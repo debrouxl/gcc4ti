@@ -40,6 +40,10 @@ typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOff
 #define __HAVE_EQU_DS_AMS1
 typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
 #endif
+#ifndef __HAVE_FUNCID
+#define __HAVE_FUNCID
+typedef struct{unsigned char FNum;unsigned char FNum2;unsigned short LNum;unsigned short PlotIndex;unsigned char PlotDir;}FUNCID;
+#endif
 #ifndef __HAVE_GrFmtFlags2
 #define __HAVE_GrFmtFlags2
 enum GrFmtFlags2{GR_DE_CUSTOM=0x0010,GR_DE_FIELDS=0x0004,GR_DIRFLD=0x0002,GR_EULER=0x0001};
@@ -58,7 +62,7 @@ typedef struct{unsigned short gr_fmt_flags;unsigned char gr_xaxis;signed char gr
 #endif
 #ifndef __HAVE_GrSides
 #define __HAVE_GrSides
-typedef enum GrSides{AP_SIDE_A=0,AP_SIDE_B=1,AP_SIDE_UNKNOWN=2};
+enum GrSides{AP_SIDE_A=0,AP_SIDE_B=1,AP_SIDE_UNKNOWN=2};
 #endif
 #ifndef __HAVE_GrWinFlags
 #define __HAVE_GrWinFlags

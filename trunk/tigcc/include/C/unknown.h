@@ -65,6 +65,10 @@ typedef ESQ*ESI;
 #define __HAVE_ESI_Callback_t
 typedef CALLBACK void(*ESI_Callback_t)(ESI);
 #endif
+#ifndef __HAVE_FUNCID
+#define __HAVE_FUNCID
+typedef struct{unsigned char FNum;unsigned char FNum2;unsigned short LNum;unsigned short PlotIndex;unsigned char PlotDir;}FUNCID;
+#endif
 #ifndef __HAVE_GrFmtFlags2
 #define __HAVE_GrFmtFlags2
 enum GrFmtFlags2{GR_DE_CUSTOM=0x0010,GR_DE_FIELDS=0x0004,GR_DIRFLD=0x0002,GR_EULER=0x0001};
@@ -87,7 +91,7 @@ enum GraphModes{GR_FUNC=1,GR_PAR=2,GR_POL=3,GR_SEQ=4,GR_3D=5,GR_DE=6};
 #endif
 #ifndef __HAVE_GrSides
 #define __HAVE_GrSides
-typedef enum GrSides{AP_SIDE_A=0,AP_SIDE_B=1,AP_SIDE_UNKNOWN=2};
+enum GrSides{AP_SIDE_A=0,AP_SIDE_B=1,AP_SIDE_UNKNOWN=2};
 #endif
 #ifndef __HAVE_GrWinFlags
 #define __HAVE_GrWinFlags
@@ -138,7 +142,6 @@ typedef short WIN_COORDS;
 typedef struct{short x0,y0,x1,y1;}WIN_RECT;
 #endif
 typedef enum{SELECT_ON,SELECT_OFF,SELECT_TOGGLE}EQU_SELECT;
-typedef struct{unsigned char FNum;unsigned char FNum2;unsigned short LNum;unsigned short PlotIndex;unsigned char PlotDir;}FUNCID;
 typedef unsigned long pFrame;
 typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK tag_proc)(void);unsigned long tag_str;}tag_info;
 typedef CALLBACK void(*Two_ESI_Callback_t)(ESI,ESI);
