@@ -295,8 +295,9 @@ static void PatchRelocOffsetsIn (const SECTION *Section, void *UserData ATTRIBUT
 
 		if (Section->Data)
 		{
-			OFFSET RelocVirtualOffset = GetLocationOffset (Section, &(Reloc->Target)) + Reloc->FixedOffset;
-			RelocVirtualOffset += VAddrs[GetCOFFSectionNumber (Reloc->Target.Symbol->Parent)];
+			const SECTION *RelocSection = Reloc->Target.Symbol->Parent;
+			OFFSET RelocVirtualOffset = GetLocationOffset (RelocSection, &(Reloc->Target)) + Reloc->FixedOffset;
+			RelocVirtualOffset += VAddrs[GetCOFFSectionNumber (RelocSection)];
 			WriteTI4 (*(TI4 *)(Section->Data + Reloc->Location), RelocVirtualOffset);
 		}
 		else
@@ -381,7 +382,7 @@ static void WriteSymbolTable (const SECTION *Section, void *UserData)
 	}
 }
 
-static void WriteStringTable (const SECTION *Section, void *UserData ATTRIBUTE_UNUSED)
+static void WriteStringTable (const SECTION *Section, void *UserData)
 {
 	const SYMBOL *Symbol;
 
@@ -392,7 +393,7 @@ static void WriteStringTable (const SECTION *Section, void *UserData ATTRIBUTE_U
 		if (NameLen > 8)
 		{
 			// String table entry
-			ExportWrite (((SectionOffsets *)UserData)->File, Symbol->Name, NameLen + 1, 1);
+			ExportWrite ((EXP_FILE *)UserData, Symbol->Name, NameLen + 1, 1);
 		}
 	}
 }
@@ -453,7 +454,7 @@ static BOOLEAN ExportDebuggingInfoFile (const PROGRAM *Program, EXP_FILE *File, 
 	MapToAllSections (Program, WriteSymbolTable, &CurrentSectionOffsets);
 
 	// Write the string table
-	MapToAllSections (Program, WriteStringTable, NULL);
+	MapToAllSections (Program, WriteStringTable, File);
 
 	return TRUE;;
 }

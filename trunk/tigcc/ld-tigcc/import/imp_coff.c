@@ -252,6 +252,20 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 							// First, check whether we didn't omit the section.
 							// If we did, no problem; we need to give an error only if
 							// someone actually uses the symbol (in a reloc).
+
+							// However, for debugging information support, we
+							// need to at least try to relocate the symbol to
+							// somewhere if it was in an empty section:
+							if (!SymVal && !Section)
+							{
+								while (SymSection <= FileInfo.SectionCount)
+								{
+									Section = SecInfo[SymSection-1].Section;
+									if (Section) break;
+									SymSection++;
+								}
+							}
+
 							if (Section)
 							{
 								BOOLEAN Exported = (ReadTI1 (CurCOFFSymbol->Class) == COFF_SYMBOL_EXTERNAL);
@@ -424,6 +438,11 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 									// Subtract the target offset for this reloc
 									// from the positive reloc's fixed offset.
 									PositiveReloc->FixedOffset += VAddr + Symbol->Location;
+									if (RelocSize <= 1) {
+										PositiveReloc->FixedOffset = (SI1) PositiveReloc->FixedOffset;
+									} else if (RelocSize <= 2) {
+										PositiveReloc->FixedOffset = (SI2) PositiveReloc->FixedOffset;
+									}
 									HandleLocation (PositiveReloc, Relation);
 									
 									RelocHint = PositiveReloc;
@@ -483,6 +502,11 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 								
 								// Calculate the remaining part of the offset.
 								Reloc->FixedOffset = Offset - Reloc->Target.Offset;
+								if (RelocSize <= 1) {
+									Reloc->FixedOffset = (SI1) Reloc->FixedOffset;
+								} else if (RelocSize <= 2) {
+									Reloc->FixedOffset = (SI2) Reloc->FixedOffset;
+								}
 								
 								// Append the reloc to the linked list.
 								InsertReloc (Section, Reloc);
@@ -570,6 +594,12 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 									if (Relative)
 										Reloc->FixedOffset += Location + SecInfo[CurCOFFSectionNumber].VAddr;
 									
+									if (RelocSize <= 1) {
+										Reloc->FixedOffset = (SI1) Reloc->FixedOffset;
+									} else if (RelocSize <= 2) {
+										Reloc->FixedOffset = (SI2) Reloc->FixedOffset;
+									}
+
 									// Add the reloc to the section.
 									InsertReloc (Section, Reloc);
 								}
