@@ -22,10 +22,33 @@
 #include "manip.h"
 #include "special.h"
 
+// Recursively mark the target section of the specified location, if any (i.e.
+// if the location is non-NULL), as referenced.
+#define MarkLocation(Location) \
+	if ((Location) && (Location)->Symbol) \
+		MarkSection ((Location)->Symbol->Parent)
+
+
 // Mark a section as referenced. If it was not already marked, follow all relocs
 // from this section and recursively mark the target sections of all the relocs.
 static void MarkSection (SECTION *Section)
 {
+	RELOC *Reloc;
+
+	// If the section is already marked, return immediately.
+	if (Section->Referenced)
+		return;
+
+	// Mark the section right now to avoid infinite recursion.
+	Section->Referenced = TRUE;
+
+	// Recursively mark the target section and the relation section of all
+	// relocs in this section
+	for_each (Reloc, Section->Relocs)
+	{
+		MarkLocation (&(Reloc->Target));
+		MarkLocation (Reloc->Relation);
+	}
 }
 
 // Free a section if it is no longer referenced. Update the ReferencedLibCount
