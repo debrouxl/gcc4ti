@@ -1,0 +1,24 @@
+[Main]
+Name=FRead
+Type=Function
+Subtype=ROM Call
+Header Files=files.h
+Definition=unsigned short FRead (void *buffer, unsigned short bytesToRead, FILES *fsPtr);
+MinAMS=2.00
+See Also=TIOS_FOpen: FOpen, TIOS_FWrite: FWrite, TIOS_FGetC: FGetC, TIOS_FSetPos: FSetPos
+
+[ROM Call]
+Index=$3E0
+
+[Description]
+Read a given number of bytes from an open file.
+
+[Explanation]
+FRead reads <I>bytesToRead</I> bytes from the open file <I>fsPtr</I> (which may be opened in either read or
+write mode) into <I>buffer</I>. <I>fsPtr</I> must be a pointer to a <A HREF="$$LINK(FILES)">FILES</A> structure previously opened with
+<A HREF="$$LINK(TIOS_FOpen)">FOpen</A>. <I>buffer</I> must be a pointer to a buffer at least <I>bytesToRead</I> bytes long.
+<BR><BR>
+FRead returns <A HREF="$$LINK(FileStatusEnum)">FS_OK</A> if the file read was successful or <A HREF="$$LINK(FileStatusEnum)">FS_EOF</A> if it read past the end of the file.
+
+[References]
+Out=TIOS_FGetC: FGetC

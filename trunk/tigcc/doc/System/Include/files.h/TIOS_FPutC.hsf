@@ -1,0 +1,32 @@
+[Main]
+Name=FPutC
+Type=Function
+Subtype=ROM Call
+Header Files=files.h
+Definition=unsigned short FPutC (short byte, FILES *fsPtr);
+MinAMS=2.00
+See Also=TIOS_FOpen: FOpen, TIOS_FGetC: FGetC, TIOS_FWrite: FWrite, TIOS_FSetPos: FSetPos, TIOS_FStatus: FStatus
+
+[ROM Call]
+Index=$3DF
+
+[Description]
+Write a byte to a file opened in write mode.
+
+[Explanation]
+FPutC writes the byte <I>byte</I> to the file <I>fsPtr</I> opened in write mode at the current file position. 
+The <A HREF="$$LINK(FILES)">FILES</A> structure pointed to by <I>fsPtr</I> must have been opened with
+<A HREF="$$LINK(TIOS_FOpen)">FOpen</A> in write mode.
+<BR><BR>
+FPutC returns <A HREF="$$LINK(FileStatusEnum)">FS_OK</A> if successful, <A HREF="$$LINK(FileStatusEnum)">FS_ERROR</A> if the file is not opened for write
+mode or <A HREF="$$LINK(FileStatusEnum)">FS_MEMORY</A> if the system is out of memory.
+<BR><BR>
+<B>Note:</B> Any error will cause the file status to be set to <A HREF="$$LINK(FileStatusEnum)">FS_ERROR</A> so that multiple
+writes may be performed without checking the return status as long as an
+<A HREF="$$LINK(TIOS_FStatus)">FStatus</A> is done at the end to make sure all of the writes were successful.
+<BR><BR>
+This routine may cause heap compression.
+
+[References]
+Out=alloc.h/HeapRealloc, alloc.h/HeapSize
+In=TIOS_FWrite: FWrite

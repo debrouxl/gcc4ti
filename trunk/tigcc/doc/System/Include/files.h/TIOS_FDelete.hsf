@@ -1,0 +1,36 @@
+[Main]
+Name=FDelete
+Type=Function
+Subtype=ROM Call
+Header Files=files.h
+Definition=unsigned short FDelete (const char *fileName);
+MinAMS=2.00
+See Also=TIOS_FCreate: FCreate
+
+[ROM Call]
+Index=$3D7
+
+[Description]
+Deletes a file.
+
+[Explanation]
+FDelete deletes the file <I>fileName</I>. <I>fileName</I> is a normal zero-terminated C string (i.e. it musn't be tokenized).
+<BR>
+<B>Note:</B> FDelete may invalidate any current <A HREF="$$LINK(vat.h/HSym)">HSym</A>s.
+<BR><BR>
+FDelete may return one of the following values as described in the <A HREF="$$LINK(FileStatusEnum)">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>File deleted.</TD>
+</TR>
+<TR>
+<TD>FS_BAD_NAME</TD><TD>Bad filename.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>File not deleted because it is locked, in use, a folder, in Flash, or it does not exist.</TD>
+</TR>
+</TABLE>
+
+[References]
+Out=unknown.h/TokenizeName, vat.h/DerefSym, vat.h/HSymDel, vat.h/VarRecall
+Out_EV_eventLoop=1

@@ -1,0 +1,23 @@
+[Main]
+Name=FStatus
+Type=Function
+Subtype=ROM Call
+Header Files=files.h
+Definition=unsigned short FStatus (FILES *fsPtr);
+MinAMS=2.00
+See Also=TIOS_FOpen: FOpen, TIOS_FClose: FClose, TIOS_FWrite: FWrite, TIOS_FPutC: FPutC
+
+[ROM Call]
+Index=$3E5
+
+[Description]
+Return the status of a file.
+
+[Explanation]
+FStatus returns the status of the file <I>fsPtr</I>: <A HREF="$$LINK(FileStatusEnum)">FS_OK</A> 
+if no errors have occurred, or
+<A HREF="$$LINK(FileStatusEnum)">FS_ERROR</A> if any errors have occurred. Note that errors accumulate so
+that multiple writes may be done on a file as long as the status is checked
+after the last write. The only way to clear the status is to close the file.
+<BR><BR>
+<I>fsPtr</I> must be a pointer to a <A HREF="$$LINK(FILES)">FILES</A> structure previously opened with <A HREF="$$LINK(TIOS_FOpen)">FOpen</A>.

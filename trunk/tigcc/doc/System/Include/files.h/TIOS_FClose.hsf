@@ -1,0 +1,28 @@
+[Main]
+Name=FClose
+Type=Function
+Subtype=ROM Call
+Header Files=files.h
+Definition=unsigned short FClose (FILES *fsPtr);
+MinAMS=2.00
+See Also=TIOS_FAccess: FAccess, TIOS_FOpen: FOpen, TIOS_FStatus: FStatus
+
+[ROM Call]
+Index=$3D5
+
+[Description]
+Close a file.
+
+[Explanation]
+FClose closes the file <I>fsPtr</I>. This is required for files opened in WRITE mode. For files in
+READ mode, FClose just updates the <I>fsPtr</I>->fileMode and <I>fsPtr</I>->fileStatus fields in the <A HREF="$$LINK(FILES)">FILES</A> structure.
+<BR><BR>
+<I>fsPtr</I> is a pointer to a <A HREF="$$LINK(FILES)">FILES</A> structure that was previously opened with <A HREF="$$LINK(TIOS_FOpen)">FOpen</A>.
+<BR><BR>
+FClose returns <A HREF="$$LINK(FileStatusEnum)">FS_OK</A> if the file was successfully closed. There is extra overhead required
+for a file that is always kept around by the file system and so closing a
+file will only return an error if the file or the heap has been damaged.
+
+[References]
+Out=alloc.h/HeapRealloc, alloc.h/HeapSize, string.h/strlen, vat.h/DerefSym
+In=TIOS_FCreate: FCreate

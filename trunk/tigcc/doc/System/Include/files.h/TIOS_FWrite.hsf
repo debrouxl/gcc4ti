@@ -1,0 +1,38 @@
+[Main]
+Name=FWrite
+Type=Function
+Subtype=ROM Call
+Header Files=files.h
+Definition=unsigned short FWrite (void *buffer, unsigned short bytesToWrite, FILES *fsPtr);
+MinAMS=2.00
+See Also=TIOS_FOpen: FOpen, TIOS_FPutC: FPutC, TIOS_FRead: FRead, TIOS_FClose: FClose
+
+[ROM Call]
+Index=$3E7
+
+[Description]
+Write a specified number of bytes to a file.
+
+[Explanation]
+FWrite writes <I>bytesToWrite</I> bytes of data from the buffer <I>buffer</I> to the output file associated with the <A HREF="$$LINK(FILES)">FILES</A> structure pointed to by <I>fsPtr</I>. 
+The data written begins at the current file position. <I>buffer</I> is a pointer to any object.
+<BR><BR>
+FWrite returns one of the following values as enumerated in the <A HREF="$$LINK(FileStatusEnum)">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>The write was successful.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>The file <I>fsPtr</I> is not opened in write mode.</TD>
+</TR>
+<TR>
+<TD>FS_MEMORY</TD><TD>Out of memory.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> Any error will cause the file status to be set to <A HREF="$$LINK(FileStatusEnum)">FS_ERROR</A> so that multiple
+writes may be performed without checking the return status as long as an
+<A HREF="$$LINK(TIOS_FStatus)">FStatus</A> is done at the end to make sure all of the writes were successful.
+
+[References]
+Out=TIOS_FPutC: FPutC

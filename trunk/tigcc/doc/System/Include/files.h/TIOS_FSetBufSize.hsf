@@ -1,0 +1,24 @@
+[Main]
+Name=FSetBufSize
+Type=Function
+Subtype=ROM Call
+Header Files=files.h
+Definition=unsigned short FSetBufSize (FILES *fsPtr, unsigned short newBufSize);
+MinAMS=2.00
+See Also=TIOS_FOpen: FOpen, TIOS_FWrite: FWrite
+
+[ROM Call]
+Index=$3E2
+
+[Description]
+Set the buffer size of a file.
+
+[Explanation]
+FSetBufSize sets the buffer size of the file <I>fsPtr</I> to a new one: <I>newBufSize</I>. 
+The buffer size determines how much memory
+is reallocated to the file every time a write needs more memory from the
+heap. The default size (128 bytes) is set when the file is opened and
+should be sufficient for most uses. Setting a larger value will make writes
+faster but at the cost of possibly prematurely running out of memory.
+<BR><BR>
+FSetBufSize returns the value stored in <I>newBufSize</I>.

@@ -1,0 +1,98 @@
+[Main]
+Name=FOpen
+Type=Function
+Subtype=ROM Call
+Header Files=files.h
+Definition=unsigned short FOpen (const char *fileName, FILES *fsPtr, unsigned short mode, char *typeName);
+MinAMS=2.00
+See Also=TIOS_FAccess: FAccess, TIOS_FClose: FClose, TIOS_FRead: FRead, TIOS_FGetC: FGetC, TIOS_FSetPos: FSetPos, TIOS_FStatus: FStatus, TIOS_FWrite: FWrite, TIOS_FPutC: FPutC
+
+[ROM Call]
+Index=$3DE
+
+[Description]
+Open a file for a specific mode.
+
+[Explanation]
+FOpen opens the file <I>fileName</I> for the mode <I>mode</I>. <I>fileName</I> is not a tokenized variable name (as required by the symbol
+table code), but rather a normal zero-terminated C string of characters. It must not be a reserved
+name. If <I>fileName</I> does not contain a folder name, the file will be stored in (or read from)
+the current folder. Internally, files are stored as custom (third-party) data-type files
+(<A HREF="$$LINK(estack.h/Tags)">OTH_TAG</A>). They will show up to the user in the VAR-LINK screen
+as the type specified when the file was opened (up to four letters).
+<BR><BR>
+When a file is opened with FOpen in <A HREF="$$LINK(fileMode)">FM_WRITE</A> or <A HREF="$$LINK(fileMode)">FM_APPEND</A> mode,
+the associated variable is locked and inaccessible by any other routines in
+the system. It must be closed with <A HREF="$$LINK(TIOS_FClose)">FClose</A> to return the variable to a not-in-use mode,
+to write the file type and the <A HREF="$$LINK(estack.h/Tags)">OTH_TAG</A>, and to close
+the associated buffer. For files opened in <A HREF="$$LINK(fileMode)">FM_READ</A> mode, the call to <A HREF="$$LINK(TIOS_FClose)">FClose</A>
+will merely update the mode of the file in the <A HREF="$$LINK(FILES)">FILES</A> structure to closed and
+clear the associated error status.
+<BR><BR>
+There is no separate mode to open a file for both reading and writing.
+However, if a file is opened in <A HREF="$$LINK(fileMode)">FM_APPEND</A> mode, the contents of the file
+are not erased and the file may be subsequently positioned to any location
+in the file (random access) and either read from or written to.
+For all access modes, the given name must not be a system variable. For
+<A HREF="$$LINK(fileMode)">FM_READ</A> and <A HREF="$$LINK(fileMode)">FM_APPEND</A> the name must correspond to an existing file of a custom data-type. For
+<A HREF="$$LINK(fileMode)">FM_WRITE</A> the file must either not exist or correspond to a file of a custom
+data-type which is not locked or marked in-use.
+<BR><BR>
+Note that for files in read mode, <A HREF="$$LINK(TIOS_FClose)">FClose</A> merely updates the
+<I>fsPtr</I>->fileMode field in the <A HREF="$$LINK(FILES)">FILES</A> structure to indicate it is closed. For write mode, it must be
+called to update information in the file needed by the system. While a file is
+in write mode, it is marked as in-use so that no other application, nor the
+system itself, will try to access it (it will not be visible in the VAR-LINK screen
+either). Files in write or append mode may be accessed randomly by
+using <A HREF="$$LINK(TIOS_FSetPos)">FSetPos</A>.
+<BR><BR>
+<B>Note:</B> Any number of files may be simultaneously opened in read mode. If multiple
+files are opened simultaneously in write (or append) mode, all but the
+first file must already exist before they are opened. Use the <A HREF="$$LINK(TIOS_FCreate)">FCreate</A> routine if
+they need to be created as empty files before they are opened with FOpen.
+<BR><BR>
+<I>typeName</I> must point to a normal (non-tokenized) zero-terminated C string of at most four characters
+which describes the file type (<A HREF="$$LINK(FileStatusEnum)">FS_ERROR</A> is returned
+if it does not). If there is an existing file with the
+same name as <I>fileName</I>, the types must match.
+<BR><BR>
+<I>fsPtr</I> is a pointer to a structure of type <A HREF="$$LINK(FILES)">FILES</A>.
+<BR><BR>
+The parameter <I>mode</I> can be one of the following commands, as described in the <A HREF="$$LINK(fileMode)">fileMode</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FM_READ</TD><TD>The file must exist and can only be read.</TD>
+</TR>
+<TR>
+<TD>FM_WRITE</TD><TD>Open the file for writing and erase its contents. Create the file if it does not exist.</TD>
+</TR>
+<TR>
+<TD>FM_APPEND</TD><TD>If the file exists, open it for writing at the end of the file. If it does not exist, then create it and open it for writing.</TD>
+</TR>
+</TABLE>
+<BR>
+FOpen returns one of the following values as described in the <A HREF="$$LINK(FileStatusEnum)">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>The file was opened for the specified mode.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>The file cannot be opened for the specified mode. (It may be locked or not of custom (OTH) data-type, or <I>typeName</I> may be invalid.)</TD>
+</TR>
+<TR>
+<TD>FS_BAD_NAME</TD><TD><I>fileName</I> is invalid.</TD>
+</TR>
+<TR>
+<TD>FS_MEMORY</TD><TD>Not enough memory.</TD>
+</TR>
+</TABLE>
+<BR>
+The return value is also stored in <I>fsPtr</I>->fileStatus in the <A HREF="$$LINK(FILES)">FILES</A> structure.<BR>
+The <A HREF="$$LINK(FILES)">FILES</A> pointer <I>fsPtr</I> may then be used in subsequent file routines.
+<BR><BR>
+This routine may cause heap compression or invalidate any current <A HREF="$$LINK(vat.h/HSym)">HSym</A>s.
+
+[References]
+In=TIOS_FAccess: FAccess, TIOS_FCreate: FCreate, TIOS_FType: FType
+Out=error.h/ER_catch, error.h/ER_success, estack.h/HToESI, mem.h/memset, string.h/strcmp, string.h/strlen, unknown.h/_ROM_CALL_3E8, unknown.h/TokenizeName, vat.h/DerefSym, vat.h/VarRecall, vat.h/VarStore
+Out_EV_eventLoop=1
