@@ -13,79 +13,155 @@ Index=$AC
 Initializes the text editor.
 
 [Explanation]
-TE_open initializes the text editor and displays the initial content of the editor. All
-text editor operations are controled using a structure of type <A HREF="$$LINK(TEXT_EDIT)">TEXT_EDIT</A>.
-TE_open will initialize such structure pointed to by parameter <I>te</I>, which later need
-to be passed to all text editor operations. It returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the
-initialization was successful, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+TE_open initializes the text editor and displays the initial contents of the editor. All
+text editor operations are controled using a structure of type
+<A HREF="$$LINK(TEXT_EDIT)">TEXT_EDIT</A>. TE_open will initialize such a structure pointed
+to by the parameter <I>te</I>, which later needs to be passed to all text editor operations
+(i.e. <I>te</I> must be allocated statically to maintain state between calls to the text
+edit routines). It returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the edit buffer could
+be allocated, or <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> if there is insufficient memory to
+allocate the edit buffer. This routine always returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>
+if <I>BufHandle</I> is passed in with the handle to a text buffer.
 <BR><BR>
-<I>w</I> is a pointer to the parent window of the editor: you
-can create a new window to be the parent using <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A>, or you can pass
+<B>Note:</B> The window <I>w</I> must already be open. The handle <I>BufHandle</I> must not
+be locked.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+<I>w</I> is a pointer to the parent window of the editor: you can create a new window to be
+the parent using <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A>, or you can pass
 <A HREF="$$LINK(wingraph.h/DeskTop)">DeskTop</A> as the parameter, if you are happy with
 its settings (which is usually the case). <I>rect</I> is a pointer to the
-<A HREF="$$LINK(wingraph.h/WIN_RECT)">WIN_RECT</A> structure which describes actual dimensions of the
-rectangular text editor area. Note that if you use your own window as a parent window, this
-window must not be "dirty" (i.e. it must not have <A HREF="$$LINK(wingraph.h/WinFlags)">WF_DIRTY</A>
-flag set). Windows created by <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> are "dirty" by default,
-so you need to clear "dirty" flag manually before calling TE_open. For example, you can do
+<A HREF="$$LINK(wingraph.h/WIN_RECT)">WIN_RECT</A> structure which describes the actual
+dimensions of the rectangular text editor area (You can pass
+<A HREF="$$LINK(alloc.h/NULL)">NULL</A> to use entire client rectangle of the window <I>w</I>
+for the edit region). Note that if you use your own window as a parent window, this
+window must not be "dirty" (i.e. it must not have the
+<A HREF="$$LINK(wingraph.h/WinFlags)">WF_DIRTY</A> flag set). Windows created by
+<A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> are "dirty" by default, so you need to clear
+the "dirty" flag manually before calling TE_open. For example, you can do
 <PRE><I>w</I>-&gt;Flags &amp;= ~WF_DIRTY;
 </PRE>
 <I>BufHandle</I> is the handle of the text editor buffer, which may be pre-filled with the
 text (if you want to edit existing text), or filled with zeros (if you want to create a new
-text). <I>BufHandle</I> may be, for example, a result of <A HREF="$$LINK(alloc.h/HeapAlloc)">HeapAlloc</A>
-operation. Note that in contrary what I said in the documentation of TIGCCLIB releases prior
-to 2.2, it can not be a handle of a text variable, because text variables
-contain additional system data on the begining, and the editor expect a raw data (see
-<A HREF="$$INFOLINK(faq)">Frequently Asked Questions</A> to learn how you can pass a text variable to
-the editor however).
+text). <I>BufHandle</I> may be, for example, the result of a
+<A HREF="$$LINK(alloc.h/HeapAlloc)">HeapAlloc</A> operation. <I>BufHandle</I> can also be
+<A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A>, in this case TE_open  will allocate a new handle
+and initialize it with no text. Note that contrary to what I said in the documentation of
+TIGCCLIB releases prior to 2.2, it cannot be a handle of a text variable, because text variables
+contain additional system data on the begining, and the editor expect raw data (see the
+<A HREF="$$INFOLINK(faq)">Frequently Asked Questions</A> to learn how you can pass a text
+variable to the editor though).
 <BR><BR>
-The content of text buffer is a standard zero-terminated string, in which lines of
-text are separated with '\r' character (0xD). The size of the buffer is managed automatically
+The contents of the text buffer are a standard zero-terminated string, in which lines of
+text are separated with '\r' characters (0xD). The size of the buffer is managed automatically
 by the editor: it will be expanded if necessary to add more text, so you need not to worry
-about the allocated size. Parameter <I>cur_offset</I> is the initial position of the cursor
-(counted from the begining of the buffer), and <I>ReadOnly</I> is the count of characters
-at the begining of the buffer which can't be modified (i.e. which are read-only). <I>ReadOnly</I>
-is usually set to zero, except in some special applications.
+about the allocated size.
 <BR><BR>
-<I>Flags</I> is a set of binary flags which controls the editor. Some of these flags are
-changed automatically during the operation of the editor. As I currently know, the following
-bits have sense for usage in parameter <I>Flags</I> of this function (maybe there are more
-of them, but I am not sure; keep all other bits to zero):
-<UL>
-<LI>
-Bit b0 should be set for the standard operation of the editor. If this is reset, the editor
-will operate in "compact" mode, in which the editor is only one character high, and where the
-content of the editor will scroll left/right when necessary (such mode is used in request boxes
-in dialogs). In "compact" mode, the content of the editor buffer must not contain '\r' characters,
-else the editor will be fooled.</LI>
-<LI>
-When b1&nbsp;=&nbsp;1, each line of the editor will be preceded with a colon ("<B>:</B>"),
-like in "Text editor" or "Program editor". When b1&nbsp;=&nbsp;0, there will not be a preceding
-colon.</LI>
-<LI>
-Bit 2 is used only if b1&nbsp;=&nbsp;1. When b2 is also 1, the first character of
+The parameter <I>cur_offset</I> is the initial position of the cursor
+(counted from the begining of the buffer). Position 0 is to the left of the first
+character. If the contents of the text edit buffer are too
+long to display entirely in the edit region, the text is
+scrolled to make sure the cursor is visible.
+Set <I>cur_offset</I> to <A HREF="$$LINK(TE_FAR_RIGHT)">TE_FAR_RIGHT</A> to place the edit cursor
+after the last character in the edit buffer.
+<BR><BR>
+The parameter <I>ReadOnly</I> is the count of characters
+at the begining of the buffer which can't be modified (i.e. which are read-only). <I>ReadOnly</I>
+is usually set to zero, except in some special applications. The <I>ReadOnly</I> characters are 
+considered to be part of a prompt (or of command characters as in the text editor) so the user
+cannot change the text of the <I>ReadOnly</I> characters nor move the edit cursor into them.
+<BR><BR>
+<I>Flags</I> is a set of binary flags which controls the editor. Each bit specifies optional
+features of the text editor. Some of these flags are changed automatically during the operation
+of the editor. The flags are defined in the <A HREF="$$LINK(ETE_FLAGS)">ETE_FLAGS</A>
+enumeration and have the following meanings:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">TE_WRAP</TD><TD VALIGN="TOP">Set this flag for multiline edit regions. Reset
+it for single-line edit regions: the editor will operate in "compact" mode, in which the editor
+is only one character high, and where the contents of the editor will scroll left/right when
+necessary (such a mode is used in request boxes in dialogs). In "compact" mode, the contents of
+the editor buffer must not contain '\r' characters, else the editor will be fooled. In multiline
+edit regions, text can wrap around the end of the line to the beginning of the next line. The
+program editor is an example of a multiline edit region. The Home screen entry line is an
+example of a single-line edit region.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_COLON</TD><TD VALIGN="TOP">When set, each line of the editor will be
+preceded with a colon ("<B>:</B>"), like in the "Text editor" or the "Program editor". When
+TE_COLON is reset, there will not be a preceding colon. The program editor uses this flag to
+mark the beginning of each line of the program.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_COMMANDS</TD><TD VALIGN="TOP">When set, the first character of
 each line will be regarded as "command character", and it will be displayed before the colon.
-"Text editor" application uses such mode to store editor commands (like "P" = "PrintObj" etc.).
-Note that when b2&nbsp;=&nbsp;1, parameter <I>cur_offset</I> must not be zero (it is usually
-set to 1 in this case).
-</LI>
-<LI>
-When b3&nbsp;=&nbsp;1, the editor enters some strange mode in which each line is preceded with
-a left arrow. As I am not sure about such mode, I suggest to you to avoid this.</LI>
-<LI>
-Bit b7 is set for text editors opened with <A HREF="$$LINK(TE_openFixed)">TE_openFixed</A>: you don't
-need to use this bit!
-</LI>
-<LI>
-When b11&nbsp;=&nbsp;1, the editor enters read-only mode, i.e. you can not insert or delete
-characters, etc.
-</LI></UL>
+The "Text editor" application uses this mode to store editor commands (like "P" = "PrintObj"
+etc.). Note that when this flag is set, the parameter <I>cur_offset</I> must not be zero (it
+is usually set to 1 in this case).<BR>
+<B>Note:</B> This flag includes the TE_COLON flag (as needed by the AMS).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_MORE_ARROWS</TD><TD VALIGN="TOP">Set this flag to display arrows at the
+left and right ends of a <I>single-line</I> edit region to indicate when more
+text is to the left or right of the edit region.
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_MORE_ELLIPSES</TD><TD VALIGN="TOP">Set this flag to display ellipses
+(...) at the left and right ends of a <I>single-line</I> edit region to indicate when
+more text is to the left or right of the edit region.<BR>
+<B>Note:</B> This flag includes the TE_MORE_ARROWS flag (as needed by the AMS).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_SELECT</TD><TD VALIGN="TOP">This flag is an internal flag. It is set if
+there currently is a selection in the text editor. It is clear if nothing is selected.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_CURSOR</TD><TD VALIGN="TOP">This flag is an internal flag. It represents
+the current blinking state of the cursor: it is set if the blinking cursor is currently visible.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_FIXED_LENGTH</TD><TD VALIGN="TOP">This flag is an internal flag. It is set
+for text editors opened with <A HREF="$$LINK(TE_openFixed)">TE_openFixed</A>. Do not set this
+flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_CHANGED</TD><TD VALIGN="TOP">This flag is an internal flag. It is a status
+flag which, if 1, indicates the contents of the edit buffer have changed. Do not set this
+flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_FOCUSED</TD><TD VALIGN="TOP">This flag is an internal flag. It is set if
+the text editor currently has the focus, i.e. if the cursor is currently in the text editor.
+See <A HREF="$$LINK(TE_focus)">TE_focus</A> and <A HREF="$$LINK(TE_unfocus)">TE_unfocus</A>.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_AUTO_ANS</TD><TD VALIGN="TOP">Set this flag to 1 to cause "ans(1)" to be
+inserted automatically when the edit buffer is empty and an arithmetic operation is typed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_READ_ONLY</TD><TD VALIGN="TOP">When set, the editor enters read-only mode.
+In this mode, the editor displays text and allows arrow keys to navigate through the edit
+buffer, but it does not allow changing the text, i.e. you can't insert, delete or change any
+characters.</TD>
+</TR>
+</TABLE>
+<BR>
 <B>Note:</B> TE_open just initializes the editor, displays the intial content of it and exits.
 It does not enter the editor loop in which keypresses are processed. In fact, there is no
 such loop: you need to get keypresses manually (using <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>
-or, even better, using <A HREF="$$LINK(events.h/EV_getc)">EV_getc</A>) and to pass them to
-<A HREF="$$LINK(TE_handleEvent)">TE_handleEvent</A> which will process them. Such approach gives
-much more flexibility. See <A HREF="$$LINK(TE_handleEvent)">TE_handleEvent</A> for an example of usage.
+or, even better, using <A HREF="$$LINK(events.h/EV_getc)">EV_getc</A>, or using
+the default event loop <A HREF="$$LINK(events.h/EV_eventLoop)">EV_eventLoop</A>) and to pass them
+to <A HREF="$$LINK(TE_handleEvent)">TE_handleEvent</A> which will process them. Such an approach
+gives much more flexibility. See <A HREF="$$LINK(TE_handleEvent)">TE_handleEvent</A> for an
+example of usage.
 
 [References]
 In=bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog

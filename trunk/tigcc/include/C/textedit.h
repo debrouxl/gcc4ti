@@ -4,6 +4,7 @@
 #include <default.h>
 
 /* Begin Auto-Generated Part */
+#define TE_FAR_RIGHT (0xFFFF)
 #ifndef __HAVE_Bool
 #define __HAVE_Bool
 enum Bool{FALSE,TRUE};
@@ -36,7 +37,8 @@ typedef struct EventStruct{unsigned short Type;unsigned short RunningApp;unsigne
 #define __HAVE_size_t
 typedef unsigned long size_t;
 #endif
-typedef struct TextEditStruct{WINDOW*Parent;unsigned short ReadOnly;WIN_RECT Rect;unsigned short BufSize;unsigned short CurSize;unsigned short CursorOffset;unsigned short StartOffset;unsigned short PreChars;unsigned short CharWidth;unsigned short CharHeight;unsigned short LineNum;unsigned short CursorX;unsigned short Flags;union{HANDLE h;const char*p;}Text;}TEXT_EDIT;
+typedef enum ETE_FLAGS{TE_WRAP=0x0001,TE_COLON=0x0002,TE_COMMANDS=0x0006,TE_MORE_ARROWS=0x0008,TE_MORE_ELLIPSES=0x0018,TE_SELECT=0x0020,TE_CURSOR=0x0040,TE_FIXED_LENGTH=0x0080,TE_CHANGED=0x0100,TE_FOCUSED=0x0200,TE_AUTO_ANS=0x0400,TE_READ_ONLY=0x0800}TE_FLAGS;
+typedef struct TextEditStruct{WINDOW*Parent;unsigned short ReadOnly;WIN_RECT Rect;unsigned short BufSize;unsigned short CurSize;unsigned short CursorOffset;unsigned short StartOffset;union{unsigned short SelStart;unsigned short PreChars;};unsigned short CharWidth;unsigned short CharHeight;unsigned short LineNum;unsigned short CursorX;unsigned short Flags;union{HANDLE h;const char*p;}Text;}TEXT_EDIT;
 #define TE_checkSlack _rom_call(void,(TEXT_EDIT*),A6)
 #define TE_close _rom_call(void,(TEXT_EDIT*),A5)
 #define TE_empty _rom_call(void,(TEXT_EDIT*),A7)

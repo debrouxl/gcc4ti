@@ -35,7 +35,7 @@ Email us at:        Team@tigcc.ticalc.org
 Original files Copyright (C) 1999-2004 Xavier Vassor, Niklas Brunlid,
                                        and Jean Canazzi
 ld-tigcc Copyright (C) 2002-2004 Sebastian Reichelt and Kevin Kofler
-Library Copyright (C) 2000-2004 Zeljko Juric
+Library & Documentation Copyright (C) 2000-2005 Zeljko Juric and contributors
 IDE Copyright (C) 2000-2004 Sebastian Reichelt
 
 Included programs with different licenses:

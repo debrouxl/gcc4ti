@@ -5,6 +5,7 @@ Subtype=Macro
 Header Files=vat.h
 Definition=SYM_STR SYMSTR (const char *s);
 Real Definition=#define SYMSTR(s) ({register unsigned short __slen = _rom_call(unsigned long,(const char*),27E) (s); ESI __tempstr = alloca(__slen + 2); __tempstr [0] = 0; _rom_call(void*,(void*,const void*,long),26A) (__tempstr + 1, (s), __slen + 1); __tempstr + __slen + 1;})
+See Also=estack.h/TokenizeSymName
 
 [Description]
 Defines a VAT string.
@@ -31,6 +32,11 @@ and the string is copied to this location on the stack. Strictly speaking,
 SYMSTR does not return a pointer of type <A HREF="$$LINK(estack.h/SYM_STR)">SYM_STR</A>
 in this case, but rather a pointer to non-constant data. This means that you
 may write to it if you wish.
+<BR><BR>
+Note that this macro doesn't check whether <I>s</I> is valid or not. If you
+need to tokenize a variable string and want to be sure that <I>s</I> is valid, 
+you can use the <A HREF="$$LINK(estack.h/TokenizeSymName)">TokenizeSymName</A>
+routine.
 <BR><BR>
 <B>Note:</B> You cannot create tokens for system variables using this macro.
 See <A HREF="$$LINK(estack.h/Tags)">EXT_SYSTEM_TAG</A> for more information.
