@@ -1,7 +1,7 @@
 /* dump.c: Routines to dump the internal data to a file
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2004 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -80,8 +80,8 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 		fprintf (File, "%sFile: %s\n", Indent, Section->FileName);
 	if (Section->StartupNumber)
 		fprintf (File, "%sStartup Section: %ld\n", Indent, (long) (Section->StartupNumber));
-	if (!(Section->Referenced))
-		fprintf (File, "%sNot Referenced\n", Indent);
+	if (Section->Essential)
+		fprintf (File, "%sEssential\n", Indent);
 	if (Section->Frozen)
 		fprintf (File, "%sFrozen\n", Indent);
 	if (Section->CanCutRanges)
