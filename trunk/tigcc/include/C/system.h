@@ -74,7 +74,7 @@ extern short OSVRegisterTimer(short asm("d0"),long asm("d3"),Timer_Callback_t as
 #define FiftyMsecTick (*((volatile unsigned long*)(_rom_call_addr(4FC))))
 #define AB_getGateArrayVersion _rom_call(unsigned long,(void),15E)
 #if MIN_AMS>=204
-typedef struct{unsigned short len;unsigned char releaseVersionMajor;unsigned char releaseVersionMinor;unsigned short releaseDateYear;unsigned char releaseDateMonth;unsigned char releaseDateDay;}BASECODE_PARM_BLOCK __attribute__((__packed__));
+typedef struct{unsigned short len;unsigned char releaseVersionMajor;unsigned char releaseVersionMinor;unsigned short releaseDateYear;unsigned char releaseDateMonth;unsigned char releaseDateDay;}BASECODE_PARM_BLOCK;
 #define EX_getBasecodeParmBlock _rom_call(const void*,(void),5DA)
 #endif
 #endif
