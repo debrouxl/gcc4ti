@@ -155,7 +155,7 @@ var
 	HomeDirPC: PChar;
 begin
 	if Running then
-		raise EFOpenError.Create ('Another process is still running')
+		raise EFOpenError.CreateFmt ('Another process is still running', [])
 	else begin
 		StdOut.Clear;
 		StdErr.Clear;
@@ -179,7 +179,7 @@ begin
 		if CreateProcess (nil, PChar (CommandLine), nil, nil, True, PriorityClass, nil, HomeDirPC, StartupInfo, FProcessInfo) then begin
 			FWaitThread := THandleWaitThread.Create (ProcessInfo.hProcess);
 		end else
-			raise EFOpenError.Create ('Could not start process');
+			raise EFOpenError.CreateFmt ('Could not start process', []);
 	end;
 end;
 

@@ -9,6 +9,11 @@ uses
 	Printers, SourceEditUnit, HTMLHelpUnit, MemoComponentUnit, ScktComp;
 
 type
+  TPanel = class(ExtCtrls.TPanel)
+  protected
+    procedure Paint; override;
+  end;
+
 	TMainForm = class(TForm)
 		ProjectTree: TTreeView;
 		LittleIcons: TImageList;
@@ -50,13 +55,7 @@ type
 		Delete2: TMenuItem;
 		Splitter2: TSplitter;
 		ErrWinPanel: TPanel;
-		ErrorPanel: TPanel;
-		CloseErrorsButton: TSpeedButton;
 		ErrorList: TListView;
-		Label1: TLabel;
-		Label2: TLabel;
-		ErrorsLabel: TLabel;
-		WarningsLabel: TLabel;
 		Save2: TMenuItem;
 		SaveAs2: TMenuItem;
 		N8: TMenuItem;
@@ -252,6 +251,12 @@ type
 		GNUAssemblyHeaderFile2: TMenuItem;
 		A68kAssemblyHeaderFile1: TMenuItem;
     A68kAssemblyHeaderFile2: TMenuItem;
+    ErrorPanel: TPanel;
+    CloseErrorsButton: TSpeedButton;
+    Label1: TLabel;
+    Label2: TLabel;
+    ErrorsLabel: TLabel;
+    WarningsLabel: TLabel;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure AppException(Sender: TObject; E: Exception);
@@ -483,7 +488,8 @@ function LinkLibGetOutputFile(var DestFile: TLinkLibDestFile; FileSize, DestCalc
 
 implementation
 
-{$R *.DFM}
+{$R *.DFM}   
+{$R WindowsXP.res}
 
 uses
 	CalcUnit, ParsingUnit, ProcessUnit,
@@ -493,7 +499,8 @@ uses
 	ProgramOutputUnit, VTIStartUnit,
 	LinkUnit,
 	UtilsDos, UtilsWin, HandleWaitThreadUnit, FileReadToBufferThreadUnit,
-	ShellAPI, ShlObj, IniFiles, Registry, WinSpool, ClipBrd{$IFDEF CODINGEXT}, CompletionForm{$ENDIF};
+	ShellAPI, ShlObj, IniFiles, Registry, WinSpool, ClipBrd{$IFDEF CODINGEXT}, CompletionForm{$ENDIF},
+  ProgramOptionsUnit;
 
 const
 	RegKey = '\Software\SeReSoft\TI-GCC IDE';
@@ -594,6 +601,16 @@ begin
 		OSUpgrade := (FileFormat = llffTIOSUpgrade);
 	end;
 	Result := True;
+end;
+
+{ Fix for TPanel & XP Theme }
+
+procedure TPanel.Paint;
+begin
+  Canvas.Pen.Style := psClear;
+  Canvas.Brush.Color := Color;
+  Canvas.FillRect(GetClientRect);
+  inherited;
 end;
 
 { TRecentFileMenuItem }
@@ -987,6 +1004,8 @@ begin
 		Result := rfKernel
 	else if S = 'Compressed' then
 		Result := rfCompressed
+	else if S = 'MLink' then
+		Result := rfMLink
 	else if S = 'F-Line' then
 		Result := rfFLine
 	else
@@ -1245,6 +1264,7 @@ begin
 		rfAMS:         Result := 'AMS';
 		rfKernel:      Result := 'Kernel';
 		rfCompressed:  Result := 'Compressed';
+    rfMLink:       Result := 'MLink';
 		rfFLine:       Result := 'F-Line';
 		else           Result := 'Unknown';
 	end;
@@ -2683,12 +2703,16 @@ begin
 						RelocFormat := rfKernel
 					else if RelocCompressedRadioButton.Checked then
 						RelocFormat := rfCompressed
+					else if RelocMlinkRadioButton.Checked then
+						RelocFormat := rfMlink
 					else
 						RelocFormat := rfAMS;
 					if ROMCallKernelRadioButton.Checked then
 						ROMCallFormat := rfKernel
 					else if ROMCallCompressedRadioButton.Checked then
 						ROMCallFormat := rfCompressed
+					else if ROMCallMlinkRadioButton.Checked then
+						ROMCallFormat := rfMlink
 					else if ROMCallFLineRadioButton.Checked then
 						ROMCallFormat := rfFLine
 					else
@@ -2696,13 +2720,17 @@ begin
 					if BSSKernelRadioButton.Checked then
 						BSSRefFormat := rfKernel
 					else if BSSCompressedRadioButton.Checked then
-						BSSRefFormat := rfCompressed
+						BSSRefFormat := rfCompressed   
+					else if BSSMlinkRadioButton.Checked then
+						BSSRefFormat := rfMlink
 					else
 						BSSRefFormat := rfNone;
 					if DataVarKernelRadioButton.Checked then
 						DataRefFormat := rfKernel
 					else if DataVarCompressedRadioButton.Checked then
-						DataRefFormat := rfCompressed
+						DataRefFormat := rfCompressed  
+					else if DataVarMlinkRadioButton.Checked then
+						DataRefFormat := rfMlink
 					else
 						DataRefFormat := rfNone;
 					UseFLineJumps      := RelocFLineJumpsCheckBox.Checked;

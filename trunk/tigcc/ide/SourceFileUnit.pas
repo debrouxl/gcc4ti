@@ -1478,7 +1478,7 @@ end;
 
 procedure TSourceTextSourceFile.SplitAndWriteToFile(const FN: string);
 type
-	TCharMode = (cmNone, cmNormalText, cmNumber, cmMultiSymbol, cmString, cmChar, cmComment, cmUnchangableLine, cmExtUnchangableLine, cmTrigraph);
+	TCharMode = (cmNone, cmNormalText, cmNumber, cmMultiSymbol, cmString, cmChar, cmComment, cmUnchangeableLine, cmExtUnchangeableLine, cmExtUnchangeableLineString, cmTrigraph);
 var
 	S: string;
 {$IFDEF CanSplit}
@@ -1580,22 +1580,38 @@ begin
 									if (C = '/') and (S [CurPos - 1] = '*') then
 										CurMode := cmNone;
 								end;
-								cmUnchangableLine:
+								cmUnchangeableLine:
 									if C = #13 then
 										CurMode := cmNone;
-								cmExtUnchangableLine:
+								cmExtUnchangeableLine:
 									if (C = #13) and (S [CurPos - 1] <> '\') then
-										CurMode := cmNone;
+										CurMode := cmNone
+									else if C = '"' then
+										CurMode := cmExtUnchangeableLineString;
+								cmExtUnchangeableLineString:
+									if (C = '"') then begin
+										B := True;
+										I := CurPos - 1;
+										while (I >= 1) and ((S [I] = '\') or (Copy (S, I - 2, 3) = '??/')) do begin
+											B := not B;
+											if S [I] = '\' then
+												Dec (I)
+											else
+												Dec (I, 3);
+										end;
+										if B then
+											CurMode := cmExtUnchangeableLine;
+									end;
 								cmTrigraph:
 									if (C <> '?') and ((CurPos + 1 > Length (S)) or (S [CurPos + 1] <> '?')) then
 										CurMode := cmNone;
 								else begin
 									if Copy (S, CurPos, 2) = '//' then
-										SetMultiCharMode (cmUnchangableLine)
+										SetMultiCharMode (cmUnchangeableLine)
 									else if Copy (S, CurPos, 2) = '/*' then
 										SetMultiCharMode (cmComment)
 									else if Copy (S, CurPos, 2) = '??=' then
-										SetMultiCharMode (cmExtUnchangableLine)
+										SetMultiCharMode (cmExtUnchangeableLine)
 									else if (Copy (S, CurPos, 2) = '??') and (Length (S) >= CurPos + 2) and (S [CurPos + 2] in ['(', ')', '/', '''', '<', '>', '!', '-']) then
 										SetMultiCharMode (cmTrigraph)
 									else
@@ -1616,7 +1632,10 @@ begin
 											'''':
 												SetMultiCharMode (cmChar);
 											'#':
-												SetMultiCharMode (cmExtUnchangableLine);
+												if AtLineStart then
+													SetMultiCharMode (cmExtUnchangeableLine)
+												else
+													SetMultiCharMode (cmMultiSymbol);
 											'.':
 												if CurMode <> cmNumber then begin
 													if (Length (S) >= CurPos + 1) and (S [CurPos + 1] in ['0'..'9']) then begin
@@ -2653,3 +2672,4 @@ begin
 end;
 
 end.
+

@@ -42,7 +42,7 @@ type
 	TTransferTarget = (ttNone, ttVTI, ttCalc);
 	TCurVTIType = (cvNone, cvTI89, cvTI92Plus, cvTI92);
 	TKernelFormat = (kfUnknown, kfNone, kfStandard, kfCompressedTables);
-	TRelocFormat = (rfUnknown, rfNone, rfDirect, rfAMS, rfKernel, rfCompressed, rfFLine);
+	TRelocFormat = (rfUnknown, rfNone, rfDirect, rfAMS, rfKernel, rfCompressed, rfMlink, rfFLine);
 
 	TPredefinedLibOptions = class(TObject)
 		CalcDests: TCalcDests;
@@ -227,11 +227,13 @@ begin
 		case RelocFormat of
 			rfKernel:      AddSwitch ('KERNEL_FORMAT_RELOCS');
 			rfCompressed:  AddSwitch ('COMPRESSED_FORMAT_RELOCS');
+      rfMLink:       AddSwitch ('MLINK_FORMAT_RELOCS');
 			rfFLine:       AddSwitch ('USE_FLINE_JUMPS');
 		end;
 		case ROMCallFormat of
 			rfKernel:      AddSwitch ('KERNEL_FORMAT_ROM_CALLS');
-			rfCompressed:  AddSwitch ('COMPRESSED_FORMAT_ROM_CALLS');
+			rfCompressed:  AddSwitch ('COMPRESSED_FORMAT_ROM_CALLS');  
+			rfMlink:       AddSwitch ('MLINK_FORMAT_ROM_CALLS');
 			rfFLine: begin
 				AddSwitch ('USE_FLINE_ROM_CALLS');
 				Result := Result + ' -fno-function-cse';
@@ -241,11 +243,13 @@ begin
 			rfNone:        AddSwitch ('MERGE_BSS');
 			rfKernel:      AddSwitch ('KERNEL_FORMAT_BSS');
 			rfCompressed:  AddSwitch ('COMPRESSED_FORMAT_BSS');
+      rfMlink:       AddSwitch ('MLINK_FORMAT_BSS');
 		end;
 	end;
 	case DataRefFormat of
 		rfKernel:      AddSwitch ('KERNEL_FORMAT_DATA_VAR');
 		rfCompressed:  AddSwitch ('COMPRESSED_FORMAT_DATA_VAR');
+    rfMlink:       AddSwitch ('MLINK_FORMAT_DATA_VAR');
 	end;
 	if UseFLineJumps then begin
 		AddSwitch ('USE_FLINE_JUMPS');

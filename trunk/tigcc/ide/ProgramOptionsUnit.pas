@@ -63,6 +63,10 @@ type
 		UnofficialOSSupportCheckBox: TCheckBox;
 		RelocFLineJumps4ByteCheckBox: TCheckBox;
     ROMCallOptimizedCheckBox: TCheckBox;
+    RelocMlinkRadioButton: TRadioButton;
+    ROMCallMlinkRadioButton: TRadioButton;
+    BSSMlinkRadioButton: TRadioButton;
+    DataVarMlinkRadioButton: TRadioButton;
 		procedure FormShow(Sender: TObject);
 		procedure ShellRadioButtonClick(Sender: TObject);
 		procedure MinAMSCheckBoxClick(Sender: TObject);

@@ -228,21 +228,25 @@ begin
 					rfAMS:         RelocAMSRadioButton.Checked          := True;
 					rfKernel:      RelocKernelRadioButton.Checked       := True;
 					rfCompressed:  RelocCompressedRadioButton.Checked   := True;
+          rfMlink:       RelocMlinkRadioButton.Checked        := True;
 				end;
 				case ROMCallFormat of
 					rfDirect:      ROMCallDirectRadioButton.Checked     := True;
 					rfKernel:      ROMCallKernelRadioButton.Checked     := True;
 					rfCompressed:  ROMCallCompressedRadioButton.Checked := True;
+          rfMlink:       ROMCallMlinkRadioButton.Checked      := True;
 					rfFLine:       ROMCallFLineRadioButton.Checked      := True;
 				end;
 				case BSSRefFormat of
 					rfNone:        BSSMergeRadioButton.Checked          := True;
 					rfKernel:      BSSKernelRadioButton.Checked         := True;
 					rfCompressed:  BSSCompressedRadioButton.Checked     := True;
+          rfMlink:       BSSMlinkRadioButton.Checked          := True;
 				end;
 				case DataRefFormat of
 					rfKernel:      DataVarKernelRadioButton.Checked     := True;
 					rfCompressed:  DataVarCompressedRadioButton.Checked := True;
+          rfMlink:       DataVarMlinkRadioButton.Checked      := True;
 				end;
 				RelocFLineJumpsCheckBox.Checked      := UseFLineJumps;
 				RelocFLineJumps4ByteCheckBox.Checked := Use4ByteFLineJumps;
