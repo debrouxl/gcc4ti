@@ -820,6 +820,12 @@ SECTION *MergeSections (SECTION *Dest, SECTION *Src)
 	// Store the size of the destination section.
 	OrigSize = Dest->Size;
 	
+#ifdef DEBUGGING_INFO_SUPPORT
+	// Debugging information shouldn't be padded, the DWARF 2 format doesn't support padding.
+	if (Dest->DebuggingInfoType)
+		OrigSizePadded = OrigSize;
+#endif /* DEBUGGING_INFO_SUPPORT */
+	
 	// If no size is specified yet, pad the destination section to have an even length.
 	if (!OrigSizePadded)
 		OrigSizePadded = GetPaddedSize (OrigSize, M68K_SECTION_ALIGNMENT);

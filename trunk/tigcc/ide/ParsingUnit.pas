@@ -165,85 +165,87 @@ begin
 				RegRelative := True;
 			if Pos (FLineIdentifier, L) > 0 then
 				NeedFLine := True;
-			if RegRelative then begin
-				P1 := Pos ('-__relation', L);
-				while P1 > 0 do begin
-					P2 := PosEx ('_CALL_', L, P1, True);
-					if (P2 > 0) and (P2 < P1) and (P1 - P2 <= Length ('_CALL_') + 4) then begin
-						System.Delete (L, P1, Length ('-__relation') + 1);
-						while (Length (L) > 0) and (L [P1] <> ')') do
+			if not ((Copy (L, 1, Length (#9'.ascii')) = #9'.ascii') or (Copy (L, 1, Length (#9'.asciz')) = #9'.asciz')) then begin
+				if RegRelative then begin
+					P1 := Pos ('-__relation', L);
+					while P1 > 0 do begin
+						P2 := PosEx ('_CALL_', L, P1, True);
+						if (P2 > 0) and (P2 < P1) and (P1 - P2 <= Length ('_CALL_') + 4) then begin
+							System.Delete (L, P1, Length ('-__relation') + 1);
+							while (Length (L) > 0) and (L [P1] <> ')') do
+								System.Delete (L, P1, 1);
 							System.Delete (L, P1, 1);
-						System.Delete (L, P1, 1);
-						Strings [I] := L;
-					end;
-					P2 := PosEx ('_ER_CODE_', L, P1, True);
-					if (P2 > 0) and (P2 < P1) and (P1 - P2 <= Length ('_ER_CODE_') + 5) then begin
-						System.Delete (L, P1, Length ('-__relation') + 1);
-						while (Length (L) > 0) and (L [P1] <> ')') do
+							Strings [I] := L;
+						end;
+						P2 := PosEx ('_ER_CODE_', L, P1, True);
+						if (P2 > 0) and (P2 < P1) and (P1 - P2 <= Length ('_ER_CODE_') + 5) then begin
+							System.Delete (L, P1, Length ('-__relation') + 1);
+							while (Length (L) > 0) and (L [P1] <> ')') do
+								System.Delete (L, P1, 1);
 							System.Delete (L, P1, 1);
-						System.Delete (L, P1, 1);
-						Strings [I] := L;
+							Strings [I] := L;
+						end;
+						P1 := PosEx ('-__relation', L, P1 + 1);
 					end;
-					P1 := PosEx ('-__relation', L, P1 + 1);
 				end;
-			end;
-			if (Copy (L, 1, Length (#9'jra _ER_CODE_')) = #9'jra _ER_CODE_') or (Copy (L, 1, Length (#9'jmp _ER_CODE_')) = #9'jmp _ER_CODE_') then begin
-				System.Delete (L, 1, Length (#9'jxx _ER_CODE_'));
-				if Length (L) <= 4 then
-					Strings [I] := #9'.word _A_LINE+' + L;
-			end else begin
-				Changed := True;
-				if (Copy (L, 1, Length (#9'jbsr')) = #9'jbsr') and (Pos ('_CALL_', L) > 0) then
-					System.Delete (L, 1 + Length (#9'j'), Length ('b'))
-				else if (Copy (L, 1, Length (#9'jra')) = #9'jra') and (Pos ('_CALL_', L) > 0) then begin
-					System.Delete (L, 1, Length (#9'jra'));
-					L := #9'jmp' + L;
-				end else if Copy (L, 1, Length (#9'move.l #__ld_calc_const_')) = #9'move.l #__ld_calc_const_' then
-					L [1 + Length (#9'move.')] := 'w'
-				else
-					Changed := False;
-				if NeedFLine and (Copy (L, 1, Length (#9'jsr _ROM_CALL_')) = #9'jsr _ROM_CALL_') then begin
-					System.Delete (L, 1, Length (#9'jsr _ROM_CALL_'));
-					if Length (L) <= 3 then
-						Strings [I] := #9'.word _F_LINE+0x' + L;
+				if (Copy (L, 1, Length (#9'jra _ER_CODE_')) = #9'jra _ER_CODE_') or (Copy (L, 1, Length (#9'jmp _ER_CODE_')) = #9'jmp _ER_CODE_') then begin
+					System.Delete (L, 1, Length (#9'jxx _ER_CODE_'));
+					if Length (L) <= 4 then
+						Strings [I] := #9'.word _A_LINE+' + L;
 				end else begin
-					P1 := Pos ('_ROM_CALL_', L);
-					while P1 > 0 do begin
-						P2 := P1;
-						Inc (P1, Length ('_ROM_CALL_'));
-						while (P1 <= Length (L)) and (L [P1] in ['0'..'9', 'a'..'z', 'A'..'Z', '_', '+', '-', '*', '/']) do
-							Inc (P1);
-						while (P1 <= Length (L)) and (L [P1] in [':', 'a'..'z', 'A'..'Z']) do
-							System.Delete (L, P1, 1);
-						System.Insert (':l', L, P1);
-						Inc (P1, Length (':l'));
-						if LowerCase (Copy (L, P1, Length ('(%pc)'))) = '(%pc)' then
-							System.Delete (L, P1, Length ('(%pc)'))
-						else if (LowerCase (Copy (L, P1, Length (',%pc)'))) = ',%pc)') and (P2 - 1 > 0) and (L [P2 - 1] = '(') then begin
-							System.Delete (L, P1, Length (',%pc)'));
-							System.Delete (L, P2 - 1, 1);
-						end;
-						Changed := True;
-						P1 := PosEx ('_ROM_CALL_', L, P1);
-					end;
-					P1 := Pos ('__ld_calc_const_', L);
-					while P1 > 0 do begin
-						P2 := P1;
-						Inc (P1, Length ('__ld_calc_const_'));
-						while (P1 <= Length (L)) and (L [P1] in ['0'..'9', 'a'..'z', 'A'..'Z', '_', ':']) do
-							Inc (P1);
-						if LowerCase (Copy (L, P1, Length ('(%pc)'))) = '(%pc)' then begin
-							System.Delete (L, P1, Length ('(%pc)'));
+					Changed := True;
+					if (Copy (L, 1, Length (#9'jbsr')) = #9'jbsr') and (Pos ('_CALL_', L) > 0) then
+						System.Delete (L, 1 + Length (#9'j'), Length ('b'))
+					else if (Copy (L, 1, Length (#9'jra')) = #9'jra') and (Pos ('_CALL_', L) > 0) then begin
+						System.Delete (L, 1, Length (#9'jra'));
+						L := #9'jmp' + L;
+					end else if Copy (L, 1, Length (#9'move.l #__ld_calc_const_')) = #9'move.l #__ld_calc_const_' then
+						L [1 + Length (#9'move.')] := 'w'
+					else
+						Changed := False;
+					if NeedFLine and (Copy (L, 1, Length (#9'jsr _ROM_CALL_')) = #9'jsr _ROM_CALL_') then begin
+						System.Delete (L, 1, Length (#9'jsr _ROM_CALL_'));
+						if Length (L) <= 3 then
+							Strings [I] := #9'.word _F_LINE+0x' + L;
+					end else begin
+						P1 := Pos ('_ROM_CALL_', L);
+						while P1 > 0 do begin
+							P2 := P1;
+							Inc (P1, Length ('_ROM_CALL_'));
+							while (P1 <= Length (L)) and (L [P1] in ['0'..'9', 'a'..'z', 'A'..'Z', '_', '+', '-', '*', '/']) do
+								Inc (P1);
+							while (P1 <= Length (L)) and (L [P1] in [':', 'a'..'z', 'A'..'Z']) do
+								System.Delete (L, P1, 1);
+							System.Insert (':l', L, P1);
+							Inc (P1, Length (':l'));
+							if LowerCase (Copy (L, P1, Length ('(%pc)'))) = '(%pc)' then
+								System.Delete (L, P1, Length ('(%pc)'))
+							else if (LowerCase (Copy (L, P1, Length (',%pc)'))) = ',%pc)') and (P2 - 1 > 0) and (L [P2 - 1] = '(') then begin
+								System.Delete (L, P1, Length (',%pc)'));
+								System.Delete (L, P2 - 1, 1);
+							end;
 							Changed := True;
-						end else if (LowerCase (Copy (L, P1, Length (',%pc)'))) = ',%pc)') and (P2 - 1 > 0) and (L [P2 - 1] = '(') then begin
-							System.Delete (L, P1, Length (',%pc)'));
-							System.Delete (L, P2 - 1, 1);
-							Changed := True;
+							P1 := PosEx ('_ROM_CALL_', L, P1);
 						end;
-						P1 := PosEx ('__ld_calc_const_', L, P1);
+						P1 := Pos ('__ld_calc_const_', L);
+						while P1 > 0 do begin
+							P2 := P1;
+							Inc (P1, Length ('__ld_calc_const_'));
+							while (P1 <= Length (L)) and (L [P1] in ['0'..'9', 'a'..'z', 'A'..'Z', '_', ':']) do
+								Inc (P1);
+							if LowerCase (Copy (L, P1, Length ('(%pc)'))) = '(%pc)' then begin
+								System.Delete (L, P1, Length ('(%pc)'));
+								Changed := True;
+							end else if (LowerCase (Copy (L, P1, Length (',%pc)'))) = ',%pc)') and (P2 - 1 > 0) and (L [P2 - 1] = '(') then begin
+								System.Delete (L, P1, Length (',%pc)'));
+								System.Delete (L, P2 - 1, 1);
+								Changed := True;
+							end;
+							P1 := PosEx ('__ld_calc_const_', L, P1);
+						end;
+						if Changed then
+							Strings [I] := L;
 					end;
-					if Changed then
-						Strings [I] := L;
 				end;
 			end;
 		end;
