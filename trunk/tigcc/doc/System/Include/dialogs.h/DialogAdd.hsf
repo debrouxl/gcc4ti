@@ -3,7 +3,8 @@ Name=DialogAdd
 Type=Function
 Subtype=ROM Call
 Header Files=dialogs.h
-Definition=HANDLE DialogAdd (HANDLE Handle, short unknown, short x, short y, short ItemType, ...);
+Definition=HANDLE DialogAdd (HANDLE Handle, short flags, short x, short y, short ItemType, ...);
+See Also=DialogDo, DialogNew, DIALOG_STRUCT: DIALOG
 
 [ROM Call]
 Index=$33
@@ -12,32 +13,189 @@ Index=$33
 Adds an item into a dialog box.
 
 [Explanation]
-DialogAdd is an universal item-adding function. It is a very complicated function
-which accepts from 7 to 12 parameters depending of the type of the item which will
-be added (the type is determined by parameter <I>ItemType</I>). In fact, functions like
-<A HREF="$$LINK(DialogAddText)">DialogAddText</A>, <A HREF="$$LINK(DialogAddTitle)">DialogAddTitle</A>,
-<A HREF="$$LINK(DialogAddRequest)">DialogAddRequest</A> and <A HREF="$$LINK(DialogAddPulldown)">DialogAddPulldown</A>
-are implemented as macros which calls DialogAdd function with appropriate parameters
-(for easier usage), so you can mainly avoid this function
-(you can read dialogs.h file to see how exactly these macros are implemented). However, this
-function has so many parameters that I didn't discover all the variants, so existence of
-this function would allow possibilities not covered with functions like
-<A HREF="$$LINK(DialogAddText)">DialogAddText</A>. At the moment, I still don't know how to
-create a dialog with function keys (like "MODE" and "VAR-LINK" dialogs), nor a dialog
-with scrolling items (like "UNITS" dialogs). DialogAdd returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A>
-if <I>ItemType</I> is wrong.
+DialogAdd is a universal item-adding function. It is a very complicated
+function which accepts 6 to 12 parameters depending on the type of the item
+which will be added. This type is determined by the <I>ItemType</I>
+parameter. In fact, all other functions whose names begin with "DialogAdd..."
+(such as <A HREF="$$LINK(DialogAddTextEx)">DialogAddTextEx</A>,
+<A HREF="$$LINK(DialogAddTitleEx)">DialogAddTitleEx</A>,
+<A HREF="$$LINK(DialogAddRequestEx)">DialogAddRequestEx</A>,
+<A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A>, etc.) are
+implemented as macros which call DialogAdd with appropriate parameters (for
+easier usage), so you can mainly avoid this function. You can read the
+<CODE>dialogs.h</CODE> header file to see how exactly these macros are
+implemented.
 <BR><BR>
-This function is open for anybody which
-knows more about dialogs than I know. What I also know is that legal <I>ItemType</I>
-values are: 2, 3, 7, 8, 10, 12 and 14. 2 is for adding request boxes, 7 for adding texts,
-8 for adding titles, and 14 for adding pulldown menus. 10 and 12 are also related with
-request boxes and pulldown menus, but required extra parameters are somewhat different.
-It seems that 11 was planed for adding function keys, but not implemented, so it is very
-questionable whether function key menus can be added to dialogs using DialogAdd.
-DialogAdd with <I>ItemType</I> equal to 3 is the general dialog setup command, but
-it needs 12 parameters and I still haven't had any success in discovering them exactly. This command
-(with <I>ItemType</I> set to 3) is the key for creating dialogs with scrolling items.
-Any info is welcomed.
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+DialogAdd returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of an
+error, may return <A HREF="$$LINK(DialogMessages)">DB_MEMFULL</A> if you used
+<A HREF="$$LINK(DialogFlags)">DF_SCREEN_SAVE</A>, else returns <I>Handle</I>.
+This routine (as well as all other 'DialogAdd...' routines) may cause heap
+compression.
+<BR><BR>
+<I>ItemType</I> can be filled with one of the following commands, defined in
+the <A HREF="$$LINK(DialogTypes)">DialogTypes</A> enum:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B><I>ItemType</I></B></TD>
+  <TD><B>Appearance</B></TD>
+  <TD><B>Additional Parameters</B></TD>
+  <TD><B>Macro</B></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HEADER</TD>
+  <TD VALIGN="TOP">Title bar, up to two buttons</TD>
+  <TD VALIGN="TOP"><CODE>const char *title, unsigned short LeftButton, unsigned short RightButton</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddTitleEx)">DialogAddTitleEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_TEXT</TD>
+  <TD VALIGN="TOP">Text or personalized item</TD>
+  <TD VALIGN="TOP"><CODE>const char *text</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddTextEx)">DialogAddTextEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_EDIT_FIELD</TD>
+  <TD VALIGN="TOP">Request (edit) box</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, unsigned short offset, unsigned short MaxLen, unsigned short width</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddRequestEx)">DialogAddRequestEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HEDIT</TD>
+  <TD VALIGN="TOP">Request (edit) box</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, unsigned short width</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddDynamicRequest)">DialogAddDynamicRequest</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_POPUP</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, void *Popup, unsigned short buffer</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddStaticPulldown)">DialogAddStaticPulldown</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_DYNPOPUP</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, Dialog_GetHandle_t GetPopup, unsigned short index</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddDynamicPulldown)">DialogAddDynamicPulldown</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HPOPUP</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, HANDLE MenuHandle, unsigned short index</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_MENU</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Main menu</TD>
+  <TD VALIGN="TOP"><CODE>void *Menu, unsigned short MaxMenuWidth</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddMenu)">DialogAddMenu</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_SCROLL_REGION</TD>
+  <TD VALIGN="TOP">Scroll region</TD>
+  <TD VALIGN="TOP"><CODE>unsigned short x1, unsigned short y1, unsigned short FirstItem, unsigned short LastItem, unsigned short NumDspItems, unsigned short TotNumItems, unsigned short ItemHeight</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddScrollRegion)">DialogAddScrollRegion</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_XFLAGS</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Extended dialog properties</TD>
+  <TD VALIGN="TOP"><CODE>unsigned short xFlags1, unsigned short xFlags2, unsigned short xFlags3, unsigned short xFlags4</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddXFlags)">DialogAddXFlags</A></TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>flags</I> depends on the type of element you are creating
+and can be a combination of the following flags, defined in the
+<A HREF="$$LINK(DialogFlags)">DialogFlags</A> enum:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B>Flag</B></TD>
+  <TD><B>Item Type</B></TD>
+  <TD><B>Description</B></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SCREEN_SAVE</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>When applied to the first item in the dialog, the dialog code saves the
+      area underneath the dialog box when it is started. DialogAdd returns
+      <A HREF="$$LINK(DialogMessages)">DB_MEMFULL</A> if there is not enough
+      memory to do this.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SKIP</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.
+      For example, all text items should have this flag set.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SCROLLABLE</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_TAB_ELLIPSES</TD>
+  <TD VALIGN="TOP">Request box, pulldown menu</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. It is the default on AMS 1.xx.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_TAB_SPACES</TD>
+  <TD VALIGN="TOP">Request box, pulldown menu</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_OWNER_DRAW</TD>
+  <TD VALIGN="TOP">Text</TD>
+  <TD>AMS 2.00 or higher: The callback function (see
+      <A HREF="$$LINK(DialogNew)">DialogNew</A> for more information) is
+      responsible for drawing this item (which can be text, an image, or
+      anything else). This can only be done if the dialog was created with
+      <A HREF="$$LINK(DialogNew)">DialogNew</A> and not
+      <A HREF="$$LINK(DialogNewSimple)">DialogNewSimple</A>.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_POPUP_RADIO</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD>AMS 2.00 or higher: If this flag is set, the item looks like a normal
+      pulldown menu that you can select, but when you press the right arrow
+      key, it does not pop up as usual, but returns control to the dialog
+      callback function. This enables the programmer to do whatever he/she
+      wants.
+      For example, in the 'MODE' dialog, setting custom units pops up another
+      dialog instead of a pulldown menu.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_MAX_MENU_WIDTH</TD>
+  <TD VALIGN="TOP">Main menu</TD>
+  <TD>AMS 2.00 or higher: Passes
+      <A HREF="$$LINK(menus.h/MenuBeginFlags)">MBF_MAX_MENU_WIDTH</A> to
+      <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> when the menu is
+      drawn.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_CLR_ON_REDRAW</TD>
+  <TD VALIGN="TOP">Scroll region</TD>
+  <TD>Clears the entire visible scroll region when redrawn. If you do not set
+      this flag, the scroll region will not be cleared before being redrawn,
+      and you might still see the previously drawn items underneath the new
+      ones.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> If you want your program to work in AMS 1.xx, you cannot pass
+D_MENU, D_DYNPOPUP, and D_XFLAGS to this function. Nevertheless, you can
+initialize a <A HREF="$$LINK(DIALOG_STRUCT)">DIALOG</A> structure with these
+items, and the program will still work on AMS 1.xx.
 
 [References]
 In=DialogAddPulldown, DialogAddRequest, DialogAddText, DialogAddTitle, DlgMessage, VarNew, VarOpen, VarSaveAs, bascmd.h/cmd_dialog, bascmd.h/cmd_request, events.h/EV_defaultHandler, homescr.h/HomeExecute, unknown.h/VarSaveTitle
