@@ -19,6 +19,7 @@ rm -f -r gcc/ginclude
 rm -f -r gcc/po
 rm -f -r gcc/doc
 rm -f -r gcc/treelang
+rm -f -r libcpp/po
 rm -f -r libmudflap
 rm -f -r libiberty/testsuite
 rm -f -r maintainer-scripts
