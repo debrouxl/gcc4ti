@@ -285,7 +285,7 @@ static int decode_switches (int argc, char **argv)
 
   for (c=1;c<argc;c++) {
     if (!strcmp(argv[c],"-V")||!strcmp(argv[c],"--version")) {
-       printf ("tprbuilder 1.0.14\n");
+       printf ("tprbuilder 1.0.15\n");
        exit(0);
     } else if (!strcmp(argv[c],"-h")||!strcmp(argv[c],"--help")) {
        usage(0);
@@ -610,6 +610,8 @@ int parse_file(const char *filename)
                     libopts.setting = RT_KERNEL; \
                 else if (!strcmp(p, "Compressed")) \
                     libopts.setting = RT_COMPRESSED; \
+                else if (!strcmp(p, "MLink")) \
+                    libopts.setting = RT_MLINK; \
                 else if (!strcmp(p, "F-Line")) \
                     libopts.setting = RT_FLINE; \
                 else if (strcmp(p, "Unknown")) \
@@ -928,6 +930,9 @@ int process_settings(char *outfile, char **pargs)
           case RT_COMPRESSED:
             args = dynstrcat(args, " -DCOMPRESSED_FORMAT_RELOCS");
             break;
+          case RT_MLINK:
+            args = dynstrcat(args, " -DMLINK_FORMAT_RELOCS");
+            break;
           case RT_FLINE:
             args = dynstrcat(args, " -DUSE_FLINE_JUMPS");
             break;
@@ -940,6 +945,9 @@ int process_settings(char *outfile, char **pargs)
             break;
           case RT_COMPRESSED:
             args = dynstrcat(args, " -DCOMPRESSED_FORMAT_ROM_CALLS");
+            break;
+          case RT_MLINK:
+            args = dynstrcat(args, " -DMLINK_FORMAT_ROM_CALLS");
             break;
           case RT_PRECOMP:
             args = dynstrcat(args, " -DOPTIMIZE_ROM_CALLS");
@@ -963,6 +971,9 @@ int process_settings(char *outfile, char **pargs)
           case RT_COMPRESSED:
             args = dynstrcat(args, " -DCOMPRESSED_FORMAT_BSS");
             break;
+          case RT_MLINK:
+            args = dynstrcat(args, " -DMLINK_FORMAT_BSS");
+            break;
           default:
             break;
         }
@@ -974,6 +985,9 @@ int process_settings(char *outfile, char **pargs)
         break;
       case RT_COMPRESSED:
         args = dynstrcat(args, " -DCOMPRESSED_FORMAT_DATA_VAR");
+        break;
+      case RT_MLINK:
+        args = dynstrcat(args, " -DMLINK_FORMAT_DATA_VAR");
         break;
       default:
         break;

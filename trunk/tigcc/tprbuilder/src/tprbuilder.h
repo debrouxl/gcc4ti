@@ -1,7 +1,7 @@
 /*  TPRbuilder - A make program for TIGCC project files (tpr).
  *
  *  Copyright (C) 2002 Romain Liévin
- *  Copyright (C) 2002-2004 Kevin Kofler
+ *  Copyright (C) 2002-2005 Kevin Kofler
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@ enum reloctypes {
   RT_PRECOMP, // ROM_CALLs only: Precomputed (Optimized)
   RT_KERNEL, // Kernel
   RT_COMPRESSED, // Compressed
+  RT_MLINK, // MLink
   RT_FLINE // ROM_CALLs only: F-Line
 };
 
