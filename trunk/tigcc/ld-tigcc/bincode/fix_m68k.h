@@ -65,4 +65,14 @@ OFFSET M68kFixTargetOffset (OFFSET Offset, SIZE RelocSize, BOOLEAN RelocRelative
 // and so on.
 COUNT M68kGetSectionRelationship (const SECTION *Section1, const SECTION *Section2);
 
+// Compute an estimate of how important it is to put the section containing this
+// reloc next during local section reordering.
+// Here are the estimates used:
+// 0-byte branches save 6 bytes and 1 reloc and cannot be deferred -> 512 points
+// 2-byte branches save 4 bytes and 1 reloc and can rarely be deferred -> 256
+// PC-relative references save 2 bytes and 1 reloc. They can be deferred based
+// on how far the accumulated distance is. We compute between 0 and 32 points
+// based on the offset, with the formula: (offset^2>>25)+2.
+COUNT M68kComputeRelocGoodness(OFFSET Offset, RELOC *Reloc);
+
 #endif

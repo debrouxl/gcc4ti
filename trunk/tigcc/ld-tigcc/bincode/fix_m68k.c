@@ -823,3 +823,108 @@ COUNT M68kGetSectionRelationship (const SECTION *Section1, const SECTION *Sectio
 	
 	return Result;
 }
+
+// Compute an estimate of how important it is to put the section containing this
+// reloc next during local section reordering.
+// Here are the estimates used:
+// 0-byte branches save 6 bytes and 1 reloc and cannot be deferred -> 512 points
+// 2-byte branches save 4 bytes and 1 reloc and can rarely be deferred -> 256
+// PC-relative references save 2 bytes and 1 reloc. They can be deferred based
+// on how far the accumulated distance is. We compute between 0 and 32 points
+// based on the offset, with the formula: (offset^2>>25)+2.
+COUNT M68kComputeRelocGoodness(OFFSET Offset, RELOC *Reloc)
+{
+	SECTION *Section = Reloc->Parent;
+	
+	if (Reloc->Unoptimizable) return 0;
+
+	// Byte offsets are useful only for jumps or branches, so detect
+	// them.
+	if (M68K_REL_OK (Offset, 1))
+	{
+		OFFSET RelocLocation = Reloc->Location;
+		OFFSET OpcodeLocation = RelocLocation - 2;
+		I1 *Opcode = Section->Data + OpcodeLocation;
+		if (Reloc->Size == 4)
+		{
+			// Check whether the reloc belongs to a branch.
+			BOOLEAN IsJMP = ((Opcode [0] == M68K_JMP_0)
+			                 && (Opcode [1] == M68K_JMP_1));
+			BOOLEAN IsJSR = ((Opcode [0] == M68K_JSR_0)
+			                 && (Opcode [1] == M68K_JSR_1));
+			
+			if ((IsJMP || IsJSR)
+			    && IsBinaryDataRange (Section,
+			                          OpcodeLocation,
+			                          OpcodeLocation + 6, Reloc))
+			{
+				return (Offset == 4 && IsJMP) ? 512 : 256;
+			}
+		}
+		else if (Reloc->Size == 2)
+		{
+			// Check whether the reloc belongs to a branch.
+			if ((Opcode [0] & M68K_Bcc_MASK_0) == M68K_Bcc_W_0
+			    && Opcode [1] == M68K_Bcc_W_1
+			    && IsBinaryDataRange (Section,
+			                          OpcodeLocation,
+			                          OpcodeLocation + 4, Reloc))
+			{
+				return (Offset == 2 && !(Opcode [0] == M68K_BSR_W_0
+				                         && Opcode [1] == M68K_BSR_W_1)) ? 512
+				                                                         : 256;
+			}
+		}
+	}
+	// Word offsets are useful everywhere where a PC-relative reference is
+	// possible. So look for those places.
+	if (M68K_REL_OK (Offset, 2))
+	{
+		OFFSET RelocLocation = Reloc->Location;
+		OFFSET OpcodeLocation = RelocLocation - 2;
+		I1 *Opcode = Section->Data + OpcodeLocation;
+		// Safety check before accessing the section data.
+		if (Reloc->Size == 4 && IsBinaryDataRange (Section, OpcodeLocation,
+		                                           OpcodeLocation + 6, Reloc))
+		{
+			// Check whether the reloc belongs to a branch.
+			if (((Opcode [0] == M68K_JMP_0) && (Opcode [1] == M68K_JMP_1))
+			    || ((Opcode [0] == M68K_JSR_0) && (Opcode [1] == M68K_JSR_1))
+			// Optimize LEA(.L) var.L,reg into
+			// LEA(.L) var.W(%PC),reg.
+			    || (((Opcode [0] & M68K_LEA_ABS_MASK_0) == M68K_LEA_ABS_0) && ((Opcode [1] & M68K_LEA_ABS_MASK_1) == M68K_LEA_ABS_1))
+			// Optimize PEA(.L) var.L into PEA(.L) var.W(%PC).
+			    || ((Opcode [0] == M68K_PEA_ABS_0) && (Opcode [1] == M68K_PEA_ABS_1))
+			// Optimize MOVE.x var.L,reg/(reg)/(reg)+ into
+			// MOVE.x var.W(%PC),reg/(reg)/(reg)+.
+			    || (((Opcode [0] & M68K_MOVE_ABS_REG_MASK_0) == M68K_MOVE_ABS_REG_0) && ((Opcode [1] & M68K_MOVE_ABS_REG_MASK_1) == M68K_MOVE_ABS_REG_1)
+			        && (!((Opcode [0] & M68K_MOVE_ABS_REG_INV_0_MASK_0) == M68K_MOVE_ABS_REG_INV_0_0))
+			        && (!(((Opcode [0] & M68K_MOVE_ABS_REG_INV_1_MASK_0) == M68K_MOVE_ABS_REG_INV_1_0) && ((Opcode [1] & M68K_MOVE_ABS_REG_INV_1_MASK_1) == M68K_MOVE_ABS_REG_INV_1_1))))
+			// Optimize MOVE.x var.L,-(reg) into
+			// MOVE.x var.W(%PC),-(reg).
+			    || (((Opcode [0] & M68K_MOVE_ABS_PREDEC_MASK_0) == M68K_MOVE_ABS_PREDEC_0) && ((Opcode [1] & M68K_MOVE_ABS_PREDEC_MASK_1) == M68K_MOVE_ABS_PREDEC_1)
+			        && (!((Opcode [0] & M68K_MOVE_ABS_PREDEC_INV_0_MASK_0) == M68K_MOVE_ABS_PREDEC_INV_0_0)))
+			// Optimize CMP.x var.L,reg into CMP.x var.W(%PC),reg.
+			    || (((Opcode [0] & M68K_CMP_ABS_REG_MASK_0) == M68K_CMP_ABS_REG_0) && ((Opcode [1] & M68K_CMP_ABS_REG_MASK_1) == M68K_CMP_ABS_REG_1)
+			        && (!((Opcode [1] & M68K_CMP_ABS_REG_INV_0_MASK_1) == M68K_CMP_ABS_REG_INV_0_1)))
+			// Optimize BTST reg,var.L into BTST reg,var.W(%PC).
+			    || (((Opcode [0] & M68K_BTST_REG_ABS_MASK_0) == M68K_BTST_REG_ABS_0) && ((Opcode [1] & M68K_BTST_REG_ABS_MASK_1) == M68K_BTST_REG_ABS_1))
+			// Optimize ADD/SUB.x var.L,reg into
+			// ADD/SUB.x var.W(%PC),reg.
+			    || (((Opcode [0] & M68K_ADDSUB_ABS_REG_0_MASK_0) == M68K_ADDSUB_ABS_REG_0_0) && ((Opcode [1] & M68K_ADDSUB_ABS_REG_0_MASK_1) == M68K_ADDSUB_ABS_REG_0_1))
+			        || (((Opcode [0] & M68K_ADDSUB_ABS_REG_1_MASK_0) == M68K_ADDSUB_ABS_REG_1_0) && ((Opcode [1] & M68K_ADDSUB_ABS_REG_1_MASK_1) == M68K_ADDSUB_ABS_REG_1_1))
+			// Optimize MUL/DIV.x var.L,reg into
+			// MUL/DIV.x var.W(%PC),reg.
+			    || (((Opcode [0] & M68K_MULDIV_ABS_REG_MASK_0) == M68K_MULDIV_ABS_REG_0) && ((Opcode [1] & M68K_MULDIV_ABS_REG_MASK_1) == M68K_MULDIV_ABS_REG_1))
+			// Optimize AND/OR.x var.L,reg into
+			// AND/OR.x var.W(%PC),reg.
+			    || (((Opcode [0] & M68K_ANDOR_ABS_REG_MASK_0) == M68K_ANDOR_ABS_REG_0) && ((Opcode [1] & M68K_ANDOR_ABS_REG_MASK_1) == M68K_ANDOR_ABS_REG_1)))
+			{
+				return ((Offset * Offset) >> 25);
+			}
+		}
+	}
+	// Everything else is not optimizable, so ignore it for section reordering.
+	return 0;
+}
+

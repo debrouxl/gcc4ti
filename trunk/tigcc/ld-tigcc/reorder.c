@@ -331,3 +331,287 @@ void ReorderSections (PROGRAM *Program)
 	}
 	free (Sections);
 }
+
+#if 0
+/* reorder.c: Routines to reorder sections
+
+   Copyright (C) 2004 Kevin Kofler
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software Foundation,
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
+
+#include "generic.h"
+#include "data.h"
+#include "reorder.h"
+#include "manip.h"
+#include "bincode/fix_m68k.h" // We need this to estimate the possible gains.
+
+#include <stdlib.h>
+
+// Reorder the sections to make references as short as possible. Backtrack when
+// a solution is impossible (due to hard-coded short references). Returns 1 on
+// success, 0 on failure, -1 on memory overflow.
+static SI1 ReorderSectionsRecurse(PROGRAM *Program, COUNT SectionCount,
+                                  SECTION **Sections, COUNT RecursionDepth);
+
+// Find the first section that has not yet been handled.
+static SECTION *FindNextSection(PROGRAM *Program, SECTION **Sections,
+                                COUNT RecursionDepth);
+
+// Compute an estimation of the win obtained by putting this section next.
+// Returns IMPOSSIBLE if doing so would actually invalidate a reference. Note
+// that, due to the heuristic employed, placing this section even later can only
+// make things worse, so we can immediately return FALSE if this happens.
+static COUNT ComputeGoodness(SECTION **Sections, COUNT RecursionDepth,
+                             SECTION *CurrentSection);
+#define PLACELAST ((COUNT)-1)
+#define IMPOSSIBLE ((COUNT)-2)
+
+// Comparison function for qsort.
+static int TaggedSectionComparisonFunction(const void *TaggedSection1,
+                                           const void *TaggedSection2);
+
+// Reorder the sections to make references as short as possible. Uses heuristics
+// to avoid combinatorial explosion.
+void ReorderSections(PROGRAM *Program)
+{
+	SI1 Result;
+	COUNT RecursionDepth = 0;
+	COUNT SectionCount = CountItems(Program->Sections,SECTION);
+	SECTION **Sections = malloc(SectionCount * sizeof(SECTION *));
+	if (!Sections)
+	{
+		Warning(NULL, "Out of memory reordering sections.");
+		return;
+	}
+	if (Program->Type == PT_NOSTUB)
+	{
+		*Sections = GetFirst(Program->Sections);
+		RecursionDepth++;
+	}
+	Result = ReorderSectionsRecurse(Program, SectionCount, Sections, RecursionDepth);
+	if (Result > 0)
+	{
+		// Reorder our linked list of sections:
+		SECTION *Section, *NextSection;
+		COUNT i;
+		// First unlink them all.
+		for (Section = GetFirst(Program->Sections); Section; Section = NextSection)
+		{
+			NextSection = GetNext (Section);
+			Unlink(Program->Sections, Section);
+		}
+		// Then append them in the order given by the array.
+		for (i = 0; i < SectionCount; i++)
+			Append(Program->Sections, Sections[i]);
+	}
+	else if (!Result)
+	{
+		Warning(NULL, "Section reordering failed.");
+	}
+	free(Sections);
+}
+
+typedef struct {
+	SECTION *Section;
+	COUNT Goodness;
+} TAGGEDSECTION;
+
+// Reorder the sections to make references as short as possible. Backtrack when
+// a solution is impossible (due to hard-coded short references). Returns 1 on
+// success, 0 on failure, -1 on memory overflow.
+static SI1 ReorderSectionsRecurse(PROGRAM *Program, COUNT SectionCount,
+                                  SECTION **Sections, COUNT RecursionDepth)
+{
+	// If there are no more sections to reorder, return immediately.
+	if (RecursionDepth == SectionCount)
+		return 1;
+	else
+	{
+		TAGGEDSECTION *TaggedSections = malloc(SectionCount
+		                                       * sizeof(TAGGEDSECTION)),
+		              *CurrentTaggedSection = TaggedSections;
+		SECTION *CurrentSection;
+		if (!TaggedSections)
+		{
+			Warning(NULL, "Out of memory reordering sections.");
+			return -1;
+		}
+		CurrentSection = FindNextSection(Program, Sections, RecursionDepth);
+		if (CurrentSection)
+		{
+			SECTION **PCurrentSection;
+			OFFSET StartupNumber = CurrentSection->StartupNumber;
+			COUNT TaggedSectionCount;
+			// Compute an estimation of the savings for placing each of the sections
+			// next.
+			for(; CurrentSection; CurrentSection = GetNext(CurrentSection))
+			{
+				COUNT Goodness;
+				// Search in reverse order to avoid having to skip over all those old
+				// startup sections each time.
+				for (PCurrentSection = Sections + (RecursionDepth - 1);
+				     PCurrentSection >= Sections; PCurrentSection--)
+				{
+					if (*PCurrentSection == CurrentSection)
+						goto AlreadyHandled;
+				}
+				Goodness = ComputeGoodness(Sections, RecursionDepth,
+				                           CurrentSection);
+				// IMPOSSIBLE means this section cannot be placed here, and
+				// placing it later can only make things worse, so backtrack
+				// immediately.
+				if (Goodness == IMPOSSIBLE)
+				{
+					Warning(NULL, "Impossible section arrangement rejected at "
+					              "recursion depth %ld.", (long) RecursionDepth);
+					return 0;
+				}
+				if (CurrentSection->StartupNumber == StartupNumber)
+				{
+					CurrentTaggedSection->Section = CurrentSection;
+					(CurrentTaggedSection++)->Goodness = Goodness;
+				}
+				AlreadyHandled:;
+			}
+			TaggedSectionCount = CurrentTaggedSection - TaggedSections;
+			// Sort by decreasing estimated savings.
+			qsort(TaggedSections, TaggedSectionCount, sizeof(TAGGEDSECTION),
+			      TaggedSectionComparisonFunction);
+			// Try the best one first, then the second best and so on. Note that
+			// backtracking is ONLY used when there are hardcoded sizes which are
+			// not satisfied. Therefore, the easiest way to avoid using exponential
+			// time is to not hardcode any short references. That's what linker
+			// optimization is for!
+			for (CurrentTaggedSection = TaggedSections;
+			     CurrentTaggedSection < TaggedSections + TaggedSectionCount;
+			     CurrentTaggedSection++)
+			{
+				SI1 Result;
+				Sections[RecursionDepth] = CurrentTaggedSection->Section;
+				Result = ReorderSectionsRecurse(Program, SectionCount, Sections,
+				                                RecursionDepth + 1);
+				if (Result) /* can be 1 or -1, in both cases we don't want to */
+				{           /* try the next section */
+					free(TaggedSections);
+					return Result;
+				}
+			}
+			Warning(NULL, "Cannot find a valid section order at recursion depth "
+			              "%ld.", (long) RecursionDepth);
+		}
+		free(TaggedSections);
+		return 0;
+	}
+}
+
+// Find the first section that has not yet been handled.
+static SECTION *FindNextSection(PROGRAM *Program, SECTION **Sections,
+                                COUNT RecursionDepth)
+{
+	SECTION *CurrentSection, **PCurrentSection;
+	// Check for a section that hasn't been handled by reordering yet. There
+	// should be at least one such section.
+	for_each (CurrentSection, Program->Sections)
+	{
+		// Search in reverse order to avoid having to skip over all those old
+		// startup sections each time.
+		for (PCurrentSection = Sections + (RecursionDepth - 1);
+		     PCurrentSection >= Sections; PCurrentSection--)
+		{
+			if (*PCurrentSection == CurrentSection)
+				goto AlreadyHandled;
+		}
+		return CurrentSection;
+		AlreadyHandled:;
+	}
+	return NULL;
+}
+
+// Compute an estimation of the win obtained by putting this section next.
+// Returns IMPOSSIBLE if doing so would actually invalidate a reference. Note
+// that, due to the heuristic employed, placing this section even later can only
+// make things worse, so we can immediately return FALSE if this happens.
+// The estimates used are machine-specific. See M68kComputeRelocGoodness.
+static COUNT ComputeGoodness(SECTION **Sections, COUNT RecursionDepth,
+                             SECTION *CurrentSection)
+{
+	SECTION *HandledSection, **PHandledSection;
+	COUNT Goodness = 0;
+	OFFSET ExtraOffset = 0;
+	// If the current section is already handled, putting it in front will not
+	// save us anything.
+	if (CurrentSection->Handled)
+		return PLACELAST;
+	// For each handled section, in reverse order...
+	for (PHandledSection = Sections + (RecursionDepth - 1);
+	     PHandledSection >= Sections; PHandledSection--)
+	{
+		RELOC *Reloc;
+		HandledSection = *PHandledSection;
+		// Look for references FROM the handled section TO the current section.
+		for_each (Reloc, HandledSection->Relocs)
+		{
+			if (!Reloc->Relation && Reloc->Target.Symbol
+			    && Reloc->Target.Symbol->Parent == CurrentSection)
+			{
+				OFFSET Offset = Reloc->Target.Symbol->Location
+				                + Reloc->Target.Offset
+				                + (HandledSection->Size - Reloc->Location)
+				                + ExtraOffset + Reloc->FixedOffset;
+				if (Reloc->Size == 2 && (Offset > 32767 || Offset < -32768))
+					return IMPOSSIBLE;
+				else if (Reloc->Size == 1 && (Offset > 127 || Offset < -128))
+					return IMPOSSIBLE;
+				Goodness += M68kComputeRelocGoodness(Offset, Reloc);
+			}
+		}
+		// Look for references TO the handled section FROM the current section.
+		for_each (Reloc, CurrentSection->Relocs)
+		{
+			if (!Reloc->Relation && Reloc->Target.Symbol
+			    && Reloc->Target.Symbol->Parent == HandledSection)
+			{
+				OFFSET Offset = - Reloc->Location
+				                - (HandledSection->Size
+				                   - (Reloc->Target.Symbol->Location
+				                      + Reloc->Target.Offset))
+				                - ExtraOffset + Reloc->FixedOffset;
+				if (Reloc->Size == 2 && (Offset > 32767 || Offset < -32768))
+					return IMPOSSIBLE;
+				else if (Reloc->Size == 1 && (Offset > 127 || Offset < -128))
+					return IMPOSSIBLE;
+				Goodness += M68kComputeRelocGoodness(Offset, Reloc);
+			}
+		}
+		// Add the size of the handled section to the offset to account for.
+		ExtraOffset += HandledSection->Size;
+	}	
+	return Goodness;
+}
+
+// Comparison function for qsort.
+static int TaggedSectionComparisonFunction(const void *TaggedSection1,
+                                           const void *TaggedSection2)
+{
+	if (((const TAGGEDSECTION *)TaggedSection1)->Goodness
+	    > ((const TAGGEDSECTION *)TaggedSection2)->Goodness)
+		return -1;
+	else if (((const TAGGEDSECTION *)TaggedSection1)->Goodness
+	    < ((const TAGGEDSECTION *)TaggedSection2)->Goodness)
+		return 1;
+	else
+		return 0;
+}
+#endif /* 0 */
