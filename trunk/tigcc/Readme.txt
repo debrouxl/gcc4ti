@@ -189,3 +189,17 @@ LAUNCHER (PSTARTER)
 Use the TIGCC IDE to compile the project, making sure "Delete object
 files on successful linking" is unchecked, then copy pstarter.o into the
 Lib folder.
+
+
+SETUP
+=====
+
+The setup wizard and the distribution archives can be built by running
+makeall.bat in the 'setup' folder. The following external utilities (all
+Open Source and free of charge) are needed for that to work:
+* UPX: http://upx.sourceforge.net
+* NSIS: http://nsis.sourceforge.net
+* Info-ZIP: http://www.info-zip.org/pub/infozip/
+* ClamWin: http://www.clamwin.com
+You'll also have to adjust the paths in the batch files and in tigcc.nsi
+properly for them to work on your system.
