@@ -93,7 +93,7 @@ void M68kFixCodePreMerge (SECTION *Dest, SECTION *Src, SIZE DestSize)
 // to be at even addresses. It is also assumed that IsBinaryDataRange
 // has been called on the range (without an exception, or with an
 // exception that has since been removed).
-void M68kCutOrFillRange (SECTION *Section, OFFSET Start, OFFSET End, OPTIMIZE_INFO *OptimizeInfo)
+static void M68kCutOrFillRange (SECTION *Section, OFFSET Start, OFFSET End, OPTIMIZE_INFO *OptimizeInfo)
 {
 	if (End > Start)
 	{
@@ -746,7 +746,7 @@ OFFSET M68kFixTargetOffset (OFFSET Offset, SIZE RelocSize, BOOLEAN RelocRelative
 #define SHORT_IMPORTANCE 2048
 
 // Called by M68kGetSectionRelationship; see below.
-COUNT M68kGetRelocImportance (const RELOC *Reloc, OFFSET Offset)
+static COUNT M68kGetRelocImportance (const RELOC *Reloc, OFFSET Offset)
 {
 	SECTION *Section = Reloc->Parent;
 	

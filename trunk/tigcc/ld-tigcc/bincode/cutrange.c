@@ -48,7 +48,7 @@ BOOLEAN CanCutRange (SECTION *Section, OFFSET Start, OFFSET End)
 // specified range. The location needs to be adjusted if the range
 // is between the location's symbol and the place it actually points
 // to.
-void AdjustLocationForRangeCut (RELOC *Reloc, LOCATION *Location, OFFSET Start, OFFSET End)
+static void AdjustLocationForRangeCut (RELOC *Reloc, LOCATION *Location, OFFSET Start, OFFSET End)
 {
 	// Length of the range that has been cut.
 	OFFSET RangeLength = End - Start;

@@ -24,7 +24,7 @@
 #include "../manip.h"
 
 // Fargo TI-BASIC fork
-const I1 FARGO_TIBASIC_FORK[] = {
+static const I1 FARGO_TIBASIC_FORK[] = {
 	0xE9,            // ENDSTACK_TAG
 	0x12, 0xE4,      // 'EndPrgm'
 	0x00, 0xE8,      // Newline

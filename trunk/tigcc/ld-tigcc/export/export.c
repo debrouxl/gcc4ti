@@ -55,7 +55,7 @@ typedef struct {
 
 // Return the maximum file size allowed for a given format
 // (without header and footer).
-SIZE GetMaxFileSize (FileFormats FileFormat, ProgramCalcs Calc)
+static SIZE GetMaxFileSize (FileFormats FileFormat, ProgramCalcs Calc)
 {
 	switch (FileFormat)
 	{
@@ -73,7 +73,7 @@ SIZE GetMaxFileSize (FileFormats FileFormat, ProgramCalcs Calc)
 
 // Export the internal data structures to an external file for the given
 // calculator.
-BOOLEAN ExportProgramToFormat (const PROGRAM *Program, const EXPORT_STRUCT *ExportStruct, ProgramCalcs Calc)
+static BOOLEAN ExportProgramToFormat (const PROGRAM *Program, const EXPORT_STRUCT *ExportStruct, ProgramCalcs Calc)
 {
 	BOOLEAN Success;
 	EXP_FILE File;

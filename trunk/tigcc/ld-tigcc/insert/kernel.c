@@ -30,7 +30,7 @@
 // Get the size needed to emit a reloc table in kernel format for the
 // items enumerated in the list model specified by Model. SourceSection
 // may be NULL.
-SIZE GetKernelFormatRelocSize (LIST_MODEL *Model, PROGRAM *Program, SECTION *SourceSection, void *UserData)
+static SIZE GetKernelFormatRelocSize (LIST_MODEL *Model, PROGRAM *Program, SECTION *SourceSection, void *UserData)
 {
 	// We simply need 2 bytes per item, and 2 additional bytes at the end.
 	return (2 * (GetItemCount (Model, Program, SourceSection, UserData)) + 2);
@@ -38,7 +38,7 @@ SIZE GetKernelFormatRelocSize (LIST_MODEL *Model, PROGRAM *Program, SECTION *Sou
 
 // Emit a reloc table in kernel format for the items enumerated in the
 // list model specified by Model. SourceSection may be NULL.
-BOOLEAN EmitKernelFormatRelocs (LIST_MODEL *Model, PROGRAM *Program, SECTION *SourceSection, void *UserData, SECTION *Section, I1 **NewData)
+static BOOLEAN EmitKernelFormatRelocs (LIST_MODEL *Model, PROGRAM *Program, SECTION *SourceSection, void *UserData, SECTION *Section, I1 **NewData)
 {
 	SECTION *CurSection;
 	void *NextItem = NULL;

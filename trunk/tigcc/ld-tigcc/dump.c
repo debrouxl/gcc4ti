@@ -37,7 +37,7 @@
 	NextIndent [NewLen - 1] = ' '; \
 	NextIndent [NewLen] = 0;
 
-void PrintOffset (FILE *File, OFFSET Offset)
+static void PrintOffset (FILE *File, OFFSET Offset)
 {
 	if (Offset)
 	{

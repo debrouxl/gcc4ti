@@ -1019,7 +1019,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 
 // If the given symbol name belongs to a calculator-specific builtin
 // symbol, return a pointer to the part of it that holds the values.
-const char *GetCalcBuiltinValues (const char *SymName)
+static const char *GetCalcBuiltinValues (const char *SymName)
 {
 	if (!(strncmp (SymName, SYMPF_BUILTIN_CALC_CONST, sizeof (SYMPF_BUILTIN_CALC_CONST) - 1)))
 	{

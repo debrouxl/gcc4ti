@@ -302,7 +302,7 @@ void InsertSymbol (SECTION *Section, SYMBOL *Symbol)
 
 // Increase the counters for references between the two sections, if the sections
 // are different.
-void IncRefCounts (SECTION *SourceSection, SECTION *TargetSection, const RELOC *Reloc)
+static void IncRefCounts (SECTION *SourceSection, SECTION *TargetSection, const RELOC *Reloc)
 {
 	if (SourceSection != TargetSection)
 	{
@@ -461,7 +461,7 @@ SYMBOL *ResolveLocation (PROGRAM *Program, SECTION *Section, LOCATION *Location)
 // or library call, replace it with the appropriate item.
 // This must be called in order, as the items are appended
 // unconditionally.
-BOOLEAN ResolveSpecialExternalSymbolReloc (RELOC *Reloc)
+static BOOLEAN ResolveSpecialExternalSymbolReloc (RELOC *Reloc)
 {
 	SECTION *Section = Reloc->Parent;
 	PROGRAM *Program = Section->Parent;
@@ -577,7 +577,7 @@ BOOLEAN ResolveSpecialExternalSymbolReloc (RELOC *Reloc)
 
 // Resolve the reloc's target, if possible.
 // Force: Fail on unresolvable reference.
-BOOLEAN ResolveRelocTarget (RELOC *Reloc, BOOLEAN Force)
+static BOOLEAN ResolveRelocTarget (RELOC *Reloc, BOOLEAN Force)
 {
 	SECTION *Section = Reloc->Parent;
 	PROGRAM *Program = Section->Parent;
@@ -633,7 +633,7 @@ BOOLEAN ResolveRelocTarget (RELOC *Reloc, BOOLEAN Force)
 
 // Resolve the reloc's relation, if possible.
 // Force: Fail on unresolvable reference.
-BOOLEAN ResolveRelocRelation (RELOC *Reloc, BOOLEAN Force)
+static BOOLEAN ResolveRelocRelation (RELOC *Reloc, BOOLEAN Force)
 {
 	SECTION *Section = Reloc->Parent;
 	PROGRAM *Program = Section->Parent;

@@ -28,7 +28,7 @@
 #include <string.h>
 
 // Append a new I1 to the section. Return TRUE on success, FALSE on failure.
-BOOLEAN AppendI1ToSection (SECTION *Section, I1 NewI1)
+static BOOLEAN AppendI1ToSection (SECTION *Section, I1 NewI1)
 {
 	TI1 *NewSpace = (TI1 *) AllocateSpaceInSection (Section, 1);
 	if (!NewSpace)
@@ -39,7 +39,7 @@ BOOLEAN AppendI1ToSection (SECTION *Section, I1 NewI1)
 }
 
 // Append a new I2 to the section. Return TRUE on success, FALSE on failure.
-BOOLEAN AppendI2ToSection (SECTION *Section, I2 NewI2)
+static BOOLEAN AppendI2ToSection (SECTION *Section, I2 NewI2)
 {
 	TI2 *NewSpace = (TI2 *) AllocateSpaceInSection (Section, 2);
 	if (!NewSpace)
@@ -51,7 +51,7 @@ BOOLEAN AppendI2ToSection (SECTION *Section, I2 NewI2)
 
 // Emit a compressed reloc nibble buffer. Return TRUE on success, FALSE on
 // failure.
-BOOLEAN EmitCompressedRelocNibbles (SECTION *Section, I4 NibbleCount, I1 *NibbleBuffer)
+static BOOLEAN EmitCompressedRelocNibbles (SECTION *Section, I4 NibbleCount, I1 *NibbleBuffer)
 {
 	I4 CurrentNibble;
 	I4 ByteCount = (NibbleCount + 1) >> 1; // number of bytes emitted as nibbles
@@ -86,7 +86,7 @@ BOOLEAN EmitCompressedRelocNibbles (SECTION *Section, I4 NibbleCount, I1 *Nibble
 
 // Emit a compressed reloc. If Offset is -1, end the relocation table. Return
 // TRUE on success, FALSE on failure.
-BOOLEAN EmitCompressedReloc (SECTION *Section, OFFSET Offset)
+static BOOLEAN EmitCompressedReloc (SECTION *Section, OFFSET Offset)
 {
 // Maximum number of nibbles in a nibble group.
 #define MAX_NIBBLES 9
@@ -155,7 +155,7 @@ Continue:
 // the offset as used in the compressed reloc table or gives an error message if
 // it isn't representable. Call EmitCompressedReloc with the computed offset.
 // Return TRUE on success, FALSE on failure.
-BOOLEAN EmitCompressedRelocFromActualOffset (SECTION *Section, OFFSET Offset)
+static BOOLEAN EmitCompressedRelocFromActualOffset (SECTION *Section, OFFSET Offset)
 {
 	if ((Offset > 0) && (Offset & 1))
 	{
@@ -176,7 +176,7 @@ BOOLEAN EmitCompressedRelocFromActualOffset (SECTION *Section, OFFSET Offset)
 
 // Emit a reloc table in compressed format for the items enumerated in the
 // list model specified by Model.
-BOOLEAN EmitCompressedFormatRelocs (LIST_MODEL *Model, SECTION *SourceSection, const LOCATION *SourceBase, void *UserData, SECTION *Section)
+static BOOLEAN EmitCompressedFormatRelocs (LIST_MODEL *Model, SECTION *SourceSection, const LOCATION *SourceBase, void *UserData, SECTION *Section)
 {
 	if (!SourceSection)
 		SourceSection = Section;
@@ -352,7 +352,7 @@ BOOLEAN InsertCompressedROMCalls (SECTION *Section, SECTION *MergedSection, cons
 
 // Emit a compressed index in PreOs format. Return TRUE on success, FALSE on
 // failure. This is NOT the same format as the compressed relocs!
-BOOLEAN EmitPreOsCompressedIndex (SECTION *Section, COUNT LastIndex, COUNT Index)
+static BOOLEAN EmitPreOsCompressedIndex (SECTION *Section, COUNT LastIndex, COUNT Index)
 {
 #define AppendI1(i1) ({if (!AppendI1ToSection (Section, (i1))) return FALSE;})
 #define AppendI2(i2) ({if (!AppendI2ToSection (Section, (i2))) return FALSE;})
