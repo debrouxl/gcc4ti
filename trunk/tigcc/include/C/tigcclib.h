@@ -13,6 +13,7 @@
 #include <error.h>
 #include <estack.h>
 #include <events.h>
+#include <files.h>
 #include <flash.h>
 #include <float.h>
 #include <gdraw.h>

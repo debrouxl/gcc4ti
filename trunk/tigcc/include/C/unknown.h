@@ -81,7 +81,6 @@ typedef struct{long cVertices;HANDLE hVertices;long cEdges;HANDLE hEdges;HANDLE 
 typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS;
 typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
 typedef enum{SELECT_ON,SELECT_OFF,SELECT_TOGGLE}EQU_SELECT;
-typedef struct fileStruct{unsigned short dataLen;unsigned short dataPos;unsigned short bufSize;HANDLE dataH;unsigned char fileFlags,fileMode;unsigned short fileStatus;HSym hSym;char type[5];}FILES;
 typedef struct{unsigned char FNum;unsigned char FNum2;unsigned short LNum;unsigned short PlotIndex;unsigned char PlotDir;}FUNCID;
 typedef struct{unsigned short gr_fmt_flags;unsigned char gr_xaxis;signed char gr_yaxis;unsigned short gr_fmt_flags2;unsigned char gr_3dflags;unsigned char pad;}GR_MODES;
 typedef struct{short last_col;short last_row;unsigned short table_xpix;unsigned short table_ypix;unsigned char curtblinc;unsigned char curtblincy;unsigned char col_first;unsigned char col_last;short row_first;short row_last;unsigned char tbfn[10];unsigned char gr_xpix;float orgtblmax;}TABLE_WIN_VARS;
@@ -334,29 +333,9 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define ERD_notice _rom_call(short,(unsigned char const*,unsigned char const*),475)
 #define estack_to_float(x) _tios_float_1(469,x,CESI)
 #define EV_quit ({__need_in_use_bit;_rom_call(void,(void),48E);})
-#define FAccess ({__need_in_use_bit;_rom_call(unsigned short,(char*,short,char*),3D4);})
-#define FClose _rom_call(unsigned short,(FILES*),3D5)
-#define FCreate ({__need_in_use_bit;_rom_call(unsigned short,(char*,char*),3D6);})
-#define FDelete ({__need_in_use_bit;_rom_call(unsigned short,(const char*),3D7);})
-#define FEof _rom_call(short,(FILES*),3D8)
-#define FFindFirst _rom_call(SYM_ENTRY*,(short,char*,char*),3D9)
-#define FFindNext _rom_call(SYM_ENTRY*,(void),3DA)
-#define FGetC _rom_call(unsigned short,(FILES*),3DB)
-#define FGetPos _rom_call(unsigned short,(FILES*),3DC)
-#define FGetSize _rom_call(unsigned short,(FILES*),3DD)
 #define FirstNonblank _rom_call(unsigned char*,(unsigned char*),4DE)
-#define FOpen ({__need_in_use_bit;_rom_call(unsigned short,(const char*,FILES*,short,char*),3DE);})
 #define ForceFloat(x) ({__need_in_use_bit;_tios_float_1(47D,x,ESI);})
-#define FPutC _rom_call(unsigned short,(short,FILES*),3DF)
-#define FRead _rom_call(unsigned short,(void*,short,FILES*),3E0)
 #define freeIdList _rom_call(void,(void),4D6)
-#define FSetBufSize _rom_call(unsigned short,(FILES*,short),3E2)
-#define FSetPos _rom_call(unsigned short,(FILES*,short),3E1)
-#define FSetSize _rom_call(unsigned short,(FILES*,short),3E3)
-#define FSetVer _rom_call(unsigned char,(FILES*,char),3E4)
-#define FStatus _rom_call(unsigned short,(FILES*),3E5)
-#define FType ({__need_in_use_bit;_rom_call(unsigned short,(const char*,char*),3E6);})
-#define FWrite _rom_call(unsigned short,(void*,short,FILES*),3E7)
 #define GetTagStr _rom_call(char*,(ESI,char*),46C)
 #define hStrAppend _rom_call(void,(HANDLE,unsigned char*),45F)
 #define is_cFloat_agg _rom_call(short,(ESI),465)
