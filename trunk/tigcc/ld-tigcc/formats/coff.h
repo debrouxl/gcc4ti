@@ -91,6 +91,7 @@ typedef struct ATTRIBUTE_PACKED {
 typedef COFF_SYMBOL COFF_SYMBOLS[];
 
 #define COFF_SYMBOL_EXTERNAL 0x02
+#define COFF_SYMBOL_LABEL 0x06
 
 // Reloc Entry
 typedef struct ATTRIBUTE_PACKED {

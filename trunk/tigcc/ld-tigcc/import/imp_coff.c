@@ -168,12 +168,12 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 #endif
 				Section->Initialized   = Data || InitializeBSS;
 				Section->StartupNumber = StartupNumber;
-				Section->Constructors  = (!(strcmp (SectionName, ".ctors")));
-				Section->Destructors   = (!(strcmp (SectionName, ".dtors")));
+				Section->Constructors  = (!(strncmp (SectionName, ".ctors", 8)));
+				Section->Destructors   = (!(strncmp (SectionName, ".dtors", 8)));
 #ifdef DEBUGGING_INFO_SUPPORT
-				if (!strcmp (SectionName, ".stab"))
+				if (!strncmp (SectionName, ".stab", 8))
 					Section->DebuggingInfoType = DI_STAB;
-				else if (!strcmp (SectionName, ".stabstr"))
+				else if (!strncmp (SectionName, ".stabstr", 8))
 					Section->DebuggingInfoType = DI_STABSTR;
 #endif
 				Section->CanCutRanges  = AllRelocs;

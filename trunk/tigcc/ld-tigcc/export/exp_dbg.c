@@ -348,12 +348,58 @@ static void PatchRelocOffsetsOut (const SECTION *Section, void *UserData ATTRIBU
 	}
 }
 
+static void WriteSymbolTable (const SECTION *Section, void *UserData)
+{
+	const SYMBOL *Symbol;
+	COUNT COFFSectionNumber = ++(((SectionOffsets *)UserData)->COFFSectionNumber);
+	OFFSET VAddr = VAddrs[COFFSectionNumber];
+
+	for_each (Symbol, Section->Symbols)
+	{
+		COFF_SYMBOL COFFSymbol;
+		COUNT NameLen = strlen (Symbol->Name);
+
+		if (NameLen > 8)
+		{
+			// String table entry
+			WriteTI4(*(TI4*)(COFFSymbol.Name.Name), 0);
+			WriteTI4(COFFSymbol.Name.StringRef.StringOffset, ((SectionOffsets *)UserData)->FileOffset);
+			((SectionOffsets *)UserData)->FileOffset += NameLen + 1;
+		}
+		else
+		{
+			memset (COFFSymbol.Name.Name, 0, 8);
+			strncpy (COFFSymbol.Name.Name, Symbol->Name, 8);
+		}
+		WriteTI4 (COFFSymbol.Value, VAddr + Symbol->Location);
+		WriteTI2 (COFFSymbol.Section, COFFSectionNumber);
+		WriteTI2 (COFFSymbol.Type, 0);
+		WriteTI1 (COFFSymbol.Class, Symbol->Exported ? COFF_SYMBOL_EXTERNAL : COFF_SYMBOL_LABEL);
+		WriteTI1 (COFFSymbol.AuxSymbolCount, 0);
+
+		ExportWrite (((SectionOffsets *)UserData)->File, &COFFSymbol, sizeof (COFF_SYMBOL), 1);
+	}
+}
+
+static void WriteStringTable (const SECTION *Section, void *UserData ATTRIBUTE_UNUSED)
+{
+	const SYMBOL *Symbol;
+
+	for_each (Symbol, Section->Symbols)
+	{
+		COUNT NameLen = strlen (Symbol->Name);
+
+		if (NameLen > 8)
+		{
+			// String table entry
+			ExportWrite (((SectionOffsets *)UserData)->File, Symbol->Name, NameLen + 1, 1);
+		}
+	}
+}
+
 // Export the internal data structures into a TIOS file.
 static BOOLEAN ExportDebuggingInfoFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize ATTRIBUTE_UNUSED)
 {
-	// A simple macro to make the code more readable.
-#define FailWithError(Err...) ({ Error (Err); return FALSE; })
-
 	COFF_HEADER COFFHeader;
 	COUNT SectionCount = 0;
 	COUNT SymbolCount = 0;
@@ -402,12 +448,14 @@ static BOOLEAN ExportDebuggingInfoFile (const PROGRAM *Program, EXP_FILE *File, 
 	MapToAllSections (Program, PatchRelocOffsetsOut, NULL);
 
 	// Write the symbol table
+	CurrentSectionOffsets.FileOffset = StringTableOffset;
+	CurrentSectionOffsets.COFFSectionNumber = 0;
+	MapToAllSections (Program, WriteSymbolTable, &CurrentSectionOffsets);
 
 	// Write the string table
+	MapToAllSections (Program, WriteStringTable, NULL);
 
 	return TRUE;;
-
-#undef FailWithError
 }
 
 // Export the debugging information to a .dbg file.
