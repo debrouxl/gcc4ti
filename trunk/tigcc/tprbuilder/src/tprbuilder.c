@@ -2,7 +2,7 @@
    tprbuilder - tprbuilder is a MAKE program for TIGCC projects (.tpr files)
 
    Copyright (C) 2002 Romain Liévin
-   Copyright (C) 2002-2004 Kevin Kofler
+   Copyright (C) 2002-2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,6 +47,37 @@ LibOpts libopts = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,RT_NONE,RT_NONE,RT_KERNEL,RT_
 int clean = 0;
 int verbose = 0;
 int quiet = 0;
+
+/*
+   An implementation of system() for Win32 which doesn't use the crippled
+   command.com to execute commands.
+   Note that this implementation hardcodes the name of the program to launch. A
+   complete implementation would have to read it from the command line.
+*/
+#ifdef __WIN32__
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+static inline int win32_system(const char *cmdline)
+{
+  char execname[MAX_PATH], *p;
+  long exitcode;
+  STARTUPINFO startupinfo={.cb=sizeof(startupinfo)};
+  PROCESS_INFORMATION processinfo;
+  _searchenv("tigcc.exe","PATH",execname);
+  while ((p=strchr(execname,'/'))) *p='\\';
+  if (!CreateProcess(execname,(char *)cmdline,NULL,NULL,FALSE,0,NULL,NULL,
+                     &startupinfo,&processinfo)) return 1;
+  if (WaitForSingleObject(processinfo.hProcess,INFINITE)==WAIT_FAILED) return 1;
+  if (!GetExitCodeProcess(processinfo.hProcess,&exitcode)) return 1;
+  CloseHandle(processinfo.hProcess);
+  CloseHandle(processinfo.hThread);
+  return exitcode;
+}
+
+#undef system
+#define system win32_system
+#endif
 
 /*
    Our main function
@@ -253,7 +284,7 @@ static int decode_switches (int argc, char **argv)
 
   for (c=1;c<argc;c++) {
     if (!strcmp(argv[c],"-V")||!strcmp(argv[c],"--version")) {
-       printf ("tprbuilder 1.0.13\n");
+       printf ("tprbuilder 1.0.14\n");
        exit(0);
     } else if (!strcmp(argv[c],"-h")||!strcmp(argv[c],"--help")) {
        usage(0);
