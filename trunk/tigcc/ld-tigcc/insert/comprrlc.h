@@ -86,9 +86,9 @@ BOOLEAN InsertFargo021Libraries (SECTION *Section, SECTION *MergedSection, const
 BOOLEAN InsertMlinkRelocs (SECTION *Section, SECTION *TargetSection, SECTION *MergedSection, const LOCATION *Reference);
 
 // Append mlink-style relocation entries in the format required by the TIGCCLIB
-// relocation code, using InsertCompressedRelocs. If TargetSection is NULL,
-// output an empty relocation table. Otherwise, append all relocation entries
-// pointing to this section.
+// relocation code, using InsertMlinkRelocs. If TargetSection is NULL, output
+// an empty relocation table. Otherwise, append all relocation entries pointing
+// to this section.
 // Warning: Inserting relocs is special: Since the relocs are changed
 // during the process, they can be inserted only once.
 BOOLEAN InsertMlinkSectionRefs (SECTION *Section, SECTION *TargetSection, SECTION *MergedSection, const LOCATION *Reference);

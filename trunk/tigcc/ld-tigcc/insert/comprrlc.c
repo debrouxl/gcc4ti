@@ -940,9 +940,8 @@ static BOOLEAN EmitMlinkReloc (SECTION *Section, OFFSET Offset)
 
 // Emit an mlink-format compressed reloc given the true offset between the 2
 // relocs. Compute the offset as used in the compressed reloc table or give
-// an error message if
-// it isn't representable. Call EmitCompressedReloc with the computed offset.
-// Return TRUE on success, FALSE on failure.
+// an error message if it isn't representable. Call EmitMlinkReloc with the
+// computed offset. Return TRUE on success, FALSE on failure.
 static BOOLEAN EmitMlinkRelocFromActualOffset (SECTION *Section, OFFSET Offset)
 {
 	if ((Offset > 0) && (Offset & 1))
@@ -1002,7 +1001,7 @@ static BOOLEAN EmitMlinkFormatRelocs (LIST_MODEL *Model, SECTION *SourceSection,
 			}
 			
 			// Emit the reloc.
-			if (!(EmitCompressedReloc (Section, (Offset - BaseAddress) >> 1)))
+			if (!(EmitMlinkReloc (Section, (Offset - BaseAddress) >> 1)))
 				return FALSE;
 			
 	 		// Output the remaining items in the list...
@@ -1062,9 +1061,9 @@ BOOLEAN InsertMlinkRelocs (SECTION *Section, SECTION *TargetSection, SECTION *Me
 }
 
 // Append mlink-style relocation entries in the format required by the TIGCCLIB
-// relocation code, using InsertCompressedRelocs. If TargetSection is NULL,
-// output an empty relocation table. Otherwise, append all relocation entries
-// pointing to this section.
+// relocation code, using InsertMlinkRelocs. If TargetSection is NULL, output
+// an empty relocation table. Otherwise, append all relocation entries pointing
+// to this section.
 // Warning: Inserting relocs is special: Since the relocs are changed
 // during the process, they can be inserted only once.
 BOOLEAN InsertMlinkSectionRefs (SECTION *Section, SECTION *TargetSection, SECTION *MergedSection, const LOCATION *Reference)
@@ -1100,14 +1099,14 @@ BOOLEAN InsertMlinkROMCalls (SECTION *Section, SECTION *MergedSection, const LOC
 		// If no ROM calls are used, do not output anything but the final null-terminator.
 		if (ROMRelocCount > 0)
 		{
-			// Apply the format documented in _compressed_format_rom_calls.s.
-			OFFSET LastFunction = -1;
+			// Apply the format documented in _mlink_format_rom_calls.s.
+			OFFSET LastFunction = 0;
 			
 			for (UserData.CurFunction = 0; UserData.CurFunction <= Program->HighestROMCall; UserData.CurFunction++)
 			{
 				if (UserData.ROMFunctions[UserData.CurFunction].RelocCount)
 				{
-					// Emit the function number as a compressed offset.
+					// Emit the function number as a mlink-format compressed offset.
 					OFFSET FunctionOffset = UserData.CurFunction - LastFunction;
 					if (!(EmitMlinkReloc (Section, FunctionOffset)))
 					{
