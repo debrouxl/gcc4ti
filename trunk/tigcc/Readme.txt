@@ -1,5 +1,5 @@
 
-           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 2
+           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 3
           ================================================================
 
 Xavier Vassor       Xavier@tigcc.ticalc.org    (original linker and tigcc)
@@ -29,10 +29,12 @@ This archive contains the sources for...
 - the linker ('ld-tigcc' folder)
 - the command-line compiler ('TIGCC' folder)
 - the IDE ('IDE' folder)
+- the tprbuilder ('tprbuilder' folder)
 - the link library ('FolderLink' folder)
 - the setup program ('Setup' folder)
-- the TIGCC tools used ('Tools' folder)
+- the ExePack compressor (from the TIGCC Tools Suite) ('ttpack' folder)
 - the standard library archive ('Archive' folder)
+- the ExePack launcher ('pstarter' folder)
 - the documentation ('Doc' folder)
 - various utilities
 
@@ -41,20 +43,21 @@ Portability
 -----------
 
 This source code can be compiled without modifications only in Windows. For
-other environments (Unix/Linux, Mac, etc.), you will have to download the
-TIGCC/UNIX sources from http://lpg.ticalc.org/prj_tigcc and follow the
+other environments (Unix/Linux, Mac OS X, etc.), you will have to download
+the TIGCC/*nix sources from http://tigcc.ticalc.org/linux/ and follow the
 instructions.
 
 
 GCC
 ===
 
-GCC has to be compiled under Cygwin (www.cygwin.com) or MinGW32
-(www.mingw.org) if you want to use it in a Win32 environment (see
-instructions below). To make it use TI's calling convention, implement
-floating point support, etc., you have to patch a lot of files. Simply apply
-the appropriate .diff files in this archive using the GNU 'patch' utility
-('patch' found on Unix systems may also work).
+GCC has to be compiled under MinGW (www.mingw.org) if you want to use it
+in a Win32 environment (see instructions below). Cygwin is no longer supported
+by TIGCC. To make it use TI's calling convention, implement floating point
+support, etc., you have to patch a lot of files. The GNU assembler (from
+Binutils) also has to be patched and compiled with MinGW. Simply apply the
+appropriate .diff files in this archive using the GNU 'patch' utility ('patch'
+found on Unix systems may also work).
 
 A reduced version of the full GCC source code can be downloaded at:
 http://tigcc.ticalc.org/sources/gcc-3.3.3.tar.bz2
@@ -62,53 +65,46 @@ Likewise, a reduced version of GNU binutils can be obtained from:
 http://tigcc.ticalc.org/sources/gas-2.15.tar.bz2
 However, if possible, it is better to get the official files from
 http://www.gnu.org/. There you can also get the very latest versions of these
-programs.
+programs, but it is recommended to use the exact versions our patch was tested
+with, newer versions may or may not work and are definitely not supported.
 
-The binutils patches actually perform two tasks. For as, ld, and ar, it
-just contains some minor bug fixes when dealing with MC68000 (instead of
-MC68020) code. But the much larger part is the implementation of the AmigaOS
-target using files found at www.geekgadgets.org. In the modified form
-presented here, it is only usable as an input target, but objcopy and objdump
-are handled well. Note that the original implementation supports an AmigaOS
-output target as well.
+The as (binutils) patches add support for linker optimization (all-relocs
+mode, mergeable sections) and contain some minor bug fixes when dealing with
+MC68000 (instead of MC68020) code.
 
-Currently there are apparently three different possible approaches to
-compiling a GCC-based cross compiler under Windows:
-1. Compile with MinGW (www.mingw.org), using the MSYS environment.
-2. Compile with Cygwin (www.cygwin.com), for a Cygwin host. This requires
-   the resulting cross compiler to use the file cygwin1.dll.
-3. Compile with Cygwin using the '-mno-cygwin' switch for GCC, supplying all
-   necessary header files and libraries from www.mingw.org (install by
-   editing 'specs').
-
-We are currently using the first option, using 'i386-pc-mingw32' as host.
+The recommended approach (and the one we use) to compile TIGCC is to compile
+with MinGW (www.mingw.org), using the MSYS environment. Compiling with Cygwin
+(with or without the '-mno-cygwin' switch) has not been tested for ages.
 
 A typical environment variable setup would be this (typed in on the MSYS
 prompt):
-export CFLAGS="-Os -s" LD="ld" AR="ar" RANLIB="ranlib" NM="nm" STRIP="strip"
-
-Note that these depend on the way you choose to build the GNU tools.
+export CFLAGS='-Os -s -fno-exceptions'
+export C_INCLUDE_PATH=""
+(The latter is necessary if you have GTK+ development packages installed, so
+as not to let cc1.exe depend on iconv.dll.)
 
 A typical configuration and compilation would then look like this (on the
 Cygwin prompt):
 cd <destdir>
-<srcdir>/configure --build=i386-pc-cygwin --host=i386-pc-mingw32 --target=m68k-coff --with-gnu-as --with-gnu-ld --disable-shared --enable-static --disable-multilib --disable-threads --disable-win32-registry --disable-nls
+<srcdir>/configure --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap
 <create missing makefiles (see below)>
 make
+<repeat the last 2 steps until you get cc1.exe and xgcc.exe (see below)>
 
-Do the same for binutils, except that you probably have to copy 'nm.exe' to
-'i386-pc-mingw32-nm.exe' and 'strip.exe' to 'i386-pc-mingw32-strip.exe').
-
-To compile objcopy, do the same as for the other tools from binutils, but
-compile in a different directory, and insert '--enable-targets=m68k-amigaos'
-in the 'configure' line. This way you create a tool which, given the option
-'-O coff-m68k', can convert an AmigaOS object file to a COFF file.
+Do the same for binutils, except that the configure line looks like this:
+<srcdir>/configure --host=mingw32 --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
+and the required executable is as-new.exe.
 
 In the size-reduced sources available from tigcc.ticalc.org, there are some
 missing directories. This causes the configure script to create empty
 makefiles in the destination directory. The 'make' utility rejects these
 files, however, so you need to replace these with 'Makefile-empty' from this
-archive.
+archive. Unfortunately, unlike previous versions of GCC and Binutils which
+first configured everything, then allowed you to replace the makefiles, and
+then compiled everything, newer versions configure subdirectories only as
+they are built. Therefore, you often have to replace the makefiles when an
+error occurs and then relaunch 'make'. The TIGCC/*nix build scripts automate
+this.
 
 We hope these instructions were clear enough, although they do not really
 fall into the category of how to recompile TIGCC. In fact, the possibilities
@@ -116,20 +112,20 @@ might be much greater in future releases of GCC. We will be glad to assist
 you in any way.
 
 
-LD-TIGCC
-========
+LD-TIGCC/TPRBUILDER/A68K/TTPACK
+===============================
 
-ld-tigcc can be compiled with MinGW32 (www.mingw.org). Cygwin should work as
-well.
+ld-tigcc, tprbuilder, A68k and ttpack can be compiled with MinGW32
+(www.mingw.org). ttpack can also be compiled using LCC-Win32.
 
 
-TIGCC/IDE/FOLDERLINK/SETUP
-==========================
+TIGCC/IDE
+=========
 
-IDE.exe and Setup.exe, and now also tigcc.exe, have to be compiled with
-Borland Delphi 4 or later. To do this, make sure all files in the 'Search
-Path Items' folder are available in your search path. Then install all custom
-components from the 'Components' folder.
+IDE.exe and tigcc.exe, have to be compiled with Borland Delphi 6 or later. To
+do this, make sure all files in the 'Search Path Items' folder are available
+in your search path. Then install all custom components from the 'Components'
+folder.
 
 To compile tigcc.exe
 --------------------
@@ -142,31 +138,6 @@ To compile IDE.exe
 
 Make sure the above conditions are true. Then open IDE.dpr in Delphi and
 compile it.
-
-To compile FolderLink.dll
--------------------------
-
-Make sure the above conditions are true. Then open FolderLink.dpr in Delphi
-and compile it.
-
-To compile Setup.exe
---------------------
-
-Windows NT/2000:
-You can compile Setup.exe without any additional files installed, and then
-use my program SetupWizard.exe to upload files directly to Setup.exe. This is
-untested, however, and might not work. If it doesn't, try the second method.
-
-All OSs:
-Use SetupWizard.exe to modify Files.res, which will be linked to Setup.exe.
-It is also possible to automate the process of updating the setup resource or
-executable file. For an example, see the file CreateRes.bat. You have to set
-all paths correctly, and you will probably have to modify the batch file a
-little. It is just meant as an example.
-In order to collect and zip all source files which need to be updated
-frequently, I created another batch file, UpdateSources.bat. However, before
-using it, please set all paths correctly, and read through the file. You
-should be familiar with batch files and environment variables.
 
 
 DOC
@@ -208,11 +179,13 @@ ARCHIVE
 Use the TIGCC IDE to compile the archive, then copy tigcc.a into the Lib
 folder.
 
-Alternatively you can use the command line compiler and its '-ar' switch.
+Alternatively you can use the tprbuilder (which calls the command line
+compiler and its '-ar' switch).
 
 
-TOOLS
-=====
+LAUNCHER (PSTARTER)
+===================
 
-Please download the complete TIGCC Tools Suite from http://tict.ticalc.org/.
-You can use the files from this package, but this is not recommended.
+Use the TIGCC IDE to compile the project, making sure "Delete object
+files on successful linking" is unchecked, then copy pstarter.o into the
+Lib folder.
