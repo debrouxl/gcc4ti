@@ -24,7 +24,7 @@ enum BoxAttrs{B_NORMAL=0x10,B_ROUNDED=0x20,B_DOUBLE=0x40,B_CUT=0x80};
 #endif
 #ifndef __HAVE_Buttons
 #define __HAVE_Buttons
-enum Buttons{BT_NONE,BT_OK,BT_SAVE,BT_YES,BT_CANCEL,BT_NO,BT_GOTO};
+enum Buttons{BT_NONE=0,BT_OK=1,BT_SAVE=2,BT_YES=3,BT_CANCEL=4,BT_NO=5,BT_GOTO=6};
 #endif
 #ifndef __HAVE_Fonts
 #define __HAVE_Fonts
