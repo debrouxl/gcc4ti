@@ -10,7 +10,7 @@
 #endif
 
 #ifndef NO_EXIT_SUPPORT
-extern volatile void __exit(void)__ATTR_LIB_ASM_NORETURN__;
+extern void __exit(void)__ATTR_LIB_ASM_NORETURN__;
 #endif
 
 extern long __randseed;
