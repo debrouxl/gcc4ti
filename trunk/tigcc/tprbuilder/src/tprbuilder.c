@@ -65,6 +65,7 @@ static inline int win32_system(const char *cmdline)
   STARTUPINFO startupinfo={.cb=sizeof(startupinfo)};
   PROCESS_INFORMATION processinfo;
   _searchenv("tigcc.exe","PATH",execname);
+  if (!*execname) return 1;
   while ((p=strchr(execname,'/'))) *p='\\';
   if (!CreateProcess(execname,(char *)cmdline,NULL,NULL,FALSE,0,NULL,NULL,
                      &startupinfo,&processinfo)) return 1;
