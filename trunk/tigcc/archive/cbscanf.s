@@ -481,7 +481,7 @@ cmp.b #']',%d1
 beq.s 42f
 cmp.b %d1,%d2
 bhi.s 43b
-cmp.b -2(%a3),%d2
+cmp.b -3(%a3),%d2
 bcs.s 43b
 bra.s 36f
 40:
