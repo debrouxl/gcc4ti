@@ -46,11 +46,11 @@ typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned 
 #define __HAVE_Buttons
 enum Buttons{BT_NONE=0,BT_OK=1,BT_SAVE=2,BT_YES=3,BT_CANCEL=4,BT_NO=5,BT_GOTO=6};
 #endif
-typedef struct{unsigned char Type;unsigned char Flags;unsigned char x0,y0;union{struct{void*Menu;unsigned char MaxMenuWidth;}dMenu;struct{short oText;void*PopUp;unsigned short oIndex;}dPopUp;struct{short oText;HANDLE(*GetPopUp)(unsigned short);unsigned short oIndex;}dDynPopUp;struct{short oText;HANDLE hPopUp;unsigned short dummy;unsigned short oIndex;}dHPopUp;struct DEditType{short oText;unsigned short bOffset;unsigned short Flen;unsigned char Dlen;}dEdit;struct{short oText;}dText;struct{short oText;unsigned char lButton,rButton;}dHeader;struct{short oIcon;}dIcon;struct{unsigned char x1,y1;unsigned char Index0,Index1;unsigned char NumDspFields,TotNumFields;unsigned char FieldHeight;}dScrollR;struct{unsigned short xFlags[4];}dFlags;}f;}DIALOG_ITEM;
-#define DIALOG_ITEMS DIALOG_ITEM
-typedef struct{unsigned short TextOffset;unsigned short NumItems;unsigned char Width,Height;CALLBACK short(*CallBack)(short,long);DIALOG_ITEM Fields[];}DIALOG;
 typedef CALLBACK short(*Dialog_Callback_t)(short Message,long Value);
 #define DialogNew_t Dialog_Callback_t
+typedef struct{unsigned char Type;unsigned char Flags;unsigned char x0,y0;union{struct{void*Menu;unsigned char MaxMenuWidth;}dMenu;struct{short oText;void*PopUp;unsigned short oIndex;}dPopUp;struct{short oText;HANDLE(*GetPopUp)(unsigned short);unsigned short oIndex;}dDynPopUp;struct{short oText;HANDLE hPopUp;unsigned short dummy;unsigned short oIndex;}dHPopUp;struct DEditType{short oText;unsigned short bOffset;unsigned short Flen;unsigned char Dlen;}dEdit;struct{short oText;}dText;struct{short oText;unsigned char lButton,rButton;}dHeader;struct{short oIcon;}dIcon;struct{unsigned char x1,y1;unsigned char Index0,Index1;unsigned char NumDspFields,TotNumFields;unsigned char FieldHeight;}dScrollR;struct{unsigned short xFlags[4];}dFlags;}f;}DIALOG_ITEM;
+#define DIALOG_ITEMS DIALOG_ITEM
+typedef struct{unsigned short TextOffset;unsigned short NumItems;unsigned char Width,Height;Dialog_Callback_t CallBack;DIALOG_ITEM Fields[];}DIALOG;
 typedef CALLBACK HANDLE(*Dialog_GetHandle_t)(short ID);
 enum DialogFlags{DF_TAB_ELLIPSES=0x01
 #if MIN_AMS>=200

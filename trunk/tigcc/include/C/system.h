@@ -4,6 +4,7 @@
 #include <default.h>
 
 /* Begin Auto-Generated Part */
+#define KB_AUTOREPEAT (1<<11)
 #ifndef __HAVE_Bool
 #define __HAVE_Bool
 enum Bool{FALSE,TRUE};

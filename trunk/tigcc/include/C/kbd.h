@@ -27,6 +27,7 @@
 #define __keytest_optimized(row,col) (!!((__current_row==row?__current_rowread_result:(__current_row=row,__current_rowread_result=_rowread_inverted(1<<(row))))&(1<<(col))))
 
 /* Begin Auto-Generated Part */
+#define KB_AUTOREPEAT (1<<11)
 #define NULL ((void*)0)
 #ifndef __HAVE_Bool
 #define __HAVE_Bool
@@ -41,6 +42,7 @@ enum Arrows{ARROW_UP=1,ARROW_LEFT=2,ARROW_DOWN=3,ARROW_RIGHT=4};
 #define __HAVE_CommonKeys
 enum CommonKeys{KEY_F1=268,KEY_F2=269,KEY_F3=270,KEY_F4=271,KEY_F5=272,KEY_F6=273,KEY_F7=274,KEY_F8=275,KEY_ESC=264,KEY_QUIT=4360,KEY_APPS=265,KEY_SWITCH=4361,KEY_MODE=266,KEY_BACKSPACE=257,KEY_INS=4353,KEY_CLEAR=263,KEY_VARLNK=4141,KEY_CHAR=4139,KEY_ENTER=13,KEY_ENTRY=4109,KEY_STO=258,KEY_RCL=4354,KEY_SIGN=173,KEY_MATH=4149,KEY_MEM=4150,KEY_ON=267,KEY_OFF=4363};
 #endif
+enum GKeyFlags{GKF_NORMAL=0,GKF_MODAL=1,GKF_REPUSH_KEY=2,GKF_ACCEPT=4,GKF_SYS=8,GKF_NO_EVS=16};
 enum StatKeys{STAT_2ND=1,STAT_DIAMOND=2,STAT_SHIFT=3,STAT_HAND=4};
 #define OSFastArrows (*((unsigned char*)(_rom_call_addr_hack_concat(0x15C,_ROM_CALL_15C,((unsigned char*)((unsigned long)(*(((unsigned short*)(_rom_call_addr(51)))+0x80)))),200,0x508))))
 #define _keytest(rowcol...) (__keytest(rowcol))
