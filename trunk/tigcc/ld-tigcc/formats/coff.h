@@ -1,6 +1,7 @@
 /* coff.h: Definitions for COFF object files
 
    Copyright (C) 2002-2003 Sebastian Reichelt
+   Copyright (C) 2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -51,7 +52,7 @@ typedef struct ATTRIBUTE_PACKED {
 	TI4 Flags;
 } COFF_SECTION;
 
-typedef COFF_SECTION ATTRIBUTE_PACKED COFF_SECTIONS[];
+typedef COFF_SECTION COFF_SECTIONS[];
 
 // Section Flags
 #define COFF_SECTION_TEXT 0x20
@@ -83,7 +84,7 @@ typedef struct ATTRIBUTE_PACKED {
 	TI1 AuxSymbolCount;
 } COFF_SYMBOL;
 
-typedef COFF_SYMBOL ATTRIBUTE_PACKED COFF_SYMBOLS[];
+typedef COFF_SYMBOL COFF_SYMBOLS[];
 
 #define COFF_SYMBOL_EXTERNAL 0x02
 
@@ -94,7 +95,7 @@ typedef struct ATTRIBUTE_PACKED {
 	TI2 Type;
 } COFF_RELOC;
 
-typedef COFF_RELOC COFF_RELOCS[] ATTRIBUTE_PACKED;
+typedef COFF_RELOC COFF_RELOCS[];
 
 #define COFF_RELOC_DIR2 0x01
 #define COFF_RELOC_DIR4 0x06
@@ -119,7 +120,7 @@ typedef struct ATTRIBUTE_PACKED {
 	TI2 LineNumber;
 } COFF_LINE_NUM;
 
-typedef COFF_LINE_NUM ATTRIBUTE_PACKED COFF_LINE_NUMS[];
+typedef COFF_LINE_NUM COFF_LINE_NUMS[];
 
 // *** Helping Definitions ***
 
