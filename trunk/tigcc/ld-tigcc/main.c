@@ -21,8 +21,6 @@
 #ifdef DEBUGGING_INFO_SUPPORT
 #ifdef TARGET_EMBEDDED
 #error Debugging information is not yet supported for link.dll.
-#else
-#warning Debugging information support is experimental.
 #endif
 #endif
 
@@ -262,6 +260,10 @@ int main (int ArgCount, const char **Args)
 						Program.HaveDebuggingInfo = TRUE;
 					}
 				}
+			}
+			if (Program.HaveDebuggingInfo)
+			{
+				Warning (NULL, "C debugging support is experimental.");
 			}
 #endif
 

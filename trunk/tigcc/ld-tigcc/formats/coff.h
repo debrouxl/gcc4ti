@@ -25,6 +25,10 @@
 
 // *** File Mapping Definitions ***
 
+#define COFF_MACHINE_M68K 0x150
+#define COFF_FLAG_32BIT_BE 0x0200
+#define COFF_FLAG_NO_LINE_NUMBERS 0x0004
+
 // File Header
 typedef struct ATTRIBUTE_PACKED {
 	TI2 Machine;
