@@ -1,0 +1,4 @@
+	.xdef __test_against_specific_calc_AND___MIN_AMS_required,__test_against_specific_calc_AND___reject_unofficial_os
+
+.section _st33
+	bne __calc_is_OK_1__
