@@ -1,0 +1,1285 @@
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<class>MainForm</class>
+<widget class="QMainWindow">
+    <property name="name">
+        <cstring>MainForm</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>610</width>
+            <height>520</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>TIGCC IDE for KDE</string>
+    </property>
+    <hbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QSplitter">
+            <property name="name">
+                <cstring>splitter</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <widget class="QListView">
+                <column>
+                    <property name="text">
+                        <string>Files</string>
+                    </property>
+                    <property name="clickable">
+                        <bool>false</bool>
+                    </property>
+                    <property name="resizable">
+                        <bool>false</bool>
+                    </property>
+                </column>
+                <property name="name">
+                    <cstring>fileTree</cstring>
+                </property>
+                <property name="acceptDrops">
+                    <bool>true</bool>
+                </property>
+                <property name="rootIsDecorated">
+                    <bool>false</bool>
+                </property>
+                <property name="defaultRenameAction">
+                    <enum>Accept</enum>
+                </property>
+            </widget>
+            <widget class="KTextEdit">
+                <property name="name">
+                    <cstring>kTextEdit1</cstring>
+                </property>
+                <property name="enabled">
+                    <bool>false</bool>
+                </property>
+                <property name="paletteBackgroundColor">
+                    <color>
+                        <red>230</red>
+                        <green>230</green>
+                        <blue>230</blue>
+                    </color>
+                </property>
+            </widget>
+        </widget>
+    </hbox>
+</widget>
+<menubar>
+    <property name="name">
+        <cstring>menubar</cstring>
+    </property>
+    <item text="&amp;File" name="fileMenu">
+        <action name="fileNewActionGroup"/>
+        <action name="fileOpenAction"/>
+        <action name="fileSaveAllAction"/>
+        <action name="fileSaveProjectAsAction"/>
+        <separator/>
+        <action name="filePrintAction"/>
+        <separator/>
+        <action name="filePreferencesAction"/>
+        <separator/>
+        <action name="fileExitAction"/>
+        <separator/>
+        <action name="fileRecent1Action"/>
+        <action name="fileRecent2Action"/>
+        <action name="fileRecent3Action"/>
+        <action name="fileRecent4Action"/>
+    </item>
+    <item text="&amp;Edit" name="editMenu">
+        <action name="editUndoAction"/>
+        <action name="editRedoAction"/>
+        <separator/>
+        <action name="editClearAction"/>
+        <action name="editCutAction"/>
+        <action name="editCopyAction"/>
+        <action name="editPasteAction"/>
+        <separator/>
+        <action name="editSelectAllAction"/>
+        <separator/>
+        <action name="editIncreaseIndentAction"/>
+        <action name="editDecreaseIndentAction"/>
+    </item>
+    <item text="F&amp;ind" name="PopupMenu">
+        <action name="findFindAction"/>
+        <action name="findReplaceAction"/>
+        <separator/>
+        <action name="findFunctionsAction"/>
+        <separator/>
+        <action name="findOpenFileAtCursorAction"/>
+    </item>
+    <item text="&amp;Project" name="PopupMenu_2">
+        <action name="projectAddFilesAction"/>
+        <separator/>
+        <action name="projectCompileAction"/>
+        <action name="projectMakeAction"/>
+        <action name="projectBuildAction"/>
+        <separator/>
+        <action name="projectErrorsWarningsAction"/>
+        <action name="projectProgramOutputAction"/>
+        <separator/>
+        <action name="projectOptionsAction"/>
+    </item>
+    <item text="&amp;Debug" name="PopupMenu_3">
+        <action name="debugRunAction"/>
+        <separator/>
+        <action name="debugPauseAction"/>
+        <action name="debugResetAction"/>
+    </item>
+    <item text="&amp;Tools" name="PopupMenu_4">
+        <action name="toolsConfigureAction"/>
+    </item>
+    <item text="&amp;Help" name="helpMenu">
+        <action name="helpContentsAction"/>
+        <action name="helpIndexAction"/>
+        <action name="helpSearchAction"/>
+        <separator/>
+        <action name="helpNewsAction"/>
+        <separator/>
+        <action name="helpAboutAction"/>
+    </item>
+</menubar>
+<toolbars>
+    <toolbar dock="2">
+        <property name="name">
+            <cstring>toolBar</cstring>
+        </property>
+        <property name="movingEnabled">
+            <bool>false</bool>
+        </property>
+        <property name="label">
+            <string>Tools</string>
+        </property>
+        <action name="fileNewActionGroup"/>
+        <action name="fileOpenAction"/>
+        <action name="fileSaveAllAction"/>
+        <separator/>
+        <action name="filePrintAction"/>
+        <separator/>
+        <action name="editClearAction"/>
+        <action name="editCutAction"/>
+        <action name="editCopyAction"/>
+        <action name="editPasteAction"/>
+        <separator/>
+        <action name="editUndoAction"/>
+        <action name="editRedoAction"/>
+        <separator/>
+        <action name="findFindAction"/>
+        <action name="findReplaceAction"/>
+        <action name="findFunctionsAction"/>
+        <separator/>
+        <action name="projectAddFilesAction"/>
+        <separator/>
+        <action name="projectMakeAction"/>
+        <action name="projectBuildAction"/>
+        <separator/>
+        <action name="debugRunAction"/>
+        <action name="debugPauseAction"/>
+        <separator/>
+        <action name="helpDocumentationAction"/>
+    </toolbar>
+</toolbars>
+<actions>
+    <action>
+        <property name="name">
+            <cstring>fileOpenAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>01</iconset>
+        </property>
+        <property name="text">
+            <string>Open File</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Open...</string>
+        </property>
+        <property name="statusTip">
+            <string>Open an existing project or file</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+O</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileSaveAllAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>02</iconset>
+        </property>
+        <property name="text">
+            <string>Save All</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Save All</string>
+        </property>
+        <property name="statusTip">
+            <string>Save all open files</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+S</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileSaveProjectAsAction</cstring>
+        </property>
+        <property name="text">
+            <string>Save Project As...</string>
+        </property>
+        <property name="menuText">
+            <string>Save Project &amp;As...</string>
+        </property>
+        <property name="statusTip">
+            <string>Save the current project with another name, or in another folder</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>filePrintAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>03</iconset>
+        </property>
+        <property name="text">
+            <string>Print File</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Print...</string>
+        </property>
+        <property name="statusTip">
+            <string>Print the current source file</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+P</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileExitAction</cstring>
+        </property>
+        <property name="text">
+            <string>Exit</string>
+        </property>
+        <property name="menuText">
+            <string>E&amp;xit</string>
+        </property>
+        <property name="statusTip">
+            <string>Close the TIGCC IDE</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editUndoAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>16</iconset>
+        </property>
+        <property name="text">
+            <string>Undo</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Undo</string>
+        </property>
+        <property name="statusTip">
+            <string>Undo the last operation in the editor</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+Z</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editRedoAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>17</iconset>
+        </property>
+        <property name="text">
+            <string>Redo</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Redo</string>
+        </property>
+        <property name="statusTip">
+            <string>Redo the last undone operation in the editor</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+Y</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editCutAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>05</iconset>
+        </property>
+        <property name="text">
+            <string>Cut</string>
+        </property>
+        <property name="menuText">
+            <string>Cu&amp;t</string>
+        </property>
+        <property name="statusTip">
+            <string>Copy the selected text into the clipboard and delete it</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+X</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editCopyAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>06</iconset>
+        </property>
+        <property name="text">
+            <string>Copy</string>
+        </property>
+        <property name="menuText">
+            <string>C&amp;opy</string>
+        </property>
+        <property name="statusTip">
+            <string>Copy the selected text into the clipboard without deleting it</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+C</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editPasteAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>07</iconset>
+        </property>
+        <property name="text">
+            <string>Paste</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Paste</string>
+        </property>
+        <property name="statusTip">
+            <string>Paste text from the clipboard</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+V</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>findFindAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>13</iconset>
+        </property>
+        <property name="text">
+            <string>Find</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Find...</string>
+        </property>
+        <property name="toolTip">
+            <string>Find Text</string>
+        </property>
+        <property name="statusTip">
+            <string>Find the specified text in the current source file</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+F</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>helpContentsAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>12</iconset>
+        </property>
+        <property name="text">
+            <string>Contents</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Contents...</string>
+        </property>
+        <property name="statusTip">
+            <string>Display the contents tab of the documentation</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>helpIndexAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>15</iconset>
+        </property>
+        <property name="text">
+            <string>Index</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Index...</string>
+        </property>
+        <property name="statusTip">
+            <string>Display the index tab of the documentation</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>helpAboutAction</cstring>
+        </property>
+        <property name="text">
+            <string>About</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;About...</string>
+        </property>
+        <property name="statusTip">
+            <string>Display information about this program</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+    </action>
+    <actiongroup>
+        <property name="name">
+            <cstring>fileNewActionGroup</cstring>
+        </property>
+        <property name="on">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>00</iconset>
+        </property>
+        <property name="text">
+            <string>New</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;New</string>
+        </property>
+        <property name="toolTip">
+            <string>New File</string>
+        </property>
+        <property name="statusTip">
+            <string>Create a new file</string>
+        </property>
+        <property name="accel">
+            <string></string>
+        </property>
+        <property name="exclusive">
+            <bool>false</bool>
+        </property>
+        <property name="usesDropDown">
+            <bool>true</bool>
+        </property>
+        <action>
+            <property name="name">
+                <cstring>fileNewProjectAction</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Project</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new project</string>
+            </property>
+            <property name="accel">
+                <string>Ctrl+N</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewFolderAction</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="text">
+                <string>&amp;Folder</string>
+            </property>
+            <property name="menuText">
+                <string>&amp;Folder</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new virtual folder</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewCHeaderAction</cstring>
+            </property>
+            <property name="text">
+                <string>C &amp;Header File</string>
+            </property>
+            <property name="menuText">
+                <string>C &amp;Header File</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new C header file in the current project</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewGNUAssemblyHeaderAction</cstring>
+            </property>
+            <property name="text">
+                <string>G&amp;NU Assembly Header File</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new GNU assembly header file in the current project</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewA68kAssemblyHeaderAction</cstring>
+            </property>
+            <property name="text">
+                <string>A68&amp;k Assembly &amp;Header File</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new A68k assembly header file in the current project</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewCSourceFileAction</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;C Source File</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new C source file in the current project</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewGNUAssemblySourceFileAction</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;GNU Assembly Source File</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new GNU assembly source file in the current project</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewA68kAssemblySourceFileAction</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;A68k Assembly Source File</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new A68k assembly source file in the current project</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewQuillSourceFileAction</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Quill Source File</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new Quill source file in the current project</string>
+            </property>
+        </action>
+        <action>
+            <property name="name">
+                <cstring>fileNewTextFileAction</cstring>
+            </property>
+            <property name="text">
+                <string>&amp;Text File</string>
+            </property>
+            <property name="statusTip">
+                <string>Create a new text file in the current project, for general use</string>
+            </property>
+        </action>
+    </actiongroup>
+    <action>
+        <property name="name">
+            <cstring>filePreferencesAction</cstring>
+        </property>
+        <property name="text">
+            <string>Preferences</string>
+        </property>
+        <property name="menuText">
+            <string>P&amp;references...</string>
+        </property>
+        <property name="statusTip">
+            <string>Change the IDE settings</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileRecent1Action</cstring>
+        </property>
+        <property name="text">
+            <string>Recent File 1</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileRecent2Action</cstring>
+        </property>
+        <property name="text">
+            <string>Recent File 2</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileRecent3Action</cstring>
+        </property>
+        <property name="text">
+            <string>Recent File 3</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileRecent4Action</cstring>
+        </property>
+        <property name="text">
+            <string>Recent File 4</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editClearAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>04</iconset>
+        </property>
+        <property name="text">
+            <string>Clear</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Clear</string>
+        </property>
+        <property name="statusTip">
+            <string>Delete the selected text in the editor</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editSelectAllAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>Select All</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Select All</string>
+        </property>
+        <property name="statusTip">
+            <string>Select the whole text in the editor</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+A</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editIncreaseIndentAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>19</iconset>
+        </property>
+        <property name="text">
+            <string>Increase Indent</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Increase Indent</string>
+        </property>
+        <property name="statusTip">
+            <string>Insert tabs so that the text is moved to the right</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+I</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>editDecreaseIndentAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>20</iconset>
+        </property>
+        <property name="text">
+            <string>Decrease Indent</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Decrease Indent</string>
+        </property>
+        <property name="statusTip">
+            <string>Remove tabs and spaces so that the text is moved to the left</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+D</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>findReplaceAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>14</iconset>
+        </property>
+        <property name="text">
+            <string>Replace</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Replace...</string>
+        </property>
+        <property name="toolTip">
+            <string>Replace Text</string>
+        </property>
+        <property name="statusTip">
+            <string>Find the specified text in the current source file and replace it with something else</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+R</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>findFunctionsAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>18</iconset>
+        </property>
+        <property name="text">
+            <string>Functions</string>
+        </property>
+        <property name="menuText">
+            <string>F&amp;unctions...</string>
+        </property>
+        <property name="statusTip">
+            <string>Display a list of all functions in the current file</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>findOpenFileAtCursorAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>Open File at Cursor</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Open File at Cursor</string>
+        </property>
+        <property name="statusTip">
+            <string>Open the file the cursor is on</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+Enter</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>projectAddFilesAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>08</iconset>
+        </property>
+        <property name="text">
+            <string>Add Files</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Add Files...</string>
+        </property>
+        <property name="statusTip">
+            <string>Add existing files to the current project</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>projectCompileAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>09</iconset>
+        </property>
+        <property name="text">
+            <string>Compile</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Compile</string>
+        </property>
+        <property name="statusTip">
+            <string>Compile all updated files in the current project</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+Alt+F9</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>projectMakeAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>10</iconset>
+        </property>
+        <property name="text">
+            <string>Make</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Make</string>
+        </property>
+        <property name="statusTip">
+            <string>Compile and link together all updated files in the current project, creating an executable file</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+F9</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>projectBuildAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>11</iconset>
+        </property>
+        <property name="text">
+            <string>Build</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Build</string>
+        </property>
+        <property name="statusTip">
+            <string>Recompile and link together all files in the current project, creating an executable file</string>
+        </property>
+        <property name="accel">
+            <string>Alt+F9</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>projectErrorsWarningsAction</cstring>
+        </property>
+        <property name="toggleAction">
+            <bool>true</bool>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>Errors and Warnings</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Errors and Warnings</string>
+        </property>
+        <property name="statusTip">
+            <string>Show or hide the Errors and Warnings window</string>
+        </property>
+        <property name="accel">
+            <string>Ctrl+E</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>projectProgramOutputAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>Program Output</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Program Output...</string>
+        </property>
+        <property name="statusTip">
+            <string>Show the output of the compilation tool that was run last</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>projectOptionsAction</cstring>
+        </property>
+        <property name="text">
+            <string>Options</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Options...</string>
+        </property>
+        <property name="statusTip">
+            <string>Change the settings of the current project</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>debugRunAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>24</iconset>
+        </property>
+        <property name="text">
+            <string>Run</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Run</string>
+        </property>
+        <property name="statusTip">
+            <string>Run the program on the target specified in the project settings</string>
+        </property>
+        <property name="accel">
+            <string>F9</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>debugPauseAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>25</iconset>
+        </property>
+        <property name="text">
+            <string>Pause</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Pause</string>
+        </property>
+        <property name="statusTip">
+            <string>Pause the execution of the program and enter the debugger</string>
+        </property>
+        <property name="accel">
+            <string>Shift+F9</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>debugResetAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>27</iconset>
+        </property>
+        <property name="text">
+            <string>Reset</string>
+        </property>
+        <property name="menuText">
+            <string>Re&amp;set</string>
+        </property>
+        <property name="statusTip">
+            <string>Reset the state of the virtual calculator to the one which was previously saved</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>toolsConfigureAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>26</iconset>
+        </property>
+        <property name="text">
+            <string>Configure</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Configure...</string>
+        </property>
+        <property name="statusTip">
+            <string>Add, edit and remove tools</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>helpSearchAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>13</iconset>
+        </property>
+        <property name="text">
+            <string>Search</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Search</string>
+        </property>
+        <property name="statusTip">
+            <string>Display the search tab of the documentation</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>helpNewsAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>23</iconset>
+        </property>
+        <property name="text">
+            <string>News</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;News...</string>
+        </property>
+        <property name="statusTip">
+            <string>Obtain the latest headlines from the official TIGCC site</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>helpDocumentationAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>12</iconset>
+        </property>
+        <property name="text">
+            <string>Documentation</string>
+        </property>
+        <property name="statusTip">
+            <string>Open the documentation of TIGCC</string>
+        </property>
+    </action>
+</actions>
+<connections>
+    <connection>
+        <sender>fileOpenAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileOpen()</slot>
+    </connection>
+    <connection>
+        <sender>fileSaveAllAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileSave()</slot>
+    </connection>
+    <connection>
+        <sender>fileSaveProjectAsAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileSaveAs()</slot>
+    </connection>
+    <connection>
+        <sender>filePrintAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>filePrint()</slot>
+    </connection>
+    <connection>
+        <sender>fileExitAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>close()</slot>
+    </connection>
+    <connection>
+        <sender>editUndoAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>editUndo()</slot>
+    </connection>
+    <connection>
+        <sender>editRedoAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>editRedo()</slot>
+    </connection>
+    <connection>
+        <sender>editCutAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>editCut()</slot>
+    </connection>
+    <connection>
+        <sender>editCopyAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>editCopy()</slot>
+    </connection>
+    <connection>
+        <sender>editPasteAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>editPaste()</slot>
+    </connection>
+    <connection>
+        <sender>findFindAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>editFind()</slot>
+    </connection>
+    <connection>
+        <sender>helpIndexAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>helpIndex()</slot>
+    </connection>
+    <connection>
+        <sender>helpContentsAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>helpContents()</slot>
+    </connection>
+    <connection>
+        <sender>helpAboutAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>helpAbout()</slot>
+    </connection>
+    <connection>
+        <sender>fileNewProjectAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewProject()</slot>
+    </connection>
+    <connection>
+        <sender>fileTree</sender>
+        <signal>clicked(QListViewItem*)</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileTreeClicked(QListViewItem*)</slot>
+    </connection>
+    <connection>
+        <sender>fileNewFolderAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewFolder()</slot>
+    </connection>
+    <connection>
+        <sender>fileTree</sender>
+        <signal>contextMenuRequested(QListViewItem*,const QPoint&amp;,int)</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileTreeContextMenuRequested(QListViewItem*,const QPoint&amp;,int)</slot>
+    </connection>
+    <connection>
+        <sender>fileNewCHeaderAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewCHeader()</slot>
+    </connection>
+    <connection>
+        <sender>fileNewGNUAssemblyHeaderAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewGNUAssemblyHeader()</slot>
+    </connection>
+    <connection>
+        <sender>fileNewA68kAssemblyHeaderAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewA68kAssemblyHeader()</slot>
+    </connection>
+    <connection>
+        <sender>fileNewCSourceFileAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewCSourceFile()</slot>
+    </connection>
+    <connection>
+        <sender>fileNewGNUAssemblySourceFileAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewGNUAssemblySourceFile()</slot>
+    </connection>
+    <connection>
+        <sender>fileNewA68kAssemblySourceFileAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewA68kAssemblySourceFile()</slot>
+    </connection>
+    <connection>
+        <sender>fileNewQuillSourceFileAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewQuillSourceFile()</slot>
+    </connection>
+    <connection>
+        <sender>fileNewTextFileAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileNewTextFile()</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="local" impldecl="in implementation">mainform.ui.h</include>
+</includes>
+<slots>
+    <slot>init()</slot>
+    <slot>fileNewProject()</slot>
+    <slot>fileOpen()</slot>
+    <slot>fileSave()</slot>
+    <slot>fileSaveAs()</slot>
+    <slot>filePrint()</slot>
+    <slot>fileExit()</slot>
+    <slot>editUndo()</slot>
+    <slot>editRedo()</slot>
+    <slot>editCut()</slot>
+    <slot>editCopy()</slot>
+    <slot>editPaste()</slot>
+    <slot>editFind()</slot>
+    <slot>helpIndex()</slot>
+    <slot>helpContents()</slot>
+    <slot>helpAbout()</slot>
+    <slot>resizeEvent( QResizeEvent * event )</slot>
+    <slot>timerEvent( QTimerEvent * event )</slot>
+    <slot>fileTreeClicked( QListViewItem * item )</slot>
+    <slot>fileNewFolder()</slot>
+    <slot>fileTreeContextMenuRequested( QListViewItem * item, const QPoint &amp; pos, int unused_col )</slot>
+    <slot>newFile( QListViewItem * parent, QString text, const char * iconName )</slot>
+    <slot>fileNewCHeader()</slot>
+    <slot>fileNewGNUAssemblyHeader()</slot>
+    <slot>fileNewA68kAssemblyHeader()</slot>
+    <slot>fileNewCSourceFile()</slot>
+    <slot>fileNewGNUAssemblySourceFile()</slot>
+    <slot>fileNewA68kAssemblySourceFile()</slot>
+    <slot>fileNewQuillSourceFile()</slot>
+    <slot>fileNewTextFile()</slot>
+</slots>
+<functions>
+    <function access="private" specifier="non virtual">updateSizes()</function>
+    <function access="private" specifier="non virtual">newFile( QListViewItem * parent )</function>
+    <function access="private" specifier="non virtual">updateLeftStatusLabel()</function>
+</functions>
+<pixmapinproject/>
+<layoutdefaults spacing="0" margin="0"/>
+<includehints>
+    <includehint>ktextedit.h</includehint>
+</includehints>
+</UI>
