@@ -35,7 +35,7 @@ BOOLEAN CanCutRange (SECTION *Section, OFFSET Start, OFFSET End)
 	else
 	{
 		SEGMENT *Segment;
-		for (Segment = FindSegment (Section, Start, End); Segment && (Segment->Location.End->Location < End); Segment = GetNext (Segment))
+		for (Segment = FindSegment (Section, Start, End); Segment && (Segment->Location.Start->Location < End); Segment = GetNext (Segment))
 		{
 			if (!(Segment->CanCutRanges))
 				return FALSE;
