@@ -20,7 +20,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "TIGCC"
-!define PRODUCT_VERSION "0.96 Beta 2"
+!define PRODUCT_VERSION "0.96 Beta 3"
 !define PRODUCT_PUBLISHER "TIGCC Team"
 !define PRODUCT_WEB_SITE "http://tigcc.ticalc.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
