@@ -372,7 +372,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.h binutils-2.15.tigcc1/gas/con
         && (s)->sy_symbol.ost_entry.n_scnum == C_ABS_SECTION))
 diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/config/tc-m68k.c
 --- binutils-2.15.orig/gas/config/tc-m68k.c	Mon Jan 26 19:09:30 2004
-+++ binutils-2.15.tigcc1/gas/config/tc-m68k.c	Sun Jan 30 18:57:30 2005
++++ binutils-2.15.tigcc1/gas/config/tc-m68k.c	Sun Jan 30 20:31:22 2005
 @@ -75,6 +75,7 @@
  int flag_want_pic;
  
@@ -409,7 +409,36 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  (fixP->fx_size == 1 ? R_PCRBYTE :
  	   fixP->fx_size == 2 ? R_PCRWORD :
  	   R_PCRLONG) :
-@@ -2645,8 +2655,15 @@
+@@ -2611,6 +2621,7 @@
+ 	      add_fix ('B', &opP->disp, 1, -1);
+ 	      break;
+ 	    case 'W':
++	    word_branch: /* (TIGCC 20050130) */
+ 	      add_fix ('w', &opP->disp, 1, 0);
+ 	      addword (0);
+ 	      break;
+@@ -2623,6 +2634,20 @@
+ 	      addword (0);
+ 	      addword (0);
+ 	      break;
++	    case 'G': /* (TIGCC 20050130) */
++	    /* (TIGCC 20050130) We want only branches (word). -- Kevin Kofler */
++	      if (subs (&opP->disp))	/* We can't relax it.  */
++		goto word_branch;
++
++#ifdef OBJ_ELF
++	      /* If the displacement needs pic relocation it cannot be
++		 relaxed.  */
++	      if (opP->disp.pic_reloc != pic_none)
++		goto word_branch;
++#endif
++	      add_frag (adds (&opP->disp), offs (&opP->disp),
++			TAB (BRANCHBW, SZ_UNDEF));
++	      break;
+ 	    case 'g':
+ 	      if (subs (&opP->disp))	/* We can't relax it.  */
+ 		goto long_branch;
+@@ -2645,8 +2670,15 @@
  		    the_ins.opcode[0] = 0x4EB9;
  		  else					/* jCC */
  		    {
@@ -425,7 +454,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  		      addword (0x4EF9);
  		    }
  		  add_fix ('l', &opP->disp, 0, 0);
-@@ -3817,6 +3834,10 @@
+@@ -3817,6 +3849,10 @@
  			      get_reloc_code (n, the_ins.reloc[m].pcrel,
  					      the_ins.reloc[m].pic_reloc));
  	  fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -436,7 +465,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  if (the_ins.reloc[m].wid == 'B')
  	    fixP->fx_signed = 1;
  	}
-@@ -3879,6 +3900,10 @@
+@@ -3879,6 +3915,10 @@
  			      get_reloc_code (wid, the_ins.reloc[m].pcrel,
  					      the_ins.reloc[m].pic_reloc));
  	  fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -447,7 +476,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	}
        (void) frag_var (rs_machine_dependent, 10, 0,
  		       (relax_substateT) (the_ins.fragb[n].fragty),
-@@ -3916,6 +3941,10 @@
+@@ -3916,6 +3956,10 @@
  			  get_reloc_code (wid, the_ins.reloc[m].pcrel,
  					  the_ins.reloc[m].pic_reloc));
        fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -458,7 +487,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
      }
  }
  
-@@ -4405,7 +4434,9 @@
+@@ -4405,7 +4449,9 @@
  
    val = ((val & 0xffffffff) ^ 0x80000000) - 0x80000000;
  
@@ -469,7 +498,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
      fixP->fx_done = 1;
  
  #ifdef OBJ_ELF
-@@ -4428,6 +4459,55 @@
+@@ -4428,6 +4474,55 @@
      return;
  #endif
  
@@ -525,7 +554,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
    switch (fixP->fx_size)
      {
        /* The cast to offsetT below are necessary to make code
-@@ -4455,13 +4535,8 @@
+@@ -4455,13 +4550,8 @@
        BAD_CASE (fixP->fx_size);
      }
  
@@ -541,7 +570,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  
    /* For non-pc-relative values, it's conceivable we might get something
       like "0xff" for a byte field.  So extend the upper part of the range
-@@ -4582,6 +4657,27 @@
+@@ -4582,6 +4672,27 @@
        fragP->fr_opcode[0] ^= 0x01;	/* Invert bcc.  */
        fragP->fr_opcode[1]  = 0x06;	/* Branch offset = 6.  */
  
@@ -569,7 +598,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
        /* JF: these used to be fr_opcode[2,3], but they may be in a
  	   different frag, in which case referring to them is a no-no.
  	   Only fr_opcode[0,1] are guaranteed to work.  */
-@@ -4754,8 +4850,17 @@
+@@ -4754,8 +4865,17 @@
  	    && relaxable_symbol (fragP->fr_symbol))
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), BYTE);
@@ -588,7 +617,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  {
  	    /* Symbol is undefined and we want short ref.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
-@@ -4764,6 +4869,17 @@
+@@ -4764,6 +4884,17 @@
  	  {
  	    /* Symbol is still undefined.  Make it LONG.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), LONG);
@@ -606,7 +635,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  }
  	break;
        }
-@@ -4790,7 +4906,7 @@
+@@ -4790,7 +4921,7 @@
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
  	     && relaxable_symbol (fragP->fr_symbol))
@@ -615,7 +644,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
  	  }
-@@ -4816,7 +4932,8 @@
+@@ -4816,7 +4947,8 @@
      case TAB (ABSTOPCREL, SZ_UNDEF):
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
@@ -625,7 +654,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  {
  	    fragP->fr_subtype = TAB (ABSTOPCREL, SHORT);
  	  }
-@@ -4860,6 +4977,7 @@
+@@ -4860,6 +4992,7 @@
  	    }
  	}
        break;
@@ -633,7 +662,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
      default:
        break;
      }
-@@ -6938,6 +7056,8 @@
+@@ -6938,6 +7071,8 @@
    {"disp-size-default-32", no_argument, NULL, OPTION_DISP_SIZE_DEFAULT_32},
  #define OPTION_PCREL (OPTION_MD_BASE + 7)
    {"pcrel", no_argument, NULL, OPTION_PCREL},
@@ -642,7 +671,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
    {NULL, no_argument, NULL, 0}
  };
  size_t md_longopts_size = sizeof (md_longopts);
-@@ -6952,6 +7072,12 @@
+@@ -6952,6 +7087,12 @@
      case 'l':			/* -l means keep external to 2 bit offset
  				   rather than 16 bit one.  */
        flag_short_refs = 1;
@@ -655,7 +684,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
        break;
  
      case 'S':			/* -S means that jbsr's always turn into
-@@ -7131,6 +7257,7 @@
+@@ -7131,6 +7272,7 @@
    fprintf (stream, _("\
  680X0 options:\n\
  -l			use 1 word for refs to undefined symbols [default 2]\n\
@@ -958,8 +987,49 @@ diff -Naur binutils-2.15.orig/opcodes/configure.in binutils-2.15.tigcc1/opcodes/
  AC_ISC_POSIX
 diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15.tigcc1/opcodes/m68k-opc.c
 --- binutils-2.15.orig/opcodes/m68k-opc.c	Thu Nov  6 05:32:06 2003
-+++ binutils-2.15.tigcc1/opcodes/m68k-opc.c	Sun Jan 30 15:34:40 2005
-@@ -254,6 +254,7 @@
++++ binutils-2.15.tigcc1/opcodes/m68k-opc.c	Sun Jan 30 20:04:06 2005
+@@ -116,6 +116,22 @@
+ {"asrl",	one(0160200),	one(0170770), "QdDs", m68000up | mcf },
+ {"asrl",	one(0160240),	one(0170770), "DdDs", m68000up | mcf },
+ 
++/* (TIGCC 20050130) New branch type: variable-size, word by default. */
++{"bhi",	one(0061000),	one(0177777), "BG", m68000up | mcf },
++{"bls",	one(0061400),	one(0177777), "BG", m68000up | mcf },
++{"bcc",	one(0062000),	one(0177777), "BG", m68000up | mcf },
++{"bcs",	one(0062400),	one(0177777), "BG", m68000up | mcf },
++{"bne",	one(0063000),	one(0177777), "BG", m68000up | mcf },
++{"beq",	one(0063400),	one(0177777), "BG", m68000up | mcf },
++{"bvc",	one(0064000),	one(0177777), "BG", m68000up | mcf },
++{"bvs",	one(0064400),	one(0177777), "BG", m68000up | mcf },
++{"bpl",	one(0065000),	one(0177777), "BG", m68000up | mcf },
++{"bmi",	one(0065400),	one(0177777), "BG", m68000up | mcf },
++{"bge",	one(0066000),	one(0177777), "BG", m68000up | mcf },
++{"blt",	one(0066400),	one(0177777), "BG", m68000up | mcf },
++{"bgt",	one(0067000),	one(0177777), "BG", m68000up | mcf },
++{"ble",	one(0067400),	one(0177777), "BG", m68000up | mcf },
++
+ {"bhiw",	one(0061000),	one(0177777), "BW", m68000up | mcf },
+ {"blsw",	one(0061400),	one(0177777), "BW", m68000up | mcf },
+ {"bccw",	one(0062000),	one(0177777), "BW", m68000up | mcf },
+@@ -199,6 +215,8 @@
+ 
+ {"bkpt",	one(0044110),	one(0177770), "ts", m68010up },
+ 
++/* (TIGCC 20050130) New branch type: variable-size, word by default. */
++{"bra",	one(0060000),	one(0177777), "BG", m68000up | mcf },
+ {"braw",	one(0060000),	one(0177777), "BW", m68000up | mcf },
+ {"bral",	one(0060377),	one(0177777), "BL", m68020up | cpu32 | mcfv4up},
+ {"bras",	one(0060000),	one(0177400), "BB", m68000up | mcf },
+@@ -208,6 +226,8 @@
+ {"bset",	one(0004300),	one(0177700), "#b$s", m68000up },
+ {"bset",	one(0004300),	one(0177700), "#bqs", mcf },
+ 
++/* (TIGCC 20050130) New branch type: variable-size, word by default. */
++{"bsr",	one(0060400),	one(0177777), "BG", m68000up | mcf },
+ {"bsrw",	one(0060400),	one(0177777), "BW", m68000up | mcf },
+ {"bsrl",	one(0060777),	one(0177777), "BL", m68020up | cpu32 | mcfv4up},
+ {"bsrs",	one(0060400),	one(0177400), "BB", m68000up | mcf },
+@@ -254,6 +274,7 @@
  
  {"clrb",	one(0041000),	one(0177700), "$s", m68000up | mcf },
  {"clrw",	one(0041100),	one(0177700), "$s", m68000up | mcf },
@@ -967,7 +1037,7 @@ diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15.tigcc1/opcodes/m6
  {"clrl",	one(0041200),	one(0177700), "$s", m68000up | mcf },
  
  {"cmp2b",	two(0000300,0), two(0177700,07777), "!sR1", m68020up | cpu32 },
-@@ -263,11 +264,11 @@
+@@ -263,11 +284,11 @@
  {"cmpaw",	one(0130300),	one(0170700), "*wAd", m68000up },
  {"cmpal",	one(0130700),	one(0170700), "*lAd", m68000up | mcf },
  
@@ -982,7 +1052,7 @@ diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15.tigcc1/opcodes/m6
  {"cmpil",	one(0006200),	one(0177700), "#lDs", mcf },
  
  {"cmpmb",	one(0130410),	one(0170770), "+s+d", m68000up },
-@@ -275,18 +276,18 @@
+@@ -275,18 +296,18 @@
  {"cmpml",	one(0130610),	one(0170770), "+s+d", m68000up },
  
  /* The cmp opcode can generate the cmpa, cmpm, and cmpi instructions.  */
@@ -1004,7 +1074,7 @@ diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15.tigcc1/opcodes/m6
  {"cmpl",	one(0006200),	one(0177700), "#lDs", mcf },
  {"cmpl",	one(0130610),	one(0170770), "+s+d", m68000up },
  {"cmpl",	one(0130200),	one(0170700), "*lDd", m68000up | mcf },
-@@ -2187,6 +2188,7 @@
+@@ -2187,6 +2208,7 @@
  
  const struct m68k_opcode_alias m68k_opcode_aliases[] =
  {
@@ -1012,7 +1082,51 @@ diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15.tigcc1/opcodes/m6
    { "add",	"addw", },
    { "adda",	"addaw", },
    { "addi",	"addiw", },
-@@ -2285,6 +2287,7 @@
+@@ -2194,22 +2216,6 @@
+   { "addx",	"addxw", },
+   { "asl",	"aslw", },
+   { "asr",	"asrw", },
+-  { "bhi",	"bhiw", },
+-  { "bls",	"blsw", },
+-  { "bcc",	"bccw", },
+-  { "bcs",	"bcsw", },
+-  { "bne",	"bnew", },
+-  { "beq",	"beqw", },
+-  { "bvc",	"bvcw", },
+-  { "bvs",	"bvsw", },
+-  { "bpl",	"bplw", },
+-  { "bmi",	"bmiw", },
+-  { "bge",	"bgew", },
+-  { "blt",	"bltw", },
+-  { "bgt",	"bgtw", },
+-  { "ble",	"blew", },
+-  { "bra",	"braw", },
+-  { "bsr",	"bsrw", },
+   { "bhib",	"bhis", },
+   { "blsb",	"blss", },
+   { "bccb",	"bccs", },
+@@ -2226,17 +2232,17 @@
+   { "bleb",	"bles", },
+   { "brab",	"bras", },
+   { "bsrb",	"bsrs", },
+-  { "bhs",	"bccw" },
++  { "bhs",	"bcc" }, /* (TIGCC 20050130) No 'w'. */
+   { "bhss",	"bccs" },
+   { "bhsb",	"bccs" },
+   { "bhsw",	"bccw" },
+   { "bhsl",	"bccl" },
+-  { "blo",	"bcsw" },
++  { "blo",	"bcs" }, /* (TIGCC 20050130) No 'w'. */
+   { "blos",	"bcss" },
+   { "blob",	"bcss" },
+   { "blow",	"bcsw" },
+   { "blol",	"bcsl" },
+-  { "br",	"braw", },
++  { "br",	"bra", }, /* (TIGCC 20050130) No 'w'. */
+   { "brs",	"bras", },
+   { "brb",	"bras", },
+   { "brw",	"braw", },
+@@ -2285,6 +2291,7 @@
    { "tdivsl",	"divsl", },
    { "divs",	"divsw", },
    { "divu",	"divuw", },
