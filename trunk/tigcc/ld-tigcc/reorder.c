@@ -35,8 +35,8 @@ static void ReorderStartupSections (PROGRAM *Program);
 // to avoid combinatorial explosion.
 void ReorderSections (PROGRAM *Program)
 {
-	ReorderNonStartupSections(Program);
 	ReorderStartupSections(Program);
+	ReorderNonStartupSections(Program);
 }
 
 
@@ -454,7 +454,8 @@ static SI1 ReorderSectionsRecurse(PROGRAM *Program, COUNT SectionCount,
 			COUNT TaggedSectionCount;
 			// If the current section is not a startup section, it means we are
 			// done with the startup sections. So just add all the remaining
-			// sections in the order decided by global reordering.
+			// sections in their current order, to be rearranged by global
+			// reordering.
 			if (!StartupNumber)
 			{
 				SECTION *RemainingSection;
