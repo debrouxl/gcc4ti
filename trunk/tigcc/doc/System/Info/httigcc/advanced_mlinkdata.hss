@@ -1,0 +1,23 @@
+[Main]
+Title=MLINK_FORMAT_DATA_VAR
+See Also=advanced_kerneldata: KERNEL_FORMAT_DATA_VAR, advanced_compresseddata: COMPRESSED_FORMAT_DATA_VAR
+
+[Top]
+In nostub mode, if you put
+<PRE>#define MLINK_FORMAT_DATA_VAR
+</PRE>
+at the beginning of the program, and the data section is put into an external
+data variable, references into the data variable will be stored in the
+program in a compressed format.
+This format for the relocation entries (first used in Johan Eilert's mlink
+linker) is designed to balance the size of the relocs against the size of the
+decompression routine. The relocation entries take only slightly more space
+than in the compressed format, but the decoding code is much smaller.
+Moreover, as for the compressed format, the decoding code only has to be
+inserted into the program once if multiple <CODE>MLINK_FORMAT_...</CODE>
+features are used. In most cases, this should be the optimal format to use for
+relocation entries, but for programs with very few or very many relocations,
+the kernel or compressed formats (respectively) are more efficient.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="$$INFOLINK(ld/insert_mlink_data_refs)">__ld_insert_mlink_data_refs</A>.
