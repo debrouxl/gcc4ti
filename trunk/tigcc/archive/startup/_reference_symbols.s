@@ -1,9 +1,14 @@
-	.xdef __ld_compressed_relocs_ref,__ld_compressed_bss_refs_ref,__ld_compressed_data_refs_ref,,__ld_compressed_rom_calls_ref
+	.xdef __ld_compressed_relocs_ref,__ld_compressed_bss_refs_ref,__ld_compressed_data_refs_ref,__ld_compressed_rom_calls_ref
+	.xdef __ld_mlink_relocs_ref,__ld_mlink_bss_refs_ref,__ld_mlink_data_refs_ref,__ld_mlink_rom_calls_ref
 
 .section _st20000
 __ld_compressed_relocs_ref:
 __ld_compressed_data_refs_ref:
 __ld_compressed_rom_calls_ref:
+__ld_mlink_relocs_ref:
+__ld_mlink_data_refs_ref:
+__ld_mlink_rom_calls_ref:
 
 .section _st150
 __ld_compressed_bss_refs_ref:
+__ld_mlink_bss_refs_ref:

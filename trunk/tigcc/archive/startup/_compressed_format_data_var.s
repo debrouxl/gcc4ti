@@ -2,7 +2,7 @@
 | Copyright (C) 2003 Kevin Kofler.
 | See License.txt for licensing conditions.
 
-	.xdef __handle_data_var_AND___compressed_format_data_var,__compressed_format_data_var_relocate,__compressed_format_data_var_cleanup_almost_end,__data_var_name_start,__ld_insert_compressed_data_refs,__ld_insert_data_var_name
+	.xdef __handle_data_var_AND___compressed_format_data_var,__compressed_format_data_var_relocate,__compressed_format_data_var_cleanup_almost_end,__ld_insert_compressed_data_refs,__ld_insert_data_var_name
 
 | This file requires cleanup code.
 	.xdef __ref_all___complex_main
@@ -79,9 +79,3 @@ __compressed_format_data_var_cleanup_end:
 
 __ld_insert_compressed_data_refs:
 | See _compressed_format_relocs.s for the format of the data reloc table.
-
-.section _st10001, "d"
-
-__data_var_name_start:
-	.byte 0
-__ld_insert_data_var_name:

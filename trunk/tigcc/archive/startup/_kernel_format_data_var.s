@@ -1,4 +1,4 @@
-	.xdef __handle_data_var_AND___kernel_format_data_var,__kernel_format_data_var_relocate,__kernel_format_data_var_cleanup_almost_end,__data_var_name_start,__ld_insert_kernel_data_refs,__ld_insert_data_var_name
+	.xdef __handle_data_var_AND___kernel_format_data_var,__kernel_format_data_var_relocate,__kernel_format_data_var_cleanup_almost_end,__ld_insert_kernel_data_refs,__ld_insert_data_var_name
 
 | This file requires cleanup code.
 	.xdef __ref_all___complex_main
@@ -76,9 +76,3 @@ __ld_insert_kernel_data_refs:
 | For each reloc...
 |   2 bytes: offset into the program
 | 2 bytes: 0
-
-.section _st10001, "d"
-
-__data_var_name_start:
-	.byte 0
-__ld_insert_data_var_name:
