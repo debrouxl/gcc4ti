@@ -1,0 +1,33 @@
+[Main]
+Name=CkValidDelta
+Type=Function
+Subtype=ROM Call
+Header Files=graphing.h
+Definition=unsigned char CkValidDelta (float maxrng, float minrng, float delta);
+See Also=StepCk
+
+[ROM Call]
+Index=$1C3
+
+[Description]
+Checks the validity of a given delta.
+
+[Explanation]
+CkValidDelta checks to see if the exponent of <I>delta</I> is too small relative to the exponents
+of <I>maxrng</I> and <I>minrng</I> so that all the significant digits of delta would be
+shifted out of the floating-point mantissa when performing arithmetic.
+<BR><BR>
+The parameter <I>maxrng</I> is the final value in the graph window variable sequence (e.g., xmax,
+ymax, tmax, etc.). The parameter <I>minrng</I> is the first value in the graph window variable sequence (e.g., xmin,
+ymin, tmin, etc.). The parameter <I>delta</I> is the increment value which will be used to compute the sequence from
+<I>minrng</I> to <I>maxrng</I> (e.g., &#916;x, &#916;y, tstep, etc.).
+<BR><BR>
+CkValidDelta returns 1 if delta is valid, 0 if the exponent of delta is too small.
+<BR><BR>
+<B>Note:</B> CkValidDelta assumes the sign of delta has already been verified as correct for
+computing a sequence from minrng to maxrng. It is valid for maxrng to be
+less than minrng if delta is negative.
+
+[References]
+In=CptDeltax, StepCk, bascmd.h/cmd_drawinv
+Out=unknown.h/_bcd_math

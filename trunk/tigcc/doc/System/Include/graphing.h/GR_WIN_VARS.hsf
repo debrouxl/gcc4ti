@@ -1,0 +1,388 @@
+[Main]
+Name=GR_WIN_VARS
+Type=Type
+Subtype=Structure
+Header Files=graphing.h, unknown.h
+Definition=typedef struct { float flt_xcursor; /* Graph system variable xc */ float flt_ycursor; /* Graph system variable yc */ float flt_zcursor; /* Graph system variable zc */ float flt_tcursor; /* Graph system variable tc */ float flt_rcursor; /* Graph system variable rc */ float flt_thetacursor; /* Graph system variable &#952;c */ float flt_ncursor; /* Graph system variable nc */ float recip_delx; /* 1/&#916;x rounded to 6 significant digits */ float recip_dely; /* 1/&#916;y rounded to 6 significant digits */ float orgxmin; /* Original xmin, before any panning has occurred */ float orgxmax; /* Original xmax, before any panning has occurred */ float panshift; /* Number of columns panned from orgxmin */ float orgtblst; /* Original tblStart, before any scrolling has occurred */ float tblshift; /* Number of lines scrolled in table */ float tblstart; /* Table system variable tblStart */ float deltatbl; /* Table system variable &#916;tbl */ float *rngp; /* Pointer to current Window variables array */ float PrevRange[12]; /* Current ZoomPrev values */ float UserRange[29]; /* Current ZoomSto values */ GR_MODES *gr_modep; /* Pointer to GR_MODES struct for current graph */ WINDOW *grwinp; /* Pointer to current Graph app WINDOW struct */ WINDOW *rngwinp; /* Pointer to current Window Editor app WINDOW struct */ WINDOW *tblwinp; /* Pointer to current Table app WINDOW struct */ TABLE_WIN_VARS *tableptr; /* Pointer to internal Table app data */ union { struct { EQU_DS_AMS1 equedDS; /* Internal Y= Editor app data */ unsigned short curinc; /* Graph iteration counter */ unsigned short curincy; /* 3D y trace mode iteration counter */ unsigned short tblindx; /* Index of tblInput element at top of Table */ short yaxispix; /* Pixel number of y axis for panning */ unsigned short TBL_WidthLimit; /* Format width for Table app */ HANDLE zval; /* Handle of the 3D z value array */ DB3 DB3z; /* 3D function spin database */ HANDLE htbinput; /* Handle of the table system variable tblInput */ HANDLE hfldpic; /* Handle of the graph system variable fldpic */ unsigned short gr_win_flags; /* Graph app flags */ unsigned char xmaxpix; /* Rightmost column used by graph in current window */ unsigned char ymaxpix; /* Bottom row used by graph in current window */ unsigned char gr_ref_mask; /* Graph reference flag mask for current graph */ unsigned char graph_mode; /* Graph mode of current graph */ unsigned char gr_side; /* Graph window location */ unsigned char gr_folder_cnt; /* Number of functions created by the TI-BASIC Graph and Table commands */ unsigned char gr_shade_pat; /* Shade pattern */ unsigned char rng_xpix; /* Maximum x pixel number on Window Editor screen */ unsigned char rng_ypix; /* Maximum y pixel number on Window Editor screen */ unsigned char tbl_flags; /* Table app flags */ unsigned char tbl_par_flags; /* Internal Table app flags */ unsigned char gr_top_flags; /* Internal Graph app flags */ unsigned char ValidCursBits; /* Internal Graph app flags */ signed char de_twopass; /* Internal Graph app flags */ FUNCID CurFunc; /* Data for currently selected function for tracing */ unsigned char PrevZoomMode; /* Graph mode of current ZoomPrev values */ } ams1; struct { EQU_DS equedDS; /* Internal Y= Editor app data */ unsigned short curinc; /* Graph iteration counter */ unsigned short curincy; /* 3D y trace mode iteration counter */ unsigned short tblindx; /* Index of tblInput element at top of Table */ short yaxispix; /* Pixel number of y axis for panning */ unsigned short TBL_WidthLimit; /* Format width for Table app */ HANDLE zval; /* Handle of the 3D z value array */ DB3 DB3z; /* 3D function spin database */ HANDLE htbinput; /* Handle of the table system variable tblInput */ HANDLE hfldpic; /* Handle of the graph system variable fldpic */ unsigned short gr_win_flags; /* Graph app flags */ unsigned char xmaxpix; /* Rightmost column used by graph in current window */ unsigned char ymaxpix; /* Bottom row used by graph in current window */ unsigned char gr_ref_mask; /* Graph reference flag mask for current graph */ unsigned char graph_mode; /* Graph mode of current graph */ unsigned char gr_side; /* Graph window location */ unsigned char gr_folder_cnt; /* Number of functions created by the TI-BASIC Graph and Table commands */ unsigned char gr_shade_pat; /* Shade pattern */ unsigned char rng_xpix; /* Maximum x pixel number on Window Editor screen */ unsigned char rng_ypix; /* Maximum y pixel number on Window Editor screen */ unsigned char tbl_flags; /* Table app flags */ unsigned char tbl_par_flags; /* Internal Table app flags */ unsigned char gr_top_flags; /* Internal Graph app flags */ unsigned char ValidCursBits; /* Internal Graph app flags */ signed char de_twopass; /* Internal Graph app flags */ FUNCID CurFunc; /* Data for currently selected function for tracing */ unsigned char PrevZoomMode; /* Graph mode of current ZoomPrev values */ } ams2; }; } GR_WIN_VARS;
+
+[Description]
+Structure defining data for the graph related apps.
+
+[Explanation]
+GR_WIN_VARS is a structure which contains most of the data used by the Graph Application and other graph-related apps.
+<BR><BR>
+<B>Caution:</B> This structure is different on AMS 1.xx and AMS 2.xx (34 bytes bigger on AMS 2.xx, see <A HREF="$$LINK(wingraph.h/WINDOW_AMS1)">WINDOW_AMS1</A> for a more detailed explanation)!
+<BR><BR>
+There are two main <I>GR_WIN_VARS</I> structures in the calculator which are pointed by <A HREF="$$LINK(gr_active)">gr_active</A> and <A HREF="$$LINK(gr_other)">gr_other</A>.
+In most cases, you will not have to create a <I>GR_WIN_VARS</I> structure, and therefore the <I>GR_WIN_VARS</I> will only be useful to access data pointed to by <A HREF="$$LINK(gr_active)">gr_active</A> or <A HREF="$$LINK(gr_other)">gr_other</A>.
+<BR><BR>
+None of the data contained in the <I>GR_WIN_VARS</I> struct should be changed directly, but it can be accessed for use. System routines may be called to
+change many items (for example, <A HREF="$$LINK(vat.h/VarStore)">VarStore</A> may be used to change the
+graph system variables), but some data is for internal use only and should
+only be changed by the appropriate system app.
+<BR><BR>
+Here is an explanation of all the special structure members:
+<BR><BR>
+The size of the <I>rngp</I> array and the meaning of the elements depend on the current graphing mode (see <A HREF="$$LINK(gdraw.h/GraphModes)">GraphModes</A> and <A HREF="$$LINK(rngLen)">rngLen</A>).
+It can point to one of the following sets of indices, as described in the <A HREF="$$LINK(WinVarEnum)">WinVarEnum</A> enum:
+<UL>
+<LI>FUNCTION mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XRES</TD><TD VALIGN="TOP">System variable xres.</TD>
+</TR>
+</TABLE>
+<BR>
+</LI>
+<LI>PARAMETRIC mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TMIN</TD><TD VALIGN="TOP">System variable tmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TMAX</TD><TD VALIGN="TOP">System variable tmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TSTEP</TD><TD VALIGN="TOP">System variable tstep.</TD>
+</TR>
+</TABLE>
+<BR>
+</LI>
+<LI>POLAR mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_THETMIN</TD><TD VALIGN="TOP">System variable &#952;min.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_THETMAX</TD><TD VALIGN="TOP">System variable &#952;max.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_THETSTEP</TD><TD VALIGN="TOP">System variable &#952;step.</TD>
+</TR>
+</TABLE>
+<BR>
+</LI>
+<LI>SEQUENCE mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NMIN</TD><TD VALIGN="TOP">System variable nmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NMAX</TD><TD VALIGN="TOP">System variable nmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NPLOT</TD><TD VALIGN="TOP">System variable plotStrt.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NSTEP</TD><TD VALIGN="TOP">System variable plotStep.</TD>
+</TR>
+</TABLE>
+<BR>
+</LI>
+<LI>3D mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XGRID</TD><TD VALIGN="TOP">System variable xgrid.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YGRID</TD><TD VALIGN="TOP">System variable ygrid.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ZMIN</TD><TD VALIGN="TOP">System variable zmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ZMAX</TD><TD VALIGN="TOP">System variable zmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ZSCL</TD><TD VALIGN="TOP">System variable zscl. (Note that zscl is not used on the TI-89, TI-89 Titanium, TI-92 Plus or Voyage 200.)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_EYE_THETA</TD><TD VALIGN="TOP">System variable eye&#952;.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_EYE_PHI</TD><TD VALIGN="TOP">System variable eye&#934;.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_EYE_PSI</TD><TD VALIGN="TOP">System variable eye&#936;.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NCONTOUR</TD><TD VALIGN="TOP">System variable ncontour.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCALE</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCALE</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ZSCALE</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+</TABLE>
+<BR>
+</LI>
+<LI>DIFF EQUATIONS mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_T0</TD><TD VALIGN="TOP">System variable t0.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TMAX</TD><TD VALIGN="TOP">System variable tmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TSTEP</TD><TD VALIGN="TOP">System variable tstep.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TPLOT</TD><TD VALIGN="TOP">System variable tplot.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DIFTOL</TD><TD VALIGN="TOP">System variable diftol.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ESTEP</TD><TD VALIGN="TOP">System variable Estep.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_FLDRES</TD><TD VALIGN="TOP">System variable fldres.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NCURVES</TD><TD VALIGN="TOP">System variable ncurves.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DTIME</TD><TD VALIGN="TOP">System variable dtime.</TD>
+</TR>
+</TABLE>
+</LI>
+</UL>
+<BR>
+The parameter <I>gr_win_flags</I> can be a combination of the following as described in the <A HREF="$$LINK(GrWinFlags)">GrWinFlags</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_REDRAW</TD><TD VALIGN="TOP">Redraw 3D graph without recomputing.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DIRTY</TD><TD VALIGN="TOP">The current graph needs to be recomputed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TAB_DIRTY</TD><TD VALIGN="TOP">The current table needs to be recomputed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ADD_TO</TD><TD VALIGN="TOP">Add a function to the current graph without recomputing.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_OPEN</TD><TD VALIGN="TOP">The current graph window is open.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GRAPH_FOLDER</TD><TD VALIGN="TOP">The temporary folder for functions created by the Graph and Table commands exists.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">EYE_DIRTY</TD><TD VALIGN="TOP">The eye of the 3D graph has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_SHADE_NO_PAN</TD><TD VALIGN="TOP">The panning is not valid after shading.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">FLDPIC_DIRTY</TD><TD VALIGN="TOP">The system variable fldpic needs to be recomputed.</TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>graph_mode</I> can be one of the following as described in the <A HREF="$$LINK(gdraw.h/GraphModes)">GraphModes</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_FUNC</TD><TD VALIGN="TOP">FUNCTION mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_PAR</TD><TD VALIGN="TOP">PARAMETRIC mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_POL</TD><TD VALIGN="TOP">POLAR mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_SEQ</TD><TD VALIGN="TOP">SEQUENCE mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D</TD><TD VALIGN="TOP">3D mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DE</TD><TD VALIGN="TOP">DIFF EQUATIONS mode.</TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>gr_side</I> can be one of the following as described in the <A HREF="$$LINK(GrSides)">GrSides</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">AP_SIDE_A</TD><TD VALIGN="TOP">Top or left split.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">AP_SIDE_B</TD><TD VALIGN="TOP">Bottom or right split.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">AP_SIDE_UNKNOWN</TD><TD VALIGN="TOP">Unknown.</TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>gr_shade_pat</I> can be one of the following as described in the <A HREF="$$LINK(graph.h/Attrs)">Attrs</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">A_SHADE_V</TD><TD VALIGN="TOP">Vertical shade pattern.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">A_SHADE_H</TD><TD VALIGN="TOP">Horizontal shade pattern.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">A_SHADE_NS</TD><TD VALIGN="TOP">Negative slope 45° shade pattern.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">A_SHADE_PS</TD><TD VALIGN="TOP">Positive slope 45° shade pattern.</TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>tbl_flags</I> can be one of the following as described in the <A HREF="$$LINK(TableFlags)">TableFlags</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">TBL_CONNECT_TRC</TD><TD VALIGN="TOP">Set when Graph&lt;-&gt;Table = ON.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TBL_INDEP_ASK</TD><TD VALIGN="TOP">Set when Independent = ASK.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TBL_NO_MODE_CHANGE</TD><TD VALIGN="TOP">Set when executing the DispTbl command.</TD>
+</TR>
+</TABLE>
+<BR>

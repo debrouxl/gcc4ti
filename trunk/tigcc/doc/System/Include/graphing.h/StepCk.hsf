@@ -1,0 +1,31 @@
+[Main]
+Name=StepCk
+Type=Function
+Subtype=ROM Call
+Header Files=graphing.h
+Definition=void StepCk (float *indep);
+See Also=CkValidDelta, error.h/
+
+[ROM Call]
+Index=$1DD
+
+[Description]
+Verifies that the input min, max, and step values are valid in parametric or polar mode.
+
+[Explanation]
+StepCk verifies that the input min, max, and step values in the array pointed to by
+<I>indep</I> are valid values for the independent variable in parametric mode
+(tmin, tmax, and tstep) or polar mode (&#952;min, &#952;max, and &#952;step). The
+function will return to the calling routine if the values are valid, otherwise an
+error is thrown.
+<BR><BR>
+<I>indep</I> is a pointer to an array of floating-point values where
+indep[0] = min, indep[1] = max, and indep[2] = step.
+<BR><BR>
+An error is thrown if the input values are not valid for the independent
+variable in parametric mode or polar mode, such as the step value being
+negative when it should have been positive for the given min and max.
+
+[References]
+In=bascmd.h/cmd_blddata, bascmd.h/cmd_drawparm, bascmd.h/cmd_drawpol, unknown.h/deStepCk, unknown.h/Regraph
+Out=CkValidDelta, timath.h/floor, unknown.h/_bcd_math

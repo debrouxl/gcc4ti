@@ -1,0 +1,31 @@
+[Main]
+Name=gr_other
+Type=Variable
+Subtype=ROM Call
+Header Files=graphing.h
+Definition=GR_WIN_VARS *gr_other;
+See Also=GR_WIN_VARS, gr_active
+
+[ROM Call]
+Index=$10C
+
+[Description]
+Pointer to the second <A HREF="$$LINK(GR_WIN_VARS)">GR_WIN_VARS</A> struct.
+
+[Explanation]
+<I>gr_other</I> is a pointer to a <A HREF="$$LINK(GR_WIN_VARS)">GR_WIN_VARS</A> struct that contain most of the data used by
+the Graph application and other graph related apps. <I>gr_other</I> points to the
+<A HREF="$$LINK(GR_WIN_VARS)">GR_WIN_VARS</A> struct containing all the information for the second graph in two-graph mode
+(whereas <A HREF="$$LINK(gr_active)">gr_active</A> points to the information for the active graph).
+As the calculator user switches between the two windows in two-graph
+mode, the pointers in <I>gr_other</I> and <A HREF="$$LINK(gr_active)">gr_active</A> are swapped so that
+<A HREF="$$LINK(gr_active)">gr_active</A> is always referring to the active graph. The members of a
+<A HREF="$$LINK(GR_WIN_VARS)">GR_WIN_VARS</A> struct are given along with an explanation of the
+contents of each in the description of <A HREF="$$LINK(GR_WIN_VARS)">GR_WIN_VARS</A>. None of the data should be changed directly by a program,
+but can be accessed for use. System routines may be called to
+change many items (for example, <A HREF="$$LINK(vat.h/VarStore)">VarStore</A> may be used to change the
+graph system variables), but some data is for internal use only and should
+only be changed by the appropriate system app.
+
+[References]
+In=gdb_len, gdb_recall, gdb_store, events.h/MO_currentOptions, link.h/OSLinkCmd, unknown.h/CheckGraphRef, unknown.h/EQU_setStyle, unknown.h/GetSysGraphRef, unknown.h/gr_add_fldpic, unknown.h/PlotDel, unknown.h/SetGraphMode, unknown.h/statFree, vat.h/FolderCur, vat.h/VarStore

@@ -1,0 +1,66 @@
+[Main]
+Name=GR_FLAGS
+Type=Type
+Subtype=Structure
+Header Files=graphing.h
+Definition=typedef struct { int gr_in_progress: 1; int gr_zoom_fit: 1; int gr_cpt_seq_flag: 1; int stat_in_progress: 1; int gr_trace_seq: 1; int de_init_conds: 1; int gr_cpt_de_flag: 1; int new_eqn: 1; int de_error: 1; } GR_FLAGS;
+MinAMS=2.00
+See Also=gr_flags
+
+[Description]
+A structure for defining global flags used by the Graph application.
+
+[Explanation]
+The <I>GR_FLAGS</I> structure is used for defining global flags used by the Graph application (this structure is pointed to by <A HREF="$$LINK(gr_flags)">gr_flags</A>). Each flag is a separate
+member of the structure (each member is in fact a boolean value). The contents of these flags should not be changed by a program,
+but may be accessed for testing the value.
+<BR><BR>
+The purposes of these flags are:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">gr_in_progress</TD><TD VALIGN="TOP">A graph is currently being plotted. Among
+other things, this flag alerts <A HREF="$$LINK(vat.h/VarRecall)">VarRecall</A> to set
+the graph reference flag for every user
+variable accessed until this flag is reset to
+enable the Smart Graph feature to work.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">gr_zoom_fit</TD><TD VALIGN="TOP">ZoomFit is being executed. Every graph point
+is computed to determine the min and max
+Window variable values, but while this flag is
+set, nothing is plotted.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">gr_cpt_seq_flag</TD><TD VALIGN="TOP">A graph sequence mode function (u1 - u99)
+is being executed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">stat_in_progress</TD><TD VALIGN="TOP">A statistics calculation is currently being
+performed. Among other things, this flag
+alerts <A HREF="$$LINK(vat.h/VarRecall)">VarRecall</A> to set the stat reference flag
+for every user variable accessed until this flag
+is reset to enable the calculator to determine
+when the statistics results are no longer valid.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">gr_trace_seq</TD><TD VALIGN="TOP">A sequence function is being traced.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">de_init_conds</TD><TD VALIGN="TOP">A differential equation is being plotted with
+initial conditions selected interactively using
+the graph cursor.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">gr_cpt_de_flag</TD><TD VALIGN="TOP">A differential equation graphing mode function
+(y1' - y99') is being executed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">new_eqn</TD><TD VALIGN="TOP">The Numeric Solver system variable eqn has
+changed. This alerts the solver graph to
+regraph.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">de_error</TD><TD VALIGN="TOP">An error has occurred while computing a
+differential equation graphing mode function.</TD>
+</TR>
+</TABLE>

@@ -1,0 +1,234 @@
+[Main]
+Name=GR_MODES
+Type=Type
+Subtype=Structure
+Header Files=graphing.h, unknown.h
+Definition=typedef struct { unsigned short gr_fmt_flags; /* Graph Format flags */ unsigned char gr_xaxis; /* X Axis for SEQUENCE or DIFF EQUATIONS CUSTOM Axes setting */ signed char gr_yaxis; /* Y Axis for SEQUENCE or DIFF EQUATIONS CUSTOM Axes setting */ unsigned short gr_fmt_flags2; /* Graph Format flags */ unsigned char gr_3dflags; /* 3D Graph Style */ unsigned char pad; /* Unused. */ } GR_MODES;
+Needed by=GR_WIN_VARS
+See Also=graphing.h/GR_WIN_VARS
+
+[Description]
+Structure for describing graph modes.
+
+[Explanation]
+The members of the <I>GR_MODES</I> struct and their contents are as follows:
+<BR><BR>
+Contents of the <I>gr_fmt_flags</I> (Graph Format flags) member as given in the <A HREF="$$LINK(GrFmtFlags)">GrFmtFlags</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_SEQ_TIME</TD>
+<TD VALIGN="TOP" ROWSPAN="2">SEQUENCE Axes settings:<BR>
+<UL>
+<LI>GR_SEQ_TIME = 1 and GR_SEQ_WEB = 0: TIME</LI>
+<LI>GR_SEQ_TIME = 0 and GR_SEQ_WEB = 1: WEB</LI>
+<LI>GR_SEQ_TIME = 0 and GR_SEQ_WEB = 0: CUSTOM </LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_SEQ_WEB</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_BUILD_WEB</TD><TD VALIGN="TOP">SEQUENCE WEB Build Web:
+<UL>
+<LI>GR_BUILD_WEB = 0: TRACE</LI>
+<LI>GR_BUILD_WEB = 1: AUTO</LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3dEXPAND</TD><TD VALIGN="TOP">Set for 3D expanded view mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_COORDOFF</TD><TD VALIGN="TOP" ROWSPAN="2">Graph Coordinates:
+<UL>
+<LI>GR_COORDOFF = 0 and GR_COORD_POLAR = 0: RECT</LI>
+<LI>GR_COORDOFF = 0 and GR_COORD_POLAR = 1: POLAR</LI>
+<LI>GR_COORDOFF = 1: OFF</LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_COORD_POLAR</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_SIMUL</TD><TD VALIGN="TOP">Graph Order:
+<UL>
+<LI>GR_SIMUL = 0: SEQ</LI>
+<LI>GR_SIMUL = 1: SIMUL</LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_GRIDON</TD><TD VALIGN="TOP">Graph Grid:
+<UL>
+<LI>GR_GRIDON = 0: OFF</LI>
+<LI>GR_GRIDON = 1: ON</LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_AXESOFF</TD><TD VALIGN="TOP">Graph Axes:
+<UL>
+<LI>GR_AXESOFF = 0: ON</LI>
+<LI>GR_AXESOFF = 1: OFF</LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_AXESBOX</TD><TD VALIGN="TOP">3D Axes:
+<UL>
+<LI>GR_AXESOFF = 1: OFF</LI>
+<LI>GR_AXESOFF = 0 and GR_AXESBOX = 0: AXES</LI>
+<LI>GR_AXESOFF = 0 and GR_AXESBOX = 1: BOX</LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_LABELSON</TD><TD VALIGN="TOP">Graph Labels:
+<UL>
+<LI>GR_LABELSON = 0: OFF</LI>
+<LI>GR_LABELSON = 1: ON</LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_LEAD_CURSOR</TD><TD VALIGN="TOP">Graph Leading Cursor:
+<UL>
+<LI>GR_LEAD_CURSOR = 0: OFF</LI>
+<LI>GR_LEAD_CURSOR = 1: ON</LI>
+</UL>
+</TD>
+</TR>
+</TABLE>
+<BR>
+Meaning of the <I>gr_xaxis</I> member, X Axis for SEQUENCE or DIFF EQUATIONS CUSTOM Axes setting:
+<UL>
+<LI>SEQUENCE X Axis:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP"><I>gr_xaxis</I> value:</TD><TD VALIGN="TOP">meaning:</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-1</TD><TD VALIGN="TOP">n</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">0</TD><TD VALIGN="TOP">u</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">1,2,...,99</TD><TD VALIGN="TOP">u1,u2,...,u99</TD>
+</TR>
+</TABLE>
+</LI>
+<LI>DIFF EQUATIONS X Axis:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP"><I>gr_xaxis</I> value:</TD><TD VALIGN="TOP">meaning:</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-100</TD><TD VALIGN="TOP">y'</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-1,-2,...,-99</TD><TD VALIGN="TOP">y1',y2',...,y99'</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">0</TD><TD VALIGN="TOP">t</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">1,2,...,99</TD><TD VALIGN="TOP">y1,y2,...,y99</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">100</TD><TD VALIGN="TOP">y</TD>
+</TR>
+</TABLE>
+</LI>
+</UL>
+<BR>
+
+Meaning of the <I>gr_yaxis</I> member, Y Axis for SEQUENCE or DIFF EQUATIONS CUSTOM Axes setting:
+<UL>
+<LI>SEQUENCE Y Axis:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP"><I>gr_yaxis</I> value:</TD><TD VALIGN="TOP">meaning:</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-1</TD><TD VALIGN="TOP">n</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">0</TD><TD VALIGN="TOP">u</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">1,2,...,99</TD><TD VALIGN="TOP">u1,u2,...,u99</TD>
+</TR>
+</TABLE>
+</LI>
+<LI>DIFF EQUATIONS Y Axis:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP"><I>gr_yaxis</I> value:</TD><TD VALIGN="TOP">meaning:</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-100</TD><TD VALIGN="TOP">y'</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-1,-2,...,-99</TD><TD VALIGN="TOP">y1',y2',...,y99'</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">0</TD><TD VALIGN="TOP">t</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">1,2,...,99</TD><TD VALIGN="TOP">y1,y2,...,y99</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">100</TD><TD VALIGN="TOP">y</TD>
+</TR>
+</TABLE>
+</LI>
+</UL>
+<BR>
+Contents of the <I>gr_fmt_flags2</I> (Graph Format flags) member as given in the <A HREF="$$LINK(GrFmtFlags2)">GrFmtFlags2</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_DE_CUSTOM</TD><TD VALIGN="TOP">GR_DE_CUSTOM = 1: DIFF EQUATIONS Axes = CUSTOM</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DE_FIELDS</TD><TD VALIGN="TOP" ROWSPAN="2">DIFF EQUATIONS Fields:<BR>
+<UL>
+<LI>GR_DE_FIELDS = 1: SLPFLD</LI>
+<LI>GR_DE_FIELDS = 0 and GR_DIRFLD = 1: DIRFLD</LI>
+<LI>GR_DE_FIELDS = 0 and GR_DIRFLD = 0: FLDOFF</LI>
+</UL>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DIRFLD</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_EULER</TD><TD VALIGN="TOP">DIFF EQUATIONS Solution Method:
+<UL>
+<LI>GR_EULER = 0: RK</LI>
+<LI>GR_EULER = 1: EULER</LI>
+</UL>
+</TD>
+</TR>
+</TABLE>
+<BR>
+Contents of the <I>gr_3dflags</I> (3D Graph Style) member as given in the <A HREF="$$LINK(GrMode3dStyles)">GrMode3dStyles</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_3D_WIRE_FRAME</TD><TD VALIGN="TOP">Wire frame</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D_HIDDEN_SURFACE</TD><TD VALIGN="TOP">Hidden surface</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D_CONTOUR</TD><TD VALIGN="TOP">Contour levels</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D_CONTOUR_WIRE</TD><TD VALIGN="TOP">Wire and contour</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D_IMPLICIT</TD><TD VALIGN="TOP">Implicit plot</TD>
+</TR>
+</TABLE>
