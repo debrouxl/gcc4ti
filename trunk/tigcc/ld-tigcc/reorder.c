@@ -451,6 +451,7 @@ static SI1 ReorderSectionsRecurse(PROGRAM *Program, COUNT SectionCount,
 		{
 			SECTION **PCurrentSection;
 			OFFSET StartupNumber = CurrentSection->StartupNumber;
+			COUNT TaggedSectionCount;
 			// If the current section is not a startup section, it means we are
 			// done with the startup sections. So just add all the remaining
 			// sections in the order decided by global reordering.
@@ -464,7 +465,6 @@ static SI1 ReorderSectionsRecurse(PROGRAM *Program, COUNT SectionCount,
 				}
 				return 1;
   			}
-			COUNT TaggedSectionCount;
 			// Compute an estimation of the savings for placing each of the sections
 			// next.
 			for(; CurrentSection; CurrentSection = GetNext(CurrentSection))
