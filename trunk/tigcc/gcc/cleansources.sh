@@ -14,10 +14,12 @@ for name in `grep -v -e "x-cygwin" -e "xm-cygwin" -e "xm-mingw" tmpfiles.lst`; d
 ls -A gcc/config/m68k/ >tmpfiles.lst
 for name in `grep -v -e "m68k\.c" -e "t-m68kbare" -e "m68k\.md" -e "^m68k\.h" -e "m68k-coff" -e "m68k-none" -e "m68k-protos" -e "coff\.h" tmpfiles.lst`; do rm -f "gcc/config/m68k/$name"; done
 rm -f -r gcc/fixinc
+rm -f -r fixincludes
 rm -f -r gcc/ginclude
 rm -f -r gcc/po
 rm -f -r gcc/doc
 rm -f -r gcc/treelang
+rm -f -r libmudflap
 rm -f -r libiberty/testsuite
 rm -f -r maintainer-scripts
 rm -f -r bfd/doc
