@@ -462,8 +462,6 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define push_constant_terms ({__need_in_use_bit;_rom_call(void,(ESI),566);})
 #define push_dependent_factors ({__need_in_use_bit;_rom_call(void,(ESI,ESI),55F);})
 #define push_dependent_terms ({__need_in_use_bit;_rom_call(void,(ESI,ESI),568);})
-#define push_div_dif_1c ({__need_in_use_bit;_rom_call(void,(ESI,ESI,ESI),58D);})
-#define push_div_dif_1f ({__need_in_use_bit;_rom_call(void,(ESI,ESI,ESI),58C);})
 #define push_gcd_then_cofactors ({__need_in_use_bit;_rom_call(ESI,(ESI,ESI,ESI*),59E);})
 #define push_independent_factors ({__need_in_use_bit;_rom_call(void,(ESI,ESI),560);})
 #define push_independent_terms ({__need_in_use_bit;_rom_call(void,(ESI,ESI),569);})
