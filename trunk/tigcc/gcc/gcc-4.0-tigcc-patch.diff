@@ -7524,6 +7524,58 @@ diff -Naur gcc-4.0-20050319.orig/gcc/real.h gcc-4.0-20050319-src/gcc/real.h
 +#endif /* 0 */
  
  #endif /* ! GCC_REAL_H */
+diff -Naur gcc-4.0-20050319.orig/gcc/rtlanal.c gcc-4.0-20050319-src/gcc/rtlanal.c
+--- gcc-4.0-20050319.orig/gcc/rtlanal.c	Mon Jan 24 09:55:38 2005
++++ gcc-4.0-20050319-src/gcc/rtlanal.c	Thu Mar 24 17:43:40 2005
+@@ -3056,6 +3056,19 @@
+   if (offset == 0 || nregs_xmode == nregs_ymode)
+     return 0;
+ 
++  /* (TIGCC 20050324) Subregs of a 10-byte mode are special, hardcode them. */
++  if (GET_MODE_SIZE (xmode) == 10)
++  {
++     gcc_assert (nregs_xmode == 3);
++
++     if (offset < 4)
++       return 0;
++     else if (offset < 8)
++       return 1;
++     else
++       return 2;
++  }
++
+   /* size of ymode must not be greater than the size of xmode.  */
+   mode_multiple = GET_MODE_SIZE (xmode) / GET_MODE_SIZE (ymode);
+   gcc_assert (mode_multiple != 0);
+@@ -3095,6 +3108,28 @@
+   /* Lowpart subregs are always valid.  */
+   if (offset == subreg_lowpart_offset (ymode, xmode))
+     return true;
++
++  /* (TIGCC 20050324) Subregs of a 10-byte mode are special, hardcode them. */
++  if (GET_MODE_SIZE (xmode) == 10)
++  {
++     switch (GET_MODE_SIZE (ymode))
++     {
++       case 1:
++         return (offset == 3 || offset == 7 || offset == 9);
++
++       case 2:
++         return (offset == 2 || offset == 6 || offset == 8);
++
++       case 4:
++         return (offset == 0 || offset == 4);
++
++       case 8:
++         return !offset;
++
++       default:
++         return false;
++     }
++  }
+ 
+   /* This should always pass, otherwise we don't know how to verify the
+      constraint.  These conditions may be relaxed but subreg_offset would
 diff -Naur gcc-4.0-20050319.orig/gcc/sdbout.c gcc-4.0-20050319-src/gcc/sdbout.c
 --- gcc-4.0-20050319.orig/gcc/sdbout.c	Thu Nov  4 14:23:18 2004
 +++ gcc-4.0-20050319-src/gcc/sdbout.c	Wed Mar 23 01:21:04 2005
