@@ -58,6 +58,7 @@ SetCompressor lzma
 ; License page
 !insertmacro MUI_PAGE_LICENSE "${TIGCCCVSDIR}\License.txt"
 ; Components page
+!define MUI_PAGE_CUSTOMFUNCTION_PRE CheckHTMLHelp
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE CheckComponents
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
@@ -171,6 +172,13 @@ a68k_not_selected:
   StrCpy $EXEPACK_SELECTED 0
 exepack_accepted:
 exepack_not_selected:
+FunctionEnd
+
+; Make sure HTML Help is installed. Display a warning otherwise.
+Function CheckHTMLHelp
+  IfFileExists "$WINDIR\HH.exe" HTMLHelpPresent
+  MessageBox MB_ICONEXCLAMATION|MB_OK "HTML Help not installed$\n$\nThe TIGCC setup can't find the Microsoft HTML Help executable. HTML Help is required to view the documentation. Please download and install the free HTML Help upgrade."
+HTMLHelpPresent:
 FunctionEnd
 
 ; Make sure the user selected at least one interface
