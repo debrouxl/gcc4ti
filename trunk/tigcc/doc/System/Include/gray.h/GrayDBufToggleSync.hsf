@@ -4,7 +4,7 @@ Type=Function
 Subtype=Macro
 Header Files=gray.h
 Definition=void GrayDBufToggleSync (void);
-Real Definition=#define GrayDBufToggleSync() ({GrayWaitNSwitches (1); GrayDBufToggle ();})
+Real Definition=#define GrayDBufToggleSync() ({short __ishw2=_GrayIsRealHW2();if(__ishw2)GrayWaitNSwitches(1);GrayDBufToggle();if(!__ishw2)GrayWaitNSwitches(1);})
 See Also=GrayDBufToggle, GrayDBufSetActiveIdxSync, GrayDBufSetActiveIdx
 
 [Description]
@@ -12,7 +12,13 @@ Synchronizes and toggles the currently visible double buffer.
 
 [Explanation]
 GrayDBufToggleSync waits until the next plane switch occurs
-(using <A HREF="$$LINK(GrayWaitNSwitches)">GrayWaitNSwitches</A>), then calls
-<A HREF="$$LINK(GrayDBufToggle)">GrayDBufToggle</A>. This way you can make
-sure that the switch is not performed during an update of the screen, which
-would cause unwanted distortion effects.
+(using <A HREF="$$LINK(GrayWaitNSwitches)">GrayWaitNSwitches</A>) and calls
+<A HREF="$$LINK(GrayDBufToggle)">GrayDBufToggle</A>. Due to grayscale
+routine implementation differences, the order of the synchronizing and
+switching depends on the hardware version. On HW1, the toggles are
+effective only after a plane switch, so GrayDBufToggleSync toggles first
+and waits for synchronization afterwards so as to keep you from writing
+into the "hidden" planes before they are actually hidden. On HW2 and higher,
+GrayDBufToggleSync waits for synchronization before toggling. This way you
+can make sure that the switch is not performed during an update of the
+screen, which would cause unwanted distortion effects. 
