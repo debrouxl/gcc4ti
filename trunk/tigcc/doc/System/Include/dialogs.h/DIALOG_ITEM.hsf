@@ -1,0 +1,21 @@
+[Main]
+Name=DIALOG_ITEM
+Alias=DIALOG_ITEMS
+Type=Type
+Subtype=Structure
+Header Files=dialogs.h
+Definition=typedef struct { unsigned char Type; unsigned char Flags; unsigned char x0, y0; union { struct { void *Menu; unsigned char MaxMenuWidth; } dMenu; struct { short oText; void *PopUp; unsigned short oIndex; } dPopUp; struct { short oText; HANDLE (*GetPopUp)(unsigned short); unsigned short oIndex; } dDynPopUp; struct { short oText; HANDLE hPopUp; unsigned short  dummy; unsigned short oIndex; } dHPopUp; struct DEditType { short oText; unsigned short bOffset; unsigned short Flen; unsigned char Dlen; } dEdit; struct { short oText; } dText; struct { short oText; unsigned char  lButton, rButton; } dHeader; struct { short oIcon; } dIcon; struct { unsigned char x1, y1; unsigned char Index0, Index1; unsigned char NumDspFields, TotNumFields; unsigned char FieldHeight; } dScrollR; struct { unsigned short xFlags[4]; } dFlags; } f; } DIALOG_ITEM;
+Needed By=DIALOG
+See Also=DIALOG_STRUCT: DIALOG, DialogAdd, SIZED_DIALOG, DialogTypes
+
+[Description]
+A scructure for defining dialog items.
+
+[Explanation]
+This is the structure that defines an item in a
+<A HREF="$$LINK(DIALOG_STRUCT)">DIALOG</A> structure.
+<BR><BR>
+<B>Note:</B> To declare an Item of type D_END, which is all zeros, you can write:
+<BR><BR>
+<CODE>DIALOG_ITEM empty={.f={}};</CODE>
+

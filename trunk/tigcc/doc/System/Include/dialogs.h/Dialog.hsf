@@ -3,7 +3,7 @@ Name=Dialog
 Type=Function
 Subtype=ROM Call
 Header Files=dialogs.h
-Definition=short Dialog (void *DialogPtr, short x, short y, char *RequestBuffer, short *PopupBuffer);
+Definition=short Dialog (DIALOG *DialogPtr, short x, short y, char *RequestBuffer, short *PopupBuffer);
 See Also=DialogDo
 
 [ROM Call]
@@ -16,14 +16,12 @@ Shows and activates a dialog box given a pointer to a dialog structure.
 Dialog works exactly like <A HREF="$$LINK(DialogDo)">DialogDo</A>, except instead of the
 handle, a pointer to the dialog structure is given as the parameter.
 <A HREF="$$LINK(DialogDo)">DialogDo</A> internally calls <A HREF="$$LINK(alloc.h/HeapDeref)">HeapDeref</A>,
-then passes returned pointer to Dialog function. This function is manly used
+then passes the returned pointer to the Dialog function. This function is mainly used
 internally in TIOS. Its advantage compared to <A HREF="$$LINK(DialogDo)">DialogDo</A> is
-in the fact that the complete dialog structure may be given as a static pre-filled
-array of butes, and you can give the pointer to such structure to Dialog function.
-It will save a lot of memory, because you need not to call <A HREF="$$LINK(DialogNew)">DialogNew</A>,
-a lot of functions like <A HREF="$$LINK(DialogAddText)">DialogAddText</A> etc. But note that
-the dialog structure is an extremely complicated variable-shape structure, so if you
-don't know EXACTLY what you are doing, avoid this function!
+the fact that the complete dialog structure may be given as a static pre-filled
+array of bytes, and you can give a pointer to such a structure to the Dialog function.
+It will save a lot of memory, because you do not need to call <A HREF="$$LINK(DialogNew)">DialogNew</A> and 
+a lot of functions like <A HREF="$$LINK(DialogAddText)">DialogAddText</A> etc.
 
 [References]
 In=DialogDo, bascmd.h/cmd_clrtable, events.h/EV_defaultHandler, events.h/handleRclKey, events.h/MO_modeDialog, homescr.h/HomeExecute, link.h/LIO_Receive, textedit.h/TE_handleEvent, unknown.h/GT_DE_Init_Conds, unknown.h/GT_Format, unknown.h/GZ_SetFactors, unknown.h/SP_Define, unknown.h/_ROM_CALL_45E, unknown.h/_ROM_CALL_5F1
