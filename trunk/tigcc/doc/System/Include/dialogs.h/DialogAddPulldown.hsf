@@ -7,23 +7,15 @@ Definition=HANDLE DialogAddPulldown (HANDLE Handle, short x, short y, const char
 Real Definition=#define DialogAddPulldown(h,x,y,t,p,i) DialogAdd(h,2,x,y,14,(const char*)(t),(short)(p),(short)(i))
 
 [Description]
-Adds a pulldown menu into a dialog box.
+Adds a pulldown/popup menu into a dialog box.
 
 [Explanation]
-DialogAddPulldown adds a pulldown menu to the dialog structure associated with handle
-<I>Handle</I> at the position (<I>x</I>,&nbsp;<I>y</I>), where coordinates are
-relative to the top-left corner of the dialog box. <I>prompt</I> is the prompt which
-will appear in front of the pulldown menu, and <I>MenuHandle</I> is a handle of the
-associated menu which need to be created using <A HREF="$$LINK(menus.h/PopupNew)">PopupNew</A>
-function (the same functions are used for creating pulldown and popup menus). See
-<A HREF="$$LINK(menus.h/)">menus.h</A> for more info about creating menus.
-DialogAddPulldown returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A>
-in a case of error, else returns <I>Handle</I>. The text must fit into one line of
-the dialog box.
-<BR><BR>
-Parameter <I>index</I> determines where the result value of executing the pulldown
-menu will be stored, and also indicates what the initially selected option will be. See
-<A HREF="$$LINK(DialogDo)">DialogDo</A> for info on how and where the result values are actually stored.
+DialogAddPulldown works exactly as
+<A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A>, but doesn't have
+the <I>flags</I> parameter available. This routine is in fact a macro using
+<A HREF="$$LINK(DialogAdd)">DialogAdd</A> with D_HPOPUP passed as a command and
+zero passed as the flags. All the parameters are explained in
+<A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A>.
 
 [References]
 Out=DialogAdd

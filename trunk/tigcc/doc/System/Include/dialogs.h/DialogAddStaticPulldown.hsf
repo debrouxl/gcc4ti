@@ -1,0 +1,94 @@
+[Main]
+Name=DialogAddStaticPulldown
+Type=Function
+Subtype=Macro
+Header Files=dialogs.h
+Definition=HANDLE DialogAddStaticPulldown (HANDLE Handle, short flags, short x, short y, const char *label, void *Popup, unsigned short index);
+Real Definition=#define DialogAddStaticPulldown(h,f,x,y,l,p,i) DialogAdd(h,f,x,y,D_POPUP,(char *)(l),(void *)(p),(unsigned short)(i))
+
+[Description]
+Adds a static pulldown/popup menu into a dialog box.
+
+[Explanation]
+DialogAddStaticPulldown uses the pointer <I>Popup</I> to a static pre-filled
+popup menu structure (popup menus and dialog pulldowns are in fact the same
+structure) and adds this pulldown menu to the dialog structure associated with
+the handle <I>Handle</I> at the position (<I>x</I>,<I>y</I>), where the
+coordinates are relative to the top-left corner of the dialog box.
+<BR><BR>
+<I>label</I> is the label which will appear in front of the popup menu (or ""
+if you don't want any name), and <I>Popup</I> is a prefilled static
+<A HREF="$$LINK(menus.h/MenuPopup)">popup structure</A> (i.e. you must write
+this popup in your source code; for dynamic pop-ups use
+<A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A>) of the
+associated menu. See <A HREF="$$LINK(menus.h/)">menus.h</A> for more info about
+creating static popups. The text must fit into one line of the dialog box.
+<BR><BR>
+The parameter <I>index</I> determines where the result value of executing the
+pulldown menu will be stored, and also indicates what the initially selected
+option will be. See <A HREF="$$LINK(DialogDo)">DialogDo</A> for information on
+how and where the result values are actually stored.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+DialogAddStaticPulldown works like
+<A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A>, but only accepts
+a static pre-filled dialog <I>Popup</I> instead of a handle.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="$$LINK(DialogFlags)">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_ELLIPSES</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. It is the default on AMS 1.xx.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_SPACES</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+<TR>
+  <TD>DF_POPUP_RADIO</TD>
+  <TD>AMS 2.00 or higher: If this flag is set, the item looks like a normal
+      pulldown menu that you can select, but when you press the right arrow
+      key, it does not pop up as usual, but returns control to the dialog
+      callback function. This enables the programmer to do whatever he/she
+      wants.
+      For example, in the 'MODE' dialog, setting custom units pops up another
+      dialog instead of a pulldown menu.</TD>
+</TR>
+</TABLE>
+<BR>
+DialogAddStaticPulldown returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case
+of an error, may return <A HREF="$$LINK(DialogMessages)">DB_MEMFULL</A> if you
+used <A HREF="$$LINK(DialogFlags)">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddStaticPulldown is in fact a macro created for your convenience. It
+calls <A HREF="$$LINK(DialogAdd)">DialogAdd</A> with D_POPUP as the
+<I>ItemType</I> parameter.
+
+[References]
+Out=DialogAdd

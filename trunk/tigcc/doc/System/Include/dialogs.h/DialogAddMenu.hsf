@@ -1,0 +1,74 @@
+[Main]
+Name=DialogAddMenu
+Type=Function
+Subtype=Macro
+MinAMS=2.00
+Header Files=dialogs.h
+Definition=HANDLE DialogAddMenu (HANDLE Handle, short flags, short x, short y, void *Menu, unsigned short MaxMenuWidth);
+Real Definition=#define DialogAddMenu(h,f,x,y,m,w) DialogAdd(h,f,x,y,D_MENU,(void *)(m),(unsigned short)(w))
+
+[Description]
+Adds a menu into a dialog box.
+
+[Explanation]
+DialogAddMenu adds the menu <I>Menu</I>, with a maximum width of
+<I>MaxMenuWidth</I> (or zero to automatically calculate the width) at the
+position (<I>x</I>,<I>y</I>) to the dialog structure associated with the handle
+<I>Handle</I>, where the coordinates are relative to the top-left corner of the
+dialog box.
+<BR><BR>
+A menu item is defined by a pointer <I>Menu</I> to a toolbar menu structure
+created statically (i.e. you must include a pre-filled static menu in your
+source code) or dynamically with <A HREF="$$LINK(menus.h/MenuNew)">MenuNew</A>
+(in this case the caller must ensure the structure remains locked while in use
+in the dialog box, i.e. use <A HREF="$$LINK(alloc.h/HLock)">HLock</A> in the
+same way as for <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A>). The menu
+is drawn by an internal call to
+<A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A>. When a menu key is pressed,
+the callback's (see <A HREF="$$LINK(DialogNew)">DialogNew</A> for more
+information) <I>Message</I> value will be the item's identification number and
+<I>Value</I> will be passed the menu handle returned from
+<A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> in the high word and the key
+code in the low word. You can specify a maximum width for your menu in
+<I>MaxMenuWidth</I> or zero if you want it to be automatically calculated. Each
+dialog box can have at most one menu. The creation of menus is explained in the
+header file <A HREF="$$LINK(menus.h/)">menus.h</A>. Note that if you want a
+menu, you must write a callback function, else you will not be able to do
+anything but dispaying it!
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="$$LINK(DialogFlags)">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_MAX_MENU_WIDTH</TD>
+  <TD>AMS 2.00 or higher: Passes
+      <A HREF="$$LINK(menus.h/MenuBeginFlags)">MBF_MAX_MENU_WIDTH</A> to
+      <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> when the menu is
+      drawn.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+DialogAddMenu returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case
+of an error, may return <A HREF="$$LINK(DialogMessages)">DB_MEMFULL</A> if you
+used <A HREF="$$LINK(DialogFlags)">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddMenu is in fact a macro created for your convenience. It calls
+<A HREF="$$LINK(DialogAdd)">DialogAdd</A> with D_MENU as the <I>ItemType</I>
+parameter.
+
+[References]
+Out=DialogAdd

@@ -1,0 +1,73 @@
+[Main]
+Name=DialogAddXFlags
+Type=Function
+Subtype=Macro
+Header Files=dialogs.h
+MinAMS=2.00
+Definition=HANDLE DialogAddXFlags (HANDLE Handle, short flags, unsigned short xFlags1, unsigned short xFlags2, unsigned short xFlags3, unsigned short xFlags4);
+Real Definition=#define DialogAddXFlags(h,f,u,v,w,x) DialogAdd(h,f,0,0,D_XFLAGS,(unsigned short)(u),(unsigned short)(v),(unsigned short)(w),(unsigned short)(x))
+
+[Description]
+Adds extended dialog properties into a dialog box.
+
+[Explanation]
+DialogAddXFlags adds extended dialog properties to the dialog structure
+associated with the handle <I>Handle</I>.<BR>
+The XFLAGS item defines an array of four extended unsigned short flags (i.e.
+<I>xFlags1</I>, <I>xFlags2</I>, <I>xFlags3</I>, <I>xFlags4</I>.) Currently only
+<I>xFlags1</I> is used: the three remaining values should always be set to zero
+for future compatibility.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>xFlags1</I> may contain a combination of the following flags,
+defined in the <A HREF="$$LINK(DialogXFlags)">DialogXFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>XF_ALLOW_VARLINK</TD>
+<TD>Setting this extended <I>xflag</I> allows all EDIT (=request) items in the
+dialog box to allow the [VAR-LINK] key to be activated within the dialog box
+and to paste results to the edit item. If this <I>xflag</I> or
+XF_VARLINK_SELECT_ONLY is not set, then when [VAR-LINK] is pressed in a dialog
+box, the dialog will be closed and VAR-LINK will be activated.</TD>
+</TR>
+<TR>
+<TD>XF_NO_ALPHA_LOCK</TD>
+<TD>On the TI-89, Alpha-Lock is turned on for all dialog boxes with edit items.
+Setting this extended <I>xflag</I> disables this feature.</TD>
+</TR>
+<TR>
+<TD>XF_VARLINK_SELECT_ONLY</TD>
+<TD>This <I>xflag</I> is similar to XF_ALLOW_VARLINK except thet the user may
+not make any variable changes inside VAR-LINK (like deleting, copying,
+renaming, or locking variables).</TD>
+</TR>
+<TR>
+<TD>XF_TE_REPAINT</TD>
+<TD>This <I>xflag</I> is unknown for the moment. Do not use. </TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>flags</I> can be zero or DF_SCREEN_SAVE if you wish the dialog
+code to save the area underneath the dialog box when it is started and to
+return DB_MEMFULL if it cannot. Note that if you use this flag, the item must
+be the first one to be created. These flags are defined in the
+<A HREF="$$LINK(DialogFlags)">DialogFlags</A> enumeration.
+<BR><BR>
+DialogAddXFlags returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case
+of an error, may return <A HREF="$$LINK(DialogMessages)">DB_MEMFULL</A> if you
+used <A HREF="$$LINK(DialogFlags)">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddXFlags is in fact a macro created for your convenience. It calls
+<A HREF="$$LINK(DialogAdd)">DialogAdd</A> with D_XFLAGS as the <I>ItemType</I>
+parameter and with zero passed to the <I>x</I> and <I>y</I> parameters. (These
+parameters are ignored when you use D_XFLAGS as the <I>ItemType</I>.)
+
+[References]
+Out=DialogAdd
