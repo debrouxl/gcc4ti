@@ -50,6 +50,7 @@
 #include <string.h>
 
 #define MAX_NAMED_SECTION (3+DI_LAST)
+#define FIRST_SECTION_ID_WITH_ZERO_VADDR 3
 
 typedef struct {
 	OFFSET FileOffset;
@@ -208,9 +209,10 @@ static void WriteSectionHeader (const SECTION *Section, void *UserData)
 	const RELOC *Reloc;
 	COUNT RelocCount = 0;
 	COFF_SECTION COFFSectionHeader;
+	OFFSET VAddr = SectionID < FIRST_SECTION_ID_WITH_ZERO_VADDR ?
+	               ((SectionOffsets *)UserData)->VirtualOffset : 0;
 
-	VAddrs[++(((SectionOffsets *)UserData)->COFFSectionNumber)] =
-		((SectionOffsets *)UserData)->VirtualOffset;
+	VAddrs[++(((SectionOffsets *)UserData)->COFFSectionNumber)] = VAddr;
 
 	for_each (Reloc, Section->Relocs)
 	{
@@ -226,7 +228,7 @@ static void WriteSectionHeader (const SECTION *Section, void *UserData)
 
 	memcpy (COFFSectionHeader.Name, SectionNames[SectionID], COFF_SECTION_NAME_LEN);
 	WriteTI4 (COFFSectionHeader.PhysicalAddress, ((SectionOffsets *)UserData)->VirtualOffset);
-	WriteTI4 (COFFSectionHeader.VirtualAddress, ((SectionOffsets *)UserData)->VirtualOffset);
+	WriteTI4 (COFFSectionHeader.VirtualAddress, VAddr);
 	WriteTI4 (COFFSectionHeader.Size, Section->Size);
 	WriteTI4 (COFFSectionHeader.PData, ((SectionOffsets *)UserData)->FileOffset);
 	WriteTI4 (COFFSectionHeader.PRelocs, ((SectionOffsets *)UserData)->FileOffset + Section->Size);
@@ -318,6 +320,8 @@ static void PatchRelocOffsetsIn (const SECTION *Section, void *UserData ATTRIBUT
 static void WriteSectionContents (const SECTION *Section, void *UserData)
 {
 	const RELOC *Reloc;
+	COUNT COFFSectionNumber = ++(((SectionOffsets *)UserData)->COFFSectionNumber);
+	OFFSET VAddr = VAddrs[COFFSectionNumber];
 
 	// Write section data.
 	ExportWrite (((SectionOffsets *)UserData)->File, Section->Data, Section->Size, 1);
@@ -332,15 +336,12 @@ static void WriteSectionContents (const SECTION *Section, void *UserData)
 		if (IsPlainCalcBuiltin (Reloc))
 			continue;
 				
-		WriteTI4 (COFFReloc.Location, ((SectionOffsets *)UserData)->VirtualOffset + Reloc->Location);
+		WriteTI4 (COFFReloc.Location, VAddr + Reloc->Location);
 		WriteTI4 (COFFReloc.Symbol, GetCOFFSymbolNumber (Reloc->Target.Symbol));
 		WriteTI2 (COFFReloc.Type, COFF_RELOC_ABS4);
 
 		ExportWrite (((SectionOffsets *)UserData)->File, &COFFReloc, sizeof (COFF_RELOC), 1);
 	}
-
-	// Count VirtualAddress.
-	((SectionOffsets *)UserData)->VirtualOffset += Section->Size;
 }
 
 static void PatchRelocOffsetsOut (const SECTION *Section, void *UserData ATTRIBUTE_UNUSED)
@@ -498,7 +499,7 @@ static BOOLEAN ExportDebuggingInfoFile (const PROGRAM *Program, EXP_FILE *File, 
 
 	// Write the section contents
 	MapToAllSections (Program, PatchRelocOffsetsIn, NULL);
-	CurrentSectionOffsets.VirtualOffset = 0;
+	CurrentSectionOffsets.COFFSectionNumber = 0;
 	MapToAllSections (Program, WriteSectionContents, &CurrentSectionOffsets);
 	MapToAllSections (Program, PatchRelocOffsetsOut, NULL);
 
