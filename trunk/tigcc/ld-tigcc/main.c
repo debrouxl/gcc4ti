@@ -1,7 +1,7 @@
 /* main.c: Main entry point for ld-tigcc, handling the command line input
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2004 Kevin Kofler
+   Copyright (C) 2004-2005 Kevin Kofler
    Copyright (C) 2004 Billy Charvet
 
    This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,14 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
+
+#ifdef DEBUGGING_INFO_SUPPORT
+#ifdef TARGET_EMBEDDED
+#error Debugging information is not yet supported for link.dll.
+#else
+#warning Debugging information support is experimental.
+#endif
+#endif
 
 #include "generic.h"
 #include "intrface.h"
@@ -226,7 +234,7 @@ int main (int ArgCount, const char **Args)
 			DoDump (1);
 			
 			// Merge all zero-data and uninitialized sections.
-			Program.BSSSection = MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, FALSE);
+			Program.BSSSection = MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, FALSE, DI_NONE);
 			
 			// As a dirty trick, allow the caller to skip the BSS
 			// initialization entirely.
@@ -234,9 +242,29 @@ int main (int ArgCount, const char **Args)
 				Program.BSSSection->Initialized = FALSE;
 			
 			// Extract, merge, and mark constructor and destructor sections.
-			CreateSectionMarkers (&(Program.Constructors), MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, TRUE,  FALSE, TRUE, TRUE));
-			CreateSectionMarkers (&(Program.Destructors),  MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE,  TRUE, TRUE));
+			CreateSectionMarkers (&(Program.Constructors), MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, TRUE,  FALSE, TRUE, TRUE, DI_NONE));
+			CreateSectionMarkers (&(Program.Destructors),  MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE,  TRUE, TRUE, DI_NONE));
 				
+#ifdef DEBUGGING_INFO_SUPPORT
+			// If we want debugging information, merge all debugging information
+			// sections of each type.
+			{
+				DebuggingInfoTypes i;
+				for (i = 0; i < DI_LAST; i++)
+				{
+					Program.DebuggingInfoSection[i] = MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, i + 1);
+					if (Program.DebuggingInfoSection[i])
+					{
+						Program.DebuggingInfoSection[i]->Handled = TRUE;
+						// FIXME: How should we remove unused sections with debugging information in place?
+						//        The linker will probably have to understand the debugging information formats up to some point.
+						Program.DebuggingInfoSection[i]->Essential = TRUE;
+						Program.HaveDebuggingInfo = TRUE;
+					}
+				}
+			}
+#endif
+
 #ifdef DATA_VAR_SUPPORT
 			// If we want a separate data variable, merge all data
 			// sections.
@@ -265,7 +293,7 @@ int main (int ArgCount, const char **Args)
 					DoSpecialDump (1, "(const-merged)");
 				}
 				
-				Program.DataSection = MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, FALSE);
+				Program.DataSection = MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, DI_NONE);
 				// Mark the section as "handled" so it will not be merged
 				// with code.
 				if (Program.DataSection)
@@ -359,16 +387,16 @@ int main (int ArgCount, const char **Args)
 					// area (base 2), the big OS code part.
 					
 					// Merge all startup sections.
-					MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE);
+					MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, DI_NONE);
 					// Merge all normal sections.
-					MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE);
+					MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, DI_NONE);
 				}				
 #endif /* FLASH_OS_SUPPORT */
 				
 				// Merge all initialized sections.
-				Program.MainSection = MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
+				Program.MainSection = MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, DI_NONE);
 				// Merge all unhandled sections.
-				Program.MainSection = MergeAllSections (&Program, Program.MainSection, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE);
+				Program.MainSection = MergeAllSections (&Program, Program.MainSection, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, DI_NONE);
 				
 				// Record the size of the BSS section.
 				if (Program.BSSSection)

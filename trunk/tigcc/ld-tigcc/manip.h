@@ -98,7 +98,7 @@ void OptimizeRelocs (PROGRAM *Program);
 SECTION *MergeSections (SECTION *Dest, SECTION *Src);
 // Merge all sections of the specified type.
 // Returns the merged section if successful (even if Dest is NULL).
-SECTION *MergeAllSections (PROGRAM *Program, SECTION *Dest, BOOLEAN AcceptInitialized, BOOLEAN AcceptUninitialized, BOOLEAN AcceptZeroes, BOOLEAN AcceptContents, BOOLEAN AcceptData, BOOLEAN AcceptCode, BOOLEAN AcceptNonConstructors, BOOLEAN AcceptConstructors, BOOLEAN AcceptDestructors, BOOLEAN AcceptNonStartup, BOOLEAN AcceptStartup);
+SECTION *MergeAllSections (PROGRAM *Program, SECTION *Dest, BOOLEAN AcceptInitialized, BOOLEAN AcceptUninitialized, BOOLEAN AcceptZeroes, BOOLEAN AcceptContents, BOOLEAN AcceptData, BOOLEAN AcceptCode, BOOLEAN AcceptNonConstructors, BOOLEAN AcceptConstructors, BOOLEAN AcceptDestructors, BOOLEAN AcceptNonStartup, BOOLEAN AcceptStartup, DebuggingInfoTypes AcceptDebuggingInfo);
 
 // Get the size that would result from padding a section of size
 // OrigSize to a multiple of Alignment.

@@ -50,6 +50,13 @@ struct GLOBAL_IMPORT;
 // PT_FARGO:      Fargo II mode; uses specific output format
 typedef enum {PT_NATIVE = 1, PT_NOSTUB = 2, PT_KERNEL = 0, PT_NOSTUB_DLL = 3, PT_FLASH_OS = 4, PT_FARGO = 5} ProgramTypes;
 
+// Debugging Information Section Type Enumeration
+// DI_NONE:       Not debugging information (same as FALSE)
+// DI_STAB:       Stabs symbol table
+// DI_STABSTR:    Stabs string table
+// DI_LAST:       Last debugging information type, for iterating purposes
+typedef enum {DI_NONE = FALSE, DI_STAB = 1, DI_STABSTR = 2, DI_LAST = 2} DebuggingInfoTypes;
+
 typedef I4 VERSION;
 
 // Named Location in a Section
@@ -95,6 +102,11 @@ typedef struct PROGRAM {
 		*MainSection,     // Pointer to the main section, as soon as it is known. Usually only this section has to be written to the file.
 		*DataSection,     // Pointer to the data section, if code and data are separated.
 		*BSSSection;      // Pointer to the BSS section, if the program contains one.
+#ifdef DEBUGGING_INFO_SUPPORT
+	BOOLEAN HaveDebuggingInfo; // Flag set if any debugging information is present, so we don't emit a .dbg file if there is no debugging information anyway.
+	struct SECTION
+		*DebuggingInfoSection[DI_LAST]; // Pointers to the debugging information sections of each type.
+#endif
 	struct GLOBAL_IMPORT
 		*BSSImport;       // Pointer to the global import which handles the BSS section.
 	SECTION_MARKERS
@@ -126,6 +138,7 @@ typedef struct SECTION {
 	BOOLEAN Referenced;   // Specifies whether the section is either essential itself or referenced somewhere (in a reloc) from an essential section.
 	                      // This flag is significant only during RemoveUnusedSections. Before (or if not removing unused sections), it is always FALSE, afterwards, it is always TRUE.
 	OFFSET StartupNumber; // If nonzero, specifies the location of the section in respect to other startup sections.
+	DebuggingInfoTypes DebuggingInfoType; // Nonzero if this is a debugging information section, the actual value indicates what type of debugging information.
 	BOOLEAN Constructors; // Is a vector of constructor functions.
 	BOOLEAN Destructors;  // Is a vector of destructor functions.
 	BOOLEAN CanCutRanges; // Range cutting is allowed at least in parts of the section (i.e. the section or segments in it do not contain any implicit relative relocs).

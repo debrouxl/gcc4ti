@@ -1,7 +1,7 @@
 /* imp_coff.c: Routines to import a COFF file
 
    Copyright (C) 2002-2003 Sebastian Reichelt
-   Copyright (C) 2003-2004 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -170,6 +170,12 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 				Section->StartupNumber = StartupNumber;
 				Section->Constructors  = (!(strcmp (SectionName, ".ctors")));
 				Section->Destructors   = (!(strcmp (SectionName, ".dtors")));
+#ifdef DEBUGGING_INFO_SUPPORT
+				if (!strcmp (SectionName, ".stab"))
+					Section->DebuggingInfoType = DI_STAB;
+				else if (!strcmp (SectionName, ".stabstr"))
+					Section->DebuggingInfoType = DI_STABSTR;
+#endif
 				Section->CanCutRanges  = AllRelocs;
 				Section->FileName      = FileName;
 				

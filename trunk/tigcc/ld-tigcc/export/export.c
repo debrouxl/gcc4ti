@@ -1,7 +1,7 @@
 /* export.c: Routines for file exports
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2004 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
    Copyright (C) 2004 Billy Charvet
 
    This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,9 @@
 #ifdef DATA_VAR_SUPPORT
 #include "exp_data.h"
 #endif /* DATA_VAR_SUPPORT */
+#ifdef DEBUGGING_INFO_SUPPORT
+#include "exp_dbg.h"
+#endif /* DEBUGGING_INFO_SUPPORT */
 
 #include "../formats/tios.h"
 #include "../formats/tiosupgd.h"
@@ -179,6 +182,15 @@ BOOLEAN ExportProgram (const PROGRAM *Program, OUTPUT_FILE_FUNCTION GetOutputFil
 	if (!GetOutputFile)
 		return FALSE;
 	
+#ifdef DEBUGGING_INFO_SUPPORT
+	// If we have debugging information to export, do it.
+	if (Program->HaveDebuggingInfo)
+	{
+			if (!ExportDebuggingInfo (Program, GetOutputFile, FinalizeOutputFile))
+				return FALSE;
+	}
+#endif
+
 	switch (Program->Type)
 	{
 #ifdef FLASH_OS_SUPPORT
@@ -543,6 +555,34 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 			break;
 #endif /* TIOS_UPGRADE_FILE_SUPPORT */
 		
+#ifdef DEBUGGING_INFO_SUPPORT
+		case FF_GDB_COFF:
+			*EffectiveSize = FileSize;
+			{
+				SIZE FileNameSize = DestFileSize+4;
+					
+				// Create a temporary file name string.
+				char CurOutputFileName[FileNameSize+1];
+				strncpy (CurOutputFileName, DestFile, DestFileSize);
+					
+				// Append ".dbg" to the file name.
+				strcpy (CurOutputFileName + DestFileSize, ".dbg");
+				
+				// Zero-terminate the string.
+				CurOutputFileName [FileNameSize] = 0;
+				
+				// Open a file with the specified name.
+				if (!(File->File = fopen (CurOutputFileName, "wb")))
+				{
+					Error (CurOutputFileName, "Could not open file for writing.");
+					return FALSE;
+				}
+				
+				return TRUE;
+			}
+			break;
+#endif /* DEBUGGING_INFO_SUPPORT */
+
 		default:
 			Error (NULL, "Unrecognized output file format.");
 	}
@@ -625,6 +665,12 @@ void FinalizeOutputFile (INT_EXP_FILE *File)
 			}
 			break;
 #endif /* TIOS_UPGRADE_FILE_SUPPORT */
+
+#ifdef DEBUGGING_INFO_SUPPORT
+		case FF_GDB_COFF:
+			// Do nothing.
+			break;
+#endif /* DEBUGGING_INFO_SUPPORT */
 	}
 	
 	// Close the file.

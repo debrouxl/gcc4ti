@@ -77,10 +77,10 @@ typedef enum {
 #define HIGHEST_CALC CALC_V200
 
 // File Role Constants (File Output)
-typedef enum {FR_MAIN = 0, FR_DATA = 1} FileRoles;
+typedef enum {FR_MAIN = 0, FR_DATA = 1, FR_DEBUGGING_INFO = 2} FileRoles;
 
 // File Format Constants (File Output)
-typedef enum {FF_NONE = -1, FF_TIOS = 0, FF_TIOS_UPGRADE = 1} FileFormats;
+typedef enum {FF_NONE = -1, FF_TIOS = 0, FF_TIOS_UPGRADE = 1, FF_GDB_COFF = 2} FileFormats;
 
 #ifdef TARGET_EMBEDDED
 

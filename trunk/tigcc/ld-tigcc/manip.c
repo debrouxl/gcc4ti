@@ -945,7 +945,7 @@ SECTION *MergeSections (SECTION *Dest, SECTION *Src)
 }
 
 // Merge all sections of the specified type.
-SECTION *MergeAllSections (PROGRAM *Program, SECTION *Dest, BOOLEAN AcceptInitialized, BOOLEAN AcceptUninitialized, BOOLEAN AcceptZeroes, BOOLEAN AcceptContents, BOOLEAN AcceptData, BOOLEAN AcceptCode, BOOLEAN AcceptNonConstructors, BOOLEAN AcceptConstructors, BOOLEAN AcceptDestructors, BOOLEAN AcceptNonStartup, BOOLEAN AcceptStartup)
+SECTION *MergeAllSections (PROGRAM *Program, SECTION *Dest, BOOLEAN AcceptInitialized, BOOLEAN AcceptUninitialized, BOOLEAN AcceptZeroes, BOOLEAN AcceptContents, BOOLEAN AcceptData, BOOLEAN AcceptCode, BOOLEAN AcceptNonConstructors, BOOLEAN AcceptConstructors, BOOLEAN AcceptDestructors, BOOLEAN AcceptNonStartup, BOOLEAN AcceptStartup, DebuggingInfoTypes AcceptDebuggingInfo)
 {
 	BOOLEAN MergeForward = FALSE;
 	SECTION *CurMergedSection = NULL, *Section, *NextSection;
@@ -969,7 +969,8 @@ SECTION *MergeAllSections (PROGRAM *Program, SECTION *Dest, BOOLEAN AcceptInitia
 			&& (AcceptConstructors    || (!(Section->Constructors)))
 			&& (AcceptDestructors     || (!(Section->Destructors)))
 			&& (AcceptNonStartup      || Section->StartupNumber)
-			&& (AcceptStartup         || (!(Section->StartupNumber))))
+			&& (AcceptStartup         || (!(Section->StartupNumber)))
+			&& (AcceptDebuggingInfo   == Section->DebuggingInfoType))
 		{
 			// If no current merged section has been specified, make this
 			// one current. Otherwise, merge the current merged section
