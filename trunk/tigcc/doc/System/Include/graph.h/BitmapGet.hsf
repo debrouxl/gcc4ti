@@ -10,15 +10,17 @@ See Also=BitmapPut, BitmapSize, CalcBitmapSize
 Index=$185
 
 [Description]
-Gets a bitmap from the screen.
+Gets a bitmap from the port graphical functions are writing to.
 
 [Explanation]
 BitmapGet stores a series of bytes (the size of which is defined by
 <A HREF="$$LINK(BitmapSize)">BitmapSize</A>) defining a bitmap for a rectangular
-area (whose boundaries are given using <A HREF="$$LINK(SCR_RECT)">SCR_RECT</A> structure <I>rect</I>)
-into a buffer pointed to by <I>BitMap</I>. The first two words at address
+area (whose boundaries are given using the <A HREF="$$LINK(SCR_RECT)">SCR_RECT</A>
+structure <I>rect</I>) into a buffer pointed to by <I>BitMap</I>. The data is
+fetched in the port  graphical functions are writing to (see
+<A HREF="$$LINK(PortSet)">PortSet</A>). The first two words at the address
 <I>BitMap</I> will contain the height and the width (in pixels) of the rectangular
-area respectively, then actual data follows. <I>BitMap</I> is
+area respectively, then the actual data follows. <I>BitMap</I> is
 usually a pointer to a <A HREF="$$LINK(BITMAP)">BITMAP</A> structure.
 <BR><BR>
 Here is a simple example (called "Bitmap Test"), which uses BitmapGet and
@@ -29,7 +31,7 @@ Note that this is just an example: for saving/restoring the whole screen,
 functions <A HREF="$$LINK(LCD_save)">LCD_save</A> and
 <A HREF="$$LINK(LCD_restore)">LCD_restore</A> are much more efficient!
 And, <CODE>'buffer'</CODE> will probably be allocated using
-<A HREF="$$LINK(alloc.h/malloc)">malloc</A> in a more realictic example...
+<A HREF="$$LINK(alloc.h/malloc)">malloc</A> in a more realistic example...
 
 [References]
 In=ScrRectScroll, ScrRectShift, menus.h/MenuKey, wingraph.h/WinBitmapGet, wingraph.h/WinOpen, unknown.h/_ROM_CALL_421

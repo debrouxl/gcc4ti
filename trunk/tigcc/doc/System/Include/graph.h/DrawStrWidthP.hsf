@@ -23,9 +23,10 @@ This function is interesting only for the <A HREF="$$LINK(Fonts)">F_4x6</A>
 font; for the <A HREF="$$LINK(Fonts)">F_6x8</A> and
 <A HREF="$$LINK(Fonts)">F_8x10</A> fonts, DrawStrWidthP will return
 6*len and 8*len, respectively.
-Also, it is faster to use <A HREF="$$LINK(DrawStrWidth)">DrawStrWidth</A> than to use:
-<PRE>DrawStrWidthP (str, strlen (str), font);
-</PRE>
+Also, using 
+<PRE>DrawStrWidthP (str, strlen (str), font);</PRE>
+is slower than using
+<PRE>DrawStrWidth (str, font);</PRE>
 Example:
 <PRE>// This line is equivalent to:
 // printf_xy (0, 0, "%hu", DrawStrWidth ("DEFGHIJK", F_4x6));
@@ -44,7 +45,40 @@ On AMS versions lower than 2.00, you can emulate DrawStrWidthP with:
   return DrawStrWidth (s, font);
 }
 </PRE>
-This function is about 1% slower than the original implementation.
+or the following assembly code provided by Lionel Debroux:
+<PRE>
+unsigned short DrawStrWidthP(register const char *str asm("a0"), register short len asm("d0"), register short Font asm("d2"));
+asm("DrawStrWidthP:
+    move.w   %d0,%d1
+    beq.s    __end_DrawStrWidthP__
+    btst     #0,%d0
+    beq.s    __allocate_on_the_stack_DSWP__
+    addq.w   #1,%d1
+__allocate_on_the_stack_DSWP__:
+    suba.w   %d1,%sp
+    
+    movea.l  %sp,%a1
+    subq.w   #1,%d0
+__loop_copy_DrawStrWidthP__:
+    move.b   (%a0)+,(%a1)+
+    dbf      %d0,__loop_copy_DrawStrWidthP__
+    clr.b    (%a1)
+    
+    addq.w   #8,%d1
+    move.w   %d1,-(%sp) | save d1 (DrawStrWidth can destroy it)...
+    move.w   %d2,-(%sp)
+    pea      4(%sp)
+    movea.l  0xC8.w,%a0
+    movea.l  0x197*4(%a0),%a0 | DrawStrWidth
+    jsr      (%a0)
+    
+    adda.w   6(%sp),%sp
+__end_DrawStrWidthP__:
+    rts
+");
+ </PRE>
+The C function is about 1% slower than the original implementation.
+The assembly implementation is faster.
 
 [References]
 In=dialogs.h/Dialog, unknown.h/WinStrXYWrap

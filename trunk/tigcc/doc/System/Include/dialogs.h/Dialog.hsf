@@ -22,6 +22,15 @@ the fact that the complete dialog structure may be given as a static pre-filled
 array of bytes, and you can give a pointer to such a structure to the Dialog function.
 It will save a lot of memory, because you do not need to call <A HREF="$$LINK(DialogNew)">DialogNew</A> and 
 a lot of functions like <A HREF="$$LINK(DialogAddText)">DialogAddText</A> etc.
+<BR><BR>
+If DialogPtr points to a dynamically created dialog box (i.e a dialog created with <A HREF="$$LINK(DialogNew)">DialogNew</A>
+or <A HREF="$$LINK(DialogAdd)">DialogAdd</A>), the heap block that stores the dialog box must be locked
+because <I>this routine may cause heap compression</I>.
+<BR><BR>
+Dialog may return:
+<UL><LI><CODE>KEY_ENTER</CODE> if the user pressed ENTER to close the dialog box.</LI>
+<LI><CODE>KEY_ESC</CODE> if the user pressed ESC to close the dialog box.</LI>
+<LI><CODE>-1</CODE> if there is not enough memory to open the menu for the dialog box.</LI></UL>
 
 [References]
 In=DialogDo, bascmd.h/cmd_clrtable, events.h/EV_defaultHandler, events.h/handleRclKey, events.h/MO_modeDialog, homescr.h/HomeExecute, link.h/LIO_Receive, textedit.h/TE_handleEvent, unknown.h/GT_DE_Init_Conds, unknown.h/GT_Format, unknown.h/GZ_SetFactors, unknown.h/SP_Define, unknown.h/_ROM_CALL_45E, unknown.h/_ROM_CALL_5F1
