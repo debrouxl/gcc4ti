@@ -10,6 +10,6 @@ __floatunssibf:
 	.word 0x6B30 /* bcdMove | bcdUnsigned | bcdAbsSrc | bcdR0 */
 	move.l -10(%a6),%d0
 	move.l -6(%a6),%d1
-	move.l -2(%a6),%d2
+	move.w -2(%a6),%d2
 	unlk %a6
 	rts
