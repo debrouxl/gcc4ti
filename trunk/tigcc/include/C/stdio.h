@@ -82,7 +82,7 @@ extern short vcbscanf(vcbscanf_get_Callback_t asm("a0"),vcbscanf_unget_Callback_
 typedef void(*__vcbprintf__type__)(vcbprintf_Callback_t,void**,const char*,void*)__ATTR_TIOS__;
 CALLBACK short __fscanf_get(FILE *param);
 CALLBACK void __fscanf_unget(short c, FILE *param);
-typedef struct {char *buffer; unsigned short pos;} __sscanf_string;
+typedef struct {const char *buffer; unsigned short pos;} __sscanf_string;
 CALLBACK short __sscanf_get(__sscanf_string *param);
 CALLBACK void __sscanf_unget(short c, __sscanf_string *param);
 
