@@ -83,6 +83,9 @@ asm (".xdef _v200");
 #undef COMPRESSED_FORMAT_RELOCS
 #undef COMPRESSED_FORMAT_ROM_CALLS
 #undef COMPRESSED_FORMAT_BSS
+#undef MLINK_FORMAT_RELOCS
+#undef MLINK_FORMAT_ROM_CALLS
+#undef MLINK_FORMAT_BSS
 #ifndef MIN_AMS
 #define MIN_AMS 100
 #endif
@@ -253,7 +256,11 @@ __need_in_use_bit;
 #ifdef COMPRESSED_FORMAT_DATA_VAR
 _INCLUDE_PATCH(__compressed_format_data_var);
 #else
+#ifdef MLINK_FORMAT_DATA_VAR
+_INCLUDE_PATCH(__mlink_format_data_var);
+#else
 _INCLUDE_PATCH(__kernel_format_data_var);
+#endif
 #endif
 #endif
 

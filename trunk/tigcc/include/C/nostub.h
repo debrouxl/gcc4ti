@@ -16,7 +16,7 @@ asm (".xdef _tigcc_native");
 
 _INCLUDE_PATCH(__nostub);
 
-#if defined (USE_FLINE_ROM_CALLS) || defined (KERNEL_FORMAT_ROM_CALLS) || defined (COMPRESSED_FORMAT_ROM_CALLS)
+#if defined (USE_FLINE_ROM_CALLS) || defined (KERNEL_FORMAT_ROM_CALLS) || defined (COMPRESSED_FORMAT_ROM_CALLS) || defined (MLINK_FORMAT_ROM_CALLS)
 #include <romsymb.h>
 #ifdef USE_FLINE_ROM_CALLS
 // Kernel-mode ROM calls as introduced by romsymb.h should be avoided.
@@ -45,18 +45,30 @@ _INCLUDE_PATCH(__kernel_format_relocs);
 _INCLUDE_PATCH(__compressed_format_relocs);
 #endif
 
+#ifdef MLINK_FORMAT_RELOCS
+_INCLUDE_PATCH(__mlink_format_relocs);
+#endif
+
 #ifndef MERGE_BSS
 #ifdef COMPRESSED_FORMAT_BSS
 _INCLUDE_PATCH(__compressed_format_bss);
 #else
+#ifdef MLINK_FORMAT_BSS
+_INCLUDE_PATCH(__mlink_format_bss);
+#else
 _INCLUDE_PATCH(__kernel_format_bss);
+#endif
 #endif
 #endif
 
 #ifdef COMPRESSED_FORMAT_ROM_CALLS
 _INCLUDE_PATCH(__compressed_format_rom_calls);
 #else
+#ifdef MLINK_FORMAT_ROM_CALLS
+_INCLUDE_PATCH(__mlink_format_rom_calls);
+#else
 _INCLUDE_PATCH(__kernel_format_rom_calls);
+#endif
 #endif
 
 #ifdef RETURN_VALUE                /* A RETURN_VALUE option is present */
