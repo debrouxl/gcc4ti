@@ -152,7 +152,7 @@ Continue:
 }
 
 // Emit a compressed reloc given the true offset between the 2 relocs. Compute
-// the offset as used in the compressed reloc table or gives an error message if
+// the offset as used in the compressed reloc table or give an error message if
 // it isn't representable. Call EmitCompressedReloc with the computed offset.
 // Return TRUE on success, FALSE on failure.
 static BOOLEAN EmitCompressedRelocFromActualOffset (SECTION *Section, OFFSET Offset)
@@ -894,3 +894,246 @@ Fargo021LibsOutOfMem:
 }
 
 #endif /* FARGO_SUPPORT */
+
+
+// Emit an mlink-format compressed reloc. If Offset is -1, end the relocation
+// table. Return TRUE on success, FALSE on failure.
+static BOOLEAN EmitMlinkReloc (SECTION *Section, OFFSET Offset)
+{
+#define AppendI1(i1) ({if (!AppendI1ToSection (Section, (i1))) return FALSE;})
+#define AppendI2(i2) ({if (!AppendI2ToSection (Section, (i2))) return FALSE;})
+	
+	if (Offset == -1)
+	{
+		// End the relocation table.
+		AppendI1(0);
+	}
+	else
+	{
+		if (Offset < 128)
+		{
+			// We have 1 byte.
+			AppendI1 (Offset + 0x80);
+		}
+		else if (Offset < 16384)
+		{
+			// We have 2 bytes.
+			AppendI1 (Offset >> 7);
+			AppendI1 ((Offset & 0x7F) + 0x80);
+		}
+		else if (Offset < 2097152)
+		{
+			// We have 3 bytes.
+			AppendI1 (Offset >> 14);
+			AppendI1 ((Offset >> 7) & 0x7F);
+			AppendI1 ((Offset & 0x7F) + 0x80);
+		}
+		else
+			Error (Section->FileName, "Offset `%ld' for mlink-format reloc doesn't fit into 3 bytes.", (long) Offset);
+	}
+	
+#undef AppendI1
+#undef AppendI2
+	
+	return TRUE;
+}
+
+// Emit an mlink-format compressed reloc given the true offset between the 2
+// relocs. Compute the offset as used in the compressed reloc table or give
+// an error message if
+// it isn't representable. Call EmitCompressedReloc with the computed offset.
+// Return TRUE on success, FALSE on failure.
+static BOOLEAN EmitMlinkRelocFromActualOffset (SECTION *Section, OFFSET Offset)
+{
+	if ((Offset > 0) && (Offset & 1))
+	{
+		Error (Section->FileName, "Odd offset `%ld' between 2 absolute relocs. Even offset needed.", (long) Offset);
+		return FALSE;
+	}
+
+	if (Offset < 0)
+	{
+		Error (Section->FileName, "Invalid internal reloc sorting order (offset `-0x%lx', need positive offset).",
+		       -Offset);
+		return FALSE;
+	}
+	
+	return EmitMlinkReloc (Section, Offset >> 1);
+}
+
+// Emit a reloc table in mlink compressed format for the items enumerated in the
+// list model specified by Model.
+static BOOLEAN EmitMlinkFormatRelocs (LIST_MODEL *Model, SECTION *SourceSection, const LOCATION *SourceBase, void *UserData, SECTION *Section)
+{
+	if (!SourceSection)
+		SourceSection = Section;
+	
+	SourceSection->Frozen = TRUE;
+	
+	{
+		void *NextItem = NULL;
+		OFFSET Offset;
+		
+		// Output the first item in the list...
+		// Output the target offset, and get the reloc's location.
+		Offset = Model (SourceSection, &NextItem, UserData, FALSE, TRUE);
+		
+		// A return value < 0 indicates that the list was empty.
+		if (Offset >= 0)
+		{
+			OFFSET BaseAddress = GetLocationOffset (SourceSection, SourceBase);
+			
+			if (BaseAddress & 1)
+			{
+				Error (Section->FileName, "Invalid base address `0x%lx'. Even base address needed.", BaseAddress);
+				return FALSE;
+			}
+			
+			if (Offset & 1)
+			{
+				Error (Section->FileName, "Odd offset between base address `0x%lx' and first absolute reloc `0x%lx'. Even offset needed.", BaseAddress, Offset);
+				return FALSE;
+			}
+			
+			if (Offset < BaseAddress)
+			{
+				Error (Section->FileName, "Cannot emit absolute reloc located at `0x%lx' before base address.", Offset);
+				return FALSE;
+			}
+			
+			// Emit the reloc.
+			if (!(EmitCompressedReloc (Section, (Offset - BaseAddress) >> 1)))
+				return FALSE;
+			
+	 		// Output the remaining items in the list...
+			while (NextItem)
+			{
+				// Save the previous offset.
+				OFFSET LastOffset = Offset;
+				
+				// Output the target offset, and get the reloc's location.
+				Offset = Model (SourceSection, &NextItem, UserData, FALSE, TRUE);
+				
+				// A negative offset means the list ends here.
+				if (Offset >= 0)
+				{
+					// Emit the reloc.
+					if (!(EmitMlinkRelocFromActualOffset (Section, Offset - LastOffset)))
+						return FALSE;
+				}
+			}
+		}
+		
+		return EmitMlinkReloc (Section, -1);
+	}
+}
+
+// Append mlink-style relocation entries in the format required by the TIGCCLIB
+// relocation code. If TargetSection is NULL, append all relocation entries that
+// point to unhandled sections. Otherwise, append all relocation entries
+// pointing to this section.
+// Warning: Inserting relocs is special: Since the relocs are changed
+// during the process, they can be inserted only once.
+BOOLEAN InsertMlinkRelocs (SECTION *Section, SECTION *TargetSection, SECTION *MergedSection, const LOCATION *Reference)
+{
+	// Initialize user data for list model.
+	RELOC_USER_DATA UserData = {TargetSection};
+	
+	// If a target section is specified, it is essential now, and it may
+	// not be modified any more.
+	if (TargetSection)
+		TargetSection->Frozen = TargetSection->Essential = TRUE;
+	else
+		// Do code optimizations now, since this might reduce the number
+		// of relocs. If a target section was specified, this is pointless,
+		// as relocs into a separate section can never be optimized away.
+		FixCode (Section->Parent);
+	
+	// Apply the format documented in _mlink_format_relocs.s.
+	if (!(EmitMlinkFormatRelocs ((LIST_MODEL *) RelocListModel, MergedSection, Reference, &UserData, Section)))
+		return FALSE;
+	
+	// If a target section was specified, and its Handled flag was not
+	// set yet, now setting it is probably correct.
+	if (TargetSection)
+		TargetSection->Handled = TRUE;
+	
+	return TRUE;
+}
+
+// Append mlink-style relocation entries in the format required by the TIGCCLIB
+// relocation code, using InsertCompressedRelocs. If TargetSection is NULL,
+// output an empty relocation table. Otherwise, append all relocation entries
+// pointing to this section.
+// Warning: Inserting relocs is special: Since the relocs are changed
+// during the process, they can be inserted only once.
+BOOLEAN InsertMlinkSectionRefs (SECTION *Section, SECTION *TargetSection, SECTION *MergedSection, const LOCATION *Reference)
+{
+	if (TargetSection)
+		return InsertMlinkRelocs (Section, TargetSection, MergedSection, Reference);
+	else
+		return (AllocateSpaceInSection (Section, 1) != NULL);
+}
+
+// Append ROM calls in the mlink-style format required by the TIGCCLIB
+// relocation code.
+BOOLEAN InsertMlinkROMCalls (SECTION *Section, SECTION *MergedSection, const LOCATION *Reference)
+{
+	PROGRAM *Program = Section->Parent;
+	
+	// Initialize user data for list model.
+	ROM_CALL_USER_DATA UserData = {NULL, 0, -1};
+	
+	// Allocate space for dynamic user data.
+	if (!(UserData.ROMFunctions = calloc (Program->HighestROMCall + 1, sizeof (ROM_CALL_FUNCTION_DATA))))
+	{
+		Error (NULL, "Out of memory while inserting ROM calls with mlink-format relocs.");
+		return FALSE;
+	}
+	
+	{
+		BOOLEAN Result = TRUE;
+		
+		// Go through all ROM calls and increment the appropriate counters.
+		COUNT ROMRelocCount = GetSectionItemCount ((LIST_MODEL *) ROMCallListModel, MergedSection ? : Section, &UserData);
+		
+		// If no ROM calls are used, do not output anything but the final null-terminator.
+		if (ROMRelocCount > 0)
+		{
+			// Apply the format documented in _compressed_format_rom_calls.s.
+			OFFSET LastFunction = -1;
+			
+			for (UserData.CurFunction = 0; UserData.CurFunction <= Program->HighestROMCall; UserData.CurFunction++)
+			{
+				if (UserData.ROMFunctions[UserData.CurFunction].RelocCount)
+				{
+					// Emit the function number as a compressed offset.
+					OFFSET FunctionOffset = UserData.CurFunction - LastFunction;
+					if (!(EmitMlinkReloc (Section, FunctionOffset)))
+					{
+						Result = FALSE;
+						break;
+					}
+					LastFunction = UserData.CurFunction;
+						
+					// Emit all ROM calls using this function.
+					if (!(EmitMlinkFormatRelocs ((LIST_MODEL *) ROMCallListModel, MergedSection, Reference, &UserData, Section)))
+					{
+						Result = FALSE;
+						break;
+					}
+				}
+			}
+		}
+		
+		// Output the final null-terminator.
+		if (!(AppendI1ToSection (Section, 0)))
+			Result = FALSE;
+		
+		// Free the extra information.
+		free (UserData.ROMFunctions);
+		
+		return Result;
+	}
+}
+

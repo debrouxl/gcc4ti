@@ -1216,6 +1216,7 @@ SYMBOL *HandleAutoInsertion (SECTION *Section, const char *SymbolName)
 		
 		// All insertions except compressed ones should be aligned on a 2-byte boundary.
 		if ((!(strncmp (SymbolName, SYMPF_BUILTIN_INSERT_COMPRESSED, sizeof (SYMPF_BUILTIN_INSERT_COMPRESSED) - 1)))
+		 || (!(strncmp (SymbolName, SYMPF_BUILTIN_INSERT_MLINK, sizeof (SYMPF_BUILTIN_INSERT_MLINK) - 1)))
 		 || (!(strcmp (SymbolName, SYMPF_BUILTIN_INSERT "fargo021_relocs")))
 		 || (!(strcmp (SymbolName, SYMPF_BUILTIN_INSERT "preos_compressed_tables")))
 		 || PadSection (Section, 2))
@@ -1352,6 +1353,16 @@ BOOLEAN AppendInsertionData (SECTION *Section, const char *Name, SECTION *Merged
 					return InsertCompressedSectionRefs (Section, Program->DataSection, MergedSection, &Reference);
 				else if (NameMatches ("compressed_rom_calls"))
 					return InsertCompressedROMCalls (Section, MergedSection, &Reference);
+				
+				// Compressed relocation tables using our own mlink-style format.
+				else if (NameMatches ("mlink_relocs"))
+					return InsertMlinkRelocs (Section, NULL, MergedSection, &Reference);
+				else if (NameMatches ("mlink_bss_refs"))
+					return InsertMlinkSectionRefs (Section, Program->BSSSection, MergedSection, &Reference);
+				else if (NameMatches ("mlink_data_refs"))
+					return InsertMlinkSectionRefs (Section, Program->DataSection, MergedSection, &Reference);
+				else if (NameMatches ("mlink_rom_calls"))
+					return InsertMlinkROMCalls (Section, MergedSection, &Reference);
 				
 				else
 					Warning (GetFileName (Section, Section->Size), "Unrecognized insertion `%s'.", Name);

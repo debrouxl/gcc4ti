@@ -1,7 +1,7 @@
 /* special.h: Routines to handle special characteristics of the linker
 
    Copyright (C) 2002-2003 Sebastian Reichelt
-   Copyright (C) 2003 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -41,6 +41,9 @@
 
 #define SYMPF_COMPRESSED "compressed_"
 #define SYMPF_BUILTIN_INSERT_COMPRESSED SYMPF_BUILTIN_INSERT SYMPF_COMPRESSED
+
+#define SYMPF_MLINK "mlink_"
+#define SYMPF_BUILTIN_INSERT_MLINK SYMPF_BUILTIN_INSERT SYMPF_MLINK
 
 #define SYMPF_CALC_CONST "calc_const_"
 #define SYMPF_BUILTIN_CALC_CONST SYMPF_BUILTIN SYMPF_CALC_CONST

@@ -1,6 +1,6 @@
 /* comprrlc.h: Routines for compressed relocation tables
 
-   Copyright (C) 2003 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
    Portions copyright (C) 2002-2003 Sebastian Reichelt
 
    This program is free software; you can redistribute it and/or modify
@@ -76,5 +76,25 @@ BOOLEAN InsertFargo021SectionRefs (SECTION *Section, SECTION *TargetSection, SEC
 // Append library calls in the format required by Fargo 0.2.1.
 BOOLEAN InsertFargo021Libraries (SECTION *Section, SECTION *MergedSection, const LOCATION *Reference);
 #endif /* FARGO_SUPPORT */
+
+// Append mlink-style relocation entries in the format required by the TIGCCLIB
+// relocation code. If TargetSection is NULL, append all relocation entries that
+// point to unhandled sections. Otherwise, append all relocation entries
+// pointing to this section.
+// Warning: Inserting relocs is special: Since the relocs are changed
+// during the process, they can be inserted only once.
+BOOLEAN InsertMlinkRelocs (SECTION *Section, SECTION *TargetSection, SECTION *MergedSection, const LOCATION *Reference);
+
+// Append mlink-style relocation entries in the format required by the TIGCCLIB
+// relocation code, using InsertCompressedRelocs. If TargetSection is NULL,
+// output an empty relocation table. Otherwise, append all relocation entries
+// pointing to this section.
+// Warning: Inserting relocs is special: Since the relocs are changed
+// during the process, they can be inserted only once.
+BOOLEAN InsertMlinkSectionRefs (SECTION *Section, SECTION *TargetSection, SECTION *MergedSection, const LOCATION *Reference);
+
+// Append ROM calls in the mlink-style format required by the TIGCCLIB
+// relocation code.
+BOOLEAN InsertMlinkROMCalls (SECTION *Section, SECTION *MergedSection, const LOCATION *Reference);
 
 #endif
