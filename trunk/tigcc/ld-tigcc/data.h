@@ -1,7 +1,7 @@
 /* data.h: Definitions for internal data handling
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2004 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
    Copyright (C) 2004 Billy Charvet
 
    This program is free software; you can redistribute it and/or modify
@@ -122,7 +122,9 @@ typedef struct SECTION {
 	BOOLEAN Mergeable;    // Specifies whether this section contains one or more constants which may be merged on a symbol basis.
 	BOOLEAN Unaligned;    // Specifies whether this section can be placed at an unaligned address. If the section is mergeable, it is also assumed that each symbol can be unaligned.
 	                      // (The latter case is the only one currently implemented.)
-	BOOLEAN Referenced;   // Specifies whether the section is referenced somewhere (in a reloc).
+	BOOLEAN Essential;    // Specifies whether the section is essential (unremovable).
+	BOOLEAN Referenced;   // Specifies whether the section is either essential itself or referenced somewhere (in a reloc) from an essential section.
+	                      // This flag is significant only during RemoveUnusedSections. Before (or if not removing unused sections), it is always FALSE, afterwards, it is always TRUE.
 	OFFSET StartupNumber; // If nonzero, specifies the location of the section in respect to other startup sections.
 	BOOLEAN Constructors; // Is a vector of constructor functions.
 	BOOLEAN Destructors;  // Is a vector of destructor functions.
