@@ -117,7 +117,7 @@ diff -Naur binutils-2.15.orig/gas/as.h binutils-2.15-src/gas/as.h
  extern int max_macro_nest;
 diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config/obj-coff.c
 --- binutils-2.15.orig/gas/config/obj-coff.c	Thu Nov 20 00:01:54 2003
-+++ binutils-2.15-src/gas/config/obj-coff.c	Sun Apr  3 06:29:08 2005
++++ binutils-2.15-src/gas/config/obj-coff.c	Sun Apr  3 11:17:52 2005
 @@ -1556,7 +1556,7 @@
       section alignment, then skip this step, as TICOFF does.  */
    size = bfd_get_section_size_before_reloc (sec);
@@ -192,18 +192,20 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  
  static relax_addressT relax_align PARAMS ((relax_addressT, long));
  
-@@ -1876,6 +1901,10 @@
+@@ -1876,6 +1901,12 @@
  	    size += off;
  	  }
  	  break;
 +    case rs_cfa:
++      size += frag->fr_fix + eh_frame_estimate_size_before_relax (frag);
++      break;
 +    case rs_dwarf2dbg:
-+      size += frag->fr_fix + frag->fr_subtype;
++      size += frag->fr_fix + dwarf2dbg_estimate_size_before_relax (frag);
 +      break;
  	default:
  	  BAD_CASE (frag->fr_type);
  	  break;
-@@ -2025,8 +2054,11 @@
+@@ -2025,8 +2056,11 @@
  					S_GET_NAME (symbol_ptr));
  			    }
  
@@ -216,7 +218,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  			    intr.r_symndx = dot->sy_number;
  			  else
  			    intr.r_symndx = symbol_ptr->sy_number;
-@@ -2175,6 +2207,16 @@
+@@ -2175,6 +2209,16 @@
  		    }
  
  		  break;
@@ -233,7 +235,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		case rs_space:
  		case rs_fill:
  		case rs_align:
-@@ -3094,6 +3136,11 @@
+@@ -3094,6 +3138,11 @@
        tc_frob_coff_symbol (symbolP);
  #endif
  
@@ -245,7 +247,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
        /* We must put the external symbols apart. The loader
  	 does not bomb if we do not. But the references in
  	 the endndx field for a .bb symbol are not corrected
-@@ -3435,7 +3482,7 @@
+@@ -3435,7 +3484,7 @@
    (!(FRCHAIN)->frch_next || (FRCHAIN)->frch_next->frch_seg != (SEG)	\
     ? get_recorded_alignment (SEG) : 0)
  #else
@@ -254,7 +256,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  #endif
  #endif
  
-@@ -3652,7 +3699,9 @@
+@@ -3652,7 +3701,9 @@
  {
    unsigned int i;
  
@@ -265,7 +267,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
    char buf[SCNNMLEN + 1];
  
    strncpy (buf, name, SCNNMLEN);
-@@ -3755,6 +3804,9 @@
+@@ -3755,6 +3806,9 @@
  		case 'w': flags |= STYP_DATA;   break;
  		case 'x': flags |= STYP_TEXT;   break;
  		case 'r': flags |= STYP_LIT;	break;
@@ -275,7 +277,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		default:
  		  as_warn(_("unknown section attribute '%c'"),
  			  *input_line_pointer);
-@@ -3915,6 +3967,13 @@
+@@ -3915,6 +3969,13 @@
        symbol_remove (symbolP, &symbol_rootP, &symbol_lastP);
        symbol_insert (symbolP, symbol_rootP, &symbol_rootP, &symbol_lastP);
      }
@@ -289,7 +291,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  }
  
  /* Build a 'section static' symbol.  */
-@@ -4291,10 +4350,13 @@
+@@ -4291,10 +4352,13 @@
  #endif /* TC_I960 */
  	      add_number += S_GET_VALUE (add_symbolP) -
  		S_GET_VALUE (sub_symbolP);
@@ -304,7 +306,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		  fixP->fx_addsy = NULL;
  		  fixP->fx_subsy = NULL;
  		  fixP->fx_done = 1;
-@@ -4319,6 +4381,8 @@
+@@ -4319,6 +4383,8 @@
  #endif
  		       )
  		{
@@ -313,7 +315,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		  /* Make it pc-relative.  */
  		  add_number += (md_pcrel_from (fixP)
  				 - S_GET_VALUE (sub_symbolP));
-@@ -4326,15 +4390,19 @@
+@@ -4326,15 +4392,19 @@
  		  fixP->fx_pcrel = 1;
  		  sub_symbolP = 0;
  		  fixP->fx_subsy = 0;
@@ -333,7 +335,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		}
  	    }
  	}
-@@ -4473,7 +4541,13 @@
+@@ -4473,7 +4543,13 @@
  
        md_apply_fix3 (fixP, (valueT *) & add_number, this_segment_type);
  
@@ -400,7 +402,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.h binutils-2.15-src/gas/config
         && (s)->sy_symbol.ost_entry.n_scnum == C_ABS_SECTION))
 diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/tc-m68k.c
 --- binutils-2.15.orig/gas/config/tc-m68k.c	Mon Jan 26 18:09:30 2004
-+++ binutils-2.15-src/gas/config/tc-m68k.c	Sun Apr  3 05:20:08 2005
++++ binutils-2.15-src/gas/config/tc-m68k.c	Sun Apr  3 10:50:10 2005
 @@ -75,6 +75,7 @@
  int flag_want_pic;
  
@@ -409,7 +411,18 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  static int flag_long_jumps;	/* -S option.  */
  static int flag_keep_pcrel;	/* --pcrel option.  */
  
-@@ -700,15 +701,24 @@
+@@ -565,6 +566,10 @@
+   {"extend", float_cons, 'x'},
+   {"ldouble", float_cons, 'x'},
+ 
++  /* Dwarf2 support for Gcc.  */
++  {"file", (void (*) PARAMS ((int))) dwarf2_directive_file, 0},
++  {"loc", dwarf2_directive_loc, 0},
++
+   /* The following pseudo-ops are supported for MRI compatibility.  */
+   {"chip", s_chip, 0},
+   {"comline", s_space, 1},
+@@ -700,15 +705,24 @@
  tc_coff_fix2rtype (fixP)
       fixS *fixP;
  {
@@ -437,7 +450,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  (fixP->fx_size == 1 ? R_PCRBYTE :
  	   fixP->fx_size == 2 ? R_PCRWORD :
  	   R_PCRLONG) :
-@@ -2611,6 +2621,7 @@
+@@ -2611,6 +2625,7 @@
  	      add_fix ('B', &opP->disp, 1, -1);
  	      break;
  	    case 'W':
@@ -445,7 +458,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	      add_fix ('w', &opP->disp, 1, 0);
  	      addword (0);
  	      break;
-@@ -2623,6 +2634,20 @@
+@@ -2623,6 +2638,20 @@
  	      addword (0);
  	      addword (0);
  	      break;
@@ -466,7 +479,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	    case 'g':
  	      if (subs (&opP->disp))	/* We can't relax it.  */
  		goto long_branch;
-@@ -2645,8 +2670,15 @@
+@@ -2645,8 +2674,15 @@
  		    the_ins.opcode[0] = 0x4EB9;
  		  else					/* jCC */
  		    {
@@ -482,7 +495,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  		      addword (0x4EF9);
  		    }
  		  add_fix ('l', &opP->disp, 0, 0);
-@@ -3766,7 +3798,7 @@
+@@ -3766,7 +3802,7 @@
        current_label = NULL;
      }
  
@@ -491,7 +504,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
    /* Tie dwarf2 debug info to the address at the start of the insn.  */
    dwarf2_emit_insn (0);
  #endif
-@@ -3819,6 +3851,13 @@
+@@ -3819,6 +3855,13 @@
  	  fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
  	  if (the_ins.reloc[m].wid == 'B')
  	    fixP->fx_signed = 1;
@@ -505,7 +518,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	}
        return;
      }
-@@ -3879,6 +3918,10 @@
+@@ -3879,6 +3922,10 @@
  			      get_reloc_code (wid, the_ins.reloc[m].pcrel,
  					      the_ins.reloc[m].pic_reloc));
  	  fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -516,7 +529,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	}
        (void) frag_var (rs_machine_dependent, 10, 0,
  		       (relax_substateT) (the_ins.fragb[n].fragty),
-@@ -3916,6 +3959,10 @@
+@@ -3916,6 +3963,10 @@
  			  get_reloc_code (wid, the_ins.reloc[m].pcrel,
  					  the_ins.reloc[m].pic_reloc));
        fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -527,7 +540,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
      }
  }
  
-@@ -4405,7 +4452,9 @@
+@@ -4405,7 +4456,9 @@
  
    val = ((val & 0xffffffff) ^ 0x80000000) - 0x80000000;
  
@@ -538,7 +551,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
      fixP->fx_done = 1;
  
  #ifdef OBJ_ELF
-@@ -4428,6 +4477,55 @@
+@@ -4428,6 +4481,55 @@
      return;
  #endif
  
@@ -594,7 +607,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
    switch (fixP->fx_size)
      {
        /* The cast to offsetT below are necessary to make code
-@@ -4455,13 +4553,8 @@
+@@ -4455,13 +4557,8 @@
        BAD_CASE (fixP->fx_size);
      }
  
@@ -610,7 +623,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  
    /* For non-pc-relative values, it's conceivable we might get something
       like "0xff" for a byte field.  So extend the upper part of the range
-@@ -4582,6 +4675,27 @@
+@@ -4582,6 +4679,27 @@
        fragP->fr_opcode[0] ^= 0x01;	/* Invert bcc.  */
        fragP->fr_opcode[1]  = 0x06;	/* Branch offset = 6.  */
  
@@ -638,7 +651,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
        /* JF: these used to be fr_opcode[2,3], but they may be in a
  	   different frag, in which case referring to them is a no-no.
  	   Only fr_opcode[0,1] are guaranteed to work.  */
-@@ -4754,8 +4868,17 @@
+@@ -4754,8 +4872,17 @@
  	    && relaxable_symbol (fragP->fr_symbol))
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), BYTE);
@@ -657,7 +670,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    /* Symbol is undefined and we want short ref.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
-@@ -4764,6 +4887,17 @@
+@@ -4764,6 +4891,17 @@
  	  {
  	    /* Symbol is still undefined.  Make it LONG.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), LONG);
@@ -675,7 +688,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  }
  	break;
        }
-@@ -4790,7 +4924,7 @@
+@@ -4790,7 +4928,7 @@
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
  	     && relaxable_symbol (fragP->fr_symbol))
@@ -684,7 +697,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
  	  }
-@@ -4816,7 +4950,8 @@
+@@ -4816,7 +4954,8 @@
      case TAB (ABSTOPCREL, SZ_UNDEF):
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
@@ -694,7 +707,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    fragP->fr_subtype = TAB (ABSTOPCREL, SHORT);
  	  }
-@@ -4860,6 +4995,7 @@
+@@ -4860,6 +4999,7 @@
  	    }
  	}
        break;
@@ -702,7 +715,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
      default:
        break;
      }
-@@ -6938,6 +7074,8 @@
+@@ -6938,6 +7078,8 @@
    {"disp-size-default-32", no_argument, NULL, OPTION_DISP_SIZE_DEFAULT_32},
  #define OPTION_PCREL (OPTION_MD_BASE + 7)
    {"pcrel", no_argument, NULL, OPTION_PCREL},
@@ -711,7 +724,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
    {NULL, no_argument, NULL, 0}
  };
  size_t md_longopts_size = sizeof (md_longopts);
-@@ -6952,6 +7090,12 @@
+@@ -6952,6 +7094,12 @@
      case 'l':			/* -l means keep external to 2 bit offset
  				   rather than 16 bit one.  */
        flag_short_refs = 1;
@@ -724,7 +737,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
        break;
  
      case 'S':			/* -S means that jbsr's always turn into
-@@ -7131,6 +7275,7 @@
+@@ -7131,6 +7279,7 @@
    fprintf (stream, _("\
  680X0 options:\n\
  -l			use 1 word for refs to undefined symbols [default 2]\n\
