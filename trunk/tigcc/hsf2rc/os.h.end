@@ -1,0 +1,92 @@
+
+ScreenClear equ $19e
+bcdadd equ $b6
+bcdcmp equ $bb
+bcddiv equ $b9
+bcdbcd equ $bd
+bcdmul equ $b8
+bcdneg equ $ba
+bcdsub equ $b7
+bcdlong equ $bc
+
+LCD_MEM equ $4c00
+doorsos::main_lcd equ LCD_MEM
+doorsos::globals equ $4c00
+
+ROM_CALL macro
+ move.l $C8,a4
+ move.l \1*4(a4),a4
+ jsr (a4)
+ endm
+
+ROM_CALL2 macro
+ move.l $C8,a4
+ move.l \1*4(a4),a4
+ endm
+
+inc	MACRO
+	addq.\0	#1,\1
+	ENDM
+INC	MACRO
+	addq.\0	#1,\1
+	ENDM
+dec	MACRO
+	subq.\0	#1,\1
+	ENDM
+DEC	MACRO
+	subq.\0	#1,\1
+	ENDM
+
+
+push	MACRO
+	move.\0	\1,-(a7)
+	ENDM
+
+pop	MACRO
+	move.\0	(a7)+,\1
+	ENDM
+pushm	MACRO
+	movem.\0	\1,-(a7)
+	ENDM
+
+popm	MACRO
+	movem.\0	(a7)+,\1
+	ENDM
+
+PUSH	MACRO
+	move.\0	\1,-(a7)
+	ENDM
+
+POP	MACRO
+	move.\0	(a7)+,\1
+	ENDM
+PUSHM	MACRO
+	movem.\0	\1,-(a7)
+	ENDM
+
+POPM	MACRO
+	movem.\0	(a7)+,\1
+	ENDM
+
+doorsos::SYM_ENTRY.name equ 0
+doorsos::SYM_ENTRY.flags equ 8
+doorsos::SYM_ENTRY.hVal equ $c
+doorsos::NULL equ 0
+doorsos::H_NULL equ 0
+doorsos::RAND_MAX equ $7fff
+ACTIVITY_IDLE equ 0
+ACTIVITY_BUSY equ 1
+ACTIVITY_PAUSED equ 2
+ER_STOP equ 2
+ER_DIMENSION equ 230
+ER_MEMORY equ 670
+ER_MEMORY_DML equ 810
+UNDEFINED_TAG equ $2a
+LIST_TAG equ $d9
+MATRIX_TAG equ $db
+END_TAG equ $e5
+CALC_TI89 equ 0
+CALC_TI92PLUS equ 1
+_nostub
+_ti89
+_ti92plus

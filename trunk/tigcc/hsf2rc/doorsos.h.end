@@ -1,0 +1,206 @@
+
+doorsos::ScreenClear equ _ROM_CALL_19E
+doorsos::DrawStrXY equ _ROM_CALL_1A9
+doorsos::ArchiveErase equ _ROM_CALL_16A+$10
+doorsos::ArchiveWrite equ _ROM_CALL_171
+doorsos::bcdadd equ _ROM_CALL_B6
+doorsos::bcdcmp equ _ROM_CALL_BB
+doorsos::bcddiv equ _ROM_CALL_B9
+doorsos::bcdbcd equ _ROM_CALL_BD
+doorsos::bcdmul equ _ROM_CALL_B8
+doorsos::bcdneg equ _ROM_CALL_BA
+doorsos::bcdsub equ _ROM_CALL_B7
+doorsos::bcdlong equ _ROM_CALL_BC
+
+CALCULATOR		equ	_RAM_CALL_000
+HW_VERSION		equ	CALCULATOR+1
+LCD_WIDTH		equ	_RAM_CALL_001
+LCD_HEIGHT		equ	_RAM_CALL_002
+doorsos::ROM_base	equ	_RAM_CALL_003
+LCD_LINE_BYTES	equ	_RAM_CALL_004
+KEY_LEFT		equ	_RAM_CALL_005
+KEY_RIGHT		equ	_RAM_CALL_006
+KEY_UP			equ	_RAM_CALL_007
+KEY_DOWN		equ	_RAM_CALL_008
+KEY_UPRIGHT		equ	_RAM_CALL_009
+KEY_DOWNLEFT		equ	_RAM_CALL_00A
+KEY_DIAMOND		equ	_RAM_CALL_00B
+LCD_SIZE		equ	_RAM_CALL_00C
+KEY_SHIFT		equ	_RAM_CALL_00D
+doorsos::font_medium	equ	_RAM_CALL_00E
+ReturnValue		equ	_RAM_CALL_00F
+doorsos::kb_globals	equ	_RAM_CALL_010
+doorsos::Heap		equ	_RAM_CALL_011
+doorsos::FolderListHandle equ	_RAM_CALL_012
+doorsos::MainHandle	equ	_RAM_CALL_013
+ROM_VERSION		equ	_RAM_CALL_014
+
+doorsos::font_small	equ	doorsos::font_medium+$800
+doorsos::font_large	equ	doorsos::font_medium+$E00
+
+LCD_MEM equ $4c00
+doorsos::main_lcd equ LCD_MEM
+doorsos::globals equ $4c00
+doorsos::OSOnBreak	equ	doorsos::globals+$F02
+
+
+doorsos::MaxHandles	equ	doorsos::Heap-$16
+doorsos::TopHeap   	equ     doorsos::Heap-$C
+doorsos::FirstFreeByte	equ	doorsos::Heap-$14
+
+doorsos::kb_vars	equ 	doorsos::kb_globals
+
+KEY_PRESSED_FLAG	equ	doorsos::kb_globals+$1c
+GETKEY_CODE		equ	doorsos::kb_globals+$1e
+
+APD_INIT	equ	LCD_MEM+$F10
+APD_TIMER	equ	LCD_MEM+$F14
+APD_FLAG	equ	LCD_MEM+$F42
+
+doorsos::SYM_ENTRY.name equ 0
+doorsos::SYM_ENTRY.flags equ 8
+doorsos::SYM_ENTRY.hVal equ $c
+doorsos::NULL equ 0
+doorsos::H_NULL equ 0
+doorsos::RAND_MAX equ $7fff
+ACTIVITY_IDLE equ 0
+ACTIVITY_BUSY equ 1
+ACTIVITY_PAUSED equ 2
+doorsos::ER_STOP equ 2
+doorsos::ER_DIMENSION equ 230
+doorsos::ER_MEMORY equ 670
+doorsos::ER_MEMORY_DML equ 810
+doorsos::UNDEFINED_TAG equ $2a
+doorsos::LIST_TAG equ $d9
+doorsos::MATRIX_TAG equ $db
+doorsos::END_TAG equ $e5
+CALC_TI89 equ 0
+CALC_TI92PLUS equ 1
+
+ROM_CALL macro
+ move.l ($C8),a4
+ add.l #\1*4,a4
+ move.l (a4),a4
+ jsr (a4)
+ endm
+
+EXTRA_RAM_TABLE macro
+_extraram:
+    xdef _extraram
+    endm
+
+EXTRA_RAM_ADDR macro
+    dc.w \3
+    dc.w \4
+\2 equ _extraramaddr@\1
+    endm
+
+doorsos::DEREF     macro   ; Dn,An
+	lsl.w	#2,\1
+        move.l  doorsos::Heap,\2
+	move.l	0(\2,\1.w),\2
+		endm
+
+SetFont	macro
+	move.w	\1,-(a7)
+	jsr	doorsos::FontSetSys
+	addq.l	#2,a7
+		endm
+
+WriteStr	macro	;x,y,col,str
+	move.w	\3,-(a7)
+	pea	\4(pc)
+	move.w	\2,-(a7)
+	move.w	\1,-(a7)
+	jsr	doorsos::DrawStrXY
+	lea	10(a7),a7
+                endm
+
+WriteStrA	macro	;x,y,col,An
+	move.w	\3,-(a7)
+	move.l	\4,-(a7)
+	move.w	\2,-(a7)
+	move.w	\1,-(a7)
+	jsr	doorsos::DrawStrXY
+	lea	10(a7),a7
+                endm
+
+GetKeyStat	MACRO
+		move.w		#$FFFE,d0
+		move.b		\1,d1
+		rol.w 		d1,d0
+		move.w		d0,($600018)
+		nop
+		nop
+		nop
+		nop
+		move.b		($60001B),d0
+		ENDM
+
+DEREF macro
+ doorsos::DEREF \1,\2
+ endm
+
+handle_ptr macro
+ DEREF \1,\2
+ endm
+
+doorsos::DEREF_SYM macro
+ move.l \1,-(sp)
+ jsr doorsos::DerefSym
+ add.l #4,sp
+ endm
+
+
+doorsos::ER_throw macro
+ dc.w $A000+\1
+ endm
+
+inc	MACRO
+	addq.\0	#1,\1
+	ENDM
+INC	MACRO
+	addq.\0	#1,\1
+	ENDM
+dec	MACRO
+	subq.\0	#1,\1
+	ENDM
+DEC	MACRO
+	subq.\0	#1,\1
+	ENDM
+
+
+push	MACRO
+	move.\0	\1,-(a7)
+	ENDM
+
+pop	MACRO
+	move.\0	(a7)+,\1
+	ENDM
+pushm	MACRO
+	movem.\0	\1,-(a7)
+	ENDM
+
+popm	MACRO
+	movem.\0	(a7)+,\1
+	ENDM
+
+PUSH	MACRO
+	move.\0	\1,-(a7)
+	ENDM
+
+POP	MACRO
+	move.\0	(a7)+,\1
+	ENDM
+PUSHM	MACRO
+	movem.\0	\1,-(a7)
+	ENDM
+
+POPM	MACRO
+	movem.\0	(a7)+,\1
+	ENDM
+
+
+_library
+_ti89
+_ti92plus

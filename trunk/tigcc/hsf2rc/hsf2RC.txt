@@ -1,0 +1,43 @@
+
+       hsf2RC ROM_CALL include builder for the TI-89 and TI-92 Plus 
+      ===============================================================
+
+Loïc YHUEL (hwti)	hwti@hotmail.com
+
+Copyright (C) 2002 Loïc YHUEL
+
+This archive contains :
+- the program ('hsf2RC.exe')
+- the source code ('hsf2RC.cpp')
+- configuration files : 'os.h.end', 'doorsos.h.end', 'NotDefinedRom_calls' and 'db92_alias'
+- license.txt : the GPL license
+- this document
+
+How to use it
+=============
+It must be launched in doc\System\Include subdirectory of TIGCC sources.
+If you run it without parameters it builds only 'doorsos.h' and 'os.h'.
+If you execute 'hsf2RC /db92' it will build DB92 ROM_CALLS include files ('Romcalls.bin' and 'romcalls.h') too.
+
+
+OPTIONS
+=======
+hsf2RC appends 'os.h.end' and 'doorsos.h.end' at the end of 'os.h' and 'doorsos.h'. They contains the macros and consts.
+You can modify them if you want.
+'NotDefinedRom_calls' contains ROM_CALLS which are not in TIGCC documentation because they are AMS1 specific or they are implemented as macros.
+
+
+DB92 SPECIFIC
+=============
+When you add the '/db92' switch, hsftoRC builds a list of the ROM_CALLS names for DB92.
+In this format, each ROM_CALL has an unique name, so :
+      -	if it sees a new name for an already named ROM_CALL, it asks you if you want to keep the first name or use the second
+   	In order to not ask the user each time, it saves the result in 'db92_alias' file wich has a simple format
+	"[ROM_CALL number in decimal] [y/n]" ('n' means that it keeps the first name, 'y' that it uses the second)
+      -	if a ROM_CALL is unnamed, it prints a warning and in DB92 it will show a blank name.
+
+
+Portability
+-----------
+This source code can be compiled without modifications under windows with MS VC++ 7.0 and MinGW32.
+I don't know if it can be compiled correctly under Linux. You should be able to use any C++ compiler.
