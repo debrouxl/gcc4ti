@@ -95,7 +95,6 @@ Page custom ConfirmSettings
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "Setup.exe"
 InstallDir "$PROGRAMFILES\TIGCC"
-InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -204,6 +203,7 @@ FunctionEnd
 Section "Core TIGCC Components" SEC01
   SectionIn 1 RO
 ; delete obsolete files
+  Delete "$SYSDIR\TIGCCUninst.exe"
   Delete "$INSTDIR\Readme.txt"
   Delete "$INSTDIR\License.txt"
   Delete "$INSTDIR\Doc\tigcclib.chm"
