@@ -215,6 +215,8 @@ Section "Core TIGCC Components" SEC01
   Delete "$INSTDIR\Bin\ar.exe"
   Delete "$INSTDIR\Bin\objcopy.exe"
   Delete "$INSTDIR\Bin\cygwin1.dll"
+  Delete "$INSTDIR\Bin\ld.exe"
+  Delete "$INSTDIR\Bin\obj2ti.exe"
   Delete "$INSTDIR\Lib\tipatch.lib"
   Delete "$INSTDIR\Lib\tipatchmain.lib"
   Delete "$INSTDIR\Lib\pstarter-titanium.o"
