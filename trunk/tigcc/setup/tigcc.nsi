@@ -204,8 +204,11 @@ Section "Core TIGCC Components" SEC01
   SectionIn 1 RO
 ; delete obsolete files
   Delete "$SYSDIR\TIGCCUninst.exe"
+  GetFullPathName $0 "."
+  StrCmp "$0" "$INSTDIR" dont_delete
   Delete "$INSTDIR\Readme.txt"
   Delete "$INSTDIR\License.txt"
+dont_delete:
   Delete "$INSTDIR\Doc\tigcclib.chm"
   Delete "$INSTDIR\Bin\cpp.exe"
   Delete "$INSTDIR\Bin\cpp0.exe"
