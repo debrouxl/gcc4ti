@@ -11,7 +11,7 @@
 __fscanf_get:
 |extern short fgetc(FILE*)__ATTR_LIB_C__;
 move.l 4(%a7),%a0
-jmp fgetc
+jra fgetc
 
 .xdef __fscanf_unget
 __fscanf_unget:

@@ -9,5 +9,5 @@
 	.xdef __ref_all___save_all_registers_main
 
 __exit:
-	movea.l __save__sp__:l,%a7 |(NOT PC-relative because of programs >32 KB)
+	movea.l __save__sp__,%a7 |(NOT PC-relative because of programs >32 KB)
 	rts

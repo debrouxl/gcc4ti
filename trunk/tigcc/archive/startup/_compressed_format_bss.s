@@ -26,7 +26,7 @@ __compressed_format_bss:
 	moveq.l #0,%d1
 	clr.w %d2
 __compressed_format_bss_refs_loop_1:
-	bsr.w __decode_compressed_offset
+	bsr __decode_compressed_offset
 	bcs.s __compressed_format_bss_refs_done_1
 	add.l %d3,0(%a1,%d1.l)
 	bra.s __compressed_format_bss_refs_loop_1
@@ -40,7 +40,7 @@ __compressed_format_bss_cleanup:
 	moveq.l #0,%d1
 	clr.w %d2
 __compressed_format_bss_refs_loop_2:
-	bsr.w __decode_compressed_offset
+	bsr __decode_compressed_offset
 	bcs.s __compressed_format_bss_refs_done_2
 	sub.l %d3,0(%a1,%d1.l)
 	bra.s __compressed_format_bss_refs_loop_2

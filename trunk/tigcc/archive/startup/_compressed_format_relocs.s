@@ -16,7 +16,7 @@ __compressed_format_relocs:
 	move.l #__ld_compressed_relocs_ref-__ld_entry_point-4,%d1
 	clr.w %d2
 __compressed_format_relocs_loop_1:
-	bsr.w __decode_compressed_offset
+	bsr __decode_compressed_offset
 	bcs.s __compressed_format_relocs_done_1
 	add.l %d0,0(%a1,%d1.l)
 	bra.s __compressed_format_relocs_loop_1
@@ -31,7 +31,7 @@ __compressed_format_relocs_cleanup:
 	move.l #__ld_compressed_relocs_ref-__ld_entry_point-4,%d1
 	clr.w %d2
 __compressed_format_relocs_loop_2:
-	bsr.w __decode_compressed_offset
+	bsr __decode_compressed_offset
 	bcs.s __compressed_format_relocs_done_2
 	sub.l %d0,0(%a1,%d1.l)
 	bra.s __compressed_format_relocs_loop_2

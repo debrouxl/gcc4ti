@@ -19,7 +19,7 @@ __compressed_format_rom_calls:
 __compressed_format_rom_calls_loop_1:
 	move.w (%sp)+,%d1 | get the previous [ROM_CALL number]*2
 	subq.w #2,%d1     | next ROM_CALL, the decoding function adds 2 too much
-	bsr.w __decode_compressed_offset
+	bsr __decode_compressed_offset
 	bcs.s __compressed_format_rom_calls_done_1
 	move.w %d1,-(%sp) | we need to reuse d1 for the offsets below
 	add.w %d1,%d1 | multiply the offset by 2, because we want 4 * num,
@@ -27,7 +27,7 @@ __compressed_format_rom_calls_loop_1:
 	move.l (%a5,%d1.w),%d0
 	moveq.l #0,%d1
 __compressed_format_rom_calls_loop_2:
-	bsr.w __decode_compressed_offset
+	bsr __decode_compressed_offset
 	bcs.s __compressed_format_rom_calls_loop_1 | done with the inner loop
 	add.l %d0,(%a1,%d1.l)
 	bra.s __compressed_format_rom_calls_loop_2
@@ -43,7 +43,7 @@ __compressed_format_rom_calls_cleanup:
 __compressed_format_rom_calls_loop_3:
 	move.w (%sp)+,%d1 | get the previous [ROM_CALL number]*2
 	subq.w #2,%d1     | next ROM_CALL, the decoding function adds 2 too much
-	bsr.w __decode_compressed_offset
+	bsr __decode_compressed_offset
 	bcs.s __compressed_format_rom_calls_done_3
 	move.w %d1,-(%sp) | we need to reuse d1 for the offsets below
 	add.w %d1,%d1 | multiply the offset by 2, because we want 4 * num,
@@ -51,7 +51,7 @@ __compressed_format_rom_calls_loop_3:
 	move.l (%a5,%d1.w),%d0
 	moveq.l #0,%d1
 __compressed_format_rom_calls_loop_4:
-	bsr.w __decode_compressed_offset
+	bsr __decode_compressed_offset
 	bcs.s __compressed_format_rom_calls_loop_3 | done with the inner loop
 	sub.l %d0,(%a1,%d1.l)
 	bra.s __compressed_format_rom_calls_loop_4

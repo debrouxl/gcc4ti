@@ -18,8 +18,8 @@
 
 atexit:
 |find the return address:
-	movea.l __save__sp__:l,%a0 |stack pointer before restoring the registers
-	                           |(NOT PC-relative because of programs >32 KB)
+	movea.l __save__sp__,%a0 |stack pointer before restoring the registers
+	                         |(NOT PC-relative because of programs >32 KB)
 |The return address is now at (a0).
 
 |check if the return address is .L__atexit__new__return
