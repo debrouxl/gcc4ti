@@ -22,9 +22,15 @@
 #include "manip.h"
 #include "special.h"
 
+// Mark a section as referenced. If it was not already marked, follow all relocs
+// from this section and recursively mark the target sections of all the relocs.
+static void MarkSection (SECTION *Section)
+{
+}
+
 // Free a section if it is no longer referenced. Update the ReferencedLibCount
 // accordingly.
-static BOOLEAN RemoveSectionIfUnused (SECTION *Section)
+static void RemoveSectionIfUnused (SECTION *Section)
 {
 	PROGRAM *Program = Section->Parent;
 	SECTION *OtherSection;
@@ -32,7 +38,7 @@ static BOOLEAN RemoveSectionIfUnused (SECTION *Section)
 	
 	// Don't free the section if it is still referenced.
 	if (Section->Referenced)
-		return FALSE;
+		return;
 
 	// If this section references any libraries, and if it was the last one to
 	// reference them, we need to mark the library as no longer referenced.
@@ -60,14 +66,20 @@ NextLibCall:;
 
 	// Now free the section.
 	FreeSection (Section);
-	
-	return TRUE;
 }
 
 // Remove all unused sections.
 void RemoveUnusedSections (PROGRAM *Program)
 {
 	SECTION *Section, *NextSection;
+	
+	for_each (Section, Program->Sections)
+	{
+		// If the section is an essential section, mark it (and all sections it
+		// references) as referenced.
+		if (Section->Essential)
+			MarkSection (Section);
+	}
 	
 	// For each section...
 	for (Section = GetFirst (Program->Sections); Section; Section = NextSection)
