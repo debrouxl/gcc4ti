@@ -266,7 +266,7 @@ typedef unsigned short unknown_retval;
 #define GZ_Standard ({__need_in_use_bit;_rom_call(unknown_retval,(),235);})
 #define GZ_Stat ({__need_in_use_bit;_rom_call(unknown_retval,(),236);})
 #define GZ_Store ({__need_in_use_bit;_rom_call(unknown_retval,(),237);})
-#define GZ_Trig ({__need_in_use_bit;_rom_call(unknown_retval,(),238);})
+#define GZ_Trig ({__need_in_use_bit;_rom_call(void,(void),238);})
 #define InitDEAxesRng _rom_call(unknown_retval,(),1E9)
 #define InitDEMem ({__need_in_use_bit;_rom_call(unknown_retval,(),1EA);})
 #define InitTimeSeq ({__need_in_use_bit;_rom_call(unknown_retval,(),1D9);})
@@ -325,13 +325,13 @@ typedef unsigned short unknown_retval;
 #define does_push_fetch ({__need_in_use_bit;_rom_call(short,(ESI),2AE);})
 #define get_list_indices _rom_call(unknown_retval,(),2B8)
 #define get_matrix_indices _rom_call(unknown_retval,(),2B9)
-#define has_unit_base _rom_call(unknown_retval,(),3AF)
+#define has_unit_base _rom_call(short,(ESI),3AF)
 #define index_after_match_endtag _rom_call(ESI,(ESI,char),2B1)
 #define init_list_indices _rom_call(unknown_retval,(),2BA)
 #define init_matrix_indices _rom_call(unknown_retval,(),2BB)
 #define init_unit_system _rom_call(unknown_retval,(),3B0)
 #define is_pathname _rom_call(short,(CESI),3C6)
-#define is_units_term _rom_call(unknown_retval,(),3B1)
+#define is_units_term _rom_call(short,(CESI),3B1)
 #define next_token _rom_call(short,(short),3C7)
 #define nonblank _rom_call(void,(void),3C8)
 #define push_ans_entry _rom_call(HANDLE,(CESI),2B0)
@@ -352,7 +352,7 @@ typedef unsigned short unknown_retval;
 #define store_to_subscripted_element ({__need_in_use_bit;_rom_call(void,(CESI,CESI),2B5);})
 #if MIN_AMS>=200
 typedef union{unsigned short*pW;SYM_ENTRY*pS;unsigned char*pB;}FOLDER_TYPE;
-enum OO_Indices{OO_APP_FLAGS=1,OO_APP_NAME=2,OO_APP_TOK_NAME=3,OO_APP_PROCESS_EVENT=4,OO_APP_DEFAULT_MENU=5,OO_APP_DEFAULT_MENU_HANDLE=6,OO_APP_EXT_COUNT=7,OO_APP_EXTENSIONS=8,OO_APP_EXT_ENTRIES=9,OO_APP_LOCALIZE=10,OO_APP_UNLOCALIZE=11,OO_APP_CAN_DELETE=12,OO_APP_CAN_MOVE=13,OO_APP_VIEWER=14,OO_APP_ICON=15,OO_APP_EXT_HELP=16,OO_APP_NOTICE_INSTALL=17,OO_APP_ABOUT=18,OO_SFONT=768,OO_LFONT=769,OO_HFONT=770,OO_APP_SFONT=768,OO_APP_LFONT=769,OO_APP_HFONT=770,OO_LANGUAGE=784,OO_DATE_FORMAT=785,OO_BUILTIN_HELP=786,OO_KTLIST=800,OO_CAT_TABLE=801,OO_CAT_INDEX=802,OO_CAT_COUNT=803,OO_CHAR_MENU=816,OO_CHAR_HANDLER=817,OO_APPS_HANDLER=818,OO_FLASH_APPS_HANDLER=819,OO_MATH_HANDLER=820,OO_MEM_HANDLER=821,OO_STO_HANDLER=822,OO_QUIT_HANDLER=823};
+enum OO_Indices{OO_APP_FLAGS=0x1,OO_APP_NAME=0x2,OO_APP_TOK_NAME=0x3,OO_APP_PROCESS_EVENT=0x4,OO_APP_DEFAULT_MENU=0x5,OO_APP_DEFAULT_MENU_HANDLE=0x6,OO_APP_EXT_COUNT=0x7,OO_APP_EXTENSIONS=0x8,OO_APP_EXT_ENTRIES=0x9,OO_APP_LOCALIZE=0xA,OO_APP_UNLOCALIZE=0xB,OO_APP_CAN_DELETE=0xC,OO_APP_CAN_MOVE=0xD,OO_APP_VIEWER=0xE,OO_APP_ICON=0xF,OO_APP_EXT_HELP=0x10,OO_APP_NOTICE_INSTALL=0x11,OO_APP_ABOUT=0x12,OO_SFONT=0x300,OO_LFONT=0x301,OO_HFONT=0x302,OO_APP_SFONT=0x300,OO_APP_LFONT=0x301,OO_APP_HFONT=0x301,OO_LANGUAGE=0x310,OO_DATE_FORMAT=0x311,OO_BUILTIN_HELP=0x312,OO_KTLIST=0x320,OO_CAT_TABLE=0x312,OO_CAT_INDEX=0x322,OO_CAT_COUNT=0x323,OO_CHAR_MENU=0x330,OO_CHAR_HANDLER=0x331,OO_APPS_HANDLER=0x332,OO_FLASH_APPS_HANDLER=0x333,OO_MATH_HANDLER=0x334,OO_MEM_HANDLER=0x335,OO_STO_HANDLER=0x336,OO_QUIT_HANDLER=0x337};
 typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFolCount;unsigned char*SymFolder,*SymName;HANDLE SymHandle,HomeHandle,MainHandle,DefTempHandle,DefFolderHandle;unsigned short SymErrCode;BOOL CallStatFree;HANDLE FindHandle;unsigned short DefFolderName[SYM_LEN+1];struct{FOLDER_TYPE Low,High,Cur;unsigned short CurOffset;}Find,Prev;}SymPG_S;
 #define CTypeTable ((unsigned char*const)(_rom_call_addr(442)))
 #define EV_appA (*((short*)(_rom_call_addr(452))))

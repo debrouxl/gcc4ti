@@ -16,7 +16,14 @@ typedef unsigned short HANDLE;
 typedef struct{unsigned short Head;unsigned short Tail;unsigned short Size;unsigned short Used;unsigned short Buffer[];}DEF_QUEUE;
 #define QUEUE(n) struct{unsigned short Head,Tail,Size,Used,Buffer[n/2];}
 typedef CALLBACK void(*Timer_Callback_t)(void);
-enum Timers{BATT_TIMER=1,APD_TIMER=2,LIO_TIMER=3,CURSOR_TIMER=4,MISC_TIMER=5,USER_TIMER=6};
+enum Timers{USER1_TIMER=1,BATT_TIMER=1,APD_TIMER=2,LIO_TIMER=3,CURSOR_TIMER=4,MISC_TIMER=5,USER_TIMER=6
+#if MIN_AMS>=204
+,BATTERY_TIMER=7
+#endif
+#if MIN_AMS>=207
+,BP_TIMER=8
+#endif
+};
 #define ReleaseDate ((const char*const)(_rom_call_addr_hack(43F,(((MIN_AMS>=101)||(TIOS_entries>0x2AC))?(((const char*const)_rom_call_addr(393))-11):((const char*const)"05/21/1998")),200)))
 #define ReleaseVersion ((const char*const)(_rom_call_addr_hack(440,((((MIN_AMS>=101)||(TIOS_entries>0x2AC))?(((const char*const)_rom_call_addr(393))-16):((const char*const)"1.00"))),200)))
 #define AB_prodid _rom_call(void,(char*),29D)
