@@ -19,6 +19,8 @@
 
 #include "gcunused.h"
 
+#include <string.h>
+
 #include "manip.h"
 #include "special.h"
 
