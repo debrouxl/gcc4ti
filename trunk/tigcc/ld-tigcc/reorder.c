@@ -1,7 +1,7 @@
 /* reorder.c: Routines to reorder sections
 
+   Copyright (C) 2004-2005 Kevin Kofler
    Copyright (C) 2004 Sebastian Reichelt
-   (original version was written by Kevin Kofler)
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,6 +25,24 @@
 #include "bincode/m68k.h"
 
 #include <stdlib.h>
+
+// MAIN ENTRY POINT:
+
+static void ReorderNonStartupSections (PROGRAM *Program);
+static void ReorderStartupSections (PROGRAM *Program);
+
+// Reorder the sections to make references as short as possible. Uses heuristics
+// to avoid combinatorial explosion.
+void ReorderSections (PROGRAM *Program)
+{
+	ReorderNonStartupSections(Program);
+	ReorderStartupSections(Program);
+}
+
+
+// REORDERING ROUTINES USING GLOBAL HEURISTICS (Sebastian Reichelt):
+// The following functions handle section reordering using global heuristics.
+// They are used to reorder non-startup sections.
 
 // Maximum length of the search for related sections.
 #define MAX_RELATED_SEARCH_LENGTH 100
@@ -108,9 +126,9 @@ BOOLEAN CanMoveSectionToBack (const SECTION *Section, const SECTION *Dest)
 	}
 }
 
-// Reorder the sections to make references as short as possible. Uses heuristics
-// to avoid combinatorial explosion.
-void ReorderSections (PROGRAM *Program)
+// Reorder non-startup sections to make references as short as possible. Uses
+// global heuristics to avoid combinatorial explosion.
+static void ReorderNonStartupSections (PROGRAM *Program)
 {
 	SECTION **Sections = calloc (CountItems (Program->Sections, SECTION), sizeof (SECTION *));
 	if (!Sections)
@@ -332,32 +350,12 @@ void ReorderSections (PROGRAM *Program)
 	free (Sections);
 }
 
-#if 0
-/* reorder.c: Routines to reorder sections
 
-   Copyright (C) 2004 Kevin Kofler
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
-
-#include "generic.h"
-#include "data.h"
-#include "reorder.h"
-#include "manip.h"
-#include "bincode/fix_m68k.h" // We need this to estimate the possible gains.
-
-#include <stdlib.h>
+// REORDERING ROUTINES USING LOCAL HEURISTICS (Kevin Kofler):
+// The following functions handle reordering of startup sections which share one
+// and the same startup number and can thus be arbitrarily reordered. The
+// current implementation is based on my (Kevin Kofler's) original section
+// reordering algorithm.
 
 // Reorder the sections to make references as short as possible. Backtrack when
 // a solution is impossible (due to hard-coded short references). Returns 1 on
@@ -382,9 +380,9 @@ static COUNT ComputeGoodness(SECTION **Sections, COUNT RecursionDepth,
 static int TaggedSectionComparisonFunction(const void *TaggedSection1,
                                            const void *TaggedSection2);
 
-// Reorder the sections to make references as short as possible. Uses heuristics
-// to avoid combinatorial explosion.
-void ReorderSections(PROGRAM *Program)
+// Reorder startup sections to make references as short as possible. Uses
+// local heuristics to avoid combinatorial explosion.
+static void ReorderStartupSections(PROGRAM *Program)
 {
 	SI1 Result;
 	COUNT RecursionDepth = 0;
@@ -453,6 +451,19 @@ static SI1 ReorderSectionsRecurse(PROGRAM *Program, COUNT SectionCount,
 		{
 			SECTION **PCurrentSection;
 			OFFSET StartupNumber = CurrentSection->StartupNumber;
+			// If the current section is not a startup section, it means we are
+			// done with the startup sections. So just add all the remaining
+			// sections in the order decided by global reordering.
+			if (!StartupNumber)
+			{
+				SECTION *RemainingSection;
+				for (RemainingSection = CurrentSection; RemainingSection;
+				     RemainingSection = GetNext (RemainingSection))
+				{
+					Sections[RecursionDepth++] = RemainingSection;
+				}
+				return 1;
+  			}
 			COUNT TaggedSectionCount;
 			// Compute an estimation of the savings for placing each of the sections
 			// next.
@@ -614,4 +625,4 @@ static int TaggedSectionComparisonFunction(const void *TaggedSection1,
 	else
 		return 0;
 }
-#endif /* 0 */
+
