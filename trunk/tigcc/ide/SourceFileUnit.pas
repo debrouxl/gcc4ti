@@ -1632,10 +1632,7 @@ begin
 											'''':
 												SetMultiCharMode (cmChar);
 											'#':
-												if AtLineStart then
-													SetMultiCharMode (cmExtUnchangeableLine)
-												else
-													SetMultiCharMode (cmMultiSymbol);
+												SetMultiCharMode (cmExtUnchangeableLine);
 											'.':
 												if CurMode <> cmNumber then begin
 													if (Length (S) >= CurPos + 1) and (S [CurPos + 1] in ['0'..'9']) then begin
