@@ -1,5 +1,20 @@
 Changelog of the TIGCC-local changes to Binutils (2.15 branch):
 
+2005-04-03  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/config/tc-m68k.c (md_assemble): Always enable DWARF2 handling code.
+	* Revert (by changing #ifdef BFD_ASSEMBLER to #if 1):
+	  2000-12-11  H.J. Lu  <hjl@gnu.org>
+		* dwarf2dbg.c: Enabled only if BFD_ASSEMBLER is defined.
+	* Revert:
+	  2000-12-21  H.J. Lu  <hjl@gnu.org>
+		* dwarf2dbg.c (dwarf2_finish): Remove #if BFD_ASSEMBLER.
+	* gas/dwarfdbg.c (section_symbol): #define if BFD_ASSEMBLER not defined.
+	  (ffs): #define to __builtin_ffs on MinGW.
+          (dwarf2_finish): Add bfd_get_section_by_name replacement for the !BFD_ASSEMBLER case.
+	* gas/config/obj-coff.c (size_section): Handle rs_cfa and rs_dwarf2dbg.
+	  (fill_section): Handle rs_cfa and rs_dwarf2dbg.
+
 2005-01-30  Kevin Kofler  <Kevin@tigcc.ticalc.org>
 
 	* Import Binutils 2.15 release.
