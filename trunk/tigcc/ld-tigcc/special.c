@@ -848,7 +848,6 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					Location->Symbol = NewSymbol;
 					FreeLocationSymbolName (Section, Location);
 					Location->Offset += NewTargetOffset;
-					NewSymbol->Parent->Referenced = TRUE;
 				}
 				else
 					Location->Builtin = TRUE;

@@ -551,7 +551,6 @@ BOOLEAN InsertKernelExports (SECTION *Section, BOOLEAN TrailingZeroBytes)
 								Reloc->Target.SymbolName = CurSymbol->Name;
 								SetRelocProgramRelative (Reloc);
 								InsertReloc (Section, Reloc);
-								CurSection->Referenced = TRUE;
 							}
 							else
 							{

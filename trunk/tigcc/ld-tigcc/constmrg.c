@@ -182,7 +182,6 @@ OutOfMem:
 						Section->Parent = Program;
 						Section->Initialized = TRUE;
 						Section->Mergeable = TRUE;
-						Section->Referenced = TRUE;
 						Section->Size = max (Constant1Length, Constant2Length);
 						Section->Data = malloc (Section->Size);
 						if (!Section->Data)

@@ -102,7 +102,6 @@ BOOLEAN InsertNostubComments (SECTION *Section)
 										Reloc->Target.SymbolName = CurSymbol->Name;
 										SetRelocProgramRelative (Reloc);
 										InsertReloc (Section, Reloc);
-										CurSection->Referenced = TRUE;
 									}
 									else
 									{

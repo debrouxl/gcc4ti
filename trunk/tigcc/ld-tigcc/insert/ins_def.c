@@ -38,7 +38,6 @@ RELOC *CreateProgramRelativeReloc (SECTION *Section, I1 **NewData, SECTION *Targ
 		Reloc->Target.Offset      = TargetLocation;
 		SetRelocProgramRelative (Reloc);
 		InsertReloc (Section, Reloc);
-		TargetSection->Referenced = TRUE;
 	}
 	else
 		Error (NULL, "Out of memory.");

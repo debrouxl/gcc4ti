@@ -460,13 +460,7 @@ void HandleLocation (RELOC *Reloc, LOCATION *Location)
 	if (Location)
 	{
 		SECTION *Section = Reloc->Parent;
-		if (Location->Symbol)
-		{
-			SECTION *RelationSection = Location->Symbol->Parent;
-			if (RelationSection != Section)
-				RelationSection->Referenced = TRUE;
-		}
-		else
+		if (!Location->Symbol)
 		{
 			Section->Relocs.UnresolvedCount++;
 		}
@@ -497,8 +491,6 @@ SYMBOL *ResolveLocation (PROGRAM *Program, SECTION *Section, LOCATION *Location)
 					// destination string.
 					Location->Symbol = CurSymbol;
 					FreeLocationSymbolName (Section, Location);
-					if (CurSection != Section)
-						CurSection->Referenced = TRUE;
 					return CurSymbol;
 				}
 			}
