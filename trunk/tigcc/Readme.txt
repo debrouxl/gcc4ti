@@ -1,5 +1,5 @@
 
-           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 1
+           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 2
           ================================================================
 
 Xavier Vassor       Xavier@tigcc.ticalc.org    (original linker and tigcc)
@@ -57,9 +57,9 @@ the appropriate .diff files in this archive using the GNU 'patch' utility
 ('patch' found on Unix systems may also work).
 
 A reduced version of the full GCC source code can be downloaded at:
-http://tigcc.ticalc.org/sources/sources-gcc.tar.bz2
+http://tigcc.ticalc.org/sources/gcc-3.3.3.tar.bz2
 Likewise, a reduced version of GNU binutils can be obtained from:
-http://tigcc.ticalc.org/sources/sources-binutils.tar.bz2
+http://tigcc.ticalc.org/sources/gas-2.15.tar.bz2
 However, if possible, it is better to get the official files from
 http://www.gnu.org/. There you can also get the very latest versions of these
 programs.
