@@ -16,7 +16,11 @@ MD ttpack
 FOR %%i IN ("%TTPACKSRCDIR%\..\..\readme.txt" "%TTPACKSRCDIR%\packhead.h" "%TTPACKSRCDIR%\revtools.h" "%TTPACKSRCDIR%\tt.h" "%TTPACKSRCDIR%\ttpack.c" "%TTPACKSRCDIR%\ttversion.h") DO COPY "%%i" ttpack
 
 DEL "%ZIPDIR%\tigccsrc.zip"
-"%INFOZIPDIR%\zip.exe" -9 -r "%ZIPDIR%\tigccsrc.zip" ..\Readme.txt ..\License.txt a68k ..\archive ..\components ..\doc ..\gcc ..\general ..\hsf2rc ..\ide ..\ld-tigcc pstarter ..\setup\*.nsi ..\setup\*.ini ..\setup\*.bat ..\setup\makeall.pif ..\tigcc ..\tprbuilder ttpack -x CVS
+CD ..\doc
+"%INFOZIPDIR%\zip.exe" -9 -r "%ZIPDIR%\doc.zip" Programs System -x CVS
+CD ..\setup
+"%INFOZIPDIR%\zip.exe" -9 -r "%ZIPDIR%\tigccsrc.zip" ..\Readme.txt ..\License.txt a68k ..\archive ..\components ..\doc\doc.zip ..\gcc ..\general ..\hsf2rc ..\ide ..\ld-tigcc pstarter ..\setup\*.nsi ..\setup\*.ini ..\setup\*.bat ..\setup\makeall.pif ..\tigcc ..\tprbuilder ttpack -x CVS
+DEL ..\doc\doc.zip
 
 DELTREE /Y a68k
 DELTREE /Y pstarter
