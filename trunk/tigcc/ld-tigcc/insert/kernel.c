@@ -1,6 +1,7 @@
 /* kernel.c: Routines to handle automatic insertion of section contents in kernel format
 
-   Copyright (C) 2003 Sebastian Reichelt, Kevin Kofler
+   Copyright (C) 2003 Sebastian Reichelt
+   Copyright (C) 2003-2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -83,9 +84,9 @@ BOOLEAN InsertKernelRelocs (SECTION *Section, SECTION *TargetSection)
 	// Initialize user data for list model.
 	RELOC_USER_DATA UserData = {TargetSection};
 	
-	// If a target section is specified, it is referenced now.
+	// If a target section is specified, it is essential now.
 	if (TargetSection)
-		TargetSection->Referenced = TRUE;
+		TargetSection->Essential = TRUE;
 	else
 		// Do code optimizations now, since this might reduce the number
 		// of relocs. If a target section was specified, this is pointless,

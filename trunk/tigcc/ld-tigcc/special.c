@@ -1,7 +1,7 @@
 /* special.c: Routines to handle special characteristics of the linker
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2004 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
    Copyright (C) 2004 Billy Charvet
 
    This program is free software; you can redistribute it and/or modify
@@ -134,7 +134,7 @@ BOOLEAN HandleSpecialSymbol (PROGRAM *Program, const char *SymbolName)
 		{
 			SECTION *FirstSection = GetFirst (Program->Sections);
 			if (FirstSection && (!(FirstSection->StartupNumber)))
-				FirstSection->Referenced = TRUE;
+				FirstSection->Essential = TRUE;
 			Program->Type = PT_NOSTUB;
 		}
 #ifdef NOSTUB_DLL_SUPPORT
@@ -142,7 +142,7 @@ BOOLEAN HandleSpecialSymbol (PROGRAM *Program, const char *SymbolName)
 		{
 			SECTION *FirstSection = GetFirst (Program->Sections);
 			if (FirstSection && (!(FirstSection->StartupNumber)))
-				FirstSection->Referenced = TRUE;
+				FirstSection->Essential = TRUE;
 			Program->Type = PT_NOSTUB_DLL;
 			Program->Library = TRUE;
 		}
@@ -439,7 +439,7 @@ BOOLEAN CreateSpecialGlobalImports (PROGRAM *Program)
 					if (ExportNumber >= 0)
 					{
 						NostubComments = TRUE;
-						TempSection->Referenced = TRUE;
+						TempSection->Essential = TRUE;
 						break;
 					}
 				}
@@ -799,7 +799,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 							if (ExportNumber >= 0)
 							{
 								HasExports = TRUE;
-								TempSection->Referenced = TRUE;
+								TempSection->Essential = TRUE;
 								break;
 							}
 						}

@@ -1,7 +1,7 @@
 /* manip.c: Routines to manipulate the internal data
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2004 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -305,7 +305,7 @@ void InsertSection (PROGRAM *Program, SECTION *Section)
 			Warning (Section->FileName, "Inserting startup section with number %ld in front of entry point.", (long) Section->StartupNumber);
 		
 		// Cannot remove startup sections.
-		Section->Referenced = TRUE;
+		Section->Essential = TRUE;
 		
 		// Insert the section where it belongs.
 		InsertAfter (Program->Sections, Section, PrevStartupSection);
@@ -943,7 +943,7 @@ SECTION *MergeSections (SECTION *Dest, SECTION *Src)
 	}
 	Dest->Mergeable = Dest->Mergeable && Src->Mergeable;
 	Dest->Unaligned = Dest->Unaligned && Src->Unaligned;
-	Dest->Referenced |= Src->Referenced;
+	Dest->Essential |= Src->Essential;
 	Dest->Constructors = Dest->Constructors && Src->Constructors;
 	Dest->Destructors = Dest->Destructors && Src->Destructors;
 	Dest->CanCutRanges |= Src->CanCutRanges;
@@ -1418,8 +1418,8 @@ SECTION_MARKERS *CreateSectionMarkers (SECTION_MARKERS *Marker, SECTION *Section
 	{
 		SYMBOL *Symbol;
 
-		// Mark the section as referenced so it isn't removed.
-		Section->Referenced = TRUE;
+		// Mark the section as essential so it isn't removed.
+		Section->Essential = TRUE;
 		
 		// Use the section symbol for the beginning.
 		Marker->Start = Section->SectionSymbol;

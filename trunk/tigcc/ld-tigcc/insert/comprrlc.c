@@ -1,6 +1,6 @@
 /* comprrlc.c: Routines for compressed relocation tables
 
-   Copyright (C) 2003-2004 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
    Portions copyright (C) 2002-2003 Sebastian Reichelt
 
    This program is free software; you can redistribute it and/or modify
@@ -252,10 +252,10 @@ BOOLEAN InsertCompressedRelocs (SECTION *Section, SECTION *TargetSection, SECTIO
 	// Initialize user data for list model.
 	RELOC_USER_DATA UserData = {TargetSection};
 	
-	// If a target section is specified, it is referenced now, and it may
+	// If a target section is specified, it is essential now, and it may
 	// not be modified any more.
 	if (TargetSection)
-		TargetSection->Frozen = TargetSection->Referenced = TRUE;
+		TargetSection->Frozen = TargetSection->Essential = TRUE;
 	else
 		// Do code optimizations now, since this might reduce the number
 		// of relocs. If a target section was specified, this is pointless,
