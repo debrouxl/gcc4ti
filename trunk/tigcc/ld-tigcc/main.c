@@ -242,6 +242,15 @@ int main (int ArgCount, const char **Args)
 			// sections.
 			if (DatVarInfo->Name)
 			{
+				if (OptInfo->MergeConstants && (!(Program.Frozen)))
+				{
+					// Merge constants now, as we can't do it anymore after
+					// the data variable has been built.
+					MergeConstants (&Program);
+					
+					DoSpecialDump (1, "(const-merged)");
+				}
+				
 				Program.DataSection = MergeAllSections (&Program, NULL, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, FALSE);
 				// Mark the section as "handled" so it will not be merged
 				// with code.
@@ -307,7 +316,7 @@ int main (int ArgCount, const char **Args)
 					DoSpecialDump (4, "(cut)");
 				}
 				
-				if (OptInfo->MergeConstants && (!(Program.Frozen)))
+				if (!DatVarInfo->Name && OptInfo->MergeConstants && (!(Program.Frozen)))
 				{
 					// Merge constants.
 					MergeConstants (&Program);

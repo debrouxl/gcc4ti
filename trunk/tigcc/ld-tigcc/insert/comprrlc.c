@@ -252,15 +252,16 @@ BOOLEAN InsertCompressedRelocs (SECTION *Section, SECTION *TargetSection, SECTIO
 	// Initialize user data for list model.
 	RELOC_USER_DATA UserData = {TargetSection};
 	
+	// Do code optimizations now, since this might reduce the number
+	// of relocs. This is useful even if a target section was specified
+	// because we can't fix the code anymore after the section is frozen.
+	// This could even cause us to emit invalid code (bra +0).
+	FixCode (Section->Parent);
+
 	// If a target section is specified, it is essential now, and it may
 	// not be modified any more.
 	if (TargetSection)
 		TargetSection->Frozen = TargetSection->Essential = TRUE;
-	else
-		// Do code optimizations now, since this might reduce the number
-		// of relocs. If a target section was specified, this is pointless,
-		// as relocs into a separate section can never be optimized away.
-		FixCode (Section->Parent);
 	
 	// Apply the format documented in _compressed_format_relocs.s.
 	if (!(EmitCompressedFormatRelocs ((LIST_MODEL *) RelocListModel, MergedSection, Reference, &UserData, Section)))
@@ -1038,15 +1039,16 @@ BOOLEAN InsertMlinkRelocs (SECTION *Section, SECTION *TargetSection, SECTION *Me
 	// Initialize user data for list model.
 	RELOC_USER_DATA UserData = {TargetSection};
 	
+	// Do code optimizations now, since this might reduce the number
+	// of relocs. This is useful even if a target section was specified
+	// because we can't fix the code anymore after the section is frozen.
+	// This could even cause us to emit invalid code (bra +0).
+	FixCode (Section->Parent);
+
 	// If a target section is specified, it is essential now, and it may
 	// not be modified any more.
 	if (TargetSection)
 		TargetSection->Frozen = TargetSection->Essential = TRUE;
-	else
-		// Do code optimizations now, since this might reduce the number
-		// of relocs. If a target section was specified, this is pointless,
-		// as relocs into a separate section can never be optimized away.
-		FixCode (Section->Parent);
 	
 	// Apply the format documented in _mlink_format_relocs.s.
 	if (!(EmitMlinkFormatRelocs ((LIST_MODEL *) RelocListModel, MergedSection, Reference, &UserData, Section)))
