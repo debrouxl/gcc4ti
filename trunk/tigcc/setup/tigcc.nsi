@@ -72,6 +72,8 @@ var ICONS_GROUP
 !insertmacro MUI_PAGE_STARTMENU Application $ICONS_GROUP
 ; Path settings page
 Page custom PathSettings
+; Confirmation dialog
+Page custom ConfirmSettings
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
@@ -109,6 +111,7 @@ Var SET_PATH
 Function .onInit
 !insertmacro MUI_INSTALLOPTIONS_EXTRACT "dlgpth9x.ini"
 !insertmacro MUI_INSTALLOPTIONS_EXTRACT "dlgpthnt.ini"
+!insertmacro MUI_INSTALLOPTIONS_EXTRACT "dlgcnfrm.ini"
   ReadRegStr $0 HKCU "Software\SeReSoft\TI-GCC IDE" "Program Folder"
   StrCmp $0 "" noseresoft
   StrCpy $INSTALLED_BEFORE 1
@@ -407,6 +410,64 @@ isnt:
   !insertmacro MUI_INSTALLOPTIONS_SHOW
   ReadINIStr $SET_PATH "$PLUGINSDIR\$2" "Field 6" "State"
 tigcc_not_selected:
+FunctionEnd
+
+; Confirm settings window
+Function ConfirmSettings
+  !insertmacro MUI_HEADER_TEXT "Confirm Settings" "Please double-check and confirm your settings."
+  Push $INSTDIR
+  Call Nsis2Io
+  Pop $1
+  WriteINIStr "$PLUGINSDIR\dlgcnfrm.ini" "Field 4" "Text" $1
+  Push $ICONS_GROUP
+  Call Nsis2Io
+  Pop $1
+  WriteINIStr "$PLUGINSDIR\dlgcnfrm.ini" "Field 6" "Text" $1
+  StrCpy $2 ""
+  SectionGetFlags 1 $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  IntCmp $0 0 ide_not_selected
+  StrCpy $2 "$2IDE; "
+ide_not_selected:
+  SectionGetFlags 2 $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  IntCmp $0 0 tigcc_not_selected
+  StrCpy $2 "$2Command Line Compiler; "
+tigcc_not_selected:
+  SectionGetFlags 3 $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  IntCmp $0 0 examples_not_selected
+  StrCpy $2 "$2Examples; "
+examples_not_selected:
+  SectionGetFlags 5 $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  IntCmp $0 0 a68k_not_selected
+  StrCpy $2 "$2A68k; "
+a68k_not_selected:
+  SectionGetFlags 6 $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  IntCmp $0 0 exepack_not_selected
+  StrCpy $2 "$2ExePack Compression; "
+exepack_not_selected:
+  StrLen $1 $2
+  IntOp $1 $1 - 2
+  StrCpy $2 $2 $1
+  WriteINIStr "$PLUGINSDIR\dlgcnfrm.ini" "Field 8" "Text" $2
+  SectionGetFlags 2 $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  IntCmp $0 0 tigcc_not_selected2
+  IntCmp $SET_PATH 0 set_path_no
+  WriteINIStr "$PLUGINSDIR\dlgcnfrm.ini" "Field 10" "Text" "Yes"
+  Goto tigcc_selected
+set_path_no:
+  WriteINIStr "$PLUGINSDIR\dlgcnfrm.ini" "Field 10" "Text" "No"
+  Goto tigcc_selected
+tigcc_not_selected2:
+  WriteINIStr "$PLUGINSDIR\dlgcnfrm.ini" "Field 10" "Text" "No, command line compiler not installed"
+tigcc_selected:
+  !insertmacro MUI_INSTALLOPTIONS_INITDIALOG "dlgcnfrm.ini"
+  Pop $0 ;HWND of dialog
+  !insertmacro MUI_INSTALLOPTIONS_SHOW
 FunctionEnd
 
 ; Uninstallation
