@@ -14,11 +14,65 @@ Sends mode change notify message to all applications.
 [Explanation]
 MO_notifyModeChange sends a <A HREF="$$LINK(EventIDs)">CM_MODE_CHANGE</A> message to all applications
 (note that "Graph" application will first receive this message). This function also has one
-parameter <I>Flags</I> which is ignored on AMS 1.xx, but used in AMS 2.xx. It contains a
-set of flags which describes what exactly was changed. This parameter is attached to message
-in the <I>extra</I> field of the message, so it gives more info to applications on what they
-need to check. At the moment, I don't have exact information about what each bit in <I>Flags</I>
-represents.
+parameter <I>Flags</I> which is ignored on AMS 1.xx, but used in AMS 2.xx, and one which is used
+only on AMS 2.07 or higher. It contains a set of flags which describes what exactly was changed.
+This parameter is attached to message in the <I>extra</I> field of the message, so it gives more
+info to applications on what they need to check.
+<BR><BR>
+The flags can be one of the following as enumerated in <A HREF="$$LINK(MoNotifyFlags)">MoNotifyFlags</A>:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_FOLDER</TD><TD VALIGN="TOP">The current folder has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_GRAPH_COUNT</TD><TD VALIGN="TOP">2 graph mode or 1 graph mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_GRAPH_TYPE_1</TD><TD VALIGN="TOP">Graph mode change.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_GRAPH_TYPE_2</TD><TD VALIGN="TOP">Graph mode change for graph 2 if in 2
+graph mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_SPLIT</TD><TD VALIGN="TOP">The screen size has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_ANGLE</TD><TD VALIGN="TOP">The angle mode has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_PRECISION</TD><TD VALIGN="TOP">The precision has changed between
+EXACT, APPROX and AUTO.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_FIX</TD><TD VALIGN="TOP">Fix digits or float precision change.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_NUMBER_FORMAT</TD><TD VALIGN="TOP">Exponential format: Normal, scientific
+or engineering.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_VECTOR_FORMAT</TD><TD VALIGN="TOP">Rectangular, cylindrical or spherical.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_COMPLEX_FORMAT</TD><TD VALIGN="TOP">Real, rectangular or polar.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_PRETTY_PRINT</TD><TD VALIGN="TOP">Pretty Print has been switched on or off.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_UNIT_SYSTEM</TD><TD VALIGN="TOP">SI, ENG/US or CUSTOM unit system.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_BASE</TD><TD VALIGN="TOP">DEC, HEX or BIN base.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_LANGUAGE</TD><TD VALIGN="TOP">AMS 2.00 or higher: The language mode has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_DESKTOP</TD><TD VALIGN="TOP">AMS 2.07 or higher: The Apps Desktop has been switched on or off.</TD>
+</TR>
+</TABLE>
 
 [References]
 In=MO_digestOptions, unknown.h/setup_unit_system
