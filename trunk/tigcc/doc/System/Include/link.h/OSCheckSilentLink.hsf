@@ -1,0 +1,34 @@
+[Main]
+Name=OSCheckSilentLink
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=short OSCheckSilentLink (void);
+
+[ROM Call]
+Index=$24A
+
+[Description]
+Checks the link state.
+
+[Explanation]
+OSCheckSilentLink returns an integer which determines the link state. The meaning of the returned
+value is:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD VALIGN="TOP">0</TD><TD>None (the link is silent)</TD></TR>
+<TR><TD VALIGN="TOP">1</TD><TD>A variable header or extended header is received</TD></TR>
+<TR><TD VALIGN="TOP">2</TD><TD>A direct command, a screen dump, a request with size or a request is in progress</TD></TR>
+<TR><TD VALIGN="TOP">3</TD><TD>The link is ready</TD></TR>
+</TABLE>
+<BR>
+This function is called from high-level keyboard reading functions like
+<A HREF="$$LINK(kbd.h/kbhit)">kbhit</A> and <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>, and if it returns
+non-zero, <A HREF="$$LINK(OSLinkCmd)">OSLinkCmd</A> is called to process the received packet (as the
+link is interrupt-driven, a packet may be received asynchronously, without the request from
+the program itself). So, the TIOS can receive variables from the link whenever the program is
+waiting for a keypress (used mainly when the calculator is in the Home Screen).
+
+[References]
+In=kbd.h/kbhit, kbd.h/ngetchx
+Out=LIO_RecvData, OSLinkClose, OSLinkReset

@@ -1,0 +1,27 @@
+[Main]
+Name=fwrite
+Type=Function
+Subtype=tigcc.a
+Header Files=stdio.h
+Definition=unsigned short fwrite (const void *ptr, unsigned short size, unsigned short n, FILE *stream);
+
+[Description]
+Writes data to a stream.
+
+[Explanation]
+fwrite writes <I>n</I> items of data, each of length <I>size</I> bytes, to the output
+file associated with the structure pointed to by <I>stream</I>. The data written begins at <I>ptr</I>.
+The total number of bytes written is <I>n</I>&nbsp;x&nbsp;<I>size</I>. <I>ptr</I> in the declarations
+is a pointer to any object. fwrite returns the number of items (not bytes) actually written.
+If the operation was sucessful,
+the returned result should be equal to <I>n</I>. In a case of error, returned result will
+be smaller (possibly zero).
+<BR><BR>
+<B>Note:</B> fwrite is proposed to be used in "binary" mode (see <A HREF="$$LINK(fopen)">fopen</A>).
+Although this is not strictly necessary, it is is highly recommended opening <I>stream</I>
+in "binary" mode if you want to use this function. Anyway,
+there will not be any character translations during writing, even if the file is opened in
+"text" mode. This function was buggy in releases of TIGCCLIB prior to 2.2; this is now fixed.
+
+[References]
+Out=fputc

@@ -1,0 +1,22 @@
+[Main]
+Title=OPTIMIZE_CALC_CONSTS
+
+[Top]
+If you are compiling a program for more than one calculator, you can put
+<PRE>#define OPTIMIZE_CALC_CONSTS
+</PRE>
+at the beginning of the program to optimize code speed and size. This will
+affect <A HREF="$$LINK(compat.h/PSEUDO_CONST_CALC)">PSEUDO_CONST_CALC</A> and
+everything derived from it - mainly pseudo-constants from
+<A HREF="$$LINK(compat.h/)">compat.h</A>, but you can also define your own
+pseudo-constants very easily.
+<BR><BR>
+Defining this does have one drawback: Each of the executable files produced
+by the linker can only be run on the calculator it was linked for and cannot
+be transferred from one type of calculator to another. A check to make sure
+the program is not run on a wrong calculator is inserted automatically,
+unless <CODE><A HREF="$$LINK(advanced_calcdetect)">NO_CALC_DETECT</A></CODE>
+is defined.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="$$INFOLINK(ld/symbols_ld_calc_const)">__ld_calc_const_...</A>.

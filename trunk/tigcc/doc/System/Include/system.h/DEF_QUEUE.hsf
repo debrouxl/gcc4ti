@@ -1,0 +1,24 @@
+[Main]
+Name=DEF_QUEUE
+Type=Type
+Subtype=Structure
+Header Files=system.h
+Definition=typedef struct { unsigned short Head; /* Offset to the head of the queue */ unsigned short Tail; /* Offset to the tail of the queue */ unsigned short Size; /* Max number of entries in the queue */ unsigned short Used; /* Actual number of entries in the queue */ unsigned short Buffer[]; } DEF_QUEUE;
+
+[Description]
+A structure describing the header of a variable-sized queue.
+
+[Explanation]
+Note that Buffer[] is a <A HREF="$$INFOLINK(gnuexts)">GNU C extension</A> for variable-sized arrays (TIGCC is GNU C). The
+main usage of DEF_QUEUE structure is when you want to allocate a queue dynamically on
+the heap (using <A HREF="$$LINK(alloc.h/malloc)">malloc</A>). The operator <B>sizeof</B>
+treats variable-sized arrays as zero-length arrays (this is a sense of zero in square brackets).
+So, the following example ilustrates correct allocating of a queue with 100-byte long buffer on the
+heap (note that 100-byte long buffer can store 50 entries, because each int entry is 2 bytes long):
+<PRE>DEF_QUEUE *qptr = malloc (sizeof (DEF_QUEUE) + 100);
+OSqclear (qptr);
+qptr-&gt;Size = 50;
+OSenqueue (<I>some_data</I>, qptr);
+</PRE>
+From this example you can see that you need to fill field <I>Size</I> of the queue
+structure manually.

@@ -1,0 +1,20 @@
+[Main]
+Name=poke
+Type=Function
+Subtype=Macro
+Header Files=peekpoke.h
+Definition=#define poke(addr,val) (void)(*((unsigned char*)(long)(addr)) = (val))
+
+[Description]
+Stores a byte in memory.
+
+[Explanation]
+poke is a macro which stores a byte <I>val</I> at the memory address <I>addr</I>,
+where <I>addr</I> does not necessarily need to be a pointer. Instead, it can be of
+any type (usually an integer) which may represent a memory address in a way which makes sense.
+This way it allows for storing bytes in memory using the style which is common in most dialects
+of the BASIC language. For example, to store a byte 255 at the first byte of the video memory, do this:
+<PRE>poke (0x4C00, 255);
+</PRE>
+<B>Note:</B> Do not use poke for sending bytes to I/O ports! Use <A HREF="$$LINK(pokeIO)">pokeIO</A>
+instead.

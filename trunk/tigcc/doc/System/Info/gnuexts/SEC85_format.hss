@@ -1,0 +1,42 @@
+[Main]
+Title=format
+
+[Top]
+Syntax: <B>format (<I>archetype</I>, <I>string-index</I>, <I>first-to-check</I>)</B>
+<BR><BR>
+The <CODE>format</CODE> attribute specifies that a function takes <A HREF="$$LINK(stdio.h/printf)">printf</A>
+style arguments which
+should be type-checked against a format string.  For example, the
+declaration:
+<PRE>extern int
+my_printf (void *my_object, const char *my_format, ...)
+      __attribute__ ((format (printf, 2, 3)));
+</PRE>
+causes the compiler to check the arguments in calls to <I>my_printf</I>
+for consistency with the <A HREF="$$LINK(stdio.h/printf)">printf</A> style format string argument
+<I>my_format</I>.
+<BR><BR>
+The parameter <I>archetype</I> determines how the format string is
+interpreted, and should be <CODE>printf</CODE>, <CODE>scanf</CODE>, <CODE>strftime</CODE>
+or <CODE>strfmon</CODE> (note that only the function <A HREF="$$LINK(stdio.h/printf)">printf</A> is implemented in the TIGCC Library).
+(You can also use <CODE>__printf__</CODE>,
+<CODE>__scanf__</CODE>, <CODE>__strftime__</CODE> or <CODE>__strfmon__</CODE>.)  The
+parameter <I>string-index</I> specifies which argument is the format
+string argument (starting from 1), while <I>first-to-check</I> is the
+number of the first argument to check against the format string.  For
+functions where the arguments are not available to be checked (such as
+<A HREF="$$LINK(stdio.h/vprintf)">vprintf</A>), specify the third parameter as zero.  In this case the
+compiler only checks the format string for consistency.  For
+<CODE>strftime</CODE> formats, the third parameter is required to be zero.
+<BR><BR>
+In the example above, the format string (<I>my_format</I>) is the second
+argument of the function <I>my_print</I>, and the arguments to check
+start with the third argument, so the correct parameters for the format
+attribute are 2 and 3.
+<BR><BR>
+The <CODE>format</CODE> attribute allows you to identify your own functions
+which take format strings as arguments, so that GCC can check the
+calls to these functions for errors.  The compiler always (unless
+<B>'-ffreestanding'</B> is used) checks formats
+for the standard library functions.
+See <A HREF="$$INFOLINK(comopts/SEC6)">Options Controlling C Dialect</A>.

@@ -1,0 +1,29 @@
+[Main]
+Name=WinScrollH
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinScrollH (WINDOW *w, const WIN_RECT *rect, short NumCols);
+
+[ROM Call]
+Index=$23
+
+[Description]
+Shifts a region of a window left or right.
+
+[Explanation]
+WinScrollH shifts the rectangular area determined by <I>rect</I> of the window
+pointed to by <I>w</I> left by <I>NumRows</I> pixels (or right
+if <I>NumRows</I>&nbsp;&lt;&nbsp;0). The coordinates in <I>rect</I> are relative
+to the topleft corner od the window. Blank areas (i.e. the vacant space produced after
+scrolling) are filled with current background for the window (see
+<A HREF="$$LINK(WinBackground)">WinBackground</A>).
+<BR><BR>
+<B>Note:</B> This command is not very fast because it is realized using
+<A HREF="$$LINK(WinBitmapGet)">WinBitmapGet</A> and <A HREF="$$LINK(WinBitmapPut)">WinBitmapPut</A>.
+If the region to be scrolled starts on a byte boundary (left-most pixel), then the
+region will scroll much faster.
+
+[References]
+In=bascmd.h/cmd_pause
+Out=graph.h/ClientToScr, graph.h/PortRestore, graph.h/ScrRectOverlap, graph.h/ScrRectShift, unknown.h/_ROM_CALL_413, unknown.h/_ROM_CALL_42F

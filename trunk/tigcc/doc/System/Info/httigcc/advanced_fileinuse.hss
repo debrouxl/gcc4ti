@@ -1,0 +1,15 @@
+[Main]
+Title=SET_FILE_IN_USE_BIT
+
+[Top]
+With this definition, the program's <A HREF="$$LINK(vat.h/SYM_ENTRY)">in use</A> (a.k.a. hidden)
+bit is set while the program is running. Normally, this isn't necessary; however, the event dispatching loop deletes
+<A HREF="$$LINK(vat.h/SymAddTwin)">twin symbols</A> unless their in-use bit is set. In many cases,
+programs which might be archived will not call the event dispatching loop directly. However, dialog
+boxes (including the catalog) <I>do</I> call the event dispatching loop. The result: If an archived
+program uses dialog boxes (including the catalog), then the program's twin symbol will get
+deleted. Thus, the area of memory the program occupies gets freed, and the program will almost
+certainly crash. Setting this bit is handled automatically now, but you can still set it manually by defining
+this at the beginning of a file:
+<PRE>#define SET_FILE_IN_USE_BIT
+</PRE>

@@ -1,0 +1,30 @@
+[Main]
+Name=FlashMemoryEnd
+Type=Variable
+Subtype=ROM Call
+Header Files=flash.h
+Definition=unsigned char *const FlashMemoryEnd;
+MinAMS=2.00
+See Also=compat.h/ROM_base
+
+[ROM Call]
+Index=$43D
+Reference=1
+
+[Description]
+A pointer to the first byte after the end of the archive memory.
+
+[Explanation]
+FlashMemoryEnd can be used in a function reading the archive memory like this:
+<PRE>void ReadSomethingInArchive(unsigned char *start)
+{
+  unsigned char *end = FlashMemoryEnd;
+  for (; start &lt; end; start++)
+    {
+      // Read something here...
+    }
+}
+</PRE>
+
+[References]
+In=EM_survey, system.h/AB_prodid, system.h/AB_prodname, unknown.h/_ROM_CALL_3CE, unknown.h/_ROM_CALL_4F3

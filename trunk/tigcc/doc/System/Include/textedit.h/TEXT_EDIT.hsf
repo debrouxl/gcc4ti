@@ -1,0 +1,12 @@
+[Main]
+Name=TEXT_EDIT
+Type=Type
+Subtype=Structure
+Header Files=textedit.h
+Definition=typedef struct TextEditStruct { WINDOW *Parent; /* Pointer to the parent window */ unsigned short ReadOnly; /* Number of bytes at start that are read only */ WIN_RECT Rect; /* Editor area descriptor */ unsigned short BufSize; /* Number of currently allocated bytes */ unsigned short CurSize; /* Current number of characters in the editor */ unsigned short CursorOffset; /* Offset of the cursor */ unsigned short StartOffset; /* ScrollX, position at which text is displayed */ unsigned short PreChars; /* Number of characters to display before ":" */ unsigned short CharWidth; /* Width in characters */ unsigned short CharHeight; /* Height in characters */ unsigned short LineNum; /* Line number: cursor is on 0..CharHeight-1 */ unsigned short CursorX; /* Horizontal char position */ unsigned short Flags; /* Editor flags */ union { HANDLE h; /* Handle of the editor buffer, if opened with TE_open */ const char *p; /* Ptr to the editor buffer, if opened with TE_openFixed */ } Text; } TEXT_EDIT;
+
+[Description]
+A structure used to coordinate all text editor operations.
+
+[Explanation]
+<B>Note:</B> <I>CursorX</I> is the horizontal character position in the line, or position relative to <I>StartOffset</I>.

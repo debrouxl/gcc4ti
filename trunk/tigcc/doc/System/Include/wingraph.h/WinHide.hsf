@@ -1,0 +1,30 @@
+[Main]
+Name=WinHide
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinHide (WINDOW *w);
+
+[ROM Call]
+Index=$15
+
+[Description]
+Hides a window.
+
+[Explanation]
+WinHide hides a window pointed to by <I>w</I> (mark it as not-visible so that it is never
+activated by the system) and updates the screen. When a window is activated
+(see <A HREF="$$LINK(WinActivate)">WinActivate</A>) or when it is opened (unless the
+<A HREF="$$LINK(WinFlags)">WF_VIRTUAL</A> flag is passed to <A HREF="$$LINK(WinOpen)">WinOpen</A>), it is
+marked as visible. All windows in the system are kept in a linked list. When a window in the
+system is closed, the next visible window in the system is activated and becomes the currently
+active window. Since virtual windows are never displayed on the screen they are never considered
+visible. An application's main window is always visible since that is the only view the user has
+of the application. From the other side, an application may open other windows that it does not
+want to ever be activated. In that case, use WinHide so that they will never be activated by
+the system. Although the given window will not be activated by the system, writes to it still
+go to the screen (unless it is a virtual window).
+
+[References]
+In=bascmd.h/cmd_disp, bascmd.h/cmd_disphome, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_prompt, homescr.h/HomeExecute, unknown.h/_ROM_CALL_45B
+Out=unknown.h/UpdateWindows

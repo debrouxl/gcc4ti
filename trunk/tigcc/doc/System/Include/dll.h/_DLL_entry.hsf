@@ -1,0 +1,19 @@
+[Main]
+Name=_DLL_entry
+Type=Function
+Subtype=Macro
+Header Files=dll.h
+Definition=void *_DLL_entry (int index);
+Real Definition=#define _DLL_entry(index) (__DLL_interface_ptr->jump_table[index])
+
+[Description]
+Returns a pointer to a symbol exported from a DLL.
+
+[Explanation]
+_DLL_entry returns a void pointer to the location of the <I>index</I>-th exported symbol of the
+currently loaded DLL (assuming that it has been loaded sucessfully using <A HREF="$$LINK(LoadDLL)">LoadDLL</A>).
+Note that _DLL_entry returns garbage if the DLL is not loaded.
+<BR><BR>
+This function is used internally in
+<A HREF="$$LINK(_DLL_call)">_DLL_call</A>, <A HREF="$$LINK(_DLL_call_attr)">_DLL_call_attr</A>, 
+<A HREF="$$LINK(_DLL_reference)">_DLL_reference</A>, and <A HREF="$$LINK(_DLL_glbvar)">_DLL_glbvar</A>.

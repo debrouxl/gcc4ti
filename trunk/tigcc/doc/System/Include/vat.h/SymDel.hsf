@@ -1,0 +1,27 @@
+[Main]
+Name=SymDel
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short SymDel (SYM_STR SymName);
+
+[ROM Call]
+Index=$5E
+
+[Description]
+Deletes a symbol.
+
+[Explanation]
+SymDel deletes the symbol <I>SymName</I> and returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was successful,
+else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. See <A HREF="$$LINK(SYMSTR)">SYMSTR</A> for rules
+about <I>SymName</I>. Note that this routine will delete symbols even if they are locked or
+in use! Do not call SymDel to delete a folder, or twin or archived symbols (for these purposes,
+see <A HREF="$$LINK(FolderDel)">FolderDel</A> and <A HREF="$$LINK(SymDelTwin)">SymDelTwin</A>).
+<BR><BR>
+<B>Note:</B> Do not call SymDel to delete twin symbols. Instead, use the
+<A HREF="$$LINK(SymDelTwin)">SymDelTwin</A> function.
+
+[References]
+In=SymMove, VarStore, bascmd.h/cmd_stogdb, events.h/handleVarLinkKey, link.h/LIO_Receive, link.h/OSLinkCmd, stdio.h/fopen, stdio.h/unlink, unknown.h/gr_del_locals, unknown.h/GraphOrTableCmd, unknown.h/GT_SaveAs, unknown.h/_ROM_CALL_438
+Out=SymFindPtr, alloc.h/HeapFree, alloc.h/HeapRealloc, mem.h/memmove, unknown.h/CheckGraphRef, unknown.h/statFree, unknown.h/_ds32s32
+Out_EV_eventLoop=1

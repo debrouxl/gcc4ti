@@ -1,0 +1,26 @@
+[Main]
+Name=FiftyMsecTick
+Type=Variable
+Subtype=ROM Call
+Header Files=system.h
+Definition=volatile unsigned long FiftyMsecTick;
+MinAMS=2.00
+
+[ROM Call]
+Index=$4FC
+
+[Description]
+A counter incremented by the system auto-int 5 routine.
+
+[Explanation]
+FiftyMsecTick represents the number of times <A HREF="$$LINK(intr.h/IntVecs)">AUTO_INT_5</A> was executed since the last reset.<BR>
+Indeed, this variable is changed only by a routine called at reset, and by the system routine for auto-int 5.
+<BR><BR> 
+This variable is a way to measure a delay, without using a system timer with
+<A HREF="$$LINK(system.h/OSFreeTimer)">OSFreeTimer</A>,
+<A HREF="$$LINK(system.h/OSRegisterTimer)">OSRegisterTimer</A>,
+<A HREF="$$LINK(system.h/OSTimerCurVal)">OSTimerCurVal</A>,
+<A HREF="$$LINK(system.h/OSTimerExpired)">OSTimerExpired</A>, and
+<A HREF="$$LINK(system.h/OSTimerRestart)">OSTimerRestart</A>.
+<BR><BR>
+Note also that unlike all the other system timers, FiftyMsecTick is a countup timer.

@@ -1,0 +1,28 @@
+[Main]
+Title=How do you use DrawIcon?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I don't understand how to use <A HREF="$$LINK(graph.h/DrawIcon)">DrawIcon</A>.
+Do I need to use <A HREF="$$LINK(graph.h/pICON)">pICON</A>?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+If you want to draw an icon at 50,50 for example, do:
+<PRE>ICON i = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+...
+DrawIcon (50, 50, &amp;i, A_NORMAL);
+</PRE>
+Of course, change 1, 2, 3... to the real definition of the icon.
+<BR><BR>
+<A HREF="$$LINK(graph.h/pICON)">pICON</A> is necessary only for using with icons which are dynamically allocated
+(forget it if you are not familiar with dynamic structures in C), like in:
+<PRE>pICON p = malloc (32);
+...
+// <I>Here is a code which fill up the icon structure</I>
+...
+DrawIcon (50, 50, p, A_REPLACE);
+</PRE>
+Look operator "&amp;" in first example, it is omitted in second example. In fact,
+"&amp;" converts a variable of <A HREF="$$LINK(graph.h/ICON)">ICON</A> type to
+<A HREF="$$LINK(graph.h/pICON)">pICON</A> type (in general, it converts any
+type to corresponding pointer type).
+</TD></TR></TABLE>

@@ -1,0 +1,27 @@
+[Main]
+Name=cmd_fnon
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_fnon (CESI IntList);
+MinAMS=1.01
+See Also=cmd_fnoff
+
+[ROM Call]
+Index=$34E
+
+[Description]
+Executes TI-Basic 'FnOn' command.
+
+[Explanation]
+If <I>IntList</I> points to <A HREF="$$LINK(estack.h/Tags)">END_TAG</A>, cmd_fnon selects
+all 'Y=' functions that are defined for the current graphing mode (note that in split-screen two-graph mode,
+cmd_fnon only applies to the active graph). If <I>IntList</I> points to an integer item
+in the range from 1 to 99, cmd_fnon selects the specified
+'Y=' function for the current graph mode, and repeats this task for all expressions on the
+expression stack below <I>IntList</I>, until <A HREF="$$LINK(estack.h/Tags)">END_TAG</A>
+is reached. In 3D graphing mode, only one function at a time can be selected.
+
+[References]
+Out=estack.h/next_expression_index, unknown.h/EQU_select, unknown.h/FindGrFunc, unknown.h/gr_active
+Out_EV_eventLoop=1

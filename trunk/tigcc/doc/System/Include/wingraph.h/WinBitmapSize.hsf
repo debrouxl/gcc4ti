@@ -1,0 +1,25 @@
+[Main]
+Name=WinBitmapSize
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=unsigned short WinBitmapSize (WINDOW *w, const WIN_RECT *rect);
+
+[ROM Call]
+Index=$8
+
+[Description]
+Determines a size of a bitmap (eventually clipped) in bytes.
+
+[Explanation]
+WinBitmapSize returns the size in bytes of a bitmap for a part of rectangular area given by
+parameter <I>rect</I> which belongs to the window pointed to by <I>w</I> (may be smaller than
+the size of this area due to clipping). This size includes the data for the bitmap and the
+header. All coordinates in <I>rect</I> are relative to the topleft corner of the window.
+See <A HREF="$$LINK(WinBitmapGet)">WinBitmapGet</A> for more info about bitmaps.
+<BR><BR>
+<B>Note:</B> WinBitmapSize will clip any negative coordinates to zero.
+
+[References]
+Out=graph.h/BitmapSize, graph.h/ScrRectOverlap, unknown.h/_ROM_CALL_42F
+In=bascmd.h/cmd_newpic, unknown.h/gr_stopic, unknown.h/GT_SaveAs

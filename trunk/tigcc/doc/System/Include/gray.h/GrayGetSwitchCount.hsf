@@ -1,0 +1,38 @@
+[Main]
+Name=GrayGetSwitchCount
+Alias=GetGraySwitchCount
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=unsigned long GrayGetSwitchCount (void);
+Real Definition=#define GrayGetSwitchCount() (__switch_cnt)
+See Also=GraySetSwitchCount
+
+[Description]
+Returns the current plane switch counter.
+
+[Explanation]
+Previous versions of the TIGCC (up to v0.91) grayscale support were lacking a
+mechanism to synchronize to the internal switching of the grayscales planes,
+which is quite necessary for almost any kind of "high-speed" games where the
+grayscale graphics change a lot.
+<BR><BR>
+This is why Thomas Nussbaumer implemented a plane switch counter which is
+increased after every processed plane switch.
+<BR><BR>
+A complete grayscale frame consists of 2 plane switches.
+<A HREF="$$LINK(GrayOn)">GrayOn</A> resets the switch counter value to 0.
+<BR><BR>
+A program which wants to synchronize to the plane switching within a loop can do
+this like this, for example:
+<PRE>unsigned long cur_count = GrayGetSwitchCount ();
+do {
+  unsigned long wait_for = cur_count + 2;
+  while ((cur_count = GrayGetSwitchCount ()) &lt; wait_for);
+  // <I>We'll always come here after the same plane</I>
+  // <I>(dark plane or light plane) was switched.</I>
+  
+  // <I>Do something here ...</I>
+  
+} while (<I>some_condition</I>);
+</PRE>

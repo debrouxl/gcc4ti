@@ -1,0 +1,37 @@
+[Main]
+Name=strncmp
+Type=Function
+Subtype=ROM Call
+Header Files=string.h
+Definition=short strncmp (const unsigned char *s1, const unsigned char *s2, unsigned long maxlen);
+Attributes=__attribute__((__pure__))
+See Also=strcmp
+
+[ROM Call]
+Index=$272
+
+[Description]
+Compares at most maxlen characters of one string to another.
+
+[Explanation]
+strncmp makes the same unsigned comparison as <A HREF="$$LINK(strcmp)">strcmp</A>, but looks at no more
+than <I>maxlen</I> characters. It starts with the first character in each string and
+continues with subsequent characters until the corresponding characters
+differ or until it has examined <I>maxlen</I> characters. strncmp returns an int
+value based on the result of comparing <I>s1</I> (or part of it) to <I>s2</I> (or part of
+it):
+<UL>
+<LI>&lt; 0 if <I>s1</I> is less than <I>s2</I></LI>
+<LI>== 0 if <I>s1</I> is the same as <I>s2</I></LI>
+<LI>&gt; 0 if <I>s1</I> is greater than <I>s2</I></LI>
+</UL>
+More precisely, if the strings differ, the value of the first nonmatching character in <I>s2</I>
+subtracted from the corresponding character in <I>s1</I> is returned. The
+subtraction casts the input strings to unsigned chars so that the characters
+in the range 128..255 are considered above the characters in the range 0..127.
+<BR><BR>
+<B>Note:</B> This routine is declared as "short" although the ANSI standard proposes "long". This is important,
+because TIOS the strncmp routine puts garbage in the higher half of the d0 register.
+
+[References]
+In=unknown.h/TIOS_EV_getAppID

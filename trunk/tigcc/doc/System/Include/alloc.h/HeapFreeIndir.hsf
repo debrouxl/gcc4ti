@@ -1,0 +1,33 @@
+[Main]
+Name=HeapFreeIndir
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=void HeapFreeIndir (HANDLE *HandlePtr);
+
+[ROM Call]
+Index=$98
+
+[Description]
+Frees a heap block given a pointer to it.
+
+[Explanation]
+HeapFreeIndir is like <A HREF="$$LINK(HeapFree)">HeapFree</A> except you pass the address
+of a variable which keeps the block handle instead of the handle itself. If the handle
+that <I>HandlePtr</I> points to is not <A HREF="$$LINK(H_NULL)">H_NULL</A>, then it frees that
+handle and sets the handle variable that is pointed to by <I>HandlePtr</I> to
+<A HREF="$$LINK(H_NULL)">H_NULL</A>.
+<BR><BR>
+Maybe this sounds a bit confusing to you. In fact, doing
+<PRE>HeapFreeIndir (&amp;<I>handle</I>);    // <I>The ampersand ('&amp;') is important</I>
+</PRE>
+works exactly the same as
+<PRE>if (<I>handle</I>) HeapFree (<I>handle</I>);
+<I>handle</I> = H_NULL;
+</PRE>
+<B>Note:</B> In releases of TIGCCLIB prior to 2.2, the information about this routine was
+quite misleading or even wrong.
+
+[References]
+In=bascmd.h/cmd_blddata, bascmd.h/cmd_cubicreg, bascmd.h/cmd_custom, bascmd.h/cmd_dialog, bascmd.h/cmd_disphome, bascmd.h/cmd_expreg, bascmd.h/cmd_linreg, bascmd.h/cmd_lnreg, bascmd.h/cmd_logistic, bascmd.h/cmd_medmed, bascmd.h/cmd_newdata, bascmd.h/cmd_onevar, bascmd.h/cmd_pause, bascmd.h/cmd_popup, bascmd.h/cmd_powerreg, bascmd.h/cmd_quadreg, bascmd.h/cmd_quartreg, bascmd.h/cmd_request, bascmd.h/cmd_sinreg, bascmd.h/cmd_sorta, bascmd.h/cmd_sortd, bascmd.h/cmd_stogdb, bascmd.h/cmd_toolbar, bascmd.h/cmd_twovar, dialogs.h/DlgMessage, error.h/ERD_dialog, events.h/EV_clearPasteString, events.h/EV_defaultHandler, events.h/handleRclKey, events.h/MO_modeDialog, gdraw.h/GR3_paint3d, homescr.h/HomeExecute, homescr.h/HomePushEStack, homescr.h/HS_freeFIFONode, textedit.h/TE_close, unknown.h/cleanup_de_mem, unknown.h/cleanup_seq_mem, unknown.h/CustomFree, unknown.h/EV_quit, unknown.h/gdb_recall, unknown.h/gr_delete_fldpic, unknown.h/GR3_addContours, unknown.h/GR3_freeDB, unknown.h/GT_Trace, unknown.h/Regraph, unknown.h/SetGraphMode, unknown.h/SP_Define, unknown.h/VarStoreLink, unknown.h/_ROM_CALL_3F7, unknown.h/_ROM_CALL_3F8, unknown.h/_ROM_CALL_424, unknown.h/_ROM_CALL_438, unknown.h/_ROM_CALL_45B, unknown.h/_ROM_CALL_486, unknown.h/_ROM_CALL_494, unknown.h/_ROM_CALL_495
+Out=HeapFree

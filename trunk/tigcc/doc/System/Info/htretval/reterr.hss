@@ -1,0 +1,31 @@
+[Main]
+Title=Returning TI-Basic Errors
+Index=ENABLE_ERROR_RETURN
+
+[Top]
+Basically, you can return errors using
+<A HREF="$$LINK(error.h/ER_throw)">ER_throw</A> or
+<A HREF="$$LINK(error.h/ER_throwVar)">ER_throwVar</A> from
+<A HREF="$$LINK(error.h/)">error.h</A>. Many functions from this library
+throw errors, which you can simply pass on to the operating system, possibly using
+<A HREF="$$LINK(error.h/TRY)">TRY</A>...<A HREF="$$LINK(error.h/FINALLY)">FINALLY</A>...<A HREF="$$LINK(error.h/ENDFINAL)">ENDFINAL</A> blocks.
+<BR><BR>
+However, for the system to operate normally after this, you need to write
+<PRE>#define ENABLE_ERROR_RETURN
+</PRE>
+at the beginning of your program. Otherwise, the screen will not be updated
+properly and other cleanup code (for example for <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>)
+is not executed. Most importantly, however, the program handle remains locked
+in AMS 1.xx because of a bug in the operating system. If you try to start the
+program again, you will get an "Invalid Program Reference" error.
+<BR><BR>
+<B>Note:</B> The workaround for this bug works only in kernel-less programs.
+For kernel-based programs, working around the bug is the kernel's
+responsibility. If you want to use this directive in kernel mode, you need to
+check which kernels perform such a workaround, and tell your users about this
+fact.
+<BR><BR>
+The following example (called "Memory Error") demonstrates how this directive
+may be used together with
+<A HREF="$$LINK(error.h/TRY)">TRY</A>...<A HREF="$$LINK(error.h/FINALLY)">FINALLY</A>...<A HREF="$$LINK(error.h/ENDFINAL)">ENDFINAL</A> blocks:
+$$EXAMPLE(Memory Error.c)

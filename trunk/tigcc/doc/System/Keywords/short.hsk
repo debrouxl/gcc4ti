@@ -1,0 +1,39 @@
+[Main]
+Keywords=short, long, signed, unsigned
+
+[Description]
+Type modifiers.
+
+[Explanation]
+A type modifier alters the meaning of the base type to yield a new type.
+Each of these type modifiers can be applied to the base type <A HREF="$$LINK(int)">int</A>.
+The modifiers <CODE>signed</CODE> and <CODE>unsigned</CODE> can be applied to the base type <A HREF="$$LINK(char)">char</A>.
+In addition, <CODE>long</CODE> can be applied to <A HREF="$$LINK(double)">double</A>.
+<BR><BR>
+When the base type is omitted from a declaration, <CODE>int</CODE> is assumed.
+For example,
+<PRE>long x;                 // <I>'int' is implied</I>
+unsigned char ch;
+signed int i;           // <I>'signed' is default</I>
+unsigned long int l;    // <I>'int' is accepted, but not needed</I>
+</PRE>
+In this implementation of the compiler, the valid range of valid data types is as
+listed in the following table:
+<PRE>short int              -32768 to 32767
+long int               -2147483648 to 2147483647
+signed char            -128 to 127
+signed int             -32768 to 32767 (signed is default)
+                       [or -2147483648 to 2147483647 if '-mnoshort' is given]
+signed short int       -32768 to 32767
+signed long int        -2147483648 to 2147483647
+unsigned char          0 to 255
+unsigned int           0 to 65535
+                       [or 0 to 4294967295 if '-mnoshort' is given]
+unsigned short int     0 to 65535
+unsigned long int      0 to 4294967295
+</PRE>
+
+<B>Note:</B> GNU C extends the <CODE>long</CODE> keyword to allow
+<A HREF="$$INFOLINK(gnuexts/SEC72)">double-long integers</A> (64-bit integers in this implementation),
+so they have range from -9223372036854775808 to 9223372036854775807 if signed, or from 0 to
+18446744073709551615 if unsigned.

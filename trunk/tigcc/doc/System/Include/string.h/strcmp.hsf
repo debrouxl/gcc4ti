@@ -1,0 +1,33 @@
+[Main]
+Name=strcmp
+Type=Function
+Subtype=ROM Call
+Header Files=string.h
+Definition=short strcmp (const unsigned char *s1, const unsigned char *s2);
+Attributes=__attribute__((__pure__))
+See Also=strncmp, cmpstri, stricmp
+
+[ROM Call]
+Index=$271
+
+[Description]
+Compares one string to another.
+
+[Explanation]
+strcmp performs an unsigned comparison of <I>s1</I> to <I>s2</I>. It starts with the first
+character in each string and continues with subsequent characters until the
+corresponding characters differ or until the end of the strings is reached.
+strcmp returns a value that is
+<UL>
+<LI>&lt; 0 if <I>s1</I> is less than <I>s2</I></LI>
+<LI>== 0 if <I>s1</I> is the same as <I>s2</I></LI>
+<LI>&gt; 0 if <I>s1</I> is greater than <I>s2</I></LI>
+</UL>
+More precisely, if the strings differ, the value of the first nonmatching character in <I>s2</I>
+subtracted from the corresponding character in <I>s1</I> is returned.
+<BR><BR>
+<B>Note:</B> This routine is declared as "short" although the ANSI standard proposes "long". This is important,
+because TIOS the strncmp routine puts garbage in the higher half of the d0 register.
+
+[References]
+In=bascmd.h/cmd_movevar, dialogs.h/VarOpen, dll.h/LoadDLL, estack.h/compare_expressions, events.h/EV_getAppID, events.h/MO_currentOptions, events.h/MO_digestOptions, link.h/OSLinkCmd, link.h/sendcalc, unknown.h/GraphOrTableCmd, unknown.h/OO_AppNameToACB, unknown.h/TIOS_FFindFirst: FFindFirst, unknown.h/TIOS_FFindNext: FFindNext, unknown.h/TIOS_FOpen: FOpen, unknown.h/tokenize_if_TI_92_or_text, vat.h/FolderCur, vat.h/FolderOp, vat.h/IsMainFolderStr, vat.h/SymFindFirst, vat.h/SymSysVar, vat.h/VarRecall, vat.h/VarStore, unknown.h/_ROM_CALL_131

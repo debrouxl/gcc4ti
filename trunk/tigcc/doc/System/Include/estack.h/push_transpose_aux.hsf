@@ -1,0 +1,28 @@
+[Main]
+Name=push_transpose_aux
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void push_transpose_aux (CESI ptr, short ConjFlag);
+MinAMS=1.01
+
+[ROM Call]
+Index=$3C1
+
+[Description]
+Pushes transposed matrix to the expression stack.
+
+[Explanation]
+Assuming that <I>ptr</I> points to the tag of a matrix (which is, in fact,
+a list of equally sized lists), push_transpose_aux pushes the transpose
+of the matrix to the expression stack. If <I>ConjFlag</I> is
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, a complex conjugate transpose will be produced,
+and if <I>ConjFlag</I> is <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, an ordinary
+transpose will be produced. For complex conjugate transposition, the matrix
+should be in canonic internal form (see <A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A>).
+If <I>ptr</I> doesn't point to a matrix, the behaviour is unpredictable.
+
+[References]
+In=unknown.h/push_symbolic_qr_fact, unknown.h/_ROM_CALL_4D2
+Out=delete_between, push_expression, push_quantum, top_estack, basfunc.h/push_conj, unknown.h/get_matrix_indices
+Out_EV_eventLoop=1

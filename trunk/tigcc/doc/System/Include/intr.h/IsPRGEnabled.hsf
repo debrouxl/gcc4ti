@@ -1,0 +1,16 @@
+[Main]
+Name=IsPRGEnabled
+Type=Function
+Subtype=Macro
+Header Files=intr.h
+Definition=short IsPRGEnabled (void);
+Real Definition=#define IsPRGEnabled() (!!((*((volatile unsigned char *) 0x600015)) & 0x8))
+See Also=EnablePRG, DisablePRG
+
+[Description]
+Determines whether the programmable rate generator is enabled.
+
+[Explanation]
+The programmable rate generator is used by the AMS and is normally on.
+However, if you enable or disable it in a program, first you should check
+whether it is currently enabled, which can be done with this macro.

@@ -1,0 +1,19 @@
+[Main]
+Name=TE_updateCommand
+Type=Function
+Subtype=ROM Call
+Header Files=textedit.h
+Definition=void TE_updateCommand (TEXT_EDIT *te, unsigned char cmd);
+
+[ROM Call]
+Index=$B4
+
+[Description]
+Updates the command byte in the current line of the text.
+
+[Explanation]
+TE_updateCommand sets the first byte of the current line (i.e. the line in which the cursor
+is located) of the text editor associated to the structure pointed to by <I>te</I> to <I>cmd</I>,
+i.e. sets the "command byte". This function works correctly only if the editor is opened in "command byte"
+mode, i.e. if if b2&nbsp;=&nbsp;1 in parameter <I>Flags</I> of the <A HREF="$$LINK(TE_open)">TE_open</A>
+function).

@@ -1,0 +1,38 @@
+[Main]
+Name=cmd_popup
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_popup (ESI ItemList, ESI SymName);
+MinAMS=1.01
+See Also=cmd_toolbar, menus.h/
+
+[ROM Call]
+Index=$36E
+
+[Description]
+Executes TI-Basic 'Popup' command.
+
+[Explanation]
+cmd_popup displays a popup menu containing character strings from the list
+of strings pointed to by <I>ItemList</I> (it should point to the tag of the
+list, i.e. to the <A HREF="$$LINK(estack.h/Tags)">LIST_TAG</A>),
+waits for the user to select an item, and stores the index of the selection
+in the TI-Basic variable determined by the <I>SymName</I> parameter (see
+<A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A>). If the variable does not exist,
+it will be created. Each item in the list expression must be a string. Also,
+both the <I>ItemList</I> and <I>SymName</I> entries must be on the expression
+stack, and the <I>SymName</I> entry must be exactly below the <I>ItemList</I>
+entry on the expression stack (the <I>ItemList</I> entry is usually on the
+top of the expression stack). As this function serves mainly as an internal
+subroutine for executing the TI-Basic Popup command, such a limitation is not
+so unusual.
+<BR><BR>
+<B>Note:</B> See <A HREF="$$LINK(menus.h/PopupNew)">PopupNew</A>,
+<A HREF="$$LINK(menus.h/PopupDo)">PopupDo</A>, and other functions from
+<A HREF="$$LINK(menus.h/)">menus.h</A>, for much more flexible methods to
+create popup menus in a C program.
+
+[References]
+Out=alloc.h/HeapFree, alloc.h/HeapFreeIndir, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/GetValue, estack.h/HToESI, estack.h/next_expression_index, estack.h/push_quantum, estack.h/push_quantum_pair, estack.h/top_estack, menus.h/PopupAddText, menus.h/PopupDo, menus.h/PopupNew, string.h/strlen, unknown.h/primary_tag_list, estack.h/push_simplify, vat.h/DerefSym, vat.h/VarRecall, vat.h/VarStore, unknown.h/_ROM_CALL_480
+Out_EV_eventLoop=1

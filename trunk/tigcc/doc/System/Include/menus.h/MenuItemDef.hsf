@@ -1,0 +1,42 @@
+[Main]
+Name=MenuItemDef
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=void *MenuItemDef (HANDLE ExecHandle, short ID, unsigned short *Type);
+MinAMS=2.00
+See Also=MenuBegin, DynMenuAdd, DynMenuChange
+
+[ROM Call]
+Index=$3F3
+
+[Description]
+Returns a pointer to the data of a menu item.
+
+[Explanation]
+Given a menu item <I>ID</I>, MenuItemDef returns a pointer to the text,
+<A HREF="$$LINK(graph.h/ICON)">ICON</A>, or <A HREF="$$LINK(graph.h/BITMAP)">BITMAP</A> defining it
+(or <A HREF="$$LINK(alloc.h/NULL)">NULL</A> if <I>ID</I> was not found in the menu identified by
+<I>ExecHandle</I>) and returns its type in <I>Type</I>. <I>ExecHandle</I> is a handle returned from
+<A HREF="$$LINK(MenuBegin)">MenuBegin</A>.
+<BR><BR>
+The value returned in <I>Type</I> can be one of the following types (or 0 if not found), as defined
+in the enum <A HREF="$$LINK(DynMenuFlags)">DynMenuFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TEXT</TD>
+  <TD>The pointer returned points to a text string.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_ICON</TD>
+  <TD>The pointer returned points to an <A HREF="$$LINK(graph.h/ICON)">ICON</A> structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_BITMAP</TD>
+  <TD>The pointer returned points to a <A HREF="$$LINK(graph.h/BITMAP)">BITMAP</A> structure.</TD>
+</TR>
+</TABLE>
+
+[References]
+Out=unknown.h/_ROM_CALL_41E, unknown.h/_ROM_CALL_422

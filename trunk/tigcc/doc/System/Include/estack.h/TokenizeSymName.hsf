@@ -1,0 +1,50 @@
+[Main]
+Name=TokenizeSymName
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=ESI TokenizeSymName (const char *src, unsigned short Flags);
+See Also=vat.h/StrToTokN
+
+[ROM Call]
+Index=$80
+
+[Description]
+Tokenizes a C string into a symbol name.
+
+[Explanation]
+TokenizeSymName converts a symbol name pointed to by <I>src</I>,
+which is an ordinary ANSI C string, into a tokenized form, and pushes the
+tokenized form on the expression stack.
+After pushing, the new value of <A HREF="$$LINK(top_estack)">top_estack</A>
+points to the variable tag on the expression stack. TokenizeSymName returns
+the old value of <A HREF="$$LINK(top_estack)">top_estack</A> (which you
+can use to restore <A HREF="$$LINK(top_estack)">top_estack</A>), or
+<A HREF="$$LINK(NULL_INDEX)">NULL_INDEX</A> if the symbol name was invalid.
+<BR><BR>
+The parameter <I>Flags</I> is a set of binary flags from
+<A HREF="$$LINK(TokenizeSymNameFlags)">TokenizeSymNameFlags</A> with the
+following meaning:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>TSF_FULLY_QUALIFIED</TD>
+<TD>Add current default folder to the name if no folder specified in the
+name (do not use if tokenizing standalone folder names).</TD>
+</TR>
+<TR>
+<TD>TSF_ALLOW_RESERVED</TD>
+<TD>Allow reserved names to be tokenized (otherwise they cause throwing an
+error).</TD>
+</TR>
+<TR>
+<TD>TSF_PASS_ERRORS</TD>
+<TD>Throw errors instead of returning <A HREF="$$LINK(NULL_INDEX)">NULL_INDEX</A>.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> This routine may cause heap compression.
+
+[References]
+In=bascmd.h/cmd_newplot, dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs, events.h/handleRclKey, unknown.h/TokenizeName, unknown.h/VarStoreLink
+Out=next_expression_index, push_parse_text, top_estack, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, string.h/strcat, string.h/strchr, string.h/strlen, system.h/OSDisableBreak, system.h/OSEnableBreak, unknown.h/FirstNonblank, vat.h/IsMainFolderStr, vat.h/SymSysVar

@@ -1,0 +1,29 @@
+[Main]
+Name=EV_setCmdState
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void EV_setCmdState (unsigned short cmd, short State);
+See Also=menus.h/MenuSubStat
+
+[ROM Call]
+Index=$D2
+
+[Description]
+Changes the status (active/inactive) of a menu command in the current application.
+
+[Explanation]
+EV_setCmdState is similar to <A HREF="$$LINK(EV_setFKeyState)">EV_setFKeyState</A>, but works with
+command pulldown menus associated with the main toolbar menu which belongs to the current application.
+EV_setCmdState changes the status of the command item which has its <I>ret_val</I>
+(see <A HREF="$$LINK(EV_registerMenu)">EV_registerMenu</A>) equal to the <I>cmd</I>. For example,
+if you execute
+<PRE>EV_setCmdState (CM_MENU_CUT, FALSE);
+</PRE>
+in your program, you will see that the "Cut" command in the "Home screen" menu will be disabled
+(note that "Home screen" is the current application if you didn't use <A HREF="$$LINK(EV_startApp)">EV_startApp</A>
+in your program). <A HREF="$$LINK(EventIDs)">CM_MENU_CUT</A> is, of course, the code of the "Cut" menu command.
+
+[References]
+In=bascmd.h/cmd_disphome, homescr.h/HomeExecute, textedit.h/TE_indicateReadOnly
+Out=menus.h/MenuSubStat, unknown.h/_ROM_CALL_3CD

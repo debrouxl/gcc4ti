@@ -1,0 +1,65 @@
+[Main]
+Name=SetCurAttr
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=short SetCurAttr (short Attr);
+
+[ROM Call]
+Index=$19A
+
+[Description]
+Sets the default attribute.
+
+[Explanation]
+SetCurAttr sets the default attribute for all commands which haven't an
+attribute as an explicite parameter to <I>Attr</I>. The interpretation of the attribute depends
+of concrete graphic command. Some attributes are only valid for certain
+graphic operation. Legal attribute values are defined in enum <A HREF="$$LINK(Attrs)">Attrs</A>.
+In a general, the following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REVERSE</TD><TD>Destination pixels turned off</TD>
+</TR><TR>
+<TD>A_NORMAL</TD><TD>Destination pixels turned on</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Source pixels XORed with destination pixels</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Destination pixels masked so that every other pixel turned off</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>Source pixels replace destination pixels</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>Source pixels ORed with destination pixels</TD>
+</TR>
+</TABLE>
+<BR>
+For lines the following additional attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+SetCurAttr returns the previous current attribute.
+<BR><BR>
+<B>Note:</B> Although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS
+and A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which
+are more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act
+like A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to
+draw shaded-fill rectangle using a line drawing command (for example, <A HREF="$$LINK(DrawLine)">DrawLine</A>)
+in a loop, use vertical lines for drawing, not horizontal ones! Note also that these
+additional attributes work fine with <A HREF="$$LINK(FillTriangle)">FillTriangle</A> and
+<A HREF="$$LINK(FillLines2)">FillLines2</A>, but not with <A HREF="$$LINK(ScrRectFill)">ScrRectFill</A>!
+
+[References]
+In=DrawClipRect, DrawMultiLines, menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, wingraph.h/DrawWinBorder, unknown.h/_ROM_CALL_421

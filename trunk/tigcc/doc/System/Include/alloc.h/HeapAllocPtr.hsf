@@ -1,0 +1,28 @@
+[Main]
+Name=HeapAllocPtr
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=void *HeapAllocPtr (unsigned long Size);
+Attributes=__attribute__((__malloc__))
+
+[ROM Call]
+Index=$A2
+
+[Description]
+Allocates memory at the high end of the heap and returns a pointer to the allocated block.
+
+[Explanation]
+HeapAllocPtr performs <A HREF="$$LINK(HeapAllocHigh)">HeapAllocHigh</A>, but instead of the handle, it returns
+a pointer to the allocated block (<A HREF="$$LINK(NULL)">NULL</A> in a case of error). It also
+gives a necessary information to the heap manager which is needed later for deallocating
+the memory using <A HREF="$$LINK(HeapFreePtr)">HeapFreePtr</A> command. This routine is principally
+equivalent to ANSI C <A HREF="$$LINK(malloc)">malloc</A> function, so it is aliased here also as
+<A HREF="$$LINK(malloc)">malloc</A>.
+<BR><BR>
+<B>Note:</B> If somebody is interested in it, the handle of the allocated block is stored two
+bytes below the address returned by HeapAllocPtr.
+
+[References]
+Out=HeapAllocHigh, system.h/NeedStack
+In=calloc, HeapAllocPtrThrow, realloc, dll.h/LoadDLL, stdio.h/fopen, stdio.h/scanf, stdio.h/vscanf, stdlib.h/atexit

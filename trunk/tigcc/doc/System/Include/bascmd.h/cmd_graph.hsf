@@ -1,0 +1,52 @@
+[Main]
+Name=cmd_graph
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_graph (CESI ExprEtc);
+MinAMS=1.01
+See Also=cmd_table, cmd_drawfunc, cmd_clrgraph
+
+[ROM Call]
+Index=$353
+
+[Description]
+Executes TI-Basic 'Graph' command.
+
+[Explanation]
+cmd_graph graphs the requested expressions or functions using the current graph mode.
+This function uses the Smart Graph feature (see the TI-Basic manual). It expects the
+following layout of the expression stack before calling (<I>ExprEtc</I> should
+point to the last item):
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD>Graph mode</TD><TD>Requested layout on the expression stack</TD></TR>
+<TR><TD VALIGN="TOP">Function graphing</TD><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>var_name</I> <I>expression</I></TD></TR>
+<TR><TD VALIGN="TOP">Parametric graphing</TD><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>var_name</I> <I>y_expression</I> <I>x_expression</I></TD></TR>
+<TR><TD VALIGN="TOP">Polar graphing</TD><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>var_name</I> <I>expression</I></TD></TR>
+<TR><TD VALIGN="TOP">3D graphing</TD><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>y_var_name</I> <I>x_var_name</I> <I>expression</I></TD></TR>
+</TABLE>
+<BR>
+Graphing sequences and differential equations is not possible using this command. Variable
+names are optional, i.e. they may be omitted. In such cases, default variable names are used ("x" for function
+graphing, "t" for parametric graphing, "<FONT FACE="Symbol">q</FONT>" for polar graphing, and "x" and "y" for 3D
+graphing). For example, to graph the expression <CODE>sin(t)+sin(2t)</CODE> with respect to t (assuming
+that the current graph mode is set accordingly), you should do (example "Graph Function"):
+$$EXAMPLE(Graph Function.c)
+Or, you can avoid <A HREF="$$LINK(estack.h/push_parse_text)">push_parse_text</A> by
+transforming the expression into RPN manually (which is very easy):
+<BR><BR>
+<PRE>static ESQ rpn[] = {END_TAG, VAR_T_TAG, VAR_T_TAG, SIN_TAG,
+  VAR_T_TAG, 2, 1, POSINT_TAG, MUL_TAG, SIN_TAG, ADD_TAG};
+cmd_graph (rpn + sizeof(rpn) - 1);
+</PRE>
+All expressions entered using cmd_graph or <A HREF="$$LINK(cmd_table)">cmd_table</A> are
+remembered and assigned increasing function
+numbers starting with 1. The currently selected 'Y=' functions are deselected. Use
+<A HREF="$$LINK(cmd_clrgraph)">cmd_clrgraph</A> to clear the functions graphed with this
+command (they will also be cleared after you go to the Y= Editor application to re-enable
+the system 'Y=' functions).
+
+[References]
+Out=unknown.h/GraphActivate, unknown.h/GraphOrTableCmd
+Out_EV_eventLoop=1

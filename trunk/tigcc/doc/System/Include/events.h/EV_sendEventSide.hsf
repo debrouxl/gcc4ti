@@ -1,0 +1,24 @@
+[Main]
+Name=EV_sendEventSide
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void EV_sendEventSide (short TaskID, EVENT *event, unsigned short Side);
+
+[ROM Call]
+Index=$CF
+
+[Description]
+Sends an event message from the given side.
+
+[Explanation]
+EV_sendEventSide is very similar to <A HREF="$$LINK(EV_sendEvent)">EV_sendEvent</A>. The only difference
+is in the fact that EV_sendEventSide fills the field <I>Side</I> of the event structure with
+the value of parameter <I>Side</I>. <A HREF="$$LINK(EV_sendEvent)">EV_sendEvent</A> fills this
+field with the current side number (0=left or top side, 1 = right or bottom side). This
+field allows the message handler to determine which side (of course, in split screen mode)
+the message is sent from, so it allows a primitive kind of multitasking.
+
+[References]
+In=EV_eventLoop, EV_sendEvent, EV_startSide, MO_digestOptions, MO_sendQuit
+Out=EV_hook, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, unknown.h/EV_currentApp, unknown.h/EV_runningApp, unknown.h/OO_GetAttr, unknown.h/ST_flags_var: ST_flags

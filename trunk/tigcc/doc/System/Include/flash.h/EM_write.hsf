@@ -1,0 +1,59 @@
+[Main]
+Name=EM_write
+Type=Function
+Subtype=ROM Call
+Header Files=flash.h
+Definition=void EM_write (const void *src, void *dest, unsigned long size);
+
+[ROM Call]
+Index=$167
+
+[Description]
+Writes a block into the extended memory.
+
+[Explanation]
+EM_write is mostly identical as <A HREF="$$LINK(FL_write)">FL_write</A>, except an error will be
+thrown if <I>dest</I> points out of the archive memory (i.e. user portion of the Flash ROM).
+<BR><BR>
+<B>Note:</B> For anybody who wants to write something into the archive memory, the following
+information may be useful:
+<UL>
+<LI>Blocks in the archive memory are kept in the linked list, but the organization of the
+list is AMS-dependent (see <A HREF="$$LINK(compat.h/)">compat.h</A> header file to see how to
+check which AMS version is present on the machine). If you don't want problems, you should
+not write any data to the archive memory which are not organized as described below.</LI>
+<LI>Archive memory is divided in sectors which are 64K long. The first word of each sector
+is the status word, and it can not be used for storage purposes
+(-2 means "sector in use", -4
+means "full sector", and -1 means "unused sector").
+Each block must completely
+belong to one sector, i.e. it can not cross over sector boundaries.</LI>
+<LI>Before each block is a header. It starts with a flag which may be -4
+for deleted blocks, -2 for used blocks and
+-1 for free blocks (AMS 2.xx uses
+-32 and -64
+instead of -2 and -4, I don't
+know why; maybe old flags may be used for "noname" files, see below).
+So, if you need to keep some data in the archive memory for a longer time, it must be
+marked with -2
+(or -32 on AMS 2.xx), otherwise it may be treated by TIOS as "free space".
+</LI>
+<LI>After the flag word, on AMS 2.xx the name of the folder (8 bytes) and the name of the
+stored file (8 bytes) are stored (both of them are zero padded). After this, yet one word
+follows (usually set to zero), exact meaning is unknown to me. This extra information
+(18 bytes) is not present on AMS 1.xx.</LI>
+<LI>After this, the next stored word is the size of the block in words increased
+by 1 and with the topmost bit set. This word is used as a link to the next block. This concludes
+the block header. Its size is 4 bytes on AMS 1.xx and 22 bytes on AMS 2.xx.</LI>
+<LI>Finally, the actual content of the block follows. If a handle is associated with the
+block, the handle points just here, i.e. to the first byte of the actual content.</LI>
+</UL>
+Function <A HREF="$$LINK(EM_findEmptySlot)">EM_findEmptySlot</A> may be used for finding an
+empty space in the archive memory of a given size.
+Of course, if you are not an experienced programmer, avoid direct writing in the archive
+memory. Use safe high-level functions like
+<A HREF="$$LINK(vat.h/EM_moveSymToExtMem)">EM_moveSymToExtMem</A> instead.
+
+[References]
+In=EM_abandon, EM_findEmptySlot, vat.h/EM_moveSymFromExtMem, vat.h/EM_moveSymToExtMem
+Out=FL_write, unknown.h/_ROM_CALL_3CF

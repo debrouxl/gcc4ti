@@ -1,0 +1,27 @@
+[Main]
+Name=PSEUDO_CONST_KBD
+Type=Function
+Subtype=Macro
+Header Files=compat.h
+Definition=#define PSEUDO_CONST_KBD(kbd89,kbd92) PSEUDO_CONST_CALC(kbd92, kbd89, kbd92, kbd92)
+See Also=PSEUDO_CONST_CALC, PSEUDO_CONST_SCREEN
+
+[Description]
+A macro to construct a pseudo-constant from keyboard-based values.
+
+[Explanation]
+PSEUDO_CONST_KBD takes several values for different keyboard layouts, and
+returns one of them based on the keyboard that the program currently uses.
+The values must be plain positive integers up to 65535 (0xFFFF) in decimal
+or hexadecimal notation, otherwise this macro may fail in some cases.
+<BR><BR>
+Currently, there are two different keyboard layouts: The TI-89 keyboard,
+which looks like a normal calculator keyboard with extra keys, and the
+TI-92/TI-92+/V200 keyboard, which has a QWERTY layout.
+The two parameters specify the values to use whichever keyboard layout is
+encountered, which means that the number of parameters may increase as new
+hardware becomes available. If you want to use this macro in your
+application, you must decide for yourself whether this feature is desirable:
+On the one hand, it can prevent your code from being compiled in future
+releases of TIGCC; on the other hand, you can easily port your programs to
+new hardware just by fixing all of the compile-time errors.

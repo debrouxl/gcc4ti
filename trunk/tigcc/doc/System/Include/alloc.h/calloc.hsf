@@ -1,0 +1,32 @@
+[Main]
+Name=calloc
+Type=Function
+Subtype=tigcc.a
+Header Files=alloc.h, stdlib.h
+Definition=void *calloc (unsigned short NoOfItems, unsigned short SizeOfItems);
+See Also=malloc, realloc, free, calloc_throw
+
+[Library Call]
+Asm=1
+
+[Registers]
+NoOfItems=d0
+SizeOfItems=d1
+
+[Description]
+Allocates a memory block for a given number and size of items.
+
+[Explanation]
+calloc allocates a block of <I>NoOfItems</I>&nbsp;x&nbsp;<I>SizeOfItems</I>
+bytes from the memory heap. On success, calloc returns a pointer to the newly allocated
+block of memory. If not enough space exists for the new block, it returns
+<A HREF="$$LINK(NULL)">NULL</A>. The allocated block will be cleared to zero content.
+<BR><BR>
+<B>Note:</B> In releases of TIGCCLIB prior to 2.0, calloc was implemented here as a macro,
+Now, it is a function. It first calls <A HREF="$$LINK(malloc)">malloc</A>
+with <I>NoOfItems</I>&nbsp;x&nbsp;<I>SizeOfItems</I> as the argument, then calls
+<A HREF="$$LINK(mem.h/memset)">memset</A> if the first call was successful.
+
+[References]
+Out=HeapAllocPtr, mem.h/memset
+In=calloc_throw

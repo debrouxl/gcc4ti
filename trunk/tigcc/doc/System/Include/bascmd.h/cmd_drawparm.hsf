@@ -1,0 +1,54 @@
+[Main]
+Name=cmd_drawparm
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_drawparm (CESI ExprList);
+MinAMS=1.01
+See Also=cmd_drawpol, cmd_drawfunc
+
+[ROM Call]
+Index=$343
+
+[Description]
+Executes TI-Basic 'DrawParm' command.
+
+[Explanation]
+cmd_drawparm displays the Graph Screen and draws a parametric graph, using
+"t" as the independent variable. This function expects one of the following
+eight layouts on the expression stack:
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+<TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> tstep tmax tmin y_expr x_expr</TD></TR>
+<TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> tmax tmin y_expr x_expr</TD></TR>
+<TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> tstep <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> tmin y_expr x_expr</TD></TR>
+<TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> tstep tmax <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> y_expr x_expr</TD></TR>
+<TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> tmin y_expr x_expr</TD></TR>
+<TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> tmax <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> y_expr x_expr</TD></TR>
+<TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> tstep <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> y_expr x_expr</TD></TR>
+<TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> y_expr x_expr</TD></TR>
+</TABLE>
+<BR>
+The parameter <I>ExprList</I> should point to the tag of the last item.
+<I>x_expr</I> and <I>y_expr</I> are the expressions for "x(t)" and "y(t)",
+which define the curve. <I>tmin</I>, <I>tmax</I> and <I>tstep</I> are
+floating point items which determine the starting value, the ending
+value, and the increment of the independent variable "t" which will be used
+for drawing. For example, to draw the curve defined by <CODE>x=cos(t)</CODE>
+and <CODE>y=sin(t)</CODE> where t varies from 0 to 2*pi in steps of 0.1, you
+can use the following code fragment:
+<PRE>push_Float (0.1);
+push_Float (2. * PI);
+push_Float (0);
+push_parse_text ("cos(t)");
+push_parse_text ("sin(t)");
+cmd_drawparm (top_estack);
+</PRE>
+If the current graphing mode is not parametric, only the first layout is
+valid. Otherwise, the omitted expressions will be picked from the current
+settings of the "tmin", "tmax", and "tstep" system variables, which can be
+set using the "Window Editor" application.
+
+[References]
+Out=error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/next_expression_index, estack.h/push_expression, estack.h/push_Float, estack.h/push_quantum, estack.h/top_estack, system.h/OSCheckBreak, timath.h/is_transfinite, unknown.h/CptIndep, unknown.h/ForceFloat, unknown.h/gr_active, unknown.h/GraphActivate, unknown.h/GrLineFlt, unknown.h/QSkipGraphErr, unknown.h/StepCk
+Out_EV_eventLoop=1

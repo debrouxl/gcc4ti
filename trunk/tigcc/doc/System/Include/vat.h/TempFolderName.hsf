@@ -1,0 +1,26 @@
+[Main]
+Name=TempFolderName
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=SYM_STR TempFolderName (unsigned short TempNum);
+
+[ROM Call]
+Index=$76
+
+[Description]
+Creates a temporary folder name.
+
+[Explanation]
+TempFolderName converts the number <I>TempNum</I> in a four-digit string which
+corresponds to the given number (i.e. 12 will be converted into "0012"). This
+string will begin with '\0' character, and TempFolderName will return a pointer
+to the terminating '\0' character, as expected by many TIOS VAT routines (see
+<A HREF="$$LINK(SymAdd)">SymAdd</A> for more info about symbol names). TIOS will accept
+such "numeric" folder names, but they are invisible for the TI-Basic system,
+VAR-LINK menu, etc. TIOS creates and uses such folders for storing local variables
+during execution of TI-Basic programs.
+
+[References]
+In=FolderAddTemp, FolderDelAllTemp, FolderDelTemp, VarRecall, bascmd.h/cmd_cyclepic, bascmd.h/cmd_local, basop.h/push_indir_name, estack.h/push_parse_text, unknown.h/de_initRes, unknown.h/de_loop, unknown.h/EQU_getNameInfo, unknown.h/gr_del_locals, unknown.h/InitDEMem, unknown.h/InitTimeSeq, unknown.h/push_parse_prgm_or_func_text, unknown.h/recall_data_var, unknown.h/Regraph, unknown.h/store_func_def
+Out=stdio.h/sprintf

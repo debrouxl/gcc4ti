@@ -1,0 +1,57 @@
+[Main]
+Name=PortSet
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void PortSet (void *vm_addr, short x_max, short y_max);
+
+[ROM Call]
+Index=$1A2
+
+[Description]
+Sets up the virtual screen.
+
+[Explanation]
+PortSet allows drawing in a virtual screen. All graphic commands which are built-in
+into TIOS does not expect that the video memory must be at 0x4C00, and that the
+video memory is always 240&nbsp;x&nbsp;128 pixels. Using PortSet you can set up a virtual screen
+anywhere in a memory, and of any size. After using PortSet, all graphic commands
+will assume that the video memory starts at <I>vm_addr</I>, and that the dimensions
+of the video memory are (<I>x_max</I>+1)&nbsp;x&nbsp;(<I>y_max</I>+1)
+pixels. This allows to you to use graphic functions even when the actual LCD memory is
+relocated at any other address using I/O hardware ports, or to draw pictures into
+virtual screens (not visible on the real screen), then move them (using
+<A HREF="$$LINK(mem.h/memcpy)">memcpy</A> or some other function) to the real screen. This will enable the possibility of
+hiding the actual drawing process, and to display the drawn picture immediately.
+<BR><BR>
+Here is a code fragment which ilustrates the usage of virtual screens:
+<PRE>void *virtual=malloc (LCD_SIZE);  // <I>Allocate the buffer</I>
+...
+if (!virtual) ... // <I>do some error handling - not enough memory!</I>
+PortSet (virtual, 239, 127); // <I>redirect drawing routines to buffer</I>
+</PRE>
+or, even simpler, a virtual screen may simply be in any local variable which is
+long enough:
+<PRE>char virtual[LCD_SIZE];
+...
+PortSet (virtual, 239, 127);
+</PRE>
+Note that, in this case, virtual screen memory will in fact be somewhere on the stack.
+There is nothing bad in this, but keep in mind that the total amount of the
+stack is 16K, so don't put too much data (like big arrays etc.) on the stack
+(i.e. in local variables). If you really need to handle a lot of data, use
+<A HREF="$$LINK(alloc.h/malloc)">malloc</A> instead.
+<BR><BR>
+After setting up the virtual screen, you can do any drawing you want - it will be
+redirected to the virtual
+screen. To copy this to the regular screen (i.e. to display it) do this:
+<PRE>memcpy (LCD_MEM, virtual, LCD_SIZE);
+</PRE>
+or even simpler (this is the same):
+<PRE>LCD_restore (virtual);
+</PRE>
+<B>Note:</B> Don't forget to do <A HREF="$$LINK(PortRestore)">PortRestore</A> before the end of the program, otherwise TIOS will
+be fooled after returning to TI-Basic!
+
+[References]
+In=gray.h/GrayOn, gray.h/GraySetAMSPlane, unknown.h/_ROM_CALL_413

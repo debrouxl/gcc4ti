@@ -1,0 +1,26 @@
+[Main]
+Name=is_monomial_in_kernel
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short is_monomial_in_kernel (CESI ptr);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2DA
+
+[Description]
+Checks whether an expression is a monomial in kernel.
+
+[Explanation]
+is_monomial_in_kernel returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the expression pointed to by
+<I>ptr</I> is a monomial in kernel, i.e. if it is a monomial function of kernels,
+where "kernel" means any irrational subexpression, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+For example, <CODE>'sin(x)*ln(y)'</CODE> is not monomial (in respect to <CODE>'x'</CODE>
+and <CODE>'y'</CODE>), but it is monomial in kernel (in respect to <CODE>'sin(x)'</CODE>
+and <CODE>'ln(y)'</CODE>).
+
+[References]
+In=basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_solve, basfunc.h/push_zeros, basop.h/push_equals, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not_equals, unknown.h/get_ub
+Out=are_expressions_identical, factor_base_index, is_independent_of, lead_factor_index, remaining_factors_index, unknown.h/primary_tag_list

@@ -1,0 +1,24 @@
+[Main]
+Name=HSYMtoName
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short HSYMtoName (HSym Sym, char *buffer);
+
+[ROM Call]
+Index=$7A
+
+[Description]
+Determines a full path of a symbol.
+
+[Explanation]
+HSYMtoName fills <I>buffer</I> with a full-path name (i.e. "folder\name")
+of the symbol given by <A HREF="$$LINK(HSym)">HSym</A> structure <I>Sym</I>. See
+<A HREF="$$LINK(SYMSTR)">SYMSTR</A> for more info about HSym names. The buffer must be
+at least 18 bytes long, and it will be filled with a standard C zero-terminated string.
+HSYMtoName returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was successful,
+else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+
+[References]
+In=EM_moveSymToExtMem, EM_twinSymFromExtMem, bascmd.h/cmd_newdata, unknown.h/ValidateStore
+Out=DerefSym, SymCpy, SymCpy0, SymSysVar, string.h/strcat

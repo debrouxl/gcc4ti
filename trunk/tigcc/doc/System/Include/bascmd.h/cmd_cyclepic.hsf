@@ -1,0 +1,47 @@
+[Main]
+Name=cmd_cyclepic
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_cyclepic (CESI PicNamePrefix, CESI n, CESI wait, CESI cycles, CESI direction);
+MinAMS=1.01
+
+[ROM Call]
+Index=$339
+
+[Description]
+Executes TI-Basic 'CyclePic' command.
+
+[Explanation]
+cmd_cyclepic implements the TI-Basic CyclePic command, which displays the
+Graph Screen and then displays a series of pictures (a slide show) on it in a
+cycle. The <I>PicNamePrefix</I> parameter should point to a string item on
+the expression stack (more precise, to its <A HREF="$$LINK(estack.h/Tags)">STR_TAG</A>),
+and <I>n</I> should point to an integer item which determines the total
+number of pictures.
+<BR><BR>
+The names of the TI-Basic PIC variables which contain the
+picture data will be derived from <I>PicNamePrefix</I> and <I>n</I>. For
+example, if <I>PicNamePrefix</I> points to "pic" and <I>n</I> points to 5,
+the picture data will be picked from TI-Basic PIC variables
+called "pic1", "pic2", "pic3", "pic4" and "pic5".
+<BR><BR>
+The <I>wait</I> parameter should point to an integer or floating point item which
+determines the time between pictures. <I>cycles</I> should point to an
+integer item which determines the number of times to cycle through the
+pictures. <I>direction</I> should point to an integer item containing 1 or -1.
+If it is 1, the pictures will be displayed in a normal loop, and if it is -1,
+the loop will run in both directions.
+<BR><BR>
+<B>Note:</B> The TI-Basic command CyclePic is implemented to allow making
+simple animations in the TI-Basic. Although this function principally may be
+used in C to accomplish the same task, the usage of it is tedious and there
+are much better ways for doing this in C which are also independent of the
+Graph Screen. Take a look at the functions from
+<A HREF="$$LINK(graph.h/)">graph.h</A>,
+<A HREF="$$LINK(wingraph.h/)">wingraph.h</A>, and
+<A HREF="$$LINK(sprites.h/)">sprites.h</A>.
+
+[References]
+Out=estack.h/GetValue, estack.h/HToESI, estack.h/next_expression_index, mem.h/memset, stdio.h/sprintf, string.h/strlen, system.h/idle, system.h/OSCheckBreak, system.h/OSFreeTimer, system.h/OSRegisterTimer, system.h/OSTimerExpired, unknown.h/ForceFloat, unknown.h/gr_active, unknown.h/GraphActivate, vat.h/DerefSym, vat.h/FindSymInFolder, vat.h/TempFolderName, vat.h/ValidateSymName, vat.h/VarRecall, wingraph.h/WinBitmapPut, unknown.h/_bcd_math
+Out_EV_eventLoop=1

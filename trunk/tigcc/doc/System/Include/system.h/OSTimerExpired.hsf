@@ -1,0 +1,26 @@
+[Main]
+Name=OSTimerExpired
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short OSTimerExpired (short timer_no);
+
+[ROM Call]
+Index=$F3
+
+[Description]
+Determines whether a notify (countdown) timer expired.
+
+[Explanation]
+OSTimerExpired returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the notify (countdown) timer <I>timer_no</I>
+expired, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. See <A HREF="$$LINK(OSRegisterTimer)">OSRegisterTimer</A>
+for more info. For example, a legal way to make a 5-second delay is:
+<PRE>OSFreeTimer (USER_TIMER);
+OSRegisterTimer (USER_TIMER, 5*20);
+while (!OSTimerExpired (USER_TIMER));
+</PRE>
+OSTimerExpired also resets flag which tells that the timer was expired, so the calling
+this function again will return <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+
+[References]
+In=bascmd.h/cmd_cyclepic, bascmd.h/cmd_disptbl, bascmd.h/cmd_pause, bascmd.h/cmd_sendcalc, bascmd.h/cmd_sendchat, basfunc.h/push_getkey, events.h/EV_eventLoop, events.h/EV_getc, flash.h/BatTooLowFlash, link.h/LIO_RecvData, link.h/OSLinkOpen, unknown.h/GS_PlotAll, unknown.h/GT_Trace, unknown.h/GZ_Stat, unknown.h/Regraph

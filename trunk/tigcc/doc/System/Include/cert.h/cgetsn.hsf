@@ -1,0 +1,23 @@
+[Main]
+Name=cgetsn
+Type=Function
+Subtype=ROM Call
+Header Files=cert.h
+Definition=void cgetsn (char *dest);
+
+[ROM Call]
+Index=$2A1
+
+[Description]
+Gets the calculator serial number from the Flash ROM certificate.
+
+[Explanation]
+cgetsn fills the buffer pointed to by <I>dest</I> with the calculator serial
+number picked from the Flash ROM certificate. It has the form "pphnnnnnnn", where "pp"
+is the platform number (01 for TI-92 Plus, 03 for TI-89), "h" is hardware revision level,
+and "nnnnnnn" is an ID number which is unique to each calculator.
+All the above fields consist of hexadecimal digits.
+<I>buffer</I> must be at least 17 bytes long to accept the serial number.
+
+[References]
+In=link.h/LIO_Receive, system.h/AB_serno, unknown.h/LIO_SendIdList

@@ -1,0 +1,21 @@
+[Main]
+Name=vsscanf
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=short vsscanf (const char *buffer, const char *format, va_list arglist);
+Real Definition=#define vsscanf(__buffer__,__format__,__arglist__) ({__sscanf_string __param__={(__buffer__),0};vcbscanf((vcbscanf_get_Callback_t)__sscanf_get,(vcbscanf_unget_Callback_t)__sscanf_unget,&__param__,(__format__),(__arglist__));})
+
+[Description]
+String parsing function using argument list.
+
+[Explanation]
+The vsscanf function is known as an alternate entry point for the sscanf function.
+It behaves exactly like <A HREF="$$LINK(sscanf)">sscanf</A>, but it accepts a pointer to a
+list of arguments instead of an argument list (see <A HREF="$$LINK(stdarg.h/)">stdarg.h</A>
+header file for more info about argument lists).
+See <A HREF="$$LINK(sscanf)">sscanf</A> for details on format specifiers.
+
+[References]
+Out=vcbscanf
+In=vscanf

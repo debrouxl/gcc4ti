@@ -1,0 +1,36 @@
+[Main]
+Title=.p2align[wl]
+See Also=SEC74: .balign
+
+[Top]
+Syntax: <B>.p2align[wl] <I>alignment</I>[, [<I>fill</I>][, <I>max</I>]]</B>
+<BR><BR>
+Pad the location counter (in the current subsection) to a particular
+storage boundary.  <I>alignment</I> (which must be absolute) is the
+number of low-order zero bits the location counter must have after
+advancement.  For example <CODE>.p2align&nbsp;3</CODE> advances the location
+counter until it a multiple of 8.  If the location counter is already a
+multiple of 8, no change is needed.
+<BR><BR>
+<I>fill</I> (also absolute) gives the fill value to be stored in the
+padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
+padding bytes are normally zero.  However, on some systems, if the section is
+marked as containing code and the fill value is omitted, the space is filled
+with no-op instructions (I didn't checked whether this is the case in TIGCC).
+<BR><BR>
+<I>max</I> is also absolute, and is also optional.  If it is present,
+it is the maximum number of bytes that should be skipped by this alignment
+directive.  If doing the alignment would require skipping more bytes than the
+specified maximum, then the alignment is not done at all.  You can omit the
+fill value (the second argument) entirely by simply using two commas after the
+required alignment; this can be useful if you want the alignment to be filled
+with no-op instructions when appropriate.
+<BR><BR>
+The <CODE>.p2alignw</CODE> and <CODE>.p2alignl</CODE> directives are variants of the
+<CODE>.p2align</CODE> directive.  The <CODE>.p2alignw</CODE> directive treats the fill
+pattern as a two byte word value.  The <CODE>.p2alignl</CODE> directives treats the
+fill pattern as a four byte longword value.  For example, <CODE>.p2alignw
+2,0x368d</CODE> will align to a multiple of 4.  If it skips two bytes, they will be
+filled in with the value 0x368d (the exact placement of the bytes depends upon
+the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
+undefined.

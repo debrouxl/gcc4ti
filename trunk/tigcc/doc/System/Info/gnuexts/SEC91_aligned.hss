@@ -1,0 +1,33 @@
+[Main]
+Title=aligned
+
+[Top]
+Syntax: <B>aligned [(<I>alignment</I>)]</B>
+<BR><BR>
+This attribute specifies a minimum alignment for the variable or
+structure field, measured in bytes.  For example, the declaration:
+<PRE>int x __attribute__ ((aligned (4))) = 0;
+</PRE>
+causes the compiler to allocate the global variable <CODE>x</CODE> on a
+4-byte boundary.
+<BR><BR>
+You can also specify the alignment of structure fields.  For example, to
+create a 4-byte aligned <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE> pair, you could write:
+<PRE>struct foo { int x[2] __attribute__ ((aligned (4))); };
+</PRE>
+As in the preceding examples, you can explicitly specify the alignment
+(in bytes) that you wish the compiler to use for a given variable or
+structure field.  Alternatively, you can leave out the alignment factor
+and just ask the compiler to align a variable or field to the maximum
+useful alignment for the target machine you are compiling for.  For
+example, you could write:
+<PRE>short array[3] __attribute__ ((aligned));
+</PRE>
+Whenever you leave out the alignment factor in an <CODE>aligned</CODE> attribute
+specification, the compiler automatically sets the alignment for the declared
+variable or field to the largest alignment which is ever used for any data
+type on the target machine you are compiling for (useless in TIGCC, since everything
+is already aligned well enough with the default 2-byte alignment).
+<BR><BR>
+The <CODE>aligned</CODE> attribute can only increase the alignment; but you
+can decrease it by specifying <CODE><A HREF="$$LINK(SEC91_packed)">packed</A></CODE> as well.

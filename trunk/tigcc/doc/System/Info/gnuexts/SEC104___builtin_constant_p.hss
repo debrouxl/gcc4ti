@@ -1,0 +1,46 @@
+[Main]
+Title=__builtin_constant_p
+
+[Top]
+<CODE><B><A HREF="$$INFOLINK(keywords/int)">int</A></B> __builtin_constant_p (exp);</CODE>
+<BR><BR>
+You can use the built-in function <CODE>__builtin_constant_p</CODE> to
+determine if a value is known to be constant at compile-time and hence
+that GCC can perform constant-folding on expressions involving that
+value.  The argument of the function is the value to test.  The function
+returns the integer 1 if the argument is known to be a compile-time
+constant and 0 if it is not known to be a compile-time constant.  A
+return of 0 does not indicate that the value is <I>not</I> a constant,
+but merely that GCC cannot prove it is a constant with the specified
+value of the <B>'-O'</B> option.
+<BR><BR>
+If you have some complex calculation,
+you may want it to be folded if it involves constants, but need to call
+a function if it does not.  For example:
+<PRE>#define Scale_Value(X)      \
+  (__builtin_constant_p (X) \
+  ? ((X) * SCALE + OFFSET) : Scale (X))
+</PRE>
+You may use this built-in function in either a macro or an inline
+function.  However, if you use it in an inlined function and pass an
+argument of the function as the argument to the built-in, GCC will
+never return 1 when you call the inline function with a string constant
+or compound literal (see <A HREF="$$LINK(SEC81)">Compound Literals</A>) and will not return 1
+when you pass a constant numeric value to the inline function unless you
+specify the <B>'-O'</B> option.
+<BR><BR>
+You may also use <CODE>__builtin_constant_p</CODE> in initializers for static
+data.  For instance, you can write
+<PRE>static const int table[] = {
+   __builtin_constant_p (EXPRESSION) ? (EXPRESSION) : -1,
+   /* ... */
+};
+</PRE>
+This is an acceptable initializer even if <I>EXPRESSION</I> is not a
+constant expression.  GCC must be more conservative about evaluating the
+built-in in this case, because it has no opportunity to perform
+optimization.
+<BR><BR>
+Previous versions of GCC did not accept this built-in in data
+initializers.  The earliest version where it is completely safe is
+3.0.1.

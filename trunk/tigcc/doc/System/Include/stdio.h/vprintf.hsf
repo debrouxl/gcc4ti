@@ -1,0 +1,29 @@
+[Main]
+Name=vprintf
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=void vprintf (const char *format, va_list arglist);
+Real Definition=#define vprintf(f,a) vcbprintf((vcbprintf_Callback_t)fputchar,NULL,(f),(a))
+
+[Description]
+Sends formatted output to the screen using argument list.
+
+[Explanation]
+The vprintf functions is known as an alternate entry point for the
+<A HREF="$$LINK(printf)">printf</A> function. It behaves exactly like <A HREF="$$LINK(printf)">printf</A>,
+but it accepts a pointer to a list of arguments instead of an argument
+list (see <A HREF="$$LINK(stdarg.h/)">stdarg.h</A> header file for more info about argument lists).
+See <A HREF="$$LINK(printf)">printf</A> for details on format specifiers.
+<BR><BR>
+vprintf accepts <I>arglist</I>, which is a pointer to a series of arguments, applies to
+each a format specifier contained in the format string pointed to by <I>format</I>, and
+outputs the formatted data to the screen. There must be the same number of format
+specifiers as arguments.
+<BR><BR>
+<B>Note:</B> In ANSI C, function vprintf is an int function, and it returns the number of printed
+characters. Due to some practical reasons, this implementation of vprintf is a void function.
+This difference is usually not important.
+
+[References]
+Out=vcbprintf, fputchar

@@ -1,0 +1,28 @@
+[Main]
+Name=cmd_stogdb
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_stogdb (SYM_STR SymName);
+MinAMS=1.01
+See Also=cmd_rclgdb
+
+[ROM Call]
+Index=$390
+
+[Description]
+Executes TI-Basic 'StoGDB' command.
+
+[Explanation]
+cmd_stogdb creates a Graph database (GDB) variable whose name is pointed to by <I>SymName</I>
+(a VAT string, see <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A>),
+containing the current graphing mode, 'Y=' functions,
+Window variables, Graph format settings, 1 or 2 Graph setting (split screen and ratio
+settings if 2-Graph mode), Angle mode, Real/complex mode, Initial conditions for Sequence
+and Diff Equations mode, Table flags, tblStart, Delta_tbl and tblInput system variables.
+These items are saved for both graphs in 2-Graph mode. You can use <A HREF="$$LINK(cmd_rclgdb)">cmd_rclgdb</A>
+to restore the graph environment later.
+
+[References]
+Out=alloc.h/HeapAlloc, alloc.h/HeapFreeIndir, unknown.h/gdb_len, unknown.h/gdb_store, vat.h/DerefSym, vat.h/SymDel, vat.h/VarStore
+Out_EV_eventLoop=1

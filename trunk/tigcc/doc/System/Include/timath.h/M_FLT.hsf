@@ -1,0 +1,20 @@
+[Main]
+Name=FLT
+Type=Function
+Subtype=Macro constructor
+Header Files=timath.h
+Real Definition=#define FLT(x,y...) ((sizeof(#y)==1)?x##.0:x##.##y)
+
+[Description]
+A deprecated macro used to define floating point numbers.
+
+[Explanation]
+FLT is a now deprecated macro which is kept here only to retain compatibility
+with programs which are written with older releases of TIGCC (before 0.9),
+which didn't support standard floating point numbers. Now,
+<CODE>FLT(x,y)</CODE> will simply be translated to <CODE>x.y</CODE> and
+<CODE>FLT(x)</CODE> will be translated to <CODE>x.0</CODE>, e.g.
+<CODE>FLT(342,15)</CODE> will be translated to <CODE>342.15</CODE>,
+<CODE>FLT(0,0001)</CODE> will be translated to <CODE>0.0001</CODE>, and
+<CODE>FLT(4)</CODE> will be translated to <CODE>4.0</CODE>. Anyway, you don't
+need to use the <CODE>FLT</CODE> macro any more.

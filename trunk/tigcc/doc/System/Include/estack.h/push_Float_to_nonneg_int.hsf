@@ -1,0 +1,23 @@
+[Main]
+Name=push_Float_to_nonneg_int
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void push_Float_to_nonneg_int (float value);
+MinAMS=1.01
+
+[ROM Call]
+Index=$30B
+
+[Description]
+Rounds a floating point value to an integer, then pushes it to the expression stack.
+
+[Explanation]
+push_Float_to_nonneg_int rounds <I>value</I> to the nearest integer, then pushes
+it to the expression stack, as a tagged integer value. The sign of <I>value</I> is ignored.
+This routine may throw an error if the truncated integer part of <I>value</I> is
+not representable as a big integer.
+
+[References]
+Out=check_estack_size, delete_between, push_between, push_quantum, top_estack, unknown.h/_bcd_math
+In=did_push_cnvrt_Float_to_integer, basfunc.h/push_gcd_numbers, basfunc.h/push_sequence

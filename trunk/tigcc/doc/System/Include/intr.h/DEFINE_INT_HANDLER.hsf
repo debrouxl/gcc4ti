@@ -1,0 +1,45 @@
+[Main]
+Name=DEFINE_INT_HANDLER
+Type=Language Extension
+Header Files=intr.h
+Real Definition=#define DEFINE_INT_HANDLER(name) extern _DEREF_INT_HANDLER name[]; asm(".xdef __ref_all___custom_int_handlers;.text;.even;"#name":move.w #0x2700,%sr;movem.l %d0-%d7/%a0-%a6,-(%sp);move.l 0xC8,%a5;jbsr __"#name"_body__;movem.l (%sp)+,%d0-%d7/%a0-%a6;rte"); void __##name##_body__(void)
+
+[Description]
+Defines an interrupt handler function.
+
+[Explanation]
+DEFINE_INT_HANDLER is a language extension macro which is used for defining interrupt
+handlers. The syntax is similar to function definition:
+<PRE>DEFINE_INT_HANDLER (<I>HandlerName</I>)
+{
+  // <I>The body of the handler...</I>
+}
+</PRE>
+Note, however, that DEFINE_INT_HANDLER does not define a standard function: it constructs
+an object named <I>HandlerName</I> of <A HREF="$$LINK(INT_HANDLER)">INT_HANDLER</A> type, which is initialized to point
+to the handler body (implemented internally as a function, but unaccessable
+directly to the rest of the program).
+So, you can not call the interrupt handler using a standard call construction like
+<PRE><I>HandlerName</I> ();</PRE>
+Such behaviour is implemented due to safety reasons: interrupt handlers are not supposed to
+be executed directly. If you need to call the interrupt handler anyway, you can use
+<A HREF="$$LINK(ExecuteHandler)">ExecuteHandler</A> function. Here is an example of the program
+which installs the new (user-defined) interrupt handler for auto interrupt 5 (the programable
+timer interrupt), in which the old (default) handler is called as well (called "Interrupt Handler"):
+$$EXAMPLE(Interrupt Handler.c)
+The only legal usage of <A HREF="$$LINK(INT_HANDLER)">INT_HANDLER</A> objects is to be passed
+as arguments to the functions <A HREF="$$LINK(SetIntVec)">SetIntVec</A> or
+<A HREF="$$LINK(ExecuteHandler)">ExecuteHandler</A>.
+<BR><BR>
+Be aware that the variable <I>Counter</I> in above example is declared as <CODE><A HREF="$$INFOLINK(keywords/volatile)">volatile</A></CODE>.
+In fact, any global variable which may be changed by the
+interrupt handler should be declared as <CODE>volatile</CODE>, especially if it is accessed
+from the other parts of the program (i.e. out of the interrupt handler). This is necessary
+to prevent various optimizations which may be fooled by the fact
+that the variable may be changed in a way which is completely unpredictable from the aspect
+of the normal program flow. For example, various optimizations may force keeping the variable
+content in a register, so if the variable is changed asynchronously, the compiler will not
+know anything about it. <CODE>volatile</CODE> will prevent keeping the variable in a
+register, so it will be reloaded from the memory on each access. The example given above
+will still work if you omit the <CODE>volatile</CODE> keyword, but more complicated programs
+will probably not work correctly without it.

@@ -1,0 +1,29 @@
+[Main]
+Name=map_unary_over_comparison
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void map_unary_over_comparison (ESI_Callback_t f, ESI cmptag_ptr);
+MinAMS=1.01
+
+[ROM Call]
+Index=$2E3
+
+[Description]
+Calls callback function for both comparison terms and pushes the comparison tag.
+
+[Explanation]
+map_unary_over_comparison assumes that <I>cmptag_ptr</I>
+points to a comparison tag. It calls the callback function <I>f</I> twice, passing to it pointers
+to both comparison terms, i.e. the two expressions below the comparison tag (the callback function
+should push something to the expression stack). The callback function is applied first to the
+deeper argument on the stack, then to the shallower argument. Finally, map_unary_over_comparison
+will push the tag pointed to by <I>cmptag_ptr</I> (one byte) to the expression stack.
+This function is useful to perform some transformations on both sides of a comparison
+(e.g. to transform <CODE>'n&lt;5'</CODE> into <CODE>'n!&lt;120'</CODE>). Beware that squaring of
+both sides of an inequality can cause loss of solutions, and squaring both sides of an
+equation may introduce spurious solutions!
+
+[References]
+Out=next_expression_index, push_quantum
+In=basfunc.h/push_abs, basfunc.h/push_acosh, basfunc.h/push_asin, basfunc.h/push_asinh, basfunc.h/push_atan, basfunc.h/push_atanh, basfunc.h/push_conj, basfunc.h/push_cosh, basfunc.h/push_exp, basfunc.h/push_im, basfunc.h/push_ln, basfunc.h/push_phase, basfunc.h/push_re, basfunc.h/push_sign, basfunc.h/push_sinh, basfunc.h/push_tan, basfunc.h/push_tanh, basop.h/push_factorial

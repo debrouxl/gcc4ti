@@ -1,0 +1,33 @@
+[Main]
+Name=can_be_approxed
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short can_be_approxed (CESI ptr, short Complex);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2F5
+
+[Description]
+Checks whether an expression can be approximated to a number.
+
+[Explanation]
+can_be_approxed returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the expression pointed to by
+<I>ptr</I> can be approximated to a number (including transfinite ones) or a list of
+numbers (such expression are for example
+<CODE>'ln(2+sin(1))/5'</CODE>, <CODE>'1/0'</CODE> or
+<CODE>'x^2+1-x*x'</CODE>), else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+<I>Complex</I> is a Boolean parameter:
+if it is <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, complex results will be allowed, but if it
+is <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, complex results will be treated as "can not be approxed".
+<BR><BR>
+<B>Note:</B> can_be_approxed performs much detailed investigation than functions
+<A HREF="$$LINK(likely_approx_to_number)">likely_approx_to_number</A> and
+<A HREF="$$LINK(likely_approx_to_complex_number)">likely_approx_to_complex_number</A>.
+
+[References]
+Out=next_expression_index, top_estack, basfunc.h/push_approx, unknown.h/primary_tag_list
+In=basfunc.h/push_colnorm, basfunc.h/push_rownorm, basop.h/push_degrees, basop.h/push_exponentiate
+Out_EV_eventLoop=1

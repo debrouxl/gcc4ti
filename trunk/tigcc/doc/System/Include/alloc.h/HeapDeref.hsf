@@ -1,0 +1,29 @@
+[Main]
+Name=HeapDeref
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=void *HeapDeref (HANDLE Handle);
+
+[ROM Call]
+Index=$96
+
+[Description]
+Dereferences a handle.
+
+[Explanation]
+HeapDeref dereferences <I>Handle</I> and returns a pointer to the actual block
+of the memory defined by that <I>Handle</I>. Nearly all heap allocation routines
+return a "handle" which is an identifier for a block of memory allocated in the heap.
+In order to use that memory, the handle must be dereferenced. Once a handle is
+dereferenced, that pointer is valid as long as nothing else is done to cause
+the heap to be compressed. If the heap is compressed the handle can be
+redereferenced to make it valid again. If a handle is locked, then the
+pointer that references that block of memory is valid even after the heap is
+compressed (since locking a handle means the heap manager will never
+move the memory associated with that handle).
+<BR><BR>
+<B>Note:</B> HeapDeref returns garbage if <I>Handle</I> is <A HREF="$$LINK(H_NULL)">H_NULL</A>.
+
+[References]
+In=bascmd.h/cmd_cubicreg, bascmd.h/cmd_expreg, bascmd.h/cmd_linreg, bascmd.h/cmd_lnreg, bascmd.h/cmd_logistic, bascmd.h/cmd_medmed, bascmd.h/cmd_onevar, bascmd.h/cmd_powerreg, bascmd.h/cmd_quadreg, bascmd.h/cmd_quartreg, bascmd.h/cmd_twovar, dll.h/LoadDLL, events.h/EV_defaultHandler, events.h/MO_modeDialog, gdraw.h/GR3_paint3d, gdraw.h/GR3_xyToWindow, gray.h/GrayOn, homescr.h/HomeStorePair, menus.h/FKeyI_H, unknown.h/de_loop, unknown.h/EV_quit, unknown.h/execute_graph_func, unknown.h/GR3_addContours, unknown.h/InitDEMem, unknown.h/InitTimeSeq, unknown.h/Regraph, unknown.h/run_one_seq, vat.h/FindProgramVar, unknown.h/_ROM_CALL_424

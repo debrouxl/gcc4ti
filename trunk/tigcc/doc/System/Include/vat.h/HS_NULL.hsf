@@ -1,0 +1,19 @@
+[Main]
+Name=HS_NULL
+Type=Constant
+Header Files=vat.h
+Definition=#define HS_NULL ((HSym) {0, 0})
+
+[Description]
+A null symbol constant.
+
+[Explanation]
+HS_NULL is a null symbol. Many TIOS functions returns such a symbol
+in case of an error. Note that you can't check whether a some variable is HS_NULL using
+the "==" operator because HS_NULL is not scalar, i.e. you can't
+write something like
+<PRE>if (hs == HS_NULL) ...
+</PRE>
+Instead, check the <I>folder</I> field of <A HREF="$$LINK(HSym)">HSym</A> structure: if it is zero,
+the whole structure is HS_NULL, because TIOS never creates <A HREF="$$LINK(HSym)">HSym</A>
+structures in which the <I>folder</I> field is zero and the <I>offset</I> field is nonzero.

@@ -1,0 +1,25 @@
+[Main]
+Title=I need a really fast line-drawing routine...
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I want to make a program which draw a lot of lines (for example which does some
+kind of 3D graphic). But, it seems that <A HREF="$$LINK(graph.h/DrawLine)">DrawLine</A>
+function is not too fast for my purposes. What I can do?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Yes, TIOS drawing routines are not championes in speed. Note that really fast
+line drawing function may be written only in ASM. But don't underestimate the power
+of C: even in pure C it is possible to make better (read: faster) line drawing
+routine than TIOS routine. As a programming exercise, I started with one trivial
+line drawing routine, and tried to optimize it. What I got is the routine which is
+in general 3-4 times faster than TIOS <A HREF="$$LINK(graph.h/DrawLine)">DrawLine</A> routine.
+In some special cases, TIOS routine may be faster (for example, TIOS routine handles
+special cases when the line is horizontal or vertical), but in general case (slope
+lines) my routine is much better. Maybe (and probably) it may be speed-optimized yet; this is
+a challenge for you. Here is the routine (example "Draw Line"):
+$$EXAMPLE(Draw Line.c)
+If you need a line erasing or line inverting routine, replace
+<CODE>'*ptr&nbsp;|=&nbsp;mask'</CODE> with
+<CODE>'*ptr&nbsp;&amp;=&nbsp;~mask'</CODE> or <CODE>'*ptr&nbsp;^=&nbsp;mask'</CODE>
+respectively.
+</TD></TR></TABLE>

@@ -1,0 +1,33 @@
+[Main]
+Title=Unnamed struct/union Fields within structs/unions
+
+[Top]
+For compatibility with other compilers, GCC allows you to define
+a structure or union that contains, as fields, structures and unions
+without names.  For example:
+<PRE>struct {
+  int a;
+  union {
+    int b;
+    float c;
+  };
+  int d;
+} foo;
+</PRE>
+In this example, the user would be able to access members of the unnamed
+union with code like <CODE>foo.b</CODE>.  Note that only unnamed structs and
+unions are allowed, you may not have, for example, an unnamed
+<CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.
+<BR><BR>
+You must never create such structures that cause ambiguous field definitions.
+For example, this structure:
+<PRE>struct {
+  int a;
+  struct {
+    int a;
+  };
+} foo;
+</PRE>
+It is ambiguous which <I>a</I> is being referred to with <CODE>foo.a</CODE>.
+Such constructs are not supported and must be avoided.  In the future,
+such constructs may be detected and treated as compilation errors.

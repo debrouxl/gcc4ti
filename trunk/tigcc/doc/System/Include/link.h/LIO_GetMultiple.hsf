@@ -1,0 +1,28 @@
+[Main]
+Name=LIO_GetMultiple
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=short LIO_GetMultiple (LIO_CTX *file);
+
+[ROM Call]
+Index=$59
+
+[Description]
+Gets a multiple (???) from the link interface.
+
+[Explanation]
+Yet another unclear high-level link routine. It is called often as a subroutine in other
+high-level linking routines. In fact, it just performs
+<PRE>LIO_Receive (file, 0, 0);
+</PRE>
+but returns a different result. If <A HREF="$$LINK(LIO_Receive)">LIO_Receive</A> returns 0,
+LIO_GetMultiple returns -1. If <A HREF="$$LINK(LIO_Receive)">LIO_Receive</A> returns 0xFFFF,
+LIO_GetMultiple returns 0. Else, LIO_GetMultiple returns the same value returned from
+<A HREF="$$LINK(LIO_Receive)">LIO_Receive</A>. Don't ask me what it means. Any additional
+info is welcomed.
+
+[References]
+Out=LIO_Receive, OSLinkReset
+In=getcalc
+Out_EV_eventLoop=1

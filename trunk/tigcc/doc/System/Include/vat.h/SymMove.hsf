@@ -1,0 +1,33 @@
+[Main]
+Name=SymMove
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short SymMove (SYM_STR SrcName, SYM_STR DestName);
+
+[ROM Call]
+Index=$63
+
+[Description]
+Moves a symbol.
+
+[Explanation]
+SymMove moves the symbol <I>SrcName</I> to the symbol <I>DestName</I>
+(see <A HREF="$$LINK(SymFind)">SymFind</A> for rules about <I>SrcName</I> and <I>DestName</I>).
+Both <I>SrcName</I> and <I>DestName</I> may also contain a folder name together with the
+symbol name (separated by "\"). If none of the names does not contain a folder name,
+moving will be simply reduced to renaming. If the destination folder does not exist, a dialog
+will appear which asks the user whether a new folder will be created. If the answer is "NO", a
+"Folder" error will be thrown. Destination symbol will be deleted before moving, if such
+symbol exists. SymMove returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was successful,
+else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. This function will even move and rename
+locked and archived files; however, upon a reset, they will return to the original name and/or
+folder.
+<BR><BR>
+<B>Note:</B> Check whether <I>SrcName</I> exists before applying this command, because the
+destination symbol <I>DestName</I> (if exists) will be deleted even in a case of an error!
+
+[References]
+In=bascmd.h/cmd_movevar, stdio.h/rename, unknown.h/_ROM_CALL_437
+Out=SymDel, SymFindPtr, unknown.h/CheckGraphRef, unknown.h/_ROM_CALL_439
+Out_EV_eventLoop=1

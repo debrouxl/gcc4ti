@@ -1,0 +1,48 @@
+[Main]
+Name=strerror
+Type=Function
+Subtype=ROM Call
+Header Files=stdio.h, string.h
+Definition=char *strerror (short err_no);
+
+[ROM Call]
+Index=$27D
+
+[Description]
+Gives an error message string.
+
+[Explanation]
+strerror returns a pointer to string which contains text of the system error message
+<I>err_no</I>. Note that this is not a TI-Basic error message, but a low level
+error message. Here is a complete table of such messages:
+<BR><BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP" WIDTH="50">0</TD><TD>no error</TD></TR>
+<TR><TD VALIGN="TOP">1</TD><TD>no such file entry</TD></TR>
+<TR><TD VALIGN="TOP">2</TD><TD>I/O error</TD></TR>
+<TR><TD VALIGN="TOP">3</TD><TD>not a serial device</TD></TR>
+<TR><TD VALIGN="TOP">4</TD><TD>out of memory</TD></TR>
+<TR><TD VALIGN="TOP">5</TD><TD>permission denied</TD></TR>
+<TR><TD VALIGN="TOP">6</TD><TD>block device required</TD></TR>
+<TR><TD VALIGN="TOP">7</TD><TD>no such device</TD></TR>
+<TR><TD VALIGN="TOP">8</TD><TD>invalid argument</TD></TR>
+<TR><TD VALIGN="TOP">9</TD><TD>file table is full</TD></TR>
+<TR><TD VALIGN="TOP">10</TD><TD>device directory is full</TD></TR>
+<TR><TD VALIGN="TOP">11</TD><TD>no space left on device</TD></TR>
+<TR><TD VALIGN="TOP">12</TD><TD>no more allocation blocks</TD></TR>
+<TR><TD VALIGN="TOP">13</TD><TD>no more data blocks on device</TD></TR>
+<TR><TD VALIGN="TOP">14</TD><TD>file is open</TD></TR>
+<TR><TD VALIGN="TOP">15</TD><TD>no RAM space configured</TD></TR>
+<TR><TD VALIGN="TOP">16</TD><TD>no heap space configured</TD></TR>
+<TR><TD VALIGN="TOP">17</TD><TD>seek can't extend read only file</TD></TR>
+<TR><TD VALIGN="TOP">18</TD><TD>bad file descriptor - file not open</TD></TR>
+<TR><TD VALIGN="TOP">19</TD><TD>invalid signal number</TD></TR>
+<TR><TD VALIGN="TOP">20</TD><TD>argument out of range</TD></TR>
+<TR><TD VALIGN="TOP">21</TD><TD>result out of range</TD></TR>
+</TABLE>
+<BR>
+Other values of <I>err_no</I> will generate "undefined errno value" message.
+<BR><BR>
+<B>Note:</B> Previous releases of TIGCCLIB prior to 2.0 reports wrongly that <I>err_no</I>
+is a TI-Basic error code, which is not true. To get a pointer to TI-Basic error
+message, use <A HREF="$$LINK(error.h/find_error_message)">find_error_message</A> function.

@@ -1,0 +1,90 @@
+[Main]
+Name=CheckReservedName
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short CheckReservedName (SYM_STR SymName);
+See Also=CheckSysFunc, SymSysVar
+
+[ROM Call]
+Index=$8B
+
+[Description]
+Checks for graph functions and other special variable names.
+
+[Explanation]
+CheckReservedName checks whether <I>SymName</I> is a graph function or
+another special variable name. It returns zero if this is not the case,
+otherwise it returns the type of the variable. This routine works in the same
+way as <A HREF="$$LINK(CheckSysFunc)">CheckSysFunc</A>; the only differences
+are that <I>SymName</I> is a tokenized name, and that the function may also
+return <A HREF="$$LINK(ExtendedSysTypes)">R_SYSVAR</A>.
+<BR><BR>
+Precisely, this function returns values from either
+<A HREF="$$LINK(gdraw.h/GraphModes)">GraphModes</A> or
+<A HREF="$$LINK(ExtendedSysTypes)">ExtendedSysTypes</A>, in addition to zero:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>GR_FUNC</TD>
+  <TD>"y1".."y99"</TD>
+</TR>
+<TR>
+  <TD>GR_PAR</TD>
+  <TD>"xt1".."xt99", "yt1".."yt99"</TD>
+</TR>
+<TR>
+  <TD>GR_POL</TD>
+  <TD>"r1".."r99"</TD>
+</TR>
+<TR>
+  <TD>GR_SEQ</TD>
+  <TD>"u1".."u99"</TD>
+</TR>
+<TR>
+  <TD>GR_3D</TD>
+  <TD>"z1".."z99"</TD>
+</TR>
+<TR>
+  <TD>GR_DE</TD>
+  <TD>"y'1".."y'99"</TD>
+</TR>
+<TR>
+  <TD>SEQ_INITC</TD>
+  <TD>"ui1".."ui99"</TD>
+</TR>
+<TR>
+  <TD>DE_INITC</TD>
+  <TD>"yi1".."yi99"</TD>
+</TR>
+<TR>
+  <TD>DR_FLDPIC</TD>
+  <TD>"FldPic"</TD>
+</TR>
+<TR>
+  <TD>SOLVER_SYS_VARS</TD>
+  <TD>"Exp", "Eqn"</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">UNIT_VAR</TD>
+  <TD>name with a leading underscore</TD>
+</TR>
+<TR>
+  <TD>C_COL</TD>
+  <TD>"c1".."c99"</TD>
+</TR>
+<TR>
+  <TD>R_REGEQ</TD>
+  <TD>"RegEq"</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">R_SYSVAR</TD>
+  <TD>another system variable (see <A HREF="$$LINK(estack.h/Tags)">EXT_SYSTEM_TAG</A>)</TD>
+</TR>
+</TABLE>
+<BR>
+This function calls <A HREF="$$LINK(TokToStrN)">TokToStrN</A> and <A HREF="$$LINK(CheckSysFunc)">CheckSysFunc</A>.
+
+[References]
+In=bascmd.h/cmd_local, estack.h/push_parse_text, unknown.h/EQU_getNameInfo, unknown.h/GraphOrTableCmd, unknown.h/push_parse_prgm_or_func_text, unknown.h/tokenize_if_TI_92_or_text, unknown.h/VarStoreLink, unknown.h/_ROM_CALL_437
+Out=CheckSysFunc, TokToStrN

@@ -1,0 +1,30 @@
+[Main]
+Name=cmd_movevar
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_movevar (SYM_STR SymName, SYM_STR SrcFolder, SYM_STR DestFolder);
+MinAMS=1.01
+See Also=cmd_copyvar, cmd_rename, vat.h/SymMove
+
+[ROM Call]
+Index=$362
+
+[Description]
+Executes TI-Basic 'MoveVar' command.
+
+[Explanation]
+cmd_movevar moves a TI-Basic variable from one folder to another. The
+parameter <I>SymName</I> should point to the variable tag of the symbol which
+will be moved (see <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A>).
+<I>SrcFolder</I> and <I>DestFolder</I> should point to the variable tags of
+the source and the destination folders, respectively. If the destination
+folder does not exist, cmd_movevar creates it. This function may be used
+instead of the low-level function <A HREF="$$LINK(vat.h/SymMove)">SymMove</A>
+from the <A HREF="$$LINK(vat.h/)">vat.h</A> header file.
+<BR><BR>
+This function may cause heap compression.
+
+[References]
+Out=error.h/ER_throwVar, string.h/strcat, string.h/strcmp, string.h/strlen, unknown.h/ParseSymName, vat.h/CheckSysFunc, vat.h/DerefSym, vat.h/FolderAdd, vat.h/FolderFind, vat.h/SymMove, vat.h/SymSysVar, vat.h/VarRecall
+Out_EV_eventLoop=1

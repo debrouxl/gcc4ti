@@ -1,0 +1,51 @@
+[Main]
+Title=Compound Literals (Cast Constructors)
+
+[Top]
+ISO C99 supports compound literals.  A compound literal looks like
+a cast containing an initializer.  Its value is an object of the
+type specified in the cast, containing the elements specified in
+the initializer; it is an lvalue.  As an extension, GCC supports
+compound literals in C89 mode and in C++.
+<BR><BR>
+Usually, the specified type is a structure.  Assume that
+<CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A>&nbsp;foo</CODE> and <I>structure</I> are declared as shown:
+<PRE>struct foo {int a; char b[2];} structure;
+</PRE>
+Here is an example of constructing a <CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A>&nbsp;foo</CODE> with a compound literal:
+<PRE>structure = ((struct foo) {x + y, 'a', 0});
+</PRE>
+This is equivalent to writing the following:
+<PRE>{
+  struct foo temp = {x + y, 'a', 0};
+  structure = temp;
+}
+</PRE>
+You can also construct an array.  If all the elements of the compound literal
+are (made up of) simple constant expressions, suitable for use in
+initializers of objects of static storage duration, then the compound
+literal can be coerced to a pointer to its first element and used in
+such an initializer, as shown here:
+<PRE>char **foo = (char *[]) { &quot;x&quot;, &quot;y&quot;, &quot;z&quot; };
+</PRE>
+Compound literals for scalar types and union types are
+also allowed, but then the compound literal is equivalent
+to a cast.
+<BR><BR>
+As a GNU extension, GCC allows initialization of objects with static storage
+duration by compound literals (which is not possible in ISO C99, because
+the initializer is not a constant).
+It is handled as if the object was initialized only with the bracket
+enclosed list if compound literal's and object types match.
+The initializer list of the compound literal must be constant.
+If the object being initialized has array type of unknown size, the size is
+determined by compound literal size.
+<PRE>static struct foo x = (struct foo) {1, 'a', 'b'};
+static int y[] = (int []) {1, 2, 3};
+static int z[] = (int [3]) {1};
+</PRE>
+The above lines are equivalent to the following:
+<PRE>static struct foo x = {1, 'a', 'b'};
+static int y[] = {1, 2, 3};
+static int z[] = {1, 0, 0};
+</PRE>

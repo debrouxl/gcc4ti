@@ -1,0 +1,21 @@
+[Main]
+Name=OSContrastUp
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=void OSContrastUp (void);
+Real Definition=#define OSContrastUp() ({_rom_call(void,(void),296) (); asm ("":::"d3","d4");})
+
+[ROM Call]
+Index=$296
+
+[Description]
+Increases the contrast.
+
+[Explanation]
+OSContrastUp increases the display contrast.
+It is actually a library function calling the real TIOS function called OSContrastUp,
+because the TIOS function destroys the content of a register which needs to be preserved.
+
+[References]
+Out=AB_getGateArrayVersion

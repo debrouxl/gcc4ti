@@ -1,0 +1,62 @@
+[Main]
+Title=Options Available in the Command Line Compiler
+
+[Top]
+These options apply only to the command line compiler.  If you want to use
+the IDE instead, you do not need to worry about these topics.
+<BR><BR>
+<CODE>tigcc</CODE> has an important difference to the standard program
+<CODE>gcc</CODE>: <CODE>tigcc</CODE> always overwrites assembly or
+object files.  For example, if a file <CODE>test.c</CODE> is compiled, the
+files <CODE>test.s</CODE> and <CODE>test.o</CODE> will be created and
+overwritten if necessary, but they will automatically be deleted again if
+neither <B>'-c'</B> nor <B>'-S'</B> are specified.
+<BR><BR>
+Another important difference is that <CODE>tigcc</CODE> always looks for
+libraries in the <CODE>'Lib'</CODE> subfolder of the installation.
+<DL>
+<DT><B>-pack <I>varname</I></B>
+<DD>Compress the file generated during compilation.
+<I>varname</I> is the name of the on-calc packed variable.  Although
+<I>varname</I> cannot have an extension, the variable on the calculator will
+always have the extension <CODE>ppg</CODE>.  <I>varname</I> cannot be the
+same as the on-calc name of the program itself.  When you use this switch,
+two files will be created; one with the extension <CODE>.89y</CODE> or
+<CODE>.9xy</CODE>, and one <CODE>.89z</CODE> or <CODE>.9xz</CODE> file.
+<BR><BR>
+This option comes from
+<A HREF="mailto:thomas.nussbaumer@gmx.net">Thomas Nussbaumer</A>'s
+TIGCC Tools Suite, where this feature is called "ExePack Technology."
+You can read about it on the official
+<A HREF="http://tict.ticalc.org/">TI-Chess Team site</A>.
+<BR><BR>
+<DT><B>-q</B>
+<DD>Keep as quiet as possible while assembling and linking.  This option is
+not needed by the compiler because it is always quiet, but the linker and
+especially the assembler output some information.
+<BR><BR>
+<DT><B>-v0</B>
+<DD>This switch is an addition to the <B>'-v'</B> switch.  It tells TIGCC to
+output only the commands that are run directly.  This was the default in some
+previous releases.
+<BR><BR>
+<DT><B>-g</B>
+<DD>The <B>'-g'</B> switch in GCC turns on debugging information; in TIGCC
+the COFF format will be used in all cases.  If you use this option in TIGCC,
+the <CODE>.s</CODE> file will not be deleted, but instead it will be filled
+with lines from the C source along with file offsets as comments.
+<BR><BR>
+<DT><B>-standalone</B>
+<DD>Do not link against <CODE>tigcc.a</CODE>.  All of GCC's internal
+functions are implemented in this library, as well as all non-TIOS functions.
+Using one of these will result in an error from the linker.
+<BR><BR>
+<DT><B>-ar</B>
+<DD>Create an archive (a static library) instead of a program.  The resulting
+file will have an <CODE>.a</CODE> ending.
+<BR><BR>
+<DT><B>-bsr</B>
+<DD>This option is ignored for compatibility.
+</DL>
+In addition to these options, the <CODE>tigcc</CODE> program also accepts
+most of the <A HREF="$$INFOLINK(ld/invocation)">linker options</A>.

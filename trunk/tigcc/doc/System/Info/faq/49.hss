@@ -1,0 +1,44 @@
+[Main]
+Title=How can I create a program that is bigger than 24K and works on AMS 2.xx?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can make a program which does not need any kernel, but which
+is greater than 8K and which works on AMS 2.03 as well (or greater than 24K and which works
+on AMS 2.04 and AMS 2.05 as well)?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+In fact, you need to make a short program (a so-called "launcher") which will call the main
+program, bypassing the TIOS (to skip the software protection). If the main program is
+"example.c", I recommend the following "launcher":
+$$EXAMPLE(Launcher.c)
+If you are not an expert, use this program as-is.
+<BR><BR>
+For anybody who wants to know more about the 8K limit: on HW1 calcs it is a pure software
+limit which can be broken by intercepting some error traps (used in DoorsOS and UniOS),
+or by making a short launcher which relocates the called program and jumps to it bypassing
+the TIOS check. This is what I used. But, yet another problem must be solved: HW2. Namely, it
+has built-in a hardware device which does not allow that PC can be out of certain zone,
+so the launcher itself will not help. This device can't be turned off normally by
+software, but Julien Muchembled found a "hole" in the protection system which allows
+turning out this device (this is what his HW2 patch does): this is a very nasty
+method, and I don't want to explain this here. But, this protection device can be fooled in a
+simple way: it protects only the "normal" RAM address space (i.e. the first 256K of RAM). As
+RAM is partially decoded, address x and x+256K are the same for TI-89, but if you jump to
+x+256K instead of x, the protection will not be activated! Look at the launcher to see how
+it works, and you now can understand why I added 0x40000 (i.e. 256K) to the address in two
+places. First, I relocate the called program as it is located on x+256K instead of x,
+then I call the subroutine on x+256K instead of x.
+<BR><BR>
+AMS 2.04 and AMS 2.05 introduce yet another level of protection (which existed before, but
+caused problems very seldomly): on these AMS versions, even jumping
+to the "ghost address space" (above 256K) is not possible if the program counter is out
+of a certain area. (This caused the so-called "second launch crash"; if you have AMS 2.05 with
+any longer program like TI-Chess, you probably know what I am talking about.) That's why I
+introcuced a new function called
+<A HREF="$$LINK(system.h/enter_ghost_space)">enter_ghost_space</A>: its only purpose is to
+smoothly bypass this new protection. Note that
+<A HREF="$$LINK(system.h/enter_ghost_space)">enter_ghost_space</A> is
+deprecated now; you should use the
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_ghostspace)">EXECUTE_IN_GHOST_SPACE</A></CODE>
+directive instead in most cases.
+</TD></TR></TABLE>

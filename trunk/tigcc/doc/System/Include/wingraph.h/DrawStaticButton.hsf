@@ -1,0 +1,42 @@
+[Main]
+Name=DrawStaticButton
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void DrawStaticButton (WINDOW *w, short ButtonType, short x);
+
+[ROM Call]
+Index=$35
+
+[Description]
+Draws a button in a window.
+
+[Explanation]
+DrawStaticButton draws a button at the bottom of the window pointed to by <I>w</I>,
+where <I>x</I> is distance (in pixels) from the left edge of the window to the left
+edge of the button. Parameter <I>ButtonType</I> determines the type of the button.
+The set of possible types is very limited, and they are defined in enum
+<A HREF="$$LINK(dialogs.h/Buttons)">Buttons</A> (any other values will cause a crash). The meanings
+of these constants are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>BT_OK</TD><TD>Button "Enter=OK"</TD>
+</TR><TR>
+<TD>BT_SAVE</TD><TD>Button "Enter=SAVE"</TD>
+</TR><TR>
+<TD>BT_YES</TD><TD>Button "Enter=YES"</TD>
+</TR><TR>
+<TD>BT_CANCEL</TD><TD>Button "Esc=CANCEL"</TD>
+</TR><TR>
+<TD>BT_NO</TD><TD>Button "ESC=NO"</TD>
+</TR><TR>
+<TD>BT_GOTO</TD><TD>Button "Enter=GOTO"</TD>
+</TR></TABLE>
+<BR>
+<B>Note:</B> The current font (set using <A HREF="$$LINK(WinFont)">WinFont</A>) must be F_4x6
+for this function to work correctly.
+
+[References]
+In=assert.h/assert, bascmd.h/cmd_showstat, error.h/ERD_dialog, events.h/EV_defaultHandler, unknown.h/EV_quit
+Out=MakeWinRect, WinRect, WinStrXY, unknown.h/_ROM_CALL_4D5

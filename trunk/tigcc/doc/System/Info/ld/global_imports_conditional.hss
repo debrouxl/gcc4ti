@@ -1,0 +1,32 @@
+[Main]
+Title=Conditional Reaction to Global Imports
+Index=..._AND_..., NOT_...
+
+[Top]
+Sometimes, it is convenient for an archive member to react to a global import
+differently than just to be included whenever the import is created. For
+example, a startup section may be optimized better if a certain register
+already holds a certain value, otherwise it must compute the value by itself.
+The TIGCC linker defines two symbol operators for this purpose:
+<UL>
+<LI>..._AND_...</LI>
+<LI>NOT_...</LI>
+</UL>
+To be included only if the global imports <I>A</I> and <I>B</I> are defined,
+a file must export the symbol <CODE><I>A</I>_AND_<I>B</I></CODE>. To be
+included only if the global import <I>A</I> is not defined, a file must
+export the symbol <CODE>NOT_<I>A</I></CODE>. Symbol operators may be
+combined, i.e. a file exporting <CODE>NOT_<I>A</I>_AND_<I>B</I></CODE> is
+included only if no global import <I>A</I> exists, and a global import
+<I>B</I> is defined.
+<BR><BR>
+There is a small quirk related to negated conditions: At some point, the
+linker needs to assume that no global imports <I>A</I> and <I>B</I> exist,
+and any file exporting the symbol <CODE>NOT_<I>A</I></CODE> or
+<CODE>NOT_<I>B</I></CODE> needs to be imported. However, the file which
+exported <CODE>NOT_<I>B</I></CODE> may actually create a global import
+<I>A</I> after the file exporting <CODE>NOT_<I>A</I></CODE> has been
+imported. The linker does not detect this, so you need to be careful not to
+create such situations. They are especially difficult to detect if a lot of
+combinations of AND and NOT operators are used, and if a lot of files that
+react to global imports create imports of their own.

@@ -1,0 +1,38 @@
+[Main]
+Title=format_arg
+
+[Top]
+Syntax: <B>format_arg (<I>string-index</I>)</B>
+<BR><BR>
+The <CODE>format_arg</CODE> attribute specifies that a function takes a format
+string for a <A HREF="$$LINK(stdio.h/printf)">printf</A> style function and modifies it (for example, to translate
+it into another language), so the result can be passed to a
+<A HREF="$$LINK(stdio.h/printf)">printf</A> style
+function (with the remaining arguments to the format function the same
+as they would have been for the unmodified string).  For example, the
+declaration
+<PRE>extern char *
+my_dgettext (char *my_domain, const char *my_format)
+      __attribute__ ((format_arg (2)));
+</PRE>
+causes the compiler to check the arguments in calls to a <A HREF="$$LINK(stdio.h/printf)">printf</A> type function, whose
+format string argument is the result of a call to the <I>my_dgettext</I> function, for
+consistency with the format string argument <I>my_format</I>.  If the
+<CODE>format_arg</CODE> attribute had not been specified, all the compiler
+could tell in such calls to format functions would be that the format
+string argument is not constant; this would generate a warning when
+<B>'-Wformat-nonliteral'</B> is used, but the calls could not be checked
+without the attribute.
+<BR><BR>
+The parameter <I>string-index</I> specifies which argument is the format
+string argument (starting from 1).
+<BR><BR>
+The <CODE>format-arg</CODE> attribute allows you to identify your own
+functions which modify format strings, so that GCC can check the
+calls to <A HREF="$$LINK(stdio.h/printf)">printf</A>
+type functions whose operands are calls to one of your own functions.
+(The compiler always treats <CODE>gettext</CODE>, <CODE>dgettext</CODE>, and
+<CODE>dcgettext</CODE> in this manner except when strict ISO C support is
+requested by <B>'-ansi'</B> or an appropriate <B>'-std'</B> option, or
+<B>'-ffreestanding'</B> is used.  See <A HREF="$$INFOLINK(comopts/SEC6)">Options
+Controlling C Dialect</A>.)

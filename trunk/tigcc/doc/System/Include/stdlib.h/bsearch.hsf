@@ -1,0 +1,29 @@
+[Main]
+Name=bsearch
+Type=Function
+Subtype=tigcc.a
+Header Files=stdlib.h
+Definition=void *bsearch (const void *Key, const void *BasePtr, unsigned short NoOfElements, unsigned short Width, compare_t cmp_func);
+See Also=qsort
+
+[Description]
+Binary search.
+
+[Explanation]
+bsearch searches a table (array) of <I>NoOfElements</I> elements in memory, and returns
+the address of the first entry in the table that matches the search key. Because this is a
+binary search, the first matching entry is not necessarily the first entry in the table.
+If no match is found, bsearch returns <A HREF="$$LINK(alloc.h/NULL)">NULL</A>.
+<I>NoOfElements</I> gives the number of elements in the table.
+<I>Width</I> specifies the number of bytes in each table entry.
+<I>BasePtr</I> points to the base (0-th element) of the table to be sorted.
+<I>Key</I> is a pointer to the search key.
+<I>cmp_func</I>, the comparison function, accepts two arguments,
+<I>elem1</I> and <I>elem2</I>, each a pointer to an entry in the table.
+The comparison function compares each of the pointed-to items (*<I>elem1</I> and
+*<I>elem2</I>), and returns a short integer based on the result of the comparison:
+<UL>
+<LI>If *<I>elem1</I> &lt; *<I>elem2</I>, <I>cmp_func</I> should return an integer &lt; 0.</LI>
+<LI>If *<I>elem1</I> == *<I>elem2</I>, <I>cmp_func</I> should return 0.</LI>
+<LI>If *<I>elem1</I> &gt; *<I>elem2</I>, <I>cmp_func</I> should return an integer &gt; 0.</LI>
+</UL>

@@ -1,0 +1,28 @@
+[Main]
+Name=should_and_did_push_approx_arg2
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short should_and_did_push_approx_arg2 (CESI arg1_ptr, CESI arg2_ptr);
+MinAMS=1.01
+
+[ROM Call]
+Index=$311
+
+[Description]
+Pushes a second floating point argument, if possible.
+
+[Explanation]
+This function is combination of "push" and "check" operations. If the entry on the expressions
+stack pointed to by <I>arg1_ptr</I> is not a floating point number (i.e. if <I>arg1_ptr</I>
+does not point to <A HREF="$$LINK(Tags)">FLOAT_TAG</A>), this function does nothing and returns
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. Otherwise, it checks if it is likely that the entry on the expression stack
+pointed to by <I>arg2_ptr</I> can be approxed to a real number (using
+<A HREF="$$LINK(likely_approx_to_number)">likely_approx_to_number</A>). If it is,
+should_and_did_push_approx_arg2 pushes the approximated value to the expression stack and returns
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, otherwise it does nothing more and returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+
+[References]
+In=basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_solve, basfunc.h/push_zeros, basop.h/push_equals, basop.h/push_exponentiate, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not_equals, basop.h/push_product, basop.h/push_sum, add_to_top, unknown.h/get_ub, unknown.h/push_standardize, unknown.h/raise_to_top, unknown.h/replace_top2_with_imre, unknown.h/replace_top2_with_pow, unknown.h/replace_top2_with_prod, unknown.h/replace_top2_with_sum, unknown.h/times_top
+Out=likely_approx_to_number, next_expression_index, push_expression, top_estack, basfunc.h/push_approx, unknown.h/primary_tag_list
+Out_EV_eventLoop=1

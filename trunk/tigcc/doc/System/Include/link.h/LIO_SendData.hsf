@@ -1,0 +1,23 @@
+[Main]
+Name=LIO_SendData
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=unsigned short LIO_SendData (const void *src, unsigned long size);
+
+[ROM Call]
+Index=$5A
+
+[Description]
+Sends data through the link interface.
+
+[Explanation]
+LIO_SendData sends <I>size</I> bytes from the address <I>src</I> through the link interface.
+This function calls repeatedly <A HREF="$$LINK(OSWriteLinkBlock)">OSWriteLinkBlock</A> function
+as many times as necessary to send all of data. Returns zero if the operation was successful,
+else returns a non-zero value (this value describes the type of the error, but I am not sure
+about the concrete meaning of particular values).
+
+[References]
+In=LIO_Get, LIO_Receive, LIO_Send, LIO_SendProduct, OSLinkCmd, alloc.h/HeapWalk, events.h/handleVarLinkKey, unknown.h/LIO_SendIdList
+Out=OSLinkTxQueueInquire, OSWriteLinkBlock, system.h/OSFreeTimer

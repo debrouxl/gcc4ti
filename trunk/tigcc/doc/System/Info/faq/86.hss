@@ -1,0 +1,24 @@
+[Main]
+Title=When I disable interrupts, grayscale doesn't work!
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I'm writing a game in C, but I encountered the following problem: when I
+disable interrupts, the grayscale doesn't work...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Of course, because grayscale is based on interrupts. I.e. you must not disable them
+in grayscale programs. So, what to do? You probably want to disable auto-int 1 to avoid screwing up
+the status line. Instead of DISABLING auto-int 1, you may REDIRECT it
+to nothing. New header file <A HREF="$$LINK(intr.h/)">intr.h</A> provides very elegant methods
+for doing this. It is enough to do this:
+<PRE>INT_HANDLER save_int_1;
+...
+save_int_1 = GetIntVec (AUTO_INT_1);
+SetIntVec (AUTO_INT_1, DUMMY_HANDLER);   // <I>redirect auto-int 1 to "nothing"</I>
+// <I>enable grayscale</I>
+// <I>do your code</I>
+// <I>disable grayscale</I>
+SetIntVec (AUTO_INT_1, save_int_1);
+</PRE>
+This method is much more elegant than in previous releases of TIGCCLIB.
+</TD></TR></TABLE>

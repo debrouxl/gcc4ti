@@ -1,0 +1,39 @@
+[Main]
+Name=LIO_Send
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=unsigned short LIO_Send (LIO_CTX *file, unsigned short DevType);
+
+[ROM Call]
+Index=$56
+
+[Description]
+Sends a file through the link interface.
+
+[Explanation]
+LIO_Send is a high-level function which sends a file (a variable, a screen dump file, etc.)
+described by the <A HREF="$$LINK(LIO_CTX)">LIO_CTX</A> structure pointed to by <I>file</I> through
+the link interface. However, this function is not so easy for usage, because you need to fill
+the file context structure pointed to by <I>file</I> manually before using this function. If
+you want just to send a variable through the link interface, function <A HREF="$$LINK(sendcalc)">sendcalc</A>
+is much easier to use. The advantage of this routine is greater generality in comparing to
+<A HREF="$$LINK(sendcalc)">sendcalc</A> (for example, it allows transfer even between incompatible TI
+models, if properly used; sorry, I don't know too much about it).
+<BR><BR>
+Parameter <I>DevType</I> determines the device type (this information is stored in the header
+of each packet during the communication). It is a collection of flags. Bit b7 is 0 during
+transfer from a computer to a calculator and 1 during transfer from a calculator to a computer
+or another calculator. Bits b6 and b5 are reserved (keep them to 0). Bit b4 is 1 if a device
+is a "special" device, whatever it means (so far, I know that this bit is set if a device is
+TI-89 or CBL). Bits b3-b0 determine the calculator type (so far, I know the following meanings:
+0010 for TI-82, 0011 for TI83, 0101 for TI85, 1000 for TI-89 or TI-92 Plus, and 1001 for TI-92).
+So, <I>DevType</I> should to be 0x98 for sending from TI-89 or 0x88 for sending from TI-92 Plus.
+<BR><BR>
+LIO_Send returns zero if the operation was successful, else returns a non-zero value
+(this value describes the type of the error, but I am not sure about the concrete meaning of
+particular values).
+
+[References]
+Out=LIO_RecvData, LIO_SendData, OSLinkClose, OSLinkOpen, OSLinkReset, string.h/strlen, system.h/OSClearBreak, unknown.h/_ROM_CALL_46E
+In=bascmd.h/cmd_send, unknown.h/LIO_SendIdList

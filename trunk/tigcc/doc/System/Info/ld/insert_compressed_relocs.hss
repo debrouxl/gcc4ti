@@ -1,0 +1,57 @@
+[Main]
+Title=__ld_insert_compressed_relocs
+See Also=insert_compressed_bss_refs: __ld_insert_compressed_bss_refs, insert_compressed_data_refs: __ld_insert_compressed_data_refs, insert_kernel_relocs: __ld_insert_kernel_relocs
+
+[Developer Notes]
+Warning: This table is referred to in other places. Please don't change the
+definition of "offset" if you don't know what you are doing. You'll risk
+breaking the definition of __ld_insert_compressed_rom_calls otherwise.
+
+[Top]
+__ld_insert_compressed_relocs inserts relocs in a compressed format known
+from Fargo. For more information on inserting and processing relocs, see
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+In the following format description, <I>offset</I> refers to the difference
+in words (half of the difference in bytes) between the start of this reloc
+and the end of the previous reloc. If there is no previous reloc (i.e. for
+the first reloc), <I>offset</I> is the distance in words between this reloc
+and the symbol <CODE>__ld_compressed_relocs_ref</CODE>. This symbol must be
+exported to be found. If it is not found, the entry point is used instead
+(see <A HREF="$$LINK(symbols_ld_entry_point)">__ld_entry_point</A>).
+<UL>
+<LI>For each relocation entry...
+    <UL>
+    <LI>If we are inside a nibble sequence (see below):
+        <UL>
+        <LI><B>1 nibble (1/2 byte):</B> <I>offset</I></LI>
+        </UL></LI>
+    <LI>Else: Any of the following, whichever fits:
+        <UL>
+        <LI><B>1 byte:</B> <I>offset</I> + 1 (must be between 0x01 and
+            0x7F)</LI>
+        <LI><B>1 byte:</B>
+            <UL>
+            <LI>1<SUP>st</SUP> nibble: <I>nibble_count</I> / 2 + 0x6
+                (must be between 0x8 and 0xB)</LI>
+            <LI>2<SUP>nd</SUP> nibble: <I>offset</I></LI>
+            </UL>
+            A nibble sequence of <I>nibble_count</I> nibbles follows
+            (see above).
+        </LI>
+        <LI><B>2 bytes:</B> <I>offset</I> + 0xBF81 (must be between 0xC000
+            and 0xFFFE)</LI>
+        <LI>A variable-length sequence:
+            <UL>
+            <LI><B>2 bytes:</B> 0xFFFF</LI>
+            <LI>Any of the four possibilities, with <I>offset</I> decreased
+                by 0x407E</LI>
+            </UL>
+        </LI>
+        </UL></LI>
+    </UL></LI>
+<LI><B>1 byte:</B> 0</LI>
+</UL>
+<B>Note:</B> The limitations of
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A> also
+apply to this insertion.

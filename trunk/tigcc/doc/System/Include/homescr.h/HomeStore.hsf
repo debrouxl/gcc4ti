@@ -1,0 +1,43 @@
+[Main]
+Name=HomeStore
+Type=Function
+Subtype=tigcc.a
+Header Files=homescr.h
+Definition=void HomeStore (void);
+See Also=HomePushEStack, HomeStorePair, HS_popEStack
+
+[Library Call]
+Asm=1
+
+[Description]
+Creates a new history pair with contents from the expression stack.
+
+[Explanation]
+HomeStore performs the same operation as
+<A HREF="$$LINK(HomePushEStack)">HomePushEStack</A>. However, the visuals for
+storing something to the history with
+<A HREF="$$LINK(HomePushEStack)">HomePushEStack</A> will be done immediately,
+over top of your program's visuals, if the home screen is the current
+application, which it most likely is. This function suppresses this.
+<BR><BR>
+However, HomeStore still displays a message in the status bar saying "DATA
+PLACED IN HOME SCREEN HISTORY," and turns on the busy indicator.
+<BR><BR>
+HomeStore is implemented in assembly, using the following code as a starting
+point:
+<PRE>CALLBACK void TempHook(EVENT *ev)
+{
+  ev->Type = CM_IDLE;
+}
+
+void HomeStore(void)
+{
+  EVENT_HANDLER temp = EV_hook;
+  EV_hook = TempHook;
+  HomePushEStack ();
+  EV_hook = temp;
+}
+</PRE>
+
+[References]
+Out=HomePushEStack, events.h/EV_hook

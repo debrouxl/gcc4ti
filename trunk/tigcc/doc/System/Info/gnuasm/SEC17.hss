@@ -1,0 +1,20 @@
+[Main]
+Title=Joining the Data and Text Sections
+
+[Top]
+The <B>'-R'</B> option tells <CODE>as</CODE> to write the object file as if all
+data-section data lives in the text section.  This is only done at
+the very last moment:  your binary data are the same, but data
+section parts are relocated differently.  The data section part of
+your object file is zero bytes long because all its bytes are
+appended to the text section.  (see <A HREF="$$LINK(SEC39)">Sections and Relocation</A>).
+<BR><BR>
+When you specify <B>'-R'</B>, it would be possible to generate shorter
+address displacements (because we do not have to cross between text and
+data section).  We refrain from doing this simply for compatibility with
+older versions of <CODE>as</CODE>.  In the future, <B>'-R'</B> may work this way.
+<BR><BR>
+When <CODE>as</CODE> is configured for COFF output (which is the case in TIGCC),
+this option is only useful if you use sections named <CODE>.text</CODE> and
+<CODE>.data</CODE>.
+

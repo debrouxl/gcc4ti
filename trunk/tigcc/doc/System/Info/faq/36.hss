@@ -1,0 +1,30 @@
+[Main]
+Title=How can I have large global variables that don't take up space in my program file?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I would like to have a global screen buffers which need to be allocated
+dynamically (to avoid wasting space in the program). The problem is that global
+variables must be initialized. In your programs, you define the buffer in the
+<CODE>_main</CODE> function, but then they are not available in the other functions. Is
+there a way to make "global" non-initialized screen buffers?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Declare a pointer initialized to <A HREF="$$LINK(alloc.h/NULL)">NULL</A>, then at the beginning
+allocate the buffer with <A HREF="$$LINK(alloc.h/malloc)">malloc</A>. For example, do this:
+<PRE>#include &lt;tigcclib.h&gt;
+...
+void *buff;  // <I>Buffer pointer</I>
+...
+void _main(void)
+{
+  ...
+  buff = malloc (LCD_SIZE); // <I>Alloc buffer, make "buff" point to it</I>
+  if (!buff) ...            // <I>Do some error handling (no memory)</I>
+  LCD_save (buff);
+  ...
+  LCD_restore (buff);
+  free (buff);
+}
+</PRE>
+Simple?
+</TD></TR></TABLE>

@@ -1,0 +1,33 @@
+[Main]
+Name=EV_hook
+Type=Variable
+Subtype=ROM Call
+Header Files=events.h
+Definition=EVENT_HANDLER EV_hook;
+
+[ROM Call]
+Index=$2A3
+
+[Description]
+A global variable pointing to the "hook" event handler.
+
+[Explanation]
+EV_hook is a global pointer variable which points to the "hook" event handler (or
+<A HREF="$$LINK(alloc.h/NULL)">NULL</A> if there is no "hook" handler installed. Hook handler hooks
+events like <A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A>, however, the application
+handler (either default application handler or user handler installed with
+<A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A>) is still called afterwards (see
+<A HREF="$$LINK(EV_sendEvent)">EV_sendEvent</A> for more info. This is probably meant for
+debugging purposes as it is never used in TIOS.
+<BR><BR>
+Using EV_hook you can capture all messages and process them as you like, without
+overriding current handlers. So, you can use it to change behaviour of some events,
+or add new functionalities. DoorsOS for example uses EV_hook to add SHIFT+ON feature.
+You also can hook the APPS key and display a different menu in which your application
+set will be listed (then you can start your own event driven application via
+<A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A>). If you understand principles
+described in this header file, this is not so hard. If you didn't understand what
+is written here, don't try to play with this...
+
+[References]
+In=EV_centralDispatcher, EV_sendEventSide, homescr.h/HomeStore

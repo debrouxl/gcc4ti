@@ -1,0 +1,21 @@
+[Main]
+Name=DeskTop
+Type=Variable
+Header Files=wingraph.h
+Definition=WINDOW *const DeskTop;
+Real Definition=#define DeskTop ((WINDOW* const)(((long*)(_rom_call_addr(0)))+1))
+
+[Description]
+A pointer to the desktop window.
+
+[Explanation]
+DeskTop is a constant static pointer (i.e. it can't be changed, but the structure pointed to by it
+may be changed) which points to the desktop window. This is a window without a border which
+occupies the whole screen area except the status line, but the clipping area of this window
+is set to exclude the area occupied by the toolbar menu, so you can not draw over the menu
+area if you use this window as a parameter to any window drawing function (except if you
+changed <I>Clip</I> field of the structure pointed to by DeskTop manually). Usually, if you
+want to use a function which expects a parameter
+which is a pointer to a window structure, but if you don't want to create your own window,
+you can pass DeskTop as the parameter to it (of course, if you don't need to draw something
+in the menu or status line area).

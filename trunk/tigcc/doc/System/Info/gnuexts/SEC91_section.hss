@@ -1,0 +1,46 @@
+[Main]
+Title=section
+
+[Top]
+Syntax: <B>section (&quot;<I>section-name</I>&quot;)</B>
+<BR><BR>
+Normally, the compiler places the objects it generates in sections like
+<CODE>.data</CODE> and <CODE>.bss</CODE>.  Sometimes, however, you need additional sections,
+or you need certain particular variables to appear in special sections,
+for example to map to special hardware.  The <CODE>section</CODE>
+attribute specifies that a variable (or function) lives in a particular
+section.  The use of this attribute is limited in TIGCC, because its linker supports
+only a few types of sections, but this may be improved in the future.
+For example, this small hypothetical program uses several specific section names:
+<PRE>struct duart a __attribute__ ((section (&quot;DUART_A&quot;))) = { 0 };
+struct duart b __attribute__ ((section (&quot;DUART_B&quot;))) = { 0 };
+char stack[10000] __attribute__ ((section (&quot;STACK&quot;))) = { 0 };
+int init_data __attribute__ ((section (&quot;INITDATA&quot;))) = 0;
+
+main()
+{
+  /* Initialize stack pointer */
+  init_sp (stack + sizeof (stack));
+
+  /* Initialize initialized data */
+  memcpy (&amp;init_data, &amp;data, &amp;edata - &amp;data);
+
+  /* Turn on the serial ports */
+  init_duart (&amp;a);
+  init_duart (&amp;b);
+}
+</PRE>
+Use the <CODE>section</CODE> attribute with an <I>initialized</I> definition
+of a <I>global</I> variable, as shown in the example.  GCC issues
+a warning and otherwise ignores the <CODE>section</CODE> attribute in
+uninitialized variable declarations.
+<BR><BR>
+You may only use the <CODE>section</CODE> attribute with a fully initialized
+global definition because of the way linkers work.  The linker requires
+each object be defined once, with the exception that uninitialized
+variables tentatively go in the <CODE>.bss</CODE> section
+and can be multiply &quot;defined&quot;.  You can force a variable to be
+initialized with the <B>'-fno-common'</B> flag or the <CODE><A HREF="$$LINK(SEC91_nocommon)">nocommon</A></CODE>
+attribute.
+<BR><BR>
+The <CODE>section</CODE> attribute can also be used for <A HREF="$$LINK(SEC85_section)">functions</A>.

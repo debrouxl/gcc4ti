@@ -1,0 +1,30 @@
+[Main]
+Name=FillLines2
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void FillLines2 (const WIN_RECT *lower_line, const WIN_RECT *upper_line, const SCR_RECT *clip, short Attr);
+
+[ROM Call]
+Index=$199
+
+[Description]
+Draws a filled area between two lines.
+
+[Explanation]
+FillLines2 fills an area bounded with two lines which coordinates are given
+in two <A HREF="$$LINK(wingraph.h/WIN_RECT)">WIN_RECT</A> structures <I>lower_line</I> (lower bound) and <I>upper_line</I> (upper bound).
+In fact, it draws a filled polygon whose vertices are
+(<I>lower_line</I>.x0,&nbsp;<I>lower_line</I>.y0),
+(<I>lower_line</I>.x1,&nbsp;<I>lower_line</I>.y1),
+(<I>upper_line</I>.x0,&nbsp;<I>upper_line</I>.y0) and
+(<I>upper_line</I>.x1,&nbsp;<I>upper_line</I>.y1)
+using the attribute <I>Attr</I>. Supported attributes are the same as in command
+<A HREF="$$LINK(FillTriangle)">FillTriangle</A>. The drawn polygon will be clipped at the boundaries of the
+area given by parameter <I>clip</I>. See <A HREF="$$LINK(SetCurClip)">SetCurClip</A> for more
+info about clipping areas. If <I>lower_line</I> is above <I>upper_line</I>,
+nothing will be drawn. To be more precise, "above" means "closer to the top of the screen".
+
+[References]
+In=wingraph.h/WinFillLines2
+Out=DrawClipLine, unknown.h/TIOS_abs

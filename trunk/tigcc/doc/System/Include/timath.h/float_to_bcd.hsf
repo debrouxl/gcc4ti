@@ -1,0 +1,22 @@
+[Main]
+Name=float_to_bcd
+Type=Function
+Subtype=Macro
+Header Files=timath.h
+Definition=bcd float_to_bcd (float x);
+Real Definition=#define float_to_bcd(a) ({float __a=(a);*(bcd*)&__a;})
+
+[Description]
+Converts float to BCD.
+
+[Explanation]
+bcd_to_float converts BCD structure <I>x</I> into an ordinary floating point value.
+In fact, this function returns the same value as the argument, but with different interpretation.
+This function, in a way, performs typecasting from an ordinary <CODE>float</CODE> type to a
+<A HREF="$$LINK(bcd)">bcd</A> type. Beware that returned value is not an lvalue (ordinary C functions
+never return lvalues, by the way), so you can not do something like
+<PRE>float a;
+...
+float_to_bcd(a).exponent = 0x4002;
+</PRE>
+To perform such assignments, use <A HREF="$$LINK(bcd_var)">bcd_var</A> macro.

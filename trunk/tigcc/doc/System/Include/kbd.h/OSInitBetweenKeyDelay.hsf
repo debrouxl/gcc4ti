@@ -1,0 +1,34 @@
+[Main]
+Name=OSInitBetweenKeyDelay
+Type=Function
+Subtype=ROM Call
+Header Files=kbd.h
+Definition=short OSInitBetweenKeyDelay (short rate);
+Real Definition=#define OSInitBetweenKeyDelay(rate) ({ short __oldRate = _OSInitBetweenKeyDelay (48); (__oldRate * 48 - 1) / _OSInitBetweenKeyDelay ((rate)) + 1; })
+
+[ROM Call]
+Index=$249
+
+[Description]
+Sets the rate at which a key autorepeats.
+
+[Explanation]
+OSInitBetweenKeyDelay sets the rate at which a key autorepeats to <I>rate</I>
+(note that only few keys have an autorepeat feature, namely arrow keys and backspace).
+The measuring unit for this function is 1/395&nbsp;s (because
+Auto-Int 1 is triggered 395 times per second), and the default value for
+<I>rate</I> is 48. OSInitBetweenKeyDelay returns the previous autorepeat rate.
+<BR><BR>
+Greg Dietsche pointed out that on HW2 (precisely, if the <I>gateArray</I>
+field of the structure returned by
+<A HREF="$$LINK(flash.h/FL_getHardwareParmBlock)">FL_getHardwareParmBlock</A>
+exists and is 2 or higher), TIOS immediately multiplies the value passed to
+it by 3/4.
+This is probably a bug, as this implies that there is no way to restore the
+rate to the value previously returned by OSInitBetweenKeyDelay. To work
+around this problem, OSInitBetweenKeyDelay is defined as a macro which
+detects this modification in a smart way, and tries to revert it for the
+return value.
+
+[References]
+Out=flash.h/FL_getHardwareParmBlock

@@ -1,0 +1,20 @@
+[Main]
+Name=GrayDBufToggle
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void GrayDBufToggle (void);
+Real Definition=#define GrayDBufToggle() ((void)(__gray_dbl_offset = (__gray_dbl_offset ? 0 : 8)))
+See Also=GrayDBufToggleSync, GrayDBufSetActiveIdx, GrayDBufSetActiveIdxSync
+
+[Description]
+Toggles the currently visible double buffer.
+
+[Explanation]
+GrayDBufToggle sets the currently visible buffer to the one which was
+previously hidden. Afterwards, the return values of
+<A HREF="$$LINK(GrayDBufGetActiveIdx)">GrayDBufGetActiveIdx</A> and
+<A HREF="$$LINK(GrayDBufGetHiddenIdx)">GrayDBufGetHiddenIdx</A> will be the
+exact opposite as before. As the switch may happen during the time a plane is
+copied to the screen, it may be desirable to use
+<A HREF="$$LINK(GrayDBufToggleSync)">GrayDBufToggleSync</A> instead.

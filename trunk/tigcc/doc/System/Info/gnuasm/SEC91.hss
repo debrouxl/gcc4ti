@@ -1,0 +1,23 @@
+[Main]
+Title=.fill
+
+[Top]
+Syntax: <B>.fill <I>repeat</I>[, <I>size</I>[, <I>value</I>]]</B>
+<BR><BR>
+<I>repeat</I>, <I>size</I> and <I>value</I> are absolute expressions.
+This emits <I>repeat</I> copies of <I>size</I> bytes.  <I>Repeat</I>
+may be zero or more.  <I>Size</I> may be zero or more, but if it is
+more than 8, then it is deemed to have the value 8, compatible with
+other people's assemblers.  The contents of each <I>repeat</I> bytes
+is taken from an 8-byte number.  The highest order 4 bytes are
+zero.  The lowest order 4 bytes are <I>value</I> rendered in the
+byte-order of an integer on the computer <CODE>as</CODE> is assembling for
+(big-endian for 680x0).
+Each <I>size</I> bytes in a repetition is taken from the lowest order
+<I>size</I> bytes of this number.  Again, this bizarre behavior is
+compatible with other people's assemblers.
+<BR><BR>
+<I>size</I> and <I>value</I> are optional.
+If the second comma and <I>value</I> are absent, <I>value</I> is
+assumed zero.  If the first comma and following tokens are absent,
+<I>size</I> is assumed to be 1.

@@ -1,0 +1,52 @@
+[Main]
+Name=assert
+Type=Function
+Subtype=Macro
+Header Files=assert.h
+Definition=void assert (short condition);
+Real Definition=#define assert(p) ((p) ? (void) 0 : __assertion_failed (#p, __FILE__, __LINE__))
+
+[Description]
+Tests a condition and possibly aborts.
+
+[Explanation]
+assert is a macro for debugging purposes that expands to an if statement.
+If <I>condition</I> evaluates to zero, assert opens an error message box, waits for
+a keypress, then abort the program. Here is a HTMLized "picture" which shows principally
+how such message box looks like:
+<BR><BR>
+<CENTER>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>
+<CENTER>
+<B>ASSERTION FAILED</B>
+</CENTER>
+</TD></TR>
+<TR><TD>
+<BR>
+&nbsp;&nbsp;<B>Condition:</B> <I>condition_written_as_text</I>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<BR><BR>
+&nbsp;&nbsp;<B>File:</B> <I>filename</I>&nbsp;&nbsp;&nbsp;<B>Line:</B> <I>linenum</I>
+<BR><BR><BR>
+<TABLE BORDER><TR><TD><B>&nbsp;&nbsp;Enter=OK&nbsp;&nbsp;</B></TD></TR></TABLE>
+</TD></TR>
+</TABLE>
+</CENTER>
+<BR>
+The <I>filename</I> and <I>linenum</I> listed in the message box are the source file name and
+line number where the assert macro appears. assert expands to relatively big code, so if you have
+many assert statements in the program, it may become quite long relatively fast. But, if you place
+the directive
+<PRE>#define NDEBUG
+</PRE>
+("no debugging") in the source code before the
+<PRE>#include &lt;assert.h&gt;
+</PRE>
+directive, the assert statement will be ignored.
+<BR><BR>
+It might be hard to use this function if you are compiling your program with the <A HREF="$$INFOLINK(ide)">IDE</A>
+(it is possible to get wrong line numbers). In any case, turning off file splitting may be useful.
+
+[References]
+Out=graph.h/ScrRect, kbd.h/ngetchx, wingraph.h/DrawStaticButton, wingraph.h/MakeWinRect, wingraph.h/WinClose, wingraph.h/WinFont, wingraph.h/WinOpen, wingraph.h/WinStr, stdio.h/sprintf

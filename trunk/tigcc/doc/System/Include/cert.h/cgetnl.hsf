@@ -1,0 +1,22 @@
+[Main]
+Name=cgetnl
+Type=Function
+Subtype=ROM Call
+Header Files=cert.h
+Definition=long cgetnl (CFILE *context);
+
+[ROM Call]
+Index=$12F
+
+[Description]
+Gets a non-aligned long integer from a context.
+
+[Explanation]
+cgetnl gets a long integer (which does not necessarily need to be aligned on an even address)
+from the file associated with the file context pointed to by <I>context</I>, and moves
+the file pointer forward by four characters. In fact, it calls <A HREF="$$LINK(cgetc)">cgetc</A>
+four times, and combines four returned bytes into one doubleword.
+
+[References]
+In=cgetflen
+Out=cgetc

@@ -1,0 +1,45 @@
+[Main]
+Name=SymDelTwin
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short SymDelTwin (SYM_ENTRY *SymPtr);
+
+[ROM Call]
+Index=$280
+
+[Description]
+Deletes a twin symbol.
+
+[Explanation]
+SymDelTwin deletes a twin symbol (see <A HREF="$$LINK(SymAddTwin)">SymAddTwin</A> for more info
+about twin symbols) whose VAT entry is <I>SymPtr</I>. Returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if
+the operation was successful, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+<BR><BR>
+When the TIOS deletes a twin symbol, the current value of the flags
+<A HREF="$$LINK(SymFlags)">SF_GREF1</A>, <A HREF="$$LINK(SymFlags)">SF_GREF2</A>,
+and <A HREF="$$LINK(SymFlags)">SF_STATVAR</A>
+are copied from the twin symbol to the original symbol.
+<BR><BR>
+<B>Note:</B> Since the TIOS is not able to get the folder handle with only the
+<A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> structure, it reads
+the folder address, the number of files in this folder, and the maximum
+number of files in the folder from the global variables used by
+<A HREF="$$LINK(SymFindFirst)">SymFindFirst</A> and related functions.
+If the program changes these variables (for example by simply using
+<A HREF="$$LINK(SymFindFirst)">SymFindFirst</A>) or if it adds or deletes a
+symbol in the VAT by itself without using <A HREF="$$LINK(SymAdd)">SymAdd</A>
+and <A HREF="$$LINK(SymDel)">SymDel</A>, SymDelTwin will cause severe data
+corruption.
+<BR><BR>
+The solution is simple: Always call <A HREF="$$LINK(SymFindPtr)">SymFindPtr</A>
+with the complete name of the twin symbol before calling SymDelTwin; passing
+0 to its <I>Flags</I> parameter. Samuel Stearley says that calling
+<A HREF="$$LINK(unknown.h/LoadSymFromFindHandle)">LoadSymFromFindHandle</A>
+after finding the symbol with <A HREF="$$LINK(SymFindFirst)">SymFindFirst</A>
+and <A HREF="$$LINK(SymFindNext)">SymFindNext</A> works as well.
+(However, do not call <A HREF="$$LINK(SymDel)">SymDel</A> to delete twin symbols.)
+
+[References]
+In=bascmd.h/cmd_archive, bascmd.h/cmd_unarchiv, events.h/EV_eventLoop, link.h/LIO_Receive, link.h/OSLinkCmd
+Out=alloc.h/HeapFree, alloc.h/HeapRealloc, mem.h/memmove, unknown.h/_ds32s32, unknown.h/_ROM_CALL_5CA

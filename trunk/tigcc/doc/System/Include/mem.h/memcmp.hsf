@@ -1,0 +1,32 @@
+[Main]
+Name=memcmp
+Type=Function
+Subtype=ROM Call
+Header Files=mem.h, string.h
+Definition=short memcmp (const void *s1, const void *s2, unsigned long len);
+See Also=memucmp
+
+[ROM Call]
+Index=$270
+
+[Description]
+Compares two blocks of signed chars.
+
+[Explanation]
+memcmp compares the first <I>len</I> bytes of the blocks <I>s1</I> and <I>s2</I> as signed chars.
+Since it compares bytes as signed chars, memcmp returns a value
+<UL>
+<LI>&lt; 0 if <I>s1</I> is less than <I>s2</I></LI>
+<LI>=0 if <I>s1</I> is the same as <I>s2</I></LI>
+<LI>&gt; 0 if <I>s1</I> is greater than <I>s2</I></LI>
+</UL>
+For example, <CODE>memcmp("\xFF","\x7F",1)</CODE> returns a value greater than 0. More precisely,
+the exact return value is the result of subtracting the first pair of values
+that differ in the two blocks being compared based on them being signed
+chars.
+<BR><BR>
+<B>Note:</B> This routine is declared as "short" although the ANSI standard proposes "long". This is important,
+because the TIOS memcmp routine puts garbage in the higher half of the d0 register.
+
+[References]
+In=dll.h/LoadDLL, estack.h/are_expressions_identical, events.h/EV_defaultHandler, graph.h/ScrRectScroll, unknown.h/GraphOrTableCmd, unknown.h/ScrRectDivide

@@ -1,0 +1,25 @@
+[Main]
+Name=EM_abandon
+Type=Function
+Subtype=ROM Call
+Header Files=flash.h
+Definition=void EM_abandon (HANDLE h);
+
+[ROM Call]
+Index=$15B
+
+[Description]
+Abandon an archive memory block.
+
+[Explanation]
+EM_abandon abandons an archive memory block associated with handle <I>h</I>. More precise,
+it frees the handle by clearing the entry in the heap table, and precedes memory block with
+flag which indicate that the block is free.
+<BR><BR>
+<B>Note:</B> Functions like <B>EM_blockErase</B> are removed in AMS 2.xx to increase the
+life of the Flash ROM. Really, it is not necessary to erase a block psyhically. It is
+quite enough to mark it as "deleted", and it will be eventually simply be rewritten later.
+
+[References]
+In=link.h/LIO_Receive, link.h/OSLinkCmd, vat.h/FolderDel
+Out=EM_write, unknown.h/_ROM_CALL_3CF

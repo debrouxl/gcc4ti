@@ -1,0 +1,31 @@
+[Main]
+Name=GrayGetInt1Handler
+Alias=GetGrayInt1Handler
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=INT_HANDLER GrayGetInt1Handler (void);
+Real Definition=#define GrayGetInt1Handler() ((INT_HANDLER)(__gray_hw_type ? __gray_old_int1_hw2 : __gray_old_int1_hw1))
+See Also=GraySetInt1Handler, intr.h/
+
+[Description]
+Returns the interrupt handler executed by the grayscale algorithm.
+
+[Explanation]
+GrayGetInt1Handler returns the interrupt handler which is called internally by
+the grayscale support. Use this function to store the interrupt temporarily
+when you are using <A HREF="$$LINK(GraySetInt1Handler)">GraySetInt1Handler</A>
+to change it.
+<BR><BR>
+The interrupt handler called by the grayscale routines looks something like this
+(pseudo-code):
+<PRE>DEFINE_INT_HANDLER (GrayInt1Handler)
+{
+  SwitchPlanes ();
+  ExecuteHandler (OldInt1);
+}
+</PRE>
+where <I>OldInt1</I> is the previous <A HREF="$$LINK(intr.h/IntVecs)">AUTO_INT_1</A> handler.
+GrayGetInt1Handler returns the value of <I>OldInt1</I>.
+Note that this is just a C-style declaration of the <A HREF="$$LINK(intr.h/IntVecs)">AUTO_INT_1</A>
+handler for grayscale; the actual one is implemented in assembly.

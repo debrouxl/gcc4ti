@@ -1,0 +1,43 @@
+[Main]
+Name=DialogAddRequest
+Type=Function
+Subtype=Macro
+Header Files=dialogs.h
+Definition=HANDLE DialogAddRequest (HANDLE Handle, short x, short y, const char *prompt, unsigned short offset, short MaxLen, short width);
+Real Definition=#define DialogAddRequest(h,x,y,t,o,m,w) DialogAdd(h,0,x,y,2,(const char*)(t),(short)(o),(short)(m),(short)(w))
+
+[Description]
+Adds a request box into a dialog box.
+
+[Explanation]
+DialogAddRequest adds a request box (i.e. an input line box) to the dialog structure
+associated with handle <I>Handle</I> at the position (<I>x</I>,&nbsp;<I>y</I>),
+where coordinates are relative to the top-left corner of the dialog box.
+A prompt <I>prompt</I> will appear in front of the request box. All request boxes in
+one dialog box will be aligned in according to a request box which has the longest
+prompt, except when the prompt string finishes with '`' character (code 96). In such case,
+the request box will start immidiately after the prompt string ('`' is a special
+character, which will not be displayed). If the prompt is not finished with '`', it will
+be eventually padded with '<B>.</B>' characters up to the length of the longest prompt, except when
+the prompt finishes with '<B>:</B>'. In such case, the prompt will be padded with space character
+('<B>:</B>' will also be displayed).
+<BR><BR>
+Maximal number of characters which may be entered is determined by parameter <I>MaxLen</I>,
+and <I>width</I> determines the actual width of the request box. It will be such that
+the widest string made of <I>width</I> characters may fit into the box. So, the real
+width of box in pixels will be <I>width</I>&nbsp;*&nbsp;6, because the widest character
+'M' is 6 pixels wide. If you try to enter a string with more than <I>width</I> characters,
+the content of the request box will scroll. If <I>width</I> is wider than the actual
+avaliable width of the dialog box, the request box will be truncated at the edge of the
+dialog box.
+<BR><BR>
+Parameter <I>offset</I> determines what will be the initial content of the request box,
+and where the entered characters will be stored. See <A HREF="$$LINK(DialogDo)">DialogDo</A> for
+info on how and where the entered characters are actually stored.
+<BR><BR>
+DialogAddRequest returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A>
+in a case of error, otherwise it returns <I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may cause
+heap compression.
+
+[References]
+Out=DialogAdd

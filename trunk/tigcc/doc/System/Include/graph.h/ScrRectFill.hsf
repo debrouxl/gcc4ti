@@ -1,0 +1,35 @@
+[Main]
+Name=ScrRectFill
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void ScrRectFill (const SCR_RECT *rect, const SCR_RECT *clip, short Attr);
+
+[ROM Call]
+Index=$189
+
+[Description]
+Draws a filled rectangle.
+
+[Explanation]
+ScrRectFill draws a filled rectangle given by <A HREF="$$LINK(SCR_RECT)">SCR_RECT</A>
+structure <I>rect</I>, using the attribute <I>Attr</I>. The rectangle will be
+clipped at the boundaries of the area given by parameter <I>clip</I>. See
+<A HREF="$$LINK(SetCurClip)">SetCurClip</A> for more info about clipping areas. Supported
+attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>A_NORMAL</TD><TD>Fill with black pixels</TD></TR>
+<TR><TD>A_REVERSE</TD><TD>Fill with white pixels</TD></TR>
+<TR><TD>A_XOR</TD><TD>All pixels in the rectangle will be reversed</TD></TR>
+</TABLE>
+<BR>
+<A HREF="$$LINK(FillLines2)">FillLines2</A> is more complicated and slower function than ScrRectFill,
+but it supports many more attributes. See <A HREF="$$LINK(SetCurAttr)">SetCurAttr</A> for more info about attributes.
+<BR><BR>
+<B>Note:</B> TI said that attribute A_SHADED (set to a pattern of pixels on and off) is also supported,
+but it didn't work when I tried it; at least, it does not work on AMS 1.00.
+
+[References]
+In=ScrRectScroll, ScrRectShift, menus.h/MenuEnd, menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, unknown.h/UpdateWindows, wingraph.h/DrawWinBorder, wingraph.h/WinClr, wingraph.h/WinFill, unknown.h/_ROM_CALL_3EA, unknown.h/_ROM_CALL_421
+Out=DrawLine

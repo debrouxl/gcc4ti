@@ -1,0 +1,68 @@
+[Main]
+Name=cmd_twovar
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_twovar (ESI StatData);
+MinAMS=1.01
+See Also=cmd_onevar, cmd_linreg, cmd_quadreg, cmd_cubicreg, cmd_quartreg, cmd_powerreg, cmd_expreg, cmd_lnreg, cmd_sinreg, cmd_medmed, cmd_logistic
+
+[ROM Call]
+Index=$398
+
+[Description]
+Executes TI-Basic 'TwoVar' command.
+
+[Explanation]
+cmd_twovar calculates two-variable statistics and updates all statistics
+variables (see TI-Basic manual for more info). The <I>StatData</I> parameter
+must point to a structure on the expression stack which describes where the
+actual data is stored. This structure may have one of the following four
+layouts (<I>StatData</I> should point to the last item):
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> <I>freqs_name</I> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>categories_list</I> <A HREF="$$LINK(estack.h/Tags)">LIST_TAG</A> <I>categories_name</I> <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>categories_list</I> <A HREF="$$LINK(estack.h/Tags)">LIST_TAG</A> <I>categories_name</I> <I>freqs_name</I> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+</TABLE>
+<BR>
+<I>x_list_name</I> is the VAT symbol name (see
+<A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> and
+<A HREF="$$LINK(estack.h/Tags)">Tags</A> for more info) of a TI-Basic list
+variable which contains the x values. <I>y_list_name</I> is the VAT symbol
+name of a TI-Basic list variable which contains the y values.
+<I>freqs_name</I> (if present) is the VAT symbol name of a TI-Basic list
+variable which contains the frequencies (all frequencies are assumed to be 1
+if <I>freqs_name</I> is not present). <I>categories_name</I> (if present) is
+the VAT symbol name of a TI-Basic list which contains the category code for
+each item. <I>categories_list</I> represents a list of integer items which
+determine which categories will be included (this makes sense only when
+<I>categories_name</I> is used).
+<BR><BR>
+For example, assuming that two TI-Basic list variables "xdata" and "ydata"
+contain the x and y values, you can calculate simple two-variable statistics
+using the following code fragment:
+<PRE>push_quantum (NOTHING_TAG);
+push_quantum (NOTHING_TAG);
+push_quantum (NOTHING_TAG);
+push_expression (SYMSTR ("ydata"));
+push_expression (SYMSTR ("xdata"));
+cmd_twovar (top_estack);
+</PRE>
+After this, you can retrieve the calculated regression data by accessing
+TI-Basic system variables like "minX" directly (using
+<A HREF="$$LINK(vat.h/VarRecall)">VarRecall</A>, for example), or you can
+display the calculated data using
+<A HREF="$$LINK(cmd_showstat)">cmd_showstat</A>.
+<BR><BR>
+The symbol names <I>x_list_name</I>, <I>y_list_name</I>, <I>freqs_name</I>,
+and <I>categories_name</I> may also be "c1".."c99". In this case, they
+represent columns in the last data variable shown in the Data/Matrix editor.
+In all cases, the lists represented by <I>x_list_name</I>,
+<I>y_list_name</I>, <I>freqs_name</I>, and <I>categories_name</I> must have
+the same dimension.
+
+[References]
+Out=alloc.h/HeapAlloc, alloc.h/HeapDeref, alloc.h/HeapFree, alloc.h/HeapFreeIndir, alloc.h/HeapRealloc, alloc.h/HLock, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/estack_to_ushort, estack.h/next_expression_index, statline.h/ST_helpMsg, system.h/XR_stringPtr, timath.h/ceil, timath.h/fabs, timath.h/floor, timath.h/sqrt, unknown.h/ck_valid_float, unknown.h/estack_to_float, unknown.h/is_cFloat_agg, unknown.h/OO_GetAppAttr, unknown.h/PlotInit, unknown.h/PlotPut, unknown.h/RM_Type, unknown.h/statFree, unknown.h/statStart, wingraph.h/MakeWinRect, wingraph.h/WinFill, wingraph.h/WinFillTriangle, wingraph.h/WinLine, wingraph.h/WinRect, wingraph.h/WinStrXY, unknown.h/_bcd_math, unknown.h/_ROM_CALL_46B, unknown.h/_ROM_CALL_4CB
+Out_EV_eventLoop=1

@@ -1,0 +1,28 @@
+[Main]
+Name=cmd_disphome
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_disphome (void);
+MinAMS=1.01
+
+[ROM Call]
+Index=$33F
+
+[Description]
+Executes TI-Basic 'DispHome' command.
+
+[Explanation]
+cmd_disphome displays the current content of the Home Screen window.
+More precise, it starts the Home application if it is not already running, and makes sure the
+Home Screen window is being displayed switching from the Program I/O window if necessary.
+The OS will deactivate or terminate the current application to activate the
+Home Screen.
+<BR><BR>
+<B>Note:</B> If you used any function from this header file which displays various windows which
+are different than Home Screen window (for example, TI-Basic Program I/O Screen window), use
+cmd_disphome before returning from your program to activate the Home Screen again!
+
+[References]
+Out=alloc.h/HeapFreeIndir, estack.h/bottom_estack, events.h/EV_setCmdState, events.h/EV_setFKeyState, events.h/EV_startApp, homescr.h/HS_countFIFO, statline.h/ST_stack, textedit.h/TE_focus, unknown.h/EV_currentApp, unknown.h/EV_quit, wingraph.h/WinActivate, wingraph.h/WinDeactivate, wingraph.h/WinFill, wingraph.h/WinHide, unknown.h/_ROM_CALL_471, unknown.h/_ROM_CALL_5DE
+Out_EV_eventLoop=1

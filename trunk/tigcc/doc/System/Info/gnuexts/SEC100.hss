@@ -1,0 +1,32 @@
+[Main]
+Title=Alternate Keywords
+Index=__const__, __extension__
+
+[Top]
+<B>'-ansi'</B> and the various <B>'-std'</B> options disable certain
+keywords.  This causes trouble when you want to use GNU C extensions, or
+a general-purpose header file that should be usable by all programs,
+including ISO C programs.  The keywords <CODE>asm</CODE>, <CODE>typeof</CODE> and
+<CODE>inline</CODE> are not available in programs compiled with
+<B>'-ansi'</B> or <B>'-std'</B> (although <CODE>inline</CODE> can be used in a
+program compiled with <B>'-std=c99'</B>).  The ISO C99 keyword
+<CODE>restrict</CODE> is only available when <B>'-std=gnu99'</B> (which will
+eventually be the default) or <B>'-std=c99'</B> (or the equivalent
+<B>'-std=iso9899:1999'</B>) is used.
+<BR><BR>
+The way to solve these problems is to put <CODE>__</CODE> at the beginning and
+end of each problematical keyword.  For example, use <CODE>__asm__</CODE>
+instead of <CODE>asm</CODE>, and <CODE>__inline__</CODE> instead of <CODE>inline</CODE>.
+<BR><BR>
+Other C compilers won't accept these alternative keywords; if you want to
+compile with another compiler, you can define the alternate keywords as
+macros to replace them with the customary keywords.  It looks like this:
+<PRE>#ifndef __GNUC__
+#define __asm__ asm
+#endif
+</PRE>
+<B>'-pedantic'</B> and other options cause warnings for many GNU C extensions.
+You can
+prevent such warnings within one expression by writing
+<CODE>__extension__</CODE> before the expression.  <CODE>__extension__</CODE> has no
+effect aside from this.

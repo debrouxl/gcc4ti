@@ -1,0 +1,34 @@
+[Main]
+Title=Comments
+
+[Top]
+There are two ways of rendering comments to <CODE>as</CODE>.  In both
+cases the comment is equivalent to one space.
+<BR><BR>
+Anything from <CODE>/*</CODE> through the next <CODE>*/</CODE> is a comment.
+This means you may not nest these comments.
+<PRE>/*
+  The only way to include a newline ('\n') in a comment
+  is to use this sort of comment.
+*/
+
+/* This sort of comment does not nest. */
+</PRE>
+Anything from the <U>line comment</U> character to the next newline
+is considered a comment and is ignored.  The line comment character is
+<CODE>|</CODE> on the 680x0 family of processors.  
+<BR><BR>
+To be compatible with past assemblers, lines that begin with <CODE>#</CODE> have a
+special interpretation.  Following the <CODE>#</CODE> should be an absolute
+expression (see <A HREF="$$LINK(SEC60)">Expressions</A>): the logical line number of the <I>next</I>
+line.  Then a string (see <A HREF="$$LINK(SEC33)">Strings</A>) is allowed: if present it is a
+new logical file name.  The rest of the line, if any, should be whitespace.
+<BR><BR>
+If the first non-whitespace characters on the line are not numeric,
+the line is ignored.  (Just like a comment.)
+<PRE>                          # This is an ordinary comment.
+# 42-6 &quot;new_file_name&quot;    # New logical file name
+                          # This is logical line # 36.
+</PRE>
+This feature is deprecated, and may disappear from future versions
+of <CODE>as</CODE>.

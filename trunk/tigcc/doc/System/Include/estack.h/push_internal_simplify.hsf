@@ -1,0 +1,31 @@
+[Main]
+Name=push_internal_simplify
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void push_internal_simplify (CESI ptr);
+MinAMS=1.01
+
+[ROM Call]
+Index=$4F8
+Address Hack=*((void *const *) (((const char *) (_rom_call_addr (385))) + 22))
+
+[Description]
+Converts an expression into internal canonic form and pushes the result to the expression stack.
+
+[Explanation]
+This extremely important low-level subroutine converts an expression pointed to by <I>ptr</I>
+to the internal canonic form (see <A HREF="$$LINK(top_estack)">top_estack</A> for more info about
+the internal canonic form), and pushes the converted expression at the top of the expression
+stack. This routine accepts all valid (algebraic, calculus, relational, logical or Boolean)
+tokenized expressions. During the conversion, various simplifications may be performed too.
+This routine may cause heap compression, stack expansion, and may throw an error if something
+goes wrong.
+<BR><BR>
+<B>Note:</B> It is really unbelievable that such an important routine was not present in TIOS jump
+table before AMS 2.xx. Using very dirty hacks, it is implemented here to work on every AMS version.
+
+[References]
+In=bascmd.h/cmd_dialog, bascmd.h/cmd_endfor, bascmd.h/cmd_endwhile, bascmd.h/cmd_if, bascmd.h/cmd_ifthen, bascmd.h/cmd_return, bascmd.h/cmd_sinreg, bascmd.h/cmd_while, basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_abs, basfunc.h/push_approx, basfunc.h/push_conj, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_extended_prod, basfunc.h/push_factor, basfunc.h/push_im, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nint, basfunc.h/push_nsolve, basfunc.h/push_part, basfunc.h/push_phase, basfunc.h/push_randpoly, basfunc.h/push_re, basfunc.h/push_sign, basfunc.h/push_solve, basfunc.h/push_summation, basfunc.h/push_when, basfunc.h/push_zeros, basop.h/push_dot_exponentiate, basop.h/push_equals, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_indir_name, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not_equals, basop.h/push_substitute_simplify, basop.h/push_substitute_using_such_that, events.h/EV_defaultHandler, homescr.h/HomeExecute, unknown.h/are_units_consistent, unknown.h/did_push_approx_inflection_point, unknown.h/get_lb, unknown.h/get_ub, unknown.h/index_if_pushed_qquad_info, estack.h/is_negative, estack.h/is_nonnegative, estack.h/is_nonpositive, estack.h/is_positive, unknown.h/push_format, push_simplify, unknown.h/push_simplify_statements, unknown.h/push_user_func, unknown.h/replace_top_with_post_simplified, unknown.h/_ROM_CALL_450, unknown.h/_ROM_CALL_4D1, unknown.h/_ROM_CALL_4E6
+Out=are_expressions_identical, bottom_estack, delete_between, is_free_of_tag, is_independent_of, next_expression_index, push_expr_quantum, push_expression, push_quantum, top_estack, basop.h/push_indir_name, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, unknown.h/did_push_var_val, unknown.h/does_push_fetch, is_constant, unknown.h/is_real, is_variable, unknown.h/NG_control, unknown.h/NG_such_that_index, unknown.h/primary_tag_list, unknown.h/replace_top2_with_and, vat.h/DerefSym, vat.h/VarRecall, unknown.h/_ROM_CALL_5E4
+Out_EV_eventLoop=1

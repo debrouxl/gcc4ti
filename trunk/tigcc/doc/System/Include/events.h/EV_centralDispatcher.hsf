@@ -1,0 +1,31 @@
+[Main]
+Name=EV_centralDispatcher
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void EV_centralDispatcher (void);
+
+[ROM Call]
+Index=$156
+
+[Description]
+Enters the main controlling loop of the TIOS.
+
+[Explanation]
+As the name suggests this is the main controlling loop of the entire TIOS. This
+functions initializes all installed applications by sending <A HREF="$$LINK(EventIDs)">CM_INIT</A>
+event to them, starts the "Home screen" application, then calls <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A>
+under an error handler, so if any error appeared during execution of the event loop, it will
+be catched by the error handler, which will first dispatch the error code to
+<A HREF="$$LINK(error.h/ERD_process)">ERD_process</A> then restart the event loop.
+<BR><BR>
+<B>Note:</B> As far as I know, there is no any need to call this function from your program. This
+will enter the endless loop, which can not be broken even by throwing an error from the
+event handler (the method used to exit from <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A>), because
+the event loop is now executed under the internal error handler (maybe the only method to exit
+from such loop is using <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A> from the event handler, but
+I don't believe that such barbaric method would leave the system in a stable state).
+
+[References]
+Out=EV_eventLoop, EV_hook, EV_sendEvent, EV_startTask, error.h/ER_catch, error.h/ERD_process, estack.h/reset_control_flags, statline.h/ST_busy, unknown.h/EV_appA, unknown.h/EV_appB, unknown.h/EV_appSide, unknown.h/EV_currentApp, unknown.h/EV_runningApp, unknown.h/OO_firstACB, unknown.h/OO_NextACB, unknown.h/_ROM_CALL_428
+Out_EV_eventLoop=1

@@ -1,0 +1,40 @@
+[Main]
+Name=_DLL_call
+Type=Function
+Subtype=Macro Constructor
+Header Files=dll.h
+Definition=#define _DLL_call(type,args,index) (*(type(*)args) _DLL_entry (index))
+See Also=_DLL_call_attr, _DLL_reference, _DLL_glbvar
+
+[Description]
+Constructs a function definition for a DLL call.
+
+[Explanation]
+_DLL_call gets a void pointer to the location of the <I>index</I>-th exported symbol of
+the currently loaded DLL (using <A HREF="$$LINK(_DLL_entry)">_DLL_entry</A>), casts this pointer to a pointer to a function which
+returns <I>type</I> and which requires <I>args</I> as arguments, and dereferences it. This macro is usually used
+for accessing functions exported from the DLL. For example, suppose that the
+DLL contains the following declarations in the DLL interface section (see <A HREF="$$LINK(DLL_INTERFACE)">DLL_INTERFACE</A>):
+<PRE>void foo (int, const char *);
+int bar (long);
+...
+DLL_EXPORTS foo, bar
+</PRE>
+Then <I>foo</I> will get the index number 0, and <I>bar</I> will get the index number 1. To
+call <I>foo</I> from the main program (assuming that the DLL has been loaded sucessfully using
+<A HREF="$$LINK(LoadDLL)">LoadDLL</A>) with arguments <CODE>123</CODE> and <CODE>"foostr"</CODE>, you can principally do
+<PRE>_DLL_call (void, (int, const char *), 0) (123, "foostr");
+</PRE>
+But this is awkward, of course. So, to 'import' <I>foo</I> and <I>bar</I> from the DLL, you
+should use the following defines: 
+<PRE>#define foo _DLL_call (void, (int, const char*), 0)
+#define bar _DLL_call (int, (long), 1)
+</PRE>
+Then you can use <I>foo</I> and <I>bar</I> just as normal functions defined in the main program.
+For example:
+<PRE>foo (123, "foostr");
+</PRE>
+Principally, _DLL_call is quite similar to <A HREF="$$LINK(default.h/_rom_call)">_rom_call</A>,
+which constructs TIOS function calls instead of DLL function calls. But note that <I>index</I> 
+in _DLL_call is an ordinary integer, which is not true for
+<A HREF="$$LINK(default.h/_rom_call)">_rom_call</A>.

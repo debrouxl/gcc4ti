@@ -1,0 +1,25 @@
+[Main]
+Name=copensub
+Type=Function
+Subtype=ROM Call
+Header Files=cert.h
+Definition=void copensub (CFILE *context, CERT_FIELD *subfield);
+
+[ROM Call]
+Index=$133
+
+[Description]
+Opens a subcontext.
+
+[Explanation]
+As the certificate file is usually consist of various field, this function is used for initializing
+the context pointed to by <I>context</I> to point to the actual content of the field described
+in the structure pointed to by <I>subfield</I>. This function is equal to
+<PRE>copen (<I>context</I>, <I>subfield</I>-&gt;Data, <I>subfield</I>-&gt;Len);
+</PRE>
+copen is used mainly to reset the file pointer to the start of a group of items. See
+<A HREF="$$LINK(cfindfield)">cfindfield</A> for more info.
+
+[References]
+In=system.h/AB_prodid, system.h/AB_prodname, unknown.h/_ROM_CALL_504
+Out=copen

@@ -1,0 +1,25 @@
+[Main]
+Title=How can I bring up the VAR-LINK dialog and get the name of the selected file?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How do I bring up the VAR-LINK dialog from C code and then get the name of the
+file that was selected?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+This is an advanced question. As the VAR-LINK dialog is an event-driven applet, you must
+use event-driven functions defined in the <A HREF="$$LINK(events.h/)">events.h</A>
+header file. Bringing up the VAR-LINK dialog is quite easy:
+<PRE>EVENT ev;
+ev.Type = CM_KEYPRESS;
+ev.extra.Key.Code = KEY_VARLNK;
+EV_defaultHandler (&amp;ev);
+</PRE>
+but getting the name of the file that was selected is a bit harder.
+After executing the VAR-LINK dialog, the VAR-LINK applet will send the
+name of the selected file to the current application via the <A HREF="$$LINK(events.h/EventIDs)">CM_HSTRING</A>
+message. This message may be captured by a user event handler. Here is the demonstration program
+(called "Get File Name"):
+$$EXAMPLE(Get File Name.c)
+Read more about the <A HREF="$$LINK(events.h/)">events.h</A> header file:
+incredible miracles may be produced using event-passing techniques!
+</TD></TR></TABLE>

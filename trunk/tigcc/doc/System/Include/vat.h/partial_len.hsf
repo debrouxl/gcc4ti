@@ -1,0 +1,40 @@
+[Main]
+Name=partial_len
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=unsigned long partial_len (const char *VarName, unsigned char *MaxList);
+
+[ROM Call]
+Index=$11C
+
+[Description]
+Queries information about the Data Editor.
+
+[Explanation]
+partial_len is used to query information about the temporary folder of the
+Data Editor ("9998", see <A HREF="$$LINK(FolderAdd)">FolderAdd</A>), which
+contains three variables for each column:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>"tc1".."tc99"</TD>
+  <TD>A STR variable containing the title for the column.</TD>
+</TR>
+<TR>
+  <TD>"hc1".."hc99"</TD>
+  <TD>An EXPR variable containing the formula for the column.</TD>
+</TR>
+<TR>
+  <TD>"c1".."c99"</TD>
+  <TD>A LIST variable containing the (fixed or calculated) cell values.</TD>
+</TR>
+</TABLE>
+<BR>
+<I>VarName</I> must be "tc", "hc", or "c", and partial_len returns the size
+of all files matching <I>VarName</I>. It stores the last column which is used
+into the byte pointed to by <I>MaxList</I>.
+
+[References]
+In=unknown.h/store_data_var
+Out=DerefSym, FindSymInFolder, unknown.h/CharNumber

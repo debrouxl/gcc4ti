@@ -1,0 +1,40 @@
+[Main]
+Name=all_tail
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short all_tail (CESI_Callback_t f, ESI start_ptr);
+MinAMS=1.01
+
+[ROM Call]
+Index=$3B5
+
+[Description]
+Checks whether all elements in the list have some property.
+
+[Explanation]
+all_tail is similar to <A HREF="$$LINK(map_tail)">map_tail</A>, but callback function <I>f</I> is
+not void. It needs to return a Boolean value (<A HREF="$$LINK(alloc.h/Bool)">TRUE</A> or <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>).
+If <I>f</I> returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, any further processing of the list tail will
+be stopped, even if <A HREF="$$LINK(Tags)">END_TAG</A> is not reached yet. The result of all_tail is
+the last value returned from <I>f</I>. In other words, it returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if
+and only if the callback function <I>f</I> returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> for each expression
+in the tail of expressions indexed by <I>element_ptr</I>.
+<BR><BR>
+all_tail is very useful to check whether all elements of a list possess some property. Suppose
+that you defined the following function which checks whether an entry on the expression stack is a positive
+integer:
+<PRE>short is_positive_integer (ESI ptr)
+{
+  return (*ptr == POSINT_TAG);
+}
+</PRE>
+and suppose that <I>start_ptr</I> points to the first element of the list (one byte below
+<A HREF="$$LINK(Tags)">LIST_TAG</A>). Then, you can use the following call to check whether all
+elements of the lists are positive integers:
+<PRE>are_all_positive_integers = all_tail (is_positive_integer, <I>start_ptr</I>);
+</PRE>
+
+[References]
+In=NG_graphESI, basfunc.h/did_push_anti_deriv, basfunc.h/did_push_series, basfunc.h/push_1st_derivative, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_extended_prod, basfunc.h/push_factor, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_rec_to_angle, basfunc.h/push_solve, basfunc.h/push_summation, basfunc.h/push_zeros, basop.h/push_equals, basop.h/push_exponentiate, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not_equals, basop.h/push_product, basop.h/push_sum, unknown.h/get_ub, unknown.h/is_cFloat_agg, is_constant, unknown.h/push_reciprocal, unknown.h/push_user_func, unknown.h/_ROM_CALL_4D1
+Out=next_expression_index

@@ -1,0 +1,34 @@
+[Main]
+Name=HeapFreePtr
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=void HeapFreePtr (void *Ptr);
+
+[ROM Call]
+Index=$A3
+
+[Description]
+Frees a block allocated using <A HREF="$$LINK(HeapAllocPtr)">HeapAllocPtr</A>.
+
+[Explanation]
+HeapFreePtr frees a heap block pointed to by <I>Ptr</I>. The block must be a block
+which was allocated using the <A HREF="$$LINK(HeapAllocPtr)">HeapAllocPtr</A> command.
+<BR><BR>
+Do not attempt to use HeapFreePtr on a pointer which has changed after it was allocated
+with <A HREF="$$LINK(HeapAllocPtr)">HeapAllocPtr</A>. For example, the following code
+will certainly crash the calculator:
+<PRE>char *ptr = HeapAllocPtr (2);
+if (ptr)
+  {
+    *(ptr++) = 'A';  // pointer changed here
+    *ptr = 0;
+    ...
+    HeapFreePtr (ptr);
+  }
+</PRE>
+Instead, preserve the original pointer and pass it to HeapFreePtr.
+
+[References]
+Out=HeapFree
+In=dll.h/UnloadDLL, stdio.h/fopen, stdio.h/scanf, stdio.h/vscanf, stdlib.h/atexit

@@ -1,0 +1,39 @@
+[Main]
+Name=freopen
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=FILE *freopen (const char *filename, const char *mode, FILE *stream);
+Real Definition=#define freopen(n,m,f) (fclose(f),(f)=fopen((n),(m)),(f))
+
+[Description]
+Associates a new file with an open stream.
+
+[Explanation]
+freopen substitutes the named file in place of the open stream. It closes
+stream, regardless of whether the open succeeds. In this implementation, freopen
+is implemented as macro which first calls <A HREF="$$LINK(fclose)">fclose</A> passing
+<I>stream</I> to it, then calls <A HREF="$$LINK(fopen)">fopen</A> passing
+<I>filename</I> and <I>mode</I> to it. Such implementation is not absolutely
+correct, because the address of the file descriptor structure may be changed after
+closing and reopening again (if a garbage collect occurs). This is not a problem
+in programs which uses freopen as in
+<PRE>f=freopen (name, mode, f);
+</PRE>
+but it might cause problems in programs which uses freopen as in
+<PRE>freopen (name, mode, f);
+</PRE>
+To solve this problem, freopen macro will always re-assign the variable <I>f</I> to
+a (eventually) new value, so both above examples will be correct (the only small
+problem is in fact that <I>f</I> must ultimately be an lvalue, i.e, a variable or
+something similar).
+<BR><BR>
+On successful completion, freopen returns the argument <I>stream</I> (possibly
+changed). In the event of error, it returns <A HREF="$$LINK(alloc.h/NULL)">NULL</A>.
+<BR><BR>
+<B>Note:</B> This function is usually used for redirecting terminal streams like
+<B>stdout</B> and <B>stdin</B>. This is not possible here,
+because terminal-associated streams are not implemented.
+
+[References]
+Out=fclose, fopen

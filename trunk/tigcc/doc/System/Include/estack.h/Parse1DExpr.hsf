@@ -1,0 +1,28 @@
+[Main]
+Name=Parse1DExpr
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=HANDLE Parse1DExpr (CESI ptr, unsigned short FullPrec, unsigned short width);
+
+[ROM Call]
+Index=$4F
+
+[Description]
+Parses a tokenized expression to be printed.
+
+[Explanation]
+Parse1DExpr does a similar job as <A HREF="$$LINK(display_statements)">display_statements</A>
+(i.e. converts a RPN expression to the TEXT and returns the handle to the text), but the
+parameters are somewhat different. Here, <I>width</I> is the
+maximum width of text result (0 indicates no width restriction). So, when necessary, symbolic
+expressions are truncated to <I>width</I>-1
+characters and terminated with an ellipsis character ('...'). When <I>ptr</I>
+points to a tagged floating point number, the number is rounded to fit in <I>width</I>
+characters. When the number cannot be rounded to fit in <I>width</I> characters,
+an ellipsis character ('...') is returned.
+See <A HREF="$$LINK(display_statements)">display_statements</A> for more info.
+
+[References]
+In=bascmd.h/cmd_disp, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_prompt, basfunc.h/push_string, events.h/handleRclKey, unknown.h/GT_PrintCursor, unknown.h/SP_Define, unknown.h/_ROM_CALL_45B
+Out=index_below_display_expression_aux, alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapLock, alloc.h/HeapRealloc, alloc.h/HeapUnlock, alloc.h/HLock, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, stdio.h/sprintf, string.h/strchr, system.h/OSDisableBreak, system.h/OSEnableBreak, unknown.h/estack_to_float, unknown.h/TIOS_abs, unknown.h/_ROM_CALL_457

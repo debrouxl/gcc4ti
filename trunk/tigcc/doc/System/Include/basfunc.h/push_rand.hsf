@@ -1,0 +1,41 @@
+[Main]
+Name=push_rand
+Type=Function
+Subtype=ROM Call
+Header Files=basfunc.h
+Definition=void push_rand (CESI Range);
+MinAMS=1.01
+See Also=bascmd.h/cmd_randseed, stdlib.h/rand, stdlib.h/random
+
+[ROM Call]
+Index=$31F
+
+[Description]
+Executes TI-Basic 'rand' function.
+
+[Explanation]
+push_rand pushes a random number on the expression stack. <I>Range</I> should
+point either to <A HREF="$$LINK(estack.h/Tags)">END_TAG</A>, or to an
+integer expression. If <I>Range</I> points to
+<A HREF="$$LINK(estack.h/Tags)">END_TAG</A>, push_rand pushes a floating
+point number between 0 and 1. If <I>Range</I> points to an integer value
+<I>n</I>, push_rand pushes an integer number between 1 and
+<I>n</I> if <I>n</I> is positive, or between -<I>n</I> and -1 if <I>n</I> is
+negative.
+<BR><BR>
+<B>Note:</B> This function calls the TI-Basic random number generator, so it
+has nothing to do with the random number generator from
+<A HREF="$$LINK(stdlib.h/)">stdlib.h</A> (i.e. with the functions
+<A HREF="$$LINK(stdlib.h/rand)">rand</A>,
+<A HREF="$$LINK(stdlib.h/random)">random</A>,
+<A HREF="$$LINK(stdlib.h/randomize)">randomize</A>, and
+<A HREF="$$LINK(stdlib.h/srand)">srand</A>).
+You can use the function
+<A HREF="$$LINK(bascmd.h/cmd_randseed)">cmd_randseed</A> (instead of
+<A HREF="$$LINK(stdlib.h/srand)">srand</A>) to set the seed for the TI-Basic
+random number generator. Note also that push_rand is much slower than the
+random number generator implemented in
+<A HREF="$$LINK(stdlib.h/)">stdlib.h</A>.
+
+[References]
+Out=estack.h/delete_between, estack.h/estack_number_to_Float, estack.h/push_expression, estack.h/push_Float, estack.h/push_Float_to_rat, estack.h/push_quantum, estack.h/top_estack, mem.h/memcpy, timath.h/fabs, timath.h/fpisanint, timath.h/is_transfinite, unknown.h/estack_to_float, estack.h/is_whole_number, estack.h/is0, unknown.h/NG_control, unknown.h/primary_tag_list, unknown.h/_bcd_math

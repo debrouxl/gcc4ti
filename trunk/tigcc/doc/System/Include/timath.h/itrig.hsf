@@ -1,0 +1,37 @@
+[Main]
+Name=itrig
+Type=Function
+Subtype=ROM Call
+Header Files=timath.h
+Definition=void itrig (short option, short deg_flag, float *xptr, float *result);
+
+[ROM Call]
+Index=$28A
+
+[Description]
+Generic subroutine for calculating inverse trigonometric functions.
+
+[Explanation]
+itrig is a TIOS subroutine which is used internally for calculating
+inverse trigonometric functions, i.e. in TIOS functions
+<A HREF="$$LINK(asin)">asin</A>, <A HREF="$$LINK(acos)">acos</A> and
+<A HREF="$$LINK(atan)">atan</A>. It calculates the arc sine, the arc cosine or
+the arc tangent of the floating point value pointed to by <I>xptr</I>, and stores the result in
+the floating point destination pointed to by <I>result</I>.
+The result will be in radians if <I>deg_flag</I> is 0, or in degrees if
+<I>deg_flag</I> is 1 (it seems that these two values are only legal values
+for <I>deg_flag</I>). Parameter <I>option</I> determines which inverse
+trigonometric function will be calculated: the arc sine if <I>option</I>&nbsp;=&nbsp;1,
+the arc cosine if <I>option</I>&nbsp;=&nbsp;2 and the arc tangent if
+<I>option</I>&nbsp;=&nbsp;4. I don't know whether these values are the
+only legal values for <I>option</I>, but I believe so.
+<BR><BR>
+<B>Note:</B> The parameter <I>xptr</I> is not a pointer to <B>const</B>
+value. This means that the value pointed to by it may be changed. In normal
+cases this would not appear, but this need not to be true if the structure pointed
+to by <I>xptr</I> contains wrong values (for example, arguments out of the function
+domain, unnormalized values, etc.).
+
+[References]
+Out=is_inf, is_nan, is_sinf, is_transfinite, is_uinf_or_nan, sqrt, unknown.h/_bcd_math
+In=acos, asin, atan, basop.h/push_to_sphere

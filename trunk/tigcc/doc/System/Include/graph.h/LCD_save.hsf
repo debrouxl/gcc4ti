@@ -1,0 +1,21 @@
+[Main]
+Name=LCD_save
+Type=Function
+Subtype=Macro
+Header Files=graph.h
+Definition=void LCD_save (void *buffer);
+Real Definition=#define LCD_save(b) ((void) (_rom_call(void,(),26A) ((void *) (b), LCD_MEM, (long) LCD_SIZE)))
+
+[Description]
+Saves the content of the LCD screen.
+
+[Explanation]
+LCD_save saves the complete contents of the screen into the 3840-bytes long buffer
+pointed to by <I>buffer</I>. <I>buffer</I> is usually of type
+<A HREF="$$LINK(LCD_BUFFER)">LCD_BUFFER</A>.
+LCD_save is a small macro which calls the <A HREF="$$LINK(mem.h/memcpy)">memcpy</A> function.
+<BR><BR>
+<B>Note:</B> LCD_save and <A HREF="$$LINK(LCD_restore)">LCD_restore</A> do not work in grayscale mode.
+
+[References]
+Out=mem.h/memcpy

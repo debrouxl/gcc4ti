@@ -1,0 +1,158 @@
+[Main]
+Title=Environment Variables Affecting GCC
+
+[Top]
+This section describes several environment variables that affect how GCC
+operates.  Some of them work by specifying directories or prefixes to use
+when searching for various kinds of files.  Some are used to specify other
+aspects of the compilation environment.
+<BR><BR>
+Note that you can also specify places to search using options such as
+<B>'-B'</B>, <B>'-I'</B> and <B>'-L'</B> (see <A HREF="$$LINK(SEC14)">Options for Directory Search</A>).
+<DL>
+<DT><B>LANG</B>
+<BR><B>LC_CTYPE</B>
+<BR><B>LC_MESSAGES</B>
+<BR><B>LC_ALL</B>
+<DD>These environment variables control the way that GCC uses
+localization information that allow GCC to work with different
+national conventions.  GCC inspects the locale categories
+<CODE>LC_CTYPE</CODE> and <CODE>LC_MESSAGES</CODE> if it has been configured to do
+so.  These locale categories can be set to any value supported by your
+installation.  A typical value is <CODE>en_UK</CODE> for English in the United
+Kingdom.
+<BR><BR>
+The <CODE>LC_CTYPE</CODE> environment variable specifies character
+classification.  GCC uses it to determine the character boundaries in
+a string; this is needed for some multibyte encodings that contain quote
+and escape characters that would otherwise be interpreted as a string
+end or escape.
+<BR><BR>
+The <CODE>LC_MESSAGES</CODE> environment variable specifies the language to
+use in diagnostic messages.
+<BR><BR>
+If the <CODE>LC_ALL</CODE> environment variable is set, it overrides the value
+of <CODE>LC_CTYPE</CODE> and <CODE>LC_MESSAGES</CODE>; otherwise, <CODE>LC_CTYPE</CODE>
+and <CODE>LC_MESSAGES</CODE> default to the value of the <CODE>LANG</CODE>
+environment variable.  If none of these variables are set, GCC
+defaults to traditional C English behavior.
+<BR><BR>
+<DT><B>TMPDIR</B>
+<DD>If <CODE>TMPDIR</CODE> is set, it specifies the directory to use for temporary
+files.  GCC uses temporary files to hold the output of one stage of
+compilation which is to be used as input to the next stage: for example,
+the output of the preprocessor, which is the input to the compiler
+proper.
+<BR><BR>
+<DT><B>GCC_EXEC_PREFIX</B>
+<DD>If <CODE>GCC_EXEC_PREFIX</CODE> is set, it specifies a prefix to use in the
+names of the subprograms executed by the compiler.  No slash is added
+when this prefix is combined with the name of a subprogram, but you can
+specify a prefix that ends with a slash if you wish.
+<BR><BR>
+If <CODE>GCC_EXEC_PREFIX</CODE> is not set, GCC will attempt to figure out
+an appropriate prefix to use based on the pathname it was invoked with.
+<BR><BR>
+If GCC cannot find the subprogram using the specified prefix, it
+tries looking in the usual places for the subprogram.
+<BR><BR>
+The default value of <CODE>GCC_EXEC_PREFIX</CODE> is
+<CODE><I>prefix</I>/lib/gcc-lib/</CODE> where <I>prefix</I> is the value
+of <CODE>prefix</CODE> when you ran the <CODE>configure</CODE> script.
+<BR><BR>
+Other prefixes specified with <B>'-B'</B> take precedence over this prefix.
+<BR><BR>
+In addition, the prefix is used in an unusual way in finding the
+directories to search for header files.  For each of the standard
+directories whose name normally begins with <CODE>/usr/local/lib/gcc-lib</CODE>
+(more precisely, with the value of <CODE>GCC_INCLUDE_DIR</CODE>), GCC tries
+replacing that beginning with the specified prefix to produce an
+alternate directory name.  Thus, with <B>'-B<I>foo</I>/'</B>, GCC will search
+<CODE><I>foo</I>/<I>bar</I></CODE> where it would normally search <CODE>/usr/local/lib/<I>bar</I></CODE>.
+These alternate directories are searched first; the standard directories
+come next.
+<BR><BR>
+<DT><B>COMPILER_PATH</B>
+<DD>The value of <CODE>COMPILER_PATH</CODE> is a colon-separated list of
+directories, much like <CODE>PATH</CODE>.  GCC tries the directories thus
+specified when searching for subprograms, if it can't find the
+subprograms using <CODE>GCC_EXEC_PREFIX</CODE>.
+<BR><BR>
+<DT><B>LIBRARY_PATH</B>
+<DD>The value of <CODE>LIBRARY_PATH</CODE> is a colon-separated list of
+directories, much like <CODE>PATH</CODE>.  When configured as a native compiler (which TIGCC is <I>not</I>),
+GCC tries the directories thus specified when searching for special
+linker files, if it can't find them using <CODE>GCC_EXEC_PREFIX</CODE>.  Linking
+using GCC also uses these directories when searching for ordinary
+libraries for the <B>'-l'</B> option (but directories specified with
+<B>'-L'</B> come first).
+<BR><BR>
+<DT><B>LANG</B>
+<DD>This variable is used to pass locale information to the compiler.  One way in
+which this information is used is to determine the character set to be used
+when character literals, string literals and comments are parsed.
+When the compiler is configured to allow multibyte characters,
+the following values for <CODE>LANG</CODE> are recognized:
+<BR><BR><DL>
+<DT><B>C-JIS</B>
+<DD>Recognize JIS characters.
+<BR><BR>
+<DT><B>C-SJIS</B>
+<DD>Recognize SJIS characters.
+<BR><BR>
+<DT><B>C-EUCJP</B>
+<DD>Recognize EUCJP characters.
+</DL><BR>
+If <CODE>LANG</CODE> is not defined, or if it has some other value, then the
+compiler will use mblen and mbtowc as defined by the default locale to
+recognize and translate multibyte characters.
+</DL>
+Some additional environments variables affect the behavior of the
+preprocessor.
+<DL>
+<DT><B>CPATH</B>
+<BR><B>C_INCLUDE_PATH</B>
+<DD>Each variable's value is a list of directories separated by a special
+character, much like <CODE>PATH</CODE>, in which to look for header files.
+The special character, <CODE>PATH_SEPARATOR</CODE>, is target-dependent and
+determined at GCC build time.  For Windows-based targets it is a
+semicolon, and for almost all other targets it is a colon.
+<BR><BR>
+<CODE>CPATH</CODE> specifies a list of directories to be searched as if
+specified with <B>'-I'</B>, but after any paths given with <B>'-I'</B>
+options on the command line.
+<BR><BR>
+<CODE>C_INCLUDE_PATH</CODE> specifies a list of directories
+to be searched as if specified with <B>'-isystem'</B>, but after any
+paths given with <B>'-isystem'</B> options on the command line.
+<BR><BR>
+In all these variables, an empty element instructs the compiler to
+search its current working directory.  Empty elements can appear at the
+beginning or end of a path.  For instance, if the value of
+<CODE>CPATH</CODE> is <CODE>:/special/include</CODE>, that has the same
+effect as <CODE>-I.&nbsp;-I/special/include</CODE>.
+<BR><BR>
+<DT><B>DEPENDENCIES_OUTPUT</B>
+<DD>If this variable is set, its value specifies how to output
+dependencies for Make based on the non-system header files processed
+by the compiler.  System header files are ignored in the dependency
+output.
+<BR><BR>
+The value of <CODE>DEPENDENCIES_OUTPUT</CODE> can be just a file name, in
+which case the Make rules are written to that file, guessing the target
+name from the source file name.  Or the value can have the form
+<CODE><I>file</I>&nbsp;<I>target</I></CODE>, in which case the rules are written to
+file <I>file</I> using <I>target</I> as the target name.
+<BR><BR>
+In other words, this environment variable is equivalent to combining
+the options <B>'-MM'</B> and <B>'-MF'</B>
+(see <A HREF="$$LINK(SEC11)">Options Controlling the Preprocessor</A>),
+with an optional <B>'-MT'</B> switch, too.
+<BR><BR>
+<DT><B>SUNPRO_DEPENDENCIES</B>
+<DD>This variable is the same as <CODE>DEPENDENCIES_OUTPUT</CODE> (see above),
+except that system header files are not ignored, so it implies
+<B>'-M'</B> rather than <B>'-MM'</B>
+(see <A HREF="$$LINK(SEC11)">Options Controlling the Preprocessor</A>).
+However, the dependence on the main input file is omitted.
+</DL>

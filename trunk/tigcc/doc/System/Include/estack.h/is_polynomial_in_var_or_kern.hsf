@@ -1,0 +1,26 @@
+[Main]
+Name=is_polynomial_in_var_or_kern
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short is_polynomial_in_var_or_kern (CESI test, CESI var_or_kern);
+Attributes=__attribute__((__pure__))
+MinAMS=2.02
+
+[ROM Call]
+Index=$56B
+
+[Description]
+Checks if an expression is a polynomial with respect to another expression.
+
+[Explanation]
+is_polynomial_in_var_or_kern returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the expression
+pointed to by <I>test</I> is a polynomial with respect to the expression <I>var_or_kern</I>,
+otherwise it returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. The definition of "polynomial
+with respect to" is more complicated when dealing with expressions in <I>var_or_kern</I>. For
+example, "x+sin(x)" is polynomial with respect to "sin(x)" but not to "x".
+Interestingly, when testing with respect to "sin(x)", "x" seems to be treated like a constant.
+
+[References]
+In=basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_solve, basfunc.h/push_zeros, basop.h/push_equals, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not_equals, unknown.h/get_ub, unknown.h/index_if_pushed_binomial_info
+Out=are_expressions_identical, is_independent_of, is_whole_number, next_expression_index, unknown.h/primary_tag_list, unknown.h/_ROM_CALL_4E2

@@ -1,0 +1,26 @@
+[Main]
+Name=ungetc
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=short ungetc (short c, FILE *stream);
+Real Definition=#define ungetc(c,f) ((f)->unget=((c)|0x8000))
+
+[Description]
+Pushes a character back into input stream.
+
+[Explanation]
+ungetc pushes the character <I>c</I> back onto the stream associated with the structure
+pointed to by <I>stream</I>. This character will be returned on the next call to
+<A HREF="$$LINK(getc)">getc</A> (or related functions like <A HREF="$$LINK(fread)">fread</A>) for that stream.
+A second call to ungetc without a call to <A HREF="$$LINK(getc)">getc</A> will force the previous
+character to be forgotten. A call to <A HREF="$$LINK(fflush)">fflush</A>, <A HREF="$$LINK(fseek)">fseek</A>,
+<A HREF="$$LINK(fsetpos)">fsetpos</A>, or <A HREF="$$LINK(rewind)">rewind</A> erases all memory of any
+pushed-back characters. ungetc returns the character pushed back. ANSI C proposes that it
+need to return <A HREF="$$LINK(EOF)">EOF</A> if the operation fails, but in this implementation it
+cannot fail. It is implemented as a very simple macro.
+<BR><BR>
+<B>Note:</B> ungetc is used in some programs to push back a character to the stream associated with
+the keyboard using <CODE>ungetc(c,&nbsp;stdin)</CODE>. This is not possible on TI, because
+terminal-associated streams are not supported. Use <A HREF="$$LINK(kbd.h/pushkey)">pushkey</A> instead
+to achieve the same effect.

@@ -1,0 +1,26 @@
+[Main]
+Name=SymFindFolderName
+Alias=SymFindFoldername
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=char *SymFindFolderName (void);
+
+[ROM Call]
+Index=$6F
+
+[Description]
+Returns an actual folder name during browsing through the VAT table.
+
+[Explanation]
+This routine is used only when you search the complete VAT table using functions <A HREF="$$LINK(SymFindFirst)">SymFindFirst</A>,
+<A HREF="$$LINK(SymFindNext)">SymFindNext</A> and <A HREF="$$LINK(SymFindPrev)">SymFindPrev</A> with
+<A HREF="$$LINK(FindOptions)">FO_RECURSE</A> in <I>Flags</I> set. Each time when a folder is encountered in the VAT table,
+the TIOS stores its name in an internal buffer. Later, when you go through the variable part of the VAT
+table, you can call this routine to retrieve the stored folder name, i.e. to get the name of the
+folder for the symbol just returned. Under any other conditions, SymFindFolderName just returns
+a pointer to the string "main".
+
+[References]
+In=alloc.h/HeapWalk, error.h/ERD_process, link.h/LIO_Receive, link.h/OSLinkCmd
+Out=IsMainFolderStr, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/next_expression_index, estack.h/push_parse_text, estack.h/top_estack, string.h/strcat, string.h/strchr, system.h/OSDisableBreak, system.h/OSEnableBreak

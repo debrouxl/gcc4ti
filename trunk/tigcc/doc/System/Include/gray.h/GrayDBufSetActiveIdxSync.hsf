@@ -1,0 +1,18 @@
+[Main]
+Name=GrayDBufSetActiveIdxSync
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void GrayDBufSetActiveIdxSync (short idx);
+Real Definition=#define GrayDBufSetActiveIdxSync(i) ((void)(GrayWaitNSwitches (1), GrayDBufSetActiveIdx (i)))
+See Also=GrayDBufSetActiveIdx, GrayDBufToggleSync, GrayDBufToggle, GrayDBufGetActiveIdx, GrayDBufGetHiddenIdx
+
+[Description]
+Synchronizes and sets the currently visible double buffer.
+
+[Explanation]
+GrayDBufSetActiveIdxSync waits until the next plane switch occurs
+(using <A HREF="$$LINK(GrayWaitNSwitches)">GrayWaitNSwitches</A>), then calls
+<A HREF="$$LINK(GrayDBufSetActiveIdx)">GrayDBufSetActiveIdx</A>. This way you
+can make sure that the switch is not performed during an update of the
+screen, which would cause unwanted distortion effects.

@@ -1,0 +1,39 @@
+[Main]
+Name=OSSetSR
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short OSSetSR (short SR);
+
+[ROM Call]
+Index=$29C
+
+[Description]
+Sets the processor status register.
+
+[Explanation]
+OSSetSR sets the processor status register to <I>SR</I>. Supervisor and
+trace bits cannot be set up using this routine. For example, use
+<PRE>OSSetSR (0x0700);
+</PRE>
+to disable all interrupts, and
+<PRE>OSSetSR (0x0000);
+</PRE>
+to enable them again. Note that any call to keyboard input routines
+like <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> etc. will enable interrupts
+again.
+<BR><BR>
+OSSetSR returns the previous contents of the status register.
+<BR><BR>
+<B>Note:</B> Disabling Auto-Int 1 is often used for making the status line indicators
+not visible on the screen so that the status indicators do not mess up your graphics
+(status line indicators are updated from this interrupt). In this case, you need to
+read the keyboard using <A HREF="$$LINK(kbd.h/_rowread)">_rowread</A> function, because
+functions like <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> are based on Auto-Int 1.
+However, if you disable interrupts, the grayscale will not work, because the grayscale
+is also based on Auto-Int 1. To solve this problem, instead of <B>disabling</B>
+Auto-Int 1, you may <B>redirect</B> it to nothing. See <A HREF="$$LINK(intr.h/DUMMY_HANDLER)">DUMMY_HANDLER</A>
+from <A HREF="$$LINK(intr.h/)">intr.h</A> for more info.
+
+[References]
+In=dialogs.h/Dialog, error.h/ERD_dialog, homescr.h/HomeExecute, kbd.h/kbhit, kbd.h/ngetchx, kbd.h/pushkey, unknown.h/_ROM_CALL_3EA

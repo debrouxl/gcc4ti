@@ -1,0 +1,38 @@
+[Main]
+Name=malloc
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h, stdlib.h
+Definition=void *malloc (unsigned long Size);
+Attributes=__attribute__((__malloc__))
+See Also=realloc, calloc, free, malloc_throw
+
+[ROM Call]
+Index=$A2
+
+[Description]
+Allocates a memory block.
+
+[Explanation]
+malloc allocates a block of <I>Size</I> bytes from the memory heap.
+It allows a program to allocate memory explicitly as it's needed, and in
+the exact amounts needed. The heap is used for dynamic allocation of
+variable-sized blocks of memory. Many data structures, such as trees and
+lists, naturally employ heap memory allocation. On success, malloc returns
+a pointer to the newly allocated block of memory. If not enough space
+exists for the new block, it returns <A HREF="$$LINK(NULL)">NULL</A>. The contents
+of the block are left unchanged. If the argument <I>Size</I> is zero
+malloc also returns <A HREF="$$LINK(NULL)">NULL</A>.
+malloc is in fact an ANSI C alias for a TIOS routine originally called
+<A HREF="$$LINK(HeapAllocPtr)">HeapAllocPtr</A> (see description of it for more
+system info).
+<BR><BR>
+<B>Note:</B> As the TIOS memory manager assigns a handle to each allocated block, and
+as the total number of handles is limited, malloc is not good for algorithms
+where you need to allocate a large number of small blocks (as in implementations
+of linked lists which are usually seen in various C language books and tutorials).
+The same is true for all other TIOS memory management routines.
+
+[References]
+Out=HeapAllocHigh, system.h/NeedStack
+In=malloc_throw

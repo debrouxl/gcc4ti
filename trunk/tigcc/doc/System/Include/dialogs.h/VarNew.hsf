@@ -1,0 +1,30 @@
+[Main]
+Name=VarNew
+Type=Function
+Subtype=ROM Call
+Header Files=dialogs.h
+Definition=HSym VarNew (const ESQ *FileTypes, ...);
+See Also=VarOpen, VarSaveAs
+
+[ROM Call]
+Index=$28E
+
+[Description]
+Displays the standard "New" dialog.
+
+[Explanation]
+VarNew implements the standard "New" dialog. The user may select a type to
+create as well as the folder to create the new variable in, and then may type
+in a variable name.
+<BR><BR>
+<I>FileTypes</I> is a pointer to a zero-terminated array of types that are
+supported (see <A HREF="$$LINK(VarOpen)">VarOpen</A> for more info). VarNew
+returns the <A HREF="$$LINK(vat.h/HSym)">HSym</A> descriptor of the newly
+created symbol, or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if the user
+presses 'ESC' or in case of an error.
+<BR><BR>
+This function may cause heap compression.
+
+[References]
+Out=DialogAdd, DialogDo, DialogNew, alloc.h/HeapFree, error.h/ER_catch, error.h/ER_success, error.h/ERD_dialog, estack.h/TokenizeSymName, estack.h/top_estack, mem.h/memset, menus.h/PopupAddText, menus.h/PopupNew, menus.h/PopupText, menus.h/VarCreateFolderPopup, string.h/strcat, string.h/strlen, system.h/XR_stringPtr, unknown.h/DataTypeNames, unknown.h/FirstNonblank, unknown.h/VarOptList, unknown.h/VarSaveTitle, vat.h/FindSymInFolder, vat.h/StrToTokN, vat.h/SymSysVar, vat.h/VarStore
+Out_EV_eventLoop=1

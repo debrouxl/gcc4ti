@@ -1,0 +1,41 @@
+[Main]
+Title=Preprocessing
+
+[Top]
+The <CODE>as</CODE> internal preprocessor:
+<UL>
+<LI>
+adjusts and removes extra whitespace.  It leaves one space or tab before
+the keywords on a line, and turns any other whitespace on the line into
+a single space.
+<BR><BR>
+</LI>
+<LI>
+removes all comments, replacing them with a single space, or an
+appropriate number of newlines.
+<BR><BR>
+</LI>
+<LI>
+converts character constants into the appropriate numeric values.
+</LI>
+</UL>
+It does not do macro processing, include file handling, or
+anything else you may get from your C compiler's preprocessor.  You can
+do include file processing with the <CODE>.include</CODE> directive
+(see <CODE><A HREF="$$LINK(SEC97)">.include</A></CODE>).  You can use the GNU C compiler driver
+to get other &quot;CPP&quot; style preprocessing by giving the input file a
+<CODE>.S</CODE> suffix.  See <A HREF="$$INFOLINK(comopts/SEC4)">Options Controlling the Kind of
+Output, gcc.info, Using GNU CC</A>.
+<BR><BR>
+Excess whitespace, comments, and character constants
+cannot be used in the portions of the input text that are not
+preprocessed.
+<BR><BR>
+If the first line of an input file is <CODE>#NO_APP</CODE> or if you use the
+<B>'-f'</B> option, whitespace and comments are not removed from the input file.
+Within an input file, you can ask for whitespace and comment removal in
+specific portions of the by putting a line that says <CODE>#APP</CODE> before the
+text that may contain whitespace or comments, and putting a line that says
+<CODE>#NO_APP</CODE> after this text.  This feature is mainly intend to support
+<CODE>asm</CODE> statements in compilers whose output is otherwise free of comments
+and whitespace.

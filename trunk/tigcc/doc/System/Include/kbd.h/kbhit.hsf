@@ -1,0 +1,31 @@
+[Main]
+Name=kbhit
+Type=Function
+Subtype=ROM Call
+Header Files=kbd.h
+Definition=short kbhit (void);
+See Also=ngetchx, GKeyIn, system.h/kbd_queue, OSFastArrows
+
+[ROM Call]
+Index=$52
+
+[Description]
+Checks for unread keystrokes.
+
+[Explanation]
+kbhit checks to see if a keystroke is currently available. Any available keystrokes can be
+retrieved with <A HREF="$$LINK(ngetchx)">ngetchx</A>. If a keystroke is available, kbhit returns a
+nonzero integer (in fact, it returns the exactly same value as
+<A HREF="$$LINK(ngetchx)">ngetchx</A>); if not, it returns 0. Note that kbhit does not pick a
+keystroke from the keyboard queue. So, kbhit will continue to return non-zero value until
+"keypress" flag is reset by calling <A HREF="$$LINK(ngetchx)">ngetchx</A>,
+<A HREF="$$LINK(GKeyFlush)">GKeyFlush</A> or <A HREF="$$LINK(GKeyIn)">GKeyIn</A>.
+<BR><BR>
+<B>Note:</B> kbhit function is slow, because it also handles receiving eventual bytes from the
+link port (used mainly internally in TIOS when the calculator is in the Home screen). See <A HREF="$$LINK(system.h/kbd_queue)">kbd_queue</A>
+for much faster way to check the keyboard state.
+
+[References]
+In=GKeyDown, GKeyFlush, pushkey, bascmd.h/cmd_disptbl, bascmd.h/cmd_pause, basfunc.h/push_getkey, events.h/EV_eventLoop, events.h/EV_getc, unknown.h/GS_PlotAll, unknown.h/GZ_Stat, unknown.h/Regraph
+Out=homescr.h/HomeAlone, link.h/OSCheckSilentLink, link.h/OSLinkCmd, system.h/OSqinquire, system.h/OSSetSR
+Out_EV_eventLoop=1

@@ -1,0 +1,2962 @@
+diff -Nur comopts/SEC10.hss fix/comopts/SEC10.hss
+--- comopts/SEC10.hss	2003-09-17 23:35:30.000000000 +0200
++++ fix/comopts/SEC10.hss	2003-09-17 17:45:36.000000000 +0200
+@@ -11,6 +11,8 @@
+ variable or change the program counter to any other statement in the
+ function and get exactly the results you would expect from the source
+ code.
++(This statement is currently meaningless for TIGCC, because there is no
++integrated debugger yet.)
+ <BR><BR>
+ Turning on optimization flags makes the compiler attempt to improve
+ the performance and/or code size at the expense of compilation time
+@@ -43,7 +45,10 @@
+ <BR><BR>
+ <B>'-O2'</B> turns on all optimization flags specified by <B>'-O'</B>.  It
+ also turns on the following optimization flags:
++<BR>
++<CODE>
+ -fforce-mem -foptimize-sibling-calls -fstrength-reduce -fcse-follow-jumps  -fcse-skip-blocks -frerun-cse-after-loop  -frerun-loop-opt -fgcse   -fgcse-lm   -fgcse-sm -fdelete-null-pointer-checks -fexpensive-optimizations -fregmove -fschedule-insns  -fschedule-insns2 -fsched-interblock -fsched-spec -fcaller-saves -fpeephole2 -freorder-blocks  -freorder-functions -fstrict-aliasing -falign-functions  -falign-jumps -falign-loops  -falign-labels
++</CODE>
+ <BR><BR>
+ Please note the warning under <B>'-fgcse'</B> about
+ invoking <B>'-O2'</B> on programs that use computed gotos.
+@@ -70,8 +75,8 @@
+ Options of the form <B>'-f<I>flag</I>'</B> specify machine-independent
+ flags.  Most flags have both positive and negative forms; the negative
+ form of <B>'-ffoo'</B> would be <B>'-fno-foo'</B>.  In the table
+-below, only one of the forms is listed - the one you typically will
+-use.  You can figure out the other form by either removing <CODE>no-</CODE>
++below, only one of the forms is listed: the one you typically will
++use.  You can figure out the other form by either removing <B>'no-'</B>
+ or adding it.
+ <BR><BR>
+ The following options control specific optimizations.  They are either
+@@ -79,13 +84,6 @@
+ can use the following flags in the rare cases when &quot;fine-tuning&quot; of
+ optimizations to be performed is desired.
+ <DL>
+-<DT><B>-fno-default-inline</B>
+-<DD>Do not make member functions inline by default merely because they are
+-defined inside the class scope (C++ only).  Otherwise, when you specify
+-<B>'-O'</B>, member functions defined inside class scope are compiled
+-inline by default; i.e., you don't need to add <CODE>inline</CODE> in front of
+-the member function name.
+-<BR><BR>
+ <DT><B>-fno-defer-pop</B>
+ <DD>Always pop the arguments to each function call as soon as that function
+ returns.  For machines which must pop arguments after a function call,
+@@ -112,15 +110,12 @@
+ <DD>Don't keep the frame pointer in a register for functions that
+ don't need one.  This avoids the instructions to save, set up and
+ restore frame pointers; it also makes an extra register available
+-in many functions.  <B>It also makes debugging impossible on
+-some machines.</B>
++in many functions.  It also makes debugging impossible on
++some machines (the Motorola 68000 used in TI calculators is such a case).
+ <BR><BR>
+-On some machines, such as the VAX, this flag has no effect, because
+-the standard calling sequence automatically handles the frame pointer
+-and nothing is saved by pretending it doesn't exist.  The
+-machine-description macro <CODE>FRAME_POINTER_REQUIRED</CODE> controls
+-whether a target machine supports this flag.  See <A HREF="$$INFOLINK(Registers,,Register Usage, gccint, GNU Compiler Collection (GCC) Internals)">Register
+-Usage, gccint, GNU Compiler Collection (GCC) Internals</A>.
++Note, however, that you must not use this option if
++you use floating point operators: The TIOS routines for floating point
++arithmetic assume that the frame pointer is always present!
+ <BR><BR>
+ Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+ <BR><BR>
+@@ -148,15 +143,15 @@
+ <DT><B>-finline-limit=<I>n</I></B>
+ <DD>By default, gcc limits the size of functions that can be inlined.  This flag
+ allows the control of this limit for functions that are explicitly marked as
+-inline (i.e., marked with the inline keyword or defined within the class
+-definition in c++).  <I>n</I> is the size of functions that can be inlined in
++inline (i.e., marked with the inline keyword).
++<I>n</I> is the size of functions that can be inlined in
+ number of pseudo instructions (not counting parameter handling).  The default
+ value of <I>n</I> is 600.
+ Increasing this value can result in more inlined code at
+ the cost of compilation time and memory consumption.  Decreasing usually makes
+ the compilation faster and less code will be inlined (which presumably
+ means slower programs).  This option is particularly useful for programs that
+-use inlining heavily such as those based on recursive templates with C++.
++use inlining heavily.
+ <BR><BR>
+ Inlining is actually controlled by a number of parameters, which may be
+ specified individually by using <B>'--param <I>name</I>=<I>value</I>'</B>.
+@@ -179,7 +174,7 @@
+ for these parameters.  See below for a documentation of the individual
+ parameters controlling inlining.
+ <BR><BR>
+-<I>Note:</I> pseudo instruction represents, in this particular context, an
++<B>Note:</B> pseudo instruction represents, in this particular context, an
+ abstract measurement of function's size.  In no way, it represents a count
+ of assembly instructions and as such its exact meaning might change from one
+ release to an another.
+@@ -191,7 +186,7 @@
+ <CODE>extern&nbsp;inline</CODE> functions.
+ <BR><BR>
+ <DT><B>-fkeep-static-consts</B>
+-<DD>Emit variables declared <CODE>static&nbsp;const</CODE> when optimization isn't turned
++<DD>Emit variables declared <CODE><A HREF="$$INFOLINK(keywords/static)">static</A>&nbsp;<A HREF="$$INFOLINK(keywords/const)">const</A></CODE> when optimization isn't turned
+ on, even if the variables aren't referenced.
+ <BR><BR>
+ GCC enables this option by default.  If you want to force the compiler to
+@@ -214,9 +209,8 @@
+ This option implies <B>'-fmerge-constants'</B>.  In addition to
+ <B>'-fmerge-constants'</B> this considers e.g. even constant initialized
+ arrays or initialized constant variables with integral or floating point
+-types.  Languages like C or C++ require each non-automatic variable to
+-have distinct location, so using this option will result in non-conforming
+-behavior.
++types.  C requires each non-automatic variable to have a distinct location,
++so using this option will result in non-conforming behavior.
+ <BR><BR>
+ <DT><B>-fno-branch-count-reg</B>
+ <DD>Do not use &quot;decrement and branch&quot; instructions on a count register,
+@@ -239,7 +233,8 @@
+ The default is <B>'-ffunction-cse'</B>
+ <BR><BR>
+ <DT><B>-fno-zero-initialized-in-bss</B>
+-<DD>If the target supports a BSS section, GCC by default puts variables that
++<DD>If the target supports a BSS section
++(which is always the case for TIGCC now), GCC by default puts variables that
+ are initialized to zero into BSS.  This can save space in the resulting
+ code.
+ <BR><BR>
+@@ -284,7 +279,7 @@
+ Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+ <BR><BR>
+ <DT><B>-frerun-cse-after-loop</B>
+-<DD>Re-run common subexpression elimination after loop optimizations has been
++<DD>Re-run common subexpression elimination after loop optimizations have been
+ performed.
+ <BR><BR>
+ Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+@@ -298,7 +293,7 @@
+ <DD>Perform a global common subexpression elimination pass.
+ This pass also performs global constant and copy propagation.
+ <BR><BR>
+-<I>Note:</I> When compiling a program using computed gotos, a GCC
++<B>Note:</B> When compiling a program using computed gotos, a GCC
+ extension, you may get better runtime performance if you disable
+ the global common subexpression elimination pass by adding
+ <B>'-fno-gcse'</B> to the command line.
+@@ -441,10 +436,6 @@
+ <DD>Forces all general-induction variables in loops to be
+ strength-reduced.
+ <BR><BR>
+-<I>Note:</I> When compiling programs written in Fortran,
+-<B>'-fmove-all-movables'</B> and <B>'-freduce-all-givs'</B> are enabled
+-by default when you use the optimizer.
+-<BR><BR>
+ These options may generate better or worse code; results are highly
+ dependent on the structure of loops within the source code.
+ <BR><BR>
+@@ -452,12 +443,6 @@
+ they have helped determine the efficacy of various
+ approaches to improving loop optimizations.
+ <BR><BR>
+-Please let us (<A HREF="mailto:gcc@gcc.gnu.org">gcc@gcc.gnu.org</A> and <A HREF="mailto:fortran@gnu.org">fortran@gnu.org</A>)
+-know how use of these options affects
+-the performance of your production code.
+-We're very interested in code that runs <I>slower</I>
+-when these options are <I>enabled</I>.
+-<BR><BR>
+ <DT><B>-fno-peephole</B>
+ <BR><B>-fno-peephole2</B>
+ <DD>Disable any machine-specific peephole optimizations.  The difference
+@@ -480,7 +465,7 @@
+ <BR><BR>
+ In a hard real-time system, people don't want different runs of the
+ compiler to produce code that has different behavior; minimizing
+-non-determinism is of paramount import.  This switch allows users to
++non-determinism is of paramount importance.  This switch allows users to
+ reduce non-determinism, possibly at the expense of inferior
+ optimization.
+ <BR><BR>
+@@ -508,7 +493,7 @@
+ <BR><BR>
+ <DT><B>-fstrict-aliasing</B>
+ <DD>Allows the compiler to assume the strictest aliasing rules applicable to
+-the language being compiled.  For C (and C++), this activates
++the language being compiled.  For C, this activates
+ optimizations based on the type of expressions.  In particular, an
+ object of one type is assumed never to reside at the same address as an
+ object of a different type, unless the types are almost the same.  For
+@@ -541,12 +526,6 @@
+   return *ip;
+ }
+ </PRE>
+-Every language that wishes to perform language-specific alias analysis
+-should define a function that computes, given an <CODE>tree</CODE>
+-node, an alias set for the node.  Nodes in different alias sets are not
+-allowed to alias.  For an example, see the C front-end function
+-<CODE>c_get_alias_set</CODE>.
+-<BR><BR>
+ Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+ <BR><BR>
+ <DT><B>-falign-functions</B>
+@@ -631,15 +610,18 @@
+ <BR><BR>
+ This option prevents undesirable excess precision on machines such as
+ the 68000 where the floating registers (of the 68881) keep more
+-precision than a <CODE>double</CODE> is supposed to have.  Similarly for the
++precision than a <CODE><A HREF="$$INFOLINK(keywords/double)">double</A></CODE> is supposed to have.  Similarly for the
+ x86 architecture.  For most programs, the excess precision does only
+ good, but a few programs rely on the precise definition of IEEE floating
+ point.  Use <B>'-ffloat-store'</B> for such programs, after modifying
+ them to store all pertinent intermediate computations into variables.
+ <BR><BR>
++This option is probably useless in TIGCC, except as a workaround for floating
++point arithmetic errors.
++<BR><BR>
+ <DT><B>-ffast-math</B>
+-<DD>Sets <B>'-fno-math-errno'</B>, <B>'-funsafe-math-optimizations'</B>, *
+-<B>'-fno-trapping-math'</B>, <B>'-ffinite-math-only'</B> and *
++<DD>Sets <B>'-fno-math-errno'</B>, <B>'-funsafe-math-optimizations'</B>,
++<B>'-fno-trapping-math'</B>, <B>'-ffinite-math-only'</B> and
+ <B>'-fno-signaling-nans'</B>.
+ <BR><BR>
+ This option causes the preprocessor macro <CODE>__FAST_MATH__</CODE> to be defined.
+@@ -649,6 +631,8 @@
+ an exact implementation of IEEE or ISO rules/specifications for
+ math functions.
+ <BR><BR>
++This option is probably useless in TIGCC.
++<BR><BR>
+ <DT><B>-fno-math-errno</B>
+ <DD>Do not set ERRNO after calling math functions that are executed
+ with a single instruction, e.g., sqrt.  A program that relies on
+@@ -660,6 +644,8 @@
+ an exact implementation of IEEE or ISO rules/specifications for
+ math functions.
+ <BR><BR>
++This option is probably useless in TIGCC.
++<BR><BR>
+ The default is <B>'-fmath-errno'</B>.
+ <BR><BR>
+ <DT><B>-funsafe-math-optimizations</B>
+@@ -674,6 +660,8 @@
+ an exact implementation of IEEE or ISO rules/specifications for
+ math functions.
+ <BR><BR>
++This option is probably useless in TIGCC.
++<BR><BR>
+ The default is <B>'-fno-unsafe-math-optimizations'</B>.
+ <BR><BR>
+ <DT><B>-ffinite-math-only</B>
+@@ -698,6 +686,8 @@
+ an exact implementation of IEEE or ISO rules/specifications for
+ math functions.
+ <BR><BR>
++This option is probably useless in TIGCC.
++<BR><BR>
+ The default is <B>'-ftrapping-math'</B>.
+ <BR><BR>
+ <DT><B>-fsignaling-nans</B>
+@@ -724,13 +714,13 @@
+ <DL>
+ <DT><B>-fbranch-probabilities</B>
+ <DD>After running a program compiled with <B>'-fprofile-arcs'</B>
+-(see <CODE><A HREF="$$LINK(SEC9)">Options for Debugging Your Program or
+-gcc</A></CODE>), you can compile it a second time using
++(see <A HREF="$$LINK(SEC9)">Options for Debugging Your Program or GCC</A>),
++you can compile it a second time using
+ <B>'-fbranch-probabilities'</B>, to improve optimizations based on
+ the number of times each branch was taken.  When the program
+-compiled with <B>'-fprofile-arcs'</B> exits it saves arc execution
++compiled with <B>'-fprofile-arcs'</B> exits, it saves arc execution
+ counts to a file called <CODE><I>sourcename</I>.da</CODE> for each source
+-file  The information in this data file is very dependent on the
++file.  The information in this data file is very dependent on the
+ structure of the generated code, so you must use the same source code
+ and the same optimization options for both compilations.
+ <BR><BR>
+@@ -856,7 +846,7 @@
+ This number sets the maximum number of instructions (counted in gcc's
+ internal representation) in a single function that the tree inliner
+ will consider for inlining.  This only affects functions declared
+-inline and methods implemented in a class declaration (C++).
++inline.
+ The default value is 300.
+ <BR><BR>
+ <DT><B>max-inline-insns-auto</B>
+@@ -972,5 +962,5 @@
+ parameter very large effectively disables garbage collection.  Setting
+ this parameter and <B>'ggc-min-expand'</B> to zero causes a full
+ collection to occur at every opportunity.
+-</DL><BR>
++</DL>
+ </DL>
+diff -Nur comopts/SEC11.hss fix/comopts/SEC11.hss
+--- comopts/SEC11.hss	2003-09-17 23:35:46.000000000 +0200
++++ fix/comopts/SEC11.hss	2003-09-16 14:21:22.000000000 +0200
+@@ -2,7 +2,7 @@
+ Title=Options Controlling the Preprocessor
+ 
+ [Top]
+-These options control the C preprocessor, which is run on each C source
++These options control the <A HREF="$$INFOLINK(cpp)">C preprocessor</A>, which is run on each C source
+ file before actual compilation.
+ <BR><BR>
+ If you use the <B>'-E'</B> option, nothing is done except preprocessing.
+@@ -52,14 +52,12 @@
+ <DT><B>-I <I>dir</I></B>
+ <DD>Add the directory <I>dir</I> to the list of directories to be searched
+ for header files.
+-See <A HREF="$$INFOLINK(Search Path)">Search Path</A>.
+ Directories named by <B>'-I'</B> are searched before the standard
+ system include directories.  If the directory <I>dir</I> is a standard
+ system include directory, the option is ignored to ensure that the
+ default search order for system directories and the special treatment
+ of system headers are not defeated
+-(see <A HREF="$$INFOLINK(cpp/SEC9a)">System Headers</A>)
+-.
++(see <A HREF="$$INFOLINK(cpp/SEC9a)">System Headers</A>).
+ <BR><BR>
+ <DT><B>-o <I>file</I></B>
+ <DD>Write output to <I>file</I>.  This is the same as specifying <I>file</I>
+@@ -231,9 +229,7 @@
+ </PRE>
+ <DT><B>-MQ <I>target</I></B>
+ <DD>Same as <B>'-MT'</B>, but it quotes any characters which are special to
+-Make.  <B>'-MQ '$(objpfx)foo.o''</B> gives
+-<PRE>$$(objpfx)foo.o: foo.c
+-</PRE>
++Make.
+ The default target is automatically quoted, as if it were given with
+ <B>'-MQ'</B>.
+ <BR><BR>
+@@ -245,8 +241,8 @@
+ basename of the input file and applies a <CODE>.d</CODE> suffix.
+ <BR><BR>
+ If <B>'-MD'</B> is used in conjunction with <B>'-E'</B>, any
+-<B>'-o'</B> switch is understood to specify the dependency output file
+-(but <A HREF="$$INFOLINK(-MF)">-MF</A>), but if used without <B>'-E'</B>, each <B>'-o'</B>
++<B>'-o'</B> switch is understood to specify the dependency output file, but
++if used without <B>'-E'</B>, each <B>'-o'</B>
+ is understood to specify a target object file.
+ <BR><BR>
+ Since <B>'-E'</B> is not implied, <B>'-MD'</B> can be used to generate
+@@ -267,7 +263,7 @@
+ <CODE>.c</CODE>, <CODE>.cc</CODE>, <CODE>.m</CODE>, or <CODE>.S</CODE>.  Some other common
+ extensions for C++ and assembly are also recognized.  If cpp does not
+ recognize the extension, it will treat the file as C; this is the most
+-generic mode.
++generic mode.  Note that C++ and Objective-C are not supported in TIGCC.
+ <BR><BR>
+ <B>Note:</B> Previous versions of cpp accepted a <B>'-lang'</B> option
+ which selected both the language and the standards conformance level.
+@@ -277,7 +273,8 @@
+ <DT><B>-std=<I>standard</I></B>
+ <BR><B>-ansi</B>
+ <DD>Specify the standard to which the code should conform.  Currently CPP
+-knows about C and C++ standards; others may be added in the future.
++knows about C and C++ standards; others may be added in the future
++(although it will not be important for TIGCC).
+ <BR><BR>
+ <I>standard</I>
+ may be one of:
+@@ -325,7 +322,6 @@
+ In addition, <B>'-I-'</B> inhibits the use of the directory of the current
+ file directory as the first search directory for <CODE>#include
+ &quot;<I>file</I>&quot;</CODE>.
+-See <A HREF="$$INFOLINK(Search Path)">Search Path</A>.
+ <BR><BR>
+ <DT><B>-nostdinc</B>
+ <DD>Do not search the standard system directories for header files.
+@@ -334,8 +330,8 @@
+ <BR><BR>
+ <DT><B>-nostdinc++</B>
+ <DD>Do not search for header files in the C++-specific standard directories,
+-but do still search the other standard directories.  (This option is
+-used when building the C++ library.)
++but do still search the other standard directories (not applicable to TIGCC,
++because it does not support C++).
+ <BR><BR>
+ <DT><B>-include <I>file</I></B>
+ <DD>Process <I>file</I> as if <CODE>#include&nbsp;&quot;file&quot;</CODE> appeared as the first
+@@ -448,7 +444,6 @@
+ <DD>Output <CODE>#include</CODE> directives in addition to the result of
+ preprocessing.
+ </DL><BR>
+-<BR><BR>
+ <DT><B>-P</B>
+ <DD>Inhibit generation of linemarkers in the output from the preprocessor.
+ This might be useful when running the preprocessor on something that is
+diff -Nur comopts/SEC12.hss fix/comopts/SEC12.hss
+--- comopts/SEC12.hss	2003-09-17 23:35:46.000000000 +0200
++++ fix/comopts/SEC12.hss	2003-09-16 13:53:36.000000000 +0200
+@@ -1,10 +1,23 @@
+ [Main]
+-Title=Passing Options to the Assembler
++Title=Passing Options to the Assembler and Linker
+ 
+ [Top]
+-You can pass options to the assembler.
++You can pass options to the <A HREF="$$INFOLINK(gnuasm)">GNU assembler</A>, to the
++<A HREF="$$INFOLINK(a68k)">A68k assembler</A>, and to the GNU linker.
++<BR><BR>
++However, this is only possible this way if you are using the command line compiler.
++In the IDE, you have to use the appropriate edit boxes in the project options.
+ <DL>
+ <DT><B>-Wa,<I>option</I></B>
+-<DD>Pass <I>option</I> as an option to the assembler.  If <I>option</I>
++<DD>Pass <I>option</I> as an option to the GNU assembler.  If <I>option</I>
++contains commas, it is split into multiple options at the commas.
++<BR><BR>
++<DT><B>-WA,<I>option</I></B>
++<DD>Pass <I>option</I> as an option to the A68k assembler.  If <I>option</I>
++contains commas, it is split into multiple options at the commas.
++This is a TIGCC-only switch.
++<BR><BR>
++<DT><B>-Wl,<I>option</I></B>
++<DD>Pass <I>option</I> as an option to the GNU linker.  If <I>option</I>
+ contains commas, it is split into multiple options at the commas.
+ </DL>
+diff -Nur comopts/SEC14.hss fix/comopts/SEC14.hss
+--- comopts/SEC14.hss	2003-09-17 23:36:02.000000000 +0200
++++ fix/comopts/SEC14.hss	2003-09-16 16:28:26.000000000 +0200
+@@ -54,49 +54,17 @@
+ <DD>This option specifies where to find the executables, libraries,
+ include files, and data files of the compiler itself.
+ <BR><BR>
+-The compiler driver program runs one or more of the subprograms
+-<CODE>cpp</CODE>, <CODE>cc1</CODE>, <CODE>as</CODE> and <CODE>ld</CODE>.  It tries
+-<I>prefix</I> as a prefix for each program it tries to run, both with and
+-without <CODE><I>machine</I>/<I>version</I>/</CODE> (see <A HREF="$$INFOLINK(Target Options)">Target Options</A>).
+-<BR><BR>
+-For each subprogram to be run, the compiler driver first tries the
+-<B>'-B'</B> prefix, if any.  If that name is not found, or if <B>'-B'</B>
+-was not specified, the driver tries two standard prefixes, which are
+-<CODE>/usr/lib/gcc/</CODE> and <CODE>/usr/local/lib/gcc-lib/</CODE>.  If neither of
+-those results in a file name that is found, the unmodified program
+-name is searched for using the directories specified in your
+-<CODE>PATH</CODE> environment variable.
+-<BR><BR>
+ The compiler will check to see if the path provided by the <B>'-B'</B>
+ refers to a directory, and if necessary it will add a directory
+ separator character at the end of the path.
+ <BR><BR>
+-<B>'-B'</B> prefixes that effectively specify directory names also apply
+-to libraries in the linker, because the compiler translates these
+-options into <B>'-L'</B> options for the linker.  They also apply to
+-includes files in the preprocessor, because the compiler translates these
+-options into <B>'-isystem'</B> options for the preprocessor.  In this case,
+-the compiler appends <CODE>include</CODE> to the prefix.
+-<BR><BR>
+-The run-time support file <CODE>libgcc.a</CODE> can also be searched for using
+-the <B>'-B'</B> prefix, if needed.  If it is not found there, the two
+-standard prefixes above are tried, and that is all.  The file is left
+-out of the link if it is not found by those means.
+-<BR><BR>
+ Another way to specify a prefix much like the <B>'-B'</B> prefix is to use
+-the environment variable <CODE>GCC_EXEC_PREFIX</CODE>.  See <A HREF="$$INFOLINK(cpp/SEC45)">Environment
++the environment variable <CODE>GCC_EXEC_PREFIX</CODE>.  See <A HREF="$$LINK(SEC45)">Environment
+ Variables</A>.
+ <BR><BR>
+-As a special kludge, if the path provided by <B>'-B'</B> is
+-<CODE>[dir/]stage<I>N</I>/</CODE>, where <I>N</I> is a number in the range 0 to
+-9, then it will be replaced by <CODE>[dir/]include</CODE>.  This is to help
+-with boot-strapping the compiler.
+-<BR><BR>
+ <DT><B>-specs=<I>file</I></B>
+ <DD>Process <I>file</I> after the compiler reads in the standard <CODE>specs</CODE>
+ file, in order to override the defaults that the <CODE>gcc</CODE> driver
+-program uses when determining what switches to pass to <CODE>cc1</CODE>,
+-<CODE>cc1plus</CODE>, <CODE>as</CODE>, <CODE>ld</CODE>, etc.  More than one
+-<B>'-specs=<I>file</I>'</B> can be specified on the command line, and they
+-are processed in order, from left to right.
++program uses when determining what switches to pass to the individual programs.
++This does not work in TIGCC.
+ </DL>
+diff -Nur comopts/SEC15.hss fix/comopts/SEC15.hss
+--- comopts/SEC15.hss	2003-09-17 23:36:18.000000000 +0200
++++ fix/comopts/SEC15.hss	2003-09-16 14:23:04.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Specifying subprocesses and the switches to pass to them
++Title=GCC Spec Strings
+ 
+ [Top]
+ <CODE>gcc</CODE> is a driver program.  It performs its job by invoking a
+@@ -15,440 +15,8 @@
+ <BR><BR>
+ <U>Spec files</U> are plaintext files that are used to construct spec
+ strings.  They consist of a sequence of directives separated by blank
+-lines.  The type of directive is determined by the first non-whitespace
+-character on the line and it can be one of the following:
+-<DL>
+-<DT><B>%<I>command</I></B>
+-<DD>Issues a <I>command</I> to the spec file processor.  The commands that can
+-appear here are:
+-<BR><BR><DL>
+-<DT><B>%include &lt;<I>file</I>&gt;</B>
+-<DD>Search for <I>file</I> and insert its text at the current point in the
+-specs file.
++lines.
+ <BR><BR>
+-<DT><B>%include_noerr &lt;<I>file</I>&gt;</B>
+-<DD>Just like <CODE>%include</CODE>, but do not generate an error message if the include
+-file cannot be found.
+-<BR><BR>
+-<DT><B>%rename <I>old_name</I> <I>new_name</I></B>
+-<DD>Rename the spec string <I>old_name</I> to <I>new_name</I>.
+-</DL><BR>
+-<DT><B>*[<I>spec_name</I>]:</B>
+-<DD>This tells the compiler to create, override or delete the named spec
+-string.  All lines after this directive up to the next directive or
+-blank line are considered to be the text for the spec string.  If this
+-results in an empty string then the spec will be deleted.  (Or, if the
+-spec did not exist, then nothing will happened.)  Otherwise, if the spec
+-does not currently exist a new spec will be created.  If the spec does
+-exist then its contents will be overridden by the text of this
+-directive, unless the first character of that text is the <CODE>+</CODE>
+-character, in which case the text will be appended to the spec.
+-<BR><BR>
+-<DT><B>[<I>suffix</I>]:</B>
+-<DD>Creates a new <CODE>[<I>suffix</I>]&nbsp;spec</CODE> pair.  All lines after this directive
+-and up to the next directive or blank line are considered to make up the
+-spec string for the indicated suffix.  When the compiler encounters an
+-input file with the named suffix, it will processes the spec string in
+-order to work out how to compile that file.  For example:
+-<PRE>.ZZ:
+-z-compile -input %i
+-</PRE>
+-This says that any input file whose name ends in <CODE>.ZZ</CODE> should be
+-passed to the program <CODE>z-compile</CODE>, which should be invoked with the
+-command-line switch <B>'-input'</B> and with the result of performing the
+-<CODE>%i</CODE> substitution.  (See below.)
+-<BR><BR>
+-As an alternative to providing a spec string, the text that follows a
+-suffix directive can be one of the following:
+-<BR><BR><DL>
+-<DT><B><I>language</I></B>
+-<DD>This says that the suffix is an alias for a known <I>language</I>.  This is
+-similar to using the <B>'-x'</B> command-line switch to GCC to specify a
+-language explicitly.  For example:
+-<PRE>.ZZ:
+-@c++
+-</PRE>
+-Says that .ZZ files are, in fact, C++ source files.
+-<BR><BR>
+-<DT><B>#<I>name</I></B>
+-<DD>This causes an error messages saying:
+-<PRE><I>name</I> compiler not installed on this system.
+-</PRE>
+-</DL><BR>
+-GCC already has an extensive list of suffixes built into it.
+-This directive will add an entry to the end of the list of suffixes, but
+-since the list is searched from the end backwards, it is effectively
+-possible to override earlier entries using this technique.
+-</DL>
+-GCC has the following spec strings built into it.  Spec files can
+-override these strings or create their own.  Note that individual
+-targets can also add their own spec strings to this list.
+-<PRE>asm          Options to pass to the assembler
+-asm_final    Options to pass to the assembler post-processor
+-cpp          Options to pass to the C preprocessor
+-cc1          Options to pass to the C compiler
+-cc1plus      Options to pass to the C++ compiler
+-endfile      Object files to include at the end of the link
+-link         Options to pass to the linker
+-lib          Libraries to include on the command line to the linker
+-libgcc       Decides which GCC support library to pass to the linker
+-linker       Sets the name of the linker
+-predefines   Defines to be passed to the C preprocessor
+-signed_char  Defines to pass to CPP to say whether <CODE>char</CODE> is signed
+-             by default
+-startfile    Object files to include at the start of the link
+-</PRE>
+-Here is a small example of a spec file:
+-<PRE>%rename lib                 old_lib
+-
+-*lib:
+---start-group -lgcc -lc -leval1 --end-group %(old_lib)
+-</PRE>
+-This example renames the spec called <CODE>lib</CODE> to <CODE>old_lib</CODE> and
+-then overrides the previous definition of <CODE>lib</CODE> with a new one.
+-The new definition adds in some extra command-line options before
+-including the text of the old definition.
+-<BR><BR>
+-<U>Spec strings</U> are a list of command-line options to be passed to their
+-corresponding program.  In addition, the spec strings can contain
+-<CODE>%</CODE>-prefixed sequences to substitute variable text or to
+-conditionally insert text into the command line.  Using these constructs
+-it is possible to generate quite complex command lines.
+-<BR><BR>
+-Here is a table of all defined <CODE>%</CODE>-sequences for spec
+-strings.  Note that spaces are not generated automatically around the
+-results of expanding these sequences.  Therefore you can concatenate them
+-together or combine them with constant text in a single argument.
+-<DL>
+-<DT><B>%%</B>
+-<DD>Substitute one <CODE>%</CODE> into the program name or argument.
+-<BR><BR>
+-<DT><B>%i</B>
+-<DD>Substitute the name of the input file being processed.
+-<BR><BR>
+-<DT><B>%b</B>
+-<DD>Substitute the basename of the input file being processed.
+-This is the substring up to (and not including) the last period
+-and not including the directory.
+-<BR><BR>
+-<DT><B>%B</B>
+-<DD>This is the same as <CODE>%b</CODE>, but include the file suffix (text after
+-the last period).
+-<BR><BR>
+-<DT><B>%d</B>
+-<DD>Marks the argument containing or following the <CODE>%d</CODE> as a
+-temporary file name, so that that file will be deleted if GCC exits
+-successfully.  Unlike <CODE>%g</CODE>, this contributes no text to the
+-argument.
+-<BR><BR>
+-<DT><B>%g<I>suffix</I></B>
+-<DD>Substitute a file name that has suffix <I>suffix</I> and is chosen
+-once per compilation, and mark the argument in the same way as
+-<CODE>%d</CODE>.  To reduce exposure to denial-of-service attacks, the file
+-name is now chosen in a way that is hard to predict even when previously
+-chosen file names are known.  For example, <CODE>%g.s&nbsp;...&nbsp;%g.o&nbsp;...&nbsp;%g.s</CODE>
+-might turn into <CODE>ccUVUUAU.s&nbsp;ccXYAXZ12.o&nbsp;ccUVUUAU.s</CODE>.  <I>suffix</I> matches
+-the regexp <CODE>[.A-Za-z]*</CODE> or the special string <CODE>%O</CODE>, which is
+-treated exactly as if <CODE>%O</CODE> had been preprocessed.  Previously, <CODE>%g</CODE>
+-was simply substituted with a file name chosen once per compilation,
+-without regard to any appended suffix (which was therefore treated
+-just like ordinary text), making such attacks more likely to succeed.
+-<BR><BR>
+-<DT><B>%u<I>suffix</I></B>
+-<DD>Like <CODE>%g</CODE>, but generates a new temporary file name even if
+-<CODE>%u<I>suffix</I></CODE> was already seen.
+-<BR><BR>
+-<DT><B>%U<I>suffix</I></B>
+-<DD>Substitutes the last file name generated with <CODE>%u<I>suffix</I></CODE>, generating a
+-new one if there is no such last file name.  In the absence of any
+-<CODE>%u<I>suffix</I></CODE>, this is just like <CODE>%g<I>suffix</I></CODE>, except they don't share
+-the same suffix <I>space</I>, so <CODE>%g.s&nbsp;...&nbsp;%U.s&nbsp;...&nbsp;%g.s&nbsp;...&nbsp;%U.s</CODE>
+-would involve the generation of two distinct file names, one
+-for each <CODE>%g.s</CODE> and another for each <CODE>%U.s</CODE>.  Previously, <CODE>%U</CODE> was
+-simply substituted with a file name chosen for the previous <CODE>%u</CODE>,
+-without regard to any appended suffix.
+-<BR><BR>
+-<DT><B>%j<I>SUFFIX</I></B>
+-<DD>Substitutes the name of the <CODE>HOST_BIT_BUCKET</CODE>, if any, and if it is
+-writable, and if save-temps is off; otherwise, substitute the name
+-of a temporary file, just like <CODE>%u</CODE>.  This temporary file is not
+-meant for communication between processes, but rather as a junk
+-disposal mechanism.
+-<BR><BR>
+-<DT><B>%.<I>SUFFIX</I></B>
+-<DD>Substitutes <I>.SUFFIX</I> for the suffixes of a matched switch's args
+-when it is subsequently output with <CODE>%*</CODE>.  <I>SUFFIX</I> is
+-terminated by the next space or %.
+-<BR><BR>
+-<DT><B>%w</B>
+-<DD>Marks the argument containing or following the <CODE>%w</CODE> as the
+-designated output file of this compilation.  This puts the argument
+-into the sequence of arguments that <CODE>%o</CODE> will substitute later.
+-<BR><BR>
+-<DT><B>%o</B>
+-<DD>Substitutes the names of all the output files, with spaces
+-automatically placed around them.  You should write spaces
+-around the <CODE>%o</CODE> as well or the results are undefined.
+-<CODE>%o</CODE> is for use in the specs for running the linker.
+-Input files whose names have no recognized suffix are not compiled
+-at all, but they are included among the output files, so they will
+-be linked.
+-<BR><BR>
+-<DT><B>%O</B>
+-<DD>Substitutes the suffix for object files.  Note that this is
+-handled specially when it immediately follows <CODE>%g,&nbsp;%u,&nbsp;or&nbsp;%U</CODE>,
+-because of the need for those to form complete file names.  The
+-handling is such that <CODE>%O</CODE> is treated exactly as if it had already
+-been substituted, except that <CODE>%g,&nbsp;%u,&nbsp;and&nbsp;%U</CODE> do not currently
+-support additional <I>suffix</I> characters following <CODE>%O</CODE> as they would
+-following, for example, <CODE>.o</CODE>.
+-<BR><BR>
+-<DT><B>%p</B>
+-<DD>Substitutes the standard macro predefinitions for the
+-current target machine.  Use this when running <CODE>cpp</CODE>.
+-<BR><BR>
+-<DT><B>%P</B>
+-<DD>Like <CODE>%p</CODE>, but puts <CODE>__</CODE> before and after the name of each
+-predefined macro, except for macros that start with <CODE>__</CODE> or with
+-<CODE>_<I>L</I></CODE>, where <I>L</I> is an uppercase letter.  This is for ISO
+-C.
+-<BR><BR>
+-<DT><B>%I</B>
+-<DD>Substitute a <B>'-iprefix'</B> option made from <CODE>GCC_EXEC_PREFIX</CODE>.
+-<BR><BR>
+-<DT><B>%s</B>
+-<DD>Current argument is the name of a library or startup file of some sort.
+-Search for that file in a standard list of directories and substitute
+-the full name found.
+-<BR><BR>
+-<DT><B>%e<I>str</I></B>
+-<DD>Print <I>str</I> as an error message.  <I>str</I> is terminated by a newline.
+-Use this when inconsistent options are detected.
+-<BR><BR>
+-<DT><B>%|</B>
+-<DD>Output <CODE>-</CODE> if the input for the current command is coming from a pipe.
+-<BR><BR>
+-<DT><B>%(<I>name</I>)</B>
+-<DD>Substitute the contents of spec string <I>name</I> at this point.
+-<BR><BR>
+-<DT><B>%[<I>name</I>]</B>
+-<DD>Like <CODE>%(...)</CODE> but put <CODE>__</CODE> around <B>'-D'</B> arguments.
+-<BR><BR>
+-<DT><B>%x{<I>option</I>}</B>
+-<DD>Accumulate an option for <CODE>%X</CODE>.
+-<BR><BR>
+-<DT><B>%X</B>
+-<DD>Output the accumulated linker options specified by <B>'-Wl'</B> or a <CODE>%x</CODE>
+-spec string.
+-<BR><BR>
+-<DT><B>%Y</B>
+-<DD>Output the accumulated assembler options specified by <B>'-Wa'</B>.
+-<BR><BR>
+-<DT><B>%Z</B>
+-<DD>Output the accumulated preprocessor options specified by <B>'-Wp'</B>.
+-<BR><BR>
+-<DT><B>%v1</B>
+-<DD>Substitute the major version number of GCC.
+-(For version 2.9.5, this is 2.)
+-<BR><BR>
+-<DT><B>%v2</B>
+-<DD>Substitute the minor version number of GCC.
+-(For version 2.9.5, this is 9.)
+-<BR><BR>
+-<DT><B>%v3</B>
+-<DD>Substitute the patch level number of GCC.
+-(For version 2.9.5, this is 5.)
+-<BR><BR>
+-<DT><B>%a</B>
+-<DD>Process the <CODE>asm</CODE> spec.  This is used to compute the
+-switches to be passed to the assembler.
+-<BR><BR>
+-<DT><B>%A</B>
+-<DD>Process the <CODE>asm_final</CODE> spec.  This is a spec string for
+-passing switches to an assembler post-processor, if such a program is
+-needed.
+-<BR><BR>
+-<DT><B>%l</B>
+-<DD>Process the <CODE>link</CODE> spec.  This is the spec for computing the
+-command line passed to the linker.  Typically it will make use of the
+-<CODE>%L&nbsp;%G&nbsp;%S&nbsp;%D&nbsp;and&nbsp;%E</CODE> sequences.
+-<BR><BR>
+-<DT><B>%D</B>
+-<DD>Dump out a <B>'-L'</B> option for each directory that GCC believes might
+-contain startup files.  If the target supports multilibs then the
+-current multilib directory will be prepended to each of these paths.
+-<BR><BR>
+-<DT><B>%M</B>
+-<DD>Output the multilib directory with directory separators replaced with
+-<CODE>_</CODE>.  If multilib directories are not set, or the multilib directory is
+-<CODE>.</CODE> then this option emits nothing.
+-<BR><BR>
+-<DT><B>%L</B>
+-<DD>Process the <CODE>lib</CODE> spec.  This is a spec string for deciding which
+-libraries should be included on the command line to the linker.
+-<BR><BR>
+-<DT><B>%G</B>
+-<DD>Process the <CODE>libgcc</CODE> spec.  This is a spec string for deciding
+-which GCC support library should be included on the command line to the linker.
+-<BR><BR>
+-<DT><B>%S</B>
+-<DD>Process the <CODE>startfile</CODE> spec.  This is a spec for deciding which
+-object files should be the first ones passed to the linker.  Typically
+-this might be a file named <CODE>crt0.o</CODE>.
+-<BR><BR>
+-<DT><B>%E</B>
+-<DD>Process the <CODE>endfile</CODE> spec.  This is a spec string that specifies
+-the last object files that will be passed to the linker.
+-<BR><BR>
+-<DT><B>%C</B>
+-<DD>Process the <CODE>cpp</CODE> spec.  This is used to construct the arguments
+-to be passed to the C preprocessor.
+-<BR><BR>
+-<DT><B>%c</B>
+-<DD>Process the <CODE>signed_char</CODE> spec.  This is intended to be used
+-to tell cpp whether a char is signed.  It typically has the definition:
+-<PRE>%{funsigned-char:-D__CHAR_UNSIGNED__}
+-</PRE>
+-<DT><B>%1</B>
+-<DD>Process the <CODE>cc1</CODE> spec.  This is used to construct the options to be
+-passed to the actual C compiler (<CODE>cc1</CODE>).
+-<BR><BR>
+-<DT><B>%2</B>
+-<DD>Process the <CODE>cc1plus</CODE> spec.  This is used to construct the options to be
+-passed to the actual C++ compiler (<CODE>cc1plus</CODE>).
+-<BR><BR>
+-<DT><B>%*</B>
+-<DD>Substitute the variable part of a matched option.  See below.
+-Note that each comma in the substituted string is replaced by
+-a single space.
+-<BR><BR>
+-<DT><B>%:<I>function</I>(<I>args</I>)</B>
+-<DD>Call the named function <I>function</I>, passing it <I>args</I>.
+-<I>args</I> is first processed as a nested spec string, then split
+-into an argument vector in the usual fashion.  The function returns
+-a string which is processed as if it had appeared literally as part
+-of the current spec.
+-<BR><BR>
+-The following built-in spec functions are provided:
+-<BR><BR><DL>
+-<DT><B>if-exists</B>
+-<DD>The <CODE>if-exists</CODE> spec function takes one argument, an absolute
+-pathname to a file.  If the file exists, <CODE>if-exists</CODE> returns the
+-pathname.  Here is a small example of its usage:
+-<PRE>*startfile:
+-crt0%O%s %:if-exists(crti%O%s) crtbegin%O%s
+-</PRE>
+-<DT><B>if-exists-else</B>
+-<DD>The <CODE>if-exists-else</CODE> spec function is similar to the <CODE>if-exists</CODE>
+-spec function, except that it takes two arguments.  The first argument is
+-an absolute pathname to a file.  If the file exists, <CODE>if-exists-else</CODE>
+-returns the pathname.  If it does not exist, it returns the second argument.
+-This way, <CODE>if-exists-else</CODE> can be used to select one file or another,
+-based on the existence of the first.  Here is a small example of its usage:
+-<PRE>*startfile:
+-crt0%O%s %:if-exists(crti%O%s) \
+-%:if-exists-else(crtbeginT%O%s crtbegin%O%s)
+-</PRE>
+-</DL><BR>
+-<DT><B>%{S}</B>
+-<DD>Substitutes the <B>'-S'</B> switch, if that switch was given to GCC.
+-If that switch was not specified, this substitutes nothing.  Note that
+-the leading dash is omitted when specifying this option, and it is
+-automatically inserted if the substitution is performed.  Thus the spec
+-string <CODE>%{foo}</CODE> would match the command-line option <B>'-foo'</B>
+-and would output the command line option <B>'-foo'</B>.
+-<BR><BR>
+-<DT><B>%W{S}</B>
+-<DD>Like %{<CODE>S</CODE>} but mark last argument supplied within as a file to be
+-deleted on failure.
+-<BR><BR>
+-<DT><B>%{S*}</B>
+-<DD>Substitutes all the switches specified to GCC whose names start
+-with <B>'-S'</B>, but which also take an argument.  This is used for
+-switches like <B>'-o'</B>, <B>'-D'</B>, <B>'-I'</B>, etc.
+-GCC considers <B>'-o foo'</B> as being
+-one switch whose names starts with <CODE>o</CODE>.  %{o*} would substitute this
+-text, including the space.  Thus two arguments would be generated.
+-<BR><BR>
+-<DT><B>%{^S*}</B>
+-<DD>Like %{<CODE>S</CODE>*}, but don't put a blank between a switch and its
+-argument.  Thus %{^o*} would only generate one argument, not two.
+-<BR><BR>
+-<DT><B>%{S*&amp;T*}</B>
+-<DD>Like %{<CODE>S</CODE>*}, but preserve order of <CODE>S</CODE> and <CODE>T</CODE> options
+-(the order of <CODE>S</CODE> and <CODE>T</CODE> in the spec is not significant).
+-There can be any number of ampersand-separated variables; for each the
+-wild card is optional.  Useful for CPP as <CODE>%{D*&amp;U*&amp;A*}</CODE>.
+-<BR><BR>
+-<DT><B>%{&lt;S}</B>
+-<DD>Remove all occurrences of <B>'-S'</B> from the command line.  Note - this
+-command is position dependent.  <CODE>%</CODE> commands in the spec string
+-before this option will see <B>'-S'</B>, <CODE>%</CODE> commands in the spec
+-string after this option will not.
+-<BR><BR>
+-<DT><B>%{S*:X}</B>
+-<DD>Substitutes <CODE>X</CODE> if one or more switches whose names start with
+-<B>'-S'</B> are specified to GCC.  Note that the tail part of the
+-<B>'-S'</B> option (i.e. the part matched by the <CODE>*</CODE>) will be substituted
+-for each occurrence of <CODE>%*</CODE> within <CODE>X</CODE>.
+-<BR><BR>
+-<DT><B>%{S:X}</B>
+-<DD>Substitutes <CODE>X</CODE>, but only if the <B>'-S'</B> switch was given to GCC.
+-<BR><BR>
+-<DT><B>%{!S:X}</B>
+-<DD>Substitutes <CODE>X</CODE>, but only if the <B>'-S'</B> switch was <I>not</I> given to GCC.
+-<BR><BR>
+-<DT><B>%{|S:X}</B>
+-<DD>Like %{<CODE>S</CODE>:<CODE>X</CODE>}, but if no <CODE>S</CODE> switch, substitute <CODE>-</CODE>.
+-<BR><BR>
+-<DT><B>%{|!S:X}</B>
+-<DD>Like %{!<CODE>S</CODE>:<CODE>X</CODE>}, but if there is an <CODE>S</CODE> switch, substitute <CODE>-</CODE>.
+-<BR><BR>
+-<DT><B>%{.S:X}</B>
+-<DD>Substitutes <CODE>X</CODE>, but only if processing a file with suffix <CODE>S</CODE>.
+-<BR><BR>
+-<DT><B>%{!.S:X}</B>
+-<DD>Substitutes <CODE>X</CODE>, but only if <I>not</I> processing a file with suffix <CODE>S</CODE>.
+-<BR><BR>
+-<DT><B>%{S|P:X}</B>
+-<DD>Substitutes <CODE>X</CODE> if either <B>'-S'</B> or <B>'-P'</B> was given to GCC.  This may be
+-combined with <CODE>!</CODE> and <CODE>.</CODE> sequences as well, although they
+-have a stronger binding than the <CODE>|</CODE>.  For example a spec string
+-like this:
+-<PRE>%{.c:-foo} %{!.c:-bar} %{.c|d:-baz} %{!.c|d:-boggle}
+-</PRE>
+-will output the following command-line options from the following input
+-command-line options:
+-<PRE>fred.c        -foo -baz
+-jim.d         -bar -boggle
+--d fred.c     -foo -baz -boggle
+--d jim.d      -bar -baz -boggle
+-</PRE>
+-</DL>
+-The conditional text <CODE>X</CODE> in a %{<CODE>S</CODE>:<CODE>X</CODE>} or
+-%{!<CODE>S</CODE>:<CODE>X</CODE>} construct may contain other nested <CODE>%</CODE> constructs
+-or spaces, or even newlines.  They are processed as usual, as described
+-above.
+-<BR><BR>
+-The <B>'-O'</B>, <B>'-f'</B>, <B>'-m'</B>, and <B>'-W'</B>
+-switches are handled specifically in these
+-constructs.  If another value of <B>'-O'</B> or the negated form of a <B>'-f'</B>, <B>'-m'</B>, or
+-<B>'-W'</B> switch is found later in the command line, the earlier switch
+-value is ignored, except with {<CODE>S</CODE>*} where <CODE>S</CODE> is just one
+-letter, which passes all matching options.
+-<BR><BR>
+-The character <CODE>|</CODE> at the beginning of the predicate text is used to indicate
+-that a command should be piped to the following command, but only if <B>'-pipe'</B>
+-is specified.
+-<BR><BR>
+-It is built into GCC which switches take arguments and which do not.
+-(You might think it would be useful to generalize this to allow each
+-compiler's spec to say which switches take arguments.  But this cannot
+-be done in a consistent fashion.  GCC cannot even decide which input
+-files have been specified without knowing which switches take arguments,
+-and it must know which input files to compile in order to tell which
+-compilers to run).
+-<BR><BR>
+-GCC also knows implicitly that arguments starting in <B>'-l'</B> are to be
+-treated as compiler output files, and passed to the linker in their
+-proper position among the other output files.
++Since <CODE>gcc</CODE> only performs a small part of the tasks in TIGCC, spec
++strings are more or less irrelevant.  For details on specs, see the
++<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html#Spec%20Files">original documentation</A> on the net.
+diff -Nur comopts/SEC16.hss fix/comopts/SEC16.hss
+--- comopts/SEC16.hss	2003-09-17 23:36:22.000000000 +0200
++++ fix/comopts/SEC16.hss	2003-09-16 13:53:36.000000000 +0200
+@@ -1,145 +1,77 @@
+ [Main]
+-Title=M680x0 Options
++Title=M680x0 Target Options
+ 
+ [Top]
+-These are the <B>'-m'</B> options defined for the 68000 series.  The default
+-values for these options depends on which style of 68000 was selected when
+-the compiler was configured; the defaults for the most common choices are
+-given below.
++The GCC compiler used in TIGCC is configured for just one target family:
++the Motorola M680x0 (M68k) family.  In the TI-89, TI-92+, and V200 calculators,
++an MC68000 processor is used, therefore TIGCC creates code for such a
++processor by default.  However, switches specifying the processor model, such
++as <B>'-m68020'</B>, still exist, although they are not useful.  However,
++there are also options that control the code that is generated specifically
++for TI calculators; they also start with <B>'-m'</B>:
+ <DL>
+-<DT><B>-m68000</B>
+-<BR><B>-mc68000</B>
+-<DD>Generate output for a 68000.  This is the default
+-when the compiler is configured for 68000-based systems.
+-<BR><BR>
+-Use this option for microcontrollers with a 68000 or EC000 core,
+-including the 68008, 68302, 68306, 68307, 68322, 68328 and 68356.
+-<BR><BR>
+-<DT><B>-m68020</B>
+-<BR><B>-mc68020</B>
+-<DD>Generate output for a 68020.  This is the default
+-when the compiler is configured for 68020-based systems.
+-<BR><BR>
+-<DT><B>-m68881</B>
+-<DD>Generate output containing 68881 instructions for floating point.
+-This is the default for most 68020 systems unless <B>'--nfp'</B> was
+-specified when the compiler was configured.
+-<BR><BR>
+-<DT><B>-m68030</B>
+-<DD>Generate output for a 68030.  This is the default when the compiler is
+-configured for 68030-based systems.
+-<BR><BR>
+-<DT><B>-m68040</B>
+-<DD>Generate output for a 68040.  This is the default when the compiler is
+-configured for 68040-based systems.
+-<BR><BR>
+-This option inhibits the use of 68881/68882 instructions that have to be
+-emulated by software on the 68040.  Use this option if your 68040 does not
+-have code to emulate those instructions.
+-<BR><BR>
+-<DT><B>-m68060</B>
+-<DD>Generate output for a 68060.  This is the default when the compiler is
+-configured for 68060-based systems.
+-<BR><BR>
+-This option inhibits the use of 68020 and 68881/68882 instructions that
+-have to be emulated by software on the 68060.  Use this option if your 68060
+-does not have code to emulate those instructions.
+-<BR><BR>
+-<DT><B>-mcpu32</B>
+-<DD>Generate output for a CPU32.  This is the default
+-when the compiler is configured for CPU32-based systems.
+-<BR><BR>
+-Use this option for microcontrollers with a
+-CPU32 or CPU32+ core, including the 68330, 68331, 68332, 68333, 68334,
+-68336, 68340, 68341, 68349 and 68360.
+-<BR><BR>
+-<DT><B>-m5200</B>
+-<DD>Generate output for a 520X &quot;coldfire&quot; family cpu.  This is the default
+-when the compiler is configured for 520X-based systems.
+-<BR><BR>
+-Use this option for microcontroller with a 5200 core, including
+-the MCF5202, MCF5203, MCF5204 and MCF5202.
+-<BR><BR>
+-<DT><B>-m68020-40</B>
+-<DD>Generate output for a 68040, without using any of the new instructions.
+-This results in code which can run relatively efficiently on either a
+-68020/68881 or a 68030 or a 68040.  The generated code does use the
+-68881 instructions that are emulated on the 68040.
+-<BR><BR>
+-<DT><B>-m68020-60</B>
+-<DD>Generate output for a 68060, without using any of the new instructions.
+-This results in code which can run relatively efficiently on either a
+-68020/68881 or a 68030 or a 68040.  The generated code does use the
+-68881 instructions that are emulated on the 68060.
+-<BR><BR>
+-<DT><B>-mfpa</B>
+-<DD>Generate output containing Sun FPA instructions for floating point.
+-<BR><BR>
+-<DT><B>-msoft-float</B>
+-<DD>Generate output containing library calls for floating point.
+-<B>Warning:</B> the requisite libraries are not available for all m68k
+-targets.  Normally the facilities of the machine's usual C compiler are
+-used, but this can't be done directly in cross-compilation.  You must
+-make your own arrangements to provide suitable library functions for
+-cross-compilation.  The embedded targets <CODE>m68k-*-aout</CODE> and
+-<CODE>m68k-*-coff</CODE> do provide software floating point support.
+-<BR><BR>
+-<DT><B>-mshort</B>
+-<DD>Consider type <CODE>int</CODE> to be 16 bits wide, like <CODE>short&nbsp;int</CODE>.
+-<BR><BR>
+-<DT><B>-mnobitfield</B>
+-<DD>Do not use the bit-field instructions.  The <B>'-m68000'</B>, <B>'-mcpu32'</B>
+-and <B>'-m5200'</B> options imply <B>'-mnobitfield'</B>.
++<DT><B>-mno-bss</B>
++<DD>Output all uninitialized variables as normal data with zero content.
+ <BR><BR>
+-<DT><B>-mbitfield</B>
+-<DD>Do use the bit-field instructions.  The <B>'-m68020'</B> option implies
+-<B>'-mbitfield'</B>.  This is the default if you use a configuration
+-designed for a 68020.
+-<BR><BR>
+-<DT><B>-mrtd</B>
+-<DD>Use a different function-calling convention, in which functions
+-that take a fixed number of arguments return with the <CODE>rtd</CODE>
+-instruction, which pops their arguments while returning.  This
+-saves one instruction in the caller since there is no need to pop
+-the arguments there.
+-<BR><BR>
+-This calling convention is incompatible with the one normally
+-used on Unix, so you cannot use it if you need to call libraries
+-compiled with the Unix compiler.
+-<BR><BR>
+-Also, you must provide function prototypes for all functions that
+-take variable numbers of arguments (including <CODE>printf</CODE>);
+-otherwise incorrect code will be generated for calls to those
+-functions.
+-<BR><BR>
+-In addition, seriously incorrect code will result if you call a
+-function with too many arguments.  (Normally, extra arguments are
+-harmlessly ignored.)
++<DT><B>-mlong</B>
++<DD>Consider type <CODE>int</CODE> to be 32 bits wide, like <CODE>long&nbsp;int</CODE>.
++The <B>'-mshort'</B> option is enabled by default in TIGCC; the negative is
++actually <B>'-mnoshort'</B>, but <B>'-mno-short'</B> and <B>'-mlong'</B> have
++been added as aliases.  Constants such as <CODE>INT_MAX</CODE> are set to the
++appropriate values, and <CODE>__INT_SHORT__</CODE> will be defined if short
++integers are used (i.e. if this switch is not used).  This option may be
++useful if you need to port code from a system which uses long integers.
++<BR><BR>
++<DT><B>-mno-tios</B>
++<DD>Again, this is the negative form of a switch called <B>'-mtios'</B>,
++which changes the convention for returning pointers from functions, and which
++also implies <B>'-fcall-used-d2'</B>.  This is necessary to make GCC work
++with the TIOS calling conventions, therefore <B>'-mno-tios'</B> may only be
++used if no interaction with the operating system is required.  Since library
++calls also use the TIOS calling convention, they cannot be used either; you
++should disable linking against <CODE>tigcc.a</CODE>.  Only use this option if
++you know exactly what you are doing.
++<BR><BR>
++<DT><B>-mmlink</B>
++<DD>Assume that uninitialized global variables can be handled smartly through
++BSS blocks even in kernel-less mode.
++<BR><BR>
++<DT><B>-mpcrel</B>
++<DD>Use the pc-relative addressing mode of the 68000 directly, instead of
++using a global offset table (also known as the relocation table).
++Therefore, this option produces position-independent code.
++<BR><BR>
++<DT><B>-mregparm[=<I>regcount</I>]</B>
++<DD>Use register passing for all user-defined functions.  <I>regcount</I>
++data registers plus <I>regcount</I> address registers are used to pass
++arguments to functions.  If <I>regcount</I> is not specified, a default value
++of 2 is used.  You should not specify a value higher than 6, or 5 if you use
++<CODE><A HREF="$$INFOLINK(httigcc/advanced_optrom)">OPTIMIZE_ROM_CALLS</A></CODE>.
++Note that you have to be careful with callback functions if you use this
++switch, although you will be warned about incompatiblities.
+ <BR><BR>
+-The <CODE>rtd</CODE> instruction is supported by the 68010, 68020, 68030,
+-68040, 68060 and CPU32 processors, but not by the 68000 or 5200.
++<DT><B>-mbitfield</B>
++<DD>Use bit-field instructions.
+ <BR><BR>
+ <DT><B>-malign-int</B>
+-<BR><B>-mno-align-int</B>
+-<DD>Control whether GCC aligns <CODE>int</CODE>, <CODE>long</CODE>, <CODE>long&nbsp;long</CODE>,
++<DD>Aligns <CODE>int</CODE>, <CODE>long</CODE>, <CODE>long&nbsp;long</CODE>,
+ <CODE>float</CODE>, <CODE>double</CODE>, and <CODE>long&nbsp;double</CODE> variables on a 32-bit
+-boundary (<B>'-malign-int'</B>) or a 16-bit boundary (<B>'-mno-align-int'</B>).
+-Aligning variables on 32-bit boundaries produces code that runs somewhat
+-faster on processors with 32-bit busses at the expense of more memory.
+-<BR><BR>
+-<B>Warning:</B> if you use the <B>'-malign-int'</B> switch, GCC will
+-align structures containing the above types  differently than
+-most published application binary interface specifications for the m68k.
+-<BR><BR>
+-<DT><B>-mpcrel</B>
+-<DD>Use the pc-relative addressing mode of the 68000 directly, instead of
+-using a global offset table.  At present, this option implies <B>'-fpic'</B>,
+-allowing at most a 16-bit offset for pc-relative addressing.  <B>'-fPIC'</B> is
+-not presently supported with <B>'-mpcrel'</B>, though this could be supported for
+-68020 and higher processors.
++boundary.
+ <BR><BR>
+ <DT><B>-mno-strict-align</B>
+ <BR><B>-mstrict-align</B>
+-<DD>Do not (do) assume that unaligned memory references will be handled by
++<DD>Do not or do assume that unaligned memory references will be handled by
+ the system.
++<BR><BR>
++<DT><B>-mno-merge-sections</B>
++<DD>Do not merge the <CODE>.text</CODE> and <CODE>.data</CODE> sections,
++as TIGCC normally does (to save space used by relocation).
++<BR><BR>
++<DT><B>-mmerge-to-data</B>
++<DD>When merging sections, merge to <CODE>.data</CODE> rather than to
++<CODE>.text</CODE>.
++<BR><BR>
++<DT><B>-mrodata-to-text</B>
++<DD>When not merging sections, put read-only data into <CODE>.text</CODE>
++rather than <CODE>.data</CODE>.
+ </DL>
+diff -Nur comopts/SEC3.hss fix/comopts/SEC3.hss
+--- comopts/SEC3.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/comopts/SEC3.hss	2003-09-17 17:43:50.000000000 +0200
+@@ -0,0 +1,62 @@
++[Main]
++Title=Options Available in the Command Line Compiler
++
++[Top]
++These options apply only to the command line compiler.  If you want to use
++the IDE instead, you do not need to worry about these topics.
++<BR><BR>
++<CODE>tigcc</CODE> has an important difference to the standard program
++<CODE>gcc</CODE>: <CODE>tigcc</CODE> always overwrites assembly or
++object files.  For example, if a file <CODE>test.c</CODE> is compiled, the
++files <CODE>test.s</CODE> and <CODE>test.o</CODE> will be created and
++overwritten if necessary, but they will automatically be deleted again if
++neither <B>'-c'</B> nor <B>'-S'</B> are specified.
++<BR><BR>
++Another important difference is that <CODE>tigcc</CODE> always looks for
++libraries in the <CODE>'Lib'</CODE> subfolder of the installation.
++<DL>
++<DT><B>-pack <I>varname</I></B>
++<DD>Compress the file generated during compilation.
++<I>varname</I> is the name of the on-calc packed variable.  Although
++<I>varname</I> cannot have an extension, the variable on the calculator will
++always have the extension <CODE>ppg</CODE>.  <I>varname</I> cannot be the
++same as the on-calc name of the program itself.  When you use this switch,
++two files will be created; one with the extension <CODE>.89y</CODE> or
++<CODE>.9xy</CODE>, and one <CODE>.89z</CODE> or <CODE>.9xz</CODE> file.
++<BR><BR>
++This option comes from
++<A HREF="mailto:thomas.nussbaumer@gmx.net">Thomas Nussbaumer</A>'s
++TIGCC Tools Suite, where this feature is called "ExePack Technology."
++You can read about it on the official
++<A HREF="http://tict.ticalc.org/">TI-Chess Team site</A>.
++<BR><BR>
++<DT><B>-q</B>
++<DD>Keep as quiet as possible while assembling and linking.  This option is
++not needed by the compiler because it is always quiet, but the linker and
++especially the assembler output some information.
++<BR><BR>
++<DT><B>-v0</B>
++<DD>This switch is an addition to the <B>'-v'</B> switch.  It tells TIGCC to
++output only the commands that are run directly.  This was the default in some
++previous releases.
++<BR><BR>
++<DT><B>-g</B>
++<DD>The <B>'-g'</B> switch in GCC turns on debugging information; in TIGCC
++the COFF format will be used in all cases.  If you use this option in TIGCC,
++the <CODE>.s</CODE> file will not be deleted, but instead it will be filled
++with lines from the C source along with file offsets as comments.
++<BR><BR>
++<DT><B>-standalone</B>
++<DD>Do not link against <CODE>tigcc.a</CODE>.  All of GCC's internal
++functions are implemented in this library, as well as all non-TIOS functions.
++Using one of these will result in an error from the linker.
++<BR><BR>
++<DT><B>-ar</B>
++<DD>Create an archive (a static library) instead of a program.  The resulting
++file will have an <CODE>.a</CODE> ending.
++<BR><BR>
++<DT><B>-bsr</B>
++<DD>This option is ignored for compatibility.
++</DL>
++In addition to these options, the <CODE>tigcc</CODE> program also accepts
++most of the <A HREF="$$INFOLINK(ld/invocation)">linker options</A>.
+diff -Nur comopts/SEC4.hss fix/comopts/SEC4.hss
+--- comopts/SEC4.hss	2003-09-17 23:34:42.000000000 +0200
++++ fix/comopts/SEC4.hss	2003-09-16 14:24:02.000000000 +0200
+@@ -9,76 +9,25 @@
+ compiled, and those specified as input) into an executable file.
+ <BR><BR>
+ For any given input file, the file name suffix determines what kind of
+-compilation is done:
++compilation is done (some of these apply only to TIGCC):
+ <DL>
+ <DT><B><I>file</I>.c</B>
+ <DD>C source code which must be preprocessed.
+ <BR><BR>
+-<DT><B><I>file</I>.i</B>
+-<DD>C source code which should not be preprocessed.
+-<BR><BR>
+-<DT><B><I>file</I>.ii</B>
+-<DD>C++ source code which should not be preprocessed.
+-<BR><BR>
+-<DT><B><I>file</I>.m</B>
+-<DD>Objective-C source code.  Note that you must link with the library
+-<CODE>libobjc.a</CODE> to make an Objective-C program work.
+-<BR><BR>
+-<DT><B><I>file</I>.mi</B>
+-<DD>Objective-C source code which should not be preprocessed.
+-<BR><BR>
+-<DT><B><I>file</I>.h</B>
+-<DD>C header file (not to be compiled or linked).
+-<BR><BR>
+-<DT><B><I>file</I>.cc</B>
+-<BR><B><I>file</I>.cp</B>
+-<BR><B><I>file</I>.cxx</B>
+-<BR><B><I>file</I>.cpp</B>
+-<BR><B><I>file</I>.c++</B>
+-<BR><B><I>file</I>.C</B>
+-<DD>C++ source code which must be preprocessed.  Note that in <CODE>.cxx</CODE>,
+-the last two letters must both be literally <CODE>x</CODE>.  Likewise,
+-<CODE>.C</CODE> refers to a literal capital C.
+-<BR><BR>
+-<DT><B><I>file</I>.f</B>
+-<BR><B><I>file</I>.for</B>
+-<BR><B><I>file</I>.FOR</B>
+-<DD>Fortran source code which should not be preprocessed.
+-<BR><BR>
+-<DT><B><I>file</I>.F</B>
+-<BR><B><I>file</I>.fpp</B>
+-<BR><B><I>file</I>.FPP</B>
+-<DD>Fortran source code which must be preprocessed (with the traditional
+-preprocessor).
+-<BR><BR>
+-<DT><B><I>file</I>.r</B>
+-<DD>Fortran source code which must be preprocessed with a RATFOR
+-preprocessor (not included with GCC).
+-<BR><BR>
+-See <A HREF="$$INFOLINK(Overall Options,,Options Controlling the Kind of Output, g77, Using and Porting GNU Fortran)">Options Controlling the Kind of Output, g77,
+-Using and Porting GNU Fortran</A> for more details of the handling of
+-Fortran input files.
+-<BR><BR>
+-<DT><B><I>file</I>.ads</B>
+-<DD>Ada source code file which contains a library unit declaration (a
+-declaration of a package, subprogram, or generic, or a generic
+-instantiation), or a library unit renaming declaration (a package,
+-generic, or subprogram renaming declaration).  Such files are also
+-called <U>specs</U>.
+-<BR><BR>
+-<DT><B><I>file</I>.adb</B>
+-<DD>Ada source code file containing a library unit body (a subprogram or
+-package body).  Such files are also called <U>bodies</U>.
+-<BR><BR>
+ <DT><B><I>file</I>.s</B>
+-<DD>Assembler code.
++<DD>GNU Assembler code.
+ <BR><BR>
+ <DT><B><I>file</I>.S</B>
+-<DD>Assembler code which must be preprocessed.
++<DD>GNU Assembler code which must be preprocessed.
++<BR><BR>
++<DT><B><I>file</I>.asm</B>
++<DD>A68k Assembler code.
++<BR><BR>
++<DT><B><I>file</I>.o</B>
++<DD>COFF object file to be linked using <CODE>ld</CODE>.
+ <BR><BR>
+-<DT><B><I>other</I></B>
+-<DD>An object file to be fed straight into linking.
+-Any file name with no recognized suffix is treated this way.
++<DT><B><I>file</I>.a</B>
++<DD>Static library (function archive) to be linked using <CODE>ld</CODE>.
+ </DL>
+ You can specify the input language explicitly with the <B>'-x'</B> option:
+ <DL>
+@@ -87,7 +36,9 @@
+ (rather than letting the compiler choose a default based on the file
+ name suffix).  This option applies to all following input files until
+ the next <B>'-x'</B> option.  Possible values for <I>language</I> are:
+-<PRE>c  c-header  cpp-output
++<BR>
++<CODE>
++c  c-header  cpp-output
+ c++  c++-cpp-output
+ objective-c  objc-cpp-output
+ assembler  assembler-with-cpp
+@@ -95,7 +46,7 @@
+ f77  f77-cpp-input  ratfor
+ java
+ treelang
+-</PRE>
++</CODE>
+ <DT><B>-x none</B>
+ <DD>Turn off any specification of a language, so that subsequent files are
+ handled according to their file name suffixes (as they are if <B>'-x'</B>
+diff -Nur comopts/SEC44.hss fix/comopts/SEC44.hss
+--- comopts/SEC44.hss	2003-09-17 23:38:42.000000000 +0200
++++ fix/comopts/SEC44.hss	2003-09-17 23:32:44.000000000 +0200
+@@ -7,8 +7,8 @@
+ <BR><BR>
+ Most of them have both positive and negative forms; the negative form
+ of <B>'-ffoo'</B> would be <B>'-fno-foo'</B>.  In the table below, only
+-one of the forms is listed - the one which is not the default.  You
+-can figure out the other form by either removing <CODE>no-</CODE> or adding
++one of the forms is listed: the one which is not the default.  You
++can figure out the other form by either removing <B>'no-'</B> or adding
+ it.
+ <DL>
+ <DT><B>-fbounds-check</B>
+@@ -23,30 +23,19 @@
+ <BR><BR>
+ <DT><B>-fexceptions</B>
+ <DD>Enable exception handling.  Generates extra code needed to propagate
+-exceptions.  For some targets, this implies GCC will generate frame
+-unwind information for all functions, which can produce significant data
+-size overhead, although it does not affect execution.  If you do not
+-specify this option, GCC will enable it by default for languages like
+-C++ which normally require exception handling, and disable it for
+-languages like C that do not normally require it.  However, you may need
+-to enable this option when compiling C code that needs to interoperate
+-properly with exception handlers written in C++.  You may also wish to
+-disable this option if you are compiling older C++ programs that don't
+-use exception handling.
++exceptions.  In principle, you may need to enable this option when compiling
++C code that needs to interoperate properly with exception handlers, but this
++is useless in TIGCC, as the TIOS uses its own exception handling mechanism
++(see <A HREF="$$LINK(error.h/)">error.h</A>).
+ <BR><BR>
+ <DT><B>-fnon-call-exceptions</B>
+ <DD>Generate code that allows trapping instructions to throw exceptions.
+-Note that this requires platform-specific runtime support that does
+-not exist everywhere.  Moreover, it only allows <I>trapping</I>
+-instructions to throw exceptions, i.e. memory references or floating
+-point instructions.  It does not allow exceptions to be thrown from
+-arbitrary signal handlers such as <CODE>SIGALRM</CODE>.
++Probably useless in TIGCC.
+ <BR><BR>
+ <DT><B>-funwind-tables</B>
+ <DD>Similar to <B>'-fexceptions'</B>, except that it will just generate any needed
+ static data, but will not affect the generated code in any other way.
+-You will normally not enable this option; instead, a language processor
+-that needs this handling would enable it on your behalf.
++Probably useless in TIGCC.
+ <BR><BR>
+ <DT><B>-fasynchronous-unwind-tables</B>
+ <DD>Generate unwind table in dwarf2 format, if supported by target machine.  The
+@@ -77,11 +66,7 @@
+ <B>'-fpcc-struct-return'</B>.
+ <BR><BR>
+ If you specify neither <B>'-fpcc-struct-return'</B> nor
+-<B>'-freg-struct-return'</B>, GCC defaults to whichever convention is
+-standard for the target.  If there is no standard convention, GCC
+-defaults to <B>'-fpcc-struct-return'</B>, except on targets where GCC is
+-the principal compiler.  In those cases, we can choose the standard, and
+-we chose the more efficient register return alternative.
++<B>'-freg-struct-return'</B>, TIGCC defaults to <B>'-freg-struct-return'</B>.
+ <BR><BR>
+ <B>Warning:</B> code compiled with the <B>'-freg-struct-return'</B>
+ switch is not binary compatible with code compiled with the
+@@ -99,6 +84,7 @@
+ <BR><BR>
+ <DT><B>-fshort-double</B>
+ <DD>Use the same size for <CODE>double</CODE> as for <CODE>float</CODE>.
++This is always true in TIGCC, regardless of this switch.
+ <BR><BR>
+ <B>Warning:</B> the <B>'-fshort-double'</B> switch causes GCC to generate
+ code that is not binary compatible with code generated without that switch.
+@@ -121,25 +107,21 @@
+ exists in one copy per process.
+ <BR><BR>
+ <DT><B>-fno-common</B>
+-<DD>In C, allocate even uninitialized global variables in the data section of the
++<DD>Allocate even uninitialized global variables in the data section of the
+ object file, rather than generating them as common blocks.  This has the
+ effect that if the same variable is declared (without <CODE>extern</CODE>) in
+ two different compilations, you will get an error when you link them.
+ The only reason this might be useful is if you wish to verify that the
+-program will work on other systems which always work this way.
++program will work on other systems which always work this way.  Currently,
++TIGCC does not support this option, since it needs common symbols to
++communicate with the linker.
+ <BR><BR>
+ <DT><B>-fno-ident</B>
+ <DD>Ignore the <CODE>#ident</CODE> directive.
+ <BR><BR>
+ <DT><B>-fno-gnu-linker</B>
+-<DD>Do not output global initializations (such as C++ constructors and
+-destructors) in the form used by the GNU linker (on systems where the GNU
+-linker is the standard method of handling them).  Use this option when
+-you want to use a non-GNU linker, which also requires using the
+-<CODE>collect2</CODE> program to make sure the system linker includes
+-constructors and destructors.  (<CODE>collect2</CODE> is included in the GCC
+-distribution.)  For systems which <I>must</I> use <CODE>collect2</CODE>, the
+-compiler driver <CODE>gcc</CODE> is configured to do this automatically.
++<DD>Do not output global initializations in the form used by the GNU linker
++Useless in TIGCC, because global initializations are not implemented.
+ <BR><BR>
+ <DT><B>-finhibit-size-directive</B>
+ <DD>Don't output a <CODE>.size</CODE> assembler directive, or anything else that
+@@ -171,39 +153,21 @@
+ <BR><BR>
+ <DT><B>-fpic</B>
+ <DD>Generate position-independent code (PIC) suitable for use in a shared
+-library, if supported for the target machine.  Such code accesses all
+-constant addresses through a global offset table (GOT).  The dynamic
+-loader resolves the GOT entries when the program starts (the dynamic
+-loader is not part of GCC; it is part of the operating system).  If
+-the GOT size for the linked executable exceeds a machine-specific
+-maximum size, you get an error message from the linker indicating that
+-<B>'-fpic'</B> does not work; in that case, recompile with <B>'-fPIC'</B>
+-instead.  (These maximums are 16k on the m88k, 8k on the SPARC, and 32k
+-on the m68k and RS/6000.  The 386 has no such limit.)
+-<BR><BR>
+-Position-independent code requires special support, and therefore works
+-only on certain machines.  For the 386, GCC supports PIC for System V
+-but not for the Sun 386i.  Code generated for the IBM RS/6000 is always
+-position-independent.
++library.  However, it requires special support of the operating
++system (like dynamic loaders, etc.).  So forget it with the TIOS; maybe
++some future ASM shells will support this.  At the moment, forget this
++nice option.
+ <BR><BR>
+ <DT><B>-fPIC</B>
+ <DD>If supported for the target machine, emit position-independent code,
+ suitable for dynamic linking and avoiding any limit on the size of the
+-global offset table.  This option makes a difference on the m68k, m88k,
+-and the SPARC.
+-<BR><BR>
+-Position-independent code requires special support, and therefore works
+-only on certain machines.
++global offset table.
+ <BR><BR>
+ <DT><B>-ffixed-<I>reg</I></B>
+ <DD>Treat the register named <I>reg</I> as a fixed register; generated code
+ should never refer to it (except perhaps as a stack pointer, frame
+ pointer or in some other fixed role).
+ <BR><BR>
+-<I>reg</I> must be the name of a register.  The register names accepted
+-are machine-specific and are defined in the <CODE>REGISTER_NAMES</CODE>
+-macro in the machine description macro file.
+-<BR><BR>
+ This flag does not have a negative form, because it specifies a
+ three-way choice.
+ <BR><BR>
+@@ -236,6 +200,12 @@
+ This flag does not have a negative form, because it specifies a
+ three-way choice.
+ <BR><BR>
++<DT><B>-freg-relative-<I>reg</I></B><DD>
++Refer to all labels only in relation to the register specified in
++<I>reg</I>.  This can make the code somewhat smaller, but you should use this
++option with care as it is not fully supported.
++This option is implemented only in TIGCC.
++<BR><BR>
+ <DT><B>-fpack-struct</B>
+ <DD>Pack all structure members together without holes.
+ <BR><BR>
+@@ -280,14 +250,8 @@
+ <BR><BR>
+ <DT><B>-fstack-check</B>
+ <DD>Generate code to verify that you do not go beyond the boundary of the
+-stack.  You should specify this flag if you are running in an
+-environment with multiple threads, but only rarely need to specify it in
+-a single-threaded environment since stack overflow is automatically
+-detected on nearly all systems if there is only one stack.
+-<BR><BR>
+-Note that this switch does not actually cause checking to be done; the
+-operating system must do that.  The switch causes generation of code
+-to ensure that the operating system sees the stack being extended.
++stack.  As this requires support from the operating system, it probably does
++not work in TIGCC.
+ <BR><BR>
+ <DT><B>-fstack-limit-register=<I>reg</I></B>
+ <BR><B>-fstack-limit-symbol=<I>sym</I></B>
+@@ -309,14 +273,14 @@
+ <BR><B>-fargument-noalias-global</B>
+ <DD>Specify the possible relationships among parameters and between
+ parameters and global data.
+-<BR><BR>
+-<B>'-fargument-alias'</B> specifies that arguments (parameters) may
+-alias each other and may alias global storage.*
+-<B>'-fargument-noalias'</B> specifies that arguments do not alias
+-each other, but may alias global storage.*
+-<B>'-fargument-noalias-global'</B> specifies that arguments do not
+-alias each other and do not alias global storage.
+-<BR><BR>
++<UL>
++<LI><B>'-fargument-alias'</B> specifies that arguments (parameters) may
++alias each other and may alias global storage.</LI>
++<LI><B>'-fargument-noalias'</B> specifies that arguments do not alias
++each other, but may alias global storage.</LI>
++<LI><B>'-fargument-noalias-global'</B> specifies that arguments do not
++alias each other and do not alias global storage.</LI>
++</UL>
+ Each language will automatically use whatever option is required by
+ the language standard.  You should not need to use these options yourself.
+ <BR><BR>
+@@ -328,13 +292,14 @@
+ <B>Warning:</B> the <B>'-fleading-underscore'</B> switch causes GCC to
+ generate code that is not binary compatible with code generated without that
+ switch.  Use it to conform to a non-default application binary interface.
+-Not all targets provide complete support for this switch.
+ <BR><BR>
+ <DT><B>-ftls-model=<I>model</I></B>
+-<DD>Alter the thread-local storage model to be used (see <A HREF="$$INFOLINK(Thread-Local)">Thread-Local</A>).
++<DD>Alter the thread-local storage model to be used.
+ The <I>model</I> argument should be one of <CODE>global-dynamic</CODE>,
+ <CODE>local-dynamic</CODE>, <CODE>initial-exec</CODE> or <CODE>local-exec</CODE>.
+ <BR><BR>
+ The default without <B>'-fpic'</B> is <CODE>initial-exec</CODE>; with
+ <B>'-fpic'</B> the default is <CODE>global-dynamic</CODE>.
++<BR><BR>
++Useless in TIGCC, as threads are not supported.
+ </DL>
+diff -Nur comopts/SEC45.hss fix/comopts/SEC45.hss
+--- comopts/SEC45.hss	2003-09-17 23:38:50.000000000 +0200
++++ fix/comopts/SEC45.hss	2003-09-16 14:37:54.000000000 +0200
+@@ -8,8 +8,7 @@
+ aspects of the compilation environment.
+ <BR><BR>
+ Note that you can also specify places to search using options such as
+-<B>'-B'</B>, <B>'-I'</B> and <B>'-L'</B> (see <A HREF="$$INFOLINK(Directory Options)">, Controlling the Compilation Driver <CODE>gcc</CODE>, gccint,
+-GNU Compiler Collection (GCC) Internals</A>.
++<B>'-B'</B>, <B>'-I'</B> and <B>'-L'</B> (see <A HREF="$$LINK(SEC14)">Options for Directory Search</A>).
+ <DL>
+ <DT><B>LANG</B>
+ <BR><B>LC_CTYPE</B>
+@@ -63,16 +62,13 @@
+ <BR><BR>
+ Other prefixes specified with <B>'-B'</B> take precedence over this prefix.
+ <BR><BR>
+-This prefix is also used for finding files such as <CODE>crt0.o</CODE> that are
+-used for linking.
+-<BR><BR>
+ In addition, the prefix is used in an unusual way in finding the
+ directories to search for header files.  For each of the standard
+ directories whose name normally begins with <CODE>/usr/local/lib/gcc-lib</CODE>
+ (more precisely, with the value of <CODE>GCC_INCLUDE_DIR</CODE>), GCC tries
+ replacing that beginning with the specified prefix to produce an
+-alternate directory name.  Thus, with <B>'-Bfoo/'</B>, GCC will search
+-<CODE>foo/bar</CODE> where it would normally search <CODE>/usr/local/lib/bar</CODE>.
++alternate directory name.  Thus, with <B>'-B<I>foo</I>/'</B>, GCC will search
++<CODE><I>foo</I>/<I>bar</I></CODE> where it would normally search <CODE>/usr/local/lib/<I>bar</I></CODE>.
+ These alternate directories are searched first; the standard directories
+ come next.
+ <BR><BR>
+@@ -84,7 +80,7 @@
+ <BR><BR>
+ <DT><B>LIBRARY_PATH</B>
+ <DD>The value of <CODE>LIBRARY_PATH</CODE> is a colon-separated list of
+-directories, much like <CODE>PATH</CODE>.  When configured as a native compiler,
++directories, much like <CODE>PATH</CODE>.  When configured as a native compiler (which TIGCC is <I>not</I>),
+ GCC tries the directories thus specified when searching for special
+ linker files, if it can't find them using <CODE>GCC_EXEC_PREFIX</CODE>.  Linking
+ using GCC also uses these directories when searching for ordinary
+@@ -94,7 +90,7 @@
+ <DT><B>LANG</B>
+ <DD>This variable is used to pass locale information to the compiler.  One way in
+ which this information is used is to determine the character set to be used
+-when character literals, string literals and comments are parsed in C and C++.
++when character literals, string literals and comments are parsed.
+ When the compiler is configured to allow multibyte characters,
+ the following values for <CODE>LANG</CODE> are recognized:
+ <BR><BR><DL>
+@@ -116,8 +112,6 @@
+ <DL>
+ <DT><B>CPATH</B>
+ <BR><B>C_INCLUDE_PATH</B>
+-<BR><B>CPLUS_INCLUDE_PATH</B>
+-<BR><B>OBJC_INCLUDE_PATH</B>
+ <DD>Each variable's value is a list of directories separated by a special
+ character, much like <CODE>PATH</CODE>, in which to look for header files.
+ The special character, <CODE>PATH_SEPARATOR</CODE>, is target-dependent and
+@@ -126,11 +120,9 @@
+ <BR><BR>
+ <CODE>CPATH</CODE> specifies a list of directories to be searched as if
+ specified with <B>'-I'</B>, but after any paths given with <B>'-I'</B>
+-options on the command line.  This environment variable is used
+-regardless of which language is being preprocessed.
++options on the command line.
+ <BR><BR>
+-The remaining environment variables apply only when preprocessing the
+-particular language indicated.  Each specifies a list of directories
++<CODE>C_INCLUDE_PATH</CODE> specifies a list of directories
+ to be searched as if specified with <B>'-isystem'</B>, but after any
+ paths given with <B>'-isystem'</B> options on the command line.
+ <BR><BR>
+@@ -140,8 +132,6 @@
+ <CODE>CPATH</CODE> is <CODE>:/special/include</CODE>, that has the same
+ effect as <CODE>-I.&nbsp;-I/special/include</CODE>.
+ <BR><BR>
+-See also <A HREF="$$INFOLINK(Search Path)">Search Path</A>.
+-<BR><BR>
+ <DT><B>DEPENDENCIES_OUTPUT</B>
+ <DD>If this variable is set, its value specifies how to output
+ dependencies for Make based on the non-system header files processed
+@@ -156,15 +146,13 @@
+ <BR><BR>
+ In other words, this environment variable is equivalent to combining
+ the options <B>'-MM'</B> and <B>'-MF'</B>
+-(see <A HREF="$$INFOLINK(cpp/SEC44)">Invocation</A>),
+-(see <A HREF="$$INFOLINK(Preprocessor Options)">Preprocessor Options</A>),
+-with an optional <B>'-MT'</B> switch too.
++(see <A HREF="$$LINK(SEC11)">Options Controlling the Preprocessor</A>),
++with an optional <B>'-MT'</B> switch, too.
+ <BR><BR>
+ <DT><B>SUNPRO_DEPENDENCIES</B>
+ <DD>This variable is the same as <CODE>DEPENDENCIES_OUTPUT</CODE> (see above),
+ except that system header files are not ignored, so it implies
+-<B>'-M'</B> rather than <B>'-MM'</B>.  However, the dependence on the
+-main input file is omitted.
+-See <A HREF="$$INFOLINK(cpp/SEC44)">Invocation</A>.
+-See <A HREF="$$INFOLINK(Preprocessor Options)">Preprocessor Options</A>.
++<B>'-M'</B> rather than <B>'-MM'</B>
++(see <A HREF="$$LINK(SEC11)">Options Controlling the Preprocessor</A>).
++However, the dependence on the main input file is omitted.
+ </DL>
+diff -Nur comopts/SEC6.hss fix/comopts/SEC6.hss
+--- comopts/SEC6.hss	2003-09-17 23:34:44.000000000 +0200
++++ fix/comopts/SEC6.hss	2003-09-16 15:46:48.000000000 +0200
+@@ -2,33 +2,28 @@
+ Title=Options Controlling C Dialect
+ 
+ [Top]
+-The following options control the dialect of C (or languages derived
+-from C, such as C++ and Objective-C) that the compiler accepts:
++The following options control the dialect of C that the compiler accepts:
+ <DL>
+ <DT><B>-ansi</B>
+-<DD>In C mode, support all ISO C90 programs.  In C++ mode,
+-remove GNU extensions that conflict with ISO C++.
+-<BR><BR>
+-This turns off certain features of GCC that are incompatible with ISO
+-C90 (when compiling C code), or of standard C++ (when compiling C++ code),
++<DD>Support all ISO C89 programs.
++This turns off certain features of GCC that are incompatible with ISO C89,
+ such as the <CODE>asm</CODE> and <CODE>typeof</CODE> keywords, and
+-predefined macros such as <CODE>unix</CODE> and <CODE>vax</CODE> that identify the
++some predefined macros that identify the
+ type of system you are using.  It also enables the undesirable and
+-rarely used ISO trigraph feature.  For the C compiler,
+-it disables recognition of C++ style <CODE>//</CODE> comments as well as
+-the <CODE>inline</CODE> keyword.
++rarely used ISO trigraph feature, and disables recognition of C++ style
++<CODE>//</CODE> comments as well as the <CODE>inline</CODE> keyword.
+ <BR><BR>
+ The alternate keywords <CODE>__asm__</CODE>, <CODE>__extension__</CODE>,
+ <CODE>__inline__</CODE> and <CODE>__typeof__</CODE> continue to work despite
+ <B>'-ansi'</B>.  You would not want to use them in an ISO C program, of
+ course, but it is useful to put them in header files that might be included
+ in compilations done with <B>'-ansi'</B>.  Alternate predefined macros
+-such as <CODE>__unix__</CODE> and <CODE>__vax__</CODE> are also available, with or
++such as <CODE>__unix__</CODE> are also available, with or
+ without <B>'-ansi'</B>.
+ <BR><BR>
+ The <B>'-ansi'</B> option does not cause non-ISO programs to be
+ rejected gratuitously.  For that, <B>'-pedantic'</B> is required in
+-addition to <B>'-ansi'</B>.  See <A HREF="$$INFOLINK(Warning Options)">Warning Options</A>.
++addition to <B>'-ansi'</B>.  See <A HREF="$$LINK(SEC8)">Warning Options</A>.
+ <BR><BR>
+ The macro <CODE>__STRICT_ANSI__</CODE> is predefined when the <B>'-ansi'</B>
+ option is used.  Some header files may notice this macro and refrain
+@@ -37,14 +32,16 @@
+ programs that might use these names for other things.
+ <BR><BR>
+ Functions which would normally be built in but do not have semantics
+-defined by ISO C (such as <CODE>alloca</CODE> and <CODE>ffs</CODE>) are not built-in
+-functions with <B>'-ansi'</B> is used.  See <A HREF="$$INFOLINK(Other Builtins,,Other built-in functions provided by GCC)">Other
++defined by ISO C (such as <A HREF="$$LINK(alloc.h/alloca)">alloca</A>) are not built-in
++functions with <B>'-ansi'</B> is used.  See <A HREF="$$INFOLINK(gnuexts/SEC104)">Other
+ built-in functions provided by GCC</A> for details of the functions
+ affected.
+ <BR><BR>
+-<DT><B>-std=</B>
+-<DD>Determine the language standard.  This option is currently only
+-supported when compiling C or C++.  A value for this option must be
++<B>Note:</B> At the moment, the TIGCC library depends heavily on GNU C extensions,
++so you cannot use the <B>'-ansi'</B> switch in TIGCC.
++<BR><BR>
++<DT><B>-std=<I>standard</I></B>
++<DD>Determine the language standard.  A value for <I>standard</I> must be provided;
+ provided; possible values are
+ <BR><BR><DL>
+ <DT><B>c89</B>
+@@ -69,13 +66,6 @@
+ <BR><B>gnu9x</B>
+ <DD>ISO C99 plus GNU extensions.  When ISO C99 is fully implemented in GCC,
+ this will become the default.  The name <CODE>gnu9x</CODE> is deprecated.
+-<BR><BR>
+-<DT><B>c++98</B>
+-<DD>The 1998 ISO C++ standard plus amendments.
+-<BR><BR>
+-<DT><B>gnu++98</B>
+-<DD>The same as <B>'-std=c++98'</B> plus GNU extensions.  This is the
+-default for C++ code.
+ </DL><BR>
+ Even when this option is not specified, you can still use some of the
+ features of newer standards in so far as they do not conflict with
+@@ -87,9 +77,6 @@
+ but are in the specified version (for example, <CODE>//</CODE> comments and
+ the <CODE>inline</CODE> keyword in ISO C99) are not disabled.
+ <BR><BR>
+-See <A HREF="$$INFOLINK(Standards,,Language Standards Supported by GCC)">Language Standards Supported by GCC</A> for details of
+-these standard versions.
+-<BR><BR>
+ <DT><B>-aux-info <I>filename</I></B>
+ <DD>Output to the given filename prototyped declarations for all functions
+ declared and/or defined in a translation unit, including those in header
+@@ -111,31 +98,23 @@
+ the keywords <CODE>__asm__</CODE>, <CODE>__inline__</CODE> and <CODE>__typeof__</CODE>
+ instead.  <B>'-ansi'</B> implies <B>'-fno-asm'</B>.
+ <BR><BR>
+-In C++, this switch only affects the <CODE>typeof</CODE> keyword, since
+-<CODE>asm</CODE> and <CODE>inline</CODE> are standard keywords.  You may want to
+-use the <B>'-fno-gnu-keywords'</B> flag instead, which has the same
+-effect.  In C99 mode (<B>'-std=c99'</B> or <B>'-std=gnu99'</B>), this
+-switch only affects the <CODE>asm</CODE> and <CODE>typeof</CODE> keywords, since
+-<CODE>inline</CODE> is a standard keyword in ISO C99.
+-<BR><BR>
+ <DT><B>-fno-builtin</B>
+ <BR><B>-fno-builtin-<I>function</I></B>
+ <DD>Don't recognize built-in functions that do not begin with
+-<CODE>__builtin_</CODE> as prefix.  See <A HREF="$$INFOLINK(Other Builtins,,Other built-in functions provided by GCC)">Other built-in
++<CODE>__builtin_</CODE> as prefix.  See <A HREF="$$INFOLINK(gnuexts/SEC104)">Other built-in
+ functions provided by GCC</A> for details of the functions affected,
+ including those which are not built-in functions when <B>'-ansi'</B> or
+ <B>'-std'</B> options for strict ISO C conformance are used because they
+ do not have an ISO standard meaning.
+ <BR><BR>
+ GCC normally generates special code to handle certain built-in functions
+-more efficiently; for instance, calls to <CODE>alloca</CODE> may become single
+-instructions that adjust the stack directly, and calls to <CODE>memcpy</CODE>
+-may become inline copy loops.  The resulting code is often both smaller
++more efficiently; for instance, calls to <A HREF="$$LINK(alloc.h/alloca)">alloca</A> may become single
++instructions that adjust the stack directly.  The resulting code is often both smaller
+ and faster, but since the function calls no longer appear as such, you
+ cannot set a breakpoint on those calls, nor can you change the behavior
+ of the functions by linking with a different library.
+ <BR><BR>
+-With the <B>'-fno-builtin-<I>function</I>'</B> option
++With the <B>'-fno-builtin-<I>function</I>'</B> option,
+ only the built-in function <I>function</I> is
+ disabled.  <I>function</I> must not begin with <CODE>__builtin_</CODE>.  If a
+ function is named this is not built-in in this version of GCC, this
+@@ -153,6 +132,9 @@
+ type of <CODE>int</CODE>.  Examples are nearly everything except a kernel.
+ This is equivalent to <B>'-fno-freestanding'</B>.
+ <BR><BR>
++Although TI calculators are not really hosted environments, <B>'-fhosted'</B>
++is kept as the default.
++<BR><BR>
+ <DT><B>-ffreestanding</B>
+ <DD>Assert that compilation takes place in a freestanding environment.  This
+ implies <B>'-fno-builtin'</B>.  A freestanding environment
+@@ -160,22 +142,20 @@
+ not necessarily be at <CODE>main</CODE>.  The most obvious example is an OS kernel.
+ This is equivalent to <B>'-fno-hosted'</B>.
+ <BR><BR>
+-See <A HREF="$$INFOLINK(Standards,,Language Standards Supported by GCC)">Language Standards Supported by GCC</A> for details of
+-freestanding and hosted environments.
+-<BR><BR>
+ <DT><B>-fms-extensions</B>
+ <DD>Accept some non-standard constructs used in Microsoft header files.
+ <BR><BR>
+ <DT><B>-trigraphs</B>
+ <DD>Support ISO C trigraphs.  The <B>'-ansi'</B> option (and <B>'-std'</B>
+ options for strict ISO C conformance) implies <B>'-trigraphs'</B>.
++See <A HREF="$$LINK(SEC11)">Options Controlling the Preprocessor</A> for more information.
+ <BR><BR>
+ <DT><B>-no-integrated-cpp</B>
+ <DD>Performs a compilation in two passes: preprocessing and compiling.  This
+-option allows a user supplied &quot;cc1&quot;, &quot;cc1plus&quot;, or &quot;cc1obj&quot; via the
++option allows a user supplied &quot;cc1&quot; via the
+ <B>'-B'</B> option. The user supplied compilation step can then add in
+ an additional preprocessing step after normal preprocessing but before
+-compiling. The default is to use the integrated cpp (internal cpp)
++compiling. The default is to use the integrated preprocessor.
+ <BR><BR>
+ The semantics of this option will change if &quot;cc1&quot;, &quot;cc1plus&quot;, and
+ &quot;cc1obj&quot; are merged.
+@@ -184,20 +164,15 @@
+ <BR><B>-traditional-cpp</B>
+ <DD>Formerly, these options caused GCC to attempt to emulate a pre-standard
+ C compiler.  They are now only supported with the <B>'-E'</B> switch.
+-The preprocessor continues to support a pre-standard mode.  See the GNU
+-CPP manual for details.
++The preprocessor continues to support a <A HREF="$$INFOLINK(CPP/SEC70)">pre-standard mode</A>.
+ <BR><BR>
+ <DT><B>-fcond-mismatch</B>
+ <DD>Allow conditional expressions with mismatched types in the second and
+-third arguments.  The value of such an expression is void.  This option
+-is not supported for C++.
++third arguments.  The value of such an expression is void.
+ <BR><BR>
+ <DT><B>-funsigned-char</B>
+-<DD>Let the type <CODE>char</CODE> be unsigned, like <CODE>unsigned&nbsp;char</CODE>.
+-<BR><BR>
+-Each kind of machine has a default for what <CODE>char</CODE> should
+-be.  It is either like <CODE>unsigned&nbsp;char</CODE> by default or like
+-<CODE>signed&nbsp;char</CODE> by default.
++<DD>Let the type <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> be unsigned, like <CODE>unsigned&nbsp;char</CODE>.
++In TIGCC, the default is <CODE>signed char</CODE>.
+ <BR><BR>
+ Ideally, a portable program should always use <CODE>signed&nbsp;char</CODE> or
+ <CODE>unsigned&nbsp;char</CODE> when it depends on the signedness of an object.
+@@ -211,7 +186,7 @@
+ is always just like one of those two.
+ <BR><BR>
+ <DT><B>-fsigned-char</B>
+-<DD>Let the type <CODE>char</CODE> be signed, like <CODE>signed&nbsp;char</CODE>.
++<DD>Let the type <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> be signed, like <CODE>signed&nbsp;char</CODE>.
+ <BR><BR>
+ Note that this is equivalent to <B>'-fno-unsigned-char'</B>, which is
+ the negative form of <B>'-funsigned-char'</B>.  Likewise, the option
+diff -Nur comopts/SEC8.hss fix/comopts/SEC8.hss
+--- comopts/SEC8.hss	2003-09-17 23:35:04.000000000 +0200
++++ fix/comopts/SEC8.hss	2003-09-16 16:11:20.000000000 +0200
+@@ -14,22 +14,21 @@
+ two forms, whichever is not the default.
+ <BR><BR>
+ The following options control the amount and kinds of warnings produced
+-by GCC; for further, language-specific options also refer to
+-<A HREF="$$INFOLINK(C++ Dialect Options)">C++ Dialect Options</A> and <A HREF="$$INFOLINK(Objective-C Dialect Options)">Objective-C Dialect Options</A>.
++by GCC.
+ <DL>
+ <DT><B>-fsyntax-only</B>
+ <DD>Check the code for syntax errors, but don't do anything beyond that.
+ <BR><BR>
+ <DT><B>-pedantic</B>
+-<DD>Issue all the warnings demanded by strict ISO C and ISO C++;
++<DD>Issue all the warnings demanded by strict ISO C;
+ reject all programs that use forbidden extensions, and some other
+-programs that do not follow ISO C and ISO C++.  For ISO C, follows the
++programs that do not follow ISO C.  This option follows the
+ version of the ISO C standard specified by any <B>'-std'</B> option used.
+ <BR><BR>
+-Valid ISO C and ISO C++ programs should compile properly with or without
++Valid ISO C programs should compile properly with or without
+ this option (though a rare few will require <B>'-ansi'</B> or a
+ <B>'-std'</B> option specifying the required version of ISO C).  However,
+-without this option, certain GNU extensions and traditional C and C++
++without this option, certain GNU extensions and traditional C
+ features are supported as well.  With this option, they are rejected.
+ <BR><BR>
+ <B>'-pedantic'</B> does not cause warning messages for use of the
+@@ -47,7 +46,7 @@
+ <BR><BR>
+ A feature to report any failure to conform to ISO C might be useful in
+ some instances, but would require considerable additional work and would
+-be quite different from <B>'-pedantic'</B>.  We don't have plans to
++be quite different from <B>'-pedantic'</B>.  The GNU team doesn't have plans to
+ support such a feature in the near future.
+ <BR><BR>
+ Where the standard specified with <B>'-std'</B> represents a GNU
+@@ -68,10 +67,10 @@
+ <DD>Inhibit all warning messages.
+ <BR><BR>
+ <DT><B>-Wno-import</B>
+-<DD>Inhibit warning messages about the use of <CODE>#import</CODE>.
++<DD>Inhibit warning messages about the use of <CODE><A HREF="$$INFOLINK(cpp/SEC84)">#import</A></CODE>.
+ <BR><BR>
+ <DT><B>-Wchar-subscripts</B>
+-<DD>Warn if an array subscript has type <CODE>char</CODE>.  This is a common cause
++<DD>Warn if an array subscript has type <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE>.  This is a common cause
+ of error, as programmers often forget that this type is signed on some
+ machines.
+ <BR><BR>
+@@ -80,50 +79,26 @@
+ comment, or whenever a Backslash-Newline appears in a <CODE>//</CODE> comment.
+ <BR><BR>
+ <DT><B>-Wformat</B>
+-<DD>Check calls to <CODE>printf</CODE> and <CODE>scanf</CODE>, etc., to make sure that
++<DD>Check calls to <A HREF="$$LINK(stdio.h/printf)">printf</A> and <A HREF="$$LINK(stdio.h/scanf)">scanf</A>, etc., to make sure that
+ the arguments supplied have types appropriate to the format string
+ specified, and that the conversions specified in the format string make
+ sense.  This includes standard functions, and others specified by format
+-attributes (see <A HREF="$$INFOLINK(gnuexts/SEC85)">Function Attributes</A>), in the <CODE>printf</CODE>,
+-<CODE>scanf</CODE>, <CODE>strftime</CODE> and <CODE>strfmon</CODE> (an X/Open extension,
+-not in the C standard) families.
+-<BR><BR>
+-The formats are checked against the format features supported by GNU
+-libc version 2.2.  These include all ISO C90 and C99 features, as well
+-as features from the Single Unix Specification and some BSD and GNU
+-extensions.  Other library implementations may not support all these
+-features; GCC does not support warning about features that go beyond a
+-particular library's limitations.  However, if <B>'-pedantic'</B> is used
+-with <B>'-Wformat'</B>, warnings will be given about format features not
+-in the selected standard version (but not for <CODE>strfmon</CODE> formats,
+-since those are not in any version of the C standard).  See <A HREF="$$LINK(SEC6)">Options Controlling C Dialect</A>.
++attributes (see <A HREF="$$INFOLINK(gnuexts/SEC85_format)">format</A>).
+ <BR><BR>
+ Since <B>'-Wformat'</B> also checks for null format arguments for
+ several functions, <B>'-Wformat'</B> also implies <B>'-Wnonnull'</B>.
+ <BR><BR>
+ <B>'-Wformat'</B> is included in <B>'-Wall'</B>.  For more control over some
+-aspects of format checking, the options <B>'-Wno-format-y2k'</B>,
++aspects of format checking, the options
+ <B>'-Wno-format-extra-args'</B>, <B>'-Wno-format-zero-length'</B>,
+ <B>'-Wformat-nonliteral'</B>, <B>'-Wformat-security'</B>, and
+ <B>'-Wformat=2'</B> are available, but are not included in <B>'-Wall'</B>.
+ <BR><BR>
+-<DT><B>-Wno-format-y2k</B>
+-<DD>If <B>'-Wformat'</B> is specified, do not warn about <CODE>strftime</CODE>
+-formats which may yield only a two-digit year.
+-<BR><BR>
+ <DT><B>-Wno-format-extra-args</B>
+ <DD>If <B>'-Wformat'</B> is specified, do not warn about excess arguments to a
+-<CODE>printf</CODE> or <CODE>scanf</CODE> format function.  The C standard specifies
++<A HREF="$$LINK(stdio.h/printf)">printf</A> or <A HREF="$$LINK(stdio.h/scanf)">scanf</A> format function.  The C standard specifies
+ that such arguments are ignored.
+ <BR><BR>
+-Where the unused arguments lie between used arguments that are
+-specified with <CODE>$</CODE> operand number specifications, normally
+-warnings are still given, since the implementation could not know what
+-type to pass to <CODE>va_arg</CODE> to skip the unused arguments.  However,
+-in the case of <CODE>scanf</CODE> formats, this option will suppress the
+-warning if the unused arguments are all pointers, since the Single
+-Unix Specification says that such unused arguments are allowed.
+-<BR><BR>
+ <DT><B>-Wno-format-zero-length</B>
+ <DD>If <B>'-Wformat'</B> is specified, do not warn about zero-length formats.
+ The C standard specifies that zero-length formats are allowed.
+@@ -131,12 +106,12 @@
+ <DT><B>-Wformat-nonliteral</B>
+ <DD>If <B>'-Wformat'</B> is specified, also warn if the format string is not a
+ string literal and so cannot be checked, unless the format function
+-takes its format arguments as a <CODE>va_list</CODE>.
++takes its format arguments as a <A HREF="$$LINK(stdarg.h/va_list)">va_list</A>.
+ <BR><BR>
+ <DT><B>-Wformat-security</B>
+ <DD>If <B>'-Wformat'</B> is specified, also warn about uses of format
+ functions that represent possible security problems.  At present, this
+-warns about calls to <CODE>printf</CODE> and <CODE>scanf</CODE> functions where the
++warns about calls to <A HREF="$$LINK(stdio.h/printf)">printf</A> and <A HREF="$$LINK(stdio.h/scanf)">scanf</A> functions where the
+ format string is not a string literal and there are no format arguments,
+ as in <CODE>printf&nbsp;(foo);</CODE>.  This may be a security hole if the format
+ string came from untrusted input and contains <CODE>%n</CODE>.  (This is
+@@ -165,12 +140,7 @@
+ declared.
+ <BR><BR>
+ <DT><B>-Wimplicit</B>
+-<DD>Same as <B>'-Wimplicit-int'</B> and <B>'-Wimplicit-function-declaration'</B>.
+-<BR><BR>
+-<DT><B>-Wmain</B>
+-<DD>Warn if the type of <CODE>main</CODE> is suspicious.  <CODE>main</CODE> should be a
+-function with external linkage, returning int, taking either zero
+-arguments, two, or three arguments of appropriate types.
++<DD>Same as <B>'-Wimplicit-int -Wimplicit-function-declaration'</B>.
+ <BR><BR>
+ <DT><B>-Wmissing-braces</B>
+ <DD>Warn if an aggregate or union initializer is not fully bracketed.  In
+@@ -186,7 +156,7 @@
+ often get confused about.
+ <BR><BR>
+ Also warn about constructions where there may be confusion to which
+-<CODE>if</CODE> statement an <CODE>else</CODE> branch belongs.  Here is an example of
++<CODE><A HREF="$$INFOLINK(keywords/if)">if</A></CODE> statement an <CODE><A HREF="$$INFOLINK(keywords/else)">else</A></CODE> branch belongs.  Here is an example of
+ such a case:
+ <PRE>{
+   if (a)
+@@ -198,7 +168,7 @@
+ </PRE>
+ In C, every <CODE>else</CODE> branch belongs to the innermost possible <CODE>if</CODE>
+ statement, which in this example is <CODE>if&nbsp;(b)</CODE>.  This is often not
+-what the programmer expected, as illustrated in the above example by
++what the programmer expected, as illustrated in the above example by the
+ indentation the programmer chose.  When there is the potential for this
+ confusion, GCC will issue a warning when this flag is specified.
+ To eliminate the warning, add explicit braces around the innermost
+@@ -250,27 +220,20 @@
+ result, but in general it has been found fairly effective at detecting
+ this sort of problem in programs.
+ <BR><BR>
+-The present implementation of this option only works for C programs.  A
+-future implementation may also work for C++ programs.
+-<BR><BR>
+ The C standard is worded confusingly, therefore there is some debate
+ over the precise meaning of the sequence point rules in subtle cases.
+ Links to discussions of the problem, including proposed formal
+-definitions, may be found on our readings page, at
++definitions, may be found on the GCC readings page, at
+ <A HREF="http://gcc.gnu.org/readings.html">http://gcc.gnu.org/readings.html</A>.
+ <BR><BR>
+ <DT><B>-Wreturn-type</B>
+ <DD>Warn whenever a function is defined with a return-type that defaults to
+-<CODE>int</CODE>.  Also warn about any <CODE>return</CODE> statement with no
+-return-value in a function whose return-type is not <CODE>void</CODE>.
+-<BR><BR>
+-For C++, a function without return type always produces a diagnostic
+-message, even when <B>'-Wno-return-type'</B> is specified.  The only
+-exceptions are <CODE>main</CODE> and functions defined in system headers.
++<CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.  Also warn about any <CODE>return</CODE> statement with no
++return-value in a function whose return-type is not <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE>.
+ <BR><BR>
+ <DT><B>-Wswitch</B>
+-<DD>Warn whenever a <CODE>switch</CODE> statement has an index of enumeral type
+-and lacks a <CODE>case</CODE> for one or more of the named codes of that
++<DD>Warn whenever a <CODE><A HREF="$$INFOLINK(keywords/switch)">switch</A></CODE> statement has an index of enumeral type
++and lacks a <CODE><A HREF="$$INFOLINK(keywords/case)">case</A></CODE> for one or more of the named codes of that
+ enumeration.  (The presence of a <CODE>default</CODE> label prevents this
+ warning.)  <CODE>case</CODE> labels outside the enumeration range also
+ provoke warnings when this option is used.
+@@ -288,34 +251,34 @@
+ <DT><B>-Wtrigraphs</B>
+ <DD>Warn if any trigraphs are encountered that might change the meaning of
+ the program (trigraphs within comments are not warned about).
++For more information about trigraphs, see <A HREF="$$LINK(SEC11)">Options Controlling the Preprocessor</A>.
+ <BR><BR>
+ <DT><B>-Wunused-function</B>
+ <DD>Warn whenever a static function is declared but not defined or a
+ non\-inline static function is unused.
+ <BR><BR>
++To suppress this warning, use the <CODE><A HREF="$$INFOLINK(gnuexts/SEC85_unused)">unused</A></CODE> attribute.
++<BR><BR>
+ <DT><B>-Wunused-label</B>
+ <DD>Warn whenever a label is declared but not used.
+ <BR><BR>
+-To suppress this warning use the <CODE>unused</CODE> attribute
+-(see <A HREF="$$INFOLINK(gnuexts/SEC91)">Variable Attributes</A>).
++To suppress this warning, use the <CODE><A HREF="$$INFOLINK(gnuexts/SEC91_unused)">unused</A></CODE> attribute.
+ <BR><BR>
+ <DT><B>-Wunused-parameter</B>
+ <DD>Warn whenever a function parameter is unused aside from its declaration.
+ <BR><BR>
+-To suppress this warning use the <CODE>unused</CODE> attribute
+-(see <A HREF="$$INFOLINK(gnuexts/SEC91)">Variable Attributes</A>).
++To suppress this warning, use the <CODE><A HREF="$$INFOLINK(gnuexts/SEC91_unused)">unused</A></CODE> attribute.
+ <BR><BR>
+ <DT><B>-Wunused-variable</B>
+ <DD>Warn whenever a local variable or non-constant static variable is unused
+ aside from its declaration
+ <BR><BR>
+-To suppress this warning use the <CODE>unused</CODE> attribute
+-(see <A HREF="$$INFOLINK(gnuexts/SEC91)">Variable Attributes</A>).
++To suppress this warning, use the <CODE><A HREF="$$INFOLINK(gnuexts/SEC91_unused)">unused</A></CODE> attribute.
+ <BR><BR>
+ <DT><B>-Wunused-value</B>
+ <DD>Warn whenever a statement computes a result that is explicitly not used.
+ <BR><BR>
+-To suppress this warning cast the expression to <CODE>void</CODE>.
++To suppress this warning, cast the expression to <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE>.
+ <BR><BR>
+ <DT><B>-Wunused</B>
+ <DD>All the above <B>'-Wunused'</B> options combined.
+@@ -326,7 +289,8 @@
+ <BR><BR>
+ <DT><B>-Wuninitialized</B>
+ <DD>Warn if an automatic variable is used without first being initialized or
+-if a variable may be clobbered by a <CODE>setjmp</CODE> call.
++if a variable may be clobbered by a <A HREF="$$LINK(setjmp.h/setjmp)">setjmp</A> call
++(I am not sure whether <A HREF="$$LINK(setjmp.h/setjmp)">setjmp</A> problems may be detected in TIGCC).
+ <BR><BR>
+ These warnings are possible only in optimizing compilation,
+ because they require data flow information that is computed only
+@@ -335,7 +299,7 @@
+ <BR><BR>
+ These warnings occur only for variables that are candidates for
+ register allocation.  Therefore, they do not occur for a variable that
+-is declared <CODE>volatile</CODE>, or whose address is taken, or whose size
++is declared <CODE><A HREF="$$INFOLINK(keywords/volatile)">volatile</A></CODE>, or whose address is taken, or whose size
+ is other than 1, 2, 4 or 8 bytes.  Also, they do not occur for
+ structures, unions or arrays, even when they are in registers.
+ <BR><BR>
+@@ -361,7 +325,7 @@
+   foo (x);
+ }
+ </PRE>
+-If the value of <CODE>y</CODE> is always 1, 2 or 3, then <CODE>x</CODE> is
++If the value of <I>y</I> is always 1, 2 or 3, then <I>x</I> is
+ always initialized, but GCC doesn't know this.  Here is
+ another common case:
+ <PRE>{
+@@ -371,24 +335,24 @@
+   if (change_y) y = save_y;
+ }
+ </PRE>
+-This has no bug because <CODE>save_y</CODE> is used only if it is set.
++This has no bug because <I>save_y</I> is used only if it is set.
+ <BR><BR>
+ This option also warns when a non-volatile automatic variable might be
+-changed by a call to <CODE>longjmp</CODE>.  These warnings as well are possible
+-only in optimizing compilation.
++changed by a call to <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A>.  These warnings as well are possible
++only in optimizing compilation
++(although I am not sure whether they can be caught at all in TIGCC).
+ <BR><BR>
+-The compiler sees only the calls to <CODE>setjmp</CODE>.  It cannot know
+-where <CODE>longjmp</CODE> will be called; in fact, a signal handler could
++The compiler sees only the calls to <A HREF="$$LINK(setjmp.h/setjmp)">setjmp</A>.  It cannot know
++where <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A> will be called; in fact, an interrupt handler could
+ call it at any point in the code.  As a result, you may get a warning
+-even when there is in fact no problem because <CODE>longjmp</CODE> cannot
++even when there is in fact no problem because <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A> cannot
+ in fact be called at the place which would cause a problem.
+ <BR><BR>
+ Some spurious warnings can be avoided if you declare all the functions
+-you use that never return as <CODE>noreturn</CODE>.  See <A HREF="$$INFOLINK(gnuexts/SEC85)">Function
+-Attributes</A>.
++you use that never return as <A HREF="$$INFOLINK(gnuexts/SEC85_noreturn)">noreturn</A>.
+ <BR><BR>
+ <DT><B>-Wunknown-pragmas</B>
+-<DD>Warn when a #pragma directive is encountered which is not understood by
++<DD>Warn when a <CODE><A HREF="$$INFOLINK(cpp/SEC46)">#pragma</A></CODE> directive is encountered which is not understood by
+ GCC.  If this command line option is used, warnings will even be issued
+ for unknown pragmas in system header files.  This is not the case if
+ the warnings were only enabled by the <B>'-Wall'</B> command line option.
+@@ -404,9 +368,7 @@
+ <DD>All of the above <B>'-W'</B> options combined.  This enables all the
+ warnings about constructions that some users consider questionable, and
+ that are easy to avoid (or modify to prevent the warning), even in
+-conjunction with macros.  This also enables some language-specific
+-warnings described in <A HREF="$$INFOLINK(C++ Dialect Options)">C++ Dialect Options</A> and
+-<A HREF="$$INFOLINK(Objective-C Dialect Options)">Objective-C Dialect Options</A>.
++conjunction with macros.
+ </DL>
+ The following <B>'-W...'</B> options are not implied by <B>'-Wall'</B>.
+ Some of them warn about constructions that users generally do not
+@@ -475,7 +437,7 @@
+ <LI>
+ An aggregate has a partly bracketed initializer.
+ For example, the following code would evoke such a warning,
+-because braces are missing around the initializer for <CODE>x.h</CODE>:
++because braces are missing around the initializer for <I>x</I>.<I>h</I>:
+ <PRE>struct s { int f, g; };
+ struct t { struct s h; int i; };
+ struct t x = { 1, 2, 3 };
+@@ -484,7 +446,7 @@
+ <LI>
+ An aggregate has an initializer which does not initialize all members.
+ For example, the following code would cause such a warning, because
+-<CODE>x.h</CODE> would be implicitly initialized to zero:
++<I>x</I>.<I>h</I> would be implicitly initialized to zero:
+ <PRE>struct s { int f, g, h; };
+ struct s x = { 3, 4 };
+ </PRE>
+@@ -505,6 +467,9 @@
+ option will <I>not</I> warn about unknown pragmas in system
+ headers - for that, <B>'-Wunknown-pragmas'</B> must also be used.
+ <BR><BR>
++Note that the TIGCC Library header files are not included as system header
++files.
++<BR><BR>
+ <DT><B>-Wfloat-equal</B>
+ <DD>Warn if floating point values are used in equality comparisons.
+ <BR><BR>
+@@ -519,7 +484,7 @@
+ this is done with the relational operators, so equality comparisons are
+ probably mistaken.
+ <BR><BR>
+-<DT><B>-Wtraditional (C only)</B>
++<DT><B>-Wtraditional</B>
+ <DD>Warn about certain constructs that behave differently in traditional and
+ ISO C.  Also warn about ISO C constructs that have no traditional C
+ equivalent, and/or problematic constructs which should be avoided.
+@@ -537,8 +502,8 @@
+ <B>'-Wtraditional'</B> warns about directives that traditional C
+ understands but would ignore because the <CODE>#</CODE> does not appear as the
+ first character on the line.  It also suggests you hide directives like
+-<CODE>#pragma</CODE> not understood by traditional C by indenting them.  Some
+-traditional implementations would not recognize <CODE>#elif</CODE>, so it
++<CODE><A HREF="$$INFOLINK(cpp/SEC46)">#pragma</A></CODE> not understood by traditional C by indenting them.  Some
++traditional implementations would not recognize <CODE><A HREF="$$INFOLINK(cpp/SEC36)">#elif</A></CODE>, so it
+ suggests avoiding it altogether.
+ <BR><BR>
+ </LI>
+@@ -553,11 +518,8 @@
+ <LI>
+ The <CODE>U</CODE> integer constant suffix, or the <CODE>F</CODE> or <CODE>L</CODE> floating point
+ constant suffixes.  (Traditional C does support the <CODE>L</CODE> suffix on integer
+-constants.)  Note, these suffixes appear in macros defined in the system
+-headers of most modern systems, e.g. the <CODE>_MIN</CODE>/<CODE>_MAX</CODE> macros in <CODE>&lt;limits.h&gt;</CODE>.
+-Use of these macros in user code might normally lead to spurious
+-warnings, however gcc's integrated preprocessor has enough context to
+-avoid warning in these cases.
++constants.)  Note, these suffixes appear in macros defined in <A HREF="$$LINK(limits.h/)">limits.h</A>,
++for example.
+ <BR><BR>
+ </LI>
+ <LI>
+@@ -566,18 +528,18 @@
+ <BR><BR>
+ </LI>
+ <LI>
+-A <CODE>switch</CODE> statement has an operand of type <CODE>long</CODE>.
++A <CODE><A HREF="$$INFOLINK(keywords/switch)">switch</A></CODE> statement has an operand of type <CODE><A HREF="$$INFOLINK(keywords/long)">long</A></CODE>.
+ <BR><BR>
+ </LI>
+ <LI>
+-A non-<CODE>static</CODE> function declaration follows a <CODE>static</CODE> one.
++A non-<CODE><A HREF="$$INFOLINK(keywords/static)">static</A></CODE> function declaration follows a <CODE>static</CODE> one.
+ This construct is not accepted by some traditional C compilers.
+ <BR><BR>
+ </LI>
+ <LI>
+ The ISO type of an integer constant has a different width or
+ signedness from its traditional type.  This warning is only issued if
+-the base of the constant is ten.  I.e. hexadecimal or octal values, which
++the base of the constant is 10, i.e. hexadecimal or octal values, which
+ typically represent bit patterns, are not warned about.
+ <BR><BR>
+ </LI>
+@@ -597,7 +559,7 @@
+ <LI>
+ Initialization of unions.  If the initializer is zero, the warning is
+ omitted.  This is done under the assumption that the zero initializer in
+-user code appears conditioned on e.g. <CODE>__STDC__</CODE> to avoid missing
++user code appears conditioned on e.g. <A HREF="$$INFOLINK(cpp/SEC15_STDC)">__STDC__</A> to avoid missing
+ initializer warnings and relies on default initialization to zero in the
+ traditional C case.
+ <BR><BR>
+@@ -634,11 +596,11 @@
+ <BR><BR>
+ <DT><B>-Wpointer-arith</B>
+ <DD>Warn about anything that depends on the &quot;size of&quot; a function type or
+-of <CODE>void</CODE>.  GNU C assigns these types a size of 1, for
+-convenience in calculations with <CODE>void&nbsp;*</CODE> pointers and pointers
++of <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE>.  GNU C assigns these types a size of 1, for
++convenience in calculations with <CODE>void*</CODE> pointers and pointers
+ to functions.
+ <BR><BR>
+-<DT><B>-Wbad-function-cast (C only)</B>
++<DT><B>-Wbad-function-cast</B>
+ <DD>Warn whenever a function call is cast to a non-matching type.
+ For example, warn if <CODE>int&nbsp;malloc()</CODE> is cast to <CODE>anything&nbsp;*</CODE>.
+ <BR><BR>
+@@ -685,16 +647,15 @@
+ <BR><BR>
+ <DT><B>-Waggregate-return</B>
+ <DD>Warn if any functions that return structures or unions are defined or
+-called.  (In languages where you can return an array, this also elicits
+-a warning.)
++called.
+ <BR><BR>
+-<DT><B>-Wstrict-prototypes (C only)</B>
++<DT><B>-Wstrict-prototypes</B>
+ <DD>Warn if a function is declared or defined without specifying the
+ argument types.  (An old-style function definition is permitted without
+ a warning if preceded by a declaration which specifies the argument
+ types.)
+ <BR><BR>
+-<DT><B>-Wmissing-prototypes (C only)</B>
++<DT><B>-Wmissing-prototypes</B>
+ <DD>Warn if a global function is defined without a previous prototype
+ declaration.  This warning is issued even if the definition itself
+ provides a prototype.  The aim is to detect global functions that fail
+@@ -707,20 +668,19 @@
+ header files.
+ <BR><BR>
+ <DT><B>-Wmissing-noreturn</B>
+-<DD>Warn about functions which might be candidates for attribute <CODE>noreturn</CODE>.
++<DD>Warn about functions which might be candidates for attribute <A HREF="$$INFOLINK(gnuexts/SEC85_noreturn)">noreturn</A>.
+ Note these are only possible candidates, not absolute ones.  Care should
+ be taken to manually verify functions actually do not ever return before
+-adding the <CODE>noreturn</CODE> attribute, otherwise subtle code generation
+-bugs could be introduced.  You will not get a warning for <CODE>main</CODE> in
+-hosted C environments.
++adding the <A HREF="$$INFOLINK(gnuexts/SEC85_noreturn)">noreturn</A> attribute, otherwise subtle code generation
++bugs could be introduced.
+ <BR><BR>
+ <DT><B>-Wmissing-format-attribute</B>
+ <DD>If <B>'-Wformat'</B> is enabled, also warn about functions which might be
+-candidates for <CODE>format</CODE> attributes.  Note these are only possible
+-candidates, not absolute ones.  GCC will guess that <CODE>format</CODE>
++candidates for <A HREF="$$INFOLINK(gnuexts/SEC85_format)">format</A> attributes.  Note these are only possible
++candidates, not absolute ones.  GCC will guess that <A HREF="$$INFOLINK(gnuexts/SEC85_format)">format</A>
+ attributes might be appropriate for any function that calls a function
+-like <CODE>vprintf</CODE> or <CODE>vscanf</CODE>, but this might not always be the
+-case, and some functions for which <CODE>format</CODE> attributes are
++like <A HREF="$$LINK(stdio.h/vprintf)">vprintf</A> or <A HREF="$$LINK(stdio.h/vscanf)">vscanf</A>, but this might not always be the
++case, and some functions for which <A HREF="$$INFOLINK(gnuexts/SEC85_format)">format</A> attributes are
+ appropriate may not be detected.  This option has no effect unless
+ <B>'-Wformat'</B> is enabled (possibly by <B>'-Wall'</B>).
+ <BR><BR>
+@@ -731,15 +691,13 @@
+ <BR><BR>
+ <DT><B>-Wno-deprecated-declarations</B>
+ <DD>Do not warn about uses of functions, variables, and types marked as
+-deprecated by using the <CODE>deprecated</CODE> attribute.
+-(see <A HREF="$$INFOLINK(gnuexts/SEC85)">Function Attributes</A> See <A HREF="$$INFOLINK(gnuexts/SEC91)">Variable Attributes</A>
+-See <A HREF="$$INFOLINK(gnuexts/SEC92)">Type Attributes</A>.)
++deprecated by using the <A HREF="$$INFOLINK(gnuexts/SEC85_deprecated)">deprecated</A> attribute.
+ <BR><BR>
+ <DT><B>-Wpacked</B>
+-<DD>Warn if a structure is given the packed attribute, but the packed
++<DD>Warn if a structure is given the <A HREF="$$INFOLINK(gnuexts/SEC92_packed)">packed</A> attribute, but the <A HREF="$$INFOLINK(gnuexts/SEC92_packed)">packed</A>
+ attribute has no effect on the layout or size of the structure.
+ Such structures may be mis-aligned for little benefit.  For
+-instance, in this code, the variable <CODE>f.x</CODE> in <CODE>struct&nbsp;bar</CODE>
++instance, in this code, the variable <I>f</I>.<I>x</I> in <CODE>struct&nbsp;bar</CODE>
+ will be misaligned even though <CODE>struct&nbsp;bar</CODE> does not itself
+ have the packed attribute:
+ <PRE>struct foo {
+@@ -761,8 +719,8 @@
+ <DD>Warn if anything is declared more than once in the same scope, even in
+ cases where multiple declaration is valid and changes nothing.
+ <BR><BR>
+-<DT><B>-Wnested-externs (C only)</B>
+-<DD>Warn if an <CODE>extern</CODE> declaration is encountered within a function.
++<DT><B>-Wnested-externs</B>
++<DD>Warn if an <CODE><A HREF="$$INFOLINK(keywords/extern)">extern</A></CODE> declaration is encountered within a function.
+ <BR><BR>
+ <DT><B>-Wunreachable-code</B>
+ <DD>Warn if the compiler detects that code will never be executed.
+diff -Nur comopts/SEC9.hss fix/comopts/SEC9.hss
+--- comopts/SEC9.hss	2003-09-17 23:35:12.000000000 +0200
++++ fix/comopts/SEC9.hss	2003-09-16 16:22:58.000000000 +0200
+@@ -1,23 +1,23 @@
+ [Main]
+-Title=Options for Debugging Your Program or GCC
++Title=Options for Debugging Your Program
+ 
+ [Top]
+ GCC has various special options that are used for debugging
+-either your program or GCC:
++either your program or GCC.
++However, this manual is not meant to explain anything about the internals of
++GCC, so you will have to go to the
++<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html">official version</A>
++of this page on the internet if you want to debug GCC itself.
++<BR><BR>
++Currently there is no debugger for TIGCC programs, so most of these options
++make sense only if you plan to use their output directly.
+ <DL>
+ <DT><B>-g</B>
+ <DD>Produce debugging information in the operating system's native format
+-(stabs, COFF, XCOFF, or DWARF).  GDB can work with this debugging
++(stabs is the default for the MC68000).  GDB can work with this debugging
+ information.
+-<BR><BR>
+-On most systems that use stabs format, <B>'-g'</B> enables use of extra
+-debugging information that only GDB can use; this extra information
+-makes debugging work better in GDB but will probably make other debuggers
+-crash or
+-refuse to read the program.  If you want to control for certain whether
+-to generate the extra information, use <B>'-gstabs+'</B>, <B>'-gstabs'</B>,
+-<B>'-gxcoff+'</B>, <B>'-gxcoff'</B>, <B>'-gdwarf-1+'</B>, <B>'-gdwarf-1'</B>,
+-or <B>'-gvms'</B> (see below).
++Note that <CODE>tigcc</CODE> handles this switch differently; see
++<A HREF="$$LINK(SEC3)">Options Available in the Command Line Compiler</A>.
+ <BR><BR>
+ Unlike most other C compilers, GCC allows you to use <B>'-g'</B> with
+ <B>'-O'</B>.  The shortcuts taken by optimized code may occasionally
+@@ -35,68 +35,23 @@
+ <BR><BR>
+ <DT><B>-ggdb</B>
+ <DD>Produce debugging information for use by GDB.  This means to use the
+-most expressive format available (DWARF 2, stabs, or the native format
+-if neither of those are supported), including GDB extensions if at all
+-possible.
++most expressive format available, including GDB extensions if at all
++possible.  Note that you currently cannot use GDB together with TIGCC.
+ <BR><BR>
+ <DT><B>-gstabs</B>
+-<DD>Produce debugging information in stabs format (if that is supported),
+-without GDB extensions.  This is the format used by DBX on most BSD
+-systems.  On MIPS, Alpha and System V Release 4 systems this option
+-produces stabs debugging output which is not understood by DBX or SDB.
+-On System V Release 4 systems this option requires the GNU assembler.
++<DD>Produce debugging information in stabs format.
+ <BR><BR>
+ <DT><B>-gstabs+</B>
+-<DD>Produce debugging information in stabs format (if that is supported),
+-using GNU extensions understood only by the GNU debugger (GDB).  The
+-use of these extensions is likely to make other debuggers crash or
+-refuse to read the program.
++<DD>Produce debugging information in stabs format,
++using GNU extensions understood only by the GNU debugger (GDB).
+ <BR><BR>
+ <DT><B>-gcoff</B>
+-<DD>Produce debugging information in COFF format (if that is supported).
+-This is the format used by SDB on most System V systems prior to
+-System V Release 4.
+-<BR><BR>
+-<DT><B>-gxcoff</B>
+-<DD>Produce debugging information in XCOFF format (if that is supported).
+-This is the format used by the DBX debugger on IBM RS/6000 systems.
+-<BR><BR>
+-<DT><B>-gxcoff+</B>
+-<DD>Produce debugging information in XCOFF format (if that is supported),
+-using GNU extensions understood only by the GNU debugger (GDB).  The
+-use of these extensions is likely to make other debuggers crash or
+-refuse to read the program, and may cause assemblers other than the GNU
+-assembler (GAS) to fail with an error.
+-<BR><BR>
+-<DT><B>-gdwarf</B>
+-<DD>Produce debugging information in DWARF version 1 format (if that is
+-supported).  This is the format used by SDB on most System V Release 4
+-systems.
+-<BR><BR>
+-This option is deprecated.
+-<BR><BR>
+-<DT><B>-gdwarf+</B>
+-<DD>Produce debugging information in DWARF version 1 format (if that is
+-supported), using GNU extensions understood only by the GNU debugger
+-(GDB).  The use of these extensions is likely to make other debuggers
+-crash or refuse to read the program.
+-<BR><BR>
+-This option is deprecated.
+-<BR><BR>
+-<DT><B>-gdwarf-2</B>
+-<DD>Produce debugging information in DWARF version 2 format (if that is
+-supported).  This is the format used by DBX on IRIX 6.
+-<BR><BR>
+-<DT><B>-gvms</B>
+-<DD>Produce debugging information in VMS debug format (if that is
+-supported).  This is the format used by DEBUG on VMS systems.
++<DD>Produce debugging information in COFF format.
+ <BR><BR>
+ <DT><B>-g<I>level</I></B>
+ <BR><B>-ggdb<I>level</I></B>
+ <BR><B>-gstabs<I>level</I></B>
+ <BR><B>-gcoff<I>level</I></B>
+-<BR><B>-gxcoff<I>level</I></B>
+-<BR><B>-gvms<I>level</I></B>
+ <DD>Request debugging information and also use <I>level</I> to specify how
+ much information.  The default level is 2.
+ <BR><BR>
+@@ -109,326 +64,24 @@
+ present in the program.  Some debuggers support macro expansion when
+ you use <B>'-g3'</B>.
+ <BR><BR>
+-Note that in order to avoid confusion between DWARF1 debug level 2,
+-and DWARF2, neither <B>'-gdwarf'</B> nor <B>'-gdwarf-2'</B> accept
+-a concatenated debug level.  Instead use an additional <B>'-g<I>level</I>'</B>
+-option to change the debug level for DWARF1 or DWARF2.
+-<BR><BR>
+-<DT><B>-feliminate-dwarf2-dups</B>
+-<DD>Compress DWARF2 debugging information by eliminating duplicated
+-information about each symbol.  This option only makes sense when
+-generating DWARF2 debugging information with <B>'-gdwarf-2'</B>.
+-<BR><BR>
+ <DT><B>-p</B>
+ <DD>Generate extra code to write profile information suitable for the
+ analysis program <CODE>prof</CODE>.  You must use this option when compiling
+ the source files you want data about, and you must also use it when
+ linking.
++This option is probably useless in TIGCC.
+ <BR><BR>
+ <DT><B>-pg</B>
+ <DD>Generate extra code to write profile information suitable for the
+ analysis program <CODE>gprof</CODE>.  You must use this option when compiling
+ the source files you want data about, and you must also use it when
+ linking.
++This option is probably useless in TIGCC.
+ <BR><BR>
+ <DT><B>-Q</B>
+ <DD>Makes the compiler print out each function name as it is compiled, and
+ print some statistics about each pass when it finishes.
+ <BR><BR>
+-<DT><B>-ftime-report</B>
+-<DD>Makes the compiler print some statistics about the time consumed by each
+-pass when it finishes.
+-<BR><BR>
+-<DT><B>-fmem-report</B>
+-<DD>Makes the compiler print some statistics about permanent memory
+-allocation when it finishes.
+-<BR><BR>
+-<DT><B>-fprofile-arcs</B>
+-<DD>Instrument <U>arcs</U> during compilation to generate coverage data or
+-for profile-directed block ordering.  During execution the program
+-records how many times each branch is executed and how many times it is
+-taken.  When the compiled program exits it saves this data to a file
+-called <CODE><I>auxname</I>.da</CODE> for each source file.  <I>auxname</I> is
+-generated from the name of the output file, if explicitly specified and
+-it is not the final executable, otherwise it is the basename of the
+-source file. In both cases any suffix is removed (e.g.  <CODE>foo.da</CODE>
+-for input file <CODE>dir/foo.c</CODE>, or <CODE>dir/foo.da</CODE> for output file
+-specified as <B>'-o dir/foo.o'</B>).
+-<BR><BR>
+-For profile-directed block ordering, compile the program with
+-<B>'-fprofile-arcs'</B> plus optimization and code generation options,
+-generate the arc profile information by running the program on a
+-selected workload, and then compile the program again with the same
+-optimization and code generation options plus
+-<B>'-fbranch-probabilities'</B> (see <A HREF="$$INFOLINK(Optimize Options,,Options that Control Optimization)">Options that
+-Control Optimization</A>).
+-<BR><BR>
+-The other use of <B>'-fprofile-arcs'</B> is for use with <CODE>gcov</CODE>,
+-when it is used with the <B>'-ftest-coverage'</B> option.
+-<BR><BR>
+-With <B>'-fprofile-arcs'</B>, for each function of your program GCC
+-creates a program flow graph, then finds a spanning tree for the graph.
+-Only arcs that are not on the spanning tree have to be instrumented: the
+-compiler adds code to count the number of times that these arcs are
+-executed.  When an arc is the only exit or only entrance to a block, the
+-instrumentation code can be added to the block; otherwise, a new basic
+-block must be created to hold the instrumentation code.
+-<BR><BR>
+-<DT><B>-ftest-coverage</B>
+-<DD>Create data files for the <CODE>gcov</CODE> code-coverage utility
+-(see <A HREF="$$INFOLINK(Gcov,,@command{gcov})"><CODE>gcov</CODE> - a Test Coverage Program</A>).  See
+-<B>'-fprofile-arcs'</B> option above for a description of <I>auxname</I>.
+-<BR><BR><DL>
+-<DT><B><I>auxname</I>.bb</B>
+-<DD>A mapping from basic blocks to line numbers, which <CODE>gcov</CODE> uses to
+-associate basic block execution counts with line numbers.
+-<BR><BR>
+-<DT><B><I>auxname</I>.bbg</B>
+-<DD>A list of all arcs in the program flow graph.  This allows <CODE>gcov</CODE>
+-to reconstruct the program flow graph, so that it can compute all basic
+-block and arc execution counts from the information in the
+-<CODE><I>auxname</I>.da</CODE> file.
+-</DL><BR>
+-Use <B>'-ftest-coverage'</B> with <B>'-fprofile-arcs'</B>; the latter
+-option adds instrumentation to the program, which then writes
+-execution counts to another data file:
+-<BR><BR><DL>
+-<DT><B><I>auxname</I>.da</B>
+-<DD>Runtime arc execution counts, used in conjunction with the arc
+-information in the file <CODE><I>auxname</I>.bbg</CODE>.
+-</DL><BR>
+-Coverage data will map better to the source files if
+-<B>'-ftest-coverage'</B> is used without optimization.
+-<BR><BR>
+-<DT><B>-d<I>letters</I></B>
+-<DD>Says to make debugging dumps during compilation at times specified by
+-<I>letters</I>.  This is used for debugging the compiler.  The file names
+-for most of the dumps are made by appending a pass number and a word to
+-the <I>dumpname</I>. <I>dumpname</I> is generated from the name of the
+-output file, if explicitly specified and it is not an executable,
+-otherwise it is the basename of the source file. In both cases any
+-suffix is removed (e.g.  <CODE>foo.00.rtl</CODE> or <CODE>foo.01.sibling</CODE>).
+-Here are the possible letters for use in <I>letters</I>, and their
+-meanings:
+-<BR><BR><DL>
+-<DT><B>A</B>
+-<DD>Annotate the assembler output with miscellaneous debugging information.
+-<BR><BR>
+-<DT><B>b</B>
+-<DD>Dump after computing branch probabilities, to <CODE><I>file</I>.14.bp</CODE>.
+-<BR><BR>
+-<DT><B>B</B>
+-<DD>Dump after block reordering, to <CODE><I>file</I>.32.bbro</CODE>.
+-<BR><BR>
+-<DT><B>c</B>
+-<DD>Dump after instruction combination, to the file <CODE><I>file</I>.19.combine</CODE>.
+-<BR><BR>
+-<DT><B>C</B>
+-<DD>Dump after the first if conversion, to the file <CODE><I>file</I>.15.ce1</CODE>.
+-<BR><BR>
+-<DT><B>d</B>
+-<DD>Dump after delayed branch scheduling, to <CODE><I>file</I>.34.dbr</CODE>.
+-<BR><BR>
+-<DT><B>D</B>
+-<DD>Dump all macro definitions, at the end of preprocessing, in addition to
+-normal output.
+-<BR><BR>
+-<DT><B>e</B>
+-<DD>Dump after SSA optimizations, to <CODE><I>file</I>.04.ssa</CODE> and
+-<CODE><I>file</I>.07.ussa</CODE>.
+-<BR><BR>
+-<DT><B>E</B>
+-<DD>Dump after the second if conversion, to <CODE><I>file</I>.29.ce3</CODE>.
+-<BR><BR>
+-<DT><B>f</B>
+-<DD>Dump after control and data flow analysis, to <CODE><I>file</I>.14.cfg</CODE>.
+-Also dump after life analysis, to <CODE><I>file</I>.18.life</CODE>.
+-<BR><BR>
+-<DT><B>F</B>
+-<DD>Dump after purging <CODE>ADDRESSOF</CODE> codes, to <CODE><I>file</I>.10.addressof</CODE>.
+-<BR><BR>
+-<DT><B>g</B>
+-<DD>Dump after global register allocation, to <CODE><I>file</I>.24.greg</CODE>.
+-<BR><BR>
+-<DT><B>G</B>
+-<DD>Dump after GCSE, to <CODE><I>file</I>.11.gcse</CODE>.
+-<BR><BR>
+-<DT><B>h</B>
+-<DD>Dump after finalization of EH handling code, to <CODE><I>file</I>.02.eh</CODE>.
+-<BR><BR>
+-<DT><B>i</B>
+-<DD>Dump after sibling call optimizations, to <CODE><I>file</I>.01.sibling</CODE>.
+-<BR><BR>
+-<DT><B>j</B>
+-<DD>Dump after the first jump optimization, to <CODE><I>file</I>.03.jump</CODE>.
+-<BR><BR>
+-<DT><B>k</B>
+-<DD>Dump after conversion from registers to stack, to <CODE><I>file</I>.31.stack</CODE>.
+-<BR><BR>
+-<DT><B>l</B>
+-<DD>Dump after local register allocation, to <CODE><I>file</I>.23.lreg</CODE>.
+-<BR><BR>
+-<DT><B>L</B>
+-<DD>Dump after loop optimization, to <CODE><I>file</I>.12.loop</CODE>.
+-<BR><BR>
+-<DT><B>M</B>
+-<DD>Dump after performing the machine dependent reorganization pass, to
+-<CODE><I>file</I>.33.mach</CODE>.
+-<BR><BR>
+-<DT><B>n</B>
+-<DD>Dump after register renumbering, to <CODE><I>file</I>.28.rnreg</CODE>.
+-<BR><BR>
+-<DT><B>N</B>
+-<DD>Dump after the register move pass, to <CODE><I>file</I>.21.regmove</CODE>.
+-<BR><BR>
+-<DT><B>o</B>
+-<DD>Dump after post-reload optimizations, to <CODE><I>file</I>.25.postreload</CODE>.
+-<BR><BR>
+-<DT><B>r</B>
+-<DD>Dump after RTL generation, to <CODE><I>file</I>.00.rtl</CODE>.
+-<BR><BR>
+-<DT><B>R</B>
+-<DD>Dump after the second scheduling pass, to <CODE><I>file</I>.30.sched2</CODE>.
+-<BR><BR>
+-<DT><B>s</B>
+-<DD>Dump after CSE (including the jump optimization that sometimes follows
+-CSE), to <CODE><I>file</I>.09.cse</CODE>.
+-<BR><BR>
+-<DT><B>S</B>
+-<DD>Dump after the first scheduling pass, to <CODE><I>file</I>.22.sched</CODE>.
+-<BR><BR>
+-<DT><B>t</B>
+-<DD>Dump after the second CSE pass (including the jump optimization that
+-sometimes follows CSE), to <CODE><I>file</I>.17.cse2</CODE>.
+-<BR><BR>
+-<DT><B>T</B>
+-<DD>Dump after running tracer, to <CODE><I>file</I>.16.tracer</CODE>.
+-<BR><BR>
+-<DT><B>u</B>
+-<DD>Dump after null pointer elimination pass to <CODE><I>file</I>.08.null</CODE>.
+-<BR><BR>
+-<DT><B>w</B>
+-<DD>Dump after the second flow pass, to <CODE><I>file</I>.26.flow2</CODE>.
+-<BR><BR>
+-<DT><B>W</B>
+-<DD>Dump after SSA conditional constant propagation, to
+-<CODE><I>file</I>.05.ssaccp</CODE>.
+-<BR><BR>
+-<DT><B>X</B>
+-<DD>Dump after SSA dead code elimination, to <CODE><I>file</I>.06.ssadce</CODE>.
+-<BR><BR>
+-<DT><B>z</B>
+-<DD>Dump after the peephole pass, to <CODE><I>file</I>.27.peephole2</CODE>.
+-<BR><BR>
+-<DT><B>a</B>
+-<DD>Produce all the dumps listed above.
+-<BR><BR>
+-<DT><B>m</B>
+-<DD>Print statistics on memory usage, at the end of the run, to
+-standard error.
+-<BR><BR>
+-<DT><B>p</B>
+-<DD>Annotate the assembler output with a comment indicating which
+-pattern and alternative was used.  The length of each instruction is
+-also printed.
+-<BR><BR>
+-<DT><B>P</B>
+-<DD>Dump the RTL in the assembler output as a comment before each instruction.
+-Also turns on <B>'-dp'</B> annotation.
+-<BR><BR>
+-<DT><B>v</B>
+-<DD>For each of the other indicated dump files (except for
+-<CODE><I>file</I>.00.rtl</CODE>), dump a representation of the control flow graph
+-suitable for viewing with VCG to <CODE><I>file</I>.<I>pass</I>.vcg</CODE>.
+-<BR><BR>
+-<DT><B>x</B>
+-<DD>Just generate RTL for a function instead of compiling it.  Usually used
+-with <CODE>r</CODE>.
+-<BR><BR>
+-<DT><B>y</B>
+-<DD>Dump debugging information during parsing, to standard error.
+-</DL><BR>
+-<BR><BR>
+-<DT><B>-fdump-unnumbered</B>
+-<DD>When doing debugging dumps (see <B>'-d'</B> option above), suppress instruction
+-numbers and line number note output.  This makes it more feasible to
+-use diff on debugging dumps for compiler invocations with different
+-options, in particular with and without <B>'-g'</B>.
+-<BR><BR>
+-<DT><B>-fdump-translation-unit (C and C++ only)</B>
+-<BR><B>-fdump-translation-unit-<I>options</I> (C and C++ only)</B>
+-<DD>Dump a representation of the tree structure for the entire translation
+-unit to a file.  The file name is made by appending <CODE>.tu</CODE> to the
+-source file name.  If the <CODE>-<I>options</I></CODE> form is used, <I>options</I>
+-controls the details of the dump as described for the
+-<B>'-fdump-tree'</B> options.
+-<BR><BR>
+-<DT><B>-fdump-class-hierarchy (C++ only)</B>
+-<BR><B>-fdump-class-hierarchy-<I>options</I> (C++ only)</B>
+-<DD>Dump a representation of each class's hierarchy and virtual function
+-table layout to a file.  The file name is made by appending <CODE>.class</CODE>
+-to the source file name.  If the <CODE>-<I>options</I></CODE> form is used,
+-<I>options</I> controls the details of the dump as described for the
+-<B>'-fdump-tree'</B> options.
+-<BR><BR>
+-<DT><B>-fdump-tree-<I>switch</I> (C++ only)</B>
+-<BR><B>-fdump-tree-<I>switch</I>-<I>options</I> (C++ only)</B>
+-<DD>Control the dumping at various stages of processing the intermediate
+-language tree to a file.  The file name is generated by appending a switch
+-specific suffix to the source file name.  If the <CODE>-<I>options</I></CODE>
+-form is used, <I>options</I> is a list of <CODE>-</CODE> separated options that
+-control the details of the dump. Not all options are applicable to all
+-dumps, those which are not meaningful will be ignored. The following
+-options are available
+-<BR><BR><DL>
+-<DT><B>address</B>
+-<DD>Print the address of each node.  Usually this is not meaningful as it
+-changes according to the environment and source file. Its primary use
+-is for tying up a dump file with a debug environment.
+-<BR><BR>
+-<DT><B>slim</B>
+-<DD>Inhibit dumping of members of a scope or body of a function merely
+-because that scope has been reached. Only dump such items when they
+-are directly reachable by some other path.
+-<BR><BR>
+-<DT><B>all</B>
+-<DD>Turn on all options.
+-</DL><BR>
+-The following tree dumps are possible:
+-<BR><BR><DL>
+-<DT><B>original</B>
+-<DD>Dump before any tree based optimization, to <CODE><I>file</I>.original</CODE>.
+-<BR><BR>
+-<DT><B>optimized</B>
+-<DD>Dump after all tree based optimization, to <CODE><I>file</I>.optimized</CODE>.
+-<BR><BR>
+-<DT><B>inlined</B>
+-<DD>Dump after function inlining, to <CODE><I>file</I>.inlined</CODE>.
+-</DL><BR>
+-<BR><BR>
+-<DT><B>-frandom-seed=<I>string</I></B>
+-<DD>This option provides a seed that GCC uses when it would otherwise use
+-random numbers.  At present, this is used to generate certain symbol names
+-that have to be different in every compiled file.
+-<BR><BR>
+-The <I>string</I> should be different for every file you compile.
+-<BR><BR>
+-<DT><B>-fsched-verbose=<I>n</I></B>
+-<DD>On targets that use instruction scheduling, this option controls the
+-amount of debugging output the scheduler prints.  This information is
+-written to standard error, unless <B>'-dS'</B> or <B>'-dR'</B> is
+-specified, in which case it is output to the usual dump
+-listing file, <CODE>.sched</CODE> or <CODE>.sched2</CODE> respectively.  However
+-for <I>n</I> greater than nine, the output is always printed to standard
+-error.
+-<BR><BR>
+-For <I>n</I> greater than zero, <B>'-fsched-verbose'</B> outputs the
+-same information as <B>'-dRS'</B>.  For <I>n</I> greater than one, it
+-also output basic block probabilities, detailed ready list information
+-and unit/insn info.  For <I>n</I> greater than two, it includes RTL
+-at abort point, control-flow and regions info.  And for <I>n</I> over
+-four, <B>'-fsched-verbose'</B> also includes dependence info.
+-<BR><BR>
+ <DT><B>-save-temps</B>
+ <DD>Store the usual &quot;temporary&quot; intermediate files permanently; place them
+ in the current directory and name them based on the source file.  Thus,
+@@ -436,68 +89,4 @@
+ <CODE>foo.i</CODE> and <CODE>foo.s</CODE>, as well as <CODE>foo.o</CODE>.  This creates a
+ preprocessed <CODE>foo.i</CODE> output file even though the compiler now
+ normally uses an integrated preprocessor.
+-<BR><BR>
+-<DT><B>-time</B>
+-<DD>Report the CPU time taken by each subprocess in the compilation
+-sequence.  For C source files, this is the compiler proper and assembler
+-(plus the linker if linking is done).  The output looks like this:
+-<PRE># cc1 0.12 0.01
+-# as 0.00 0.01
+-</PRE>
+-The first number on each line is the &quot;user time,&quot; that is time spent
+-executing the program itself.  The second number is &quot;system time,&quot;
+-time spent executing operating system routines on behalf of the program.
+-Both numbers are in seconds.
+-<BR><BR>
+-<DT><B>-print-file-name=<I>library</I></B>
+-<DD>Print the full absolute name of the library file <I>library</I> that
+-would be used when linking - and don't do anything else.  With this
+-option, GCC does not compile or link anything; it just prints the
+-file name.
+-<BR><BR>
+-<DT><B>-print-multi-directory</B>
+-<DD>Print the directory name corresponding to the multilib selected by any
+-other switches present in the command line.  This directory is supposed
+-to exist in <CODE>GCC_EXEC_PREFIX</CODE>.
+-<BR><BR>
+-<DT><B>-print-multi-lib</B>
+-<DD>Print the mapping from multilib directory names to compiler switches
+-that enable them.  The directory name is separated from the switches by
+-<CODE>;</CODE>, and each switch starts with an <CODE>@</CODE> instead of the
+-<CODE>-</CODE>, without spaces between multiple switches.  This is supposed to
+-ease shell-processing.
+-<BR><BR>
+-<DT><B>-print-prog-name=<I>program</I></B>
+-<DD>Like <B>'-print-file-name'</B>, but searches for a program such as <CODE>cpp</CODE>.
+-<BR><BR>
+-<DT><B>-print-libgcc-file-name</B>
+-<DD>Same as <B>'-print-file-name=libgcc.a'</B>.
+-<BR><BR>
+-This is useful when you use <B>'-nostdlib'</B> or <B>'-nodefaultlibs'</B>
+-but you do want to link with <CODE>libgcc.a</CODE>.  You can do
+-<PRE>gcc -nostdlib <I>files</I>... 'gcc -print-libgcc-file-name'
+-</PRE>
+-<DT><B>-print-search-dirs</B>
+-<DD>Print the name of the configured installation directory and a list of
+-program and library directories gcc will search - and don't do anything else.
+-<BR><BR>
+-This is useful when gcc prints the error message
+-<CODE>installation&nbsp;problem,&nbsp;cannot&nbsp;exec&nbsp;cpp0:&nbsp;No&nbsp;such&nbsp;file&nbsp;or&nbsp;directory</CODE>.
+-To resolve this you either need to put <CODE>cpp0</CODE> and the other compiler
+-components where gcc expects to find them, or you can set the environment
+-variable <CODE>GCC_EXEC_PREFIX</CODE> to the directory where you installed them.
+-Don't forget the trailing '/'.
+-See <A HREF="$$INFOLINK(cpp/SEC45)">Environment Variables</A>.
+-<BR><BR>
+-<DT><B>-dumpmachine</B>
+-<DD>Print the compiler's target machine (for example,
+-<CODE>i686-pc-linux-gnu</CODE>) - and don't do anything else.
+-<BR><BR>
+-<DT><B>-dumpversion</B>
+-<DD>Print the compiler version (for example, <CODE>3.0</CODE>) - and don't do
+-anything else.
+-<BR><BR>
+-<DT><B>-dumpspecs</B>
+-<DD>Print the compiler's built-in specs - and don't do anything else.  (This
+-is used when GCC itself is being built.)  <A HREF="$$INFOLINK(Spec Files)">Spec Files</A>.
+ </DL>
+diff -Nur comopts/comopts.hss fix/comopts/comopts.hss
+--- comopts/comopts.hss	2003-09-17 23:34:40.000000000 +0200
++++ fix/comopts/comopts.hss	2003-09-16 13:53:36.000000000 +0200
+@@ -1,9 +1,27 @@
+ [Main]
+-Title=GCC Command Options
++Title=GCC Command-Line Options
++Subsections=SEC3, SEC4, SEC6, SEC8, SEC9, SEC10, SEC11, SEC12, SEC14, SEC15, SEC16, SEC44, SEC45, history, gnugpl/gnugpl, gnugpl/gnufdl, gnugpl/funding
+ 
+ [Top]
+-When you invoke GCC, it normally does preprocessing, compilation,
+-assembly and linking.  The &quot;overall options&quot; allow you to stop this
++This part of the documentation is a modified version of the
++<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html">Command-Line Options</A>
++section of the <A HREF="http://gcc.gnu.org/onlinedocs/gcc/">GCC Manual</A>.
++Therefore it is licensed under the
++<A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>.
++<BR><BR>
++This section describes the options supported by <CODE>gcc</CODE>,
++the driver program of the GNU Compiler Collection, whose C compiler
++and assembler are used here.  This program is called either by
++<CODE>tigcc</CODE> or by the IDE.  <CODE>tigcc</CODE>
++simulates some of these options itself, namely <B>'-E'</B>,
++<B>'-S'</B>, and <B>'-c'</B>, and it also has some additional ones.
++In the IDE, there is an item in the project settings where you can
++set the options described here, with some exceptions, including the
++switches mentioned above.
++<BR><BR>
++TIGCC normally does preprocessing, compilation, assembly and linking
++all in one step, and finally produces a file which is executable on
++the calculator.  The &quot;overall options&quot; allow you to stop this
+ process at an intermediate stage.  For example, the <B>'-c'</B> option
+ says not to run the linker.  Then the output consists of object files
+ output by the assembler.
+@@ -12,17 +30,17 @@
+ control the preprocessor and others the compiler itself.  Yet other
+ options control the assembler and linker; most of these are not
+ documented here, since you rarely need to use any of them.
++In fact, only those options which may be more or less useful with TIGCC
++are mentioned here (although we didn't check whether all of them are
++really usable in TIGCC).  For more info about standard options that are
++recognized by the compiler, read the
++<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html">official manual</A>.
++<BR><BR>
++We suggest that you use the <B>'-O2'</B> switch in all of your
++compilations; it increases speed and decreases the program size at the
++cost of compilation time.
+ <BR><BR>
+-Most of the command line options that you can use with GCC are useful
+-for C programs; when an option is only useful with another language
+-(usually C++), the explanation says so explicitly.  If the description
+-for a particular option does not mention a source language, you can use
+-that option with all supported languages.
+-<BR><BR>
+-See <A HREF="$$INFOLINK(Invoking G++,,Compiling C++ Programs)">Compiling C++ Programs</A> for a summary of special
+-options for compiling C++ programs.
+-<BR><BR>
+-The <CODE>gcc</CODE> program accepts options and file names as operands.  Many
++<CODE>tigcc</CODE> accepts options and file names as operands.  Many
+ options have multi-letter names; therefore multiple single-letter options
+ may <I>not</I> be grouped: <B>'-dr'</B> is very different from <B>'-d
+ -r'</B>.
+@@ -38,5 +56,30 @@
+ these have both positive and negative forms; the negative form of
+ <B>'-ffoo'</B> would be <B>'-fno-foo'</B>.  This manual documents
+ only one of these two forms, whichever one is not the default.
+-<BR><BR>
+-See <A HREF="$$INFOLINK(Option Index)">Option Index</A> for an index to GCC's options.
++
++[Bottom]
++Original author: Free Software Foundation, Inc.
++<BR>
++Authors of the modifications: Zeljko Juric, Sebastian Reichelt, and Kevin Kofler
++<BR>
++Published by the TIGCC Team.
++<BR>
++See the <A HREF="$$LINK(history)">History</A> section for details and copyright information.
++<BR><BR>
++Permission is granted to copy, distribute and/or modify this document
++under the terms of the <A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>, Version 1.1 or any
++later version published by the Free Software Foundation; with the Invariant
++Sections being "<A HREF="$$INFOLINK(gnugpl)">GNU General Public License</A>" and "<A HREF="$$INFOLINK(gnugpl/funding)">Funding Free Software</A>", the
++Front-Cover texts being (a) (see below), and with the Back-Cover Texts being
++(b) (see below).  A copy of the license is included in the section entitled
++"<A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>".
++<BR><BR>
++(a) The FSF's Front-Cover Text is:
++<BR><BR>
++A GNU Manual
++<BR><BR>
++(b) The FSF's Back-Cover Text is:
++<BR><BR>
++You have freedom to copy and modify this GNU Manual, like GNU software.
++Copies published by the Free Software Foundation raise funds for GNU
++development.
+diff -Nur comopts/history.hss fix/comopts/history.hss
+--- comopts/history.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/comopts/history.hss	2003-09-16 13:53:36.000000000 +0200
+@@ -0,0 +1,24 @@
++[Main]
++Title=History
++
++[Top]
++<UL>
++<LI><B>Original Version:</B> <A HREF="http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html">GCC Command Options</A>
++<BR><BR>
++Published by the Free Software Foundation
++<BR>
++59 Temple Place - Suite 330
++<BR>
++Boston, MA 02111-1307 USA
++<BR><BR>
++Copyright &copy; 1988, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
++2000, 2001, 2002 Free Software Foundation, Inc.
++<BR><BR>
++</LI>
++<LI><B>Modifications for TIGCC:</B> <A HREF="$$LINK(comopts)">GCC Command-Line Options</A>
++<BR><BR>
++Published by the TIGCC Team
++<BR><BR>
++Copyright &copy; 2000, 2001, 2002 Zeljko Juric, Sebastian Reichelt, Kevin Kofler
++</LI>
++</UL>

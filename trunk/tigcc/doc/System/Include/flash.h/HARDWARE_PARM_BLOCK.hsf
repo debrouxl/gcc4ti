@@ -1,0 +1,32 @@
+[Main]
+Name=HARDWARE_PARM_BLOCK
+Type=Type
+Subtype=Structure
+Header Files=flash.h
+Definition=typedef struct { unsigned short len; /* length of parameter block */ unsigned long hardwareID; /* 1 = TI-92 Plus, 3 = TI-89 */ unsigned long hardwareRevision; /* hardware revision number */ unsigned long bootMajor; /* boot code version number */ unsigned long bootRevision; /* boot code revision number */ unsigned long bootBuild; /* boot code build number */ unsigned long gateArray; /* gate array version number */ unsigned long physDisplayBitsWide; /* display width */ unsigned long physDisplayBitsTall; /* display height */ unsigned long LCDBitsWide; /* visible display width */ unsigned long LCDBitsTall; /* visible display height */ } HARDWARE_PARM_BLOCK;
+See Also=FL_getHardwareParmBlock
+
+[Description]
+Structure describing the calculator hardware.
+
+[Explanation]
+The hardware parameter block contains a description of the calculator hardware.
+This structure is mainly used with the <A HREF="$$LINK(FL_getHardwareParmBlock)">FL_getHardwareParmBlock</A> function.
+<BR><BR>
+Some fields of the HARDWARE_PARM_BLOCK structure are not available in earlier
+versions of the calculator. Only the <I>len</I> and <I>hardwareID</I> fields are available in all boot
+code versions. It is important to check the value of <I>len</I> before accessing any
+values after <I>hardwareID</I>. You can use <A HREF="$$LINK(stddef.h/offsetof)">offsetof</A> to
+determine if a particular field is present.
+<BR><BR>
+The TI-89 and TI-92 Plus allocate the same amount of memory for the LCD.
+However, the TI-89 cannot display as much as the TI-92 Plus.
+<I>LCDBitsWide</I> and <I>LCDBitsTall</I> reflect how much of the calculator's
+LCD memory the user can see.
+<BR><BR>
+If <I>len</I> is 24 or more, <I>gateArray</I> contains a hardware version number
+(currently 1 (HW1) or 2 (HW2)). Otherwise, the calculator is certainly a HW1 calculator.
+<BR><BR>
+Here is an example (called "Hardware Parameters") which returns the
+complete hardware parameter block as a list:
+$$EXAMPLE(Hardware Parameters.c)

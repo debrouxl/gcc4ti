@@ -1,0 +1,25 @@
+[Main]
+Title=Can I create a variable with a custom type (like HSC for highscores)?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is it possible to create a file which will have a custom type (i.e. which does not appear
+in VAR-LINK as a stanard type like STR, PIC, PRGM etc.). For example, I want to create a
+highscore file which will appear in VAR-LINK as HSC type...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Christian Walther pointed to me that this is possible. Moreover, this is easy. All you need
+to do is to create a file of "other" type (i.e. which terminates with <A HREF="$$LINK(estack.h/Tags)">OTH_TAG</A>).
+TIOS then expects that a real type name is stored just below <A HREF="$$LINK(estack.h/Tags)">OTH_TAG</A>
+as a zero-started zero-terminated string of maximum 4 chars. Look the following code fragment
+as an example:
+<PRE>FILE *fp = fopen ("example", "wb");
+// <I>store anything you want in the file here</I>
+fputc (0, fp);
+fputs ("HSC", fp);
+fputc (0, fp);
+fputc (OTH_TAG, fp);
+fclose (fp);
+</PRE>
+After this, you will have a file named "example" with type "HSC": you will see it in the
+VAR-LINK dialog.
+</TD></TR></TABLE>

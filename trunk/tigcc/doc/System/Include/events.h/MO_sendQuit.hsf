@@ -1,0 +1,32 @@
+[Main]
+Name=MO_sendQuit
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void MO_sendQuit (short TaskID, short Side);
+
+[ROM Call]
+Index=$DF
+
+[Description]
+Quits an application on given side.
+
+[Explanation]
+MO_sendQuit quits an application on side <I>Side</I> (0=left/top, 1 = right/bottom).
+This is what pressing of the QUIT key does.
+More precise, if <I>Side</I> is equal to the current side, the side will receive
+<A HREF="$$LINK(EventIDs)">CM_UNFOCUS</A> and <A HREF="$$LINK(EventIDs)">CM_DEACTIVATE</A> messages.
+After this, the application will receive <A HREF="$$LINK(EventIDs)">CM_ENDTASK</A> message.
+Finally, the application on side <I>Side</I> will be set to <A HREF="$$LINK(StandardTaskIDs)">CM_NULL</A>.
+If the application on side <I>Side</I> is already <A HREF="$$LINK(StandardTaskIDs)">CM_NULL</A>,
+nothing will be performed.
+<BR><BR>
+<B>Note:</B> If you don't understand what "quitting" means, try MO_sendQuit(AP_CURRENT, 0) from
+your program to "quit" the "Home screen" application.
+You will notice that the menu will dissappear. Later, executing commands will not show results
+in the home screen, because "repainting" of the "Home screen" window will be suspended
+(the application is set to <A HREF="$$LINK(StandardTaskIDs)">CM_NULL</A>).
+
+[References]
+In=EV_defaultHandler, MO_digestOptions, unknown.h/EV_quit
+Out=EV_sendEventSide, unknown.h/EV_appA, unknown.h/EV_appB, unknown.h/EV_appSide

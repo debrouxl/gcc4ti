@@ -1,0 +1,17 @@
+[Main]
+Title=Return Sequence Optimization
+
+[Top]
+The TIGCC linker can optimize function return sequences. If a section ends
+with a subroutine branch followed by a simple return instruction, the
+subroutine branch is converted into a simple unconditional branch (jump),
+and the return instruction is removed. Note that this may fail easily if
+there is a branch to the return instruction somewhere; if the return
+instruction is removed, the branch will point to arbitrary code or data.
+You can make this less likely by telling the assembler to emit all local
+labels, so the linker knows it cannot optimize a return sequence because
+there is a label in front of the return instruction. With the
+<A HREF="$$INFOLINK(gnuasm)">GNU Assembler</A>, this is done by using the
+<B>'--keep-locals'</B> option, which is included automatically if
+range-cutting is enabled. With the <A HREF="$$INFOLINK(a68k)">A68k Assembler</A>,
+the <B>'-d'</B> switch does the job.

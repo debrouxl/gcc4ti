@@ -1,0 +1,35 @@
+[Main]
+Name=MULTI_EXPR
+Type=Type
+Subtype=Structure
+Header Files=estack.h, homescr.h, vat.h
+Definition=typedef struct { unsigned short Size; ESQ Expr[]; } MULTI_EXPR;
+Needed By=FIFO_ELEMENT
+See Also=top_estack, HToESI, Parse2DMultiExpr, homescr.h/
+
+[Description]
+Describes a multi-expression, which is processed as a separate expression stack.
+
+[Explanation]
+MULTI_EXPR is a structure describing a multi-expression. It can be applied to the
+contents of every VAT symbol, because all symbols contain size bytes at the
+beginning. It can also be used to describe a multi-expression passed to
+<A HREF="$$LINK(Parse2DMultiExpr)">Parse2DMultiExpr</A>, or used by the FIFO
+elements in <A HREF="$$LINK(homescr.h/)">homescr.h</A>.
+<BR><BR>
+The <I>Size</I> field contains the size of the data in <I>Expr</I>, in bytes
+(but note that <A HREF="$$LINK(ESQ)">ESQ</A> is one byte large). For real
+multi-expressions, <I>Expr</I> should start with
+<A HREF="$$LINK(Tags)">ENDSTACK_TAG</A>, followed by the actual expressions.
+These expressions are processed from the end to the beginning, as usual
+(using the <I>Size</I> field to find the end). So the last quantum needs to
+be a tag from the <A HREF="$$LINK(Tags)">Tags</A> enum.
+<BR><BR>
+Multiple expressions are separated with
+<A HREF="$$LINK(Tags)">NEXTEXPR_TAG</A>, or with
+<A HREF="$$LINK(Tags)">NEWLINE_TAG</A> (only in TI-Basic programs and
+functions).
+<BR><BR>
+If you have a handle to a MULTI_EXPR structure, you can use the
+<A HREF="$$LINK(HToESI)">HToESI</A> function to get a pointer to the last
+quantum (i.e. the tag).

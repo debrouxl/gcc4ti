@@ -1,0 +1,34 @@
+[Main]
+Name=EX_patch
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=void EX_patch (void *base_addr, void *tag_ptr);
+See Also=enter_ghost_space, info/httigcc/advanced_ghostspace: EXECUTE_IN_GHOST_SPACE
+
+[ROM Call]
+Index=$15A
+
+[Description]
+Relocates an assembly program.
+
+[Explanation]
+EX_patch relocates relocatable items in the assembly program (.89z or .9xz file), where
+<I>tag_ptr</I> points to the "PROGRAM" signature (tag) byte (byte 0xF3), and
+<I>base_addr</I> is the address from where the assembly program will be started.
+So, if <I>handle</I> is a handle of an .89z (or .9xz) file, you can execute it using
+<PRE>len = *(unsigned short*)(base_ptr = HLock (handle));
+EX_patch (base_ptr + 2, base_ptr + len + 1);
+ASM_call (base_ptr + 2);
+HeapUnlock (handle);
+</PRE>
+In practice, some protection devices in HW2 calculators make the whole thing much more
+complicated (see the <A HREF="$$INFOLINK(faq/49)">laucher</A> FAQ entry for more info).
+<BR><BR>
+Note that the relocation table ends just below the tag byte.
+<BR><BR>
+<B>Note:</B> If <I>base_addr</I> is in the ghost space,
+<I>tag_ptr</I> has to be in the ghost space, too!
+
+[References]
+In=dll.h/LoadDLL, unknown.h/push_user_func

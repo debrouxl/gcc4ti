@@ -1,0 +1,49 @@
+[Main]
+Name=push_offset_array
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=unsigned short push_offset_array (CESI elements_ptr, unsigned short **dest);
+MinAMS=1.01
+
+[ROM Call]
+Index=$3C4
+
+[Description]
+Pushes an array of offsets to the list items.
+
+[Explanation]
+This function is not complicated, but it is a bit hard to explain.
+It first increments the pointer to the top of the expression stack to the
+nearest even address, then pushes a word array which contains the offsets to all entries
+on the expression stack below <I>elements_ptr</I> until <A HREF="$$LINK(Tags)">END_TAG</A> is
+reached. The offset is expressed relative to the <I>elements_ptr</I>.
+push_offset_array returns the size of pushed array in words (i.e. the number of elements),
+and stores in the pointer variable pointed to by <I>dest</I> the top address of pushed
+array. For example, if you execute the following sequence
+<BR><BR>
+unsigned int *offsets;<BR>
+ESI esi;<BR>
+unsigned int count;<BR>
+<B>...</B><BR>
+esi=top_estack;<BR>
+count=push_offset_array (esi, &amp;offsets);
+<BR><BR>
+then
+esi-offsets[0],
+esi-offsets[-1],
+esi-offsets[-2],
+..., esi-offsets[1-count]
+will point to entries on the expression stack.
+esi-offsets[0] will point to the further entry from the
+top of the expression stack,
+esi-offsets[-1] will point
+to the next one, and finally,
+esi-offsets[1-count] will
+point to the entry on the top of the expression stack (more precise,
+offsets[1-count] is always zero). This function is useful
+when you need a fast way to access to all entries on the expression stack many times.
+
+[References]
+In=map_tail, map_tail_Int, basfunc.h/did_push_anti_deriv, basfunc.h/did_push_series, basfunc.h/push_1st_derivative, basfunc.h/push_comdenom, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_denominator, basfunc.h/push_desolve, basfunc.h/push_dotproduct, basfunc.h/push_expand, basfunc.h/push_extended_prod, basfunc.h/push_factor, basfunc.h/push_floor, basfunc.h/push_im, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nint, basfunc.h/push_nsolve, basfunc.h/push_numerator, basfunc.h/push_phase, basfunc.h/push_re, basfunc.h/push_round, basfunc.h/push_sin2, basfunc.h/push_solve, basfunc.h/push_summation, basfunc.h/push_zeros, basop.h/did_push_to_polar, basop.h/push_and, basop.h/push_equals, basop.h/push_exponentiate, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_list_plus, basop.h/push_list_times, basop.h/push_negate, basop.h/push_not_equals, basop.h/push_or, basop.h/push_product, basop.h/push_substitute_no_simplify, basop.h/push_sum, basop.h/push_to_cylin, basop.h/push_to_sphere, add_to_top, unknown.h/are_units_consistent, unknown.h/did_map_aggregate_arg, unknown.h/get_ub, unknown.h/index_if_pushed_qquad_info, unknown.h/push_auto_units_conversion, unknown.h/push_but_factor, unknown.h/push_but_term, unknown.h/push_constant_factors, unknown.h/push_constant_terms, unknown.h/push_dependent_factors, unknown.h/push_dependent_terms, unknown.h/push_gcd_then_cofactors, unknown.h/push_independent_factors, unknown.h/push_independent_terms, unknown.h/push_make_proper, unknown.h/push_mrow_aux, unknown.h/push_nonconstant_factors, unknown.h/push_nonconstant_terms, unknown.h/push_nonnumeric_factors, unknown.h/push_poly_qr, unknown.h/push_reciprocal, unknown.h/push_standardize, unknown.h/push_zero_partial_column, unknown.h/raise_to_top, unknown.h/replace_top_with_post_simplified, unknown.h/replace_top2_with_pow, unknown.h/replace_top2_with_sum, unknown.h/_ROM_CALL_484
+Out=check_estack_size, next_expression_index, top_estack, unknown.h/estack_max_index

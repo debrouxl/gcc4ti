@@ -1,0 +1,34 @@
+[Main]
+Name=trunc
+Type=Function
+Subtype=ROM Call
+Header Files=timath.h
+Definition=long trunc (float x);
+Attributes=__attribute__((__const__))
+
+[ROM Call]
+Index=$BC
+
+[Description]
+Converts floating point to integer.
+
+[Explanation]
+trunc truncates floating point argument <I>x</I> to the long integer result. Returns
+zero in a case of overflow.
+This routine performs the same operation as casting a floating point value
+to an int type using <CODE>'(int)'</CODE>, <CODE>'(unsigned int)'</CODE> and
+<CODE>'(long)'</CODE> typecast operators,
+but it is kept here to allow compatibility with older programs created before
+TIGCC introduced floating point operators (i.e. before release 0.9 of TIGCC).
+This function is automatically called when any function which needs an integer is called with
+a floating point arguments, to force a truncation of a floating point value to
+an integer. Also, you can do assignments like <I>b</I>&nbsp;=&nbsp;<I>a</I>;
+when <I>a</I> is a floating point variable (or expression) and <I>b</I> is an
+integer variable. In both cases, trunc will be called automatically
+to perform the truncation.
+At the fundamental level, trunc is exactly the same routine as
+<A HREF="$$LINK(bcdlong)">bcdlong</A>.
+
+[References]
+Out=statline.h/ST_modKey, unknown.h/_bcd_math
+In=bcdlong

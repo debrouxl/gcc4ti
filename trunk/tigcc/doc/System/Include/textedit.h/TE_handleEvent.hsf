@@ -1,0 +1,129 @@
+[Main]
+Name=TE_handleEvent
+Type=Function
+Subtype=ROM Call
+Header Files=textedit.h
+Definition=short TE_handleEvent (TEXT_EDIT *te, EVENT *event);
+
+[ROM Call]
+Index=$A9
+
+[Description]
+Dispatches an event to the text editor to be processed by it.
+
+[Explanation]
+The text editor is an event driven application (see <A HREF="$$LINK(events.h/)">events.h</A> for more
+info about events). It does not have a "main loop" in which keypresses are collected and
+processed. Instead, the user need to collect keypresses, and to dispatch them to the editor
+using TE_handleEvent. The editor will then process the keypress (for example, it will insert a new
+character, delete a character, scroll the editor area upwards/downwards
+etc. depending of the concrete keypress). In other words, the "main loop" is part of the user program. This
+approach is much more flexible, because the user may decide which
+keys will be processed and which will not be, and the user may program a lot of special
+actions which are not pre-programmed in the editor. For example, the user can redefine keys,
+forbid all keys except uppercase letters, etc. TE_handleEvent returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>
+if the event was sucessfully processed by the editor, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+<BR><BR>
+TE_handleEvent needs a pointer to the editor control structure <I>te</I>, and a pointer to
+the <A HREF="$$LINK(events.h/EVENT)">EVENT</A> structure <I>event</I> which represents the event to be processed. Basically,
+after calling <A HREF="$$LINK(TE_open)">TE_open</A>, the program should enter a loop which does
+keyboard reading, and sending (wanted) keypress events to the editor using TE_handleEvent. The keyboard
+may be read using <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>, but this requires manual converting
+of integer keycode to an event structure. It is better idea to use
+<A HREF="$$LINK(events.h/EV_getc)">EV_getc</A> which is similar to <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>
+but in addition to the returned keycode, it also fills as an event structure. So, the text
+editor operations should be programmed as follows:
+<PRE>EVENT ev;
+TEXT_EDIT te;
+HANDLE h = HeapAlloc (200);                     // <I>initial buffer size</I>
+memset (HeapDeref (h), 0, 200);
+
+TE_open (&amp;te, DeskTop, MakeWinRect (30, 30, 130, 70), h, 0, 0, 3);
+
+CU_start ();                                    // <I>Enable the cursor</I>
+
+while (EV_getc (ACTIVITY_BUSY, &amp;ev) != KEY_ESC) // <I>Get keypress and translate it to</I>
+  {                                             // <I>  the event (until ESC pressed)</I>
+    TE_handleEvent (&amp;te, &amp;ev);                  // <I>Send the event to the editor</I>
+  }                                             // <I>  to be processed</I>
+</PRE>
+In this example, all keypresses are passed to the editor. This need not to be always true; in
+fact, the main loop may contain whatever the user wants. The editor can handle a lot of
+special keypresses, like marking with shift+arrows, cut, copy and paste operations etc, not
+only inserting, deleting and scrolling (note that you can later access the clipboard using
+<A HREF="$$LINK(system.h/CB_fetchTEXT)">CB_fetchTEXT</A> and
+<A HREF="$$LINK(system.h/CB_replaceTEXT)">CB_replaceTEXT</A> if necessary).
+However, TE_handleEvent can not handle keypresses
+which represents tokens (like "sin" etc.) nor system keypresses which open menus like "CHAR" etc.
+Fortunately, this problem can be solved easily (see the next example).
+<BR><BR>
+The example given above is not a typical example of event driven program. All events in this
+example are restricted to simple keypresses. Typical event driven program uses
+<A HREF="$$LINK(events.h/EV_eventLoop)">EV_eventLoop</A> function, which is an endless loop in which
+all timers, I/O ports etc. are checked for every possible event, and when an event appears, it
+is dispatched to the active application. The program need to install an event handler using
+<A HREF="$$LINK(events.h/EV_captureEvents)">EV_captureEvents</A> function, which will capture all
+events, and which need to decide what to do with every particular event. This approach is used
+in the following example, which is written in typical "event driven" maneer.
+In this example (extracted from the "Text Editor" example), all events are dispatched to the text editor,
+except pressing the ESC key (this event will exit the event loop),
+and all events which were not processed sucessfully by the
+editor are dispatched to the default event handler (see <A HREF="$$LINK(events.h/EV_defaultHandler)">EV_defaultHandler</A>)
+which for example split tokens to single characters, open menus, etc:
+<PRE>TEXT_EDIT te;
+
+CALLBACK void EventHandler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_KEYPRESS &amp;&amp; ev-&gt;extra.Key.Code == KEY_ESC)
+    ER_throw (1);
+  if (!TE_handleEvent (&amp;te, ev))
+    EV_defaultHandler (ev);
+}
+
+void _main(void)
+{
+  HANDLE h = HeapAlloc (200);
+  ...
+  memset (HeapDeref (h), 0, 200);
+  TE_open (&amp;te, DeskTop, MakeWinRect (30, 30, 130, 70), h, 0, 0, 3);
+  CU_start ();
+  EV_captureEvents (EventHandler);
+  TRY
+    EV_eventLoop ();           // <I>The only way to exit from "EV_eventLoop" is</I>
+  ONERR                        // <I>  to throw an error from the event handler</I>
+    EV_captureEvents (NULL);
+  ENDTRY
+  ...
+}
+</PRE>
+So, event driven programs using the text edit manager typically process events in three
+phases. First, the application event handler examines the event for action it needs to
+take. Either the application handler handles the event and returns to the event
+manager or it proceeds further. Second, the application event handler calls
+TE_handleEvent to allow the text edit manager to process the event. Either
+TE_handleEvent handles the event and returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, or it does not
+understand the event and returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. If TE_handleEvent does not
+handle the event, the application proceeds further. Third, the application calls
+<A HREF="$$LINK(events.h/EV_defaultHandler)">EV_defaultHandler</A> to let the event
+manager have one last try at handling the event. System-wide default
+behavior is implemented in <A HREF="$$LINK(events.h/EV_defaultHandler)">EV_defaultHandler</A>.
+Programs may drive the text editor by calling TE_handleEvent with their own created event
+messages (as in previous example), but in practice, the application just forwards events it
+received from the event manager (i.e. from the <A HREF="$$LINK(events.h/EV_eventLoop)">EV_eventLoop</A>
+loop). Also note that calling TE_handleEvent may cause the heap compression.
+<BR><BR>
+Beware that <A HREF="$$LINK(events.h/EV_eventLoop)">EV_eventLoop</A> is an endless loop, so the only
+way to exit from it is to throw an error from the event handler. This error will be captured later by a
+<A HREF="$$LINK(error.h/TRY)">TRY</A><B>...</B><A HREF="$$LINK(error.h/ONERR)">ONERR</A><B>...</B><A HREF="$$LINK(error.h/ENDTRY)">ENDTRY</A>
+construction.
+<BR><BR>
+<B>Note:</B> For the most of applications, you need not to use any text editor functions except
+<A HREF="$$LINK(TE_open)">TE_open</A> (or <A HREF="$$LINK(TE_openFixed)">TE_openFixed</A>) and TE_handleEvent,
+because TE_handleEvent can do even relatively
+complicated operations like cut/copy/paste, etc. Other text editor functions are needed only
+if the user wants to program some special actions.
+
+[References]
+In=homescr.h/HomeExecute
+Out=TE_checkSlack, TE_focus, TE_pasteText, TE_select, TE_unfocus, alloc.h/HeapFree, alloc.h/HeapLock, alloc.h/HeapMoveHigh, alloc.h/HeapRealloc, alloc.h/HeapUnlock, alloc.h/HLock, dialogs.h/Dialog, dialogs.h/DlgMessage, error.h/ERD_dialog, estack.h/display_statements, estack.h/HToESI, events.h/EV_paintWindows, homescr.h/HS_getEntry, mem.h/memmove, string.h/strlen, system.h/CB_fetchTEXT, system.h/CB_replaceTEXT, system.h/CU_start, system.h/CU_stop, system.h/XR_stringPtr, unknown.h/CTypeTable, unknown.h/EV_errorCode, unknown.h/sf_width, wingraph.h/WinBegin, wingraph.h/WinChar, wingraph.h/WinFill, wingraph.h/WinScrollV, unknown.h/_du16u16, unknown.h/_mu16u16, unknown.h/_ROM_CALL_412, unknown.h/_ROM_CALL_471
+Out_EV_eventLoop=1

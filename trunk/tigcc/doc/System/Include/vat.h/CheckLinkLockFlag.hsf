@@ -1,0 +1,24 @@
+[Main]
+Name=CheckLinkLockFlag
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=void CheckLinkLockFlag (const SYM_ENTRY *FuncSymEntry);
+
+[ROM Call]
+Index=$7F
+
+[Description]
+Prevents a variable to be overwritten through link transfer if this is not allowed.
+
+[Explanation]
+If <I>FuncSymEntry</I> is a pointer to the VAT entry of TI-Basic program or function
+variable, then this function sets or clears the link lock flag which is
+embedded in the program or function variable itself, according to the
+'archived' and 'locked' bits in the VAT entry. This prevents the variable to
+be overwritten through link transfer if this is not permitted. Otherwise
+this function does nothing.
+
+[References]
+In=link.h/sendcalc
+Out=estack.h/HToESI

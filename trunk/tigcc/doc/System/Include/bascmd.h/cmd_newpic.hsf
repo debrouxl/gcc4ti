@@ -1,0 +1,35 @@
+[Main]
+Name=cmd_newpic
+Type=Function
+Header Files=bascmd.h
+Definition=void cmd_newpic (ESI Matrix, SYM_STR PicName, ESI MaxRow, ESI MaxCol);
+Subtype=ROM Call
+MinAMS=1.01
+
+[ROM Call]
+Index=$365
+
+[Description]
+Executes TI-Basic 'NewPic' command.
+
+[Explanation]
+cmd_newpic creates a new TI-Basic PIC variable based on data from a matrix on
+the expression stack (see TI-Basic manual for more info). The parameter
+<I>Matrix</I> should point to the tag of an n&nbsp;x&nbsp;2 matrix on the
+expression stack (its elements must be integer items). Each row in the matrix
+represents a pixel. Pixel coordinates starts at (0,0). <I>PicName</I> should
+point to the variable tag of the symbol (i.e. TI-Basic variable) which will
+be created (see <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A>). If the symbol
+already exists, cmd_newpic replaces it. The parameters <I>MaxRow</I> and
+<I>MaxCol</I> should point to two integer items which determine the height
+and the width of the created PIC variable, i.e. the maximum boundary limits
+for it. Optionally, either <I>MaxRow</I> or <I>MaxCol</I> may point to
+<A HREF="$$LINK(estack.h/Tags)">END_TAG</A>. In this case, default values
+will be used, which are determined from the minimum area required for the
+matrix values.
+<BR><BR>
+This function may cause heap compression.
+
+[References]
+Out=error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/GetValue, estack.h/next_expression_index, unknown.h/WinRemove, vat.h/DerefSym, vat.h/VarStore, wingraph.h/MakeWinRect, wingraph.h/WinBitmapGet, wingraph.h/WinBitmapSize, wingraph.h/WinOpen, wingraph.h/WinPixSet
+Out_EV_eventLoop=1

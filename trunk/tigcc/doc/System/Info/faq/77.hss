@@ -1,0 +1,21 @@
+[Main]
+Title=Why does calling the previous event handler in a user event handler result in a crash?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+What is wrong in calling the previous installed event handler in a new one?
+Whenever I tried to do so, my only result is a crash...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Very probably you do
+<PRE>OldHandler = EV_captureEvents (NewHandler);
+</PRE>
+then you call <CODE>OldHandler</CODE> from <CODE>NewHandler</CODE>. There would be nothing
+wrong in doing so, but function <A HREF="$$LINK(events.h/EV_captureEvents)">EV_captureEvents</A>
+returns <A HREF="$$LINK(alloc.h/NULL)">NULL</A> when there is no any user handlers previously
+installed, which is very common case. So, you can call <CODE>OldHandler</CODE> only if
+it is not null. In other words, it is illegal to call an event handler when it is not
+actually installed. From the other side, function <A HREF="$$LINK(events.h/EV_defaultHandler)">EV_defaultHandler</A>
+calls the TIOS handler which is used for default dispatching of some common events. It works independently of
+which handler is currently installed and whether it is installed at all. This is a function
+which you probably need to call in your event handler to process all unprocessed events.
+</TD></TR></TABLE>

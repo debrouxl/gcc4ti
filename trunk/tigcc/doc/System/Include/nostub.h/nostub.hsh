@@ -1,0 +1,28 @@
+[Main]
+See Also=info/httigcc/nostub: How to make a nostub program, default.h/, doors.h/
+
+[Description]
+Basic header file for kernel-less programming
+
+[Top]
+This header file will be included automatically by <A HREF="$$LINK(default.h/)">default.h</A>,
+except if you define the global preprocessor symbol
+<CODE><A HREF="$$INFOLINK(httigcc/kernel)">USE_KERNEL</A></CODE>, or if you explicitly include the <A HREF="$$LINK(doors.h/)">doors.h</A>
+header file before including any other header file.
+<BR><BR>
+First, this header file defines a global symbol named <CODE>NOSTUB</CODE> which is used
+in other header files to indicate nostub mode.
+Next, it includes <A HREF="$$LINK(default.h/)">default.h</A> to make
+sure that the basic macros which TIGCC needs are defined.
+<BR><BR>
+It then handles nostub-specific directives such as
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_optrom)">OPTIMIZE_ROM_CALLS</A></CODE> (which is useful only for nostub mode) and
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_flinerom)">USE_FLINE_ROM_CALLS</A></CODE> (which needs special support in nostub mode).
+If these symbols are defined, some of the definitions from
+<A HREF="$$LINK(default.h/)">default.h</A> are overwritten.
+<BR><BR>
+It contains code for <CODE>tigcc.a</CODE>, to support
+<CODE><A HREF="$$INFOLINK(httigcc/nostub)">SAVE_SCREEN</A></CODE> and
+<CODE><A HREF="$$INFOLINK(htretval)">RETURN_VALUE</A></CODE>.
+Finally, it contains some rather complicated macros and <CODE>asm</CODE> statements
+to put data needed for <CODE>RETURN_VALUE</CODE> directly into the assembly file.

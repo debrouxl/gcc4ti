@@ -1,0 +1,36 @@
+[Main]
+Name=cmd_pton
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_pton (CESI xValOrList, CESI yValOrList);
+MinAMS=1.01
+See Also=cmd_ptoff, cmd_ptchg, cmd_pxlon, cmd_line, cmd_circle, graph.h/DrawPix
+
+[ROM Call]
+Index=$374
+
+[Description]
+Executes TI-Basic 'PtOn' command.
+
+[Explanation]
+cmd_pton displays the Graph Screen and turns on the screen pixel nearest to
+the window coordinates (x,y) which are relative to the current window
+settings (you can change them using the "Window Editor" application, or
+directly by storing values in system variables like "xmin", using the
+<A HREF="$$LINK(vat.h/VarStore)">VarStore</A> function).
+The parameters <I>xValOrList</I> and <I>yValOrList</I> should either point
+to integer or floating point items on the expression stack, or to lists of 
+integer or floating
+point items which contain x and y coordinates respectively (both lists must
+have an equal number of elements). In the second case, a set of corresponding
+pixels will be turned on, instead of just one pixel.
+<BR><BR>
+See also <A HREF="$$LINK(cmd_pxlon)">cmd_pxlon</A>, which uses pixel
+coordinates instead of window relative ones, and
+<A HREF="$$LINK(graph.h/DrawPix)">DrawPix</A> for much faster low-level pixel
+drawing (independently of the Graph Screen).
+
+[References]
+Out=estack.h/GetValue, estack.h/next_expression_index, unknown.h/ForceFloat, unknown.h/gr_active, unknown.h/GraphActivate, unknown.h/XCvtFtoP, unknown.h/YCvtFtoP, wingraph.h/WinAttr, wingraph.h/WinDupStat, wingraph.h/WinPixSet, unknown.h/_bcd_math
+Out_EV_eventLoop=1

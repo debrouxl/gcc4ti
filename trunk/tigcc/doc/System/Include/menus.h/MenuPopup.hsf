@@ -1,0 +1,128 @@
+[Main]
+Name=MenuPopup
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=unsigned short MenuPopup (const void *MenuPtr, short x, short y, unsigned short start_option);
+See Also=PopupDo
+
+[ROM Call]
+Index=$3B
+
+[Description]
+Executes a popup menu given a pointer to a popup menu structure.
+
+[Explanation]
+MenuPopup works exactly like <A HREF="$$LINK(PopupDo)">PopupDo</A>, except instead of the handle,
+a pointer to the menu structure is given as the parameter. <A HREF="$$LINK(PopupDo)">PopupDo</A>
+internally calls <A HREF="$$LINK(alloc.h/HeapDeref)">HeapDeref</A>, then passes the returned pointer
+to this function. This function is mainly used internally in the TIOS. Its advantage in
+comparison with <A HREF="$$LINK(PopupDo)">PopupDo</A> is the fact that the complete popup menu
+structure may be given as a static pre-filled array of bytes, and you can pass the pointer
+to such a structure to the MenuPopup function. This will save a lot of memory, because you do not need
+to call <A HREF="$$LINK(PopupNew)">PopupNew</A> and a lot of functions like <A HREF="$$LINK(PopupAddText)">PopupAddText</A>.
+Moreover, MenuPopup allows executing menus with more than one level of submenus even in AMS 1.xx, which
+is not possible otherwise. But note that the menu
+structure is a quite complicated variable-shape structure, so if you do not know <I>exactly</I> what
+you are doing, avoid this function! As the menu structure has a variable length and shape,
+it can not be strictly described as a C language type, but it will be described here using
+non-formal C-like syntax. Note that toolbar menus use the same structure:
+<PRE>packed struct MENU
+  {
+    unsigned short DisplayOffset;  // <I>Contains offset to Display[0] from here</I>
+    unsigned short Flags;          // <I>Various flags: see text below</I>
+    unsigned short TotalItems;     // <I>Total number of items</I>
+    unsigned char Width;           // <I>Menu width, 0 for popup menus</I>
+    unsigned char Height;          // <I>Menu height</I>
+    unsigned short MainItems;      // <I>Number of main items only</I>
+    unsigned short DynSize;        // <I>Dynamic size (see text below)</I>
+    unsigned short RedefOffset;    // <I>Offset to RedefIcons, 0 if RedefItems = 0</I>
+    unsigned short RedefItems;     // <I>Number of redefinable icons</I>
+    long separator = -1;
+
+    MENU_ENTRY main_entries [];    // <I>for each main item</I>
+    long separator = -1;
+
+    struct
+      {
+        MENU_ENTRY sub_entries []; // <I>for each submenu item</I>
+        long separator = -1;
+      } cascade [];                // <I>for each submenu</I>
+
+    packed union
+      {
+        <A HREF="$$LINK(graph.h/ICON)">ICON</A> Icon;          // <I>Used in toolbars with icons instead of text</I>
+        char Text [];       // <I>Text, zero terminated</I>
+      } Display [];         // <I>for each menu item</I>
+
+    struct
+      {
+        unsigned short ID;  // <I>ID number</I>
+        <A HREF="$$LINK(graph.h/ICON)">ICON</A> Icon;          // <I>Corresponding icon description</I>
+      } RedefIcons [];      // <I>for each redefinable icon (if any)</I>
+  };
+</PRE>
+The <I>Flags</I> field contains various flags defined in the enum
+<A HREF="$$LINK(MenuFlagsEnum)">MenuFlagsEnum</A>.
+The <I>DynSize</I> field for dynamically created menus (i.e. menus created with
+<A HREF="$$LINK(PopupNew)">PopupNew</A>) contains the total length of the MENU structure in bytes (this
+info is needed for the heap manager). For statically allocated menus, you can put zero in this
+field. Also, each element of the array <I>Display</I> should be aligned on a word boundary. This is not
+strictly necessary for text items, but it is necessary for icon items.
+<BR><BR>
+Each menu item is described using a variable-length (4 or 6 bytes) structure called
+MENU_ENTRY, which is described as:
+<PRE>struct MENU_ENTRY
+  {
+    unsigned short ID;                // <I>Item type (see below) ORed with</I>
+                                      //   <I>ID number for this item</I>
+    unsigned short Offset;            // <I>Offset of icon/text (from Display[0])</I>
+                                      //   <I>or <A HREF="$$LINK(system.h/XR_stringPtr)">XR_string</A>, depending of item type</I>
+    packed union                      // <I>If the item is cascaded (i.e if it has</I>
+      {                               // <I>  a submenu), we have an extra offset</I>
+        unsigned short CascadeOffset; // <I>Offset from the begining of menu</I>
+      } extras;                       // <I>  structure to the begining of the</I>
+  };                                  // <I>  description of the cascaded submenu</I>
+</PRE>
+Possible item types are MT_TEXT (0x8000), MT_XREF (0x9000), and MT_ICON (0xA000). They may
+optionally be ORed with MT_CASCADE (0x4000) to signalize that the item is cascaded (i.e. that
+the item has a submenu). All these constants are defined in the enum <A HREF="$$LINK(ItemTypes)">ItemTypes</A>.
+The <I>CascadeOffset</I> field exists only if <I>ID</I>&nbsp;&amp;&nbsp;MT_CASCADE is non-zero
+(i.e. if bit b14 in <I>ID</I> is set). If the <I>Offset</I> field for an item of icon type is not
+defined, this is an item with redefinable icons (for example, the toolbar menu item in the Geometry application
+uses such menu items).
+<BR><BR>
+Note that the topmost (b15) bit of the <I>ID</I> field is always set, and the topmost bit of the
+<I>Offset</I> field is always 0. This is necessary because MENU_ENTRY is a variable length
+structure (4 or 6 bytes), depending on whether a cascade is defined. To correctly move up and down
+through menu items, the TIOS uses the following strategy: on pressing down, if MT_CASCADE is set,
+move down 6 bytes, otherwise move down 4 bytes. On pressing up, move back 4 bytes, then check
+bit b15. If it is 0, this is an <I>Offset</I> field, so move back another 2 bytes.
+<BR><BR>
+All of this will become clearer with a concrete example. A variable-sized variable-shape structure
+like MENU cannot be defined using standard C initializers, but it may be defined with the help of
+the built-in assembler. This example (called "Static Popup") defines exactly the same menu as the
+example given with <A HREF="$$LINK(PopupDo)">PopupDo</A>, but saves about 200 bytes:
+$$EXAMPLE(Static Popup.c)
+There is an alternative method as well. Note that the field <I>DynSize</I> (the tenth and eleventh byte starting from zero)
+of the MENU structure contains the total length of the structure for dynamically created menus.
+So you can make a menu using commands like <A HREF="$$LINK(PopupNew)">PopupNew</A>,
+<A HREF="$$LINK(PopupAddText)">PopupAddText</A>, etc., and then to use VTI and its debugger to pick up bytes
+from the menu structure knowing the length of it. After this, you may pass a pointer to the
+pre-filled sequence of bytes picked from VTI to this function. I used this approach in the
+following (cryptic) example which is functionally equivalent to the example given above:
+<PRE>static long menu[] = {0x4800D5, 0x90028, 0x500BA, 0, -1, 0x80010008,
+  0x80020012, 0xC003001C, 0x30C004, 0X260040, 0X80050030, -1, 0x8006003A,
+  0x80070048, 0x80080056, -1, 0X80090064, -1, 0x4558414D, 0x504C4500,
+  0x4F707469, 0x6F6E2031, 0x4F4F70, 0x74696F6E, 0x20320053, 0x5375626D,
+  0x656E7520, 0x33005375, 0x626D656E, 0x75203400, 0x4F707469, 0x6F6E2035,
+  0x535375, 0x626F7074, 0x696F6E20, 0x332E3100, 0x5375626F, 0x7074696F,
+  0x6E20332E, 0x32005375, 0x626F7074, 0x696F6E20, 0x332E3300, 0x5375626F,
+  0x7074696F, 0x6E20342E, 0x31000000};
+MenuPopup (&amp;menu, CENTER, CENTER, 0);
+</PRE>
+
+[References]
+In=PopupDo, dialogs.h/Dialog
+Out=unknown.h/_ROM_CALL_421
+Out_EV_eventLoop=1

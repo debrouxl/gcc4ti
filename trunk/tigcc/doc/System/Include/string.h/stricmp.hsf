@@ -1,0 +1,31 @@
+[Main]
+Name=stricmp
+Type=Function
+Subtype=ROM Call
+Header Files=string.h
+Definition=short stricmp (const unsigned char *s1, const unsigned char *s1);
+Attributes=__attribute__((__pure__))
+MinAMS=2.00
+See Also=cmpstri, strcmp
+
+[ROM Call]
+Index=$407
+
+[Description]
+Performs case-insensitive string comparison.
+
+[Explanation]
+stricmp acts like <A HREF="$$LINK(strcmp)">strcmp</A>, but the comparison is
+case-insensitive. More precisely, it internally converts all lowercase
+characters to uppercase (unlike <A HREF="$$LINK(cmpstri)">cmpstri</A>, which
+converts all uppercase characters to lowercase).
+<BR><BR>
+<B>Note:</B> This function is buggy in the AMS versions 2.00 through 2.03: If
+<I>s1</I> contains characters above 127 (i.e. extended/international
+characters), and these characters are really needed for the comparison, it
+always returns a negative value. So, if you really need to use this function,
+make sure that you never call it with such characters in <I>s1</I>.
+
+[References]
+In=bascmd.h/cmd_style, unknown.h/OO_AppNameToACB, unknown.h/_ROM_CALL_131, unknown.h/_ROM_CALL_4F6
+Out=unknown.h/CTypeTable

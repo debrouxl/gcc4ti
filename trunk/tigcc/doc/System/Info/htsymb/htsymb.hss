@@ -1,0 +1,60 @@
+[Main]
+Title=Using Symbolic Mathematics
+See Also=estack.h/, basfunc.h/, basop.h/, bascmd.h/
+
+[Top]
+Using this library you can use even complex calculations which include algebraic
+manipulations, calculus, etc. Everything you need is to build up the expression on
+the expression stack in RPN (Reverse Polish Notation) form using various functions
+from <A HREF="$$LINK(estack.h/)">estack.h</A> header file, then to evaluate the expression
+using functions <A HREF="$$LINK(estack.h/NG_approxESI)">NG_approxESI</A> or
+<A HREF="$$LINK(estack.h/NG_rationalESI)">NG_rationalESI</A>.
+You need to know what is RPN (also known as Postfix Notation) to do this (see
+<A HREF="$$LINK(estack.h/)">estack.h</A> for a list of RPN tokens). Symbolic
+mathematics will be ilustrated through various examples. First example will be a simple
+program which takes two polynoms (or more general expressions) as arguments, multiplies them,
+then returns a new polynom as the result. In TI-Basic, you can perform such calculations using
+TI-Basic function
+<PRE>expand (<I>arg1</I> * <I>arg2</I>)</PRE>
+where <I>arg1</I> and <I>arg2</I> are arguments. This may be represented in RPN form as
+<PRE><I>arg2</I>  <I>arg1</I>  *  expand</PRE>
+So, here is a program (called "Multiply Polynoms"; note that <I>arg2</I> and <I>arg1</I> are already on the stack before
+entering the program):
+$$EXAMPLE(Multiply Polynoms.c)
+It is highly recommended to <A HREF="$$INFOLINK(htretval/reterr)">pass errors on to the AMS</A>.
+After compiling this program (assuming that its name is "polymul.c") try this from TI-Basic:
+<PRE>polymul (x+y, x-y)</PRE>
+But note that returning values from ASM programs to TI-Basic is not without severe limitations.
+See the section about <A HREF="$$INFOLINK(htretval)">returning values to TI-Basic</A>.
+<BR><BR>
+<A HREF="$$LINK(estack.h/)">estack.h</A> contains two very useful functions which convert ordinary
+algebraic expressions (given in a string) to tokenized RPN form and vice-versa, named
+<A HREF="$$LINK(estack.h/push_parse_text)">push_parse_text</A> and <A HREF="$$LINK(estack.h/display_statements)">display_statements</A>
+(although they are somewhat slow, so if you want fast calculations, force RPN as much as possible).
+They are very useful if you want to process algebraic data accepted from the keyboard, or to display
+algebraic data on the screen. Also, a function <A HREF="$$LINK(estack.h/Print2DExpr)">Print2DExpr</A>
+is implemented, which "pretty prints" the expression in a window. Here is an example of a program (called "Pretty Print")
+which calculates the ingegral of 1/((x-3)(x^2+4)) with respect to x and "pretty prints" the result
+on the screen:
+$$EXAMPLE(Pretty Print.c)
+As already mentioned above, powerful applications should avoid <A HREF="$$LINK(estack.h/push_parse_text)">push_parse_text</A>
+as much as possible, and use RPN as much as possible. This will be ilustrated through an example.
+The expression
+<PRE>Integral (1/((x-3)(x^2+4)), x)
+</PRE>
+may be expressed in the RPN form (see <A HREF="$$LINK(estack.h/)">estack.h</A>) as shown below:
+<PRE>x  1  x  3  -  2  x  ^  4  +  *  /  Integral
+</PRE>
+According to this representation, the previous program may be rewritten as ("Static Expression"):
+$$EXAMPLE(Static Expression.c)
+Maybe you want to find an integral of the function which is passed as the argument
+of the program in respect to x, and to print the result using the ordinary
+<A HREF="$$LINK(stdio.h/printf)">printf</A> function (i.e. without "pretty printing")? OK, why not?
+Here is an example (called "Integrate"):
+$$EXAMPLE(Integrate.c)
+A lot of extremely powerful math functions are implemented in the <A HREF="$$LINK(estack.h/)">estack.h</A>
+header file, which are never seen in TI-Basic: accessing various parts of expressions, extracting
+factors, terms, etc. Of course, don't try to make any program for symbolic math before studying
+the <A HREF="$$LINK(estack.h/)">estack.h</A> header file carefully. Anyway,
+<A HREF="$$LINK(bascmd.h/)">bascmd.h</A>, <A HREF="$$LINK(basfunc.h/)">basfunc.h</A>,
+and <A HREF="$$LINK(basop.h/)">basop.h</A> are useful for symbolic mathematics as well.

@@ -1,0 +1,38 @@
+[Main]
+Name=free
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h, stdlib.h
+Definition=void free (void *Ptr);
+See Also=malloc, realloc, calloc
+
+[ROM Call]
+Index=$A3
+
+[Description]
+Frees an allocated block.
+
+[Explanation]
+free deallocates a memory block allocated by a previous call to
+<A HREF="$$LINK(malloc)">malloc</A> or <A HREF="$$LINK(calloc)">calloc</A>.
+<BR><BR>
+<B>Note:</B> free is in fact an ANSI C alias for a TIOS routine originally called
+<A HREF="$$LINK(HeapFreePtr)">HeapFreePtr</A>.
+<BR><BR>
+Do not attempt to use free on a pointer which has changed after it was allocated
+with <A HREF="$$LINK(malloc)">malloc</A>, <A HREF="$$LINK(calloc)">calloc</A>,
+or <A HREF="$$LINK(realloc)">realloc</A>. For example, the following code
+will certainly crash the calculator:
+<PRE>char *ptr = malloc (2);
+if (ptr)
+  {
+    *(ptr++) = 'A';  // pointer changed here
+    *ptr = 0;
+    ...
+    free (ptr);
+  }
+</PRE>
+Instead, preserve the original pointer and pass it to free.
+
+[References]
+Out=HeapFree

@@ -1,0 +1,40 @@
+[Main]
+Name=ST_PROGRESS_BAR
+Type=Type
+Subtype=Structure
+Header Files=statline.h
+Definition=typedef struct { WINDOW *w; /* parent window */ WIN_RECT rect; /* scroll bar area */ long value; /* current progress */ long low, high; /* minimum and maximum values for progress */ long logwidth; /* equal to high-low */ short physwidth; /* equal to rect.x1-rect.x0+1 */ } ST_PROGRESS_BAR;
+MinAMS=2.00
+
+[Description]
+A structure describing a progress bar.
+
+[Explanation]
+ST_PROGRESS_BAR describes a progress bar, which is used with the following functions:
+<A HREF="$$LINK(ST_progressBar)">ST_progressBar</A>,
+<A HREF="$$LINK(ST_progressDismiss)">ST_progressDismiss</A>,
+<A HREF="$$LINK(ST_progressIncrement)">ST_progressIncrement</A>,
+<A HREF="$$LINK(ST_progressUpdate)">ST_progressUpdate</A>.
+<BR><BR>
+You do not need to fill the structure by hand; this is done automatically by <A HREF="$$LINK(ST_progressBar)">ST_progressBar</A>.
+In addition to this, this function already draws the outline of the progress bar.
+<BR>
+However, if you want to fill an ST_PROGRESS_BAR structure by hand, you can do it easily:
+<UL>
+  <LI><I>w</I> is a pointer to the window in which you want to display the progress bar.
+      This window has to be initialized with <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> before you use it.
+      Of course, you can use <A HREF="$$LINK(wingraph.h/DeskTop)">DeskTop</A> as well.</LI>
+  <LI><I>rect</I> is the structure that represents the rectangle where the progress bar will be on the screen. Note that the coordinates have to be in the right order (i.e. xmin as <I>rect</I>.<I>x0</I>, xmax as <I>rect</I>.<I>x1</I>).</LI>
+  <LI><I>value</I> represents the current progress of the task. It must be between <I>low</I> and <I>high</I>.</LI>
+  <LI><I>low</I> is the minimum value for <I>value</I>. That is to say, if <I>value</I> is equal to <I>low</I>, the progress bar is empty.</LI>
+  <LI><I>high</I> is the maximum value for <I>value</I>. If <I>value</I> is equal to <I>high</I> the progress bar is filled completely. Of course, <I>high</I> must always be greater than <I>low</I>.</LI>
+  <LI><I>logwidth</I> must be equal to <CODE>high - low</CODE>.</LI>
+  <LI><I>physwidth</I> is the length in pixels of the progress bar on the screen. It must be equal to <CODE>rect.x1 - rect.x0 + 1</CODE>.</LI>
+</UL>
+Beware that the functions dealing with progress bars are <I>very</I> slow.
+They take more than 20 ms, that is to say more than the time between two timer ticks.
+You can go up to 850 ms for an increment, with a progress bar taking the full screen of the 92+.
+<BR>
+So it is not a good idea to use these functions if you want to clock the process whose progress is represented by the bar.
+Take a look at the "Progress Bar" example for an implementation demonstrating this pitfall:
+$$EXAMPLE(Progress.c)

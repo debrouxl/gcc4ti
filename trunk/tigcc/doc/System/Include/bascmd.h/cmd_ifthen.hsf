@@ -1,0 +1,32 @@
+[Main]
+Name=cmd_ifthen
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_ifthen (CESI condition);
+MinAMS=1.01
+See Also=cmd_else, cmd_if
+
+[ROM Call]
+Index=$355
+
+[Description]
+Executes TI-Basic 'If'...'Then' command.
+
+[Explanation]
+cmd_ifthen is an internal subroutine used by TI-Basic interpreter for
+executing 'If'...'EndIf' and 'If'...'Else'...'EndIf' blocks (searches for a matching
+'Else', 'ElseIf' or 'EndIf' instruction and transfers the control there if the
+condition is not true).
+As this function depends heavily on some system state variables of the
+TI-Basic intepreter which are not set correctly while executing an ASM
+program, it is extremely unlikely that this function may be used inside a C
+program for anything useful.
+<BR><BR>
+<B>Note:</B> See the <CODE><A HREF="$$INFOLINK(keywords/if)">if</A></CODE> and
+<CODE><A HREF="$$INFOLINK(keywords/else)">else</A></CODE> keywords to learn how to
+implement conditional execution in the C language.
+
+[References]
+Out=estack.h/next_expression_index, estack.h/push_internal_simplify, estack.h/top_estack, unknown.h/index_after_match_endtag, unknown.h/NG_control, unknown.h/_ROM_CALL_5C8
+Out_EV_eventLoop=1

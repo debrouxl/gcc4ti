@@ -1,0 +1,31 @@
+[Main]
+Name=estack_to_short
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short estack_to_short (CESI ptr, short *value_ptr);
+MinAMS=1.01
+
+[ROM Call]
+Index=$2C7
+
+[Description]
+Converts entry on the expression stack to signed short integer.
+
+[Explanation]
+estack_to_short converts an entry on the expression stack pointed to by
+<I>ptr</I> (it needs to point to the entry tag) to a signed short integer
+and stores the result in the location pointed to by <I>value_ptr</I>.
+Note that the entry need not be represented by <A HREF="$$LINK(Tags)">POSINT_TAG</A>
+or <A HREF="$$LINK(Tags)">NEGINT_TAG</A>: it also may be represented by
+<A HREF="$$LINK(Tags)">FLOAT_TAG</A> for example, but the value itself needs to be a whole
+number. This function does not remove the entry from the stack.
+<BR><BR>
+estack_to_short returns 1 if the conversion was sucessful, 0 in the case of overflow
+(in this case the stored result will be -32768 or 32767 depending of the direction
+of the overflow), and -1 if the entry can not be represented as a whole number (in
+this case the result is undefined).
+
+[References]
+In=GetValue, bascmd.h/cmd_output, unknown.h/push_ans_entry, unknown.h/push_sq_matrix_to_whole_number
+Out=unknown.h/estack_to_float, estack.h/is_whole_number, estack.h/is0, unknown.h/_bcd_math

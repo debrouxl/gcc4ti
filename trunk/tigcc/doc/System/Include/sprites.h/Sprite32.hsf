@@ -1,0 +1,30 @@
+[Main]
+Name=Sprite32
+Type=Function
+Subtype=tigcc.a
+Header Files=sprites.h
+Definition=void Sprite32 (short x, short y, short height, unsigned long *sprite, void *vm_addr, short mode);
+
+[Description]
+Draws a sprite with a width of 32 pixels or less on the screen.
+
+[Explanation]
+Sprite32 works exactly like <A HREF="$$LINK(Sprite8)">Sprite8</A>, but it takes sprites with a width of 32 pixels.
+<I>sprite</I> is now a pointer to the array of unsigned long integers which defines the sprite.
+So, to define a sprite (or sprite mask), use something like
+<PRE>static unsigned long sprite[] = {...};
+</PRE>
+<B>Note:</B> If you define a sprite mask and invert it with the '~' operator, you need to take
+care of the possibility of the first two bytes being zero in one constant. In this case, the constant will
+be assumed to be a 16 bit value, so only 16 bits will be inverted. Then the constant is promoted to an
+unsigned long integer, and the first 16 bits are still zero as if they actually belonged to the mask.
+To take care of this problem, add the <B>'L'</B> (long) suffix to the end of the value.
+<BR><BR>
+If you want to use sprites wider than 32 pixels (which is not very likely), one solution is to
+use DoorsOS and its "put_sprite" function (see <A HREF="$$INFOLINK(faq)">Frequently Asked Questions</A>
+for more info about how to do it). If you don't want to use DoorsOS, the proposed method depends
+on what the use of the sprite will be. If you don't need too fast action, the built-in TIOS function
+<A HREF="$$LINK(graph.h/BitmapPut)">BitmapPut</A> may be good enough. If you need a very fast sprite
+routine for very large sprites, then you must write it yourself.
+<BR><BR>
+See <A HREF="$$LINK(Sprite8)">Sprite8</A> for more info about sprites.

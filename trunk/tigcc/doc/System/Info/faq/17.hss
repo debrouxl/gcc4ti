@@ -1,0 +1,47 @@
+[Main]
+Title=How do you use sprite functions from sprites.h with grayscale?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I would like to know if it is possible to use the sprite functions
+in <A HREF="$$LINK(sprites.h/)">sprites.h</A> with grayscale. I have tried
+using the <A HREF="$$LINK(sprites.h/Sprite16)">Sprite16</A> function with
+grayscale, and none of the sprites I intended to be in grayscale appeared.
+I tried to use <A HREF="$$LINK(graph.h/DrawIcon)">DrawIcon</A> and the grayscale
+worked just fine. But <A HREF="$$LINK(graph.h/DrawIcon)">DrawIcon</A> is too
+slow... Can <A HREF="$$LINK(sprites.h/Sprite16)">Sprite16</A> and
+<A HREF="$$LINK(sprites.h/Sprite32)">Sprite32</A> handle grayscale sprites.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Very common question in a recent time. See, you probably tried to use
+<A HREF="$$LINK(gray.h/GraySetAMSPlane)">GraySetAMSPlane</A>.
+<A HREF="$$LINK(sprites.h/Sprite16)">Sprite16</A> have a parameter for drawing
+plane, so it is not sensitive to <A HREF="$$LINK(gray.h/GraySetAMSPlane)">GraySetAMSPlane</A>:
+you need to give the plane as an explicite parameter. In fact, you need to
+have two different sprite planes and to draw a sprite twice, passing two
+different planes as a parameter. For example,
+<PRE>static unsigned short light_definition [] = {...};
+static unsigned short dark_definition [] = {...};
+...
+Sprite16 (x, y, height, light_definition, GrayGetPlane (LIGHT_PLANE), A_XOR);
+Sprite16 (x, y, height, dark_definition, GrayGetPlane (DARK_PLANE), A_XOR);
+</PRE>
+In other words, sprite routines <I>can</I> handle grayscale
+sprites, but not natively, meaning you have to take your grayscale
+sprite, split it into two layers, and draw each one separately on its
+own plane - the routine does not handle these by itself. As suggested
+by Scott Noveck, it is possible to make a function of your own to
+handle this. Assume that your grayscale sprites follow the "standard"
+format seen in the most of ASM games, with the dark plane data followed
+immediately by the light plane data. This routine will call
+<A HREF="$$LINK(sprites.h/Sprite16)">Sprite16</A> twice - once for each plane:
+<PRE>void GraySprite16 (short x, short y, short h, unsigned short *spr, short mode)
+{
+  Sprite16 (x, y, h, *spr, GetPlane (LIGHT_PLANE), mode);
+  Sprite16 (x, y, h, *spr + h, GetPlane (DARK_PLANE), mode);
+}
+</PRE>
+Don't be afraid about calling <A HREF="$$LINK(gray.h/GrayGetPlane)">GrayGetPlane</A> each
+time: it is not a waste of time. Its implementation is smart: when the input
+is a constant, it will simply evaluate to a memory address that
+contains the pointer; when it is variable, it expands to a simple macro.
+</TD></TR></TABLE>

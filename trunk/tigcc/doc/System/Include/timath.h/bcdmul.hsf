@@ -1,0 +1,20 @@
+[Main]
+Name=bcdmul
+Type=Function
+Subtype=Macro
+Header Files=timath.h
+Definition=bcd bcdmul (bcd x, bcd y);
+Real Definition=#define bcdmul(x,y) ({bcd __x=(x),__y=(y);float __z=fmul(*(float*)&__x,*(float*)&__y);*(bcd*)&__z;})
+
+[Description]
+BCD multiplication.
+
+[Explanation]
+bcdmul is principally the same as <A HREF="$$LINK(fmul)">fmul</A>, but instead of
+ordinary floats, its arguments and return value are <A HREF="$$LINK(bcd)">bcd</A>
+structures (which represent internal organization of floating point values in
+TIOS). At the fundamental level, bcdmul and <A HREF="$$LINK(fmul)">fmul</A> are the
+same routine.
+
+[References]
+Out=fmul

@@ -1,0 +1,19 @@
+[Main]
+Title=USE_FLINE_ROM_CALLS
+Index=USE_FLINE_EMULATOR, USE_INTERNAL_FLINE_EMULATOR
+See Also=advanced_flinejmp: USE_FLINE_JUMPS
+
+[Top]
+AMS 2.04 and higher support a method of calling ROM calls in a way that is shorter
+than any other way, but very slow. If you want to use this method, write
+<PRE>#define USE_FLINE_ROM_CALLS
+</PRE>
+at the beginning of the program. However, you need to <A HREF="$$LINK(minams)">define a minimum AMS version</A>
+for your program if you want to use this. You can bypass this, assuming that the user
+has installed an emulator for Line 1111 ROM calls, by defining <CODE>USE_FLINE_EMULATOR</CODE>.
+Alternatively, you can even define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>
+to make the program install its own handler for Line 1111 ROM calls.
+<BR><BR>
+<B>Note:</B> The Line 1111 handler of the AMS does not support calling TIOS
+functions from interrupts. If you want to use your own interrupt handlers for
+something, you will have to define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>.

@@ -1,0 +1,43 @@
+[Main]
+Name=DrawClipRect
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void DrawClipRect (const WIN_RECT *rect, const SCR_RECT *clip, short Attr);
+
+[ROM Call]
+Index=$195
+
+[Description]
+Draws a clipped rectangle.
+
+[Explanation]
+DrawClipRect draws a rectangle with (x0,&nbsp;y0) and (x1,&nbsp;y1) as corners,
+where coordinates (x0,&nbsp;y0) and (x1,&nbsp;y1) are given in a <A HREF="$$LINK(wingraph.h/WIN_RECT)">WIN_RECT</A> structure <I>rect</I>.
+The rectangle will be clipped at the boundaries of the area given by parameter <I>clip</I>.
+See <A HREF="$$LINK(SetCurClip)">SetCurClip</A> for more info about clipping areas.
+The interior of the rectangle remains intact (no fill). The border lines of
+the rectangle will be drawn using the attribute <I>Attr</I>.
+See <A HREF="$$LINK(DrawLine)">DrawLine</A> for a description of supported line atributes. In
+addition, the attribute may be ORed with one or more following constants (which
+are defined in enum <A HREF="$$LINK(BoxAttrs)">BoxAttrs</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>B_NORMAL</TD><TD>Draw a normal rectangle</TD>
+</TR><TR>
+<TD>B_DOUBLE</TD><TD>Draw a double thick rectangle</TD>
+</TR><TR>
+<TD>B_ROUNDED</TD><TD>Draw a rectangle with rounded corners</TD>
+</TR><TR>
+<TD>B_CUT</TD><TD>Draw a rectangle with the upper corners cut (like in toolboxes)</TD>
+</TR><TR>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> I cannot conclude what the difference is if you OR the attribute with
+B_NORMAL or if you do not do so. Maybe I am stupid.
+
+[References]
+In=menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, wingraph.h/DrawWinBorder, wingraph.h/WinRect, unknown.h/_ROM_CALL_421
+Out=DrawClipPix, LineTo, MoveTo, SetCurAttr, SetCurClip

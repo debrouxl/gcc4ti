@@ -1,0 +1,18 @@
+[Main]
+Name=ldexp10
+Type=Function
+Subtype=Macro
+Header Files=math.h, timath.h
+Definition=float ldexp10 (float x, short exponent);
+Real Definition=#define ldexp10(x,e) ({float __f=(x);((bcd*)&__f)->exponent+=(e);__f;})
+
+[Description]
+Calculates x times 10 raised to exponent.
+
+[Explanation]
+ldexp10 calculates <I>x</I> times 10 raised to <I>exponent</I>, and returns the
+result, i.e. returns <I>x</I>*10^<I>exponent</I>. Strictly speaking, ldexp10 is
+a macro, not a function.
+<BR><BR>
+<B>Note:</B> This routine is analogous to <CODE>ldexp</CODE> in ANSI C math library, except
+using base ten rather than base two.

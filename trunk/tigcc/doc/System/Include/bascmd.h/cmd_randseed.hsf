@@ -1,0 +1,33 @@
+[Main]
+Name=cmd_randseed
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_randseed (CESI seed);
+MinAMS=1.01
+See Also=basfunc.h/push_rand
+
+[ROM Call]
+Index=$380
+
+[Description]
+Executes TI-Basic 'RandSeed' command.
+
+[Explanation]
+cmd_randseed sets the seeds for the TI-Basic random number generator.
+<I>seed</I> should point to an integer item. If it is zero, then the
+seeds are set to the factory defaults for the random number generator, else
+the value is used to calculate two seeds, which are stored in the TI-Basic
+system variables "seed1" and "seed2".
+<BR><BR>
+<B>Note:</B> This function controls only the TI-Basic random number
+generator, so it has nothing to do with the random number generator from
+<A HREF="$$LINK(stdlib.h/)">stdlib.h</A> (i.e. with
+<A HREF="$$LINK(stdlib.h/srand)">srand</A>). You can use the function
+<A HREF="$$LINK(basfunc.h/push_rand)">push_rand</A> to call the TI-Basic random number
+generator, but note that it is much slower than the random number generator
+implemented in <A HREF="$$LINK(stdlib.h/)">stdlib.h</A>.
+
+[References]
+Out=estack.h/next_expression_index, estack.h/NG_approxESI, estack.h/top_estack, mem.h/memcpy, timath.h/fpisanint, timath.h/is_transfinite, unknown.h/estack_to_float, unknown.h/_bcd_math
+Out_EV_eventLoop=1

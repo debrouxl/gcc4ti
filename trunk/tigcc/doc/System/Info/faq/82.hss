@@ -1,0 +1,29 @@
+[Main]
+Title=Can I use sizeof to determine the exact size of functions?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is it possible to determine the size of the function using the
+<A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A> operator?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+No. In "normal" programs you should never know this information.
+ANSI C even does not propose what is <CODE>'sizeof(<I>function</I>)'</CODE>, and such
+construction will be rejected by the most of C compilers.
+GNU C (like TIGCC is) uses <A HREF="$$INFOLINK(gnuexts/SEC79)">extended pointer arithmetic</A>
+on such way that <CODE>'sizeof(<I>function</I>)'</CODE> is always 1. If you are a dirty
+hacker (as I am), and if you really need to determine the number of bytes occupied by
+function, I used the following method:
+<PRE>void MyFunction(void)
+{
+  // <I>The function body...</I>
+}
+void End_Marker(void);
+asm("End_Marker:");
+...
+...
+num_of_bytes = (char*)End_Marker - (char*)MyFunction;
+</PRE>
+Note however that this method is not absolutely reliable, because it depends of the ordering of
+functions in the program. But, the compiler is free to change the order of functions
+if such reorganization may lead to a better code.
+</TD></TR></TABLE>

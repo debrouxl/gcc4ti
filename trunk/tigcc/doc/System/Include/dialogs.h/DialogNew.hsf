@@ -1,0 +1,71 @@
+[Main]
+Name=DialogNew
+Type=Function
+Subtype=ROM Call
+Header Files=dialogs.h
+Definition=HANDLE DialogNew (short width, short height, DialogNew_t UserFunc);
+
+[ROM Call]
+Index=$34
+
+[Description]
+Creates a new dialog box which can interact with the user program.
+
+[Explanation]
+DialogNew acts like <A HREF="$$LINK(DialogNewSimple)">DialogNewSimple</A>, but accepts
+a pointer to the user function <I>UserFunc</I> as third parameter. This function
+is called (as far as I know):
+<UL>
+<LI>whenever an item in the dialog box is created or recreated;</LI>
+<LI>when an item gets a focus;</LI>
+<LI>after the user pressed ENTER in a request box;</LI>
+<LI>after execution of any pulldown menu.</LI>
+</UL>
+Such a user function allows interaction between execution of dialog boxes and the user
+program, and allows creation of dialog boxes which dynamically change thier properties
+during execution. I still don't know all the possibilities of such interaction, but
+what I know is quite enough for creating very complex dialog boxes.
+<BR><BR>
+Whenever the user function is called, two parameters (one short and one long, I will
+call them x and y for simplicity) are passed to it. What I know about them at the
+moment is:
+<UL>
+<LI>When an item in the dialog box is created, recreated or gets a focus, x&nbsp;=&nbsp;-2 and
+y will be equal to the ordinal number of the item in the list of dialog items
+(first added item after DialogNew has
+ordinal number 0, the next one has number 1, etc.). If the user function returns 0,
+the item in the dialog box will be dimmed (displayed as
+gray) and inactive (nonselectable), else it will be normal.</LI>
+<LI>After the user pressed ENTER in a request box, x will be nonnegative and
+equal to the ordinal number of the item (i.e. this request box) in the list
+of dialog items. y will contain the absolute address of the place where the
+content of the request box is stored. I don't know what return value of the
+user function means in this case. According what TIOS does during execution of
+built-in dialogs, you should return 1 for normal return in this case. Returning -3
+and -4 will force redrawing the dialog box; in addition to this, return value
+-3 will force ignoring the key just pressed by the user.</LI>
+<LI>After execution of the pulldown menu, x will also be nonnegative and equal to
+the ordinal number of the item in the list of dialog items. y will contain the
+result of executing the menu. The user function should return 1 if you want to
+continue execution of the dialog normally. If the user function returns -8,
+execution of the dialog will be terminated immediately. Return values -3 and
+-4 have the same meaning as with request boxes.</LI>
+<LI>
+There is also one event known to me in which x&nbsp;=&nbsp;-6. In normal situations
+this event will not happen, but I will describe what I know about it, maybe later
+more info will be available. This event happens when a special request box which may be
+added to the dialog using <A HREF="$$LINK(DialogAdd)">DialogAdd</A> with <I>ItemType</I> set
+to 10 is created or gets a focus. The user function in such case must return a handle
+which points to a memory area from where such request box will get its initial value,
+and where the content of the request box would be stored. I think that "normal"
+request boxes are quite enough for all purposes, so I will not explain this special
+feature in more detail.</LI>
+</UL>
+After pressing ENTER in a request box or after execution of a pulldown menu, all
+items in the dialog will be recreated (and user function will be called for each
+item accordingly). This allows creating dialogs in which execution of various
+options in pulldown menus makes some other items in the dialog dimmed or active again.
+
+[References]
+In=DialogNewSimple, DlgMessage, VarNew, VarOpen, VarSaveAs, bascmd.h/cmd_dialog, bascmd.h/cmd_request, events.h/EV_defaultHandler, homescr.h/HomeExecute
+Out=alloc.h/HeapAlloc, mem.h/memset

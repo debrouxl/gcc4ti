@@ -1,0 +1,40 @@
+[Main]
+Name=PopupDo
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=short PopupDo (HANDLE Handle, short x, short y, short StartID);
+See Also=PopupNew, MenuPopup
+
+[ROM Call]
+Index=$47
+
+[Description]
+Executes a popup menu.
+
+[Explanation]
+PopupDo draws the popup menu associated with the handle <I>Handle</I> on the screen.
+<I>Handle</I> must be returned from <A HREF="$$LINK(PopupNew)">PopupNew</A> and <I>not</I>
+from <A HREF="$$LINK(PopupBegin)">PopupBegin</A>; take care <I>never</I> to mix handles.
+<BR><BR>
+The top-left corner of the dialog will be the at the position (<I>x</I>,&nbsp;<I>y</I>);
+the coordinates are absolute screen coordinates. <I>x</I>, <I>y</I>, or both may also
+have a special value <A HREF="$$LINK(dialogs.h/CENTER)">CENTER</A>, which tells PopupDo to
+center the menu in this dimension. After the execution, the original contents of the screen
+will be restored. PopupDo returns the identification number (ID) of the selected menu item (see
+<A HREF="$$LINK(PopupAddText)">PopupAddText</A>), or 0 if the user pressed ESC.
+<I>StartID</I> determines which option will be selected first when the menu is
+executed. It seems that <I>StartID</I> works correctly only for menus without
+submenus. Anyway, you can always pass 0 to <I>StartID</I>. It causes the function
+to select the first item.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of a scrolling popup menu with submenus
+(called "Popup Menu Example"):
+$$EXAMPLE(Popup Menu Example.c)
+
+[References]
+Out=MenuPopup, alloc.h/HeapLock, alloc.h/HeapUnlock
+In=bascmd.h/cmd_popup, events.h/EV_defaultHandler, unknown.h/EV_quit
+Out_EV_eventLoop=1

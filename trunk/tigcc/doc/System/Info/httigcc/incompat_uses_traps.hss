@@ -1,0 +1,14 @@
+[Main]
+Title=INCOMPAT_USES_TRAPS
+See Also=incompat_uses_vectors: INCOMPAT_USES_VECTORS
+
+[Top]
+If your program is a TSR that hooks a trap (see
+<A HREF="$$LINK(intr.h/SetIntVec)">SetIntVec</A>), you should write
+<PRE>#define INCOMPAT_USES_TRAPS
+</PRE>
+at the top of at least one source file, before including any header file
+from the TIGCC Library.
+If this directive is not used, a shell might automatically restore the hooked
+trap, rendering the TSR useless. Or it might even just free other resources
+allocated by the program, causing a crash.

@@ -1,0 +1,24 @@
+[Main]
+Name=EV_getSplitRect
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=WIN_RECT *EV_getSplitRect (unsigned short Side);
+
+[ROM Call]
+Index=$C9
+
+[Description]
+Gets the screen rectangle for a given side.
+
+[Explanation]
+EV_getSplitRect consults various calculator mode settings ("Split Screen": "FULL",
+"LEFT-RIGHT" or "TOP-BOTTOM" and "Split Aspect Ratio": "1<B>:</B>1", "1<B>:</B>2" or "2<B>:</B>1") to determine
+dimensions of the rectangular area in which the application will be executed. Parameter
+<I>Side</I> determines wanted side, and it needs to be 0 or 1 (0=left or top side,
+1=right or bottom side). EV_getSplitRect returns the static pointer to the
+<A HREF="$$LINK(graph.h/SCR_RECT)">SCR_RECT</A> structure which describes the determined rectangular
+area.
+
+[References]
+In=EV_startSide, EV_startTask

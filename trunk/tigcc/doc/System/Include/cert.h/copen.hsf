@@ -1,0 +1,30 @@
+[Main]
+Name=copen
+Type=Function
+Subtype=ROM Call
+Header Files=cert.h
+Definition=void copen (CFILE *context, char *data, unsigned long size);
+
+[ROM Call]
+Index=$132
+
+[Description]
+Opens a certificate file context.
+
+[Explanation]
+copen opens a memory mapped file which starts at address <I>data</I>,
+and which is <I>size</I> bytes long. It also initializes file context (this is a file
+control structure of type <A HREF="$$LINK(CFILE)">CFILE</A>) pointed to by
+<I>context</I>. It does not reserve any memory. In fact, copen does nothing more than
+<PRE><I>context</I>-&gt;Start = <I>context</I>-&gt;Pos = <I>data</I>;
+<I>context</I>-&gt;End = <I>data</I> + <I>size</I>;
+<I>context</I>-&gt;EOF = FALSE;
+</PRE>
+<B>Note:</B> All functions from this header file are used in TIOS exclusively for accessing certificate
+files, which are stored in the protected area of Flash ROM, and which contain certificate data.
+However, these functions are not limited to such files. They may be used with any memory mapped
+file (i.e. a "headerless" file which does not have an entry in the VAT table), which does not need to be
+a file which really contains certificate data.
+
+[References]
+In=copensub, system.h/AB_prodid, system.h/AB_prodname, unknown.h/_ROM_CALL_44B, unknown.h/_ROM_CALL_477, unknown.h/_ROM_CALL_4F3

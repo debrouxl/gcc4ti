@@ -1,0 +1,17 @@
+[Main]
+Name=ispunct
+Type=Function
+Subtype=Macro
+Header Files=ctype.h
+Definition=short ispunct (short c);
+Real Definition=#define ispunct(c) ({register short __c=(c);__c>=33&&__c<=127&&!((__c>='0'&&__c<='9')||(__c>='A'&&__c<='Z')||(__c>='a'&&__c<='z'));})
+
+[Description]
+Checks whether a character is a punctuation character.
+
+[Explanation]
+ispunct returns nonzero if <I>c</I> is a punctuation character, otherwise it returns zero. Punctuation
+characters are all characters in standard ASCII graph range (0x21 to 0x7F), which are not
+alphanumeric character (see <A HREF="$$LINK(isalnum)">isalnum</A>).
+ispunct is an inline function which is implemented using GNU C smart macros, which expands to a
+relatively large code.

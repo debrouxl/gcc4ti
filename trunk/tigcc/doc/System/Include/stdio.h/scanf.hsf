@@ -1,0 +1,26 @@
+[Main]
+Name=scanf
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=short scanf (const char *format, ...);
+Real Definition=#define scanf(__format__...) ({long __maxbuflen=(_rom_call(unsigned long,(void),9C))()-2;(__maxbuflen>0)?({char *__inputbuf=(_rom_call(void*,(long),A2))(__maxbuflen);getsn(__inputbuf,__maxbuflen);short __result=sscanf(__inputbuf,__format__);(_rom_call(void,(void*),A3))(__inputbuf);__result;}):0;})
+
+[Description]
+Console input parsing function.
+
+[Explanation]
+Works like <A HREF="$$LINK(sscanf)">sscanf</A>, but reads the input from the keyboard using
+<A HREF="$$LINK(getsn)">getsn</A> rather than from a buffer of type <CODE>char *</CODE>. [ENTER]
+is interpreted as EOF.
+<BR><BR>
+The input is echoed on the screen. <B>No</B> newline will be output at the end of the
+input, no matter whether it resulted from the user pressing [ENTER] or from a
+format matching error.
+<BR><BR>
+The amount of possible user input is limited by available memory. scanf may also return 0 if there
+was no memory left at all to allocate the temporary buffer.
+
+[References]
+Out=getsn, sscanf, alloc.h/HeapAllocPtr, alloc.h/HeapFreePtr, alloc.h/HeapMax
+Out_EV_eventLoop=1

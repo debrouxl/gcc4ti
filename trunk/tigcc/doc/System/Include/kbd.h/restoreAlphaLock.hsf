@@ -1,0 +1,46 @@
+[Main]
+Name=restoreAlphaLock
+Type=Function
+Subtype=ROM Call
+Header Files=kbd.h
+Definition=void restoreAlphaLock (unsigned char *Status);
+MinAMS=2.00
+See Also=alphaLockOn, alphaLockOff, SetAlphaStatus
+
+[ROM Call]
+Index=$483
+
+[Description]
+Restores the alpha-lock status.
+
+[Explanation]
+restoreAlphaLock restores the alpha-lock status to the value saved in <I>Flags</I>,
+which is obtained through a call to <A HREF="$$LINK(alphaLockOn)">alphaLockOn</A> or <A HREF="$$LINK(alphaLockOff)">alphaLockOff</A>.
+It seems that these are the valid values for *<I>Status</I>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">0</TD>
+  <TD>Alpha-lock is turned off.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">1</TD>
+  <TD>Alpha-lock is turned on.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">2</TD>
+  <TD>Uppercase alpha-lock is turned on.
+      However, <A HREF="$$LINK(GetAlphaStatus)">GetAlphaStatus</A> will then return <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+      This is the value which is used if the user presses SHIFT and then ALPHA.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">3</TD>
+  <TD>Uppercase alpha-lock is turned on.
+      <A HREF="$$LINK(GetAlphaStatus)">GetAlphaStatus</A> will return <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>.</TD>
+</TR>
+</TABLE>
+<BR>
+On the TI-92+, the function does nothing.
+
+[References]
+In=dialogs.h/Dialog, menus.h/MenuKey, unknown.h/_ROM_CALL_421

@@ -1,0 +1,21 @@
+[Main]
+Name=OSContrastDn
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=void OSContrastDn (void);
+Real Definition=#define OSContrastDn() ({_rom_call(void,(void),297) (); asm ("":::"d3","d4");})
+
+[ROM Call]
+Index=$297
+
+[Description]
+Decreases the contrast.
+
+[Explanation]
+OSContrastDn decreases the display contrast.
+It is actually a library function calling the real TIOS function called OSContrastDn,
+because the TIOS function destroys the content of a register which needs to be preserved.
+
+[References]
+Out=AB_getGateArrayVersion

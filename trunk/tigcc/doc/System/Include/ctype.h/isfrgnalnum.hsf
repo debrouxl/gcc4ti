@@ -1,0 +1,16 @@
+[Main]
+Name=isfrgnalnum
+Type=Function
+Subtype=Macro
+Header Files=ctype.h
+Definition=short isfrgnalnum (short c);
+Real Definition=#define isfrgnalnum(c) ({register short __c=(c);(__c>=128&&__c<=148&&__c!=140)||__c==181||(__c>=192&&__c<=255&&__c!=215&&__c!=247);})
+
+[Description]
+Checks whether a character is a foreign letter which is valid in a variable name.
+
+[Explanation]
+isfrgnalnum is the same as <A HREF="$$LINK(isfrgn)">isfrgn</A>, except small Greek "pi" is excluded,
+because it is the reserved symbol and it is not valid in a variable name.
+isfrgnalnum is an inline function which is implemented using GNU C smart macros, which expands
+to a relatively large code.

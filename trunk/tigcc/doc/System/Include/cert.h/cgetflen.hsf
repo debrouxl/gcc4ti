@@ -1,0 +1,23 @@
+[Main]
+Name=cgetflen
+Type=Function
+Subtype=ROM Call
+Header Files=cert.h
+Definition=unsigned long cgetflen (CFILE *context, unsigned short FieldIDWord);
+
+[ROM Call]
+Index=$12D
+
+[Description]
+Gets the length of a field.
+
+[Explanation]
+cgetflen returns length of the field which has ID word (see <A HREF="$$LINK(cread)">cread</A>) equal to
+<I>FieldIDWord</I>. This information is present in lower 4 bits of <I>FieldIDWord</I>
+if these bits are smaller or equal to 0xC. If not, necessary information needed to
+calculate the length are read from the context pointed to by <I>context</I>. cgetflen
+returns 0 if the end of the file is reached.
+
+[References]
+Out=cgetc, cgetnl, cgetns
+In=cread

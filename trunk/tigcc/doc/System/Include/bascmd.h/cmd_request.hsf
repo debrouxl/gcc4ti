@@ -1,0 +1,35 @@
+[Main]
+Name=cmd_request
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_request (CESI PromptStr, SYM_STR SymName);
+MinAMS=1.01
+See Also=cmd_text, cmd_dialog, dialogs.h/
+
+[ROM Call]
+Index=$384
+
+[Description]
+Executes TI-Basic 'Request' command.
+
+[Explanation]
+cmd_request displays a dialog box without a title which contains only a
+request box (i.e. an input line box) and two buttons ("OK" and "Cancel").
+The parameter <I>PromptStr</I> should point to the tag of a string item
+which describes a prompt of at most 20 characters which will appear in front
+of the request box, and <I>SymName</I> should point to the variable tag of
+the name of a TI-Basic variable (see
+<A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A>). If this variable exists and
+contains a string value, this value will be displayed and highlighted in the
+input box as the default choice, else the input box will be empty. Either
+way, if the user presses 'ENTER', the value from the input box will be stored
+in this variable as a string value (it will be created if it does not exist,
+except if the user presses the 'ESC' key).
+<BR><BR>
+<B>Note:</B> See the <A HREF="$$LINK(dialogs.h/)">dialogs.h</A> header file
+for much more flexible methods to create dialog boxes.
+
+[References]
+Out=alloc.h/HeapFree, alloc.h/HeapFreeIndir, alloc.h/HeapLock, alloc.h/HeapRealloc, dialogs.h/DialogAdd, dialogs.h/DialogDo, dialogs.h/DialogNew, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/HToESI, estack.h/next_expression_index, estack.h/push_zstr, estack.h/top_estack, mem.h/memset, string.h/strcat, string.h/strlen, string.h/strncpy, system.h/NeedStack, unknown.h/primary_tag_list, estack.h/push_simplify, vat.h/DerefSym, vat.h/SetOK, vat.h/VarRecall, vat.h/VarStore, unknown.h/_ROM_CALL_480
+Out_EV_eventLoop=1

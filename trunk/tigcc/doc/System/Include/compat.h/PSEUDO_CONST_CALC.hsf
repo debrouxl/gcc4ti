@@ -1,0 +1,25 @@
+[Main]
+Name=PSEUDO_CONST_CALC
+Type=Function
+Subtype=Macro
+Header Files=compat.h
+Definition=#define PSEUDO_CONST_CALC(calc92,calc89,calc92plus,calcv200) (CALCULATOR ? ((CALCULATOR == 1) ? (calc92plus) : (calcv200)) : (calc89))
+See Also=PSEUDO_CONST_SCREEN, PSEUDO_CONST_KBD
+
+[Description]
+A macro to construct a pseudo-constant from calculator-based values.
+
+[Explanation]
+PSEUDO_CONST_CALC is a macro used by
+<A HREF="$$LINK(PSEUDO_CONST_SCREEN)">PSEUDO_CONST_SCREEN</A> and
+<A HREF="$$LINK(PSEUDO_CONST_KBD)">PSEUDO_CONST_KBD</A>. Most of the time,
+you should not use it directly, but use these two macros instead.
+<BR><BR>
+It takes several values for the different calculators that TIGCC can
+currently compile code for, and returns one of them based on the calculator
+that the program currently uses.
+The values must be plain positive integers up to 65535 (0xFFFF) in decimal
+or hexadecimal notation, otherwise this macro may fail in some cases.
+<BR><BR>
+Uses of this macro may be optimized by defining
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_optcalc)">OPTIMIZE_CALC_CONSTS</A></CODE>.

@@ -1,0 +1,35 @@
+[Main]
+Title=I get weird error messages where I don't see errors.
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+The compiler sometimes report strange error messages on places where I really can not see
+any errors. For example, the compiler reports the error
+<PRE>parse error before 'void'
+</PRE>
+but the statement on which the error is reported was
+<PRE>int cexp;
+</PRE>
+I am really confused. First, I don't see any errors here, and second, I can't see any 'void'
+keywords here!
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Yes, such problems may really be the source of big frustrations. There is nothing wrong with
+above statement, but note that <CODE>'cexp'</CODE> is a function defined in
+<A HREF="$$LINK(timath.h/)">timath.h</A> header file, and you can not use this name as a name
+of a variable. Now you can say why you got such strange error message? See, the most of
+functions in TIGCCLIB are translated by the <A HREF="$$INFOLINK(cpp)">preprocessor</A> into constructions which perform
+indirect function calls through a TIOS jump table. In other words, <CODE>'cexp'</CODE> will
+be replaced by the preprocessor into the indirect function call constructor whenever it is
+used. So, the innocent statement like
+<PRE>int cexp;
+</PRE>
+will be converted into
+<PRE>int (*(void(**)(float,float,float*,float*))(*(long*)0xC8+1316));
+</PRE>
+which is a syntax error. And the error is just before <CODE>'void'</CODE>.
+<BR><BR>
+I can not do anything against such hidden errors. Whenever you encounter strange errors without
+obvious reasons, check whether you used reserved library name for your identifier. The chance
+of making such errors is much smaller if you include only the necessary header files than if you
+include the general header file <A HREF="$$LINK(tigcclib.h/)">tigcclib.h</A>.
+</TD></TR></TABLE>

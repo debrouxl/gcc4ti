@@ -1,0 +1,23 @@
+[Main]
+Title=__builtin_frame_address
+
+[Top]
+<CODE><B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *__builtin_frame_address (<B><A HREF="$$INFOLINK(keywords/int)">int</A></B> level);</CODE>
+<BR><BR>
+This function is similar to <A HREF="$$LINK(SEC103___builtin_return_address)">__builtin_return_address</A>, but it
+returns the address of the function frame rather than the return address
+of the function.  Calling __builtin_frame_address with a value of
+0 yields the frame address of the current function, a value of
+1 yields the frame address of the caller of the current function,
+and so forth.
+<BR><BR>
+The frame is the area on the stack which holds local variables and saved
+registers.  The frame address is normally the address of the first word
+pushed on to the stack by the function.  However, the exact definition
+depends upon the processor and the calling convention.  On the Motorola
+68000, if the function has a frame,
+then __builtin_frame_address will return the value of the frame
+pointer register <CODE>a6</CODE> if <I>level</I> is 0.
+<BR><BR>
+This function should be used with a nonzero argument only for debugging
+purposes.

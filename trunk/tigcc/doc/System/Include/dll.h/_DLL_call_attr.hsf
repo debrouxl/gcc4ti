@@ -1,0 +1,28 @@
+[Main]
+Name=_DLL_call_attr
+Type=Function
+Subtype=Macro Constructor
+Header Files=dll.h
+Definition=#define _DLL_call_attr(type,args,attr,index) (*(type (* attr) args) _DLL_entry (index))
+See also=_DLL_call, _DLL_reference, _DLL_glbvar, info/gnuexts/SEC85: Declaring Attributes of Functions
+
+[Description]
+Constructs a function definition with attributes for a DLL call.
+
+[Explanation]
+_DLL_call_attr gets a void pointer to the location of the <I>index</I>-th exported symbol of the
+currently loaded DLL (using <A HREF="$$LINK(_DLL_entry)">_DLL_entry</A>), casts this pointer to a temporarily-defined pointer
+to a function which returns <I>type</I>, requires <I>args</I> as arguments, and has the attributes
+defined by <I>attr</I>, and then dereferences it. _DLL_call_attr is very similar to <A HREF="$$LINK(_DLL_call)">_DLL_call</A>, but allows for defining function attributes,
+too. For example, suppose that the DLL contains the following declarations in the DLL
+interface section (see <A HREF="$$LINK(DLL_INTERFACE)">DLL_INTERFACE</A>): 
+<PRE>void foo (int, const char *) __attribute__((__regparm__(4)));
+int bar (long) __ATTR_STD__;
+...
+DLL_EXPORTS foo, bar
+</PRE>
+Then, to 'import' <I>foo</I> and <I>bar</I> from the DLL (assuming that it has been loaded sucessfully using
+<A HREF="$$LINK(LoadDLL)">LoadDLL</A>), you should use the following defines:
+<PRE>#define foo _DLL_call_attr (void, (int, const char *), 0, __attribute__((regparm(4))))
+#define bar _DLL_call_attr (int, (long), 1, __ATTR_STD__)
+</PRE>

@@ -1,0 +1,44 @@
+[Main]
+Name=VarCreateFolderPopup
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=HANDLE VarCreateFolderPopup (unsigned short *CurIndex, unsigned short Flags);
+
+[ROM Call]
+Index=$28F
+
+[Description]
+Creates a popup menu containing a list of all folders.
+
+[Explanation]
+VarCreateFolderPopup creates a dynamic popup (or pulldown) menu which
+contains a list of all folders in the VAT folder table, and returns a handle
+to it (or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of an error).
+<BR><BR>
+The parameter <I>Flags</I> is usually zero, but it may contain
+additional flags from the enum <A HREF="$$LINK(VCFPFlags)">VCFPFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">VCFP_ALL</TD>
+  <TD>"All" is included as the first option in the list, like in the "View"
+      dialog of the Var-Link window.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">VCFP_SKIP_CURDIR</TD>
+  <TD>The currently active folder is not included in the list.</TD>
+</TR>
+</TABLE>
+<BR>
+This function also stores the index of the currently active folder in the
+word pointed to by <I>CurIndex</I>.
+<BR><BR>
+<B>Note:</B> You need to free the returned handle later by calling
+<A HREF="$$LINK(alloc.h/HeapFree)">HeapFree</A>.
+<BR><BR>
+This routine may cause heap compression.
+
+[References]
+In=dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs, events.h/MO_modeDialog
+Out=PopupAddText, PopupNew, alloc.h/HeapFree, system.h/XR_stringPtr, vat.h/FolderOp, vat.h/SymCpy0, vat.h/SymFindFirst, vat.h/SymFindNext

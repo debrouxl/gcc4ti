@@ -1,0 +1,26 @@
+[Main]
+Name=va_arg
+Type=Function
+Subtype=Macro
+Header Files=stdarg.h
+Definition=type va_arg (va_list &ap, type);
+Real Definition=#define va_arg(ap,type) (*(type*)((((char*)(ap))+=((sizeof(type)+1)&0xFFFE))-(((sizeof(type)+1)&0xFFFE))))
+
+[Description]
+Returns the current argument in the list.
+
+[Explanation]
+This function (also implemented as a macro) expands to an expression that
+has the same type and value as the next argument being passed (one of the
+variable arguments). The variable <I>ap</I> to va_arg should be the same
+<I>ap</I> that <A HREF="$$LINK(va_start)">va_start</A> initialized. Because of
+default promotions, you can't use char or unsigned char types with va_arg.
+<BR><BR>
+The first time va_arg is used, it returns the first argument in the list. Each
+successive time va_arg is used, it returns the next argument in the list. It
+does this by first dereferencing <I>ap</I>, and then incrementing <I>ap</I>
+to point to the following item.
+<BR><BR>
+va_arg uses the parameter <I>type</I> (which must be an expected type name) to both
+perform the dereference and to locate the following item. Each successive time va_arg
+is invoked, it modifies ap to point to the next argument in the list.

@@ -1,0 +1,39 @@
+[Main]
+Name=DrawChar
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void DrawChar (short x, short y, char c, short Attr);
+
+[ROM Call]
+Index=$1A4
+
+[Description]
+Draws a character.
+
+[Explanation]
+DrawChar draws a character <I>c</I> at a specific
+(<I>x</I>,&nbsp;<I>y</I>) location. The following
+character attributes are supported (the region defined by a character is 8x10
+for huge font, 6x8 for large font or nx5 for small font, depending on the
+current font set by <A HREF="$$LINK(FontSetSys)">FontSetSys</A> command):
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>The character is ORed into the destination</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>The region created by inversing the character replaces the destination</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>The region defined by the character replaces the destination</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>The character is XORed into the destination</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>The character is masked so that every other pixel is turned off then ORed into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="$$LINK(SetCurAttr)">SetCurAttr</A> command for more general info about attributes.
+
+[References]
+In=DrawFkey, menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, stdio.h/fputchar, unknown.h/_ROM_CALL_412, unknown.h/_ROM_CALL_421
+Out=unknown.h/EV_runningApp, unknown.h/OO_GetAppAttr, unknown.h/sf_width, unknown.h/TIOS_abs

@@ -1,0 +1,34 @@
+[Main]
+Title=Symbols to Control the Linker
+Subsections=control_ref_all, control_tigcc_native, control_nostub, control_nostub_dll, control_fargo, control_flash_os, control_library, control_calc, control_flag, control_version, control_lib_min_version, control_ld_use_fline_jumps, control_ld_use_4byte_fline_jumps, control_ld_omit_bss_init, control_ld_ignore_global_imports
+
+[Top]
+In addition to options specified in the command line, the TIGCC linker can
+be controlled using special symbol names. They should be used directly only
+in assembly programs; C programs should rely on the appropriate library
+facilities if they are available.
+<BR><BR>
+These are the symbols the linker treats as control symbols:
+
+[Bottom]
+Symbols can be created in a variety of ways; they can be:
+<UL>
+<LI>labels;</LI>
+<LI>undefined exported symbols;</LI>
+<LI>imported (used but undefined) symbols;</LI>
+<LI>common symbols.</LI>
+</UL>
+Not all assemblers support all types of symbols; for example, the
+<A HREF="$$INFOLINK(a68k)">A68k assembler</A> does not support exporting
+symbols which are not defined somewhere in the same file. This assembler is
+also somewhat special from the linker's point of view: It only outputs
+exported and imported symbols by default; local labels can be supplied in a
+symbol table, but since it is optional, the linker does not use it to receive
+control information.
+<BR><BR>
+If a symbol is detected as a control symbol, it is not imported into the
+internal data structures as usual. There are two reasons for this: First,
+if a user accidentally defines a control symbol somewhere (some traditional
+control symbol names are quite short), the resulting error can help detect
+this problem. Second, if common symbols are used, they would waste space in
+the executable otherwise.

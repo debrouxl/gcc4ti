@@ -1,0 +1,29 @@
+[Main]
+Title=may_alias
+
+[Top]
+Accesses to objects with types with this attribute are not subjected to
+type-based alias analysis, but are instead assumed to be able to alias
+any other type of objects, just like the <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> type.  See
+<B>'-fstrict-aliasing'</B> for more information on aliasing issues.
+<BR><BR>
+Example of use:
+<PRE>typedef short __attribute__((__may_alias__)) short_a;
+
+void _main (void)
+{
+  long a = 0x12345678;
+  short_a *b = (short_a *) &amp;a;
+
+  b[1] = 0;
+
+  if (a == 0x12345678)
+    abort();
+
+  /* ... */
+}
+</PRE>
+If you replaced <CODE>short_a</CODE> with <CODE>short</CODE> in the variable
+declaration, the above program would abort when compiled with
+<B>'-fstrict-aliasing'</B>, which is on by default at <B>'-O2'</B> or
+above in recent GCC versions.

@@ -1,0 +1,21 @@
+[Main]
+Title=Inquiring on Alignment of Types or Variables
+
+[Top]
+The keyword <CODE>__alignof__</CODE> allows you to inquire about how an object
+is aligned, or the minimum alignment usually required by a type.  Its
+syntax is just like <CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE>.
+<BR><BR>
+In TIGCC, <CODE>__alignof__&nbsp;(<I>anything</I>)</CODE> is always 2, except for
+<CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> variables.
+<BR><BR>
+If the operand of <CODE>__alignof__</CODE> is an lvalue rather than a type,
+its value is the required alignment for its type, taking into account
+any minimum alignment specified with GCC's <CODE><A HREF="$$LINK(SEC91_aligned)">aligned</A></CODE> attribute.  For example, after this
+declaration:
+<PRE>struct foo { int x; char y; } foo1;
+</PRE>
+the value of <CODE>__alignof__&nbsp;(foo1.y)</CODE> is 1, even though its actual
+alignment is 2, the same as <CODE>__alignof__&nbsp;(int)</CODE>.
+<BR><BR>
+It is an error to ask for the alignment of an incomplete type.

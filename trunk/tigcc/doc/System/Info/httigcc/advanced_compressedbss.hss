@@ -1,0 +1,18 @@
+[Main]
+Title=COMPRESSED_FORMAT_BSS
+See Also=advanced_kernelbss: KERNEL_FORMAT_BSS, advanced_mergebss: MERGE_BSS
+
+[Top]
+In nostub mode, if you put
+<PRE>#define COMPRESSED_FORMAT_BSS
+</PRE>
+at the beginning of the program, a BSS section will be created dynamically at
+run time, and the references into this section will be stored in the program
+in a compressed format. A BSS section holds uninitialized global variables.
+Relocation entries in this format take the smallest space that is reasonable.
+The relocation code for the compressed format is rather large, but part of it
+only has to be inserted into the program once if multiple
+<CODE>COMPRESSED_FORMAT_...</CODE> features are used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="$$INFOLINK(ld/insert_compressed_bss_refs)">__ld_insert_compressed_bss_refs</A>.

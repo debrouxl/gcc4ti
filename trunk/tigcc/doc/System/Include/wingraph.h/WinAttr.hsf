@@ -1,0 +1,66 @@
+[Main]
+Name=WinAttr
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=short WinAttr (WINDOW *w, short Attr);
+
+[ROM Call]
+Index=$2
+
+[Description]
+Sets the default window attribute.
+
+[Explanation]
+WinAttr sets the attribute for the next write (or draw) to the window pointed to by <I>w</I>
+to <I>Attr</I>. This attribute will be used in all drawing commands which have not an
+attribute as explicite parameter. The interpretation of the attribute depends of concrete
+graphic command. Some attributes are only valid for certain graphic operation. Legal attribute
+values are defined in enum <A HREF="$$LINK(graph.h/Attrs)">Attrs</A>. In a general, the following attributes
+are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REVERSE</TD><TD>Destination pixels turned off</TD>
+</TR><TR>
+<TD>A_NORMAL</TD><TD>Destination pixels turned on</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Source pixels XORed with destination pixels</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Destination pixels masked so that every other pixel turned off</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>Source pixels replace destination pixels</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>Source pixels ORed with destination pixels</TD>
+</TR>
+</TABLE>
+<BR>
+For lines the following additional attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+WinAttr returns the previous current attribute.
+<BR><BR>
+<B>Note:</B> Although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS and
+A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which are
+more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act like
+A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to draw
+shaded-fill rectangle using a line drawing command (for example, <A HREF="$$LINK(WinLine)">WinLine</A>)
+in a loop, use vertical lines for drawing, not horizontal ones! Note also that these additional
+attributes work fine with <A HREF="$$LINK(WinFillTriangle)">WinFillTriangle</A> and
+<A HREF="$$LINK(WinFillLines2)">WinFillLines2</A>, but not with <A HREF="$$LINK(WinFill)">WinFill</A>!
+
+[References]
+In=bascmd.h/cmd_circle, bascmd.h/cmd_disp, bascmd.h/cmd_line, bascmd.h/cmd_linehorz, bascmd.h/cmd_linevert, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_ptchg, bascmd.h/cmd_ptoff, bascmd.h/cmd_pton, bascmd.h/cmd_pttext, bascmd.h/cmd_pxlchg, bascmd.h/cmd_pxlcircle, bascmd.h/cmd_pxlhorz, bascmd.h/cmd_pxlline, bascmd.h/cmd_pxloff, bascmd.h/cmd_pxlon, bascmd.h/cmd_pxltext, bascmd.h/cmd_pxlvert, bascmd.h/cmd_shade, dialogs.h/Dialog, error.h/ERD_dialog, events.h/ABT_dialog, events.h/EV_defaultHandler, events.h/handleVarLinkKey, gdraw.h/GD_Pen, gdraw.h/GD_Text, gdraw.h/GR3_paint3d, homescr.h/HomeExecute, statline.h/ST_eraseHelp, statline.h/ST_modKey, textedit.h/TE_open, textedit.h/TE_openFixed, unknown.h/ERD_notice, unknown.h/EV_quit, unknown.h/FuncLineFlt, unknown.h/GM_Integrate, unknown.h/GM_Shade, unknown.h/gr_DispLabels, unknown.h/GR3_addContours, unknown.h/GR3_handleEvent, unknown.h/GrLineFlt, unknown.h/GT_BackupToScr, unknown.h/GT_DspMsg, unknown.h/GT_DspTraceCoords, unknown.h/GT_KeyIn, unknown.h/GT_ShowMarkers, unknown.h/GT_Trace, unknown.h/Regraph, unknown.h/YCvtFtoP, unknown.h/_ROM_CALL_45B

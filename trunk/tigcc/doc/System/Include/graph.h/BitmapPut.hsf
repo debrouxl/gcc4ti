@@ -1,0 +1,53 @@
+[Main]
+Name=BitmapPut
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void BitmapPut (short x, short y, const void *BitMap, const SCR_RECT *clip, short Attr);
+See Also=BitmapGet, CalcBitmapSize
+
+[ROM Call]
+Index=$187
+
+[Description]
+Puts a bitmap to the screen.
+
+[Explanation]
+BitmapPut puts a bitmap <I>BitMap</I> (which was taken using <A HREF="$$LINK(BitmapGet)">BitmapGet</A>)
+on the screen at position (<I>x</I>,&nbsp;<I>y</I>), using the attribute <I>Attr</I>.
+The drawn bitmap will be clipped at the boundaries of the area given by the
+<I>clip</I> parameter. See <A HREF="$$LINK(SetCurClip)">SetCurClip</A> for more info about clipping areas.
+The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REPLACE</TD><TD>Replace the destination region with the source bitmap</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Replace the destination region with the inverse of the source bitmap</TD>
+</TR><TR>
+<TD>A_NORMAL</TD><TD>OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Exculsive-OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_AND</TD><TD>AND the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Mask the source bitmap so that every other pixel is turned off and replace
+the destination region with that result (the source region is left unchanged)</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="$$LINK(SetCurAttr)">SetCurAttr</A> command for more general info about attributes.
+<BR><BR>
+It seems that the A_REVERSE attribute is broken in current implementations of
+this function: If the value of <I>x</I> is not a multiple of 8, a black vertical
+line will appear across the picture.
+<BR><BR>
+<B>Note:</B> The <A HREF="$$LINK(sprites.h/)">sprites.h</A> header file supports much faster alternatives to
+the BitmapPut function for bitmap shapes which are not wider than 32 pixels (useful for games
+programming).
+
+[References]
+In=ScrRectScroll, ScrRectShift, menus.h/MenuKey, unknown.h/WinRemove, wingraph.h/WinBackupToScr, wingraph.h/WinBitmapPut, unknown.h/_ROM_CALL_420, unknown.h/_ROM_CALL_421
+Out=ScrRectOverlap, mem.h/memcpy, unknown.h/TIOS_abs

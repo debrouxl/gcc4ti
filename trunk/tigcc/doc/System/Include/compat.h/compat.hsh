@@ -1,0 +1,63 @@
+[Description]
+Various calc-dependent and AMS-dependent pseudo-constants
+
+[Top]
+This header file contains a set of various pseudo-constants (i.e. macros defined to
+look and work like constants), dedicated to increase compatibility between the TI-89 and
+TI-92 Plus and between AMS versions. These "constants" have different values on the
+TI-89 and TI-92 Plus (or on AMS 1.xx and AMS 2.xx). Using these pseudo-constants,
+you can, for example, perform keyboard reading and graphic calculations in a more sophisticated way,
+check the AMS version and perform some AMS-dependent actions (although this is not recommended
+if not really necessary), etc.
+<BR><BR>
+The following table shows all defined pseudo-constants.
+A lot of them are known from DoorsOS, but they are defined here to work in both "nostub"
+and "Doors" mode.
+
+[Bottom]
+<B>Note:</B> All of these pseudo-constants are in fact macros. Although they expand to relatively small
+code (in "Doors" mode they are mainly implemented as RAM calls and managed by kernel), it is recommended to
+store a pseudo-constant in an ordinary variable if you use it a lot of times in the program (especially in "nostub"
+mode), and to use this variable instead. For example, if you use the <A HREF="$$LINK(KEY_LEFT)">KEY_LEFT</A> pseudo-constant
+too often, it is recommended to define
+<PRE>int key_left = KEY_LEFT;
+</PRE>
+somewhere at the beginning of the program, and to use
+<PRE>if (key == key_left) ...
+</PRE>
+instead of
+<PRE>if (key == KEY_LEFT) ...
+</PRE>
+Such indirection will save memory, but note that this is necessary only if you use
+the same pseudo-constant a lot in the program (say, more than 5 times).
+<BR><BR>
+There is yet another note. Pseudo-Constants work as constants in nearly all cases, but
+they are not really constants, so they can not be used in <B>case</B> labels
+inside <B>switch</B> statements, i.e. the following is not legal:
+<PRE>switch (ngetchx ())
+  {
+    case KEY_LEFT:
+      ...
+    case KEY_RIGHT:
+      ...
+    ...
+  }
+</PRE>
+Instead, use <B>if...else</B> constructions:
+<PRE>key = ngetchx ();
+if (key == KEY_LEFT)
+  {
+    ...
+  }
+else if (key == KEY_RIGHT)
+  {
+    ...
+  }
+...
+</PRE>
+The pseudo-constants really become constants if you compile only for one
+calculator model. For example, if you define <CODE>USE_TI89</CODE> and nothing
+else, <A HREF="$$LINK(CALCULATOR)">CALCULATOR</A> will have the value <CODE>0</CODE>,
+and all other pseudo-constants will be optimized into single values.
+Or, if you define <CODE>MIN_AMS</CODE> to be <CODE>200</CODE>,
+<A HREF="$$LINK(AMS_1xx)">AMS_1xx</A> will always be false.

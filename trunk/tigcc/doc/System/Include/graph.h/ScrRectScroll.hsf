@@ -1,0 +1,42 @@
+[Main]
+Name=ScrRectScroll
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void ScrRectScroll (const SCR_RECT *rect, const SCR_RECT *clip, short NumRows, short Attr);
+
+[ROM Call]
+Index=$18B
+
+[Description]
+Scrols a rectangular area upwards or downwards.
+
+[Explanation]
+ScrRectScroll scrolls a rectangular area which is an intersection of two
+rectangular areas given using two <A HREF="$$LINK(SCR_RECT)">SCR_RECT</A> structures
+<I>rect</I> and <I>clip</I> upwards by <I>NumRows</I> pixels (or downwards
+if <I>NumRows</I>&nbsp;&lt;&nbsp;0). <I>rect</I> usually represents the actual
+area which need to be scrolled, and <I>clip</I> is the clipping area.
+See <A HREF="$$LINK(SetCurClip)">SetCurClip</A> for more info about clipping areas.
+The attribute <I>Attr</I> determines what happens
+with pixels in a vacant space produced after scrolling:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Pixels in a vacant space are set</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Pixels in a vacant space are reset</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Pixels in a vacant space are inverted</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="$$LINK(SetCurAttr)">SetCurAttr</A> command for more general info about attributes.
+<BR><BR>
+<B>Note:</B> This command is internally realized stupidly using
+<A HREF="$$LINK(BitmapGet)">BitmapGet</A> and <A HREF="$$LINK(BitmapPut)">BitmapPut</A>,
+so it is slow.
+
+[References]
+In=stdio.h/fputchar, wingraph.h/WinChar, wingraph.h/WinScrollV
+Out=BitmapGet, BitmapPut, ScrRectFill, mem.h/memcmp, mem.h/memcpy, unknown.h/TIOS_abs

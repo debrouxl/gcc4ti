@@ -1,0 +1,116 @@
+[Main]
+Title=Nested Functions
+
+[Top]
+A <U>nested function</U> is a function defined inside another function.
+The nested function's
+name is local to the block where it is defined.  For example, here we
+define a nested function named <CODE>square</CODE>, and call it twice:
+<PRE>double square_sum (double a, double b)
+{
+  double square (double z)
+  {
+    return z * z;
+  }
+
+  return square (a) + square (b);
+}
+</PRE>
+The nested function can access all the variables of the containing
+function that are visible at the point of its definition.  This is
+called <U>lexical scoping</U>.  For example, here we show a nested
+function which uses an inherited variable named <CODE>offset</CODE>:
+<PRE>int foo (int *array, int offset, int size)
+{
+  int access (int *array, int index)
+  {
+    return array[index + offset];
+  }
+
+  int i;
+  /* ... */
+  for (i = 0; i &lt; size; i++)
+    /* ... */ access (array, i) /* ... */
+}
+</PRE>
+Nested function definitions are permitted within functions in the places
+where variable definitions are allowed; that is, in any block, before
+the first statement in the block.
+<BR><BR>
+It is possible to call the nested function from outside the scope of its
+name by storing its address or passing the address to another function:
+<PRE>int hack (int *array, int size)
+{
+  void store (int index, int value)
+  {
+    array[index] = value;
+  }
+
+  intermediate (store, size);
+}
+</PRE>
+Here, the function <CODE>intermediate</CODE> receives the address of
+<CODE>store</CODE> as an argument.  If <CODE>intermediate</CODE> calls <CODE>store</CODE>,
+the arguments given to <CODE>store</CODE> are used to store into <CODE>array</CODE>.
+But this technique works only so long as the containing function
+(<CODE>hack</CODE>, in this example) does not exit.
+<BR><BR>
+If you try to call the nested function through its address after the
+containing function has exited, all hell will break loose.  If you try
+to call it after a containing scope level has exited, and if it refers
+to some of the variables that are no longer in scope, you may be lucky,
+but it's not wise to take the risk.  If, however, the nested function
+does not refer to anything that has gone out of scope, you should be
+safe.
+<BR><BR>
+GCC implements taking the address of a nested function using a technique
+called <U>trampolines</U>.  A paper describing them is available at
+<A HREF="http://people.debian.org/~aaronl/Usenix88-lexic.pdf">http://people.debian.org/~aaronl/Usenix88-lexic.pdf</A>.
+Note that trampolines are currently broken in TIGCC; they create code on the
+stack, which can make HW2 calculators crash.
+<BR><BR>
+A nested function can jump to a label inherited from a containing
+function, provided the label was explicitly declared in the containing
+function (see <A HREF="$$LINK(SEC64)">Local Labels</A>).  Such a jump returns instantly to the
+containing function, exiting the nested function which did the
+<CODE><A HREF="$$INFOLINK(keywords/goto)">goto</A></CODE> and any intermediate functions as well.  Here is an example:
+<PRE>int bar (int *array, int offset, int size)
+{
+  __label__ failure;
+  int access (int *array, int index)
+    {
+      if (index &gt; size)
+        goto failure;
+      return array[index + offset];
+    }
+  int i;
+  /* ... */
+  for (i = 0; i &lt; size; i++)
+    /* ... */ access (array, i) /* ... */
+  /* ... */
+  return 0;
+
+ /* Control comes here from 'access'
+    if it detects an error.  */
+ failure:
+  return -1;
+}
+</PRE>
+A nested function always has internal linkage.  Declaring one with
+<CODE>extern</CODE> is erroneous.  If you need to declare the nested function
+before its definition, use <CODE><A HREF="$$INFOLINK(keywords/auto)">auto</A></CODE> (which is otherwise meaningless
+for function declarations).
+<PRE>int bar (int *array, int offset, int size)
+{
+  __label__ failure;
+  auto int access (int *, int);
+  /* ... */
+  int access (int *array, int index)
+    {
+      if (index &gt; size)
+        goto failure;
+      return array[index + offset];
+    }
+  /* ... */
+}
+</PRE>

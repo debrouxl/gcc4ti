@@ -1,0 +1,24 @@
+[Main]
+Name=EV_suspendPainting
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=short EV_suspendPainting (void);
+
+[ROM Call]
+Index=$D7
+
+[Description]
+Suspends window painting.
+
+[Explanation]
+EV_suspendPainting sets a flag which indicates that window painting is suspended
+(see <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A> and <A HREF="$$LINK(EV_paintWindows)">EV_paintWindows</A>).
+Returns <A HREF="$$LINK(PaintFlags)">PAINTING_ENABLED</A> or <A HREF="$$LINK(PaintFlags)">PAINTING_SUSPENDED</A>
+depending on whether painting was enabled or disabled before calling this function (these constants
+are defined in enum <A HREF="$$LINK(PaintFlags)">PaintFlags</A>), so the returned value may be later
+used in the <A HREF="$$LINK(EV_restorePainting)">EV_restorePainting</A> function.
+
+[References]
+In=ABT_dialog, EV_defaultHandler, dialogs.h/Dialog, error.h/ERD_dialog, unknown.h/EV_quit
+Out=unknown.h/EV_flags

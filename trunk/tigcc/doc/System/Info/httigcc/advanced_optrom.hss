@@ -1,0 +1,26 @@
+[Main]
+Title=OPTIMIZE_ROM_CALLS
+
+[Top]
+In nostub mode, if you put
+<PRE>#define OPTIMIZE_ROM_CALLS
+</PRE>
+at the beginning of the program, the compiler will reserve one processor register
+(a5) to keep the base address of TIOS jump table in it. This will make all calls
+to TIOS routines smaller and faster. The disadvantage of this method lies in the
+fact that the a5 register is fully reserved during the execution of the program, so
+the compiler will have one register less for internal manipulations. The consequence
+is that it sometimes can produce somewhat longer code when compiling a particular
+expression or statement. Generally, the use of <CODE>OPTIMIZE_ROM_CALLS</CODE> usually
+leads to shorter and faster code, but this does not always need to be true. It is best
+to try it and see how it performs in a particular program.
+<BR><BR>
+If you define <CODE>OPTIMIZE_ROM_CALLS</CODE> in one file, you must also define it in
+every file that uses a function from this file.
+<BR><BR>
+<B>Note:</B> Avoid <CODE>OPTIMIZE_ROM_CALLS</CODE> in a program which may change its flow
+asynchronously in an unpredictable way (an event-driven program, for example).
+Such programs are mainly all programs which use some kind of callback function (like
+programs which use <A HREF="$$LINK(system.h/OSVRegisterTimer)">OSVRegisterTimer</A>, complex
+dialogs with callback functions, the function <A HREF="$$LINK(stdio.h/vcbprintf)">vcbprintf</A> etc.).
+There may also be some problems with floating point arithmetic.

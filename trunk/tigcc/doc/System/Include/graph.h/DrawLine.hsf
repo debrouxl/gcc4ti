@@ -1,0 +1,53 @@
+[Main]
+Name=DrawLine
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void DrawLine (short x0, short y0, short x1, short y1, short Attr);
+
+[ROM Call]
+Index=$1A7
+
+[Description]
+Draws a line between two specified points.
+
+[Explanation]
+DrawLine draws a line from
+(<I>x0</I>,&nbsp;<I>y0</I>) to (<I>x1</I>,&nbsp;<I>y1</I>) using
+the attribute <I>Attr</I>. The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a normal line</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Draw an inverse line (i.e. erase the line)</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Draw a line using XORing with the destination</TD>
+</TR><TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="$$LINK(SetCurAttr)">SetCurAttr</A> command for more general info about attributes.
+Note that although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS
+and A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which
+are more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act
+like A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to
+draw shaded-fill rectangle using DrawLine in a loop, use vertical lines for drawing, not
+horizontal ones!
+<BR><BR>
+Using DrawLine (and all other graphic comands which does not do clipping) may be
+harmful if called using parameters which are out of legal range (i.e. out of the
+screen area).
+
+[References]
+In=DrawClipLine, FillTriangle, ScrRectFill, menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, unknown.h/GT_BackupToScr, unknown.h/Regraph, wingraph.h/DrawWinBorder, wingraph.h/WinLineNC, unknown.h/_ROM_CALL_421, unknown.h/_ROM_CALL_47B
+Out=unknown.h/TIOS_abs

@@ -1,0 +1,21 @@
+[Main]
+Name=ASM_call
+Type=Function
+Subtype=Macro
+Header Files=system.h
+Definition=void ASM_call (void *base_addr);
+Real Definition=#define ASM_call(x) ({asm volatile("movem.l %d0-%d7/%a0-%a6,-(%sp)");ASM_fastcall(x);asm volatile("movem.l (%sp)+,%d0-%d7/%a0-%a6");})
+
+[Description]
+Calls a subroutine located on absolute address, with saving/restoring all registers.
+
+[Explanation]
+ASM_call pushes all registers onto the stack, performs <A HREF="$$LINK(ASM_fastcall)">ASM_fastcall</A>,
+then restores all saved registers from the stack. Use ASM_call whenever you are not sure about
+behaviour of called subroutine. If you are sure that the called subroutine will preserve all
+registers, you can use <A HREF="$$LINK(ASM_fastcall)">ASM_fastcall</A>: it generates smaller and
+faster code.
+
+[References]
+Out=ASM_fastcall
+Out_EV_eventLoop=1

@@ -1,0 +1,39 @@
+[Main]
+Title=Function Names as Strings
+Index=__func__, __FUNCTION__, __PRETTY_FUNCTION__
+
+[Top]
+GCC predefines two magic identifiers to hold the name of the current
+function.  The identifier <CODE>__FUNCTION__</CODE> holds the name of the function
+as it appears in the source.  The identifier <CODE>__PRETTY_FUNCTION__</CODE>
+holds the name of the function pretty printed in a language specific
+fashion.
+(These names are always the same in a C function, but in a C++ function
+they may be different; don't care about this, because TIGCC is not a C++ compiler.)
+<BR><BR>
+The compiler automatically replaces the identifiers with a string
+literal containing the appropriate name.  Thus, they are neither
+preprocessor macros, like <CODE>__FILE__</CODE> and <CODE>__LINE__</CODE>, nor
+variables.  This means that they catenate with other string literals, and
+that they can be used to initialize char arrays.  For example
+<PRE>char here[] = &quot;Function &quot; __FUNCTION__ &quot; in &quot; __FILE__;
+</PRE>
+On the other hand, <CODE>#ifdef&nbsp;__FUNCTION__</CODE> does not have any special
+meaning inside a function, since the preprocessor does not do anything
+special with the identifier <CODE>__FUNCTION__</CODE>.
+<BR><BR>
+Note that these semantics are deprecated, and that GCC 3.2 will handle
+<CODE>__FUNCTION__</CODE> and <CODE>__PRETTY_FUNCTION__</CODE> the same way as
+<CODE>__func__</CODE>.  <CODE>__func__</CODE> is defined by the ISO standard C99:
+<BR><BR>
+The identifier <CODE>__func__</CODE> is implicitly declared by the translator
+as if, immediately following the opening brace of each function
+definition, the declaration
+<PRE>static const char __func__[] = &quot;function-name&quot;;
+</PRE>
+appeared, where function-name is the name of the lexically-enclosing
+function.  This name is the unadorned name of the function.
+<BR><BR>
+By this definition, <CODE>__func__</CODE> is a variable, not a string literal.
+In particular, <CODE>__func__</CODE> does not catenate with other string
+literals.

@@ -1,0 +1,36 @@
+[Main]
+Name=vcbprintf
+Type=Function
+Subtype=ROM Call
+Header Files=stdio.h
+Definition=void vcbprintf (vcbprintf_Callback_t callback, void **param, const char *format, va_list arglist);
+Real Definition=#define vcbprintf ({register long __a=32+(long)(_rom_call_addr(53));(__vcbprintf__type__)(__a+*(short*)__a);})
+
+[Description]
+Virtual callback printing function.
+
+[Explanation]
+vcbprintf is an auxiliary function which is the heart of all v...printf functions.
+<I>arglist</I> is a pointer to the list of arguments (see <A HREF="$$LINK(stdarg.h/)">stdarg.h</A>
+for more info about argument lists), and <I>format</I> is the format string, as
+usually. vcbprintf applies to each argument a format specifier contained in the format string.
+After this, the formatted data is sent character by character to the callback function
+<I>callback</I> passing the actual characters as the parameter <I>c</I> to it. Also, the parameter
+<I>param</I> of vcbprint is passed as the second parameter to the callback function. This
+allows for much more flexibility, because a callback function usually needs more info than a simple
+character to be processed. The callback function for example can push characters to a stream, so
+in this case <I>param</I> would probably be a pointer to the stream structure. More precisely,
+<PRE>vfprintf (stream, format, arglist);
+</PRE>
+is exactly the same as
+<PRE>vcbprintf ((vcbprintf_callback_t)fputc, (void**)stream, format, arglist);
+</PRE>
+See also <A HREF="$$LINK(textedit.h/TE_pasteText)">TE_pasteText</A> for an ununsual but powerful
+example of usage of vcbprintf.
+<BR><BR>
+<I>param</I> is declared as a "double pointer" because it is often used as a pointer to a
+pointer variable (in <A HREF="$$LINK(vsprintf)">vsprintf</A> for example), so the callback function
+is able to change the content of the actual pointer variable (see <A HREF="$$LINK(strputchar)">strputchar</A>).
+
+[References]
+In=cbprintf, fprintf, printf, vfprintf, vprintf, vsprintf

@@ -1,0 +1,34 @@
+[Main]
+Name=_keytest_optimized
+Type=Function
+Subtype=Macro
+Header Files=kbd.h
+Definition=short _keytest_optimized (short row, short col);
+Real Definition=#define _keytest_optimized(rowcol...) (__keytest_optimized (rowcol))
+
+[Description]
+Optimized low-level keyboard reading for single keys.
+
+[Explanation]
+_keytest_optimized behaves like <A HREF="$$LINK(_keytest)">_keytest</A>, but
+it produces better code if keys from the same row are read sequentially.
+You have to use it together with <A HREF="$$LINK(BEGIN_KEYTEST)">BEGIN_KEYTEST</A> and <A HREF="$$LINK(END_KEYTEST)">END_KEYTEST</A>.
+<BR><BR>
+An example probably best explains the usage of this function. The following
+piece of code waits until an arrow key is pressed. Since all arrows
+are in the same row, only one call to <A HREF="$$LINK(_rowread)">_rowread</A>
+is necessary.
+<PRE>for (;;)
+  {
+    BEGIN_KEYTEST
+      if (_keytest_optimized (RR_LEFT)
+       || _keytest_optimized (RR_RIGHT)
+       || _keytest_optimized (RR_UP)
+       || _keytest_optimized (RR_DOWN))
+        break;
+    END_KEYTEST
+  }
+</PRE>
+
+[References]
+Out=_rowread

@@ -1,0 +1,28 @@
+[Main]
+Name=cmd_disp
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_disp (CESI ExprList);
+MinAMS=1.01
+
+[ROM Call]
+Index=$33D
+
+[Description]
+Executes TI-Basic 'Disp' command.
+
+[Explanation]
+cmd_disp first displays the current contents of the TI-Basic Program I/O Screen window. If
+<I>ExprList</I> points to <A HREF="$$LINK(estack.h/Tags)">END_TAG</A>, cmd_disp does nothing more.
+Else, the expression (or string, if <I>ExprList</I> points to
+<A HREF="$$LINK(estack.h/Tags)">STR_TAG</A>) pointed to by <I>ExprList</I> is displayed on
+the TI-Basic Program I/O Screen window. This task is repeated for all expressions on the
+expression stack below <I>ExprList</I>, until <A HREF="$$LINK(estack.h/Tags)">END_TAG</A>
+is reached. Each expression (or character string) is displayed on a separate line in the
+TI-Basic Program I/O Screen window. If "Pretty Print" in the current mode settings
+is turned on, expressions are displayed in mathematical notation.
+
+[References]
+Out=alloc.h/HeapFree, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/next_expression_index, estack.h/Parms2D, estack.h/Parse1DExpr, estack.h/Parse2DExpr, estack.h/Print2DExpr, estack.h/top_estack, events.h/EV_setFKeyState, events.h/EV_startApp, graph.h/ScrToHome, graph.h/ScrToWin, textedit.h/TE_unfocus, unknown.h/EV_currentApp, unknown.h/EV_quit, wingraph.h/WinActivate, wingraph.h/WinAttr, wingraph.h/WinBackupToScr, wingraph.h/WinClr, wingraph.h/WinDeactivate, wingraph.h/WinHeight, wingraph.h/WinHide, wingraph.h/WinScrollV, wingraph.h/WinStrXY, unknown.h/_ROM_CALL_457, unknown.h/_ROM_CALL_471
+Out_EV_eventLoop=1

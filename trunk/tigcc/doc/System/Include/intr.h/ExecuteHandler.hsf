@@ -1,0 +1,23 @@
+[Main]
+Name=ExecuteHandler
+Type=Function
+Subtype=Macro
+Header Files=intr.h
+Definition=void ExecuteHandler (INT_HANDLER Handler);
+Real Definition=#define ExecuteHandler(h) ({INT_HANDLER __addr=(h); asm("pea 0f;move %%sr,-(%%sp);jra (%0);0:"::"a"(__addr));})
+
+[Description]
+Executes an interrupt handler.
+
+[Explanation]
+ExecuteHandler executes the interrupt handler pointed to by <I>Handler</I>. The
+only purpose of this function is to allow calling the previous
+interrupt handler (usually the default one) from the user-defined interrupt
+handler. This function must not be executed from anywhere out of the user-defined
+interrupt handler (defined using <A HREF="$$LINK(DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A>).
+Otherwise, you will get the "Privilege Violation" crash, because all interrupt
+handlers expect to be executed in the supervisor CPU mode. Parameter <I>Handler</I>
+should be either the value returned from <A HREF="$$LINK(GetIntVec)">GetIntVec</A>, or the address
+of a user-defined interrupt handler defined using <A HREF="$$LINK(DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A>.
+It must not be the address of an ordinary C function.
+See <A HREF="$$LINK(DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A> for an example of usage.

@@ -1,0 +1,23 @@
+[Main]
+Title=Conditionals with Omitted Operands
+
+[Top]
+The middle operand in a conditional expression may be omitted.  Then
+if the first operand is nonzero, its value is the value of the conditional
+expression.
+<BR><BR>
+Therefore, the expression
+<PRE>x ? : y
+</PRE>
+has the value of <CODE>x</CODE> if that is nonzero; otherwise, the value of
+<CODE>y</CODE>.
+<BR><BR>
+This example is perfectly equivalent to
+<PRE>x ? x : y
+</PRE>
+In this simple case, the ability to omit the middle operand is not
+especially useful.  When it becomes useful is when the first operand does,
+or may (if it is a macro argument), contain a side effect.  Then repeating
+the operand in the middle would perform the side effect twice.  Omitting
+the middle operand uses the value already computed without the undesirable
+effects of recomputing it.

@@ -1,0 +1,47 @@
+[Main]
+Name=display_statements
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=HANDLE display_statements (CESI ptr, unsigned short Newlines, unsigned short FullPrec);
+
+[ROM Call]
+Index=$4E
+
+[Description]
+Converts tokenized expressions or TI-Basic statements to the printable form.
+
+[Explanation]
+display_statements converts the expression (or a group of tokenized TI-Basic statements)
+pointed to by <I>ptr</I> from RPN form to the
+standard printable ("algebraic") form, and returns a handle to
+the memory block where the converted string is stored (you don't need to allocate anything by
+yourself, this function will do it instead; note that this routine may cause heap compression).
+It will return <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if memory is full.
+<I>Newline</I> is a Boolean flag: when it is
+nonzero, all newline characters will be replaced with ':', otherwise they will remain intact.
+<I>FullPrec</I> is also a Boolean flag: when it is non-zero,
+all floating point values will be converted using the maximal precision (14 digits), else
+current precision settings (from TI-Basic MODE dialog) will be used. Here is an ilustrative
+example for usage of this command (take a look at the "Integrate" example as well):
+<PRE>push_parse_text ("expand((x+1)(x+2)(x+3))");
+NG_rationalESI (top_estack);
+handle = display_statements (top_estack, 1, 1);
+printf_xy (0, 40, "%s", HeapDeref (handle));
+HeapFree (handle);
+</PRE>
+See <A HREF="$$LINK(push_parse_text)">push_parse_text</A>, <A HREF="$$LINK(NG_rationalESI)">NG_rationalESI</A>,
+<A HREF="$$LINK(alloc.h/HeapDeref)">HeapDeref</A> and <A HREF="$$LINK(alloc.h/HeapFree)">HeapFree</A>
+to understand how this example works.
+<BR><BR>
+display_statements will always convert expressions into the "cannonic printing (external) form".
+For example, both x*3 and 3*x will be displayed as 3*x, x*y^(-1) will be displayed as x/y etc.
+<BR><BR>
+<B>Note:</B> Although display_statements is very similar to <A HREF="$$LINK(Parse1DExpr)">Parse1DExpr</A>
+and both of them may usually be used for the same purposes, display_statements is used in TIOS for
+printing TI-Basic statements (from programs) and for the detokenization (in <A HREF="$$LINK(NG_RPNToText)">NG_RPNToText</A>),
+and <A HREF="$$LINK(Parse1DExpr)">Parse1DExpr</A> is used for printing expressions.
+
+[References]
+In=NG_RPNToText, events.h/handleRclKey, textedit.h/TE_handleEvent, unknown.h/tokenize_if_TI_92_or_text
+Out=index_below_display_expression_aux, alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapLock, alloc.h/HeapRealloc, alloc.h/HeapUnlock, alloc.h/HLock, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, system.h/OSDisableBreak, system.h/OSEnableBreak, unknown.h/_ROM_CALL_5CB

@@ -1,0 +1,35 @@
+[Main]
+Name=handleRclKey
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void handleRclKey (short CRstatus);
+See Also=handleVarLinkKey
+
+[ROM Call]
+Index=$14F
+
+[Description]
+Displays the standard "Recall Variable" dialog.
+
+[Explanation]
+handleRclKey is the default handler for the 'RCL' key (called from
+<A HREF="$$LINK(EV_defaultHandler)">EV_defaultHandler</A> when processing
+a <A HREF="$$LINK(EventIDs)">CM_RECALL</A> message).
+A pop-up dialog box is displayed requesting the name of a variable. The
+contents of the variable are converted to text and pasted to the current
+application as a <A HREF="$$LINK(EventIDs)">CM_HSTRING</A> message. Nothing is
+pasted if the user pressed 'ESC' to cancel the dialog.
+<BR><BR>
+<I>CRstatus</I> is a boolean parameter. If it is
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, carriage returns are converted to
+colons after the contents of the variable have been converted to text. The
+variable itself is not changed. If it is
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, carriage returns remain unchanged.
+<BR><BR>
+<B>Note:</B> This function may cause heap compression and may throw errors.
+
+[References]
+Out=EV_sendEvent, alloc.h/HeapAlloc, alloc.h/HeapFreeIndir, alloc.h/HeapGetLock, alloc.h/HeapLock, alloc.h/HeapUnlock, dialogs.h/Dialog, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/display_statements, estack.h/HToESI, estack.h/Parse1DExpr, estack.h/TokenizeSymName, estack.h/top_estack, mem.h/memset, string.h/strchr, string.h/strlen, system.h/NeedStack, vat.h/DerefSym, vat.h/GetFuncPrgmBodyPtr, vat.h/VarRecall
+In=EV_defaultHandler
+Out_EV_eventLoop=1

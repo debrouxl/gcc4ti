@@ -1,0 +1,104 @@
+[Main]
+Title=Information for Assembly Programmers
+
+[Top]
+The TIOS has a very rich set of built-in functions, but unfortunately they are not yet documented
+by TI. However, entry points are documented. As nearly 80% of functions which I defined in this
+library are just TIOS calls (either direct or indirect, depending of whether the compile mode is
+"Doors" or "nostub"), the documentation of these functions are also the documentation of TIOS calls.
+This means that this document documents about 600 TIOS calls, so it may be very valuable
+for assembly programers. When the function is nothing more than simple TIOS call, I give to it
+the name which is exactly the same as the name used in TI list of TIOS entry points. So you can
+easily determine which functions are simple TIOS calls.
+<BR><BR>
+Of course, function parameters are listed using the C language calling convention, because this is a library for C programing. If you are an assembly programmer, you need to know the following:
+<UL>
+<LI>Parameters are pushed onto the stack in reverse order.</LI>
+<LI>"short" types occupy two bytes, and "long" types occupy four bytes. "int" types usually occupy two bytes, except if the user specifies the <B>'-mlong'</B> compiler switch; in such case "int" occupies four bytes.
+All pointer types occupy four bytes. A float type occupies ten bytes.</LI>
+<LI>Although the "char" type occupies just one byte, it must be promoted to a word before pushing it on the stack.</LI>
+<LI>To clean up after the function has been called, pop all the values that were pushed. This can be done by adding a value to SP; this value is calculated by summing the sizes of all the parameters that were pushed.</LI>
+<LI>Assume that D0-D2/A0-A1 are destroyed by any given ROM function upon return.</LI>
+<LI>Any function which returns any non-pointer type (char, short, int, long), including not-too-long structures (like <A HREF="$$LINK(vat.h/HSym)">HSym</A>), keeps the result in the register D0.</LI>
+<LI>Any function which returns a pointer type keeps the result in the register A0.</LI>
+<LI>All TIOS functions which return a floating point value (like most functions from <A HREF="$$LINK(timath.h/)">timath.h</A> header file) expect that before calling A6 points to the byte after the end byte of 10-byte long buffer where the result will be stored (usually this is a preallocated space on the stack frame). Note that this is not the same as GCC convention for returning floating point values: GCC returns floats in a triplet [D0.l;D1.l;D2.w]. That's why implementing floating point routines was not so easy, especially because A6 is a very important register (used in GCC as the frame pointer).</LI>
+</UL>
+Many users ask me for examples, especially about the usage of floating point functions in ASM programs. I expected that everything I wrote is so clear (for anybody who knows C syntax), but it seems that it is not. OK. I will give two examples (the second one deals with floats):
+<BR><BR>
+<B>Example 1:</B>
+<BR><BR>
+Look at the <A HREF="$$LINK(graph.h/DrawClipEllipse)">DrawClipEllipse</A> function from the <A HREF="$$LINK(graph.h/)">graph.h</A>
+header file. It is declared as
+<BR><BR><B>
+void DrawClipEllipse (short x, short y, short a, short b, const <A HREF="$$LINK(graph.h/ScrRect)">ScrRect</A> *clip, short Attr);
+</B><BR><BR>
+If you want to simulate the following call
+<PRE>DrawClipEllipse (100, 50, 30, 20, &amp;(SCR_RECT){{0, 0, 159, 99)}, A_NORMAL);
+</PRE>
+in the ASM program, you should do the following code (Doors calling convention will be
+assumed, due to simplicity):
+<PRE>       move.w #1,-(sp)
+       pea    clip(pc)
+       move.w #20,-(sp)            ; Using move.l #$1E0014,-(sp) you can pack
+       move.w #30,-(sp)            ;  these two ASM instructions into one
+       move.w #50,-(sp)
+       move.w #20,-(sp)
+       jsr    tios::DrawClipEllipse
+       lea    (sp,14),sp           ; The same as add.l #14,sp but shorter
+       ...
+clip:  dc.b   0,0,159,99           ; Components of SCR_RECT structure are bytes
+</PRE>
+<BR><BR>
+<B>Example 2:</B>
+<BR><BR>
+This example will show to you how to use floats in ASM programs. Look at the functions
+<A HREF="$$LINK(timath.h/log)">log</A>, <A HREF="$$LINK(timath.h/fmul)">fmul</A> and
+<A HREF="$$LINK(timath.h/trunc)">trunc</A> from the <A HREF="$$LINK(timath.h/)">timath.h</A> header
+file. They are declared as
+<BR><BR><B>
+float log (float x);<BR>
+float fmul (float x, float y);<BR>
+long trunc (float x);
+</B><BR><BR>
+Suppose that you want to calculate the integer part of 2.34*log(342.1178). First, you need to
+know that hexadecimal representations for 2.34 and 342.1178 are $40002340000000000000 and
+$40023421178000000000 (see <A HREF="$$LINK(timath.h/bcd)">bcd</A> if you don't know
+why). Also, note that <A HREF="$$LINK(timath.h/bcdmul)">bcdmul</A> and
+<A HREF="$$LINK(timath.h/bcdlong)">bcdlong</A> are original TIOS names for functions aliased as <A HREF="$$LINK(timath.h/fmul)">fmul</A> and <A HREF="$$LINK(timath.h/trunc)">trunc</A> (don't be misleaded by the fact that the library defines <A HREF="$$LINK(timath.h/fmul)">fmul</A> &amp; <A HREF="$$LINK(timath.h/trunc)">trunc</A> to work with native <CODE>float</CODE> type and <A HREF="$$LINK(timath.h/bcdmul)">bcdmul</A> &amp; <A HREF="$$LINK(timath.h/bcdlong)">bcdlong</A> to work with <A HREF="$$LINK(timath.h/bcd)">bcd</A> structures; at the fundamental ASM level they are exactly the same routines). Then, this calculation may be performed using the following ASM program:
+<PRE>       lea    after(pc),a6         ; Prepare a6 for storing results
+       clr.l  -(sp)                ; Push 342.1178
+       move.l #$34211780,-(sp)
+       move.w #$4002,-(sp)
+       jsr    tios::log            ; The result is now in "temp"
+       move.l (a6,-4),-(sp)        ; Push the result
+       move.l (a6,-8),-(sp)
+       move.w (a6,-10),-(sp)
+       clr.l  -(sp)                ; Push 2.34
+       clr.w  -(sp)
+       move.l #$40002340,-(sp)
+       jsr    tios::bcdmul         ; The result is again in "temp"
+       move.l (a6,-4),-(sp)        ; Push the result again
+       move.l (a6,-8),-(sp)
+       move.w (a6,-10),-(sp)
+       jsr    tios::bcdlong        ; The final result is now in d0
+       lea    (sp,40),sp           ; Clean up the stack
+       ...
+temp:  ds.b   10                   ; Ten-byte buffer
+after: ...
+</PRE>
+This program may be much more optimized if you know how to use stack frames properly (this technic is so popular in high-level language compilers, but quite unpopular in ASM programs; this example shows that stack frames may be very useful). The optimized version of the same program follows:
+<PRE>       link   a6,#-10              ; Create 10-bytes long space on the stack
+       clr.l  -(sp)                ; Push 342.1178
+       move.l #$34211780,-(sp)
+       move.w #$4002,-(sp)
+       jsr    tios::log            ; The result is on the stack frame
+       addq.l #6,sp                ; Adjust the stack pointer
+       clr.l  (sp)                 ; Push 2.34
+       clr.w  -(sp)
+       move.l #$40002340,-(sp)
+       jsr    tios::bcdmul         ; The result is again on the stack frame
+       lea    (sp,10),sp           ; Adjust the stack pointer again
+       jsr    tios:bcdlong         ; The final result is now in d0
+       unlk   a6                   ; Remove the stack frame
+</PRE>
+<B>Note:</B> Some of the information about TIOS calls given by TI itself on their site is incomplete or even <B>wrong</B>. This document contains more precise information.

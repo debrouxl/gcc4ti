@@ -1,0 +1,38 @@
+[Main]
+Name=WinActivate
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinActivate (WINDOW *w);
+
+[ROM Call]
+Index=$1
+
+[Description]
+Activates a window.
+
+[Explanation]
+WinActivate makes the window pointed to by <I>w</I> the current active window.
+This will cause the following events:
+<UL>
+<LI>
+The currently active window will be deactivated (its border will be changed to a single-line
+border);</LI>
+<LI>The border for the window will switch to a double-line border (except in single-border
+mode, in rounded-border mode or if the window is a full-screen window);</LI>
+<LI>The graphics system will be reset to the current windows defaults (draw attributes, current
+(x,&nbsp;y) location, etc.).</LI>
+<LI>The window will be marked as visible (see <A HREF="$$LINK(WinHide)">WinHide</A>).</LI>
+</UL>
+See <A HREF="$$LINK(WinOpen)">WinOpen</A> for more info.
+<BR><BR>
+<B>Note:</B> Because of memory requirements, only the active window may be drawn to. Once a window
+becomes the active window, it may use any of the window drawing routines. If you try to draw
+in a non-active window, a garbage may appear on the screen. If no other window overlaps a
+window (even if there are multiple windows on the screen), then you may write to a non-active
+window by using <A HREF="$$LINK(WinBegin)">WinBegin</A> and <A HREF="$$LINK(WinEnd)">WinEnd</A> to bracket
+the writes.
+
+[References]
+In=bascmd.h/cmd_disp, bascmd.h/cmd_disphome, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_prompt, bascmd.h/cmd_showstat, dialogs.h/Dialog, error.h/ERD_dialog, events.h/ABT_dialog, events.h/EV_defaultHandler, events.h/handleVarLinkKey, homescr.h/HomeExecute, system.h/HelpKeys, unknown.h/ERD_notice, unknown.h/EV_quit
+Out=DrawWinBorder, FirstWindow, WinClr, WinDeactivate, graph.h/FontSetSys, unknown.h/UpdateWindows

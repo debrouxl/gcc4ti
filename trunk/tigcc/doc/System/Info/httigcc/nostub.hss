@@ -1,0 +1,111 @@
+[Main]
+Title=Making Kernel-Less (NoStub) Programs
+See Also=nostub.h/
+
+[Top]
+NoStub programs are programs which don't need any kernel like DoorsOS, Universal OS, TeOS,
+PlusShell etc. for execution. This does not imply that they do not work with a kernel installed.
+Starting from release 2.2 of TIGCCLIB, TIGCC produces NoStub
+programs by default (there is no need to include <A HREF="$$LINK(nostub.h/)">nostub.h</A>
+before including any other header files from this library as in releases of
+TIGCCLIB prior 2.2; this will be explained in more details below). As this
+release of the library is highly ANSI-compatible, the first example will be the
+classic Kernighan &amp; Ritchie "Hello world" example (called "Hello World 1", slightly modified
+to include clearing the screen and waiting for the keypress):
+$$EXAMPLE(Hello World 1.c)
+Note that the main entry point is <CODE>_main</CODE>, not <CODE>main</CODE>
+as defined in Kernighan &amp; Ritchie. The reason for it is the compatibility with
+kernels, which propose that the main program entry
+point is called <CODE>_main</CODE>. Also note that <CODE>_main</CODE> should be a function
+with return type <CODE>void</CODE> (not <CODE>int</CODE> as usual), because you can
+not return a status code to the operating system.
+<BR><BR>
+To compile this program, you can use the
+<A HREF="$$INFOLINK(ide)">TIGCC Integrated Environment</A>, or you can type from the command line
+(if the file is named "hello.c"):
+<BR><BR>
+<B>tigcc -O2 hello.c</B>
+<BR><BR>
+Always include the switch <B>'-O2'</B>. It will turn on optimization
+(click <A HREF="$$INFOLINK(comopts)">here</A> to see much more about compiler command line options).
+<BR><BR>
+As you can see, defining macros named <CODE>USE_TI89</CODE>,
+<CODE>USE_TI92PLUS</CODE> (or <CODE>USE_TI92P</CODE>), and <CODE>USE_V200</CODE> will generate
+.89z (for the TI-89) or .9xz (for the TI-92&nbsp;Plus and V200) executable files.
+Only the calculators which you define this way are supported; if you only
+define <CODE>USE_TI89</CODE>, then only the TI-89 will be supported. Defining
+only one calculator model may generate shorter and faster code. See
+<A HREF="$$LINK(compat.h/)">compat.h</A> for more info.
+<BR><BR>
+The old way of defining global variables called <CODE>_ti89</CODE> and <CODE>_ti92plus</CODE>
+is still supported, but it is not recommended to use it any more, since no
+optimization of the above kind can be performed. In the IDE, you will find
+replacements for these macros in the project options.
+<BR><BR>
+The directive <CODE><A HREF="$$LINK(advanced_savescreen)">SAVE_SCREEN</A></CODE> forces saving the screen contents before
+execution and restoring them after execution of the program.
+<BR><BR>
+Users which are familiar with previous releases of TIGCCLIB may ask what
+has happened to the <A HREF="$$LINK(nostub.h/)">nostub.h</A> header file. Starting from release 2.2
+the use of any header file from TIGCCLIB will automatically include
+the <A HREF="$$LINK(nostub.h/)">nostub.h</A> header file, except if the global preprocessor
+symbol <CODE>USE_KERNEL</CODE> is defined, or if the <A HREF="$$LINK(doors.h/)">doors.h</A>
+is included at the beginning (see section
+<A HREF="$$LINK(kernel)">How to make a kernel-based program</A> for more info). This way you need
+to include <CODE>nostub.h</CODE> manually only if you don't include any
+other header file from TIGCCLIB, which is extremely unlikely. To retain compatibility
+with programs created with previous versions of the library, including
+<A HREF="$$LINK(nostub.h/)">nostub.h</A> explicitly will not cause any damage.
+<BR><BR>
+The example given above works, but it is better to use TIOS-specific functions than ANSI C console
+functions. First, they are more flexible, and second, they are built-in in the OS,
+so using them will usually produce much shorter code. For example, the use of the
+<A HREF="$$LINK(stdio.h/printf)">printf</A> function will increase the size of your program
+by about 200 bytes, because <A HREF="$$LINK(stdio.h/printf)">printf</A> is an advanced
+high-level function (not present in the TIOS) which may do much more than writing "Hello
+world" on the screen (like formatted output, screen scrolling, etc.). So, to write
+just "Hello world" on the screen, it is a better idea to use particular TIOS functions
+like <A HREF="$$LINK(graph.h/DrawStr)">DrawStr</A> to do the same thing: your program will
+be much shorter and more efficient (although less "standard"). This idea is illustrated
+in the following program ("Hello World 2"), which uses only TIOS functions, and which does
+the following:
+<UL>
+<LI>saves the contents of the screen;</LI>
+<LI>clears the screen;</LI>
+<LI>displays the "Hello world!" message using the large font;</LI>
+<LI>draws a border around the message;</LI>
+<LI>waits for a keypress;</LI>
+<LI>restores the original contents of the screen before returning.</LI>
+</UL>
+$$EXAMPLE(Hello World 2.c)
+Note that <CODE><A HREF="$$LINK(advanced_savescreen)">SAVE_SCREEN</A></CODE> is a new directive introduced in
+TIGCCLIB 2.0. In previous releases of TIGCCLIB you had to save and restore the
+screen manually, like in the following example ("Hello World 3"):
+$$EXAMPLE(Hello World 3.c)
+See <A HREF="$$LINK(graph.h/)">graph.h</A> and <A HREF="$$LINK(kbd.h/)">kbd.h</A> for
+detailed descriptions of the used functions and data types. Be aware of the slight difference between
+<A HREF="$$LINK(graph.h/ClrScr)">ClrScr</A> defined in <A HREF="$$LINK(graph.h/)">graph.h</A> and
+<A HREF="$$LINK(stdio.h/clrscr)">clrscr</A> defined in <A HREF="$$LINK(stdio.h/)">stdio.h</A>.
+<BR><BR>
+The <CODE>SAVE_SCREEN</CODE> directive does exactly the same thing as in the previous
+example, but the task is automatized (i.e. you need not to explicitely declare the save buffer
+and to call functions for saving and restoring screen manually). If you are not happy with such
+allocation (the buffer is allocated on the stack, reducing its size by 3840 bytes), don't use
+<CODE>SAVE_SCREEN</CODE> directive and perform saving and restoring the screen
+using an other method (for example, using dynamic memory allocation). Note that the
+total stack size on TI is limited to 16384 bytes.
+<BR><BR>
+The disadvantage of NoStub programs is that they are somewhat longer
+than kernel programs if the program contains many ROM calls (but in the above
+example, the NoStub version is shorter than the kernel version), and they can not call
+routines from external files (often called "libraries") whithout special support
+code. Any other features supported with this library of header files work in both
+kernel and NoStub mode, so if the difference in the program size is not enormous,
+and if no external libraries are needed, NoStub mode is highly recommended. Note that
+routines defined in these header files contain most of routines which are seen
+in various external libraries, sometimes maybe with a different name and syntax. I
+think that making a program which is independent of external library files is a
+big advantage!
+<BR><BR>
+If you make a NoStub program, you must also know that the exit point defined
+by the function <CODE>_exit</CODE> has no meaning in NoStub programs.

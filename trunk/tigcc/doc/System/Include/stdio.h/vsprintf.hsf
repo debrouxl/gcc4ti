@@ -1,0 +1,29 @@
+[Main]
+Name=vsprintf
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=short vsprintf (char *buffer, const char *format, va_list arglist);
+Real Definition=#define vsprintf(b,f,a) ((void)({void *__p=(b);vcbprintf((vcbprintf_Callback_t)strputchar,&__p,(f),(a));*(char*)__p=0;}))
+
+[Description]
+Sends formatted output to a string using argument list.
+
+[Explanation]
+The vsprintf functions is known as an alternate entry point for the
+<A HREF="$$LINK(sprintf)">sprintf</A> function. It behaves exactly like <A HREF="$$LINK(sprintf)">sprintf</A>,
+but it accepts a pointer to a list of arguments instead of an argument
+list (see <A HREF="$$LINK(stdarg.h/)">stdarg.h</A> header file for more info about argument lists).
+See <A HREF="$$LINK(printf)">printf</A> for details on format specifiers.
+<BR><BR>
+vsprintf accepts <I>arglist</I>, which is a pointer to a series of arguments, applies to
+each a format specifier contained in the format string pointed to by <I>format</I>, and
+outputs the formatted data to the string pointed to by <I>buffer</I>. There must be the same
+number of format specifiers as arguments.
+<BR><BR>
+<B>Note:</B> In ANSI C, function vsprintf is an int function, and it returns the number of characters
+stored in <I>buffer</I>. Due to some practical reasons, this implementation of vsprintf is
+a void function. This difference is usually not important.
+
+[References]
+Out=vcbprintf, strputchar

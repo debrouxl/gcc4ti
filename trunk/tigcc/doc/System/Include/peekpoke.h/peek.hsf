@@ -1,0 +1,22 @@
+[Main]
+Name=peek
+Type=Function
+Subtype=Macro
+Header Files=peekpoke.h
+Definition=#define peek(addr) (*((unsigned char*)(long)(addr)))
+
+[Description]
+Fetches a byte from the memory.
+
+[Explanation]
+peek is a macro which fetches a byte from the memory address <I>addr</I>,
+where <I>addr</I> does not necessarily need to be a pointer. Instead, it can be of
+any type (usually an integer) which may represent a memory address in a way which makes sense.
+This way it allows for fetching bytes from memory using the style which is
+common in most dialects of the BASIC language. For example, to read a first byte from the
+video memory, do this:
+<PRE>byte = peek (0x4C00);
+</PRE>
+Note that it is better to use <A HREF="$$LINK(graph.h/LCD_MEM)">LCD_MEM</A> in this case.
+<BR><BR>
+<B>Note:</B> Do not use peek for reading I/O ports! Use <A HREF="$$LINK(peekIO)">peekIO</A> instead.

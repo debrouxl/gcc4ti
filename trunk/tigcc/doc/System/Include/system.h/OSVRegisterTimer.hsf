@@ -1,0 +1,67 @@
+[Main]
+Name=OSVRegisterTimer
+Type=Function
+Subtype=tigcc.a
+Header Files=system.h
+Definition=short OSVRegisterTimer (short timer_no, unsigned long T, Timer_Callback_t Action);
+
+[Library Call]
+Asm=1
+
+[Registers]
+timer_no=d0
+T=d3
+Action=d4
+
+[Description]
+Registers an event (vectored) timer.
+
+[Explanation]
+Before release 2.04 of the AMS, TIOS also had two event (vectored) timers numbered as 1 and 2
+(in addition to 6 notify timers which may be registered using
+<A HREF="$$LINK(OSRegisterTimer)">OSRegisterTimer</A>). In AMS 2.04, Texas Instruments decided
+for some strange reasons to remove these vectored timers from the TIOS. I was very angry due to
+this decision, so I decided to reimplement these timers independently of the TIOS, to
+make them work on any AMS version. Well, now you have it. More precise, you now have
+two event (vectored) timers which are numbered as 1 and 2, which work on any AMS release
+(TIOS based implementation as implemented in TIGCCLIB releases prior to 2.2 did not work
+on AMS 2.04 and AMS 2.05).
+<BR><BR>
+OSVRegisterTimer initializes the event timer which ID number
+is <I>timer_no</I>, and sets its initial value to <I>T</I>. Every time the
+Auto-Int 5 is triggered (20 times per second if you didn't change the programable
+rate generator), the current value of the timer is decremented by 1. When the
+current value reaches zero, a procedure specified by user will be called, then
+the timer starts counting again from its initial value. The parameter
+<I>Action</I> is the pointer to the procedure which will be triggered every
+time the timer reaches zero. So, the procedure <I>Action</I> will be called
+periodically, with a period determined by <I>T</I>.
+<BR><BR>
+<I>Action</I> need not to be an assembly language procedure; it may be any
+user-defined function written in C. Its body will be executed in the
+supervisor CPU mode and with disabled interrupts (th information is probably
+not important from the user point of view).
+<BR><BR>
+If the function <I>Action</I> changes any global variable
+in the program, such global variable must be declared as "volatile" to inform
+the compiler that its value may be changed asynchronously, i.e. in a way which
+is unexpected for the normal program flow.
+<BR><BR>
+OSVRegisterTimer returns a nonzero value if the registration was successful, else
+returns zero. This happens if you give wrong parameters, or if the timer <I>timer_no</I>
+is already in use. So, you must first free the timer using
+<A HREF="$$LINK(OSVFreeTimer)">OSVFreeTimer</A> (as I completely rewrote these routines, I
+also corrected some bugs in them which were presented in TIOS routines; you know about
+them if you read the documentation about OSVRegisterTimer in earlier releases of
+TIGCCLIB). As event timers now work indepentently of TIOS timers, both event timers
+(1 and 2) are free for use. Here is a simple example of a program which installs
+both event timers (called "Timers"):
+$$EXAMPLE(Timers.c)
+In this implementation of OSVRegisterTimer, it is not necessary to free timers using
+<A HREF="$$LINK(OSVFreeTimer)">OSVFreeTimer</A> before first usage of them, because they are
+free by default at the begining. However, nothing wrong will happen if you try to free
+them explicitely (which was necessary in previous releases of TIGCCLIB).
+<BR><BR>
+<B>Note:</B> As already mentioned above, all TIOS bugs in timer routines (dependence between
+notify and event timers, etc.) are now removed, because these routines are rewritten to
+be independent of the TIOS.

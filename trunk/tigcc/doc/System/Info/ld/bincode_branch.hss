@@ -1,0 +1,21 @@
+[Main]
+Title=Branch Fixup and Optimization
+Subsections=bincode_branch_fline
+
+[Top]
+On some architectures, certain branches are not permitted. For example, on
+the MC68000 processor, it is not possible to branch to the next instruction
+using a short branch. While the assembler usually detects such invalid
+situations, they may still occur if the branch target is in a different
+section or file. The TIGCC linker detects such invalid situations and tries
+to resolve them as well as possible: If it is invalid for a branch at the end
+of a section to point to the beginning of the next section, it is removed
+unless it is a subroutine branch. For subroutine branches, a NOP instruction
+is inserted instead.
+<BR><BR>
+In addition to fixing invalid branches, the TIGCC linker can optimize branch
+instructions to reduce the number of absolute relocations needed. If an
+absolute branch (jump or subroutine branch) can be converted to a relative
+branch, the operating system does not need to insert the destination address
+at run time; therefore this will save space. Moreover, if range-cutting is
+enabled, optimizing branches can reduce the size of the code.

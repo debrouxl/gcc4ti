@@ -1,0 +1,21 @@
+[Main]
+Name=FL_getCert
+Type=Function
+Subtype=ROM Call
+Header Files=flash.h
+Definition=void FL_getCert (HANDLE *hDest, unsigned long *len, short decrypt);
+
+[ROM Call]
+Index=$16C
+
+[Description]
+Gets a certificate.
+
+[Explanation]
+FL_getCert allocates a space in the RAM and stores in it all relevant information which can
+be collected from the certificate area of Flash ROM (which is read-protected). It stores a handle of allocated
+space to a variable pointed to by <I>hDest</I>, and stores the length of it in the
+variable pointed to by <I>len</I>. <I>decrypt</I> is a Boolean parameter, which
+determines whether the crypted part of the certificate will be stored or not (it will be decrypted
+before storing, so crypted parts of the certificate are always invisible).
+See <A HREF="$$LINK(cert.h/)">cert.h</A> header file for more info.

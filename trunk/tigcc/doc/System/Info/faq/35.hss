@@ -1,0 +1,28 @@
+[Main]
+Title=How do you use strcat properly?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Whenever I used <A HREF="$$LINK(string.h/strcat)">strcat</A> in my program, it
+crashes!?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+See, you probably want to ask what is wrong in the following code:
+<PRE>printf (strcat ("Hello ", "World!"));
+</PRE>
+<A HREF="$$LINK(string.h/strcat)">strcat</A> appends the second argument to the
+first argument and returns the augmented first argument, but it does not
+allocate any extra space for doing this task. So, if you do
+<PRE>strcat ("Hello ", "World!");
+</PRE>
+string <CODE>"World!"</CODE> will be copied over bytes which follows immidiately
+after bytes <CODE>"Hello "</CODE> in the memory (whatever is there), which will
+nearly surely cause a crash (because there is probably a part of code or other
+data there). So, <A HREF="$$LINK(string.h/strcat)">strcat</A> may be used only when
+the first argument is enough long buffer, like in:
+<PRE>char buffer[50];
+strcpy (buffer, "Hello ");
+strcat (buffer, "World!");
+</PRE>
+In other words, C language does not support dynamic string manipulations which is
+present in some other languages like Basic, Turbo Pascal, etc.
+</TD></TR></TABLE>

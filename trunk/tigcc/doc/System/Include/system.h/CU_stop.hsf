@@ -1,0 +1,23 @@
+[Main]
+Name=CU_stop
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short CU_stop (void);
+
+[ROM Call]
+Index=$C5
+
+[Description]
+Stops the cursor.
+
+[Explanation]
+CU_stop resets an internal flag which tell that cursor is active, so after this function,
+displaying of the cursor will be denied. This function is called often from event driven
+and interrupt driven applications to stop the cursor blinking for a while.
+CU_stop returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> or <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, depending of whether the cursor
+was enabled or disabled before calling this function.
+
+[References]
+Out=CU_cursorState
+In=dialogs.h/Dialog, events.h/handleVarLinkKey, menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, textedit.h/TE_handleEvent, textedit.h/TE_pasteText, textedit.h/TE_unfocus, unknown.h/GT_KeyIn, unknown.h/_ROM_CALL_421

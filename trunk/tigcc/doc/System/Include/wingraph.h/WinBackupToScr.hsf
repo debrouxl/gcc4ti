@@ -1,0 +1,25 @@
+[Main]
+Name=WinBackupToScr
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinBackupToScr (WINDOW *w);
+See Also=DrawWinBorder
+
+[ROM Call]
+Index=$3
+
+[Description]
+Shows a current backup screen.
+
+[Explanation]
+If the window pointed to by <I>w</I> is active, WinBackupToScreen copies the current backup
+screen (duplicate screen) to the real screen (more precise, to the client area of the
+window), else does nothing. This routine assumes that a window is opened with the
+<A HREF="$$LINK(WinFlags)">WF_DUP_SCR</A> flag (see <A HREF="$$LINK(WinOpen)">WinOpen</A>). Then, all output
+to that window is saved in a backup screen image (allocated in the heap). So, this routine
+copies the contents of that image to the real screen.
+
+[References]
+In=bascmd.h/cmd_disp, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_prompt, gdraw.h/GR3_paint3d, homescr.h/HomeExecute, unknown.h/GR3_handleEvent, unknown.h/GT_BackupToScr
+Out=graph.h/BitmapPut

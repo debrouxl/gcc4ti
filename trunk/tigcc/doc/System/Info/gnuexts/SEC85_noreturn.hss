@@ -1,0 +1,28 @@
+[Main]
+Title=noreturn
+
+[Top]
+A few standard library functions, such as <A HREF="$$LINK(stdlib.h/abort)">abort</A> and <A HREF="$$LINK(stdlib.h/exit)">exit</A>,
+cannot return.  Some programs define
+their own functions that never return.  You can declare them
+<CODE>noreturn</CODE> to tell the compiler this fact.  For example:
+<PRE>void fatal () __attribute__ ((noreturn));
+
+void
+fatal (/* ... */)
+{
+  /* ... */ /* Print error message. */ /* ... */
+  exit (1);
+}
+</PRE>
+The <CODE>noreturn</CODE> keyword tells the compiler to assume that
+<I>fatal</I> cannot return.  It can then optimize without regard to what
+would happen if <I>fatal</I> ever did return.  This makes slightly
+better code.  More importantly, it helps avoid spurious warnings of
+uninitialized variables.
+<BR><BR>
+Do not assume that registers saved by the calling function are
+restored before calling the <CODE>noreturn</CODE> function.
+<BR><BR>
+It does not make sense for a <CODE>noreturn</CODE> function to have a return
+type other than <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE>.

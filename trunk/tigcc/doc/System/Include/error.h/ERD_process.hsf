@@ -1,0 +1,29 @@
+[Main]
+Name=ERD_process
+Type=Function
+Subtype=ROM Call
+Header Files=error.h
+Definition=void ERD_process (short err_no);
+
+[ROM Call]
+Index=$152
+
+[Description]
+Processes an error.
+
+[Explanation]
+ERD_process processes the error with error code <I>err_no</I> by calling
+<A HREF="$$LINK(ERD_dialog)">ERD_dialog</A> appropriately. Button "Enter=GOTO" will
+be displayed only if the routine concludes from some system flags that the
+routine is called from the TI-Basic interpreter (which will not be the case
+if you called it from a C or ASM program). Then, ERD_process responds by
+starting the appropriate application (for example the text editor if the TI-Basic
+interpreter was active and if the user pressed the button "Enter=GOTO").
+Principally, there is no difference between ERD_process and
+<A HREF="$$LINK(ERD_dialog)">ERD_dialog</A>, except in event-driven applications
+(see the <A HREF="$$LINK(events.h/)">events.h</A> header file).
+
+[References]
+Out=ER_catch, ER_success, ERD_dialog, events.h/EV_startApp, stdio.h/sprintf, vat.h/CheckSysFunc, vat.h/DerefSym, vat.h/SymFind, vat.h/SymFindFirst, vat.h/SymFindFolderName, vat.h/SymFindNext, unknown.h/_ROM_CALL_31, unknown.h/_ROM_CALL_5C9, unknown.h/_ROM_CALL_5CA, unknown.h/_ROM_CALL_5CC
+In=bascmd.h/cmd_disptbl, events.h/EV_centralDispatcher, homescr.h/HomeExecute
+Out_EV_eventLoop=1

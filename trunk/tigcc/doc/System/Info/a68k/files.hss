@@ -1,0 +1,55 @@
+[Main]
+Title=Files
+
+[Top]
+<CODE>A68k</CODE> uses the following files:
+<UL>
+<LI>
+The source code file - this file contains the program to be
+assembled.  This file is an ASCII text file whose last line
+must be an <CODE>END</CODE> statement.
+<TABLE><TR><TD><B>(TIGCC)</B></TD><TD>
+This <CODE>END</CODE> statement is no longer necessary starting
+from v.2.71.F3c.<BR>
+Moreover, the assembler will no longer accept an <CODE>END</CODE>
+statement in include files or macros, since it did
+never expect that and caused bugs.</TD></TR></TABLE>
+</LI>
+<LI>
+The object code file - this file is created by <CODE>A68k</CODE>, replacing
+any previous version which may exist.  If any errors are
+encountered during the assembly, this file will be scratched,
+unless the <B>'-k'</B> (keep) switch is specified (see below).
+Although this file is normally written in AmigaDOS format,
+the <B>'-s'</B> switch (see below) will cause it to be written in
+Motorola S-record format instead.
+</LI>
+<LI>
+The listing file - this file is optionally created by <CODE>A68k</CODE>
+and contains a listing complete with page headings (including
+form feeds), generated object code, and error messages if any.
+It is suitable for feeding to a printer.
+</LI>
+<LI>
+An equate file - this file is optionally created by <CODE>A68k</CODE>
+and consists of a leading comment line followed by <CODE>EQU</CODE>
+statements, one for each symbol encountered by <CODE>A68k</CODE> whose
+value is absolute.  This file is only created if the <B>'-e'</B>
+command-line switch is specified (see below).
+</LI>
+<LI>
+A header file - if requested, this file is read by <CODE>A68k</CODE>
+immediately prior to the source code file.  It treated
+exactly as if it were requested by an <CODE>INCLUDE</CODE> statement
+at the front of the source file, but is selected only if
+the <B>'-h'</B> command-line switch is specified (see below).
+</LI>
+<LI>
+Include files are selected by <CODE>INCLUDE</CODE> directives within the
+source file, and are inserted in the source code in place
+of the <CODE>INCLUDE</CODE> directive itself.  <CODE>A68k</CODE> first searches the
+current directory for <CODE>INCLUDE</CODE> files; the <B>'-i'</B> command-line
+switch (see below) specifies additional directories which
+can be searched.
+</LI>
+</UL>

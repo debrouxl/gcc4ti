@@ -1,0 +1,29 @@
+[Main]
+Name=EV_startSide
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void EV_startSide (short *saveTaskID, short TaskID, unsigned short Side);
+See Also=EV_startApp
+
+[ROM Call]
+Index=$D5
+
+[Description]
+Starts the given side.
+
+[Explanation]
+EV_startSide first sends <A HREF="$$LINK(EventIDs)">CM_STARTTASK</A> message to the application
+with ID number <I>TaskID</I>. Field <I>StartType</I> of the event structure will be set
+to <A HREF="$$LINK(StartTypes)">AP_START_CURRENT</A>, and field <I>r</I> (in <I>extra</I> field)
+of the event structure will be filled from the result of executing <A HREF="$$LINK(EV_getSplitRect)">EV_getSplitRect</A>
+function (with <I>Side</I> given to it as the parameter). See <A HREF="$$LINK(EV_startTask)">EV_startTask</A>.
+This is all if the current side is not equal to <I>Side</I>, else messages
+<A HREF="$$LINK(EventIDs)">CM_ACTIVATE</A> and <A HREF="$$LINK(EventIDs)">CM_FOCUS</A> will also be sent
+to the task <I>TaskID</I> and side <I>Side</I> (using <A HREF="$$LINK(EV_sendEventSide)">EV_sendEventSide</A>).
+EV_startSide also fills the variable pointed to by <I>saveTaskID</I> with <I>TaskID</I> (I
+don't know what the purpose of this is).
+
+[References]
+In=MO_digestOptions
+Out=EV_getSplitRect, EV_sendEventSide, unknown.h/EV_appSide, unknown.h/EV_currentApp

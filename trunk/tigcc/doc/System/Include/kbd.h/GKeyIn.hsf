@@ -1,0 +1,61 @@
+[Main]
+Name=GKeyIn
+Type=Function
+Subtype=ROM Call
+Header Files=kbd.h
+Definition=short GKeyIn (SCR_RECT *cursor_shape, unsigned short Flags);
+See Also=ngetchx, kbhit, system.h/kbd_queue, OSFastArrows
+
+[ROM Call]
+Index=$17E
+
+[Description]
+Gets character from the keyboard, with additional possibilities.
+
+[Explanation]
+GKeyIn acts similarly to <A HREF="$$LINK(ngetchx)">ngetchx</A>, with following differences:
+<UL>
+<LI>During waiting for a keypress, a flashing cursor may optionally be displayed.
+Parameter <I>cursor_shape</I> is a pointer to <A HREF="$$LINK(graph.h/SCR_RECT)">SCR_RECT</A> structure
+which defines location and shape of the cursor (it is, in fact, a flashing rectangular
+area). If <I>cursor_shape</I> is <A HREF="$$LINK(alloc.h/NULL)">NULL</A>, no cursor will be displayed.</LI>
+<LI>The activity in the status line during waiting for a keypress is set to IDLE (in opposite
+to <A HREF="$$LINK(ngetchx)">ngetchx</A> which sets activity to BUSY). After a keystroke is ready,
+the activity will be switched to BUSY. See <A HREF="$$LINK(statline.h/ST_busy)">ST_busy</A> for
+more info about status line activity indicator.</LI>
+<LI>During waiting for a keypress, if the user waits too long, the calculator will be switched
+off (APD feature - Automatic Power Down). This will not happen with
+<A HREF="$$LINK(ngetchx)">ngetchx</A>. See <A HREF="$$LINK(system.h/)">system.h</A> header file for more
+info about APD.</LI>
+<LI>During waiting for a keypress, the calculator enters into "idle" state (see
+<A HREF="$$LINK(system.h/idle)">idle</A> for more info).</LI>
+<LI>If <I>Flags</I> is different than zero, some special behaviour happens.</LI>
+</UL>
+Normally, <I>Flags</I> should be zero. It is collection of binary flags, where bits
+b0, b1, b3 and b4 are used. They are not very useful, but their meaning is as follows:
+<UL>
+<LI>When b0=1, if the pressed key is a modal key (see <A HREF="$$LINK(system.h/QModeKey)">QModeKey</A>
+for info what is a "modal" key for TIOS), GKeyIn will return <A HREF="$$LINK(CommonKeys)">KEY_ESC</A> instead of
+real keystroke code, and the keystroke will not be picked from the keyboard queue. If the
+pressed key is not a mode key, GKeyIn behaves as usual.</LI>
+<LI>When b1=1, GKeyIn will not pick a keystroke from the keyboard queue, so the "keypress"
+flag will remain set. You must explicitely pick it using <A HREF="$$LINK(ngetchx)">ngetchx</A> or
+flush the queue using <A HREF="$$LINK(GKeyFlush)">GKeyFlush</A>.</LI>
+<LI>When b3=1, if the pressed key is a system key (see <A HREF="$$LINK(system.h/QSysKey)">QSysKey</A>
+for info what is a "system" key for TIOS), GKeyIn will return <A HREF="$$LINK(CommonKeys)">KEY_ESC</A> (code of ESC key) instead of
+real keystroke code, and the keystroke will not be picked from the keyboard queue. If the
+pressed key is not a system key, GKeyIn behaves as usual.</LI>
+<LI>When b4=1, pressing on CATALOG key will be ignored.</LI>
+</UL>
+Except in noted special cases, GKeyIn returns the same value as <A HREF="$$LINK(ngetchx)">ngetchx</A>.
+Menus and dialog boxes usually set b0=1 and b3=1, so that if au user presses say VAR-LINK key in the dialog
+box, the dialog box is closed and then the VAR-LINK key is acted on.
+<BR><BR>
+<B>Note:</B> Thomas Nussbaumer informed me that <A HREF="$$LINK(system.h/idle)">idle</A> interferes with
+grayscale graphics. As GKeyIn calls the <A HREF="$$LINK(system.h/idle)">idle</A> function, the use of
+GKeyIn while grayscale mode is active is not recommended.
+
+[References]
+Out=unknown.h/_ROM_CALL_3EA
+In=GKeyFlush, bascmd.h/cmd_showstat, bascmd.h/cmd_toolbar, dialogs.h/Dialog, dialogs.h/DlgMessage, events.h/handleVarLinkKey, menus.h/MenuKey, system.h/HelpKeys, unknown.h/GT_Trace
+Out_EV_eventLoop=1

@@ -1,0 +1,37 @@
+[Main]
+Name=Parse2DExpr
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=ESI Parse2DExpr (CESI ptr, unsigned short FullPrec);
+
+[ROM Call]
+Index=$4A
+
+[Description]
+Parses a tokenized expression to be pretty printed using Print2DExpr.
+
+[Explanation]
+Parse2DExpr parses the expression pointed to by <I>ptr</I>, so it can be displayed with
+<A HREF="$$LINK(Print2DExpr)">Print2DExpr</A>. This function splits up expression into blocks with
+information about their relative position and size. This splitting is performed for
+efficiency reasons, so the expression may be displayed again without having to calculate
+the positions again. Parse2DExpr returns the pointer to a created structure (it needs to be
+passed to <A HREF="$$LINK(Print2DExpr)">Print2DExpr</A>). This pointer is in fact the new
+value of <A HREF="$$LINK(top_estack)">top_estack</A>, because the created structure (known as "boxed RPN")
+is also pushed on the expression stack. <I>FullPrec</I> is a Boolean flag:
+when it is non-zero, all floating point values will be converted using the maximal precision
+(14 digits), else current precision settings (from TI-Basic MODE dialog) will be used.
+If there is not enough memory, a special symbol is pushed onto the expression stack to signify
+this. This routine may cause heap compression.
+See <A HREF="$$LINK(Print2DExpr)">Print2DExpr</A> for an example of usage.
+<BR><BR>
+Parse2DExpr will always convert expressions into the "cannonic printing (external) form".
+For example, both x*3 and 3*x will be displayed as 3*x, x*y^(-1) will be displayed as x/y etc.
+<BR><BR>
+<B>Note:</B> Break key (ON) is checked during execution of this function, and pressing it will throw
+an error!
+
+[References]
+In=bascmd.h/cmd_disp, bascmd.h/cmd_output, bascmd.h/cmd_pause
+Out=check_estack_size, delete_between, next_expression_index, push_between, push_END_TAG, push_expression, push_quantum, top_estack, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, stdio.h/sprintf, string.h/strlen, system.h/NeedStack, system.h/XR_stringPtr, unknown.h/estack_max_index, unknown.h/estack_to_float, unknown.h/GetTagStr, unknown.h/primary_tag_list, unknown.h/_ds32s32, unknown.h/_ms32s32, unknown.h/_ROM_CALL_457, unknown.h/_ROM_CALL_4DF, unknown.h/_ROM_CALL_5D8

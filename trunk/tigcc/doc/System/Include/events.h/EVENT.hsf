@@ -1,0 +1,13 @@
+[Main]
+Name=EVENT
+Type=Type
+Subtype=Structure
+Header Files=events.h, textedit.h
+Definition=typedef struct EventStruct { unsigned short Type; /* ID code of the message, see EventIDs */ unsigned short RunningApp; /* Task ID of the sender of the message */ unsigned short Side; /* Side from which message is sent */ unsigned short StatusFlags; /* Status line flags */ union /* Message-dependent extra information: see EventIDs */ { WINDOW *w; WIN_RECT *r; char *pasteText; HANDLE hPasteText; struct { unsigned short Mod; /* Key modifiers (SHIFT, etc.) */ unsigned short Code; /* Key code */ } Key; } extra; unsigned char StartType; /* Used only in the CM_STARTTASK message */ } EVENT;
+Needed by=EVENT_HANDLER
+
+[Description]
+A structure describing an event message.
+
+[Explanation]
+EVENT is a structure which describes an event message in an event-driven application.

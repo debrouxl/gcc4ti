@@ -1,0 +1,28 @@
+[Main]
+Name=va_start
+Type=Function
+Subtype=Macro
+Header Files=stdarg.h
+Definition=void va_start (va_list &ap, &lastfix);
+Real Definition=#define va_start(ap,parmN) ((void)((ap)=(va_list)((char*)(&parmN)+((sizeof(parmN)+1)&0xFFFE))))
+
+[Description]
+Initializes a pointer to a variable argument list.
+
+[Explanation]
+Some C functions, such as sprintf have a variable number of arguments. This
+function, together with <A HREF="$$LINK(va_arg)">va_arg</A> and <A HREF="$$LINK(va_end)">va_end</A>,
+provides a portable way to access
+these argument lists. They are used for stepping through a list of arguments
+when the called function does not know the number and types of the arguments
+being passed. Function va_start (implemented as a macro) sets <I>ap</I> to point to the
+first of the variable arguments being passed to the function. It must be
+used before the first call to <A HREF="$$LINK(va_arg)">va_arg</A> or <A HREF="$$LINK(va_end)">va_end</A>.
+<BR><BR>
+va_start takes two parameters: <I>ap</I> and <I>lastfix</I>. <I>ap</I> is explained
+above, and <I>lastfix</I> is the name of the last fixed parameter being passed to the
+called function.
+<BR><BR>
+<B>Note:</B> I used notation "&amp;<I>ap</I>" in the prototype description, although passing by
+reference does not exist in ordinary C (only in C++). However, this macro is implemented
+in such a way that it simulates "passing by reference".

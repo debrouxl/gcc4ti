@@ -1,0 +1,27 @@
+[Main]
+Title=Misnesting
+
+[Top]
+When a macro is called with arguments, the arguments are substituted
+into the macro body and the result is checked, together with the rest of
+the input file, for more macro calls.  It is possible to piece together
+a macro call coming partially from the macro body and partially from the
+arguments.  For example,
+<PRE>#define twice(x) (2*(x))
+#define call_with_1(x) x(1)
+call_with_1 (twice)
+     expands to twice(1)
+     expands to (2*(1))
+</PRE>
+Macro definitions do not have to have balanced parentheses.  By writing
+an unbalanced open parenthesis in a macro body, it is possible to create
+a macro call that begins inside the macro body but ends outside of it.
+For example,
+<PRE>#define strange(file) fprintf (file, &quot;%s %d&quot;,
+...
+strange(stderr) p, 35)
+     expands to fprintf (stderr, &quot;%s %d&quot;, p, 35)
+</PRE>
+The ability to piece together a macro call can be useful, but the use of
+unbalanced open parentheses in a macro body is just confusing, and
+should be avoided.

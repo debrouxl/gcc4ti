@@ -1,0 +1,24 @@
+[Main]
+Name=ModeSettings
+Type=Constant
+Header Files=events.h
+Definition=MO_OPTIONS *const ModeSettings;
+Real Definition=#define ModeSettings ((MO_OPTIONS*const)(long)*(short*)((char*)MO_currentOptions+6))
+
+[Description]
+Contains a pointer to the global <A HREF="$$LINK(MO_OPTIONS)">MO_OPTIONS</A> structure.
+
+[Explanation]
+ModeSettings is the constant pointer to the <A HREF="$$LINK(MO_OPTIONS)">MO_OPTIONS</A> structure,
+which keeps all mode settings together. But note that this structure is "auxilary": TIOS
+consults other variables to check various mode settings when necessary. So, values in this
+structure are correct only after calling <A HREF="$$LINK(MO_currentOptions)">MO_currentOptions</A>, and
+after changing one or more values in this structure, you need to call
+<A HREF="$$LINK(MO_digestOptions)">MO_digestOptions</A> to inform TIOS about any changes. So, if you
+want, for example, to change "Display Digits" settings to "FIX 4" and "Complex Format" to
+"POLAR", you should do:
+<PRE>MO_currentOptions ();
+ModeSettings-&gt;Fix = 5;
+ModeSettings-&gt;Complex = 3;
+MO_digestOptions (0);
+</PRE>

@@ -1,0 +1,46 @@
+[Main]
+Title=Locally Declared Labels
+
+[Top]
+Each statement expression is a scope in which <U>local labels</U> can be
+declared.  A local label is simply an identifier; you can jump to it
+with an ordinary <CODE><A HREF="$$INFOLINK(keywords/goto)">goto</A></CODE> statement, but only from within the
+statement expression it belongs to.
+<BR><BR>
+A local label declaration looks like this:
+<PRE>__label__ <I>label</I>;
+</PRE>
+or
+<PRE>__label__ <I>label1</I>, <I>label2</I>, /* ... */;
+</PRE>
+Local label declarations must come at the beginning of the statement
+expression, right after the <CODE>({</CODE>, before any ordinary
+declarations.
+<BR><BR>
+The label declaration defines the label <I>name</I>, but does not define
+the label itself.  You must do this in the usual way, with
+<CODE><I>label</I>:</CODE>, within the statements of the statement expression.
+<BR><BR>
+The local label feature is useful because statement expressions are
+often used in macros.  If the macro contains nested loops, a <CODE><A HREF="$$INFOLINK(keywords/goto)">goto</A></CODE>
+can be useful for breaking out of them.  However, an ordinary label
+whose scope is the whole function cannot be used: if the macro can be
+expanded several times in one function, the label will be multiply
+defined in that function.  A local label avoids this problem.  For
+example:
+<PRE>#define SEARCH(array, target)                     \
+({                                                \
+  __label__ found;                                \
+  typeof (target) _SEARCH_target = (target);      \
+  typeof (*(array)) *_SEARCH_array = (array);     \
+  int i, j;                                       \
+  int value;                                      \
+  for (i = 0; i &lt; max; i++)                       \
+    for (j = 0; j &lt; max; j++)                     \
+      if (_SEARCH_array[i][j] == _SEARCH_target)  \
+        { value = i; goto found; }                \
+  value = -1;                                     \
+ found:                                           \
+  value;                                          \
+})
+</PRE>

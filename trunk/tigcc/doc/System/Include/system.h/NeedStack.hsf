@@ -1,0 +1,33 @@
+[Main]
+Name=NeedStack
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=void NeedStack (short Size);
+
+[ROM Call]
+Index=$A4
+
+[Description]
+Checks for space on the stack.
+
+[Explanation]
+NeedStack throws a memory error if there is no enough space on the processor stack for <I>Size</I> bytes
+(the hardware stack is 16K in size; when a function calls another function the system will throw an
+error if there is not enough hardware stack to make the call).
+Although this routine is used mainly internally in TIOS, sometimes it may be useful even
+in user programs. For example, a function may have a complex set of operations that may not be
+easily undone in a <A HREF="$$LINK(error.h/ONERR)">ONERR</A> block. The function may also require
+that all of the operations do not fail due to a lack of hardware stack. In this case, the
+function can be started with a call to NeedStack to at least guarantee that
+the hardware stack will not overflow during the critical section of the function.
+Critical operations may be, say, direct modifying elements of the VAT table. So, if the
+function calls NeedStack first, this insures
+that none of the critical operations are partially completed due to a lack of
+hardware stack thus leaving the VAT table (for example) in an undefined state. The
+TI-Basic interpreter uses the hardware stack to make recursive calls and
+so all TI-Basic commands and functions cannot rely on the hardware
+stack being at any particular level.
+
+[References]
+In=alloc.h/HeapAlloc, alloc.h/HeapAllocESTACK, alloc.h/HeapAllocHigh, alloc.h/HeapAllocPtr, alloc.h/HeapCompress, alloc.h/HeapFree, alloc.h/HeapMoveHigh, alloc.h/HeapRealloc, alloc.h/malloc, bascmd.h/cmd_custom, bascmd.h/cmd_dialog, bascmd.h/cmd_request, bascmd.h/cmd_toolbar, estack.h/Parse2DExpr, estack.h/Parse2DMultiExpr, events.h/handleRclKey, events.h/handleVarLinkKey, link.h/getcalc, unknown.h/GraphActivate, vat.h/VarStore, unknown.h/_ROM_CALL_438

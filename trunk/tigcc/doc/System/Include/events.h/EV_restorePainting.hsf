@@ -1,0 +1,25 @@
+[Main]
+Name=EV_restorePainting
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=short EV_restorePainting (short blockPaint);
+
+[ROM Call]
+Index=$CD
+
+[Description]
+Restores previous state of window painting.
+
+[Explanation]
+EV_restorePainting suspends or enables window painting, depending on whether <I>blockPaint</I>
+is <A HREF="$$LINK(PaintFlags)">PAINTING_ENABLED</A> or <A HREF="$$LINK(PaintFlags)">PAINTING_SUSPENDED</A>
+(these constants are defined in enum <A HREF="$$LINK(PaintFlags)">PaintFlags</A>). The main purpose of
+this function is to restore previous state after usage of <A HREF="$$LINK(EV_suspendPainting)">EV_suspendPainting</A>
+function. EV_restorePainting also returns previous state of painting enable flag
+(<A HREF="$$LINK(PaintFlags)">PAINTING_ENABLED</A> or <A HREF="$$LINK(PaintFlags)">PAINTING_SUSPENDED</A>)
+before calling this function.
+
+[References]
+In=ABT_dialog, EV_defaultHandler, dialogs.h/Dialog, error.h/ERD_dialog, unknown.h/EV_quit
+Out=unknown.h/EV_flags

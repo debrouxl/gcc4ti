@@ -1,0 +1,28 @@
+[Main]
+Name=get_key_ptr
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=char *get_key_ptr (ESQ Tag1, ESQ Tag2);
+MinAMS=1.01
+
+[ROM Call]
+Index=$2B7
+
+[Description]
+Converts a tag code to a tag name.
+
+[Explanation]
+get_key_ptr returns a static pointer to the string which represents the name of the
+tag <I>Tag1</I>. <I>Tag2</I> is used only if <I>Tag1</I> is an extended tag
+(i.e. <A HREF="$$LINK(Tags)">EXT_TAG</A>, <A HREF="$$LINK(Tags)">EXT_INSTR_TAG</A> or <A HREF="$$LINK(Tags)">EXT_SYSTEM_TAG</A>)
+which can't be fully represented using only one byte.
+<BR><BR>
+If the tag corresponds to a function, AMS 1.xx does not append
+'(' at the end of the string, but AMS 2.xx does. Thus, anyone who
+intends to use this function for function tokens should use extra
+code to handle both cases.
+
+[References]
+Out=system.h/XR_stringPtr
+In=index_below_display_expression_aux, basfunc.h/push_part

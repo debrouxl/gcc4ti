@@ -1,0 +1,27 @@
+[Main]
+Name=FINALLY
+Type=Language Extension
+Header Files=error.h
+Real Definition=#define FINALLY ER_success (); } {
+
+[Description]
+Begins the termination handler in a TRY...FINALLY...ENDFINAL block.
+
+[Explanation]
+The macro FINALLY ends the protected block and begins the handler for code
+which always has to be executed (see <A HREF="$$LINK(TRY)">TRY</A> for more info).
+The variable <A HREF="$$LINK(errCode)">errCode</A> is
+automatically created in the error handler, and it contains the error number to allow
+the program to check what caused the error, or 0 if there was no error.
+This variable is destroyed after the <A HREF="$$LINK(ENDFINAL)">ENDFINAL</A> statement.
+<BR><BR>
+<B>Note:</B> The macro FINALLY uses the <A HREF="$$LINK(ER_success)">ER_success</A> function to end the protected
+block, and <A HREF="$$LINK(ENDFINAL)">ENDFINAL</A> uses <A HREF="$$LINK(PASS)">PASS</A> to throw the
+error signaled by <A HREF="$$LINK(errCode)">errCode</A> a second time.
+<BR><BR>
+Here is an example (called "Memory Error"), which demonstrates the use of this
+macro:
+$$EXAMPLE(Memory Error.c)
+
+[References]
+Out=ER_success

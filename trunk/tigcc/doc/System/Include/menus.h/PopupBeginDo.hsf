@@ -1,0 +1,41 @@
+[Main]
+Name=PopupBeginDo
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=short PopupBeginDo (HANDLE ExecHandle, short x, short y, short StartID);
+MinAMS=2.00
+See Also=PopupBegin, MenuEnd, PopupDo
+
+[ROM Call]
+Index=$3F6
+
+[Description]
+Executes a dynamically allocated popup using a menu-draw handle.
+
+[Explanation]
+PopupBeginDo draws the popup menu associated with the handle
+<I>ExecHandle</I> on the screen. <I>ExecHandle</I> must be returned from
+<A HREF="$$LINK(PopupBegin)">PopupBegin</A> and <I>not</I> directly from
+<A HREF="$$LINK(PopupNew)">PopupNew</A>; take care <I>never</I> to mix
+handles.
+<BR><BR>
+The top-left corner of the dialog will be the at the position (<I>x</I>, <I>y</I>);
+the coordinates are absolute screen coordinates. <I>x</I>, <I>y</I>, or both may also
+have a special value <A HREF="$$LINK(dialogs.h/CENTER)">CENTER</A>, which tells PopupBeginDo to
+center the menu in this dimension. After the execution, the original contents of the screen
+will be restored. PopupBeginDo returns the identification number (ID) of the selected menu item (see
+<A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A>), or 0 if the user pressed ESC.
+<I>StartID</I> determines which option will be selected first when the menu is
+executed. It seems that <I>StartID</I> works correctly only for menus without
+submenus. Anyway, you can always pass 0 to <I>StartID</I>. It causes the function
+to select the first item.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of a scrolling popup menu with submenus (called "Dynamic Popup Example"):
+$$EXAMPLE(Dynamic Popup Example.c)
+
+[References]
+Out=alloc.h/HeapLock, alloc.h/HeapUnlock, unknown.h/_ROM_CALL_421
+Out_EV_eventLoop=1

@@ -1,0 +1,26 @@
+[Main]
+Name=GZ_Center
+Type=Function
+Subtype=ROM Call
+Header Files=gdraw.h
+Definition=void GZ_Center (void);
+
+[ROM Call]
+Index=$22C
+
+[Description]
+Changes the zoom settings of the graph.
+
+[Explanation]
+This function basically changes the zoom settings of the graph. The first time the function is
+called, it changes the graph to the standard settings. The next time it is called, if there is a
+function selected, it increases <CODE>xmin</CODE> and <CODE>xmax</CODE> by 10, and increases <CODE>ymin</CODE> and <CODE>ymax</CODE> also. If there
+is no function selected, it remains at the standard. It seems that this function has some
+internal values for <CODE>xmin</CODE> and <CODE>xmax</CODE>, and any changes are ignored, meaning that, if you call it
+twice and change the values for <CODE>xmin</CODE> and <CODE>xmax</CODE>, and call this function a third time, the changes you made
+will be ignored.
+
+[References]
+In=GZ_Box, unknown.h/GZ_Decimal, unknown.h/GZ_Fit, unknown.h/GZ_InOut, unknown.h/GZ_Integer, unknown.h/GZ_Previous, unknown.h/GZ_Recall, unknown.h/GZ_Square, unknown.h/GZ_Standard, unknown.h/GZ_Stat, unknown.h/GZ_Store, unknown.h/GZ_Trig
+Out=timath.h/round12_err, unknown.h/gr_active, unknown.h/GT_CenterGraphCursor, unknown.h/GT_Regraph, unknown.h/_bcd_math
+Out_EV_eventLoop=1

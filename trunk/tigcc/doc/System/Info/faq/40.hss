@@ -1,0 +1,37 @@
+[Main]
+Title=How can I set up a SCR_RECT structure?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can setup properly a <A HREF="$$LINK(graph.h/SCR_RECT)">SCR_RECT</A> structure?
+For example, the <A HREF="$$LINK(graph.h/FillTriangle)">FillTriangle</A>
+function requires the parameter of <A HREF="$$LINK(graph.h/SCR_RECT)">SCR_RECT</A> type.
+How to put coordinates into it, so that I can change the clipping area for the screen?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+If all coordinates of clip area are known in advance (for example 5, 5, 90, 70),
+do this:
+<PRE>FillTriangle (10, 10, 10, 50, 50, 50, &amp;(SCR_RECT){{5, 5, 90, 70}}, A_NORMAL);
+</PRE>
+or, using "standard" C (i.e. without <A HREF="$$INFOLINK(gnuexts)">GNU extensions</A>):
+<BR><BR>
+<PRE>SCR_RECT area = {{5, 5, 90, 70}};  // <I>somewhere in the declaration part</I>
+...
+FillTriangle (10, 10, 10, 50, 50, 50, &amp;area, A_NORMAL);
+</PRE>
+Note that double braces are necessary because <A HREF="$$LINK(graph.h/SCR_RECT)">SCR_RECT</A>
+is an union.
+<BR><BR>
+If coordinates are not known in advance, for examples if they are in
+integer variables a, b, c and d, you can do this:
+<PRE>SCR_RECT area;
+...
+area.xy.x0 = a;
+area.xy.y0 = b;
+area.xy.x1 = c;
+area.xy.y1 = d;
+FillTriangle (10, 10, 10, 50, 50, 50, &amp;area, A_NORMAL);
+</PRE>
+or, much simpler, using <A HREF="$$INFOLINK(gnuexts)">GNU C extensions</A>:
+<PRE>FillTriangle (10, 10, 10, 50, 50, 50, &amp;(SCR_RECT){{a, b, c, d}}, A_NORMAL);
+</PRE>
+</TD></TR></TABLE>

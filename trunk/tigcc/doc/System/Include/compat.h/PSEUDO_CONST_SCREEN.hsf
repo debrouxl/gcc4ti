@@ -1,0 +1,26 @@
+[Main]
+Name=PSEUDO_CONST_SCREEN
+Type=Function
+Subtype=Macro
+Header Files=compat.h
+Definition=#define PSEUDO_CONST_SCREEN(screen89,screen92) PSEUDO_CONST_CALC(screen92, screen89, screen92, screen92)
+See Also=PSEUDO_CONST_CALC, PSEUDO_CONST_KBD
+
+[Description]
+A macro to construct a pseudo-constant from screen-based values.
+
+[Explanation]
+PSEUDO_CONST_SCREEN takes several values for different types of screens, and
+returns one of them based on the screen that the program currently uses.
+The values must be plain positive integers up to 65535 (0xFFFF) in decimal
+or hexadecimal notation, otherwise this macro may fail in some cases.
+<BR><BR>
+Currently, there are two types of screens: The TI-89 LCD with a size of
+160x100 pixels, and the TI-92/TI-92+/V200 LCD with a size of 240x128 pixels.
+The two parameters specify the values to use whichever screen type is
+encountered, which means that the number of parameters may increase as new
+hardware becomes available. If you want to use this macro in your
+application, you must decide for yourself whether this feature is desirable:
+On the one hand, it can prevent your code from being compiled in future
+releases of TIGCC; on the other hand, you can easily port your programs to
+new hardware just by fixing all of the compile-time errors.

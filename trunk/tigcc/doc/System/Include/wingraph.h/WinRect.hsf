@@ -1,0 +1,42 @@
+[Main]
+Name=WinRect
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinRect (WINDOW *w, const WIN_RECT *rect, short Attr);
+
+[ROM Call]
+Index=$21
+
+[Description]
+Draws a rectangle to a window.
+
+[Explanation]
+WinRect draws a rectangle with (x0,&nbsp;y0) and (x1,&nbsp;y1) as corners
+to the window pointed to by <I>w</I>, where coordinates (x0,&nbsp;y0) and (x1,&nbsp;y1)
+are given in a <A HREF="$$LINK(WIN_RECT)">WIN_RECT</A> structure <I>rect</I>. All coordinates
+are relative to the topleft corner of the window. The rectangle will be clipped at the
+boundaries of the clipping area of the window. The interior of the rectangle remains
+intact (no fill). The border lines of the rectangle will be drawn using the attribute
+<I>Attr</I>. See <A HREF="$$LINK(WinLineTo)">WinLineTo</A> for a description of supported line
+atributes. In addition, the attribute may be ORed with one or more following constants
+(which are defined in enum <A HREF="$$LINK(graph.h/BoxAttrs)">BoxAttrs</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>B_NORMAL</TD><TD>Draw a normal rectangle</TD>
+</TR><TR>
+<TD>B_DOUBLE</TD><TD>Draw a double thick rectangle</TD>
+</TR><TR>
+<TD>B_ROUNDED</TD><TD>Draw a rectangle with rounded corners</TD>
+</TR><TR>
+<TD>B_CUT</TD><TD>Draw a rectangle with the upper corners cut (like in toolboxes)</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> I cannot conclude which is the difference if you OR the attribute
+with B_NORMAL or if you do not so. Maybe I am stupid.
+
+[References]
+Out=RectWinToWin, graph.h/DrawClipRect, graph.h/PortRestore, graph.h/ScrRectOverlap, unknown.h/_ROM_CALL_413, unknown.h/_ROM_CALL_42F
+In=DrawStaticButton, bascmd.h/cmd_cubicreg, bascmd.h/cmd_expreg, bascmd.h/cmd_linreg, bascmd.h/cmd_lnreg, bascmd.h/cmd_logistic, bascmd.h/cmd_medmed, bascmd.h/cmd_onevar, bascmd.h/cmd_powerreg, bascmd.h/cmd_quadreg, bascmd.h/cmd_quartreg, bascmd.h/cmd_twovar, dialogs.h/Dialog, events.h/EV_defaultHandler, gdraw.h/GD_Select, gdraw.h/GZ_Box, system.h/HelpKeys, unknown.h/EV_quit

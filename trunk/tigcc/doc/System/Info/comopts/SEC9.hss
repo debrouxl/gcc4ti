@@ -1,0 +1,92 @@
+[Main]
+Title=Options for Debugging Your Program
+
+[Top]
+GCC has various special options that are used for debugging
+either your program or GCC.
+However, this manual is not meant to explain anything about the internals of
+GCC, so you will have to go to the
+<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html">official version</A>
+of this page on the internet if you want to debug GCC itself.
+<BR><BR>
+Currently there is no debugger for TIGCC programs, so most of these options
+make sense only if you plan to use their output directly.
+<DL>
+<DT><B>-g</B>
+<DD>Produce debugging information in the operating system's native format
+(stabs is the default for the MC68000).  GDB can work with this debugging
+information.
+Note that <CODE>tigcc</CODE> handles this switch differently; see
+<A HREF="$$LINK(SEC3)">Options Available in the Command Line Compiler</A>.
+<BR><BR>
+Unlike most other C compilers, GCC allows you to use <B>'-g'</B> with
+<B>'-O'</B>.  The shortcuts taken by optimized code may occasionally
+produce surprising results: some variables you declared may not exist
+at all; flow of control may briefly move where you did not expect it;
+some statements may not be executed because they compute constant
+results or their values were already at hand; some statements may
+execute in different places because they were moved out of loops.
+<BR><BR>
+Nevertheless it proves possible to debug optimized output.  This makes
+it reasonable to use the optimizer for programs that might have bugs.
+<BR><BR>
+The following options are useful when GCC is generated with the
+capability for more than one debugging format.
+<BR><BR>
+<DT><B>-ggdb</B>
+<DD>Produce debugging information for use by GDB.  This means to use the
+most expressive format available, including GDB extensions if at all
+possible.  Note that you currently cannot use GDB together with TIGCC.
+<BR><BR>
+<DT><B>-gstabs</B>
+<DD>Produce debugging information in stabs format.
+<BR><BR>
+<DT><B>-gstabs+</B>
+<DD>Produce debugging information in stabs format,
+using GNU extensions understood only by the GNU debugger (GDB).
+<BR><BR>
+<DT><B>-gcoff</B>
+<DD>Produce debugging information in COFF format.
+<BR><BR>
+<DT><B>-g<I>level</I></B>
+<BR><B>-ggdb<I>level</I></B>
+<BR><B>-gstabs<I>level</I></B>
+<BR><B>-gcoff<I>level</I></B>
+<DD>Request debugging information and also use <I>level</I> to specify how
+much information.  The default level is 2.
+<BR><BR>
+Level 1 produces minimal information, enough for making backtraces in
+parts of the program that you don't plan to debug.  This includes
+descriptions of functions and external variables, but no information
+about local variables and no line numbers.
+<BR><BR>
+Level 3 includes extra information, such as all the macro definitions
+present in the program.  Some debuggers support macro expansion when
+you use <B>'-g3'</B>.
+<BR><BR>
+<DT><B>-p</B>
+<DD>Generate extra code to write profile information suitable for the
+analysis program <CODE>prof</CODE>.  You must use this option when compiling
+the source files you want data about, and you must also use it when
+linking.
+This option is probably useless in TIGCC.
+<BR><BR>
+<DT><B>-pg</B>
+<DD>Generate extra code to write profile information suitable for the
+analysis program <CODE>gprof</CODE>.  You must use this option when compiling
+the source files you want data about, and you must also use it when
+linking.
+This option is probably useless in TIGCC.
+<BR><BR>
+<DT><B>-Q</B>
+<DD>Makes the compiler print out each function name as it is compiled, and
+print some statistics about each pass when it finishes.
+<BR><BR>
+<DT><B>-save-temps</B>
+<DD>Store the usual &quot;temporary&quot; intermediate files permanently; place them
+in the current directory and name them based on the source file.  Thus,
+compiling <CODE>foo.c</CODE> with <B>'-c -save-temps'</B> would produce files
+<CODE>foo.i</CODE> and <CODE>foo.s</CODE>, as well as <CODE>foo.o</CODE>.  This creates a
+preprocessed <CODE>foo.i</CODE> output file even though the compiler now
+normally uses an integrated preprocessor.
+</DL>

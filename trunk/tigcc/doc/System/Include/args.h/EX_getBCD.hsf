@@ -1,0 +1,22 @@
+[Main]
+Name=EX_getBCD
+Type=Function
+Subtype=ROM Call
+Header Files=args.h
+Definition=short EX_getBCD (short n, float *dest);
+
+[ROM Call]
+Index=$BF
+
+[Description]
+Gets the n-th floating point argument.
+
+[Explanation]
+EX_getBCD is a somewhat limited TIOS function. It first calls <A HREF="$$LINK(EX_getArg)">EX_getArg</A>
+passing <I>n</I> to it. Then, if the argument pointed to by the result of
+<A HREF="$$LINK(EX_getArg)">EX_getArg</A> is not a floating point number, EX_getBCD returns
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, otherwise it stores the floating point value to the variable pointed to by
+<I>dest</I> and returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>.
+
+[References]
+Out=EX_getArg, unknown.h/estack_to_float

@@ -1,0 +1,35 @@
+[Main]
+Name=cmd_newdata
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_newdata (CESI Data);
+MinAMS=1.01
+
+[ROM Call]
+Index=$363
+
+[Description]
+Executes TI-Basic 'NewData' command.
+
+[Explanation]
+cmd_newdata creates a TI-Basic data variable. This function expects the
+following layout on the expression stack:
+<BR><BR>
+<A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>listexpr_n</I> ... <I>listexpr_2</I> <I>listexpr_1</I> <I>symname</I>
+<BR><BR>
+<I>listexpr_1</I>, <I>listexpr_2</I>, etc. are list expressions (they may be
+symbol names of TI-Basic list variables as well), and <I>symname</I> is
+the VAT symbol name (see <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> and
+<A HREF="$$LINK(estack.h/Tags)">Tags</A> for more info) of the TI-Basic data
+variable which will be created. The parameter <I>Data</I> should point to the
+tag of the last item on the expression stack. The data variable will be built
+up from these list expressions; each list will become one column of the data
+variable. There must be at least one list. This function also makes the new
+variable the current one in the Data/Matrix editor. See the TI-Basic manual
+for more info.
+
+[References]
+In=cmd_blddata, unknown.h/spike_geo_titles, unknown.h/spike_optionD
+Out=alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapFreeIndir, alloc.h/HeapLock, alloc.h/HeapRealloc, alloc.h/HeapUnlock, estack.h/remaining_element_count, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/check_estack_size, estack.h/HToESI, estack.h/next_expression_index, estack.h/top_estack, mem.h/memcpy, mem.h/memset, stdio.h/sprintf, unknown.h/CheckGraphRef, unknown.h/estack_max_index, unknown.h/gen_version, unknown.h/primary_tag_list, unknown.h/statFree, vat.h/AddSymToFolder, vat.h/checkCurrent, vat.h/DerefSym, vat.h/HSymDel, vat.h/HSYMtoName, vat.h/SymFind, vat.h/VarStore, unknown.h/_bcd_math, unknown.h/_ROM_CALL_459, unknown.h/_ROM_CALL_45A
+Out_EV_eventLoop=1

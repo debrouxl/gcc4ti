@@ -1,0 +1,25 @@
+[Main]
+Name=XR_stringPtr
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=const char *XR_stringPtr (long XR_string_no);
+Real Definition=#define XR_stringPtr(strno) (AMS_1xx ? _rom_call(const char*,(short),293) (strno) : _rom_call(const char*,(long),293) (strno))
+
+[ROM Call]
+Index=$293
+
+[Description]
+Returns a pointer to a TIOS system message (XR string).
+
+[Explanation]
+XR_stringPtr returns a pointer to the TIOS system message whose number is given
+in <I>XR_string_no</I>. IDs are not consistent across AMS versions, but since
+AMS 2.00 they have stayed the same and probably will in the future.
+They are often used internally, for example dialog structures and
+<A HREF="$$LINK(events.h/EV_sendString)">EV_sendString</A> use them.
+All tokens (like "sin" etc.) are also XR strings.
+
+[References]
+In=HelpKeys, bascmd.h/cmd_cubicreg, bascmd.h/cmd_expreg, bascmd.h/cmd_linreg, bascmd.h/cmd_lnreg, bascmd.h/cmd_logistic, bascmd.h/cmd_medmed, bascmd.h/cmd_onevar, bascmd.h/cmd_pause, bascmd.h/cmd_powerreg, bascmd.h/cmd_quadreg, bascmd.h/cmd_quartreg, bascmd.h/cmd_showstat, bascmd.h/cmd_sinreg, bascmd.h/cmd_twovar, basfunc.h/did_push_anti_deriv, basfunc.h/did_push_series, basfunc.h/push_1st_derivative, basfunc.h/push_abs, basfunc.h/push_comb, basfunc.h/push_comdenom, basfunc.h/push_cosh, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_denominator, basfunc.h/push_desolve, basfunc.h/push_exp, basfunc.h/push_expand, basfunc.h/push_extended_prod, basfunc.h/push_factor, basfunc.h/push_floor, basfunc.h/push_gettype, basfunc.h/push_im, basfunc.h/push_integer_lcm, basfunc.h/push_is_prime, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_nth_derivative, basfunc.h/push_numerator, basfunc.h/push_phase, basfunc.h/push_re, basfunc.h/push_rotate, basfunc.h/push_shift, basfunc.h/push_sign, basfunc.h/push_sin2, basfunc.h/push_solve, basfunc.h/push_summation, basfunc.h/push_tan, basfunc.h/push_zeros, basop.h/did_push_to_polar, basop.h/push_and, basop.h/push_equals, basop.h/push_exponentiate, basop.h/push_factorial, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_negate, basop.h/push_not, basop.h/push_not_equals, basop.h/push_or, basop.h/push_product, basop.h/push_sum, basop.h/push_to_cylin, basop.h/push_to_sphere, dialogs.h/Dialog, dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs, error.h/ERD_dialog, error.h/find_error_message, estack.h/compare_complex_magnitudes, estack.h/get_key_ptr, estack.h/index_below_display_expression_aux, estack.h/Parse2DExpr, estack.h/Parse2DMultiExpr, estack.h/push_overflow_to_infinity, events.h/ABT_dialog, events.h/EV_defaultHandler, events.h/EV_eventLoop, events.h/EV_sendString, events.h/handleVarLinkKey, events.h/MO_currentOptions, events.h/MO_digestOptions, gdraw.h/GD_Circle, gdraw.h/GD_Eraser, gdraw.h/GD_HVLine, gdraw.h/GD_Line, gdraw.h/GD_Pen, gdraw.h/GD_Select, gdraw.h/GD_Text, gdraw.h/GR3_paint3d, gdraw.h/GZ_Box, homescr.h/HomeExecute, homescr.h/HomePushEStack, kbd.h/KeyYesOrNo, link.h/LIO_Receive, link.h/OSLinkCmd, menus.h/MenuKey, menus.h/VarCreateFolderPopup, statline.h/ST_eraseHelp, statline.h/ST_precision, stdio.h/sprintf, textedit.h/TE_handleEvent, estack.h/add_to_top, unknown.h/are_units_consistent, unknown.h/compare_numbers, unknown.h/DataTypeNames, unknown.h/EQU_deStatus, unknown.h/EQU_getNameInfo, unknown.h/EV_quit, unknown.h/get_ub, unknown.h/GetTagStr, unknown.h/GM_Shade, unknown.h/GR3_addContours, unknown.h/GT_DE_Init_Conds, unknown.h/GT_FreeTrace, unknown.h/GT_Trace, unknown.h/GZ_InOut, unknown.h/GZ_Integer, unknown.h/index_if_pushed_qquad_info, unknown.h/init_unit_system, unknown.h/next_token, unknown.h/push_auto_units_conversion, unknown.h/push_but_factor, unknown.h/push_but_term, unknown.h/push_constant_factors, unknown.h/push_constant_terms, unknown.h/push_dependent_factors, unknown.h/push_dependent_terms, unknown.h/push_div_dif_1c, unknown.h/push_gcd_then_cofactors, unknown.h/push_independent_factors, unknown.h/push_independent_terms, unknown.h/push_make_proper, unknown.h/push_nonconstant_factors, unknown.h/push_nonconstant_terms, unknown.h/push_nonnumeric_factors, unknown.h/push_poly_qr, unknown.h/push_reciprocal, unknown.h/push_standardize, unknown.h/push_unit_system_list, unknown.h/push_var, unknown.h/raise_to_top, unknown.h/replace_top_with_post_simplified, unknown.h/replace_top2_with_pow, unknown.h/replace_top2_with_prod, unknown.h/replace_top2_with_sum, unknown.h/setup_unit_system, unknown.h/SP_Define, unknown.h/spike_optionD, unknown.h/times_top, unknown.h/tokenize_if_TI_92_or_text, unknown.h/VarSaveTitle, vat.h/SmapTypeStrings, vat.h/SymFindPtr, vat.h/VarRecall, vat.h/VarStore, unknown.h/_ROM_CALL_3F7, unknown.h/_ROM_CALL_3F8, unknown.h/_ROM_CALL_40C, unknown.h/_ROM_CALL_41E, unknown.h/_ROM_CALL_41F, unknown.h/_ROM_CALL_421, unknown.h/_ROM_CALL_486, unknown.h/_ROM_CALL_4CC, unknown.h/_ROM_CALL_4D5, unknown.h/_ROM_CALL_4E6, unknown.h/_ROM_CALL_502, unknown.h/_ROM_CALL_601
+Out=unknown.h/EV_runningApp, unknown.h/OO_CondGetAttr

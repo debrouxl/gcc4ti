@@ -1,0 +1,28 @@
+[Main]
+Keywords=union
+
+[Description]
+Groups variables which share the same storage space.
+
+[Explanation]
+A union is similar to a <A HREF="$$LINK(struct)">struct</A>, except it allows you to define variables
+that share storage space. The syntax for defining unions is:
+<PRE>union [<I>union-type-name</I>]
+  {
+    <I>type</I> <I>variable-names</I>;
+    ...
+  } [<I>union-variables</I>] ;
+</PRE>
+For example,
+<PRE>union short_or_long
+  {
+    short i;
+    long l;
+  } a_number;
+</PRE>
+The compiler will allocate enough storage in a number to accommodate the
+largest element in the union.
+Elements of a union are accessed in the same manner as a struct.
+<BR><BR>
+Unlike a struct, the variables <CODE>'a_number.i'</CODE> and <CODE>'a_number.l'</CODE> occupy the same
+location in memory. Thus, writing into one will overwrite the other.

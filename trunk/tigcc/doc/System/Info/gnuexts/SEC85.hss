@@ -1,0 +1,68 @@
+[Main]
+Title=Specifying Attributes of Functions
+Subsections=SEC85_noreturn, SEC85_pure, SEC85_const, SEC85_format, SEC85_format_arg, SEC85_no_instrument_function, SEC85_section, SEC85_constructor, SEC85_unused, SEC85_used, SEC85_malloc, SEC85_alias, SEC85_always_inline, SEC85_noinline, SEC85_deprecated, SEC85_regparm, SEC85_nonnull, SEC85_nothrow
+Index=__attribute__, CALLBACK, __ATTR_TIOS__, __ATTR_TIOS_NORETURN__, __ATTR_TIOS_CALLBACK__, __ATTR_GCC__, __ATTR_LIB_C__, __ATTR_LIB_ASM__, __ATTR_LIB_ASM_NORETURN__, __ATTR_LIB_CALLBACK_C__, __ATTR_LIB_CALLBACK_ASM__
+
+[Top]
+In GNU C, you declare certain things about functions called in your program
+which help the compiler optimize function calls and check your code more
+carefully.
+<BR><BR>
+The keyword <CODE>__attribute__</CODE> allows you to specify special
+attributes when making a declaration.  This keyword is followed by an
+attribute specification inside double parentheses.
+The following attributes are currently defined for functions:
+
+[Bottom]
+Other attributes are supported for variable declarations (see <A HREF="$$LINK(SEC91)">Variable Attributes</A>)
+and for types (see <A HREF="$$LINK(SEC92)">Type Attributes</A>).
+<BR><BR>
+TIGCC also defines the macros <CODE>CALLBACK, __ATTR_TIOS__, __ATTR_TIOS_NORETURN__, __ATTR_TIOS_CALLBACK__, __ATTR_GCC__, __ATTR_LIB_C__, __ATTR_LIB_ASM__, __ATTR_LIB_ASM_NORETURN__, __ATTR_LIB_CALLBACK_C__,</CODE> and <CODE>__ATTR_LIB_CALLBACK_ASM__</CODE>.
+They are useful for specifying default attributes for a specific class of functions.
+You only need to use them when you define a callback function.
+For example, the callback function type <A HREF="$$LINK(stdlib.h/compare_t)">compare_t</A>
+needs the attributes specified by <CODE>__ATTR_LIB_CALLBACK_C__</CODE>,
+i.e. the attributes required by a callback function for a library function
+written in C.  Since this is too inconvenient for the user, all three callback
+attributes have been made equal, and we have defined a single <CODE>CALLBACK</CODE>
+macro.
+<BR><BR>
+You may also specify attributes with <CODE>__</CODE> preceding and following
+each keyword.  This allows you to use them in header files without
+being concerned about a possible macro of the same name.  For example,
+you may use <CODE>__noreturn__</CODE> instead of <CODE>noreturn</CODE>.
+For example, as <A HREF="$$LINK(alloc.h/malloc)">malloc</A> is defined as a macro in the TIGCC Library,
+always use <CODE>__malloc__</CODE> instead of <CODE>malloc</CODE>.
+<BR><BR>
+See <A HREF="$$LINK(SEC85a)">Attribute Syntax</A> for details of the exact syntax for using
+attributes.
+<BR><BR>
+You can specify multiple attributes in a declaration by separating them
+by commas within the double parentheses or by immediately following an
+attribute declaration with another attribute declaration.
+<BR><BR>
+Some people object to the <CODE>__attribute__</CODE> feature, suggesting that
+ISO C's <CODE><A HREF="$$INFOLINK(cpp/SEC46)">#pragma</A></CODE> should be used instead.  At the time
+<CODE>__attribute__</CODE> was designed, there were two reasons for not doing
+this.
+<OL>
+<LI>
+It is impossible to generate <CODE>#pragma</CODE> commands from a macro.
+<BR><BR>
+</LI>
+<LI>
+There is no telling what the same <CODE>#pragma</CODE> might mean in another
+compiler.
+</LI>
+</OL>
+These two reasons applied to almost any application that might have been
+proposed for <CODE>#pragma</CODE>.  It was basically a mistake to use
+<CODE>#pragma</CODE> for <I>anything</I>.
+<BR><BR>
+The ISO C99 standard includes <CODE>_Pragma</CODE>, which now allows pragmas
+to be generated from macros.  In addition, a <CODE>#pragma&nbsp;GCC</CODE>
+namespace is now in use for GCC-specific pragmas.  However, it has been
+found convenient to use <CODE>__attribute__</CODE> to achieve a natural
+attachment of attributes to their corresponding declarations, whereas
+<CODE>#pragma&nbsp;GCC</CODE> is of use for constructs that do not naturally form
+part of the grammar.

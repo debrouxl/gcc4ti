@@ -1,0 +1,19 @@
+[Main]
+Name=ReleaseDate
+Type=Variable
+Subtype=ROM Call
+Header Files=system.h
+Definition=const char *const ReleaseDate;
+See Also=ReleaseVersion
+
+[ROM Call]
+Index=$43F
+Reference=1
+Address Hack=((MIN_AMS >= 101) || (TIOS_entries > 0x2AC)) ? (((const char *const) _rom_call_addr(393)) - 11) : ((const char *const) "05/21/1998")
+
+[Description]
+A pointer to a string containing the release date of the AMS.
+
+[References]
+In=ReleaseVersion
+Out=mem.h/_memset

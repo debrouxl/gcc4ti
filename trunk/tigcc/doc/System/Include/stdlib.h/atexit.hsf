@@ -1,0 +1,34 @@
+[Main]
+Name=atexit
+Type=Function
+Subtype=tigcc.a
+Header Files=stdlib.h
+Definition=short atexit (atexit_t func);
+
+[Library Call]
+Asm=1
+
+[Description]
+Registers a termination function.
+
+[Explanation]
+atexit registers the function pointed to by <I>func</I> as an exit function.
+Upon normal termination of the program (including termination using the
+<A HREF="$$LINK(exit)">exit</A> function), <I>func</I> is called just before
+returning to the TIOS. Each call to atexit registers another exit function.
+The number of function which can be registered depends on the current number
+of free handles. All registered termination functions are executed on a last-in,
+first-out basis (the last function registered is the first to be executed).
+atexit returns 0 on success and nonzero on failure (no space left to register
+the function).
+<BR><BR>
+<B>Note:</B> Termination functions are not called on abnormal termination of the
+program (i.e. if an error is thrown from the program).
+<BR><BR>
+atexit does not work with <A HREF="$$LINK(system.h/enter_ghost_space)">enter_ghost_space</A>.
+However, if a program is already executed in the ghost space (because of ExePack
+compression or because it has been called from a launcher), there should not be
+any problems.
+
+[References]
+Out=alloc.h/HeapAllocPtr, alloc.h/HeapFreePtr, alloc.h/realloc

@@ -1,0 +1,24 @@
+[Main]
+Title=How can I get input from the keyboard?
+See Also=69: Do you have the function that gets called when you do InputStr in TI-Basic?, 70: How can I make a keyboard input function that allows you to bring up a menu?, stdio.h/getsn
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can get input from the keyboard?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+There is a lot of method how you can make such routine. This is quite easy if you are
+a C programmer. The easiest but the worst method is to use <A HREF="$$LINK(stdio.h/gets)">gets</A>
+function from <A HREF="$$LINK(stdio.h/)">stdio.h</A> header file: <A HREF="$$LINK(stdio.h/gets)">gets</A>
+does not do any buffer length checking. In previous releases of TIGCCLIB, it did not even allow
+any editing facitilities (even backspace key would not work), but this is no longer the case.
+A better idea is to use <A HREF="$$LINK(stdio.h/getsn)">getsn</A> which does avoid buffer overflows.
+But if you want to control what exactly is done by the input routine (for example, you may or may
+not want to allow opening the CHAR menu), you'll have to make a
+custom keyboard input routine. For example, I usually used the following routine, which is good enough
+for many purposes (example "Input String"):
+$$EXAMPLE(Input String.c)
+Especially, if very good editing facitilities are required, the best idea is to use routines
+from the <A HREF="$$LINK(textedit.h/)">textedit.h</A> header file. These routines are extremely powerful
+and fully customizable. Alternatively, you can also use routines from
+<A HREF="$$LINK(dialogs.h/)">dialogs.h</A>, especially <A HREF="$$LINK(dialogs.h/DialogAddRequest)">DialogAddRequest</A>.
+</TD></TR></TABLE>

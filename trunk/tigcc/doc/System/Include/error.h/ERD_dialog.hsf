@@ -1,0 +1,34 @@
+[Main]
+Name=ERD_dialog
+Type=Function
+Subtype=ROM Call
+Header Files=error.h
+Definition=short ERD_dialog (short err_no, short prog_flag);
+
+[ROM Call]
+Index=$151
+
+[Description]
+Displays an error dialog box.
+
+[Explanation]
+ERD_dialog displays an error dialog box with a message corresponding to the
+error code <I>err_no</I>. See the TI manual for a meaning of the various
+error codes. ERD_dialog returns <A HREF="$$LINK(kbd.h/CommonKeys)">KEY_ENTER</A> or
+<A HREF="$$LINK(kbd.h/CommonKeys)">KEY_ESC</A>, depending of whether the user
+exits the dialog box by pressing ENTER or ESC key. This routine may cause
+heap compression.
+<BR><BR>
+<I>prog_flag</I> is a flag which may be <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> or
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A>. Normally, it needs to be <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>,
+but when it is <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, in addition to the standard button
+whith message "Esc=CANCEL", another button with message "Enter=GOTO" will be
+added in the error dialog box. This is mostly useless, but
+error dialog boxes have this option (TIOS uses this when you break a BASIC program).
+Note, however, that pressing Enter will not perform the actual transfer to the program
+editor.
+
+[References]
+Out=ER_catch, ER_success, find_error_message, alloc.h/HeapAlloc, alloc.h/HeapFreeIndir, events.h/EV_captureEvents, events.h/EV_clearPasteString, events.h/EV_eventLoop, events.h/EV_restorePainting, events.h/EV_suspendPainting, link.h/OSWriteLinkBlock, stdio.h/sprintf, system.h/off, system.h/OSSetSR, system.h/OSTimerRestart, system.h/XR_stringPtr, unknown.h/EV_errorCode, unknown.h/sf_width, vat.h/ResetSymFlags, wingraph.h/DrawStaticButton, wingraph.h/WinActivate, wingraph.h/WinAttr, wingraph.h/WinClose, wingraph.h/WinFont, wingraph.h/WinOpen, wingraph.h/WinStrXY, unknown.h/_ROM_CALL_471
+In=ERD_process, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog, dialogs.h/VarNew, dialogs.h/VarSaveAs, events.h/EV_defaultHandler, events.h/EV_eventLoop, events.h/handleVarLinkKey, homescr.h/HomeExecute, textedit.h/TE_handleEvent, textedit.h/TE_pasteText, unknown.h/GT_Error, unknown.h/GT_Trace, unknown.h/SP_Define, unknown.h/_ROM_CALL_45B, unknown.h/_ROM_CALL_5F1
+Out_EV_eventLoop=1

@@ -1,0 +1,25 @@
+[Main]
+Name=SCR_RECT
+Type=Type
+Subtype=Structure
+Header Files=dialogs.h, estack.h, events.h, graph.h, kbd.h, statline.h, textedit.h, wingraph.h, unknown.h
+Definition=typedef union { struct { unsigned char x0, y0, x1, y1; } xy; unsigned long l; } SCR_RECT;
+Needed by=WINDOW, EVENT, ST_PROGRESS_BAR, EQU_DS
+See Also=ScrRect
+
+[Description]
+A scructure for defining a rectangular area.
+
+[Explanation]
+SCR_RECT is a scructure (more precise, an union) for defining a rectangular area
+using psysical screen coordinates.
+<BR><BR>
+Instead of giving four coordinates <I>x0</I>, <I>y0</I>, <I>x1</I> and <I>y1</I>,
+it is possible to give all together using a field <I>l</I> which is a packed long
+number.
+<BR><BR>
+<B>Note:</B> TIGCC is derived from GNU C, so it allows <A HREF="$$INFOLINK(gnuexts/SEC81)">cast constructors</A>.
+That's why, constructions like
+<PRE>DrawClipEllipse (50, 50, 30, 20, &amp;(SCR_RECT){{0, 0, 159, 99}}, A_NORMAL);
+</PRE>
+are legal. See <A HREF="$$LINK(DrawClipEllipse)">DrawClipEllipse</A> for info about this command.

@@ -1,0 +1,39 @@
+[Main]
+Name=qsort
+Type=Function
+Subtype=tigcc.a
+Header Files=stdlib.h
+Definition=void qsort (void *BasePtr, unsigned short NoOfElements, unsigned short Width, compare_t cmp_func);
+
+[Description]
+Sorts an area of items.
+
+[Explanation]
+qsort sorts the entries in a table by repeatedly calling the user-defined
+comparison function pointed to by <I>cmp_func</I>. <I>BasePtr</I> points to the base
+(0-th element) of the table to be sorted. <I>NoOfElement</I> is the number of
+entries in the table. <I>Width</I> is the size of each entry in the table, in
+bytes. <I>cmp_func</I>, the comparison function, accepts two arguments,
+<I>elem1</I> and <I>elem2</I>, each a pointer to an entry in the table.
+The comparison function compares each of the pointed-to items (*<I>elem1</I> and
+*<I>elem2</I>), and returns a short integer based on the result of the comparison:
+<UL>
+<LI>If *<I>elem1</I> &lt; *<I>elem2</I>, <I>cmp_func</I> should return an integer &lt; 0.</LI>
+<LI>If *<I>elem1</I> == *<I>elem2</I>, <I>cmp_func</I> should return 0.</LI>
+<LI>If *<I>elem1</I> &gt; *<I>elem2</I>, <I>cmp_func</I> should return an integer &gt; 0.</LI>
+</UL>
+In the comparison, the less-than symbol (&lt;) means the left element should
+appear before the right element in the final, sorted sequence. Similarly, the
+greater-than symbol (&gt;) means the left element should appear after the right element
+in the final, sorted sequence.
+<BR><BR>
+The ANSI standard proposes that the comparison function has to return a long integer.
+However, <A HREF="$$LINK(string.h/strcmp)">strcmp</A>, which is frequently
+used as a comparison function, returns a short integer.
+<BR><BR>
+Here is a complete example of usage (called "Sort Integers"):
+$$EXAMPLE(Sort Integers.c)
+Note that the function <A HREF="$$LINK(string.h/strcmp)">strcmp</A> is ideal for string comparisons.
+However, its parameters are not void pointers. This may be solved using a typecast like
+<PRE>qsort (<I>StringArray</I>, <I>NoOfStrings</I>, <I>LenOfEachString</I>, (compare_t) strcmp);
+</PRE>

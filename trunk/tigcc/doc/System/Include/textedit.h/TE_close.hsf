@@ -1,0 +1,26 @@
+[Main]
+Name=TE_close
+Type=Function
+Subtype=ROM Call
+Header Files=textedit.h
+Definition=void TE_close (TEXT_EDIT *te);
+
+[ROM Call]
+Index=$A5
+
+[Description]
+Closes the text editor.
+
+[Explanation]
+TE_close closes the text editor structure pointed to by <I>te</I>. I am not sure whether
+calling this routine is necessary: it performs mainly some irrelevant operations
+(like calling <A HREF="$$LINK(TE_unfocus)">TE_unfocus</A>). I also know that TE_close tries
+to free the memory occupied by the buffer (by calling <A HREF="$$LINK(alloc.h/HeapFreeIndir)">HeapFreeIndir</A>)
+if the editor was opened using <A HREF="$$LINK(TE_openFixed)">TE_openFixed</A>, and if the buffer
+was allocated dinamically. So, it seems that it tries to close out a text edit record and to
+release its memory automatically. It seems better to me to release the memory manually
+(it is more safe anyway).
+
+[References]
+In=bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog, unknown.h/GT_Trace
+Out=TE_unfocus, alloc.h/HeapFreeIndir

@@ -1,0 +1,23 @@
+[Main]
+Name=DisablePRG
+Type=Function
+Subtype=Macro
+Header Files=intr.h
+Definition=void DisablePRG (void);
+Real Definition=#define DisablePRG() ({ asm volatile ("bclr #3,0x600015"); })
+See Also=EnablePRG, system.h/OSRegisterTimer
+
+[Description]
+Disables the programmable rate generator.
+
+[Explanation]
+DisablePRG disables the programmable rate generator, which means that the
+value determined by <A HREF="$$LINK(PRG_getValue)">PRG_getValue</A> does not
+change and <A HREF="$$LINK(IntVecs)">AUTO_INT_5</A> is not called any more.
+<BR><BR>
+<B>Note:</B> Auto interrupt 5 is used by the AMS, so the previous state
+(which can be determined using
+<A HREF="$$LINK(IsPRGEnabled)">IsPRGEnabled</A>) should be restored before
+the program terminates.
+<BR><BR>
+This macro does not work in VTI 2.5 Beta 5.

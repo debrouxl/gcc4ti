@@ -1,0 +1,20 @@
+[Main]
+Name=bcdsub
+Type=Function
+Subtype=Macro
+Header Files=timath.h
+Definition=bcd bcdsub (bcd x, bcd y);
+Real Definition=#define bcdsub(x,y) ({bcd __x=(x),__y=(y);float __z=fsub(*(float*)&__x,*(float*)&__y);*(bcd*)&__z;})
+
+[Description]
+BCD substraction.
+
+[Explanation]
+bcdsub is principally the same as <A HREF="$$LINK(fsub)">fsub</A>, but instead of
+ordinary floats, its arguments and return value are <A HREF="$$LINK(bcd)">bcd</A>
+structures (which represent internal organization of floating point values in
+TIOS). At the fundamental level, bcdsub and <A HREF="$$LINK(fsub)">fsub</A> are the
+same routine.
+
+[References]
+Out=fsub

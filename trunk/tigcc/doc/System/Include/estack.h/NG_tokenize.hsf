@@ -1,0 +1,29 @@
+[Main]
+Name=NG_tokenize
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short NG_tokenize (HANDLE hTEXT, unsigned short *ErrCode, unsigned short *ErrOffset);
+
+[ROM Call]
+Index=$260
+
+[Description]
+Tokenizes text associated with a handle and pushes them to the expression stack.
+
+[Explanation]
+NG_tokenize is more powerful variant of <A HREF="$$LINK(push_parse_text)">push_parse_text</A>.
+It tokenizes the text associated with the handle <I>hTEXT</I>, and pushes the converted
+text to the expression stack. Returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was
+successful, otherwise it returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. If there was an error, then the
+variable pointed to by <I>ErrCode</I> contains the error code, and the variable pointed
+to by <I>ErrOffset</I> contains the offset in the text where the error occured. If there
+were not any errors, then the variable pointed to by <I>ErrCode</I> contains multi state
+(this is the result returned from <A HREF="$$LINK(push_parse_text)">push_parse_text</A>) and
+<I>ErrOffset</I> is undefined. This routine may expand the expression stack, may cause
+the heap compression, or even may throw an error if something goes really wrong (not enough
+memory, for example).
+
+[References]
+In=bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, bascmd.h/cmd_sinreg, homescr.h/HomeExecute, unknown.h/SP_Define
+Out=push_parse_text, alloc.h/HeapUnlock, alloc.h/HLock, error.h/ER_catch, error.h/ER_success

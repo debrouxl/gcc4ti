@@ -1,0 +1,24 @@
+[Main]
+Title=I have trouble allocating memory, my program crashes on the second run.
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I have problems with allocating memory with TIGCC.
+When I run my program the first time, it works just as expected,
+but the second (or sometimes the third) time I run it, it hangs.
+Typical memory allocation problem. But I just can't understand what the
+problem is.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+The problem is very probably not related to the dynamic memory allocation, but
+to the usage of static variables. At the moment, all static vars need to
+be initialized, even to nothing. I.e, you need to use
+<PRE>static int a = 0, b = 0;
+static char *ptr = NULL;
+</PRE>
+instead of
+<PRE>static int a, b;
+static char *ptr;
+</PRE>
+I expect that this will solve your problems. I hope that Xavier will implement automatic
+initialization of all static data in the near future.
+</TD></TR></TABLE>

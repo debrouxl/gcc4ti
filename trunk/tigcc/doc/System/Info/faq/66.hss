@@ -1,0 +1,26 @@
+[Main]
+Title=I need the gotoxy() function to port PC programs to the calculator...
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+In addition to functions from <A HREF="$$LINK(stdio.h/)">stdio.h</A> header file, I need
+<B>gotoxy</B> function to allow porting some PC programs to TI...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+All printing functions from <A HREF="$$LINK(stdio.h/)">stdio.h</A> are sensitive to
+<A HREF="$$LINK(graph.h/MoveTo)">MoveTo</A> command, so it is not hard to set print position
+to anywhere. If you need just <B>gotoxy</B>, it is impossible for 4x6 font,
+because it is proportional. But, for 6x8 and 8x10 fonts, it may be implemented
+trivially:
+<PRE>#define gotoxy(x,y) MoveTo (6*x-6,8*y-8)    // <I>for 6x8 font</I>
+#define gotoxy(x,y) MoveTo (8*x-8,10*y-10)  // <I>for 8x10 font</I>
+</PRE>
+Here I assumed that top-left corner is (1,1) as on PC. Note that you MUST NOT put a space
+between gotoxy and left bracket (else the preprocessor will define an argument-less macro).
+You can also define an universal <B>gotoxy</B> macro which will work regardless of current font
+setting, using smart GNU C macros:
+<PRE>#define gotoxy(x,y) \
+  ({short __f=2*FontGetSys(); MoveTo((4+__f)*(x-1),(6+__f)*(y-1));})
+</PRE>
+You will not be able to understand this if you are not familiar with
+<A HREF="$$INFOLINK(gnuexts)">GNU extensions</A>.
+</TD></TR></TABLE>

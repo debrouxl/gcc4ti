@@ -1,0 +1,24 @@
+[Main]
+Name=SumStoChkMem
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short SumStoChkMem (void);
+
+[ROM Call]
+Index=$295
+
+[Description]
+Compares memory contents by making a checksum.
+
+[Explanation]
+SumStoChkMem calculates a checksum of the user portion of the RAM memory (more precisely,
+from address 0x400 to 0xFFF (on AMS 1.xx) or to 0xF7F (on AMS 2.xx) and from the bottom of the heap
+to the end of the RAM), and stores the calculated value in one internal system variable. It returns
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the calculated checksum is equal to the previous value of
+this system variable, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. So, SumStoChkMem may
+be used to check whether the contents of the memory were changed since the last call of
+SumStoChkMem (i.e. between two calls of SumStoChkMem).
+
+[References]
+Out=unknown.h/_ROM_CALL_441

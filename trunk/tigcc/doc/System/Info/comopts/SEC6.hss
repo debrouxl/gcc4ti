@@ -1,0 +1,211 @@
+[Main]
+Title=Options Controlling C Dialect
+
+[Top]
+The following options control the dialect of C that the compiler accepts:
+<DL>
+<DT><B>-ansi</B>
+<DD>Support all ISO C89 programs.
+This turns off certain features of GCC that are incompatible with ISO C89,
+such as the <CODE>asm</CODE> and <CODE>typeof</CODE> keywords, and
+some predefined macros that identify the
+type of system you are using.  It also enables the undesirable and
+rarely used ISO trigraph feature, and disables recognition of C++ style
+<CODE>//</CODE> comments as well as the <CODE>inline</CODE> keyword.
+<BR><BR>
+The alternate keywords <CODE>__asm__</CODE>, <CODE>__extension__</CODE>,
+<CODE>__inline__</CODE> and <CODE>__typeof__</CODE> continue to work despite
+<B>'-ansi'</B>.  You would not want to use them in an ISO C program, of
+course, but it is useful to put them in header files that might be included
+in compilations done with <B>'-ansi'</B>.  Alternate predefined macros
+such as <CODE>__unix__</CODE> are also available, with or
+without <B>'-ansi'</B>.
+<BR><BR>
+The <B>'-ansi'</B> option does not cause non-ISO programs to be
+rejected gratuitously.  For that, <B>'-pedantic'</B> is required in
+addition to <B>'-ansi'</B>.  See <A HREF="$$LINK(SEC8)">Warning Options</A>.
+<BR><BR>
+The macro <CODE>__STRICT_ANSI__</CODE> is predefined when the <B>'-ansi'</B>
+option is used.  Some header files may notice this macro and refrain
+from declaring certain functions or defining certain macros that the
+ISO standard doesn't call for; this is to avoid interfering with any
+programs that might use these names for other things.
+<BR><BR>
+Functions which would normally be built in but do not have semantics
+defined by ISO C (such as <A HREF="$$LINK(alloc.h/alloca)">alloca</A>) are not built-in
+functions with <B>'-ansi'</B> is used.  See <A HREF="$$INFOLINK(gnuexts/SEC104)">Other
+built-in functions provided by GCC</A> for details of the functions
+affected.
+<BR><BR>
+<B>Note:</B> At the moment, the TIGCC library depends heavily on GNU C extensions,
+so you cannot use the <B>'-ansi'</B> switch in TIGCC.
+<BR><BR>
+<DT><B>-std=<I>standard</I></B>
+<DD>Determine the language standard.  A value for <I>standard</I> must be provided;
+provided; possible values are
+<BR><BR><DL>
+<DT><B>c89</B>
+<BR><B>iso9899:1990</B>
+<DD>ISO C90 (same as <B>'-ansi'</B>).
+<BR><BR>
+<DT><B>iso9899:199409</B>
+<DD>ISO C90 as modified in amendment 1.
+<BR><BR>
+<DT><B>c99</B>
+<BR><B>c9x</B>
+<BR><B>iso9899:1999</B>
+<BR><B>iso9899:199x</B>
+<DD>ISO C99.  Note that this standard is not yet fully supported; see
+<A HREF="http://gcc.gnu.org/gcc-3.3/c99status.html">http://gcc.gnu.org/gcc-3.3/c99status.html</A> for more information.  The
+names <CODE>c9x</CODE> and <CODE>iso9899:199x</CODE> are deprecated.
+<BR><BR>
+<DT><B>gnu89</B>
+<DD>Default, ISO C90 plus GNU extensions (including some C99 features).
+<BR><BR>
+<DT><B>gnu99</B>
+<BR><B>gnu9x</B>
+<DD>ISO C99 plus GNU extensions.  When ISO C99 is fully implemented in GCC,
+this will become the default.  The name <CODE>gnu9x</CODE> is deprecated.
+</DL><BR>
+Even when this option is not specified, you can still use some of the
+features of newer standards in so far as they do not conflict with
+previous C standards.  For example, you may use <CODE>__restrict__</CODE> even
+when <B>'-std=c99'</B> is not specified.
+<BR><BR>
+The <B>'-std'</B> options specifying some version of ISO C have the same
+effects as <B>'-ansi'</B>, except that features that were not in ISO C90
+but are in the specified version (for example, <CODE>//</CODE> comments and
+the <CODE>inline</CODE> keyword in ISO C99) are not disabled.
+<BR><BR>
+<DT><B>-aux-info <I>filename</I></B>
+<DD>Output to the given filename prototyped declarations for all functions
+declared and/or defined in a translation unit, including those in header
+files.  This option is silently ignored in any language other than C.
+<BR><BR>
+Besides declarations, the file indicates, in comments, the origin of
+each declaration (source file and line), whether the declaration was
+implicit, prototyped or unprototyped (<CODE>I</CODE>, <CODE>N</CODE> for new or
+<CODE>O</CODE> for old, respectively, in the first character after the line
+number and the colon), and whether it came from a declaration or a
+definition (<CODE>C</CODE> or <CODE>F</CODE>, respectively, in the following
+character).  In the case of function definitions, a K&amp;R-style list of
+arguments followed by their declarations is also provided, inside
+comments, after the declaration.
+<BR><BR>
+<DT><B>-fno-asm</B>
+<DD>Do not recognize <CODE>asm</CODE>, <CODE>inline</CODE> or <CODE>typeof</CODE> as a
+keyword, so that code can use these words as identifiers.  You can use
+the keywords <CODE>__asm__</CODE>, <CODE>__inline__</CODE> and <CODE>__typeof__</CODE>
+instead.  <B>'-ansi'</B> implies <B>'-fno-asm'</B>.
+<BR><BR>
+<DT><B>-fno-builtin</B>
+<BR><B>-fno-builtin-<I>function</I></B>
+<DD>Don't recognize built-in functions that do not begin with
+<CODE>__builtin_</CODE> as prefix.  See <A HREF="$$INFOLINK(gnuexts/SEC104)">Other built-in
+functions provided by GCC</A> for details of the functions affected,
+including those which are not built-in functions when <B>'-ansi'</B> or
+<B>'-std'</B> options for strict ISO C conformance are used because they
+do not have an ISO standard meaning.
+<BR><BR>
+GCC normally generates special code to handle certain built-in functions
+more efficiently; for instance, calls to <A HREF="$$LINK(alloc.h/alloca)">alloca</A> may become single
+instructions that adjust the stack directly.  The resulting code is often both smaller
+and faster, but since the function calls no longer appear as such, you
+cannot set a breakpoint on those calls, nor can you change the behavior
+of the functions by linking with a different library.
+<BR><BR>
+With the <B>'-fno-builtin-<I>function</I>'</B> option,
+only the built-in function <I>function</I> is
+disabled.  <I>function</I> must not begin with <CODE>__builtin_</CODE>.  If a
+function is named this is not built-in in this version of GCC, this
+option is ignored.  There is no corresponding
+<B>'-fbuiltin-<I>function</I>'</B> option; if you wish to enable
+built-in functions selectively when using <B>'-fno-builtin'</B> or
+<B>'-ffreestanding'</B>, you may define macros such as:
+<PRE>#define abs(n)          __builtin_abs ((n))
+#define strcpy(d, s)    __builtin_strcpy ((d), (s))
+</PRE>
+<DT><B>-fhosted</B>
+<DD>Assert that compilation takes place in a hosted environment.  This implies
+<B>'-fbuiltin'</B>.  A hosted environment is one in which the
+entire standard library is available, and in which <CODE>main</CODE> has a return
+type of <CODE>int</CODE>.  Examples are nearly everything except a kernel.
+This is equivalent to <B>'-fno-freestanding'</B>.
+<BR><BR>
+Although TI calculators are not really hosted environments, <B>'-fhosted'</B>
+is kept as the default.
+<BR><BR>
+<DT><B>-ffreestanding</B>
+<DD>Assert that compilation takes place in a freestanding environment.  This
+implies <B>'-fno-builtin'</B>.  A freestanding environment
+is one in which the standard library may not exist, and program startup may
+not necessarily be at <CODE>main</CODE>.  The most obvious example is an OS kernel.
+This is equivalent to <B>'-fno-hosted'</B>.
+<BR><BR>
+<DT><B>-fms-extensions</B>
+<DD>Accept some non-standard constructs used in Microsoft header files.
+<BR><BR>
+<DT><B>-trigraphs</B>
+<DD>Support ISO C trigraphs.  The <B>'-ansi'</B> option (and <B>'-std'</B>
+options for strict ISO C conformance) implies <B>'-trigraphs'</B>.
+See <A HREF="$$LINK(SEC11)">Options Controlling the Preprocessor</A> for more information.
+<BR><BR>
+<DT><B>-no-integrated-cpp</B>
+<DD>Performs a compilation in two passes: preprocessing and compiling.  This
+option allows a user supplied &quot;cc1&quot; via the
+<B>'-B'</B> option. The user supplied compilation step can then add in
+an additional preprocessing step after normal preprocessing but before
+compiling. The default is to use the integrated preprocessor.
+<BR><BR>
+The semantics of this option will change if &quot;cc1&quot;, &quot;cc1plus&quot;, and
+&quot;cc1obj&quot; are merged.
+<BR><BR>
+<DT><B>-traditional</B>
+<BR><B>-traditional-cpp</B>
+<DD>Formerly, these options caused GCC to attempt to emulate a pre-standard
+C compiler.  They are now only supported with the <B>'-E'</B> switch.
+The preprocessor continues to support a <A HREF="$$INFOLINK(CPP/SEC70)">pre-standard mode</A>.
+<BR><BR>
+<DT><B>-fcond-mismatch</B>
+<DD>Allow conditional expressions with mismatched types in the second and
+third arguments.  The value of such an expression is void.
+<BR><BR>
+<DT><B>-funsigned-char</B>
+<DD>Let the type <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> be unsigned, like <CODE>unsigned&nbsp;char</CODE>.
+In TIGCC, the default is <CODE>signed char</CODE>.
+<BR><BR>
+Ideally, a portable program should always use <CODE>signed&nbsp;char</CODE> or
+<CODE>unsigned&nbsp;char</CODE> when it depends on the signedness of an object.
+But many programs have been written to use plain <CODE>char</CODE> and
+expect it to be signed, or expect it to be unsigned, depending on the
+machines they were written for.  This option, and its inverse, let you
+make such a program work with the opposite default.
+<BR><BR>
+The type <CODE>char</CODE> is always a distinct type from each of
+<CODE>signed&nbsp;char</CODE> or <CODE>unsigned&nbsp;char</CODE>, even though its behavior
+is always just like one of those two.
+<BR><BR>
+<DT><B>-fsigned-char</B>
+<DD>Let the type <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> be signed, like <CODE>signed&nbsp;char</CODE>.
+<BR><BR>
+Note that this is equivalent to <B>'-fno-unsigned-char'</B>, which is
+the negative form of <B>'-funsigned-char'</B>.  Likewise, the option
+<B>'-fno-signed-char'</B> is equivalent to <B>'-funsigned-char'</B>.
+<BR><BR>
+<DT><B>-fsigned-bitfields</B>
+<BR><B>-funsigned-bitfields</B>
+<BR><B>-fno-signed-bitfields</B>
+<BR><B>-fno-unsigned-bitfields</B>
+<DD>These options control whether a bit-field is signed or unsigned, when the
+declaration does not use either <CODE>signed</CODE> or <CODE>unsigned</CODE>.  By
+default, such a bit-field is signed, because this is consistent: the
+basic integer types such as <CODE>int</CODE> are signed types.
+<BR><BR>
+<DT><B>-fwritable-strings</B>
+<DD>Store string constants in the writable data segment and don't uniquize
+them.  This is for compatibility with old programs which assume they can
+write into string constants.
+<BR><BR>
+Writing into string constants is a very bad idea; &quot;constants&quot; should
+be constant.
+</DL>

@@ -1,0 +1,24 @@
+[Main]
+Title=Automatically Inserted Section Contents
+Subsections=insert_kernel_relocs, insert_compressed_relocs, insert_fargo021_relocs, insert_kernel_bss_refs, insert_compressed_bss_refs, insert_fargo020_bss_refs, insert_fargo021_bss_refs, insert_kernel_data_refs, insert_compressed_data_refs, insert_kernel_rom_calls, insert_compressed_rom_calls, insert_kernel_ram_calls, insert_kernel_libs, insert_fargo020_libs, insert_fargo021_libs, insert_kernel_exports, insert_fargo_exports, insert_preos_compressed_tables, insert_nostub_comments, insert_data_var_name
+
+[Top]
+The TIGCC linker can insert certain variable-length data into the contents of
+sections. If a symbol (i.e., a label) at the end of a section is recognized
+as an insertion point, then the linker appends the data specified by the
+symbol name. If the symbol is not at the end of a section, the insertion will
+fail without notice, since these contents may have been inserted
+automatically already.
+<BR><BR>
+You may refer to an insertion symbol even if you did not put a label at a
+specific place. In this case, the data is written to an arbitrary place
+(usually the end of the program, but do <I>not</I> rely on this). However,
+all object files and archives are searched for exported symbols with this
+name first, to avoid duplication of the data.
+<BR><BR>
+This method is only used if some program-related data cannot be expressed
+using simple <A HREF="$$LINK(symbols)">built-in symbols</A>. It should be
+used with care, as the inserted data may be invalid under certain
+circumstances. The format of the data is fixed and usually represents some
+already established data format, but new data formats may be developed on
+demand. The insertion symbols which are currently recognized are:

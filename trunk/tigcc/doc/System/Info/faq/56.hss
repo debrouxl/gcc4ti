@@ -1,0 +1,29 @@
+[Main]
+Title=I want to create a variable without using functions from stdio.h.
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I want to avoid standard ANSI C functions for file handling like
+<A HREF="$$LINK(stdio.h/fopen)">fopen</A> etc. and to use low-level functions from
+<A HREF="$$LINK(vat.h/)">vat.h</A> (to make my program shorter), but I am not very sure
+what I need exactly to do to create a new file, and how I can manipulate with it.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Basically, to create a file you need to do the following:
+<OL>
+<LI>Create a new VAT symbol using <A HREF="$$LINK(vat.h/SymAdd)">SymAdd</A>;</LI>
+<LI>Allocate a space for the variable using <A HREF="$$LINK(alloc.h/HeapAlloc)">HeapAlloc</A>;</LI>
+<LI>Dereference the symbol to get a pointer to the VAT entry, then
+store the handle returned by <A HREF="$$LINK(alloc.h/HeapAlloc)">HeapAlloc</A> to it;</LI>
+<LI>Put the actual file length in first two bytes of allocated space.</LI>
+</OL>
+To be more concrete, I will show here a simple demo program (called "Create Variable")
+which creates a string file (I use this internally), but it is easy to adapt to
+any file type:
+$$EXAMPLE(Create Variable.c)
+Note that the used method is not the best: it initially
+allocates as much space as avaliable, then reallocates the space to
+the necessary size on closing, but it is worth to look at it. Note
+also that the <CODE>CreateFile</CODE> function may be even simpler if you want to use it
+like <CODE>CreateFile(SYMSTR("example"))</CODE> instead of
+<CODE>CreateFile("example")</CODE>, i.e. if you avoid the use of ANSI strings.
+</TD></TR></TABLE>

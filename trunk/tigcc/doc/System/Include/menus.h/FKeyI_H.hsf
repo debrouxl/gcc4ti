@@ -1,0 +1,33 @@
+[Main]
+Name=FKeyI_H
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=short FKeyI_H (HANDLE ExecHandle, short Key);
+MinAMS=2.02
+See Also=MenuBegin, MenuKey
+
+[ROM Call]
+Index=$592
+
+[Description]
+Returns the corresponding menu item for a function key.
+
+[Explanation]
+FKeyI_H returns the corresponding index to the function key given in <I>Key</I>
+of the menu associated with the <I>ExecHandle</I> handle, or returns
+<A HREF="$$LINK(MenuKeyValues)">M_NOTMENUKEY</A> for function keys not used
+in the given menu. The <I>ExecHandle</I> handle should have been returned from
+<A HREF="$$LINK(MenuBegin)">MenuBegin</A>.
+<BR><BR>
+<I>Key</I> should be a function key (i.e. KEY_Fx) given in the enum
+<A HREF="$$LINK(kbd.h/CommonKeys)">CommonKeys</A>.
+<A HREF="$$LINK(kbd.h/CommonKeys)">KEY_F1</A> will return 0 for the first
+top-level entry if it exists, <A HREF="$$LINK(kbd.h/CommonKeys)">KEY_F2</A>
+will return 1 for the second top-level entry if it exists, and so on.
+<BR><BR>
+FKeyI_H can be useful in combination with <A HREF="$$LINK(MenuKey)">MenuKey</A>.
+
+[References]
+In=MenuKey, bascmd.h/cmd_toolbar, unknown.h/_ROM_CALL_421
+Out=alloc.h/HeapDeref

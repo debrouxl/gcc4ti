@@ -1,0 +1,26 @@
+[Main]
+Name=fgets
+Type=Function
+Subtype=tigcc.a
+Header Files=stdio.h
+Definition=char *fgets (char *s, short n, FILE *stream);
+
+[Description]
+Gets a string from a stream.
+
+[Explanation]
+fgets reads characters from stream associated to the structure pointed to by <I>stream</I>
+into the string <I>s</I>. It does this by calling <A HREF="$$LINK(fgetc)">fgetc</A> repeatedly.
+The function stops reading when it reads either
+<I>n</I>&nbsp;-&nbsp;1 characters or a '\r' (0x0D) character,
+whichever comes first. fgets retains the newline character at the end of <I>s</I>,
+eventually translated to '\n' character if the stream is opened in "text" mode (see
+<A HREF="$$LINK(fopen)">fopen</A>). A null byte is appended to <I>s</I> to mark the end of the
+string. On success, fgets returns the string pointed to by <I>s</I>.
+It returns <A HREF="$$LINK(alloc.h/NULL)">NULL</A> in a case of error.
+<BR><BR>
+<B>Note:</B> fgets is used mainly with files opened in "text" mode. As an example, this command may be
+useful for reading a text line from a TEXT variable.
+
+[References]
+Out=fgetc

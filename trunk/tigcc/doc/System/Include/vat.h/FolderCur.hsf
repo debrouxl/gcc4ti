@@ -1,0 +1,41 @@
+[Main]
+Name=FolderCur
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short FolderCur (SYM_STR SymName, short nonSys);
+
+[ROM Call]
+Index=$65
+
+[Description]
+Sets the currently active folder.
+
+[Explanation]
+FolderCur sets the currently active folder to <I>SymName</I> (see
+<A HREF="$$LINK(SYMSTR)">SYMSTR</A> for rules about <I>SymName</I>). It
+returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was
+successful, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> (e.g. if
+the folder name is invalid).
+<BR><BR>
+<I>nonSys</I> is a boolean flag which normally needs to be
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A>. If it is set to
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, FolderCur calls
+<A HREF="$$LINK(SymFindNext)">SymFindNext</A> repeatedly until the
+first non-system variable in this folder is reached. This is necessary, else
+the current graph may become invalid. In particular, if the graph references
+a variable defined in a folder which previously was the current folder, it is
+not redrawn if <I>nonSys</I> is set to
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+<BR><BR>
+<B>Note:</B> The folder name in the status line will not be changed
+automatically using this command. You must change it manually using the
+function <A HREF="$$LINK(statline.h/ST_folder)">ST_folder</A> from
+<A HREF="$$LINK(statline.h/)">statline.h</A>.
+<BR><BR>
+This routine may cause heap compression.
+
+[References]
+In=bascmd.h/cmd_newfold, basfunc.h/push_setfold, events.h/MO_digestOptions
+Out=CheckSysFunc, SymCmp, SymCpy, SymCpy0, SymFindFirst, SymFindNext, TokToStrN, string.h/strcmp, unknown.h/gr_active, unknown.h/gr_other, unknown.h/statFree, unknown.h/_mu16u16
+Out_EV_eventLoop=1

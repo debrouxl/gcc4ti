@@ -1,0 +1,47 @@
+[Main]
+Name=MenuCheck
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=short MenuCheck (HANDLE ExecHandle, short ID, unsigned short Cmd);
+See Also=MenuBegin
+
+[ROM Call]
+Index=$37
+
+[Description]
+Checks/unchecks or returns the state of an item in a pulldown menu.
+
+[Explanation]
+MenuCheck checks/unchecks or returns the state of the check mark of the pulldown submenu item identified by <I>ID</I>
+(see <A HREF="$$LINK(MenuAddText)">MenuAddText</A> for more details about item IDs).
+<I>ExecHandle</I> is a handle returned from the <A HREF="$$LINK(MenuBegin)">MenuBegin</A> function,
+not from <A HREF="$$LINK(MenuNew)">MenuNew</A>.
+<BR><BR>
+If <I>Cmd</I> is set to MC_STATUS, MenuCheck returns the status of the check mark (zero: not checked, nonzero: checked).
+Otherwise it returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> on success (i.e. item was found) and <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> on failure.
+<BR><BR>
+The <I>Cmd</I> parameter must be one of the following values, defined in the enum <A HREF="$$LINK(MenuCheckCmds)">MenuCheckCmds</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">MC_CHECK</TD>
+  <TD>Display a check mark next to the menu item.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MC_UNCHECK</TD>
+  <TD>AMS 2.00 or higher: Remove the check mark.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MC_STATUS</TD>
+  <TD>Return the status of the check mark (zero: not checked, nonzero: checked).</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MC_FLIP</TD>
+  <TD>Invert the status of the check mark.</TD>
+</TR>
+</TABLE>
+
+[References]
+Out=unknown.h/_ROM_CALL_422
+In=events.h/EV_setCmdCheck

@@ -1,0 +1,214 @@
+[Main]
+Name=top_estack
+Type=Variable
+Subtype=ROM Call
+Header Files=args.h, estack.h
+Definition=ESI top_estack;
+See Also=bottom_estack
+
+[ROM Call]
+Index=$109
+
+[Description]
+Points to the top of the expression stack.
+
+[Explanation]
+The global variable top_estack points to the top (i.e. the last byte) of the expression stack.
+Strictly speaking, in "nostub" mode it is not a real variable but smart macro, although it
+works like it is a variable. The expression stack is the place in the memory where TI keeps
+expressions during evaluation. All statements are tokenised before being executed
+(interpreted). Instructions are reduced to (byte sized) quanta and parsed into Reverse
+Polish Notation (RPN). This is a common technique in interpreted languagues. Expressions,
+functions, etc. are all stored in RPN form, to allow for efficient operation of the expressions
+stack. See below for more details about organization of the expression stack.
+<BR><BR>
+The actual processing of all expressions is done via the expression stack. The position in the
+stack is given by top_estack. Pushing a value appends it to the expression stack and increments
+top_estack. When a expression is interpreted, expressions are reduced, and executed as far as
+possible. Whatever remains on the stack is the result, this may then be stored or processed
+later.
+<BR><BR>
+When a file is interpreted the end of the variable is found and it is processed as a separate
+expression stack. It is then processed recursively, producing a simplified version on the real
+expression stack. Expressions are therefore interpreted from the top (high memory) recursively.
+<BR><BR>
+As an artefact of expressions processing mechhanism, the arguments of the called program are
+kept also on the expression stack. It grows upwards, and the last argument is stored first.
+After the assembly program is called, the image of the expression stack is as follows:
+<UL>
+<LI>The first byte (i.e. the byte with the lowest address) on the stack is <A HREF="$$LINK(Tags)">END_TAG</A> (0xE5).</LI>
+<LI>Then, a argument list follows, starting from the last argument up to the first
+argument. So, top_estack points to the last byte of the first argument.</LI>
+</UL>
+Each string entry on the expression stack is stored as follows (from lower to higher addresses):
+<UL>
+<LI>One zero byte (starting tag);</LI>
+<LI>Content of the string;</LI>
+<LI>Terminating zero byte;</LI>
+<LI>Byte <A HREF="$$LINK(Tags)">STR_TAG</A> (0x2D).</LI>
+</UL>
+Each integer entry is stored as follows:
+<UL>
+<LI>Bytes of the number in little endian format (i.e. the lowest byte is stored first);
+the number of bytes varies depending of the size of the number;</LI>
+<LI>A byte which represents the number of the bytes which made the number
+(note that zero has zero-byte length);</LI>
+<LI>Byte <A HREF="$$LINK(Tags)">POSINT_TAG</A> (0x1F) or <A HREF="$$LINK(Tags)">NEGINT_TAG</A> (0x20), depending whether the number is
+positive or negative (for negative numbers, previous bytes contain the absolute
+value).</LI>
+</UL>
+Each fraction entry is stored as follows:
+<UL>
+<LI>Bytes of the denominator in little endian format (i.e. the lowest byte is stored first);
+the number of bytes varies depending of the size of the number;</LI>
+<LI>A byte which represents the number of the bytes which made the denominator;</LI>
+<LI>Bytes of the numerator in little endian format;</LI>
+<LI>A byte which represents the number of the bytes which made the numerator;</LI>
+<LI>Byte <A HREF="$$LINK(Tags)">POSFRAC_TAG</A> (0x21) or <A HREF="$$LINK(Tags)">NEGFRAC_TAG</A> (0x22), depending whether the fraction is
+positive or negative (for negative fractions, previous bytes contain absolute
+values).</LI>
+</UL>
+Each floating point entry is stored as follows:
+<UL>
+<LI>Only first 9 bytes of the content of the floating point value
+are stored (instead of 10), because TIOS always rounds floating point values up to 14
+significant digits before pushing them on expression stack
+(see <A HREF="$$LINK(timath.h/bcd)">bcd</A> structure for more information about the internal
+organization of floating point values);</LI>
+<LI>The last byte is <A HREF="$$LINK(Tags)">FLOAT_TAG</A> (0x23).</LI>
+</UL>
+If the entry is complex number, real part is stored first (which can be integer, float,
+fraction, etc.), then imaginary part. <A HREF="$$LINK(Tags)">COMPLEX_TAG</A> (0x9D) is stored after them, so if the
+current argument type is complex, decrease the argument pointer by one, then first read
+imaginary part, then real part separately.
+<BR><BR>
+If the entry is composite (i.e. if it is a list or a matrix), the first byte is end_of_list marker
+(byte <A HREF="$$LINK(Tags)">END_TAG</A> or 0xE5), then follow each element of the list in reverse order (starting
+from the last element), and the last byte is <A HREF="$$LINK(Tags)">LIST_TAG</A> (0xD9).
+Now, you surely have an idea how you can pick up elements from the list. Note that a matrix is
+a "list of lists".
+<BR><BR>
+Signed zeros (<A HREF="$$LINK(timath.h/POSITIVE_ZERO)">POSITIVE_ZERO</A> and
+<A HREF="$$LINK(timath.h/NEGATIVE_ZERO)">NEGATIVE_ZERO</A>) are represented as
+fractions +0/1 and -0/1.
+<BR><BR>
+Variable names are stored exactly like strings without terminating <A HREF="$$LINK(Tags)">STR_TAG</A> (i.e. it is a
+sequence of letters bounded with two zero bytes), so "variable" tag is just a zero byte.
+There is an exception: one-letter variables have unique one-byte tags (see
+<A HREF="$$LINK(Tags)">Tags</A> for more info. Also, note that variable names are always
+stored with lowercase letters. Variables whose names ends with an underscore are assumed
+to be complex, and variables whose names starts with an underscore are assumed to
+represent physical units.
+<BR><BR>
+Expressions are stored in RPN (Reverse Polish Notation) form (also known as postfix form).
+So, function calls like <I>func</I>(<I>arg1</I>,<I>arg2</I>,...<I>argn</I>) are stored as sequence
+<BR><BR>
+<I>argn</I> ... <I>arg2</I> <I>arg1</I> <I>func_tag</I>
+<BR><BR>
+and terms like <I>arg1</I>&nbsp;<I>operator</I>&nbsp;<I>arg2</I> are stored as
+<I>arg1</I>&nbsp;<I>arg2</I>&nbsp;<I>operator_tag</I> or
+<I>arg2</I>&nbsp;<I>arg1</I>&nbsp;<I>operator_tag</I>, depending on the concrete operator.
+The situation is analogous for unary operators.
+Note that a "pointer to an expression" is a pointer to the <B>last byte</B> of the expression!
+When a function (or operator) has variable number of arguments, <A HREF="$$LINK(Tags)">END_TAG</A> is used to indicate "no more arguments".
+See <A HREF="$$LINK(Tags)">Tags</A> for complete list of various tags. This will be ilustrated with
+some examples:
+<BR><BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>integrate (e^(x^2), x, 1, 2)</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>2 1 2 x ^ e ^ integrate</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[02 01 1F] [01 01 1F] [08] [02 01 1F] [08] [93] [25] [93] [C4]
+</TD></TR></TABLE>
+<BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>sum (sqrt (1 + x), x, 0, a)</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>a 0 x x 1 sqrt sum</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[0B] [00 1F] [08] [08] [01 01 1F] [8B] [51]
+</TD></TR></TABLE>
+<BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>a + b + a - b + (a + b) * (a - b) -&gt; a</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>a b + a + b - a b + a b - * + a -&gt;</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[0B] [0C] [8B] [0B] [8B] [0C] [8D] [0B] [0C] [8B] [0B] [0C] [8D] [8F] [8B] [0B] [80]
+</TD></TR></TABLE>
+<BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>{{1, 2}, {3, 4}}</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>END_TAG END_TAG 4 3 LIST_TAG END_TAG 2 1 LIST_TAG LIST_TAG</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[E5] [E5] [04 01 1F] [03 01 1F] [D9] [E5] [02 01 1F] [01 01 1F] [D9] [D9]
+</TD></TR></TABLE>
+<BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>my_func (a, b, c)</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>END_TAG c b a my_func USERFUNC_TAG</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[E5] [0D] [0C] [0B] [00 6D 79 5F 66 75 6E 63 00] [DA]
+</TD></TR></TABLE>
+<BR>
+To perform some algebraic transformations on more unique way, expressions should be
+transformed into an equivalent form called "internal canonic form". In such form,
+for example, all constants are always in front of variables, e.g. <CODE>'x*3'</CODE> and
+<CODE>'x+3'</CODE> becomes <CODE>'3*x'</CODE> and <CODE>'3+x'</CODE> (although
+the second example will be printed as <CODE>'x+3'</CODE>). Also, expressions like <CODE>'x/y'</CODE> or
+<CODE>'x-y'</CODE> in internal canonic form do not contain substractions and divisions.
+As the parameter list (when the program is called from TI-Basic) is always in internal
+canonic form, such expressions will never be observed as-is in parameter lists
+etc. because they will be converted before passing them to the program. A lot of functions
+for algebraic manipulations automatically convert the expression in the internal canonic form,
+but when this is not true, you can always force the conversion using explicite call to
+<A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A> function. Note that the reverse conversion
+(i.e. back from the canonic form into a regular form) is performed anytime when you try to
+print out the expression. Here is the list of the most common transformations which appears
+during the transformation into the internal canonic form:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>Expression</TD><TD>Standard canonnic form</TD></TR>
+<TR><TD>-x</TD><TD>(-1)*x</TD></TR>
+<TR><TD>x-y</TD><TD>x+y*(-1)</TD></TR>
+<TR><TD>x/y</TD><TD>x*y^(-1)</TD></TR>
+<TR><TD VALIGN="TOP">e^x</TD><TD>exp(x)</TD></TR>
+<TR><TD VALIGN="TOP">x^y</TD><TD>exp(ln(x)*y)<BR>[ <I>except when "y" is an integer or a fraction</I> ]</TD></TR>
+<TR><TD VALIGN="TOP">e</TD><TD>exp(1)</TD></TR>
+<TR><TD>sqrt(x)</TD><TD>x^(1/2)</TD></TR>
+<TR><TD>log(x)</TD><TD>ln(x)*(ln(10)^(-1))</TD></TR>
+<TR><TD VALIGN="TOP">sin(x)</TD><TD>trig(x,0)<BR>[ <I>assuming "radian" mode; for "trig" function, see <A HREF="$$LINK(Tags)">SINCOS_TAG</A></I> ]</TD></TR>
+<TR><TD>cos(x)</TD><TD>trig(x,1)</TD></TR>
+<TR><TD>tan(x)</TD><TD>trig(x,0)*trig(x,1)^(-1)</TD></TR>
+<TR><TD>sinh(x)</TD><TD>exp(x)*(1/2)+exp(x)^(-1)*(-1/2)</TD></TR>
+<TR><TD>cosh(x)</TD><TD>exp(x)*(1/2)+exp(x)^(-1)*(1/2)</TD></TR>
+<TR><TD>tanh(x)</TD><TD>(exp(x)^2+1)^(-1)*(exp(x)^2+(-1))</TD></TR>
+<TR><TD>x xor y</TD><TD>(not x and y) or (x and not y)</TD></TR>
+</TABLE>
+<BR>
+Mode dependent calculations are performed by converting expressions to a specific format,
+i.e. for trigonometric functions all values are converted to radians before passing them to
+radian trigonometric functions.
+<BR><BR>
+A variable may consist of multiple expressions, these are separated by several
+special quanta: <A HREF="$$LINK(Tags)">NEXTEXPR_TAG</A> and <A HREF="$$LINK(Tags)">NEWLINE_TAG</A>.
+The last expression is marked with <A HREF="$$LINK(Tags)">ENDSTACK_TAG</A>.
+See <A HREF="$$LINK(MULTI_EXPR)">MULTI_EXPR</A>.
+<BR><BR>
+If everything mentioned above is not so clear for you, compile and run the following example
+(called "Print EStack"):
+$$EXAMPLE(Print EStack.c)
+Run this program in VTI and pass to it parameters as you want. top_estack will be shown
+on the screen. During waiting for a keypress, enter the debugger and look at the addresses
+shown, to see how parameters are stored.
+
+[References]
+In=can_be_approxed, check_estack_size, compare_complex_magnitudes, delete_between, deleted_between, did_push_cnvrt_Float_to_integer, index_below_display_expression_aux, is_antisymmetric, is_symmetric, map_tail, map_tail_Int, next_expression_index, NG_graphESI, Parse2DExpr, Parse2DMultiExpr, push_between, push_expr_quantum, push_expr2_quantum, push_Float, push_Float_to_nonneg_int, push_Float_to_rat, push_internal_simplify, push_offset_array, push_parse_text, push_quantum, push_quantum_pair, push_round_Float, push_transpose_aux, push_ushort_to_integer, reset_estack_size, should_and_did_push_approx_arg2, TokenizeSymName, alloc.h/HeapAllocESTACK, args.h/ArgCount, args.h/EX_getArg, args.h/InitArgPtr, bascmd.h/cmd_blddata, bascmd.h/cmd_circle, bascmd.h/cmd_custom, bascmd.h/cmd_dialog, bascmd.h/cmd_disp, bascmd.h/cmd_drawfunc, bascmd.h/cmd_drawinv, bascmd.h/cmd_drawparm, bascmd.h/cmd_drawpol, bascmd.h/cmd_endfor, bascmd.h/cmd_endwhile, bascmd.h/cmd_fill, bascmd.h/cmd_for, bascmd.h/cmd_get, bascmd.h/cmd_if, bascmd.h/cmd_ifthen, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_linetan, bascmd.h/cmd_local, bascmd.h/cmd_newdata, bascmd.h/cmd_newplot, bascmd.h/cmd_output, bascmd.h/cmd_passerr, bascmd.h/cmd_pause, bascmd.h/cmd_popup, bascmd.h/cmd_prompt, bascmd.h/cmd_randseed, bascmd.h/cmd_request, bascmd.h/cmd_shade, bascmd.h/cmd_sinreg, bascmd.h/cmd_slpline, bascmd.h/cmd_sorta, bascmd.h/cmd_sortd, bascmd.h/cmd_toolbar, bascmd.h/cmd_try, bascmd.h/cmd_while, basfunc.h/did_push_anti_deriv, basfunc.h/did_push_series, basfunc.h/push_1st_derivative, basfunc.h/push_abs, basfunc.h/push_acos, basfunc.h/push_acosh, basfunc.h/push_asin, basfunc.h/push_asinh, basfunc.h/push_atan, basfunc.h/push_atanh, basfunc.h/push_ceiling, basfunc.h/push_coldim, basfunc.h/push_colnorm, basfunc.h/push_comb, basfunc.h/push_comdenom, basfunc.h/push_conj, basfunc.h/push_cosh, basfunc.h/push_cross_product, basfunc.h/push_csolve, basfunc.h/push_cumsum, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_denominator, basfunc.h/push_desolve, basfunc.h/push_determinant, basfunc.h/push_diag, basfunc.h/push_dimension, basfunc.h/push_dotproduct, basfunc.h/push_eigvc, basfunc.h/push_eigvl, basfunc.h/push_exp, basfunc.h/push_expand, basfunc.h/push_extended_prod, basfunc.h/push_factor, basfunc.h/push_floor, basfunc.h/push_fractional_part, basfunc.h/push_gcd_numbers, basfunc.h/push_im, basfunc.h/push_integer_lcm, basfunc.h/push_integer_part, basfunc.h/push_integer_quotient, basfunc.h/push_integer_remainder, basfunc.h/push_is_prime, basfunc.h/push_left, basfunc.h/push_lim, basfunc.h/push_list_to_mat, basfunc.h/push_ln, basfunc.h/push_log10, basfunc.h/push_matnorm, basfunc.h/push_max, basfunc.h/push_max1, basfunc.h/push_max2, basfunc.h/push_mean, basfunc.h/push_median, basfunc.h/push_mid, basfunc.h/push_min, basfunc.h/push_min1, basfunc.h/push_min2, basfunc.h/push_mod, basfunc.h/push_mrowadd, basfunc.h/push_nint, basfunc.h/push_nsolve, basfunc.h/push_nth_derivative, basfunc.h/push_numerator, basfunc.h/push_part, basfunc.h/push_perm, basfunc.h/push_phase, basfunc.h/push_pttest, basfunc.h/push_pxltest, basfunc.h/push_r_cis, basfunc.h/push_rand, basfunc.h/push_randmat, basfunc.h/push_randnorm, basfunc.h/push_randpoly, basfunc.h/push_re, basfunc.h/push_rec_to_angle, basfunc.h/push_red_row_ech, basfunc.h/push_right, basfunc.h/push_rotate, basfunc.h/push_round, basfunc.h/push_row_echelon, basfunc.h/push_rowadd, basfunc.h/push_rowdim, basfunc.h/push_rownorm, basfunc.h/push_rowswap, basfunc.h/push_sequence, basfunc.h/push_shift, basfunc.h/push_sign, basfunc.h/push_simult, basfunc.h/push_sin2, basfunc.h/push_sinh, basfunc.h/push_solve, basfunc.h/push_stddev, basfunc.h/push_str_to_expr, basfunc.h/push_string, basfunc.h/push_submat, basfunc.h/push_summation, basfunc.h/push_switch, basfunc.h/push_tan, basfunc.h/push_tanh, basfunc.h/push_unitv, basfunc.h/push_variance, basfunc.h/push_when, basfunc.h/push_zeros, basop.h/did_push_to_polar, basop.h/push_and, basop.h/push_assignment, basop.h/push_degrees, basop.h/push_dot_exponentiate, basop.h/push_equals, basop.h/push_exponentiate, basop.h/push_factorial, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_indir_name, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_list_plus, basop.h/push_list_times, basop.h/push_matrix_product, basop.h/push_negate, basop.h/push_not, basop.h/push_not_equals, basop.h/push_or, basop.h/push_product, basop.h/push_radians, basop.h/push_ratio, basop.h/push_substitute_no_simplify, basop.h/push_substitute_simplify, basop.h/push_substitute_using_such_that, basop.h/push_sum, basop.h/push_to_cylin, basop.h/push_to_sphere, dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs, events.h/EV_defaultHandler, events.h/handleRclKey, events.h/handleVarLinkKey, gdraw.h/GR3_paint3d, gdraw.h/GR3_xyToWindow, homescr.h/HomeExecute, homescr.h/HomePushEStack, homescr.h/HS_popEStack, link.h/getcalc, link.h/OSLinkCmd, link.h/sendcalc, timath.h/atof, add_to_top, and_onto_top, unknown.h/are_units_consistent, unknown.h/compare_numbers, unknown.h/cpt_gr_fun, unknown.h/cpt_gr_param, unknown.h/cpt_gr_polar, unknown.h/de_initRes, unknown.h/de_loop, unknown.h/did_map_aggregate_arg, unknown.h/did_push_approx_inflection_point, unknown.h/did_push_divide_units, unknown.h/did_push_lincf, unknown.h/divide_top, unknown.h/dv_create_graph_titles, unknown.h/EQU_getNameInfo, unknown.h/ForceFloat, unknown.h/get_lb, unknown.h/get_list_indices, unknown.h/get_matrix_indices, unknown.h/get_ub, unknown.h/GetStatValue, unknown.h/GM_Derivative, unknown.h/GM_DistArc, unknown.h/GM_Inflection, unknown.h/GM_Integrate, unknown.h/GM_Intersect, unknown.h/GM_Math1, unknown.h/GM_TanLine, unknown.h/gr_ck_solvergraph, unknown.h/gr_execute_de, unknown.h/gr_execute_seq, unknown.h/GR_Pan, unknown.h/GR3_addContours, unknown.h/GraphOrTableCmd, unknown.h/GT_CalcDepVals, unknown.h/GT_PrintCursor, unknown.h/has_different_variable, unknown.h/index_if_pushed_binomial_info, unknown.h/index_if_pushed_qquad_info, unknown.h/InitDEMem, unknown.h/InitTimeSeq, unknown.h/is_equivalent_to, estack.h/is_negative, estack.h/is_never0, estack.h/is_nonnegative, estack.h/is_nonpositive, estack.h/is_positive, unknown.h/is_real, unknown.h/is_term_improper, unknown.h/or_onto_top, unknown.h/push_auto_units_conversion, unknown.h/push_but_factor, unknown.h/push_but_term, unknown.h/push_constant_factors, unknown.h/push_constant_terms, unknown.h/push_dependent_factors, unknown.h/push_dependent_terms, unknown.h/push_div_dif_1c, unknown.h/push_div_dif_1f, unknown.h/push_float_qr_fact, unknown.h/push_format, unknown.h/push_gcd_then_cofactors, unknown.h/push_independent_factors, unknown.h/push_independent_terms, unknown.h/push_lu_fact, unknown.h/push_make_proper, unknown.h/push_minus_recip_of_quantum, unknown.h/push_mrow_aux, unknown.h/push_negate_quantum_as_negint, unknown.h/push_nonconstant_factors, unknown.h/push_nonconstant_terms, unknown.h/push_nonnumeric_factors, unknown.h/push_parse_prgm_or_func_text, unknown.h/push_pi_on_quantum, unknown.h/push_poly_deg_in_var_or_kernel, unknown.h/push_poly_qr, unknown.h/push_quantum_as_nonnegative_int, unknown.h/push_quantum_pair_as_pos_frac, unknown.h/push_reciprocal, unknown.h/push_reciprocal_of_quantum, push_simplify, unknown.h/push_simplify_statements, unknown.h/push_sq_matrix_to_whole_number, unknown.h/push_standardize, unknown.h/push_symbolic_qr_fact, unknown.h/push_trig, unknown.h/push_user_func, unknown.h/push_var, unknown.h/push_zero_partial_column, unknown.h/raise_to_top, unknown.h/Regraph, unknown.h/replace_top_with_post_simplified, unknown.h/replace_top_with_reciprocal, unknown.h/replace_top2_with_and, unknown.h/replace_top2_with_imre, unknown.h/replace_top2_with_or, unknown.h/replace_top2_with_pow, unknown.h/replace_top2_with_prod, unknown.h/replace_top2_with_ratio, unknown.h/replace_top2_with_sum, unknown.h/run_one_seq, unknown.h/seqWebInit, unknown.h/setup_unit_system, unknown.h/SP_Define, unknown.h/spike_geo_titles, unknown.h/spike_in_editor, unknown.h/spike_optionD, unknown.h/spike_titles_in_editor, unknown.h/store_func_def, unknown.h/store_to_subscripted_element, subtract_from_top, unknown.h/time_loop, unknown.h/times_top, unknown.h/tokenize_if_TI_92_or_text, unknown.h/TokenizeName, unknown.h/VarStoreLink, vat.h/FolderDel, vat.h/FolderRename, vat.h/HSymDel, vat.h/SymFindFolderName, vat.h/VarRecall, unknown.h/_ROM_CALL_45B, unknown.h/_ROM_CALL_468, unknown.h/_ROM_CALL_46F, unknown.h/_ROM_CALL_47F, unknown.h/_ROM_CALL_480, unknown.h/_ROM_CALL_484, unknown.h/_ROM_CALL_485, unknown.h/_ROM_CALL_48D, unknown.h/_ROM_CALL_494, unknown.h/_ROM_CALL_495, unknown.h/_ROM_CALL_4C2, unknown.h/_ROM_CALL_4C6, unknown.h/_ROM_CALL_4C7, unknown.h/_ROM_CALL_4D1, unknown.h/_ROM_CALL_4E6, unknown.h/_ROM_CALL_4EC, unknown.h/_ROM_CALL_4ED, unknown.h/_ROM_CALL_4F2, unknown.h/_ROM_CALL_5F1, unknown.h/_ROM_CALL_606

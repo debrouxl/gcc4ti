@@ -1,0 +1,31 @@
+[Main]
+Name=EV_setFKeyState
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void EV_setFKeyState (unsigned short Item, short State, short Redraw);
+See Also=menus.h/MenuTopStat
+
+[ROM Call]
+Index=$D3
+
+[Description]
+Changes the status (active/inactive) of a toolbox in the menu associated with current application.
+
+[Explanation]
+EV_setFKeyState changes the status of the toolbox <I>Item</I> (0 = first, 1 = second
+etc.) which belongs to the menu associated with the current application
+(see also <A HREF="$$LINK(menus.h/MenuTopStat)">MenuTopStat</A>).
+<I>State</I> is a Boolean value: when it is <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, the toolbox will be
+active, and when it is <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, the toolbox will be inactive (i.e. it will be
+dimmed, and it can not be selected).
+<BR><BR>
+EV_setFKeyState can also force redrawing of the menu after changing state: to do this,
+set Boolean parameter <I>Redraw</I> to <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>.
+Avoid menu redraw flicker when enabling/disabling several
+function keys by specifying <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> for <I>redraw</I> in all but the
+last call to this routine.
+
+[References]
+In=bascmd.h/cmd_disp, bascmd.h/cmd_disphome, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_prompt, homescr.h/HomeExecute
+Out=menus.h/MenuOn, menus.h/MenuTopStat, system.h/CU_cursorState, system.h/CU_restore, unknown.h/_ROM_CALL_3CD, unknown.h/_ROM_CALL_4FB

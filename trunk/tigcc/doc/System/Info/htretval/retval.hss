@@ -1,0 +1,81 @@
+[Main]
+Title=Returning Values Like TI-Basic Functions
+
+[Top]
+Starting from release 1.5 of the TIGCC library, it is possible to write programs
+which return a value to the TI-Basic, i.e. which act like TI-Basic function (but note
+that there are some serious limitations if you want to do this; read below for more
+info). To do this, put the following statement at the begining of the program (or
+at the begining of the main module of your program):<BR><BR>
+<PRE>#define RETURN_VALUE
+</PRE>
+This will work in both NoStub and kernel mode. Such statement will cause
+the last value pushed to the expression stack to become the "result"
+of the program. For pushing values on expression stack, use routines from the
+<A HREF="$$LINK(estack.h/)">estack.h</A> header file. For example, use
+<A HREF="$$LINK(estack.h/push_shortint)">push_shortint</A> or
+<A HREF="$$LINK(estack.h/push_longint)">push_longint</A> to push integer values,
+<A HREF="$$LINK(estack.h/push_Float)">push_Float</A> to push floating point values,
+<A HREF="$$LINK(estack.h/push_zstr)">push_zstr</A> to push strings, etc. Note
+that if you declared <CODE>RETURN_VALUE</CODE>, you <I>must</I> push something on the
+expression stack.
+<BR><BR>
+Recently, I received some important information from Kevin Kofler. If you plan to write a
+function which returns a value to TI-Basic in either Assembly or C, you should also clean up
+all arguments of the function from the expression stack before pushing the result including
+the <A HREF="$$LINK(estack.h/Tags)">END_TAG</A>. If you neglect to do this, then using the
+function as an argument of another one will not work correctly. Also, you should leave exactly
+one value on the expression stack (i.e. you should delete all eventual temporary results from
+the expression stack). Here is a sample code how you can clean up function arguments from the
+expression stack:
+<PRE>while (GetArgType (top_estack) != END_TAG)
+  top_estack = next_expression_index (top_estack);
+top_estack--;
+</PRE>
+Here is a complete example (called "Add Arguments") of a
+very simple program which gets two arguments (assuming that they are small
+positive integers, without any checking), and returns their sum (see
+<A HREF="$$LINK(args.h/)">args.h</A> for more info about getting the arguments):
+$$EXAMPLE(Add Arguments.c)
+Test this program from TI-Basic by giving <CODE>add(2,3)</CODE> (assuming that
+you compiled it and gave the name "add.c" to it). Note that if you neglect cleaning
+up arguments from the expression stack, then something like
+<CODE>add(add(3,5),add(4,7))</CODE> will not give the correct result!
+<BR><BR>
+You can even return <B>lists</B> as the result. To do this, push first
+End_Of_List marker (using <A HREF="$$LINK(estack.h/push_END_TAG)">push_END_TAG</A>), then
+push elements of the list in the reverse order, and finnaly push List marker on the
+expression stack using <A HREF="$$LINK(estack.h/push_LIST_TAG)">push_LIST_TAG</A>. The following
+program (called "Folder") returns the list of all variables in the folder which is given as the argument:
+$$EXAMPLE(Folder.c)
+Give the name "folder.c" to it, compile it using<BR><BR>
+<B>tigcc -O2 folder.c</B><BR><BR>
+then try, for example, <CODE>folder("main")</CODE> from the TI-Basic. Happy? Many
+users asked me how to make such a program!
+<BR><BR>
+Now about problems. Everything works fine in AMS 1.xx, but AMS 2.xx forbids the use of
+ASM programs in expressions. So, in the above example, <CODE>'add(2,3)'</CODE> will
+work perfectly, but <CODE>'5+add(2,3)'</CODE> or even
+<CODE>'add(2,3)-&gt;a'</CODE> will not. This stupidity
+makes returning values mostly useless. What to do? Unfortunately, I can't do nothing
+from the TIGCC itself, because an ASM program will not be executed at all if AMS 2.xx
+detects its presence in an expression. However, there is a solution: it is possible to
+make a resident program which will intercept such "stupid" behaviour of AMS 2.xx and to
+allow executing ASM programs in expressions. Such interception is already implemented
+in the latest versions of DoorsOS, Universal OS, PreOS and KerNO (but not in TeOS). So, if
+you have installed a fresh release of DoorsOS, Universal OS, PreOS or KerNO, everything
+will work OK even on AMS 2.xx. There is also a TSR called IPR which intercepts only this
+error and the "ASAP or Exec string too long" error available at
+<A HREF="http://membres.lycos.fr/sirryl/download/index.php?url=download.php">Cyril
+Pascal's (Paxal's) web page</A> for those who don't want to install a full-featured
+kernel. But for HW2 calculators, the <A HREF="http://ti89prog.kevinkofler.cjb.net">HW2
+AMS 2 TSR support (h220xTSR)</A> needs to be installed before IPR.
+This does not mean that your program must be compiled in "Doors" mode: it may be a
+"nostub" program, but DoorsOS, Universal OS, PreOs, KerNO or IPR must be present on
+the calculator (to intercept stupid behavior of AMS 2.xx). To conclude: if you have
+AMS 2.xx and if you want to use "returning a value" feature, you must have installed
+DoorsOS, Universal OS, PreOs, KerNO or IPR. If you are a programmer, please note this
+fact in the documentation of any program which uses this feature!
+<BR><BR>
+As an alternative, you may use <A HREF="$$LINK(retvar)">returning values
+through variables</A>.

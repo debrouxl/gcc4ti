@@ -1,0 +1,32 @@
+[Main]
+Title=How can I execute TI-Basic programs or statements from C?
+See Also=49: How can I create a program that is bigger than 24K and works on AMS 2.xx?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is there any way to execute a file (i.e. another ASM or TI-Basic program) from a C program?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+There are a lot of methods for doing this.
+The most obvious method to do this is usage of a function like this one:
+<PRE>void progrun(const char *name)
+{
+  char fname[25];
+  HANDLE h;
+  strcpy (fname, name);
+  strcat (fname, "()");
+  push_parse_text (fname);
+  h = HS_popEStack ();
+  TRY
+    NG_execute (h, FALSE);
+  FINALLY
+    HeapFree (h);
+  ENDFINAL
+}
+</PRE>
+The usage of it is straightforward, for example:
+<PRE>progrun ("testprog");
+</PRE>
+Note that the program you call may throw errors. If you understand this function, you can easily expand it
+to accept arguments, etc. Principally, using <A HREF="$$LINK(estack.h/NG_execute)">NG_execute</A>
+you can execute any particular sequence of TI-Basic statements.
+</TD></TR></TABLE>

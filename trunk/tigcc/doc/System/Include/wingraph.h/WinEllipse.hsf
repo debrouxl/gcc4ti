@@ -1,0 +1,37 @@
+[Main]
+Name=WinEllipse
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinEllipse (WINDOW *w, short x, short y, short a, short b);
+
+[ROM Call]
+Index=$F
+
+[Description]
+Draws an ellipse to a window.
+
+[Explanation]
+WinEllipse draws an ellipse with centre at (<I>x</I>,&nbsp;<I>y</I>) and with
+semiaxes <I>a</I> and <I>b</I> to the window pointed to by <I>w</I>. The coordinates
+are relative to the topleft
+corner of the window. The ellipse will be clipped at the boundaries of the clipping
+area of the window. The interior of the ellipse remains intact (no fill). The ellipse
+will be drawn using the current window attribute (set using <A HREF="$$LINK(WinFill)">WinFill</A>).
+Supported attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a elipse</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Erase a ellipse</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>XORs a ellipse into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> Set <I>a</I>=<I>b</I> to draw a circle.
+
+[References]
+Out=graph.h/DrawClipEllipse, graph.h/PortRestore, unknown.h/_ROM_CALL_413
+In=bascmd.h/cmd_circle, bascmd.h/cmd_pxlcircle, gdraw.h/GD_Circle

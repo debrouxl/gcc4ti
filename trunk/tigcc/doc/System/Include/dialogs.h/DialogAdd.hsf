@@ -1,0 +1,44 @@
+[Main]
+Name=DialogAdd
+Type=Function
+Subtype=ROM Call
+Header Files=dialogs.h
+Definition=HANDLE DialogAdd (HANDLE Handle, short unknown, short x, short y, short ItemType, ...);
+
+[ROM Call]
+Index=$33
+
+[Description]
+Adds an item into a dialog box.
+
+[Explanation]
+DialogAdd is an universal item-adding function. It is a very complicated function
+which accepts from 7 to 12 parameters depending of the type of the item which will
+be added (the type is determined by parameter <I>ItemType</I>). In fact, functions like
+<A HREF="$$LINK(DialogAddText)">DialogAddText</A>, <A HREF="$$LINK(DialogAddTitle)">DialogAddTitle</A>,
+<A HREF="$$LINK(DialogAddRequest)">DialogAddRequest</A> and <A HREF="$$LINK(DialogAddPulldown)">DialogAddPulldown</A>
+are implemented as macros which calls DialogAdd function with appropriate parameters
+(for easier usage), so you can mainly avoid this function
+(you can read dialogs.h file to see how exactly these macros are implemented). However, this
+function has so many parameters that I didn't discover all the variants, so existence of
+this function would allow possibilities not covered with functions like
+<A HREF="$$LINK(DialogAddText)">DialogAddText</A>. At the moment, I still don't know how to
+create a dialog with function keys (like "MODE" and "VAR-LINK" dialogs), nor a dialog
+with scrolling items (like "UNITS" dialogs). DialogAdd returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A>
+if <I>ItemType</I> is wrong.
+<BR><BR>
+This function is open for anybody which
+knows more about dialogs than I know. What I also know is that legal <I>ItemType</I>
+values are: 2, 3, 7, 8, 10, 12 and 14. 2 is for adding request boxes, 7 for adding texts,
+8 for adding titles, and 14 for adding pulldown menus. 10 and 12 are also related with
+request boxes and pulldown menus, but required extra parameters are somewhat different.
+It seems that 11 was planed for adding function keys, but not implemented, so it is very
+questionable whether function key menus can be added to dialogs using DialogAdd.
+DialogAdd with <I>ItemType</I> equal to 3 is the general dialog setup command, but
+it needs 12 parameters and I still haven't had any success in discovering them exactly. This command
+(with <I>ItemType</I> set to 3) is the key for creating dialogs with scrolling items.
+Any info is welcomed.
+
+[References]
+In=DialogAddPulldown, DialogAddRequest, DialogAddText, DialogAddTitle, DlgMessage, VarNew, VarOpen, VarSaveAs, bascmd.h/cmd_dialog, bascmd.h/cmd_request, events.h/EV_defaultHandler, homescr.h/HomeExecute, unknown.h/VarSaveTitle
+Out=alloc.h/HeapRealloc, alloc.h/HeapSize, mem.h/memcpy, mem.h/memmove, mem.h/memset, string.h/strlen

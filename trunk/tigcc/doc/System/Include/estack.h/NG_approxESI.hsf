@@ -1,0 +1,36 @@
+[Main]
+Name=NG_approxESI
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void NG_approxESI (CESI ptr);
+
+[ROM Call]
+Index=$25C
+
+[Description]
+Evaluates an expression in "APPROX" mode.
+
+[Explanation]
+NG_approxESI executes the entry on the expression stack pointed to by <I>ptr</I>
+(it needs to point to the entry tag) in "APPROX" mode, then pushes the result (i.e. a new
+expression) on the top of the expression stack. The pushed result is NOT in
+internal canonic form
+(if necessary, do <A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A> to force conversion
+to the internal canonic form). The following example ilustrates this very powerful command:
+<PRE>push_parse_text ("sin(1.3)+log(2)/7");
+NG_approxESI (top_estack);
+printf_xy (0, 50, "%f", estack_number_to_Float (top_estack));
+</PRE>
+See <A HREF="$$LINK(push_parse_text)">push_parse_text</A> and <A HREF="$$LINK(estack_number_to_Float)">estack_number_to_Float</A>
+to understand how this example works.
+<BR><BR>
+<B>Note:</B> The expression must not contain TI-Basic statements.
+For executing TI-Basic statements, use <A HREF="$$LINK(NG_execute)">NG_execute</A>. Also, this
+command may cause expansion of the expression stack or heap compression, and may throw
+various errors is something is wrong.
+
+[References]
+In=bascmd.h/cmd_linetan, bascmd.h/cmd_randseed, bascmd.h/cmd_sinreg, basfunc.h/push_randnorm, basfunc.h/push_round, unknown.h/de_initRes, unknown.h/dv_create_graph_titles, unknown.h/ForceFloat, unknown.h/GetStatValue, unknown.h/GM_Derivative, unknown.h/GM_DistArc, unknown.h/GM_Inflection, unknown.h/GM_Integrate, unknown.h/GM_Intersect, unknown.h/GM_Math1, unknown.h/GM_TanLine, unknown.h/gr_execute_de, unknown.h/gr_execute_seq, unknown.h/InitTimeSeq, unknown.h/push_format, unknown.h/seqWebInit, unknown.h/_ROM_CALL_46F
+Out=error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, unknown.h/NG_control, push_simplify, unknown.h/_ROM_CALL_5C7
+Out_EV_eventLoop=1

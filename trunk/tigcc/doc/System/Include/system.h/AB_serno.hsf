@@ -1,0 +1,32 @@
+[Main]
+Name=AB_serno
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short AB_serno (char *buffer);
+
+[ROM Call]
+Index=$29F
+
+[Description]
+Determines the serial number.
+
+[Explanation]
+AB_serno tries to fill the <I>buffer</I> with the serial number of the calculator.
+The serial number is constructed from the string returned from
+<A HREF="$$LINK(cert.h/cgetsn)">cgetsn</A> function (with one space inserted in the middle), and from
+the hexadecimal value returned from <A HREF="$$LINK(flash.h/FL_getVerNum)">FL_getVerNum</A>
+function. Note that these routines are very cryptic, and do some ugly things with the Flash
+memory, so this probably works only on real TI (at least, it does not work under VTI).
+AB_serno returns
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if determining the serial number was successful, else returns
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A> (this is a case on VTI, for example).
+The serial number has the form "pphnn nnnnn vvvv", where "pp" is the platform number
+(01 for TI-92 Plus, 03 for TI-89), "h" is hardware revision level, "nnnnnnn" is an ID number
+which is unique to each calculator, and "vvvv" is a verification number.
+All the above fields consist of hexadecimal digits.
+<I>buffer</I> must be at least 17 bytes long to accept the serial number.
+
+[References]
+In=events.h/ABT_dialog
+Out=cert.h/cgetsn, flash.h/FL_getVerNum, mem.h/memmove, stdio.h/sprintf, string.h/strlen

@@ -1,0 +1,44 @@
+[Main]
+Name=PopupClear
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=HANDLE PopupClear (HANDLE Handle);
+See Also=PopupNew, DynMenuAdd, DynMenuChange
+
+[ROM Call]
+Index=$46
+
+[Description]
+Clears a popup or toolbar menu structure.
+
+[Explanation]
+PopupClear erases all menu items from the popup menu associated with the handle <I>Handle</I>,
+without freeing the memory (the popup structure itself remains intact, only menu items
+are erased). PopupClear returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of an error,
+otherwise it returns <I>Handle</I>.
+<BR><BR>
+<B>Note:</B> This function is very useful in menus which are parts of dialogs, if
+some changes in a dialog box may force menu items to be refilled (for example when the
+user selects a new folder in the "Open Variable" dialog). Since the dialog box code keeps the handle
+of the menu, a new one cannot be created. So the old popup menu is cleared and new
+entries are added to it.
+<BR><BR>
+It seems that this function can also be used for toolbar menus. As popups
+and toolbar menus just differ in some points, it should work just fine. Then
+<I>Handle</I> is a handle returned from the <A HREF="$$LINK(MenuNew)">MenuNew</A>
+function (not one returned from <A HREF="$$LINK(MenuBegin)">MenuBegin</A>).
+Take care <I>not</I> to execute <A HREF="$$LINK(MenuBegin)">MenuBegin</A> or
+functions which use the menu in any way just after this function
+without refilling the menu with new items using
+<A HREF="$$LINK(MenuAddText)">MenuAddText</A> or <A HREF="$$LINK(MenuAddIcon)">MenuAddIcon</A>,
+or this will result in a crash. Remember that using this function erases all the items;
+using a menu with no items inside is nonsense.
+<BR><BR>
+Also note that the memory allocated to the handle is not released until the
+next call to <A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A> or
+<A HREF="$$LINK(PopupAddText)">PopupAddText</A>.
+
+[References]
+In=dialogs.h/VarOpen
+Out=alloc.h/HeapAlloc, mem.h/memset, string.h/strlen, string.h/strncpy

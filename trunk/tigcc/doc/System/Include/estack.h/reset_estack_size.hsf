@@ -1,0 +1,24 @@
+[Main]
+Name=reset_estack_size
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void reset_estack_size (unsigned short NewSize);
+MinAMS=1.01
+
+[ROM Call]
+Index=$2F3
+
+[Description]
+Reallocates the expression stack.
+
+[Explanation]
+reset_estack_size changes the size of the expression stack to <I>NewSize</I>. It
+throws an error if the requirement cannot be satisfied. If <I>NewSize</I> is smaller
+than the current amount of used space, then the expression stack is set to the
+current amount of used space instead of <I>NewSize</I>. Default size of the
+expression stack is 16384 bytes.
+
+[References]
+In=alloc.h/HeapAllocESTACK, alloc.h/HeapFree, bascmd.h/cmd_try, homescr.h/HomeExecute, link.h/OSLinkCmd, textedit.h/TE_checkSlack, unknown.h/push_simplify_statements, unknown.h/time_loop
+Out=bottom_estack, top_estack, alloc.h/HeapRealloc, unknown.h/estack_max_index

@@ -1,0 +1,23 @@
+[Main]
+Name=EM_GC
+Type=Function
+Subtype=ROM Call
+Header Files=flash.h
+Definition=short EM_GC (short allowDialog);
+
+[ROM Call]
+Index=$160
+
+[Description]
+Performs garbage collection in the archive memory.
+
+[Explanation]
+EM_GC performs garbage collection, i.e. rearranges blocks in the archive memory on such way
+that all used blocks become contiguous, without free blocks between them. If <I>allowDialog</I>
+is <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, a confirmation dialog will be displayed, and if it is
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, the garbage collection will be performed without asking user for
+the confirmation. EM_GC returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if garbage collection occured, otherwise it
+returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+
+[References]
+In=link.h/OSLinkCmd, vat.h/EM_moveSymToExtMem

@@ -1,0 +1,36 @@
+[Main]
+Name=vcbscanf
+Type=Function
+Subtype=tigcc.a
+Header Files=stdio.h
+Definition=short vcbscanf (vcbscanf_get_Callback_t getfun, vcbscanf_unget_Callback_t ungetfun, void *param, const char *format, va_list arglist);
+
+[Library Call]
+Asm=1
+TIOS Callback=0
+
+[Registers]
+getfun=a0
+ungetfun=a1
+param=a2
+format=a3
+arglist=a4
+
+[Description]
+Virtual callback parsing function.
+
+[Explanation]
+vcbscanf is an auxiliary function which is the heart of all scanf family functions.
+<I>arglist</I> is a pointer to the list of arguments (see <A HREF="$$LINK(stdarg.h/)">stdarg.h</A>
+for more info about argument lists), and <I>format</I> is the format string, as
+usually (see <A HREF="$$LINK(sscanf)">sscanf</A>). vcbscanf gets its characters using the
+<I>getfun</I> callback. If it reads a character it can't handle, it ungets it using the
+<I>ungetfun</I> callback. Also, the parameter <I>param</I> of vcbscanf is passed as the second
+parameter to the callback function. This allows for much more flexibility, because a callback
+function usually needs more info than a simple character to be processed. The callback function
+for example can get characters from to a stream, so in this case <I>param</I> would probably be
+a pointer to the stream structure. The formatted data is parsed according to the format string, as
+described for <A HREF="$$LINK(sscanf)">sscanf</A>.
+
+[References]
+In=vfscanf, vsscanf

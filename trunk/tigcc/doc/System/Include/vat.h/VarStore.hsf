@@ -1,0 +1,147 @@
+[Main]
+Name=VarStore
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=HSym VarStore (SYM_STR SymName, unsigned short Flags, unsigned short Size, ...);
+
+[ROM Call]
+Index=$86
+
+[Description]
+High-level function to store values into variables.
+
+[Explanation]
+VarStore performs many storing operations, from basic file saving to
+list/matrix element access. Although some of its operations appear to be
+quite trivial, it provides a consistent interface to all storing operations,
+even for system variables. So, this is the general system routine for storing
+to TI-Basic variables.
+<BR><BR>
+VarStore can perform different types of operations. It can store values into
+TI-Basic variables (it will create a new VAT entry if needed), prepare
+variables to be stored to, or store individual values to elements of a list
+or matrix. The data type and domain of system variables are verified to be
+correct.
+<BR><BR>
+<I>SymName</I> is the symbol name of the variable in which the value will be stored
+(see <A HREF="$$LINK(SYMSTR)">SYMSTR</A> for more info about symbol names). VarStore returns the <A HREF="$$LINK(HSym)">HSym</A>
+descriptor of the TI-Basic variable, or <A HREF="$$LINK(HS_NULL)">HS_NULL</A> if the variable is a system
+variable (which is not stored in the VAT).
+<BR><BR>
+Note that you cannot create the necessary token for system variables with the
+<A HREF="$$LINK(SYMSTR)">SYMSTR</A> or <A HREF="$$LINK(dollar)">$</A> macro.
+Instead, system variables have their own tags. For example, to store something in the
+system variable <CODE>xmin</CODE>, you have to use the following code:
+<PRE>VarStore ((const ESQ []){XMIN_TAG, EXT_SYSTEM_TAG} + 1, ...);
+</PRE>
+You may use the <A HREF="$$LINK(estack.h/TokenizeSymName)">TokenizeSymName</A>
+function if you need a generic way to access variables.
+<BR><BR>
+The parameter <I>Flags</I> determines the meaning of the remaining parameters:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">STOF_ESI</TD>
+  <TD>An extra parameter of type <A HREF="$$LINK(estack.h/ESI)">ESI</A> is needed, which points to an
+      expression which will be stored into the variable. Basically, this parameter may point to an
+      arbitrary locked block of memory, not necessarily on the expression stack.
+      On a side note, this variant is used internally if <CODE>RETURN_VALUE &lt;variable&gt;</CODE>
+      is defined.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_HESI</TD>
+  <TD>Like STOF_ESI, but the extra parameter has the type
+      <A HREF="$$LINK(alloc.h/HANDLE)">HANDLE</A>. It must be a handle
+      to a block of memory containing the data to be stored. The handle will be
+      locked during the operation.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_ELEMENT</TD>
+  <TD>Three extra parameters are needed. The first extra parameter has the type
+      <A HREF="$$LINK(estack.h/ESI)">ESI</A>; it should point to an expression
+      which will be stored into an element of a list or matrix variable determined
+      by the <I>SymName</I> parameter. The second and third parameters have the type <CODE>unsigned short</CODE>.
+      For matrices, they determine the column and the row of the element, respectively.
+      For lists, the second extra parameter is the index and the third parameter must
+      be zero. Indices for both matrices and lists start at one.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_NONE</TD>
+  <TD>Nothing is assumed about the source, so no copying is done (it is left
+      to the caller). Only the VAT entry will be created. The name and flags
+      and other conditions will be verified.</TD>
+</TR>
+</TABLE>
+<BR>
+Additionally, the parameter <I>Flags</I> may contain some tag values (see
+<A HREF="$$LINK(estack.h/Tags)">Tags</A> for more info). The allowed tags are
+<A HREF="$$LINK(estack.h/Tags)">USERFUNC_TAG</A> (in this case an extra parameter
+of type <A HREF="$$LINK(estack.h/ESI)">ESI</A> should point to the user function
+which will be stored; note that this is <I>not</I> <A HREF="$$LINK(estack.h/Tags)">FUNC_TAG</A>),
+<A HREF="$$LINK(estack.h/Tags)">TEXT_TAG</A> (for text variables),
+<A HREF="$$LINK(estack.h/Tags)">GDB_TAG</A> (for Graph Database variables),
+<A HREF="$$LINK(estack.h/Tags)">PIC_TAG</A> (for picture variables),
+<A HREF="$$LINK(estack.h/Tags)">DATA_TAG</A> (for data variables), and
+<A HREF="$$LINK(estack.h/Tags)">OTH_TAG</A> (for custom type variables).
+In all of these cases except <A HREF="$$LINK(estack.h/Tags)">USERFUNC_TAG</A>,
+the destination is verified to have the same type as the source, but the copy
+operation is not done. There are more possible values for <I>Flags</I>, but
+they are used only for internal purposes in the TIOS.
+<BR><BR>
+The parameter <I>Size</I> is the size of the source data including the tag
+but not the size word stored in the heap. If <I>Size</I> is zero, then the
+size of the expression pointed to by the first extra parameter will be used
+(this is allowed if <I>Flags</I> is
+<A HREF="$$LINK(VarStoreFlags)">STOF_ESI</A>,
+<A HREF="$$LINK(VarStoreFlags)">STOF_HESI</A>, or
+<A HREF="$$LINK(VarStoreFlags)">STOF_ELEMENT</A>).
+Otherwise, the new variable is not allocated, but the <I>folder</I> field in
+the returned <A HREF="$$LINK(HSym)">HSym</A> descriptor may still not be
+<A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if previous data existed in that
+variable).
+<BR><BR>
+<B>Note:</B> VarStore may throw various errors, and may cause heap compression (garbage
+collection). For example, some VAT variables are system protected (see
+<A HREF="$$LINK(QSysProtected)">QSysProtected</A>). These include
+programs and functions (TI-Basic or ASM), data variables, graph databases,
+custom type files, pictures, and text variables. Only variables of the same
+type can be copied to a system-protected variable. If the variable name
+already exists, the lock flag is checked (a variable that is locked or
+archived cannot be overwritten; VarStore throws an error in this case). System
+variables cannot be locked and some system variables cannot be changed by the
+user. VarStore also checks the <A HREF="$$LINK(SymFlags)">SF_HIDDEN</A> flag
+in the VAT entry (see the <A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> structure for more info),
+which is actually an "in-use" flag. Any variable being used by an application
+cannot be overwritten except by that application (it cannot be deleted,
+renamed, or linked, either). The in-use count is verified to be 0 for functions
+and programs.
+<BR><BR>
+If the variable is not a system variable, locked, system protected,
+or in use, a value can be stored to it no matter what it contained before.
+However, there are type restrictions on individual elements of lists or
+matrices. Usually, VarStore makes sure there is enough memory left to store
+the new contents to the variable before deleting the current contents of the
+variable. When storing to an existing variable, both graph reference flags are
+tested (<A HREF="$$LINK(SymFlags)">SF_GREF1</A> and <A HREF="$$LINK(SymFlags)">SF_GREF2</A>).
+If one or both is set, the corresponding dirty graph and dirty table flag(s)
+are set to indicate the graph and table are no longer valid. Storing to an
+individual element or submatrix of a matrix or list does the same checks as
+for an existing variable, and updates the length. In addition, the data type
+of the element needs to be correct (expression, relation, string).
+<BR><BR>
+Only functions with the correct function arguments can be stored in the
+variables reserved as system functions. These are <CODE>y1(x)...y99(x)</CODE>,
+<CODE>xt1(t)...xt99(t)</CODE>, <CODE>yt1(t)...yt99(t)</CODE>, <CODE>r1(q)...r99(q)</CODE>, <CODE>u1(n)...u99(n)</CODE>,
+<CODE>y1'(t)...y99'(t)</CODE>, and <CODE>z1(x,y)...z99(x,y)</CODE>.
+They can be single-line or multi-line functions, but an error is returned if
+the user tries to create any other data type with those names or if the
+number of arguments is incorrect. Since they are system functions, they
+cannot be locked and must be in the main folder. Empty functions are not
+valid and should not be added to the symbol table.
+This is true for user functions as well.
+
+[References]
+In=EX_stoBCD, SetOK, bascmd.h/cmd_blddata, bascmd.h/cmd_clrerr, bascmd.h/cmd_dialog, bascmd.h/cmd_endtry, bascmd.h/cmd_fill, bascmd.h/cmd_get, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_newdata, bascmd.h/cmd_newpic, bascmd.h/cmd_popup, bascmd.h/cmd_prompt, bascmd.h/cmd_request, bascmd.h/cmd_sinreg, bascmd.h/cmd_sorta, bascmd.h/cmd_sortd, bascmd.h/cmd_stogdb, bascmd.h/cmd_try, dialogs.h/VarNew, dialogs.h/VarSaveAs, events.h/EV_defaultHandler, unknown.h/assign_between, unknown.h/de_initRes, unknown.h/de_loop, unknown.h/delete_list_element, unknown.h/gdb_recall, unknown.h/gr_stopic, unknown.h/InitDEMem, unknown.h/InitTimeSeq, unknown.h/push_user_func, unknown.h/recall_data_var, unknown.h/spike_in_editor, unknown.h/spike_titles_in_editor, unknown.h/store_data_var, unknown.h/store_func_def, unknown.h/store_to_subscripted_element, unknown.h/TIOS_FOpen: FOpen, unknown.h/ValidateStore, unknown.h/VarStoreLink, unknown.h/_ROM_CALL_438
+Out=CheckSysFunc, DerefSym, IsMainFolderStr, MakeHSym, QSysProtected, SymAddMain, SymDel, SymFindMain, SymFindPtr, alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapLock, alloc.h/HeapRealloc, error.h/ER_throwVar, estack.h/HToESI, estack.h/next_expression_index, mem.h/memcpy, mem.h/memmove, string.h/strcmp, system.h/NeedStack, system.h/XR_stringPtr, timath.h/round12_err, unknown.h/ck_valid_float, unknown.h/CTypeTable, unknown.h/EV_currentApp, unknown.h/ForceFloat, unknown.h/gen_version, unknown.h/GetSysGraphRef, unknown.h/gr_active, unknown.h/gr_flags, unknown.h/gr_other, unknown.h/OO_GetAppAttr, unknown.h/ParseSymName, unknown.h/primary_tag_list, unknown.h/statFree, unknown.h/_bcd_math, unknown.h/_ROM_CALL_3E8, unknown.h/_ROM_CALL_439, unknown.h/_ROM_CALL_46B, unknown.h/_ROM_CALL_5C5
+Out_EV_eventLoop=1

@@ -1,0 +1,29 @@
+[Main]
+Name=getcalc
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=void getcalc (SYM_STR SymName);
+See Also=sendcalc, bascmd.h/cmd_getcalc
+
+[ROM Call]
+Index=$54
+
+[Description]
+Receives a variable (or program) from the link interface.
+
+[Explanation]
+getcalc receives a variable (or program) from the link interface (this is exactly what the
+TI-Basic command GetCalc does). <I>SymName</I> is a pointer to the variable name.
+Note that <I>SymName</I> is not an ordinary C string. Instead, it is zero-started zero-terminated
+string, and <I>SymName</I> points to the terminating byte of it (many TIOS functions for
+manipulating with TIOS variables use such strings). See <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> and
+other functions from the <A HREF="$$LINK(vat.h/)">vat.h</A> header file for more info about symbol names).
+<BR><BR>
+<B>Note:</B> getcalc enters a loop which will not end until the data is received. The only method
+to break out of this loop (if no data is received) is pressing the 'ON' key.
+
+[References]
+In=bascmd.h/cmd_getcalc
+Out=LIO_GetMultiple, LIO_Receive, OSLinkReset, basop.h/push_indir_name, error.h/ER_throwVar, estack.h/top_estack, system.h/NeedStack, unknown.h/ParseSymName, unknown.h/VarStoreLink, vat.h/SymSysVar
+Out_EV_eventLoop=1

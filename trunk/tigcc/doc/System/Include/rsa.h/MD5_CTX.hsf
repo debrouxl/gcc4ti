@@ -1,0 +1,29 @@
+[Main]
+Name=MD5_CTX
+Type=Type
+Subtype=Structure
+Header Files=rsa.h
+Definition=typedef struct { unsigned long state[4]; /* state (ABCD) */ unsigned long count[2]; /* number of bits modulo 2^64 (lsb first) */ unsigned char buffer[64]; /* input buffer */ } MD5_CTX;
+
+[Description]
+A structure for describing the context data used for implementing the MD5 Message-Digest Algorithm.
+
+[Explanation]
+MD5 is the algorithm which takes as input a message of arbitrary length and produces as output
+a 128-bit "fingerprint" or "message digest" of the input. It is conjectured that it is
+computationally infeasible to
+produce two messages having the same message digest, or to produce any message having a
+given prespecified target message digest. The MD5 algorithm is intended for digital signature
+applications, where a large file must be "compressed" in a secure manner before being
+encrypted with a private (secret) key under a public-key cryptosystem such as RSA
+(see <A HREF="$$LINK(BN)">BN</A> for more info about how RSA works). Summary, message digests create
+a unique number for given data. By sending a message digest encrypted with the private key,
+along with the original message, it is possible to check that the message came from the correct
+source. This is done by generating the message digest, and comparing it against the encrypted
+version sent along with the message (decrypted with the public key). If they match, then this
+"authenticates" the message.
+<BR><BR>
+TI implements the MD5 Message-Digest Algorithm optimised for 16 bit operation rather
+than 32 bit operation as in original algorithm. The code is based on "RSA Data Security,
+Inc. MD5 Message-Digest Algorithm". A good reference and source code for this algorithm
+can be found at [<A HREF="http://www.faqs.org/rfcs/rfc1321.html">RFC1321</A>].

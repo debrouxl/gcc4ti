@@ -1,0 +1,25 @@
+[Main]
+Name=GrayDBufCleanup
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void GrayDBufCleanup (void);
+Real Definition=#define GrayDBufCleanup() ((void)(__gray_dbl_offset=0,__D_plane2=__D_plane,__L_plane2=__L_plane))
+See Also=GrayDBufInit, GrayOff
+
+[Description]
+Uninitializes grayscale double-buffering.
+
+[Explanation]
+GrayDBufCleanup turns off double-buffering mode, which should have been
+previously turned on with <A HREF="$$LINK(GrayDBufInit)">GrayDBufInit</A>.
+After calling this function, you can operate in grayscale just like before
+calling <A HREF="$$LINK(GrayDBufInit)">GrayDBufInit</A>. You do not need to
+call this function explicitly before <A HREF="$$LINK(GrayOff)">GrayOff</A>,
+as <A HREF="$$LINK(GrayOff)">GrayOff</A> will perform the necessary
+uninitialization itself.
+<BR><BR>
+<B>Note:</B> GrayDBufCleanup does <I>not</I> free the buffer passed to
+<A HREF="$$LINK(GrayDBufInit)">GrayDBufInit</A>. You need to do this yourself
+afterwards, i.e. after calling this function or
+<A HREF="$$LINK(GrayOff)">GrayOff</A>.

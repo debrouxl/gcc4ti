@@ -1,0 +1,23 @@
+[Main]
+Name=HeapMax
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=unsigned long HeapMax (void);
+
+[ROM Call]
+Index=$9C
+
+[Description]
+Determines the size of the largest allocatable block.
+
+[Explanation]
+HeapMax returns the size of the largest block allocatable on
+the heap (it will be in the range of 0 through 65520).
+Note that this may not be equal to <A HREF="$$LINK(HeapAvail)">HeapAvail</A>
+due to locked blocks, overhead, and maximum block size. This routine will
+(always) cause heap compression (garbage collection).
+
+[References]
+Out=HeapCompress
+In=stdio.h/scanf, stdio.h/vscanf

@@ -1,0 +1,74 @@
+[Main]
+Name=EV_sendEvent
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void EV_sendEvent (short TaskID, EVENT *event);
+
+[ROM Call]
+Index=$CE
+
+[Description]
+Sends an event message from the current side.
+
+[Explanation]
+EV_sendEvent sends the event message described in the structure pointed to by <I>event</I>
+to the task/application with ID number <I>TaskID</I> (see below for more info about task
+IDs). Note that the user needs to pre-fill only <I>Type</I> field of the event structure
+and eventually <I>extra</I> field (if the message has extra information attached). All
+other fields will be filled by EV_sendEvent function before sending the message.
+<BR><BR>
+The <I>Type</I> field of the event structure is interpreted as following:
+<UL>
+<LI>If <I>Type</I> &gt;=0x700, the message is an event command message (like <A HREF="$$LINK(EventIDs)">CM_KEYPRESS</A>,
+<A HREF="$$LINK(EventIDs)">CM_WPAINT</A>, etc. These codes are defined in enum <A HREF="$$LINK(EventIDs)">EventIDs</A>. These
+messages are the most common messages, and such messages are the most usable messages
+in user applications. See <A HREF="$$LINK(EventIDs)">EventIDs</A> for detailed description of the meaning
+of such messages.</LI>
+<LI> If 0x500 &lt;=<I>Type</I> &lt; 0x700, the message is a custom command message. The interpretation
+of such messages is strictly task-dependent. The TIOS uses such messages in dialogs, etc.</LI>
+<LI> If <I>Type</I> &lt; 0x500, XR_string (see <A HREF="$$LINK(system.h/XR_stringPtr)">XR_stringPtr</A>)
+is sent as the message. This is used for internal purposes in TIOS.</LI>
+</UL>
+Here is the description what EV_sendEvent exactly does:
+<UL>
+<LI>If <A HREF="$$LINK(EV_hook)">EV_hook</A> pointer is not <A HREF="$$LINK(alloc.h/NULL)">NULL</A>, then a routine
+pointed to by it is called, passing <I>event</I> to it.</LI>
+<LI>If there is an user event handler installed (using <A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A>),
+the user handler is called, and <I>event</I> is passed to it. In this case, parameter
+<I>TaskID</I> is ignored. The only exception is when the message is <A HREF="$$LINK(EventIDs)">CM_WPAINT</A>.
+In this case, the user handler is called only if <I>TaskID</I> is <A HREF="$$LINK(StandardTaskIDs)">AP_NULL</A>.</LI>
+<LI>If there is no user event handler installed, the message <I>event</I> is sent to the
+default application-dependent event handler, which is determined by parameter <I>TaskID</I>.
+Note that default application-dependent event handler will not be called if there is an
+user event handler installed. The exception is when the message is <A HREF="$$LINK(EventIDs)">CM_WPAINT</A>.
+This message is always dispatched to the default application-dependent handler, except if
+<I>TaskID</I> is <A HREF="$$LINK(StandardTaskIDs)">AP_NULL</A>.</LI>
+</UL>
+Note that task ID numbers are inconsistent between AMS versions, so always call
+<A HREF="$$LINK(EV_getAppID)">EV_getAppID</A> before to determine an appropriate task ID,
+or use special task IDs <A HREF="$$LINK(StandardTaskIDs)">AP_CURRENT</A>,
+<A HREF="$$LINK(StandardTaskIDs)">AP_RUNNING</A> and <A HREF="$$LINK(StandardTaskIDs)">AP_NONE</A>,
+which are AMS-independent.
+<BR><BR>
+If you want to send an event from the user event handler, you can enter into
+an infinite recursion. Here is an example how to avoid this. The following program will
+change the behaviour of the ENTER key to behave like pressing DIAMOND+ENTER.
+So, run the following program (called "Approximation Mode"). After this, the ENTER key
+will behave like DIAMOND+ENTER
+(note that the program is "resident": it is active for whole time, although you have
+feeling that you are in "Home screen" for example). The ENTER key will remain redefined
+until the user press DIAMOND+ENTER. After this, the original function of the ENTER key
+is restored, and the program finishes working.
+$$EXAMPLE(Approximation Mode.c)
+Of course, this program is not extremely useful: the much easier method to achieve the same
+functionality is to set the calculator to "APPROX" mode. But, note that this is just an
+example, which should give you an idea how to redefine the keyboard.
+<BR><BR>
+<B>Note:</B> The destination application does not have to be started or active to receive
+messages. You should first start the application using <A HREF="$$LINK(EV_startApp)">EV_startApp</A>
+if it is important that the application be on the screen before it receives an event.
+
+[References]
+In=EV_centralDispatcher, EV_defaultHandler, EV_eventLoop, EV_notifySwitchGraph, EV_paintOneWindow, EV_sendString, EV_startApp, EV_startTask, EV_switch, handleRclKey, handleVarLinkKey, MO_notifyModeChange, bascmd.h/cmd_disptbl, bascmd.h/cmd_table, homescr.h/HomeExecute, unknown.h/CustomMenuItem, unknown.h/GraphActivate, unknown.h/_ROM_CALL_424, unknown.h/_ROM_CALL_428, unknown.h/_ROM_CALL_455
+Out=EV_sendEventSide, unknown.h/EV_appSide

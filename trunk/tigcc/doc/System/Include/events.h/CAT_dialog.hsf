@@ -1,0 +1,33 @@
+[Main]
+Name=CAT_dialog
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void CAT_dialog (void);
+
+[ROM Call]
+Index=$125
+
+[Description]
+Starts "CATALOG" dialog "applet".
+
+[Explanation]
+The "CATALOG" dialog is an event driven "applet". CAT_dialog draws the dialog on the screen, installs
+its own event handler, then exits (without stopping the caller program). It does not enter into a
+loop (like normal dialogs do) which ends only on pressing ENTER or ESC. Its event handler
+restores the previously installed handler after the user presses ENTER or ESC, but if the pressed key was the ENTER
+key, the selected command from the catalog is send as a <A HREF="$$LINK(EventIDs)">CM_STRING</A> message
+after restoring the user handler (which need to be captured via user event handler). That's
+why it is not so easy to use CAT_dialog in user programs, but this is also not very hard.
+Here is an example, which opens the "CATALOG" dialog, and displays in the help screen a message
+which tells what the user selected from the catalog (called "Catalog"):
+$$EXAMPLE(Catalog.c)
+Note that it is important that <A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A> must be called
+before calling CAT_dialog. This example is a good test whether you understand the principles of
+event handling or not.
+<BR><BR>
+<B>Note:</B> If your program uses this function, you have to
+define <CODE><A HREF="$$INFOLINK(httigcc/advanced_fileinuse)">SET_FILE_IN_USE_BIT</A></CODE>.
+
+[References]
+In=EV_defaultHandler

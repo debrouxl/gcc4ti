@@ -1,0 +1,45 @@
+[Main]
+Name=numeric_factor_index
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=ESI numeric_factor_index (CESI ptr);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2E7
+
+[Description]
+Searches factors in the expression for a numeric factor.
+
+[Explanation]
+If <I>ptr</I> points to the <A HREF="$$LINK(Tags)">MUL_TAG</A>, which is a case when it
+points to an expression of form <I>factor1</I>&nbsp;*&nbsp;<I>factor2</I>&nbsp;*&nbsp;<B>...</B>
+(i.e. if the expression is a product of simpler factors), numeric_factor_index returns the pointer
+to the eventual numeric factor in the expression. If the expression is a number, numeric_factor_index
+returns <I>ptr</I> (i.e. the pointer to the expression itself). If <I>ptr</I> does not point to
+the <A HREF="$$LINK(Tags)">MUL_TAG</A> (i.e. if the expression is not a product of simpler factors),
+or if there is not any numeric factors in the expression, lead_factor_index returns
+a pointer to a simple expression which consists only of the number 1 (floating point or integer,
+depending of whether the approximation mode is active or not).
+<BR><BR>
+<B>Note:</B> This function is not implemented to be very universal. TIOS always "reorganizes" expressions
+on such way that numeric factors are at the beginning of the expression (i.e. x*3 will be reorganized
+into 3*x), and this function assumes that the expression is organized on such way. This is the so-called
+"internal canonic" form, and such expressions always have at most one factor with a numeric tag, in
+which case it is the deepest factor. So, <CODE>'3*x^2*y'</CODE> contains a numeric factor (3),
+but <CODE>'2*x+3'</CODE> does not. Also, numeric factors in numerators and denominators are
+always simplified into a single numeric factor in internal canonic forms (so, the numeric
+factor of <CODE>'6*x/(4*y)'</CODE> after conversion to canonic form is 3/2. Fortunately,
+all expressions in arguments are always in internal canonic form. However, this is not true after
+<A HREF="$$LINK(push_parse_text)">push_parse_text</A> function, nor after an evaluation using
+<A HREF="$$LINK(NG_rationalESI)">NG_rationalESI</A> or <A HREF="$$LINK(NG_approxESI)">NG_approxESI</A>. In
+other words, results of these commands are not always "correctly" organized. To force converting
+an expression to the internal canonic form, always call
+<A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A> after usage any of functions
+mentioned above.
+
+[References]
+In=basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_abs, basfunc.h/push_acosh, basfunc.h/push_asin, basfunc.h/push_asinh, basfunc.h/push_atan, basfunc.h/push_atanh, basfunc.h/push_comdenom, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_exp, basfunc.h/push_expand, basfunc.h/push_factor, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_sign, basfunc.h/push_sin2, basfunc.h/push_solve, basfunc.h/push_tan, basfunc.h/push_zeros, basop.h/push_equals, basop.h/push_exponentiate, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_negate, basop.h/push_not_equals, basop.h/push_product, basop.h/push_sum, unknown.h/get_ub, unknown.h/index_if_pushed_binomial_info, unknown.h/push_gcd_then_cofactors, unknown.h/push_make_proper, unknown.h/push_reciprocal, unknown.h/push_standardize, unknown.h/replace_top_with_post_simplified, unknown.h/_ROM_CALL_48D
+Out=next_expression_index, unknown.h/Float1Index, unknown.h/Integer1Index, unknown.h/primary_tag_list

@@ -1,0 +1,45 @@
+[Main]
+Name=sendcalc
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=unsigned short sendcalc (SYM_STR SymName, short allowSysVars, unsigned short DevType, unsigned char *compat);
+See Also=getcalc, bascmd.h/cmd_sendcalc, bascmd.h/cmd_sendchat
+
+[ROM Call]
+Index=$55
+
+[Description]
+Sends a variable (or program) through the link interface.
+
+[Explanation]
+sendcalc sends a variable (or program) through the link interface (this is exactly what
+the TI-Basic command SendCalc does). <I>SymName</I> is a pointer to the variable name.
+<I>allowSysVars</I> is a Boolean parameter. If it is <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, transfer of
+a system variable will be allowed, and if it is <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, such transfer will
+be rejected. <I>DevType</I> determines the device type (see <A HREF="$$LINK(LIO_Send)">LIO_Send</A> for
+the explanation about its meaning). If <I>Compat</I> is not a <A HREF="$$LINK(alloc.h/NULL)">NULL</A> pointer,
+sendcalc also stores in a byte variable pointed to by <I>compat</I> compatibility information
+about the variable which will be transfered (see info about <A HREF="$$LINK(vat.h/SYM_ENTRY)">SYM_ENTRY</A>
+structure in <A HREF="$$LINK(vat.h/)">vat.h</A> header file for more info about compatibility flags).
+<BR><BR>
+Note that <I>SymName</I> is not an ordinary C string. Instead, it is zero-started zero-terminated
+string, and <I>SymName</I> points to the terminating byte of it (many TIOS functions for
+manipulating with TIOS variables use such strings). See <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> and
+other functions from the <A HREF="$$LINK(vat.h/)">vat.h</A> header file for more info about symbol names).
+For example, to send a variable called "example" from
+one TI-89 unit to another, use the following command:
+<PRE>sendcalc (SYMSTR ("example"), FALSE, 0x98, NULL);
+</PRE>
+Replace 0x98 with 0x89 to simulate TI-Basic SendChat command instead of SendCalc.
+<BR><BR>
+sendcalc returns zero if the operation was successful, else returns a non-zero
+value (this value describes the type of the error, but I am not sure about the concrete meaning
+of particular values). This function also may throw an error in a case of various fatal errors,
+so error trapping (using functions from the <A HREF="$$LINK(error.h/)">error.h</A> header file) is
+recommended.
+
+[References]
+In=OSLinkCmd, bascmd.h/cmd_sendcalc, bascmd.h/cmd_sendchat
+Out=basop.h/push_indir_name, estack.h/HToESI, estack.h/top_estack, string.h/strcmp, unknown.h/convert_to_TI_92, unknown.h/ParseSymName, vat.h/CheckLinkLockFlag, vat.h/CheckSysFunc, vat.h/DerefSym, vat.h/GetDataType, vat.h/SymSysVar, vat.h/VarRecall
+Out_EV_eventLoop=1

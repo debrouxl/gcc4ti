@@ -1,0 +1,24 @@
+[Main]
+Title=How can I determine the type and size of a variable?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can determine the size of a symbol (i.e. TI-Basic variable) and the TIOS type
+of the variable?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Assume that you found a VAT symbol entry for a symbol (say symbol named "foo")
+which may be done for example using <A HREF="$$LINK(vat.h/SymFindPtr)">SymFindPtr</A>:
+<PRE>SYM_ENTRY *sym;
+...
+sym = SymFindPtr (SYMSTR ("foo"), 0);
+</PRE>
+Then, do the following to find the size and type:
+<PRE>unsigned short size;
+ESQ type;
+...
+size = ((MULTI_EXPR*) HeapDeref (sym-&gt;handle))->Size + 2;
+type = *(HToESI (sym-&gt;handle));
+</PRE>
+After this, the variables <CODE>'size'</CODE> and <CODE>'type'</CODE> will contain exactly
+what do you want.
+</TD></TR></TABLE>

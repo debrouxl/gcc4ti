@@ -1,0 +1,18 @@
+[Main]
+Name=GrayDBufToggleSync
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void GrayDBufToggleSync (void);
+Real Definition=#define GrayDBufToggleSync() ({GrayWaitNSwitches (1); GrayDBufToggle ();})
+See Also=GrayDBufToggle, GrayDBufSetActiveIdxSync, GrayDBufSetActiveIdx
+
+[Description]
+Synchronizes and toggles the currently visible double buffer.
+
+[Explanation]
+GrayDBufToggleSync waits until the next plane switch occurs
+(using <A HREF="$$LINK(GrayWaitNSwitches)">GrayWaitNSwitches</A>), then calls
+<A HREF="$$LINK(GrayDBufToggle)">GrayDBufToggle</A>. This way you can make
+sure that the switch is not performed during an update of the screen, which
+would cause unwanted distortion effects.

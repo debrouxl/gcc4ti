@@ -1,0 +1,19 @@
+[Main]
+Name=isextpunct
+Type=Function
+Subtype=Macro
+Header Files=ctype.h
+Definition=short isextpunct (short c);
+Real Definition=#define isextpunct(c) ({register short __c=(c); (unsigned short)__c<256&&_extpunct_list[__c>>3]&(1<<(__c&7));})
+
+[Description]
+Checks whether a character is an extended punctuation character.
+
+[Explanation]
+isextpunct returns nonzero if <I>c</I> is a character which is printable
+(see <A HREF="$$LINK(isprint)">isprint</A> but which is not an extended alphanumeric
+(see <A HREF="$$LINK(isextalnum)">isextalnum</A>), otherwise it returns zero. Extended punctuation
+characters include ordinary punctuation characters (see <A HREF="$$LINK(ispunct)">ispunct</A>) and
+some extra ones.
+isextpunct is an inline function which is implemented using GNU C smart macros. The first call of it
+expands to a large code, but any next call of it expands to a relatively small code.

@@ -1,0 +1,42 @@
+[Main]
+Name=cmd_linehorz
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_linehorz (CESI y, CESI drawmode);
+MinAMS=1.01
+See Also=cmd_pxlhorz, graph.h/DrawLine, graph.h/DrawClipLine, cmd_linevert, cmd_line
+
+[ROM Call]
+Index=$359
+
+[Description]
+Executes TI-Basic 'LineHorz' command.
+
+[Explanation]
+cmd_linehorz displays the Graph Screen and draws, erases, or inverts a
+horizontal line on it. The parameters <I>y</I> and <I>drawmode</I> should
+point to two items on the expression stack, which represent
+respectively the y coordinate of the line and the drawing mode. The
+y coordinate is an integer or floating point value which is 
+relative to the current window settings (you can
+change them using the "Window Editor" application, or directly
+by storing values in system variables "xmin" etc., using the
+<A HREF="$$LINK(vat.h/VarStore)">VarStore</A> function).
+The parameter <I>drawmode</I> should point to one of the following values:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD VALIGN="TOP">1</TD><TD>Draws the line.</TD></TR>
+<TR><TD VALIGN="TOP">0</TD><TD>Erases the line.</TD></TR>
+<TR><TD VALIGN="TOP">-1</TD><TD>Inverts pixels along the line.</TD></TR>
+</TABLE>
+<BR>
+See also <A HREF="$$LINK(cmd_pxlhorz)">cmd_pxlhorz</A>, which uses pixel
+coordinates instead of window-relative ones, and
+<A HREF="$$LINK(graph.h/DrawLine)">DrawLine</A> (or
+<A HREF="$$LINK(graph.h/DrawClipLine)">DrawClipLine</A>) for much faster
+low-level line drawing (independently of the Graph Screen).
+
+[References]
+Out=estack.h/GetValue, unknown.h/ForceFloat, unknown.h/gr_active, unknown.h/GraphActivate, unknown.h/YCvtFtoP, wingraph.h/MakeWinRect, wingraph.h/WinAttr, wingraph.h/WinLine
+Out_EV_eventLoop=1

@@ -1,0 +1,43 @@
+[Main]
+Name=SYMSTR
+Type=Function
+Subtype=Macro
+Header Files=vat.h
+Definition=SYM_STR SYMSTR (const char *s);
+Real Definition=#define SYMSTR(s) ({register unsigned short __slen = _rom_call(unsigned long,(const char*),27E) (s); ESI __tempstr = alloca(__slen + 2); __tempstr [0] = 0; _rom_call(void*,(void*,const void*,long),26A) (__tempstr + 1, (s), __slen + 1); __tempstr + __slen + 1;})
+
+[Description]
+Defines a VAT string.
+
+[Explanation]
+Most of the TIOS functions which take symbol names as parameters do not accept ordinary C strings.
+Instead, the symbol name is either a variable tag or a sequence of characters which starts with the zero character
+(<CODE>'\0'</CODE>) and terminates with the zero character as well, and the TIOS routines for VAT handling need a
+pointer to the <I>terminating</I> zero byte as the input argument, which is a little twisty.
+For example, to search for a symbol named "tetris", instead of
+<PRE>hsym = SymFind ("tetris");
+</PRE>
+you have to do the following:
+<PRE>hsym = SymFind ("\0tetris"+7);
+</PRE>
+To make this job easier, the SYMSTR macro is implemented, so you may simply do
+<PRE>hsym = SymFind (SYMSTR ("tetris"));
+</PRE>
+If the argument passed to SYMSTR is a string literal as in this case, SYMSTR
+simply expands to the sequence in the second example. This is an optimization
+done by the preprocessor. In all other cases, space for a temporary string is
+allocated on the stack using <A HREF="$$LINK(alloc.h/alloca)">alloca</A>,
+and the string is copied to this location on the stack. Strictly speaking,
+SYMSTR does not return a pointer of type <A HREF="$$LINK(estack.h/SYM_STR)">SYM_STR</A>
+in this case, but rather a pointer to non-constant data. This means that you
+may write to it if you wish.
+<BR><BR>
+<B>Note:</B> You cannot create tokens for system variables using this macro.
+See <A HREF="$$LINK(estack.h/Tags)">EXT_SYSTEM_TAG</A> for more information.
+And if you want to use a single-character variable name, you can usually use
+one of the variable tags from the enum
+<A HREF="$$LINK(estack.h/Tags)">Tags</A>.
+Note also that all legal TIOS symbol names must be in lowercase.
+
+[References]
+Out=alloc.h/alloca, mem.h/memcpy, string.h/strlen

@@ -1,0 +1,15 @@
+[Main]
+Name=GetLongLongArg
+Type=Function
+Subtype=Macro
+Header Files=args.h
+Definition=unsigned long long GetLongLongArg (CESI &ap);
+Real Definition=#define GetLongLongArg(p) ({register unsigned short __n=*(--(ESI)(p)); register unsigned long long __s=0; while(__n--) __s=(__s<<8)+*(--(unsigned char*)(p)); (ESI)(p)--; __s;})
+See Also=GetIntArg
+
+[Description]
+Returns the current argument of double-long integer type.
+
+[Explanation]
+GetLongLongArg works like <A HREF="$$LINK(GetIntArg)">GetIntArg</A>, but
+returns a <A HREF="$$INFOLINK(gnuexts/SEC72)">double-long integer</A>.

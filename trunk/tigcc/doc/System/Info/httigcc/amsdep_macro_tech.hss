@@ -1,0 +1,16 @@
+[Main]
+Title=Wrapping a ROM Function with a Macro
+
+[Top]
+Sometimes a ROM function exists as a normal ROM call in the jump table, but
+for some reason it is not usable in a direct way. This means that it has to
+be implemented either using macros or using a wrapper function in
+<CODE>tigcc.a</CODE>. Using a macro prevents you from taking the address of
+the function and therefore from using it as a callback function.
+<BR><BR>
+This does not have to be related to an AMS dependency, although it is in the
+special case of <A HREF="$$LINK(system.h/XR_stringPtr)">XR_stringPtr</A>.
+In fact, all functions returning
+<CODE><A HREF="$$INFOLINK(keywords/float)">float</A></CODE> values are
+implemented in this way, since the TIOS method of returning floats is strange
+to say the least.

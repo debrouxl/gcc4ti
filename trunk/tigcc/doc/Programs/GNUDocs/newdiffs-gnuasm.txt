@@ -1,0 +1,2723 @@
+diff -Nur gnuasm/SEC10.hss fix/gnuasm/SEC10.hss
+--- gnuasm/SEC10.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC10.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,16 +1,12 @@
+ [Main]
+-Title=Command-Line Options
++Title=Invoking the GNU Assembler from TIGCC
+ 
+ [Top]
+-This chapter describes command-line options available in <I>all</I>
+-versions of the GNU assembler; see <A HREF="$$INFOLINK(Machine Dependencies)">Machine Dependencies</A> for options specific
+-to the TARGET target.
+-<BR><BR>
+-If you are invoking <CODE>as</CODE> via the GNU C compiler,
++If you are invoking <CODE>as</CODE> via <CODE>tigcc</CODE>,
+ you can use the <B>'-Wa'</B> option to pass arguments through to the assembler.
+ The assembler arguments must be separated from each other (and the <B>'-Wa'</B>)
+ by commas.  For example:
+-<PRE>gcc -c -g -O -Wa,-alh,-L file.c
++<PRE>tigcc -c -g -O -Wa,-alh,-L file.c
+ </PRE>
+ This passes two options to the assembler: <B>'-alh'</B> (emit a listing to
+ standard output with high-level and assembly source) and <B>'-L'</B> (retain
+diff -Nur gnuasm/SEC100.hss fix/gnuasm/SEC100.hss
+--- gnuasm/SEC100.hss	2003-09-17 15:19:32.000000000 +0200
++++ fix/gnuasm/SEC100.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,21 +2,23 @@
+ Title=.irpc
+ 
+ [Top]
++Syntax: <B>.irpc <I>symbol</I>[, <I>value</I>]</B>
++<BR><BR>
+ Evaluate a sequence of statements assigning different values to <I>symbol</I>.
+ The sequence of statements starts at the <CODE>.irpc</CODE> directive, and is
+-terminated by an <CODE>.endr</CODE> directive.  For each character in <I>value</I>,
++terminated by an <CODE><A HREF="$$LINK(SEC84R)">.endr</A></CODE> directive.  For each character in <I>value</I>,
+ <I>symbol</I> is set to the character, and the sequence of statements is
+ assembled.  If no <I>value</I> is listed, the sequence of statements is
+ assembled once, with <I>symbol</I> set to the null string.  To refer to
+-<I>symbol</I> within the sequence of statements, use <I>\symbol</I>.
++<I>symbol</I> within the sequence of statements, use \<I>symbol</I>.
+ <BR><BR>
+ For example, assembling
+ <PRE>        .irpc    param,123
+-        move    d\param,sp@-
++        move.l  %d\param,-(%sp)
+         .endr
+ </PRE>
+ is equivalent to assembling
+-<PRE>        move    d1,sp@-
+-        move    d2,sp@-
+-        move    d3,sp@-
++<PRE>        move.l %d1,-(%sp)
++        move.l %d2,-(%sp)
++        move.l %d3,-(%sp)
+ </PRE>
+diff -Nur gnuasm/SEC101.hss fix/gnuasm/SEC101.hss
+--- gnuasm/SEC101.hss	2003-09-17 15:19:32.000000000 +0200
++++ fix/gnuasm/SEC101.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,7 +1,10 @@
+ [Main]
+ Title=.lcomm
++See Also=SEC76: .comm
+ 
+ [Top]
++Syntax: <B>.lcomm <I>symbol</I>, <I>length</I></B>
++<BR><BR>
+ Reserve <I>length</I> (an absolute expression) bytes for a local common
+ denoted by <I>symbol</I>.  The section and value of <I>symbol</I> are
+ those of the new local common.  The addresses are allocated in the bss
+diff -Nur gnuasm/SEC103.hss fix/gnuasm/SEC103.hss
+--- gnuasm/SEC103.hss	2003-09-17 15:19:32.000000000 +0200
++++ fix/gnuasm/SEC103.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,12 +2,14 @@
+ Title=.line
+ 
+ [Top]
++Syntax: <B>.line <I>line-number</I></B>
++<BR><BR>
+ Even though this is a directive associated with the <CODE>a.out</CODE> or
+ <CODE>b.out</CODE> object-code formats, <CODE>as</CODE> still recognizes it
+ when producing COFF output, and treats <CODE>.line</CODE> as though it
+-were the COFF <CODE>.ln</CODE> <I>if</I> it is found outside a
+-<CODE>.def</CODE>/<CODE>.endef</CODE> pair.
++were the COFF <CODE><A HREF="$$LINK(SEC105)">.ln</A></CODE> <I>if</I> it is found outside a
++<CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>/<CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> pair.
+ <BR><BR>
+-Inside a <CODE>.def</CODE>, <CODE>.line</CODE> is, instead, one of the directives
++Inside a <CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>, <CODE>.line</CODE> is, instead, one of the directives
+ used by compilers to generate auxiliary symbol information for
+ debugging.
+diff -Nur gnuasm/SEC105.hss fix/gnuasm/SEC105.hss
+--- gnuasm/SEC105.hss	2003-09-17 15:19:32.000000000 +0200
++++ fix/gnuasm/SEC105.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,5 +1,11 @@
+ [Main]
+ Title=.ln
++See Also=SEC103: .line
+ 
+ [Top]
+-<CODE>.ln</CODE> is a synonym for <CODE>.line</CODE>.
++Syntax: <B>.ln <I>line-number</I></B>
++<BR><BR>
++Change the logical line number.  <I>line-number</I> must be an absolute
++expression.  The next line has that logical line number.  Therefore any other
++statements on the current line (after a statement separator character) are
++reported as on logical line number <I>line-number</I>-1.
+diff -Nur gnuasm/SEC106.hss fix/gnuasm/SEC106.hss
+--- gnuasm/SEC106.hss	2003-09-17 15:19:32.000000000 +0200
++++ fix/gnuasm/SEC106.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,8 +1,11 @@
+ [Main]
+ Title=.mri
++See Also=SEC19a: MRI Mode
+ 
+ [Top]
++Syntax: <B>.mri <I>val</I></B>
++<BR><BR>
+ If <I>val</I> is non-zero, this tells <CODE>as</CODE> to enter MRI mode.  If
+ <I>val</I> is zero, this tells <CODE>as</CODE> to exit MRI mode.  This change
+ affects code assembled until the next <CODE>.mri</CODE> directive, or until the end
+-of the file.  See <A HREF="$$INFOLINK(M, MRI mode, MRI mode)">M, MRI mode, MRI mode</A>.
++of the file.
+diff -Nur gnuasm/SEC107.hss fix/gnuasm/SEC107.hss
+--- gnuasm/SEC107.hss	2003-09-17 15:19:32.000000000 +0200
++++ fix/gnuasm/SEC107.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,12 +2,12 @@
+ Title=.list
+ 
+ [Top]
+-Control (in conjunction with the <CODE>.nolist</CODE> directive) whether or
++Control (in conjunction with the <CODE><A HREF="$$LINK(SEC110)">.nolist</A></CODE> directive) whether or
+ not assembly listings are generated.  These two directives maintain an
+ internal counter (which is zero initially).  <CODE>.list</CODE> increments the
+ counter, and <CODE>.nolist</CODE> decrements it.  Assembly listings are
+ generated whenever the counter is greater than zero.
+ <BR><BR>
+ By default, listings are disabled.  When you enable them (with the
+-<B>'-a'</B> command line option; see <A HREF="$$LINK(SEC10)">Command-Line Options</A>),
++<B>'-a'</B> command line option; see <A HREF="$$LINK(SEC11)">Command-Line Options</A>),
+ the initial value of the listing counter is one.
+diff -Nur gnuasm/SEC108.hss fix/gnuasm/SEC108.hss
+--- gnuasm/SEC108.hss	2003-09-17 15:19:32.000000000 +0200
++++ fix/gnuasm/SEC108.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,4 +2,6 @@
+ Title=.long
+ 
+ [Top]
+-<CODE>.long</CODE> is the same as <CODE>.int</CODE>, see <CODE><A HREF="$$LINK(SEC98)">.int</A></CODE>.
++Syntax: <B>.long <I>expressions</I></B>
++<BR><BR>
++On this target, <CODE>.long</CODE> is the same as <CODE><A HREF="$$LINK(SEC98)">.int</A></CODE>.
+diff -Nur gnuasm/SEC109.hss fix/gnuasm/SEC109.hss
+--- gnuasm/SEC109.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC109.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,7 +2,9 @@
+ Title=.macro
+ 
+ [Top]
+-The commands <CODE>.macro</CODE> and <CODE>.endm</CODE> allow you to define macros that
++Syntax: <B>.macro <I>macname [macargs...]</I></B>
++<BR><BR>
++The commands <CODE>.macro</CODE> and <CODE><A HREF="$$LINK(SEC84M)">.endm</A></CODE> allow you to define macros that
+ generate assembly output.  For example, this definition specifies a macro
+ <CODE>sum</CODE> that puts a sequence of numbers into memory:
+ <PRE>        .macro  sum from=0, to=5
+@@ -12,7 +14,7 @@
+         .endif
+         .endm
+ </PRE>
+-With that definition, <CODE>SUM&nbsp;0,5</CODE> is equivalent to this assembly input:
++With that (recursive) definition, <CODE>SUM&nbsp;0,5</CODE> is equivalent to this assembly input:
+ <PRE>        .long   0
+         .long   1
+         .long   2
+diff -Nur gnuasm/SEC11.hss fix/gnuasm/SEC11.hss
+--- gnuasm/SEC11.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC11.hss	2003-09-17 17:29:16.000000000 +0200
+@@ -1,50 +1,9 @@
+ [Main]
+-Title=Overview
++Title=GNU Assembler Command-Line Options
++Subsections=SEC12, SEC13, SEC15, SEC16, SEC17, SEC18, SEC19, SEC19a
+ 
+ [Top]
+-This manual is a user guide to the GNU assembler <CODE>as</CODE>.
+-This version of the manual describes <CODE>as</CODE> configured to generate
+-code for TARGET architectures.
+-<BR><BR>
+-Here is a brief summary of how to invoke <CODE>as</CODE>.  For details,
+-see <A HREF="$$LINK(SEC10)">Command-Line Options</A>.
+-<PRE>as [<B>-a</B>[<B>cdhlns</B>][=<I>file</I>]] [<B>-D</B>] [<B>--defsym</B> <I>sym</I>=<I>val</I>]
+- [<B>-f</B>] [<B>--gstabs</B>] [<B>--gdwarf2</B>] [<B>--help</B>] [<B>-I</B> <I>dir</I>]
+- [<B>-J</B>] [<B>-K</B>] [<B>-L</B>]
+- [<B>--listing-lhs-width</B>=<I>NUM</I>] [<B>--listing-lhs-width2</B>=<I>NUM</I>]
+- [<B>--listing-rhs-width</B>=<I>NUM</I>] [<B>--listing-cont-lines</B>=<I>NUM</I>]
+- [<B>--keep-locals</B>] [<B>-o</B> <I>objfile</I>] [<B>-R</B>] [<B>--statistics</B>] [<B>-v</B>]
+- [<B>-version</B>] [<B>--version</B>] [<B>-W</B>] [<B>--warn</B>] [<B>--fatal-warnings</B>]
+- [<B>-w</B>] [<B>-x</B>] [<B>-Z</B>] [<B>--target-help</B>] [<I>target-options</I>]
+- [<B>--</B>|<I>files</I> ...]
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-<I>Target M680X0 options:</I>
+-   [<B>-l</B>] [<B>-m68000</B>|<B>-m68010</B>|<B>-m68020</B>|...]
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-</PRE>
++Here is a brief summary of how to invoke <CODE>as</CODE>.
+ <DL>
+ <DT><B>-a[cdhlmns]</B>
+ <DD>Turn on listings, in any of a variety of ways:
+@@ -74,9 +33,24 @@
+ <DD>set the name of the listing file
+ </DL><BR>
+ You may combine these options; for example, use <B>'-aln'</B> for assembly
+-listing without forms processing.  The <CODE>=file</CODE> option, if used, must be
++listing without forms processing.  The <B>'=file'</B> option, if used, must be
+ the last one.  By itself, <B>'-a'</B> defaults to <B>'-ahls'</B>.
+ <BR><BR>
++For more information, see <A HREF="$$LINK(SEC13)">Enabling Listings</A>.
++<BR><BR>
++<DT><B>--all-relocs</B>
++<DD>Output all references to non-absolute symbols in the assembled file as
++relocation items in the object file, even if the form of a reference would
++permit the assembler to resolve it.  This especially affects pc-relative
++references to symbols defined in the same section, and certain calculations
++with symbols.  For some calculations, this requires special TIGCC-specific
++support for negative relocation items, which makes object files unusable with
++older versions of TIGCC.  If a calculation cannot be output without being
++resolved, an error message is generated.  This option implies
++'--keep-locals'.  The assembler also outputs a special symbol
++<CODE>__ld_all_relocs</CODE> to tell the linker that there are no implicit
++dependencies between different locations inside the sections.
++<BR><BR>
+ <DT><B>-D</B>
+ <DD>Ignored.  This option is accepted for script compatibility with calls to
+ other assemblers.
+@@ -90,15 +64,19 @@
+ <DD>&quot;fast&quot; - skip whitespace and comment preprocessing (assume source is
+ compiler output).
+ <BR><BR>
++This option should only be used when assembling programs written by a
++(trusted) compiler.  It stops the assembler from doing whitespace
++and comment preprocessing on the input file(s) before assembling them.
++See <A HREF="$$LINK(SEC26)">Preprocessing</A>.
++<BR><BR>
++<B>Warning:</B> if you use <B>'-f'</B> when the files actually need to be
++preprocessed (if they contain comments, for example), <CODE>as</CODE> does
++not work correctly.
++<BR><BR>
+ <DT><B>--gstabs</B>
+ <DD>Generate stabs debugging information for each assembler line.  This
+ may help debugging assembler code, if the debugger can handle it.
+ <BR><BR>
+-<DT><B>--gdwarf2</B>
+-<DD>Generate DWARF2 debugging information for each assembler line.  This
+-may help debugging assembler code, if the debugger can handle it.  Note - this
+-option is only supported by some targets, not all of them.
+-<BR><BR>
+ <DT><B>--help</B>
+ <DD>Print a summary of the command line options and exit.
+ <BR><BR>
+@@ -106,24 +84,26 @@
+ <DD>Print a summary of all target specific options and exit.
+ <BR><BR>
+ <DT><B>-I <I>dir</I></B>
+-<DD>Add directory <I>dir</I> to the search list for <CODE>.include</CODE> directives.
++<DD>Add directory <I>dir</I> to the search list for <CODE><A HREF="$$LINK(SEC97)">.include</A></CODE> directives.
+ <BR><BR>
+ <DT><B>-J</B>
+ <DD>Don't warn about signed overflow.
+ <BR><BR>
+ <DT><B>-K</B>
+-<DD>This option is accepted but has no effect on the TARGET family.
++<DD>This option is accepted but has no effect on the 680x0 family.
+ <BR><BR>
+ <DT><B>-L</B>
+ <BR><B>--keep-locals</B>
+ <DD>Keep (in the symbol table) local symbols.  On traditional a.out systems
+ these start with <CODE>L</CODE>, but different systems have different local
+-label prefixes.
++label prefixes.  See <A HREF="$$LINK(SEC18)">Including Local Labels</A>.
+ <BR><BR>
+ <DT><B>--listing-lhs-width=<I>number</I></B>
+ <DD>Set the maximum width, in words, of the output data column for an assembler
+ listing to <I>number</I>.
+ <BR><BR>
++For more information, see <A HREF="$$LINK(SEC14)">Configuring Listing Output</A>.
++<BR><BR>
+ <DT><B>--listing-lhs-width2=<I>number</I></B>
+ <DD>Set the maximum width, in words, of the output data column for continuation
+ lines in an assembler listing to <I>number</I>.
+@@ -134,13 +114,24 @@
+ <BR><BR>
+ <DT><B>--listing-cont-lines=<I>number</I></B>
+ <DD>Set the maximum number of lines printed in a listing for a single line of input
+-to <I>number</I> + 1.
++to <I>number</I>+1.
++<BR><BR>
++<DT><B>-M</B>
++<BR><B>--mri</B>
++<DD>Use MRI compatibility mode.  See <A HREF="$$LINK(SEC19a)">Assembling in MRI Compatibility Mode</A>.
++<BR><BR>
++<DT><B>--MD <I>depfile</I></B>
++<DD>Generate a dependency file.  This file consists of a single rule suitable for
++<CODE>make</CODE> describing the dependencies of the main source file.  The rule
++is written to the file named in its argument.  This feature is used in the automatic
++updating of makefiles.  It is not particulary useful for TIGCC.
+ <BR><BR>
+ <DT><B>-o <I>objfile</I></B>
+ <DD>Name the object-file output from <CODE>as</CODE> <I>objfile</I>.
++See <A HREF="$$LINK(SEC15)">Naming the Output File</A>.
+ <BR><BR>
+ <DT><B>-R</B>
+-<DD>Fold the data section into the text section.
++<DD>Fold the data section into the text section.  See <A HREF="$$LINK(SEC17)">Joining the Data and Text Sections</A>.
+ <BR><BR>
+ <DT><B>--statistics</B>
+ <DD>Print the maximum space (in bytes) and total time (in seconds) used by
+@@ -149,6 +140,9 @@
+ <DT><B>--strip-local-absolute</B>
+ <DD>Remove local absolute symbols from the outgoing symbol table.
+ <BR><BR>
++<DT><B>--traditional-format</B>
++<DD>Use a more traditional output format.  See <A HREF="$$LINK(SEC19)">Traditional Assembler Output Format</A>.
++<BR><BR>
+ <DT><B>-v</B>
+ <BR><B>-version</B>
+ <DD>Print the <CODE>as</CODE> version.
+@@ -160,6 +154,8 @@
+ <BR><B>--no-warn</B>
+ <DD>Suppress warning messages.
+ <BR><BR>
++See <A HREF="$$LINK(SEC16)">Controlling Warnings</A> for more information about warning switches.
++<BR><BR>
+ <DT><B>--fatal-warnings</B>
+ <DD>Treat warnings as errors.
+ <BR><BR>
+@@ -178,26 +174,3 @@
+ <DT><B>-- | <I>files</I> </B>
+ <DD>Standard input, or source files to assemble.
+ </DL>
+-The following options are available when as is configured for the
+-Motorola 68000 series.
+-<DL>
+-<DT><B>-l</B>
+-<DD>Shorten references to undefined symbols, to one word instead of two.
+-<BR><BR>
+-<DT><B>-m68000 | -m68008 | -m68010 | -m68020 | -m68030</B>
+-<BR><B>| -m68040 | -m68060 | -m68302 | -m68331 | -m68332</B>
+-<BR><B>| -m68333 | -m68340 | -mcpu32 | -m5200</B>
+-<DD>Specify what processor in the 68000 family is the target.  The default
+-is normally the 68020, but this can be changed at configuration time.
+-<BR><BR>
+-<DT><B>-m68881 | -m68882 | -mno-68881 | -mno-68882</B>
+-<DD>The target machine does (or does not) have a floating-point coprocessor.
+-The default is to assume a coprocessor for 68020, 68030, and cpu32.  Although
+-the basic 68000 is not compatible with the 68881, a combination of the
+-two can be specified, since it's possible to do emulation of the
+-coprocessor instructions with the main processor.
+-<BR><BR>
+-<DT><B>-m68851 | -mno-68851</B>
+-<DD>The target machine does (or does not) have a memory-management
+-unit coprocessor.  The default is to assume an MMU for 68020 and up.
+-</DL>
+diff -Nur gnuasm/SEC110.hss fix/gnuasm/SEC110.hss
+--- gnuasm/SEC110.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC110.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,7 +2,7 @@
+ Title=.nolist
+ 
+ [Top]
+-Control (in conjunction with the <CODE>.list</CODE> directive) whether or
++Control (in conjunction with the <CODE><A HREF="$$LINK(SEC107)">.list</A></CODE> directive) whether or
+ not assembly listings are generated.  These two directives maintain an
+ internal counter (which is zero initially).  <CODE>.list</CODE> increments the
+ counter, and <CODE>.nolist</CODE> decrements it.  Assembly listings are
+diff -Nur gnuasm/SEC111.hss fix/gnuasm/SEC111.hss
+--- gnuasm/SEC111.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC111.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.octa
+ 
+ [Top]
++Syntax: <B>.octa <I>bignums</I></B>
++<BR><BR>
+ This directive expects zero or more bignums, separated by commas.  For each
+ bignum, it emits a 16-byte integer.
+ <BR><BR>
+diff -Nur gnuasm/SEC112.hss fix/gnuasm/SEC112.hss
+--- gnuasm/SEC112.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC112.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.org
+ 
+ [Top]
++Syntax: <B>.org <I>new-lc</I>[, <I>fill</I>]</B>
++<BR><BR>
+ Advance the location counter of the current section to
+ <I>new-lc</I>.  <I>new-lc</I> is either an absolute expression or an
+ expression with the same section as the current subsection.  That is,
+diff -Nur gnuasm/SEC113.hss fix/gnuasm/SEC113.hss
+--- gnuasm/SEC113.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC113.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,21 +1,24 @@
+ [Main]
+ Title=.p2align[wl]
++See Also=SEC74: .balign
+ 
+ [Top]
++Syntax: <B>.p2align[wl] <I>alignment</I>[, [<I>fill</I>][, <I>max</I>]]</B>
++<BR><BR>
+ Pad the location counter (in the current subsection) to a particular
+-storage boundary.  The first expression (which must be absolute) is the
++storage boundary.  <I>alignment</I> (which must be absolute) is the
+ number of low-order zero bits the location counter must have after
+ advancement.  For example <CODE>.p2align&nbsp;3</CODE> advances the location
+ counter until it a multiple of 8.  If the location counter is already a
+ multiple of 8, no change is needed.
+ <BR><BR>
+-The second expression (also absolute) gives the fill value to be stored in the
++<I>fill</I> (also absolute) gives the fill value to be stored in the
+ padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
+ padding bytes are normally zero.  However, on some systems, if the section is
+ marked as containing code and the fill value is omitted, the space is filled
+-with no-op instructions.
++with no-op instructions (I didn't checked whether this is the case in TIGCC).
+ <BR><BR>
+-The third expression is also absolute, and is also optional.  If it is present,
++<I>max</I> is also absolute, and is also optional.  If it is present,
+ it is the maximum number of bytes that should be skipped by this alignment
+ directive.  If doing the alignment would require skipping more bytes than the
+ specified maximum, then the alignment is not done at all.  You can omit the
+diff -Nur gnuasm/SEC113a.hss fix/gnuasm/SEC113a.hss
+--- gnuasm/SEC113a.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC113a.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,5 +2,7 @@
+ Title=.print
+ 
+ [Top]
++Syntax: <B>.print <I>string</I></B>
++<BR><BR>
+ <CODE>as</CODE> will print <I>string</I> on the standard output during
+ assembly.  You must put <I>string</I> in double quotes.
+diff -Nur gnuasm/SEC114.hss fix/gnuasm/SEC114.hss
+--- gnuasm/SEC114.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC114.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.psize
+ 
+ [Top]
++Syntax: <B>.psize <I>lines</I>[, <I>columns</I>]</B>
++<BR><BR>
+ Use this directive to declare the number of lines - and, optionally, the
+ number of columns - to use for each page, when generating listings.
+ <BR><BR>
+diff -Nur gnuasm/SEC114a.hss fix/gnuasm/SEC114a.hss
+--- gnuasm/SEC114a.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC114a.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,6 +1,9 @@
+ [Main]
+ Title=.purgem
++See Also=SEC109: .macro
+ 
+ [Top]
+-Undefine the macro <I>name</I>, so that later uses of the string will not be
+-expanded.  See <A HREF="$$INFOLINK(Macro)">Macro</A>.
++Syntax: <B>.purgem <I>macname</I></B>
++<BR><BR>
++Undefine the macro <I>macname</I>, so that later uses of the string will not be
++expanded.
+diff -Nur gnuasm/SEC115.hss fix/gnuasm/SEC115.hss
+--- gnuasm/SEC115.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC115.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.quad
+ 
+ [Top]
++Syntax: <B>.quad <I>bignums</I></B>
++<BR><BR>
+ <CODE>.quad</CODE> expects zero or more bignums, separated by commas.  For
+ each bignum, it emits
+ an 8-byte integer.  If the bignum won't fit in 8 bytes, it prints a
+diff -Nur gnuasm/SEC116.hss fix/gnuasm/SEC116.hss
+--- gnuasm/SEC116.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC116.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.rept
+ 
+ [Top]
++Syntax: <B>.rept <I>count</I></B>
++<BR><BR>
+ Repeat the sequence of lines between the <CODE>.rept</CODE> directive and the next
+ <CODE>.endr</CODE> directive <I>count</I> times.
+ <BR><BR>
+diff -Nur gnuasm/SEC117.hss fix/gnuasm/SEC117.hss
+--- gnuasm/SEC117.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC117.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.sbttl
+ 
+ [Top]
++Syntax: <B>.sbttl "<I>subheading</I>"</B>
++<BR><BR>
+ Use <I>subheading</I> as the title (third line, immediately after the
+ title line) when generating assembly listings.
+ <BR><BR>
+diff -Nur gnuasm/SEC118.hss fix/gnuasm/SEC118.hss
+--- gnuasm/SEC118.hss	2003-09-17 15:19:34.000000000 +0200
++++ fix/gnuasm/SEC118.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,7 +2,9 @@
+ Title=.scl
+ 
+ [Top]
++Syntax: <B>.scl <I>class</I></B>
++<BR><BR>
+ Set the storage-class value for a symbol.  This directive may only be
+-used inside a <CODE>.def</CODE>/<CODE>.endef</CODE> pair.  Storage class may flag
++used inside a <CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>/<CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> pair.  Storage class may flag
+ whether a symbol is static or external, or it may record further
+ symbolic debugging information.
+diff -Nur gnuasm/SEC119.hss fix/gnuasm/SEC119.hss
+--- gnuasm/SEC119.hss	2003-09-17 15:19:36.000000000 +0200
++++ fix/gnuasm/SEC119.hss	2003-09-17 15:23:28.000000000 +0200
+@@ -1,12 +1,12 @@
+ [Main]
+-Title=COFF Version
++Title=.section
+ 
+ [Top]
+-For COFF targets, the <CODE>.section</CODE> directive is used in one of the following
+-ways:
+-<PRE>.section <I>name</I>[, &quot;<I>flags</I>&quot;]
+-.section <I>name</I>[, <I>subsegment</I>]
+-</PRE>
++Syntax: <B>.section <I>name</I>[, &quot;<I>flags</I>&quot;]</B> or <B>.section <I>name</I>[, <I>subsegment</I>]</B>
++<BR><BR>
++Use the <CODE>.section</CODE> directive to assemble the following code into a section
++named <I>name</I>.
++<BR><BR>
+ If the optional argument is quoted, it is taken as flags to use for the
+ section.  Each flag is a single character.  The following flags are recognized:
+ <DL>
+@@ -32,7 +32,7 @@
+ <DD>shared section (meaningful for PE targets)
+ <BR><BR>
+ <DT><B>a</B>
+-<DD>ignored.  (For compatibility with the ELF version)
++<DD>ignored (for compatibility with the ELF version)
+ </DL>
+ If no flags are specified, the default flags depend upon the section name.  If
+ the section name is not recognized, the default will be for the section to be
+@@ -41,4 +41,4 @@
+ will be as if no flags had been specified at all.
+ <BR><BR>
+ If the optional argument to the <CODE>.section</CODE> directive is not quoted, it is
+-taken as a subsegment number (see <A HREF="$$INFOLINK(Sub-Sections)">Sub-Sections</A>).
++taken as a subsegment number (see <A HREF="$$LINK(SEC43)">Sub-Sections</A>).
+diff -Nur gnuasm/SEC12.hss fix/gnuasm/SEC12.hss
+--- gnuasm/SEC12.hss	2003-09-17 15:19:42.000000000 +0200
++++ fix/gnuasm/SEC12.hss	2003-09-17 16:50:54.000000000 +0200
+@@ -14,18 +14,28 @@
+ does not know how far away these symbols are, it allocates as much space as it
+ can.)  If you use this option, the references are only one word wide (16 bits).
+ This may be useful if you want the object file to be as small as possible, and
+-you know that the relevant symbols are always less than 17 bits away.
++you know that the relevant symbols are always less 32 KB away.  This option
++implies '--short-jumps'.
++<BR><BR>
++<DT><B>--short-jumps</B>
++<DD>The '--short-jumps' option shortens the size of branches to undefined
++symbols.  Unlike '-l', other references to undefined symbols are kept wide
++enough for a full <CODE>long</CODE> (32 bits), unless an explicit size is
++specified.  This enables you to optimize a modular program that is smaller
++than 32 KB as well as possible, while still being able to reference an
++external BSS or data section (since no jumps can point into these sections).
++Previously (and in non-TIGCC assemblers), the <B>'-l'</B> option acted like
++this, but the documentation did not say this.
+ <BR><BR>
+ <DT><B>--register-prefix-optional</B>
+-<DD>For some configurations, especially those where the compiler normally
++<DD>Since the compiler as configured for TIGCC
+ does not prepend an underscore to the names of user variables, the
+ assembler requires a <CODE>%</CODE> before any use of a register name.  This
+ is intended to let the assembler distinguish between C variables and
+-functions named <CODE>a0</CODE> through <CODE>a7</CODE>, and so on.  The <CODE>%</CODE> is
+-always accepted, but is not required for certain configurations, notably
+-<CODE>sun3</CODE>.  The <B>'--register-prefix-optional'</B> option may be used
+-to permit omitting the <CODE>%</CODE> even for configurations for which it is
+-normally required.  If this is done, it will generally be impossible to
++functions named <CODE>a0</CODE> through <CODE>a7</CODE>, and so on.
++The <B>'--register-prefix-optional'</B> option may be used
++to permit omitting the <CODE>%</CODE> even in TIGCC.
++If this is done, it will generally be impossible to
+ refer to C variables and functions with the same names as register
+ names.
+ <BR><BR>
+@@ -36,7 +46,8 @@
+ either use C style comments, or start comments with a <CODE>#</CODE> character
+ at the beginning of a line.
+ <BR><BR>
+-<DT><B>--base-size-default-16  --base-size-default-32</B>
++<DT><B>--base-size-default-16</B>
++<BR><B>--base-size-default-32</B>
+ <DD>If you use an addressing mode with a base register without specifying
+ the size, <CODE>as</CODE> will normally use the full 32 bit value.
+ For example, the addressing mode <CODE>%a0@(%d0)</CODE> is equivalent to
+@@ -46,7 +57,8 @@
+ You may use the <B>'--base-size-default-32'</B> option to restore the
+ default behaviour.
+ <BR><BR>
+-<DT><B>--disp-size-default-16  --disp-size-default-32</B>
++<DT><B>--disp-size-default-16</B>
++<BR><B>--disp-size-default-32</B>
+ <DD>If you use an addressing mode with a displacement, and the value of the
+ displacement is not known, <CODE>as</CODE> will normally assume that
+ the value is 32 bits.  For example, if the symbol <CODE>disp</CODE> has not
+@@ -60,24 +72,23 @@
+ <BR><BR>
+ <DT><B>--pcrel</B>
+ <DD>Always keep branches PC-relative.  In the M680x0 architecture all branches
+-are defined as PC-relative.  However, on some processors they are limited
++are defined as PC-relative.  However, on some processors
++(including the M68000 used in calculators) they are limited
+ to word displacements maximum.  When <CODE>as</CODE> needs a long branch
+ that is not available, it normally emits an absolute jump instead.  This
+ option disables this substitution.  When this option is given and no long
+ branches are available, only word branches will be emitted.  An error
+-message will be generated if a word branch cannot reach its target.  This
+-option has no effect on 68020 and other processors that have long branches.
++message will be generated if a word branch cannot reach its target.
+ See <A HREF="$$LINK(SEC221)">Branch Improvement</A>.
+ <BR><BR>
+-<DT><B>-m68000</B>
++<DT><B>-m680<I>x</I>0</B>
+ <DD><CODE>as</CODE> can assemble code for several different members of the
+-Motorola 680x0 family.  The default depends upon how <CODE>as</CODE>
+-was configured when it was built; normally, the default is to assemble
+-code for the 68020 microprocessor.  The following options may be used to
++Motorola 680x0 family.  The default in TIGCC is to assemble
++code for the 68000 microprocessor.  The following options may be used to
+ change the default.  These options control which instructions and
+ addressing modes are permitted.  The members of the 680x0 family are
+ very similar.  For detailed information about the differences, see the
+-Motorola manuals.
++Motorola manuals.  (These options are not very useful for TIGCC.)
+ <BR><BR><DL>
+ <DT><B>-m68000</B>
+ <BR><B>-m68ec000</B>
+@@ -98,7 +109,7 @@
+ <BR><BR>
+ <DT><B>-m68020</B>
+ <BR><B>-m68ec020</B>
+-<DD>Assemble for the 68020.  This is normally the default.
++<DD>Assemble for the 68020.
+ <BR><BR>
+ <DT><B>-m68030</B>
+ <BR><B>-m68ec030</B>
+diff -Nur gnuasm/SEC120.hss fix/gnuasm/SEC120.hss
+--- gnuasm/SEC120.hss	2003-09-17 15:19:36.000000000 +0200
++++ fix/gnuasm/SEC120.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.set
+ 
+ [Top]
++Syntax: <B>.set <I>symbol</I>, <I>expression</I></B>
++<BR><BR>
+ Set the value of <I>symbol</I> to <I>expression</I>.  This
+ changes <I>symbol</I>'s value and type to conform to
+ <I>expression</I>.  If <I>symbol</I> was flagged as external, it remains
+diff -Nur gnuasm/SEC121.hss fix/gnuasm/SEC121.hss
+--- gnuasm/SEC121.hss	2003-09-17 15:19:36.000000000 +0200
++++ fix/gnuasm/SEC121.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,4 +2,6 @@
+ Title=.short
+ 
+ [Top]
+-<CODE>.short</CODE> is the same as <CODE>.word</CODE>.  See <CODE><A HREF="$$LINK(SEC136)">.word</A></CODE>.
++Syntax: <B>.short <I>expressions</I></B>
++<BR><BR>
++On this target, <CODE>.short</CODE> is the same as <CODE><A HREF="$$LINK(SEC136)">.word</A></CODE>.
+diff -Nur gnuasm/SEC122.hss fix/gnuasm/SEC122.hss
+--- gnuasm/SEC122.hss	2003-09-17 15:19:36.000000000 +0200
++++ fix/gnuasm/SEC122.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,6 +1,9 @@
+ [Main]
+ Title=.single
++See Also=SEC81: .double
+ 
+ [Top]
+-This directive assembles zero or more flonums, separated by commas.  It
+-has the same effect as <CODE>.float</CODE>.
++Syntax: <B>.single <I>flonums</I></B>
++<BR><BR>
++This directive assembles zero or more <A HREF="$$LINK(SEC38)">flonums</A>, separated by commas.  It
++has the same effect as <CODE><A HREF="$$LINK(SEC92)">.float</A></CODE>.
+diff -Nur gnuasm/SEC123.hss fix/gnuasm/SEC123.hss
+--- gnuasm/SEC123.hss	2003-09-17 15:19:36.000000000 +0200
++++ fix/gnuasm/SEC123.hss	2003-09-17 15:53:08.000000000 +0200
+@@ -1,8 +1,8 @@
+ [Main]
+-Title=COFF Version
++Title=.size
+ 
+ [Top]
+-For COFF targets, the <CODE>.size</CODE> directive is only permitted inside
+-<CODE>.def</CODE>/<CODE>.endef</CODE> pairs.  It is used like this:
+-<PRE>.size <I>expression</I>
+-</PRE>
++Syntax: <B>.size <I>expression</I></B>
++<BR><BR>
++This directive, permitted only within <CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>/<CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> pairs,
++is used to set the size associated with a symbol.
+diff -Nur gnuasm/SEC124.hss fix/gnuasm/SEC124.hss
+--- gnuasm/SEC124.hss	2003-09-17 15:19:36.000000000 +0200
++++ fix/gnuasm/SEC124.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,7 +1,10 @@
+ [Main]
+ Title=.sleb128
++See Also=SEC134: .uleb128
+ 
+ [Top]
++Syntax: <B>.sleb128 <I>expressions</I></B>
++<BR><BR>
+ <I>sleb128</I> stands for &quot;signed little endian base 128.&quot;  This is a
+ compact, variable length representation of numbers used by the DWARF
+-symbolic debugging format.  See <CODE><A HREF="$$LINK(SEC134)">Uleb128,.uleb128</A></CODE>.
++symbolic debugging format.
+diff -Nur gnuasm/SEC125.hss fix/gnuasm/SEC125.hss
+--- gnuasm/SEC125.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC125.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,7 +2,5 @@
+ Title=.skip
+ 
+ [Top]
+-This directive emits <I>size</I> bytes, each of value <I>fill</I>.  Both
+-<I>size</I> and <I>fill</I> are absolute expressions.  If the comma and
+-<I>fill</I> are omitted, <I>fill</I> is assumed to be zero.  This is the same as
+-<CODE>.space</CODE>.
++<CODE>.skip</CODE> is recognized on the 680x0 platform as a synonym for
++<CODE><A HREF="$$LINK(SEC126)">.space</A></CODE>.
+diff -Nur gnuasm/SEC126.hss fix/gnuasm/SEC126.hss
+--- gnuasm/SEC126.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC126.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,7 +2,8 @@
+ Title=.space
+ 
+ [Top]
++Syntax: <B>.space <I>size</I>[, <I>fill</I>]</B>
++<BR><BR>
+ This directive emits <I>size</I> bytes, each of value <I>fill</I>.  Both
+ <I>size</I> and <I>fill</I> are absolute expressions.  If the comma
+-and <I>fill</I> are omitted, <I>fill</I> is assumed to be zero.  This is the same
+-as <CODE>.skip</CODE>.
++and <I>fill</I> are omitted, <I>fill</I> is assumed to be zero.
+diff -Nur gnuasm/SEC127.hss fix/gnuasm/SEC127.hss
+--- gnuasm/SEC127.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC127.hss	2003-09-17 15:49:34.000000000 +0200
+@@ -1,42 +1,46 @@
+ [Main]
+ Title=.stabd
++See Also=SEC127N: .stabn, SEC127S: .stabs
+ 
+ [Top]
++Syntax: <B>.stabd <I>type</I>, <I>other</I>, <I>desc</I></B>
++<BR><BR>
+ There are three directives that begin <CODE>.stab</CODE>.
+-All emit symbols (see <A HREF="$$LINK(SEC45)">Symbols</A>), for use by symbolic debuggers.
++All emit symbols (see <A HREF="$$LINK(SEC45)">Symbols</A>), for use by symbolic debuggers
++(not integrated into TIGCC yet, but it will use COFF debugging anyway).
+ The symbols are not entered in the <CODE>as</CODE> hash table: they
+ cannot be referenced elsewhere in the source file.
+ Up to five fields are required:
+ <DL>
+-<DT><B>string</B>
++<DT><I>string</I>
+ <DD>This is the symbol's name.  It may contain any character except
+ <CODE>\000</CODE>, so is more general than ordinary symbol names.  Some
+ debuggers used to code arbitrarily complex structures into symbol names
+ using this field.
+ <BR><BR>
+-<DT><B>type</B>
++<DT><I>type</I>
+ <DD>An absolute expression.  The symbol's type is set to the low 8 bits of
+ this expression.  Any bit pattern is permitted, but <CODE>ld</CODE>
+ and debuggers choke on silly bit patterns.
+ <BR><BR>
+-<DT><B>other</B>
++<DT><I>other</I>
+ <DD>An absolute expression.  The symbol's &quot;other&quot; attribute is set to the
+ low 8 bits of this expression.
+ <BR><BR>
+-<DT><B>desc</B>
++<DT><I>desc</I>
+ <DD>An absolute expression.  The symbol's descriptor is set to the low 16
+ bits of this expression.
+ <BR><BR>
+-<DT><B>value</B>
++<DT><I>value</I>
+ <DD>An absolute expression which becomes the symbol's value.
+ </DL>
+ If a warning is detected while reading a <CODE>.stabd</CODE>, <CODE>.stabn</CODE>,
+ or <CODE>.stabs</CODE> statement, the symbol has probably already been created;
+ you get a half-formed symbol in your object file.  This is
+ compatible with earlier assemblers!
+-<DL>
+-<DT><B>.stabd <I>type</I> , <I>other</I> , <I>desc</I></B>
+-<DD>The &quot;name&quot; of the symbol generated is not even an empty string.
++<BR><BR>
++If <CODE>.stabd</CODE> is used, the &quot;name&quot; of the symbol generated
++is not even an empty string.
+ It is a null pointer, for compatibility.  Older assemblers used a
+ null pointer so they didn't waste space in object files with empty
+ strings.
+@@ -45,10 +49,6 @@
+ relocatably.  When your program is linked, the value of this symbol
+ is the address of the location counter when the <CODE>.stabd</CODE> was
+ assembled.
+-<BR><BR>
+-<DT><B>.stabn <I>type</I> , <I>other</I> , <I>desc</I> , <I>value</I></B>
+-<DD>The name of the symbol is set to the empty string <CODE>&quot;&quot;</CODE>.
+-<BR><BR>
+-<DT><B>.stabs <I>string</I> ,  <I>type</I> , <I>other</I> , <I>desc</I> , <I>value</I></B>
+-<DD>All five fields are specified.
+-</DL>
++If <CODE>.stabn</CODE> is used, the name of the symbol is set to the empty
++string <CODE>&quot;&quot;</CODE>.
++If <CODE>.stabs</CODE> is used, all five fields are required.
+diff -Nur gnuasm/SEC127N.hss fix/gnuasm/SEC127N.hss
+--- gnuasm/SEC127N.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/SEC127N.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -0,0 +1,7 @@
++[Main]
++Title=.stabn
++
++[Top]
++Syntax: <B>.stabn <I>type</I>, <I>other</I>, <I>desc</I>, <I>value</I></B>
++<BR><BR>
++See <A HREF="$$LINK(SEC127)">.stabd</A>.
+diff -Nur gnuasm/SEC127S.hss fix/gnuasm/SEC127S.hss
+--- gnuasm/SEC127S.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/SEC127S.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -0,0 +1,7 @@
++[Main]
++Title=.stabs
++
++[Top]
++Syntax: <B>.stabs <I>string</I>, <I>type</I>, <I>other</I>, <I>desc</I>, <I>value</I></B>
++<BR><BR>
++See <A HREF="$$LINK(SEC127)">.stabd</A>.
+diff -Nur gnuasm/SEC128.hss fix/gnuasm/SEC128.hss
+--- gnuasm/SEC128.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC128.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,8 +1,11 @@
+ [Main]
+ Title=.string
++See Also=SEC72: .ascii, SEC73: .asciz
+ 
+ [Top]
++Syntax: <B>.string <I>&quot;str&quot;</I></B>
++<BR><BR>
+ Copy the characters in <I>str</I> to the object file.  You may specify more than
+-one string to copy, separated by commas.  Unless otherwise specified for a
+-particular machine, the assembler marks the end of each string with a 0 byte.
++one string to copy, separated by commas.
++The assembler marks the end of each string with a 0 byte.
+ You can use any of the escape sequences described in <A HREF="$$LINK(SEC33)">Strings</A>.
+diff -Nur gnuasm/SEC128a.hss fix/gnuasm/SEC128a.hss
+--- gnuasm/SEC128a.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC128a.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.struct
+ 
+ [Top]
++Syntax: <B>.struct <I>expression</I></B>
++<BR><BR>
+ Switch to the absolute section, and set the section offset to <I>expression</I>,
+ which must be an absolute expression.  You might use this as follows:
+ <PRE>        .struct 0
+@@ -14,5 +16,5 @@
+ This would define the symbol <CODE>field1</CODE> to have the value 0, the symbol
+ <CODE>field2</CODE> to have the value 4, and the symbol <CODE>field3</CODE> to have the
+ value 8.  Assembly would be left in the absolute section, and you would need to
+-use a <CODE>.section</CODE> directive of some sort to change to some other section
++use a <CODE><A HREF="$$LINK(SEC119)">.section</A></CODE> directive of some sort to change to some other section
+ before further assembly.
+diff -Nur gnuasm/SEC13.hss fix/gnuasm/SEC13.hss
+--- gnuasm/SEC13.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC13.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,8 +1,9 @@
+ [Main]
+-Title=Enable Listings: @option{-a[cdhlns]}
++Title=Enabling Listings
++Subsections=SEC14
+ 
+ [Top]
+-These options enable listing output from the assembler.  By itself,
++The options starting with <B>'-a'</B> enable listing output from the assembler.  By itself,
+ <B>'-a'</B> requests high-level, assembly, and symbols listing.
+ You can use other letters to select specific options for the list:
+ <B>'-ah'</B> requests a high-level language listing,
+@@ -13,17 +14,17 @@
+ also.
+ <BR><BR>
+ Use the <B>'-ac'</B> option to omit false conditionals from a listing.  Any lines
+-which are not assembled because of a false <CODE>.if</CODE> (or <CODE>.ifdef</CODE>, or any
+-other conditional), or a true <CODE>.if</CODE> followed by an <CODE>.else</CODE>, will be
++which are not assembled because of a false <CODE><A HREF="$$LINK(SEC96)">.if</A></CODE> (or <CODE>.ifdef</CODE>, or any
++other conditional), or a true <CODE><A HREF="$$LINK(SEC96)">.if</A></CODE> followed by an <CODE><A HREF="$$LINK(SEC83)">.else</A></CODE>, will be
+ omitted from the listing.
+ <BR><BR>
+ Use the <B>'-ad'</B> option to omit debugging directives from the
+ listing.
+ <BR><BR>
+ Once you have specified one of these options, you can further control
+-listing output and its appearance using the directives <CODE>.list</CODE>,
+-<CODE>.nolist</CODE>, <CODE>.psize</CODE>, <CODE>.eject</CODE>, <CODE>.title</CODE>, and
+-<CODE>.sbttl</CODE>.
++listing output and its appearance using the directives <CODE><A HREF="$$LINK(SEC107)">.list</A></CODE>,
++<CODE><A HREF="$$LINK(SEC110)">.nolist</A></CODE>, <CODE><A HREF="$$LINK(SEC114)">.psize</A></CODE>, <CODE><A HREF="$$LINK(SEC82)">.eject</A></CODE>, <CODE><A HREF="$$LINK(SEC132)">.title</A></CODE>, and
++<CODE><A HREF="$$LINK(SEC117)">.sbttl</A></CODE>.
+ The <B>'-an'</B> option turns off all forms processing.
+ If you do not request listing output with one of the <B>'-a'</B> options, the
+ listing-control directives have no effect.
+diff -Nur gnuasm/SEC130.hss fix/gnuasm/SEC130.hss
+--- gnuasm/SEC130.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC130.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,7 +2,9 @@
+ Title=.tag
+ 
+ [Top]
++Syntax: <B>.tag <I>structname</I></B>
++<BR><BR>
+ This directive is generated by compilers to include auxiliary debugging
+ information in the symbol table.  It is only permitted inside
+-<CODE>.def</CODE>/<CODE>.endef</CODE> pairs.  Tags are used to link structure
++<CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>/<CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> pairs.  Tags are used to link structure
+ definitions in the symbol table with instances of those structures.
+diff -Nur gnuasm/SEC131.hss fix/gnuasm/SEC131.hss
+--- gnuasm/SEC131.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC131.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,7 +1,10 @@
+ [Main]
+ Title=.text
++See Also=SEC77: .data
+ 
+ [Top]
++Syntax: <B>.text [<I>subsection</I>]</B>
++<BR><BR>
+ Tells <CODE>as</CODE> to assemble the following statements onto the end of
+ the text subsection numbered <I>subsection</I>, which is an absolute
+ expression.  If <I>subsection</I> is omitted, subsection number zero
+diff -Nur gnuasm/SEC132.hss fix/gnuasm/SEC132.hss
+--- gnuasm/SEC132.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC132.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.title
+ 
+ [Top]
++Syntax: <B>.title &quot;<I>heading</I>&quot;</B>
++<BR><BR>
+ Use <I>heading</I> as the title (second line, immediately after the
+ source file name and pagenumber) when generating assembly listings.
+ <BR><BR>
+diff -Nur gnuasm/SEC133.hss fix/gnuasm/SEC133.hss
+--- gnuasm/SEC133.hss	2003-09-17 15:19:38.000000000 +0200
++++ fix/gnuasm/SEC133.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,10 +1,8 @@
+ [Main]
+-Title=COFF Version
++Title=.type
+ 
+ [Top]
+-For COFF targets, this directive is permitted only within
+-<CODE>.def</CODE>/<CODE>.endef</CODE> pairs.  It is used like this:
+-<PRE>.type <I>int</I>
+-</PRE>
+-This records the integer <I>int</I> as the type attribute of a symbol table
+-entry.
++Syntax: <B>.type <I>int</I></B>
++<BR><BR>
++This directive, permitted only within <CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>/<CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> pairs,
++records the integer <I>int</I> as the type attribute of a symbol table entry.
+diff -Nur gnuasm/SEC134.hss fix/gnuasm/SEC134.hss
+--- gnuasm/SEC134.hss	2003-09-17 15:19:40.000000000 +0200
++++ fix/gnuasm/SEC134.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,7 +1,10 @@
+ [Main]
+ Title=.uleb128
++See Also=SEC124: .sleb128
+ 
+ [Top]
++Syntax: <B>.uleb128 <I>expressions</I></B>
++<BR><BR>
+ <I>uleb128</I> stands for &quot;unsigned little endian base 128.&quot;  This is a
+ compact, variable length representation of numbers used by the DWARF
+-symbolic debugging format.  See <CODE><A HREF="$$LINK(SEC124)">Sleb128,.sleb128</A></CODE>.
++symbolic debugging format.
+diff -Nur gnuasm/SEC135.hss fix/gnuasm/SEC135.hss
+--- gnuasm/SEC135.hss	2003-09-17 15:19:40.000000000 +0200
++++ fix/gnuasm/SEC135.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.val
+ 
+ [Top]
+-This directive, permitted only within <CODE>.def</CODE>/<CODE>.endef</CODE> pairs,
++Syntax: <B>.val <I>addr</I></B>
++<BR><BR>
++This directive, permitted only within <CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>/<CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> pairs,
+ records the address <I>addr</I> as the value attribute of a symbol table
+ entry.
+diff -Nur gnuasm/SEC135a.hss fix/gnuasm/SEC135a.hss
+--- gnuasm/SEC135a.hss	2003-09-17 15:19:40.000000000 +0200
++++ fix/gnuasm/SEC135a.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,5 +2,7 @@
+ Title=.vtable_entry
+ 
+ [Top]
+-This directive finds or creates a symbol <CODE>table</CODE> and creates a
+-<CODE>VTABLE_ENTRY</CODE> relocation for it with an addend of <CODE>offset</CODE>.
++Syntax: <B>.vtable_entry <I>table</I>, <I>offset</I></B>
++<BR><BR>
++This directive finds or creates a symbol <I>table</I> and creates a
++<CODE>VTABLE_ENTRY</CODE> relocation for it with an addend of <I>offset</I>.
+diff -Nur gnuasm/SEC136.hss fix/gnuasm/SEC136.hss
+--- gnuasm/SEC136.hss	2003-09-17 15:19:40.000000000 +0200
++++ fix/gnuasm/SEC136.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.word
+ 
+ [Top]
++Syntax: <B>.word <I>expressions</I></B>
++<BR><BR>
+ This directive expects zero or more <I>expressions</I>, of any section,
+ separated by commas.
+-For each expression, <CODE>as</CODE> emits a 16-bit number.
++For each expression, <CODE>as</CODE> emits a 16-bit number for this target.
+diff -Nur gnuasm/SEC14.hss fix/gnuasm/SEC14.hss
+--- gnuasm/SEC14.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC14.hss	2003-09-17 14:49:50.000000000 +0200
+@@ -1,13 +1,12 @@
+ [Main]
+-Title=Configuring listing output: @option{--listing}
++Title=Configuring Listing Output
+ 
+ [Top]
+ The listing feature of the assembler can be enabled via the command line switch
+-<B>'-a'</B> (see <A HREF="$$INFOLINK(a)">a</A>).  This feature combines the input source file(s) with a
++<B>'-a'</B> (see <A HREF="$$LINK(SEC13)">Enabling Listings</A>).  This feature combines the input source file(s) with a
+ hex dump of the corresponding locations in the output object file, and displays
+ them as a listing file.  The format of this listing can be controlled by pseudo
+-ops inside the assembler source (see <A HREF="$$INFOLINK(List)">List</A> See <A HREF="$$INFOLINK(Title)">Title</A> See <A HREF="$$INFOLINK(Sbttl)">Sbttl</A>
+-See <A HREF="$$INFOLINK(Psize)">Psize</A> See <A HREF="$$INFOLINK(Eject)">Eject</A>) and also by the following switches:
++ops inside the assembler source (see <A HREF="$$LINK(SEC13)">Enabling Listings</A> for details) and also by the following switches:
+ <DL>
+ <DT><B>--listing-lhs-width=number</B>
+ <DD>Sets the maximum width, in words, of the first line of the hex byte dump.  This
+diff -Nur gnuasm/SEC15.hss fix/gnuasm/SEC15.hss
+--- gnuasm/SEC15.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC15.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,11 +1,11 @@
+ [Main]
+-Title=Name the Object File: @option{-o}
++Title=Naming the Object File
+ 
+ [Top]
+ There is always one object file output when you run <CODE>as</CODE>.  By
+ default it has the name
+ <CODE>a.out</CODE>.
+-You use this option (which takes exactly one filename) to give the
++You can use the <B>'-o'</B> option (which takes exactly one filename) to give the
+ object file a different name.
+ <BR><BR>
+ Whatever the object file is called, <CODE>as</CODE> overwrites any
+diff -Nur gnuasm/SEC16.hss fix/gnuasm/SEC16.hss
+--- gnuasm/SEC16.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC16.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Control Warnings: @option{-W}, @option{--warn}, @option{--no-warn}, @option{--fatal-warnings}
++Title=Controlling Warnings
+ 
+ [Top]
+ <CODE>as</CODE> should never give a warning or error message when
+diff -Nur gnuasm/SEC17.hss fix/gnuasm/SEC17.hss
+--- gnuasm/SEC17.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC17.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,15 +1,20 @@
+ [Main]
+-Title=Join Data and Text Sections: @option{-R}
++Title=Joining the Data and Text Sections
+ 
+ [Top]
+-<B>'-R'</B> tells <CODE>as</CODE> to write the object file as if all
++The <B>'-R'</B> option tells <CODE>as</CODE> to write the object file as if all
+ data-section data lives in the text section.  This is only done at
+ the very last moment:  your binary data are the same, but data
+ section parts are relocated differently.  The data section part of
+ your object file is zero bytes long because all its bytes are
+-appended to the text section.  (see <A HREF="$$LINK(SEC39)">Sections and Relocation</A>.)
++appended to the text section.  (see <A HREF="$$LINK(SEC39)">Sections and Relocation</A>).
+ <BR><BR>
+-When you specify <B>'-R'</B> it would be possible to generate shorter
++When you specify <B>'-R'</B>, it would be possible to generate shorter
+ address displacements (because we do not have to cross between text and
+ data section).  We refrain from doing this simply for compatibility with
+-older versions of <CODE>as</CODE>.  In future, <B>'-R'</B> may work this way.
++older versions of <CODE>as</CODE>.  In the future, <B>'-R'</B> may work this way.
++<BR><BR>
++When <CODE>as</CODE> is configured for COFF output (which is the case in TIGCC),
++this option is only useful if you use sections named <CODE>.text</CODE> and
++<CODE>.data</CODE>.
++
+diff -Nur gnuasm/SEC18.hss fix/gnuasm/SEC18.hss
+--- gnuasm/SEC18.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC18.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Include Local Labels: @option{-L}
++Title=Including Local Labels
+ 
+ [Top]
+ Labels beginning with <CODE>L</CODE> (upper case only) are called <U>local
+@@ -9,8 +9,8 @@
+ Normally both <CODE>as</CODE> and <CODE>ld</CODE> discard such labels, so you do not
+ normally debug with them.
+ <BR><BR>
+-This option tells <CODE>as</CODE> to retain those <CODE>L...</CODE> symbols
+-in the object file.  Usually if you do this you also tell the linker
++The <B>'-L'</B> option tells <CODE>as</CODE> to retain those <CODE>L...</CODE> symbols
++in the object file.  Usually, if you do this, you also tell the linker
+ <CODE>ld</CODE> to preserve symbols whose names begin with <CODE>L</CODE>.
+ <BR><BR>
+ By default, a local label is any label beginning with <CODE>L</CODE>, but each
+diff -Nur gnuasm/SEC19.hss fix/gnuasm/SEC19.hss
+--- gnuasm/SEC19.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC19.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,9 +1,9 @@
+ [Main]
+-Title=Compatible Output: @option{--traditional-format}
++Title=Traditional Assembler Output Format
+ 
+ [Top]
+ For some targets, the output of <CODE>as</CODE> is different in some ways
+-from the output of some existing assembler.  This switch requests
++from the output of some existing assembler.  The <B>'--traditional-format'</B> switch requests
+ <CODE>as</CODE> to use the traditional format instead.
+ <BR><BR>
+ For example, it disables the exception frame optimizations which
+diff -Nur gnuasm/SEC19a.hss fix/gnuasm/SEC19a.hss
+--- gnuasm/SEC19a.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC19a.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,11 +1,10 @@
+ [Main]
+-Title=Assemble in MRI Compatibility Mode: @option{-M}
++Title=Assembling in MRI Compatibility Mode
+ 
+ [Top]
+ The <B>'-M'</B> or <B>'--mri'</B> option selects MRI compatibility mode.  This
+ changes the syntax and pseudo-op handling of <CODE>as</CODE> to make it
+-compatible with the <CODE>ASM68K</CODE> or the <CODE>ASM960</CODE> (depending upon the
+-configured target) assembler from Microtec Research.  The exact nature of the
++compatible with the <CODE>ASM68K</CODE> assembler from Microtec Research.  The exact nature of the
+ MRI syntax will not be documented here; see the MRI manuals for more
+ information.  Note in particular that the handling of macros and macro
+ arguments is somewhat different.  The purpose of this option is to permit
+diff -Nur gnuasm/SEC20.hss fix/gnuasm/SEC20.hss
+--- gnuasm/SEC20.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/SEC20.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -0,0 +1,3 @@
++[Main]
++Title=GNU Assembler Input and Output
++Subsections=SEC21, SEC23, SEC24
+diff -Nur gnuasm/SEC21.hss fix/gnuasm/SEC21.hss
+--- gnuasm/SEC21.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC21.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Input Files
++Subsections=SEC22
+ 
+ [Top]
+ We use the phrase <U>source program</U>, abbreviated <U>source</U>, to
+@@ -21,7 +22,7 @@
+ <BR><BR>
+ If you give <CODE>as</CODE> no file names it attempts to read one input file
+ from the <CODE>as</CODE> standard input, which is normally your terminal.  You
+-may have to type ctl-D to tell <CODE>as</CODE> there is no more program
++may have to type <CODE>Ctrl-D</CODE> to tell <CODE>as</CODE> there is no more program
+ to assemble.
+ <BR><BR>
+ Use <CODE>--</CODE> if you need to explicitly name the standard input file
+diff -Nur gnuasm/SEC214.hss fix/gnuasm/SEC214.hss
+--- gnuasm/SEC214.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/SEC214.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -0,0 +1,17 @@
++[Main]
++Title=Motorola 680x0 Dependent Features
++Subsections=SEC216, SEC217, SEC221, SEC222
++
++[Top]
++In this configuration of <CODE>as</CODE> (which does not prepend
++an underscore to the names of user variables), the
++assembler requires a <CODE>'%'</CODE> before any use of a register name.  This
++is intended to let the assembler distinguish between C variables and
++functions named <CODE>'a0'</CODE> through <CODE>'a7'</CODE>, and so on.
++<BR><BR>
++Two different syntaxes for the Motorola 680x0 are widely used.
++The first one was developed at MIT.  The second one is the
++standard Motorola syntax for this chip, and it differs from the MIT syntax.
++<CODE>as</CODE> can accept Motorola syntax for operands, even if MIT syntax
++is used for other operands in the same instruction.  The two kinds of syntax are
++fully compatible.
+diff -Nur gnuasm/SEC216.hss fix/gnuasm/SEC216.hss
+--- gnuasm/SEC216.hss	2003-09-17 15:19:44.000000000 +0200
++++ fix/gnuasm/SEC216.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,14 +1,12 @@
+ [Main]
+-Title=Syntax
++Title=MIT Syntax
+ 
+ [Top]
+-This syntax for the Motorola 680x0 was developed at MIT.
+-<BR><BR>
+-The 680x0 version of <CODE>as</CODE> uses instructions names and
++The MIT syntax uses instructions names and
+ syntax compatible with the Sun assembler.  Intervening periods are
+ ignored; for example, <CODE>movl</CODE> is equivalent to <CODE>mov.l</CODE>.
+ <BR><BR>
+-In the following table <I>apc</I> stands for any of the address registers
++In the following table, <I>apc</I> stands for any of the address registers
+ (<CODE>%a0</CODE> through <CODE>%a7</CODE>), the program counter (<CODE>%pc</CODE>), the
+ zero-address relative to the program counter (<CODE>%zpc</CODE>), a suppressed
+ address register (<CODE>%za0</CODE> through <CODE>%za7</CODE>), or it may be omitted
+@@ -18,7 +16,9 @@
+ <CODE>4</CODE>, or <CODE>8</CODE>, and it may always be omitted along with the
+ leading colon.
+ <BR><BR>
+-The following addressing modes are understood:
++The following addressing modes are understood
++(note that some of them are valid only on 68020 or later processors,
++not on the ordinary 68000 used in TI calculators):
+ <DL>
+ <DT><B>Immediate</B>
+ <DD><CODE>#<I>number</I></CODE>
+@@ -27,7 +27,8 @@
+ <DD><CODE>%d0</CODE> through <CODE>%d7</CODE>
+ <BR><BR>
+ <DT><B>Address Register</B>
+-<DD><CODE>%a0</CODE> through <CODE>%a7</CODE>*
++<DD><CODE>%a0</CODE> through <CODE>%a7</CODE>
++<BR>
+ <CODE>%a7</CODE> is also known as <CODE>%sp</CODE>, i.e. the Stack Pointer.  <CODE>%a6</CODE>
+ is also known as <CODE>%fp</CODE>, the Frame Pointer.
+ <BR><BR>
+diff -Nur gnuasm/SEC217.hss fix/gnuasm/SEC217.hss
+--- gnuasm/SEC217.hss	2003-09-17 15:19:46.000000000 +0200
++++ fix/gnuasm/SEC217.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,13 +2,7 @@
+ Title=Motorola Syntax
+ 
+ [Top]
+-The standard Motorola syntax for this chip differs from the syntax
+-already discussed (see <A HREF="$$LINK(SEC216)">Syntax</A>).  <CODE>as</CODE> can
+-accept Motorola syntax for operands, even if MIT syntax is used for
+-other operands in the same instruction.  The two kinds of syntax are
+-fully compatible.
+-<BR><BR>
+-In the following table <I>apc</I> stands for any of the address registers
++In the following table, <I>apc</I> stands for any of the address registers
+ (<CODE>%a0</CODE> through <CODE>%a7</CODE>), the program counter (<CODE>%pc</CODE>), the
+ zero-address relative to the program counter (<CODE>%zpc</CODE>), or a
+ suppressed address register (<CODE>%za0</CODE> through <CODE>%za7</CODE>).  The use
+@@ -17,10 +11,13 @@
+ <CODE>1</CODE>, <CODE>2</CODE>, <CODE>4</CODE>, or <CODE>8</CODE>, and it may always be omitted
+ along with the leading asterisk.
+ <BR><BR>
+-The following additional addressing modes are understood:
++The following additional addressing modes are understood
++(note that some of them are valid only on 68020 or later processors,
++not on the ordinary 68000 used in TI calculators):
+ <DL>
+ <DT><B>Address Register Indirect</B>
+-<DD><CODE>(%a0)</CODE> through <CODE>(%a7)</CODE>*
++<DD><CODE>(%a0)</CODE> through <CODE>(%a7)</CODE>
++<BR>
+ <CODE>%a7</CODE> is also known as <CODE>%sp</CODE>, i.e. the Stack Pointer.  <CODE>%a6</CODE>
+ is also known as <CODE>%fp</CODE>, the Frame Pointer.
+ <BR><BR>
+diff -Nur gnuasm/SEC22.hss fix/gnuasm/SEC22.hss
+--- gnuasm/SEC22.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC22.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,11 +1,11 @@
+ [Main]
+-Title=Filenames and Line-numbers
++Title=Assembler File Names and Line Numbers
+ 
+ [Top]
+ There are two ways of locating a line in the input file (or files) and
+ either may be used in reporting error messages.  One way refers to a line
+ number in a physical file; the other refers to a line number in a
+-&quot;logical&quot; file.  See <A HREF="$$INFOLINK(Errors, ,Error and Warning Messages)">Errors, ,Error and Warning Messages</A>.
++&quot;logical&quot; file.  See <A HREF="$$LINK(SEC24)">Error and Warning Messages</A>.
+ <BR><BR>
+ <U>Physical files</U> are those files named in the command line given
+ to <CODE>as</CODE>.
+diff -Nur gnuasm/SEC221.hss fix/gnuasm/SEC221.hss
+--- gnuasm/SEC221.hss	2003-09-17 15:19:46.000000000 +0200
++++ fix/gnuasm/SEC221.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -7,34 +7,33 @@
+ target.  Generally these mnemonics are made by substituting <CODE>j</CODE> for
+ <CODE>b</CODE> at the start of a Motorola mnemonic.
+ <BR><BR>
+-The following table summarizes the pseudo-operations.  A <CODE>*</CODE> flags
++The following table summarizes the pseudo-operations for the 68000 processor;
++the 68020 has some more possibilites.
++Note that the 68000 LONG operations are always absolute and require runtime relocation.
++They will not be used if the <B>'--pcrel'</B> option is given.
++A <CODE>(*)</CODE> flags
+ cases that are more fully described after the table:
+-<PRE>          Displacement
+-          + -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+-          |                68020           68000/10, not PC-relative OK
+-Pseudo-Op |BYTE    WORD    LONG            ABSOLUTE LONG JUMP    **
+-          + -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+-     jbsr |bsrs    bsrw    bsrl            jsr
+-      jra |bras    braw    bral            jmp
+-*     jXX |bXXs    bXXw    bXXl            bNXs;jmp
+-*    dbXX | N/A    dbXXw   dbXX;bras;bral  dbXX;bras;jmp
+-     fjXX | N/A    fbXXw   fbXXl            N/A
+-
+-XX: condition
+-NX: negative of condition XX
+-</PRE>
+-<CODE>*</CODE> - see full description below
+-<CODE>**</CODE> - this expansion mode is disallowed by <B>'--pcrel'</B>
++<BR><BR>
++<TABLE BORDER CELLPADDING="5">
++<TR><TD>&nbsp;</TD><TD COLSPAN="6">Displacement</TD></TR>
++<TR><TD>Pseudo-Op</TD><TD>BYTE</TD><TD>WORD</TD><TD>LONG</TD></TR>
++<TR><TD>jbsr</TD><TD>bsr.s</TD><TD>bsr</TD><TD>jsr</TD></TR>
++<TR><TD>jra</TD><TD>bra.s</TD><TD>bra</TD><TD>jmp</TD></TR>
++<TR><TD>j<I>XX</I> <CODE>(*)</CODE></TD><TD>b<I>XX</I>.s</TD><TD>b<I>XX</I></TD><TD>b<I>NX</I>;&nbsp;jmp</TD></TR>
++<TR><TD>db<I>XX</I> <CODE>(*)</CODE></TD><TD>db<I>XX</I></TD><TD>db<I>XX</I></TD><TD>db<I>XX</I>;&nbsp;bra;&nbsp;jmp</TD></TR>
++</TABLE>
++<BR>
++<I>XX</I>: condition<BR>
++<I>NX</I>: negative of condition <I>XX</I>
+ <DL>
+ <DT><B>jbsr</B>
+ <BR><B>jra</B>
+ <DD>These are the simplest jump pseudo-operations; they always map to one
+ particular machine instruction, depending on the displacement to the
+-branch target.  This instruction will be a byte or word branch is that
+-is sufficient.  Otherwise, a long branch will be emitted if available.
+-If no long branches are available and the <B>'--pcrel'</B> option is not
+-given, an absolute long jump will be emitted instead.  If no long
+-branches are available, the <B>'--pcrel'</B> option is given, and a word
++branch target.  This instruction will be a byte or word branch if that
++is sufficient.  Otherwise, if the <B>'--pcrel'</B> option is not
++given, an absolute long jump will be emitted.
++If the <B>'--pcrel'</B> option is given and a word
+ branch cannot reach the target, an error message is generated.
+ <BR><BR>
+ In addition to standard branch operands, <CODE>as</CODE> allows these
+@@ -46,12 +45,15 @@
+ <DD>Here, <CODE>j<I>XX</I></CODE> stands for an entire family of pseudo-operations,
+ where <I>XX</I> is a conditional branch or condition-code test.  The full
+ list of pseudo-ops in this family is:
+-<PRE> jhi   jls   jcc   jcs   jne   jeq   jvc
+- jvs   jpl   jmi   jge   jlt   jgt   jle
+-</PRE>
++<BR><BR>
++<TABLE BORDER CELLPADDING="3">
++<TR><TD>jhi</TD><TD>jls</TD><TD>jcc</TD><TD>jcs</TD><TD>jne</TD><TD>jeq</TD><TD>jvc</TD></TR>
++<TR><TD>jvs</TD><TD>jpl</TD><TD>jmi</TD><TD>jge</TD><TD>jlt</TD><TD>jgt</TD><TD>jle</TD></TR>
++</TABLE>
++<BR>
+ Usually, each of these pseudo-operations expands to a single branch
+-instruction.  However, if a word branch is not sufficient, no long branches
+-are available, and the <B>'--pcrel'</B> option is not given, <CODE>as</CODE>
++instruction.  However, if a word branch is not sufficient
++and the <B>'--pcrel'</B> option is not given, <CODE>as</CODE>
+ issues a longer code fragment in terms of <I>NX</I>, the opposite condition
+ to <I>XX</I>.  For example, under these conditions:
+ <PRE>    j<I>XX</I> foo
+@@ -59,40 +61,25 @@
+ gives
+ <PRE>     b<I>NX</I>s oof
+      jmp foo
+- oof:
++oof:
+ </PRE>
+ <DT><B>db<I>XX</I></B>
+-<DD>The full family of pseudo-operations covered here is
+-<PRE> dbhi   dbls   dbcc   dbcs   dbne   dbeq   dbvc
+- dbvs   dbpl   dbmi   dbge   dblt   dbgt   dble
+- dbf    dbra   dbt
+-</PRE>
++<DD>The full family of pseudo-operations covered here is:
++<BR><BR>
++<TABLE BORDER CELLPADDING="3">
++<TR><TD>dbhi</TD><TD>dbls</TD><TD>dbcc</TD><TD>dbcs</TD><TD>dbne</TD><TD>dbeq</TD><TD>dbvc</TD></TR>
++<TR><TD>dbvs</TD><TD>dbpl</TD><TD>dbmi</TD><TD>dbge</TD><TD>dblt</TD><TD>dbgt</TD><TD>dble</TD></TR>
++<TR><TD>dbf</TD><TD>dbra</TD><TD>dbt</TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
++</TABLE>
++<BR>
+ Motorola <CODE>db<I>XX</I></CODE> instructions allow word displacements only.  When
+ a word displacement is sufficient, each of these pseudo-operations expands
+ to the corresponding Motorola instruction.  When a word displacement is not
+ sufficient and long branches are available, when the source reads
+ <CODE>db<I>XX</I>&nbsp;foo</CODE>, <CODE>as</CODE> emits
+ <PRE>     db<I>XX</I> oo1
+-     bras oo2
+- oo1:bral foo
+- oo2:
+-</PRE>
+-If, however, long branches are not available and the <B>'--pcrel'</B> option is
+-not given, <CODE>as</CODE> emits
+-<PRE>     db<I>XX</I> oo1
+-     bras oo2
+- oo1:jmp foo
+- oo2:
+-</PRE>
+-<DT><B>fj<I>XX</I></B>
+-<DD>This family includes
+-<PRE> fjne   fjeq   fjge   fjlt   fjgt   fjle   fjf
+- fjt    fjgl   fjgle  fjnge  fjngl  fjngle fjngt
+- fjnle  fjnlt  fjoge  fjogl  fjogt  fjole  fjolt
+- fjor   fjseq  fjsf   fjsne  fjst   fjueq  fjuge
+- fjugt  fjule  fjult  fjun
++     bra.s oo2
++oo1: jmp foo
++oo2:
+ </PRE>
+-Each of these pseudo-operations always expands to a single Motorola
+-coprocessor branch instruction, word or long.  All Motorola coprocessor
+-branch instructions allow both word and long displacements.
+ </DL>
+diff -Nur gnuasm/SEC23.hss fix/gnuasm/SEC23.hss
+--- gnuasm/SEC23.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC23.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,7 +2,7 @@
+ Title=Output (Object) File
+ 
+ [Top]
+-Every time you run <CODE>as</CODE> it produces an output file, which is
++Every time you run <CODE>as</CODE>, it produces an output file, which is
+ your assembly language program translated into numbers.  This file
+ is the object file.  Its default name is
+ <CODE>a.out</CODE>.
+diff -Nur gnuasm/SEC24.hss fix/gnuasm/SEC24.hss
+--- gnuasm/SEC24.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC24.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,17 +1,17 @@
+ [Main]
+-Title=Error and Warning Messages
++Title=Assembler Error and Warning Messages
+ 
+ [Top]
+ <CODE>as</CODE> may write warnings and error messages to the standard error
+-file (usually your terminal).  This should not happen when  a compiler
++file (usually your terminal).  This should not happen when a compiler
+ runs <CODE>as</CODE> automatically.  Warnings report an assumption made so
+ that <CODE>as</CODE> could keep assembling a flawed program; errors report a
+ grave problem that stops the assembly.
+ <BR><BR>
+ Warning messages have the format
+-<PRE>file_name:<B>NNN</B>:Warning Message Text
++<PRE>file_name:<I>NNN</I>:Warning Message Text
+ </PRE>
+-(where <B>NNN</B> is a line number).  If a logical file name has been given
++(where <I>NNN</I> is a line number).  If a logical file name has been given
+ (see <CODE><A HREF="$$LINK(SEC90)">.file</A></CODE>) it is used for the filename, otherwise the name of
+ the current input file is used.  If a logical line number was given
+ (see <CODE><A HREF="$$LINK(SEC103)">.line</A></CODE>)
+@@ -21,7 +21,7 @@
+ tradition).
+ <BR><BR>
+ Error messages have the format
+-<PRE>file_name:<B>NNN</B>:FATAL:Error Message Text
++<PRE>file_name:<I>NNN</I>:FATAL:Error Message Text
+ </PRE>
+ The file name and line number are derived as for warning
+ messages.  The actual message text may be rather less explanatory
+diff -Nur gnuasm/SEC25.hss fix/gnuasm/SEC25.hss
+--- gnuasm/SEC25.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC25.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,8 +1,9 @@
+ [Main]
+-Title=Syntax
++Title=GNU Assembler Syntax
++Subsections=SEC26, SEC27, SEC28, SEC29, SEC30, SEC31, SEC214
+ 
+ [Top]
+-This chapter describes the machine-independent syntax allowed in a
+-source file.  <CODE>as</CODE> syntax is similar to what many other
++The machine-independent syntax used by the GNU assembler is similar to what many other
+ assemblers use; it is inspired by the BSD 4.2
+ assembler.
++Motorola-specific features are explained at the end of this chapter.
+diff -Nur gnuasm/SEC28.hss fix/gnuasm/SEC28.hss
+--- gnuasm/SEC28.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC28.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -16,8 +16,7 @@
+ </PRE>
+ Anything from the <U>line comment</U> character to the next newline
+ is considered a comment and is ignored.  The line comment character is
+-<CODE>|</CODE> on the 680x0;
+-see <A HREF="$$INFOLINK(Machine Dependencies)">Machine Dependencies</A>.
++<CODE>|</CODE> on the 680x0 family of processors.  
+ <BR><BR>
+ To be compatible with past assemblers, lines that begin with <CODE>#</CODE> have a
+ special interpretation.  Following the <CODE>#</CODE> should be an absolute
+diff -Nur gnuasm/SEC30.hss fix/gnuasm/SEC30.hss
+--- gnuasm/SEC30.hss	2003-09-17 15:19:22.000000000 +0200
++++ fix/gnuasm/SEC30.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -8,7 +8,8 @@
+ constants are an exception: they do not end statements.
+ <BR><BR>
+ It is an error to end any statement with end-of-file:  the last
+-character of any input file should be a newline.An empty statement is allowed, and may include whitespace.  It is ignored.
++character of any input file should be a newline.
++An empty statement is allowed, and may include whitespace.  It is ignored.
+ <BR><BR>
+ A statement begins with zero or more labels, optionally followed by a
+ key symbol which determines what kind of statement it is.  The key
+@@ -19,7 +20,7 @@
+ assembles into a machine language instruction.
+ A label is a symbol immediately followed by a colon (<CODE>:</CODE>).
+ Whitespace before a label or after a colon is permitted, but you may not
+-have whitespace between a label's symbol and its colon. See <A HREF="$$INFOLINK(Labels)">Labels</A>.
++have whitespace between a label's symbol and its colon. See <A HREF="$$LINK(SEC46)">Labels</A>.
+ <PRE>label:     .directive    followed by something
+ another_label:           # This is an empty statement.
+            instruction   operand_1, operand_2, ...
+diff -Nur gnuasm/SEC31.hss fix/gnuasm/SEC31.hss
+--- gnuasm/SEC31.hss	2003-09-17 15:19:22.000000000 +0200
++++ fix/gnuasm/SEC31.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Constants
++Subsections=SEC32, SEC35
+ 
+ [Top]
+ A constant is a number, written so that its value is known by
+diff -Nur gnuasm/SEC32.hss fix/gnuasm/SEC32.hss
+--- gnuasm/SEC32.hss	2003-09-17 15:19:22.000000000 +0200
++++ fix/gnuasm/SEC32.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Character Constants
++Subsections=SEC33, SEC34
+ 
+ [Top]
+ There are two kinds of character constants.  A <U>character</U> stands
+diff -Nur gnuasm/SEC35.hss fix/gnuasm/SEC35.hss
+--- gnuasm/SEC35.hss	2003-09-17 15:19:22.000000000 +0200
++++ fix/gnuasm/SEC35.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Number Constants
++Subsections=SEC36, SEC37, SEC38
+ 
+ [Top]
+ <CODE>as</CODE> distinguishes three kinds of numbers according to how they
+diff -Nur gnuasm/SEC38.hss fix/gnuasm/SEC38.hss
+--- gnuasm/SEC38.hss	2003-09-17 15:19:22.000000000 +0200
++++ fix/gnuasm/SEC38.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -8,6 +8,11 @@
+ sufficient precision.  This generic floating point number is converted
+ to a particular computer's floating point format (or formats) by a
+ portion of <CODE>as</CODE> specialized to that computer.
++The version of <CODE>as</CODE> used by TIGCC does not use TI's SMAP II BCD
++format; it emits standard IEEE floating point numbers.
++It would be pointless to implement the correct behavior, since the appropriate
++numbers are easy to write, and converting between base 2 and 10 can
++decrease precision.
+ <BR><BR>
+ A flonum is written by writing (in order)
+ <UL>
+diff -Nur gnuasm/SEC39.hss fix/gnuasm/SEC39.hss
+--- gnuasm/SEC39.hss	2003-09-17 15:19:22.000000000 +0200
++++ fix/gnuasm/SEC39.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+-Title=Background
++Title=Sections and Relocation
++Subsections=SEC41, SEC42, SEC43, SEC44
+ 
+ [Top]
+ Roughly, a section is a range of addresses, with no gaps; all data
+@@ -26,6 +27,10 @@
+ of which may be empty.  These are named <U>text</U>, <U>data</U> and
+ <U>bss</U> sections.
+ <BR><BR>
++<CODE>as</CODE> can also generate whatever other named sections you specify
++using the <CODE><A HREF="$$LINK(SEC119)">.section</A></CODE> directive.
++If you do not use any directives that place output in the <CODE>.text</CODE>
++or <CODE>.data</CODE> sections, these sections still exist, but are empty.
+ Within the object file, the text section starts at address <CODE>0</CODE>, the
+ data section follows, and the bss section follows the data section.
+ <BR><BR>
+diff -Nur gnuasm/SEC41.hss fix/gnuasm/SEC41.hss
+--- gnuasm/SEC41.hss	2003-09-17 15:19:22.000000000 +0200
++++ fix/gnuasm/SEC41.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -37,7 +37,7 @@
+ partial program # 1:  |ttttt|dddd|00|
+                       + - --+ - -+--+
+ 
+-                      text   data bss
++                      text  data bss
+                       seg.  seg. seg.
+ 
+                       + - + - + - +
+diff -Nur gnuasm/SEC43.hss fix/gnuasm/SEC43.hss
+--- gnuasm/SEC43.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC43.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -27,7 +27,11 @@
+ <BR><BR>
+ To specify which subsection you want subsequent statements assembled
+ into, use a numeric argument to specify it, in a <CODE>.text
+-<I>expression</I></CODE> or a <CODE>.data&nbsp;<I>expression</I></CODE> statement.
++<I>expression</I></CODE> or a <CODE>.data <I>expression</I></CODE> statement.
++You
++can also use an extra subsection
++argument with arbitrarily named sections: <CODE>.section <I>name</I>,
++<I>expression</I></CODE>.
+ <I>Expression</I> should be an absolute expression.
+ (see <A HREF="$$LINK(SEC60)">Expressions</A>.)  If you just say <CODE>.text</CODE> then <CODE>.text&nbsp;0</CODE>
+ is assumed.  Likewise <CODE>.data</CODE> means <CODE>.data&nbsp;0</CODE>.  Assembly
+@@ -47,6 +51,6 @@
+ assembled into that section.  Because subsections are merely a convenience
+ restricted to <CODE>as</CODE> there is no concept of a subsection location
+ counter.  There is no way to directly manipulate a location counter - but the
+-<CODE>.align</CODE> directive changes it, and any label definition captures its
++<CODE><A HREF="$$LINK(SEC70)">.align</A></CODE> directive changes it, and any label definition captures its
+ current value.  The location counter of the section where statements are being
+ assembled is said to be the <U>active</U> location counter.
+diff -Nur gnuasm/SEC44.hss fix/gnuasm/SEC44.hss
+--- gnuasm/SEC44.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC44.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -8,8 +8,12 @@
+ your program starts running, all the contents of the bss
+ section are zeroed bytes.
+ <BR><BR>
+-The <CODE>.lcomm</CODE> pseudo-op defines a symbol in the bss section; see
+-<CODE><A HREF="$$LINK(SEC101)">.lcomm</A></CODE>.
++The <CODE><A HREF="$$LINK(SEC101)">.lcomm</A></CODE> pseudo-op defines a symbol in the bss section.
+ <BR><BR>
+-The <CODE>.comm</CODE> pseudo-op may be used to declare a common symbol, which is
+-another form of uninitialized symbol; see <CODE><A HREF="$$LINK(SEC76)">.comm</A></CODE>.
++The <CODE><A HREF="$$LINK(SEC76)">.comm</A></CODE> pseudo-op may be used to declare a common symbol, which is
++another form of uninitialized symbol.
++<BR><BR>
++You may switch into the <CODE>.bss</CODE> section and define
++symbols as usual (see <CODE><A HREF="$$LINK(SEC119)">.section</A></CODE>).  You may only assemble
++zero values into the section.  Typically the section will only contain symbol definitions
++and <CODE><A HREF="$$LINK(SEC125)">.skip</A></CODE> directives.
+diff -Nur gnuasm/SEC45.hss fix/gnuasm/SEC45.hss
+--- gnuasm/SEC45.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC45.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,10 +1,11 @@
+ [Main]
+-Title=Symbols
++Title=Assembler Symbols
++Subsections=SEC46, SEC47, SEC48, SEC49, SEC50
+ 
+ [Top]
+ Symbols are a central concept: the programmer uses symbols to name
+ things, the linker uses symbols to link, and the debugger uses symbols
+ to debug.
+ <BR><BR>
+-<I>Warning:</I> <CODE>as</CODE> does not place symbols in the object file in
++Note that <CODE>as</CODE> does not place symbols in the object file in
+ the same order they were declared.  This may break some debuggers.
+diff -Nur gnuasm/SEC47.hss fix/gnuasm/SEC47.hss
+--- gnuasm/SEC47.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC47.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -4,5 +4,5 @@
+ [Top]
+ A symbol can be given an arbitrary value by writing a symbol, followed
+ by an equals sign <CODE>=</CODE>, followed by an expression
+-(see <A HREF="$$LINK(SEC60)">Expressions</A>).  This is equivalent to using the <CODE>.set</CODE>
+-directive.  See <CODE><A HREF="$$LINK(SEC120)">.set</A></CODE>.
++(see <A HREF="$$LINK(SEC60)">Expressions</A>).  This is equivalent to using the <CODE><A HREF="$$LINK(SEC120)">.set</A></CODE>
++directive.
+diff -Nur gnuasm/SEC48.hss fix/gnuasm/SEC48.hss
+--- gnuasm/SEC48.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC48.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,12 +1,10 @@
+ [Main]
+ Title=Symbol Names
++Subsections=SEC48L, SEC48LD
+ 
+ [Top]
+-Symbol names begin with a letter or with one of <CODE>._</CODE>.  On most
+-machines, you can also use <CODE>$</CODE> in symbol names; exceptions are
+-noted in <A HREF="$$INFOLINK(Machine Dependencies)">Machine Dependencies</A>.  That character may be followed by any
+-string of digits, letters, dollar signs (unless otherwise noted in
+-<A HREF="$$INFOLINK(Machine Dependencies)">Machine Dependencies</A>), and underscores.
++Symbol names begin with a letter or with <CODE>.</CODE>, <CODE>_</CODE>, or <CODE>$</CODE>.
++That character may be followed by any string of digits, letters, dollar signs, and underscores.
+ Case of letters is significant: <CODE>foo</CODE> is a different symbol name
+ than <CODE>Foo</CODE>.
+ <BR><BR>
+diff -Nur gnuasm/SEC48L.hss fix/gnuasm/SEC48L.hss
+--- gnuasm/SEC48L.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC48L.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -5,32 +5,32 @@
+ Local symbols help compilers and programmers use names temporarily.
+ They create symbols which are guaranteed to be unique over the entire scope of
+ the input source code and which can be referred to by a simple notation.
+-To define a local symbol, write a label of the form <CODE><B>N</B>:</CODE> (where <B>N</B>
++To define a local symbol, write a label of the form <CODE><I>N</I>:</CODE> (where <I>N</I>
+ represents any positive integer).  To refer to the most recent previous
+-definition of that symbol write <CODE><B>N</B>b</CODE>, using the same number as when
++definition of that symbol write <CODE><I>N</I>b</CODE>, using the same number as when
+ you defined the label.  To refer to the next definition of a local label, write
+-<CODE><B>N</B>f</CODE> -  The <CODE>b</CODE> stands for&quot;backwards&quot; and the <CODE>f</CODE> stands
++<CODE><I>N</I>f</CODE> - The <CODE>b</CODE> stands for &quot;backwards&quot; and the <CODE>f</CODE> stands
+ for &quot;forwards&quot;.
+ <BR><BR>
+ There is no restriction on how you can use these labels, and you can reuse them
+-too.  So that it is possible to repeatedly define the same local label (using
+-the same number <CODE><B>N</B></CODE>), although you can only refer to the most recently
++as well.  So it is possible to repeatedly define the same local label (using
++the same number <I>N</I>), although you can only refer to the most recently
+ defined local label of that number (for a backwards reference) or the next
+ definition of a specific local label for a forward reference.  It is also worth
+-noting that the first 10 local labels (<CODE><B>0:</B></CODE>...<CODE><B>9:</B></CODE>) are
++noting that the first 10 local labels (<CODE>0:</CODE>...<CODE>9:</CODE>) are
+ implemented in a slightly more efficient manner than the others.
+ <BR><BR>
+ Here is an example:
+-<PRE>1:        branch 1f
+-2:        branch 1b
+-1:        branch 2f
+-2:        branch 1b
++<PRE>1:        jra 1f
++2:        jra 1b
++1:        jra 2f
++2:        jra 1b
+ </PRE>
+ Which is the equivalent of:
+-<PRE>label_1:  branch label_3
+-label_2:  branch label_1
+-label_3:  branch label_4
+-label_4:  branch label_3
++<PRE>label_1:  jra label_3
++label_2:  jra label_1
++label_3:  jra label_4
++label_4:  jra label_3
+ </PRE>
+ Local symbol names are only a notational device.  They are immediately
+ transformed into more conventional symbol names before the assembler uses them.
+@@ -39,26 +39,24 @@
+ parts:
+ <DL>
+ <DT><B>L</B>
+-<DD>All local labels begin with <CODE>L</CODE>. Normally both <CODE>as</CODE> and
+-<CODE>ld</CODE> forget symbols that start with <CODE>L</CODE>. These labels are
++<DD>All local labels begin with <CODE>L</CODE>.  Normally both <CODE>as</CODE> and
++<CODE>ld</CODE> forget symbols that start with <CODE>L</CODE>.  These labels are
+ used for symbols you are never intended to see.  If you use the
+-<B>'-L'</B> option then <CODE>as</CODE> retains these symbols in the
+-object file. If you also instruct <CODE>ld</CODE> to retain these symbols,
++<B>'-L'</B> option, <CODE>as</CODE> retains these symbols in the
++object file.  If you also instruct <CODE>ld</CODE> to retain these symbols,
+ you may use them in debugging.
+ <BR><BR>
+-<DT><B><I>number</I></B>
++<DT><B><I>N</I></B>
+ <DD>This is the number that was used in the local label definition.  So if the
+-label is written <CODE>55:</CODE> then the number is <CODE>55</CODE>.
++label is written <CODE>55:</CODE>, the number is <CODE>55</CODE>.
+ <BR><BR>
+-<DT><B>C-B</B>
++<DT><B><CODE>\002</CODE></B>
+ <DD>This unusual character is included so you do not accidentally invent a symbol
+-of the same name.  The character has ASCII value of <CODE>\002</CODE> (control-B).
++of the same name.
+ <BR><BR>
+-<DT><B>ordinal number</B>
++<DT><B><I>ordinal number</I></B>
+ <DD>This is a serial number to keep the labels distinct.  The first definition of
+ <CODE>0:</CODE> gets the number <CODE>1</CODE>.  The 15th definition of <CODE>0:</CODE> gets the
+ number <CODE>15</CODE>, and so on.  Likewise the first definition of <CODE>1:</CODE> gets
+ the number <CODE>1</CODE> and its 15th defintion gets <CODE>15</CODE> as well.
+ </DL>
+-So for example, the first <CODE>1:</CODE> is named <CODE>L1<CODE>C-B</CODE>1</CODE>, the 44th
+-<CODE>3:</CODE> is named <CODE>L3<CODE>C-B</CODE>44</CODE>.
+diff -Nur gnuasm/SEC48LD.hss fix/gnuasm/SEC48LD.hss
+--- gnuasm/SEC48LD.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC48LD.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -11,9 +11,8 @@
+ <BR><BR>
+ Dollar labels are defined in exactly the same way as ordinary local labels,
+ except that instead of being terminated by a colon, they are terminated by a
+-dollar sign.  e.g. <CODE><B>55$</B></CODE>.
++dollar sign (for example, <CODE>55$</CODE>).
+ <BR><BR>
+ They can also be distinguished from ordinary local labels by their transformed
+ name which uses ASCII character <CODE>\001</CODE> (control-A) as the magic character
+-to distinguish them from ordinary labels.  Thus the 5th defintion of <CODE>6$</CODE>
+-is named <CODE>L6<CODE>C-A</CODE>5</CODE>.
++to distinguish them from ordinary labels.
+diff -Nur gnuasm/SEC50.hss fix/gnuasm/SEC50.hss
+--- gnuasm/SEC50.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC50.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Symbol Attributes
++Subsections=SEC51, SEC52, SEC56
+ 
+ [Top]
+ Every symbol has, as well as its name, the attributes &quot;Value&quot; and
+diff -Nur gnuasm/SEC51.hss fix/gnuasm/SEC51.hss
+--- gnuasm/SEC51.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC51.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -14,7 +14,7 @@
+ 0 then the symbol is not defined in this assembler source file, and
+ <CODE>ld</CODE> tries to determine its value from other files linked into the
+ same program.  You make this kind of symbol simply by mentioning a symbol
+-name without defining it.  A non-zero value represents a <CODE>.comm</CODE>
++name without defining it.  A non-zero value represents a <CODE><A HREF="$$LINK(SEC76)">.comm</A></CODE>
+ common declaration.  The value is how much common storage to reserve, in
+ bytes (addresses).  The symbol refers to the first address of the
+ allocated storage.
+diff -Nur gnuasm/SEC56.hss fix/gnuasm/SEC56.hss
+--- gnuasm/SEC56.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC56.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,7 +1,8 @@
+ [Main]
+ Title=Symbol Attributes for COFF
++Subsections=SEC57, SEC58
+ 
+ [Top]
+ The COFF format supports a multitude of auxiliary symbol attributes;
+-like the primary symbol attributes, they are set between <CODE>.def</CODE> and
+-<CODE>.endef</CODE> directives.
++like the primary symbol attributes, they are set between <CODE><A HREF="$$LINK(SEC78)">.def</A></CODE> and
++<CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> directives.
+diff -Nur gnuasm/SEC57.hss fix/gnuasm/SEC57.hss
+--- gnuasm/SEC57.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC57.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,5 +2,5 @@
+ Title=Primary Attributes
+ 
+ [Top]
+-The symbol name is set with <CODE>.def</CODE>; the value and type,
+-respectively, with <CODE>.val</CODE> and <CODE>.type</CODE>.
++The symbol name is set with <CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>; the value and type,
++respectively, with <CODE><A HREF="$$LINK(SEC135)">.val</A></CODE> and <CODE><A HREF="$$LINK(SEC133)">.type</A></CODE>.
+diff -Nur gnuasm/SEC58.hss fix/gnuasm/SEC58.hss
+--- gnuasm/SEC58.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC58.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,6 +2,6 @@
+ Title=Auxiliary Attributes
+ 
+ [Top]
+-The <CODE>as</CODE> directives <CODE>.dim</CODE>, <CODE>.line</CODE>, <CODE>.scl</CODE>,
+-<CODE>.size</CODE>, and <CODE>.tag</CODE> can generate auxiliary symbol table
++The <CODE>as</CODE> directives <CODE><A HREF="$$LINK(SEC80)">.dim</A></CODE>, <CODE><A HREF="$$LINK(SEC103)">.line</A></CODE>, <CODE><A HREF="$$LINK(SEC118)">.scl</A></CODE>,
++<CODE><A HREF="$$LINK(SEC123)">.size</A></CODE>, and <CODE><A HREF="$$LINK(SEC130)">.tag</A></CODE> can generate auxiliary symbol table
+ information for COFF.
+diff -Nur gnuasm/SEC60.hss fix/gnuasm/SEC60.hss
+--- gnuasm/SEC60.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC60.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+-Title=Expressions
++Title=Assembler Expressions
++Subsections=SEC61, SEC62
+ 
+ [Top]
+ An <U>expression</U> specifies an address or numeric value.
+diff -Nur gnuasm/SEC62.hss fix/gnuasm/SEC62.hss
+--- gnuasm/SEC62.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC62.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Integer Expressions
++Subsections=SEC63, SEC64
+ 
+ [Top]
+ An <U>integer expression</U> is one or more <I>arguments</I> delimited
+diff -Nur gnuasm/SEC63.hss fix/gnuasm/SEC63.hss
+--- gnuasm/SEC63.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC63.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -15,8 +15,7 @@
+ integer.
+ <BR><BR>
+ Numbers are usually integers.
+-<BR><BR>
+-A number can be a flonum or bignum.  In this case, you are warned
++In principle, a number can be a flonum or bignum.  In this case, you are warned
+ that only the low order 32 bits are used, and <CODE>as</CODE> pretends
+ these 32 bits are an integer.  You may write integer-manipulating
+ instructions that act on exotic constants, compatible with other
+diff -Nur gnuasm/SEC64.hss fix/gnuasm/SEC64.hss
+--- gnuasm/SEC64.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC64.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Operators
++Subsections=SEC65, SEC66
+ 
+ [Top]
+ <U>Operators</U> are arithmetic functions, like <CODE>+</CODE> or <CODE>%</CODE>.  Prefix
+diff -Nur gnuasm/SEC65.hss fix/gnuasm/SEC65.hss
+--- gnuasm/SEC65.hss	2003-09-17 15:19:24.000000000 +0200
++++ fix/gnuasm/SEC65.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Prefix Operator
++Title=Prefix Operators
+ 
+ [Top]
+ <CODE>as</CODE> has the following <U>prefix operators</U>.  They each take
+@@ -8,5 +8,5 @@
+ <DT><B>-</B>
+ <DD><U>Negation</U>.  Two's complement negation.
+ <DT><B>~</B>
+-<DD><U>Complementation</U>.  Bitwise not.
++<DD><U>Complementation</U>.  Bitwise NOT.
+ </DL>
+diff -Nur gnuasm/SEC66.hss fix/gnuasm/SEC66.hss
+--- gnuasm/SEC66.hss	2003-09-17 15:19:26.000000000 +0200
++++ fix/gnuasm/SEC66.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -4,17 +4,18 @@
+ [Top]
+ <U>Infix operators</U> take two arguments, one on either side.  Operators
+ have precedence, but operations with equal precedence are performed left
+-to right.  Apart from <CODE>+</CODE> or <B>'-'</B>, both arguments must be
++to right.  Apart from <CODE>+</CODE> or <CODE>-</CODE>, both arguments must be
+ absolute, and the result is absolute.
+ <OL>
+ <LI>
+ Highest Precedence
++<BR><BR>
+ <DL>
+ <DT><B>*</B>
+ <DD><U>Multiplication</U>.
+ <BR><BR>
+ <DT><B>/</B>
+-<DD><U>Division</U>.  Truncation is the same as the C operator <CODE>/</CODE>
++<DD><U>Division</U>.  Truncation is the same as the C operator <CODE>/</CODE>.
+ <BR><BR>
+ <DT><B>%</B>
+ <DD><U>Remainder</U>.
+@@ -27,25 +28,29 @@
+ <BR><B>&gt;&gt;</B>
+ <DD><U>Shift Right</U>.  Same as the C operator <CODE>&gt;&gt;</CODE>.
+ </DL>
++<BR>
+ </LI>
+ <LI>
+ Intermediate precedence
++<BR><BR>
+ <DL>
+ <DT><B>|</B>
+-<DD><U>Bitwise Inclusive Or</U>.
++<DD><U>Bitwise Inclusive OR</U>.
+ <BR><BR>
+ <DT><B>&amp;</B>
+-<DD><U>Bitwise And</U>.
++<DD><U>Bitwise AND</U>.
+ <BR><BR>
+ <DT><B>^</B>
+-<DD><U>Bitwise Exclusive Or</U>.
++<DD><U>Bitwise Exclusive OR</U>.
+ <BR><BR>
+ <DT><B>!</B>
+-<DD><U>Bitwise Or Not</U>.
++<DD><U>Bitwise OR NOT</U>.
+ </DL>
++<BR>
+ </LI>
+ <LI>
+ Low Precedence
++<BR><BR>
+ <DL>
+ <DT><B>+</B>
+ <DD><U>Addition</U>.  If either argument is absolute, the result has the section of
+@@ -59,36 +64,36 @@
+ You may not subtract arguments from different sections.
+ <BR><BR>
+ <DT><B>==</B>
+-<DD><U>Is Equal To</U>
++<DD><U>Is Equal To</U>.
+ <DT><B>&lt;&gt;</B>
+-<DD><U>Is Not Equal To</U>
++<DD><U>Is Not Equal To</U>.
+ <DT><B>&lt;</B>
+-<DD><U>Is Less Than</U>
++<DD><U>Is Less Than</U>.
+ <DT><B>&gt;</B>
+-<DD><U>Is Greater Than</U>
++<DD><U>Is Greater Than</U>.
+ <DT><B>&gt;=</B>
+-<DD><U>Is Greater Than Or Equal To</U>
++<DD><U>Is Greater Than Or Equal To</U>.
+ <DT><B>&lt;=</B>
+-<DD><U>Is Less Than Or Equal To</U>
++<DD><U>Is Less Than Or Equal To</U>.
+ <BR><BR>
+ The comparison operators can be used as infix operators.  A true results has a
+ value of -1 whereas a false result has a value of 0.  Note, these operators
+ perform signed comparisons.
+ </DL>
++<BR>
+ </LI>
+ <LI>
+-Lowest Precedence
+ <DL>
+ <DT><B>&amp;&amp;</B>
+-<DD><U>Logical And</U>.
++<DD><U>Logical AND</U>.
+ <BR><BR>
+ <DT><B>||</B>
+-<DD><U>Logical Or</U>.
++<DD><U>Logical OR</U>.
+ <BR><BR>
+ These two logical operations can be used to combine the results of sub
+ expressions.  Note, unlike the comparison operators a true result returns a
+-value of 1 but a false results does still return 0.  Also note that the logical
+-or operator has a slightly lower precedence than logical and.
++value of 1.  Also note that the logical
++OR operator has a slightly lower precedence than logical AND.
+ </DL>
+ </LI>
+ </OL>
+diff -Nur gnuasm/SEC67.hss fix/gnuasm/SEC67.hss
+--- gnuasm/SEC67.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC67.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,9 +1,10 @@
+ [Main]
+ Title=Assembler Directives
++Subsections=SEC68, SEC70, SEC72, SEC73, SEC74, SEC75, SEC76, SEC77, SEC78, SEC80, SEC81, SEC82, SEC83, SEC83b, SEC83IF, SEC84, SEC84FUNC, SEC84IF, SEC84M, SEC84R, SEC86, SEC87, SEC88, SEC70E, SEC85, SEC89, SEC89a, SEC90, SEC91, SEC92, SEC92a, SEC93, SEC94, SEC95, SEC96, SEC97, SEC97B, SEC98, SEC99, SEC100, SEC101, SEC102, SEC103, SEC105, SEC107, SEC108, SEC109, SEC106, SEC110, SEC111, SEC112, SEC113, SEC113a, SEC114, SEC114a, SEC115, SEC116, SEC117, SEC118, SEC119, SEC120, SEC121, SEC122, SEC123, SEC124, SEC125, SEC126, SEC127, SEC127N, SEC127S, SEC128, SEC128a, SEC130, SEC131, SEC132, SEC133, SEC134, SEC135, SEC135a, SEC136
+ 
+ [Top]
+ All assembler directives have names that begin with a period (<CODE>.</CODE>).
+ The rest of the name is letters, usually in lower case.
+ <BR><BR>
+-This chapter discusses directives that are available regardless of the
++This chapter mostly discusses directives that are available regardless of the
+ target machine configuration for the GNU assembler.
+diff -Nur gnuasm/SEC68.hss fix/gnuasm/SEC68.hss
+--- gnuasm/SEC68.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC68.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -5,5 +5,7 @@
+ This directive stops the assembly immediately.  It is for
+ compatibility with other assemblers.  The original idea was that the
+ assembly language source would be piped into the assembler.  If the sender
+-of the source quit, it could use this directive tells <CODE>as</CODE> to
++of the source quit, it could use this directive to tell <CODE>as</CODE> to
+ quit also.  One day <CODE>.abort</CODE> will not be supported.
++<BR><BR>
++<CODE>.ABORT</CODE> is accepted as an alternate spelling of <CODE>.abort</CODE>.
+diff -Nur gnuasm/SEC69.hss fix/gnuasm/SEC69.hss
+--- gnuasm/SEC69.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC69.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-[Main]
+-Title=.ABORT
+-
+-[Top]
+-When producing COFF output, <CODE>as</CODE> accepts this directive as a
+-synonym for <CODE>.abort</CODE>.
+diff -Nur gnuasm/SEC70.hss fix/gnuasm/SEC70.hss
+--- gnuasm/SEC70.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC70.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,17 +2,19 @@
+ Title=.align
+ 
+ [Top]
++Syntax: <B>.align <I>alignment</I>[, [<I>fill</I>][, <I>max</I>]]</B>
++<BR><BR>
+ Pad the location counter (in the current subsection) to a particular storage
+-boundary.  The first expression (which must be absolute) is the alignment
++boundary.  <I>alignment</I> (which must be absolute) is the alignment
+ required, as described below.
+ <BR><BR>
+-The second expression (also absolute) gives the fill value to be stored in the
++<I>fill</I> (also absolute) gives the fill value to be stored in the
+ padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
+ padding bytes are normally zero.  However, on some systems, if the section is
+ marked as containing code and the fill value is omitted, the space is filled
+-with no-op instructions.
++with no-op instructions (I didn't checked whether this is the case in TIGCC).
+ <BR><BR>
+-The third expression is also absolute, and is also optional.  If it is present,
++<I>max</I> is also absolute, and is also optional.  If it is present,
+ it is the maximum number of bytes that should be skipped by this alignment
+ directive.  If doing the alignment would require skipping more bytes than the
+ specified maximum, then the alignment is not done at all.  You can omit the
+@@ -36,7 +38,7 @@
+ multiple of 8, no change is needed.
+ <BR><BR>
+ This inconsistency is due to the different behaviors of the various
+-native assemblers for these systems which GAS must emulate.
+-GAS also provides <CODE>.balign</CODE> and <CODE>.p2align</CODE> directives,
+-described later, which have a consistent behavior across all
+-architectures (but are specific to GAS).
++native assemblers for these systems which <CODE>as</CODE> must emulate.
++<CODE>as</CODE> also provides <CODE><A HREF="$$LINK(SEC74)">.balign</A></CODE> and <CODE><A HREF="$$LINK(SEC113)">.p2align</A></CODE> directives,
++which have a consistent behavior across all
++architectures (but are specific to <CODE>as</CODE>).
+diff -Nur gnuasm/SEC70E.hss fix/gnuasm/SEC70E.hss
+--- gnuasm/SEC70E.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/SEC70E.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -0,0 +1,7 @@
++[Main]
++Title=.even
++
++[Top]
++This directive is a special case of the <CODE><A HREF="$$LINK(SEC70)">.align</A></CODE> directive; it
++aligns the output to an even byte boundary.  It is 680x0-specific;
++introduced in order to be compatible with the Sun assembler.
+diff -Nur gnuasm/SEC72.hss fix/gnuasm/SEC72.hss
+--- gnuasm/SEC72.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC72.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,7 +1,10 @@
+ [Main]
+ Title=.ascii
++See Also=SEC73: .asciz, SEC128: .string
+ 
+ [Top]
++Syntax: <B>.ascii <I>strings</I></B>
++<BR><BR>
+ <CODE>.ascii</CODE> expects zero or more string literals (see <A HREF="$$LINK(SEC33)">Strings</A>)
+ separated by commas.  It assembles each string (with no automatic
+ trailing zero byte) into consecutive addresses.
+diff -Nur gnuasm/SEC73.hss fix/gnuasm/SEC73.hss
+--- gnuasm/SEC73.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC73.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,6 +1,9 @@
+ [Main]
+ Title=.asciz
++See Also=SEC72: .ascii, SEC128: .string
+ 
+ [Top]
+-<CODE>.asciz</CODE> is just like <CODE>.ascii</CODE>, but each string is followed by
++Syntax: <B>.asciz <I>strings</I></B>
++<BR><BR>
++<CODE>.asciz</CODE> is just like <CODE><A HREF="$$LINK(SEC72)">.ascii</A></CODE>, but each string is followed by
+ a zero byte.  The &quot;z&quot; in <CODE>.asciz</CODE> stands for &quot;zero&quot;.
+diff -Nur gnuasm/SEC74.hss fix/gnuasm/SEC74.hss
+--- gnuasm/SEC74.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC74.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,20 +1,23 @@
+ [Main]
+ Title=.balign[wl]
++See Also=SEC113: .p2align
+ 
+ [Top]
++Syntax: <B>.balign[wl] <I>alignment</I>[, [<I>fill</I>][, <I>max</I>]]</B>
++<BR><BR>
+ Pad the location counter (in the current subsection) to a particular
+-storage boundary.  The first expression (which must be absolute) is the
++storage boundary.  <I>alignment</I> (which must be absolute) is the
+ alignment request in bytes.  For example <CODE>.balign&nbsp;8</CODE> advances
+ the location counter until it is a multiple of 8.  If the location counter
+ is already a multiple of 8, no change is needed.
+ <BR><BR>
+-The second expression (also absolute) gives the fill value to be stored in the
++<I>fill</I> (also absolute) gives the fill value to be stored in the
+ padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
+ padding bytes are normally zero.  However, on some systems, if the section is
+ marked as containing code and the fill value is omitted, the space is filled
+-with no-op instructions.
++with no-op instructions (I didn't checked whether this is the case in TIGCC).
+ <BR><BR>
+-The third expression is also absolute, and is also optional.  If it is present,
++<I>max</I> is also absolute, and is also optional.  If it is present,
+ it is the maximum number of bytes that should be skipped by this alignment
+ directive.  If doing the alignment would require skipping more bytes than the
+ specified maximum, then the alignment is not done at all.  You can omit the
+diff -Nur gnuasm/SEC75.hss fix/gnuasm/SEC75.hss
+--- gnuasm/SEC75.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC75.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,5 +2,7 @@
+ Title=.byte
+ 
+ [Top]
++Syntax: <B>.byte <I>expressions</I></B>
++<BR><BR>
+ <CODE>.byte</CODE> expects zero or more expressions, separated by commas.
+ Each expression is assembled into the next byte.
+diff -Nur gnuasm/SEC76.hss fix/gnuasm/SEC76.hss
+--- gnuasm/SEC76.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC76.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,11 +1,14 @@
+ [Main]
+ Title=.comm
++See Also=SEC101: .lcomm
+ 
+ [Top]
++Syntax: <B>.comm <I>symbol</I>, <I>length</I></B>
++<BR><BR>
+ <CODE>.comm</CODE> declares a common symbol named <I>symbol</I>.  When linking, a
+ common symbol in one object file may be merged with a defined or common symbol
+ of the same name in another object file.  If <CODE>ld</CODE> does not see a
+-definition for the symbol--just one or more common symbols--then it will
++definition for the symbol - just one or more common symbols - then it will
+ allocate <I>length</I> bytes of uninitialized memory.  <I>length</I> must be an
+ absolute expression.  If <CODE>ld</CODE> sees multiple common symbols with
+ the same name, and they do not all have the same size, it will allocate space
+diff -Nur gnuasm/SEC77.hss fix/gnuasm/SEC77.hss
+--- gnuasm/SEC77.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC77.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,8 +1,15 @@
+ [Main]
+ Title=.data
++See Also=SEC131: .text
+ 
+ [Top]
++Syntax: <B>.data [<I>subsection</I>]</B>
++<BR><BR>
+ <CODE>.data</CODE> tells <CODE>as</CODE> to assemble the following statements onto the
+ end of the data subsection numbered <I>subsection</I> (which is an
+ absolute expression).  If <I>subsection</I> is omitted, it defaults
+ to zero.
++<BR><BR>
++In order to be compatible with the Sun assembler, the 680x0 assembler
++understands the directives <CODE>.data1</CODE> and <CODE>.data2</CODE>
++as alternatives to <CODE>.data&nbsp;1</CODE> and <CODE>.data&nbsp;2</CODE>.
+diff -Nur gnuasm/SEC78.hss fix/gnuasm/SEC78.hss
+--- gnuasm/SEC78.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC78.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,5 +2,7 @@
+ Title=.def
+ 
+ [Top]
++Syntax: <B>.def <I>name</I></B>
++<BR><BR>
+ Begin defining debugging information for a symbol <I>name</I>; the
+-definition extends until the <CODE>.endef</CODE> directive is encountered.
++definition extends until the <CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> directive is encountered.
+diff -Nur gnuasm/SEC80.hss fix/gnuasm/SEC80.hss
+--- gnuasm/SEC80.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC80.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -4,4 +4,4 @@
+ [Top]
+ This directive is generated by compilers to include auxiliary debugging
+ information in the symbol table.  It is only permitted inside
+-<CODE>.def</CODE>/<CODE>.endef</CODE> pairs.
++<CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>/<CODE><A HREF="$$LINK(SEC84)">.endef</A></CODE> pairs.
+diff -Nur gnuasm/SEC81.hss fix/gnuasm/SEC81.hss
+--- gnuasm/SEC81.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC81.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,6 +1,9 @@
+ [Main]
+ Title=.double
++See Also=SEC122: .single
+ 
+ [Top]
+-<CODE>.double</CODE> expects zero or more flonums, separated by commas.  It
++Syntax: <B>.double <I>flonums</I></B>
++<BR><BR>
++<CODE>.double</CODE> expects zero or more <A HREF="$$LINK(SEC38)">flonums</A>, separated by commas.  It
+ assembles floating point numbers.
+diff -Nur gnuasm/SEC83IF.hss fix/gnuasm/SEC83IF.hss
+--- gnuasm/SEC83IF.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC83IF.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -4,4 +4,4 @@
+ [Top]
+ <CODE>.elseif</CODE> is part of the <CODE>as</CODE> support for conditional
+ assembly; see <CODE><A HREF="$$LINK(SEC96)">.if</A></CODE>.  It is shorthand for beginning a new
+-<CODE>.if</CODE> block that would otherwise fill the entire <CODE>.else</CODE> section.
++<CODE><A HREF="$$LINK(SEC96)">.if</A></CODE> block that would otherwise fill the entire <CODE>.else</CODE> section.
+diff -Nur gnuasm/SEC84.hss fix/gnuasm/SEC84.hss
+--- gnuasm/SEC84.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC84.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -3,4 +3,4 @@
+ 
+ [Top]
+ This directive flags the end of a symbol definition begun with
+-<CODE>.def</CODE>.
++<CODE><A HREF="$$LINK(SEC78)">.def</A></CODE>.
+diff -Nur gnuasm/SEC84FUNC.hss fix/gnuasm/SEC84FUNC.hss
+--- gnuasm/SEC84FUNC.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC84FUNC.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,4 +2,4 @@
+ Title=.endfunc
+ 
+ [Top]
+-<CODE>.endfunc</CODE> marks the end of a function specified with <CODE>.func</CODE>.
++<CODE>.endfunc</CODE> marks the end of a function specified with <CODE><A HREF="$$LINK(SEC92a)">.func</A></CODE>.
+diff -Nur gnuasm/SEC84M.hss fix/gnuasm/SEC84M.hss
+--- gnuasm/SEC84M.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/SEC84M.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -0,0 +1,5 @@
++[Main]
++Title=.endm
++
++[Top]
++<CODE>.endm</CODE> terminates a <CODE><A HREF="$$LINK(SEC109)">.macro</A></CODE> directive.
+diff -Nur gnuasm/SEC84R.hss fix/gnuasm/SEC84R.hss
+--- gnuasm/SEC84R.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/SEC84R.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -0,0 +1,6 @@
++[Main]
++Title=.endr
++
++[Top]
++<CODE>.endr</CODE> can terminate either an <CODE><A HREF="$$LINK(SEC99)">.irp</A></CODE>
++or an <CODE><A HREF="$$LINK(SEC100)">.irpc</A></CODE> directive.
+diff -Nur gnuasm/SEC85.hss fix/gnuasm/SEC85.hss
+--- gnuasm/SEC85.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC85.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,4 +2,4 @@
+ Title=.exitm
+ 
+ [Top]
+-Exit early from the current macro definition.  See <A HREF="$$INFOLINK(Macro)">Macro</A>.
++Exit early from the current macro definition.  See <CODE><A HREF="$$LINK(SEC109)">.macro</A></CODE>.
+diff -Nur gnuasm/SEC86.hss fix/gnuasm/SEC86.hss
+--- gnuasm/SEC86.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC86.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,6 +1,9 @@
+ [Main]
+ Title=.equ
++See Also=SEC87: .equiv
+ 
+ [Top]
++Syntax: <B>.equ <I>symbol</I>, <I>expression</I></B>
++<BR><BR>
+ This directive sets the value of <I>symbol</I> to <I>expression</I>.
+-It is synonymous with <CODE>.set</CODE>; see <CODE><A HREF="$$LINK(SEC120)">.set</A></CODE>.
++It is synonymous with <CODE><A HREF="$$LINK(SEC120)">.set</A></CODE>.
+diff -Nur gnuasm/SEC87.hss fix/gnuasm/SEC87.hss
+--- gnuasm/SEC87.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC87.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,7 +2,9 @@
+ Title=.equiv
+ 
+ [Top]
+-The <CODE>.equiv</CODE> directive is like <CODE>.equ</CODE> and <CODE>.set</CODE>, except that
++Syntax: <B>.equiv <I>symbol</I>, <I>expression</I></B>
++<BR><BR>
++The <CODE>.equiv</CODE> directive is like <CODE><A HREF="$$LINK(SEC86)">.equ</A></CODE> and <CODE><A HREF="$$LINK(SEC120)">.set</A></CODE>, except that
+ the assembler will signal an error if <I>symbol</I> is already defined.  Note a
+ symbol which has been referenced but not actually defined is considered to be
+ undefined.
+diff -Nur gnuasm/SEC9.hss fix/gnuasm/SEC9.hss
+--- gnuasm/SEC9.hss	2003-09-17 15:19:20.000000000 +0200
++++ fix/gnuasm/SEC9.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+-Title=Command Line
++Title=GNU Assembler Command Line
++Subsections=SEC10, SEC11
+ 
+ [Top]
+ After the program name <CODE>as</CODE>, the command line may contain
+diff -Nur gnuasm/SEC90.hss fix/gnuasm/SEC90.hss
+--- gnuasm/SEC90.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC90.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,9 +2,9 @@
+ Title=.file
+ 
+ [Top]
++Syntax: <B>.file <I>string</I></B>
++<BR><BR>
+ <CODE>.file</CODE> tells <CODE>as</CODE> that we are about to start a new logical
+ file.  <I>string</I> is the new file name.  In general, the filename is
+-recognized whether or not it is surrounded by quotes <CODE>&quot;</CODE>; but if you wish
+-to specify an empty file name, you must give the quotes--<CODE>&quot;&quot;</CODE>.  This
+-statement may go away in future: it is only recognized to be compatible with
+-old <CODE>as</CODE> programs.
++recognized whether or not it is surrounded by quotes (<CODE>&quot;</CODE>); but if you wish
++to specify an empty file name, you must give the quotes <CODE>&quot;&quot;</CODE>.
+diff -Nur gnuasm/SEC91.hss fix/gnuasm/SEC91.hss
+--- gnuasm/SEC91.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC91.hss	2003-09-17 14:49:52.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=.fill
+ 
+ [Top]
++Syntax: <B>.fill <I>repeat</I>[, <I>size</I>[, <I>value</I>]]</B>
++<BR><BR>
+ <I>repeat</I>, <I>size</I> and <I>value</I> are absolute expressions.
+ This emits <I>repeat</I> copies of <I>size</I> bytes.  <I>Repeat</I>
+ may be zero or more.  <I>Size</I> may be zero or more, but if it is
+@@ -9,7 +11,8 @@
+ other people's assemblers.  The contents of each <I>repeat</I> bytes
+ is taken from an 8-byte number.  The highest order 4 bytes are
+ zero.  The lowest order 4 bytes are <I>value</I> rendered in the
+-byte-order of an integer on the computer <CODE>as</CODE> is assembling for.
++byte-order of an integer on the computer <CODE>as</CODE> is assembling for
++(big-endian for 680x0).
+ Each <I>size</I> bytes in a repetition is taken from the lowest order
+ <I>size</I> bytes of this number.  Again, this bizarre behavior is
+ compatible with other people's assemblers.
+diff -Nur gnuasm/SEC92.hss fix/gnuasm/SEC92.hss
+--- gnuasm/SEC92.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC92.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -2,5 +2,7 @@
+ Title=.float
+ 
+ [Top]
+-This directive assembles zero or more flonums, separated by commas.  It
+-has the same effect as <CODE>.single</CODE>.
++Syntax: <B>.float <I>flonums</I></B>
++<BR><BR>
++This directive assembles zero or more <A HREF="$$LINK(SEC38)">flonums</A>, separated by commas.  It
++has the same effect as <CODE><A HREF="$$LINK(SEC122)">.single</A></CODE>.
+diff -Nur gnuasm/SEC92a.hss fix/gnuasm/SEC92a.hss
+--- gnuasm/SEC92a.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC92a.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -2,11 +2,12 @@
+ Title=.func
+ 
+ [Top]
++Syntax: <B>.func <I>name</I>[, <I>label</I>]</B>
++<BR><BR>
+ <CODE>.func</CODE> emits debugging information to denote function <I>name</I>, and
+ is ignored unless the file is assembled with debugging enabled.
+ Only <B>'--gstabs'</B> is currently supported.
+-<I>label</I> is the entry point of the function and if omitted <I>name</I>
+-prepended with the <CODE>leading&nbsp;char</CODE> is used.
+-<CODE>leading&nbsp;char</CODE> is usually <CODE>_</CODE> or nothing, depending on the target.
++<I>label</I> is the entry point of the function, and if omitted, <I>name</I>
++prepended with the leading character is used (no leading character in TIGCC).
+ All functions are currently defined to have <CODE>void</CODE> return type.
+-The function must be terminated with <CODE>.endfunc</CODE>.
++The function must be terminated with <CODE><A HREF="$$LINK(SEC84FUNC)">.endfunc</A></CODE>.
+diff -Nur gnuasm/SEC93.hss fix/gnuasm/SEC93.hss
+--- gnuasm/SEC93.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC93.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -1,7 +1,10 @@
+ [Main]
+ Title=.global
++Index=.globl
+ 
+ [Top]
++Syntax: <B>.global <I>symbol</I></B>
++<BR><BR>
+ <CODE>.global</CODE> makes the symbol visible to <CODE>ld</CODE>.  If you define
+ <I>symbol</I> in your partial program, its value is made available to
+ other partial programs that are linked with it.  Otherwise,
+diff -Nur gnuasm/SEC94.hss fix/gnuasm/SEC94.hss
+--- gnuasm/SEC94.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC94.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -2,7 +2,9 @@
+ Title=.hword
+ 
+ [Top]
++Syntax: <B>.hword <I>expressions</I></B>
++<BR><BR>
+ This expects zero or more <I>expressions</I>, and emits
+ a 16 bit number for each.
+ <BR><BR>
+-This directive is a synonym for both <CODE>.short</CODE> and <CODE>.word</CODE>.
++On this target, this directive is a synonym for both <CODE><A HREF="$$LINK(SEC121)">.short</A></CODE> and <CODE><A HREF="$$LINK(SEC136)">.word</A></CODE>.
+diff -Nur gnuasm/SEC96.hss fix/gnuasm/SEC96.hss
+--- gnuasm/SEC96.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC96.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -1,15 +1,18 @@
+ [Main]
+ Title=.if
++Index=.ifdef, .ifc, .ifeq, .ifeqs, .ifge, .ifgt, .ifle, .iflt, .ifnc, .ifndef, .ifne, .ifnes
+ 
+ [Top]
++Syntax: <B>.if <I>absolute expression</I></B>
++<BR><BR>
+ <CODE>.if</CODE> marks the beginning of a section of code which is only
+ considered part of the source program being assembled if the argument
+ (which must be an <I>absolute expression</I>) is non-zero.  The end of
+-the conditional section of code must be marked by <CODE>.endif</CODE>
+-(see <CODE><A HREF="$$LINK(SEC84IF)">.endif</A></CODE>); optionally, you may include code for the
+-alternative condition, flagged by <CODE>.else</CODE> (see <CODE><A HREF="$$LINK(SEC83)">.else</A></CODE>).
+-If you have several conditions to check, <CODE>.elseif</CODE> may be used to avoid
+-nesting blocks if/else within each subsequent <CODE>.else</CODE> block.
++the conditional section of code must be marked by <CODE><A HREF="$$LINK(SEC84IF)">.endif</A></CODE>;
++optionally, you may include code for the
++alternative condition, flagged by <CODE><A HREF="$$LINK(SEC83)">.else</A></CODE>.
++If you have several conditions to check, <CODE><A HREF="$$LINK(SEC83IF)">.elseif</A></CODE> may be used to avoid
++nesting blocks if/else within each subsequent <CODE><A HREF="$$LINK(SEC83)">.else</A></CODE> block.
+ <BR><BR>
+ The following variants of <CODE>.if</CODE> are also supported:
+ <DL>
+@@ -18,7 +21,7 @@
+ has been defined.  Note a symbol which has been referenced but not yet defined
+ is considered to be undefined.
+ <BR><BR>
+-<DT><B>.ifc <I>string1</I>,<I>string2</I></B>
++<DT><B>.ifc <I>string1</I>, <I>string2</I></B>
+ <DD>Assembles the following section of code if the two strings are the same.  The
+ strings may be optionally quoted with single quotes.  If they are not quoted,
+ the first string stops at the first comma, and the second string stops at the
+@@ -28,7 +31,7 @@
+ <DT><B>.ifeq <I>absolute expression</I></B>
+ <DD>Assembles the following section of code if the argument is zero.
+ <BR><BR>
+-<DT><B>.ifeqs <I>string1</I>,<I>string2</I></B>
++<DT><B>.ifeqs <I>string1</I>, <I>string2</I></B>
+ <DD>Another form of <CODE>.ifc</CODE>.  The strings must be quoted using double quotes.
+ <BR><BR>
+ <DT><B>.ifge <I>absolute expression</I></B>
+@@ -45,7 +48,7 @@
+ <DT><B>.iflt <I>absolute expression</I></B>
+ <DD>Assembles the following section of code if the argument is less than zero.
+ <BR><BR>
+-<DT><B>.ifnc <I>string1</I>,<I>string2</I>.</B>
++<DT><B>.ifnc <I>string1</I>, <I>string2</I>.</B>
+ <DD>Like <CODE>.ifc</CODE>, but the sense of the test is reversed: this assembles the
+ following section of code if the two strings are not the same.
+ <BR><BR>
+@@ -59,7 +62,7 @@
+ <DD>Assembles the following section of code if the argument is not equal to zero
+ (in other words, this is equivalent to <CODE>.if</CODE>).
+ <BR><BR>
+-<DT><B>.ifnes <I>string1</I>,<I>string2</I></B>
++<DT><B>.ifnes <I>string1</I>, <I>string2</I></B>
+ <DD>Like <CODE>.ifeqs</CODE>, but the sense of the test is reversed: this assembles the
+ following section of code if the two strings are not the same.
+ </DL>
+diff -Nur gnuasm/SEC97.hss fix/gnuasm/SEC97.hss
+--- gnuasm/SEC97.hss	2003-09-17 15:19:28.000000000 +0200
++++ fix/gnuasm/SEC97.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -2,10 +2,12 @@
+ Title=.include
+ 
+ [Top]
++Syntax: <B>.include "<I>file</I>"</B>
++<BR><BR>
+ This directive provides a way to include supporting files at specified
+ points in your source program.  The code from <I>file</I> is assembled as
+ if it followed the point of the <CODE>.include</CODE>; when the end of the
+ included file is reached, assembly of the original file continues.  You
+ can control the search paths used with the <B>'-I'</B> command-line option
+-(see <A HREF="$$LINK(SEC10)">Command-Line Options</A>).  Quotation marks are required
++(see <A HREF="$$LINK(SEC11)">Command-Line Options</A>).  Quotation marks are required
+ around <I>file</I>.
+diff -Nur gnuasm/SEC97B.hss fix/gnuasm/SEC97B.hss
+--- gnuasm/SEC97B.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC97B.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -2,9 +2,11 @@
+ Title=.incbin
+ 
+ [Top]
++Syntax: <B>.incbin "<I>file</I>"[, <I>skip</I>[, <I>count</I>]]</B>
++<BR><BR>
+ The <CODE>incbin</CODE> directive includes <I>file</I> verbatim at the current
+ location. You can control the search paths used with the <B>'-I'</B> command-line
+-option (see <A HREF="$$LINK(SEC10)">Command-Line Options</A>).  Quotation marks are required
++option (see <A HREF="$$LINK(SEC11)">Command-Line Options</A>).  Quotation marks are required
+ around <I>file</I>.
+ <BR><BR>
+ The <I>skip</I> argument skips a number of bytes from the start of the
+diff -Nur gnuasm/SEC98.hss fix/gnuasm/SEC98.hss
+--- gnuasm/SEC98.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC98.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -2,7 +2,10 @@
+ Title=.int
+ 
+ [Top]
++Syntax: <B>.int <I>expressions</I></B>
++<BR><BR>
+ Expect zero or more <I>expressions</I>, of any section, separated by commas.
+ For each expression, emit a number that, at run time, is the value of that
+ expression.  The byte order and bit size of the number depends on what kind
+-of target the assembly is for.
++of target the assembly is for (big endian 32-bit for MC 68000;
++be aware that in TIGCC, C language <CODE>int</CODE> variables occupy 16 bits by default).
+diff -Nur gnuasm/SEC99.hss fix/gnuasm/SEC99.hss
+--- gnuasm/SEC99.hss	2003-09-17 15:19:30.000000000 +0200
++++ fix/gnuasm/SEC99.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -2,21 +2,23 @@
+ Title=.irp
+ 
+ [Top]
++Syntax: <B>.irp <I>symbol</I>[, <I>value</I>[, <I>value</I>][, ...]]</B>
++<BR><BR>
+ Evaluate a sequence of statements assigning different values to <I>symbol</I>.
+ The sequence of statements starts at the <CODE>.irp</CODE> directive, and is
+-terminated by an <CODE>.endr</CODE> directive.  For each <I>value</I>, <I>symbol</I> is
++terminated by an <CODE><A HREF="$$LINK(SEC84R)">.endr</A></CODE> directive.  For each <I>value</I>, <I>symbol</I> is
+ set to <I>value</I>, and the sequence of statements is assembled.  If no
+ <I>value</I> is listed, the sequence of statements is assembled once, with
+ <I>symbol</I> set to the null string.  To refer to <I>symbol</I> within the
+-sequence of statements, use <I>\symbol</I>.
++sequence of statements, use \<I>symbol</I>.
+ <BR><BR>
+ For example, assembling
+-<PRE>        .irp    param,1,2,3
+-        move    d\param,sp@-
++<PRE>        .irp   param,1,2,3
++        move.l %d\param,-(%sp)
+         .endr
+ </PRE>
+ is equivalent to assembling
+-<PRE>        move    d1,sp@-
+-        move    d2,sp@-
+-        move    d3,sp@-
++<PRE>        move    %d1,-(%sp)
++        move.l %d2,-(%sp)
++        move.l %d3,-(%sp)
+ </PRE>
+diff -Nur gnuasm/acknowledge.hss fix/gnuasm/acknowledge.hss
+--- gnuasm/acknowledge.hss	2003-09-17 15:19:48.000000000 +0200
++++ fix/gnuasm/acknowledge.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -5,8 +5,9 @@
+ If you have contributed to <CODE>as</CODE> and your name isn't listed here,
+ it is not meant as a slight.  We just don't know about it.  Send mail to the
+ maintainer, and we'll correct the situation.  Currently
+-<BR><BR>
+-the maintainer is Ken Raeburn (email address <CODE>raeburn@cygnus.com</CODE>).
++the maintainer is Ken Raeburn (email address <A HREF="mailto:raeburn@cygnus.com">raeburn@cygnus.com</A>).
++(Note: Since this is a modified version of the manual, please check the original
++version as well before sending a mail.)
+ <BR><BR>
+ Dean Elsner wrote the original GNU assembler for the VAX. Any
+ more details?
+diff -Nur gnuasm/gnuasm.hss fix/gnuasm/gnuasm.hss
+--- gnuasm/gnuasm.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/gnuasm.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -0,0 +1,53 @@
++[Main]
++Title=The GNU Assembler
++Subsections=SEC9, SEC20, SEC25, SEC39, SEC45, SEC60, SEC67, acknowledge, history, gnugpl/gnugpl, gnugpl/gnufdl, gnugpl/funding
++
++[Top]
++This part of the documentation is a modified version of the <A HREF="http://sources.redhat.com/binutils/docs-2.12/as.info/">GNU Assembler Manual</A>.
++Therefore it is licensed under the <A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>.
++<BR><BR>
++The GNU assembler <CODE>as</CODE> is primarily intended to assemble the output
++of the GNU C compiler for use by the linker, so it may be regarded as an internal
++part of TIGCC package.
++However, it may be called as a standalone program, and the GNU team
++tried to make <CODE>as</CODE> assemble everything correctly that other assemblers
++for the same machine would assemble. Any exceptions are documented explicitly.
++This doesn't mean <CODE>as</CODE> always uses the same syntax as other
++assemblers for the same architecture; for example, there exist several
++incompatible versions of the MC 68000 assembly language syntax, so the syntax used
++in the GNU assembler is not exactly the same as in some other assemblers
++(like the <A HREF="$$INFOLINK(a68k)">A68k Assembler</A>, which is the most frequently
++used assembler for the TI-89 and TI-92+, and which is also included in the TIGCC
++package as a standalone program).
++<BR><BR>
++This documentation will cover <CODE>as</CODE> features which are applicable
++to TIGCC.  The most frequent use of <CODE>as</CODE> is probably as
++an <A HREF="$$INFOLINK(gnuexts/SEC94)">inline assembler</A>, which allows mixing assembly
++statements with C code using the <CODE>asm</CODE> keyword.
++<BR><BR>
++This documentation is <I>not</I>
++intended as an introduction to programming in assembly language.  In a similar
++vein, you will not find here details about machine architecture: here you can not
++expect detailed description of the instruction set, standard mnemonics, registers
++or addressing modes.  You may want to consult the Motorola manufacturer's machine
++architecture manual for such information.
++<BR><BR>
++<B>Note:</B> It is possible to use source files for the GNU Assembler
++together with C source files in TIGCC projects.  However, please make sure that you
++put a <CODE><A HREF="$$LINK(SEC77)">.data</A></CODE> directive at the beginning of each assembly source file.
++
++[Bottom]
++Original author: Free Software Foundation, Inc.
++<BR>
++Authors of the modifications: Zeljko Juric, Sebastian Reichelt, and Kevin Kofler
++<BR>
++Published by the TIGCC Team.
++<BR>
++See the <A HREF="$$LINK(history)">History</A> section for details and copyright information.
++<BR><BR>
++Permission is granted to copy, distribute and/or modify this document
++under the terms of the GNU Free Documentation License, Version 1.1 or any
++later version published by the Free Software Foundation;
++with no Invariant Sections, with no Front-Cover Texts, and with no
++Back-Cover Texts.  A copy of the license is included in the
++section entitled "<A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>".
+diff -Nur gnuasm/history.hss fix/gnuasm/history.hss
+--- gnuasm/history.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuasm/history.hss	2003-09-17 14:49:54.000000000 +0200
+@@ -0,0 +1,24 @@
++[Main]
++Title=History
++
++[Top]
++<UL>
++<LI><B>Original Version:</B> <A HREF="http://sources.redhat.com/binutils/docs-2.12/as.info/">Using as</A>
++<BR><BR>
++Published by the Free Software Foundation
++<BR>
++59 Temple Place - Suite 330
++<BR>
++Boston, MA 02111-1307 USA
++<BR><BR>
++Copyright &copy; 1988, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
++2000, 2001, 2002, 2003 Free Software Foundation, Inc.
++<BR><BR>
++</LI>
++<LI><B>Modifications for TIGCC:</B> <A HREF="$$LINK(gnuasm)">The GNU Assembler</A>
++<BR><BR>
++Published by the TIGCC Team
++<BR><BR>
++Copyright &copy; 2000, 2001, 2002, 2003 Zeljko Juric, Sebastian Reichelt, Kevin Kofler
++</LI>
++</UL>

@@ -1,0 +1,29 @@
+[Main]
+Name=are_expressions_identical
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short are_expressions_identical (CESI ptr1, CESI ptr2);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2BF
+
+[Description]
+Checks whether two expressions are identical.
+
+[Explanation]
+are_expressions_identical returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if expressions pointed to by
+<I>ptr1</I> and <I>ptr2</I> are syntactically identical, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+At the moment, I am not exactly sure what is the criteria for equivalence. I only know
+that a+b and b+a are not identical for example. And, floats are never identical to
+rational numbers. So far, I only know that this function
+surely returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> when two expressions are absolutely identical.
+But, if this is the only case of equivalence, this routine should be very simple. But it
+is not. It is very complicated and recursive, so I am really not sure which pairs of
+expressions may be treated as "identical". Any additional info is welcomed.
+
+[References]
+In=is_independent_of, is_monomial_in_kernel, is_narrowly_independent_of, push_internal_simplify, push_parse_text, bascmd.h/cmd_goto, basfunc.h/did_push_anti_deriv, basfunc.h/did_push_series, basfunc.h/push_1st_derivative, basfunc.h/push_abs, basfunc.h/push_acosh, basfunc.h/push_asin, basfunc.h/push_asinh, basfunc.h/push_atan, basfunc.h/push_atanh, basfunc.h/push_comdenom, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_expand, basfunc.h/push_extended_prod, basfunc.h/push_factor, basfunc.h/push_floor, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nint, basfunc.h/push_nsolve, basfunc.h/push_phase, basfunc.h/push_sign, basfunc.h/push_sin2, basfunc.h/push_solve, basfunc.h/push_summation, basfunc.h/push_zeros, basop.h/did_push_to_polar, basop.h/push_and, basop.h/push_equals, basop.h/push_exponentiate, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_negate, basop.h/push_not_equals, basop.h/push_or, basop.h/push_product, basop.h/push_substitute_no_simplify, basop.h/push_sum, basop.h/push_to_cylin, basop.h/push_to_sphere, statline.h/ST_eraseHelp, statline.h/ST_modKey, add_to_top, and_onto_top, unknown.h/are_units_consistent, unknown.h/did_push_lincf, unknown.h/EQU_getNameInfo, unknown.h/get_lb, unknown.h/get_ub, unknown.h/has_different_variable, unknown.h/index_if_pushed_binomial_info, unknown.h/index_rmng_factor, unknown.h/index_rmng_fctrs_start_base, unknown.h/is_equivalent_to, estack.h/is_negative, estack.h/is_never0, estack.h/is_nonnegative, estack.h/is_nonpositive, is_polynomial_in_var_or_kern, estack.h/is_positive, unknown.h/is_term_improper, unknown.h/linear_degree, unknown.h/or_onto_top, unknown.h/push_but_term, unknown.h/push_constant_terms, unknown.h/push_dependent_terms, unknown.h/push_gcd_then_cofactors, unknown.h/push_independent_terms, unknown.h/push_make_proper, unknown.h/push_nonconstant_terms, unknown.h/push_parse_prgm_or_func_text, unknown.h/push_poly_deg_in_var_or_kernel, unknown.h/push_poly_qr, unknown.h/push_reciprocal, unknown.h/push_standardize, unknown.h/replace_top_with_post_simplified, unknown.h/replace_top2_with_sum, unknown.h/_ROM_CALL_410, unknown.h/_ROM_CALL_48D, unknown.h/_ROM_CALL_4E6
+Out=next_expression_index, mem.h/memcmp, unknown.h/primary_tag_list

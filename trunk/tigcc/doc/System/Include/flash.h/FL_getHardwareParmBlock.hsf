@@ -1,0 +1,22 @@
+[Main]
+Name=FL_getHardwareParmBlock
+Type=Function
+Subtype=ROM Call
+Header Files=flash.h
+Definition=const void *FL_getHardwareParmBlock (void);
+Real Definition=#define FL_getHardwareParmBlock() (MIN_AMS < 101 && TIOS_entries < 0x3CC ? (const void*)"\0\x6\0\0\0\x1" : _rom_call(const void*,(void),16B) ())
+
+[ROM Call]
+Index=$16B
+
+[Description]
+Gets a pointer to the hardware parameter block.
+
+[Explanation]
+FL_getHardwareParmBlock returns a pointer to a
+<A HREF="$$LINK(HARDWARE_PARM_BLOCK)">HARDWARE_PARM_BLOCK</A> structure
+describing the hardware. If the parameter block of the boot code is not
+found, it returns the address of the default parameter block.
+
+[References]
+In=kbd.h/OSInitBetweenKeyDelay, link.h/LIO_Receive, link.h/OSLinkCmd, system.h/AB_getGateArrayVersion, unknown.h/_ROM_CALL_3CF, unknown.h/_ROM_CALL_473

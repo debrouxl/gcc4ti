@@ -1,0 +1,26 @@
+[Main]
+Name=EM_moveSymToExtMem
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short EM_moveSymToExtMem (SYM_STR SymName, HSym Sym);
+
+[ROM Call]
+Index=$162
+
+[Description]
+Moves a symbol from the RAM to the archive memory.
+
+[Explanation]
+EM_moveSymToExtMem archives a symbol. The symbol may be described either by
+symbol name <I>SymName</I> (in this case, parameter <I>Sym</I> should be
+set to <A HREF="$$LINK(HS_NULL)">HS_NULL</A>) or by <A HREF="$$LINK(HSym)">HSym</A> structure
+<I>Sym</I> (in this case, <I>SymName</I> must be <A HREF="$$LINK(alloc.h/NULL)">NULL</A>).
+See <A HREF="$$LINK(SYMSTR)">SYMSTR</A> for rules about <I>SymName</I>.
+EM_moveSymToExtMem returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was
+successful, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+
+[References]
+In=bascmd.h/cmd_archive, bascmd.h/cmd_unarchiv
+Out=DerefSym, HSYMtoName, SymFind, alloc.h/HeapFree, alloc.h/HeapSize, bascmd.h/cmd_archive, estack.h/HToESI, flash.h/EM_findEmptySlot, flash.h/EM_GC, flash.h/EM_write, mem.h/memcpy, mem.h/memset, string.h/strchr, string.h/strncpy
+Out_EV_eventLoop=1

@@ -1,0 +1,17 @@
+[Main]
+Title=__ld_kernel_bss_table
+Index=__kernel_bss_table
+
+[Top]
+Usually, this symbol is simply resolved to a user-defined symbol named
+<CODE>__kernel_bss_table</CODE>. However, if the program does not contain a
+BSS section, it is redirected to the entry point of the program. The effect
+is that constructs of the form
+<PRE>.word __ld_kernel_bss_table-<I>entry_point</I>
+</PRE>
+resolve to 0 if no BSS section is used.
+<BR><BR>
+<B>Note:</B> If a program/library defines <CODE>__kernel_bss_table</CODE>, it
+absolutely <I>must</I> handle the BSS section. See
+<A HREF="$$LINK(insert_kernel_bss_refs)">__ld_insert_kernel_bss_refs</A> for
+a way to get information about references into the BSS section.

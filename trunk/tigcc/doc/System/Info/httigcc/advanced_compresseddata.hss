@@ -1,0 +1,18 @@
+[Main]
+Title=COMPRESSED_FORMAT_DATA_VAR
+See Also=advanced_kerneldata: KERNEL_FORMAT_DATA_VAR
+
+[Top]
+In nostub mode, if you put
+<PRE>#define COMPRESSED_FORMAT_DATA_VAR
+</PRE>
+at the beginning of the program, and the data section is put into an external
+data variable, references into the data variable will be stored in the
+program in a compressed format.
+Relocation entries in this format take the smallest space that is reasonable.
+The relocation code for the compressed format is rather large, but part of it
+only has to be inserted into the program once if multiple
+<CODE>COMPRESSED_FORMAT_...</CODE> features are used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="$$INFOLINK(ld/insert_compressed_data_refs)">__ld_insert_compressed_data_refs</A>.

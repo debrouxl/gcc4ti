@@ -1,0 +1,34 @@
+[Main]
+Title=EXECUTE_IN_GHOST_SPACE
+
+[Top]
+Sometimes, on hardware version 2, it is necessary to execute a program in the
+so-called "ghost space", which is the area of addresses above 0x40000. If you
+need to know more about this, read the
+<A HREF="$$INFOLINK(faq/49)">launcher</A> FAQ entry. If you put
+<PRE>#define EXECUTE_IN_GHOST_SPACE
+</PRE>
+at the beginning of your program, on hardware version 2 (and 1, for
+backwards compatibility reasons), the program will automatically be 
+executed in the ghost space. This causes an overhead of about 200 bytes.
+More precisely, it will <B>relocate</B> itself in the ghost space (by
+applying <A HREF="$$LINK(system.h/EX_patch)">EX_patch</A> to itself with the
+start address increased by 0x40000) before entering the ghost space.
+Everything will be performed <I>before</I> anything else. Therefore, there
+are no limitations introduced by this directive on hardware versions 1 and 2,
+whereas the older
+<A HREF="$$LINK(system.h/enter_ghost_space)">enter_ghost_space</A> function
+was very limited and hard to use.
+<BR><BR>
+<CODE>EXECUTE_IN_GHOST_SPACE</CODE> allows the user to simply call one
+program from another, without worrying about the AMS protections which
+usually prevent this.
+<BR><BR>
+Unfortunately, on hardware version 3 (TI-89 Titanium), it is not possible
+anymore to bypass the execution protection this way. EXECUTE_IN_GHOST_SPACE
+detects hardware version 3 and requires a FlashROM patch to be present,
+refusing the execution otherwise. The name might be changed in future versions
+of TIGCC to reflect this. Therefore, you need to know that you should
+<I>not</I> blindly add 0x40000 to an address, because this does not work <I>at
+all</I> on the TI-89 Titanium. Instead, use <CODE>HW_VERSION==2?0x40000:0</CODE>
+or <CODE>HW_VERSION&lt;=2?0x40000:0</CODE> as appropriate.

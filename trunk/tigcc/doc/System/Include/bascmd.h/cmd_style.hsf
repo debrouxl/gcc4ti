@@ -1,0 +1,35 @@
+[Main]
+Name=cmd_style
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_style (CESI EqnNum, CESI StyleString);
+MinAMS=1.01
+
+[ROM Call]
+Index=$392
+
+[Description]
+Executes TI-Basic 'Style' command.
+
+[Explanation]
+cmd_style sets the system graphing function determined by <I>EqnNum</I> in the current
+graph mode to use the graphing property determined by <I>StyleString</I>. <I>EqnNum</I>
+must point to an integer item in the range from 1 to 99, and the
+corresponding graph function must already exist. <I>StyleString</I> must point to a string
+item containing one of the following strings: "LINE", "DOT", "THICK", "ANIMATE",
+"PATH", "ABOVE", "BELOW", "SQUARE". Note that some settings are not valid in various graph
+modes. The following table shows valid style names for particular graph modes:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD>Graph mode</TD><TD>Valid styles</TD></TR>
+<TR><TD VALIGN="TOP">Function</TD><TD>LINE, DOT, THICK, ANIMATE, PATH, ABOVE, BELOW, SQUARE</TD></TR>
+<TR><TD VALIGN="TOP">Parametric/Polar</TD><TD>LINE, DOT, THICK, ANIMATE, PATH, SQUARE</TD></TR>
+<TR><TD VALIGN="TOP">Sequence</TD><TD>LINE, DOT, THICK, SQUARE</TD></TR>
+<TR><TD VALIGN="TOP">3D</TD><TD>none</TD></TR>
+<TR><TD VALIGN="TOP">Diff Equations</TD><TD>LINE, DOT, THICK, ANIMATE, PATH, SQUARE</TD></TR>
+</TABLE>
+
+[References]
+Out=estack.h/estack_to_ushort, string.h/stricmp, unknown.h/EQU_setStyle, unknown.h/gr_active
+Out_EV_eventLoop=1

@@ -1,0 +1,33 @@
+[Main]
+Name=MenuTopRedef
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=void MenuTopRedef (HANDLE ExecHandle, short Item, short ID);
+See Also=MenuBegin, MenuGetTopRedef, MenuTopSelect
+
+[ROM Call]
+Index=$3F
+
+[Description]
+Redefines a toolbox icon.
+
+[Explanation]
+MenuTopRedef redefines the icon in the toolbox <I>Item</I> (0 = first, 1 = second,
+etc.), which belongs to the menu associated with the handle <I>ExecHandle</I>, to
+the icon with index <I>Index</I>, i.e. to the icon associated with the submenu
+with the given <I>ID</I>. The menu must have been started using
+<A HREF="$$LINK(MenuBegin)">MenuBegin</A> with the
+<A HREF="$$LINK(MenuBeginFlags)">MBF_REDEF</A> flag set.
+This is used mainly in the Geometry application which has a toolbar menu with redefinable icons.
+<I>ExecHandle</I> is a handle returned from the <A HREF="$$LINK(MenuBegin)">MenuBegin</A> function,
+not one returned from <A HREF="$$LINK(MenuNew)">MenuNew</A>.
+<BR><BR>
+<B>Note:</B> Such menus cannot be
+created using commands like <A HREF="$$LINK(MenuNew)">MenuNew</A>, <A HREF="$$LINK(MenuAddIcon)">MenuAddIcon</A>,
+etc. The only way to make a such menu is to create an appropriate pre-filled static menu
+structure, and to pass a pointer to such a structure to <A HREF="$$LINK(MenuBegin)">MenuBegin</A>.
+See <A HREF="$$LINK(MenuPopup)">MenuPopup</A> for more info about menu structures.
+
+[References]
+Out=graph.h/CalcBitmapSize, graph.h/DrawChar, graph.h/DrawClipRect, graph.h/DrawFkey, graph.h/DrawLine, graph.h/DrawMultiLines, graph.h/DrawPix, graph.h/DrawStr, graph.h/DrawStrWidth, graph.h/FontSetSys, graph.h/PortRestore, graph.h/RestoreScrState, graph.h/SaveScrState, graph.h/ScrRect, graph.h/ScrRectFill, graph.h/ScrToWin, graph.h/SetCurAttr, graph.h/SetCurClip, mem.h/memset, statline.h/ST_eraseHelp, system.h/CU_cursorState, system.h/CU_restore, system.h/CU_stop, unknown.h/_ROM_CALL_41E, unknown.h/_ROM_CALL_420

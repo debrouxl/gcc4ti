@@ -1,0 +1,48 @@
+[Main]
+Name=compare_expressions
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short compare_expressions (CESI ptr1, CESI ptr2);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2C0
+
+[Description]
+Compares two expressions.
+
+[Explanation]
+compare_expressions returns 0 if two expressions pointed to by <I>ptr1</I> and <I>ptr2</I>
+are equal in the sense that they have the same structure, variables, function names, and
+numbers that compare equal. A float and a rational number compare equal
+if converting the rational number to a float produces an identical number.
+If the expressions are not, it returns a non-zero value which may be positive or negative
+(more precise, 1 or -1). Positive result means that the
+expression pointed to by <I>ptr1</I> is "more main" that the expression pointed to by <I>ptr2</I>,
+and negative result means "less main". Principally, variables are more main than symbolic constants
+such as <B>pi</B>, which are more main than numbers. In expressions such
+as <CODE>'expand(...,var)'</CODE> or <CODE>'Integral(...,var)'</CODE>, a variable <I>var</I>
+is "most main". Otherwise, the 26 Roman one-letter variables order
+r&gt;&gt;s&gt;&gt;...&gt;&gt;z&gt;&gt;a&gt;&gt;b&gt;&gt;...&gt;&gt;q ('&gt;&gt;' means "more main"),
+which order more main than all other variables, which order alphabetically. Functions and operators
+are typically ordered by recursively comparing their first arguments, with ties broken by
+comparing their second arguments, etc. then finally comparing the operators or functions, if
+necessary. For example:
+<UL>
+<LI>-2.0 and -2 are equal;</LI>
+<LI>-2.0 is less main than -1;</LI>
+<LI><B>pi</B> is more main than 4;</LI>
+<LI><CODE>x</CODE> is more main than 4;</LI>
+<LI><CODE>x</CODE> is less main than <CODE>r</CODE>;</LI>
+<LI><CODE>x</CODE> is more main than <CODE>ln(y)</CODE>;</LI>
+<LI><CODE>x</CODE> is less main than <CODE>ln(x)</CODE>.</LI>
+</UL>
+<B>Note:</B> Both expressions should be in internal canonic form
+(see <A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A>),
+else this function may not work as expected.
+
+[References]
+In=bascmd.h/cmd_sorta, bascmd.h/cmd_sortd, basfunc.h/did_push_anti_deriv, basfunc.h/did_push_series, basfunc.h/push_1st_derivative, basfunc.h/push_abs, basfunc.h/push_acosh, basfunc.h/push_asin, basfunc.h/push_asinh, basfunc.h/push_atan, basfunc.h/push_atanh, basfunc.h/push_comdenom, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_denominator, basfunc.h/push_desolve, basfunc.h/push_expand, basfunc.h/push_factor, basfunc.h/push_floor, basfunc.h/push_im, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_max2, basfunc.h/push_median, basfunc.h/push_min, basfunc.h/push_min2, basfunc.h/push_nsolve, basfunc.h/push_numerator, basfunc.h/push_phase, basfunc.h/push_re, basfunc.h/push_sign, basfunc.h/push_sin2, basfunc.h/push_solve, basfunc.h/push_zeros, basop.h/did_push_to_polar, basop.h/push_and, basop.h/push_equals, basop.h/push_exponentiate, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_negate, basop.h/push_not_equals, basop.h/push_or, basop.h/push_product, basop.h/push_sum, basop.h/push_to_cylin, basop.h/push_to_sphere, add_to_top, unknown.h/are_units_consistent, unknown.h/did_push_divide_units, unknown.h/get_ub, unknown.h/GM_Intersect, unknown.h/index_if_pushed_binomial_info, unknown.h/index_if_pushed_qquad_info, unknown.h/next_var_or_kernel_index, unknown.h/push_auto_units_conversion, unknown.h/push_but_factor, unknown.h/push_but_term, unknown.h/push_constant_factors, unknown.h/push_constant_terms, unknown.h/push_dependent_factors, unknown.h/push_dependent_terms, unknown.h/push_gcd_then_cofactors, unknown.h/push_independent_factors, unknown.h/push_independent_terms, unknown.h/push_make_proper, unknown.h/push_nonconstant_factors, unknown.h/push_nonconstant_terms, unknown.h/push_nonnumeric_factors, unknown.h/push_poly_deg_in_var_or_kernel, unknown.h/push_poly_qr, unknown.h/push_reciprocal, unknown.h/push_standardize, unknown.h/raise_to_top, unknown.h/replace_top_with_post_simplified, unknown.h/replace_top2_with_pow, unknown.h/replace_top2_with_sum, unknown.h/_ROM_CALL_48D
+Out=lead_base_index, next_expression_index, string.h/cmpstri, string.h/strcmp, unknown.h/compare_numbers, unknown.h/Integer1Index, unknown.h/primary_tag_list, unknown.h/_ROM_CALL_5E2

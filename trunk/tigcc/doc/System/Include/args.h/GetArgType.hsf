@@ -1,0 +1,26 @@
+[Main]
+Name=GetArgType
+Type=Function
+Subtype=Macro
+Header Files=args.h
+Definition=unsigned char GetArgType (CESI ap);
+Real Definition=#define GetArgType(p) (*(CESI)(p))
+
+[Description]
+Returns the type of the current argument.
+
+[Explanation]
+GetArgType returns a one-byte value which determines the type of the current argument
+(pointed to by <I>ap</I>). There are many types of arguments: strings, integers
+(positive or negative), fractions, floats, symbols, various algebraic expressions,
+lists, matrices, etc. The enum <A HREF="$$LINK(estack.h/Tags)">Tags</A>
+defines a lot of constants: the most commonly used in argument lists are
+STR_TAG, POSINT_TAG, NEGINT_TAG, FLOAT_TAG, POSFRAC_TAG, ENDFRAC_TAG,
+COMPLEX_TAG, LIST_TAG and END_TAG. They represent respectively a string, a positive integer, a negative
+integer, a floating point value, a positive fraction, a negative fraction, a complex number,
+a begining of the list structure and an end-of-list marker (which also has meaning "no more arguments").
+Any values except these need to be regarded as "an expression": you need to handle them
+"by hand" (of course, if you know how).
+See <A HREF="$$LINK(InitArgPtr)">InitArgPtr</A> for an example of usage.<BR><BR>
+<B>Note:</B> You can use <A HREF="$$LINK(SkipArg)">SkipArg</A> to bypass the argument which you don't know
+how to handle (or, which you don't want to handle for any reason).

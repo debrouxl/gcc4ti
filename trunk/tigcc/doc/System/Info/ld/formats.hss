@@ -1,0 +1,110 @@
+[Main]
+Title=TIGCC Linker File Formats
+
+[Top]
+The TIGCC linker recognizes several file formats. Currently, it can import
+COFF and AmigaOS files and export TIOS ASM files, Nostub DLL files (which are
+TIOS custom files with a special format), and Fargo II files (which are TIOS
+PRGM files with special hidden data). A small overview of the capabilities of
+each format is described in the following table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD><B>Format</B></TD>
+<TD><B>Sections</B></TD>
+<TD><B>Relocations</B></TD>
+<TD><B>Unresolved Relocations</B></TD>
+<TD><B>Symbols</B></TD>
+<TD><B>ROM Calls</B></TD>
+<TD><B>RAM Calls</B></TD>
+<TD><B>Library Calls</B></TD>
+<TD><B>Library Exports</B></TD>
+<TD><B>Debug Information</B></TD>
+<TD><B>Version Number</B></TD>
+<TD><B>Additional Information</B></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>COFF</B></TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>AmigaOS</B></TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (except 1-byte absolute)</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>TIOS ASM</B></TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">4-byte absolute only</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format with a comment, and a header for additional information may be inserted manually)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>Nostub DLL</B></TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">4-byte absolute only</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Yes (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Yes (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">No</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>Fargo II</B></TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">4-byte absolute only (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Yes (through library calls, but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">Yes (through library calls, but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">Yes (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">Yes (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Single comment only (but required header is not inserted directly by the linker)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>TI Flash OS (TIB, 89u/9xu/v2u)</B></TD>
+<TD VALIGN="TOP">2 fixed sections (24 KB startup, 1944/3992 KB main)</TD>
+<TD VALIGN="TOP">No, runs from fixed address</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Yes (but not yet supported by the linker)</TD>
+<TD VALIGN="TOP">Product name and date stamp only (but not yet supported by the linker)</TD>
+</TR>
+</TABLE>

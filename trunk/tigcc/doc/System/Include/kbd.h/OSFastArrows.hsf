@@ -1,0 +1,42 @@
+[Main]
+Name=OSFastArrows
+Type=Variable
+Subtype=ROM Call
+Header Files=kbd.h
+Definition=unsigned char OSFastArrows;
+See Also=ngetchx, OSInitBetweenKeyDelay, OSInitKeyInitDelay
+
+[ROM Call]
+Index=$15C
+Address Hack=(unsigned char *) ((unsigned long) (*(((unsigned short *) (_rom_call_addr(51))) + 0x80)))
+MinAMS=2.00
+
+[Description]
+A variable determining whether arrow keys are repeated slowly or quickly.
+
+[Explanation]
+OSFastArrows tells <A HREF="$$LINK(ngetchx)">ngetchx</A>, <A HREF="$$LINK(GKeyIn)">GKeyIn</A>, and <A HREF="$$LINK(system.h/OSdequeue)">OSdequeue</A> how to handle the arrow keys.
+<BR>
+It seems that the following values are allowed:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">0</TD>
+  <TD>Keys are repeated at normal speed. This is the default.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">1</TD>
+  <TD>Same as 0 for <A HREF="$$LINK(ngetchx)">ngetchx</A>,
+      but in text editors like the home screen entry line, keys are not repeated at all.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">2</TD>
+  <TD>The key delay is ignored; <A HREF="$$LINK(ngetchx)">ngetchx</A> returns immediately if an arrow key is pressed.
+      In text editors, the busy indicator is visible, but keys do not seem to be repeated.</TD>
+</TR>
+</TABLE>
+<BR>
+Further information is welcome.
+
+[References]
+In=ngetchx, unknown.h/GT_Trace, unknown.h/_ROM_CALL_473

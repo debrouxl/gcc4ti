@@ -1,0 +1,25 @@
+[Main]
+Name=MO_notifyModeChange
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void MO_notifyModeChange (short Flags);
+
+[ROM Call]
+Index=$DE
+
+[Description]
+Sends mode change notify message to all applications.
+
+[Explanation]
+MO_notifyModeChange sends a <A HREF="$$LINK(EventIDs)">CM_MODE_CHANGE</A> message to all applications
+(note that "Graph" application will first receive this message). This function also has one
+parameter <I>Flags</I> which is ignored on AMS 1.xx, but used in AMS 2.xx. It contains a
+set of flags which describes what exactly was changed. This parameter is attached to message
+in the <I>extra</I> field of the message, so it gives more info to applications on what they
+need to check. At the moment, I don't have exact information about what each bit in <I>Flags</I>
+represents.
+
+[References]
+In=MO_digestOptions, unknown.h/setup_unit_system
+Out=EV_sendEvent, estack.h/reset_control_flags, menus.h/MenuUpdate, statline.h/ST_eraseHelp, statline.h/ST_helpMsg, unknown.h/EV_appA, unknown.h/EV_appB, unknown.h/OO_firstACB, unknown.h/OO_NextACB, wingraph.h/FirstWindow

@@ -1,0 +1,44 @@
+[Main]
+Name=WinChar
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinChar (WINDOW *w, char c);
+
+[ROM Call]
+Index=$A
+
+[Description]
+Draws a character to a window.
+
+[Explanation]
+DrawChar writes a character <I>c</I> at the current (x,&nbsp;y) location of the window
+pointed to by <I>w</I>, using the current window attribute (set using <A HREF="$$LINK(WinAttr)">WinAttr</A>).
+The character will be clipped at the boundaries of the window clipping area. The following
+character attributes are supported (the region defined by a character is 8x10
+for huge font, 6x8 for large font or nx5 for small font, depending on the
+current font set by <A HREF="$$LINK(WinFont)">WinFont</A> command):
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>The character is ORed into the destination</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>The region created by inversing the character replaces the destination</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>The region defined by the character replaces the destination</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>The character is XORed into the destination</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>The character masked so that every other pixel is turned off then ORed into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="$$LINK(WinAttr)">WinAttr</A> command for a more general info about attributes.
+<BR><BR>
+<B>Note:</B> If the window is opened in TTY mode (see <A HREF="$$LINK(WinOpen)">WinOpen</A>), the current printing
+location will be updated, and newline ('\n' or '\r') and formfeed ('\f') characters will be
+handled correctly.
+
+[References]
+In=WinCharXY, WinStr, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, textedit.h/TE_handleEvent, textedit.h/TE_open, textedit.h/TE_openFixed, textedit.h/TE_pasteText, textedit.h/TE_select
+Out=WinClr, graph.h/PortRestore, graph.h/ScrRectScroll, unknown.h/sf_width, unknown.h/_ROM_CALL_412, unknown.h/_ROM_CALL_413

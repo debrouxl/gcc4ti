@@ -1,0 +1,40 @@
+[Main]
+Title=Enabling Listings
+Subsections=SEC14
+
+[Top]
+The options starting with <B>'-a'</B> enable listing output from the assembler.  By itself,
+<B>'-a'</B> requests high-level, assembly, and symbols listing.
+You can use other letters to select specific options for the list:
+<B>'-ah'</B> requests a high-level language listing,
+<B>'-al'</B> requests an output-program assembly listing, and
+<B>'-as'</B> requests a symbol table listing.
+High-level listings require that a compiler debugging option like
+<B>'-g'</B> be used, and that assembly listings (<B>'-al'</B>) be requested
+also.
+<BR><BR>
+Use the <B>'-ac'</B> option to omit false conditionals from a listing.  Any lines
+which are not assembled because of a false <CODE><A HREF="$$LINK(SEC96)">.if</A></CODE> (or <CODE>.ifdef</CODE>, or any
+other conditional), or a true <CODE><A HREF="$$LINK(SEC96)">.if</A></CODE> followed by an <CODE><A HREF="$$LINK(SEC83)">.else</A></CODE>, will be
+omitted from the listing.
+<BR><BR>
+Use the <B>'-ad'</B> option to omit debugging directives from the
+listing.
+<BR><BR>
+Once you have specified one of these options, you can further control
+listing output and its appearance using the directives <CODE><A HREF="$$LINK(SEC107)">.list</A></CODE>,
+<CODE><A HREF="$$LINK(SEC110)">.nolist</A></CODE>, <CODE><A HREF="$$LINK(SEC114)">.psize</A></CODE>, <CODE><A HREF="$$LINK(SEC82)">.eject</A></CODE>, <CODE><A HREF="$$LINK(SEC132)">.title</A></CODE>, and
+<CODE><A HREF="$$LINK(SEC117)">.sbttl</A></CODE>.
+The <B>'-an'</B> option turns off all forms processing.
+If you do not request listing output with one of the <B>'-a'</B> options, the
+listing-control directives have no effect.
+<BR><BR>
+The letters after <B>'-a'</B> may be combined into one option,
+<I>e.g.</I>, <B>'-aln'</B>.
+<BR><BR>
+Note if the assembler source is coming from the standard input (e.g. because it
+is being created by <CODE>gcc</CODE> and the <B>'-pipe'</B> command line switch
+is being used) then the listing will not contain any comments or preprocessor
+directives.  This is because the listing code buffers input source lines from
+stdin only after they have been preprocessed by the assembler.  This reduces
+memory usage and makes the code more efficient.

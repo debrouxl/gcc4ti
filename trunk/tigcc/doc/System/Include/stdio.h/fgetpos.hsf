@@ -1,0 +1,21 @@
+[Main]
+Name=fgetpos
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=short fgetpos (FILE *stream, fpos_t *pos);
+Real Definition=#define fgetpos(f,p) (((long)((*(p)=ftell(f))))==EOF)
+
+[Description]
+Gets the current file pointer position.
+
+[Explanation]
+fgetpos stores the position of the file pointer associated with the stream associated with
+the structure pointed to by <I>stream</I> in the location pointed to by <I>pos</I>
+The exact value is irrelevant. On success, fgetpos returns 0. On failure, it returns a nonzero
+value.
+<BR><BR>
+<B>Note:</B> fgetpos is implemented here as a macro which calls <A HREF="$$LINK(ftell)">ftell</A>.
+
+[References]
+Out=ftell

@@ -1,0 +1,52 @@
+[Main]
+Name=atof
+Type=Function
+Subtype=tigcc.a
+Header Files=math.h, stdlib.h, timath.h
+Definition=float atof (const char *s);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[Library Call]
+Asm=1
+
+[Description]
+Converts a string to a floating point.
+
+[Explanation]
+atof converts a string pointed to by <I>s</I> to floating point value. It recognizes
+the character representation of a floating point number, made up of the following:
+<UL>
+<LI>an optional string of spaces;</LI>
+<LI>an optional minus sign;</LI>
+<LI>a string of ditits and an optional decimal point (the digits can be on both
+sides of the decimal point);</LI>
+<LI>an optional exponent followed by a (optionally signed) integer.</LI>
+</UL>
+It is important to say that this implementation of atof requires that an optional
+minus sign and an optional exponent must be TI&nbsp;Basic characters for minus sign and exponent,
+(characters with codes 0xAD and 0x95 instead of ordinary
+'-' and 'e' or 'E' characters).
+This limitation is caused by using some TIOS calls which needs such number format. Anyway,
+it is very easy to "preprocess" any string to satisfy this convention before calling to
+atof by routine like the following (assuming that <I>c</I> is a char variable, and <I>i</I>
+is an integer variable):
+<PRE>for (i = 0; (c = s[i]); i++)
+ // <I>Yes, the second '=' is really '=', not '=='</I>...
+  {
+    if (c == '-') s[i] = 0xAD;
+    if ((c|32) == 'e') s[i] = 0x95;
+  }
+</PRE>
+atof returns the converted value of the input string. It returns <A HREF="$$LINK(NAN)">NAN</A> if the
+input string cannot be converted (i.e. if it is not in a correct format). This is not the same
+as in ANSI C: atof in ANSI C returns 0 if the conversion was not successful. I decided to
+return <A HREF="$$LINK(NAN)">NAN</A> instead, so the user can check whether the conversion was
+successful (which is not possible with ANSI atof). See <A HREF="$$LINK(is_nan)">is_nan</A> for a good
+method to check whether the result is <A HREF="$$LINK(NAN)">NAN</A>.
+<BR><BR>
+<B>Note:</B> This function is not part of TIOS, and it is implemented
+using the TIOS function <A HREF="$$LINK(estack.h/push_parse_text)">push_parse_text</A>.
+
+[References]
+Out=error.h/ER_catch, error.h/ER_success, estack.h/estack_number_to_Float, estack.h/push_parse_text, estack.h/top_estack

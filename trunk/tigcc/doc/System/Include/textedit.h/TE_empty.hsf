@@ -1,0 +1,22 @@
+[Main]
+Name=TE_empty
+Type=Function
+Subtype=ROM Call
+Header Files=textedit.h
+Definition=void TE_empty (TEXT_EDIT *te);
+
+[ROM Call]
+Index=$A7
+
+[Description]
+Empties the text editor buffer.
+
+[Explanation]
+TE_empty empties the text editor buffer (associated with the structure pointed to by <I>te</I>).
+Note that this routine turns off cursor blink before emptying the edit buffer, but
+does not repaint the edit region. It only makes its parent window dirty
+(i.e. clears its <A HREF="$$LINK(wingraph.h/WinFlags)">WF_DIRTY</A> bit) so, the edit region will be eventually
+updated when the next paint message arrives.
+
+[References]
+Out=TE_checkSlack, TE_unfocus

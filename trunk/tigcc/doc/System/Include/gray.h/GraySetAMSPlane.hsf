@@ -1,0 +1,21 @@
+[Main]
+Name=GraySetAMSPlane
+Alias=SetPlane
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void GraySetAMSPlane (short plane);
+Real Definition=#define GraySetAMSPlane(x) (_rom_call(void,(void*,long),1A2) (GrayGetPlane (x), 0xEF007F))
+
+[Description]
+Forces graphics routines to use selected plane.
+
+[Explanation]
+GraySetAMSPlane forces all graphics routines (from <A HREF="$$LINK(graph.h/)">graph.h</A>) to draw into
+the grayscale plane <I>plane</I> (valid values are <A HREF="$$LINK(GrayPlanes)">LIGHT_PLANE</A> and
+<A HREF="$$LINK(GrayPlanes)">DARK_PLANE</A>). This way you can use standard routines for drawing lines, circles,
+etc. in grayscale mode as well. In fact, GraySetAMSPlane is a macro which calls
+<A HREF="$$LINK(GrayGetPlane)">GrayGetPlane</A> and <A HREF="$$LINK(graph.h/PortSet)">PortSet</A>.
+
+[References]
+Out=graph.h/PortSet

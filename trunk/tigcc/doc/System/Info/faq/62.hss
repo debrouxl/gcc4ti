@@ -1,0 +1,24 @@
+[Main]
+Title=Why is 'a=GetIntArg (top_estack);' wrong?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+What is wrong in doing
+<PRE>a = GetIntArg (top_estack);
+</PRE>
+It seems that it works fine, but you always use an auxilary variable...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+It works fine sometimes, but not always. See, <A HREF="$$LINK(args.h/GetIntArg)">GetIntArg</A>
+is a function-looking macro, with <B>changes</B> the value of its actual
+argument. So, if you write
+<PRE>a = GetIntArg (top_estack);
+</PRE>
+you will also change the value of TIOS system variable <A HREF="$$LINK(estack.h/top_estack)">top_estack</A>,
+and I am not sure that you really want this. So, I strictly recommend using an auxilary variable,
+like in the following example:
+<PRE>ESI argptr = top_estack;
+...
+a = GetIntArg (argptr);
+</PRE>
+Using this method, you will avoid unexpected changes of <A HREF="$$LINK(estack.h/top_estack)">top_estack</A>.
+</TD></TR></TABLE>

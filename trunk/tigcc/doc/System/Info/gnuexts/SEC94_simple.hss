@@ -1,0 +1,33 @@
+[Main]
+Title=Simple Inline Assembler Instructions
+
+[Top]
+The simplest form the <CODE>asm</CODE> keyword is:
+<PRE>asm (&quot;<I>instructions</I>&quot;);
+</PRE>
+where <I>instructions</I> contains one or more assembler instructions
+separated by semicolons or newlines.
+<BR><BR>
+In TIGCC, all register names must be preceded by a percent sign, to avoid
+confusion with C variables named like one of the CPU registers.  For example:
+<PRE>asm (&quot;move.l 0xC8,%a0; move.l (%a0,1656),%a0; jsr (%a0)&quot;);
+</PRE>
+Hexadecimal constants must be written according to C syntax
+(like <CODE>0xC8</CODE>), not using the notation <CODE>$C8</CODE> which is
+common in various assemblers.
+<BR><BR>
+Note that something like
+<PRE>asm (&quot;move.l 0xC8,a0&quot;);
+</PRE>
+will be interpreted quite differently: <CODE>a0</CODE> will be regarded as a C language
+variable, not a register!  Read the documentation about the <A HREF="$$INFOLINK(gnuasm)">GNU Assembler</A>
+for more information about the exact syntax and directives which it accepts;
+since inline assembler instructions are copied directly into the output of the
+compiler, exactly the same features are available.
+<BR><BR>
+Newlines as separators are also accepted in <I>instructions</I>, so the following code is valid as well:
+<PRE>asm (&quot;   move.l 0xC8,%a0
+         move.l (%a0,1656),%a0
+         jsr (%a0)&quot;);
+</PRE>
+See <A HREF="$$LINK(SEC106)">Multi-line Strings</A> for more information.

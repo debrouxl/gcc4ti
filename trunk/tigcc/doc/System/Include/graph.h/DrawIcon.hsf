@@ -1,0 +1,41 @@
+[Main]
+Name=DrawIcon
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void DrawIcon (short x, short y, const void *Icon, short Attr);
+See Also=sprites.h/
+
+[ROM Call]
+Index=$1A6
+
+[Description]
+Draws an icon.
+
+[Explanation]
+DrawIcon draws an icon (a 16x16 bitmap structure given as 16-word group of
+bits) pointed to by pointer <I>Icon</I> at location (<I>x</I>,&nbsp;<I>y</I>)
+using attribute <I>Attr</I>. Pointer
+<I>Icon</I> is usually of type <A HREF="$$LINK(pICON)">pICON</A> (pointer to the
+<A HREF="$$LINK(ICON)">ICON</A> structure). The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>The icon is ORed into the destination</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>The inversed icon is ANDed into the destination</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>The icon is XORed into the destination</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>The icon is masked so that every other pixel is turned off then ORed into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="$$LINK(SetCurAttr)">SetCurAttr</A> command for more general info about attributes.
+<BR><BR>
+<B>Note:</B> In previous releases of TIGCCLIB (prior 2.0) the documentation said that A_REPLACE
+attribute is supported. Unfortunately, it seems that this is not true (Daniel Pineo informed
+me about this problem). Also, information about usage of A_REVERSE was incorrect.
+
+[References]
+Out=DrawPix

@@ -1,0 +1,29 @@
+[Main]
+Name=TE_focus
+Type=Function
+Subtype=ROM Call
+Header Files=textedit.h
+Definition=short TE_focus (TEXT_EDIT *te);
+
+[ROM Call]
+Index=$A8
+
+[Description]
+Highlightes the selected text in the editor, and gives the focus to it.
+
+[Explanation]
+TE_focus is usually called after <A HREF="$$LINK(TE_select)">TE_select</A>. It highlightes the
+selected text in the editor (associated with the structure pointed to by <I>te</I>), and
+gives the focus to it, so the selected text will become
+active (after this, any keypress will replace selected text with the newly pressed
+key). Returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if focusing was performed, and returns
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A> if not (for example, if the text was already focused).
+<BR><BR>
+<B>Note:</B> TE_focus also enables the cursor using <A HREF="$$LINK(system.h/CU_start)">CU_start</A>
+if it was disabled. So, it is sometimes used after calling <A HREF="$$LINK(TE_select)">TE_select</A>
+with <I>Low</I>&nbsp;==&nbsp;<I>High</I>, just to
+display the cursor.
+
+[References]
+In=TE_handleEvent, TE_reopen, TE_reopenPlain, TE_select, bascmd.h/cmd_disphome, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog, events.h/EV_defaultHandler, homescr.h/HomeExecute, unknown.h/EV_quit, unknown.h/GT_Trace
+Out=system.h/CU_start, unknown.h/sf_width, wingraph.h/WinBegin, wingraph.h/WinFill, unknown.h/_ROM_CALL_471

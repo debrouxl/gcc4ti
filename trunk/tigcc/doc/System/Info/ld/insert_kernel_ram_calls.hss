@@ -1,0 +1,69 @@
+[Main]
+Title=__ld_insert_kernel_ram_calls
+
+[Top]
+__ld_insert_kernel_ram_calls can be used to handle
+<A HREF="$$LINK(symbols_ram_call)">RAM calls</A>. It inserts references to
+RAM calls in the format used by kernels:
+<UL>
+<LI>If the program uses at least one RAM call...
+    <UL>
+    <LI><B>2 bytes:</B> the number of different RAM calls minus 1</LI>
+    <LI>For each RAM call...
+        <UL>
+        <LI><B>2 bytes:</B> RAM call information:
+            <UL>
+            <LI>Bits 0 through 13: <I>index</I></LI>
+            <LI>Bit 14: <I>type</I>
+                (0: <A HREF="$$LINK(symbols_ram_call)">RAM call</A>;
+                 1: <A HREF="$$LINK(symbols_extra_ram_addr)">extra RAM
+                    address</A>)</LI>
+            <LI>Bit 15: <I>size</I> (0: 4 bytes; 1: 2 bytes)</LI>
+            </UL></LI>
+        <LI>Relocation table for this RAM call:
+            <UL>
+            <LI>For each reference...
+                <UL>
+                <LI><B>2 bytes:</B> <I>location</I> (may not be 0)</LI>
+                </UL></LI>
+            <LI><B>2 bytes:</B> 0</LI>
+            </UL></LI>
+        </UL></LI>
+    </UL></LI>
+</UL>
+If a program uses this insertion, it must process it as follows:
+<UL>
+<LI>For each RAM call...
+    <UL>
+    <LI>For each relocation entry...
+        <UL>
+        <LI>Get the starting address of the program (via
+            <A HREF="$$LINK(symbols_ld_entry_point)">__ld_entry_point</A>);</LI>
+        <LI>Add the <I>location</I> value;</LI>
+        <LI>Modify the value (<I>offset</I>) at the resulting address (2 or
+            4 bytes depending on <I>size</I>):
+            <UL>
+            <LI>If <I>type</I> indicates an extra RAM address:
+                <UL>
+                <LI>Determine the location of the extra RAM table row indexed
+                    by <I>index</I> (see
+                    <A HREF="$$LINK(symbols_extraram)">_extraram</A>);</LI>
+                <LI>Get the correct value for the current calculator from
+                    this row;</LI>
+                </UL>
+                Else:
+                <UL>
+                <LI>Get the address/value of the RAM function/variable
+                    indexed by <I>index</I>;</LI>
+                </UL></LI>
+            <LI>Add the value of <I>offset</I>;</LI>
+            <LI>Write the resulting address/value to the space covered by
+                <I>offset</I>.</LI>
+            </UL></LI>
+        </UL></LI>
+    </UL></LI>
+</UL>
+Before program termination, this process has to be reverted, so that it can
+be repeated the next time the program starts. Simply deactivating the
+relocation code would prevent programs from being transferred between
+devices.

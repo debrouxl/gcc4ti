@@ -1,0 +1,25 @@
+[Main]
+Name=CU_start
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short CU_start (void);
+
+[ROM Call]
+Index=$C4
+
+[Description]
+Starts the cursor.
+
+[Explanation]
+CU_start restarts the cursor timer and sets an internal flag which tell that cursor is
+active. This does not mean that the cursor will be displayed on the screen immidiately.
+This mean only that if some routine wants to display cursor, it will be permitted.
+The main usage of this function is in conjuction with text editor functions
+(see <A HREF="$$LINK(textedit.h/)">textedit.h</A> header file). CU_start returns
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A> or <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, depending of whether the cursor
+was enabled or disabled before calling this function.
+
+[References]
+In=textedit.h/TE_focus, textedit.h/TE_handleEvent, textedit.h/TE_pasteText, unknown.h/GT_KeyIn, unknown.h/_ROM_CALL_3EA
+Out=CU_cursorState, OSTimerRestart

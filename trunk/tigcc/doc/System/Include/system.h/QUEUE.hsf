@@ -1,0 +1,30 @@
+[Main]
+Name=QUEUE
+Type=Type
+Subtype=Structure constructor
+Header Files=system.h
+Definition=#define QUEUE(n) struct {unsigned short Head, Tail, Size, Used, Buffer[n/2];}
+See Also=DEF_QUEUE
+
+[Description]
+A structure describing a queue with a buffer.
+
+[Explanation]
+QUEUE(n) is a structure which describes a queue with an <I>n</I>-byte long buffer. Strictly
+speaking, QUEUE(n) is not a type but a macro,
+although it works exactly as a type, so you can treat it as a type. It is useful for
+definining a queue without dynamic allocation (i.e. without calling
+<A HREF="$$LINK(alloc.h/malloc)">malloc</A>), like in the following example:
+<PRE>QUEUE(100) q;
+OSqclear (&amp;q);
+q.Size = 50;
+OSenqueue (<I>some_data</I>, &amp;q);
+</PRE>
+Note that QUEUE(n) works exactly like a type, so it can be used anywhere where a type
+name is expected, for example in pointer declarations, and even as the argument of
+<B>sizeof</B> etc. This is illustrated in the following example:
+<PRE>QUEUE(100) *qptr = malloc (sizeof (QUEUE(100)));
+OSqclear (qptr);
+qptr-&gt;Size = 50;
+OSenqueue (<I>some_data</I>, qptr);
+</PRE>

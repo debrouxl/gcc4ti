@@ -1,0 +1,28 @@
+[Main]
+Name=vfprintf
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=short vfprintf (FILE *stream, const char *format, va_list arglist);
+Real Definition=#define vfprintf(s,f,a) vcbprintf((vcbprintf_Callback_t)fputc,(void**)(s),(f),(a))
+
+[Description]
+Sends formatted output to a stream using argument list.
+
+[Explanation]
+The vfprintf functions is known as an alternate entry point for the fprintf functions.
+It behaves exactly like <A HREF="$$LINK(fprintf)">fprintf</A>, but it accepts a pointer to a
+list of arguments instead of an argument list (see <A HREF="$$LINK(stdarg.h/)">stdarg.h</A>
+header file for more info about argument lists).
+See <A HREF="$$LINK(printf)">printf</A> for details on format specifiers.
+<BR><BR>
+vfprintf accepts <I>arglist</I> which is a pointer to a series of arguments, applies to each
+argument a format specifier contained in the format string pointed to by
+<I>format</I>, and outputs the formatted data to the stream associated with the structure
+pointed to by <I>stream</I>. There must be the same number of format specifiers as arguments.
+<BR><BR>
+vfprintf returns the number of bytes output. In the event of error, vfprintf
+returns <A HREF="$$LINK(EOF)">EOF</A>.
+
+[References]
+Out=vcbprintf, fputc

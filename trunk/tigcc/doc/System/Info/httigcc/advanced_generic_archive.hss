@@ -1,0 +1,20 @@
+[Main]
+Title=_GENERIC_ARCHIVE
+
+[Top]
+If you are writing a function archive (also known as a static library), you
+will probably want to write:
+<PRE>#define _GENERIC_ARCHIVE
+</PRE>
+at the top of every C file that includes a header file from the TIGCC
+Library. It tells the TIGCC Library that you are creating a function archive
+(static library) which you want programs to be able to use no matter what
+their compiler, TIGCCLIB, linker and output format settings are. It disables
+all optimizations which rely on startup code, and it makes the library use a
+kernel-independent ROM call mechanism. It also disables outputting of any
+linker control symbols which force a specific output format.
+<BR><BR>
+All static libraries should use this option unless they are created for a
+very specific program (which implies you are probably better off linking the
+files directly into your project). However, some special features of the
+TIGCC Library may not be available.

@@ -1,0 +1,19 @@
+[Main]
+Name=peek_bit
+Type=Function
+Subtype=Macro
+Header Files=peekpoke.h
+Definition=short peek_bit (unsigned char *addr, short bit);
+Real Definition=#define peek_bit(addr,bit) (!!(*((unsigned char*)(long)(addr)) & (1 << (bit))))
+
+[Description]
+Fetches a bit from the memory.
+
+[Explanation]
+peek_bit is a macro which fetches bit <I>bit</I> from the memory address <I>addr</I>.
+For example, to read the first bit from the video memory (the pixel in the upper left corner), do this:
+<PRE>byte = peek_bit (0x4C00, 7);
+</PRE>
+Note that it is better to use <A HREF="$$LINK(graph.h/LCD_MEM)">LCD_MEM</A> in this case.
+<BR><BR>
+<B>Note:</B> Do not use peek_bit for reading I/O ports! Use <A HREF="$$LINK(peekIO_bit)">peekIO_bit</A> instead.

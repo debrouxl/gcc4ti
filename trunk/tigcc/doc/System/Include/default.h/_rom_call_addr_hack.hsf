@@ -1,0 +1,28 @@
+[Main]
+Name=_rom_call_addr_hack
+Type=Function
+Subtype=Macro Constructor
+Header Files=default.h
+Definition=#define _rom_call_addr_hack(index,addr,minams) (_rom_call_addr_hack_concat (0x##index, _ROM_CALL_##index, (addr), (minams), 0x##index))
+See Also=_rom_call_addr, _rom_call_hack, info/httigcc/amsdep_addr: Manually Obtaining the Address of a ROM Function
+
+[Description]
+Returns a void pointer for a TIOS ROM call, using an address hack if needed.
+
+[Explanation]
+_rom_call_addr_hack works exactly like
+<A HREF="$$LINK(_rom_call_addr)">_rom_call_addr</A>,
+except that it takes an additional parameter <I>addr</I> specifying an
+alternative way to get the address of the ROM call. If the TIOS jump table
+contains the ROM call specified by <I>index</I>, the address from the jump
+table is used. Otherwise _rom_call_addr_hack computes the address specified by
+<I>addr</I> (which can be any pointer type), and returns it.
+<BR><BR>
+<I>minams</I> specifies the AMS version which first exports the ROM call
+identified by <I>index</I>. If the value of
+<CODE><A HREF="$$INFOLINK(httigcc/minams)">MIN_AMS</A></CODE> is greater or
+equal to the value of <I>minams</I>, the ROM call is used unconditionally.
+When using this macro directly, you need to make sure that this value is
+correct; otherwise you will get crashes only if a specific value for
+<CODE><A HREF="$$INFOLINK(httigcc/minams)">MIN_AMS</A></CODE> has been
+chosen and an unsupported AMS version is used.

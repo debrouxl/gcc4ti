@@ -1,0 +1,65 @@
+[Main]
+Title=Arrays of Variable Length
+
+[Top]
+Variable-length automatic arrays are allowed in ISO C99, and as an
+extension GCC accepts them in C89 mode.  (However, GCC's
+implementation of variable-length arrays does not yet conform in detail
+to the ISO C99 standard.)  These arrays are
+declared like any other automatic arrays, but with a length that is not
+a constant expression.  The storage is allocated at the point of
+declaration and deallocated when the brace-level is exited.  For
+example:
+<PRE>FILE *concat_fopen (const char *s1, const char *s2, const char *mode)
+{
+  char str[strlen (s1) + strlen (s2) + 1];
+  strcpy (str, s1);
+  strcat (str, s2);
+  return fopen (str, mode);
+}
+</PRE>
+Jumping or breaking out of the scope of the array name deallocates the
+storage.  Jumping into the scope is not allowed; you get an error
+message for it.
+<BR><BR>
+You can use the function <A HREF="$$LINK(alloc.h/alloca)">alloca</A> to get an effect much like
+variable-length arrays.  The function <A HREF="$$LINK(alloc.h/alloca)">alloca</A> is available in
+many other C implementations (but not in all).  On the other hand,
+variable-length arrays are more elegant.
+<BR><BR>
+There are other differences between these two methods.  Space allocated
+with <A HREF="$$LINK(alloc.h/alloca)">alloca</A> exists until the containing <I>function</I> returns.
+The space for a variable-length array is deallocated as soon as the array
+name's scope ends.  (If you use both variable-length arrays and
+<A HREF="$$LINK(alloc.h/alloca)">alloca</A> in the same function, deallocation of a variable-length array
+will also deallocate anything more recently allocated with <A HREF="$$LINK(alloc.h/alloca)">alloca</A>.)
+<BR><BR>
+You can also use variable-length arrays as arguments to functions:
+<PRE>struct entry
+tester (int len, char data[len][len])
+{
+  /* ... */
+}
+</PRE>
+The length of an array is computed once when the storage is allocated
+and is remembered for the scope of the array in case you access it with
+<CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE>.
+<BR><BR>
+If you want to pass the array first and the length afterward, you can
+use a forward declaration in the parameter list - another GNU extension.
+<PRE>struct entry
+tester (int len; char data[len][len], int len)
+{
+  /* ... */
+}
+</PRE>
+The <CODE>int&nbsp;len</CODE> before the semicolon is a <U>parameter forward
+declaration</U>, and it serves the purpose of making the name <I>len</I>
+known when the declaration of <I>data</I> is parsed.
+<BR><BR>
+You can write any number of such parameter forward declarations in the
+parameter list.  They can be separated by commas or semicolons, but the
+last one must end with a semicolon, which is followed by the &quot;real&quot;
+parameter declarations.  Each forward declaration must match a &quot;real&quot;
+declaration in parameter name and data type.  ISO C99 does not support
+parameter forward declarations.

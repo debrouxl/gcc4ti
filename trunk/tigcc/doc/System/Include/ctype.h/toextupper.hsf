@@ -1,0 +1,16 @@
+[Main]
+Name=toextupper
+Type=Function
+Subtype=Macro
+Header Files=ctype.h
+Definition=short toextupper (short c);
+Real Definition=#define toextupper(c) ({register short __c=(c);((__c>='a'&&__c<='z')||(__c>=224&&__c<=254&&__c!=247))?(__c+'A'-'a'):__c;})
+
+[Description]
+Translates characters to uppercase, including foreign ones.
+
+[Explanation]
+toextupper works like <A HREF="$$LINK(toupper)">toupper</A>, but it also converts foreign
+lowercase characters (see <A HREF="$$LINK(isfrgnlower)">isfrgnlower</A>).
+toextupper is an inline function which is implemented using GNU C smart macros, which
+expands to a medium-sized code.

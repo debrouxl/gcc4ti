@@ -1,0 +1,16 @@
+[Main]
+Name=isextlower
+Type=Function
+Subtype=Macro
+Header Files=ctype.h
+Definition=short isextlower (short c);
+Real Definition=#define isextlower(c) ({register short __c=(c);(__c>='a'&&__c<='z')||(__c>=224&&__c<=254&&__c!=247);})
+
+[Description]
+Checks whether a character is a lowercase, including foreign ones.
+
+[Explanation]
+isextlower returns nonzero if <I>c</I> is a lowercase letter, either ordinary ('a' to 'z')
+or foreign one (see <A HREF="$$LINK(isfrgnlower)">isfrgnlower</A>), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros, which expands to a
+medium-sized code.

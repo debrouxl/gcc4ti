@@ -1,0 +1,38 @@
+[Main]
+Name=NG_execute
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void NG_execute (HANDLE Handle, short approx_flag);
+
+[ROM Call]
+Index=$25D
+
+[Description]
+Executes TI-Basic statements.
+
+[Explanation]
+NG_execute executes a sequence of TI-Basic statements in tokenized form, which are
+located in a memory block pointed to by handle <I>Handle</I>. It is a handle
+to a <A HREF="$$LINK(MULTI_EXPR)">MULTI_EXPR</A> structure. To create such a block, the
+functions <A HREF="$$LINK(push_parse_text)">push_parse_text</A> and <A HREF="$$LINK(homescr.h/HS_popEStack)">HS_popEStack</A>
+may be very useful, like in the following example:
+<PRE>push_parse_text ("ClrGraph:Graph sin(x)");
+handle = HS_popEStack ();
+NG_execute (handle, FALSE);
+HeapFree (handle);
+</PRE>
+If <I>approx_flag</I> is non-zero, the sequence will be executed in "approx" mode
+(like running with [DIAMOND]+[ENTER]). Otherwise, the current mode settings will be used.
+This routine is called after <A HREF="$$LINK(NG_RPNToText)">NG_RPNToText</A> from the home screen.
+<BR><BR>
+NG_execute can also evaluate expressions. In this case, the result of the evaluation
+is pushed on the top of the expression stack.
+<BR><BR>
+<B>Note:</B> This routine always clears the error context, resets control flags, may cause estack
+expansion or heap compression. It may throw various errors if something is wrong.
+
+[References]
+In=homescr.h/HomeExecute
+Out=HToESI, reset_control_flags, alloc.h/HeapLock, alloc.h/HeapMoveHigh, alloc.h/HeapUnlock, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, unknown.h/clear_error_context, unknown.h/NG_control, unknown.h/push_simplify_statements, unknown.h/_ROM_CALL_5C5, unknown.h/_ROM_CALL_5C6, unknown.h/_ROM_CALL_5C7, unknown.h/_ROM_CALL_5C8, unknown.h/_ROM_CALL_5CB, unknown.h/_ROM_CALL_5CC
+Out_EV_eventLoop=1

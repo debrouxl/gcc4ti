@@ -1,0 +1,30 @@
+[Main]
+Name=idle
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=void idle (void);
+
+[ROM Call]
+Index=$29B
+
+[Description]
+Switches the calculator to "idle" state for a while.
+
+[Explanation]
+While idle is running, the calculator rests. idle turns the calculator in "low
+power" state until the next interrupt occurs (then "low power" state will be
+disabled, and idle returns).
+<BR><BR>
+While calculator is in "idle" state, the power consumption decreases significantly.
+TIOS very often calls idle, whenever it is in a kind of "idle loop". So it is very
+useful to be used in programs which waits in a loop for something (waiting for
+specific keypress, timer expiring, etc.). Many programs should use idle to save the
+batteries (editors, reflexive games, explorers, debuggers etc.). Thanks to Julien
+Muchembled for this info.
+<BR><BR>
+<B>Note:</B> Thomas Nussbaumer informed me that idle interferes with grayscale graphics,
+so the use of idle while grayscale mode is active is not recommended.
+
+[References]
+In=bascmd.h/cmd_cyclepic, bascmd.h/cmd_disptbl, bascmd.h/cmd_pause, bascmd.h/cmd_sendcalc, bascmd.h/cmd_sendchat, events.h/EV_eventLoop, events.h/EV_getc, unknown.h/GS_PlotAll, unknown.h/GT_Trace, unknown.h/GZ_Stat, unknown.h/Regraph

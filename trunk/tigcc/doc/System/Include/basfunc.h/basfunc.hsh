@@ -1,0 +1,42 @@
+[Main]
+See Also=bascmd.h/, basop.h/
+
+[Description]
+Routines for executing TI-Basic functions
+
+[Top]
+Very few of the functions from this header file are documented as of now. Of
+course, the ones which are undocumented have not been tested, either. It is
+very likely that there are errors in this file, so use it with care.
+<BR><BR>
+However, we thought it might be a good idea to provide a header file for all
+of the built-in TI-Basic functions which have a documented entry in the jump
+table.
+This way, you can easily search for particular symbolic math functions if you
+need them. If you use a function from this header file, please document it,
+too.
+<BR><BR>
+Many functions from this header file require their arguments to have some
+specific format. They usually have to be internally simplified, which can be
+achieved with the
+<A HREF="$$LINK(estack.h/push_internal_simplify)">push_internal_simplify</A>
+function from <A HREF="$$LINK(estack.h/)">estack.h</A>, and the result is an
+internally simplified expression as well. For optional arguments, you can
+usually pass <A HREF="$$LINK(estack.h/NULL_INDEX)">NULL_INDEX</A>.
+<BR><BR>
+If you do not want to accept the AMS dependency of these functions, you can
+usually construct an expression using their appropriate tags, and then call
+<A HREF="$$LINK(estack.h/push_internal_simplify)">push_internal_simplify</A>.
+
+[Bottom]
+<B>Note:</B> All functions from this header file get parameters from the expression stack, so this
+header file must be used in conjunction with <A HREF="$$LINK(estack.h/)">estack.h</A>. You need to
+learn about the usage of the expression stack before using any function from this header file.
+All functions defined here execute particular TI-Basic functions. They sometimes
+may be useful to perform some operations which can not be implemented in C easily. But note that
+if you use functions from this header file too much, this will decrease the performance of your
+program significantly. In an extreme case, it will in fact decrease to that of a TI-Basic program! So
+use functions from this header file only if it is really necessary. Also note that these
+functions act exactly like the appropriate TI-Basic commands (including throwing errors if
+something is wrong), so the use of an error tracking mechanism from the <A HREF="$$LINK(error.h/)">error.h</A>
+header file is highly recommended.

@@ -1,0 +1,44 @@
+[Main]
+Name=GetIntArg
+Type=Function
+Subtype=Macro
+Header Files=args.h
+Definition=unsigned long GetIntArg (CESI &ap);
+Real Definition=#define GetIntArg(p) ({register unsigned short __n=*(--(ESI)(p)); register unsigned long __s=0; while(__n--) __s=(__s<<8)+*(--(unsigned char*)(p)); (ESI)(p)--; __s;})
+See Also=GetLongLongArg
+
+[Description]
+Returns the current argument of integer type.
+
+[Explanation]
+GetIntArg is a macro which returns the current integer argument
+(pointed to by <I>ap</I>) and modifies <I>ap</I> to point to the next argument in
+the argument list. So, each successive time GetIntArg is used, it returns the next
+argument in the argument list. If the argument is a negative number (check the sign using
+<A HREF="$$LINK(GetArgType)">GetArgType</A>), GetIntArg returns its absolute value.
+See <A HREF="$$LINK(InitArgPtr)">InitArgPtr</A> for an example of usage.
+Note that GetIntArg assumes that the current argument IS an integer, either positive
+or negative (this may be checked using <A HREF="$$LINK(GetArgType)">GetArgType</A>). If this
+is not true, the result of GetIntArg is unpredictable.
+<BR><BR>
+If the current argument type is a fraction, do the following to pick it:
+<PRE>numerator = GetIntArg (ap);
+ap++;
+denominator = GetIntArg (ap);
+</PRE>
+i.e. pick two integers, with increasing argument pointer between two picks.
+<BR><BR>
+<B>Note:</B> It is not recommended to do something like
+<PRE>a = GetIntArg (top_estack);
+</PRE>
+It works fine sometimes, but not always. GetIntArg
+is a function-looking macro, with <B>changes</B> the value of its actual
+argument. So, if you write the statement mentioned above,
+you will also change the value of TIOS system variable <A HREF="$$LINK(estack.h/top_estack)">top_estack</A>,
+which is not always a good idea. So, I strictly recommend using an auxilary variable,
+like in the following example:
+<PRE>ESI argptr = top_estack;
+...
+a = GetIntArg (argptr);
+</PRE>
+Using this method, you will avoid unexpected changes of <A HREF="$$LINK(estack.h/top_estack)">top_estack</A>.

@@ -1,0 +1,42 @@
+[Main]
+Name=WinBitmapPut
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinBitmapPut (WINDOW *w, short x, short y, void *BitMap, short Attr);
+
+[ROM Call]
+Index=$7
+
+[Description]
+Puts a bitmap to a window.
+
+[Explanation]
+WinBitmapPut puts a bitmap <I>BitMap</I> (which was taken using <A HREF="$$LINK(WinBitmapGet)">WinBitmapGet</A>)
+to the window pointed to by <I>w</I> at the position (<I>x</I>,&nbsp;<I>y</I>), using the attribute <I>Attr</I>.
+The coordinates are relative to the topleft corner of the window pointed to by <I>w</I>.
+The drawn bitmap will be clipped at the boundaries of the clipping area of the window.
+The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REPLACE</TD><TD>Replace the destination region with the source bitmap</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Replace the destination region with the inverse of the source bitmap</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Exculsive-OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_AND</TD><TD>AND the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Mask the source bitmap so that every other pixel is turned off and replace
+the destination region with that result (the source region is left unchanged)</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="$$LINK(WinAttr)">WinAttr</A> command for a more general info about attributes.
+
+[References]
+Out=graph.h/BitmapPut, graph.h/PortRestore, unknown.h/_ROM_CALL_413
+In=bascmd.h/cmd_andpic, bascmd.h/cmd_cyclepic, bascmd.h/cmd_rclpic, bascmd.h/cmd_rplcpic, bascmd.h/cmd_xorpic, events.h/EV_defaultHandler, gdraw.h/GD_Eraser, unknown.h/EV_quit, unknown.h/GS_PlotAll, unknown.h/GT_Open, unknown.h/GT_WinCursor, unknown.h/Regraph, unknown.h/_ROM_CALL_45B

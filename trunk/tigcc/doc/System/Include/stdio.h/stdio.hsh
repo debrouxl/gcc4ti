@@ -1,0 +1,22 @@
+[Description]
+ANSI-compatible file and TTY input/output routines
+
+[Bottom]
+<B>Note:</B> This implementation of stdio.h is 90% compatible with the ANSI standard.
+I tried to make all functions to be as close to ANSI as possible, without introducing a too large
+overload in the generated code. The main difference is the fact that there are no
+terminal-associated file streams like <B>stdin</B> and <B>stdout</B> which may be redirected.
+However, functions from this header file are mostly not
+TIOS functions - they are completely written by us, so they are not
+embedded in the TIOS. That's why their use may cause your program to be larger than
+if you don't use functions from this header file. The typical increase in size is
+300-2000 bytes, depending on which functions and how many
+different functions from this header file are used in the program. Functions from the <I>scanf</I>
+family are the worst offenders, using any of them takes about 1500 bytes. So,
+although functions from this header file are much more "standard" than TIOS-specific functions,
+it is better to avoid functions like <A HREF="$$LINK(fopen)">fopen</A> etc.
+Instead, use "non-standard" functions from the <A HREF="$$LINK(vat.h/)">vat.h</A> header file.
+Also avoid using <I>scanf</I> family functions if you don't really have to. Prefer
+<A HREF="$$LINK(getsn)">getsn</A> for input, and <I>atoi</I> family functions for parsing.
+Of course, functions from this header file may be very useful for porting a program from a
+"standard" computer to the TI. But I will repeat again: it is better to avoid them.

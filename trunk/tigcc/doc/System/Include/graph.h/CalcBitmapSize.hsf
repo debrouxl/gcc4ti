@@ -1,0 +1,28 @@
+[Main]
+Name=CalcBitmapSize
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=unsigned short CalcBitmapSize (BITMAP *b);
+MinAMS=2.00
+See Also=BitmapGet, BitmapPut, BitmapSize
+
+[ROM Call]
+Index=$3EF
+
+[Description]
+Calculates the size of a bitmap.
+
+[Explanation]
+CalcBitmapSize calculates the size of the bitmap pointed to by <I>b</I>.
+In fact, CalcBitmapSize has the following implementation:
+<PRE>unsigned short CalcBitmapSize(BITMAP *b)
+{
+  return ((((b->NumCols + 7) >> 3) * b->NumRows) + BITMAP_HDR_SIZE);
+}
+</PRE>
+This means that you can create a bitmap with only <I>NumRows</I> and
+<I>NumCols</I> filled, and pass it to this function.
+
+[References]
+In=menus.h/DynMenuAdd, menus.h/DynMenuChange, menus.h/MenuBegin, menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, unknown.h/_ROM_CALL_421

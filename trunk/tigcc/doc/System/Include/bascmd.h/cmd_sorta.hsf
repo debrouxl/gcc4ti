@@ -1,0 +1,32 @@
+[Main]
+Name=cmd_sorta
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_sorta (ESI SymName);
+MinAMS=1.01
+See Also=cmd_sortd
+
+[ROM Call]
+Index=$38E
+
+[Description]
+Executes TI-Basic 'SortA' command.
+
+[Explanation]
+cmd_sorta sorts elements in a TI-Basic list variable in ascending order and
+stores the result back in the same list. The parameter <I>SymName</I> should
+point to the terminating zero byte or variable tag of the list variable name.
+It must be on the expression stack, so you cannot pass a result of the
+<A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> macro directly to cmd_sorta.
+Instead, if you want to sort the list variable named "foo", for example, you
+should do:
+<PRE>push_expression (SYMSTR ("foo"));
+cmd_sorta (top_estack);
+</PRE>
+This function may cause heap compression and expansion of the expression
+stack.
+
+[References]
+Out=alloc.h/HeapAllocHighThrow, alloc.h/HeapAllocThrow, alloc.h/HeapFree, alloc.h/HeapFreeIndir, alloc.h/HeapLock, alloc.h/HeapUnlock, alloc.h/HLock, estack.h/remaining_element_count, basfunc.h/push_mat_to_list, basfunc.h/push_string, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/compare_expressions, estack.h/delete_expression, estack.h/HToESI, estack.h/next_expression_index, estack.h/push_expression, estack.h/push_quantum, estack.h/top_estack, unknown.h/compare_numbers, unknown.h/primary_tag_list, estack.h/push_simplify, vat.h/DerefSym, vat.h/QSysProtected, vat.h/VarRecall, vat.h/VarStore
+Out_EV_eventLoop=1

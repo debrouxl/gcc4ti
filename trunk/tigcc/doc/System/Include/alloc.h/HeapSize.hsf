@@ -1,0 +1,24 @@
+[Main]
+Name=HeapSize
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=unsigned long HeapSize (HANDLE Handle);
+
+[ROM Call]
+Index=$9E
+
+[Description]
+Determines the size of an allocated block.
+
+[Explanation]
+HeapSize returns the number of bytes allocated for the heap block referenced by
+<I>Handle</I>. Due to word alignment and minimum block size, this may not be the
+amount it was allocated with. Also note that because of locked blocks, it is possible
+(rare) that a heap block will actually be bumped up a few words by the
+<A HREF="$$LINK(HeapCompress)">HeapCompress</A> routine. So never assume that the value
+returned by HeapSize is the true number of bytes used by the data stored in the
+heap block.
+
+[References]
+In=dialogs.h/DialogAdd, stdio.h/fopen, unknown.h/TIOS_FClose: FClose, unknown.h/TIOS_FPutC: FPutC, vat.h/EM_moveSymFromExtMem, vat.h/EM_moveSymToExtMem, vat.h/EM_twinSymFromExtMem, vat.h/FindProgramVar, unknown.h/_ROM_CALL_438

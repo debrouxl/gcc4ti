@@ -1,0 +1,20 @@
+[Main]
+Name=GrayGetPlane
+Alias=GetPlane
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void *GrayGetPlane (short plane);
+Real Definition=#define GrayGetPlane(x) ((x) ? __D_plane : __L_plane)
+
+[Description]
+Gets the address of a grayscale plane.
+
+[Explanation]
+GrayGetPlane returns a pointer to the grayscale plane <I>plane</I>. Valid values for <I>plane</I> are
+<A HREF="$$LINK(GrayPlanes)">LIGHT_PLANE</A> and <A HREF="$$LINK(GrayPlanes)">DARK_PLANE</A>.
+To draw in black, draw in both planes.
+<BR><BR>
+<B>Note:</B> Do not assume that any plane is on 0x4C00 when in grayscale mode, due to
+hardware version 2 support. Also do not assume that the 2 grayscale planes are
+consecutive, this is not the case on hardware version 1.

@@ -1,0 +1,17 @@
+[Main]
+Title=When I use functions from vat.h, the calculator crashes!
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+When I tried to use <A HREF="$$LINK(vat.h/EM_moveSymToExtMem)">EM_moveSymToExtMem</A> to archive
+a file, the calculator crashed!
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+You probably wrote something like
+<PRE>EM_moveSymToExtMem ("example", HS_NULL);
+</PRE>
+Instead, you need to write
+<PRE>EM_moveSymToExtMem (SYMSTR ("example"), HS_NULL);
+</PRE>
+This routine except <A HREF="$$LINK(estack.h/SYM_STR)">SYM_STR</A> type strings, not ordinary C strings. See
+<A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> from the <A HREF="$$LINK(vat.h/)">vat.h</A> header file for more info.
+</TD></TR></TABLE>

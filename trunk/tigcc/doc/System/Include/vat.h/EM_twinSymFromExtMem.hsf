@@ -1,0 +1,29 @@
+[Main]
+Name=EM_twinSymFromExtMem
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=HSym EM_twinSymFromExtMem (SYM_STR SymName, HSym Sym);
+
+[ROM Call]
+Index=$166
+
+[Description]
+Creates a twin symbol, then copies a symbol from the archive memory to it.
+
+[Explanation]
+EM_twinSymFromExtMem first calls <A HREF="$$LINK(SymAddTwin)">SymAddTwin</A> to create a twin
+symbol, then copies the archived symbol to it. The symbol may be described either by
+symbol name <I>SymName</I> (in this case, parameter <I>Sym</I> should be
+set to <A HREF="$$LINK(HS_NULL)">HS_NULL</A>) or by <A HREF="$$LINK(HSym)">Hsym</A> structure
+<I>Sym</I> (in this case, <I>SymName</I> must be <A HREF="$$LINK(alloc.h/NULL)">NULL</A>).
+See <A HREF="$$LINK(SYMSTR)">SYMSTR</A> for rules about <I>SymName</I>.
+TIOS uses EM_twinSymFromExtMem when it need to execute archived program.
+EM_twinSymFromExtMem returns a <A HREF="$$LINK(HSym)">HSym</A> structure which represents
+a newly created symbol (or <A HREF="$$LINK(HS_NULL)">HS_NULL</A> in a case of error).
+EM_twinSymFromExtMem returns <I>Sym</I> itself if the symbol is not archived.
+
+[References]
+Out=DerefSym, HSYMtoName, SymAddTwin, SymFind, alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapSize, mem.h/memcpy
+In=unknown.h/push_user_func
+Out_EV_eventLoop=1

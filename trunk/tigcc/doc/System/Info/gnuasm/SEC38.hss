@@ -1,0 +1,62 @@
+[Main]
+Title=Flonums
+
+[Top]
+A <U>flonum</U> represents a floating point number.  The translation is
+indirect: a decimal floating point number from the text is converted by
+<CODE>as</CODE> to a generic binary floating point number of more than
+sufficient precision.  This generic floating point number is converted
+to a particular computer's floating point format (or formats) by a
+portion of <CODE>as</CODE> specialized to that computer.
+The version of <CODE>as</CODE> used by TIGCC does not use TI's SMAP II BCD
+format; it emits standard IEEE floating point numbers.
+It would be pointless to implement the correct behavior, since the appropriate
+numbers are easy to write, and converting between base 2 and 10 can
+decrease precision.
+<BR><BR>
+A flonum is written by writing (in order)
+<UL>
+<LI>
+The digit <CODE>0</CODE>.
+<BR><BR>
+</LI>
+<LI>
+A letter, to tell <CODE>as</CODE> the rest of the number is a flonum.
+<BR><BR>
+</LI>
+<LI>
+An optional sign: either <CODE>+</CODE> or <CODE>-</CODE>.
+<BR><BR>
+</LI>
+<LI>
+An optional <U>integer part</U>: zero or more decimal digits.
+<BR><BR>
+</LI>
+<LI>
+An optional <U>fractional part</U>: <CODE>.</CODE> followed by zero
+or more decimal digits.
+<BR><BR>
+</LI>
+<LI>
+An optional exponent, consisting of:
+<UL>
+<LI>
+An <CODE>E</CODE> or <CODE>e</CODE>.
+<BR><BR>
+</LI>
+<LI>
+Optional sign: either <CODE>+</CODE> or <CODE>-</CODE>.
+<BR><BR>
+</LI>
+<LI>
+One or more decimal digits.
+</LI>
+</UL>
+</LI>
+</UL>
+At least one of the integer part or the fractional part must be
+present.  The floating point number has the usual base-10 value.
+<BR><BR>
+<CODE>as</CODE> does all processing using integers.  Flonums are computed
+independently of any floating point hardware in the computer running
+<CODE>as</CODE>.

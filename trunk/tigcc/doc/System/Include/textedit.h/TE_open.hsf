@@ -1,0 +1,92 @@
+[Main]
+Name=TE_open
+Type=Function
+Subtype=ROM Call
+Header Files=textedit.h
+Definition=short TE_open (TEXT_EDIT *te, WINDOW *w, WIN_RECT *rect, HANDLE BufHandle, unsigned short cur_offset, unsigned short ReadOnly, unsigned short Flags);
+See Also=TE_openFixed
+
+[ROM Call]
+Index=$AC
+
+[Description]
+Initializes the text editor.
+
+[Explanation]
+TE_open initializes the text editor and displays the initial content of the editor. All
+text editor operations are controled using a structure of type <A HREF="$$LINK(TEXT_EDIT)">TEXT_EDIT</A>.
+TE_open will initialize such structure pointed to by parameter <I>te</I>, which later need
+to be passed to all text editor operations. It returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the
+initialization was successful, else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>.
+<BR><BR>
+<I>w</I> is a pointer to the parent window of the editor: you
+can create a new window to be the parent using <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A>, or you can pass
+<A HREF="$$LINK(wingraph.h/DeskTop)">DeskTop</A> as the parameter, if you are happy with
+its settings (which is usually the case). <I>rect</I> is a pointer to the
+<A HREF="$$LINK(wingraph.h/WIN_RECT)">WIN_RECT</A> structure which describes actual dimensions of the
+rectangular text editor area. Note that if you use your own window as a parent window, this
+window must not be "dirty" (i.e. it must not have <A HREF="$$LINK(wingraph.h/WinFlags)">WF_DIRTY</A>
+flag set). Windows created by <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> are "dirty" by default,
+so you need to clear "dirty" flag manually before calling TE_open. For example, you can do
+<PRE><I>w</I>-&gt;Flags &amp;= ~WF_DIRTY;
+</PRE>
+<I>BufHandle</I> is the handle of the text editor buffer, which may be pre-filled with the
+text (if you want to edit existing text), or filled with zeros (if you want to create a new
+text). <I>BufHandle</I> may be, for example, a result of <A HREF="$$LINK(alloc.h/HeapAlloc)">HeapAlloc</A>
+operation. Note that in contrary what I said in the documentation of TIGCCLIB releases prior
+to 2.2, it can not be a handle of a text variable, because text variables
+contain additional system data on the begining, and the editor expect a raw data (see
+<A HREF="$$INFOLINK(faq)">Frequently Asked Questions</A> to learn how you can pass a text variable to
+the editor however).
+<BR><BR>
+The content of text buffer is a standard zero-terminated string, in which lines of
+text are separated with '\r' character (0xD). The size of the buffer is managed automatically
+by the editor: it will be expanded if necessary to add more text, so you need not to worry
+about the allocated size. Parameter <I>cur_offset</I> is the initial position of the cursor
+(counted from the begining of the buffer), and <I>ReadOnly</I> is the count of characters
+at the begining of the buffer which can't be modified (i.e. which are read-only). <I>ReadOnly</I>
+is usually set to zero, except in some special applications.
+<BR><BR>
+<I>Flags</I> is a set of binary flags which controls the editor. Some of these flags are
+changed automatically during the operation of the editor. As I currently know, the following
+bits have sense for usage in parameter <I>Flags</I> of this function (maybe there are more
+of them, but I am not sure; keep all other bits to zero):
+<UL>
+<LI>
+Bit b0 should be set for the standard operation of the editor. If this is reset, the editor
+will operate in "compact" mode, in which the editor is only one character high, and where the
+content of the editor will scroll left/right when necessary (such mode is used in request boxes
+in dialogs). In "compact" mode, the content of the editor buffer must not contain '\r' characters,
+else the editor will be fooled.</LI>
+<LI>
+When b1&nbsp;=&nbsp;1, each line of the editor will be preceded with a colon ("<B>:</B>"),
+like in "Text editor" or "Program editor". When b1&nbsp;=&nbsp;0, there will not be a preceding
+colon.</LI>
+<LI>
+Bit 2 is used only if b1&nbsp;=&nbsp;1. When b2 is also 1, the first character of
+each line will be regarded as "command character", and it will be displayed before the colon.
+"Text editor" application uses such mode to store editor commands (like "P" = "PrintObj" etc.).
+Note that when b2&nbsp;=&nbsp;1, parameter <I>cur_offset</I> must not be zero (it is usually
+set to 1 in this case).
+</LI>
+<LI>
+When b3&nbsp;=&nbsp;1, the editor enters some strange mode in which each line is preceded with
+a left arrow. As I am not sure about such mode, I suggest to you to avoid this.</LI>
+<LI>
+Bit b7 is set for text editors opened with <A HREF="$$LINK(TE_openFixed)">TE_openFixed</A>: you don't
+need to use this bit!
+</LI>
+<LI>
+When b11&nbsp;=&nbsp;1, the editor enters read-only mode, i.e. you can not insert or delete
+characters, etc.
+</LI></UL>
+<B>Note:</B> TE_open just initializes the editor, displays the intial content of it and exits.
+It does not enter the editor loop in which keypresses are processed. In fact, there is no
+such loop: you need to get keypresses manually (using <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>
+or, even better, using <A HREF="$$LINK(events.h/EV_getc)">EV_getc</A>) and to pass them to
+<A HREF="$$LINK(TE_handleEvent)">TE_handleEvent</A> which will process them. Such approach gives
+much more flexibility. See <A HREF="$$LINK(TE_handleEvent)">TE_handleEvent</A> for an example of usage.
+
+[References]
+In=bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog
+Out=TE_checkSlack, alloc.h/HeapAlloc, string.h/strlen, unknown.h/sf_width, wingraph.h/WinAttr, wingraph.h/WinBegin, wingraph.h/WinChar, wingraph.h/WinFill, unknown.h/_du16u16, unknown.h/_mu16u16, unknown.h/_ROM_CALL_412

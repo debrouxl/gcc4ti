@@ -1,0 +1,244 @@
+[Main]
+Title=Using Floating Point Arithmetic
+
+[Top]
+If you have used earlier releases of TIGCC (prior to 0.9), you probably know that the use of floating
+point values and functions was possible, but only using some very awkward syntax, which caused a lot of
+headaches and nightmares. The TIGCC team (mostly
+<A HREF="mailto:SebastianR@gmx.de">Sebastian Reichelt</A> and
+<A HREF="mailto:zjuric@utic.net.ba">Zeljko Juric</A>) spent a lot
+of time and effort implementing native (ANSI) floats in TIGCC. And the results are now available:
+you can use regular floating point numbers and values now, as in all regular C compilers! This means
+that:
+<UL>
+<LI>
+You can now use the standard ANSI types <CODE>float</CODE>, <CODE>double</CODE> and
+<CODE>long&nbsp;double</CODE> without any trouble (in fact, these three types are the same,
+there is no difference between them). The old-style type <A HREF="$$LINK(timath.h/ti_float)">ti_float</A>
+still exists due to compatibility reasons, but now it is the same as <CODE>float</CODE>.
+</LI>
+</UL>
+<UL>
+<LI>
+You can now use "standard" floating point constants (like 2.854). So, the following is now valid:
+<PRE>float a, b, c;
+a = 2.854;
+b = 7;
+c = 1.5e-7;
+</PRE>
+In other words, no more ugly <A HREF="$$LINK(timath.h/M_FLT)">FLT</A> and
+<A HREF="$$LINK(timath.h/M_FEXP)">FEXP</A> macros! They still exist due to compatibility reasons,
+but their usage is very deprecated now.
+</LI>
+</UL>
+<UL>
+<LI>
+You can now use standard arithmetic ('+', '-', '*', '/) and comparison ('&lt;', '&gt;',
+'&lt;=', '&gt;=', '==' and '!=') operators with floating point values. There is no need any more
+for the use of awkward functions like <A HREF="$$LINK(timath.h/fadd)">fadd</A>,
+<A HREF="$$LINK(timath.h/fcmp)">fcmp</A> etc. So statements like these are now accepted:
+<PRE>p = (q + 3.15) / (q - r);
+x1 = (-b + sqrt (b * b - 4 * a * c)) / (2 * a);
+if (p &lt; 3.0) q += 1e-3;
+</PRE>
+This feature is probably the best present for TIGCC users...
+</LI>
+</UL>
+<UL>
+<LI>
+You can use all floating point functions (like <A HREF="$$LINK(timath.h/sqrt)">sqrt</A>,
+<A HREF="$$LINK(timath.h/sin)">sin</A> etc.) as usual. In this release, a standard ANSI
+math library <A HREF="$$LINK(math.h/)">math.h</A> is implemented, which contains nearly all
+functions proposed by ANSI C, with some extensions. The old
+<A HREF="$$LINK(timath.h/)">timath.h</A> library file still exists due to compatibility reasons,
+and it contains more functions than <A HREF="$$LINK(math.h/)">math.h</A>, because it contains
+some functions for making compatibility with older programs, and some functions which are
+internally related to the TIOS. Anyway, you can do calculations like these:
+<PRE>a = sin (b);
+b = exp (1);
+c = log (3.19);
+a = sqrt (b + c) * sinh (a / 2.);
+</PRE>
+As you can see from the second example, automatic promotion from integer constants to
+the floating point is also implemented.</LI>
+</UL>
+<UL>
+<LI>
+Integer types are now automatically promoted to floating point values when necessary, as
+proposed in ANSI C. This means that the following constructions are valid, assuming that
+<CODE>'n'</CODE> is a variable of integer (short, long, signed, unsigned) type:
+<PRE>a = n;
+b = sqrt (n);
+c = b + n;
+</PRE>
+You can also explicitely cast an integer value to a floating point one:
+<PRE>a = (float)n;
+</PRE>
+The function <A HREF="$$LINK(timath.h/flt)">flt</A> which performs the promotion explicitely
+still exists, due to compatibility reasons.
+</LI>
+</UL>
+<UL>
+<LI>
+Floating point types are automatically truncated to integers when the program
+expects an integer value (for example, when a floating point variable is assigned to an integer
+variable), as proposed in ANSI C. This means that you can write
+<PRE>n = a;
+</PRE>
+where <CODE>'n'</CODE> is an integer, and <CODE>'a'</CODE> is a float, although it is better
+to express your wish more explicitely using type cast as
+<PRE>n = (int)a;</PRE>
+The function <A HREF="$$LINK(timath.h/trunc)">trunc</A> which performs the
+truncation explicitely still exists due to compatibility reasons.
+</LI>
+</UL>
+<UL>
+<LI>
+You can use <A HREF="$$LINK(stdio.h/printf)">printf</A> and similar
+functions to print floating point values, using the format specifiers <CODE>%f</CODE>,
+<CODE>%e</CODE> and <CODE>%g</CODE>, as defined in ANSI C. So, the following is
+completely legal:
+<PRE>printf ("sin(%f)=%f", a, sin(a));
+printf ("%f", 3.14);</PRE>
+Note that the second statement was not valid prior to release 0.9 of TIGCC!
+</LI>
+</UL>
+<UL>
+<LI>
+To accept a floating point value from the keyboard, first accept it as a string (using
+<A HREF="$$LINK(stdio.h/gets)">gets</A>, some user-written input routine, or
+functions from <A HREF="$$LINK(dialogs.h/)">dialogs.h</A>), then
+convert the string to a floating point value using the <A HREF="$$LINK(timath.h/atof)">atof</A>
+(ascii-to-float) function. To get a floating point argument passed from TI-Basic to the
+program, use the <A HREF="$$LINK(args.h/GetFloatArg)">GetFloatArg</A> function.
+</LI>
+</UL>
+As you can see, the usage of floats with TIGCC is now essentially the same as in all other C
+compilers. See the description of the <A HREF="$$LINK(math.h/)">math.h</A> and
+<A HREF="$$LINK(timath.h/)">timath.h</A> header files for more info. However, floating point
+support in TIGCC is not perfect yet. That's why there are still some limitations
+in the use of floating point values (fortunately, they are not serious):
+<UL>
+<LI>
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_optrom)">OPTIMIZE_ROM_CALLS</A></CODE> in combination with floats sometimes seems to produce wrong
+results in calculations.
+</LI>
+</UL>
+<UL>
+<LI>
+The promotion of unsigned long integers which are too big to fit in a long integer type
+(i.e. values between 2147483648 and 4294967295) does not work correctly: The promoted value
+will be negative.</LI>
+</UL>
+<UL>
+<LI>
+The promotion of double long integers (<A HREF="$$INFOLINK(gnuexts/SEC72)">long long</A> types) to
+floating point values, and truncation of floating point values to longlongs are not implemented
+yet. If you try to do this (which is not very likely), you will get an "undefined reference"
+error during the linking stage.
+</LI>
+</UL>
+As an example of usage of floating point values and functions, the program given below
+(called "Float Test") reads coefficients of a quadratic equation from the keyboard, then
+calculates and displays the solutions of the equation (including complex ones):
+$$EXAMPLE(Float Test.c)
+See the description of the included header files for more info about the functions used.
+<BR><BR>
+As already mentioned above, the new floating point support is implemented without
+losing compatibility with programs written with releases of TIGCC before 0.9
+(more precise, the degree of compatibility is about 95%; read further to see possible
+reasons of incompatibility). So, the quadratic equation solver given below, which
+is written using old methods (prior to TIGCC 0.9), will still work with a new compiler.
+Compare this (old-style) code with the previous (new-style) one to see how much clearer
+the new-style code is...
+<PRE>#define SAVE_SCREEN
+
+#include &lt;stdio.h&gt;
+#include &lt;timath.h&gt;
+#include &lt;string.h&gt;
+#include &lt;kbd.h&gt;
+
+int _ti89, _ti92plus;
+
+void _main (void)
+{
+  ti_float a, b, c, d;
+  char buffer[200];
+  clrscr ();
+  puts ("a=");
+  a = atof (gets (buffer));
+  puts ("b=");
+  b = atof (gets (buffer));
+  puts ("c=");
+  c = atof (gets (buffer));
+  if (is_nan (a) || is_nan (b) || is_nan (c)) return;
+  d = fsub (fmul (b, b), fmul (FLT (4), fmul (a, c)));
+  if (fcmp (d, ZERO) &gt;= 0)
+    {
+      ti_float x1, x2;
+      x1 = fdiv (fadd (fneg (b), sqrt (d)), fadd (a, a));
+      x2 = fdiv (fsub (fneg (b), sqrt (d)), fadd (a, a));
+      printf ("\nx1=%f\nx2=%f", x1, x2);
+    }
+  else
+    {
+      ti_float re, im;
+      re = fdiv (fneg (b), fadd (a,a));
+      im = fabs (fdiv (sqrt (fneg (d)), fadd(a, a)));
+      printf ("\nx1=%f-%f*i\nx2=%f+%f*i", re, im, re, im);
+    }
+  ngetchx();
+}
+</PRE>
+The possible reasons which may cause incompatibility (very unlikely) with programs written
+with older versions of TIGCC (prior to 0.9) are:
+<UL>
+<LI>
+The types <A HREF="$$LINK(timath.h/ti_float)">ti_float</A> and <A HREF="$$LINK(timath.h/bcd)">bcd</A>
+are not the same any more.
+<CODE>ti_float</CODE> is now equal to ANSI type <CODE>float</CODE>, but
+<CODE>bcd</CODE> is still a structure. If your program uses the
+<CODE>bcd</CODE> type (not very likely), you should probably change it to
+<CODE>float</CODE> to make the program work, because functions which expect a
+<CODE>float</CODE> type will not accept a structured type. Two macros called
+<A HREF="$$LINK(timath.h/float_to_bcd)">float_to_bcd</A> and
+<A HREF="$$LINK(timath.h/bcd_to_float)">bcd_to_float</A> have been introduced to provide more general
+conversion if necessary.
+</LI>
+</UL>
+<UL>
+<LI>
+Functions <A HREF="$$LINK(timath.h/fadd)">fadd</A>, <A HREF="$$LINK(timath.h/fsub)">fsub</A>,
+<A HREF="$$LINK(timath.h/fmul)">fmul</A>, <A HREF="$$LINK(timath.h/fdiv)">fdiv</A>,
+<A HREF="$$LINK(timath.h/fneg)">fneg</A>, <A HREF="$$LINK(timath.h/fcmp)">fcmp</A>,
+<A HREF="$$LINK(timath.h/flt)">flt</A> and <A HREF="$$LINK(timath.h/trunc)">trunc</A> are not
+absolutely equal to functions
+<A HREF="$$LINK(timath.h/bcdadd)">bcdadd</A>, <A HREF="$$LINK(timath.h/bcdsub)">bcdsub</A>,
+<A HREF="$$LINK(timath.h/bcdmul)">bcdmul</A>, <A HREF="$$LINK(timath.h/bcddiv)">fdiv</A>,
+<A HREF="$$LINK(timath.h/bcdneg)">bcdneg</A>, <A HREF="$$LINK(timath.h/bcdcmp)">fcmp</A>,
+<A HREF="$$LINK(timath.h/bcdbcd)">bcdbcd</A> and <A HREF="$$LINK(timath.h/bcdlong)">bcdlong</A> any more.
+The first group of functions now works with the ordinary <CODE>float</CODE> type (and they
+will continue to work with <A HREF="$$LINK(timath.h/ti_float)">ti_float</A>), but the second
+group now only works with <A HREF="$$LINK(timath.h/bcd)">bcd</A> structures. So, if you used
+<CODE>bcdadd</CODE> etc. in your program (not very likely), you should
+probably change it to <CODE>fadd</CODE> etc. to make the program work.
+</LI>
+</UL>
+<UL>
+<LI>
+Suppose that your old program uses the <A HREF="$$LINK(timath.h/ti_float)">ti_float</A> type with
+direct access to its internal fields (not very likely), like in the following example:
+<PRE>ti_float a;
+a.exponent = 0x4003;
+a.mantissa = 0x3284300000000000;
+</PRE>
+Then the program will not work with the new compiler, because <CODE>ti_float</CODE> is not a
+structure any more. Using a new macro <A HREF="$$LINK(timath.h/bcd_var)">bcd_var</A> you can easily
+get your program to work. All you need to do is to re-express the above statements as
+<PRE>ti_float a;
+bcd_var(a).exponent = 0x4003;
+bcd_var(a).mantissa = 0x3284300000000000;
+</PRE>
+Note, however, that the <A HREF="$$LINK(timath.h/bcd)">bcd</A> type is still a structure.
+</LI>
+</UL>

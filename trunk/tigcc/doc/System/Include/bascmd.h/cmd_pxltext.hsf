@@ -1,0 +1,33 @@
+[Main]
+Name=cmd_pxltext
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_pxltext (CESI string, CESI y, CESI x);
+MinAMS=1.01
+See Also=cmd_pttext, graph.h/DrawStr
+
+[ROM Call]
+Index=$37C
+
+[Description]
+Executes TI-Basic 'PxlText' command.
+
+[Explanation]
+cmd_pxltext displays the Graph Screen and places a character string on the
+screen at the pixel (x,y). The coordinates are absolute pixel coordinates
+(independent of the current window settings), where (0,0) is the top left
+corner of the Graph Screen, excluding the menu area.
+The parameters <I>y</I> and <I>x</I> should point to integer items
+on the expression stack which determine the coordinates (note that the order of x and y
+coordinates is swapped), and the parameter <I>string</I> should point to the
+tag of a string expression to be displayed.
+<BR><BR>
+See also <A HREF="$$LINK(cmd_pttext)">cmd_pttext</A>, which uses
+window-relative coordinates, and
+<A HREF="$$LINK(graph.h/DrawStr)">DrawStr</A> for
+much faster low-level string drawing (independently of the Graph Screen).
+
+[References]
+Out=estack.h/GetValue, unknown.h/ForceFloat, unknown.h/gr_active, unknown.h/GraphActivate, unknown.h/XCvtFtoP, unknown.h/YCvtFtoP, wingraph.h/WinAttr, wingraph.h/WinStrXY
+Out_EV_eventLoop=1

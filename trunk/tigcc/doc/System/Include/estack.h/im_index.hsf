@@ -1,0 +1,31 @@
+[Main]
+Name=im_index
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=ESI im_index (CESI ptr);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2CC
+
+[Description]
+Gets the index of the imaginary part of an expression.
+
+[Explanation]
+If <I>ptr</I> points to the <A HREF="$$LINK(Tags)">COMPLEX_TAG</A>
+(i.e. if the expression is complex), im_index returns the pointer
+to the imaginary part of the expression. If <I>ptr</I> does not point to the
+<A HREF="$$LINK(Tags)">COMPLEX_TAG</A> (i.e. if the expression is real),
+im_index returns a pointer to a simple zero expression, i.e. expression which
+consists only of the number 0 (floating point or integer,
+depending on whether the approximation mode is active or not).
+<BR><BR>
+<B>Note:</B> The expression should be in internal canonic form
+(see <A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A>), else this function
+is not reliable.
+
+[References]
+In=basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_solve, basfunc.h/push_zeros, basop.h/push_equals, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not_equals, unknown.h/get_ub
+Out=unknown.h/Float0Index, unknown.h/Integer0Index

@@ -1,0 +1,46 @@
+[Main]
+Name=LIO_CTX
+Type=Type
+Subtype=Structure
+Header Files=link.h
+Definition=typedef struct { unsigned short hVar; /* File handle (or 0 if no handles associated) */ union { const void *pVar; /* Pointer to the file, used only if hVar is 0 */ struct { unsigned short FindFlags; unsigned short NameSym; } DirVars; /* Used only if hVar is non-zero */ } extra; const char *VarName; /* Pointer to the var name (ordinary C string) */ unsigned short VarSize; /* Size of the variable */ unsigned short Index; /* Only for CBL access - data sent as float array */ unsigned short Unknown; /* Sent after index */ unsigned char VarType; /* See below */ unsigned char VarCompat; /* See info about SYM_ENTRY in vat.h */ } LIO_CTX;
+
+[Description]
+A file context structure used in some high-level link commands.
+
+[Explanation]
+LIO_CTX is a file context structure used in some high-level link commands. Some fields of this
+structure are not so clear for me. However, in many applications not all fields need to be set
+properly, so limited use of this structure is possible.
+<BR><BR>
+The field <I>VarType</I> may contain the following values (I don't know much more than I
+wrote in this table, so don't ask me about details):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>0</TD><TD>Expression</TD></TR>
+<TR><TD>4</TD><TD>List</TD></TR>
+<TR><TD>6</TD><TD>Matrix</TD></TR>
+<TR><TD>10</TD><TD>Data</TD></TR>
+<TR><TD>11</TD><TD>Text</TD></TR>
+<TR><TD>12</TD><TD>String</TD></TR>
+<TR><TD>13</TD><TD>GDB variable</TD></TR>
+<TR><TD>14</TD><TD>Geometry figure</TD></TR>
+<TR><TD>16</TD><TD>Picture</TD></TR>
+<TR><TD>17</TD><TD>Picture (???)</TD></TR>
+<TR><TD>18</TD><TD>TI-Basic program</TD></TR>
+<TR><TD>19</TD><TD>TI-Basic function</TD></TR>
+<TR><TD>20</TD><TD>Geometry macro</TD></TR>
+<TR><TD>21</TD><TD>In link protocol, cause execution of assembly block</TD></TR>
+<TR><TD>25</TD><TD>Directory list (used recursively, unless <I>VarType</I> 26 follows)</TD></TR>
+<TR><TD>26</TD><TD>List the folder table entries</TD></TR>
+<TR><TD>27</TD><TD>List contents of a given folder (<I>VarType</I> 26 should follow)</TD></TR>
+<TR><TD>28</TD><TD>Other (OTH) file</TD></TR>
+<TR><TD>29</TD><TD>Backup file</TD></TR>
+<TR><TD>31</TD><TD>Folder entry symbol in group files</TD></TR>
+<TR><TD>32</TD><TD>Used for getting a certificate</TD></TR>
+<TR><TD>33</TD><TD>ASM program</TD></TR>
+<TR><TD>34</TD><TD>ID List</TD></TR>
+<TR><TD>35</TD><TD>Product code (AMS)</TD></TR>
+<TR><TD>36</TD><TD>FLASH application</TD></TR>
+<TR><TD>37</TD><TD>Certificate</TD></TR>
+</TABLE>

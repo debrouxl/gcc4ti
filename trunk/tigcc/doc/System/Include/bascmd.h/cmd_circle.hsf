@@ -1,0 +1,40 @@
+[Main]
+Name=cmd_circle
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_circle (CESI x, CESI y, CESI radius, CESI drawmode);
+MinAMS=1.01
+See Also=cmd_pxlcircle, graph.h/DrawClipEllipse
+
+[ROM Call]
+Index=$32C
+
+[Description]
+Executes TI-Basic 'Circle' command.
+
+[Explanation]
+cmd_circle displays the Graph Screen and draws, erases, or inverts a circle on it.
+The parameters <I>x</I>, <I>y</I>, <I>radius</I>, and <I>drawmode</I> should point
+to four items on the expression stack, which represent
+respectively the coordinates of the center of the circle, the radius, and the
+drawing mode. All coordinates and the radius are integer or floating point values
+which are relative to the current
+window settings (you can change them using the
+"Window Editor" application, or directly by storing values in system
+variables like "xmin", using the <A HREF="$$LINK(vat.h/VarStore)">VarStore</A> function).
+<I>drawmode</I> should point to one of the following values:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD VALIGN="TOP">1</TD><TD>Draws the circle.</TD></TR>
+<TR><TD VALIGN="TOP">0</TD><TD>Erases the circle.</TD></TR>
+<TR><TD VALIGN="TOP">-1</TD><TD>Inverts pixels along the circle.</TD></TR>
+</TABLE>
+<BR>
+See also <A HREF="$$LINK(cmd_pxlcircle)">cmd_pxlcircle</A>, which uses pixel coordinates instead of window-relative
+ones, and <A HREF="$$LINK(graph.h/DrawClipEllipse)">DrawClipEllipse</A> for much faster low-level circle/ellipse drawing
+(independently of the Graph Screen).
+
+[References]
+Out=error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/GetValue, estack.h/push_expression, estack.h/push_Float, estack.h/push_quantum, estack.h/top_estack, system.h/OSCheckBreak, timath.h/is_transfinite, unknown.h/ForceFloat, unknown.h/gr_active, unknown.h/GraphActivate, unknown.h/GrLineFlt, unknown.h/QSkipGraphErr, unknown.h/XCvtFtoP, unknown.h/XCvtPtoF, unknown.h/YCvtFtoP, unknown.h/YCvtFtoWin, wingraph.h/MakeWinRect, wingraph.h/WinAttr, wingraph.h/WinEllipse, wingraph.h/WinLine, unknown.h/_bcd_math
+Out_EV_eventLoop=1

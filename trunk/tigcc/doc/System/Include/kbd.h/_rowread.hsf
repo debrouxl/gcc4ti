@@ -1,0 +1,125 @@
+[Main]
+Name=_rowread
+Type=Function
+Subtype=tigcc.a
+Header Files=kbd.h
+Definition=unsigned short _rowread (unsigned short row);
+See Also=_rowread_internal, _rowread_inverted, _keytest
+
+[Library Call]
+Asm=1
+
+[Registers]
+row=d0
+
+[Description]
+Low-level keyboard reading.
+
+[Explanation]
+_rowread is a function for low-level keyboard reading.
+It is implemented for simultaneous reading of more than one key (useful in games), or for reading
+keys when interrupts are disabled (useful if you want to avoid displaying status
+line indicators, which are displayed from Auto-Int 1).
+<BR><BR>
+Setting a bit in <I>row</I> masks the corresponding row of the keyboard from being
+read, so if <I>row</I> is zero, all rows are read at the same time. Take a look
+at <A HREF="$$LINK(_rowread_inverted)">_rowread_inverted</A> as well.
+In the result, all bits (cols) corresponding to keys which are being held down
+are set.
+See below for some examples.
+<BR><BR>
+Here is a table which describes how the keyboard matrix is organized on
+both the TI-89 and TI-92 Plus:
+<BR><BR>
+<B>TI-89:</B>
+<BR>
+<TABLE CELLPADDING="2" CELLSPACING="0">
+<TR><TD>&nbsp;</TD>
+<TD ALIGN="CENTER"><B>C o l u m n</B></TD></TR>
+<TR><TD VALIGN="MIDDLE"><B>R<BR>o<BR>w</B></TD>
+<TD>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;7&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;6&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;5&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;4&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;3&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;2&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;1&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;0&nbsp;&nbsp;</B></TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;0</B></TD><TD ALIGN="CENTER">alpha</TD><TD ALIGN="CENTER">Diamnd</TD><TD ALIGN="CENTER">Shift</TD><TD ALIGN="CENTER">2nd</TD><TD ALIGN="CENTER">Right</TD><TD ALIGN="CENTER">Down</TD><TD ALIGN="CENTER">Left</TD><TD ALIGN="CENTER">Up</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;1</B></TD><TD ALIGN="CENTER">F5</TD><TD ALIGN="CENTER">CLEAR</TD><TD ALIGN="CENTER">^</TD><TD ALIGN="CENTER">/</TD><TD ALIGN="CENTER">*</TD><TD ALIGN="CENTER">-</TD><TD ALIGN="CENTER">+</TD><TD ALIGN="CENTER">ENTER</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;2</B></TD><TD ALIGN="CENTER">F4</TD><TD ALIGN="CENTER">BckSpc</TD><TD ALIGN="CENTER">T</TD><TD ALIGN="CENTER">,</TD><TD ALIGN="CENTER">9</TD><TD ALIGN="CENTER">6</TD><TD ALIGN="CENTER">3</TD><TD ALIGN="CENTER">(-)</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;3</B></TD><TD ALIGN="CENTER">F3</TD><TD ALIGN="CENTER">CATLG</TD><TD ALIGN="CENTER">Z</TD><TD ALIGN="CENTER">)</TD><TD ALIGN="CENTER">8</TD><TD ALIGN="CENTER">5</TD><TD ALIGN="CENTER">2</TD><TD ALIGN="CENTER"><B>.</B></TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;4</B></TD><TD ALIGN="CENTER">F2</TD><TD ALIGN="CENTER">MODE</TD><TD ALIGN="CENTER">Y</TD><TD ALIGN="CENTER">(</TD><TD ALIGN="CENTER">7</TD><TD ALIGN="CENTER">4</TD><TD ALIGN="CENTER">1</TD><TD ALIGN="CENTER">0</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;5</B></TD><TD ALIGN="CENTER">F1</TD><TD ALIGN="CENTER">HOME</TD><TD ALIGN="CENTER">X</TD><TD ALIGN="CENTER">=</TD><TD ALIGN="CENTER">|</TD><TD ALIGN="CENTER">EE</TD><TD ALIGN="CENTER">STO</TD><TD ALIGN="CENTER">APPS</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;6</B></TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">ESC</TD></TR>
+</TABLE>
+</TD></TR></TABLE>
+<BR>
+<B>TI-92 Plus:</B>
+<BR>
+<TABLE CELLPADDING="2" CELLSPACING="0">
+<TR><TD>&nbsp;</TD>
+<TD ALIGN="CENTER"><B>C o l u m n</B></TD></TR>
+<TR><TD VALIGN="MIDDLE"><B>R<BR>o<BR>w</B></TD>
+<TD>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;7&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;6&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;5&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;4&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;3&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;2&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;1&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;0&nbsp;&nbsp;</B></TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;0</B></TD><TD ALIGN="CENTER">Down</TD><TD ALIGN="CENTER">Right</TD><TD ALIGN="CENTER">Up</TD><TD ALIGN="CENTER">Left</TD><TD ALIGN="CENTER">Hand</TD><TD ALIGN="CENTER">Shift</TD><TD ALIGN="CENTER">Diamnd</TD><TD ALIGN="CENTER">2nd</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;1</B></TD><TD ALIGN="CENTER">3</TD><TD ALIGN="CENTER">2</TD><TD ALIGN="CENTER">1</TD><TD ALIGN="CENTER">F8</TD><TD ALIGN="CENTER">W</TD><TD ALIGN="CENTER">S</TD><TD ALIGN="CENTER">Z</TD><TD ALIGN="CENTER">&nbsp;</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;2</B></TD><TD ALIGN="CENTER">6</TD><TD ALIGN="CENTER">5</TD><TD ALIGN="CENTER">4</TD><TD ALIGN="CENTER">F3</TD><TD ALIGN="CENTER">E</TD><TD ALIGN="CENTER">D</TD><TD ALIGN="CENTER">X</TD><TD ALIGN="CENTER">&nbsp;</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;3</B></TD><TD ALIGN="CENTER">9</TD><TD ALIGN="CENTER">8</TD><TD ALIGN="CENTER">7</TD><TD ALIGN="CENTER">F7</TD><TD ALIGN="CENTER">R</TD><TD ALIGN="CENTER">F</TD><TD ALIGN="CENTER">C</TD><TD ALIGN="CENTER">STO</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;4</B></TD><TD ALIGN="CENTER">,</TD><TD ALIGN="CENTER">)</TD><TD ALIGN="CENTER">(</TD><TD ALIGN="CENTER">F2</TD><TD ALIGN="CENTER">T</TD><TD ALIGN="CENTER">G</TD><TD ALIGN="CENTER">V</TD><TD ALIGN="CENTER">Space</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;5</B></TD><TD ALIGN="CENTER">TAN</TD><TD ALIGN="CENTER">COS</TD><TD ALIGN="CENTER">SIN</TD><TD ALIGN="CENTER">F6</TD><TD ALIGN="CENTER">Y</TD><TD ALIGN="CENTER">H</TD><TD ALIGN="CENTER">B</TD><TD ALIGN="CENTER">/</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;6</B></TD><TD ALIGN="CENTER">P</TD><TD ALIGN="CENTER">ENTER2</TD><TD ALIGN="CENTER">LN</TD><TD ALIGN="CENTER">F1</TD><TD ALIGN="CENTER">U</TD><TD ALIGN="CENTER">J</TD><TD ALIGN="CENTER">N</TD><TD ALIGN="CENTER">^</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;7</B></TD><TD ALIGN="CENTER">*</TD><TD ALIGN="CENTER">APPS</TD><TD ALIGN="CENTER">CLEAR</TD><TD ALIGN="CENTER">F5</TD><TD ALIGN="CENTER">I</TD><TD ALIGN="CENTER">K</TD><TD ALIGN="CENTER">M</TD><TD ALIGN="CENTER">=</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;8</B></TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">ESC</TD><TD ALIGN="CENTER">MODE</TD><TD ALIGN="CENTER">+</TD><TD ALIGN="CENTER">O</TD><TD ALIGN="CENTER">L</TD><TD ALIGN="CENTER"><FONT FACE="Symbol">q</FONT></TD><TD ALIGN="CENTER">BckSpc</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;9</B></TD><TD ALIGN="CENTER">(-)</TD><TD ALIGN="CENTER"><B>.</B></TD><TD ALIGN="CENTER">0</TD><TD ALIGN="CENTER">F4</TD><TD ALIGN="CENTER">Q</TD><TD ALIGN="CENTER">A</TD><TD ALIGN="CENTER">ENTER1</TD><TD ALIGN="CENTER">-</TD></TR>
+</TABLE>
+</TD></TR></TABLE>
+<BR>
+Note for TI-92+: ENTER1 is on the alphabetic and numeric keypads.
+ENTER2 is next to the cursor pad.
+<BR><BR>
+You can use binary numbers as implemented in TIGCC v0.91 (or higher) to mask out the rows you need.
+Note, however, that this is <B>not recommended</B> since programs written this way
+will not be compatible with other C dialects and previous versions of TIGCC.
+<BR>
+Instead, you can make use of the fact that a value where only bit <I>i</I> is set equals 1&lt;&lt;<I>i</I>.
+<BR>
+Use the bitwise NOT operator ('~') to invert the value.
+<BR><BR>
+These four expressions all check whether '9' on the TI-89 or 'E' on the TI-92+ is held down. In fact, they are all equal:
+<PRE>_rowread(~((short)(1&lt;&lt;2))) &amp; (1&lt;&lt;3)
+_rowread(~0b100) &amp; 0b1000
+_rowread(~0x4) &amp; 0x8
+_rowread(0xFFFB) &amp; 0x8
+</PRE>
+But generally it is much easier to use the <A HREF="$$LINK(_keytest)">_keytest</A> macro instead.
+<BR><BR>
+Because of the way the TI-89 and TI-92+'s keyboard is wired, if you hold down three
+keys that form the corners of a rectangle, the calculator will think you are
+also holding down the key at the fourth corner. The ON key is special. It is not
+part of the keyboard matrix and therefore cannot be read with _rowread. It
+triggers a special interrupt instead.
+<BR><BR>
+<B>Note:</B> It is recommended to redirect Auto-Int 1 and 5 while reading the keyboard using _rowread,
+because keyboard reading routines implemented in these two interrupts may interfere with _rowread if
+an interrupt occurs just while _rowread is executing.
+See <A HREF="$$LINK(intr.h/DUMMY_HANDLER)">DUMMY_HANDLER</A> from <A HREF="$$LINK(intr.h/)">intr.h</A>
+for information on how to do this.
+<BR><BR>
+About the internal implementation: _rowread sends <I>row</I> to the I/O port
+0x600018 (keyboard row mask), waits a while to allow the I/O to recover, then
+returns the byte read from 0x60001B (inverted for easier testing in C programs).
+
+[References]
+In=_keytest, _keytest_optimized, _rowread_internal, _rowread_inverted

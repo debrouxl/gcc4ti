@@ -1,0 +1,34 @@
+[Main]
+Name=HS_getEntry
+Type=Function
+Subtype=ROM Call
+Header Files=homescr.h
+Definition=HANDLE HS_getEntry (unsigned short Index);
+See Also=HS_getAns, HS_getFIFONode
+
+[ROM Call]
+Index=$242
+
+[Description]
+Returns the handle of a Home Screen entry.
+
+[Explanation]
+HS_getEntry returns a handle to the entry part of the Home Screen history pair with
+index <I>Index</I>, where <I>Index</I> is a value between 1 and 99 and has
+the same meaning as the parameter of the TI-Basic <CODE>'entry'</CODE> pseudo-function.
+If the entry does not exist, HS_getEntry returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A>.
+<BR><BR>
+The returned handle contains a "multi-expression". A multi-expression is
+an expression consisting of multiple expressions seperated by <A HREF="$$LINK(estack.h/Tags)">NEXTEXPR_TAG</A>
+and ending in <A HREF="$$LINK(estack.h/Tags)">ENDSTACK_TAG</A>. See
+<A HREF="$$LINK(estack.h/MULTI_EXPR)">MULTI_EXPR</A> for more info.
+<BR><BR>
+Even if the multi-expression contains only one expression and therefore has
+no <A HREF="$$LINK(estack.h/Tags)">NEXTEXPR_TAG</A>s in it, it will still have an <A HREF="$$LINK(estack.h/Tags)">ENDSTACK_TAG</A>.
+<BR><BR>
+The handle returned by this funtion is valid input for <A HREF="$$LINK(estack.h/HToESI)">HToESI</A> and
+<A HREF="$$LINK(estack.h/Parse2DMultiExpr)">Parse2DMultiExpr</A>.
+
+[References]
+Out=HS_getFIFONode
+In=textedit.h/TE_handleEvent, unknown.h/push_ans_entry

@@ -1,0 +1,21 @@
+[Main]
+Name=vscanf
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=short vscanf (const char *format, va_list arglist);
+Real Definition=#define vscanf(__format__,__arglist__) ({long __maxbuflen=(_rom_call(unsigned long,(void),9C))()-2;(__maxbuflen>0)?({char *__inputbuf=(_rom_call(void*,(long),A2))(__maxbuflen);getsn(__inputbuf,__maxbuflen);short __result=vsscanf(__inputbuf,(__format__),(__arglist__));(_rom_call(void,(void*),A3))(__inputbuf);__result;}):0;})
+
+[Description]
+Console input parsing function using argument list.
+
+[Explanation]
+The vfscanf function is known as an alternate entry point for the fscanf function.
+It behaves exactly like <A HREF="$$LINK(scanf)">scanf</A>, but it accepts a pointer to a
+list of arguments instead of an argument list (see <A HREF="$$LINK(stdarg.h/)">stdarg.h</A>
+header file for more info about argument lists).
+See <A HREF="$$LINK(sscanf)">sscanf</A> for details on format specifiers.
+
+[References]
+Out=getsn, vsscanf, alloc.h/HeapAllocPtr, alloc.h/HeapFreePtr, alloc.h/HeapMax
+Out_EV_eventLoop=1

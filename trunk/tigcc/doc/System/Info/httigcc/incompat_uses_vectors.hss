@@ -1,0 +1,15 @@
+[Main]
+Title=INCOMPAT_USES_VECTORS
+See Also=incompat_uses_traps: INCOMPAT_USES_TRAPS
+
+[Top]
+If your program is a TSR that hooks an interrupt or exception (see
+<A HREF="$$LINK(intr.h/SetIntVec)">SetIntVec</A>) or makes any other change
+to the interrupt vector table other than traps, you should write
+<PRE>#define INCOMPAT_USES_VECTORS
+</PRE>
+at the top of at least one source file, before including any header file
+from the TIGCC Library.
+If this directive is not used, a shell might automatically restore the hooked
+interrupt, rendering the TSR useless. Or it might even just free other
+resources allocated by the program, causing a crash.

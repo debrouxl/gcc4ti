@@ -1,0 +1,39 @@
+[Main]
+Title=Definite Access of Volatile Objects
+
+[Top]
+Both the C and C++ standard have the concept of <A HREF="$$INFOLINK(keywords/volatile)">volatile</A> objects.  These
+are normally accessed by pointers and used for accessing hardware.  The
+standards encourage compilers to refrain from optimizations
+concerning accesses to volatile objects that it might perform on
+non-volatile objects.  The C standard leaves it implementation defined
+as to what constitutes a volatile access.  The C++ standard omits to
+specify this, except to say that C++ should behave in a similar manner
+to C with respect to volatiles, where possible.  The minimum either
+standard specifies is that at a sequence point all previous accesses to
+volatile objects have stabilized and no subsequent accesses have
+occurred.  Thus an implementation is free to reorder and combine
+volatile accesses which occur between sequence points, but cannot do so
+for accesses across a sequence point.  The use of volatiles does not
+allow you to violate the restriction on updating objects multiple times
+within a sequence point.
+<BR><BR>
+In most expressions, it is intuitively obvious what is a read and what is
+a write.  For instance
+<PRE>volatile int *dst = <I>somevalue</I>;
+volatile int *src = <I>someothervalue</I>;
+*dst = *src;
+</PRE>
+will cause a read of the volatile object pointed to by <I>src</I> and stores the
+value into the volatile object pointed to by <I>dst</I>.  There is no
+guarantee that these reads and writes are atomic, especially for objects
+larger than <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.
+<BR><BR>
+Less obvious expressions are where something which looks like an access
+is used in a void context.  An example would be,
+<PRE>volatile int *src = <I>somevalue</I>;
+*src;
+</PRE>
+With C, such expressions are rvalues, and as rvalues cause a read of
+the object, GCC interprets this as a read of the volatile being pointed
+to.

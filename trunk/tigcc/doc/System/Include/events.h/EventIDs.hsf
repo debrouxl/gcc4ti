@@ -1,0 +1,392 @@
+[Main]
+Name=EventIDs
+Type=Type
+Subtype=Enumeration
+Header Files=events.h
+Definition=enum EventIDs {...};
+Real Definition=enum EventIDs {CM_NOTHING=0x0,CM_LAST_STRING_NUMBER=0x4ff,CM_FIRST_APP_ID=0x500,CM_FIRST_SYS_ID=0x700,CM_IDLE=0x700,CM_NULL=0x700,CM_INIT=0x701,CM_STARTTASK=0x702,CM_START=0x702,CM_ACTIVATE=0x703,CM_FOCUS=0x704,CM_UNFOCUS=0x705,CM_DEACTIVATE=0x706,CM_ENDTASK=0x707,CM_QUIT=0x707,CM_START_CURRENT=0x708,CM_RESTART=0x708,CM_APD=0x709,CM_OFF=0x70A,CM_ON=0x70B,CM_INSTALL=0x70C,CM_UNINSTALL=0x70D,CM_PACK=0x70E,CM_UNPACK=0x70F,CM_KEYPRESS=0x710,CM_KEY_PRESS=0x710,CM_MENU_CUT=0x720,CM_CUT=0x720,CM_MENU_COPY=0x721,CM_COPY=0x721,CM_MENU_PASTE=0x722,CM_PASTE=0x722,CM_STRING=0x723,CM_PASTE_STRING=0x723,CM_HSTRING=0x724,CM_PASTE_HANDLE=0x724,CM_DEL=0x725,CM_DELETE=0x725,CM_CLR=0x726,CM_CLEAR=0x726,CM_MENU_CLEAR=0x727,CM_CLEAR_ALL=0x727,CM_MENU_FIND=0x728,CM_FIND=0x728,CM_INSERT=0x730,CM_TOGGLE_INSERT=0x730,CM_BLINK=0x740,CM_CURSOR_FLASH=0x740,CM_STORE=0x750,CM_STO=0x750,CM_RECALL=0x751,CM_RCL=0x751,CM_WPAINT=0x760,CM_MENU_OPEN=0x770,CM_OPEN=0x770,CM_MENU_SAVE=0x771,CM_SAVE_AS=0x771,CM_MENU_NEW=0x772,CM_NEW=0x772,CM_MENU_FORMAT=0x773,CM_FORMAT=0x773,CM_MENU_ABOUT=0x774,CM_ABOUT=0x774,CM_MODE_CHANGE=0x780,CM_SWITCH_GRAPH=0x781,CM_DEFAULTS=0x782,CM_GEOMETRY=0x7C0,CM_OPEN_SYSDATA=0x7C0,CM_FIRST_APP_STRING=0x800};
+
+[Description]
+An enumeration describing IDs of system messages.
+
+[Explanation]
+EventIDs is enumerated type for describing ID numbers of system messages (they are
+stored in the <I>Type</I> field of the <A HREF="$$LINK(EVENT)">EVENT</A> structure. All possible
+ID numbers (everything is in hex) are described in the following table. "Extra field" describes which
+subfield in <I>extra</I> union field of <A HREF="$$LINK(EVENT)">EVENT</A> structure
+is used for storing extra information (if any). "(depr.)" after a name specifies that
+this name is deprecated.
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+  <TR>
+    <TD VALIGN="TOP"><B>Code</B></TD>
+    <TD VALIGN="TOP"><B>Message name</B></TD>
+    <TD VALIGN="TOP"><B>Description</B></TD>
+    <TD VALIGN="TOP"><B>Extra field</B></TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x0</TD>
+    <TD VALIGN="TOP">CM_NOTHING</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x1 - 0x4FF</TD>
+    <TD VALIGN="TOP">CM_LAST_STRING_NUMBER</TD>
+    <TD VALIGN="TOP">Built-in strings:<BR>
+Strings for the AMS are stored in a table for lanugage customization. <A HREF="$$LINK(EV_defaultHandler)">EV_defaultHandler</A> will
+turn these events into CM_PASTE_STRING events for the application to process. For compatibility
+with TI's Flash Studio, CM_LAST_STRING_NUMBER (0x4FF) is defined here.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x500</TD>
+    <TD VALIGN="TOP">CM_FIRST_APP_ID</TD>
+    <TD VALIGN="TOP">Commands in the range 0x500 - 0x6FF are reserved for applications.
+Generally, these commands refer to Menu choices made by the user while running the application.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x700</TD>
+    <TD VALIGN="TOP">CM_FIRST_SYS_ID</TD>
+    <TD VALIGN="TOP">Commands in the range 0x700 - 0x7BF are reserved for use by the AMS.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x700</TD>
+    <TD VALIGN="TOP">CM_NULL<BR>CM_IDLE&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Idle (<A HREF="$$LINK(system.h/idle)">idle</A> is called after message sent).
+This message is sent to the active application when there are no other
+events to process. The application might use this event to
+take care of some background processing or update an animated display.
+This message is used for example in spinning of 3D graph.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x701</TD>
+    <TD VALIGN="TOP">CM_INIT</TD>
+    <TD VALIGN="TOP">Init application. This message is sent
+from <A HREF="$$LINK(EV_centralDispatcher)">EV_centralDispatcher</A> after a reset
+or when batteries are inserted.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x702</TD>
+    <TD VALIGN="TOP">CM_START<BR>CM_STARTTASK&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Start Task (in rect <I>r</I>). This message is sent
+to a task when it is being started. <I>r</I> is a rectangle with the requested window
+location and size chosen by the user from the mode screen settings.
+The application passes it to <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> to create
+its initial window. <I>StartType</I> field of the message is checked here
+(see <A HREF="$$LINK(EV_startTask)">EV_startTask</A>), because some applications display a
+"Current/Open/New" submenu on the APPS menu, so this field is needed to tell
+the application which submenu command was selected by the user.</TD>
+    <TD VALIGN="TOP">r</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x703</TD>
+    <TD VALIGN="TOP">CM_ACTIVATE</TD>
+    <TD VALIGN="TOP">Activate. Applications usually respond to this message by
+highlighting their window border to make it apparent to the user which application
+is active, by setting menu command states,
+and by updating (or activating) registered menus (see <A HREF="$$LINK(EV_registerMenu)">EV_registerMenu</A>.
+Calling <A HREF="$$LINK(EV_defaultHandler)">EV_defaultHandler</A> will register and start the default toolbar
+for the running application.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x704</TD>
+    <TD VALIGN="TOP">CM_FOCUS</TD>
+    <TD VALIGN="TOP">Focus. Applications usually respond to this message by getting Mode options, and by
+giving the focus to the application editor (see <A HREF="$$LINK(textedit.h/TE_focus)">TE_focus</A>
+in <A HREF="$$LINK(textedit.h/)">textedit.h</A> header file).
+This usually means making the cursor flashing.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x705</TD>
+    <TD VALIGN="TOP">CM_UNFOCUS</TD>
+    <TD VALIGN="TOP">UnFocus. Usually used on switching sides.
+When used on the text editor, it means turning of the cursor flashing.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x706</TD>
+    <TD VALIGN="TOP">CM_DEACTIVATE</TD>
+    <TD VALIGN="TOP">DeActivate.
+This message is sent to the active application to inform it that it no longer
+holds the interactive center of attention. Applications usually respond to this
+message by hiding menus and releasing the memory occupied by them.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x707</TD>
+    <TD VALIGN="TOP">CM_QUIT<BR>CM_ENDTASK&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">End Task. Applications usually respond to this message by hiding windows and doing
+various cleanups.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x708</TD>
+    <TD VALIGN="TOP">CM_RESTART<BR>CM_START_CURRENT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Start current.
+This message only notifies the current application that the user has chosen to
+start the same application again. Usually ignored.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x709</TD>
+    <TD VALIGN="TOP">CM_APD</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70A</TD>
+    <TD VALIGN="TOP">CM_OFF</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+
+  <TR>
+    <TD VALIGN="TOP">0x70B</TD>
+    <TD VALIGN="TOP">CM_ON</TD>
+    <TD VALIGN="TOP">
+Sent to each application when the calculator is turned on after
+being turned off with ([2ND] [OFF]). This command is not sent
+if the calculator was turned off via APD (Auto Power Down).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70C</TD>
+    <TD VALIGN="TOP">CM_INSTALL</TD>
+    <TD VALIGN="TOP">Sent to a FLASH application after it has been successfully installed on the calculator.
+This event will be sent when batteries are replaced, and after the FLASH app has been downloaded into the FLASH memory.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70D</TD>
+    <TD VALIGN="TOP">CM_UNINSTALL</TD>
+    <TD VALIGN="TOP">Sent to a FLASH application before it is deleted from the FLASH memory.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70E</TD>
+    <TD VALIGN="TOP">CM_PACK</TD>
+    <TD VALIGN="TOP">Tells a FLASH app that FLASH memory garbage collection is about to take place. All important settings should to be backed up using the application's public storage.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70F</TD>
+    <TD VALIGN="TOP">CM_UNPACK</TD>
+    <TD VALIGN="TOP">Tells a FLASH app that FLASH memory garbage collection has finished. The application should restore any saved settings.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x710</TD>
+    <TD VALIGN="TOP">CM_KEY_PRESS<BR>CM_KEYPRESS&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Keypress. This is the most common event. Note that a lot of system and mode events
+(opening system menus, dialogs etc.) are also processed as keypresses. They all have correct
+keypresses attached to them (usually DIAMOND + <B>...</B>). Tokens
+are usually send via <A href="$$LINK(EV_sendString)">EV_sendString</A> and do not have to be
+processed as single keypresses. All special keypresses may be passed to
+<A href="$$LINK(EV_defaultHandler)">EV_defaultHandler</A> for further processing.</TD>
+    <TD VALIGN="TOP">Key</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x720</TD>
+    <TD VALIGN="TOP">CM_CUT<BR>CM_MENU_CUT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Cut.
+Dedicated for cutting selected text to the clipboard.
+All similar (text editing) events should eventually be handled by
+<A HREF="$$LINK(textedit.h/TE_handleEvent)">TE_handleEvent</A> (the default text editor handler).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x721</TD>
+    <TD VALIGN="TOP">CM_COPY<BR>CM_MENU_COPY&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Copy. Dedicated for copying selected text to the clipboard.
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x722</TD>
+    <TD VALIGN="TOP">CM_PASTE<BR>CM_MENU_PASTE&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Paste.
+Dedicated for pasting text from the clipboard to the edit buffer at the cursor position,
+replacing any eventually selected text.
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x723</TD>
+    <TD VALIGN="TOP">CM_PASTE_STRING<BR>CM_STRING&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Paste static (constant) text into the event paste buffer (in fact, it only sets a pointer
+to PasteText). See <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A> and <A HREF="$$LINK(EV_sendString)">EV_sendString</A>.</TD>
+    <TD VALIGN="TOP">PasteText</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x724</TD>
+    <TD VALIGN="TOP">CM_PASTE_HANDLE<BR>CM_HSTRING&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Paste dynamic text, associated with a handle.
+The handle is released back to the heap by the default text edit handler after the paste is
+complete.</TD>
+    <TD VALIGN="TOP">hPasteText</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x725</TD>
+    <TD VALIGN="TOP">CM_DELETE<BR>CM_DEL&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">DEL (backspace) keypress. Dedicated for deleting selected text,
+or one character to the left of the cursor if no text is selected.
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x726</TD>
+    <TD VALIGN="TOP">CM_CLEAR<BR>CM_CLR&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">CLR keypress.
+Dedicated for clearing selected text (if no text is selected, clear from cursor
+to end of edit buffer, and if cursor is at end of edit buffer, clear all
+text from edit buffer).
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x727</TD>
+    <TD VALIGN="TOP">CM_CLEAR_ALL<BR>CM_MENU_CLEAR&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Clear.
+The application should decide decides what it means.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x728</TD>
+    <TD VALIGN="TOP">CM_FIND<BR>CM_MENU_FIND&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Find. The application should decide decides what it means.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x730</TD>
+    <TD VALIGN="TOP">CM_TOGGLE_INSERT<BR>CM_INSERT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Insert key. Dedicated for
+switching between text insert mode and overstrike mode.
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x740</TD>
+    <TD VALIGN="TOP">CM_CURSOR_FLASH<BR>CM_BLINK&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Flash cursor (0.5 sec timer expired, see <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A>).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x750</TD>
+    <TD VALIGN="TOP">CM_STO<BR>CM_STORE&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">"Store" keypress. The default handler convert this message to the right arrow character.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x751</TD>
+    <TD VALIGN="TOP">CM_RCL<BR>CM_RECALL&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">"RCL" keypress. The default event handler
+displays a dialog box for the user to enter the name of a
+variable to recall. The chosen variable’s contents are pasted
+at the edit cursor.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x760</TD>
+    <TD VALIGN="TOP">CM_WPAINT</TD>
+    <TD VALIGN="TOP">Paint window. Pointer to a window which need to be painted is attached.
+Applications should check to see if it belongs to the application and to redraw it if it is.
+See <A HREF="$$LINK(EV_paintWindows)">EV_paintWindows</A>. These are not sent to the capturing hook,
+unless an application ID number is set to <A HREF="$$LINK(StandardTaskIDs)">CM_NULL</A> (force redraw).
+<A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> stores the current application ID number
+in <I>TaskId</I> field of <A HREF="$$LINK(wingraph.h/WINDOW)">WINDOW</A> structure.</TD>
+    <TD VALIGN="TOP">w</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x770</TD>
+    <TD VALIGN="TOP">CM_OPEN<BR>CM_MENU_OPEN&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Open... (the application should decide how to handle
+this and similar event messages; there are no default actions for them).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x771</TD>
+    <TD VALIGN="TOP">CM_SAVE_AS<BR>CM_MENU_SAVE&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Save Copy As...</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x772</TD>
+    <TD VALIGN="TOP">CM_NEW<BR>CM_MENU_NEW&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: New...</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x773</TD>
+    <TD VALIGN="TOP">CM_FORMAT<BR>CM_MENU_FORMAT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Format...</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x774</TD>
+    <TD VALIGN="TOP">CM_ABOUT<BR>CM_MENU_ABOUT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: About...</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x780</TD>
+    <TD VALIGN="TOP">CM_MODE_CHANGE</TD>
+    <TD VALIGN="TOP">Notify Mode Change (see <A HREF="$$LINK(MO_notifyModeChange)">MO_notifyModeChange</A>).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x781</TD>
+    <TD VALIGN="TOP">CM_SWITCH_GRAPH</TD>
+    <TD VALIGN="TOP">Notify Switch Graph (this message is sent to "Graph", "Window Editor",
+"Table" and "Y=Editor" applications only). This event is used when the user switches between graphs
+in two-graph mode.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x782</TD>
+    <TD VALIGN="TOP">CM_DEFAULTS</TD>
+    <TD VALIGN="TOP">This command is sent when Reset->RAM->Default is executed in the MEMORY screen.
+Applications should revert to default settings.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x790</TD>
+    <TD VALIGN="TOP">CM_BACKGROUND</TD>
+    <TD VALIGN="TOP">This command is sent to applications which have a special flag set in their ACB
+	(Application Control Block). It is a very low priority message and is generally used for background processing.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x7C0</TD>
+    <TD VALIGN="TOP">CM_OPEN_SYSDATA<BR>CM_GEOMETRY&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Geometry Open Data.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+ <TR>
+    <TD VALIGN="TOP">0x7C0 - 0x7FF</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">Used especially by AMS 1.xx to communicate between applications. This command
+has been largely replaced by using application frames on AMS 2.xx</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR> 
+ <TR>
+    <TD VALIGN="TOP">0x800</TD>
+    <TD VALIGN="TOP">CM_FIRST_APP_STRING</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+ <TR>
+    <TD VALIGN="TOP">0x800 - 0xFFF</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">On AMS 2.xx, applications store pointers to their strings in a frame.
+Messages in the range from 0x800 - 0xFFF are reserved for the active application's strings.
+For more information, see <A HREF="$$LINK(system.h/XR_stringPtr)">XR_stringPtr</A>.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+</TABLE>

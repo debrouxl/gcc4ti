@@ -1,0 +1,49 @@
+[Main]
+Name=HS_popEStack
+Type=Function
+Subtype=ROM Call
+Header Files=homescr.h, estack.h
+Definition=HANDLE HS_popEStack (void);
+
+[ROM Call]
+Index=$244
+
+[Description]
+Pops the entire expression stack into memory.
+
+[Explanation]
+HS_popEStack allocates a block in memory, pops the entire expression stack
+into the allocated block, and returns a handle which points to it. More
+precisely, it creates a <A HREF="$$LINK(estack.h/MULTI_EXPR)">MULTI_EXPR</A>
+structure holding the expression stack. If there
+is not enough memory, it throws an error. See
+<A HREF="$$LINK(estack.h/NG_execute)">NG_execute</A> for an example of usage.
+The returned handle is allocated with
+<A HREF="$$LINK(alloc.h/HeapAllocHigh)">HeapAllocHigh</A>, and is
+therefore intended to be temporary. However, it is unlocked.
+<BR><BR>
+This function copies everything from
+<A HREF="$$LINK(estack.h/bottom_estack)">bottom_estack</A> to
+<A HREF="$$LINK(estack.h/top_estack)">top_estack</A> (including both
+<A HREF="$$LINK(estack.h/bottom_estack)">bottom_estack</A> and
+<A HREF="$$LINK(estack.h/top_estack)">top_estack</A>), and resets
+<A HREF="$$LINK(estack.h/top_estack)">top_estack</A> to
+<A HREF="$$LINK(estack.h/bottom_estack)">bottom_estack</A>. This means that
+the size of the allocated block is
+<CODE>top_estack&nbsp;-&nbsp;bottom_estack&nbsp;+&nbsp;3</CODE> (because the
+<A HREF="$$LINK(estack.h/MULTI_EXPR)">MULTI_EXPR</A> structure reserves two
+bytes for the size). By changing
+<A HREF="$$LINK(estack.h/bottom_estack)">bottom_estack</A> temporarily, it
+is theoretically possible to set the block which is to be popped off
+manually. However, you need to take care of the requirement that
+<A HREF="$$LINK(estack.h/bottom_estack)">bottom_estack</A> has to point to
+an <A HREF="$$LINK(estack.h/Tags)">ENDSTACK_TAG</A> quantum.
+<BR><BR>
+This function is intended to copy an expression into memory so that it can be
+pushed to the Home Screen using
+<A HREF="$$LINK(HS_pushFIFONode)">HS_pushFIFONode</A> or one of its wrapper
+functions.
+
+[References]
+Out=alloc.h/HeapAllocHigh, alloc.h/HeapUnlock, estack.h/bottom_estack, estack.h/top_estack, mem.h/memcpy
+In=HomeExecute

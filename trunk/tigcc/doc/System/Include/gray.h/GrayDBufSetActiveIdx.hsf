@@ -1,0 +1,22 @@
+[Main]
+Name=GrayDBufSetActiveIdx
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void GrayDBufSetActiveIdx (short idx);
+Real Definition=#define GrayDBufSetActiveIdx(i) ((void)(__gray_dbl_offset = ((i) ? 8 : 0)))
+See Also=GrayDBufSetActiveIdxSync, GrayDBufToggle, GrayDBufToggleSync, GrayDBufGetActiveIdx, GrayDBufGetHiddenIdx
+
+[Description]
+Sets the currently visible double buffer.
+
+[Explanation]
+GrayDBufSetActiveIdx sets the currently visible buffer to the one indexed by
+<I>idx</I>, which should be either 0 or 1. Afterwards,
+<A HREF="$$LINK(GrayDBufGetActiveIdx)">GrayDBufGetActiveIdx</A> will return
+<I>idx</I>, and
+<A HREF="$$LINK(GrayDBufGetHiddenIdx)">GrayDBufGetHiddenIdx</A> will return
+the opposite. As the switch may happen during the time a plane is copied to
+the screen, it may be desirable to use
+<A HREF="$$LINK(GrayDBufSetActiveIdxSync)">GrayDBufSetActiveIdxSync</A>
+instead.

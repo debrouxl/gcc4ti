@@ -1,0 +1,28 @@
+[Main]
+Title=How can I display a PIC variable created in TI-Basic?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is it hard to display a PIC variable created from TI-Basic in C programs?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+No, it is easy. It is enough to locate the variable (using <A HREF="$$LINK(vat.h/SymFind)">SymFind</A>
+for example), and to display its content using <A HREF="$$LINK(graph.h/BitmapPut)">BitmapPut</A> (its
+contents are just as expected by <A HREF="$$LINK(graph.h/BitmapPut)">BitmapPut</A> function). To be
+more concrete, look at the following function:
+<PRE>short show_picvar (SYM_STR SymName, short x, short y, short Attr)
+{
+  SYM_ENTRY *sym_entry = SymFindPtr (SymName, 0);
+  if (!sym_entry) return FALSE;
+  if (peek (HToESI (sym_entry-&gt;handle)) != PIC_TAG) return FALSE;
+  BitmapPut (x, y, HeapDeref (sym_entry-&gt;handle) + 2, ScrRect, Attr);
+  return TRUE;
+}
+</PRE>
+The usage of this function is straightforward, for example:
+<PRE>show_picvar (SYMSTR ("testpic"), 30, 30, A_NORMAL);
+</PRE>
+assuming that "testpic" is the name of the wanted PIC variable. This function returns
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was successful, else returns
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A> (i.e. the picvar does not exist, or it is not
+a PIC variable).
+</TD></TR></TABLE>

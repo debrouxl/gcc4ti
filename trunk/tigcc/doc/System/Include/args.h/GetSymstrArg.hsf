@@ -1,0 +1,19 @@
+[Main]
+Name=GetSymstrArg
+Type=Function
+Subtype=Macro
+Header Files=args.h
+Definition=SYM_STR GetSymstrArg (CESI &ap);
+Real Definition=#define GetSymstrArg(p) ({register ESI __t=(ESI)(p); (ESI)(p)-=2; while(*(ESI)(p)--); (const char*)(__t-1);})
+
+[Description]
+Returns a pointer to the terminating zero byte of the current argument of string type.
+
+[Explanation]
+GetSymstrArg does the same task as <A HREF="$$LINK(GetStrnArg)">GetStrnArg</A> but returns
+a pointer to the terminating zero byte of the string, instead of a pointer to the
+first byte of the string. This function is implemented because nearly all functions for
+TIOS VAT handling need just the pointer to the terminating byte of the string. As
+the arguments are stored in memory as strings which are bounded with zero bytes from
+both sides, the result of GetSymstrArg may be directly passed to TIOS VAT routines.
+See <A HREF="$$LINK(vat.h/)">vat.h</A> for more info.

@@ -1,0 +1,31 @@
+[Main]
+Name=ST_busy
+Type=Function
+Subtype=ROM Call
+Header Files=statline.h
+Definition=void ST_busy (short mode);
+
+[ROM Call]
+Index=$E2
+
+[Description]
+Sets the BUSY indicator in the status line.
+
+[Explanation]
+ST_busy sets the program status indicator to idle, busy or paused,
+depending of whether <I>mode</I> is ST_IDLE, ST_BUSY or ST_PAUSED (these
+constants are defined in enum <A HREF="$$LINK(ST_FLAGS)">ST_FLAGS</A>). This
+indicator would be displayed in the status line. In the idle mode, the
+number of entry/answer pairs in the history area would be displayed, else
+words "BUSY" or "PAUSE" would be displayed. If ST_busy is called with
+argument ST_NORMAL, the indicator would be erased. Note that the TIOS event
+handler always sets "BUSY" indicator before calling an event to an application,
+and clears it when the application returns from handling the event.
+<BR><BR>
+<B>Note:</B> Alternative mode names ACTIVITY_IDLE, ACTIVITY_BUSY and ACTIVITY_PAUSED
+known from DoorsOS will also be accepted, and these constants are defined
+in enum <A HREF="$$LINK(ST_ACTIVITIES)">ST_ACTIVITIES</A>.
+
+[References]
+In=bascmd.h/cmd_disptbl, bascmd.h/cmd_pause, events.h/EV_centralDispatcher, events.h/EV_eventLoop, events.h/EV_getc, unknown.h/GR3_handleEvent, unknown.h/GS_PlotAll, unknown.h/GZ_Stat, unknown.h/Regraph
+Out=ST_eraseHelp, unknown.h/ST_flags_var: ST_flags

@@ -1,0 +1,23 @@
+[Main]
+Title=I tried to use sizeof to get the size of an object, but it returned zero!
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+When I tried to use the <A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A> operator to determine the
+exact size of some objects, I got zero as the result. What is wrong?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+You probably tried something like
+<PRE>printf ("%d", sizeof (<I>something</I>));
+</PRE>
+The ANSI standard proposes that the <A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A> operator returns
+a value of type <A HREF="$$LINK(stddef.h/size_t)">size_t</A>, which is in fact long integer in
+this implementation. So, the result is pushed on the stack as a long integer, but the format
+specifier "%d" expects an ordinary integer, so it pulls from the stack just one word, which
+is zero in this case. You need to write
+<PRE>printf ("%ld", sizeof (<I>something</I>));
+</PRE>
+Alternatively, you can use a typecast to convert the result to a short integer
+<PRE>printf ("%d", (short) sizeof (<I>something</I>));
+</PRE>
+assuming that no object would be longer that 32767 bytes.
+</TD></TR></TABLE>

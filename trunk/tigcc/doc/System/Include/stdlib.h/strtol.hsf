@@ -1,0 +1,65 @@
+[Main]
+Name=strtol
+Type=Function
+Subtype=tigcc.a
+Header Files=stdlib.h
+Definition=long strtol (const char *str, char **endptr, short radix);
+
+[Description]
+Converts a string to a long integer using a given radix, with detection of overflows and errors.
+
+[Explanation]
+strtol converts a character string <I>str</I> to a long integer value. <I>str</I> is a
+sequence of characters that can be interpreted as a long value. The characters must match this
+generic format:
+<BR><BR>
+ [ws] [sn] [0] [x] [ddd]
+<BR><BR>
+where
+<UL>
+<LI>[ws] is an optional string of spaces;</LI>
+<LI>[sn] is an optional sign ('+', '-', or special "small" minus used in TI-Basic);</LI>
+<LI>[0] is an optional zero (0);</LI>
+<LI>[x] is an optional 'x' or 'X';</LI>
+<LI>[ddd] is an optional string of digits.</LI>
+</UL>
+strtol stops reading the string at the first character it doesn't recognize.
+<UL>
+<LI>If <I>radix</I> is between 2 and 36, the long integer is expressed in base <I>radix</I>.</LI>
+<LI>If <I>radix</I> is 0, the first few characters of <I>str</I> determine the base of the value
+being converted.<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>First character</TD><TD>Second character</TD><TD>String interpreted as</TD></TR>
+<TR><TD>0<BR>0<BR>1 - 9</TD>
+<TD VALIGN="TOP">1 - 7<BR>x or X</TD>
+<TD>Octal<BR>Hexadecimal<BR>Decimal</TD></TR></TABLE><BR>
+</LI>
+<LI>If <I>radix</I> is 1, less than 0 or greater than 36, it is considered to be an invalid value.</LI>
+</UL>
+The characters are interpreted according to the following table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD><B>Value in <I>str</I> meant to be interpreted as</B></TD>
+<TD><B>Resulting Character Recognition</B></TD></TR>
+<TR><TD>Octal</TD>
+<TD>Any character other than 0 to 7 will be unrecognized.</TD></TR>
+<TR><TD>Decimal</TD>
+<TD>Any character other than 0 to 9 will be unrecognized.</TD></TR>
+<TR><TD>A number in any other base</TD>
+<TD>Only the numerals and letters used to represent numbers in that base will be
+recognized (for example, if radix equals 5, only 0 to 4 will be recognized; if
+radix equals 20, only 0 to 9 and A to J will be recognized).
+</TD></TR></TABLE>
+<BR>
+If <I>endptr</I> is not <A HREF="$$LINK(alloc.h/NULL)">NULL</A>, strtol sets the pointer variable pointed
+to by <I>endptr</I> to point to the character that stopped the scan (i.e. *<I>endptr</I>&nbsp;=&nbsp;&amp;stopper).
+strtol returns the value of the converted string, or 0 on error. In a case of overflow,
+strtol returns <A HREF="$$LINK(limits.h/)">LONG_MAX</A> or
+<A HREF="$$LINK(limits.h/)">LONG_MIN</A>, depending of the sign.
+<BR><BR>
+<B>Note:</B> strtol is much more flexible than <A HREF="$$LINK(atol)">atol</A> (or <A HREF="$$LINK(atoi)">atoi</A>),
+but as it is not built-in in the TIOS, usage of it makes the total size of the program much
+greater.
+
+[References]
+Out=unknown.h/_du32u32, unknown.h/_mu32u32

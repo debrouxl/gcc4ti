@@ -1,0 +1,23 @@
+[Main]
+Title=USE_4_BYTE_FLINE_JUMPS
+Index=USE_FLINE_EMULATOR
+See Also=advanced_flinejmp: USE_FLINE_JUMPS, advanced_flinerom: USE_FLINE_ROM_CALLS
+
+[Top]
+Normal <A HREF="$$LINK(advanced_flinejmp)">F-Line jumps</A> take 6 bytes, but
+if they are not pc-relative but relative to the beginning of the program,
+they can fit into 4 bytes. To activate 4-byte F-Line jumps, put
+<PRE>#define USE_4_BYTE_FLINE_JUMPS
+</PRE>
+at the beginning of the program. However, only the internal F-Line emulator
+supports such jumps, so you need to define
+<CODE>USE_INTERNAL_FLINE_EMULATOR</CODE> as well, to make the program install
+its own handler for Line 1111 jumps.
+<BR><BR>
+<B>Note:</B> Since 4-byte F-Line jumps use codes that are otherwise used for
+ROM calls, this might break applications that are called from the program, if
+any. However, this is very unlikely, as the two ROM calls used are not
+defined yet.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="$$INFOLINK(ld/control_ld_use_4byte_fline_jumps)">__ld_use_4byte_fline_jumps</A>.

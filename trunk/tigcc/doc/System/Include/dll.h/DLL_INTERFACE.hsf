@@ -1,0 +1,36 @@
+[Main]
+Name=DLL_INTERFACE
+Type=Language Extension
+Header Files=dll.h
+Real Definition=#define DLL_INTERFACE asm(".xdef _nostub_dll\n\t.xdef __ld_ignore_global_imports");
+See Also=DLL_ID, DLL_VERSION, DLL_EXPORTS, DLL_IMPLEMENTATION
+
+[Description]
+Starts the DLL interface section.
+
+[Explanation]
+The DLL_INTERFACE macro starts the DLL interface section and tells the linker that a DLL image should be
+produced instead of the standard executable image. The DLL interface section <I>must</I> have the
+following general layout:
+<PRE>DLL_INTERFACE
+
+// <I>Declarations of global symbols which should be exported,</I>
+// <I>and prototypes of functions which should be exported.</I>
+
+DLL_ID <I>identification_number</I>
+DLL_VERSION <I>major_version_number</I>, <I>minor_version_number</I>
+DLL_EXPORTS <I>list_of_exported_symbols</I>
+
+DLL_IMPLEMENTATION
+
+// <I>Now the implementation follows</I>
+</PRE>
+In principle, in addition to function prototypes, it is legal to put function implementations
+in the DLL interface section as well, although this is not a good practice from the aspect of
+readability and good structuring. So, a well-designed interface should contain only prototypes.
+<BR><BR>
+Note that just putting a symbol declaration or a function prototype into the DLL interface
+section does not mean that this symbol or function will automatically be exported: you need
+to put the names of all objects which should be exported after the <A HREF="$$LINK(DLL_EXPORTS)">DLL_EXPORTS</A> interface
+item. Also, note that <A HREF="$$LINK(DLL_IMPLEMENTATION)">DLL_IMPLEMENTATION</A> ends the interface section, so any symbol declared
+after it can not be exported from the DLL.

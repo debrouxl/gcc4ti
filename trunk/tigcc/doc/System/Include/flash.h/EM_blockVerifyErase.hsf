@@ -1,0 +1,23 @@
+[Main]
+Name=EM_blockVerifyErase
+Type=Function
+Header Files=flash.h
+Definition=short EM_blockVerifyErase (void *src);
+Subtype=ROM Call
+
+[ROM Call]
+Index=$15D
+
+[Description]
+Verifies if an archive block is erased.
+
+[Explanation]
+EM_blockVerifyErase returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if an archive block of 64KB size is erased
+(i.e filled with 0xFFFFFFFF), and <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> otherwise.
+It is used in the reset routine of AMS 2.xx.
+<BR><BR>
+<B>Note:</B> This function behaves differently on AMS 1.xx and AMS 2.xx:
+<UL>
+<LI>On AMS 1.xx, <I>src</I> may be anything between 0 and 0x60000; it will be rounded down to the nearest multiple of 0x10000.</LI>
+<LI>On AMS 2.xx, <I>src</I> can only be 0x340000, 0x350000, 0x360000, 0x370000, 0x380000, 0x390000, 0x3A0000, 0x3B0000, 0x3C0000, 0x3D0000, 0x3E0000, 0x3F0000. There is <I>no</I> rounding.</LI>
+</UL>

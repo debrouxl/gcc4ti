@@ -1,0 +1,36 @@
+[Main]
+Keywords=const
+
+[Description]
+Makes variable value or pointer parameter unmodifiable.
+
+[Explanation]
+When <CODE>const</CODE> is used with a variable, it uses the following syntax:
+<PRE>const <I>variable-name</I> [ = <I>value</I>];
+</PRE>
+In this case, the <CODE>const</CODE> modifier allows you to assign an initial
+value to a variable that cannot later be changed by the program. For
+example,
+<PRE>const my_age = 32;
+</PRE>
+Any assignments to <CODE>'my_age'</CODE> will result in a compiler error. However,
+such declaration is quite different than using
+<PRE>#define my_age 32
+</PRE>
+In the first case, the compiler allocates a memory for <CODE>'my_age'</CODE> and stores
+the initial value 32 there, but it will not allow any later assignment to this variable.
+But, in the second case, all occurences of <CODE>'my_age'</CODE> are simply replaced with 32
+by the <A HREF="$$INFOLINK(cpp)">preprocessor</A>, and no memory will be allocated for it.
+<BR><BR>
+Warning: a const variable can be indirectly modified by a pointer, as in the following
+example:
+<PRE>*(int*)&amp;my_age = 35;
+</PRE>
+When the <CODE>const</CODE> modifier is used with a pointer parameter in a function's parameter
+list, it uses the following syntax:
+<PRE><I>function-name</I> (const <I>type</I> *<I>var-name</I>)
+</PRE>
+Then, the function cannot modify the variable that the pointer points to. For example,
+<PRE>int printf (const char *format, ...);
+</PRE>
+Here the <CODE>printf</CODE> function is prevented from modifying the format string.

@@ -1,0 +1,19 @@
+[Main]
+Name=abort
+Type=Function
+Subtype=Macro
+Header Files=stdlib.h
+Definition=void abort (void);
+Real Definition=#define abort() (_rom_call(void,(const char*),E6) ("ABNORMAL PROGRAM TERMINATION"), exit(0))
+
+[Description]
+Abnormal termination of a process.
+
+[Explanation]
+abort writes a termination message ("ABNORMAL PROGRAM TERMINATION") in the status line,
+then aborts the program by a call to <A HREF="$$LINK(exit)">exit</A> (passing 0 to it).
+<BR><BR>
+Note that the status line text will not be visible if <CODE>SAVE_SCREEN</CODE> is defined.
+
+[References]
+Out=exit, statline.h/ST_helpMsg

@@ -1,0 +1,45 @@
+[Main]
+Name=Print2DExpr
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void Print2DExpr (CESI ptr, WINDOW *w, short x, short y);
+
+[ROM Call]
+Index=$4C
+
+[Description]
+Performs "pretty printing" (or "2D printing") of an expression.
+
+[Explanation]
+Print2DExpr prints the expression in "pretty" or "2D" style. Before printing, the expression
+needs first to be "parsed" using <A HREF="$$LINK(Parse2DExpr)">Parse2DExpr</A>, and argument <I>ptr</I>
+should be a result returned from <A HREF="$$LINK(Parse2DExpr)">Parse2DExpr</A>
+(an error may be thrown if <I>ptr</I> points to something else). <I>w</I> is a pointer
+to the <A HREF="$$LINK(wingraph.h/WINDOW)">WINDOW</A> structure which describes the window in which
+the expression will be displayed (see <A HREF="$$LINK(wingraph.h/)">wingraph.h</A> header file for
+more info about windows). If you didn't create your own windows in the program, you can pass
+<A HREF="$$LINK(wingraph.h/DeskTop)">DeskTop</A> as the parameter (as in the example given below).
+<I>x</I> and <I>y</I> are coordinates (window-relative) where the expression will be printed.
+<I>x</I> determines the left edge of the expression, and the expression goes (in y direction)
+both above and below the value of <I>y</I>. See <A HREF="$$LINK(Parms2D)">Parms2D</A> for exact
+information about dimensions of displayed expression. If the displayed expression can not fit
+into the given window, it will be simply clipped at edges of the window.
+<BR><BR>
+Here is an example (called "Pretty Print") which first calculates the integral of 1/((x-3)(x^2+4)), then "pretty prints"
+the result on the screen:
+$$EXAMPLE(Pretty Print.c)
+It is also possible to use
+<PRE>Parse2DExpr (top_estack, FALSE);
+Print2DExpr (top_estack, DeskTop, 0, 50);
+</PRE>
+instead of
+<PRE>Print2DExpr (Parse2DExpr (top_estack, FALSE), DeskTop, 0, 50);
+</PRE>
+You can use <A HREF="$$LINK(Parms2D)">Parms2D</A> to get information about the height and the width
+of the printed expression without displaying it on the screen. This may be used to determine
+coordinates where the expression needs to be displayed.
+
+[References]
+In=bascmd.h/cmd_disp, bascmd.h/cmd_output, bascmd.h/cmd_pause, homescr.h/HomeExecute
+Out=wingraph.h/WinFont

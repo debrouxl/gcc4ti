@@ -1,0 +1,24 @@
+[Main]
+Title=.irp
+
+[Top]
+Syntax: <B>.irp <I>symbol</I>[, <I>value</I>[, <I>value</I>][, ...]]</B>
+<BR><BR>
+Evaluate a sequence of statements assigning different values to <I>symbol</I>.
+The sequence of statements starts at the <CODE>.irp</CODE> directive, and is
+terminated by an <CODE><A HREF="$$LINK(SEC84R)">.endr</A></CODE> directive.  For each <I>value</I>, <I>symbol</I> is
+set to <I>value</I>, and the sequence of statements is assembled.  If no
+<I>value</I> is listed, the sequence of statements is assembled once, with
+<I>symbol</I> set to the null string.  To refer to <I>symbol</I> within the
+sequence of statements, use \<I>symbol</I>.
+<BR><BR>
+For example, assembling
+<PRE>        .irp   param,1,2,3
+        move.l %d\param,-(%sp)
+        .endr
+</PRE>
+is equivalent to assembling
+<PRE>        move    %d1,-(%sp)
+        move.l %d2,-(%sp)
+        move.l %d3,-(%sp)
+</PRE>

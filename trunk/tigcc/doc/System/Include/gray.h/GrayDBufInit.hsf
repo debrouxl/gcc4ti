@@ -1,0 +1,49 @@
+[Main]
+Name=GrayDBufInit
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void GrayDBufInit (void *buf);
+Real Definition=#define GrayDBufInit(p) ({char *aptr = (char *)((((long) p) + 7) & 0xfffffff8L); __gray_dbl_offset = 0; __D_plane2 = aptr; (void)(__L_plane2 = aptr + 3840);})
+See Also=GrayDBufCleanup, GrayDBufSetActiveIdx, GrayDBufToggle
+
+[Description]
+Initializes grayscale double-buffering mode.
+
+[Explanation]
+GrayDBufInit initializes double-buffering mode. In double-buffering mode, you
+can switch between two buffers (using
+<A HREF="$$LINK(GrayDBufToggle)">GrayDBufToggle</A>) very quickly; much more
+quickly than using <A HREF="$$LINK(mem.h/memcpy)">memcpy</A> to achieve
+double-buffering. This function assumes that
+<A HREF="$$LINK(GrayOn)">GrayOn</A> has been called and its result was
+successful. To have as little extra double-buffering code in the grayscale
+implementation as possible, you need to allocate your own buffer and pass it
+to this function. You can do this with
+<A HREF="$$LINK(alloc.h/malloc)">malloc</A>, for example, but be sure to
+check its result before proceeding. The necessary size of the buffer (in
+bytes) is specified by the constant
+<A HREF="$$LINK(GRAYDBUFFER_SIZE)">GRAYDBUFFER_SIZE</A>.
+<BR><BR>
+You do not explicitly need to call
+<A HREF="$$LINK(GrayDBufCleanup)">GrayDBufCleanup</A> to deactivate
+double-buffering mode; <A HREF="$$LINK(GrayOff)">GrayOff</A> will do the
+necessary uninitialization. However, be sure to free the buffer after calling
+<A HREF="$$LINK(GrayDBufCleanup)">GrayDBufCleanup</A> or
+<A HREF="$$LINK(GrayOff)">GrayOff</A>.
+<BR><BR>
+The contents of the current grayscale buffer become the new contents of the
+plane with index 0 (see
+<A HREF="$$LINK(GrayDBufGetActiveIdx)">GrayDBufGetActiveIdx</A>). The plane
+with index 1 is initialized from the new buffer and is filled either with
+random contents or with zeroes, depending on the contents of <I>buf</I>. Do
+not attempt to change the contents of <I>buf</I> directly after calling
+GrayDBufInit.
+<BR><BR>
+<B>Note:</B> After calling this function, you should not use the standard
+grayscale functions <A HREF="$$LINK(GrayGetPlane)">GrayGetPlane</A> and
+<A HREF="$$LINK(GraySetAMSPlane)">GraySetAMSPlane</A> any more. Instead, use
+the double-buffering functions
+<A HREF="$$LINK(GrayDBufGetPlane)">GrayDBufGetPlane</A> and
+<A HREF="$$LINK(GrayDBufSetAMSPlane)">GrayDBufSetAMSPlane</A> or related
+ones.

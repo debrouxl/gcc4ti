@@ -1,0 +1,23 @@
+[Main]
+Name=pushkey
+Type=Function
+Subtype=ROM Call
+Header Files=kbd.h
+Definition=void pushkey (short code);
+
+[ROM Call]
+Index=$50
+
+[Description]
+Replaces the keystroke in the keyboard queue with the given code.
+
+[Explanation]
+If the keyboard queue is empty, pushkey pushes <I>code</I> in the keyboard queue,
+then sets the "keypressed" flag. If the keyboard queue is not empty, pushkey replaces the
+keystroke on the top of the keyboard queue with <I>code</I>. In each case, the next
+call of <A HREF="$$LINK(ngetchx)">ngetchx</A> will return <I>code</I>.
+
+[References]
+In=bascmd.h/cmd_disptbl, unknown.h/GS_PlotAll, unknown.h/GT_FreeTrace, unknown.h/GT_KeyIn, unknown.h/GT_Trace, unknown.h/GZ_Stat, unknown.h/Regraph, unknown.h/_ROM_CALL_3EA
+Out=kbhit, system.h/OSdequeue, system.h/OSenqueue, system.h/OSSetSR
+Out_EV_eventLoop=1

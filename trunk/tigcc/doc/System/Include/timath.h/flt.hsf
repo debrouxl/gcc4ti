@@ -1,0 +1,32 @@
+[Main]
+Name=flt
+Type=Function
+Subtype=ROM Call
+Header Files=timath.h
+Definition=float flt (long x);
+Attributes=__attribute__((__const__))
+
+[ROM Call]
+Index=$BD
+
+[Description]
+Converts integer to floating point.
+
+[Explanation]
+flt converts the (long) integer argument <I>x</I> to the floating point representation
+of the same value. This routine performs the same operation as casting a long integer
+value to float type using the <CODE>'(float)'</CODE> typecast operator,
+but it is kept here to allow compatibility with older programs created before
+TIGCC introduced floating point operators (i.e. before release 0.9 of TIGCC).
+This function is automatically called when any floating point function is called with
+a long integer argument, to force a promotion of an integer to a floating
+point type. In other words, integer values will be automatically promoted to the floating
+point type when necessary. So, you can do assignment like <I>b</I>&nbsp;=&nbsp;<I>a</I>;
+when <I>a</I> is an integer variable (or expression) and <I>b</I> is a standard floating
+point variable (<B>float</B> or <B>double</B>). Also, you can calculate
+sin(<I>a</I>) where <I>a</I> is an integer. In both cases, flt will be called automatically
+to perform the promotion. At the fundamental level, flt is exactly the same routine as
+<A HREF="$$LINK(bcdbcd)">bcdbcd</A>.
+
+[References]
+Out=unknown.h/_bcd_math

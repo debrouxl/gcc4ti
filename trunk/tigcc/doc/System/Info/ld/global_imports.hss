@@ -1,0 +1,43 @@
+[Main]
+Title=Global Imports
+Subsections=global_imports_conditional, global_imports_auto
+
+[Top]
+Just like <A HREF="$$LINK(startup)">startup sections</A>, the concept of
+<U>global imports</U> is unique to the TIGCC linker. Global imports and
+startup sections are closely related to each other: It is best to keep
+startup sections in archive files, so they can be imported as needed, but
+the existing method of importing archive file members does not work. Usually,
+an archive file member is imported if a symbol it exports is referenced in
+a relocation entry. However, code that requires a specific startup section to
+be included does not necessarily reference any of the symbols in the
+corresponding archive member; it just needs the startup code to be there. A
+global import solves this problem by importing an archive member without
+inserting its address anywhere.
+<BR><BR>
+Actually, a global import imports all archive members that export the symbol
+referenced by the import (and even more, see
+<A HREF="$$LINK(global_imports_conditional)">Conditional Reaction to Global
+Imports</A>). If no archive member exports this symbol, a warning is emitted.
+This way, it is very easy to create archive files that react to multiple
+imports; for example:
+<UL>
+<LI>File 1 exports the symbols <I>A</I> and <I>B</I>.</LI>
+<LI>File 2 exports the symbols <I>B</I> and <I>C</I>.</LI>
+<LI>File 3 exports the symbols <I>A</I> and <I>C</I>.</LI>
+</UL>
+A global import for <I>A</I> would cause the files 1 and 3 to be included in
+the program. If it could only import one file, 6 files would be needed to get
+the same result:
+<UL>
+<LI>File 1 exports the symbol <I>A</I> and creates two global imports for <I>File4</I> and <I>File6</I>.</LI>
+<LI>File 2 exports the symbol <I>B</I> and creates two global imports for <I>File4</I> and <I>File5</I>.</LI>
+<LI>File 3 exports the symbol <I>C</I> and creates two global imports for <I>File5</I> and <I>File6</I>.</LI>
+<LI>File 4 exports the symbol <I>File4</I>.</LI>
+<LI>File 5 exports the symbol <I>File5</I>.</LI>
+<LI>File 6 exports the symbol <I>File6</I>.</LI>
+</UL>
+Global import can be created using the
+<A HREF="$$LINK(control_ref_all)">__ref_all_...</A> control symbol. Some
+global imports are also created automatically by the linker on certain
+conditions.

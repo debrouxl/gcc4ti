@@ -1,0 +1,25 @@
+[Main]
+Title=Why do I get "Value computed is not used" when working with pointers?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I have a variable and a pointer to it, for example,
+<PRE>int a, ptr_to_a = &amp;a;
+</PRE>
+When I tried to modify the variable "a" indirectly using the pointer, like in
+<PRE>*ptr_to_a++;
+</PRE>
+the compiler reports to me "Value computed is not used". What is wrong here?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Note that although operators <CODE>'++'</CODE> and <CODE>'*'</CODE> have the same
+precedence, <CODE>'++'</CODE> will be evaluated first, so this expression will be evaluated as
+<PRE>*(ptr_to_a++);
+</PRE>
+i.e. it increases the pointer, then reads the value from it (which is not used for anything).
+This is not what do you want, of course.
+To perform what do you want (i.e. to increase the variable pointed to by the pointer), use
+parentheses to change the order of evaluation, i.e. use
+<PRE>(*ptr_to_a)++;
+</PRE>
+This will work as expected.
+</TD></TR></TABLE>

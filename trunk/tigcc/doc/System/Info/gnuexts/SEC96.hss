@@ -1,0 +1,37 @@
+[Main]
+Title=Controlling Names Used in Assembler Code
+
+[Top]
+You can specify the name to be used in the assembler code for a C
+function or variable by writing the <CODE>asm</CODE> (or <CODE>__asm__</CODE>)
+keyword after the declarator as follows:
+<PRE>int foo asm (&quot;myfoo&quot;) = 2;
+</PRE>
+This specifies that the name to be used for the variable <CODE>foo</CODE> in
+the assembler code should be <CODE>myfoo</CODE> rather than the usual
+<CODE>foo</CODE>.
+<BR><BR>
+On systems where an underscore is normally prepended to the name of a C
+function or variable, this feature allows you to define names for the
+linker that do not start with an underscore.
+<BR><BR>
+It does not make sense to use this feature with a non-static local
+variable since such variables do not have assembler names.  If you are
+trying to put the variable in a particular register, see <A HREF="$$LINK(SEC97)">Explicit
+Reg Vars</A>.  GCC presently accepts such code with a warning, but will
+probably be changed to issue an error, rather than a warning, in the
+future.
+<BR><BR>
+You cannot use <CODE>asm</CODE> in this way in a function <I>definition</I>; but
+you can get the same effect by writing a <I>declaration</I> for the function
+before its definition and putting <CODE>asm</CODE> there, like this:
+<PRE>extern func () asm (&quot;FUNC&quot;);
+
+func (int x, int y)
+/* ... */
+</PRE>
+It is up to you to make sure that the assembler names you choose do not
+conflict with any other assembler symbols.  Also, you must not use a
+register name; that would produce completely invalid assembler code.  GCC
+does not as yet have the ability to store static variables in registers.
+Perhaps that will be added.

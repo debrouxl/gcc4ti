@@ -1,0 +1,24 @@
+[Main]
+Name=CB_fetchTEXT
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short CB_fetchTEXT (HANDLE *hText, unsigned long *len);
+See Also=CB_replaceTEXT
+
+[ROM Call]
+Index=$C2
+
+[Description]
+Fetches a text from the clipboard.
+
+[Explanation]
+CB_fetchTEXT stores in the variable pointed to by <I>hText</I> the handle of the text stored
+in the clipboard (use <A HREF="$$LINK(alloc.h/HeapDeref)">HeapDeref</A> to get actual pointer to
+the text). It also stores the length of the text in the variable pointed to by <I>len</I>.
+<BR><BR>
+CB_fetchTEXT returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was successful,
+else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> (i.e. if the clipboard is empty or trashed).
+
+[References]
+In=textedit.h/TE_handleEvent

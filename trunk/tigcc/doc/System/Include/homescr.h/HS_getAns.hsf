@@ -1,0 +1,32 @@
+[Main]
+Name=HS_getAns
+Type=Function
+Subtype=ROM Call
+Header Files=homescr.h
+Definition=HANDLE HS_getAns (unsigned short Index);
+See Also=HS_getEntry, HS_getFIFONode
+
+[ROM Call]
+Index=$241
+
+[Description]
+Returns the handle of a Home Screen answer.
+
+[Explanation]
+HS_getAns returns a handle to the answer part of the Home Screen history pair with
+index <I>Index</I>, where <I>Index</I> is a value between 1 and 99 and has
+the same meaning as the parameter of the TI-Basic <CODE>'ans'</CODE> pseudo-function.
+If the answer does not exist, HS_getAns returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A>.
+This happens in three conditions
+<UL>
+<LI>The entry/answer pair does not exist.</LI>
+<LI>The answer is a message like "Done" that comes after an executed program.</LI>
+<LI>The answer is an error message (i.e. <A HREF="$$LINK(estack.h/Tags)">ERROR_MSG_TAG</A> is present in it)</LI>.
+</UL>
+The returned handle contains a "multi-expression"; see
+<A HREF="$$LINK(estack.h/MULTI_EXPR)">MULTI_EXPR</A> and
+<A HREF="$$LINK(HS_getEntry)">HS_getEntry</A> for more info.
+
+[References]
+Out=HS_getFIFONode, estack.h/HToESI
+In=unknown.h/push_ans_entry

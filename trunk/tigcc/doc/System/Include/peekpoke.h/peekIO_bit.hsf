@@ -1,0 +1,14 @@
+[Main]
+Name=peekIO_bit
+Type=Function
+Subtype=Macro
+Header Files=peekpoke.h
+Definition=short peekIO_bit (unsigned char *port, short bit);
+Real Definition=#define peekIO_bit(port,bit) (!!(*((volatile unsigned char*)(long)(port)) & (1 << (bit))))
+
+[Description]
+Reads a bit from an I/O port.
+
+[Explanation]
+This macro exists because <A HREF="$$LINK(peek_bit)">peek_bit</A> is not reliable when reading data from memory-mapped I/O ports.
+See the notes about <A HREF="$$LINK(peekIO)">peekIO</A> if you want to know why.

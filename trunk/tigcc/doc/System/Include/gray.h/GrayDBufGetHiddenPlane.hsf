@@ -1,0 +1,21 @@
+[Main]
+Name=GrayDBufGetHiddenPlane
+Type=Function
+Subtype=Macro
+Header Files=gray.h
+Definition=void *GrayDBufGetHiddenPlane (short plane);
+Real Definition=#define GrayDBufGetHiddenPlane(x) (GrayDBufGetPlane (GrayDBufGetHiddenIdx (), x))
+See Also=GrayDBufGetActivePlane, GrayGetPlane, GrayDBufGetPlane, GrayDBufToggle
+
+[Description]
+Returns a pointer to a specific plane of the currently hidden buffer.
+
+[Explanation]
+GrayDBufGetHiddenPlane acts like
+<A HREF="$$LINK(GrayGetPlane)">GrayGetPlane</A> for the currently hidden
+buffer (it calls <A HREF="$$LINK(GrayDBufGetPlane)">GrayDBufGetPlane</A> with
+the index returned from
+<A HREF="$$LINK(GrayDBufGetHiddenIdx)">GrayDBufGetActiveIdx</A>). Drawing
+into this buffer has no effect on the contents of the screen until
+<A HREF="$$LINK(GrayDBufSetActiveIdx)">GrayDBufSetActiveIdx</A> or
+<A HREF="$$LINK(GrayDBufToggle)">GrayDBufToggle</A> is called.

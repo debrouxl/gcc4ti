@@ -1,0 +1,24 @@
+[Main]
+Name=LIO_SendProduct
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=unsigned short LIO_SendProduct (LIO_CTX *file, unsigned short DevType);
+
+[ROM Call]
+Index=$253
+
+[Description]
+Sends a product code through the link interface.
+
+[Explanation]
+LIO_SendProduct is a high-level function which sends a Product Code through the link interface.
+What exactly will be sent is described in <A HREF="$$LINK(LIO_CTX)">LIO_CTX</A> structure pointed to by
+<I>file</I>. Parameter <I>DevType</I> determines the device type (see <A HREF="$$LINK(LIO_Send)">LIO_Send</A> for
+the explanation about its meaning). This routine is called from the VAR_LINK menu.
+Returns zero if the operation was successful, else returns a non-zero
+value (this value describes the type of the error, but I am not sure about the concrete meaning
+of particular values).
+
+[References]
+Out=LIO_RecvData, LIO_SendData, OSLinkClose, OSLinkOpen, OSLinkReset, system.h/OSClearBreak

@@ -1,0 +1,51 @@
+[Main]
+Name=DrawStrWidthP
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=unsigned short DrawStrWidthP (const char *str, short len, short Font);
+MinAMS=2.00
+See Also=DrawStrWidth
+
+[ROM Call]
+Index=$3EE
+
+[Description]
+Returns the width of the first <I>len</I> characters of a string.
+
+[Explanation]
+DrawStrWidthP returns the length in pixels of the first <I>len</I> characters of the string <I>str</I> displayed with font <I>Font</I>.
+The difference between DrawStrWidthP and <A HREF="$$LINK(DrawStrWidth)">DrawStrWidth</A> is that DrawStrWidth gives the length in pixels of the full string <I>str</I> displayed with font <I>Font</I>.
+<BR>
+Be careful: <I>len</I> must be less or equal to <CODE>strlen (str)</CODE>!
+<BR><BR>
+This function is interesting only for the <A HREF="$$LINK(Fonts)">F_4x6</A>
+font; for the <A HREF="$$LINK(Fonts)">F_6x8</A> and
+<A HREF="$$LINK(Fonts)">F_8x10</A> fonts, DrawStrWidthP will return
+6*len and 8*len, respectively.
+Also, it is faster to use <A HREF="$$LINK(DrawStrWidth)">DrawStrWidth</A> than to use:
+<PRE>DrawStrWidthP (str, strlen (str), font);
+</PRE>
+Example:
+<PRE>// This line is equivalent to:
+// printf_xy (0, 0, "%hu", DrawStrWidth ("DEFGHIJK", F_4x6));
+printf_xy (0, 0, "%hu",
+  DrawStrWidthP ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + 3, 8, F_4x6));
+</PRE>
+On AMS versions lower than 2.00, you can emulate DrawStrWidthP with:
+<PRE>unsigned short DrawStrWidthP(const char *str, short len, short Font)
+{
+  char s[len+1];
+  short i;
+  // Calling memcpy is slower than copying the string by-hand...
+  for (i = 0; i &lt; len; i++)
+    s[i] = str[i];
+  s[len] = 0;
+  return DrawStrWidth (s, font);
+}
+</PRE>
+This function is about 1% slower than the original implementation.
+
+[References]
+In=dialogs.h/Dialog, unknown.h/WinStrXYWrap
+Out=unknown.h/sf_width

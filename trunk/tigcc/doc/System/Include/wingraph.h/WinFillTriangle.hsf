@@ -1,0 +1,49 @@
+[Main]
+Name=WinFillTriangle
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinFillTriangle (WINDOW *w, short x0, short y0, short x1, short y1, short x2, short y2, short Attr);
+
+[ROM Call]
+Index=$12
+
+[Description]
+Draws a filled triangle to a window.
+
+[Explanation]
+FillTriangle draws a filled triangle with vertices (<I>x0</I>,&nbsp;<I>y0</I>),
+(<I>x1</I>,&nbsp;<I>y1</I>) and (<I>x2</I>,&nbsp;<I>y2</I>) to the window
+pointed to by <I>w</I>, using the attribute <I>Attr</I>.
+All coordinates are relative to the topleft corner of the window.
+The triangle will be clipped at the boundaries of the clipping area of the window.
+Supported attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draws a solid fill triangle</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Draws an empty triangle (i.e. erase a triangular area)</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>XORs a solid fill triangle into the destination</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draws a triangle filled using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draws a triangle filled using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draws a triangle filled using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draws a triangle filled using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="$$LINK(WinAttr)">WinAttr</A> command for a more general info about attributes.
+<BR><BR>
+<B>Note:</B> The 3D grapher in HIDDEN SURFACE mode uses this routine to shade the
+graph using <A HREF="$$LINK(graph.h/Attrs)">A_REVERSE</A> if the surface is visible and <A HREF="$$LINK(graph.h/Attrs)">A_NORMAL</A>
+if it is hidden (by splitting the graph into 6-sided polygons and splitting those into
+triangles).
+
+[References]
+Out=graph.h/FillTriangle, graph.h/PortRestore, unknown.h/_ROM_CALL_413
+In=bascmd.h/cmd_cubicreg, bascmd.h/cmd_expreg, bascmd.h/cmd_linreg, bascmd.h/cmd_lnreg, bascmd.h/cmd_logistic, bascmd.h/cmd_medmed, bascmd.h/cmd_onevar, bascmd.h/cmd_powerreg, bascmd.h/cmd_quadreg, bascmd.h/cmd_quartreg, bascmd.h/cmd_twovar, events.h/EV_defaultHandler, gdraw.h/GR3_paint3d, unknown.h/EV_quit, unknown.h/GR3_handleEvent

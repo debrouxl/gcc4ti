@@ -1,0 +1,29 @@
+[Main]
+Name=TE_shrinkWrap
+Type=Function
+Subtype=ROM Call
+Header Files=textedit.h
+Definition=HANDLE TE_shrinkWrap (TEXT_EDIT *te);
+
+[ROM Call]
+Index=$B2
+
+[Description]
+Shrinks the text editor buffer.
+
+[Explanation]
+TE_shrinkWrap shrinks the text editor buffer
+(associated with the structure pointed to by <I>te</I>) to the minimal possible size. After
+calling this function, the size of the buffer will be equal to the actual number of characters
+in the buffer. This function must not be applied to text buffers opened with the
+<A HREF="$$LINK(TE_openFixed)">TE_openFixed</A> function. TE_shrinkWrap returns the handle of
+the text editor buffer as the result. In addition, this function cancels selection highlight
+and turns off the cursor. The edit buffer memory is not freed. Use this routine to prepare the
+edit buffer for further processing or to be stored as a variable.
+<BR><BR>
+If NULL is passed as an argument, TE_shrinkWrap creates a new
+handle for the text editor buffer.
+
+[References]
+In=bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog, homescr.h/HomeExecute
+Out=TE_unfocus, alloc.h/HeapRealloc

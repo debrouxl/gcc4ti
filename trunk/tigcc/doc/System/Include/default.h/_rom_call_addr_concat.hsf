@@ -1,0 +1,43 @@
+[Main]
+Name=_rom_call_addr_concat
+Type=Function
+Subtype=Macro
+Header Files=default.h
+Definition=#define _rom_call_addr_concat(intindex,romindex) (__jmp_tbl [intindex])
+
+[Description]
+Returns a void pointer to a TIOS ROM call (internal).
+
+[Explanation]
+_rom_call_addr_concat is an internal macro which is used by
+<A HREF="$$LINK(_rom_call_addr)">_rom_call_addr</A> and
+<A HREF="$$LINK(_rom_call)">_rom_call</A>.
+<BR><BR>
+<I>intindex</I> contains the index of the ROM call as a numeric constant. It
+is used in this definition, as an array subscript for
+<A HREF="$$LINK(__jmp_tbl)">__jmp_tbl</A>, a pointer to the table of ROM calls.
+<I>romindex</I> contains a symbol in the form <CODE>_ROM_CALL_xxx</CODE>,
+where <I>xxx</I> is the index in hexadecimal form without the <CODE>'0x'</CODE>
+prefix.
+<BR><BR>
+Other header files override this definition to use <I>romind</I> instead.
+In particular, <A HREF="$$LINK(doors.h/)">doors.h</A> includes a
+<CODE>romsymb.h</CODE> header file which defines a list of external variables
+for all ROM call symbols which may appear in <I>romindex</I>, and changes the
+definition to:
+<PRE>#define _rom_call_addr_concat(intindex,romindex) (&romindex)
+</PRE>
+You probably wonder why _rom_call_addr_concat exists at all, since other
+header files might as well override <A HREF="$$LINK(_rom_call_addr)">_rom_call_addr</A>,
+which could be used directly by <A HREF="$$LINK(_rom_call)">_rom_call</A>.
+The reason is that all arguments which are not concatenated are
+<A HREF="$$INFOLINK(cpp/SEC11)">scanned</A> for macros that have to be expanded.
+If <A HREF="$$LINK(_rom_call)">_rom_call</A> was using
+<A HREF="$$LINK(_rom_call_addr)">_rom_call_addr</A>, passing <I>index</I> to
+it, then the <I>index</I> parameter would be scanned. This turns out to be fatal
+if the user defines a macro such as <CODE>A1</CODE>, and uses the ROM call with
+the index <CODE>0xA1</CODE>.
+<BR><BR>
+Therefore, both <A HREF="$$LINK(_rom_call_addr)">_rom_call_addr</A> and
+<A HREF="$$LINK(_rom_call)">_rom_call</A> have to use concatenation on their
+<I>index</I> parameter. Then they pass the resulting symbols to _rom_call_addr_concat.

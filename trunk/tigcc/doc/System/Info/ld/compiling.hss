@@ -1,0 +1,27 @@
+[Main]
+Title=Recompiling ld-tigcc and ar-tigcc
+
+[Top]
+Recompiling <CODE>ld-tigcc</CODE> and <CODE>ar-tigcc</CODE> (or the
+corresponding link DLL) from source may be useful if you want to make the
+linker as efficient as possible by disabling certain features. Recompilation
+requires <A HREF="http://gcc.gnu.org/">GCC</A> and
+<A HREF="http://www.gnu.org/software/make/">GNU make</A>. If you are using
+Linux, you may simply run <CODE>make</CODE> in the source code directory; the
+same is probably true for other Unix variants. If you are using Windows, you
+need to download <A HREF="http://www.mingw.org/msys.html">MSYS</A> or make
+some minor modifications to the makefile.
+<BR><BR>
+If you only want to disable some features, you can take a look at the
+definitions in the makefile (the file called <CODE>Makefile</CODE>). The
+<CODE>DEFINES</CODE> variable contains the general features to be included;
+<CODE>EXE_DEFINES</CODE> contains the features that should only be included
+in the executable files (not in the DLL). All available definitions are
+documented at the top of <CODE>generic.h</CODE>.
+<BR><BR>
+For example, if you want to disable support for the AmigaOS files generated
+by the <A HREF="$$INFOLINK(a68k)">A68k Assembler</A>, you may simply remove
+the <B>'-DAMIGAOS_SUPPORT'</B> definition from the <CODE>DEFINES</CODE>
+variable. Note that some combinations are invalid; for example, if you
+disable support for all object file formats, you will get a "file format not
+recognized" error whenever you try to link some files.

@@ -1,0 +1,30 @@
+[Main]
+Name=compare_Floats
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=long compare_Floats (CESI ptr1, CESI ptr2);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2F7
+
+[Description]
+Compares two floating point entries on the expression stack.
+
+[Explanation]
+compare_Floats compares two floating point entries on the expression stack pointed to by
+<I>ptr1</I> and <I>ptr2</I>, and returns a value which is
+<UL>
+<LI>&lt; 0 if the number pointed to by <I>ptr1</I> is less than the number pointed to by <I>ptr2</I></LI>
+<LI>== 0 if the number pointed to by <I>ptr1</I> is the same as the number pointed to by <I>ptr2</I></LI>
+<LI>&gt; 0 if the number pointed to by <I>ptr1</I> is greater than the number pointed to by <I>ptr2</I></LI>
+</UL>
+So, this function is similar like <A HREF="$$LINK(timath.h/fcmp)">fcmp</A>, except the arguments are
+different (<A HREF="$$LINK(timath.h/fcmp)">fcmp</A> uses floating point arguments, and compare_Floats
+uses pointers to floating point entries on the expression stack).
+
+[References]
+Out=unknown.h/estack_to_float, unknown.h/_bcd_math
+In=basfunc.h/push_asin, basop.h/push_dot_exponentiate, unknown.h/GetStatValue

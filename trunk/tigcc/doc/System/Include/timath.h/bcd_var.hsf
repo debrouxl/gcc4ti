@@ -1,0 +1,27 @@
+[Main]
+Name=bcd_var
+Type=Function
+Subtype=Macro
+Header Files=timath.h
+Definition=#define bcd_var(a) (*(bcd*)&(a))
+
+[Description]
+Converts reference to float object to reference to BCD object.
+
+[Explanation]
+bcd_var converts the reference to a floating point object <I>x</I> (which must be an lvalue,
+for example a floating point variable) to the reference to the same object, but interpreted
+as a <A HREF="$$LINK(bcd)">bcd</A> structure. bcd_var is similar as <A HREF="$$LINK(float_to_bcd)">float_to_bcd</A>,
+but returned object is an lvalue, so it may be used in assignments like
+<PRE>float a;
+...
+bcd_var(a).exponent = 0x4002;
+</PRE>
+The drawback of bcd_var (compared with <A HREF="$$LINK(float_to_bcd)">float_to_bcd</A>) is the fact
+that its argument must be an lvalue, so it can not be a floating point constant or any
+non-lvalue expression (for example, a result of a function).
+<BR><BR>
+<B>Note:</B> I used notation "&amp;bcd_var" and "&amp;x" in the prototype description, although passing
+by reference and returning results by reference does not exist in ordinary C (only in C++).
+However, this bcd_var is macro which is implemented on such way that it simulates
+"passing and returning by reference".

@@ -1,0 +1,23 @@
+[Main]
+Name=GetFloatArg
+Type=Function
+Subtype=Macro
+Header Files=args.h
+Definition=float GetFloatArg (CESI &ap);
+Real Definition=#define GetFloatArg(p) ({float __f; (CESI)(p)-=10; _rom_call(void*,(),26A)(&__f,(CESI)(p)+1,9L); ((char*)&__f)[9]=0; __f;})
+See Also=estack.h/estack_number_to_Float
+
+[Description]
+Returns the current argument of floating point type.
+
+[Explanation]
+GetFloatArg is a macro which returns the current floating point argument
+(pointed to by <I>ap</I>) and modifies <I>ap</I> to point to the next argument in
+the argument list. So, each successive time GetFloatArg is used, it returns the next
+argument in the argument list.
+Note that GetFloatArg assumes that the current argument <I>is</I> a floating point value (not an
+integer). This may be checked using <A HREF="$$LINK(GetArgType)">GetArgType</A>. If this
+is not true, the result of GetFloatArg is unpredictable.
+
+[References]
+Out=mem.h/memcpy

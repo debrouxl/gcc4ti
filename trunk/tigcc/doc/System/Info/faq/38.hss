@@ -1,0 +1,45 @@
+[Main]
+Title=How can I create variable-size arrays?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I need variable-size arrays, i.e. arrays which size is not known in compile time...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+In general, making variable-size arrays in C is extremely easy for
+one-dimensional arrays. Instead of
+<PRE>int a[n];  // <I>where n is not known in compile-time</I></PRE>
+you can write:
+<PRE>int *a;
+...
+a = calloc (n, sizeof (int));
+</PRE>
+The same is not-so-easy for 2-dimensional arrays (see the previous question), and quite hard
+(although possible) for n-dimensional arrays where n&gt;2. To do this, you need to have nasty
+plays with pointers. It is even possible to make a function named <CODE>multi_dim</CODE> which
+creates  multidimensional variable-sized arrays. I once created such routine for some
+internal purposes (note that it is very tricky). Principally, its usage is like this:
+if you want to simulate
+<PRE>int a[n1][n2][n3][n4];</PRE>
+where n1, n2, n3 and n4 are not known apriori, you need to do:
+<PRE>int ****a;  // <I>yes, quadruple pointer!!!</I>
+...
+a = multi_dim (4, sizeof (int), n1, n2, n3, n4);
+</PRE>
+However, TIGCC is GNU C, and it has some <A HREF="$$INFOLINK(gnuexts)">extensions</A> in addition to
+"standard" C. For example, it allows variable-size arrays without any tricky
+plays with pointers!!! (Note that this particular extension, together with a few others,
+has been added to standard ISO C in 1999, so it is no longer non-standard.) Try this:
+<PRE>void _main(void)
+{
+  int m, n, p;
+  m = random (5);
+  n = random (5);
+  p = random (5);
+  {
+    int a[m][n][p];
+    // <I>do something with a</I>
+  }
+}
+</PRE>
+and you will see that it works!
+</TD></TR></TABLE>

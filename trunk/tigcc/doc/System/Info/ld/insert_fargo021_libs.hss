@@ -1,0 +1,47 @@
+[Main]
+Title=__ld_insert_fargo021_libs
+See Also=insert_fargo020_libs: __ld_insert_fargo020_libs, insert_kernel_libs: __ld_insert_kernel_libs
+
+[Top]
+__ld_insert_fargo021_libs can be used to handle
+<A HREF="$$LINK(symbols_lib_call)">library calls</A>. It inserts references
+to libraries in the format used by Fargo v0.2.1:
+<UL>
+<LI><B>2 bytes:</B> number of referenced libraries</LI>
+<LI><B>2 bytes:</B> program-relative location of the null-separated
+    null-terminated library name list</LI>
+<LI>For each referenced library...
+    <UL>
+    <LI>For each imported function/variable...
+        <UL>
+        <LI>Compressed <I>index</I> of the function/variable. The format is
+            <I>not</I> the same as for the relocation table. It is encoded
+            using <I>one</I> of the following formats:
+            <UL>
+            <LI><B>1 byte:</B> <I>offset</I> (must be between 0x01 and
+                0x7F)</LI>
+            <LI><B>2 bytes:</B> <I>offset</I> + 0x8000 (must be between
+                0x8000 and 0xFFFF)</LI>
+            </UL>
+            where <I>offset</I> is the index plus 1 for the first index, and
+            the difference between the index and the previous index for the
+            following ones.</LI>
+        <LI>A compressed relocation table for this function/variable. See
+            <A HREF="$$LINK(insert_compressed_relocs)">__ld_insert_compressed_relocs</A>
+            for the format used.
+            The reference symbol used if there is no previous reloc (i.e. for
+            the first reloc) is <CODE>__ld_fargo021_libs_ref</CODE>. It is
+            expected by Fargo to be at a fixed position: the position of the
+            format flag in the Fargo header. This is currently handled by the
+            definition of the Fargo header.</LI>
+        </UL></LI>
+    <LI><B>2 bytes:</B> 0</LI>
+    </UL></LI>
+<LI><B>2 bytes:</B> 0</LI>
+</UL>
+The libraries have to be processed using the method described in
+<A HREF="$$LINK(insert_kernel_libs)">__ld_insert_kernel_libs</A>, except that
+library versions are not implemented by this format.
+<BR><BR>
+<B>Note:</B> This insertion is available only if Fargo support is compiled
+in.

@@ -1,0 +1,124 @@
+[Main]
+Name=DynMenuAdd
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=HANDLE DynMenuAdd (HANDLE Handle, short ParentID, const void *Data, short ID, unsigned short Flags);
+MinAMS=2.00
+See Also=MenuNew, MenuLoad, DynMenuChange
+
+[ROM Call]
+Index=$3F1
+
+[Description]
+Adds a new entry to a dynamic menu.
+
+[Explanation]
+DynMenuAdd adds a new entry to the dynamic toolbar menu associated with the handle <I>Handle</I>, which must be a handle
+created by <A HREF="$$LINK(MenuNew)">MenuNew</A> or <A HREF="$$LINK(MenuLoad)">MenuLoad</A>.
+The entry added first will be the first option in the menu, the entry added second will be the second option, and so on.
+Each new entry (pointed by <I>Data</I>) can either be a text, an <A HREF="$$LINK(graph.h/ICON)">ICON</A> structure, or a
+<A HREF="$$LINK(graph.h/BITMAP)">BITMAP</A> structure, depending on the parameter <I>Flags</I>.
+<BR><BR>
+This function is similar to <A HREF="$$LINK(MenuAddText)">MenuAddText</A> and <A HREF="$$LINK(MenuAddIcon)">MenuAddIcon</A>, except that
+it is available only in AMS 2.00 and later (i.e. you have to set <A HREF="$$INFOLINK(httigcc/minams)">MIN_AMS</A> in TIGCC to 200 or higher).
+This function also offers a new feature: the use of bitmaps in menus.
+In fact, TI says that <A HREF="$$LINK(MenuAddText)">MenuAddText</A> and <A HREF="$$LINK(MenuAddIcon)">MenuAddIcon</A> are just
+older ways to do the same things, so DynMenuAdd can fully replace those functions if you plan to run your program only on AMS 2.00
+or later.
+<BR><BR>
+<I>ID</I> is the identification number of the item. It is used to identify the item
+in many other functions; for example it will later be returned by the
+<A HREF="$$LINK(MenuKey)">MenuKey</A> function if the user selects this menu item.
+You may also be able to change this new entry using the ID number and
+the function <A HREF="$$LINK(DynMenuChange)">DynMenuChange</A>. Moreover,
+this value can be used by a child entry to identify its parent.
+If <I>ID</I> equals 0, the TIOS will generate the ID automatically (1 for the
+first menu entry, 2 for the second entry, etc.).
+The legal range for <I>ID</I> is 1 to 4095. If <I>ID</I> is greater than 4095,
+it will be truncated (ANDed with 0x0FFF).
+<BR><BR>
+<B>Note:</B> If you are adding to a prefilled static menu (i.e. written in your
+source code and loaded using <A HREF="$$LINK(MenuLoad)">MenuLoad</A>), do <I>not</I>
+use the range 0x0F00 to 0x0FFF (i.e. do not use an ID greater than 3839).
+<BR><BR>
+DynMenuAdd returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of
+an error, otherwise it returns <I>Handle</I>. An error occurs if the system runs
+out of memory, or if there is an error in the parameters (<I>ParentID</I> not
+found, <I>ParentID</I> found but it was not a possible parent, or maximum
+number of items in a menu exceeded). If there is an error adding the new entry, the
+<A HREF="$$LINK(MenuFlagsEnum)">MF_ERROR</A> flag in the menu structure
+is set (you can use <A HREF="$$LINK(MenuFlags)">MenuFlags</A> to get this flag,
+but do <I>not</I> confuse menu structure flags such as <A HREF="$$LINK(MenuFlagsEnum)">MF_ERROR</A>
+and the parameter <I>Flags</I> in MenuAddText which gives the type of entry).
+DynMenuAdd may cause heap compression.
+<BR><BR>
+The parameter <I>ParentID</I> must be set to 0 if this is a new top-level
+entry (i.e. if this entry has no parent), or to the ID of the parent entry if
+this entry is a child (i.e. this is an item in a pulldown menu).
+Note that if this entry is at top level, <I>ParentID</I> can also be
+set to -1, which means it has no child. (For some reason, this seems to be
+the only way to prevent any other entry to be a child of this one,
+as the <A HREF="$$LINK(DynMenuFlags)">DMF_TOP</A> flag still allows child
+entries.)
+<BR><BR>
+The <I>Flags</I> parameter, defined in the enum <A HREF="$$LINK(DynMenuFlags)">DynMenuFlags</A>, must contain
+one of the flags described in the first following table, bitwise ORed with one of the flags
+described in the second table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TEXT</TD>
+  <TD>The parameter <I>Data</I> points to a text string.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_ICON</TD>
+  <TD>The parameter <I>Data</I> points to an <A HREF="$$LINK(graph.h/ICON)">ICON</A> structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_BITMAP</TD>
+  <TD>The parameter <I>Data</I> points to a <A HREF="$$LINK(graph.h/BITMAP)">BITMAP</A> structure.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TOP</TD>
+  <TD>New top-level entry that cannot be a parent.
+      <BR>
+      Note that this flag does not seem to prevent any other entry to be a child of this one (i.e. when this flag is set in an entry, that entry can still be a parent). To prevent this, please set -1 for the <I>ParentID</I> parameter as well as setting this flag.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_TOP_SUB</TD>
+  <TD>New top-level entry that can have children.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_CHILD</TD>
+  <TD>Child entry whose parent is the one specified by the parameter <I>ParentID</I>.
+      <BR>
+      This child entry cannot be the parent of another entry (i.e. no submenu available for this entry).
+      <BR>
+      <B>Note:</B> The parent specified by <I>ParentID</I> should have the DMF_TOP_SUB or the DMF_CHILD_SUB flag set.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_CHILD_SUB</TD>
+  <TD>Child entry whose parent is the one specified by the parameter <I>ParentID</I>.
+      <BR>
+      This child entry can be the parent of another entry (i.e. submenus are available for this entry).
+      <BR>
+      With this option, you can create many sublevels of nesting.
+      <BR>
+      <B>Note:</B> The parent specified by <I>ParentID</I> should have the DMF_TOP_SUB or the DMF_CHILD_SUB flag set.</TD>
+</TR>
+</TABLE>
+<BR>
+If you forget to give a <A HREF="$$LINK(DynMenuFlags)">DMF_TEXT</A>,
+<A HREF="$$LINK(DynMenuFlags)">DMF_ICON</A> or <A HREF="$$LINK(DynMenuFlags)">DMF_BITMAP</A>
+flag, DynMenuAdd will automatically consider <I>Data</I> to point to a text string.
+<BR><BR>
+Here is an example for this function (called "Menu Example 2"):
+$$EXAMPLE(Menu Example 2.c)
+
+[References]
+In=MenuAddIcon, MenuAddText, PopupAddText, events.h/EV_defaultHandler, unknown.h/EV_quit
+Out=alloc.h/HeapRealloc, graph.h/CalcBitmapSize, mem.h/memcpy, mem.h/memmove, mem.h/memset, string.h/strlen, string.h/strncpy

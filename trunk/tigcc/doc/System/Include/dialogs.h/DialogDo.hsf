@@ -1,0 +1,61 @@
+[Main]
+Name=DialogDo
+Type=Function
+Subtype=ROM Call
+Header Files=dialogs.h
+Definition=short DialogDo (HANDLE Handle, short x, short y, char *RequestBuffer, short *PulldownBuffer);
+
+[ROM Call]
+Index=$32
+
+[Description]
+Activates and shows a dialog box.
+
+[Explanation]
+DialogDo activates and shows on the screen the dialog associated with handle <I>Handle</I>.
+The top-left corner of the dialog will be at the position (<I>x</I>,&nbsp;<I>y</I>),
+where coordinates are absolute screen coordinates. <I>x</I>, <I>y</I> or both may
+also have a special value <A HREF="$$LINK(CENTER)">CENTER</A> which means "center the dialog on
+the screen in x, y or both directions". DialogDo returns <A HREF="$$LINK(kbd.h/CommonKeys)">KEY_ENTER</A>
+or <A HREF="$$LINK(kbd.h/CommonKeys)">KEY_ESC</A>, depending on whether the user
+exits the dialog by pressing ENTER or ESC key
+(note that structures pointed to by <I>RequestBuffer</I> and <I>PulldownBuffer</I> will be
+modified regardless of whether the user exits the dialog by pressing ENTER or ESC). It also
+may return a negative number in a case of error (e.g. not enough memory to display the dialog
+box). After the execution is finished, the original
+content of the screen will be restored. This routine may cause heap compression.
+<BR><BR>
+Parameter <I>RequestBuffer</I> is the pointer to the buffer where character entered
+into request boxes will be stored. This buffer may store more than one string; the characters
+entered into a request box will be stored starting from address
+<I>RequestBuffer</I> + <I>offset</I>, where <I>offset</I> is the parameter
+given with the <A HREF="$$LINK(DialogAddRequest)">DialogAddRequest</A> command which created
+this request box. Each stored
+string will be zero terminated. This buffer may be pre-filled with the initial content which
+will appear in request boxes. Namely, initial content of any request box will be
+a sequence of characters starting from address <I>RequestBuffer</I> + <I>offset</I>
+up to the first zero ('\0') character (where <I>offset</I> is the parameter given when
+the request box is created). If the dialog does not contain any request boxes,
+<I>RequestBuffer</I> may be <A HREF="$$LINK(alloc.h/NULL)">NULL</A>.
+<BR><BR>
+Parameter <I>PulldownBuffer</I> is the pointer to the buffer where return values
+of execution of pulldown menus will be stored. This buffer is, in fact. an array of
+integers; the return value of executing a pulldown menu will be stored in
+<I>PulldownBuffer</I>[<I>index</I>], where <I>index</I> is the parameter
+given with the <A HREF="$$LINK(DialogAddPulldown)">DialogAddPulldown</A> command which created
+this pulldown menu. This array may be pre-filled with the ordinal numbers of initial
+option in pulldown menus. Namely, initially selected option content of any pulldown menu
+will be an option with ordinal number <I>PulldownBuffer</I>[<I>index</I>]
+(where <I>index</I> is the parameter given when the pulldown menu was created).
+If the dialog does not contain any pulldown menus,
+<I>PulldownBuffer</I> may be <A HREF="$$LINK(alloc.h/NULL)">NULL</A>.
+<BR><BR>
+Here is a concrete example (called "Dialog Test"), which creates a dialog which asks the
+user for his name, then displays a message box with a greeting message in which the user's
+name is included, except if the user pressed the ESC key:
+$$EXAMPLE(Dialog Test.c)
+
+[References]
+In=DlgMessage, VarNew, VarOpen, VarSaveAs, bascmd.h/cmd_dialog, bascmd.h/cmd_request, events.h/EV_defaultHandler, homescr.h/HomeExecute
+Out=Dialog, alloc.h/HeapLock, alloc.h/HeapUnlock
+Out_EV_eventLoop=1

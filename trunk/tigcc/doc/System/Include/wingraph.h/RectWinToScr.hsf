@@ -1,0 +1,24 @@
+[Main]
+Name=RectWinToScr
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=SCR_RECT *RectWinToScr (const SCR_RECT *win_area, const WIN_RECT *rect, SCR_RECT *result_area);
+
+[ROM Call]
+Index=$2A
+
+[Description]
+Converts relative to absolute coordinates then clips them to a window.
+
+[Explanation]
+RectWinToScr first converts coordinates in the structure <I>rect</I> (which are assumed to be relative
+to the topleft corner of the structure <I>win_area</I>) to the absolute screen coordinates.
+Converted rectangular area is then clipped at the boundaries of the rectangular area
+<I>win_area</I>, and coordinates of resulting rectangular area are stored to the structure
+pointed to by <I>result_area</I>. RectWinToScr returns <I>result_area</I>. If converted
+rectangular area does not overlap with <I>win_area</I>, <I>result_area</I> will be
+undefined, and RectWinToScr returns <A HREF="$$LINK(alloc.h/NULL)">NULL</A>.
+
+[References]
+In=WinFill, dialogs.h/Dialog

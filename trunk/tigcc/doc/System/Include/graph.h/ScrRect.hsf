@@ -1,0 +1,38 @@
+[Main]
+Name=ScrRect
+Type=Variable
+Subtype=ROM Call
+Header Files=graph.h
+Definition=SCR_RECT *const ScrRect;
+
+[ROM Call]
+Index=$2F
+Reference=1
+
+[Description]
+A global pointer to a <A HREF="$$LINK(SCR_RECT)">SCR_RECT</A> structure representing the whole screen.
+
+[Explanation]
+ScrRect is a (constant) pointer to a <A HREF="$$LINK(SCR_RECT)">SCR_RECT</A> structure set by TIOS
+to point to a structure which represents the whole screen area without the status
+line. So, if you don't need drawing in the status line, you can set the default
+clipping area using the <A HREF="$$LINK(SetCurClip)">SetCurClip</A> command like
+<PRE>SetCurClip (ScrRect);
+</PRE>
+or, you can use ScrRect in a command which needs clipping area parameter explicitely
+(such command is <A HREF="$$LINK(DrawClipEllipse)">DrawClipEllipse</A>, for example):
+<PRE>DrawClipEllipse (50, 50, 30, 20, ScrRect, A_NORMAL);
+</PRE>
+ScrRect may be used also to determine a calculator type. If
+<PRE>ScrRect-&gt;xy.x1 == 159
+</PRE>
+then the calculator is TI-89, else it is TI-92 Plus or V200.
+<BR><BR>
+<B>Note:</B> ScrRect is a variable, so it may be changed (more precise, the structure on which it
+points may be changed). By changing it, it is possible to force
+some TIOS commands which normally can not access to the status line area to get the access
+to this "forbidden" zone, or to force some commands to use only smaller part of the screen.
+Use this possibility with great care, and only if you know exactly what you are doing!
+
+[References]
+In=assert.h/assert, menus.h/MenuEnd, menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, stdio.h/fputchar, unknown.h/paint_all_except, unknown.h/UpdateWindows, unknown.h/WinRemove, wingraph.h/WinClr, unknown.h/_ROM_CALL_3EA, unknown.h/_ROM_CALL_421

@@ -1,0 +1,34 @@
+[Main]
+Title=I don't understand how to define sprites!
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I can't understand how sprites are defined; I looked in many program sources, and every
+sprite definition looks for me as an array of random hex numbers!?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Well, suppose that you want to make a sprite which is a
+filled circle. Make a grid on the paper, and make a sprite shape by filling
+grid squares. Then, replace each filled square with 1 and each blank square
+with 0. In above example, it may look like:
+<BR><BR>
+00111000<BR>
+01111100<BR>
+11111110<BR>
+11111110<BR>
+01111100<BR>
+00111000
+<BR><BR>
+Then, produce rows as a set of binary numbers, and convert them
+to hex. For example:
+<BR><BR>
+00111000 binary = 38 hex<BR>
+01111100 binary = 7B hex
+<BR><BR>
+etc. These hex numbers describe the sprite, i.e. the sprite
+definition should be
+<PRE>unsigned char sprite [] = {0x38, 0x7B, ...};
+</PRE>
+assuming that <A HREF="$$LINK(sprites.h/Sprite8)">Sprite8</A> will be used. That's all...
+<BR><BR>
+<B>Note:</B> TIGCC also supports binary numbers (<CODE>0b...</CODE>).
+</TD></TR></TABLE>

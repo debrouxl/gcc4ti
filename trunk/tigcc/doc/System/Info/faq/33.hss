@@ -1,0 +1,20 @@
+[Main]
+Title=Is it possible to add one or two bytes to a longword pointer?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is it possible to add two bytes or even one byte to a longword pointer? I am using
+a longword pointer to write longwords to the screen, and I need to add 30 bytes to
+it to get to the next line. However, I can only add multiples of four bytes to it...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+It is possible using typecasting:
+<PRE>ptr = (long*)((char*)ptr + 30);
+</PRE>
+Don't be afraid, the compiler will generate just addition: everything
+other is just to satisfy type checking conventions. Or alternatively, you can
+use even simpler form:
+<PRE>(char*)ptr += 30;
+</PRE>
+Although such form is not requested to work in ANSI C standard, the most of compilers
+(including TIGCC) will accept this.
+</TD></TR></TABLE>

@@ -1,0 +1,55 @@
+[Main]
+Title=How can I use very large integers like TIOS?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I need to know more about how the TIOS stores and references big integers.
+In other words, what would be the C structure that would be used to represent
+any arbitrarily-long binary integer? In addition, I am particularly interested
+about how two extermely long binary integers would be multiplied and
+divided. Does TIOS have its own binary multiplication routine somewhere in the
+ROM? Something that works similarly to BCD multiplication/division, I'm guessing?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+TIOS stores all integers (both small and large) in the following format (looking from
+lower to higher addresses):
+<OL>
+<LI>Bytes of the integer in little endian (up to 255 bytes);</LI>
+<LI>The number of bytes occupied by integer (one byte);</LI>
+<LI><A HREF="$$LINK(estack.h/Tags)">POSINT_TAG</A> or <A HREF="$$LINK(estack.h/Tags)">NEGINT_TAG</A>,
+depending on the sign.</LI>
+</OL>
+These integers are kept on the expression stack, or in TI-Basic
+variables (of course, in TI-Basic variables, there are two extra bytes
+at the begining, which represents the length of a variable). In other
+words, integers are kept in a structure which is similar to the
+<A HREF="$$LINK(rsa.h/BN)">BN</A> structure defined in the <A HREF="$$LINK(rsa.h/)">rsa.h</A>
+header file, except the length byte is at the end, not at the begining (because
+data on the expression stack is always in RPN). So, such a structure can't be
+strictly represented using valid C syntax, because it requires something like
+<PRE>struct big_int
+  {
+    BYTE data[size];   // <I>but 'size' is not known in advance</I>
+    BYTE size;
+    BYTE tag;
+  }
+</PRE>
+Routines for multiplying and dividing very long integers surely exist in the TIOS,
+but the strange fact is that such routines are not in the TIOS jump table (read: they
+are not usable). Anyway, you can always use general eveluating routines
+like <A HREF="$$LINK(estack.h/NG_rationalESI)">NG_rationalESI</A> and
+<A HREF="$$LINK(estack.h/NG_approxESI)">NG_approxESI</A>. For example, to multiply two
+very-long-integers, you can use the following template:
+<PRE><I>push two very-long-ints on the estack</I>
+push_quantum (MULT_TAG);
+NG_approxESI (top_estack);
+</PRE>
+However, two routines for working with long integers <B>are</B> in TIOS jump table:
+for calculating <CODE>'(A*B)%N'</CODE> and <CODE>'(A^B)%N'</CODE> where "%" is the "modulus" operation,
+and "^" is "raising to a power". These operations are used in the
+RSA cryptosystem. Both of them are defined in the <A HREF="$$LINK(rsa.h/)">rsa.h</A> header file. They
+may be used for multiplying and raising to a power: you always can set <CODE>N</CODE> to very a big
+number, then <CODE>(A*B)%N&nbsp;=&nbsp;A*B</CODE>. Also, you can use them for calculating modulus
+(if you set <CODE>B</CODE> to 1). But, I am not sure how you can simulate division. I
+think that TI never uses integer division: everything like <CODE>'A/B'</CODE> is kept as
+a fraction, except in approx mode; TIOS then uses <A HREF="$$LINK(estack.h/NG_approxESI)">NG_approxESI</A>.
+</TD></TR></TABLE>

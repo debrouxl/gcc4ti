@@ -1,0 +1,25 @@
+[Main]
+Title=Double-Word Integers
+
+[Top]
+ISO C99 supports data types for integers that are at least 64 bits wide,
+and as an extension GCC supports them in C89 mode.
+Simply write <CODE><A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE> for a signed integer, or
+<CODE><A HREF="$$INFOLINK(keywords/unsigned)">unsigned</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE> for an unsigned integer.  To make an
+integer constant of type <CODE>long&nbsp;long&nbsp;int</CODE>, add the suffix <CODE>LL</CODE>
+to the integer.  To make an integer constant of type <CODE>unsigned&nbsp;long
+long&nbsp;int</CODE>, add the suffix <CODE>ULL</CODE> to the integer.
+<BR><BR>
+You can use these types in arithmetic like any other integer types.
+Addition, subtraction, and bitwise boolean operations on these types
+are open-coded on all types of machines, as well as shifts with a constant
+value.  Multiplication, division and shifts are not open-coded and use
+special library routines.
+<BR><BR>
+There may be pitfalls when you use <CODE>long&nbsp;long</CODE> types for function
+arguments, unless you declare function prototypes.  If a function
+expects type <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE> for its argument, and you pass a value of type
+<CODE><A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE>, confusion will result because the caller and the
+subroutine will disagree about the number of bytes for the argument.
+Likewise, if the function expects <CODE><A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE> and you pass
+<CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.  The best way to avoid such problems is to use prototypes.

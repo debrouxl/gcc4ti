@@ -1,0 +1,38 @@
+[Main]
+Name=trig
+Type=Function
+Subtype=ROM Call
+Header Files=timath.h
+Definition=void trig (short option, short deg_flag, const float *xptr, float *sine, float *cosine, float *tangent);
+
+[ROM Call]
+Index=$28B
+
+[Description]
+Generic subroutine for calculating trigonometric functions.
+
+[Explanation]
+trig is a TIOS subroutine which is used internally for calculating
+trigonometric functions, i.e. in TIOS functions
+<A HREF="$$LINK(sin)">sin</A>, <A HREF="$$LINK(cos)">cos</A>, <A HREF="$$LINK(sincos)">sincos</A> and
+<A HREF="$$LINK(tan)">tan</A>. It calculates simultaneously the sine, the cosine and
+the tangent of the floating point value pointed to by <I>xptr</I>, and stores the results in
+floating point destinations pointed to by <I>sine</I>, <I>cosine</I> and
+<I>tangent</I>. The argument pointed to by <I>xptr</I> is assumed to be specified in radians
+if <I>deg_flag</I> is 0, or in degrees if <I>deg_flag</I> is 1 (it seems that
+these two values are only legal values for <I>deg_flag</I>). Parameter <I>option</I>
+is not very clear to me: TIOS uses <I>option</I>&nbsp;=&nbsp;1 in
+<A HREF="$$LINK(sin)">sin</A> and <A HREF="$$LINK(sincos)">sincos</A>, <I>option</I>&nbsp;=&nbsp;2
+in <A HREF="$$LINK(cos)">cos</A>, and <I>option</I>&nbsp;=&nbsp;4 in
+<A HREF="$$LINK(tan)">tan</A>. I don't know what is the difference between
+<I>option</I>&nbsp;=&nbsp;1 and <I>option</I>&nbsp;=&nbsp;2, because both the
+sine and the cosine are calculated regardless of the value of <I>option</I>.
+I only noticed that the tangent will not be calculated if <I>option</I> is not
+equal to 4.
+<BR><BR>
+<B>Note:</B> I included the description of this routine here only due to completeness: it
+is more preferable to call particular trigonometric function instead.
+
+[References]
+Out=is_transfinite, unknown.h/_bcd_math
+In=cos, sin, sincos, tan, events.h/handleVarLinkKey, unknown.h/push_trig, unknown.h/_ROM_CALL_446

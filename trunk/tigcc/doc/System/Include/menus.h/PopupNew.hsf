@@ -1,0 +1,38 @@
+[Main]
+Name=PopupNew
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=HANDLE PopupNew (const char *Title, short Height);
+See Also=PopupDo, PopupBegin, PopupClear, DynMenuAdd, DynMenuChange, PopupAddText
+
+[ROM Call]
+Index=$45
+
+[Description]
+Creates a new popup menu.
+
+[Explanation]
+PopupNew allocates memory for a new popup menu, initializes the allocated block with the
+necessary structures and returns a handle to it (or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of an error).
+You can later free the memory by calling <A HREF="$$LINK(alloc.h/HeapFree)">HeapFree</A>.
+<I>Title</I> is the title of the menu (you can pass <A HREF="$$LINK(alloc.h/NULL)">NULL</A> if
+you do not want a title), and <I>Height</I> is the height of the menu box in pixels
+(you can pass 0 for autocalculating the height). If the cumulated height of the items in the
+menu is greater than the available height of the menu box, the contents of the menu will
+scroll up or down if necessary.
+<BR><BR>
+This empty popup structure can be modified with <A HREF="$$LINK(PopupAddText)">PopupAddText</A>
+(or <A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A> and <A HREF="$$LINK(DynMenuChange)">DynMenuChange</A>
+if you wish to use program only on AMS 2.00 or later). The popup can then be executed with
+<A HREF="$$LINK(PopupDo)">PopupDo</A> (or <A HREF="$$LINK(PopupBegin)">PopupBegin</A> and
+<A HREF="$$LINK(PopupBeginDo)">PopupBeginDo</A> on AMS 2.00 or later if specific menu features are
+needed).
+<BR><BR>
+<B>Note:</B> If <I>Title</I> is longer than 18 characters, it will be truncated by storing a
+zero byte into the string after the 18th character. You have to be especially
+careful because the <I>Title</I> parameter is <I>not</I> constant in this case.
+
+[References]
+In=VarCreateFolderPopup, bascmd.h/cmd_dialog, bascmd.h/cmd_popup, dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs, events.h/EV_defaultHandler, events.h/MO_modeDialog, homescr.h/HomeExecute, unknown.h/EV_quit, unknown.h/_ROM_CALL_3F7, unknown.h/_ROM_CALL_3F8, unknown.h/_ROM_CALL_486
+Out=alloc.h/HeapAlloc, mem.h/memset, string.h/strlen, string.h/strncpy

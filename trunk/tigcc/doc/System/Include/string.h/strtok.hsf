@@ -1,0 +1,23 @@
+[Main]
+Name=strtok
+Type=Function
+Subtype=ROM Call
+Header Files=string.h
+Definition=char *strtok (char *s1, const char *s2);
+
+[ROM Call]
+Index=$27A
+
+[Description]
+Scans <I>s1</I> for the first token not contained in <I>s2</I>.
+
+[Explanation]
+strtok considers the string s1 to consist of a sequence of zero or more text
+tokens, separated by spans of one or more characters from the separator string
+<I>s2</I>. The first call to strtok returns a pointer to the first character of the
+first token in <I>s1</I> and writes a null character into <I>s1</I> immediately following
+the returned token. Subsequent calls with <A HREF="$$LINK(alloc.h/NULL)">NULL</A> for the first argument will
+work through the string <I>s1</I> in this way, until no tokens remain. The separator
+string, <I>s2</I>, can be different from call to call. strtok returns a pointer to
+the token found in <I>s1</I>. A null pointer is returned when there are no more
+tokens.

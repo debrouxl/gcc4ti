@@ -1,0 +1,34 @@
+[Main]
+Name=DrawStr
+Alias=DrawStrXY
+Type=Function
+Subtype=ROM Call
+Header Files=graph.h
+Definition=void DrawStr (short x, short y, const char *str, short Attr);
+
+[ROM Call]
+Index=$1A9
+
+[Description]
+Draws a string.
+
+[Explanation]
+DrawStr draws a string <I>str</I> at a
+specific (<I>x</I>,&nbsp;<I>y</I>) location. See <A HREF="$$LINK(DrawChar)">DrawChar</A> for a
+description of attribute <I>Attr</I>.
+<BR><BR>
+<B>Note:</B> Too many people ask me how to draw a content of an integer variable (for example) instead
+of a string. Although this question is answered in the <A HREF="$$INFOLINK(faq)">Frequently Asked
+Question</A> list, I received a suggestion that it would be better if explained here.
+Well. You need to use <A HREF="$$LINK(stdio.h/sprintf)">sprintf</A> to convert a non-string
+variable to a string. For example:
+<PRE>int x, y;
+char buffer[50];
+...
+sprintf (buffer, "%d + %d = %d", x, y, x + y);
+DrawStr (0, 0, buffer, A_NORMAL);
+</PRE>
+
+[References]
+In=menus.h/MenuKey, menus.h/MenuOff, menus.h/MenuOn, menus.h/MenuTopRedef, menus.h/MenuTopSelect, stdio.h/printf_xy, wingraph.h/DrawWinBorder, unknown.h/_ROM_CALL_421
+Out=unknown.h/EV_runningApp, unknown.h/OO_GetAppAttr, unknown.h/sf_width, unknown.h/TIOS_abs

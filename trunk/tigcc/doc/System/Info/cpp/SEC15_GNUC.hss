@@ -1,0 +1,32 @@
+[Main]
+Title=__GNUC__
+See Also=SEC15_GNUC_MINOR: __GNUC_MINOR__, SEC15_GNUC_PATCHLEVEL: __GNUC_PATCHLEVEL__
+
+[Top]
+This macro is always defined in GCC.  The value identifies the GCC major
+version number (currently '3').
+<BR><BR>
+If all you need to know is whether or not your program is being compiled
+by GCC, you can simply test <CODE>__GNUC__</CODE>.  If you need to write code
+which depends on a specific version, you must be more careful.  Each
+time the minor version is increased, the patch level is reset to zero;
+each time the major version is increased (which happens rarely), the
+minor version and patch level are reset.  If you wish to use the
+predefined macros directly in the conditional, you will need to write it
+like this:
+<PRE>/* Test for GCC &gt; 3.2.0 */
+#if __GNUC__ &gt; 3 || \
+    (__GNUC__ == 3 &amp;&amp; (__GNUC_MINOR__ &gt; 2 || \
+                       (__GNUC_MINOR__ == 2 &amp;&amp; \
+                        __GNUC_PATCHLEVEL__ &gt; 0))
+</PRE>
+Another approach is to use the predefined macros to
+calculate a single number, then compare that against a threshold:
+<PRE>#define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
+...
+/* Test for GCC &gt; 3.2.0 */
+#if GCC_VERSION &gt; 30200
+</PRE>
+Many people find this form easier to understand.

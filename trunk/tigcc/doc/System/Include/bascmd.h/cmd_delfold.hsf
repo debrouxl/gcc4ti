@@ -1,0 +1,33 @@
+[Main]
+Name=cmd_delfold
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_delfold (CESI FolderNameList);
+MinAMS=1.01
+See Also=cmd_newfold, vat.h/FolderDel
+
+[ROM Call]
+Index=$33A
+
+[Description]
+Executes TI-Basic 'DelFold' command.
+
+[Explanation]
+cmd_delfold deletes one or more empty folders. It expects the following
+layout on the expression stack:
+<BR><BR>
+<A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>symname_n</I> ... <I>symname_2</I> <I>symname_1</I>
+<BR><BR>
+<I>symname_1</I>, <I>symname_2</I>, etc. are VAT symbol names
+(see <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> and
+<A HREF="$$LINK(estack.h/Tags)">Tags</A> for more info) of folders which
+are supposed to be deleted. The <I>FolderNameList</I> parameter should point
+to the tag of the last item. This function may be used as a high-level
+alternative for the low-level function
+<A HREF="$$LINK(vat.h/FolderDel)">FolderDel</A> from the
+<A HREF="$$LINK(vat.h/)">vat.h</A> header file.
+
+[References]
+Out=estack.h/next_expression_index, statline.h/ST_folder, vat.h/DerefSym, vat.h/HSymDel, vat.h/SymFindHome
+Out_EV_eventLoop=1

@@ -1,0 +1,31 @@
+[Main]
+Name=putchar
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=#define putchar fputchar
+
+[Description]
+Outputs a character to the screen in TTY mode.
+
+[Explanation]
+Outputs a character <I>c</I> to the screen in TTY mode. This means the following:
+<UL>
+<LI>The current print position will be moved in the text line after printing the last character
+in the screen line;</LI>
+<LI>after printing the last character in the last screen line, the screen will scroll upwards;</LI>
+<LI>characters '\n' will be translated to "next line" (and this is the only control code which
+has a special implementation);</LI>
+<LI>the current print position will be updated after the character is printed.</LI>
+</UL>
+All TI fonts are supported.
+<BR><BR>
+putchar returns the character <I>c</I> (ANSI C proposes returning <A HREF="$$LINK(EOF)">EOF</A> in
+a case of error, but printing on TIOS can not fail).
+<BR><BR>
+<B>Note:</B> In ANSI C, <CODE>putchar(c)</CODE> is equal as <CODE>putc(c,&nbsp;stdout)</CODE>, so it can be redirected
+using <A HREF="$$LINK(freopen)">freopen</A>. This is not possible here, because <B>stdout</B>
+is not implemented as a file stream.
+
+[References]
+Out=fputchar

@@ -1,0 +1,15 @@
+[Main]
+Name=clearerr
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=void clearerr (FILE *stream);
+Real Definition=#define clearerr(f) ((void)(((f)->flags)&=~(_F_EOF|_F_ERR)))
+
+[Description]
+Resets error indication.
+
+[Explanation]
+clearerr resets the error and end-of-file indicators of the stream associated to the structure
+pointed to by <I>stream</I> to 0. Once the error indicator is set, stream operations continue to
+return error status until a call is made to clearerr or <A HREF="$$LINK(rewind)">rewind</A>.

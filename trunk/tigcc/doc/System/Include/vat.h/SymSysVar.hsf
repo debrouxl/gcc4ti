@@ -1,0 +1,27 @@
+[Main]
+Name=SymSysVar
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short SymSysVar (const char *VarName);
+See Also=CheckSysFunc, CheckReservedName
+
+[ROM Call]
+Index=$8C
+
+[Description]
+Checks for a system-reserved variable name.
+
+[Explanation]
+SymSysVar checks if a variable pointed to by <I>VarName</I> (an ordinary C
+string) is a system-reserved variable stored in the symbol table (in the main
+folder). It returns the same values as
+<A HREF="$$LINK(CheckSysFunc)">CheckSysFunc</A>. Additionally, it returns
+<A HREF="$$LINK(ExtendedSysTypes)">R_SYSVAR</A> if the variable name is
+"SysData" or "RegCoef". In fact, this function calls
+<A HREF="$$LINK(CheckSysFunc)">CheckSysFunc</A> with additional checks for
+"SysData" and "RegCoef".
+
+[References]
+In=HSYMtoName, bascmd.h/cmd_movevar, dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs, estack.h/TokenizeSymName, events.h/handleVarLinkKey, link.h/getcalc, link.h/OSLinkCmd, link.h/sendcalc
+Out=CheckSysFunc, string.h/strcmp

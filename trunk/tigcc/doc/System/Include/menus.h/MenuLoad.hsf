@@ -1,0 +1,29 @@
+[Main]
+Name=MenuLoad
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=HANDLE MenuLoad (const void *BaseMenu, unsigned short Size);
+MinAMS=2.00
+See Also=MenuBegin, MenuNew, DynMenuAdd, DynMenuChange
+
+[ROM Call]
+Index=$3F2
+
+[Description]
+Begins a dynamically created menu using a prefilled static menu as the starting point.
+
+[Explanation]
+MenuLoad creates a dynamic menu, using the prefilled static menu structure <I>BaseMenu</I> with
+the size <I>Size</I> (in bytes) as the starting point. It copies the menu's items, flags, width,
+and height from the static structure. MenuLoad returns the handle of the new dynamically created menu
+which may be used in <A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A> or <A HREF="$$LINK(DynMenuChange)">DynMenuChange</A>
+and then passed to <A HREF="$$LINK(MenuBegin)">MenuBegin</A> to draw the menu, or returns
+<A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if there was not enough memory.
+<BR><BR>
+<B>Note:</B> Please see <A HREF="$$LINK(MenuPopup)">MenuPopup</A> for more informations on menu structures,
+and take a look at the proposed method to execute menus as described in
+<A HREF="$$LINK(MenuNew)">MenuNew</A>.
+
+[References]
+Out=alloc.h/HeapAlloc, mem.h/memcpy

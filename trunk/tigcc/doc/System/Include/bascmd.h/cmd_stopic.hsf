@@ -1,0 +1,45 @@
+[Main]
+Name=cmd_stopic
+Type=Function
+Subtype=ROM Call
+Header Files=bascmd.h
+Definition=void cmd_stopic (ESI Args);
+MinAMS=1.01
+See Also=cmd_rclpic, cmd_rplcpic, cmd_andpic, cmd_xorpic, graph.h/BitmapGet
+
+[ROM Call]
+Index=$391
+
+[Description]
+Executes TI-Basic 'StoPic' command.
+
+[Explanation]
+cmd_stopic displays the Graph Screen and stores a part of it in a TI-Basic
+PIC variable.
+This function expects one of the following layouts on the expression stack:
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>symname</I></TD></TR>
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>y</I> <I>symname</I></TD></TR>
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>x</I> <I>y</I> <I>symname</I></TD></TR>
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>width</I> <I>x</I> <I>y</I> <I>symname</I></TD></TR>
+  <TR><TD><A HREF="$$LINK(estack.h/Tags)">END_TAG</A> <I>height</I> <I>width</I> <I>x</I> <I>y</I> <I>symname</I></TD></TR>
+</TABLE>
+<BR>
+Additionally, each of the entries <I>x</I>, <I>y</I> and <I>width</I> may be
+omitted and replaced with <A HREF="$$LINK(estack.h/Tags)">NOTHING_TAG</A>.
+The parameter <I>Args</I> should point to the tag of the last item (i.e.
+<I>symname</I>). <I>x</I>, <I>y</I>, <I>width</I> and <I>height</I> should
+be integer items. <I>x</I> and <I>y</I> represent the upper left corner
+of the area to copy. Both default to 0 if they are omitted. <I>width</I> and
+<I>height</I> specify the dimensions in pixels. They default to the width and
+height of the whole graph screen. The <I>symname</I> entry is the VAT symbol
+name of a TI-Basic variable in which the graph data will be stored (it will
+be created if it does not exist).
+<BR><BR>
+See <A HREF="$$LINK(graph.h/BitmapGet)">BitmapGet</A> for a much faster
+low-level way of getting bitmapped data, independently of the Graph Screen.
+
+[References]
+Out=estack.h/GetValue, estack.h/next_expression_index, unknown.h/gr_active, unknown.h/gr_stopic, unknown.h/GraphActivate
+Out_EV_eventLoop=1

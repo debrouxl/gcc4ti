@@ -1,0 +1,23 @@
+[Main]
+Title=__builtin_expect
+
+[Top]
+<CODE><B><A HREF="$$INFOLINK(keywords/long)">long</A></B> __builtin_expect (<B><A HREF="$$INFOLINK(keywords/long)">long</A></B> exp, <B><A HREF="$$INFOLINK(keywords/long)">long</A></B> c);</CODE>
+<BR><BR>
+You may use <CODE>__builtin_expect</CODE> to provide the compiler with
+branch prediction information.
+<BR><BR>
+The return value is the value of <I>exp</I>, which should be an
+integral expression.  The value of <I>c</I> must be a compile-time
+constant.  The semantics of the built-in are that it is expected
+that <I>exp</I> == <I>c</I>.  For example:
+<PRE>if (__builtin_expect (x, 0))
+  foo ();
+</PRE>
+would indicate that we do not expect to call <CODE>foo</CODE>, since
+we expect <CODE>x</CODE> to be zero.  Since you are limited to integral
+expressions for <I>exp</I>, you should use constructions such as
+<PRE>if (__builtin_expect (ptr != NULL, 1))
+  error ();
+</PRE>
+when testing pointer or floating-point values.

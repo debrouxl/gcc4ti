@@ -1,0 +1,24 @@
+[Main]
+Name=FL_write
+Type=Function
+Subtype=ROM Call
+Header Files=flash.h
+Definition=void FL_write (const void *src, void *dest, unsigned long size);
+
+[ROM Call]
+Index=$171
+
+[Description]
+Writes a block into the Flash ROM.
+
+[Explanation]
+FL_write writes a <I>size</I> bytes long block which begins at address pointed to by <I>src</I>
+into the Flash ROM at the address <I>dest</I>. Writting is allowed only to the user portion
+of the Flash ROM (also known as "archive memory"), which on HW1 calculators starts at 0x390000
+(TI-89) or 0x590000 (TI-92 Plus)
+and on HW2 calculators starts just at the end of the ROM code. User portion of the Flash ROM
+ends on 0x400000 (TI-89) or 0x600000 (TI-92 Plus). Any attempt to write something out of this
+region will be ignored.
+
+[References]
+In=EM_write

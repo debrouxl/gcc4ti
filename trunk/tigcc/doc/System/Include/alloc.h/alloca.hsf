@@ -1,0 +1,39 @@
+[Main]
+Name=alloca
+Type=Function
+Subtype=Builtin
+Header Files=alloc.h, stdlib.h
+Definition=void *alloca (unsigned long Size);
+
+[Description]
+Allocates memory on the local storage space.
+
+[Explanation]
+alloca is a function which is not included in the ANSI C standard, but it exists in many C dialects
+(including TIGCC). It allocates a block of <I>Size</I> bytes on the CPU stack (local
+storage space), in opposite to <A HREF="$$LINK(malloc)">malloc</A> which allocates memory on the
+memory heap. The space allocated with alloca exists until the containing function returns
+(i.e. it will be automatically deallocated at the end of the function). Be aware of the
+fact that the size of the hardware stack on TI calculators is limited to 16 kilobytes, so
+do not use alloca for allocating large blocks.
+<BR><BR>
+alloca is usually used for simulating automatic variable-sized one-dimensional arrays, which will be automatically
+deallocated when the function ends (like all automatic variables), so it is sometimes more
+preferable than <A HREF="$$LINK(malloc)">malloc</A>. For example, to simulate
+<PRE>int a[n];
+</PRE>
+where <I>'n'</I> is not known in advance, you can use
+<PRE>int *a = alloca (n);
+</PRE>
+Note, however, that GNU C extensions allows <A HREF="$$INFOLINK(gnuexts/SEC76)">variable-length
+arrays</A>, which are more elegant than usage of alloca, and which may also be with more than
+one dimension (which is not possible with alloca).
+<BR><BR>
+<B>Note:</B> alloca is a builtin (open-coded) function in GNU C, which is translated to a single
+instruction which simply adjusts the stack. Some compiler command options (like
+<B>'-ansi'</B>) prevent alloca from being an open-coded function. In this implementation
+of TIGCC, you can not use alloca with such options (however, it is very unlikely that you will
+ever have such problems).
+
+[References]
+In=vat.h/SYMSTR

@@ -1,0 +1,31 @@
+[Main]
+Name=SmapTypeStrings
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=const char *SmapTypeStrings (short type);
+MinAMS=2.00
+See Also=GetDataType, events.h/handleVarLinkKey
+
+[ROM Call]
+Index=$436
+
+[Description]
+Returns the 3-4 character description of a variable type.
+
+[Explanation]
+SmapTypeStrings returns a string of three characters for the variable type
+represented by <I>type</I>. Valid values for <I>type</I> are defined in the
+enum <A HREF="$$LINK(SystemDataTypes)">SystemDataTypes</A>; you can use
+<A HREF="$$LINK(GetDataType)">GetDataType</A> to convert a tag to such a
+type value.
+<BR><BR>
+The value returned is the string displayed in the VAR-LINK dialog. This
+string is localized for the current language and can be up to four characters
+long. Note that files of type <A HREF="$$LINK(SystemDataTypes)">SDT_OTH</A> will
+return a pointer to the string "OTH", and not to the true extension of the
+file.
+
+[References]
+Out=string.h/strlen, system.h/XR_stringPtr
+In=basfunc.h/push_gettype, events.h/handleVarLinkKey

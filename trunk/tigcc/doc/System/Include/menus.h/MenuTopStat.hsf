@@ -1,0 +1,28 @@
+[Main]
+Name=MenuTopStat
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=void MenuTopStat (HANDLE ExecHandle, short Item, short State);
+See Also=MenuSubStat
+
+[ROM Call]
+Index=$3D
+
+[Description]
+Changes the state (enabled/disabled) of a toolbox.
+
+[Explanation]
+MenuTopStat changes the state of the toolbox <I>Item</I> (0 = first, 1 = second,
+etc.) which belongs to the menu associated with the handle <I>ExecHandle</I>.
+<I>ExecHandle</I> is a handle returned from the <A HREF="$$LINK(MenuBegin)">MenuBegin</A> function,
+not one returned from <A HREF="$$LINK(MenuNew)">MenuNew</A>. <I>State</I> is a boolean
+value: if it is <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, the toolbox will be enabled; if it is
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A>, the toolbox will be disabled (i.e. it will be dimmed and
+cannot be selected).
+<BR><BR>
+MenuTopStat does not redraw the menu according to the new state; this must
+be done manually by calling <A HREF="$$LINK(MenuOn)">MenuOn</A>.
+
+[References]
+In=events.h/EV_setFKeyState, events.h/handleVarLinkKey

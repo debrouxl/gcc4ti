@@ -1,0 +1,46 @@
+[Main]
+Name=getsn
+Type=Function
+Subtype=tigcc.a
+Header Files=stdio.h
+Definition=char *getsn (char *string, unsigned long maxlen);
+See Also=gets, fgets, info/faq/68: How can I get input from the keyboard?, textedit.h/
+
+[Library Call]
+Asm=1
+TIOS Callback=0
+
+[Registers]
+string=a2
+maxlen=d3
+
+[Description]
+Gets a string from the keyboard avoiding buffer overflows.
+
+[Explanation]
+getsn works like <A HREF="$$LINK(gets)">gets</A>, but with a maximum length specified.
+The maximum length (<CODE>maxlen</CODE>) is the total size of the buffer. In other words, the
+null-terminator is included in the maximum length. When the buffer is full (i.e. when the
+string length is <CODE>maxlen - 1</CODE>), getsn will not accept any more characters.
+Only backspace or ENTER are allowed in that situation.
+Here is an example of usage:
+<PRE>char buffer[50];
+int a, b;
+clrscr ();
+puts ("A = ");
+a = atoi (getsn (buffer, 50));
+puts ("B = ");
+b = atoi (getsn (buffer, 50));
+printf ("%d + %d = %d", a, b, a+b);
+</PRE>
+<A HREF="$$LINK(stdlib.h/atoi)">atoi</A> is an ANSI C standard function from <A HREF="$$LINK(stdlib.h/)">stdlib.h</A>
+header file.
+<BR><BR>
+<B>Note:</B> getsn is not an ANSI C standard function, but the equivalent of
+<CODE>fgets (buffer, maxlen, stdin)</CODE> in ANSI C. It is needed because terminal streams are not
+implemented in TIGCCLIB.
+
+[References]
+Out=fputchar, printf, events.h/EV_captureEvents, events.h/EV_defaultHandler, graph.h/MoveTo, graph.h/SaveScrState, kbd.h/ngetchx
+Out_EV_eventLoop=1
+In=scanf, vscanf

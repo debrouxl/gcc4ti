@@ -1,0 +1,16 @@
+[Main]
+Title=How can you control where data is stored in memory and access it?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How can you control where a program data is stored in the calculator's memory, and
+then how to access the data? By looking at your programs (cblaster etc.), you simply
+use <A HREF="$$LINK(mem.h/memcpy)">memcpy</A> to write to the array, which seems so easy!
+Is the array kept in memory because it's declared as static?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Yes. Every static and global data (i.e. data which are declared out of functions)
+are kept in the <CODE>.89z</CODE>/<CODE>.9xz</CODE> file itself (more precise, in the area of the memory allocated to
+<CODE>.89z</CODE>/<CODE>.9xz</CODE> file), so they will survive after the end of the program.  Local data
+are stored on the stack (so they will be deleted after the end of the function in which
+they are declared).
+</TD></TR></TABLE>

@@ -1,0 +1,17 @@
+[Main]
+Name=isextalnum
+Type=Function
+Subtype=Macro
+Header Files=ctype.h
+Definition=short isextalnum (short c);
+Real Definition=#define isextalnum(c) ({register short __c=(c); (unsigned short)__c<256&&_extalnum_list[__c>>3]&(1<<(__c&7));})
+
+[Description]
+Checks whether a character is an extended alphanumeric.
+
+[Explanation]
+isextalnum returns nonzero if <I>c</I> is a symbol which may be used in variable names,
+including ordinary alphanumerics (see <A HREF="$$LINK(isalnum)">isalnum</A>), underscore ('_') and
+foreign alphanumerics (see <A HREF="$$LINK(isfrgnalnum)">isfrgnalnum</A>), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros and a library variable. The first call of isextalnum
+expands to a large code, but any next call of it expands to a relatively small code.

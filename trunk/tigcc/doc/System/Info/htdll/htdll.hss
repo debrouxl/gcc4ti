@@ -1,0 +1,109 @@
+[Main]
+Title=Breaking the 64KB Limit Using a DLL
+See Also=dll.h/
+
+[Top]
+Breaking the 64 KB limit is an important topic, and because of the internal
+representation of files in the AMS as well as the size limit of memory
+blocks, it is possible only by breaking the program up into multiple files.
+<BR><BR>
+If you get close to this limit, the first thing to do is optimizing the
+program. Ways to do this are those described in
+<A HREF="$$INFOLINK(httigcc/advanced)">Advanced Options of TIGCC</A>, using functions from the AMS instead of
+those from the TIGCC Library, and, last but not least, hand-optimizing the
+code. If and only if you are still close to the limit, you should think about
+the possibility to use multiple files. At first, try storing as much data as
+possible (sprites, maps, etc.) in external files (using functions from
+<A HREF="$$LINK(vat.h/)">vat.h</A>). If this still does not help, the only
+possibility left is to split the code into multiple files.
+<BR><BR>
+This means that you need to use some form of dynamic link libraries. These
+are very well-known for kernel programs, but kernel-mode libraries are not
+something we want to encourage, seeing that they have led to a huge mess of
+versioning problems and incompatiblities. For information about how to create
+them, see the section <A HREF="$$INFOLINK(httigcc/kernel)">How to make
+kernel-based programs</A>. Libraries for kernel-less programs are relatively
+new (available in TIGCC starting from version 0.94); now that it is possible
+to create them, the program code may in fact be arbitrarily large. The
+necessary definitions can be found in the <A HREF="$$LINK(dll.h/)">dll.h</A>
+header file.
+<BR><BR>
+Now that we have explained why you might need to use external libraries, we
+specifically want to discourage their use for anything else. External
+(dynamic) libraries have been used quite often in the past to automate common
+tasks, like file access, graphics, compression, etc. This is <I>not</I> what
+we want to happen, otherwise there will be a different libraries for the same
+tasks, with a lot of incompatiblities between libraries and even between
+different versions of the same library. TIGCC provides the possibility to use
+static libraries (also known as function archives) for this purpose. In the
+<A HREF="$$INFOLINK(ide)">IDE</A>, you need to select the creation of a
+function archive in the project options; when using the
+<A HREF="$$INFOLINK(comopts/SEC3)">command line compiler</A>, you need to use
+the <B>'-ar'</B> switch. When using function archives, only the files which
+are needed are really included in the final program.
+<BR><BR>
+There is an exception to the rule that you should not create a dynamic
+library to make it available to others: If the library itself is very large,
+and a program will typically use a lot of its functions at the same time,
+client programs are likely to exceed the file size limit if it is provided as
+a static library. In this case, using a dynamic library really is the only
+possibility. An example is the FAT Library by the
+<A HREF="http://tict.ticalc.org/">TI-Chess Team</A>.
+<BR><BR>
+Hopefully, we have talked you out of creating a dynamic library if there is
+any other reasonable option. Now we can explain how to create a dynamic
+library in nostub (kernel-less) mode. For detailed explanations of all
+directives, take a look at the <A HREF="$$LINK(dll.h/)">dll.h</A> header
+file. The "Custom DLL" example demonstrates the creation of a very small
+library (note that the library file must have the name "mydll" on the
+calculator):
+$$EXAMPLE(Custom DLL.c)
+The order of the definitions is very important; read more about this in
+<A HREF="$$LINK(dll.h/DLL_INTERFACE)">DLL_INTERFACE</A>. The exported symbols
+are <I>HelloFromDLL</I>, <I>SumFromDLL</I>, <I>MessageInDLL</I>, and
+<I>GlobalVarInDLL</I>; they are assigned index numbers from 0 to 3.
+<BR><BR>
+A client program which uses this DLL could look like the following example,
+called "Custom DLL Test":
+$$EXAMPLE(Custom DLL Test.c)
+This program simply demonstrates all possible ways to import symbols from the
+DLL. See <A HREF="$$LINK(dll.h/LoadDLL)">LoadDLL</A> and the corresponding
+identifiers for more information.
+<BR><BR>
+A program which wants to use DLLs has to be executing from the so-called
+"ghost address space". This means that the program either has to be started
+through an external launcher which calls
+<A HREF="$$LINK(system.h/enter_ghost_space)">enter_ghost_space</A> (which is
+always the case if it is exe-packed), or
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_ghostspace)">EXECUTE_IN_GHOST_SPACE</A></CODE>
+needs to be defined at the beginning of the program. You will will want to
+exepack the program anyway if it is large enough. In the
+<A HREF="$$INFOLINK(ide)">IDE</A>, this can be done through a check box in
+the project options; when using the
+<A HREF="$$INFOLINK(comopts/SEC3)">command line compiler</A>, you need to use
+the <B>'-pack'</B> switch.
+<BR><BR>
+Note that this example is an exception to the rules above. It breaks two
+rules: First, it does not even come close to the 64 KB limit. Second, there
+is a variable in the DLL that could be put in another file: MessageInDLL.
+This program should remain the <I>only</I> exception; it only exists because
+a small program is best to teach. Imagine trying to learn how to use a DLL
+from a program that pushed the 64 KB limit (several thousand lines of code)!
+<BR><BR>
+Certain pseudo-constants in <A HREF="$$LINK(compat.h/)">compat.h</A> depend
+on initialization code, which is not present at all in DLLs. Using
+definitions like
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_calcdetect)">NO_CALC_DETECT</A></CODE> helps
+for calculator-dependent definitions, but not all parts of the TIGCC Library
+are available (for example, defining
+<CODE><A HREF="$$INFOLINK(htretval)">RETURN_VALUE</A></CODE> makes
+absolutely no sense).
+<BR><BR>
+Finally, we need to write a few sentences about DLL version information. The
+major version number needs to be changed if and only if two DLLs are
+incompatible with each other. Adding new functions does not make DLLs
+incompatible; rearranging them does, for example. Usually, you do not ever
+need to change the major version number. Increasing the minor version number
+means that the DLL is still compatible with existing programs; the client
+program can specify a minimum minor version number to indicate that it
+depends on the new functionality.

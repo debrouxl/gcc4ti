@@ -1,0 +1,26 @@
+[Main]
+Title=__builtin_return_address
+
+[Top]
+<CODE><B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *__builtin_return_address (<B><A HREF="$$INFOLINK(keywords/int)">int</A></B> level);</CODE>
+<BR><BR>
+This function returns the return address of the current function, or of
+one of its callers.  The <I>level</I> argument is number of frames to
+scan up the call stack.  A value of <CODE>0</CODE> yields the return address
+of the current function, a value of <CODE>1</CODE> yields the return address
+of the caller of the current function, and so forth. When inlining
+the expected behavior is that the function will return the address of
+the function that will be returned to.  To work around this behavior use
+the <CODE>noinline</CODE> function attribute.
+<BR><BR>
+The <I>level</I> argument must be a constant integer.
+<BR><BR>
+Sometimes (especially without a frame pointer)
+it may be impossible to determine the return address of
+any function other than the current one; in such cases, or when the top
+of the stack has been reached, this function will return a
+random value.  In addition, <A HREF="$$LINK(SEC103___builtin_frame_address)">__builtin_frame_address</A> may be used
+to determine if the top of the stack has been reached.
+<BR><BR>
+This function should be used with a nonzero argument only for debugging
+purposes.

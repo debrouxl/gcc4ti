@@ -1,0 +1,17 @@
+[Main]
+Name=ferror
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=short ferror (FILE *stream);
+Real Definition=#define ferror(f) (((f)->flags)&_F_ERR)
+
+[Description]
+Tests a stream for a read or write error.
+
+[Explanation]
+ferror is a macro that tests the stream associated to the structure pointed to by <I>stream</I>
+for a read or write error. It the stream's error indicator has been set, it remains set (and
+all file I/O operations will return error) until <A HREF="$$LINK(clearerr)">clearerr</A> or
+<A HREF="$$LINK(rewind)">rewind</A> is called, or until the stream is closed. ferror returns nonzero
+if an error was detected on the named stream.

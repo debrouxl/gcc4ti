@@ -1,0 +1,20 @@
+[Main]
+Name=MULTI_LINE
+Type=Type
+Subtype=Structure
+Header Files=graph.h
+Definition=typedef struct { unsigned char Count; struct { signed char Attr, x0, y0, x1, y1; } Data[]; } MULTI_LINE;
+
+[Description]
+A structure for defining multiple lines for the <A HREF="$$LINK(DrawMultiLines)">DrawMultiLines</A> command.
+
+[Explanation]
+Note that <CODE>Data[]</CODE> is a <A HREF="$$INFOLINK(gnuexts)">GNU C extension</A> for variable-length arrays (TIGCC is GNU C).
+Static variables of such types may be initialized with a variable-length constructor,
+for example:
+<PRE>static MULTI_LINE star_shape = {3, {{1, 30, 50, 70, 50},
+                                    {1, 35, 35, 65, 65},
+                                    {1, 35, 65, 65, 35}}};
+</PRE>
+Initialization with a variable-length constructor is not suitable for non-static (auto)
+variables, because the amount of stack storage will not be determined properly.

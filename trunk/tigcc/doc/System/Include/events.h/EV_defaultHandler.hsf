@@ -1,0 +1,94 @@
+[Main]
+Name=EV_defaultHandler
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=void EV_defaultHandler (EVENT *event);
+
+[ROM Call]
+Index=$157
+
+[Description]
+Processes an event message using the default handler.
+
+[Explanation]
+EV_defaultHandler performs some default actions with most common messages (<I>event</I> is the
+pointer to the message which need to be processed). This function is very useful in user event
+handlers, and it is often called to process any unhandled messages in handlers. Not all
+messages are supported in EV_defaultHandler. This is a list of supported message types (unsupported
+types are simply ignored) together with the description of the action performed by EV_defaultHandler:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">CM_ACTIVATE</TD>
+<TD>Registers and starts the menu for the running application (see <A HREF="$$LINK(EV_registerMenu)">EV_registerMenu</A>).</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_DEACTIVATE</TD>
+<TD>Ends custom and normal menus.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_KEY_PRESS</TD>
+<TD>Handles tokens, system and mode keys. This is maybe the most useful action performed by EV_defaultHandler.
+If the keypress is a simple key (i.e. a single character), nothing will happen. If the keypress
+is a token (like "sin", "ln" etc.), the appropriate string is sent (as a
+<A HREF="$$LINK(EventIDs)">CM_PASTE_STRING</A> message) to the
+application. The summary effects will be that the application will receive token as a sequence
+of single keypresses. So, tokens are all sent via <A HREF="$$LINK(EV_sendString)">EV_sendString</A> and
+do not have to be processed as single keypresses (note that this will not cause problems if called
+from user event handlers, although it may cause recursion; see <A HREF="$$LINK(textedit.h/)">textedit.h</A> header
+file for an useful example). If the keypress is system or mode key (see
+<A HREF="$$LINK(system.h/QSysKey)">QSysKey</A> and <A HREF="$$LINK(system.h/QModeKey)">QModeKey</A>), the
+corresponding action associated with the key (for example, opening a menu or a dialog) will
+be performed (see the example below this table).
+The chosen menu item is then sent as a <A HREF="$$LINK(EventIDs)">CM_PASTE_STRING</A> message to the current
+application (note however that VAR-LINK uses a <A HREF="$$LINK(EventIDs)">CM_PASTE_HANDLE</A> message
+instead), except for toolbar menus, where an appropriate menu ID is send as a message.
+Command keypresses STO, RCL, SWITCH, MODE, APPS, MEM, INS, CUT, PASTE etc. and OFF key (code
+4363) are also handled via this handler, and all of them cause usual actions (keypresses like
+CUT, PASTE etc. only send an appropriate message to the application).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_PASTE_STRING</TD>
+<TD>Pastes the string in the event paste buffer. More precise, it sets an internal
+static pointer to points to <I>event</I>-&gt;<I>extra</I>.<I>pasteText</I>
+and does not nothing more. The event loop (see <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A>)
+will then send the string as individual keypresses to the current application.
+This means that the paste buffer is exported from the code, so this allows pasting
+large amounts of text.
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_PASTE_HANDLE</TD>
+<TD>Frees the memory associated with handle <I>event</I>-&gt;<I>extra</I>.<I>hPasteText</I>.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_STO</TD>
+<TD>Sends <A HREF="$$LINK(EventIDs)">CM_KEY_PRESS</A> event filled with key code 22 (right arrow) to the current application.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_RCL</TD>
+<TD>Performs usual actions for the RCL key (open Recall dialog, etc.).
+After execution of the Recall dialog, the content of the variable is sent to the current
+application as a <A HREF="$$LINK(EventIDs)">CM_PASTE_STRING</A> message.
+</TD>
+</TR>
+</TABLE>
+<BR>
+Useful examples for this functions may be found in <A HREF="$$LINK(textedit.h/)">textedit.h</A> header
+file. Here is another simple example which ilustrates how you can open the "CHAR" menu. This
+may be useful if you want to make your user input routine which allows inserting extra characters:
+<PRE>EVENT ev;
+...
+ev.Type = CM_KEY_PRESS;
+ev.extra.Key.Code = KEY_CHAR;
+EV_defaultHandler (&amp;ev);
+</PRE>
+After execution of the menu, the selected character will be sent as the event to the
+current application (it may be captured through an user event handler).
+
+[References]
+In=gdraw.h/GD_Circle, gdraw.h/GD_Eraser, gdraw.h/GD_HVLine, gdraw.h/GD_Line, gdraw.h/GD_Pen, gdraw.h/GD_Select, gdraw.h/GD_Text, gdraw.h/GZ_Box, homescr.h/HomeExecute, stdio.h/fgetchar, stdio.h/gets, stdio.h/getsn, unknown.h/EV_quit, unknown.h/GT_FreeTrace, unknown.h/GT_KeyIn, unknown.h/GT_Trace, unknown.h/_ROM_CALL_5F3
+Out=ABT_dialog, CAT_dialog, EV_captureEvents, EV_eventLoop, EV_restorePainting, EV_sendEvent, EV_sendString, EV_startApp, EV_suspendPainting, EV_switch, handleRclKey, handleVarLinkKey, MO_currentOptions, MO_digestOptions, MO_modeDialog, MO_sendQuit, alloc.h/HeapAlloc, alloc.h/HeapDeref, alloc.h/HeapFree, alloc.h/HeapFreeIndir, alloc.h/HeapLock, alloc.h/HeapUnlock, basop.h/push_ratio, dialogs.h/Dialog, dialogs.h/DialogAdd, dialogs.h/DialogDo, dialogs.h/DialogNew, dialogs.h/DlgMessage, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, error.h/ERD_dialog, estack.h/HToESI, estack.h/push_Float, estack.h/push_internal_simplify, estack.h/top_estack, graph.h/FontCharWidth, mem.h/memcmp, mem.h/memcpy, mem.h/memset, menus.h/DynMenuAdd, menus.h/MenuBegin, menus.h/MenuEnd, menus.h/MenuKey, menus.h/PopupDo, menus.h/PopupNew, menus.h/PopupText, statline.h/ST_modKey, statline.h/ST_helpMsg, stdio.h/sprintf, string.h/strcat, system.h/AB_getGateArrayVersion, system.h/CU_cursorState, system.h/CU_restore, system.h/HelpKeys, system.h/off, system.h/OSClearBreak, system.h/XR_stringPtr, textedit.h/TE_focus, textedit.h/TE_openFixed, textedit.h/TE_select, timath.h/fabs, timath.h/fmod, unknown.h/CustomBegin, unknown.h/CustomEnd, unknown.h/CustomMenuItem, unknown.h/EV_appA, unknown.h/EV_appB, unknown.h/EV_appSide, unknown.h/EV_currentApp, unknown.h/EV_quit, unknown.h/EV_runningApp, unknown.h/gr_active, unknown.h/has_unit_base, unknown.h/MO_option, unknown.h/OO_firstACB, unknown.h/OO_GetAppAttr, unknown.h/OO_NextACB, unknown.h/OO_SetAppAttr, unknown.h/WinBeginPaint, vat.h/FolderOp, vat.h/SymFindFirst, vat.h/SymFindNext, vat.h/VarStore, wingraph.h/DrawStaticButton, wingraph.h/MakeWinRect, wingraph.h/WinActivate, wingraph.h/WinAttr, wingraph.h/WinBitmapPut, wingraph.h/WinClr, wingraph.h/WinFill, wingraph.h/WinFillTriangle, wingraph.h/WinFont, wingraph.h/WinLine, wingraph.h/WinOpen, wingraph.h/WinRect, wingraph.h/WinScrollV, wingraph.h/WinStrXY, unknown.h/_bcd_math, unknown.h/_ROM_CALL_3CD, unknown.h/_ROM_CALL_46F, unknown.h/_ROM_CALL_471, unknown.h/_ROM_CALL_4FB, unknown.h/_ROM_CALL_5F1, unknown.h/_ROM_CALL_5F3, unknown.h/_ROM_CALL_5F7, unknown.h/_ROM_CALL_5FE, unknown.h/_ROM_CALL_601
+Out_EV_eventLoop=1

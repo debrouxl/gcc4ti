@@ -1,0 +1,82 @@
+[Main]
+Title=M680x0 Target Options
+
+[Top]
+The GCC compiler used in TIGCC is configured for just one target family:
+the Motorola M680x0 (M68k) family.  In the TI-89, TI-92+, and V200 calculators,
+an MC68000 processor is used, therefore TIGCC creates code for such a
+processor by default.  However, switches specifying the processor model, such
+as <B>'-m68020'</B>, still exist, although they are not useful.  However,
+there are also options that control the code that is generated specifically
+for TI calculators; they also start with <B>'-m'</B>:
+<DL>
+<DT><B>-mno-bss</B>
+<DD>Output all uninitialized global or static variables as normal data with
+zero content. Note that this leads to different semantics if the program is
+not compressed or archived: The variables will keep their values even after
+program termination, instead of being initialized to zero every time the
+program is run. For a better alternative, see
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_mergebss)">MERGE_BSS</A></CODE>.
+<BR><BR>
+<DT><B>-mlong</B>
+<DD>Consider type <CODE>int</CODE> to be 32 bits wide, like <CODE>long&nbsp;int</CODE>.
+The <B>'-mshort'</B> option is enabled by default in TIGCC; the negative is
+actually <B>'-mnoshort'</B>, but <B>'-mno-short'</B> and <B>'-mlong'</B> have
+been added as aliases.  Constants such as <CODE>INT_MAX</CODE> are set to the
+appropriate values, and <CODE>__INT_SHORT__</CODE> will be defined if short
+integers are used (i.e. if this switch is not used).  This option may be
+useful if you need to port code from a system which uses long integers.
+<BR><BR>
+<DT><B>-mno-tios</B>
+<DD>Again, this is the negative form of a switch called <B>'-mtios'</B>,
+which changes the convention for returning pointers from functions, and which
+also implies <B>'-fcall-used-d2'</B>.  This is necessary to make GCC work
+with the TIOS calling conventions, therefore <B>'-mno-tios'</B> may only be
+used if no interaction with the operating system is required.  Since library
+calls also use the TIOS calling convention, they cannot be used either; you
+should disable linking against <CODE>tigcc.a</CODE>.  Only use this option if
+you know exactly what you are doing.
+<BR><BR>
+<DT><B>-mmlink</B>
+<DD>Assume that uninitialized global variables can be handled smartly through
+BSS blocks even in kernel-less mode.
+<BR><BR>
+<DT><B>-mpcrel</B>
+<DD>Use the pc-relative addressing mode of the 68000 directly, instead of
+using a global offset table (also known as the relocation table).
+Therefore, this option produces position-independent code.
+<BR><BR>
+<DT><B>-mregparm[=<I>regcount</I>]</B>
+<DD>Use register passing for all user-defined functions.  <I>regcount</I>
+data registers plus <I>regcount</I> address registers are used to pass
+arguments to functions.  If <I>regcount</I> is not specified, a default value
+of 2 is used.  You should not specify a value higher than 6, or 5 if you use
+<CODE><A HREF="$$INFOLINK(httigcc/advanced_optrom)">OPTIMIZE_ROM_CALLS</A></CODE>.
+Note that you have to be careful with callback functions if you use this
+switch, although you will be warned about incompatiblities.
+<BR><BR>
+<DT><B>-mbitfield</B>
+<DD>Use bit-field instructions.
+<BR><BR>
+<DT><B>-malign-int</B>
+<DD>Aligns <CODE>int</CODE>, <CODE>long</CODE>, <CODE>long&nbsp;long</CODE>,
+<CODE>float</CODE>, <CODE>double</CODE>, and <CODE>long&nbsp;double</CODE> variables on a 32-bit
+boundary.
+<BR><BR>
+<DT><B>-mno-strict-align</B>
+<BR><B>-mstrict-align</B>
+<DD>Do not or do assume that unaligned memory references will be handled by
+the system.
+<BR><BR>
+<DT><B>-mno-merge-sections</B>
+<DD>Do not merge the <CODE>.text</CODE> and <CODE>.data</CODE> sections,
+as TIGCC normally does (to save space used by relocation).
+<BR><BR>
+<DT><B>-mmerge-to-data</B>
+<DD>When merging sections, merge to <CODE>.data</CODE> rather than to
+<CODE>.text</CODE>.
+<BR><BR>
+<DT><B>-mrodata-to-text</B>
+<DD>When not merging sections, put read-only data into <CODE>.text</CODE>
+rather than <CODE>.data</CODE>.
+</DL>

@@ -1,0 +1,23 @@
+[Main]
+Name=HeapMoveHigh
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=HANDLE HeapMoveHigh (HANDLE Handle);
+
+[ROM Call]
+Index=$A0
+
+[Description]
+Reallocates a block.
+
+[Explanation]
+HeapMoveHigh tries to reallocate a block referenced by <I>Handle</I> as high in
+memory as possible. The block must not be locked. If successful, returns
+the handle passed; otherwise returns <A HREF="$$LINK(H_NULL)">H_NULL</A> (in this case,
+the block is still in the same place as before, so no memory is lost). This routine
+will cause heap compression (garbage collection).
+
+[References]
+In=estack.h/NG_execute, homescr.h/HomeExecute, textedit.h/TE_handleEvent, unknown.h/CustomBegin, unknown.h/push_user_func
+Out=HeapCompress, mem.h/memmove, system.h/NeedStack

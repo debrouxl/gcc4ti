@@ -1,0 +1,24 @@
+[Main]
+Name=DLL_ID
+Type=Language Extension
+Header Files=dll.h
+Real Definition=#define DLL_ID __DLL_interface_struct __DLL_interface __attribute__((__section__("_stl20"))) = {__DLL_SIGNATURE,
+See Also=DLL_INTERFACE, LoadDLL
+
+[Description]
+Defines the DLL identification number.
+
+[Explanation]
+The DLL_ID macro is used for defining the DLL indentification number. It must be followed by a
+32-bit constant unsigned integer, which will be embedded in the DLL image as a part of the
+internal signature. For example:
+<PRE>DLL_ID 372331723
+</PRE>
+Later, when a program wants to load the DLL, it passes the expected ID number as a parameter to the
+<A HREF="$$LINK(LoadDLL)">LoadDLL</A> function. If the expected and embedded ID numbers are not the same, the DLL is simply ignored
+(skipped). As <A HREF="$$LINK(LoadDLL)">LoadDLL</A> searches through all folders for a matching DLL, it is completely legal to
+have several DLLs with the same name (in different folders) which differ only in their ID numbers.
+<BR><BR>
+DLL_ID must appear at the end of the DLL interface section, after all prototypes and global
+declarations, and just before the <A HREF="$$LINK(DLL_VERSION)">DLL_VERSION</A> entry. See <A HREF="$$LINK(DLL_INTERFACE)">DLL_INTERFACE</A> for a detailed layout
+of the DLL interface structure.

@@ -1,0 +1,142 @@
+[Main]
+Title=Automatically Created Global Imports
+Index=__kernel_program_header, __kernel_library_header, __fargo_program_header, __fargo_library_header, __flash_os_header, __nostub_comment_header, __handle_constructors, __handle_destructors, __handle_bss, __initialize_bss, __handle_relocs, __handle_rom_calls, __handle_ram_calls, __handle_libraries, __handle_data_var, __data_var_create_copy, __data_var_copy_if_archived
+
+[Top]
+In addition to user-defined global imports, the TIGCC linker also defines
+some global imports of its own, whenever special code is needed to handle a
+situation:
+<BR><BR>
+<DL>
+<DT><B>__kernel_program_header</B>
+<DD>This global import is created automatically if the linker
+    is operating in <A HREF="$$LINK(modes_kernel)">kernel mode</A>, and if the
+    file is not declared as a library (see the
+    <A HREF="$$LINK(control_library)">_library</A> control symbol).
+<BR><BR>
+<DT><B>__kernel_library_header</B>
+<DD>This global import is created automatically if the linker
+    is operating in <A HREF="$$LINK(modes_kernel)">kernel mode</A>, and if the
+    file is declared as a library (see the
+    <A HREF="$$LINK(control_library)">_library</A> control symbol).
+<BR><BR>
+<DT><B>__fargo_program_header</B>
+<DD>This global import is created automatically if the linker
+    is operating in <A HREF="$$LINK(modes_fargo)">Fargo II mode</A>, and if the
+    file is not declared as a library (see the
+    <A HREF="$$LINK(control_library)">_library</A> control symbol).
+<BR><BR>
+<DT><B>__fargo_library_header</B>
+<DD>This global import is created automatically if the linker
+    is operating in <A HREF="$$LINK(modes_fargo)">Fargo II mode</A>, and if the
+    file is declared as a library (see the
+    <A HREF="$$LINK(control_library)">_library</A> control symbol).
+<BR><BR>
+<DT><B>__flash_os_header</B>
+<DD>This global import is created automatically if the linker
+    is operating in <A HREF="$$LINK(modes_flash_os)">Flash OS mode</A>.
+<BR><BR>
+<DT><B>__nostub_comment_header</B>
+<DD>This global import is created automatically if NoStub data (comment) exports
+    are defined for the program. The file reacting to this import must use
+    <A HREF="$$LINK(symbols_ld_nostub_comment_count)">__ld_nostub_comment_count
+    </A> and
+    <A HREF="$$LINK(insert_nostub_comments)">__ld_insert_nostub_comments</A>
+    to insert the actual data exports into the header.
+<BR><BR>
+<DT><B>__handle_constructors</B>
+<DD>This global import is created automatically if constructors
+    are defined for the program. The file which handles this import must query
+    the constructor section using the
+    <A HREF="$$LINK(symbols_ld_constructors_start)">__ld_constructors_start</A>,
+    <A HREF="$$LINK(symbols_ld_constructors_end)">__ld_constructors_end</A>,
+    <A HREF="$$LINK(symbols_ld_constructors_size)">__ld_constructors_size</A>,
+    and <A HREF="$$LINK(symbols_ld_constructor_count)">__ld_constructor_count</A>
+    symbols.
+<BR><BR>
+<DT><B>__handle_destructors</B>
+<DD>This global import is created automatically if destructors
+    are defined for the program. The file which handles this import must query
+    the destructor section using the
+    <A HREF="$$LINK(symbols_ld_destructors_start)">__ld_destructors_start</A>,
+    <A HREF="$$LINK(symbols_ld_destructors_end)">__ld_destructors_end</A>,
+    <A HREF="$$LINK(symbols_ld_destructors_size)">__ld_destructors_size</A>,
+    and <A HREF="$$LINK(symbols_ld_destructor_count)">__ld_destructor_count</A>
+    symbols.
+<BR><BR>
+<DT><B>__handle_bss</B>
+<DD>This global import is created automatically if the program
+    contains a BSS section (a section containing uninitialized global variables).
+    No file needs to react to this import; if the BSS section is not created at
+    run time (using <A HREF="$$LINK(symbols_ld_bss_size)">__ld_bss_size</A>,
+    <A HREF="$$LINK(symbols_ld_bss_ref_count)">__ld_bss_ref_count</A>, and
+    an appropriate <A HREF="$$LINK(insert)">insertion</A> for the relocation), it
+    is simply passed on to the output file. If the output format does not support
+    sections, the BSS section is merged with the other sections. However, if the
+    program reacts to this import, it absolutely <I>must</I> handle the
+    relocation entries pointing into the BSS section.
+<BR><BR>
+<DT><B>__initialize_bss</B>
+<DD>This global import is created automatically if the program
+    contains a BSS section, and the program requires the contents of this section
+    to be initialized to zero. The file reacting to this import must use
+    <A HREF="$$LINK(symbols_ld_bss_start)">__ld_bss_start</A>,
+    <A HREF="$$LINK(symbols_ld_bss_end)">__ld_bss_end</A>, and
+    <A HREF="$$LINK(symbols_ld_bss_size)">__ld_bss_size</A> to query the location
+    and size of the BSS section.
+    <BR><BR>
+    <DT><B>__handle_relocs</B>
+    <DD>This global import is created automatically if the program
+    contains absolute relocation entries. If no file reacts to this import,
+    relocation entries have to be handled by the output format. The file reacting
+    to this import must use
+    <A HREF="$$LINK(symbols_ld_reloc_count)">__ld_reloc_count</A> and an
+    appropriate <A HREF="$$LINK(insert)">insertion</A> to get information about
+    the necessary relocation.
+<BR><BR>
+<DT><B>__handle_rom_calls</B>
+<DD>This global import is created automatically if the program
+    contains ROM calls. If no file reacts to this import, ROM calls are handled
+    by the output format. The file reacting to this import must use
+    <A HREF="$$LINK(symbols_ld_rom_call_count)">__ld_rom_call_count</A> and an
+    appropriate <A HREF="$$LINK(insert)">insertion</A> to get information about
+    the ROM calls.
+<BR><BR>
+<DT><B>__handle_ram_calls</B>
+<DD>This global import is created automatically if the program
+    contains RAM calls. If no file reacts to this import, RAM calls are handled
+    by the output format. The file reacting to this import must use
+    <A HREF="$$LINK(symbols_ld_ram_call_count)">__ld_ram_call_count</A> and an
+    appropriate <A HREF="$$LINK(insert)">insertion</A> to get information about
+    the RAM calls.
+<BR><BR>
+<DT><B>__handle_libraries</B>
+<DD>This global import is created automatically if the program
+    references at least one library. If no file reacts to this import, library
+    calls are handled by the output format. The file reacting to this import must
+    use <A HREF="$$LINK(symbols_ld_lib_count)">__ld_lib_count</A> and an
+    appropriate <A HREF="$$LINK(insert)">insertion</A> to get information about
+    the libraries.
+<BR><BR>
+<DT><B>__handle_data_var</B>
+<DD>This global import is created automatically if the data
+    section of the program is not included in the program itself but in an
+    external file. The file that handles this import must open this file and
+    relocate the program accordingly. It must refer to
+    <A HREF="$$LINK(symbols_ld_data_var_name_end)">__ld_data_var_name_end</A>,
+    <A HREF="$$LINK(symbols_ld_data_size)">__ld_data_size</A>, and an appropriate
+    <A HREF="$$LINK(insert)">insertion</A> for the relocation.
+<BR><BR>
+<DT><B>__data_var_create_copy</B>
+<DD>This global import is created automatically if the data
+    section of the program is not included in the program itself but in an
+    external file, and this file needs to be copied into memory (either always or
+    under certain circumstances).
+<BR><BR>
+<DT><B>__data_var_copy_if_archived</B>
+<DD>This global import is created automatically if the data
+    section of the program is not included in the program itself but in an
+    external file, and this file needs to be copied into memory only if it is
+    archived. This import is created only in combination with
+    __data_var_create_copy.
+</DL>

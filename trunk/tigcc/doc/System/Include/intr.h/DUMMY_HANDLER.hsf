@@ -1,0 +1,31 @@
+[Main]
+Name=DUMMY_HANDLER
+Type=Function
+Subtype=tigcc.a
+Header Files=intr.h
+Definition=INT_HANDLER DUMMY_HANDLER;
+Real Definition=#define DUMMY_HANDLER ((INT_HANDLER) (&__dummy_handler__))
+
+[Description]
+A dummy interrupt handler doing nothing.
+
+[Explanation]
+DUMMY_HANDLER is an interrupt handler of type <A HREF="$$LINK(INT_HANDLER)">INT_HANDLER</A>
+which consists only of <CODE>'rte'</CODE>. The purpose of this handler is
+to redirect an interrupt vector to "nothing", in cases when disabling interrupts is not
+possible. For example, you can not disable auto-int 1 in grayscale programs, because grayscale
+support is based on it. Grayscale support installs its own auto-int 1 handler, which executes
+the previously installed handler at the end. Suppose that you don't want it to call the default auto-int 1
+handler, which trashes the status line by displaying keyboard status indicators. You can
+redirect auto-int 1 to the dummy handler <I>before</I> enabling grayscale, so
+after the grayscale interrupt, the dummy handler (i.e. nothing) will be called instead of the
+default auto-int 1 handler:
+<PRE>INT_HANDLER save_int_1;
+...
+save_int_1 = GetIntVec (AUTO_INT_1);
+SetIntVec (AUTO_INT_1, DUMMY_HANDLER);   // <I>redirect auto-int 1 to "nothing"</I>
+// <I>enable grayscale</I>
+// <I>do whatever you want in grayscale</I>
+// <I>disable grayscale</I>
+SetIntVec (AUTO_INT_1, save_int_1);
+</PRE>

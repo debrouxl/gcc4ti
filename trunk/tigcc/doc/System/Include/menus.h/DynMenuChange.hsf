@@ -1,0 +1,55 @@
+[Main]
+Name=DynMenuChange
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=HANDLE DynMenuChange (HANDLE Handle, short ID, const void *NewData, unsigned short Flags);
+MinAMS=2.00
+See Also=MenuNew, MenuLoad, DynMenuAdd
+
+[ROM Call]
+Index=$3F0
+
+[Description]
+Changes an entry in a dynamic menu.
+
+[Explanation]
+DynMenuChange replaces an entry created with <A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A>,
+<A HREF="$$LINK(MenuAddText)">MenuAddText</A>, or <A HREF="$$LINK(MenuAddIcon)">MenuAddIcon</A>
+in the dynamic toolbar menu associated with the handle <I>Handle</I>
+with a new entry (pointed to by <I>NewData</I>). <I>Handle</I> must be a handle created by
+<A HREF="$$LINK(MenuNew)">MenuNew</A> or <A HREF="$$LINK(MenuLoad)">MenuLoad</A>.
+The new entry pointed by <I>NewData</I> can either
+be a text, an <A HREF="$$LINK(graph.h/ICON)">ICON</A> structure, or a
+<A HREF="$$LINK(graph.h/BITMAP)">BITMAP</A> structure, depending on the
+parameter <I>Flags</I>. <I>ID</I> is the identification number of the existing item you wish to change.
+<BR><BR>
+DynMenuChange returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of
+an error, otherwise it returns <I>Handle</I>. An error occurs if the system runs out of memory
+or if there is an error in the parameters. If there is an error replacing the entry, the
+<A HREF="$$LINK(MenuFlagsEnum)">MF_ERROR</A> flag in the menu structure is set (you can use
+<A HREF="$$LINK(MenuFlags)">MenuFlags</A> to get this flag, but do <I>not</I>
+confuse menu structure flags such as <A HREF="$$LINK(MenuFlagsEnum)">MF_ERROR</A>
+with the parameter <I>Flags</I> in DynMenuChange which gives the type of entry).
+DynMenuChange may cause heap compression.
+<BR><BR>
+The <I>Flags</I> parameter, defined in the enum <A HREF="$$LINK(DynMenuFlags)">DynMenuFlags</A>,
+contains one of the flags given in the following array:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TEXT</TD>
+  <TD>The parameter <I>NewData</I> points to a text string.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_ICON</TD>
+  <TD>The parameter <I>NewData</I> points to an <A HREF="$$LINK(graph.h/ICON)">ICON</A> structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_BITMAP</TD>
+  <TD>The parameter <I>NewData</I> points to a <A HREF="$$LINK(graph.h/BITMAP)">BITMAP</A> structure.</TD>
+</TR>
+</TABLE>
+
+[References]
+Out=alloc.h/HeapRealloc, graph.h/CalcBitmapSize, mem.h/memcpy, mem.h/memmove, string.h/strlen, string.h/strncpy, unknown.h/_ROM_CALL_41E

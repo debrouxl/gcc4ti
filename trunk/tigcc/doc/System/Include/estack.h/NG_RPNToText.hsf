@@ -1,0 +1,28 @@
+[Main]
+Name=NG_RPNToText
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=HANDLE NG_RPNToText (HANDLE hRPN, unsigned short NewLines, unsigned short FullPrec);
+
+[ROM Call]
+Index=$25B
+
+[Description]
+Detokenizes a tokenized structure associated with a handle.
+
+[Explanation]
+NG_RPNToText detokenizes a tokenized structure (an expression, TI-Basic statement or
+a group of statements) associated with handle <I>hRPN</I> and
+returns a handle to the memory block where detokenized string is stored (you don't need
+to allocate anything by yourself, this function will do it instead). The first word of the
+data associated with <I>hRPN</I> should be the length of the data which is used to find
+the first tag of the tokenized data. It throws an error
+if the detokenization fails. This function is mainly identical to
+<A HREF="$$LINK(display_statements)">display_statements</A> except NG_RPNToText requires a
+handle instead of the pointer to the structure which needs to be detokenized. See
+<A HREF="$$LINK(display_statements)">display_statements</A> for more info.
+
+[References]
+In=homescr.h/HomeExecute, homescr.h/HomePushEStack
+Out=display_statements, HToESI, alloc.h/HeapGetLock, alloc.h/HeapLock, alloc.h/HeapUnlock, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar

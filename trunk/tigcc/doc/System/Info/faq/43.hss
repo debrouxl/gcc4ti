@@ -1,0 +1,40 @@
+[Main]
+Title=How do I use functions from the wingraph.h file?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I need some examples of how to use the functions in the <A HREF="$$LINK(wingraph.h/)">wingraph.h</A> header file.
+Especially, I am confused with static and/or dynamic data allocation.
+I tried to use <A HREF="$$LINK(alloc.h/)">alloc.h</A> to create necessary structures, but something was wrong...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+I will give five very similar examples how to do the same thing. From the first and
+fifth example you will see that you need not to use <A HREF="$$LINK(alloc.h/)">alloc.h</A> at all, and in the
+second, third and fourth example, you will see what you need to do if you want
+to use dynamic allocation (i.e. <A HREF="$$LINK(alloc.h/)">alloc.h</A>) anyway. Maybe this is not so obvious
+from my documnetation, but flags in <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> must be ORed, so they must be
+"separated" by "|", not by commas.
+<BR><BR>
+Example 1: Using <A HREF="$$LINK(wingraph.h/)">wingraph.h</A> without dynamic allocation (called "Window 1"):
+$$EXAMPLE(Window 1.c)
+Example 2: Window is allocated dynamically (called "Window 2"):
+$$EXAMPLE(Window 2.c)
+Note that synonyms for <A HREF="$$LINK(alloc.h/HeapAllocPtr)">HeapAllocPtr</A> and
+<A HREF="$$LINK(alloc.h/HeapFreePtr)">HeapFreePtr</A> are
+<A HREF="$$LINK(alloc.h/malloc)">malloc</A> and <A HREF="$$LINK(alloc.h/free)">free</A> (like in ANSI C).
+<BR><BR>
+Example 3: Both "window" and "rect" are allocated dynamically (called "Window 3"):
+$$EXAMPLE(Window 3.c)
+Example 4: How to use <A HREF="$$LINK(wingraph.h/MakeWinRect)">MakeWinRect</A> to avoid "winr" (called "Window 4"):
+$$EXAMPLE(Window 4.c)
+Example 5: This is what I do in my programs (called "Window 5"):
+$$EXAMPLE(Window 5.c)
+Don't forget to close a window before exiting. If you forget to do so, the
+TI may crash later, when window manager tries to refresh a still active window
+which ceased to exist due to end of the program!
+<BR><BR>
+In general, I prefer static allocation instead of dynamic. It is good if you
+know in advance how many open windows you have in the program (this is often a
+case on TI). Dynamic allocation is the only method if you don't know in advance
+how many open windows you need (then, you can keep them in linked list). I
+don't think that there is a lot of use for this on the TI. :-)
+</TD></TR></TABLE>

@@ -1,0 +1,22 @@
+[Main]
+Name=import_binary
+Type=Function
+Subtype=Macro Constructor
+Header Files=default.h
+Definition=#define import_binary(filename,symname) asm(".globl "#symname"\n"#symname":\n\t.incbin \""filename"\"")
+
+[Description]
+Imports a binary file as an arbitrary symbol.
+
+[Explanation]
+import_binary imports a binary file at the current position using the
+<CODE><A HREF="$$INFOLINK(gnuasm/SEC97B)">.incbin</A></CODE> assembler directive.
+The parameter <I>filename</I> specifies the file name in quotes;
+<I>symname</I> specifies the symbol name to assign to the contents.
+You can give the symbol any type using an external definition; for example:
+<PRE>extern unsigned char myarray[];
+import_binary ("myfile.bin", myarray);
+</PRE>
+It is not recommended to use import_binary at any place other than the top
+level, as binary contents placed inside functions will generally be
+interpreted as code.

@@ -1,0 +1,26 @@
+[Main]
+Name=is_valid_smap_aggregate
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short is_valid_smap_aggregate (CESI ptr);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$3B9
+
+[Description]
+Checks whether an expression is a valid aggregate type.
+
+[Explanation]
+is_valid_smap_aggregate returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the expression pointed to by
+<I>ptr</I> is a valid aggregate type (i.e. list or valid matrix), otherwise it returns
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. This is not a simple check whether a tag pointed to by
+<I>ptr</I> is <A HREF="$$LINK(Tags)">LIST_TAG</A>. For example, list which consists of
+lists which are not equally sized (like {{1,2,3},{4,5}}) are not valid. Also, matrices
+whose elements are list or matrices are also not valid aggregate types.
+
+[References]
+Out=next_expression_index, estack.h/remaining_element_count
+In=push_parse_text, unknown.h/EQU_getNameInfo, unknown.h/push_parse_prgm_or_func_text

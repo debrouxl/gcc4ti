@@ -1,0 +1,26 @@
+[Main]
+Name=WinDeactivate
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinDeactivate (WINDOW *w);
+
+[ROM Call]
+Index=$D
+
+[Description]
+Deactivates a window.
+
+[Explanation]
+WinDeactivate deactivates a window pointed to by <I>w</I>. In fact, it only changes its border
+to the single-line border, without giving a focus to any other window. It is really only needed
+if an application has multiple windows. The purpose is to provide a visual clue to the user that
+a particular window has lost the current focus and that another window (which will be activated
+with <A HREF="$$LINK(WinActivate)">WinActivate</A>) has received the focus. When
+<A HREF="$$LINK(WinActivate)">WinActivate</A> is called, the window with the current focus (the last
+one to do an activating) is automatically deactivated with WinDeactivate and so it is not
+necessary to explicitly call WinDeactivate.
+
+[References]
+In=WinActivate, bascmd.h/cmd_disp, bascmd.h/cmd_disphome, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_prompt, homescr.h/HomeExecute, unknown.h/WinRemove
+Out=DrawWinBorder

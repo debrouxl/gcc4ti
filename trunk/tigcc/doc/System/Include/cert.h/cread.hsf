@@ -1,0 +1,38 @@
+[Main]
+Name=cread
+Type=Function
+Subtype=ROM Call
+Header Files=cert.h
+Definition=short cread (CFILE *context, CERT_FIELD *dest);
+
+[ROM Call]
+Index=$137
+
+[Description]
+Reads a field from a context.
+
+[Explanation]
+Certificate files in TIOS (which packages up all the data required to perform
+authentification) are well-organized as files of variable-length records called
+"fields". So, the different components are split up into various fields, which can
+be accessed fairly easily. Each field begins with ID word. High 12 bits of ID
+are used as field ID number, and lower 4 bits are used to encode size of the field
+(as the length of the field can be a variable size). If these bits are smaller or
+equal to 0xC, this value is just the length of the field. If these bits are 0xD,
+0xE or 0xF, then the following byte, word or doubleword contains the actual length
+of the field. Fields in the file are stored sequentially. They may contain various
+data, including other fields (i.e. "subfields"), which are usually opened with
+<A HREF="$$LINK(copensub)">copensub</A>.
+<BR><BR>
+cread reads a field from the file associated with the file context pointed to by
+<I>context</I> and collects necessary information (field ID number, length
+of the field, and the pointer to the actual content of the field) into the
+<A HREF="$$LINK(CERT_FIELD)">CERT_FIELD</A> structure pointed to by <I>dest</I>. It also
+moves the field pointer to the next field, and sets the EOF indicator in the
+context if the end of the file is reached. cread returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>
+if the operation was successful, otherwise it returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> (this usually
+means end-of-file error).
+
+[References]
+In=cfindfield, unknown.h/_ROM_CALL_3D2, unknown.h/_ROM_CALL_44B, unknown.h/_ROM_CALL_477, unknown.h/_ROM_CALL_4F3
+Out=ceof, cgetflen, cgetns

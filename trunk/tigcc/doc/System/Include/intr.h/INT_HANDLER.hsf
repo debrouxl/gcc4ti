@@ -1,0 +1,27 @@
+[Main]
+Name=INT_HANDLER
+Type=Type
+Subtype=Pointer
+Header Files=intr.h, gray.h
+Real Definition=typedef struct __attribute__((__may_alias__)) { short foo; } _DEREF_INT_HANDLER, *INT_HANDLER;
+
+[Description]
+A pointer to an interrupt handler.
+
+[Explanation]
+INT_HANDLER is a pointer type which represents the address of the interrupt handler.
+It might be logical that INT_HANDLER is defined as a pointer to a void function, i.e.
+<PRE>typedef void (*INT_HANDLER)(void);
+</PRE>
+But this is not true. Instead, INT_HANDLER is a pointer to a strange structure
+(its shape is completely irrelevant, as this structure is never used, neither
+explicitely nor implicitely). Such unusual behaviour is implemented due to safety reasons.
+First, with such implementation it is impossible to call an
+interrupt handler using a simple function call (which would be possible if INT_HANDLER
+is implemented as a pointer to a function). Second, as INT_HANDLER is a pointer to an
+unusual structure, the compiler can emit a warning if you try to pass anything which
+is not created using <A HREF="$$LINK(DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A> or returned
+from <A HREF="$$LINK(GetIntVec)">GetIntVec</A> to the functions <A HREF="$$LINK(SetIntVec)">SetIntVec</A>
+and <A HREF="$$LINK(ExecuteHandler)">ExecuteHandler</A>. For example, you will be warned if
+you try to pass an ordinary void function instead of properly-defined interrupt handler
+to the <A HREF="$$LINK(SetIntVec)">SetIntVec</A>.

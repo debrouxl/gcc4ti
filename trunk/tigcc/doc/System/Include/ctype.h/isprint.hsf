@@ -1,0 +1,15 @@
+[Main]
+Name=isprint
+Type=Function
+Subtype=Macro
+Header Files=ctype.h
+Definition=short isprint (short c);
+Real Definition=#define isprint(c) ({register short __c=(c);__c==11||(__c>13&&__c<256);})
+
+[Description]
+Checks whether a character is a printing character.
+
+[Explanation]
+isprint returns nonzero if <I>c</I> is a printing character, otherwise it returns zero.
+In TIOS, all characters in a range 0x0E to 0xFF and 0x0B are marked as "printable".
+isprint is a relatively small inline function which is implemented using GNU C smart macros.

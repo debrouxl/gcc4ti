@@ -1,0 +1,31 @@
+[Main]
+Title=How can I use functions in textedit.h to edit a text variable?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I don't understand how I can use functions from <A HREF="$$LINK(textedit.h/)">textedit.h</A>
+header file to edit a text variable. When I tried to open a blank editor
+everything seems OK, but when I tried to edit an existing text variable, I
+got a crash...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+I must admit that the problem is not so easy. The problem
+is, in fact, caused by severe error in my documentation in releases of
+TIGCCLIB prior to 2.2 (it is corrected now). Namely, I was wrong when I told
+that a handle passed as a parameter to <A HREF="$$LINK(textedit.h/TE_open)">TE_open</A>
+function may be a handle of a text variable. In fact, text variables have another
+extra data at the begining (one word for the length, and one word for
+the cursor position). But, the editor expects a raw data. I inspected what TIOS
+does exactly during opening a text variable. Then I concluded: there is no any
+other solutions than striping out extra data (this is a little play with
+<A HREF="$$LINK(mem.h/memmove)">memmove</A>). Of course, after the editing is finished, it is
+necessary to reconstruct again the proper structure of the text variable (this is
+possible using some informations presented in <A HREF="$$LINK(textedit.h/TEXT_EDIT)">TEXT_EDIT</A>
+structure after the editing is finished).
+<BR><BR>
+After this theoretical elaboration, I will be much more concrete. Here is a complete
+code example (called "Text Editor") which edits the text variable named "mytext". Due to simplicity, it
+is assumed that this variable really exists and that it is not archived:
+$$EXAMPLE(Text Editor.c)
+It is important to understand how this program works if you plan to do any
+serious application of text editing functions.
+</TD></TR></TABLE>

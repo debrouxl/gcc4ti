@@ -1,0 +1,34 @@
+[Main]
+Name=EV_getc
+Type=Function
+Subtype=ROM Call
+Header Files=events.h
+Definition=unsigned short EV_getc (unsigned short busy, EVENT *event);
+
+[ROM Call]
+Index=$C8
+
+[Description]
+Waits for the keypress, then fills an event structure with the keypress.
+
+[Explanation]
+EV_getc is a function similar like <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>. It waits for
+a keypress, and returns the keycode of the keypress. But, in addition to
+<A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>, it also fills the structure pointed to by <I>event</I>
+with appropriate <A HREF="$$LINK(EventIDs)">CM_KEYPRESS</A> event. Parameter <I>busy</I>
+may be ACTIVITY_IDLE, ACTIVITY_BUSY, ACTIVITY_PAUSED or ACTIVITY_NORMAL (these
+constants are defined in enum <A HREF="$$LINK(statline.h/ST_ACTIVITIES)">ST_ACTIVITIES</A>). This
+parameter determines the indicator in the status line which will be displayed
+(see <A HREF="$$LINK(statline.h/ST_busy)">ST_busy</A> for more info).
+<BR><BR>
+If there is no keypress and the cursor timer expires (cca 0.5 seconds), the
+message <A HREF="$$LINK(EventIDs)">CM_BLINK</A> is stored in the event structure
+instead, and the function returns zero (no keypresses). Also, this routine
+puts the calculator into low power mode until a character is available,
+and it will automatically power down the calculator if a key has not
+been pressed after a few minutes.
+
+[References]
+In=unknown.h/GT_KeyIn, unknown.h/_ROM_CALL_3EA
+Out=kbd.h/kbhit, kbd.h/ngetchx, statline.h/ST_busy, system.h/CU_cursorState, system.h/idle, system.h/off, system.h/OSTimerExpired, system.h/OSTimerRestart, unknown.h/_ROM_CALL_471
+Out_EV_eventLoop=1

@@ -1,0 +1,34 @@
+[Main]
+Name=fdiv
+Type=Function
+Subtype=ROM Call
+Header Files=timath.h
+Definition=float fdiv (float x, float y);
+Attributes=__attribute__((__const__))
+
+[ROM Call]
+Index=$B9
+
+[Description]
+Floating point division.
+
+[Explanation]
+fdiv returns the quotient of floating point arguments <I>x</I> and <I>y</I>.
+This routine performs the same operation as the C <CODE>'/'</CODE> operator applied to floating
+point operands, but it is kept here to allow compatibility with older programs created before
+TIGCC introduced floating point operators (i.e. before release 0.9 of TIGCC).
+At the fundamental level, fdiv is exactly the same routine as
+<A HREF="$$LINK(bcddiv)">bcddiv</A>.
+<BR><BR>
+<B>Note:</B> fdiv returns infinite result
+if the argument is zero (signed or unsigned), or in a case of overflow.
+Also, it returns <A HREF="$$LINK(NAN)">NAN</A> if both arguments are zeros
+or infinities.
+See <A HREF="$$LINK(ZERO)">ZERO</A>, <A HREF="$$LINK(UNSIGNED_ZERO)">UNSIGNED_ZERO</A>,
+<A HREF="$$LINK(POSITIVE_ZERO)">POSITIVE_ZERO</A>, <A HREF="$$LINK(NEGATIVE_ZERO)">NEGATIVE_ZERO</A>,
+<A HREF="$$LINK(UNSIGNED_INF)">UNSIGNED_INF</A>, <A HREF="$$LINK(POSITIVE_INF)">POSITIVE_INF</A> and
+<A HREF="$$LINK(NEGATIVE_INF)">NEGATIVE_INF</A> for more details.
+
+[References]
+Out=unknown.h/_bcd_math
+In=bcddiv

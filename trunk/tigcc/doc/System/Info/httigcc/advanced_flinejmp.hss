@@ -1,0 +1,25 @@
+[Main]
+Title=USE_FLINE_JUMPS
+Index=USE_FLINE_EMULATOR
+See Also=advanced_flinejmp_4b: USE_4_BYTE_FLINE_JUMPS, advanced_flinerom: USE_FLINE_ROM_CALLS
+
+[Top]
+AMS 2.04 and higher support a method of jumping to other places in the code
+in a way that is shorter than any other way, but very slow.
+If you want to use this method, write
+<PRE>#define USE_FLINE_JUMPS
+</PRE>
+at the beginning of the program. However, you need to <A HREF="$$LINK(minams)">define a minimum AMS version</A>
+for your program if you want to use this. You can bypass this, assuming that the user
+has installed an emulator for Line 1111 jumps, by defining <CODE>USE_FLINE_EMULATOR</CODE>.
+Alternatively, you can even define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>
+to make the program install its own handler for Line 1111 jumps.
+<BR><BR>
+<B>Note:</B> The Line 1111 handler of the AMS does not support Line 1111
+jumps from interrupts. If you want to use your own interrupt handlers for
+something, you will have to define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>,
+which includes special support for such jumps automatically if
+<A HREF="$$LINK(intr.h/DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A> is used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="$$INFOLINK(ld/control_ld_use_fline_jumps)">__ld_use_fline_jumps</A>.

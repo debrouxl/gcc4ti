@@ -1,0 +1,26 @@
+[Main]
+Name=OSWriteLinkBlock
+Alias=transmit
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=short OSWriteLinkBlock (const char *buffer, unsigned short num);
+See Also=LIO_SendData
+
+[ROM Call]
+Index=$250
+
+[Description]
+Inserts bytes into the link transmit buffer.
+
+[Explanation]
+OSWriteLinkBlock inserts <I>num</I> bytes from <I>buffer</I> into the link transmit buffer.
+Returns 0 if the operation was sucessful, else returns a non-zero value. <I>num</I> must be
+in the range 1-128. An error occurs if <I>num</I> is out of range or if there is not enough
+room in the transmit buffer to insert <I>num</I> bytes.
+<BR><BR>
+<B>Note:</B> This function is a low-level function. See also <A HREF="$$LINK(LIO_SendData)">LIO_SendData</A>
+for a higher-level variant of this function.
+
+[References]
+In=LIO_SendData, dialogs.h/Dialog, error.h/ERD_dialog, homescr.h/HomeExecute, kbd.h/ngetchx, unknown.h/_ROM_CALL_3EA

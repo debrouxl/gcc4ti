@@ -1,0 +1,52 @@
+[Main]
+Name=PopupBegin
+Type=Function
+Subtype=ROM Call
+Header Files=menus.h
+Definition=HANDLE PopupBegin (HANDLE Handle, short Flags);
+MinAMS=2.00
+See Also=PopupNew, PopupBeginDo, MenuSubStat, MenuCheck, MenuEnd
+
+[ROM Call]
+Index=$3F5
+
+[Description]
+Creates a new popup menu with checkmarks features.
+
+[Explanation]
+PopuBegin allocates a menu-draw structure for a dynamic popup associated with
+<I>Handle</I>, so that the popup items can use the enable/disable or check
+mark features of menus.
+PopupBegin returns a handle which must be passed to
+<A HREF="$$LINK(PopupBeginDo)">PopupBeginDo</A>, <I>not</I> to
+<A HREF="$$LINK(PopupDo)">PopupDo</A>.
+The <I>Flags</I> parameter is currently not used and should be set to 0.
+<BR><BR>
+TI gives a strict method of using dynamic popups that use PopupBegin:
+<OL>
+<LI>Create an empty, dynamic popup structure with <A HREF="$$LINK(PopupNew)">PopupNew</A>.</LI>
+<LI>Build the menu with <A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A> (or <A HREF="$$LINK(PopupAddText)">PopupAddText</A>).</LI>
+<LI>Pass the handle returned by <A HREF="$$LINK(PopupNew)">PopupNew</A> to PopupBegin.</LI>
+<LI>The handle returned by PopupBegin can now be passed to
+<A HREF="$$LINK(MenuSubStat)">MenuSubStat</A> to enable/disable
+individual items or <A HREF="$$LINK(MenuCheck)">MenuCheck</A> to turn on/off or test
+the status of checkmarks for individual items.</LI>
+<LI>Pass the handle returned from PopupBegin to <A HREF="$$LINK(PopupBeginDo)">PopupBeginDo</A> to
+actually execute the pop-up.</LI>
+<LI>When done with the menu, call <A HREF="$$LINK(MenuEnd)">MenuEnd</A> on the handle returned from
+PopupBegin. This will free that handle <I>and</I> the handle returned from
+<A HREF="$$LINK(PopupNew)">PopupNew</A>.</LI>
+</OL>
+Do not forget that once you call PopupBegin, you may not unlock the
+handle returned from <A HREF="$$LINK(PopupNew)">PopupNew</A>, or call
+<A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A>,
+<A HREF="$$LINK(DynMenuChange)">DynMenuChange</A>, or
+<A HREF="$$LINK(PopupAddText)">PopupAddText</A>.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of a scrolling popup menu with submenus (called "Dynamic Popup Example"):
+$$EXAMPLE(Dynamic Popup Example.c)
+
+[References]
+Out=alloc.h/HeapAlloc, alloc.h/HeapLock, mem.h/memset

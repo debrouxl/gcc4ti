@@ -1,0 +1,23 @@
+[Main]
+Title=__ld_insert_fargo021_bss_refs
+See Also=insert_fargo021_relocs: __ld_insert_fargo021_relocs, insert_kernel_relocs: __ld_insert_kernel_relocs
+
+[Top]
+__ld_insert_fargo021_bss_refs inserts relocs in the compressed format used by
+Fargo 0.2.1. It acts like
+<A HREF="$$LINK(insert_compressed_bss_refs)">__ld_insert_compressed_bss_refs</A>,
+except that the size of the BSS section is automatically output (as a 2-byte
+entry) in front of the actual relocation table, and that the reference symbol
+used if there is no previous reloc (i.e. for the first reloc) is
+<CODE>__ld_fargo021_bss_refs_ref</CODE>. It is expected by Fargo to be at a
+fixed position: the position of the format flag in the Fargo header. This is
+currently handled by the definition of the Fargo header.
+<BR><BR>
+For more information on inserting and processing relocs, see
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+Fargo support must be compiled in for this insertion to be defined.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A> also
+apply to this insertion.

@@ -1,0 +1,38 @@
+[Main]
+Name=EM_survey
+Type=Function
+Subtype=ROM Call
+Header Files=flash.h
+Definition=void EM_survey (unsigned long *inUse, unsigned long *freedByGC, unsigned long *free, unsigned long *unusedSectors, unsigned long *badSectors, unsigned long *allExceptBaseCode);
+
+[ROM Call]
+Index=$165
+
+[Description]
+Collects some useful information about the archive memory.
+
+[Explanation]
+EM_survey collects some useful information about the archive memory and stores them
+in six variables pointed to by arguments. *<I>inUse</I> is the number of used bytes.
+*<I>freedByGC</I> is the number of bytes which will be freed by performing
+garbage collection (see <A HREF="$$LINK(EM_GC)">EM_GC</A>). <I>free</I> is the number of
+free bytes (not counting bytes occupied by "deleted" blocks, which will become
+"free" only after the garbage collection). *<I>unusedSectors</I> is the number of
+bytes in "unused" sectors. I don't know why the archive memory contains usually
+one unused sector (i.e. sector which is never used for archiving purposes). The
+program called "MoreMem" just marks such unused sectors as "sectors in use" to
+get more archive memory (?). *<I>badSectors</I> is the number of bytes in bad
+sectors, but I am not so sure what "bad sectors" really means.
+*<I>allExceptBaseCode</I> is the number of all bytes in the Flash ROM which are not
+occupied by TIOS. This argument is new in AMS 2.xx, but you must use six arguments
+even on AMS 1.xx. If you don't need a particular information, you may pass
+<A HREF="$$LINK(alloc.h/NULL)">NULL</A> as the argument. TIOS will see it's a null pointer and will
+not save anything in it.
+<BR><BR>
+TIOS uses only <I>freedByGC</I> and <I>free</I> and always passes
+<A HREF="$$LINK(alloc.h/NULL)">NULL</A> to everything else. *<I>freedByGC</I>&nbsp;+&nbsp;*<I>free</I>
+is used to tell the user how much archive memory is available. Thanks to Johan Eilert for
+information how EM_survey should be used correctly on both AMS 1.xx and AMS 2.xx.
+
+[References]
+Out=FlashMemoryEnd, unknown.h/_ROM_CALL_3CF, unknown.h/_ROM_CALL_3D1, unknown.h/_ROM_CALL_4F3

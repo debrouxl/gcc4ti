@@ -1,0 +1,16 @@
+[Main]
+Title=How can you disable the 2nd and alpha indicators at the bottom of the screen?
+
+[Top]
+<TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How do you make that the status line is not visible on the screen so that the
+status indicators do not mess up your graphics?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+The most general method (I use this) is: disable auto-int 1 using
+<A HREF="$$LINK(system.h/OSSetSR)">OSSetSR</A> function (status line indicators are updated
+from this interrupt). Note that in this case you need to read the keyboard using the
+<A HREF="$$LINK(kbd.h/_rowread)">_rowread</A> function, because
+<A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> etc. are based on auto-int 1. I used this method
+in my program cblaster (you can pick it from ticalc). Anyway, if you use
+<A HREF="$$LINK(kbd.h/_rowread)">_rowread</A>, you should also disable auto-int 5 as well.
+</TD></TR></TABLE>

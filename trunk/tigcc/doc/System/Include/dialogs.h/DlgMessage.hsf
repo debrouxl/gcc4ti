@@ -1,0 +1,49 @@
+[Main]
+Name=DlgMessage
+Type=Function
+Subtype=ROM Call
+Header Files=dialogs.h
+Definition=short DlgMessage (const char *title, const char *message, short left_button, short right_button);
+
+[ROM Call]
+Index=$1B4
+
+[Description]
+Displays a message dialog box.
+
+[Explanation]
+DlgMessage displays a message dialog box, where <I>title</I> is the title string
+(pass <A HREF="$$LINK(alloc.h/NULL)">NULL</A> for no title), and
+<I>message</I> is the content of the message. Both <I>title</I> and <I>message</I>
+must fit into one screen line, else the calculator will crash (however, on AMS 2.xx, a long
+message will simply be wrapped in the dialog box). Parameters <I>left_button</I>
+and <I>right_button</I> determine the type of the left and right buttons which will appear
+at the bottom of the dialog box. The set of possible buttons is very limited, and possible
+types are defined in enum <A HREF="$$LINK(Buttons)">Buttons</A> (any other values will cause a crash).
+The meanings of these constants are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>BT_NONE</TD><TD>No button at all</TD>
+</TR><TR>
+<TD>BT_OK</TD><TD>Button "Enter=OK"</TD>
+</TR><TR>
+<TD>BT_SAVE</TD><TD>Button "Enter=SAVE"</TD>
+</TR><TR>
+<TD>BT_YES</TD><TD>Button "Enter=YES"</TD>
+</TR><TR>
+<TD>BT_CANCEL</TD><TD>Button "Esc=CANCEL"</TD>
+</TR><TR>
+<TD>BT_NO</TD><TD>Button "ESC=NO"</TD>
+</TR><TR>
+<TD>BT_GOTO</TD><TD>Button "Enter=GOTO"</TD>
+</TR></TABLE>
+<BR>
+DlgMessage returns <A HREF="$$LINK(kbd.h/CommonKeys)">KEY_ENTER</A> or <A HREF="$$LINK(kbd.h/CommonKeys)">KEY_ESC</A>,
+depending on whether the user exits the dialog by pressing the ENTER or ESC key. This routine may
+cause heap compression.
+
+[References]
+Out=DialogAdd, DialogDo, DialogNew, alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapFreeIndir, kbd.h/GKeyIn, string.h/strcat, string.h/strncpy, unknown.h/ERD_dismissNotice, unknown.h/ERD_notice, unknown.h/_ROM_CALL_4D5
+In=bascmd.h/cmd_showstat, bascmd.h/cmd_text, events.h/EV_defaultHandler, events.h/handleVarLinkKey, textedit.h/TE_handleEvent, unknown.h/EV_quit, vat.h/SymFindPtr
+Out_EV_eventLoop=1

@@ -1,0 +1,31 @@
+[Main]
+Name=estack_to_ushort
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short estack_to_ushort (CESI ptr, unsigned short *value_ptr);
+MinAMS=1.01
+
+[ROM Call]
+Index=$2C8
+
+[Description]
+Converts entry on the expression stack to unsigned short integer.
+
+[Explanation]
+estack_to_ushort converts an entry on the expression stack pointed to by
+<I>ptr</I> (it needs to point to the entry tag) to a unsigned short integer
+and stores the result in the location pointed to by <I>value_ptr</I>.
+Note that the entry need not be represented by <A HREF="$$LINK(Tags)">POSINT_TAG</A>
+or <A HREF="$$LINK(Tags)">NEGINT_TAG</A>: it also may be represented by
+<A HREF="$$LINK(Tags)">FLOAT_TAG</A> for example, but the value itself needs to be a whole
+number. This function does not remove the entry from the stack.
+<BR><BR>
+estack_to_short returns 1 if the conversion was sucessful, 0 in the case of overflow
+(in this case the stored result will be 0 or 65535 depending of the direction of the
+overflow), and -1 if the entry can not be represented as a whole number (in this case
+the result is undefined).
+
+[References]
+Out=unknown.h/estack_to_float, estack.h/is_whole_number, estack.h/is0, unknown.h/_bcd_math, unknown.h/_ROM_CALL_4E2
+In=GetValue, bascmd.h/cmd_cubicreg, bascmd.h/cmd_expreg, bascmd.h/cmd_linreg, bascmd.h/cmd_lnreg, bascmd.h/cmd_logistic, bascmd.h/cmd_medmed, bascmd.h/cmd_onevar, bascmd.h/cmd_powerreg, bascmd.h/cmd_quadreg, bascmd.h/cmd_quartreg, bascmd.h/cmd_sinreg, bascmd.h/cmd_style, bascmd.h/cmd_twovar, basfunc.h/push_char, basfunc.h/push_instring, basfunc.h/push_left, basfunc.h/push_mid, basfunc.h/push_randpoly, basfunc.h/push_right, basfunc.h/push_rotate, basfunc.h/push_shift, unknown.h/store_to_subscripted_element, unknown.h/_ROM_CALL_4D1, unknown.h/_ROM_CALL_5F1

@@ -1,0 +1,41 @@
+[Main]
+Title=aligned
+
+[Top]
+Syntax: <B>aligned [(<I>alignment</I>)]</B>
+<BR><BR>
+This attribute specifies a minimum alignment (in bytes) for variables
+of the specified type.  For example, the declarations:
+<PRE>struct S { short f[3]; } __attribute__ ((aligned (8)));
+typedef int more_aligned_int __attribute__ ((aligned (8)));
+</PRE>
+force the compiler to insure (as far as it can) that each variable whose
+type is <CODE>struct&nbsp;S</CODE> or <CODE>more_aligned_int</CODE> will be allocated and
+aligned <I>at least</I> on a 8-byte boundary.
+<BR><BR>
+Note that the alignment of any given <CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A></CODE> or <CODE><A HREF="$$INFOLINK(keywords/union)">union</A></CODE> type
+is required by the ISO C standard to be at least a perfect multiple of
+the lowest common multiple of the alignments of all of the members of
+the <CODE>struct</CODE> or <CODE>union</CODE> in question.  This means that you <I>can</I>
+effectively adjust the alignment of a <CODE>struct</CODE> or <CODE>union</CODE>
+type by attaching an <CODE>aligned</CODE> attribute to any one of the members
+of such a type, but the notation illustrated in the example above is a
+more obvious, intuitive, and readable way to request the compiler to
+adjust the alignment of an entire <CODE>struct</CODE> or <CODE>union</CODE> type.
+<BR><BR>
+As in the preceding example, you can explicitly specify the alignment
+(in bytes) that you wish the compiler to use for a given <CODE>struct</CODE>
+or <CODE>union</CODE> type.  Alternatively, you can leave out the alignment factor
+and just ask the compiler to align a type to the maximum
+useful alignment for the target machine you are compiling for.  For
+example, you could write:
+<PRE>struct S { short f[3]; } __attribute__ ((aligned));
+</PRE>
+Whenever you leave out the alignment factor in an <CODE>aligned</CODE>
+attribute specification, the compiler automatically sets the alignment
+for the type to the largest alignment which is ever used for any data
+type on the target machine you are compiling for (useless in TIGCC, since everything
+is already aligned well enough with the default 2-byte alignment).
+<BR><BR>
+The <CODE>aligned</CODE> attribute can only increase the alignment; but you
+can decrease it by specifying <CODE><A HREF="$$LINK(SEC91_packed)">packed</A></CODE> as well.

@@ -1,0 +1,43 @@
+[Main]
+Name=index_numeric_term
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=ESI index_numeric_term (CESI ptr);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2CD
+
+[Description]
+Searches terms in the expression for a numeric term.
+
+[Explanation]
+If <I>ptr</I> points to the <A HREF="$$LINK(Tags)">ADD_TAG</A>, which is a case when it
+points to an expression of form <I>term1</I>&nbsp;+&nbsp;<I>term2</I>&nbsp;+&nbsp;<B>...</B>
+(i.e. if the expression is a sum of simpler terms), index_numeric_term returns the pointer
+to the eventual numeric term in the expression. If the expression is a number, index_numeric_term
+returns <I>ptr</I> (i.e. the pointer to the expression itself). If <I>ptr</I> does not point to
+the <A HREF="$$LINK(Tags)">ADD_TAG</A> (i.e. if the expression is not a sum of simpler terms),
+or if there are not any numeric terms in the expression, index_numeric_factor returns
+a pointer to a simple expression which consists only of the number 0 (floating point or integer,
+depending on whether the approximation mode is active or not).
+<BR><BR>
+<B>Note:</B> This function is not implemented to be very universal. TIOS always "reorganizes" expressions
+on such way that numeric terms are at the beginning of the expression (for example, x+3 will be reorganized
+into 3+x, although it will be displayed just reversed, i.e. as x+3), and this function assumes that the
+expression is organized on such way. In other words, it must be in internal canonic form (such
+expressions always have at most one term with a numeric tag, in which case it is the deepest
+term). Fortunately,
+all expressions in argument are always in internal canonic form. However, this is not true after
+<A HREF="$$LINK(push_parse_text)">push_parse_text</A> function, nor after an evaluation using
+<A HREF="$$LINK(NG_rationalESI)">NG_rationalESI</A> or <A HREF="$$LINK(NG_approxESI)">NG_approxESI</A>. In
+other words, results of these commands are not always "correctly" organized. To force converting
+an expression to the internal canonic form, always call
+<A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A> after usage of any of the functions
+mentioned above.
+
+[References]
+Out=next_expression_index, unknown.h/Float0Index, unknown.h/Integer0Index, unknown.h/primary_tag_list
+In=basfunc.h/push_exp, basfunc.h/push_sin2, basop.h/push_exponentiate, basop.h/push_factorial

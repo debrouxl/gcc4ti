@@ -1,0 +1,26 @@
+[Main]
+Name=ST_modKey
+Type=Function
+Subtype=ROM Call
+Header Files=statline.h
+Definition=void ST_modKey (short flags);
+
+[ROM Call]
+Index=$E7
+
+[Description]
+Sets the modifier key indicator in the status line.
+
+[Explanation]
+ST_modKey sets the modifier key indicator to nothing, 2nd, shift, diamond,
+alpha, shifted alpha lock or alpha lock, depending of whehter <I>mode</I>
+is ST_NONE, ST_2ND, ST_SHIFT, ST_DIAMOND, ST_ALPHA, ST_SH_A_LOCK or
+ST_A_LOCK (these constants are defined in enum <A HREF="$$LINK(ST_FLAGS)">ST_FLAGS</A>).
+This indicator would be displayed in the status line. This function has a
+very limited usage, because it is called very often from AutoInt 1, so if
+interrupts are enabled, the modifier key indicator will be changed very soon
+depending of actual state of the keyboard.
+
+[References]
+In=events.h/EV_defaultHandler, timath.h/trunc, unknown.h/_ROM_CALL_473
+Out=ST_eraseHelp, estack.h/are_expressions_identical, estack.h/next_expression_index, graph.h/PortRestore, graph.h/RestoreScrState, graph.h/SaveScrState, estack.h/is0, unknown.h/lead_conjunct_factor_index, unknown.h/remaining_conjuncts_index, unknown.h/ST_flags_var: ST_flags, wingraph.h/WinAttr, wingraph.h/WinFill, wingraph.h/WinFont, wingraph.h/WinStrXY

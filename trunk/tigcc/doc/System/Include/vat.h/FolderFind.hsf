@@ -1,0 +1,31 @@
+[Main]
+Name=FolderFind
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short FolderFind (SYM_STR SymName);
+
+[ROM Call]
+Index=$67
+
+[Description]
+Checks whether a folder exists.
+
+[Explanation]
+FolderFind searches for a folder <I>SymName</I> through the folder table in the VAT,
+and returns the following result:
+<UL>
+<LI>MAIN_FOLDER, if <I>SymName</I> is the "main" folder;</LI>
+<LI>FOLDER_TABLE, if a folder with name <I>SymName</I> exists;</LI>
+<LI>NOT_FOUND, if a folder with name <I>SymName</I> does not exists;</LI>
+<LI>BAD_FOLDER, if a symbol with name <I>SymName</I> is really present in the folder table,
+but does not represents a folder (i.e. folder bit is not set); this return value
+probably represents an invalid entry.</LI>
+</UL>
+These constants are defined in enum <A HREF="$$LINK(FolderStats)">FolderStats</A>.
+See <A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> for more info about structure of VAT entry, and
+<A HREF="$$LINK(SYMSTR)">SYMSTR</A> for rules about <I>SymName</I>.
+
+[References]
+In=bascmd.h/cmd_blddata, bascmd.h/cmd_movevar, unknown.h/_ROM_CALL_437
+Out=IsMainFolderStr, SymCmp, TokToStrN, unknown.h/_mu16u16

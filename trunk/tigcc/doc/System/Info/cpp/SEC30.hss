@@ -1,0 +1,22 @@
+[Main]
+Title=Newlines in Arguments
+
+[Top]
+The invocation of a function-like macro can extend over many logical
+lines.  However, in the present implementation, the entire expansion
+comes out on one line.  Thus line numbers emitted by the compiler or
+debugger refer to the line the invocation started on, which might be
+different to the line containing the argument causing the problem.
+<BR><BR>
+Here is an example illustrating this:
+<PRE>#define ignore_second_arg(a,b,c) a; c
+
+ignore_second_arg (foo (),
+                   ignored (),
+                   syntax error);
+</PRE>
+The syntax error triggered by the tokens <CODE>syntax&nbsp;error</CODE> results in
+an error message citing line three - the line of ignore_second_arg -
+even though the problematic code comes from line five.
+<BR><BR>
+We consider this a bug, and intend to fix it in the near future.

@@ -1,0 +1,31 @@
+[Main]
+Name=is_independent_of_elements
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=short is_independent_of_elements (CESI expr_ptr, CESI varlist_ptr);
+Attributes=__attribute__((__pure__))
+MinAMS=1.01
+
+[ROM Call]
+Index=$2D8
+
+[Description]
+Checks whether an expression is independent of the elements of a list.
+
+[Explanation]
+is_independent_of_elements is very similar to <A HREF="$$LINK(is_independent_of_tail)">is_independent_of_tail</A>.
+Assuming that <I>varlist_ptr</I> points to the list of variables or expressions (more precise, to the
+<A HREF="$$LINK(Tags)">LIST_TAG</A> of such list), is_independent_of_elements returns
+<A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the expression pointed to by <I>expr_ptr</I> is independent
+of all variables from the list pointed to by <I>varlist_ptr</I>, otherwise it returns
+<A HREF="$$LINK(alloc.h/Bool)">FALSE</A>. More precisely,
+<PRE>is_independent_of_elements (expr_ptr, varlist_ptr)
+</PRE>
+is the same as
+<PRE>is_independent_of_tail (expr_ptr, varlist_ptr - 1)
+</PRE>
+
+[References]
+In=basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_solve, basfunc.h/push_zeros, basop.h/push_equals, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not_equals, basop.h/push_substitute_using_such_that, unknown.h/get_ub
+Out=is_independent_of_tail

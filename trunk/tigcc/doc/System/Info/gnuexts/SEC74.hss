@@ -1,0 +1,21 @@
+[Main]
+Title=Hex Floats
+
+[Top]
+ISO C99 supports floating-point numbers written not only in the usual
+decimal notation, such as <CODE>1.55e1</CODE>, but also numbers such as
+<CODE>0x1.fp3</CODE> written in hexadecimal format.  As a GNU extension, GCC
+supports this in C89 mode (except in some cases when strictly
+conforming).  In that format the
+<CODE>0x</CODE> hex introducer and the <CODE>p</CODE> or <CODE>P</CODE> exponent field are
+mandatory.  The exponent is a decimal number that indicates the power of
+2 by which the significant part will be multiplied.  Thus <CODE>0x1.f</CODE> is
+<CODE>1&nbsp;15/16</CODE>,
+<CODE>p3</CODE> multiplies it by 8, and the value of <CODE>0x1.fp3</CODE>
+is the same as <CODE>1.55e1</CODE>.
+<BR><BR>
+Unlike for floating-point numbers in the decimal notation the exponent
+is always required in the hexadecimal notation.  Otherwise the compiler
+would not be able to resolve the ambiguity of, e.g., <CODE>0x1.f</CODE>.  This
+could mean <CODE>1.0f</CODE> or <CODE>1.9375</CODE> since <CODE>f</CODE> is also the
+extension for floating-point constants of type <CODE><A HREF="$$INFOLINK(keywords/float)">float</A></CODE>.

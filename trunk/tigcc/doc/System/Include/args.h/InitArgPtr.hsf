@@ -1,0 +1,37 @@
+[Main]
+Name=InitArgPtr
+Type=Function
+Subtype=Macro
+Header Files=args.h
+Definition=void InitArgPtr (CESI &ap);
+Real Definition=#define InitArgPtr(p) ((void) ((p)=top_estack))
+
+[Description]
+Initializes a pointer to the first argument passed to the program.
+
+[Explanation]
+InitArgPtr is a macro which initializes <I>ap</I> (which is a pointer of type
+<A HREF="$$LINK(estack.h/ESI)">ESI</A>) to point to the first argument passed to the assembly
+program. Principally, calling
+<PRE>InitArgPtr (argptr);
+</PRE>
+is equal to doing
+<PRE>argptr = top_estack;
+</PRE>
+See <A HREF="$$LINK(estack.h/top_estack)">top_estack</A> for more info.
+<BR><BR>
+InitArgPtr must be used before the first call to <A HREF="$$LINK(GetStrnArg)">GetStrnArg</A> etc.
+Here is an example of a program which reads string or integer arguments passed to it,
+and displays them on the screen, one by one (called "Argument Test"):
+$$EXAMPLE(Argument Test.c)
+If the name of this program is <B>example.89z</B>, try to call it on TI using
+<PRE>example ("strarg1", 123, -12, "strarg2")
+</PRE>
+to see how it works in practice.
+<BR><BR>
+<B>Note:</B> I used notation "&amp;<I>ap</I>" in the prototype description, although passing by
+reference does not exist in ordinary C (only in C++). However, this macro is implemented
+on such way that it simulates "passing by reference".
+
+[References]
+Out=estack.h/top_estack

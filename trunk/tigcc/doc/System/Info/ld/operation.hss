@@ -1,0 +1,36 @@
+[Main]
+Title=TIGCC Linker Purpose and Operation
+
+[Top]
+The purpose of a linker is to take executable code and data from different
+files and merge it into a single program. It must resolve dependencies
+between the files, and there are many architecture-dependent features linkers
+are required to support. The complicated part about linking is that binary
+code can be encapsulated in different formats; most linkers, including the
+TIGCC linker, can import code from several formats and export it to yet
+another one (see <A HREF="$$LINK(formats)">TIGCC Linker File Formats</A>).
+<BR><BR>
+The TIGCC linker can handle two kinds of files: object files and archive
+files. Object files are produced by the compiler or assembler. They contain
+the code and global variables of the program; all object files passed to the
+linker are processed and then included in the final output. Archive files,
+also known as static libraries, are collections of object files. An archive
+member is included only if this is requested by another file.
+<BR><BR>
+Files can reference each other via text strings called <U>symbols</U>. These
+symbols are usually labels in assembly code, or functions and global
+variables in C code. The most popular way of referencing symbols is to ask
+that the final address or offset of a specific symbol be inserted at or added
+to a specific location in the code. This is called <U>relocation</U>.
+<BR><BR>
+When the linker is executed, it first reads all object files passed to it and
+imports their contents into its internal data structures. Then it tries to
+resolve the references to symbols defined in another file. If a symbol cannot
+be resolved, it is looked up in the symbol tables of all archive files passed
+to the linker; if it is still not found, this is an error. Archive members
+are imported immediately if required, and they may reference symbols defined
+in other files as well. Some special actions are performed based on the
+contents of the imported files, code and data blocks (<U>sections</U>) are
+sorted and merged if required, and offsets between different locations in the
+code are inserted whereever the object files requested this. Finally, the
+program is exported to an executable file.

@@ -1,0 +1,60 @@
+[Main]
+Name=VarOpen
+Type=Function
+Subtype=ROM Call
+Header Files=dialogs.h
+Definition=HSym VarOpen (const ESQ *FileTypes, ...);
+See Also=VarNew, VarSaveAs
+
+[ROM Call]
+Index=$28C
+
+[Description]
+Displays the standard "Open" dialog.
+
+[Explanation]
+VarOpen implements the standard "Open" dialog. The user may select a type,
+the folder to look in, and finally a symbol in the selected folder which
+matches the selected type.
+<BR><BR>
+<I>FileTypes</I> is a pointer to a zero-terminated array of types that are
+supported. These types are, in fact, tags (see the
+<A HREF="$$LINK(estack.h/Tags)">Tags</A> enum for more info). Supported
+tags are:
+<A HREF="$$LINK(estack.h/Tags)">EQ_TAG</A> (expression),
+<A HREF="$$LINK(estack.h/Tags)">STR_TAG</A> (string),
+<A HREF="$$LINK(estack.h/Tags)">LIST_TAG</A> (list),
+<A HREF="$$LINK(estack.h/Tags)">MATRIX_TAG</A> (matrix),
+<A HREF="$$LINK(estack.h/InstructionTags)">PRGM_ITAG</A> (program),
+<A HREF="$$LINK(estack.h/InstructionTags)">FUNC_ITAG</A> (function), 
+<A HREF="$$LINK(estack.h/Tags)">DATA_TAG</A> (data),
+<A HREF="$$LINK(estack.h/Tags)">GDB_TAG</A> (Graph Database),
+<A HREF="$$LINK(estack.h/Tags)">PIC_TAG</A> (picture),
+<A HREF="$$LINK(estack.h/Tags)">TEXT_TAG</A> (text), 
+<A HREF="$$LINK(estack.h/Tags)">FIG_TAG</A> (geometry figure),
+<A HREF="$$LINK(estack.h/Tags)">MAC_TAG</A> (geometry macro),
+<A HREF="$$LINK(estack.h/Tags)">ASM_TAG</A> (assembly program), and
+<A HREF="$$LINK(estack.h/Tags)">OTH_TAG</A> (custom-type file).
+Each value in the <I>FileTypes</I> list will be presented to the user in a
+pulldown menu, unless there is only one value in the list (then it will be a
+static field).
+<BR><BR>
+VarOpen returns the <A HREF="$$LINK(vat.h/HSym)">HSym</A>
+descriptor of the selected symbol, or
+<A HREF="$$LINK(vat.h/HS_NULL)">HS_NULL</A> if the user pressed 'ESC' or in
+case of an error.
+<BR><BR>
+If the <I>FileTypes</I> list contains
+<A HREF="$$LINK(estack.h/Tags)">OTH_TAG</A> items, an extra parameter of type
+<CODE>char **</CODE> is required. This parameter is an array of strings (more
+precisely, of char pointers). There must be exactly one char pointer for each
+<A HREF="$$LINK(estack.h/Tags)">OTH_TAG</A> item in the <I>FileTypes</I>
+list, and these pointers should point to the text to display in the pulldown
+menu for these custom types.
+<BR><BR>
+This function may cause heap compression.
+
+[References]
+Out=DialogAdd, DialogDo, DialogNew, alloc.h/HeapFree, estack.h/TokenizeSymName, estack.h/top_estack, menus.h/PopupAddText, menus.h/PopupClear, menus.h/PopupNew, menus.h/PopupText, menus.h/VarCreateFolderPopup, string.h/strcat, string.h/strchr, string.h/strcmp, string.h/strlen, system.h/XR_stringPtr, unknown.h/DataTypeNames, unknown.h/VarOptList, vat.h/CheckSysFunc, vat.h/FolderOp, vat.h/GetFuncPrgmBodyPtr, vat.h/StrToTokN, vat.h/SymCpy0, vat.h/SymFindFirst, vat.h/SymFindNext, vat.h/SymSysVar, vat.h/VarRecall, unknown.h/_ROM_CALL_3E8
+In=unknown.h/GT_Open
+Out_EV_eventLoop=1

@@ -1,0 +1,1877 @@
+diff -Nur cpp/SEC10.hss fix/cpp/SEC10.hss
+--- cpp/SEC10.hss	2003-09-16 00:19:42.000000000 +0200
++++ fix/cpp/SEC10.hss	2003-09-16 00:43:52.000000000 +0200
+@@ -1,5 +1,7 @@
+ [Main]
+ Title=Macros
++Subsections=SEC11, SEC12, SEC17, SEC18, SEC19, SEC14, SEC20, SEC22
++Index=#define
+ 
+ [Top]
+ A <U>macro</U> is a fragment of code which has been given a name.
+@@ -10,8 +12,7 @@
+ <BR><BR>
+ You may define any valid identifier as a macro, even if it is a C
+ keyword.  The preprocessor does not know anything about keywords.  This
+-can be useful if you wish to hide a keyword such as <CODE>const</CODE> from an
++can be useful if you wish to hide a keyword such as <CODE><A HREF="$$INFOLINK(keywords/const)">const</A></CODE> from an
+ older compiler that does not understand it.  However, the preprocessor
+-operator <CODE>defined</CODE> (see <A HREF="$$LINK(SEC38a)">Defined</A>) can never be defined as a
+-macro, and C++'s named operators (see <A HREF="$$INFOLINK(C++ Named Operators)">C++ Named Operators</A>) cannot be
+-macros when you are compiling C++.
++operator <CODE><A HREF="$$LINK(SEC38a)">defined</A></CODE> can never be defined as a
++macro.
+diff -Nur cpp/SEC12.hss fix/cpp/SEC12.hss
+--- cpp/SEC12.hss	2003-09-16 00:19:42.000000000 +0200
++++ fix/cpp/SEC12.hss	2003-09-16 00:38:28.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Function-like Macros
++Subsections=SEC12a, SEC13
+ 
+ [Top]
+ You can also define macros whose use looks like a function call.  These
+diff -Nur cpp/SEC13.hss fix/cpp/SEC13.hss
+--- cpp/SEC13.hss	2003-09-16 00:19:42.000000000 +0200
++++ fix/cpp/SEC13.hss	2003-09-16 00:38:28.000000000 +0200
+@@ -5,7 +5,7 @@
+ A macro can be declared to accept a variable number of arguments much as
+ a function can.  The syntax for defining the macro is similar to that of
+ a function.  Here is an example:
+-<PRE>#define eprintf(...) fprintf (stderr, __VA_ARGS__)
++<PRE>#define lprintf(...) fprintf (log, __VA_ARGS__)
+ </PRE>
+ This kind of macro is called <U>variadic</U>.  When the macro is invoked,
+ all the tokens in its argument list after the last named argument (this
+@@ -13,8 +13,8 @@
+ argument</U>.  This sequence of tokens replaces the identifier
+ <CODE>__VA_ARGS__</CODE> in the macro body wherever it appears.  Thus, we
+ have this expansion:
+-<PRE>eprintf (&quot;%s:%d: &quot;, input_file, lineno)
+-     expands to  fprintf (stderr, &quot;%s:%d: &quot;, input_file, lineno)
++<PRE>lprintf (&quot;%s:%d: &quot;, input_file, lineno);
++  --&gt; fprintf (log, &quot;%s:%d: &quot;, input_file, lineno);
+ </PRE>
+ The variable argument is completely macro-expanded before it is inserted
+ into the macro expansion, just like an ordinary argument.  You may use
+@@ -26,15 +26,15 @@
+ the variable argument than <CODE>__VA_ARGS__</CODE>.  CPP permits
+ this, as an extension.  You may write an argument name immediately
+ before the <CODE>...</CODE>; that name is used for the variable argument.
+-The <CODE>eprintf</CODE> macro above could be written
+-<PRE>#define eprintf(args...) fprintf (stderr, args)
++The <CODE>lprintf</CODE> macro above could be written
++<PRE>#define lprintf(args...) fprintf (log, args)
+ </PRE>
+ using this extension.  You cannot use <CODE>__VA_ARGS__</CODE> and this
+ extension in the same macro.
+ <BR><BR>
+ You can have named arguments as well as variable arguments in a variadic
+-macro.  We could define <CODE>eprintf</CODE> like this, instead:
+-<PRE>#define eprintf(format, ...) fprintf (stderr, format, __VA_ARGS__)
++macro.  We could define <CODE>lprintf</CODE> like this, instead:
++<PRE>#define lprintf(format, ...) fprintf (log, format, __VA_ARGS__)
+ </PRE>
+ This formulation looks more descriptive, but unfortunately it is less
+ flexible: you must now supply at least one argument after the format
+@@ -42,24 +42,24 @@
+ argument from the variable arguments.  Furthermore, if you leave the
+ variable argument empty, you will get a syntax error, because
+ there will be an extra comma after the format string.
+-<PRE>eprintf(&quot;success!\n&quot;, );
+-     expands to fprintf(stderr, &quot;success!\n&quot;, );
++<PRE>lprintf (&quot;success!\n&quot;, );
++  --&gt; fprintf (log, &quot;success!\n&quot;, );
+ </PRE>
+ GNU CPP has a pair of extensions which deal with this problem.  First,
+ you are allowed to leave the variable argument out entirely:
+-<PRE>eprintf (&quot;success!\n&quot;)
+-     expands to fprintf(stderr, &quot;success!\n&quot;, );
++<PRE>lprintf (&quot;success!\n&quot;);
++  --&gt; fprintf (log, &quot;success!\n&quot;, );
+ </PRE>
+ Second, the <CODE>##</CODE> token paste operator has a special meaning when
+ placed between a comma and a variable argument.  If you write
+-<PRE>#define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
++<PRE>#define lprintf(format, ...) fprintf (log, format, ##__VA_ARGS__)
+ </PRE>
+-and the variable argument is left out when the <CODE>eprintf</CODE> macro is
++and the variable argument is left out when the <CODE>lprintf</CODE> macro is
+ used, then the comma before the <CODE>##</CODE> will be deleted.  This does
+ <I>not</I> happen if you pass an empty argument, nor does it happen if
+ the token preceding <CODE>##</CODE> is anything other than a comma.
+-<PRE>eprintf (&quot;success!\n&quot;)
+-     expands to fprintf(stderr, &quot;success!\n&quot;);
++<PRE>lprintf (&quot;success!\n&quot;)
++  --&gt; fprintf (log, &quot;success!\n&quot;);
+ </PRE>
+ The above explanation is ambiguous about the case where the only macro
+ parameter is a variable arguments parameter, as it is meaningless to
+@@ -90,6 +90,6 @@
+ previous versions of GCC, the token preceding the special <CODE>##</CODE> must
+ be a comma, and there must be white space between that comma and
+ whatever comes immediately before it:
+-<PRE>#define eprintf(format, args...) fprintf (stderr, format , ##args)
++<PRE>#define lprintf(format, args...) fprintf (log, format , ##args)
+ </PRE>
+-See <A HREF="$$LINK(SEC86)">Differences from previous versions</A> for the gory details.
++See <A HREF="$$LINK(SEC86)">Differences from Previous Versions</A> for the gory details.
+diff -Nur cpp/SEC14.hss fix/cpp/SEC14.hss
+--- cpp/SEC14.hss	2003-09-16 00:19:42.000000000 +0200
++++ fix/cpp/SEC14.hss	2003-09-16 00:38:28.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Predefined Macros
++Subsections=SEC15, SEC15a, SEC16
+ 
+ [Top]
+ Several object-like macros are predefined; you use them without
+diff -Nur cpp/SEC15.hss fix/cpp/SEC15.hss
+--- cpp/SEC15.hss	2003-09-16 00:19:44.000000000 +0200
++++ fix/cpp/SEC15.hss	2003-09-16 00:38:28.000000000 +0200
+@@ -1,116 +1,9 @@
+ [Main]
+ Title=Standard Predefined Macros
++Subsections=SEC15_FILE, SEC15_LINE, SEC15_DATE, SEC15_TIME, SEC15_STDC, SEC15_STDC_VERSION, SEC15_STDC_HOSTED
+ 
+ [Top]
+ The standard predefined macros are specified by the C and/or C++
+ language standards, so they are available with all compilers that
+ implement those standards.  Older compilers may not provide all of
+ them.  Their names all start with double underscores.
+-<DL>
+-<DT><B>__FILE__</B>
+-<DD>This macro expands to the name of the current input file, in the form of
+-a C string constant.  This is the path by which the preprocessor opened
+-the file, not the short name specified in <CODE>#include</CODE> or as the
+-input file name argument.  For example,
+-<CODE>&quot;/usr/local/include/myheader.h&quot;</CODE> is a possible expansion of this
+-macro.
+-<BR><BR>
+-<DT><B>__LINE__</B>
+-<DD>This macro expands to the current input line number, in the form of a
+-decimal integer constant.  While we call it a predefined macro, it's
+-a pretty strange macro, since its &quot;definition&quot; changes with each
+-new line of source code.
+-</DL>
+-<CODE>__FILE__</CODE> and <CODE>__LINE__</CODE> are useful in generating an error
+-message to report an inconsistency detected by the program; the message
+-can state the source line at which the inconsistency was detected.  For
+-example,
+-<PRE>fprintf (stderr, &quot;Internal error: &quot;
+-                 &quot;negative string length &quot;
+-                 &quot;%d at %s, line %d.&quot;,
+-         length, __FILE__, __LINE__);
+-</PRE>
+-An <CODE>#include</CODE> directive changes the expansions of <CODE>__FILE__</CODE>
+-and <CODE>__LINE__</CODE> to correspond to the included file.  At the end of
+-that file, when processing resumes on the input file that contained
+-the <CODE>#include</CODE> directive, the expansions of <CODE>__FILE__</CODE> and
+-<CODE>__LINE__</CODE> revert to the values they had before the
+-<CODE>#include</CODE> (but <CODE>__LINE__</CODE> is then incremented by one as
+-processing moves to the line after the <CODE>#include</CODE>).
+-<BR><BR>
+-A <CODE>#line</CODE> directive changes <CODE>__LINE__</CODE>, and may change
+-<CODE>__FILE__</CODE> as well.  See <A HREF="$$LINK(SEC41)">Line Control</A>.
+-<BR><BR>
+-C99 introduces <CODE>__func__</CODE>, and GCC has provided <CODE>__FUNCTION__</CODE>
+-for a long time.  Both of these are strings containing the name of the
+-current function (there are slight semantic differences; see the GCC
+-manual).  Neither of them is a macro; the preprocessor does not know the
+-name of the current function.  They tend to be useful in conjunction
+-with <CODE>__FILE__</CODE> and <CODE>__LINE__</CODE>, though.
+-<DL>
+-<DT><B>__DATE__</B>
+-<DD>This macro expands to a string constant that describes the date on which
+-the preprocessor is being run.  The string constant contains eleven
+-characters and looks like <CODE>&quot;Feb&nbsp;12&nbsp;1996&quot;</CODE>.  If the day of the
+-month is less than 10, it is padded with a space on the left.
+-<BR><BR>
+-If GCC cannot determine the current date, it will emit a warning message
+-(once per compilation) and <CODE>__DATE__</CODE> will expand to
+-<CODE>&quot;???&nbsp;??&nbsp;????&quot;</CODE>.
+-<BR><BR>
+-<DT><B>__TIME__</B>
+-<DD>This macro expands to a string constant that describes the time at
+-which the preprocessor is being run.  The string constant contains
+-eight characters and looks like <CODE>&quot;23:59:01&quot;</CODE>.
+-<BR><BR>
+-If GCC cannot determine the current time, it will emit a warning message
+-(once per compilation) and <CODE>__TIME__</CODE> will expand to
+-<CODE>&quot;??:??:??&quot;</CODE>.
+-<BR><BR>
+-<DT><B>__STDC__</B>
+-<DD>In normal operation, this macro expands to the constant 1, to signify
+-that this compiler conforms to ISO Standard C.  If GNU CPP is used with
+-a compiler other than GCC, this is not necessarily true; however, the
+-preprocessor always conforms to the standard unless the
+-<B>'-traditional-cpp'</B> option is used.
+-<BR><BR>
+-This macro is not defined if the <B>'-traditional-cpp'</B> option is used.
+-<BR><BR>
+-On some hosts, the system compiler uses a different convention, where
+-<CODE>__STDC__</CODE> is normally 0, but is 1 if the user specifies strict
+-conformance to the C Standard.  CPP follows the host convention when
+-processing system header files, but when processing user files
+-<CODE>__STDC__</CODE> is always 1.  This has been reported to cause problems;
+-for instance, some versions of Solaris provide X Windows headers that
+-expect <CODE>__STDC__</CODE> to be either undefined or 1.  See <A HREF="$$LINK(SEC44)">Invocation</A>.
+-<BR><BR>
+-<DT><B>__STDC_VERSION__</B>
+-<DD>This macro expands to the C Standard's version number, a long integer
+-constant of the form <CODE><I>yyyy</I><I>mm</I>L</CODE> where <I>yyyy</I> and
+-<I>mm</I> are the year and month of the Standard version.  This signifies
+-which version of the C Standard the compiler conforms to.  Like
+-<CODE>__STDC__</CODE>, this is not necessarily accurate for the entire
+-implementation, unless GNU CPP is being used with GCC.
+-<BR><BR>
+-The value <CODE>199409L</CODE> signifies the 1989 C standard as amended in
+-1994, which is the current default; the value <CODE>199901L</CODE> signifies
+-the 1999 revision of the C standard.  Support for the 1999 revision is
+-not yet complete.
+-<BR><BR>
+-This macro is not defined if the <B>'-traditional-cpp'</B> option is
+-used, nor when compiling C++ or Objective-C.
+-<BR><BR>
+-<DT><B>__STDC_HOSTED__</B>
+-<DD>This macro is defined, with value 1, if the compiler's target is a
+-<U>hosted environment</U>.  A hosted environment has the complete
+-facilities of the standard C library available.
+-<BR><BR>
+-<DT><B>__cplusplus</B>
+-<DD>This macro is defined when the C++ compiler is in use.  You can use
+-<CODE>__cplusplus</CODE> to test whether a header is compiled by a C compiler
+-or a C++ compiler.  This macro is similar to <CODE>__STDC_VERSION__</CODE>, in
+-that it expands to a version number.  A fully conforming implementation
+-of the 1998 C++ standard will define this macro to <CODE>199711L</CODE>.  The
+-GNU C++ compiler is not yet fully conforming, so it uses <CODE>1</CODE>
+-instead.  We hope to complete our implementation in the near future.
+-</DL>
+diff -Nur cpp/SEC15_BASE_FILE.hss fix/cpp/SEC15_BASE_FILE.hss
+--- cpp/SEC15_BASE_FILE.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_BASE_FILE.hss	2003-09-16 00:38:28.000000000 +0200
+@@ -0,0 +1,7 @@
++[Main]
++Title=__BASE_FILE__
++
++[Top]
++This macro expands to the name of the main input file, in the form
++of a C string constant.  This is the source file that was specified
++on the command line of the preprocessor or C compiler.
+\ No newline at end of file
+diff -Nur cpp/SEC15_CHAR_BIT.hss fix/cpp/SEC15_CHAR_BIT.hss
+--- cpp/SEC15_CHAR_BIT.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_CHAR_BIT.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,8 @@
++[Main]
++Title=__CHAR_BIT__
++
++[Top]
++Defined to the number of bits used in the representation of the
++<CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> data type.
++It exists to make the standard header given numerical limits work correctly.
++You should not use this macro directly; instead, include the appropriate headers.
+diff -Nur cpp/SEC15_CHAR_UNSIGNED.hss fix/cpp/SEC15_CHAR_UNSIGNED.hss
+--- cpp/SEC15_CHAR_UNSIGNED.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_CHAR_UNSIGNED.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,10 @@
++[Main]
++Title=__CHAR_UNSIGNED__
++
++[Top]
++This macro is defined if and only if the data type <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> is
++unsigned.  Note that this is not true on TIGCC by default, but it may be changed using
++some compiler command switches.  It exists to cause the standard header
++file <A HREF="$$LINK(limits.h/)">limits.h</A> to work correctly.  You should not refer to this
++macro yourself; instead, refer to the standard macros defined in
++<A HREF="$$LINK(limits.h/)">limits.h</A>.
+diff -Nur cpp/SEC15_DATE.hss fix/cpp/SEC15_DATE.hss
+--- cpp/SEC15_DATE.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_DATE.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,12 @@
++[Main]
++Title=__DATE__
++
++[Top]
++This macro expands to a string constant that describes the date on which
++the preprocessor is being run.  The string constant contains eleven
++characters and looks like <CODE>&quot;Feb&nbsp;12&nbsp;1996&quot;</CODE>.  If the day of the
++month is less than 10, it is padded with a space on the left.
++<BR><BR>
++If GCC cannot determine the current date, it will emit a warning message
++(once per compilation) and <CODE>__DATE__</CODE> will expand to
++<CODE>&quot;???&nbsp;??&nbsp;????&quot;</CODE>.
+diff -Nur cpp/SEC15_FILE.hss fix/cpp/SEC15_FILE.hss
+--- cpp/SEC15_FILE.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_FILE.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,10 @@
++[Main]
++Title=__FILE__
++
++[Top]
++This macro expands to the name of the current input file, in the form of
++a C string constant.  This is the path by which the preprocessor opened
++the file, not the short name specified in <CODE><A HREF="$$LINK(SEC6)">#include</A></CODE> or as the
++input file name argument.  For example,
++<CODE>&quot;/usr/local/include/myheader.h&quot;</CODE> is a possible expansion of this
++macro.
+\ No newline at end of file
+diff -Nur cpp/SEC15_GNUC.hss fix/cpp/SEC15_GNUC.hss
+--- cpp/SEC15_GNUC.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_GNUC.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,32 @@
++[Main]
++Title=__GNUC__
++See Also=SEC15_GNUC_MINOR: __GNUC_MINOR__, SEC15_GNUC_PATCHLEVEL: __GNUC_PATCHLEVEL__
++
++[Top]
++This macro is always defined in GCC.  The value identifies the GCC major
++version number (currently '3').
++<BR><BR>
++If all you need to know is whether or not your program is being compiled
++by GCC, you can simply test <CODE>__GNUC__</CODE>.  If you need to write code
++which depends on a specific version, you must be more careful.  Each
++time the minor version is increased, the patch level is reset to zero;
++each time the major version is increased (which happens rarely), the
++minor version and patch level are reset.  If you wish to use the
++predefined macros directly in the conditional, you will need to write it
++like this:
++<PRE>/* Test for GCC &gt; 3.2.0 */
++#if __GNUC__ &gt; 3 || \
++    (__GNUC__ == 3 &amp;&amp; (__GNUC_MINOR__ &gt; 2 || \
++                       (__GNUC_MINOR__ == 2 &amp;&amp; \
++                        __GNUC_PATCHLEVEL__ &gt; 0))
++</PRE>
++Another approach is to use the predefined macros to
++calculate a single number, then compare that against a threshold:
++<PRE>#define GCC_VERSION (__GNUC__ * 10000 \
++                     + __GNUC_MINOR__ * 100 \
++                     + __GNUC_PATCHLEVEL__)
++...
++/* Test for GCC &gt; 3.2.0 */
++#if GCC_VERSION &gt; 30200
++</PRE>
++Many people find this form easier to understand.
+diff -Nur cpp/SEC15_GNUC_MINOR.hss fix/cpp/SEC15_GNUC_MINOR.hss
+--- cpp/SEC15_GNUC_MINOR.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_GNUC_MINOR.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,8 @@
++[Main]
++Title=__GNUC_MINOR__
++
++[Top]
++The macro contains the minor version number of the compiler.  This can
++be used to work around differences between different releases of the
++compiler.  It must always be used together with
++<CODE><A HREF="$$LINK(SEC15_GNUC)">__GNUC__</A></CODE>.
+diff -Nur cpp/SEC15_GNUC_PATCHLEVEL.hss fix/cpp/SEC15_GNUC_PATCHLEVEL.hss
+--- cpp/SEC15_GNUC_PATCHLEVEL.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_GNUC_PATCHLEVEL.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,13 @@
++[Main]
++Title=__GNUC_PATCHLEVEL__
++
++[Top]
++The macro contains the bugfix version number of the compiler.  This can
++be used to work around differences between different releases of the
++compiler.  It must always be used together with
++<CODE><A HREF="$$LINK(SEC15_GNUC)">__GNUC__</A></CODE> and
++<CODE><A HREF="$$LINK(SEC15_GNUC_MINOR)">__GNUC_MINOR__</A></CODE>.
++<BR><BR>
++<CODE>__GNUC_PATCHLEVEL__</CODE> is new to GCC 3.0; it is also present in the
++widely-used development snapshots leading up to 3.0 (which identify
++themselves as GCC 2.96 or 2.97, depending on which snapshot you have).
+diff -Nur cpp/SEC15_INCLUDE_LEVEL.hss fix/cpp/SEC15_INCLUDE_LEVEL.hss
+--- cpp/SEC15_INCLUDE_LEVEL.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_INCLUDE_LEVEL.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,9 @@
++[Main]
++Title=__INCLUDE_LEVEL__
++
++[Top]
++This macro expands to a decimal integer constant that represents the
++depth of nesting in include files.  The value of this macro is
++incremented on every <CODE><A HREF="$$LINK(SEC6)">#include</A></CODE> directive and decremented at the
++end of every included file.  It starts out at 0, its value within the
++base file specified on the command line.
+diff -Nur cpp/SEC15_INT_SHORT.hss fix/cpp/SEC15_INT_SHORT.hss
+--- cpp/SEC15_INT_SHORT.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_INT_SHORT.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,11 @@
++[Main]
++Title=__INT_SHORT__
++
++[Top]
++TIGCC defines this macro if and only if the data type <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>
++represents a short integer (<CODE><A HREF="$$INFOLINK(keywords/short)">short</A></CODE>).
++Note that this is always true in TIGCC by default, but it may be changed using
++some compiler command line switches.  It exists to cause the standard header
++file <A HREF="$$LINK(limits.h/)">limits.h</A> to work correctly.  You should not refer to this
++macro yourself; instead, refer to the standard macros defined in
++<A HREF="$$LINK(limits.h/)">limits.h</A>.
+diff -Nur cpp/SEC15_LINE.hss fix/cpp/SEC15_LINE.hss
+--- cpp/SEC15_LINE.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_LINE.hss	2003-09-16 00:38:30.000000000 +0200
+@@ -0,0 +1,35 @@
++[Main]
++Title=__LINE__
++
++[Top]
++This macro expands to the current input line number, in the form of a
++decimal integer constant.  While we call it a predefined macro, it's
++a pretty strange macro, since its &quot;definition&quot; changes with each
++new line of source code.
++<BR><BR>
++<CODE><A HREF="$$LINK(SEC15_FILE)">__FILE__</A></CODE> and <CODE>__LINE__</CODE> are useful in generating an error
++message to report an inconsistency detected by the program; the message
++can state the source line at which the inconsistency was detected.  For
++example,
++<PRE>fprintf (stderr, &quot;Internal error: &quot;
++                 &quot;negative string length &quot;
++                 &quot;%d at %s, line %d.&quot;,
++         length, __FILE__, __LINE__);
++</PRE>
++An <CODE>#include</CODE> directive changes the expansions of <CODE>__FILE__</CODE>
++and <CODE>__LINE__</CODE> to correspond to the included file.  At the end of
++that file, when processing resumes on the input file that contained
++the <CODE>#include</CODE> directive, the expansions of <CODE>__FILE__</CODE> and
++<CODE>__LINE__</CODE> revert to the values they had before the
++<CODE>#include</CODE> (but <CODE>__LINE__</CODE> is then incremented by one as
++processing moves to the line after the <CODE>#include</CODE>).
++<BR><BR>
++A <CODE>#line</CODE> directive changes <CODE>__LINE__</CODE>, and may change
++<CODE>__FILE__</CODE> as well.  See <A HREF="$$LINK(SEC41)">Line Control</A>.
++<BR><BR>
++C99 introduces <CODE>__func__</CODE>, and GCC has provided <CODE>__FUNCTION__</CODE>
++for a long time.  Both of these are strings containing the name of the
++current function (there are slight semantic differences; see <A HREF="$$INFOLINK(gnuexts/SEC102)">Function Names as Strings</A>).
++Neither of them is a macro; the preprocessor does not know the
++name of the current function.  They tend to be useful in conjunction
++with <CODE>__FILE__</CODE> and <CODE>__LINE__</CODE>, though.
+diff -Nur cpp/SEC15_MAX.hss fix/cpp/SEC15_MAX.hss
+--- cpp/SEC15_MAX.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_MAX.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,13 @@
++[Main]
++Title=__SCHAR_MAX__, __SHRT_MAX__, __INT_MAX__, __LONG_MAX__, __LONG_LONG_MAX__
++
++[Top]
++Defined to the maximum value of the
++<CODE><A HREF="$$INFOLINK(keywords/signed)">signed</A>&nbsp;<A HREF="$$INFOLINK(keywords/char)">char</A></CODE>,
++<CODE><A HREF="$$INFOLINK(keywords/signed)">signed</A>&nbsp;<A HREF="$$INFOLINK(keywords/short)">short</A></CODE>,
++<CODE><A HREF="$$INFOLINK(keywords/signed)">signed</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE>,
++<CODE><A HREF="$$INFOLINK(keywords/signed)">signed</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A></CODE>, and
++<CODE><A HREF="$$INFOLINK(keywords/signed)">signed</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A></CODE>
++types, respectively.  They exist to make the standard header given numerical limits
++work correctly.  You should not use these macros directly; instead, include
++the appropriate headers.
+diff -Nur cpp/SEC15_NO_INLINE.hss fix/cpp/SEC15_NO_INLINE.hss
+--- cpp/SEC15_NO_INLINE.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_NO_INLINE.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,7 @@
++[Main]
++Title=__NO_INLINE__
++
++[Top]
++This macro is defined if no functions will be inlined into
++their callers (when not optimizing, or when inlining has been
++specifically disabled by <B>'-fno-inline'</B>).
+diff -Nur cpp/SEC15_OPTIMIZE.hss fix/cpp/SEC15_OPTIMIZE.hss
+--- cpp/SEC15_OPTIMIZE.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_OPTIMIZE.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,12 @@
++[Main]
++Title=__OPTIMIZE__
++See Also=SEC15_OPTIMIZE_SIZE: __OPTIMIZE_SIZE__, SEC15_NO_INLINE: __NO_INLINE__
++
++[Top]
++GNU CC defines this macro in optimizing compilations.  Along with
++<CODE><A HREF="$$LINK(SEC15_OPTIMIZE_SIZE)">__OPTIMIZE_SIZE__</A></CODE> and
++<CODE><A HREF="$$LINK(SEC15_NO_INLINE)">__NO_INLINE__</A></CODE>, it allows certain
++header files to define alternative macro definitions for some system
++library functions.  You should not refer to or test the definition of
++this macro unless you make very sure that programs will execute with the
++same effect regardless.  If it is defined, its value is 1.
+diff -Nur cpp/SEC15_OPTIMIZE_SIZE.hss fix/cpp/SEC15_OPTIMIZE_SIZE.hss
+--- cpp/SEC15_OPTIMIZE_SIZE.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_OPTIMIZE_SIZE.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,6 @@
++[Main]
++Title=__OPTIMIZE_SIZE__
++
++[Top]
++This macro is defined in addition to <A HREF="$$LINK(SEC15_OPTIMIZE)">__OPTIMIZE__</A>
++if the compiler is optimizing for size, not speed.
+diff -Nur cpp/SEC15_REGISTER_PREFIX.hss fix/cpp/SEC15_REGISTER_PREFIX.hss
+--- cpp/SEC15_REGISTER_PREFIX.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_REGISTER_PREFIX.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,10 @@
++[Main]
++Title=__REGISTER_PREFIX__
++
++[Top]
++This macro expands to a single token (not a string constant) which is
++the prefix applied to CPU register names in assembly language for this
++target.  You can use it to write assembly that is usable in multiple
++environments.  For example, in the <CODE>m68k-aout</CODE> environment it
++expands to nothing, but in the <CODE>m68k-coff</CODE> environment (as TIGCC is) it expands
++to a single <CODE>%</CODE>.
+diff -Nur cpp/SEC15_STDC.hss fix/cpp/SEC15_STDC.hss
+--- cpp/SEC15_STDC.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_STDC.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,11 @@
++[Main]
++Title=__STDC__
++
++[Top]
++In normal operation, this macro expands to the constant 1, to signify
++that this compiler conforms to ISO Standard C.  If GNU CPP is used with
++a compiler other than GCC, this is not necessarily true; however, the
++preprocessor always conforms to the standard unless the
++<B>'-traditional-cpp'</B> option is used.
++<BR><BR>
++This macro is not defined if the <B>'-traditional-cpp'</B> option is used.
+diff -Nur cpp/SEC15_STDC_HOSTED.hss fix/cpp/SEC15_STDC_HOSTED.hss
+--- cpp/SEC15_STDC_HOSTED.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_STDC_HOSTED.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,7 @@
++[Main]
++Title=__STDC_HOSTED__
++
++[Top]
++This macro is defined, with value 1, if the compiler's target is a
++<U>hosted environment</U>.  A hosted environment has the complete
++facilities of the standard C library available.
+diff -Nur cpp/SEC15_STDC_VERSION.hss fix/cpp/SEC15_STDC_VERSION.hss
+--- cpp/SEC15_STDC_VERSION.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_STDC_VERSION.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,15 @@
++[Main]
++Title=__STDC_VERSION__
++
++[Top]
++This macro expands to the C Standard's version number, a long integer
++constant of the form <CODE><I>yyyy</I><I>mm</I>L</CODE> where <I>yyyy</I> and
++<I>mm</I> are the year and month of the Standard version.  This signifies
++which version of the C Standard the compiler conforms to.
++<BR><BR>
++The value <CODE>199409L</CODE> signifies the 1989 C standard as amended in
++1994, which is the current default; the value <CODE>199901L</CODE> signifies
++the 1999 revision of the C standard.  Support for the 1999 revision is
++not yet complete.
++<BR><BR>
++This macro is not defined if the <B>'-traditional-cpp'</B> option is used.
+diff -Nur cpp/SEC15_STRICT_ANSI.hss fix/cpp/SEC15_STRICT_ANSI.hss
+--- cpp/SEC15_STRICT_ANSI.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_STRICT_ANSI.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,10 @@
++[Main]
++Title=__STRICT_ANSI__
++
++[Top]
++GCC defines this macro if and only if the <B>'-ansi'</B> switch, or a
++<B>'-std'</B> switch specifying strict conformance to some version of ISO C,
++was specified when GCC was invoked.  It is defined to <CODE>1</CODE>.
++This macro exists primarily to direct GNU libc's header files to
++restrict their definitions to the minimal set found in the 1989 C
++standard.
+diff -Nur cpp/SEC15_TIME.hss fix/cpp/SEC15_TIME.hss
+--- cpp/SEC15_TIME.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_TIME.hss	2003-09-16 00:38:32.000000000 +0200
+@@ -0,0 +1,11 @@
++[Main]
++Title=__TIME__
++
++[Top]
++This macro expands to a string constant that describes the time at
++which the preprocessor is being run.  The string constant contains
++eight characters and looks like <CODE>&quot;23:59:01&quot;</CODE>.
++<BR><BR>
++If GCC cannot determine the current time, it will emit a warning message
++(once per compilation) and <CODE>__TIME__</CODE> will expand to
++<CODE>&quot;??:??:??&quot;</CODE>.
+diff -Nur cpp/SEC15_USER_LABEL_PREFIX.hss fix/cpp/SEC15_USER_LABEL_PREFIX.hss
+--- cpp/SEC15_USER_LABEL_PREFIX.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_USER_LABEL_PREFIX.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -0,0 +1,13 @@
++[Main]
++Title=__USER_LABEL_PREFIX__
++
++[Top]
++This macro expands to a single token which is the prefix applied to
++user labels (symbols visible to C code) in assembly.  For example, in
++the <CODE>m68k-aout</CODE> environment it expands to an <CODE>_</CODE>, but in the
++<CODE>m68k-coff</CODE> environment (as TIGCC is) it expands to nothing.
++<BR><BR>
++This macro will have the correct definition even if
++<B>'-f(no-)underscores'</B> is in use, but it will not be correct if
++target-specific options that adjust this prefix are used (e.g. the
++OSF/rose <B>'-mno-underscores'</B> option).
+diff -Nur cpp/SEC15_VERSION.hss fix/cpp/SEC15_VERSION.hss
+--- cpp/SEC15_VERSION.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC15_VERSION.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -0,0 +1,8 @@
++[Main]
++Title=__VERSION__
++
++[Top]
++This macro expands to a string constant which describes the version of
++the compiler in use.  You should not rely on its contents having any
++particular form, but it can be counted on to contain at least the
++release number.
+diff -Nur cpp/SEC15a.hss fix/cpp/SEC15a.hss
+--- cpp/SEC15a.hss	2003-09-16 00:19:44.000000000 +0200
++++ fix/cpp/SEC15a.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,170 +1,9 @@
+ [Main]
+ Title=Common Predefined Macros
++Subsections=SEC15_GNUC, SEC15_GNUC_MINOR, SEC15_GNUC_PATCHLEVEL, SEC15_VERSION, SEC15_STRICT_ANSI, SEC15_BASE_FILE, SEC15_INCLUDE_LEVEL, SEC15_OPTIMIZE, SEC15_OPTIMIZE_SIZE, SEC15_NO_INLINE, SEC15_CHAR_UNSIGNED, SEC15_CHAR_BIT, SEC15_INT_SHORT, SEC15_MAX, SEC15_REGISTER_PREFIX, SEC15_USER_LABEL_PREFIX
+ 
+ [Top]
+ The common predefined macros are GNU C extensions.  They are available
+ with the same meanings regardless of the machine or operating system on
+ which you are using GNU C.  Their names all start with double
+ underscores.
+-<DL>
+-<DT><B>__GNUC__</B>
+-<BR><B>__GNUC_MINOR__</B>
+-<BR><B>__GNUC_PATCHLEVEL__</B>
+-<DD>These macros are defined by all GNU compilers that use the C
+-preprocessor: C, C++, and Objective-C.  Their values are the major
+-version, minor version, and patch level of the compiler, as integer
+-constants.  For example, GCC 3.2.1 will define <CODE>__GNUC__</CODE> to 3,
+-<CODE>__GNUC_MINOR__</CODE> to 2, and <CODE>__GNUC_PATCHLEVEL__</CODE> to 1.  They
+-are defined only when the entire compiler is in use; if you invoke the
+-preprocessor directly, they are not defined.
+-<BR><BR>
+-<CODE>__GNUC_PATCHLEVEL__</CODE> is new to GCC 3.0; it is also present in the
+-widely-used development snapshots leading up to 3.0 (which identify
+-themselves as GCC 2.96 or 2.97, depending on which snapshot you have).
+-<BR><BR>
+-If all you need to know is whether or not your program is being compiled
+-by GCC, you can simply test <CODE>__GNUC__</CODE>.  If you need to write code
+-which depends on a specific version, you must be more careful.  Each
+-time the minor version is increased, the patch level is reset to zero;
+-each time the major version is increased (which happens rarely), the
+-minor version and patch level are reset.  If you wish to use the
+-predefined macros directly in the conditional, you will need to write it
+-like this:
+-<PRE>/* Test for GCC &gt; 3.2.0 */
+-#if __GNUC__ &gt; 3 || \
+-    (__GNUC__ == 3 &amp;&amp; (__GNUC_MINOR__ &gt; 2 || \
+-                       (__GNUC_MINOR__ == 2 &amp;&amp; \
+-                        __GNUC_PATCHLEVEL__ &gt; 0))
+-</PRE>
+-Another approach is to use the predefined macros to
+-calculate a single number, then compare that against a threshold:
+-<PRE>#define GCC_VERSION (__GNUC__ * 10000 \
+-                     + __GNUC_MINOR__ * 100 \
+-                     + __GNUC_PATCHLEVEL__)
+-...
+-/* Test for GCC &gt; 3.2.0 */
+-#if GCC_VERSION &gt; 30200
+-</PRE>
+-Many people find this form easier to understand.
+-<BR><BR>
+-<DT><B>__OBJC__</B>
+-<DD>This macro is defined, with value 1, when the Objective-C compiler is in
+-use.  You can use <CODE>__OBJC__</CODE> to test whether a header is compiled
+-by a C compiler or a Objective-C compiler.
+-<BR><BR>
+-<DT><B>__GNUG__</B>
+-<DD>The GNU C++ compiler defines this.  Testing it is equivalent to
+-testing <CODE>(__GNUC__&nbsp;&amp;&amp;&nbsp;__cplusplus)</CODE>.
+-<BR><BR>
+-<DT><B>__STRICT_ANSI__</B>
+-<DD>GCC defines this macro if and only if the <B>'-ansi'</B> switch, or a
+-<B>'-std'</B> switch specifying strict conformance to some version of ISO C,
+-was specified when GCC was invoked.  It is defined to <CODE>1</CODE>.
+-This macro exists primarily to direct GNU libc's header files to
+-restrict their definitions to the minimal set found in the 1989 C
+-standard.
+-<BR><BR>
+-<DT><B>__BASE_FILE__</B>
+-<DD>This macro expands to the name of the main input file, in the form
+-of a C string constant.  This is the source file that was specified
+-on the command line of the preprocessor or C compiler.
+-<BR><BR>
+-<DT><B>__INCLUDE_LEVEL__</B>
+-<DD>This macro expands to a decimal integer constant that represents the
+-depth of nesting in include files.  The value of this macro is
+-incremented on every <CODE>#include</CODE> directive and decremented at the
+-end of every included file.  It starts out at 0, it's value within the
+-base file specified on the command line.
+-<BR><BR>
+-<DT><B>__VERSION__</B>
+-<DD>This macro expands to a string constant which describes the version of
+-the compiler in use.  You should not rely on its contents having any
+-particular form, but it can be counted on to contain at least the
+-release number.
+-<BR><BR>
+-<DT><B>__OPTIMIZE__</B>
+-<BR><B>__OPTIMIZE_SIZE__</B>
+-<BR><B>__NO_INLINE__</B>
+-<DD>These macros describe the compilation mode.  <CODE>__OPTIMIZE__</CODE> is
+-defined in all optimizing compilations.  <CODE>__OPTIMIZE_SIZE__</CODE> is
+-defined if the compiler is optimizing for size, not speed.
+-<CODE>__NO_INLINE__</CODE> is defined if no functions will be inlined into
+-their callers (when not optimizing, or when inlining has been
+-specifically disabled by <B>'-fno-inline'</B>).
+-<BR><BR>
+-These macros cause certain GNU header files to provide optimized
+-definitions, using macros or inline functions, of system library
+-functions.  You should not use these macros in any way unless you make
+-sure that programs will execute with the same effect whether or not they
+-are defined.  If they are defined, their value is 1.
+-<BR><BR>
+-<DT><B>__CHAR_UNSIGNED__</B>
+-<DD>GCC defines this macro if and only if the data type <CODE>char</CODE> is
+-unsigned on the target machine.  It exists to cause the standard header
+-file <CODE>limits.h</CODE> to work correctly.  You should not use this macro
+-yourself; instead, refer to the standard macros defined in <CODE>limits.h</CODE>.
+-<BR><BR>
+-<DT><B>__WCHAR_UNSIGNED__</B>
+-<DD>Like <CODE>__CHAR_UNSIGNED__</CODE>, this macro is defined if and only if the
+-data type <CODE>wchar_t</CODE> is unsigned and the front-end is in C++ mode.
+-<BR><BR>
+-<DT><B>__REGISTER_PREFIX__</B>
+-<DD>This macro expands to a single token (not a string constant) which is
+-the prefix applied to CPU register names in assembly language for this
+-target.  You can use it to write assembly that is usable in multiple
+-environments.  For example, in the <CODE>m68k-aout</CODE> environment it
+-expands to nothing, but in the <CODE>m68k-coff</CODE> environment it expands
+-to a single <CODE>%</CODE>.
+-<BR><BR>
+-<DT><B>__USER_LABEL_PREFIX__</B>
+-<DD>This macro expands to a single token which is the prefix applied to
+-user labels (symbols visible to C code) in assembly.  For example, in
+-the <CODE>m68k-aout</CODE> environment it expands to an <CODE>_</CODE>, but in the
+-<CODE>m68k-coff</CODE> environment it expands to nothing.
+-<BR><BR>
+-This macro will have the correct definition even if
+-<B>'-f(no-)underscores'</B> is in use, but it will not be correct if
+-target-specific options that adjust this prefix are used (e.g. the
+-OSF/rose <B>'-mno-underscores'</B> option).
+-<BR><BR>
+-<DT><B>__SIZE_TYPE__</B>
+-<BR><B>__PTRDIFF_TYPE__</B>
+-<BR><B>__WCHAR_TYPE__</B>
+-<BR><B>__WINT_TYPE__</B>
+-<DD>These macros are defined to the correct underlying types for the
+-<CODE>size_t</CODE>, <CODE>ptrdiff_t</CODE>, <CODE>wchar_t</CODE>, and <CODE>wint_t</CODE>
+-typedefs, respectively.  They exist to make the standard header files
+-<CODE>stddef.h</CODE> and <CODE>wchar.h</CODE> work correctly.  You should not use
+-these macros directly; instead, include the appropriate headers and use
+-the typedefs.
+-<BR><BR>
+-<DT><B>__CHAR_BIT__</B>
+-<DD>Defined to the number of bits used in the representation of the
+-<CODE>char</CODE> data type.  It exists to make the standard header given
+-numerical limits work correctly.  You should not use
+-this macro directly; instead, include the appropriate headers.
+-<BR><BR>
+-<DT><B>__SCHAR_MAX__</B>
+-<BR><B>__WCHAR_MAX__</B>
+-<BR><B>__SHRT_MAX__</B>
+-<BR><B>__INT_MAX__</B>
+-<BR><B>__LONG_MAX__</B>
+-<BR><B>__LONG_LONG_MAX__</B>
+-<DD>Defined to the maximum value of the <CODE>signed&nbsp;char</CODE>, <CODE>wchar_t</CODE>,
+-<CODE>signed&nbsp;short</CODE>,
+-<CODE>signed&nbsp;int</CODE>, <CODE>signed&nbsp;long</CODE>, and <CODE>signed&nbsp;long&nbsp;long</CODE> types
+-respectively.  They exist to make the standard header given numerical limits
+-work correctly.  You should not use these macros directly; instead, include
+-the appropriate headers.
+-<BR><BR>
+-<DT><B>__USING_SJLJ_EXCEPTIONS__</B>
+-<DD>This macro is defined, with value 1, if the compiler uses the old
+-mechanism based on <CODE>setjmp</CODE> and <CODE>longjmp</CODE> for exception
+-handling.
+-<BR><BR>
+-<DT><B>__NEXT_RUNTIME__</B>
+-<DD>This macro is defined, with value 1, if (and only if) the NeXT runtime
+-(as in <B>'-fnext-runtime'</B>) is in use for Objective-C.  If the GNU
+-runtime is used, this macro is not defined, so that you can use this
+-macro to determine which runtime (NeXT or GNU) is being used.
+-</DL>
+diff -Nur cpp/SEC16.hss fix/cpp/SEC16.hss
+--- cpp/SEC16.hss	2003-09-16 00:19:44.000000000 +0200
++++ fix/cpp/SEC16.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -4,11 +4,12 @@
+ [Top]
+ The C preprocessor normally predefines several macros that indicate what
+ type of system and machine is in use.  They are obviously different on
+-each target supported by GCC.  This manual, being for all systems and
+-machines, cannot tell you what their names are, but you can use
+-<CODE>cpp&nbsp;-dM</CODE> to see them all.  See <A HREF="$$LINK(SEC44)">Invocation</A>.  All system-specific
++each target supported by GCC.  TIGCC currently defines only two such macros:
++<CODE>mc68000</CODE> (predefined on most computers whose CPU is a Motorola 68000, 68010 or 68020) and
++<CODE>__embedded__</CODE>.  You can use <CODE>cpp&nbsp;-dM</CODE> to see all macros defined
++(see <A HREF="$$LINK(SEC44)">Invocation</A>).  All system-specific
+ predefined macros expand to the constant 1, so you can test them with
+-either <CODE>#ifdef</CODE> or <CODE>#if</CODE>.
++either <CODE><A HREF="$$LINK(SEC38)">#ifdef</A></CODE> or <CODE><A HREF="$$LINK(SEC34)">#if</A></CODE>.
+ <BR><BR>
+ The C standard requires that all system-specific macros be part of the
+ <U>reserved namespace</U>.  All names which begin with two underscores,
+diff -Nur cpp/SEC2.hss fix/cpp/SEC2.hss
+--- cpp/SEC2.hss	2003-09-16 00:19:40.000000000 +0200
++++ fix/cpp/SEC2.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+-Title=Overview
++Title=Preprocessor Overview
++Subsections=SEC3, SEC3a, SEC3b
+ 
+ [Top]
+ The C preprocessor, often known as <U>cpp</U>, is a <U>macro processor</U>
+diff -Nur cpp/SEC22.hss fix/cpp/SEC22.hss
+--- cpp/SEC22.hss	2003-09-16 00:19:46.000000000 +0200
++++ fix/cpp/SEC22.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,7 +1,8 @@
+ [Main]
+ Title=Macro Pitfalls
++Subsections=SEC23, SEC24, SEC25, SEC26, SEC27, SEC28, SEC30
+ 
+ [Top]
+-In this section we describe some special rules that apply to macros and
++In this section, we describe some special rules that apply to macros and
+ macro expansion, and point out certain cases in which the rules have
+ counter-intuitive consequences that you must watch out for.
+diff -Nur cpp/SEC31.hss fix/cpp/SEC31.hss
+--- cpp/SEC31.hss	2003-09-16 00:19:46.000000000 +0200
++++ fix/cpp/SEC31.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Conditionals
++Subsections=SEC32, SEC33, SEC37
+ 
+ [Top]
+ A <U>conditional</U> is a directive that instructs the preprocessor to
+diff -Nur cpp/SEC32.hss fix/cpp/SEC32.hss
+--- cpp/SEC32.hss	2003-09-16 00:19:46.000000000 +0200
++++ fix/cpp/SEC32.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -30,3 +30,6 @@
+ Simple programs that do not need system-specific logic or complex
+ debugging hooks generally will not need to use preprocessing
+ conditionals.
++In TIGCC, conditionals are useful to select appropriate constants depending
++on which calculator and operating system the program is intended to run on,
++and to enable or disable certain features.
+diff -Nur cpp/SEC33.hss fix/cpp/SEC33.hss
+--- cpp/SEC33.hss	2003-09-16 00:19:46.000000000 +0200
++++ fix/cpp/SEC33.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,6 +1,7 @@
+ [Main]
+ Title=Conditional Syntax
++Subsections=SEC38, SEC34, SEC35, SEC36
+ 
+ [Top]
+ A conditional in the C preprocessor begins with a <U>conditional
+-directive</U>: <CODE>#if</CODE>, <CODE>#ifdef</CODE> or <CODE>#ifndef</CODE>.
++directive</U>: <CODE><A HREF="$$LINK(SEC34)">#if</A></CODE>, <CODE><A HREF="$$LINK(SEC38)">#ifdef</A></CODE>, or <CODE><A HREF="$$LINK(SEC38)">#ifndef</A></CODE>.
+diff -Nur cpp/SEC34.hss fix/cpp/SEC34.hss
+--- cpp/SEC34.hss	2003-09-16 00:19:48.000000000 +0200
++++ fix/cpp/SEC34.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,7 @@
+ [Main]
+-Title=If
++Title=#if
++Subsections=SEC38a
++Index=#endif
+ 
+ [Top]
+ The <CODE>#if</CODE> directive allows you to test the value of an arithmetic
+diff -Nur cpp/SEC35.hss fix/cpp/SEC35.hss
+--- cpp/SEC35.hss	2003-09-16 00:19:48.000000000 +0200
++++ fix/cpp/SEC35.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Else
++Title=#else
+ 
+ [Top]
+ The <CODE>#else</CODE> directive can be added to a conditional to provide
+diff -Nur cpp/SEC36.hss fix/cpp/SEC36.hss
+--- cpp/SEC36.hss	2003-09-16 00:19:48.000000000 +0200
++++ fix/cpp/SEC36.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Elif
++Title=#elif
+ 
+ [Top]
+ One common case of nested conditionals is used to check for more than two
+@@ -20,9 +20,9 @@
+ ...
+ #elif X == 2
+ ...
+-#else /* X != 2 and X != 1*/
++#else /* X != 2 and X != 1 */
+ ...
+-#endif /* X != 2 and X != 1*/
++#endif /* X != 2 and X != 1 */
+ </PRE>
+ <CODE>#elif</CODE> stands for &quot;else if&quot;.  Like <CODE>#else</CODE>, it goes in the
+ middle of a conditional group and subdivides it; it does not require a
+diff -Nur cpp/SEC38.hss fix/cpp/SEC38.hss
+--- cpp/SEC38.hss	2003-09-16 00:19:48.000000000 +0200
++++ fix/cpp/SEC38.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+-Title=Ifdef
++Title=#ifdef
++Index=#ifndef
+ 
+ [Top]
+ The simplest sort of conditional is
+diff -Nur cpp/SEC38a.hss fix/cpp/SEC38a.hss
+--- cpp/SEC38a.hss	2003-09-16 00:19:48.000000000 +0200
++++ fix/cpp/SEC38a.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Defined
++Title=defined
+ 
+ [Top]
+ The special operator <CODE>defined</CODE> is used in <CODE>#if</CODE> and
+diff -Nur cpp/SEC39.hss fix/cpp/SEC39.hss
+--- cpp/SEC39.hss	2003-09-16 00:19:54.000000000 +0200
++++ fix/cpp/SEC39.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Assertions
++Index=#assert, #unassert
+ 
+ [Top]
+ <U>Assertions</U> are a deprecated alternative to macros in writing
+@@ -11,7 +12,7 @@
+ the compiler's target system.  However, in practice they are just as
+ unpredictable as the system-specific predefined macros.  In addition, they
+ are not part of any standard, and only a few compilers support them.
+-Therefore, the use of assertions is <B>less</B> portable than the use
++Therefore, the use of assertions is <I>less</I> portable than the use
+ of system-specific predefined macros.  We recommend you do not use them at
+ all.
+ <BR><BR>
+diff -Nur cpp/SEC3a.hss fix/cpp/SEC3a.hss
+--- cpp/SEC3a.hss	2003-09-16 00:19:40.000000000 +0200
++++ fix/cpp/SEC3a.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -22,10 +22,9 @@
+ tokens together.  See <A HREF="$$LINK(SEC18)">Concatenation</A>.  For example,
+ <PRE>#define foo() bar
+ foo()baz
+-     expands to bar baz
+-<I>not</I>
+-     expands to barbaz
+ </PRE>
++expands to <CODE>bar&nbsp;baz</CODE>, <I>not</I> <CODE>barbaz</CODE>.
++<BR><BR>
+ The compiler does not re-tokenize the preprocessor's output.  Each
+ preprocessing token becomes one compiler token.
+ <BR><BR>
+@@ -36,11 +35,7 @@
+ underscore.  Keywords of C have no significance to the preprocessor;
+ they are ordinary identifiers.  You can define a macro whose name is a
+ keyword, for instance.  The only identifier which can be considered a
+-preprocessing keyword is <CODE>defined</CODE>.  See <A HREF="$$LINK(SEC38a)">Defined</A>.
+-<BR><BR>
+-This is mostly true of other languages which use the C preprocessor.
+-However, a few of the keywords of C++ are significant even in the
+-preprocessor.  See <A HREF="$$INFOLINK(C++ Named Operators)">C++ Named Operators</A>.
++preprocessing keyword is <CODE><A HREF="$$LINK(SEC38a)">defined</A></CODE>.
+ <BR><BR>
+ In the 1999 C standard, identifiers may contain letters which are not
+ part of the &quot;basic source character set,&quot; at the implementation's
+@@ -97,10 +92,11 @@
+ file in different places depending on which form you use.  See <A HREF="$$LINK(SEC7)">Include
+ Operation</A>.
+ <BR><BR>
+-No string literal may extend past the end of a line.  Older versions
+-of GCC accepted multi-line string constants.  You may use continued
+-lines instead, or string constant concatenation.  See <A HREF="$$LINK(SEC86)">Differences
+-from previous versions</A>.
++In standard C, no string literal may extend past the end of a line.  GNU
++CPP accepts multi-line string constants, but not multi-line character
++constants or header file names.  To write standards-compliant code,
++you may use continued lines instead, or string
++constant concatenation.  See <A HREF="$$LINK(SEC86)">Differences from previous versions</A>.
+ <BR><BR>
+ <U>Punctuators</U> are all the usual bits of punctuation which are
+ meaningful to C and C++.  All but three of the punctuation characters in
+diff -Nur cpp/SEC4.hss fix/cpp/SEC4.hss
+--- cpp/SEC4.hss	2003-09-16 00:19:40.000000000 +0200
++++ fix/cpp/SEC4.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Header Files
++Subsections=SEC6, SEC7, SEC8, SEC8a, SEC9, SEC9a
+ 
+ [Top]
+ A header file is a file containing C declarations and macro definitions
+diff -Nur cpp/SEC40.hss fix/cpp/SEC40.hss
+--- cpp/SEC40.hss	2003-09-16 00:19:50.000000000 +0200
++++ fix/cpp/SEC40.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+-Title=Diagnostics
++Title=User-defined Diagnostics
++Index=#error, #warning
+ 
+ [Top]
+ The directive <CODE>#error</CODE> causes the preprocessor to report a fatal
+diff -Nur cpp/SEC41.hss fix/cpp/SEC41.hss
+--- cpp/SEC41.hss	2003-09-16 00:19:50.000000000 +0200
++++ fix/cpp/SEC41.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Line Control
++Index=#line
+ 
+ [Top]
+ The C preprocessor informs the C compiler of the location in your source
+diff -Nur cpp/SEC42.hss fix/cpp/SEC42.hss
+--- cpp/SEC42.hss	2003-09-16 00:19:50.000000000 +0200
++++ fix/cpp/SEC42.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Other Directives
++Index=#ident
+ 
+ [Top]
+ The <CODE>#ident</CODE> directive takes one argument, a string constant.  On
+diff -Nur cpp/SEC44.hss fix/cpp/SEC44.hss
+--- cpp/SEC44.hss	2003-09-16 00:20:02.000000000 +0200
++++ fix/cpp/SEC44.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,8 +1,9 @@
+ [Main]
+-Title=Invocation
++Title=C Preprocessor Command-Line Options
++Subsections=SEC45
+ 
+ [Top]
+-Most often when you use the C preprocessor you will not have to invoke it
++Most often, when you use the C preprocessor, you will not have to invoke it
+ explicitly: the C compiler will do so automatically.  However, the
+ preprocessor is sometimes useful on its own.  All the options listed
+ here are also acceptable to the C compiler and have the same meaning,
+@@ -34,512 +35,6 @@
+ Many options have multi-letter names; therefore multiple single-letter
+ options may <I>not</I> be grouped: <B>'-dM'</B> is very different from
+ <B>'-d -M'</B>.
+-<DL>
+-<DT><B>-D <I>name</I></B>
+-<DD>Predefine <I>name</I> as a macro, with definition <CODE>1</CODE>.
+ <BR><BR>
+-<DT><B>-D <I>name</I>=<I>definition</I></B>
+-<DD>Predefine <I>name</I> as a macro, with definition <I>definition</I>.
+-There are no restrictions on the contents of <I>definition</I>, but if
+-you are invoking the preprocessor from a shell or shell-like program you
+-may need to use the shell's quoting syntax to protect characters such as
+-spaces that have a meaning in the shell syntax.
+-<BR><BR>
+-If you wish to define a function-like macro on the command line, write
+-its argument list with surrounding parentheses before the equals sign
+-(if any).  Parentheses are meaningful to most shells, so you will need
+-to quote the option.  With <CODE>sh</CODE> and <CODE>csh</CODE>,
+-<B>'-D'<I>name</I>(<I>args...</I>)=<I>definition</I>''</B> works.
+-<BR><BR>
+-<B>'-D'</B> and <B>'-U'</B> options are processed in the order they
+-are given on the command line.  All <B>'-imacros <I>file</I>'</B> and
+-<B>'-include <I>file</I>'</B> options are processed after all
+-<B>'-D'</B> and <B>'-U'</B> options.
+-<BR><BR>
+-<DT><B>-U <I>name</I></B>
+-<DD>Cancel any previous definition of <I>name</I>, either built in or
+-provided with a <B>'-D'</B> option.
+-<BR><BR>
+-<DT><B>-undef</B>
+-<DD>Do not predefine any system-specific macros.  The common predefined
+-macros remain defined.
+-<BR><BR>
+-<DT><B>-I <I>dir</I></B>
+-<DD>Add the directory <I>dir</I> to the list of directories to be searched
+-for header files.
+-See <A HREF="$$INFOLINK(Search Path)">Search Path</A>.
+-Directories named by <B>'-I'</B> are searched before the standard
+-system include directories.  If the directory <I>dir</I> is a standard
+-system include directory, the option is ignored to ensure that the
+-default search order for system directories and the special treatment
+-of system headers are not defeated
+-(see <A HREF="$$LINK(SEC9a)">System Headers</A>)
+-.
+-<BR><BR>
+-<DT><B>-o <I>file</I></B>
+-<DD>Write output to <I>file</I>.  This is the same as specifying <I>file</I>
+-as the second non-option argument to <CODE>cpp</CODE>.  <CODE>gcc</CODE> has a
+-different interpretation of a second non-option argument, so you must
+-use <B>'-o'</B> to specify the output file.
+-<BR><BR>
+-<DT><B>-Wall</B>
+-<DD>Turns on all optional warnings which are desirable for normal code.  At
+-present this is <B>'-Wcomment'</B> and <B>'-Wtrigraphs'</B>.  Note that
+-many of the preprocessor's warnings are on by default and have no
+-options to control them.
+-<BR><BR>
+-<DT><B>-Wcomment</B>
+-<BR><B>-Wcomments</B>
+-<DD>Warn whenever a comment-start sequence <CODE>/*</CODE> appears in a <CODE>/*</CODE>
+-comment, or whenever a backslash-newline appears in a <CODE>//</CODE> comment.
+-(Both forms have the same effect.)
+-<BR><BR>
+-<DT><B>-Wtrigraphs</B>
+-<DD>Warn if any trigraphs are encountered.  This option used to take effect
+-only if <B>'-trigraphs'</B> was also specified, but now works
+-independently.  Warnings are not given for trigraphs within comments, as
+-they do not affect the meaning of the program.
+-<BR><BR>
+-<DT><B>-Wtraditional</B>
+-<DD>Warn about certain constructs that behave differently in traditional and
+-ISO C.  Also warn about ISO C constructs that have no traditional C
+-equivalent, and problematic constructs which should be avoided.
+-See <A HREF="$$LINK(SEC70)">Traditional Mode</A>.
+-<BR><BR>
+-<DT><B>-Wimport</B>
+-<DD>Warn the first time <CODE>#import</CODE> is used.
+-<BR><BR>
+-<DT><B>-Wundef</B>
+-<DD>Warn whenever an identifier which is not a macro is encountered in an
+-<CODE>#if</CODE> directive, outside of <CODE>defined</CODE>.  Such identifiers are
+-replaced with zero.
+-<BR><BR>
+-<DT><B>-Wunused-macros</B>
+-<DD>Warn about macros defined in the main file that are unused.  A macro
+-is <U>used</U> if it is expanded or tested for existence at least once.
+-The preprocessor will also warn if the macro has not been used at the
+-time it is redefined or undefined.
+-<BR><BR>
+-Built-in macros, macros defined on the command line, and macros
+-defined in include files are not warned about.
+-<BR><BR>
+-<B>Note:</B> If a macro is actually used, but only used in skipped
+-conditional blocks, then CPP will report it as unused.  To avoid the
+-warning in such a case, you might improve the scope of the macro's
+-definition by, for example, moving it into the first skipped block.
+-Alternatively, you could provide a dummy use with something like:
+-<PRE>#if defined the_macro_causing_the_warning
+-#endif
+-</PRE>
+-<DT><B>-Wendif-labels</B>
+-<DD>Warn whenever an <CODE>#else</CODE> or an <CODE>#endif</CODE> are followed by text.
+-This usually happens in code of the form
+-<PRE>#if FOO
+-...
+-#else FOO
+-...
+-#endif FOO
+-</PRE>
+-The second and third <CODE>FOO</CODE> should be in comments, but often are not
+-in older programs.  This warning is on by default.
+-<BR><BR>
+-<DT><B>-Werror</B>
+-<DD>Make all warnings into hard errors.  Source code which triggers warnings
+-will be rejected.
+-<BR><BR>
+-<DT><B>-Wsystem-headers</B>
+-<DD>Issue warnings for code in system headers.  These are normally unhelpful
+-in finding bugs in your own code, therefore suppressed.  If you are
+-responsible for the system library, you may want to see them.
+-<BR><BR>
+-<DT><B>-w</B>
+-<DD>Suppress all warnings, including those which GNU CPP issues by default.
+-<BR><BR>
+-<DT><B>-pedantic</B>
+-<DD>Issue all the mandatory diagnostics listed in the C standard.  Some of
+-them are left out by default, since they trigger frequently on harmless
+-code.
+-<BR><BR>
+-<DT><B>-pedantic-errors</B>
+-<DD>Issue all the mandatory diagnostics, and make all mandatory diagnostics
+-into errors.  This includes mandatory diagnostics that GCC issues
+-without <B>'-pedantic'</B> but treats as warnings.
+-<BR><BR>
+-<DT><B>-M</B>
+-<DD>Instead of outputting the result of preprocessing, output a rule
+-suitable for <CODE>make</CODE> describing the dependencies of the main
+-source file.  The preprocessor outputs one <CODE>make</CODE> rule containing
+-the object file name for that source file, a colon, and the names of all
+-the included files, including those coming from <B>'-include'</B> or
+-<B>'-imacros'</B> command line options.
+-<BR><BR>
+-Unless specified explicitly (with <B>'-MT'</B> or <B>'-MQ'</B>), the
+-object file name consists of the basename of the source file with any
+-suffix replaced with object file suffix.  If there are many included
+-files then the rule is split into several lines using <CODE>\</CODE>-newline.
+-The rule has no commands.
+-<BR><BR>
+-This option does not suppress the preprocessor's debug output, such as
+-<B>'-dM'</B>.  To avoid mixing such debug output with the dependency
+-rules you should explicitly specify the dependency output file with
+-<B>'-MF'</B>, or use an environment variable like
+-<CODE>DEPENDENCIES_OUTPUT</CODE> (see <A HREF="$$LINK(SEC45)">Environment Variables</A>).  Debug output
+-will still be sent to the regular output stream as normal.
+-<BR><BR>
+-Passing <B>'-M'</B> to the driver implies <B>'-E'</B>, and suppresses
+-warnings with an implicit <B>'-w'</B>.
+-<BR><BR>
+-<DT><B>-MM</B>
+-<DD>Like <B>'-M'</B> but do not mention header files that are found in
+-system header directories, nor header files that are included,
+-directly or indirectly, from such a header.
+-<BR><BR>
+-This implies that the choice of angle brackets or double quotes in an
+-<CODE>#include</CODE> directive does not in itself determine whether that
+-header will appear in <B>'-MM'</B> dependency output.  This is a
+-slight change in semantics from GCC versions 3.0 and earlier.
+-<BR><BR>
+-<DT><B>-MF <I>file</I></B>
+-<DD>
+-When used with <B>'-M'</B> or <B>'-MM'</B>, specifies a
+-file to write the dependencies to.  If no <B>'-MF'</B> switch is given
+-the preprocessor sends the rules to the same place it would have sent
+-preprocessed output.
+-<BR><BR>
+-When used with the driver options <B>'-MD'</B> or <B>'-MMD'</B>,
+-<B>'-MF'</B> overrides the default dependency output file.
+-<BR><BR>
+-<DT><B>-MG</B>
+-<DD>In conjunction with an option such as <B>'-M'</B> requesting
+-dependency generation, <B>'-MG'</B> assumes missing header files are
+-generated files and adds them to the dependency list without raising
+-an error.  The dependency filename is taken directly from the
+-<CODE>#include</CODE> directive without prepending any path.  <B>'-MG'</B>
+-also suppresses preprocessed output, as a missing header file renders
+-this useless.
+-<BR><BR>
+-This feature is used in automatic updating of makefiles.
+-<BR><BR>
+-<DT><B>-MP</B>
+-<DD>This option instructs CPP to add a phony target for each dependency
+-other than the main file, causing each to depend on nothing.  These
+-dummy rules work around errors <CODE>make</CODE> gives if you remove header
+-files without updating the <CODE>Makefile</CODE> to match.
+-<BR><BR>
+-This is typical output:
+-<PRE>test.o: test.c test.h
+-
+-test.h:
+-</PRE>
+-<DT><B>-MT <I>target</I></B>
+-<DD>Change the target of the rule emitted by dependency generation.  By
+-default CPP takes the name of the main input file, including any path,
+-deletes any file suffix such as <CODE>.c</CODE>, and appends the platform's
+-usual object suffix.  The result is the target.
+-<BR><BR>
+-An <B>'-MT'</B> option will set the target to be exactly the string you
+-specify.  If you want multiple targets, you can specify them as a single
+-argument to <B>'-MT'</B>, or use multiple <B>'-MT'</B> options.
+-<BR><BR>
+-For example, <B>'-MT '$(objpfx)foo.o''</B> might give
+-<PRE>$(objpfx)foo.o: foo.c
+-</PRE>
+-<DT><B>-MQ <I>target</I></B>
+-<DD>Same as <B>'-MT'</B>, but it quotes any characters which are special to
+-Make.  <B>'-MQ '$(objpfx)foo.o''</B> gives
+-<PRE>$$(objpfx)foo.o: foo.c
+-</PRE>
+-The default target is automatically quoted, as if it were given with
+-<B>'-MQ'</B>.
+-<BR><BR>
+-<DT><B>-MD</B>
+-<DD><B>'-MD'</B> is equivalent to <B>'-M -MF <I>file</I>'</B>, except that
+-<B>'-E'</B> is not implied.  The driver determines <I>file</I> based on
+-whether an <B>'-o'</B> option is given.  If it is, the driver uses its
+-argument but with a suffix of <CODE>.d</CODE>, otherwise it take the
+-basename of the input file and applies a <CODE>.d</CODE> suffix.
+-<BR><BR>
+-If <B>'-MD'</B> is used in conjunction with <B>'-E'</B>, any
+-<B>'-o'</B> switch is understood to specify the dependency output file
+-(but <A HREF="$$INFOLINK(-MF)">-MF</A>), but if used without <B>'-E'</B>, each <B>'-o'</B>
+-is understood to specify a target object file.
+-<BR><BR>
+-Since <B>'-E'</B> is not implied, <B>'-MD'</B> can be used to generate
+-a dependency output file as a side-effect of the compilation process.
+-<BR><BR>
+-<DT><B>-MMD</B>
+-<DD>Like <B>'-MD'</B> except mention only user header files, not system
+--header files.
+-<BR><BR>
+-<DT><B>-x c</B>
+-<BR><B>-x c++</B>
+-<BR><B>-x objective-c</B>
+-<BR><B>-x assembler-with-cpp</B>
+-<DD>Specify the source language: C, C++, Objective-C, or assembly.  This has
+-nothing to do with standards conformance or extensions; it merely
+-selects which base syntax to expect.  If you give none of these options,
+-cpp will deduce the language from the extension of the source file:
+-<CODE>.c</CODE>, <CODE>.cc</CODE>, <CODE>.m</CODE>, or <CODE>.S</CODE>.  Some other common
+-extensions for C++ and assembly are also recognized.  If cpp does not
+-recognize the extension, it will treat the file as C; this is the most
+-generic mode.
+-<BR><BR>
+-<B>Note:</B> Previous versions of cpp accepted a <B>'-lang'</B> option
+-which selected both the language and the standards conformance level.
+-This option has been removed, because it conflicts with the <B>'-l'</B>
+-option.
+-<BR><BR>
+-<DT><B>-std=<I>standard</I></B>
+-<BR><B>-ansi</B>
+-<DD>Specify the standard to which the code should conform.  Currently CPP
+-knows about C and C++ standards; others may be added in the future.
+-<BR><BR>
+-<I>standard</I>
+-may be one of:
+-<BR><BR><DL>
+-<DT><B>iso9899:1990</B>
+-<BR><B>c89</B>
+-<DD>The ISO C standard from 1990.  <CODE>c89</CODE> is the customary shorthand for
+-this version of the standard.
+-<BR><BR>
+-The <B>'-ansi'</B> option is equivalent to <B>'-std=c89'</B>.
+-<BR><BR>
+-<DT><B>iso9899:199409</B>
+-<DD>The 1990 C standard, as amended in 1994.
+-<BR><BR>
+-<DT><B>iso9899:1999</B>
+-<BR><B>c99</B>
+-<BR><B>iso9899:199x</B>
+-<BR><B>c9x</B>
+-<DD>The revised ISO C standard, published in December 1999.  Before
+-publication, this was known as C9X.
+-<BR><BR>
+-<DT><B>gnu89</B>
+-<DD>The 1990 C standard plus GNU extensions.  This is the default.
+-<BR><BR>
+-<DT><B>gnu99</B>
+-<BR><B>gnu9x</B>
+-<DD>The 1999 C standard plus GNU extensions.
+-<BR><BR>
+-<DT><B>c++98</B>
+-<DD>The 1998 ISO C++ standard plus amendments.
+-<BR><BR>
+-<DT><B>gnu++98</B>
+-<DD>The same as <B>'-std=c++98'</B> plus GNU extensions.  This is the
+-default for C++ code.
+-</DL><BR>
+-<BR><BR>
+-<DT><B>-I-</B>
+-<DD>Split the include path.  Any directories specified with <B>'-I'</B>
+-options before <B>'-I-'</B> are searched only for headers requested with
+-<CODE>#include&nbsp;&quot;<I>file</I>&quot;</CODE>; they are not searched for
+-<CODE>#include&nbsp;&lt;<I>file</I>&gt;</CODE>.  If additional directories are
+-specified with <B>'-I'</B> options after the <B>'-I-'</B>, those
+-directories are searched for all <CODE>#include</CODE> directives.
+-<BR><BR>
+-In addition, <B>'-I-'</B> inhibits the use of the directory of the current
+-file directory as the first search directory for <CODE>#include
+-&quot;<I>file</I>&quot;</CODE>.
+-See <A HREF="$$INFOLINK(Search Path)">Search Path</A>.
+-<BR><BR>
+-<DT><B>-nostdinc</B>
+-<DD>Do not search the standard system directories for header files.
+-Only the directories you have specified with <B>'-I'</B> options
+-(and the directory of the current file, if appropriate) are searched.
+-<BR><BR>
+-<DT><B>-nostdinc++</B>
+-<DD>Do not search for header files in the C++-specific standard directories,
+-but do still search the other standard directories.  (This option is
+-used when building the C++ library.)
+-<BR><BR>
+-<DT><B>-include <I>file</I></B>
+-<DD>Process <I>file</I> as if <CODE>#include&nbsp;&quot;file&quot;</CODE> appeared as the first
+-line of the primary source file.  However, the first directory searched
+-for <I>file</I> is the preprocessor's working directory <I>instead of</I>
+-the directory containing the main source file.  If not found there, it
+-is searched for in the remainder of the <CODE>#include&nbsp;&quot;...&quot;</CODE> search
+-chain as normal.
+-<BR><BR>
+-If multiple <B>'-include'</B> options are given, the files are included
+-in the order they appear on the command line.
+-<BR><BR>
+-<DT><B>-imacros <I>file</I></B>
+-<DD>Exactly like <B>'-include'</B>, except that any output produced by
+-scanning <I>file</I> is thrown away.  Macros it defines remain defined.
+-This allows you to acquire all the macros from a header without also
+-processing its declarations.
+-<BR><BR>
+-All files specified by <B>'-imacros'</B> are processed before all files
+-specified by <B>'-include'</B>.
+-<BR><BR>
+-<DT><B>-idirafter <I>dir</I></B>
+-<DD>Search <I>dir</I> for header files, but do it <I>after</I> all
+-directories specified with <B>'-I'</B> and the standard system directories
+-have been exhausted.  <I>dir</I> is treated as a system include directory.
+-<BR><BR>
+-<DT><B>-iprefix <I>prefix</I></B>
+-<DD>Specify <I>prefix</I> as the prefix for subsequent <B>'-iwithprefix'</B>
+-options.  If the prefix represents a directory, you should include the
+-final <CODE>/</CODE>.
+-<BR><BR>
+-<DT><B>-iwithprefix <I>dir</I></B>
+-<BR><B>-iwithprefixbefore <I>dir</I></B>
+-<DD>Append <I>dir</I> to the prefix specified previously with
+-<B>'-iprefix'</B>, and add the resulting directory to the include search
+-path.  <B>'-iwithprefixbefore'</B> puts it in the same place <B>'-I'</B>
+-would; <B>'-iwithprefix'</B> puts it where <B>'-idirafter'</B> would.
+-<BR><BR>
+-Use of these options is discouraged.
+-<BR><BR>
+-<DT><B>-isystem <I>dir</I></B>
+-<DD>Search <I>dir</I> for header files, after all directories specified by
+-<B>'-I'</B> but before the standard system directories.  Mark it
+-as a system directory, so that it gets the same special treatment as
+-is applied to the standard system directories.
+-See <A HREF="$$LINK(SEC9a)">System Headers</A>.
+-<BR><BR>
+-<DT><B>-fpreprocessed</B>
+-<DD>Indicate to the preprocessor that the input file has already been
+-preprocessed.  This suppresses things like macro expansion, trigraph
+-conversion, escaped newline splicing, and processing of most directives.
+-The preprocessor still recognizes and removes comments, so that you can
+-pass a file preprocessed with <B>'-C'</B> to the compiler without
+-problems.  In this mode the integrated preprocessor is little more than
+-a tokenizer for the front ends.
+-<BR><BR>
+-<B>'-fpreprocessed'</B> is implicit if the input file has one of the
+-extensions <CODE>.i</CODE>, <CODE>.ii</CODE> or <CODE>.mi</CODE>.  These are the
+-extensions that GCC uses for preprocessed files created by
+-<B>'-save-temps'</B>.
+-<BR><BR>
+-<DT><B>-ftabstop=<I>width</I></B>
+-<DD>Set the distance between tab stops.  This helps the preprocessor report
+-correct column numbers in warnings or errors, even if tabs appear on the
+-line.  If the value is less than 1 or greater than 100, the option is
+-ignored.  The default is 8.
+-<BR><BR>
+-<DT><B>-fno-show-column</B>
+-<DD>Do not print column numbers in diagnostics.  This may be necessary if
+-diagnostics are being scanned by a program that does not understand the
+-column numbers, such as <CODE>dejagnu</CODE>.
+-<BR><BR>
+-<DT><B>-A <I>predicate</I>=<I>answer</I></B>
+-<DD>Make an assertion with the predicate <I>predicate</I> and answer
+-<I>answer</I>.  This form is preferred to the older form <B>'-A
+-<I>predicate</I>(<I>answer</I>)'</B>, which is still supported, because
+-it does not use shell special characters.
+-See <A HREF="$$LINK(SEC39)">Assertions</A>.
+-<DT><B>-A -<I>predicate</I>=<I>answer</I></B>
+-<DD>Cancel an assertion with the predicate <I>predicate</I> and answer
+-<I>answer</I>.
+-<BR><BR>
+-<DT><B>-dCHARS</B>
+-<DD><I>CHARS</I> is a sequence of one or more of the following characters,
+-and must not be preceded by a space.  Other characters are interpreted
+-by the compiler proper, or reserved for future versions of GCC, and so
+-are silently ignored.  If you specify characters whose behavior
+-conflicts, the result is undefined.
+-<BR><BR><DL>
+-<DT><B>M</B>
+-<DD>Instead of the normal output, generate a list of <CODE>#define</CODE>
+-directives for all the macros defined during the execution of the
+-preprocessor, including predefined macros.  This gives you a way of
+-finding out what is predefined in your version of the preprocessor.
+-Assuming you have no file <CODE>foo.h</CODE>, the command
+-<PRE>touch foo.h; cpp -dM foo.h
+-</PRE>
+-will show all the predefined macros.
+-<BR><BR>
+-<DT><B>D</B>
+-<DD>Like <CODE>M</CODE> except in two respects: it does <I>not</I> include the
+-predefined macros, and it outputs <I>both</I> the <CODE>#define</CODE>
+-directives and the result of preprocessing.  Both kinds of output go to
+-the standard output file.
+-<BR><BR>
+-<DT><B>N</B>
+-<DD>Like <CODE>D</CODE>, but emit only the macro names, not their expansions.
+-<BR><BR>
+-<DT><B>I</B>
+-<DD>Output <CODE>#include</CODE> directives in addition to the result of
+-preprocessing.
+-</DL><BR>
+-<BR><BR>
+-<DT><B>-P</B>
+-<DD>Inhibit generation of linemarkers in the output from the preprocessor.
+-This might be useful when running the preprocessor on something that is
+-not C code, and will be sent to a program which might be confused by the
+-linemarkers.
+-See <A HREF="$$LINK(SEC43)">Preprocessor Output</A>.
+-<BR><BR>
+-<DT><B>-C</B>
+-<DD>Do not discard comments.  All comments are passed through to the output
+-file, except for comments in processed directives, which are deleted
+-along with the directive.
+-<BR><BR>
+-You should be prepared for side effects when using <B>'-C'</B>; it
+-causes the preprocessor to treat comments as tokens in their own right.
+-For example, comments appearing at the start of what would be a
+-directive line have the effect of turning that line into an ordinary
+-source line, since the first token on the line is no longer a <CODE>#</CODE>.
+-<BR><BR>
+-<DT><B>-CC</B>
+-<DD>Do not discard comments, including during macro expansion.  This is
+-like <B>'-C'</B>, except that comments contained within macros are
+-also passed through to the output file where the macro is expanded.
+-<BR><BR>
+-In addition to the side-effects of the <B>'-C'</B> option, the
+-<B>'-CC'</B> option causes all C++-style comments inside a macro
+-to be converted to C-style comments.  This is to prevent later use
+-of that macro from inadvertently commenting out the remainder of
+-the source line.
+-<BR><BR>
+-The <B>'-CC'</B> option is generally used to support lint comments.
+-<BR><BR>
+-<DT><B>-gcc</B>
+-<DD>Define the macros __GNUC__, __GNUC_MINOR__ and
+-__GNUC_PATCHLEVEL__.  These are defined automatically when you use
+-<CODE>gcc&nbsp;-E</CODE>; you can turn them off in that case with
+-<B>'-no-gcc'</B>.
+-<BR><BR>
+-<DT><B>-traditional-cpp</B>
+-<DD>Try to imitate the behavior of old-fashioned C preprocessors, as
+-opposed to ISO C preprocessors.
+-See <A HREF="$$LINK(SEC70)">Traditional Mode</A>.
+-<BR><BR>
+-<DT><B>-trigraphs</B>
+-<DD>Process trigraph sequences.
+-See <A HREF="$$LINK(SEC3)">Initial processing</A>.
+-These are three-character sequences, all starting with <CODE>??</CODE>, that
+-are defined by ISO C to stand for single characters.  For example,
+-<CODE>??/</CODE> stands for <CODE>\</CODE>, so <CODE>'??/n'</CODE> is a character
+-constant for a newline.  By default, GCC ignores trigraphs, but in
+-standard-conforming modes it converts them.  See the <B>'-std'</B> and
+-<B>'-ansi'</B> options.
+-<BR><BR>
+-The nine trigraphs and their replacements are
+-<PRE>Trigraph:       ??(  ??)  ??&lt;  ??&gt;  ??=  ??/  ??'  ??!  ??-
+-Replacement:      [    ]    {    }    #    \    ^    |    ~
+-</PRE>
+-<DT><B>-remap</B>
+-<DD>Enable special code to work around file systems which only permit very
+-short file names, such as MS-DOS.
+-<BR><BR>
+-<DT><B>--help</B>
+-<BR><B>--target-help</B>
+-<DD>Print text describing all the command line options instead of
+-preprocessing anything.
+-<BR><BR>
+-<DT><B>-v</B>
+-<DD>Verbose mode.  Print out GNU CPP's version number at the beginning of
+-execution, and report the final form of the include path.
+-<BR><BR>
+-<DT><B>-H</B>
+-<DD>Print the name of each header file used, in addition to other normal
+-activities.  Each name is indented to show how deep in the
+-<CODE>#include</CODE> stack it is.
+-<BR><BR>
+-<DT><B>-version</B>
+-<BR><B>--version</B>
+-<DD>Print out GNU CPP's version number.  With one dash, proceed to
+-preprocess as normal.  With two dashes, exit immediately.
+-</DL>
++For the actual command-line options, see
++<A HREF="$$INFOLINK(comopts/SEC11)">GCC Options Controlling the Preprocessor</A>.
+diff -Nur cpp/SEC45.hss fix/cpp/SEC45.hss
+--- cpp/SEC45.hss	2003-09-16 00:20:04.000000000 +0200
++++ fix/cpp/SEC45.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Environment Variables
++Title=Environment Variables Affecting CPP
+ 
+ [Top]
+ This section describes the environment variables that affect how CPP
+@@ -38,8 +38,6 @@
+ <CODE>CPATH</CODE> is <CODE>:/special/include</CODE>, that has the same
+ effect as <CODE>-I.&nbsp;-I/special/include</CODE>.
+ <BR><BR>
+-See also <A HREF="$$INFOLINK(Search Path)">Search Path</A>.
+-<BR><BR>
+ <DT><B>DEPENDENCIES_OUTPUT</B>
+ <DD>If this variable is set, its value specifies how to output
+ dependencies for Make based on the non-system header files processed
+@@ -55,7 +53,6 @@
+ In other words, this environment variable is equivalent to combining
+ the options <B>'-MM'</B> and <B>'-MF'</B>
+ (see <A HREF="$$LINK(SEC44)">Invocation</A>),
+-(see <A HREF="$$INFOLINK(Preprocessor Options)">Preprocessor Options</A>),
+ with an optional <B>'-MT'</B> switch too.
+ <BR><BR>
+ <DT><B>SUNPRO_DEPENDENCIES</B>
+@@ -64,5 +61,4 @@
+ <B>'-M'</B> rather than <B>'-MM'</B>.  However, the dependence on the
+ main input file is omitted.
+ See <A HREF="$$LINK(SEC44)">Invocation</A>.
+-See <A HREF="$$INFOLINK(Preprocessor Options)">Preprocessor Options</A>.
+ </DL>
+diff -Nur cpp/SEC46.hss fix/cpp/SEC46.hss
+--- cpp/SEC46.hss	2003-09-16 00:19:50.000000000 +0200
++++ fix/cpp/SEC46.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Pragmas
++Index=#pragma, _Pragma
+ 
+ [Top]
+ The <CODE>#pragma</CODE> directive is the method specified by the C standard
+diff -Nur cpp/SEC6.hss fix/cpp/SEC6.hss
+--- cpp/SEC6.hss	2003-09-16 00:19:40.000000000 +0200
++++ fix/cpp/SEC6.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Include Syntax
++Index=#include
+ 
+ [Top]
+ Both user and system header files are included using the preprocessing
+diff -Nur cpp/SEC70.hss fix/cpp/SEC70.hss
+--- cpp/SEC70.hss	2003-09-16 00:19:52.000000000 +0200
++++ fix/cpp/SEC70.hss	2003-09-16 00:43:14.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Traditional Mode
++Subsections=SEC71, SEC72, SEC73, SEC74
+ 
+ [Top]
+ Traditional (pre-standard) C preprocessing is rather different from
+@@ -9,7 +10,11 @@
+ <BR><BR>
+ GCC versions 3.2 and later only support traditional mode semantics in
+ the preprocessor, and not in the compiler front ends.  This chapter
+-outlines the traditional preprocessor semantics we implemented.
++outlines the traditional preprocessor semantics implemented by GNU.
++Note, however, that you cannot use traditional mode preprocessing if
++you include header files from the TIGCC Library; this section is
++included only for reference, for people who want their programs to
++be compilable with traditional compilers.
+ <BR><BR>
+ The implementation does not correspond precisely to the behavior of
+ earlier versions of GCC, nor to any true traditional preprocessor.
+diff -Nur cpp/SEC71.hss fix/cpp/SEC71.hss
+--- cpp/SEC71.hss	2003-09-16 00:19:54.000000000 +0200
++++ fix/cpp/SEC71.hss	2003-09-16 00:48:20.000000000 +0200
+@@ -6,7 +6,7 @@
+ the same way a standards-conforming preprocessor does.  The input is
+ simply treated as a stream of text with minimal internal form.
+ <BR><BR>
+-This implementation does not treat trigraphs (see <A HREF="$$INFOLINK(trigraphs)">trigraphs</A>)
++This implementation does not treat trigraphs (see <A HREF="$$LINK(SEC3)">Initial Processing</A>)
+ specially since they were an invention of the standards committee.  It
+ handles arbitrarily-positioned escaped newlines properly and splices
+ the lines as you would expect; many traditional preprocessors did not
+diff -Nur cpp/SEC80.hss fix/cpp/SEC80.hss
+--- cpp/SEC80.hss	2003-09-16 00:19:52.000000000 +0200
++++ fix/cpp/SEC80.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Implementation Details
++Subsections=SEC81, SEC82, SEC83, SEC86
+ 
+ [Top]
+ Here we document details of how the preprocessor's implementation
+diff -Nur cpp/SEC81.hss fix/cpp/SEC81.hss
+--- cpp/SEC81.hss	2003-09-16 00:19:54.000000000 +0200
++++ fix/cpp/SEC81.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Implementation-defined behavior
++Title=Implementation-defined Behavior
+ 
+ [Top]
+ This is how CPP behaves in all the cases which the C standard
+diff -Nur cpp/SEC82.hss fix/cpp/SEC82.hss
+--- cpp/SEC82.hss	2003-09-16 00:19:54.000000000 +0200
++++ fix/cpp/SEC82.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Implementation limits
++Title=Implementation Limits
+ 
+ [Top]
+ CPP has a small number of internal limits.  This section lists the
+diff -Nur cpp/SEC83.hss fix/cpp/SEC83.hss
+--- cpp/SEC83.hss	2003-09-16 00:19:54.000000000 +0200
++++ fix/cpp/SEC83.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Obsolete Features
++Subsections=SEC39, SEC84, SEC85
+ 
+ [Top]
+ CPP has a number of features which are present mainly for
+diff -Nur cpp/SEC84.hss fix/cpp/SEC84.hss
+--- cpp/SEC84.hss	2003-09-16 00:19:54.000000000 +0200
++++ fix/cpp/SEC84.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Obsolete once-only headers
++Title=Obsolete Once-Only Headers
+ 
+ [Top]
+ CPP supports two more ways of indicating that a header file should be
+diff -Nur cpp/SEC85.hss fix/cpp/SEC85.hss
+--- cpp/SEC85.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/SEC85.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -0,0 +1,12 @@
++[Main]
++Title=Miscellaneous Obsolete Features
++
++[Top]
++Here are a few more obsolete features.
++<UL>
++<LI>
++<CODE>#pragma&nbsp;poison</CODE>
++This is the same as <CODE>#pragma&nbsp;GCC&nbsp;poison</CODE>.  The version without the
++<CODE>GCC</CODE> prefix is deprecated.  See <A HREF="$$LINK(SEC46)">Pragmas</A>.
++</LI>
++</UL>
+diff -Nur cpp/SEC86.hss fix/cpp/SEC86.hss
+--- cpp/SEC86.hss	2003-09-16 00:19:56.000000000 +0200
++++ fix/cpp/SEC86.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Differences from previous versions
++Title=Differences from Previous Versions
+ 
+ [Top]
+ This section details behavior which has changed from previous versions
+@@ -12,7 +12,7 @@
+ they generally represent bugs in the snapshots.
+ <UL>
+ <LI>
+-Order of evaluation of <CODE>#</CODE> and <CODE>##</CODE> operators
++Order of evaluation of <CODE>#</CODE> and <CODE>##</CODE> operators:
+ The standard does not specify the order of evaluation of a chain of
+ <CODE>##</CODE> operators, nor whether <CODE>#</CODE> is evaluated before, after, or
+ at the same time as <CODE>##</CODE>.  You should therefore not write any code
+@@ -29,7 +29,7 @@
+ <BR><BR>
+ </LI>
+ <LI>
+-The form of whitespace between tokens in preprocessor output
++The form of whitespace between tokens in preprocessor output:
+ <A HREF="$$LINK(SEC43)">Preprocessor Output</A>, for the current textual format.  This is
+ also the format used by stringification.  Normally, the preprocessor
+ communicates tokens directly to the compiler's parser, and whitespace
+@@ -42,7 +42,7 @@
+ <BR><BR>
+ </LI>
+ <LI>
+-Optional argument when invoking rest argument macros
++Optional argument when invoking rest argument macros:
+ As an extension, GCC permits you to omit the variable arguments entirely
+ when you use a variable argument macro.  This is forbidden by the 1999 C
+ standard, and will provoke a pedantic warning with GCC 3.0.  Previous
+@@ -50,7 +50,7 @@
+ <BR><BR>
+ </LI>
+ <LI>
+-<CODE>##</CODE> swallowing preceding text in rest argument macros
++<CODE>##</CODE> swallowing preceding text in rest argument macros:
+ Formerly, in a macro expansion, if <CODE>##</CODE> appeared before a variable
+ arguments parameter, and the set of tokens specified for that argument
+ in the macro invocation was empty, previous versions of CPP would
+@@ -66,7 +66,7 @@
+ <BR><BR>
+ </LI>
+ <LI>
+-<CODE>#line</CODE> and <CODE>#include</CODE>
++<CODE>#line</CODE> and <CODE>#include</CODE>:
+ The <CODE>#line</CODE> directive used to change GCC's notion of the
+ &quot;directory containing the current file,&quot; used by <CODE>#include</CODE> with
+ a double-quoted header file name.  In 3.0 and later, it does not.
+@@ -74,7 +74,7 @@
+ <BR><BR>
+ </LI>
+ <LI>
+-Syntax of <CODE>#line</CODE>
++Syntax of <CODE>#line</CODE>:
+ In GCC 2.95 and previous, the string constant argument to <CODE>#line</CODE>
+ was treated the same way as the argument to <CODE>#include</CODE>: backslash
+ escapes were not honored, and the string ended at the second <CODE>&quot;</CODE>.
+diff -Nur cpp/SEC9.hss fix/cpp/SEC9.hss
+--- cpp/SEC9.hss	2003-09-16 00:19:42.000000000 +0200
++++ fix/cpp/SEC9.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -1,9 +1,11 @@
+ [Main]
+ Title=Wrapper Headers
++Index=#include_next
+ 
+ [Top]
+ Sometimes it is necessary to adjust the contents of a system-provided
+-header file without editing it directly.  GCC's <CODE>fixincludes</CODE>
++header file without editing it directly (although it is not very likely that
++this feature will ever be used in TIGCC).  GCC's <CODE>fixincludes</CODE>
+ operation does this, for example.  One way to do that would be to create
+ a new header file with the same name and insert it in the search path
+ before the original header.  That works fine as long as you're willing
+diff -Nur cpp/cpp.hss fix/cpp/cpp.hss
+--- cpp/cpp.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/cpp.hss	2003-09-16 00:38:34.000000000 +0200
+@@ -0,0 +1,39 @@
++[Main]
++Title=The GNU C Preprocessor
++Subsections=SEC2, SEC4, SEC10, SEC31, SEC46, SEC42, SEC40, SEC41, SEC43, SEC44, SEC70, SEC80, history, gnugpl/gnugpl, gnugpl/gnufdl, gnugpl/funding
++
++[Top]
++This part of the documentation is a modified version of the <A HREF="http://gcc.gnu.org/onlinedocs/cpp/">GNU CPP Manual</A>.
++Therefore it is licensed under the <A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>.
++<BR><BR>
++The C preprocessor is a <U>macro processor</U> that is used automatically by
++the C compiler to transform your program before actual compilation.  It is
++called a macro processor because it allows you to define <U>macros</U>,
++which are brief abbreviations for longer constructs.
++
++[Bottom]
++Original author: Free Software Foundation, Inc.
++<BR>
++Authors of the modifications: Zeljko Juric, Sebastian Reichelt, and Kevin Kofler
++<BR>
++Published by the TIGCC Team.
++<BR>
++See the <A HREF="$$LINK(history)">History</A> section for details and copyright information.
++<BR><BR>
++Permission is granted to copy, distribute and/or modify this document
++under the terms of the <A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>, Version 1.1 or any
++later version published by the Free Software Foundation.  A copy of the license is included in the section entitled
++"<A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>".
++<BR><BR>
++This manual contains no Invariant Sections.  The Front-Cover Texts are
++(a) (see below), and the Back-Cover Texts are (b) (see below).
++<BR><BR>
++(a) The FSF's Front-Cover Text is:
++<BR><BR>
++A GNU Manual
++<BR><BR>
++(b) The FSF's Back-Cover Text is:
++<BR><BR>
++You have freedom to copy and modify this GNU Manual, like GNU
++software.  Copies published by the Free Software Foundation raise
++funds for GNU development.
+diff -Nur cpp/history.hss fix/cpp/history.hss
+--- cpp/history.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/cpp/history.hss	2003-09-16 00:38:36.000000000 +0200
+@@ -0,0 +1,24 @@
++[Main]
++Title=History
++
++[Top]
++<UL>
++<LI><B>Original Version:</B> <A HREF="http://gcc.gnu.org/onlinedocs/cpp/">The C Preprocessor</A>
++<BR><BR>
++Published by the Free Software Foundation
++<BR>
++59 Temple Place - Suite 330
++<BR>
++Boston, MA 02111-1307 USA
++<BR><BR>
++Copyright &copy; 1988, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
++2000, 2001 Free Software Foundation, Inc.
++<BR><BR>
++</LI>
++<LI><B>Modifications for TIGCC:</B> <A HREF="$$LINK(cpp)">The GNU C Preprocessor</A>
++<BR><BR>
++Published by the TIGCC Team
++<BR><BR>
++Copyright &copy; 2000, 2001, 2002 Zeljko Juric, Sebastian Reichelt, Kevin Kofler
++</LI>
++</UL>

@@ -1,0 +1,119 @@
+[Main]
+Name=SymFindFirst
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=SYM_ENTRY *SymFindFirst (SYM_STR SymName, unsigned short Flags);
+See Also=SymFindNext, SymFindPrev, SymFindFolderName
+
+[ROM Call]
+Index=$6C
+
+[Description]
+Begins looping through the VAT.
+
+[Explanation]
+SymFindFirst searches for the first symbol entry in the variable allocation
+table which satisfies the requirements given by the parameters <I>Flags</I>
+and <I>SymName</I> (see <A HREF="$$LINK(SYMSTR)">SYMSTR</A> for information
+about symbol names), and sets some internal pointers so that
+<A HREF="$$LINK(SymFindNext)">SymFindNext</A> and
+<A HREF="$$LINK(SymFindPrev)">SymFindPrev</A> may be called to traverse the
+VAT. <I>SymName</I> is required only for some values of <I>Flags</I> (you
+can set it to <A HREF="$$LINK(alloc.h/NULL)">NULL</A> otherwise).
+<I>Flags</I> is a collection of binary flags defined in the enum
+<A HREF="$$LINK(FindOptions)">FindOptions</A>. These flags also determine how
+subsequent calls of <A HREF="$$LINK(SymFindNext)">SymFindNext</A> and
+<A HREF="$$LINK(SymFindPrev)">SymFindPrev</A> will be interpreted.
+<BR><BR>
+If <I>Flags</I> is 0 (i.e. no flags are given), SymFindFirst and subsequent
+calls to <A HREF="$$LINK(SymFindNext)">SymFindNext</A> and
+<A HREF="$$LINK(SymFindPrev)">SymFindPrev</A> loop only through the list of
+folders. In this case, <I>SymName</I> is ignored.
+<BR><BR>
+The following flags are defined:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">FO_RECURSE</TD>
+  <TD>Loop through all folders including their symbols. Naturally,
+      <I>SymName</I> is still ignored. Subsequent calls to
+      <A HREF="$$LINK(SymFindNext)">SymFindNext</A> will continue searching
+      through the whole variable allocation table, including both the folder
+      table and the variable tables associated with each folder. More
+      precisely, after each folder, the complete variable table for this
+      folder will be browsed before the next folder is reached.
+      This flag can be used together with all other flags except
+      FO_SINGLE_FOLDER and FO_RETURN_FOLDER.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SKIP_TEMPS</TD>
+  <TD>Skip temporary folders when looping through the folder table. See
+      <A HREF="$$LINK(FolderAddTemp)">FolderAddTemp</A> for more information
+      about temporary folders. This flag cannot be used together with
+      FO_SINGLE_FOLDER, obviously.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SKIP_COLLAPSE</TD>
+  <TD>Skip variables in collapsed folders. Folders can be collapsed only
+      since AMS 2.00; therefore this flag has no effect if the AMS version is
+      lower than 2.00 (but it is still defined). This flag can only be used
+      if FO_RECURSE is set as well.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_RETURN_TWINS</TD>
+  <TD>Return the temporarily hidden equivalents of twin entries in the
+      archive as well, which is normally not the case. See
+      <A HREF="$$LINK(SymAddTwin)">SymAddTwin</A> for more information about
+      twin entries. Of course, this does not have any effect if neither
+      FO_RECURSE nor FO_SINGLE_FOLDER are included in <I>Flags</I> (i.e. if
+      only folder names are returned).</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SINGLE_FOLDER</TD>
+  <TD>Loop through all symbols in the folder identified by <I>SymName</I>,
+      but do not return the folder name itself.
+      This flag may be used together with FO_RETURN_FOLDER and FO_SKIP_TWINS,
+      but not with any other flag.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_RETURN_FOLDER</TD>
+  <TD>This flag can only be set if FO_SINGLE_FOLDER is set as well. It
+      slightly alters the meaning of FO_SINGLE_FOLDER so that SymFindFirst
+      returns the <A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> structure of
+      the folder identified by <I>SymName</I>, and subsequent calls to
+      <A HREF="$$LINK(SymFindNext)">SymFindNext</A> will return all symbols
+      in that folder.</TD>
+</TR>
+</TABLE>
+<BR>
+SymFindFirst returns the pointer to the symbol entry in the VAT, or
+<A HREF="$$LINK(alloc.h/NULL)">NULL</A> if there are no symbols which
+satisfy the given requirements. Here is an example how to (legally) create a
+list of all variable names in the main folder:
+<PRE>counter = 0;
+SymPtr = SymFindFirst (SYMSTR ("main"), FO_SINGLE_FOLDER);
+while (SymPtr)
+{
+  strcpy (names[counter++], SymPtr-&gt;name);
+  SymPtr = SymFindNext ();
+}
+</PRE>
+If you want to create a list of all folder names, simply change
+<PRE>SymPtr = SymFindFirst (SYMSTR ("main"), FO_SINGLE_FOLDER);
+</PRE>
+in the previous example to
+<PRE>SymPtr = SymFindFirst (NULL, 0);
+</PRE>
+<B>Note:</B> Since this routine and subsequent calls to
+<A HREF="$$LINK(SymFindNext)">SymFindNext</A> and
+<A HREF="$$LINK(SymFindPrev)">SymFindPrev</A> return direct pointers to the
+symbol table, heap compression will cause subsequent results to be invalid or
+may crash the system. In other words, heap compression will invalidate all
+pointers returned necessitating another call to SymFindFirst. Therefore
+locking the folder table (using <A HREF="$$LINK(FolderOp)">FolderOp</A>)
+during the complete operation is highly recommended.
+
+[References]
+In=FindProgramVar, FolderCur, ResetSymFlags, alloc.h/HeapWalk, dialogs.h/VarOpen, dll.h/LoadDLL, error.h/ERD_process, events.h/EV_defaultHandler, events.h/EV_eventLoop, events.h/handleVarLinkKey, homescr.h/HomeExecute, link.h/LIO_Receive, link.h/OSLinkCmd, menus.h/VarCreateFolderPopup, unknown.h/gr_del_locals, unknown.h/Regraph, unknown.h/TIOS_FFindFirst: FFindFirst, unknown.h/_ROM_CALL_40D
+Out=SymCmp, TokToStrN, string.h/strcmp, unknown.h/_mu16u16

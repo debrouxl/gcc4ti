@@ -1,0 +1,30 @@
+[Main]
+Name=fseek
+Type=Function
+Subtype=tigcc.a
+Header Files=stdio.h
+Definition=short fseek (FILE *stream, long offset, short whence);
+
+[Description]
+Repositions the file pointer of a stream.
+
+[Explanation]
+fseek sets the file pointer associated with <I>stream</I> to a new position that is
+<I>offset</I> bytes from the file location given by <I>whence</I>.
+For text mode streams (see <A HREF="$$LINK(fopen)">fopen</A>), <I>offset</I> should be 0 or a value returned
+by <A HREF="$$LINK(ftell)">ftell</A>. <I>whence</I> must be one of the following values
+(defined in enum <A HREF="$$LINK(SeekModes)">SeekModes</A>):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>whence</TD><TD>File location</TD></TR>
+<TR><TD>SEEK_SET</TD><TD>File beginning</TD></TR>
+<TR><TD>SEEK_CUR</TD><TD>Current file pointer position</TD></TR>
+<TR><TD>SEEK_END</TD><TD>End-of-file</TD></TR>
+</TABLE>
+<BR>
+fseek discards any character pushed back using <A HREF="$$LINK(ungetc)">ungetc</A>.
+fseek returns 0 if the pointer is successfully moved. It returns a nonzero value
+on failure.
+
+[References]
+In=fsetpos, rewind

@@ -1,0 +1,31 @@
+[Main]
+Name=HeapAllocHigh
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=HANDLE HeapAllocHigh (unsigned long Size);
+See Also=HeapAlloc
+
+[ROM Call]
+Index=$92
+
+[Description]
+Allocates memory at the high end of the heap and returns the handle of the allocated block.
+
+[Explanation]
+HeapAllocHigh allocates a block of <I>Size</I> bytes of heap memory at the high end of the heap,
+locks it, and returns its handle. Returns <A HREF="$$LINK(H_NULL)">H_NULL</A> if there is not enough memory.
+The primary use of this routine is to allocate task
+local storage. It also compresses the heap first to (hopefully) move all used
+(unlocked) blocks of memory down. This routine will cause garbage collection.
+<BR><BR>
+<B>Note:</B> Blocks of memory that are locked for long periods of time should be moved high
+in memory so that they do not interfere as much with rest of the system. This routine
+ALWAYS compresses the heap before it tries to allocate the requested memory and so is
+much slower than the standard <A HREF="$$LINK(HeapAlloc)">HeapAlloc</A> routine. Locking
+memory may cause the system to run out of useable memory sooner than if memory is
+kept unlocked.
+
+[References]
+In=HeapAllocHighThrow, HeapAllocPtr, malloc, gray.h/GrayOn, homescr.h/HS_popEStack
+Out=HeapAlloc, HeapCompress, HeapGetHandle, HeapLock, system.h/NeedStack

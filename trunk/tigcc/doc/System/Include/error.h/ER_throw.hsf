@@ -1,0 +1,17 @@
+[Main]
+Name=ER_throw
+Type=Function
+Subtype=Macro
+Header Files=error.h
+Definition=void ER_throw (short err_no);
+Real Definition=#define ER_throw(err_no) _ER_throw (err_no)
+See Also=ER_throwVar, ErrorCodes
+
+[Description]
+Throws an error with a constant number.
+
+[Explanation]
+ER_throw works like <A HREF="$$LINK(ER_throwVar)">ER_throwVar</A>, but it
+produces much shorter code (only 2 bytes). This is done through the Line 1010
+(A-Line) emulator, which emulates an assembly opcode for each error number.
+As a consequence, <I>err_no</I> must be constant.

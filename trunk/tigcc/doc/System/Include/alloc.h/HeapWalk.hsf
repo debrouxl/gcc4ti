@@ -1,0 +1,43 @@
+[Main]
+Name=HeapWalk
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=short HeapWalk (short function);
+MinAMS=2.00
+See Also=HeapShuffle, vat.h/
+
+[ROM Call]
+Index=$12C
+
+[Description]
+Verifies and dumps the contents of the heap.
+
+[Explanation]
+HeapWall looks through the heap to verify it is valid.
+Then it prints the status of the heap, prints the size of each heap block and its handle, or prints the symbol table, according to the value of <I>function</I>.
+HeapWalk uses <A HREF="$$LINK(link.h/LIO_SendData)">LIO_SendData</A> to send the output through the link port.
+<BR><BR>
+The valid values for <I>function</I>, defined in the enum <A HREF="$$LINK(HeapWalkCmds)">HeapWalkCmds</A>, are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">H_WALK_VERIFY</TD>
+  <TD>The function just verifies the heap, and outputs nothing to the link port.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_STATUS</TD>
+  <TD>The function outputs the total free space, maximum size of a free block, number of used and free blocks, and the number of locked blocks.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_DUMP</TD>
+  <TD>The function outputs the heap status and the size of the heap block for each handle.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_SYM</TD>
+  <TD>AMS 2.04 or higher: The function outputs the entire VAT.</TD>
+</TR>
+</TABLE>
+
+[References]
+Out=error.h/ER_catch, link.h/LIO_SendData, mem.h/memcpy, stdio.h/sprintf, string.h/strlen, unknown.h/pSymPG, vat.h/SymFindFirst, vat.h/SymFindFolderName, vat.h/SymFindNext

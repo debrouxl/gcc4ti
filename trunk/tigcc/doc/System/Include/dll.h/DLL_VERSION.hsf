@@ -1,0 +1,28 @@
+[Main]
+Name=DLL_VERSION
+Type=Language Extension
+Header Files=dll.h
+Real Definition=#define DLL_VERSION ,
+See Also=DLL_INTERFACE, LoadDLL
+
+[Description]
+Defines the DLL major and minor version numbers.
+
+[Explanation]
+The DLL_VERSION macro is used for defining the DLL major and minor version numbers. It must be
+followed by two 16-bit constant unsigned integers, which represent the major and minor version
+numbers, respectively. For example:
+<PRE>DLL_VERSION 2,13
+</PRE>
+Later, when a program wants to load the DLL, it passes the expected major and minor version numbers
+as parameters to the <A HREF="$$LINK(LoadDLL)">LoadDLL</A> function. If the expected and actual major version numbers are not the
+same, or if the expected minor version number is greater than actual minor version number, the DLL
+is simply ignored (skipped). As <A HREF="$$LINK(LoadDLL)">LoadDLL</A> searches through all folders for a matching DLL, it is
+legal to have several DLLs with the same name (in different folders) and with the same ID numbers,
+but with different version numbers. <A HREF="$$LINK(LoadDLL)">LoadDLL</A> will load the first DLL found (if any) with a
+matching name, ID number and major version number, and whose minor version number is greater
+or equal to the expected minor version number.
+<BR><BR>
+DLL_ID must appear at the end of the DLL interface section, just after the <A HREF="$$LINK(DLL_ID)">DLL_ID</A> entry, and
+just before the <A HREF="$$LINK(DLL_EXPORTS)">DLL_EXPORTS</A> entry. See <A HREF="$$LINK(DLL_INTERFACE)">DLL_INTERFACE</A> for a detailed layout of the DLL interface
+structure.

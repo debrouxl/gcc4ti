@@ -1,0 +1,22 @@
+[Main]
+Name=longjmp
+Type=Function
+Subtype=ROM Call
+Header Files=setjmp.h
+Definition=void longjmp (void *j_buf, short ret_val);
+
+[ROM Call]
+Index=$267
+
+[Description]
+Performs nonlocal goto.
+
+[Explanation]
+A call to longjmp restores the task state captured by the last call to
+<A HREF="$$LINK(setjmp)">setjmp</A> with the argument <I>j_buf</I>. It then
+returns in such a way that <A HREF="$$LINK(setjmp)">setjmp</A> appears to have
+returned with the value <I>ret_val</I>. <I>j_buf</I> is usually a
+buffer of type <A HREF="$$LINK(JMP_BUF)">JMP_BUF</A>. See
+<A HREF="$$LINK(setjmp)">setjmp</A> for more info.
+<BR><BR>
+<B>Note:</B> longjmp should not be called with a value 0 as <I>ret_val</I>.

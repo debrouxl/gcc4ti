@@ -1,0 +1,20 @@
+[Main]
+Name=rewind
+Type=Function
+Subtype=Macro
+Header Files=stdio.h
+Definition=void rewind (FILE *stream);
+Real Definition=#define rewind(f) ((void)({FILE*__file1__=(f);fseek(__file1__,0,SEEK_SET);__file1__->flags&=~_F_ERR;}))
+
+[Description]
+Repositions file pointer to stream's beginning.
+
+[Explanation]
+rewind&nbsp;(<I>stream</I>) is equivalent to
+<PRE>fseek (<I>stream</I>, 0, SEEK_SET)
+</PRE>
+except that rewind clears the end-of-file and error indicators, while fseek only clears
+the end-of-file indicator.
+
+[References]
+Out=fseek

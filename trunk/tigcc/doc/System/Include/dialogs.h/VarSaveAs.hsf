@@ -1,0 +1,38 @@
+[Main]
+Name=VarSaveAs
+Type=Function
+Subtype=ROM Call
+Header Files=dialogs.h
+Definition=HSym VarSaveAs (const ESQ *FileTypes, const char *TitleSym, ...);
+See Also=VarNew, VarOpen
+
+[ROM Call]
+Index=$28D
+
+[Description]
+Displays the standard "Save Copy As" dialog.
+
+[Explanation]
+VarSaveAs implements the standard "Save Copy As" dialog. The user may select
+a type as well as the folder to save the symbol in, and finally has to enter
+the symbol name.
+<BR><BR>
+<I>FileTypes</I> is a pointer to a zero-terminated array of types that are
+supported (see <A HREF="$$LINK(VarOpen)">VarOpen</A> for more info).
+<I>TitleSym</I> is a string that will be placed in the title of the dialog
+box (the title will have the form "SAVE COPY OF <I>TitleSym</I> AS").
+Alternatively, <I>TitleSym</I> may be <A HREF="$$LINK(alloc.h/NULL)">NULL</A>
+if no such title is wanted.
+<BR><BR>
+VarSaveAs returns the <A HREF="$$LINK(vat.h/HSym)">HSym</A> descriptor of the
+newly created symbol, or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if the
+user pressed 'ESC' or in case of an error. This function is essentially the
+same as <A HREF="$$LINK(VarNew)">VarNew</A>, only the different dialog type
+is used.
+<BR><BR>
+This function may cause heap compression.
+
+[References]
+Out=DialogAdd, DialogDo, DialogNew, alloc.h/HeapFree, error.h/ER_catch, error.h/ER_success, error.h/ERD_dialog, estack.h/TokenizeSymName, estack.h/top_estack, mem.h/memset, menus.h/PopupAddText, menus.h/PopupNew, menus.h/PopupText, menus.h/VarCreateFolderPopup, string.h/strcat, string.h/strlen, system.h/XR_stringPtr, unknown.h/DataTypeNames, unknown.h/FirstNonblank, unknown.h/VarOptList, unknown.h/VarSaveTitle, vat.h/FindSymInFolder, vat.h/StrToTokN, vat.h/SymSysVar, vat.h/VarStore
+In=unknown.h/GT_SaveAs
+Out_EV_eventLoop=1

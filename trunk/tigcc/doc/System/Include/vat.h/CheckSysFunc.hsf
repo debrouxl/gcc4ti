@@ -1,0 +1,90 @@
+[Main]
+Name=CheckSysFunc
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short CheckSysFunc (const char *VarName, unsigned short *Index);
+See Also=SymSysVar, CheckReservedName
+
+[ROM Call]
+Index=$89
+
+[Description]
+Checks for graph functions and other special variable names.
+
+[Explanation]
+CheckSysFunc checks whether <I>VarName</I> (an ordinary C string) is a
+graph function or another special variable name. It returns zero if this is
+not the case, otherwise it returns the type of the variable.
+<BR><BR>
+Precisely, this function returns values from either
+<A HREF="$$LINK(gdraw.h/GraphModes)">GraphModes</A> or
+<A HREF="$$LINK(ExtendedSysTypes)">ExtendedSysTypes</A>, in addition to zero:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>GR_FUNC</TD>
+  <TD>"y1".."y99"</TD>
+</TR>
+<TR>
+  <TD>GR_PAR</TD>
+  <TD>"xt1".."xt99", "yt1".."yt99"</TD>
+</TR>
+<TR>
+  <TD>GR_POL</TD>
+  <TD>"r1".."r99"</TD>
+</TR>
+<TR>
+  <TD>GR_SEQ</TD>
+  <TD>"u1".."u99"</TD>
+</TR>
+<TR>
+  <TD>GR_3D</TD>
+  <TD>"z1".."z99"</TD>
+</TR>
+<TR>
+  <TD>GR_DE</TD>
+  <TD>"y'1".."y'99"</TD>
+</TR>
+<TR>
+  <TD>SEQ_INITC</TD>
+  <TD>"ui1".."ui99"</TD>
+</TR>
+<TR>
+  <TD>DE_INITC</TD>
+  <TD>"yi1".."yi99"</TD>
+</TR>
+<TR>
+  <TD>DR_FLDPIC</TD>
+  <TD>"FldPic"</TD>
+</TR>
+<TR>
+  <TD>SOLVER_SYS_VARS</TD>
+  <TD>"Exp", "Eqn"</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">UNIT_VAR</TD>
+  <TD>name with a leading underscore</TD>
+</TR>
+<TR>
+  <TD>C_COL</TD>
+  <TD>"c1".."c99"</TD>
+</TR>
+<TR>
+  <TD>R_REGEQ</TD>
+  <TD>"RegEq"</TD>
+</TR>
+</TABLE>
+<BR>
+Note that <A HREF="$$LINK(ExtendedSysTypes)">ExtendedSysTypes</A> also
+contains <A HREF="$$LINK(ExtendedSysTypes)">R_SYSVAR</A>, which may be
+returned only by <A HREF="$$LINK(CheckReservedName)">CheckReservedName</A>.
+In fact, this function cannot check for system variable names like "xmin".
+<BR><BR>
+Also, if <I>VarName</I> is a valid graph function name or column name
+("y1", "c1", etc.), CheckSysFunc stores the function/column index at the word
+pointed to by <I>Index</I>.
+
+[References]
+In=CheckReservedName, FolderCur, SymFindPtr, SymSysVar, VarRecall, VarStore, bascmd.h/cmd_archive, bascmd.h/cmd_lock, bascmd.h/cmd_movevar, bascmd.h/cmd_newfold, bascmd.h/cmd_unarchiv, bascmd.h/cmd_unlock, dialogs.h/VarOpen, error.h/ERD_process, link.h/sendcalc, unknown.h/_ROM_CALL_437
+Out=unknown.h/CTypeTable

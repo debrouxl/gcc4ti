@@ -1,0 +1,20 @@
+[Main]
+Title=pure
+See Also=SEC85_const: const
+
+[Top]
+Many functions have no effects except the return value and their
+return value depends only on the parameters and/or global variables.
+Such a function can be subject
+to common subexpression elimination and loop optimization just as an
+arithmetic operator would be.  These functions should be declared
+with the attribute <CODE>pure</CODE>.  For example,
+<PRE>int square (int) __attribute__ ((pure));
+</PRE>
+says that the hypothetical function <I>square</I> is safe to call
+fewer times than the program says.
+<BR><BR>
+Some common examples of pure functions are <A HREF="$$LINK(string.h/strlen)">strlen</A> or <A HREF="$$LINK(mem.h/memcmp)">memcmp</A>.
+Interesting non-pure functions are functions with infinite loops or those
+depending on volatile memory or other system resource, that may change between
+two consecutive calls.

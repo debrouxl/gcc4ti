@@ -1,0 +1,22 @@
+[Main]
+Name=_rom_call_addr
+Type=Function
+Subtype=Macro
+Header Files=default.h
+Definition=#define _rom_call_addr(index) (_rom_call_addr_concat (0x##index, _ROM_CALL_##index))
+
+[Description]
+Returns a void pointer to a TIOS ROM call.
+
+[Explanation]
+_rom_call_addr returns a void pointer to a TIOS ROM call, which you can cast
+to any other pointer type. After this cast, you can dereference it and handle
+it like any other variable.
+<BR><BR>
+Note that <I>index</I> is the index of the ROM Call in hexadecimal form, but
+without the <CODE>'0x'</CODE> prefix. The reason for this unusual convention is
+that kernel programs use ROM calls by referring to <CODE>_ROM_CALL_xxx</CODE>,
+where <I>xxx</I> is the hexadecimal index of the ROM call.
+<BR><BR>
+See <A HREF="$$LINK(_rom_call_addr_concat)">_rom_call_addr_concat</A> for info
+about the reason why _rom_call_addr_concat is used.

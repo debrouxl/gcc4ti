@@ -1,0 +1,32 @@
+[Main]
+Name=FolderAdd
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=HANDLE FolderAdd (SYM_STR SymName);
+See Also=FolderAddTemp, SymAdd
+
+[ROM Call]
+Index=$64
+
+[Description]
+Creates a folder.
+
+[Explanation]
+FolderAdd creates a new folder with name <I>SymName</I>. See
+<A HREF="$$LINK(SYMSTR)">SYMSTR</A> for rules about <I>SymName</I>. FolderAdd returns
+a handle to the created folder (more precise, to the VAT variable list which belongs to
+the created folder). Returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in a case of error (for example, the folder
+already exists, or there is not enough memory). Note that reserved names are not valid folder names
+and that this routine does not check for reserved names. It is up to the caller to validate
+the folder name before calling this routine. This routine may cause heap compression.
+<BR><BR>
+This routine also can be used to create temporary folders
+(see also <A HREF="$$LINK(FolderAddTemp)">FolderAddTemp</A>) whose names begin with a number and are not
+displayed in VAR-LINK dialog. Temporary folder numbers '0001'...'8192' are reserved for
+keeping TI-BASIC local symbols, folder number '9998' is used in Data/Matrix Editor,
+and folder number '9999' is reserved for various temporary storage.
+
+[References]
+In=FolderAddTemp, SymFindPtr, bascmd.h/cmd_blddata, bascmd.h/cmd_movevar, bascmd.h/cmd_newfold, unknown.h/gr_openFolder
+Out=SymCmp, SymCpy, TokToStrN, alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapRealloc, mem.h/memmove, unknown.h/_mu16u16, unknown.h/_ds32s32

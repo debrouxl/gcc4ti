@@ -1,0 +1,19 @@
+[Main]
+Name=ReleaseVersion
+Type=Variable
+Subtype=ROM Call
+Header Files=system.h
+Definition=const char *const ReleaseVersion;
+See Also=ReleaseDate
+
+[ROM Call]
+Index=$440
+Reference=1
+Address Hack=(((MIN_AMS >= 101) || (TIOS_entries > 0x2AC)) ? (((const char *const) _rom_call_addr (393)) - 16) : ((const char *const) "1.00"))
+
+[Description]
+A pointer to a string containing the AMS version.
+
+[References]
+In=events.h/ABT_dialog
+Out=ReleaseDate

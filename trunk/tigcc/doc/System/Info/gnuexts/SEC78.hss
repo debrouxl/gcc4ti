@@ -1,0 +1,20 @@
+[Main]
+Title=Non-Lvalue Arrays May Have Subscripts
+
+[Top]
+In ISO C99, arrays that are not lvalues still decay to pointers, and
+may be subscripted, although they may not be modified or used after
+the next sequence point and the unary <CODE>&amp;</CODE> operator may not be
+applied to them.  As an extension, GCC allows such arrays to be
+subscripted in C89 mode, though otherwise they do not decay to
+pointers outside C99 mode.  For example,
+this is valid in GNU C though not valid in C89:
+<PRE>struct foo {int a[4];};
+
+struct foo f();
+
+bar (int index)
+{
+  return f().a[index];
+}
+</PRE>

@@ -1,0 +1,23 @@
+[Main]
+Name=HeapCompress
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=void HeapCompress (void);
+See Also=HeapShuffle
+
+[ROM Call]
+Index=$95
+
+[Description]
+Compresses the heap.
+
+[Explanation]
+HeapCompress coalesces all used heap blocks, deleting any free blocks from the
+heap if possible. If there are any locked blocks, the heap may remain fragmented.
+This routine is called automatically by the system whenever it is needed
+and usually should not be called by applications.
+
+[References]
+In=HeapAlloc, HeapAllocESTACK, HeapAllocHigh, HeapMax, HeapMoveHigh, HeapRealloc, HeapShuffle, unknown.h/time_loop
+Out=mem.h/memmove, system.h/NeedStack

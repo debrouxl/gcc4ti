@@ -1,0 +1,31 @@
+[Main]
+Name=Dialog
+Type=Function
+Subtype=ROM Call
+Header Files=dialogs.h
+Definition=short Dialog (void *DialogPtr, short x, short y, char *RequestBuffer, short *PopupBuffer);
+See Also=DialogDo
+
+[ROM Call]
+Index=$30
+
+[Description]
+Shows and activates a dialog box given a pointer to a dialog structure.
+
+[Explanation]
+Dialog works exactly like <A HREF="$$LINK(DialogDo)">DialogDo</A>, except instead of the
+handle, a pointer to the dialog structure is given as the parameter.
+<A HREF="$$LINK(DialogDo)">DialogDo</A> internally calls <A HREF="$$LINK(alloc.h/HeapDeref)">HeapDeref</A>,
+then passes returned pointer to Dialog function. This function is manly used
+internally in TIOS. Its advantage compared to <A HREF="$$LINK(DialogDo)">DialogDo</A> is
+in the fact that the complete dialog structure may be given as a static pre-filled
+array of butes, and you can give the pointer to such structure to Dialog function.
+It will save a lot of memory, because you need not to call <A HREF="$$LINK(DialogNew)">DialogNew</A>,
+a lot of functions like <A HREF="$$LINK(DialogAddText)">DialogAddText</A> etc. But note that
+the dialog structure is an extremely complicated variable-shape structure, so if you
+don't know EXACTLY what you are doing, avoid this function!
+
+[References]
+In=DialogDo, bascmd.h/cmd_clrtable, events.h/EV_defaultHandler, events.h/handleRclKey, events.h/MO_modeDialog, homescr.h/HomeExecute, link.h/LIO_Receive, textedit.h/TE_handleEvent, unknown.h/GT_DE_Init_Conds, unknown.h/GT_Format, unknown.h/GZ_SetFactors, unknown.h/SP_Define, unknown.h/_ROM_CALL_45E, unknown.h/_ROM_CALL_5F1
+Out=alloc.h/HeapGetLock, alloc.h/HeapLock, alloc.h/HeapUnlock, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, error.h/ERD_dialog, events.h/EV_captureEvents, events.h/EV_eventLoop, events.h/EV_paintWindows, events.h/EV_restorePainting, events.h/EV_suspendPainting, graph.h/DrawStrWidth, graph.h/DrawStrWidthP, graph.h/FontCharWidth, graph.h/FontGetSys, graph.h/FontSetSys, kbd.h/alphaLockOff, kbd.h/alphaLockOn, kbd.h/GKeyIn, kbd.h/restoreAlphaLock, link.h/OSWriteLinkBlock, mem.h/memset, menus.h/MenuEnd, menus.h/MenuOn, menus.h/MenuPopup, menus.h/MenuUpdate, statline.h/ST_eraseHelp, string.h/strlen, system.h/CU_restore, system.h/CU_stop, system.h/OSSetSR, system.h/OSTimerRestart, system.h/XR_stringPtr, textedit.h/TE_close, textedit.h/TE_focus, textedit.h/TE_open, textedit.h/TE_openFixed, textedit.h/TE_select, textedit.h/TE_shrinkWrap, textedit.h/TE_unfocus, unknown.h/clear_error_context, unknown.h/sf_width, wingraph.h/RectWinToScr, wingraph.h/WinActivate, wingraph.h/WinAttr, wingraph.h/WinCharXY, wingraph.h/WinClose, wingraph.h/WinFill, wingraph.h/WinFont, wingraph.h/WinOpen, wingraph.h/WinRect, wingraph.h/WinStrXY, unknown.h/_du16u16, unknown.h/_ROM_CALL_41C, unknown.h/_ROM_CALL_41D, unknown.h/_ROM_CALL_41E, unknown.h/_ROM_CALL_471, unknown.h/_ROM_CALL_4D7, unknown.h/_ROM_CALL_5C6
+Out_EV_eventLoop=1

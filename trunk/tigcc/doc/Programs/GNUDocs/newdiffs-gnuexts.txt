@@ -1,0 +1,3795 @@
+diff -Nur gnuexts/SEC100.hss fix/gnuexts/SEC100.hss
+--- gnuexts/SEC100.hss	2003-09-16 16:47:40.000000000 +0200
++++ fix/gnuexts/SEC100.hss	2003-09-16 23:37:32.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Alternate Keywords
++Index=__const__, __extension__
+ 
+ [Top]
+ <B>'-ansi'</B> and the various <B>'-std'</B> options disable certain
+diff -Nur gnuexts/SEC101.hss fix/gnuexts/SEC101.hss
+--- gnuexts/SEC101.hss	2003-09-16 16:47:40.000000000 +0200
++++ fix/gnuexts/SEC101.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Incomplete @code{enum} Types
++Title=Incomplete 'enum' Types
+ 
+ [Top]
+ You can define an <CODE>enum</CODE> tag without specifying its possible values.
+@@ -13,5 +13,3 @@
+ This extension may not be very useful, but it makes the handling of
+ <CODE>enum</CODE> more consistent with the way <CODE>struct</CODE> and <CODE>union</CODE>
+ are handled.
+-<BR><BR>
+-This extension is not supported by GNU C++.
+diff -Nur gnuexts/SEC102.hss fix/gnuexts/SEC102.hss
+--- gnuexts/SEC102.hss	2003-09-16 16:47:42.000000000 +0200
++++ fix/gnuexts/SEC102.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Function Names as Strings
++Index=__func__, __FUNCTION__, __PRETTY_FUNCTION__
+ 
+ [Top]
+ GCC predefines two magic identifiers to hold the name of the current
+@@ -7,35 +8,10 @@
+ as it appears in the source.  The identifier <CODE>__PRETTY_FUNCTION__</CODE>
+ holds the name of the function pretty printed in a language specific
+ fashion.
++(These names are always the same in a C function, but in a C++ function
++they may be different; don't care about this, because TIGCC is not a C++ compiler.)
+ <BR><BR>
+-These names are always the same in a C function, but in a C++ function
+-they may be different.  For example, this program:
+-<PRE>extern &quot;C&quot; {
+-extern int printf (char *, ...);
+-}
+-
+-class a {
+- public:
+-  sub (int i)
+-    {
+-      printf (&quot;__FUNCTION__ = %s\n&quot;, __FUNCTION__);
+-      printf (&quot;__PRETTY_FUNCTION__ = %s\n&quot;, __PRETTY_FUNCTION__);
+-    }
+-};
+-
+-int
+-main (void)
+-{
+-  a ax;
+-  ax.sub (0);
+-  return 0;
+-}
+-</PRE>
+-gives this output:
+-<PRE>__FUNCTION__ = sub
+-__PRETTY_FUNCTION__ = int  a::sub (int)
+-</PRE>
+-The compiler automagically replaces the identifiers with a string
++The compiler automatically replaces the identifiers with a string
+ literal containing the appropriate name.  Thus, they are neither
+ preprocessor macros, like <CODE>__FILE__</CODE> and <CODE>__LINE__</CODE>, nor
+ variables.  This means that they catenate with other string literals, and
+@@ -61,6 +37,3 @@
+ By this definition, <CODE>__func__</CODE> is a variable, not a string literal.
+ In particular, <CODE>__func__</CODE> does not catenate with other string
+ literals.
+-<BR><BR>
+-In <CODE>C++</CODE>, <CODE>__FUNCTION__</CODE> and <CODE>__PRETTY_FUNCTION__</CODE> are
+-variables, declared in the same way as <CODE>__func__</CODE>.
+diff -Nur gnuexts/SEC103.hss fix/gnuexts/SEC103.hss
+--- gnuexts/SEC103.hss	2003-09-16 16:47:42.000000000 +0200
++++ fix/gnuexts/SEC103.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Getting the Return or Frame Address of a Function
++Subsections=SEC103___builtin_return_address, SEC103___builtin_frame_address
+ 
+ [Top]
+ These functions may be used to get information about the callers of a
+diff -Nur gnuexts/SEC103___builtin_frame_address.hss fix/gnuexts/SEC103___builtin_frame_address.hss
+--- gnuexts/SEC103___builtin_frame_address.hss	2003-09-16 16:47:42.000000000 +0200
++++ fix/gnuexts/SEC103___builtin_frame_address.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -2,25 +2,22 @@
+ Title=__builtin_frame_address
+ 
+ [Top]
+-This function is similar to <CODE>__builtin_return_address</CODE>, but it
++<CODE><B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *__builtin_frame_address (<B><A HREF="$$INFOLINK(keywords/int)">int</A></B> level);</CODE>
++<BR><BR>
++This function is similar to <A HREF="$$LINK(SEC103___builtin_return_address)">__builtin_return_address</A>, but it
+ returns the address of the function frame rather than the return address
+-of the function.  Calling <CODE>__builtin_frame_address</CODE> with a value of
+-<CODE>0</CODE> yields the frame address of the current function, a value of
+-<CODE>1</CODE> yields the frame address of the caller of the current function,
++of the function.  Calling __builtin_frame_address with a value of
++0 yields the frame address of the current function, a value of
++1 yields the frame address of the caller of the current function,
+ and so forth.
+ <BR><BR>
+ The frame is the area on the stack which holds local variables and saved
+ registers.  The frame address is normally the address of the first word
+ pushed on to the stack by the function.  However, the exact definition
+-depends upon the processor and the calling convention.  If the processor
+-has a dedicated frame pointer register, and the function has a frame,
+-then <CODE>__builtin_frame_address</CODE> will return the value of the frame
+-pointer register.
+-<BR><BR>
+-On some machines it may be impossible to determine the frame address of
+-any function other than the current one; in such cases, or when the top
+-of the stack has been reached, this function will return <CODE>0</CODE> if
+-the first frame pointer is properly initialized by the startup code.
++depends upon the processor and the calling convention.  On the Motorola
++68000, if the function has a frame,
++then __builtin_frame_address will return the value of the frame
++pointer register <CODE>a6</CODE> if <I>level</I> is 0.
+ <BR><BR>
+-This function should only be used with a nonzero argument for debugging
++This function should be used with a nonzero argument only for debugging
+ purposes.
+diff -Nur gnuexts/SEC103___builtin_return_address.hss fix/gnuexts/SEC103___builtin_return_address.hss
+--- gnuexts/SEC103___builtin_return_address.hss	2003-09-16 16:47:42.000000000 +0200
++++ fix/gnuexts/SEC103___builtin_return_address.hss	2003-09-16 23:39:26.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=__builtin_return_address
+ 
+ [Top]
++<CODE><B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *__builtin_return_address (<B><A HREF="$$INFOLINK(keywords/int)">int</A></B> level);</CODE>
++<BR><BR>
+ This function returns the return address of the current function, or of
+ one of its callers.  The <I>level</I> argument is number of frames to
+ scan up the call stack.  A value of <CODE>0</CODE> yields the return address
+@@ -13,11 +15,12 @@
+ <BR><BR>
+ The <I>level</I> argument must be a constant integer.
+ <BR><BR>
+-On some machines it may be impossible to determine the return address of
++Sometimes (especially without a frame pointer)
++it may be impossible to determine the return address of
+ any function other than the current one; in such cases, or when the top
+-of the stack has been reached, this function will return <CODE>0</CODE> or a
+-random value. In addition, <CODE>__builtin_frame_address</CODE> may be used
++of the stack has been reached, this function will return a
++random value.  In addition, <A HREF="$$LINK(SEC103___builtin_frame_address)">__builtin_frame_address</A> may be used
+ to determine if the top of the stack has been reached.
+ <BR><BR>
+-This function should only be used with a nonzero argument for debugging
++This function should be used with a nonzero argument only for debugging
+ purposes.
+diff -Nur gnuexts/SEC104.hss fix/gnuexts/SEC104.hss
+--- gnuexts/SEC104.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -1,26 +1,28 @@
+ [Main]
+ Title=Other built-in functions provided by GCC
++Subsections=SEC104___builtin_constant_p, SEC104___builtin_types_compatible_p, SEC104___builtin_choose_expr, SEC104___builtin_expect, SEC104___builtin_prefetch
+ 
+ [Top]
+-GCC provides a large number of built-in functions other than the ones
+-mentioned above.  Some of these are for internal use in the processing
++GCC provides a large number of built-in functions.  Some of these are for internal use in the processing
+ of exceptions or variable-length argument lists and will not be
+ documented here because they may change from time to time; we do not
+ recommend general use of these functions.
+ <BR><BR>
+ The remaining functions are provided for optimization purposes.
+-<BR><BR>
++
++[Bottom]
+ GCC includes built-in versions of many of the functions in the standard
+ C library.  The versions prefixed with <CODE>__builtin_</CODE> will always be
+ treated as having the same meaning as the C library function even if you
+-specify the <B>'-fno-builtin'</B> option. (see <A HREF="$$INFOLINK(C Dialect Options)">C Dialect Options</A>)
++specify the <B>'-fno-builtin'</B> option (see <A HREF="$$INFOLINK(comopts/SEC6)">C Dialect Options</A>).
+ Many of these functions are only optimized in certain cases; if they are
+ not optimized in a particular case, a call to the library function will
+-be emitted.
++be emitted
++(but this does not make sense in TIGCC, as the standard C library is not provided with it).
+ <BR><BR>
+ The functions <CODE>abort</CODE>, <CODE>exit</CODE>, <CODE>_Exit</CODE> and <CODE>_exit</CODE>
+ are recognized and presumed not to return, but otherwise are not built
+-in.  <CODE>_exit</CODE> is not recognized in strict ISO C mode (<B>'-ansi'</B>,
++in (TIGCC defines them as macros anyway).  <CODE>_exit</CODE> is not recognized in strict ISO C mode (<B>'-ansi'</B>,
+ <B>'-std=c89'</B> or <B>'-std=c99'</B>).  <CODE>_Exit</CODE> is not recognized in
+ strict C89 mode (<B>'-ansi'</B> or <B>'-std=c89'</B>).  All these functions
+ have corresponding versions prefixed with <CODE>__builtin_</CODE>, which may be
+@@ -31,7 +33,9 @@
+ <CODE>printf_unlocked</CODE> and <CODE>fprintf_unlocked</CODE> may be handled as
+ built-in functions.  All these functions have corresponding versions
+ prefixed with <CODE>__builtin_</CODE>, which may be used even in strict C89
+-mode.
++mode
++(in TIGCC, <A HREF="$$LINK(alloc.h/alloca)">alloca</A> is built-in;
++other than that only <CODE>__builtin_bzero</CODE> might be useful).
+ <BR><BR>
+ The ISO C99 functions <CODE>conj</CODE>, <CODE>conjf</CODE>, <CODE>conjl</CODE>,
+ <CODE>creal</CODE>, <CODE>crealf</CODE>, <CODE>creall</CODE>, <CODE>cimag</CODE>, <CODE>cimagf</CODE>,
+@@ -43,7 +47,8 @@
+ <CODE>logf</CODE>, <CODE>logl</CODE>, <CODE>sinf</CODE>, <CODE>sinl</CODE>, <CODE>sqrtf</CODE>, and
+ <CODE>sqrtl</CODE>, that are recognized in any mode since ISO C90 reserves
+ these names for the purpose to which ISO C99 puts them.  All these
+-functions have corresponding versions prefixed with <CODE>__builtin_</CODE>.
++functions have corresponding versions prefixed with <CODE>__builtin_</CODE>
++(again, none of these are implemented in TIGCC).
+ <BR><BR>
+ The ISO C90 functions <CODE>abs</CODE>, <CODE>cos</CODE>, <CODE>exp</CODE>, <CODE>fabs</CODE>,
+ <CODE>fprintf</CODE>, <CODE>fputs</CODE>, <CODE>labs</CODE>, <CODE>log</CODE>,
+@@ -58,12 +63,13 @@
+ recognized as built-in functions unless <B>'-fno-builtin'</B> is
+ specified (or <B>'-fno-builtin-<I>function</I>'</B> is specified for an
+ individual function).  All of these functions have corresponding
+-versions prefixed with <CODE>__builtin_</CODE>.
++versions prefixed with <CODE>__builtin_</CODE>
++(but most of these are defined as macros in TIGCC).
+ <BR><BR>
+ GCC provides built-in versions of the ISO C99 floating point comparison
+ macros that avoid raising exceptions for unordered operands.  They have
+-the same names as the standard macros ( <CODE>isgreater</CODE>,
++the same names as the standard macros (<CODE>isgreater</CODE>,
+ <CODE>isgreaterequal</CODE>, <CODE>isless</CODE>, <CODE>islessequal</CODE>,
+-<CODE>islessgreater</CODE>, and <CODE>isunordered</CODE>) , with <CODE>__builtin_</CODE>
+-prefixed.  We intend for a library implementor to be able to simply
++<CODE>islessgreater</CODE>, and <CODE>isunordered</CODE>), with <CODE>__builtin_</CODE>
++prefixed.  The GNU team intends for a library implementor to be able to simply
+ <CODE>#define</CODE> each standard macro to its built-in equivalent.
+diff -Nur gnuexts/SEC104___builtin_choose_expr.hss fix/gnuexts/SEC104___builtin_choose_expr.hss
+--- gnuexts/SEC104___builtin_choose_expr.hss	2003-09-16 16:47:44.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_choose_expr.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -2,7 +2,9 @@
+ Title=__builtin_choose_expr
+ 
+ [Top]
+-You can use the built-in function <CODE>__builtin_choose_expr</CODE> to
++<CODE><I>type</I> __builtin_choose_expr (const_exp, exp1, exp2);</CODE>
++<BR><BR>
++You can use the built-in function __builtin_choose_expr to
+ evaluate code depending on the value of a constant expression.  This
+ built-in function returns <I>exp1</I> if <I>const_exp</I>, which is a
+ constant expression that must be able to be determined at compile time,
+@@ -33,7 +35,7 @@
+          when assigning the result to something.  */          \
+       (void)0))
+ </PRE>
+-<I>Note:</I> This construct is only available for C.  Furthermore, the
++<B>Note:</B> The
+ unused expression (<I>exp1</I> or <I>exp2</I> depending on the value of
+ <I>const_exp</I>) may still generate syntax errors.  This may change in
+ future revisions.
+diff -Nur gnuexts/SEC104___builtin_constant_p.hss fix/gnuexts/SEC104___builtin_constant_p.hss
+--- gnuexts/SEC104___builtin_constant_p.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_constant_p.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=__builtin_constant_p
+ 
+ [Top]
++<CODE><B><A HREF="$$INFOLINK(keywords/int)">int</A></B> __builtin_constant_p (exp);</CODE>
++<BR><BR>
+ You can use the built-in function <CODE>__builtin_constant_p</CODE> to
+ determine if a value is known to be constant at compile-time and hence
+ that GCC can perform constant-folding on expressions involving that
+@@ -12,8 +14,7 @@
+ but merely that GCC cannot prove it is a constant with the specified
+ value of the <B>'-O'</B> option.
+ <BR><BR>
+-You would typically use this function in an embedded application where
+-memory was a critical resource.  If you have some complex calculation,
++If you have some complex calculation,
+ you may want it to be folded if it involves constants, but need to call
+ a function if it does not.  For example:
+ <PRE>#define Scale_Value(X)      \
+diff -Nur gnuexts/SEC104___builtin_expect.hss fix/gnuexts/SEC104___builtin_expect.hss
+--- gnuexts/SEC104___builtin_expect.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_expect.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -2,12 +2,10 @@
+ Title=__builtin_expect
+ 
+ [Top]
++<CODE><B><A HREF="$$INFOLINK(keywords/long)">long</A></B> __builtin_expect (<B><A HREF="$$INFOLINK(keywords/long)">long</A></B> exp, <B><A HREF="$$INFOLINK(keywords/long)">long</A></B> c);</CODE>
++<BR><BR>
+ You may use <CODE>__builtin_expect</CODE> to provide the compiler with
+-branch prediction information.  In general, you should prefer to
+-use actual profile feedback for this (<B>'-fprofile-arcs'</B>), as
+-programmers are notoriously bad at predicting how their programs
+-actually perform.  However, there are applications in which this
+-data is hard to collect.
++branch prediction information.
+ <BR><BR>
+ The return value is the value of <I>exp</I>, which should be an
+ integral expression.  The value of <I>c</I> must be a compile-time
+diff -Nur gnuexts/SEC104___builtin_huge_val.hss fix/gnuexts/SEC104___builtin_huge_val.hss
+--- gnuexts/SEC104___builtin_huge_val.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_huge_val.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-[Main]
+-Title=__builtin_huge_val
+-
+-[Top]
+-Returns a positive infinity, if supported by the floating-point format,
+-else <CODE>DBL_MAX</CODE>.  This function is suitable for implementing the
+-ISO C macro <CODE>HUGE_VAL</CODE>.
+diff -Nur gnuexts/SEC104___builtin_huge_valf.hss fix/gnuexts/SEC104___builtin_huge_valf.hss
+--- gnuexts/SEC104___builtin_huge_valf.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_huge_valf.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,5 +0,0 @@
+-[Main]
+-Title=__builtin_huge_valf
+-
+-[Top]
+-Similar to <CODE>__builtin_huge_val</CODE>, except the return type is <CODE>float</CODE>.
+diff -Nur gnuexts/SEC104___builtin_huge_vall.hss fix/gnuexts/SEC104___builtin_huge_vall.hss
+--- gnuexts/SEC104___builtin_huge_vall.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_huge_vall.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-[Main]
+-Title=__builtin_huge_vall
+-
+-[Top]
+-Similar to <CODE>__builtin_huge_val</CODE>, except the return
+-type is <CODE>long&nbsp;double</CODE>.
+diff -Nur gnuexts/SEC104___builtin_inf.hss fix/gnuexts/SEC104___builtin_inf.hss
+--- gnuexts/SEC104___builtin_inf.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_inf.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-[Main]
+-Title=__builtin_inf
+-
+-[Top]
+-Similar to <CODE>__builtin_huge_val</CODE>, except a warning is generated
+-if the target floating-point format does not support infinities.
+-This function is suitable for implementing the ISO C99 macro <CODE>INFINITY</CODE>.
+diff -Nur gnuexts/SEC104___builtin_inff.hss fix/gnuexts/SEC104___builtin_inff.hss
+--- gnuexts/SEC104___builtin_inff.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_inff.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,5 +0,0 @@
+-[Main]
+-Title=__builtin_inff
+-
+-[Top]
+-Similar to <CODE>__builtin_inf</CODE>, except the return type is <CODE>float</CODE>.
+diff -Nur gnuexts/SEC104___builtin_infl.hss fix/gnuexts/SEC104___builtin_infl.hss
+--- gnuexts/SEC104___builtin_infl.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_infl.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,6 +0,0 @@
+-[Main]
+-Title=__builtin_infl
+-
+-[Top]
+-Similar to <CODE>__builtin_inf</CODE>, except the return
+-type is <CODE>long&nbsp;double</CODE>.
+diff -Nur gnuexts/SEC104___builtin_nan.hss fix/gnuexts/SEC104___builtin_nan.hss
+--- gnuexts/SEC104___builtin_nan.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_nan.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,17 +0,0 @@
+-[Main]
+-Title=__builtin_nan
+-
+-[Top]
+-This is an implementation of the ISO C99 function <CODE>nan</CODE>.
+-<BR><BR>
+-Since ISO C99 defines this function in terms of <CODE>strtod</CODE>, which we
+-do not implement, a description of the parsing is in order.  The string
+-is parsed as by <CODE>strtol</CODE>; that is, the base is recognized by
+-leading <CODE>0</CODE> or <CODE>0x</CODE> prefixes.  The number parsed is placed
+-in the significand such that the least significant bit of the number
+-is at the least significant bit of the significand.  The number is
+-truncated to fit the significand field provided.  The significand is
+-forced to be a quiet NaN.
+-<BR><BR>
+-This function, if given a string literal, is evaluated early enough
+-that it is considered a compile-time constant.
+diff -Nur gnuexts/SEC104___builtin_nanf.hss fix/gnuexts/SEC104___builtin_nanf.hss
+--- gnuexts/SEC104___builtin_nanf.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_nanf.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,5 +0,0 @@
+-[Main]
+-Title=__builtin_nanf
+-
+-[Top]
+-Similar to <CODE>__builtin_nan</CODE>, except the return type is <CODE>float</CODE>.
+diff -Nur gnuexts/SEC104___builtin_nanl.hss fix/gnuexts/SEC104___builtin_nanl.hss
+--- gnuexts/SEC104___builtin_nanl.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_nanl.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,5 +0,0 @@
+-[Main]
+-Title=__builtin_nanl
+-
+-[Top]
+-Similar to <CODE>__builtin_nan</CODE>, except the return type is <CODE>long&nbsp;double</CODE>.
+diff -Nur gnuexts/SEC104___builtin_nans.hss fix/gnuexts/SEC104___builtin_nans.hss
+--- gnuexts/SEC104___builtin_nans.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_nans.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-[Main]
+-Title=__builtin_nans
+-
+-[Top]
+-Similar to <CODE>__builtin_nan</CODE>, except the significand is forced
+-to be a signaling NaN.  The <CODE>nans</CODE> function is proposed by
+-<A HREF="http://std.dkuug.dk/JTC1/SC22/WG14/www/docs/n965.htm,,WG14 N965">http://std.dkuug.dk/JTC1/SC22/WG14/www/docs/n965.htm,,WG14 N965</A>.
+diff -Nur gnuexts/SEC104___builtin_nansf.hss fix/gnuexts/SEC104___builtin_nansf.hss
+--- gnuexts/SEC104___builtin_nansf.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_nansf.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,5 +0,0 @@
+-[Main]
+-Title=__builtin_nansf
+-
+-[Top]
+-Similar to <CODE>__builtin_nans</CODE>, except the return type is <CODE>float</CODE>.
+diff -Nur gnuexts/SEC104___builtin_nansl.hss fix/gnuexts/SEC104___builtin_nansl.hss
+--- gnuexts/SEC104___builtin_nansl.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_nansl.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,5 +0,0 @@
+-[Main]
+-Title=__builtin_nansl
+-
+-[Top]
+-Similar to <CODE>__builtin_nans</CODE>, except the return type is <CODE>long&nbsp;double</CODE>.
+diff -Nur gnuexts/SEC104___builtin_prefetch.hss fix/gnuexts/SEC104___builtin_prefetch.hss
+--- gnuexts/SEC104___builtin_prefetch.hss	2003-09-16 16:47:46.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_prefetch.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -2,39 +2,9 @@
+ Title=__builtin_prefetch
+ 
+ [Top]
++<CODE><B><A HREF="$$INFOLINK(keywords/void)">void</A></B> __builtin_prefetch (<B><A HREF="$$INFOLINK(keywords/const)">const</A></B> <B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *addr, ...);</CODE>
++<BR><BR>
+ This function is used to minimize cache-miss latency by moving data into
+ a cache before it is accessed.
+-You can insert calls to <CODE>__builtin_prefetch</CODE> into code for which
+-you know addresses of data in memory that is likely to be accessed soon.
+-If the target supports them, data prefetch instructions will be generated.
+-If the prefetch is done early enough before the access then the data will
+-be in the cache by the time it is accessed.
+-<BR><BR>
+-The value of <I>addr</I> is the address of the memory to prefetch.
+-There are two optional arguments, <I>rw</I> and <I>locality</I>.
+-The value of <I>rw</I> is a compile-time constant one or zero; one
+-means that the prefetch is preparing for a write to the memory address
+-and zero, the default, means that the prefetch is preparing for a read.
+-The value <I>locality</I> must be a compile-time constant integer between
+-zero and three.  A value of zero means that the data has no temporal
+-locality, so it need not be left in the cache after the access.  A value
+-of three means that the data has a high degree of temporal locality and
+-should be left in all levels of cache possible.  Values of one and two
+-mean, respectively, a low or moderate degree of temporal locality.  The
+-default is three.
+-<PRE>for (i = 0; i &lt; n; i++)
+-  {
+-    a[i] = a[i] + b[i];
+-    __builtin_prefetch (&amp;a[i+j], 1, 1);
+-    __builtin_prefetch (&amp;b[i+j], 0, 1);
+-    /* ... */
+-  }
+-</PRE>
+-Data prefetch does not generate faults if <I>addr</I> is invalid, but
+-the address expression itself must be valid.  For example, a prefetch
+-of <CODE>p-&gt;next</CODE> will not fault if <CODE>p-&gt;next</CODE> is not a valid
+-address, but evaluation will fault if <CODE>p</CODE> is not a valid address.
+-<BR><BR>
+-If the target does not support data prefetch, the address expression
+-is evaluated if it includes side effects but no other code is generated
+-and GCC does not issue a warning.
++As the Motorola 68000 processor does not have any data prefetch instruction,
++this function is not useful in TIGCC.
+diff -Nur gnuexts/SEC104___builtin_types_compatible_p.hss fix/gnuexts/SEC104___builtin_types_compatible_p.hss
+--- gnuexts/SEC104___builtin_types_compatible_p.hss	2003-09-16 16:47:44.000000000 +0200
++++ fix/gnuexts/SEC104___builtin_types_compatible_p.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -2,7 +2,9 @@
+ Title=__builtin_types_compatible_p
+ 
+ [Top]
+-You can use the built-in function <CODE>__builtin_types_compatible_p</CODE> to
++<CODE><B><A HREF="$$INFOLINK(keywords/int)">int</A></B> __builtin_types_compatible_p (type1, type2);</CODE>
++<BR><BR>
++You can use the built-in function __builtin_types_compatible_p to
+ determine whether two types are the same.
+ <BR><BR>
+ This built-in function returns 1 if the unqualified versions of the
+@@ -10,26 +12,26 @@
+ compatible, 0 otherwise.  The result of this built-in function can be
+ used in integer constant expressions.
+ <BR><BR>
+-This built-in function ignores top level qualifiers (e.g., <CODE>const</CODE>,
+-<CODE>volatile</CODE>).  For example, <CODE>int</CODE> is equivalent to <CODE>const
+-int</CODE>.
+-<BR><BR>
+-The type <CODE>int[]</CODE> and <CODE>int[5]</CODE> are compatible.  On the other
+-hand, <CODE>int</CODE> and <CODE>char&nbsp;*</CODE> are not compatible, even if the size
+-of their types, on the particular architecture are the same.  Also, the
++This built-in function ignores top level qualifiers (<CODE><A HREF="$$INFOLINK(keywords/const)">const</A></CODE>,
++<CODE><A HREF="$$INFOLINK(keywords/volatile)">volatile</A></CODE>, etc.).  For example, <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE> is equivalent to <CODE><A HREF="$$INFOLINK(keywords/const)">const</A>
++<A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.
++<BR><BR>
++The type <CODE><A HREF="$$INFOLINK(keywords/int)">int</A>[]</CODE> and <CODE><A HREF="$$INFOLINK(keywords/int)">int</A>[5]</CODE> are compatible.  On the other
++hand, <CODE><A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE> and <CODE><A HREF="$$INFOLINK(keywords/char)">char</A>*</CODE> are not compatible,
++although their sizes are the same.  Also, the
+ amount of pointer indirection is taken into account when determining
+-similarity.  Consequently, <CODE>short&nbsp;*</CODE> is not similar to
+-<CODE>short&nbsp;**</CODE>.  Furthermore, two types that are typedefed are
++similarity.  Consequently, <CODE><A HREF="$$INFOLINK(keywords/short)">short</A>*</CODE> is not similar to
++<CODE><A HREF="$$INFOLINK(keywords/short)">short</A>**</CODE>.  Furthermore, two types that are typedefed are
+ considered compatible if their underlying types are compatible.
+ <BR><BR>
+-An <CODE>enum</CODE> type is considered to be compatible with another
+-<CODE>enum</CODE> type.  For example, <CODE>enum&nbsp;{foo,&nbsp;bar}</CODE> is similar to
++An <CODE><A HREF="$$INFOLINK(keywords/enum)">enum</A></CODE> type is considered to be compatible with another
++<CODE><A HREF="$$INFOLINK(keywords/enum)">enum</A></CODE> type.  For example, <CODE>enum&nbsp;{foo,&nbsp;bar}</CODE> is similar to
+ <CODE>enum&nbsp;{hot,&nbsp;dog}</CODE>.
+ <BR><BR>
+ You would typically use this function in code whose execution varies
+ depending on the arguments' types.  For example:
+ <PRE>#define foo(x)                                                  \
+-  ({                                                           \
++  ({                                                            \
+     typeof (x) tmp;                                             \
+     if (__builtin_types_compatible_p (typeof (x), long double)) \
+       tmp = foo_long_double (tmp);                              \
+@@ -42,4 +44,3 @@
+     tmp;                                                        \
+   })
+ </PRE>
+-<I>Note:</I> This construct is only available for C.
+diff -Nur gnuexts/SEC106.hss fix/gnuexts/SEC106.hss
+--- gnuexts/SEC106.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC106.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -8,5 +8,4 @@
+ literal, regardless of what form the newline took originally.
+ <BR><BR>
+ CPP currently allows such strings in directives as well (other than the
+-<CODE>#include</CODE> family).  This is deprecated and will eventually be
+-removed.
++<CODE>#include</CODE> family).
+diff -Nur gnuexts/SEC108.hss fix/gnuexts/SEC108.hss
+--- gnuexts/SEC108.hss	2003-09-16 16:47:54.000000000 +0200
++++ fix/gnuexts/SEC108.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Unnamed struct/union fields within structs/unions.
++Title=Unnamed struct/union Fields within structs/unions
+ 
+ [Top]
+ For compatibility with other compilers, GCC allows you to define
+@@ -17,7 +17,7 @@
+ In this example, the user would be able to access members of the unnamed
+ union with code like <CODE>foo.b</CODE>.  Note that only unnamed structs and
+ unions are allowed, you may not have, for example, an unnamed
+-<CODE>int</CODE>.
++<CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.
+ <BR><BR>
+ You must never create such structures that cause ambiguous field definitions.
+ For example, this structure:
+@@ -28,6 +28,6 @@
+   };
+ } foo;
+ </PRE>
+-It is ambiguous which <CODE>a</CODE> is being referred to with <CODE>foo.a</CODE>.
++It is ambiguous which <I>a</I> is being referred to with <CODE>foo.a</CODE>.
+ Such constructs are not supported and must be avoided.  In the future,
+ such constructs may be detected and treated as compilation errors.
+diff -Nur gnuexts/SEC109.hss fix/gnuexts/SEC109.hss
+--- gnuexts/SEC109.hss	2003-09-16 16:47:58.000000000 +0200
++++ fix/gnuexts/SEC109.hss	2003-09-16 22:56:06.000000000 +0200
+@@ -1,8 +1,8 @@
+ [Main]
+-Title=When is a Volatile Object Accessed?
++Title=Definite Access of Volatile Objects
+ 
+ [Top]
+-Both the C and C++ standard have the concept of volatile objects.  These
++Both the C and C++ standard have the concept of <A HREF="$$INFOLINK(keywords/volatile)">volatile</A> objects.  These
+ are normally accessed by pointers and used for accessing hardware.  The
+ standards encourage compilers to refrain from optimizations
+ concerning accesses to volatile objects that it might perform on
+@@ -27,7 +27,7 @@
+ will cause a read of the volatile object pointed to by <I>src</I> and stores the
+ value into the volatile object pointed to by <I>dst</I>.  There is no
+ guarantee that these reads and writes are atomic, especially for objects
+-larger than <CODE>int</CODE>.
++larger than <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.
+ <BR><BR>
+ Less obvious expressions are where something which looks like an access
+ is used in a void context.  An example would be,
+@@ -36,32 +36,4 @@
+ </PRE>
+ With C, such expressions are rvalues, and as rvalues cause a read of
+ the object, GCC interprets this as a read of the volatile being pointed
+-to.  The C++ standard specifies that such expressions do not undergo
+-lvalue to rvalue conversion, and that the type of the dereferenced
+-object may be incomplete.  The C++ standard does not specify explicitly
+-that it is this lvalue to rvalue conversion which is responsible for
+-causing an access.  However, there is reason to believe that it is,
+-because otherwise certain simple expressions become undefined.  However,
+-because it would surprise most programmers, G++ treats dereferencing a
+-pointer to volatile object of complete type in a void context as a read
+-of the object.  When the object has incomplete type, G++ issues a
+-warning.
+-<PRE>struct S;
+-struct T {int m;};
+-volatile S *ptr1 = <I>somevalue</I>;
+-volatile T *ptr2 = <I>somevalue</I>;
+-*ptr1;
+-*ptr2;
+-</PRE>
+-In this example, a warning is issued for <CODE>*ptr1</CODE>, and <CODE>*ptr2</CODE>
+-causes a read of the object pointed to.  If you wish to force an error on
+-the first case, you must force a conversion to rvalue with, for instance
+-a static cast, <CODE>static_cast&lt;S&gt;(*ptr1)</CODE>.
+-<BR><BR>
+-When using a reference to volatile, G++ does not treat equivalent
+-expressions as accesses to volatiles, but instead issues a warning that
+-no volatile is accessed.  The rationale for this is that otherwise it
+-becomes difficult to determine where volatile access occur, and not
+-possible to ignore the return value from functions returning volatile
+-references.  Again, if you wish to force a read, cast the reference to
+-an rvalue.
++to.
+diff -Nur gnuexts/SEC110.hss fix/gnuexts/SEC110.hss
+--- gnuexts/SEC110.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/SEC110.hss	2003-09-16 23:44:02.000000000 +0200
+@@ -0,0 +1,18 @@
++[Main]
++Title=Binary Numbers
++
++[Top]
++TIGCC allows you to specify binary numbers by using a <CODE>0b</CODE> prefix.  This can be handy
++in many occasions, such as when trying to declare sprites in a way which actually allows you to see
++the picture.  For example, the following declaration defines a simple black and white 8x8 diagonal
++cross:
++<PRE>unsigned char cross[8] =
++ {0b10000001,
++  0b01000010,
++  0b00100100,
++  0b00011000,
++  0b00011000,
++  0b00100100,
++  0b01000010,
++  0b10000001};
++</PRE>
+diff -Nur gnuexts/SEC63.hss fix/gnuexts/SEC63.hss
+--- gnuexts/SEC63.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC63.hss	2003-09-16 23:46:28.000000000 +0200
+@@ -20,7 +20,7 @@
+ The last thing in the compound statement should be an expression
+ followed by a semicolon; the value of this subexpression serves as the
+ value of the entire construct.  (If you use some other kind of statement
+-last within the braces, the construct has type <CODE>void</CODE>, and thus
++last within the braces, the construct has type <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE>, and thus
+ effectively no value.)
+ <BR><BR>
+ This feature is especially useful in making macro definitions &quot;safe&quot; (so
+@@ -31,7 +31,7 @@
+ </PRE>
+ But this definition computes either <I>a</I> or <I>b</I> twice, with bad
+ results if the operand has side effects.  In GNU C, if you know the
+-type of the operands (here let's assume <CODE>int</CODE>), you can define
++type of the operands (here let's assume <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>), you can define
+ the macro safely as follows:
+ <PRE>#define maxint(a,b) \
+   ({int _a = (a), _b = (b); _a &gt; _b ? _a : _b; })
+@@ -41,29 +41,4 @@
+ the initial value of a static variable.
+ <BR><BR>
+ If you don't know the type of the operand, you can still do this, but you
+-must use <CODE>typeof</CODE> (see <A HREF="$$LINK(SEC69)">Typeof</A>).
+-<BR><BR>
+-Statement expressions are not supported fully in G++, and their fate
+-there is unclear.  (It is possible that they will become fully supported
+-at some point, or that they will be deprecated, or that the bugs that
+-are present will continue to exist indefinitely.)  Presently, statement
+-expressions do not work well as default arguments.
+-<BR><BR>
+-In addition, there are semantic issues with statement-expressions in
+-C++.  If you try to use statement-expressions instead of inline
+-functions in C++, you may be surprised at the way object destruction is
+-handled.  For example:
+-<PRE>#define foo(a)  ({int b = (a); b + 3; })
+-</PRE>
+-does not work the same way as:
+-<PRE>inline int foo(int a) { int b = a; return b + 3; }
+-</PRE>
+-In particular, if the expression passed into <CODE>foo</CODE> involves the
+-creation of temporaries, the destructors for those temporaries will be
+-run earlier in the case of the macro than in the case of the function.
+-<BR><BR>
+-These considerations mean that it is probably a bad idea to use
+-statement-expressions of this form in header files that are designed to
+-work with C++.  (Note that some versions of the GNU C Library contained
+-header files using statement-expression that lead to precisely this
+-bug.)
++must use <CODE><A HREF="$$LINK(SEC69)">typeof</A></CODE>.
+diff -Nur gnuexts/SEC64.hss fix/gnuexts/SEC64.hss
+--- gnuexts/SEC64.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC64.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -4,7 +4,7 @@
+ [Top]
+ Each statement expression is a scope in which <U>local labels</U> can be
+ declared.  A local label is simply an identifier; you can jump to it
+-with an ordinary <CODE>goto</CODE> statement, but only from within the
++with an ordinary <CODE><A HREF="$$INFOLINK(keywords/goto)">goto</A></CODE> statement, but only from within the
+ statement expression it belongs to.
+ <BR><BR>
+ A local label declaration looks like this:
+@@ -22,7 +22,7 @@
+ <CODE><I>label</I>:</CODE>, within the statements of the statement expression.
+ <BR><BR>
+ The local label feature is useful because statement expressions are
+-often used in macros.  If the macro contains nested loops, a <CODE>goto</CODE>
++often used in macros.  If the macro contains nested loops, a <CODE><A HREF="$$INFOLINK(keywords/goto)">goto</A></CODE>
+ can be useful for breaking out of them.  However, an ordinary label
+ whose scope is the whole function cannot be used: if the macro can be
+ expanded several times in one function, the label will be multiply
+diff -Nur gnuexts/SEC65.hss fix/gnuexts/SEC65.hss
+--- gnuexts/SEC65.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC65.hss	2003-09-16 23:49:04.000000000 +0200
+@@ -4,20 +4,17 @@
+ [Top]
+ You can get the address of a label defined in the current function
+ (or a containing function) with the unary operator <CODE>&amp;&amp;</CODE>.  The
+-value has type <CODE>void&nbsp;*</CODE>.  This value is a constant and can be used
+++ value has type <CODE><A HREF="$$INFOLINK(keywords/void)">void</A>*</CODE>.  This value is a constant and can be used
+ wherever a constant of that type is valid.  For example:
+ <PRE>void *ptr;
+ /* ... */
+ ptr = &amp;&amp;foo;
+ </PRE>
+ To use these values, you need to be able to jump to one.  This is done
+-with the computed goto statement The analogous feature in
+-Fortran is called an assigned goto, but that name seems inappropriate in
+-C, where one can do more than simply store label addresses in label
+-variables., <CODE>goto&nbsp;*<I>exp</I>;</CODE>.  For example,
++with the computed goto statement, <CODE><A HREF="$$INFOLINK(keywords/goto)">goto</A>&nbsp;*<I>exp</I>;</CODE>.  For example,
+ <PRE>goto *ptr;
+ </PRE>
+-Any expression of type <CODE>void&nbsp;*</CODE> is allowed.
++Any expression of type <CODE><A HREF="$$INFOLINK(keywords/void)">void</A>*</CODE> is allowed.
+ <BR><BR>
+ One way of using these constants is in initializing a static array that
+ will serve as a jump table:
+@@ -30,14 +27,10 @@
+ indexing in C never does that.
+ <BR><BR>
+ Such an array of label values serves a purpose much like that of the
+-<CODE>switch</CODE> statement.  The <CODE>switch</CODE> statement is cleaner, so
++<CODE><A HREF="$$INFOLINK(keywords/switch)">switch</A></CODE> statement.  The <CODE>switch</CODE> statement is cleaner, so
+ use that rather than an array unless the problem does not fit a
+ <CODE>switch</CODE> statement very well.
+ <BR><BR>
+-Another use of label values is in an interpreter for threaded code.
+-The labels within the interpreter function can be stored in the
+-threaded code for super-fast dispatching.
+-<BR><BR>
+ You may not use this mechanism to jump to code in a different function.
+ If you do that, totally unpredictable things will happen.  The best way to
+ avoid this is to store the label address only in automatic variables and
+@@ -48,6 +41,6 @@
+                              &amp;&amp;hack - &amp;&amp;foo };
+ goto *(&amp;&amp;foo + array[i]);
+ </PRE>
+-This is more friendly to code living in shared libraries, as it reduces
+-the number of dynamic relocations that are needed, and by consequence,
+-allows the data to be read-only.
++This is more friendly to code living in shared libraries (DLLs), as it reduces
++the number of dynamic relocations that are needed (and, by consequence,
++would allow the data to be read-only).
+diff -Nur gnuexts/SEC66.hss fix/gnuexts/SEC66.hss
+--- gnuexts/SEC66.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC66.hss	2003-09-17 00:45:50.000000000 +0200
+@@ -3,12 +3,15 @@
+ 
+ [Top]
+ A <U>nested function</U> is a function defined inside another function.
+-(Nested functions are not supported for GNU C++.)  The nested function's
++The nested function's
+ name is local to the block where it is defined.  For example, here we
+ define a nested function named <CODE>square</CODE>, and call it twice:
+-<PRE>foo (double a, double b)
++<PRE>double square_sum (double a, double b)
+ {
+-  double square (double z) { return z * z; }
++  double square (double z)
++  {
++    return z * z;
++  }
+ 
+   return square (a) + square (b);
+ }
+@@ -17,10 +20,13 @@
+ function that are visible at the point of its definition.  This is
+ called <U>lexical scoping</U>.  For example, here we show a nested
+ function which uses an inherited variable named <CODE>offset</CODE>:
+-<PRE>bar (int *array, int offset, int size)
++<PRE>int foo (int *array, int offset, int size)
+ {
+   int access (int *array, int index)
+-    { return array[index + offset]; }
++  {
++    return array[index + offset];
++  }
++
+   int i;
+   /* ... */
+   for (i = 0; i &lt; size; i++)
+@@ -33,10 +39,12 @@
+ <BR><BR>
+ It is possible to call the nested function from outside the scope of its
+ name by storing its address or passing the address to another function:
+-<PRE>hack (int *array, int size)
++<PRE>int hack (int *array, int size)
+ {
+   void store (int index, int value)
+-    { array[index] = value; }
++  {
++    array[index] = value;
++  }
+ 
+   intermediate (store, size);
+ }
+@@ -56,16 +64,17 @@
+ safe.
+ <BR><BR>
+ GCC implements taking the address of a nested function using a technique
+-called <U>trampolines</U>.  A paper describing them is available as
+-<BR><BR>
+-See <A HREF="http://people.debian.org/~aaronl/Usenix88-lexic.pdf">http://people.debian.org/~aaronl/Usenix88-lexic.pdf</A>.
++called <U>trampolines</U>.  A paper describing them is available at
++<A HREF="http://people.debian.org/~aaronl/Usenix88-lexic.pdf">http://people.debian.org/~aaronl/Usenix88-lexic.pdf</A>.
++Note that trampolines are currently broken in TIGCC; they create code on the
++stack, which can make HW2 calculators crash.
+ <BR><BR>
+ A nested function can jump to a label inherited from a containing
+ function, provided the label was explicitly declared in the containing
+ function (see <A HREF="$$LINK(SEC64)">Local Labels</A>).  Such a jump returns instantly to the
+ containing function, exiting the nested function which did the
+-<CODE>goto</CODE> and any intermediate functions as well.  Here is an example:
+-<PRE>bar (int *array, int offset, int size)
++<CODE><A HREF="$$INFOLINK(keywords/goto)">goto</A></CODE> and any intermediate functions as well.  Here is an example:
++<PRE>int bar (int *array, int offset, int size)
+ {
+   __label__ failure;
+   int access (int *array, int index)
+@@ -81,7 +90,7 @@
+   /* ... */
+   return 0;
+ 
+- /* Control comes here from <CODE>access</CODE>
++ /* Control comes here from 'access'
+     if it detects an error.  */
+  failure:
+   return -1;
+@@ -89,9 +98,9 @@
+ </PRE>
+ A nested function always has internal linkage.  Declaring one with
+ <CODE>extern</CODE> is erroneous.  If you need to declare the nested function
+-before its definition, use <CODE>auto</CODE> (which is otherwise meaningless
++before its definition, use <CODE><A HREF="$$INFOLINK(keywords/auto)">auto</A></CODE> (which is otherwise meaningless
+ for function declarations).
+-<PRE>bar (int *array, int offset, int size)
++<PRE>int bar (int *array, int offset, int size)
+ {
+   __label__ failure;
+   auto int access (int *, int);
+diff -Nur gnuexts/SEC67.hss fix/gnuexts/SEC67.hss
+--- gnuexts/SEC67.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC67.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=Constructing Function Calls
++Subsections=SEC67___builtin_apply_args, SEC67___builtin_apply, SEC67___builtin_return
+ 
+ [Top]
+ Using the built-in functions described below, you can record
+diff -Nur gnuexts/SEC67___builtin_apply.hss fix/gnuexts/SEC67___builtin_apply.hss
+--- gnuexts/SEC67___builtin_apply.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC67___builtin_apply.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -2,12 +2,15 @@
+ Title=__builtin_apply
+ 
+ [Top]
++<CODE><B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *__builtin_apply (<B><A HREF="$$INFOLINK(keywords/void)">void</A></B> (*fnc)(), <B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *args, <B><A HREF="$$INFOLINK(keywords/int)">int</A></B> size);</CODE>
++<BR><BR>
+ This built-in function invokes <I>function</I>
+ with a copy of the parameters described by <I>arguments</I>
+ and <I>size</I>.
+ <BR><BR>
+ The value of <I>arguments</I> should be the value returned by
+-<CODE>__builtin_apply_args</CODE>.  The argument <I>size</I> specifies the size
++<A HREF="$$LINK(SEC67___builtin_apply_args)">__builtin_apply_args</A>.
++The argument <I>size</I> specifies the size
+ of the stack argument data, in bytes.
+ <BR><BR>
+ This function returns a pointer to data describing
+@@ -15,6 +18,6 @@
+ is saved in a block of memory allocated on the stack.
+ <BR><BR>
+ It is not always simple to compute the proper value for <I>size</I>.  The
+-value is used by <CODE>__builtin_apply</CODE> to compute the amount of data
++value is used by __builtin_apply to compute the amount of data
+ that should be pushed on the stack and copied from the incoming argument
+ area.
+diff -Nur gnuexts/SEC67___builtin_apply_args.hss fix/gnuexts/SEC67___builtin_apply_args.hss
+--- gnuexts/SEC67___builtin_apply_args.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC67___builtin_apply_args.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=__builtin_apply_args
+ 
+ [Top]
++<CODE><B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *__builtin_apply_args (<B><A HREF="$$INFOLINK(keywords/void)">void</A></B>);</CODE>
++<BR><BR>
+ This built-in function returns a pointer to data
+ describing how to perform a call with the same arguments as were passed
+ to the current function.
+diff -Nur gnuexts/SEC67___builtin_return.hss fix/gnuexts/SEC67___builtin_return.hss
+--- gnuexts/SEC67___builtin_return.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC67___builtin_return.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=__builtin_return
+ 
+ [Top]
++<CODE><B><A HREF="$$INFOLINK(keywords/void)">void</A></B> __builtin_return (<B><A HREF="$$INFOLINK(keywords/void)">void</A></B> *result);</CODE>
++<BR><BR>
+ This built-in function returns the value described by <I>result</I> from
+ the containing function.  You should specify, for <I>result</I>, a value
+-returned by <CODE>__builtin_apply</CODE>.
++returned by <A HREF="$$LINK(SEC67___builtin_apply)">__builtin_apply</A>.
+diff -Nur gnuexts/SEC69.hss fix/gnuexts/SEC69.hss
+--- gnuexts/SEC69.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC69.hss	2003-09-17 00:42:10.000000000 +0200
+@@ -1,30 +1,30 @@
+ [Main]
+-Title=Referring to a Type with @code{typeof}
++Title=Referring to a Type with 'typeof'
++Index=typeof, __typeof__
+ 
+ [Top]
+ Another way to refer to the type of an expression is with <CODE>typeof</CODE>.
+-The syntax of using of this keyword looks like <CODE>sizeof</CODE>, but the
+-construct acts semantically like a type name defined with <CODE>typedef</CODE>.
++The syntax of using of this keyword looks like <CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE>, but the
++construct acts semantically like a type name defined with <CODE><A HREF="$$INFOLINK(keywords/typedef)">typedef</A></CODE>.
+ <BR><BR>
+ There are two ways of writing the argument to <CODE>typeof</CODE>: with an
+ expression or with a type.  Here is an example with an expression:
+ <PRE>typeof (x[0](1))
+ </PRE>
+-This assumes that <CODE>x</CODE> is an array of pointers to functions;
++This assumes that <I>x</I> is an array of pointers to functions;
+ the type described is that of the values of the functions.
+ <BR><BR>
+ Here is an example with a typename as the argument:
+ <PRE>typeof (int *)
+ </PRE>
+-Here the type described is that of pointers to <CODE>int</CODE>.
++Here the type described is that of pointers to <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.
+ <BR><BR>
+-If you are writing a header file that must work when included in ISO C
+-programs, write <CODE>__typeof__</CODE> instead of <CODE>typeof</CODE>.
++An alternate keyword for <CODE>typeof</CODE> is <CODE>__typeof__</CODE>.
+ See <A HREF="$$LINK(SEC100)">Alternate Keywords</A>.
+ <BR><BR>
+ A <CODE>typeof</CODE>-construct can be used anywhere a typedef name could be
+ used.  For example, you can use it in a declaration, in a cast, or inside
+-of <CODE>sizeof</CODE> or <CODE>typeof</CODE>.
++of <CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE> or <CODE>typeof</CODE>.
+ <BR><BR>
+ <CODE>typeof</CODE> is often useful in conjunction with the
+ statements-within-expressions feature.  Here is how the two together can
+@@ -45,17 +45,17 @@
+ Some more examples of the use of <CODE>typeof</CODE>:
+ <UL>
+ <LI>
+-This declares <CODE>y</CODE> with the type of what <CODE>x</CODE> points to.
++This declares <I>y</I> with the type of what <I>x</I> points to.
+ <PRE>typeof (*x) y;
+ </PRE>
+ </LI>
+ <LI>
+-This declares <CODE>y</CODE> as an array of such values.
++This declares <I>y</I> as an array of such values.
+ <PRE>typeof (*x) y[4];
+ </PRE>
+ </LI>
+ <LI>
+-This declares <CODE>y</CODE> as an array of pointers to characters:
++This declares <I>y</I> as an array of pointers to characters:
+ <PRE>typeof (typeof (char *)[4]) y;
+ </PRE>
+ It is equivalent to the following traditional C declaration:
+@@ -63,7 +63,7 @@
+ </PRE>
+ To see the meaning of the declaration using <CODE>typeof</CODE>, and why it
+ might be a useful way to write, let's rewrite it with these macros:
+-<PRE>#define pointer(T)  typeof(T *)
++<PRE>#define pointer(T) typeof(T *)
+ #define array(T, N) typeof(T [N])
+ </PRE>
+ Now the declaration can be rewritten this way:
+diff -Nur gnuexts/SEC70.hss fix/gnuexts/SEC70.hss
+--- gnuexts/SEC70.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC70.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -6,10 +6,6 @@
+ lvalues provided their operands are lvalues.  This means that you can take
+ their addresses or store values into them.
+ <BR><BR>
+-Standard C++ allows compound expressions and conditional expressions as
+-lvalues, and permits casts to reference type, so use of this extension
+-is deprecated for C++ code.
+-<BR><BR>
+ For example, a compound expression can be assigned, provided the last
+ expression in the sequence is an lvalue.  These two expressions are
+ equivalent:
+@@ -32,7 +28,7 @@
+ right-hand side first to the specified type, then to the type of the
+ inner left-hand side expression.  After this is stored, the value is
+ converted back to the specified type to become the value of the
+-assignment.  Thus, if <CODE>a</CODE> has type <CODE>char&nbsp;*</CODE>, the following two
++assignment.  Thus, if <CODE>a</CODE> has type <CODE><A HREF="$$INFOLINK(keywords/char)">char</A>*</CODE>, the following two
+ expressions are equivalent:
+ <PRE>(int)a = 5
+ (int)(a = (char *)(int)5)
+@@ -46,14 +42,14 @@
+ </PRE>
+ You cannot take the address of an lvalue cast, because the use of its
+ address would not work out coherently.  Suppose that <CODE>&amp;(int)f</CODE> were
+-permitted, where <CODE>f</CODE> has type <CODE>float</CODE>.  Then the following
++permitted, where <CODE>f</CODE> has type <CODE><A HREF="$$INFOLINK(keywords/float)">float</A></CODE>.  Then the following
+ statement would try to store an integer bit-pattern where a floating
+ point number belongs:
+ <PRE>*&amp;(int)f = 1;
+ </PRE>
+ This is quite different from what <CODE>(int)f&nbsp;=&nbsp;1</CODE> would do - that
+ would convert 1 to floating point and store it.  Rather than cause this
+-inconsistency, we think it is better to prohibit use of <CODE>&amp;</CODE> on a cast.
++inconsistency, the GNU team thinks it is better to prohibit use of <CODE>&amp;</CODE> on a cast.
+ <BR><BR>
+-If you really do want an <CODE>int&nbsp;*</CODE> pointer with the address of
+-<CODE>f</CODE>, you can simply write <CODE>(int&nbsp;*)&amp;f</CODE>.
++If you really do want an <CODE><A HREF="$$INFOLINK(keywords/int)">int</A>*</CODE> pointer with the address of
++<CODE>f</CODE>, you can simply write <CODE>(int*)&amp;f</CODE>.
+diff -Nur gnuexts/SEC72.hss fix/gnuexts/SEC72.hss
+--- gnuexts/SEC72.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC72.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -3,25 +3,23 @@
+ 
+ [Top]
+ ISO C99 supports data types for integers that are at least 64 bits wide,
+-and as an extension GCC supports them in C89 mode and in C++.
+-Simply write <CODE>long&nbsp;long&nbsp;int</CODE> for a signed integer, or
+-<CODE>unsigned&nbsp;long&nbsp;long&nbsp;int</CODE> for an unsigned integer.  To make an
++and as an extension GCC supports them in C89 mode.
++Simply write <CODE><A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE> for a signed integer, or
++<CODE><A HREF="$$INFOLINK(keywords/unsigned)">unsigned</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE> for an unsigned integer.  To make an
+ integer constant of type <CODE>long&nbsp;long&nbsp;int</CODE>, add the suffix <CODE>LL</CODE>
+ to the integer.  To make an integer constant of type <CODE>unsigned&nbsp;long
+ long&nbsp;int</CODE>, add the suffix <CODE>ULL</CODE> to the integer.
+ <BR><BR>
+ You can use these types in arithmetic like any other integer types.
+ Addition, subtraction, and bitwise boolean operations on these types
+-are open-coded on all types of machines.  Multiplication is open-coded
+-if the machine supports fullword-to-doubleword a widening multiply
+-instruction.  Division and shifts are open-coded only on machines that
+-provide special support.  The operations that are not open-coded use
+-special library routines that come with GCC.
++are open-coded on all types of machines, as well as shifts with a constant
++value.  Multiplication, division and shifts are not open-coded and use
++special library routines.
+ <BR><BR>
+ There may be pitfalls when you use <CODE>long&nbsp;long</CODE> types for function
+ arguments, unless you declare function prototypes.  If a function
+-expects type <CODE>int</CODE> for its argument, and you pass a value of type
+-<CODE>long&nbsp;long&nbsp;int</CODE>, confusion will result because the caller and the
++expects type <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE> for its argument, and you pass a value of type
++<CODE><A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE>, confusion will result because the caller and the
+ subroutine will disagree about the number of bytes for the argument.
+-Likewise, if the function expects <CODE>long&nbsp;long&nbsp;int</CODE> and you pass
+-<CODE>int</CODE>.  The best way to avoid such problems is to use prototypes.
++Likewise, if the function expects <CODE><A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/long)">long</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE> and you pass
++<CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>.  The best way to avoid such problems is to use prototypes.
+diff -Nur gnuexts/SEC73.hss fix/gnuexts/SEC73.hss
+--- gnuexts/SEC73.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC73.hss	2003-09-17 00:49:36.000000000 +0200
+@@ -1,17 +1,18 @@
+ [Main]
+ Title=Complex Numbers
++Index=__complex__, __imag__, __real__, _Complex
+ 
+ [Top]
+ ISO C99 supports complex floating data types, and as an extension GCC
+-supports them in C89 mode and in C++, and supports complex integer data
++supports them in C89 mode, and supports complex integer data
+ types which are not part of ISO C99.  You can declare complex types
+ using the keyword <CODE>_Complex</CODE>.  As an extension, the older GNU
+ keyword <CODE>__complex__</CODE> is also supported.
+ <BR><BR>
+ For example, <CODE>_Complex&nbsp;double&nbsp;x;</CODE> declares <CODE>x</CODE> as a
+ variable whose real part and imaginary part are both of type
+-<CODE>double</CODE>.  <CODE>_Complex&nbsp;short&nbsp;int&nbsp;y;</CODE> declares <CODE>y</CODE> to
+-have real and imaginary parts of type <CODE>short&nbsp;int</CODE>; this is not
++<CODE><A HREF="$$INFOLINK(keywords/double)">double</A></CODE>.  <CODE>_Complex&nbsp;short&nbsp;int&nbsp;y;</CODE> declares <CODE>y</CODE> to
++have real and imaginary parts of type <CODE><A HREF="$$INFOLINK(keywords/short)">short</A>&nbsp;<A HREF="$$INFOLINK(keywords/int)">int</A></CODE>; this is not
+ likely to be useful, but it shows that the set of complex types is
+ complete.
+ <BR><BR>
+@@ -20,9 +21,7 @@
+ has type <CODE>_Complex&nbsp;float</CODE> and <CODE>3i</CODE> has type
+ <CODE>_Complex&nbsp;int</CODE>.  Such a constant always has a pure imaginary
+ value, but you can form any complex value you like by adding one to a
+-real constant.  This is a GNU extension; if you have an ISO C99
+-conforming C library (such as GNU libc), and want to construct complex
+-constants of floating type, you should include <CODE>&lt;complex.h&gt;</CODE> and
++real constant.  This is a GNU extension; once TIGCC supports this, you should include <CODE>&lt;complex.h&gt;</CODE> and
+ use the macros <CODE>I</CODE> or <CODE>_Complex_I</CODE> instead.
+ <BR><BR>
+ To extract the real part of a complex-valued expression <I>exp</I>, write
+@@ -30,7 +29,7 @@
+ extract the imaginary part.  This is a GNU extension; for values of
+ floating type, you should use the ISO C99 functions <CODE>crealf</CODE>,
+ <CODE>creal</CODE>, <CODE>creall</CODE>, <CODE>cimagf</CODE>, <CODE>cimag</CODE> and
+-<CODE>cimagl</CODE>, declared in <CODE>&lt;complex.h&gt;</CODE> and also provided as
++<CODE>cimagl</CODE>, declared in <CODE>&lt;complex.h&gt;</CODE> (not yet available in TIGCC) and also provided as
+ built-in functions by GCC.
+ <BR><BR>
+ The operator <CODE>~</CODE> performs complex conjugation when used on a value
+@@ -41,10 +40,4 @@
+ <BR><BR>
+ GCC can allocate complex automatic variables in a noncontiguous
+ fashion; it's even possible for the real part to be in a register while
+-the imaginary part is on the stack (or vice-versa).  Only the DWARF2
+-debug info format can represent this, so use of DWARF2 is recommended.
+-If you are using the stabs debug info format, GCC describes a noncontiguous
+-complex variable as if it were two separate variables of noncomplex type.
+-If the variable's actual name is <CODE>foo</CODE>, the two fictitious
+-variables are named <CODE>foo$real</CODE> and <CODE>foo$imag</CODE>.  You can
+-examine and set these two fictitious variables with your debugger.
++the imaginary part is on the stack (or vice-versa).
+diff -Nur gnuexts/SEC74.hss fix/gnuexts/SEC74.hss
+--- gnuexts/SEC74.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC74.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -6,11 +6,11 @@
+ decimal notation, such as <CODE>1.55e1</CODE>, but also numbers such as
+ <CODE>0x1.fp3</CODE> written in hexadecimal format.  As a GNU extension, GCC
+ supports this in C89 mode (except in some cases when strictly
+-conforming) and in C++.  In that format the
++conforming).  In that format the
+ <CODE>0x</CODE> hex introducer and the <CODE>p</CODE> or <CODE>P</CODE> exponent field are
+ mandatory.  The exponent is a decimal number that indicates the power of
+ 2 by which the significant part will be multiplied.  Thus <CODE>0x1.f</CODE> is
+-1 15/16,
++<CODE>1&nbsp;15/16</CODE>,
+ <CODE>p3</CODE> multiplies it by 8, and the value of <CODE>0x1.fp3</CODE>
+ is the same as <CODE>1.55e1</CODE>.
+ <BR><BR>
+@@ -18,4 +18,4 @@
+ is always required in the hexadecimal notation.  Otherwise the compiler
+ would not be able to resolve the ambiguity of, e.g., <CODE>0x1.f</CODE>.  This
+ could mean <CODE>1.0f</CODE> or <CODE>1.9375</CODE> since <CODE>f</CODE> is also the
+-extension for floating-point constants of type <CODE>float</CODE>.
++extension for floating-point constants of type <CODE><A HREF="$$INFOLINK(keywords/float)">float</A></CODE>.
+diff -Nur gnuexts/SEC75.hss fix/gnuexts/SEC75.hss
+--- gnuexts/SEC75.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC75.hss	2003-09-17 00:50:44.000000000 +0200
+@@ -14,8 +14,8 @@
+   malloc (sizeof (struct line) + this_length);
+ thisline-&gt;length = this_length;
+ </PRE>
+-In ISO C90, you would have to give <CODE>contents</CODE> a length of 1, which
+-means either you waste space or complicate the argument to <CODE>malloc</CODE>.
++In ISO C90, you would have to give <I>contents</I> a length of 1, which
++means either you waste space or complicate the argument to <A HREF="$$LINK(alloc.h/malloc)">malloc</A>.
+ <BR><BR>
+ In ISO C99, you would use a <U>flexible array member</U>, which is
+ slightly different in syntax and semantics:
+@@ -26,14 +26,14 @@
+ <BR><BR>
+ </LI>
+ <LI>
+-Flexible array members have incomplete type, and so the <CODE>sizeof</CODE>
++Flexible array members have incomplete type, and so the <CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE>
+ operator may not be applied.  As a quirk of the original implementation
+-of zero-length arrays, <CODE>sizeof</CODE> evaluates to zero.
++of zero-length arrays, <CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE> evaluates to zero.
+ <BR><BR>
+ </LI>
+ <LI>
+ Flexible array members may only appear as the last member of a
+-<CODE>struct</CODE> that is otherwise non-empty.
++<CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A></CODE> that is otherwise non-empty.
+ <BR><BR>
+ </LI>
+ <LI>
+@@ -55,8 +55,8 @@
+ Instead GCC allows static initialization of flexible array members.
+ This is equivalent to defining a new structure containing the original
+ structure followed by an array of sufficient size to contain the data.
+-I.e. in the following, <CODE>f1</CODE> is constructed as if it were declared
+-like <CODE>f2</CODE>.
++I.e. in the following, <I>f1</I> is constructed as if it were declared
++like <I>f2</I>.
+ <PRE>struct f1 {
+   int x; int y[];
+ } f1 = { 1, { 2, 3, 4 } };
+@@ -65,8 +65,8 @@
+   struct f1 f1; int data[3];
+ } f2 = { { 1 }, { 2, 3, 4 } };
+ </PRE>
+-The convenience of this extension is that <CODE>f1</CODE> has the desired
+-type, eliminating the need to consistently refer to <CODE>f2.f1</CODE>.
++The convenience of this extension is that <I>f1</I> has the desired
++type, eliminating the need to consistently refer to <I>f2</I>.<I>f1</I>.
+ <BR><BR>
+ This has symmetry with normal static arrays, in that an array of
+ unknown size is also written with <CODE>[]</CODE>.
+@@ -83,5 +83,5 @@
+ struct foo a = { 1, { 2, 3, 4 } };        // Valid.
+ struct bar b = { { 1, { 2, 3, 4 } } };    // Invalid.
+ struct bar c = { { 1, { } } };            // Valid.
+-struct foo d[1] = { { 1 { 2, 3, 4 } } };  // Invalid.
++struct foo d[1] = { { 1, { 2, 3, 4 } } }; // Invalid.
+ </PRE>
+diff -Nur gnuexts/SEC76.hss fix/gnuexts/SEC76.hss
+--- gnuexts/SEC76.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC76.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -3,15 +3,14 @@
+ 
+ [Top]
+ Variable-length automatic arrays are allowed in ISO C99, and as an
+-extension GCC accepts them in C89 mode and in C++.  (However, GCC's
++extension GCC accepts them in C89 mode.  (However, GCC's
+ implementation of variable-length arrays does not yet conform in detail
+ to the ISO C99 standard.)  These arrays are
+ declared like any other automatic arrays, but with a length that is not
+ a constant expression.  The storage is allocated at the point of
+ declaration and deallocated when the brace-level is exited.  For
+ example:
+-<PRE>FILE *
+-concat_fopen (char *s1, char *s2, char *mode)
++<PRE>FILE *concat_fopen (const char *s1, const char *s2, const char *mode)
+ {
+   char str[strlen (s1) + strlen (s2) + 1];
+   strcpy (str, s1);
+@@ -23,17 +22,17 @@
+ storage.  Jumping into the scope is not allowed; you get an error
+ message for it.
+ <BR><BR>
+-You can use the function <CODE>alloca</CODE> to get an effect much like
+-variable-length arrays.  The function <CODE>alloca</CODE> is available in
++You can use the function <A HREF="$$LINK(alloc.h/alloca)">alloca</A> to get an effect much like
++variable-length arrays.  The function <A HREF="$$LINK(alloc.h/alloca)">alloca</A> is available in
+ many other C implementations (but not in all).  On the other hand,
+ variable-length arrays are more elegant.
+ <BR><BR>
+ There are other differences between these two methods.  Space allocated
+-with <CODE>alloca</CODE> exists until the containing <I>function</I> returns.
++with <A HREF="$$LINK(alloc.h/alloca)">alloca</A> exists until the containing <I>function</I> returns.
+ The space for a variable-length array is deallocated as soon as the array
+ name's scope ends.  (If you use both variable-length arrays and
+-<CODE>alloca</CODE> in the same function, deallocation of a variable-length array
+-will also deallocate anything more recently allocated with <CODE>alloca</CODE>.)
++<A HREF="$$LINK(alloc.h/alloca)">alloca</A> in the same function, deallocation of a variable-length array
++will also deallocate anything more recently allocated with <A HREF="$$LINK(alloc.h/alloca)">alloca</A>.)
+ <BR><BR>
+ You can also use variable-length arrays as arguments to functions:
+ <PRE>struct entry
+@@ -44,7 +43,7 @@
+ </PRE>
+ The length of an array is computed once when the storage is allocated
+ and is remembered for the scope of the array in case you access it with
+-<CODE>sizeof</CODE>.
++<CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE>.
+ <BR><BR>
+ If you want to pass the array first and the length afterward, you can
+ use a forward declaration in the parameter list - another GNU extension.
+@@ -55,8 +54,8 @@
+ }
+ </PRE>
+ The <CODE>int&nbsp;len</CODE> before the semicolon is a <U>parameter forward
+-declaration</U>, and it serves the purpose of making the name <CODE>len</CODE>
+-known when the declaration of <CODE>data</CODE> is parsed.
++declaration</U>, and it serves the purpose of making the name <I>len</I>
++known when the declaration of <I>data</I> is parsed.
+ <BR><BR>
+ You can write any number of such parameter forward declarations in the
+ parameter list.  They can be separated by commas or semicolons, but the
+diff -Nur gnuexts/SEC77.hss fix/gnuexts/SEC77.hss
+--- gnuexts/SEC77.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC77.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -1,23 +1,24 @@
+ [Main]
+-Title=Macros with a Variable Number of Arguments.
++Title=Macros with a Variable Number of Arguments
+ 
+ [Top]
+ In the ISO C standard of 1999, a macro can be declared to accept a
+ variable number of arguments much as a function can.  The syntax for
+ defining the macro is similar to that of a function.  Here is an
+ example:
+-<PRE>#define debug(format, ...) fprintf (stderr, format, __VA_ARGS__)
++<PRE>#define lprintf(format, ...) fprintf (log, format, __VA_ARGS__)
+ </PRE>
+ Here <CODE>...</CODE> is a <U>variable argument</U>.  In the invocation of
+ such a macro, it represents the zero or more tokens until the closing
+ parenthesis that ends the invocation, including any commas.  This set of
+ tokens replaces the identifier <CODE>__VA_ARGS__</CODE> in the macro body
+-wherever it appears.  See the CPP manual for more information.
++wherever it appears.
++For more information, see <A HREF="$$INFOLINK(cpp/SEC13)">Variadic Macros</A>.
+ <BR><BR>
+ GCC has long supported variadic macros, and used a different syntax that
+ allowed you to give a name to the variable arguments just like any other
+ argument.  Here is an example:
+-<PRE>#define debug(format, args...) fprintf (stderr, format, args)
++<PRE>#define lprintf(format, args...) fprintf (stderr, format, args)
+ </PRE>
+ This is in all ways equivalent to the ISO C example above, but arguably
+ more readable and descriptive.
+@@ -29,7 +30,7 @@
+ entirely; but you are allowed to pass an empty argument.  For example,
+ this invocation is invalid in ISO C, because there is no comma after
+ the string:
+-<PRE>debug (&quot;A message&quot;)
++<PRE>lprintf (&quot;A message&quot;);
+ </PRE>
+ GNU CPP permits you to completely omit the variable arguments in this
+ way.  In the above examples, the compiler would complain, though since
+@@ -38,7 +39,7 @@
+ <BR><BR>
+ To help solve this problem, CPP behaves specially for variable arguments
+ used with the token paste operator, <CODE>##</CODE>.  If instead you write
+-<PRE>#define debug(format, ...) fprintf (stderr, format, ## __VA_ARGS__)
++<PRE>#define lprintf(format, ...) fprintf (log, format, ## __VA_ARGS__)
+ </PRE>
+ and if the variable arguments are omitted or empty, the <CODE>##</CODE>
+ operator causes the preprocessor to remove the comma before it.  If you
+diff -Nur gnuexts/SEC79.hss fix/gnuexts/SEC79.hss
+--- gnuexts/SEC79.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC79.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -1,12 +1,12 @@
+ [Main]
+-Title=Arithmetic on @code{void}- and Function-Pointers
++Title=Arithmetic on void and Function Pointers
+ 
+ [Top]
+ In GNU C, addition and subtraction operations are supported on pointers to
+-<CODE>void</CODE> and on pointers to functions.  This is done by treating the
+-size of a <CODE>void</CODE> or of a function as 1.
++<CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE> and on pointers to functions.  This is done by treating the
++size of a <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE> or of a function as 1.
+ <BR><BR>
+-A consequence of this is that <CODE>sizeof</CODE> is also allowed on <CODE>void</CODE>
++A consequence of this is that <CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE> is also allowed on <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE>
+ and on function types, and returns 1.
+ <BR><BR>
+ The option <B>'-Wpointer-arith'</B> requests a warning if these extensions
+diff -Nur gnuexts/SEC80.hss fix/gnuexts/SEC80.hss
+--- gnuexts/SEC80.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/SEC80.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -5,7 +5,7 @@
+ As in standard C++ and ISO C99, the elements of an aggregate initializer for an
+ automatic variable are not required to be constant expressions in GNU C.
+ Here is an example of an initializer with run-time varying elements:
+-<PRE>foo (float f, float g)
++<PRE>void foo (float f, float g)
+ {
+   float beat_freqs[2] = { f-g, f+g };
+   /* ... */
+diff -Nur gnuexts/SEC81.hss fix/gnuexts/SEC81.hss
+--- gnuexts/SEC81.hss	2003-09-16 16:47:26.000000000 +0200
++++ fix/gnuexts/SEC81.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -1,5 +1,5 @@
+ [Main]
+-Title=Compound Literals
++Title=Compound Literals (Cast Constructors)
+ 
+ [Top]
+ ISO C99 supports compound literals.  A compound literal looks like
+@@ -9,10 +9,10 @@
+ compound literals in C89 mode and in C++.
+ <BR><BR>
+ Usually, the specified type is a structure.  Assume that
+-<CODE>struct&nbsp;foo</CODE> and <CODE>structure</CODE> are declared as shown:
++<CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A>&nbsp;foo</CODE> and <I>structure</I> are declared as shown:
+ <PRE>struct foo {int a; char b[2];} structure;
+ </PRE>
+-Here is an example of constructing a <CODE>struct&nbsp;foo</CODE> with a compound literal:
++Here is an example of constructing a <CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A>&nbsp;foo</CODE> with a compound literal:
+ <PRE>structure = ((struct foo) {x + y, 'a', 0});
+ </PRE>
+ This is equivalent to writing the following:
+@@ -28,7 +28,7 @@
+ such an initializer, as shown here:
+ <PRE>char **foo = (char *[]) { &quot;x&quot;, &quot;y&quot;, &quot;z&quot; };
+ </PRE>
+-Compound literals for scalar types and union types are is
++Compound literals for scalar types and union types are
+ also allowed, but then the compound literal is equivalent
+ to a cast.
+ <BR><BR>
+diff -Nur gnuexts/SEC82.hss fix/gnuexts/SEC82.hss
+--- gnuexts/SEC82.hss	2003-09-16 16:47:26.000000000 +0200
++++ fix/gnuexts/SEC82.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -8,8 +8,7 @@
+ <BR><BR>
+ In ISO C99 you can give the elements in any order, specifying the array
+ indices or structure field names they apply to, and GNU C allows this as
+-an extension in C89 mode as well.  This extension is not
+-implemented in GNU C++.
++an extension in C89 mode as well.
+ <BR><BR>
+ To specify an array index, write
+ <CODE>[<I>index</I>]&nbsp;=</CODE> before the element value.  For example,
+@@ -59,10 +58,10 @@
+ 
+ union foo f = { .d = 4 };
+ </PRE>
+-will convert 4 to a <CODE>double</CODE> to store it in the union using
+-the second element.  By contrast, casting 4 to type <CODE>union&nbsp;foo</CODE>
++will convert 4 to a <CODE><A HREF="$$INFOLINK(keywords/double)">double</A></CODE> to store it in the union using
++the second element.  By contrast, casting 4 to type <CODE><A HREF="$$INFOLINK(keywords/union)">union</A>&nbsp;foo</CODE>
+ would store it into the union as the integer <CODE>i</CODE>, since it is
+-an integer.  (see <A HREF="$$LINK(SEC84)">Cast to Union</A>.)
++an integer (see <A HREF="$$LINK(SEC84)">Cast to Union</A>).
+ <BR><BR>
+ You can combine this technique of naming elements with ordinary C
+ initialization of successive elements.  Each initializer element that
+@@ -74,7 +73,7 @@
+ <PRE>int a[6] = { 0, v1, v2, 0, v4, 0 };
+ </PRE>
+ Labeling the elements of an array initializer is especially useful
+-when the indices are characters or belong to an <CODE>enum</CODE> type.
++when the indices are characters or belong to an <CODE><A HREF="$$INFOLINK(keywords/enum)">enum</A></CODE> type.
+ For example:
+ <PRE>int whitespace[256]
+   = { [' '] = 1, ['\t'] = 1, ['\h'] = 1,
+@@ -84,10 +83,10 @@
+ <CODE>[<I>index</I>]</CODE> designators before an <CODE>=</CODE> to specify a
+ nested subobject to initialize; the list is taken relative to the
+ subobject corresponding to the closest surrounding brace pair.  For
+-example, with the <CODE>struct&nbsp;point</CODE> declaration above:
++example, with the <CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A>&nbsp;point</CODE> declaration above:
+ <PRE>struct point ptarray[10] = { [2].y = yv2, [2].x = xv2, [0].x = xv0 };
+ </PRE>
+ If the same field is initialized multiple times, it will have value from
+ the last initialization.  If any such overridden initialization has
+ side-effect, it is unspecified whether the side-effect happens or not.
+-Currently, gcc will discard them and issue a warning.
++Currently, GCC will discard them and issue a warning.
+diff -Nur gnuexts/SEC83.hss fix/gnuexts/SEC83.hss
+--- gnuexts/SEC83.hss	2003-09-16 16:47:26.000000000 +0200
++++ fix/gnuexts/SEC83.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -12,7 +12,7 @@
+ This feature is especially useful for ranges of ASCII character codes:
+ <PRE>case 'A' ... 'Z':
+ </PRE>
+-<B>Be careful:</B> Write spaces around the <CODE>...</CODE>, for otherwise
++<B>Note:</B> Always write spaces around the <CODE>...</CODE>, for otherwise
+ it may be parsed wrong when you use it with integer values.  For example,
+ write this:
+ <PRE>case 1 ... 5:
+diff -Nur gnuexts/SEC84.hss fix/gnuexts/SEC84.hss
+--- gnuexts/SEC84.hss	2003-09-16 16:47:26.000000000 +0200
++++ fix/gnuexts/SEC84.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -4,9 +4,9 @@
+ [Top]
+ A cast to union type is similar to other casts, except that the type
+ specified is a union type.  You can specify the type either with
+-<CODE>union&nbsp;<I>tag</I></CODE> or with a typedef name.  A cast to union is actually
++<CODE><A HREF="$$INFOLINK(keywords/union)">union</A>&nbsp;<I>tag</I></CODE> or with a typedef name.  A cast to union is actually
+ a constructor though, not a cast, and hence does not yield an lvalue like
+-normal casts.  (see <A HREF="$$LINK(SEC81)">Compound Literals</A>.)
++normal casts (see <A HREF="$$LINK(SEC81)">Compound Literals</A>).
+ <BR><BR>
+ The types that may be cast to the union type are those of the members
+ of the union.  Thus, given the following union and variables:
+@@ -14,7 +14,7 @@
+ int x;
+ double y;
+ </PRE>
+-both <CODE>x</CODE> and <CODE>y</CODE> can be cast to type <CODE>union&nbsp;foo</CODE>.
++both <I>x</I> and <I>y</I> can be cast to type <CODE><A HREF="$$INFOLINK(keywords/union)">union</A>&nbsp;foo</CODE>.
+ <BR><BR>
+ Using the cast as the right-hand side of an assignment to a variable of
+ union type is equivalent to storing in a member of the union:
+diff -Nur gnuexts/SEC85.hss fix/gnuexts/SEC85.hss
+--- gnuexts/SEC85.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85.hss	2003-09-17 01:30:18.000000000 +0200
+@@ -1,5 +1,7 @@
+ [Main]
+-Title=Declaring Attributes of Functions
++Title=Specifying Attributes of Functions
++Subsections=SEC85_noreturn, SEC85_pure, SEC85_const, SEC85_format, SEC85_format_arg, SEC85_no_instrument_function, SEC85_section, SEC85_constructor, SEC85_unused, SEC85_used, SEC85_malloc, SEC85_alias, SEC85_always_inline, SEC85_noinline, SEC85_deprecated, SEC85_regparm, SEC85_nonnull, SEC85_nothrow
++Index=__attribute__, CALLBACK, __ATTR_TIOS__, __ATTR_TIOS_NORETURN__, __ATTR_TIOS_CALLBACK__, __ATTR_GCC__, __ATTR_LIB_C__, __ATTR_LIB_ASM__, __ATTR_LIB_ASM_NORETURN__, __ATTR_LIB_CALLBACK_C__, __ATTR_LIB_CALLBACK_ASM__
+ 
+ [Top]
+ In GNU C, you declare certain things about functions called in your program
+@@ -8,22 +10,29 @@
+ <BR><BR>
+ The keyword <CODE>__attribute__</CODE> allows you to specify special
+ attributes when making a declaration.  This keyword is followed by an
+-attribute specification inside double parentheses.  The following
+-attributes are currently defined for functions on all targets:
+-<CODE>noreturn</CODE>, <CODE>noinline</CODE>, <CODE>always_inline</CODE>,
+-<CODE>pure</CODE>, <CODE>const</CODE>, <CODE>nothrow</CODE>,
+-<CODE>format</CODE>, <CODE>format_arg</CODE>, <CODE>no_instrument_function</CODE>,
+-<CODE>section</CODE>, <CODE>constructor</CODE>, <CODE>destructor</CODE>, <CODE>used</CODE>,
+-<CODE>unused</CODE>, <CODE>deprecated</CODE>, <CODE>weak</CODE>, <CODE>malloc</CODE>,
+-<CODE>alias</CODE>, and <CODE>nonnull</CODE>.  Several other attributes are defined
+-for functions on particular target systems.  Other attributes, including
+-<CODE>section</CODE> are supported for variables declarations
+-(see <A HREF="$$LINK(SEC91)">Variable Attributes</A>) and for types (see <A HREF="$$LINK(SEC92)">Type Attributes</A>).
++attribute specification inside double parentheses.
++The following attributes are currently defined for functions:
++
++[Bottom]
++Other attributes are supported for variable declarations (see <A HREF="$$LINK(SEC91)">Variable Attributes</A>)
++and for types (see <A HREF="$$LINK(SEC92)">Type Attributes</A>).
++<BR><BR>
++TIGCC also defines the macros <CODE>CALLBACK, __ATTR_TIOS__, __ATTR_TIOS_NORETURN__, __ATTR_TIOS_CALLBACK__, __ATTR_GCC__, __ATTR_LIB_C__, __ATTR_LIB_ASM__, __ATTR_LIB_ASM_NORETURN__, __ATTR_LIB_CALLBACK_C__,</CODE> and <CODE>__ATTR_LIB_CALLBACK_ASM__</CODE>.
++They are useful for specifying default attributes for a specific class of functions.
++You only need to use them when you define a callback function.
++For example, the callback function type <A HREF="$$LINK(stdlib.h/compare_t)">compare_t</A>
++needs the attributes specified by <CODE>__ATTR_LIB_CALLBACK_C__</CODE>,
++i.e. the attributes required by a callback function for a library function
++written in C.  Since this is too inconvenient for the user, all three callback
++attributes have been made equal, and we have defined a single <CODE>CALLBACK</CODE>
++macro.
+ <BR><BR>
+ You may also specify attributes with <CODE>__</CODE> preceding and following
+ each keyword.  This allows you to use them in header files without
+ being concerned about a possible macro of the same name.  For example,
+ you may use <CODE>__noreturn__</CODE> instead of <CODE>noreturn</CODE>.
++For example, as <A HREF="$$LINK(alloc.h/malloc)">malloc</A> is defined as a macro in the TIGCC Library,
++always use <CODE>__malloc__</CODE> instead of <CODE>malloc</CODE>.
+ <BR><BR>
+ See <A HREF="$$LINK(SEC85a)">Attribute Syntax</A> for details of the exact syntax for using
+ attributes.
+@@ -33,7 +42,7 @@
+ attribute declaration with another attribute declaration.
+ <BR><BR>
+ Some people object to the <CODE>__attribute__</CODE> feature, suggesting that
+-ISO C's <CODE>#pragma</CODE> should be used instead.  At the time
++ISO C's <CODE><A HREF="$$INFOLINK(cpp/SEC46)">#pragma</A></CODE> should be used instead.  At the time
+ <CODE>__attribute__</CODE> was designed, there were two reasons for not doing
+ this.
+ <OL>
+@@ -56,5 +65,4 @@
+ found convenient to use <CODE>__attribute__</CODE> to achieve a natural
+ attachment of attributes to their corresponding declarations, whereas
+ <CODE>#pragma&nbsp;GCC</CODE> is of use for constructs that do not naturally form
+-part of the grammar.  See <A HREF="$$INFOLINK(Other Directives,,Miscellaneous Preprocessing Directives, cpp, The C Preprocessor)">Miscellaneous
+-Preprocessing Directives, cpp, The C Preprocessor</A>.
++part of the grammar.
+diff -Nur gnuexts/SEC85_alias.hss fix/gnuexts/SEC85_alias.hss
+--- gnuexts/SEC85_alias.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_alias.hss	2003-09-17 00:55:38.000000000 +0200
+@@ -2,12 +2,14 @@
+ Title=alias
+ 
+ [Top]
++Syntax: <B>alias (&quot;<I>target</I>&quot;)</B>
++<BR><BR>
+ The <CODE>alias</CODE> attribute causes the declaration to be emitted as an
+ alias for another symbol, which must be specified.  For instance,
+ <PRE>void __f () { /* Do something. */; }
+ void f () __attribute__ ((weak, alias (&quot;__f&quot;)));
+ </PRE>
+-declares <CODE>f</CODE> to be a weak alias for <CODE>__f</CODE>.  In C++, the
+-mangled name for the target must be used.
++declares <I>f</I> to be a weak alias for <I>__f</I>.
+ <BR><BR>
+ Not all target machines support this attribute.
++We haven't tested yet whether it is supported for the Motorola 68000.
+diff -Nur gnuexts/SEC85_cdecl.hss fix/gnuexts/SEC85_cdecl.hss
+--- gnuexts/SEC85_cdecl.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_cdecl.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,11 +0,0 @@
+-[Main]
+-Title=cdecl
+-
+-[Top]
+-On the Intel 386, the <CODE>cdecl</CODE> attribute causes the compiler to
+-assume that the calling function will pop off the stack space used to
+-pass arguments.  This is
+-useful to override the effects of the <B>'-mrtd'</B> switch.
+-<BR><BR>
+-The PowerPC compiler for Windows NT currently ignores the <CODE>cdecl</CODE>
+-attribute.
+diff -Nur gnuexts/SEC85_const.hss fix/gnuexts/SEC85_const.hss
+--- gnuexts/SEC85_const.hss	2003-09-16 16:47:26.000000000 +0200
++++ fix/gnuexts/SEC85_const.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -1,25 +1,15 @@
+ [Main]
+ Title=const
++See Also=SEC85_pure: pure
+ 
+ [Top]
+ Many functions do not examine any values except their arguments, and
+ have no effects except the return value.  Basically this is just slightly
+-more strict class than the <CODE>pure</CODE> attribute above, since function is not
++more strict class than the <CODE><A HREF="$$LINK(SEC85_pure)">pure</A></CODE> attribute, since the function is not
+ allowed to read global memory.
+ <BR><BR>
+ Note that a function that has pointer arguments and examines the data
+ pointed to must <I>not</I> be declared <CODE>const</CODE>.  Likewise, a
+ function that calls a non-<CODE>const</CODE> function usually must not be
+ <CODE>const</CODE>.  It does not make sense for a <CODE>const</CODE> function to
+-return <CODE>void</CODE>.
+-<BR><BR>
+-The attribute <CODE>const</CODE> is not implemented in GCC versions earlier
+-than 2.5.  An alternative way to declare that a function has no side
+-effects, which works in the current version and in some older versions,
+-is as follows:
+-<PRE>typedef int intfn ();
+-
+-extern const intfn square;
+-</PRE>
+-This approach does not work in GNU C++ from 2.6.0 on, since the language
+-specifies that the <CODE>const</CODE> must be attached to the return value.
++return <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE>.
+diff -Nur gnuexts/SEC85_constructor.hss fix/gnuexts/SEC85_constructor.hss
+--- gnuexts/SEC85_constructor.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/SEC85_constructor.hss	2003-09-16 23:37:02.000000000 +0200
+@@ -0,0 +1,11 @@
++[Main]
++Title=constructor, destructor
++
++[Top]
++The <CODE>constructor</CODE> attribute causes the function to be called
++automatically before execution enters _main.  Similarly, the
++<CODE>destructor</CODE> attribute causes the function to be called
++automatically after _main has completed or <A HREF="$$LINK(stdlib.h/exit)">exit</A> has
++been called.  Functions with these attributes are useful for
++initializing data that will be used implicitly during the execution of
++the program.
+diff -Nur gnuexts/SEC85_default.hss fix/gnuexts/SEC85_default.hss
+--- gnuexts/SEC85_default.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_default.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-[Main]
+-Title=default
+-
+-[Top]
+-Default visibility is the normal case for ELF.  This value is
+-available for the visibility attribute to override other options
+-that may change the assumed visibility of symbols.
+diff -Nur gnuexts/SEC85_deprecated.hss fix/gnuexts/SEC85_deprecated.hss
+--- gnuexts/SEC85_deprecated.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_deprecated.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -15,5 +15,5 @@
+ </PRE>
+ results in a warning on line 3 but not line 2.
+ <BR><BR>
+-The <CODE>deprecated</CODE> attribute can also be used for variables and
+-types (see <A HREF="$$LINK(SEC91)">Variable Attributes</A> See <A HREF="$$LINK(SEC92)">Type Attributes</A>.)
++The <CODE>deprecated</CODE> attribute can also be used for <A HREF="$$LINK(SEC91_deprecated)">variables</A> and
++<A HREF="$$LINK(SEC92_deprecated)">types</A>.
+diff -Nur gnuexts/SEC85_destructor.hss fix/gnuexts/SEC85_destructor.hss
+--- gnuexts/SEC85_destructor.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_destructor.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,13 +0,0 @@
+-[Main]
+-Title=destructor
+-
+-[Top]
+-The <CODE>constructor</CODE> attribute causes the function to be called
+-automatically before execution enters <CODE>main&nbsp;()</CODE>.  Similarly, the
+-<CODE>destructor</CODE> attribute causes the function to be called
+-automatically after <CODE>main&nbsp;()</CODE> has completed or <CODE>exit&nbsp;()</CODE> has
+-been called.  Functions with these attributes are useful for
+-initializing data that will be used implicitly during the execution of
+-the program.
+-<BR><BR>
+-These attributes are not currently implemented for Objective-C.
+diff -Nur gnuexts/SEC85_dllexport.hss fix/gnuexts/SEC85_dllexport.hss
+--- gnuexts/SEC85_dllexport.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_dllexport.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-[Main]
+-Title=dllexport
+-
+-[Top]
+-On the PowerPC running Windows NT, the <CODE>dllexport</CODE> attribute causes
+-the compiler to provide a global pointer to the function pointer, so
+-that it can be called with the <CODE>dllimport</CODE> attribute.  The pointer
+-name is formed by combining <CODE>__imp_</CODE> and the function name.
+diff -Nur gnuexts/SEC85_dllimport.hss fix/gnuexts/SEC85_dllimport.hss
+--- gnuexts/SEC85_dllimport.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_dllimport.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-[Main]
+-Title=dllimport
+-
+-[Top]
+-On the PowerPC running Windows NT, the <CODE>dllimport</CODE> attribute causes
+-the compiler to call the function via a global pointer to the function
+-pointer that is set up by the Windows NT dll library.  The pointer name
+-is formed by combining <CODE>__imp_</CODE> and the function name.
+diff -Nur gnuexts/SEC85_eightbit_data.hss fix/gnuexts/SEC85_eightbit_data.hss
+--- gnuexts/SEC85_eightbit_data.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_eightbit_data.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-[Main]
+-Title=eightbit_data
+-
+-[Top]
+-Use this attribute on the H8/300 and H8/300H to indicate that the specified
+-variable should be placed into the eight bit data section.
+-The compiler will generate more efficient code for certain operations
+-on data in the eight bit data area.  Note the eight bit data area is limited to
+-256 bytes of data.
+-<BR><BR>
+-You must use GAS and GLD from GNU binutils version 2.7 or later for
+-this attribute to work correctly.
+diff -Nur gnuexts/SEC85_exception.hss fix/gnuexts/SEC85_exception.hss
+--- gnuexts/SEC85_exception.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_exception.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-[Main]
+-Title=exception
+-
+-[Top]
+-On the PowerPC running Windows NT, the <CODE>exception</CODE> attribute causes
+-the compiler to modify the structured exception table entry it emits for
+-the declared function.  The string or identifier <I>except-func</I> is
+-placed in the third entry of the structured exception table.  It
+-represents a function, which is called by the exception handling
+-mechanism if an exception occurs.  If it was specified, the string or
+-identifier <I>except-arg</I> is placed in the fourth entry of the
+-structured exception table.
+diff -Nur gnuexts/SEC85_far.hss fix/gnuexts/SEC85_far.hss
+--- gnuexts/SEC85_far.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_far.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,18 +0,0 @@
+-[Main]
+-Title=far
+-
+-[Top]
+-On 68HC11 and 68HC12 the <CODE>far</CODE> attribute causes the compiler to
+-use a calling convention that takes care of switching memory banks when
+-entering and leaving a function.  This calling convention is also the
+-default when using the <B>'-mlong-calls'</B> option.
+-<BR><BR>
+-On 68HC12 the compiler will use the <CODE>call</CODE> and <CODE>rtc</CODE> instructions
+-to call and return from a function.
+-<BR><BR>
+-On 68HC11 the compiler will generate a sequence of instructions
+-to invoke a board-specific routine to switch the memory bank and call the
+-real function. The board-specific routine simulates a <CODE>call</CODE>.
+-At the end of a function, it will jump to a board-specific routine
+-instead of using <CODE>rts</CODE>. The board-specific return routine simulates
+-the <CODE>rtc</CODE>.
+diff -Nur gnuexts/SEC85_format.hss fix/gnuexts/SEC85_format.hss
+--- gnuexts/SEC85_format.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_format.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -2,32 +2,35 @@
+ Title=format
+ 
+ [Top]
+-The <CODE>format</CODE> attribute specifies that a function takes <CODE>printf</CODE>,
+-<CODE>scanf</CODE>, <CODE>strftime</CODE> or <CODE>strfmon</CODE> style arguments which
++Syntax: <B>format (<I>archetype</I>, <I>string-index</I>, <I>first-to-check</I>)</B>
++<BR><BR>
++The <CODE>format</CODE> attribute specifies that a function takes <A HREF="$$LINK(stdio.h/printf)">printf</A>
++style arguments which
+ should be type-checked against a format string.  For example, the
+ declaration:
+ <PRE>extern int
+ my_printf (void *my_object, const char *my_format, ...)
+       __attribute__ ((format (printf, 2, 3)));
+ </PRE>
+-causes the compiler to check the arguments in calls to <CODE>my_printf</CODE>
+-for consistency with the <CODE>printf</CODE> style format string argument
+-<CODE>my_format</CODE>.
++causes the compiler to check the arguments in calls to <I>my_printf</I>
++for consistency with the <A HREF="$$LINK(stdio.h/printf)">printf</A> style format string argument
++<I>my_format</I>.
+ <BR><BR>
+ The parameter <I>archetype</I> determines how the format string is
+ interpreted, and should be <CODE>printf</CODE>, <CODE>scanf</CODE>, <CODE>strftime</CODE>
+-or <CODE>strfmon</CODE>.  (You can also use <CODE>__printf__</CODE>,
++or <CODE>strfmon</CODE> (note that only the function <A HREF="$$LINK(stdio.h/printf)">printf</A> is implemented in the TIGCC Library).
++(You can also use <CODE>__printf__</CODE>,
+ <CODE>__scanf__</CODE>, <CODE>__strftime__</CODE> or <CODE>__strfmon__</CODE>.)  The
+ parameter <I>string-index</I> specifies which argument is the format
+ string argument (starting from 1), while <I>first-to-check</I> is the
+ number of the first argument to check against the format string.  For
+ functions where the arguments are not available to be checked (such as
+-<CODE>vprintf</CODE>), specify the third parameter as zero.  In this case the
++<A HREF="$$LINK(stdio.h/vprintf)">vprintf</A>), specify the third parameter as zero.  In this case the
+ compiler only checks the format string for consistency.  For
+ <CODE>strftime</CODE> formats, the third parameter is required to be zero.
+ <BR><BR>
+-In the example above, the format string (<CODE>my_format</CODE>) is the second
+-argument of the function <CODE>my_print</CODE>, and the arguments to check
++In the example above, the format string (<I>my_format</I>) is the second
++argument of the function <I>my_print</I>, and the arguments to check
+ start with the third argument, so the correct parameters for the format
+ attribute are 2 and 3.
+ <BR><BR>
+@@ -35,13 +38,5 @@
+ which take format strings as arguments, so that GCC can check the
+ calls to these functions for errors.  The compiler always (unless
+ <B>'-ffreestanding'</B> is used) checks formats
+-for the standard library functions <CODE>printf</CODE>, <CODE>fprintf</CODE>,
+-<CODE>sprintf</CODE>, <CODE>scanf</CODE>, <CODE>fscanf</CODE>, <CODE>sscanf</CODE>, <CODE>strftime</CODE>,
+-<CODE>vprintf</CODE>, <CODE>vfprintf</CODE> and <CODE>vsprintf</CODE> whenever such
+-warnings are requested (using <B>'-Wformat'</B>), so there is no need to
+-modify the header file <CODE>stdio.h</CODE>.  In C99 mode, the functions
+-<CODE>snprintf</CODE>, <CODE>vsnprintf</CODE>, <CODE>vscanf</CODE>, <CODE>vfscanf</CODE> and
+-<CODE>vsscanf</CODE> are also checked.  Except in strictly conforming C
+-standard modes, the X/Open function <CODE>strfmon</CODE> is also checked as
+-are <CODE>printf_unlocked</CODE> and <CODE>fprintf_unlocked</CODE>.
++for the standard library functions.
+ See <A HREF="$$INFOLINK(comopts/SEC6)">Options Controlling C Dialect</A>.
+diff -Nur gnuexts/SEC85_format_arg.hss fix/gnuexts/SEC85_format_arg.hss
+--- gnuexts/SEC85_format_arg.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_format_arg.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -2,22 +2,22 @@
+ Title=format_arg
+ 
+ [Top]
++Syntax: <B>format_arg (<I>string-index</I>)</B>
++<BR><BR>
+ The <CODE>format_arg</CODE> attribute specifies that a function takes a format
+-string for a <CODE>printf</CODE>, <CODE>scanf</CODE>, <CODE>strftime</CODE> or
+-<CODE>strfmon</CODE> style function and modifies it (for example, to translate
++string for a <A HREF="$$LINK(stdio.h/printf)">printf</A> style function and modifies it (for example, to translate
+ it into another language), so the result can be passed to a
+-<CODE>printf</CODE>, <CODE>scanf</CODE>, <CODE>strftime</CODE> or <CODE>strfmon</CODE> style
++<A HREF="$$LINK(stdio.h/printf)">printf</A> style
+ function (with the remaining arguments to the format function the same
+ as they would have been for the unmodified string).  For example, the
+-declaration:
++declaration
+ <PRE>extern char *
+ my_dgettext (char *my_domain, const char *my_format)
+       __attribute__ ((format_arg (2)));
+ </PRE>
+-causes the compiler to check the arguments in calls to a <CODE>printf</CODE>,
+-<CODE>scanf</CODE>, <CODE>strftime</CODE> or <CODE>strfmon</CODE> type function, whose
+-format string argument is a call to the <CODE>my_dgettext</CODE> function, for
+-consistency with the format string argument <CODE>my_format</CODE>.  If the
++causes the compiler to check the arguments in calls to a <A HREF="$$LINK(stdio.h/printf)">printf</A> type function, whose
++format string argument is the result of a call to the <I>my_dgettext</I> function, for
++consistency with the format string argument <I>my_format</I>.  If the
+ <CODE>format_arg</CODE> attribute had not been specified, all the compiler
+ could tell in such calls to format functions would be that the format
+ string argument is not constant; this would generate a warning when
+@@ -29,10 +29,10 @@
+ <BR><BR>
+ The <CODE>format-arg</CODE> attribute allows you to identify your own
+ functions which modify format strings, so that GCC can check the
+-calls to <CODE>printf</CODE>, <CODE>scanf</CODE>, <CODE>strftime</CODE> or <CODE>strfmon</CODE>
+-type function whose operands are a call to one of your own function.
+-The compiler always treats <CODE>gettext</CODE>, <CODE>dgettext</CODE>, and
++calls to <A HREF="$$LINK(stdio.h/printf)">printf</A>
++type functions whose operands are calls to one of your own functions.
++(The compiler always treats <CODE>gettext</CODE>, <CODE>dgettext</CODE>, and
+ <CODE>dcgettext</CODE> in this manner except when strict ISO C support is
+ requested by <B>'-ansi'</B> or an appropriate <B>'-std'</B> option, or
+ <B>'-ffreestanding'</B> is used.  See <A HREF="$$INFOLINK(comopts/SEC6)">Options
+-Controlling C Dialect</A>.
++Controlling C Dialect</A>.)
+diff -Nur gnuexts/SEC85_function_vector.hss fix/gnuexts/SEC85_function_vector.hss
+--- gnuexts/SEC85_function_vector.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_function_vector.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-[Main]
+-Title=function_vector
+-
+-[Top]
+-Use this attribute on the H8/300 and H8/300H to indicate that the specified
+-function should be called through the function vector.  Calling a
+-function through the function vector will reduce code size, however;
+-the function vector has a limited size (maximum 128 entries on the H8/300
+-and 64 entries on the H8/300H) and shares space with the interrupt vector.
+-<BR><BR>
+-You must use GAS and GLD from GNU binutils version 2.7 or later for
+-this attribute to work correctly.
+diff -Nur gnuexts/SEC85_hidden.hss fix/gnuexts/SEC85_hidden.hss
+--- gnuexts/SEC85_hidden.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_hidden.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-[Main]
+-Title=hidden
+-
+-[Top]
+-Hidden visibility indicates that the symbol will not be placed into
+-the dynamic symbol table, so no other <U>module</U> (executable or
+-shared library) can reference it directly.
+diff -Nur gnuexts/SEC85_internal.hss fix/gnuexts/SEC85_internal.hss
+--- gnuexts/SEC85_internal.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_internal.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-[Main]
+-Title=internal
+-
+-[Top]
+-Internal visibility is like hidden visibility, but with additional
+-processor specific semantics.  Unless otherwise specified by the psABI,
+-gcc defines internal visibility to mean that the function is <I>never</I>
+-called from another module.  Note that hidden symbols, while then cannot
+-be referenced directly by other modules, can be referenced indirectly via
+-function pointers.  By indicating that a symbol cannot be called from
+-outside the module, gcc may for instance omit the load of a PIC register
+-since it is known that the calling function loaded the correct value.
+diff -Nur gnuexts/SEC85_interrupt.hss fix/gnuexts/SEC85_interrupt.hss
+--- gnuexts/SEC85_interrupt.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_interrupt.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,19 +0,0 @@
+-[Main]
+-Title=interrupt
+-
+-[Top]
+-Use this attribute on the ARM, AVR, M32R/D and Xstormy16 ports to indicate
+-that the specified function is an interrupt handler.  The compiler will
+-generate function entry and exit sequences suitable for use in an
+-interrupt handler when this attribute is present.
+-<BR><BR>
+-Note, interrupt handlers for the H8/300, H8/300H and SH processors can
+-be specified via the <CODE>interrupt_handler</CODE> attribute.
+-<BR><BR>
+-Note, on the AVR interrupts will be enabled inside the function.
+-<BR><BR>
+-Note, for the ARM you can specify the kind of interrupt to be handled by
+-adding an optional parameter to the interrupt attribute like this:
+-<PRE>void f () __attribute__ ((interrupt (&quot;IRQ&quot;)));
+-</PRE>
+-Permissible values for this parameter are: IRQ, FIQ, SWI, ABORT and UNDEF.
+diff -Nur gnuexts/SEC85_interrupt_handler.hss fix/gnuexts/SEC85_interrupt_handler.hss
+--- gnuexts/SEC85_interrupt_handler.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_interrupt_handler.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-[Main]
+-Title=interrupt_handler
+-
+-[Top]
+-Use this attribute on the H8/300, H8/300H and SH to indicate that the
+-specified function is an interrupt handler.  The compiler will generate
+-function entry and exit sequences suitable for use in an interrupt
+-handler when this attribute is present.
+diff -Nur gnuexts/SEC85_long_call and short_call.hss fix/gnuexts/SEC85_long_call and short_call.hss
+--- gnuexts/SEC85_long_call and short_call.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_long_call and short_call.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-[Main]
+-Title=long_call/short_call
+-
+-[Top]
+-This attribute allows to specify how to call a particular function on
+-ARM.  Both attributes override the <B>'-mlong-calls'</B> (see <A HREF="$$INFOLINK(ARM Options)">ARM Options</A>)
+-command line switch and <CODE>#pragma&nbsp;long_calls</CODE> settings.  The
+-<CODE>long_call</CODE> attribute causes the compiler to always call the
+-function by first loading its address into a register and then using the
+-contents of that register.  The <CODE>short_call</CODE> attribute always places
+-the offset to the function from the call site into the <CODE>BL</CODE>
+-instruction directly.
+diff -Nur gnuexts/SEC85_longcall and shortcall.hss fix/gnuexts/SEC85_longcall and shortcall.hss
+--- gnuexts/SEC85_longcall and shortcall.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_longcall and shortcall.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,13 +0,0 @@
+-[Main]
+-Title=longcall/shortcall
+-
+-[Top]
+-On the RS/6000 and PowerPC, the <CODE>longcall</CODE> attribute causes the
+-compiler to always call this function via a pointer, just as it would if
+-the <B>'-mlongcall'</B> option had been specified.  The <CODE>shortcall</CODE>
+-attribute causes the compiler not to do this.  These attributes override
+-both the <B>'-mlongcall'</B> switch and the <CODE>#pragma&nbsp;longcall</CODE>
+-setting.
+-<BR><BR>
+-See <A HREF="$$INFOLINK(RS_6000 and PowerPC Options)">RS/6000 and PowerPC Options</A> for more information on when long
+-calls are and are not necessary.
+diff -Nur gnuexts/SEC85_malloc.hss fix/gnuexts/SEC85_malloc.hss
+--- gnuexts/SEC85_malloc.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_malloc.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -3,6 +3,6 @@
+ 
+ [Top]
+ The <CODE>malloc</CODE> attribute is used to tell the compiler that a function
+-may be treated as if it were the malloc function.  The compiler assumes
+-that calls to malloc result in a pointers that cannot alias anything.
++may be treated as if it were the <A HREF="$$LINK(alloc.h/malloc)">malloc</A> function.  The compiler assumes
++that calls to <A HREF="$$LINK(alloc.h/malloc)">malloc</A> result in a pointers that cannot alias anything.
+ This will often improve optimization.
+diff -Nur gnuexts/SEC85_model.hss fix/gnuexts/SEC85_model.hss
+--- gnuexts/SEC85_model.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_model.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,21 +0,0 @@
+-[Main]
+-Title=model
+-
+-[Top]
+-Use this attribute on the M32R/D to set the addressability of an object,
+-and the code generated for a function.
+-The identifier <I>model-name</I> is one of <CODE>small</CODE>, <CODE>medium</CODE>,
+-or <CODE>large</CODE>, representing each of the code models.
+-<BR><BR>
+-Small model objects live in the lower 16MB of memory (so that their
+-addresses can be loaded with the <CODE>ld24</CODE> instruction), and are
+-callable with the <CODE>bl</CODE> instruction.
+-<BR><BR>
+-Medium model objects may live anywhere in the 32-bit address space (the
+-compiler will generate <CODE>seth/add3</CODE> instructions to load their addresses),
+-and are callable with the <CODE>bl</CODE> instruction.
+-<BR><BR>
+-Large model objects may live anywhere in the 32-bit address space (the
+-compiler will generate <CODE>seth/add3</CODE> instructions to load their addresses),
+-and may not be reachable with the <CODE>bl</CODE> instruction (the compiler will
+-generate the much slower <CODE>seth/add3/jl</CODE> instruction sequence).
+diff -Nur gnuexts/SEC85_naked.hss fix/gnuexts/SEC85_naked.hss
+--- gnuexts/SEC85_naked.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_naked.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-[Main]
+-Title=naked
+-
+-[Top]
+-Use this attribute on the ARM, AVR and IP2K ports to indicate that the
+-specified function do not need prologue/epilogue sequences generated by
+-the compiler.  It is up to the programmer to provide these sequences.
+diff -Nur gnuexts/SEC85_near.hss fix/gnuexts/SEC85_near.hss
+--- gnuexts/SEC85_near.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_near.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-[Main]
+-Title=near
+-
+-[Top]
+-On 68HC11 and 68HC12 the <CODE>near</CODE> attribute causes the compiler to
+-use the normal calling convention based on <CODE>jsr</CODE> and <CODE>rts</CODE>.
+-This attribute can be used to cancel the effect of the <B>'-mlong-calls'</B>
+-option.
+diff -Nur gnuexts/SEC85_nonnull.hss fix/gnuexts/SEC85_nonnull.hss
+--- gnuexts/SEC85_nonnull.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_nonnull.hss	2003-09-17 01:26:00.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=nonnull
+ 
+ [Top]
++Syntax: <B>nonnull [(<I>param1</I>[, <I>param2</I>[, ...]])]</B>
++<BR><BR>
+ The <CODE>nonnull</CODE> attribute specifies that some function parameters should
+ be non-null pointers.  For instance, the declaration:
+ <PRE>extern void *
+diff -Nur gnuexts/SEC85_noreturn.hss fix/gnuexts/SEC85_noreturn.hss
+--- gnuexts/SEC85_noreturn.hss	2003-09-16 16:47:26.000000000 +0200
++++ fix/gnuexts/SEC85_noreturn.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -2,10 +2,10 @@
+ Title=noreturn
+ 
+ [Top]
+-A few standard library functions, such as <CODE>abort</CODE> and <CODE>exit</CODE>,
+-cannot return.  GCC knows this automatically.  Some programs define
++A few standard library functions, such as <A HREF="$$LINK(stdlib.h/abort)">abort</A> and <A HREF="$$LINK(stdlib.h/exit)">exit</A>,
++cannot return.  Some programs define
+ their own functions that never return.  You can declare them
+-<CODE>noreturn</CODE> to tell the compiler this fact.  For example,
++<CODE>noreturn</CODE> to tell the compiler this fact.  For example:
+ <PRE>void fatal () __attribute__ ((noreturn));
+ 
+ void
+@@ -16,8 +16,8 @@
+ }
+ </PRE>
+ The <CODE>noreturn</CODE> keyword tells the compiler to assume that
+-<CODE>fatal</CODE> cannot return.  It can then optimize without regard to what
+-would happen if <CODE>fatal</CODE> ever did return.  This makes slightly
++<I>fatal</I> cannot return.  It can then optimize without regard to what
++would happen if <I>fatal</I> ever did return.  This makes slightly
+ better code.  More importantly, it helps avoid spurious warnings of
+ uninitialized variables.
+ <BR><BR>
+@@ -25,13 +25,4 @@
+ restored before calling the <CODE>noreturn</CODE> function.
+ <BR><BR>
+ It does not make sense for a <CODE>noreturn</CODE> function to have a return
+-type other than <CODE>void</CODE>.
+-<BR><BR>
+-The attribute <CODE>noreturn</CODE> is not implemented in GCC versions
+-earlier than 2.5.  An alternative way to declare that a function does
+-not return, which works in the current version and in some older
+-versions, is as follows:
+-<PRE>typedef void voidfn ();
+-
+-volatile voidfn fatal;
+-</PRE>
++type other than <CODE><A HREF="$$INFOLINK(keywords/void)">void</A></CODE>.
+diff -Nur gnuexts/SEC85_nothrow.hss fix/gnuexts/SEC85_nothrow.hss
+--- gnuexts/SEC85_nothrow.hss	2003-09-16 16:47:26.000000000 +0200
++++ fix/gnuexts/SEC85_nothrow.hss	2003-09-17 01:28:30.000000000 +0200
+@@ -3,8 +3,6 @@
+ 
+ [Top]
+ The <CODE>nothrow</CODE> attribute is used to inform the compiler that a
+-function cannot throw an exception.  For example, most functions in
+-the standard C library can be guaranteed not to throw an exception
+-with the notable exceptions of <CODE>qsort</CODE> and <CODE>bsearch</CODE> that
+-take function pointer arguments.  The <CODE>nothrow</CODE> attribute is not
+-implemented in GCC versions earlier than 3.2.
++function cannot throw an exception.
++This is probably useless in TIGCC, as it implements its own error-handling
++mechanism.
+diff -Nur gnuexts/SEC85_protected.hss fix/gnuexts/SEC85_protected.hss
+--- gnuexts/SEC85_protected.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_protected.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-[Main]
+-Title=protected
+-
+-[Top]
+-Protected visibility indicates that the symbol will be placed in the
+-dynamic symbol table, but that references within the defining module
+-will bind to the local symbol.  That is, the symbol cannot be overridden
+-by another module.
+diff -Nur gnuexts/SEC85_pure.hss fix/gnuexts/SEC85_pure.hss
+--- gnuexts/SEC85_pure.hss	2003-09-16 16:47:26.000000000 +0200
++++ fix/gnuexts/SEC85_pure.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+ Title=pure
++See Also=SEC85_const: const
+ 
+ [Top]
+ Many functions have no effects except the return value and their
+@@ -10,13 +11,10 @@
+ with the attribute <CODE>pure</CODE>.  For example,
+ <PRE>int square (int) __attribute__ ((pure));
+ </PRE>
+-says that the hypothetical function <CODE>square</CODE> is safe to call
++says that the hypothetical function <I>square</I> is safe to call
+ fewer times than the program says.
+ <BR><BR>
+-Some of common examples of pure functions are <CODE>strlen</CODE> or <CODE>memcmp</CODE>.
++Some common examples of pure functions are <A HREF="$$LINK(string.h/strlen)">strlen</A> or <A HREF="$$LINK(mem.h/memcmp)">memcmp</A>.
+ Interesting non-pure functions are functions with infinite loops or those
+ depending on volatile memory or other system resource, that may change between
+-two consecutive calls (such as <CODE>feof</CODE> in a multithreading environment).
+-<BR><BR>
+-The attribute <CODE>pure</CODE> is not implemented in GCC versions earlier
+-than 2.96.
++two consecutive calls.
+diff -Nur gnuexts/SEC85_regparm.hss fix/gnuexts/SEC85_regparm.hss
+--- gnuexts/SEC85_regparm.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_regparm.hss	2003-09-17 00:57:24.000000000 +0200
+@@ -1,19 +1,12 @@
+ [Main]
+-Title=regparm
++Title=regparm, stkparm
++See Also=SEC99a: Specifying Registers for Function Parameters
+ 
+ [Top]
+-On the Intel 386, the <CODE>regparm</CODE> attribute causes the compiler to
+-pass up to <I>number</I> integer arguments in registers EAX,
+-EDX, and ECX instead of on the stack.  Functions that take a
+-variable number of arguments will continue to be passed all of their
+-arguments on the stack.
++Syntax: <B>regparm [(<I>regcount</I>)]</B> / <B>stkparm</B>
+ <BR><BR>
+-Beware that on some ELF systems this attribute is unsuitable for
+-global functions in shared libraries with lazy binding (which is the
+-default).  Lazy binding will send the first call via resolving code in
+-the loader, which might assume EAX, EDX and ECX can be clobbered, as
+-per the standard calling conventions.  Solaris 8 is affected by this.
+-GNU systems with GLIBC 2.1 or higher, and FreeBSD, are believed to be
+-safe since the loaders there save all registers.  (Lazy binding can be
+-disabled with the linker or the loader if desired, to avoid the
+-problem.)
++The <CODE>regparm</CODE> attribute causes the function to use <I>regcount</I>
++data registers and <I>regcount</I> address registers for parameters.
++<CODE>stkparm</CODE> means the exact opposite, i.e. all parameters are passed
++on the stack.  The <B>'-mregparm'</B> switch specifies which one is the default,
++and the default for <I>regcount</I>.
+diff -Nur gnuexts/SEC85_section.hss fix/gnuexts/SEC85_section.hss
+--- gnuexts/SEC85_section.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_section.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -2,16 +2,18 @@
+ Title=section
+ 
+ [Top]
+-Normally, the compiler places the code it generates in the <CODE>text</CODE> section.
++Syntax: <B>section (&quot;<I>section-name</I>&quot;)</B>
++<BR><BR>
++Normally, the compiler places all code and data it generates in the <CODE>.data</CODE> section.
+ Sometimes, however, you need additional sections, or you need certain
+ particular functions to appear in special sections.  The <CODE>section</CODE>
+ attribute specifies that a function lives in a particular section.
+ For example, the declaration:
+ <PRE>extern void foobar (void) __attribute__ ((section (&quot;bar&quot;)));
+ </PRE>
+-puts the function <CODE>foobar</CODE> in the <CODE>bar</CODE> section.
++puts the function <I>foobar</I> in the <CODE>bar</CODE> section.
++<BR><BR>
++The use of this attribute is limited in TIGCC, because its linker supports
++only a few types of sections.
+ <BR><BR>
+-Some file formats do not support arbitrary sections so the <CODE>section</CODE>
+-attribute is not available on all platforms.
+-If you need to map the entire contents of a module to a particular
+-section, consider using the facilities of the linker instead.
++The <CODE>section</CODE> attribute can also be used for <A HREF="$$LINK(SEC91_section)">variables</A>.
+diff -Nur gnuexts/SEC85_signal.hss fix/gnuexts/SEC85_signal.hss
+--- gnuexts/SEC85_signal.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_signal.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,8 +0,0 @@
+-[Main]
+-Title=signal
+-
+-[Top]
+-Use this attribute on the AVR to indicate that the specified
+-function is an signal handler.  The compiler will generate function
+-entry and exit sequences suitable for use in an signal handler when this
+-attribute is present.  Interrupts will be disabled inside function.
+diff -Nur gnuexts/SEC85_sp_switch.hss fix/gnuexts/SEC85_sp_switch.hss
+--- gnuexts/SEC85_sp_switch.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_sp_switch.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-[Main]
+-Title=sp_switch
+-
+-[Top]
+-Use this attribute on the SH to indicate an <CODE>interrupt_handler</CODE>
+-function should switch to an alternate stack.  It expects a string
+-argument that names a global variable holding the address of the
+-alternate stack.
+-<PRE>void *alt_stack;
+-void f () __attribute__ ((interrupt_handler,
+-                          sp_switch (&quot;alt_stack&quot;)));
+-</PRE>
+diff -Nur gnuexts/SEC85_stdcall.hss fix/gnuexts/SEC85_stdcall.hss
+--- gnuexts/SEC85_stdcall.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_stdcall.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,10 +0,0 @@
+-[Main]
+-Title=stdcall
+-
+-[Top]
+-On the Intel 386, the <CODE>stdcall</CODE> attribute causes the compiler to
+-assume that the called function will pop off the stack space used to
+-pass arguments, unless it takes a variable number of arguments.
+-<BR><BR>
+-The PowerPC compiler for Windows NT currently ignores the <CODE>stdcall</CODE>
+-attribute.
+diff -Nur gnuexts/SEC85_tiny_data.hss fix/gnuexts/SEC85_tiny_data.hss
+--- gnuexts/SEC85_tiny_data.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_tiny_data.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,9 +0,0 @@
+-[Main]
+-Title=tiny_data
+-
+-[Top]
+-Use this attribute on the H8/300H to indicate that the specified
+-variable should be placed into the tiny data section.
+-The compiler will generate more efficient code for loads and stores
+-on data in the tiny data section.  Note the tiny data area is limited to
+-slightly under 32kbytes of data.
+diff -Nur gnuexts/SEC85_tls_model.hss fix/gnuexts/SEC85_tls_model.hss
+--- gnuexts/SEC85_tls_model.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_tls_model.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,20 +0,0 @@
+-[Main]
+-Title=tls_model
+-
+-[Top]
+-The <CODE>visibility</CODE> attribute on ELF targets causes the declaration
+-to be emitted with default, hidden, protected or internal visibility.
+-<PRE>void __attribute__ ((visibility (&quot;protected&quot;)))
+-f () { /* Do something. */; }
+-int i __attribute__ ((visibility (&quot;hidden&quot;)));
+-</PRE>
+-See the ELF gABI for complete details, but the short story is:
+-<BR><BR>
+-Not all ELF targets support this attribute.
+-<BR><BR>
+-The <CODE>tls_model</CODE> attribute sets thread-local storage model
+-(see <A HREF="$$INFOLINK(Thread-Local)">Thread-Local</A>) of a particular <CODE>__thread</CODE> variable,
+-overriding <B>'-ftls-model='</B> command line switch on a per-variable
+-basis.
+-The <I>tls_model</I> argument should be one of <CODE>global-dynamic</CODE>,
+-<CODE>local-dynamic</CODE>, <CODE>initial-exec</CODE> or <CODE>local-exec</CODE>.
+diff -Nur gnuexts/SEC85_trap_exit.hss fix/gnuexts/SEC85_trap_exit.hss
+--- gnuexts/SEC85_trap_exit.hss	2003-09-16 16:47:30.000000000 +0200
++++ fix/gnuexts/SEC85_trap_exit.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,7 +0,0 @@
+-[Main]
+-Title=trap_exit
+-
+-[Top]
+-Use this attribute on the SH for an <CODE>interrupt_handle</CODE> to return using
+-<CODE>trapa</CODE> instead of <CODE>rte</CODE>.  This attribute expects an integer
+-argument specifying the trap number to be used.
+diff -Nur gnuexts/SEC85_unused.hss fix/gnuexts/SEC85_unused.hss
+--- gnuexts/SEC85_unused.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_unused.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -4,5 +4,7 @@
+ [Top]
+ This attribute, attached to a function, means that the function is meant
+ to be possibly unused.  GCC will not produce a warning for this
+-function.  GNU C++ does not currently support this attribute as
+-definitions without parameters are valid in C++.
++function.
++<BR><BR>
++The <CODE>unused</CODE> attribute can also be used for <A HREF="$$LINK(SEC91_unused)">variables</A> and
++<A HREF="$$LINK(SEC92_unused)">types</A>.
+diff -Nur gnuexts/SEC85_weak.hss fix/gnuexts/SEC85_weak.hss
+--- gnuexts/SEC85_weak.hss	2003-09-16 16:47:28.000000000 +0200
++++ fix/gnuexts/SEC85_weak.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,10 +0,0 @@
+-[Main]
+-Title=weak
+-
+-[Top]
+-The <CODE>weak</CODE> attribute causes the declaration to be emitted as a weak
+-symbol rather than a global.  This is primarily useful in defining
+-library functions which can be overridden in user code, though it can
+-also be used with non-function declarations.  Weak symbols are supported
+-for ELF targets, and also for a.out targets when using the GNU assembler
+-and linker.
+diff -Nur gnuexts/SEC85a.hss fix/gnuexts/SEC85a.hss
+--- gnuexts/SEC85a.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC85a.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -4,18 +4,10 @@
+ [Top]
+ This section describes the syntax with which <CODE>__attribute__</CODE> may be
+ used, and the constructs to which attribute specifiers bind, for the C
+-language.  Some details may vary for C++ and Objective-C.  Because of
++language.  Because of
+ infelicities in the grammar for attributes, some forms described here
+ may not be successfully parsed in all cases.
+ <BR><BR>
+-There are some problems with the semantics of attributes in C++.  For
+-example, there are no manglings for attributes, although they may affect
+-code generation, so problems may arise when attributed types are used in
+-conjunction with templates or overloading.  Similarly, <CODE>typeid</CODE>
+-does not distinguish between types with different attributes.  Support
+-for attributes in C++ may be restricted in future to attributes on
+-declarations only, but not on nested declarators.
+-<BR><BR>
+ See <A HREF="$$LINK(SEC85)">Function Attributes</A> for details of the semantics of attributes
+ applying to functions.  See <A HREF="$$LINK(SEC91)">Variable Attributes</A> for details of the
+ semantics of attributes applying to variables.  See <A HREF="$$LINK(SEC92)">Type Attributes</A>
+diff -Nur gnuexts/SEC86.hss fix/gnuexts/SEC86.hss
+--- gnuexts/SEC86.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC86.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -22,11 +22,11 @@
+   return x == 0;
+ }
+ </PRE>
+-Suppose the type <CODE>uid_t</CODE> happens to be <CODE>short</CODE>.  ISO C does
++Suppose the type <CODE>uid_t</CODE> happens to be <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE>.  ISO C does
+ not allow this example, because subword arguments in old-style
+ non-prototype definitions are promoted.  Therefore in this example the
+-function definition's argument is really an <CODE>int</CODE>, which does not
+-match the prototype argument type of <CODE>short</CODE>.
++function definition's argument is really an <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE>, which does not
++match the prototype argument type of <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE>.
+ <BR><BR>
+ This restriction of ISO C makes it hard to write code that is portable
+ to traditional C compilers, because the programmer does not know
+@@ -45,5 +45,3 @@
+   return x == 0;
+ }
+ </PRE>
+-GNU C++ does not support old-style function definitions, so this
+-extension is irrelevant.
+diff -Nur gnuexts/SEC88.hss fix/gnuexts/SEC88.hss
+--- gnuexts/SEC88.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC88.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -4,5 +4,3 @@
+ [Top]
+ In GNU C, you may normally use dollar signs in identifier names.
+ This is because many traditional C implementations allow such identifiers.
+-However, dollar signs in identifiers are not supported on a few target
+-machines, typically because the target assembler does not allow them.
+diff -Nur gnuexts/SEC89.hss fix/gnuexts/SEC89.hss
+--- gnuexts/SEC89.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC89.hss	2003-09-16 22:56:08.000000000 +0200
+@@ -1,6 +1,6 @@
+ [Main]
+-Title=The Character @key{ESC} in Constants
++Title=Escape Character in Constants
+ 
+ [Top]
+ You can use the sequence <CODE>\e</CODE> in a string or character constant to
+-stand for the ASCII character ESC.
++stand for the ASCII character ESC (<CODE>\x1B</CODE>).
+diff -Nur gnuexts/SEC90.hss fix/gnuexts/SEC90.hss
+--- gnuexts/SEC90.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC90.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -4,25 +4,18 @@
+ [Top]
+ The keyword <CODE>__alignof__</CODE> allows you to inquire about how an object
+ is aligned, or the minimum alignment usually required by a type.  Its
+-syntax is just like <CODE>sizeof</CODE>.
++syntax is just like <CODE><A HREF="$$INFOLINK(keywords/sizeof)">sizeof</A></CODE>.
+ <BR><BR>
+-For example, if the target machine requires a <CODE>double</CODE> value to be
+-aligned on an 8-byte boundary, then <CODE>__alignof__&nbsp;(double)</CODE> is 8.
+-This is true on many RISC machines.  On more traditional machine
+-designs, <CODE>__alignof__&nbsp;(double)</CODE> is 4 or even 2.
+-<BR><BR>
+-Some machines never actually require alignment; they allow reference to any
+-data type even at an odd addresses.  For these machines, <CODE>__alignof__</CODE>
+-reports the <I>recommended</I> alignment of a type.
++In TIGCC, <CODE>__alignof__&nbsp;(<I>anything</I>)</CODE> is always 2, except for
++<CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> variables.
+ <BR><BR>
+ If the operand of <CODE>__alignof__</CODE> is an lvalue rather than a type,
+ its value is the required alignment for its type, taking into account
+-any minimum alignment specified with GCC's <CODE>__attribute__</CODE>
+-extension (see <A HREF="$$LINK(SEC91)">Variable Attributes</A>).  For example, after this
++any minimum alignment specified with GCC's <CODE><A HREF="$$LINK(SEC91_aligned)">aligned</A></CODE> attribute.  For example, after this
+ declaration:
+ <PRE>struct foo { int x; char y; } foo1;
+ </PRE>
+ the value of <CODE>__alignof__&nbsp;(foo1.y)</CODE> is 1, even though its actual
+-alignment is probably 2 or 4, the same as <CODE>__alignof__&nbsp;(int)</CODE>.
++alignment is 2, the same as <CODE>__alignof__&nbsp;(int)</CODE>.
+ <BR><BR>
+ It is an error to ask for the alignment of an incomplete type.
+diff -Nur gnuexts/SEC91.hss fix/gnuexts/SEC91.hss
+--- gnuexts/SEC91.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91.hss	2003-09-17 01:14:22.000000000 +0200
+@@ -1,18 +1,18 @@
+ [Main]
+ Title=Specifying Attributes of Variables
++Subsections=SEC91_aligned, SEC91_mode, SEC91_nocommon, SEC91_packed, SEC91_section, SEC91_transparent_union, SEC91_cleanup, SEC91_unused, SEC91_deprecated
++Index=__attribute__
+ 
+ [Top]
+ The keyword <CODE>__attribute__</CODE> allows you to specify special
+ attributes of variables or structure fields.  This keyword is followed
+-by an attribute specification inside double parentheses.  Ten
+-attributes are currently defined for variables: <CODE>aligned</CODE>,
+-<CODE>mode</CODE>, <CODE>nocommon</CODE>, <CODE>packed</CODE>, <CODE>section</CODE>,
+-<CODE>transparent_union</CODE>, <CODE>unused</CODE>, <CODE>deprecated</CODE>,
+-<CODE>vector_size</CODE>, and <CODE>weak</CODE>.  Some other attributes are defined
+-for variables on particular target systems.  Other attributes are
++by an attribute specification inside double parentheses.
++The following attributes are currently defined for variables:
++
++[Bottom]
++Other attributes are
+ available for functions (see <A HREF="$$LINK(SEC85)">Function Attributes</A>) and for types
+-(see <A HREF="$$LINK(SEC92)">Type Attributes</A>).  Other front ends might define more
+-attributes (see <A HREF="$$INFOLINK(C++ Extensions,,Extensions to the C++ Language)">Extensions to the C++ Language</A>).
++(see <A HREF="$$LINK(SEC92)">Type Attributes</A>).
+ <BR><BR>
+ You may also specify attributes with <CODE>__</CODE> preceding and following
+ each keyword.  This allows you to use them in header files without
+diff -Nur gnuexts/SEC91_aligned.hss fix/gnuexts/SEC91_aligned.hss
+--- gnuexts/SEC91_aligned.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC91_aligned.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -2,22 +2,19 @@
+ Title=aligned
+ 
+ [Top]
++Syntax: <B>aligned [(<I>alignment</I>)]</B>
++<BR><BR>
+ This attribute specifies a minimum alignment for the variable or
+ structure field, measured in bytes.  For example, the declaration:
+-<PRE>int x __attribute__ ((aligned (16))) = 0;
++<PRE>int x __attribute__ ((aligned (4))) = 0;
+ </PRE>
+ causes the compiler to allocate the global variable <CODE>x</CODE> on a
+-16-byte boundary.  On a 68040, this could be used in conjunction with
+-an <CODE>asm</CODE> expression to access the <CODE>move16</CODE> instruction which
+-requires 16-byte aligned operands.
++4-byte boundary.
+ <BR><BR>
+ You can also specify the alignment of structure fields.  For example, to
+-create a double-word aligned <CODE>int</CODE> pair, you could write:
+-<PRE>struct foo { int x[2] __attribute__ ((aligned (8))); };
++create a 4-byte aligned <CODE><A HREF="$$INFOLINK(keywords/int)">int</A></CODE> pair, you could write:
++<PRE>struct foo { int x[2] __attribute__ ((aligned (4))); };
+ </PRE>
+-This is an alternative to creating a union with a <CODE>double</CODE> member
+-that forces the union to be double-word aligned.
+-<BR><BR>
+ As in the preceding examples, you can explicitly specify the alignment
+ (in bytes) that you wish the compiler to use for a given variable or
+ structure field.  Alternatively, you can leave out the alignment factor
+@@ -29,19 +26,8 @@
+ Whenever you leave out the alignment factor in an <CODE>aligned</CODE> attribute
+ specification, the compiler automatically sets the alignment for the declared
+ variable or field to the largest alignment which is ever used for any data
+-type on the target machine you are compiling for.  Doing this can often make
+-copy operations more efficient, because the compiler can use whatever
+-instructions copy the biggest chunks of memory when performing copies to
+-or from the variables or fields that you have aligned this way.
++type on the target machine you are compiling for (useless in TIGCC, since everything
++is already aligned well enough with the default 2-byte alignment).
+ <BR><BR>
+ The <CODE>aligned</CODE> attribute can only increase the alignment; but you
+-can decrease it by specifying <CODE>packed</CODE> as well.  See below.
+-<BR><BR>
+-Note that the effectiveness of <CODE>aligned</CODE> attributes may be limited
+-by inherent limitations in your linker.  On many systems, the linker is
+-only able to arrange for variables to be aligned up to a certain maximum
+-alignment.  (For some linkers, the maximum supported alignment may
+-be very very small.)  If your linker is only able to align variables
+-up to a maximum of 8 byte alignment, then specifying <CODE>aligned(16)</CODE>
+-in an <CODE>__attribute__</CODE> will still only provide you with 8 byte
+-alignment.  See your linker documentation for further information.
++can decrease it by specifying <CODE><A HREF="$$LINK(SEC91_packed)">packed</A></CODE> as well.
+diff -Nur gnuexts/SEC91_cleanup.hss fix/gnuexts/SEC91_cleanup.hss
+--- gnuexts/SEC91_cleanup.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC91_cleanup.hss	2003-09-17 01:13:38.000000000 +0200
+@@ -13,5 +13,7 @@
+ will be run during the stack unwinding that happens during the
+ processing of the exception.  Note that the <CODE>cleanup</CODE> attribute
+ does not allow the exception to be caught, only to perform an action.
++Note that TIGCC defines its own error handling mechanism, so this attribute
++will not work if used in this way.
+ It is undefined what happens if <I>cleanup_function</I> does not
+ return normally.
+diff -Nur gnuexts/SEC91_deprecated.hss fix/gnuexts/SEC91_deprecated.hss
+--- gnuexts/SEC91_deprecated.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91_deprecated.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -15,5 +15,5 @@
+ </PRE>
+ results in a warning on line 3 but not line 2.
+ <BR><BR>
+-The <CODE>deprecated</CODE> attribute can also be used for functions and
+-types (see <A HREF="$$LINK(SEC85)">Function Attributes</A> See <A HREF="$$LINK(SEC92)">Type Attributes</A>.)
++The <CODE>deprecated</CODE> attribute can also be used for <A HREF="$$LINK(SEC85_deprecated)">functions</A> and
++<A HREF="$$LINK(SEC92_deprecated)">types</A>.
+diff -Nur gnuexts/SEC91_mode.hss fix/gnuexts/SEC91_mode.hss
+--- gnuexts/SEC91_mode.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC91_mode.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=mode
+ 
+ [Top]
++Syntax: <B>mode (<I>mode</I>)</B>
++<BR><BR>
+ This attribute specifies the data type for the declaration - whichever
+ type corresponds to the mode <I>mode</I>.  This in effect lets you
+ request an integer or floating point type according to its width.
+diff -Nur gnuexts/SEC91_model.hss fix/gnuexts/SEC91_model.hss
+--- gnuexts/SEC91_model.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91_model.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,14 +0,0 @@
+-[Main]
+-Title=model
+-
+-[Top]
+-Use this attribute on the M32R/D to set the addressability of an object.
+-The identifier <I>model-name</I> is one of <CODE>small</CODE>, <CODE>medium</CODE>,
+-or <CODE>large</CODE>, representing each of the code models.
+-<BR><BR>
+-Small model objects live in the lower 16MB of memory (so that their
+-addresses can be loaded with the <CODE>ld24</CODE> instruction).
+-<BR><BR>
+-Medium and large model objects may live anywhere in the 32-bit address space
+-(the compiler will generate <CODE>seth/add3</CODE> instructions to load their
+-addresses).
+diff -Nur gnuexts/SEC91_nocommon.hss fix/gnuexts/SEC91_nocommon.hss
+--- gnuexts/SEC91_nocommon.hss	2003-09-16 16:47:32.000000000 +0200
++++ fix/gnuexts/SEC91_nocommon.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -2,7 +2,7 @@
+ Title=nocommon
+ 
+ [Top]
+-This attribute specifies requests GCC not to place a variable
++This attribute requests GCC not to place a variable
+ &quot;common&quot; but instead to allocate space for it directly.  If you
+ specify the <B>'-fno-common'</B> flag, GCC will do this for all
+ variables.
+diff -Nur gnuexts/SEC91_section.hss fix/gnuexts/SEC91_section.hss
+--- gnuexts/SEC91_section.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91_section.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -2,12 +2,16 @@
+ Title=section
+ 
+ [Top]
++Syntax: <B>section (&quot;<I>section-name</I>&quot;)</B>
++<BR><BR>
+ Normally, the compiler places the objects it generates in sections like
+-<CODE>data</CODE> and <CODE>bss</CODE>.  Sometimes, however, you need additional sections,
++<CODE>.data</CODE> and <CODE>.bss</CODE>.  Sometimes, however, you need additional sections,
+ or you need certain particular variables to appear in special sections,
+ for example to map to special hardware.  The <CODE>section</CODE>
+ attribute specifies that a variable (or function) lives in a particular
+-section.  For example, this small program uses several specific section names:
++section.  The use of this attribute is limited in TIGCC, because its linker supports
++only a few types of sections, but this may be improved in the future.
++For example, this small hypothetical program uses several specific section names:
+ <PRE>struct duart a __attribute__ ((section (&quot;DUART_A&quot;))) = { 0 };
+ struct duart b __attribute__ ((section (&quot;DUART_B&quot;))) = { 0 };
+ char stack[10000] __attribute__ ((section (&quot;STACK&quot;))) = { 0 };
+@@ -34,12 +38,9 @@
+ You may only use the <CODE>section</CODE> attribute with a fully initialized
+ global definition because of the way linkers work.  The linker requires
+ each object be defined once, with the exception that uninitialized
+-variables tentatively go in the <CODE>common</CODE> (or <CODE>bss</CODE>) section
++variables tentatively go in the <CODE>.bss</CODE> section
+ and can be multiply &quot;defined&quot;.  You can force a variable to be
+-initialized with the <B>'-fno-common'</B> flag or the <CODE>nocommon</CODE>
++initialized with the <B>'-fno-common'</B> flag or the <CODE><A HREF="$$LINK(SEC91_nocommon)">nocommon</A></CODE>
+ attribute.
+ <BR><BR>
+-Some file formats do not support arbitrary sections so the <CODE>section</CODE>
+-attribute is not available on all platforms.
+-If you need to map the entire contents of a module to a particular
+-section, consider using the facilities of the linker instead.
++The <CODE>section</CODE> attribute can also be used for <A HREF="$$LINK(SEC85_section)">functions</A>.
+diff -Nur gnuexts/SEC91_shared.hss fix/gnuexts/SEC91_shared.hss
+--- gnuexts/SEC91_shared.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91_shared.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,24 +0,0 @@
+-[Main]
+-Title=shared
+-
+-[Top]
+-On Windows NT, in addition to putting variable definitions in a named
+-section, the section can also be shared among all running copies of an
+-executable or DLL.  For example, this small program defines shared data
+-by putting it in a named section <CODE>shared</CODE> and marking the section
+-shareable:
+-<PRE>int foo __attribute__((section (&quot;shared&quot;), shared)) = 0;
+-
+-int
+-main()
+-{
+-  /* Read and write foo.  All running
+-     copies see the same value.  */
+-  return 0;
+-}
+-</PRE>
+-You may only use the <CODE>shared</CODE> attribute along with <CODE>section</CODE>
+-attribute with a fully initialized global definition because of the way
+-linkers work.  See <CODE>section</CODE> attribute for more information.
+-<BR><BR>
+-The <CODE>shared</CODE> attribute is only available on Windows NT.
+diff -Nur gnuexts/SEC91_transparent_union.hss fix/gnuexts/SEC91_transparent_union.hss
+--- gnuexts/SEC91_transparent_union.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91_transparent_union.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -5,6 +5,8 @@
+ This attribute, attached to a function parameter which is a union, means
+ that the corresponding argument may have the type of any union member,
+ but the argument is passed as if its type were that of the first union
+-member.  For more details see <A HREF="$$LINK(SEC92)">Type Attributes</A>.  You can also use
+-this attribute on a <CODE>typedef</CODE> for a union data type; then it
++member.  For more details, see the
++<CODE><A HREF="$$LINK(SEC92_transparent_union)">transparent_union</A></CODE>
++type attribute.  You can also use
++this attribute on a <CODE><A HREF="$$INFOLINK(keywords/typedef)">typedef</A></CODE> for a union data type; then it
+ applies to all function parameters with that type.
+diff -Nur gnuexts/SEC91_unused.hss fix/gnuexts/SEC91_unused.hss
+--- gnuexts/SEC91_unused.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91_unused.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -5,3 +5,6 @@
+ This attribute, attached to a variable, means that the variable is meant
+ to be possibly unused.  GCC will not produce a warning for this
+ variable.
++<BR><BR>
++The <CODE>unused</CODE> attribute can also be used for <A HREF="$$LINK(SEC85_unused)">functions</A> and
++<A HREF="$$LINK(SEC92_unused)">types</A>.
+diff -Nur gnuexts/SEC91_vector_size.hss fix/gnuexts/SEC91_vector_size.hss
+--- gnuexts/SEC91_vector_size.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91_vector_size.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,23 +0,0 @@
+-[Main]
+-Title=vector_size
+-
+-[Top]
+-This attribute specifies the vector size for the variable, measured in
+-bytes.  For example, the declaration:
+-<PRE>int foo __attribute__ ((vector_size (16)));
+-</PRE>
+-causes the compiler to set the mode for <CODE>foo</CODE>, to be 16 bytes,
+-divided into <CODE>int</CODE> sized units.  Assuming a 32-bit int (a vector of
+-4 units of 4 bytes), the corresponding mode of <CODE>foo</CODE> will be V4SI.
+-<BR><BR>
+-This attribute is only applicable to integral and float scalars,
+-although arrays, pointers, and function return values are allowed in
+-conjunction with this construct.
+-<BR><BR>
+-Aggregates with this attribute are invalid, even if they are of the same
+-size as a corresponding scalar.  For example, the declaration:
+-<PRE>struct S { int a; };
+-struct S  __attribute__ ((vector_size (16))) foo;
+-</PRE>
+-is invalid even if the size of the structure is the same as the size of
+-the <CODE>int</CODE>.
+diff -Nur gnuexts/SEC91_weak.hss fix/gnuexts/SEC91_weak.hss
+--- gnuexts/SEC91_weak.hss	2003-09-16 16:47:34.000000000 +0200
++++ fix/gnuexts/SEC91_weak.hss	1970-01-01 01:00:00.000000000 +0100
+@@ -1,5 +0,0 @@
+-[Main]
+-Title=weak
+-
+-[Top]
+-The <CODE>weak</CODE> attribute is described in <A HREF="$$LINK(SEC85)">Function Attributes</A>.
+diff -Nur gnuexts/SEC92.hss fix/gnuexts/SEC92.hss
+--- gnuexts/SEC92.hss	2003-09-16 16:47:36.000000000 +0200
++++ fix/gnuexts/SEC92.hss	2003-09-17 01:15:10.000000000 +0200
+@@ -1,13 +1,17 @@
+ [Main]
+ Title=Specifying Attributes of Types
++Subsections=SEC92_aligned, SEC92_packed, SEC92_transparent_union, SEC92_may_alias, SEC92_unused, SEC92_deprecated
++Index=__attribute__
+ 
+ [Top]
+ The keyword <CODE>__attribute__</CODE> allows you to specify special
+-attributes of <CODE>struct</CODE> and <CODE>union</CODE> types when you define such
++attributes of <CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A></CODE> and <CODE><A HREF="$$INFOLINK(keywords/union)">union</A></CODE> types when you define such
+ types.  This keyword is followed by an attribute specification inside
+-double parentheses.  Six attributes are currently defined for types:
+-<CODE>aligned</CODE>, <CODE>packed</CODE>, <CODE>transparent_union</CODE>, <CODE>unused</CODE>,
+-<CODE>deprecated</CODE> and <CODE>may_alias</CODE>.  Other attributes are defined for
++double parentheses.
++The following attributes are currently defined for types:
++
++[Bottom]
++Other attributes are defined for
+ functions (see <A HREF="$$LINK(SEC85)">Function Attributes</A>) and for variables
+ (see <A HREF="$$LINK(SEC91)">Variable Attributes</A>).
+ <BR><BR>
+diff -Nur gnuexts/SEC92_aligned.hss fix/gnuexts/SEC92_aligned.hss
+--- gnuexts/SEC92_aligned.hss	2003-09-16 16:47:36.000000000 +0200
++++ fix/gnuexts/SEC92_aligned.hss	2003-09-17 01:03:04.000000000 +0200
+@@ -2,6 +2,8 @@
+ Title=aligned
+ 
+ [Top]
++Syntax: <B>aligned [(<I>alignment</I>)]</B>
++<BR><BR>
+ This attribute specifies a minimum alignment (in bytes) for variables
+ of the specified type.  For example, the declarations:
+ <PRE>struct S { short f[3]; } __attribute__ ((aligned (8)));
+@@ -9,13 +11,9 @@
+ </PRE>
+ force the compiler to insure (as far as it can) that each variable whose
+ type is <CODE>struct&nbsp;S</CODE> or <CODE>more_aligned_int</CODE> will be allocated and
+-aligned <I>at least</I> on a 8-byte boundary.  On a SPARC, having all
+-variables of type <CODE>struct&nbsp;S</CODE> aligned to 8-byte boundaries allows
+-the compiler to use the <CODE>ldd</CODE> and <CODE>std</CODE> (doubleword load and
+-store) instructions when copying one variable of type <CODE>struct&nbsp;S</CODE> to
+-another, thus improving run-time efficiency.
++aligned <I>at least</I> on a 8-byte boundary.
+ <BR><BR>
+-Note that the alignment of any given <CODE>struct</CODE> or <CODE>union</CODE> type
++Note that the alignment of any given <CODE><A HREF="$$INFOLINK(keywords/struct)">struct</A></CODE> or <CODE><A HREF="$$INFOLINK(keywords/union)">union</A></CODE> type
+ is required by the ISO C standard to be at least a perfect multiple of
+ the lowest common multiple of the alignments of all of the members of
+ the <CODE>struct</CODE> or <CODE>union</CODE> in question.  This means that you <I>can</I>
+@@ -36,38 +34,8 @@
+ Whenever you leave out the alignment factor in an <CODE>aligned</CODE>
+ attribute specification, the compiler automatically sets the alignment
+ for the type to the largest alignment which is ever used for any data
+-type on the target machine you are compiling for.  Doing this can often
+-make copy operations more efficient, because the compiler can use
+-whatever instructions copy the biggest chunks of memory when performing
+-copies to or from the variables which have types that you have aligned
+-this way.
+-<BR><BR>
+-In the example above, if the size of each <CODE>short</CODE> is 2 bytes, then
+-the size of the entire <CODE>struct&nbsp;S</CODE> type is 6 bytes.  The smallest
+-power of two which is greater than or equal to that is 8, so the
+-compiler sets the alignment for the entire <CODE>struct&nbsp;S</CODE> type to 8
+-bytes.
+-<BR><BR>
+-Note that although you can ask the compiler to select a time-efficient
+-alignment for a given type and then declare only individual stand-alone
+-objects of that type, the compiler's ability to select a time-efficient
+-alignment is primarily useful only when you plan to create arrays of
+-variables having the relevant (efficiently aligned) type.  If you
+-declare or use arrays of variables of an efficiently-aligned type, then
+-it is likely that your program will also be doing pointer arithmetic (or
+-subscripting, which amounts to the same thing) on pointers to the
+-relevant type, and the code that the compiler generates for these
+-pointer arithmetic operations will often be more efficient for
+-efficiently-aligned types than for other types.
++type on the target machine you are compiling for (useless in TIGCC, since everything
++is already aligned well enough with the default 2-byte alignment).
+ <BR><BR>
+ The <CODE>aligned</CODE> attribute can only increase the alignment; but you
+-can decrease it by specifying <CODE>packed</CODE> as well.  See below.
+-<BR><BR>
+-Note that the effectiveness of <CODE>aligned</CODE> attributes may be limited
+-by inherent limitations in your linker.  On many systems, the linker is
+-only able to arrange for variables to be aligned up to a certain maximum
+-alignment.  (For some linkers, the maximum supported alignment may
+-be very very small.)  If your linker is only able to align variables
+-up to a maximum of 8 byte alignment, then specifying <CODE>aligned(16)</CODE>
+-in an <CODE>__attribute__</CODE> will still only provide you with 8 byte
+-alignment.  See your linker documentation for further information.
++can decrease it by specifying <CODE><A HREF="$$LINK(SEC91_packed)">packed</A></CODE> as well.
+diff -Nur gnuexts/SEC92_deprecated.hss fix/gnuexts/SEC92_deprecated.hss
+--- gnuexts/SEC92_deprecated.hss	2003-09-16 16:47:36.000000000 +0200
++++ fix/gnuexts/SEC92_deprecated.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -23,5 +23,5 @@
+ deprecated.  Line 5 has no warning because T3 is explicitly
+ deprecated.  Similarly for line 6.
+ <BR><BR>
+-The <CODE>deprecated</CODE> attribute can also be used for functions and
+-variables (see <A HREF="$$LINK(SEC85)">Function Attributes</A> See <A HREF="$$LINK(SEC91)">Variable Attributes</A>.)
++The <CODE>deprecated</CODE> attribute can also be used for <A HREF="$$LINK(SEC85_deprecated)">functions</A> and
++<A HREF="$$LINK(SEC91_deprecated)">variables</A>.
+diff -Nur gnuexts/SEC92_may_alias.hss fix/gnuexts/SEC92_may_alias.hss
+--- gnuexts/SEC92_may_alias.hss	2003-09-16 16:47:36.000000000 +0200
++++ fix/gnuexts/SEC92_may_alias.hss	2003-09-17 01:18:24.000000000 +0200
+@@ -4,16 +4,15 @@
+ [Top]
+ Accesses to objects with types with this attribute are not subjected to
+ type-based alias analysis, but are instead assumed to be able to alias
+-any other type of objects, just like the <CODE>char</CODE> type.  See
++any other type of objects, just like the <CODE><A HREF="$$INFOLINK(keywords/char)">char</A></CODE> type.  See
+ <B>'-fstrict-aliasing'</B> for more information on aliasing issues.
+ <BR><BR>
+ Example of use:
+ <PRE>typedef short __attribute__((__may_alias__)) short_a;
+ 
+-int
+-main (void)
++void _main (void)
+ {
+-  int a = 0x12345678;
++  long a = 0x12345678;
+   short_a *b = (short_a *) &amp;a;
+ 
+   b[1] = 0;
+@@ -21,7 +20,7 @@
+   if (a == 0x12345678)
+     abort();
+ 
+-  exit(0);
++  /* ... */
+ }
+ </PRE>
+ If you replaced <CODE>short_a</CODE> with <CODE>short</CODE> in the variable
+diff -Nur gnuexts/SEC92_transparent_union.hss fix/gnuexts/SEC92_transparent_union.hss
+--- gnuexts/SEC92_transparent_union.hss	2003-09-16 16:47:36.000000000 +0200
++++ fix/gnuexts/SEC92_transparent_union.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -2,7 +2,7 @@
+ Title=transparent_union
+ 
+ [Top]
+-This attribute, attached to a <CODE>union</CODE> type definition, indicates
++This attribute, attached to a <CODE><A HREF="$$INFOLINK(keywords/union)">union</A></CODE> type definition, indicates
+ that any function parameter having that union type causes calls to that
+ function to be treated in a special way.
+ <BR><BR>
+@@ -11,7 +11,7 @@
+ a pointer type, the corresponding argument can be a null pointer
+ constant or a void pointer expression; and if the union contains a void
+ pointer type, the corresponding argument can be any pointer expression.
+-If the union member type is a pointer, qualifiers like <CODE>const</CODE> on
++If the union member type is a pointer, qualifiers like <CODE><A HREF="$$INFOLINK(keywords/const)">const</A></CODE> on
+ the referenced type must be respected, just as with normal pointer
+ conversions.
+ <BR><BR>
+@@ -22,31 +22,5 @@
+ to work properly.
+ <BR><BR>
+ Transparent unions are designed for library functions that have multiple
+-interfaces for compatibility reasons.  For example, suppose the
+-<CODE>wait</CODE> function must accept either a value of type <CODE>int&nbsp;*</CODE> to
+-comply with Posix, or a value of type <CODE>union&nbsp;wait&nbsp;*</CODE> to comply with
+-the 4.1BSD interface.  If <CODE>wait</CODE>'s parameter were <CODE>void&nbsp;*</CODE>,
+-<CODE>wait</CODE> would accept both kinds of arguments, but it would also
+-accept any other pointer type and this would make argument type checking
+-less useful.  Instead, <CODE>&lt;sys/wait.h&gt;</CODE> might define the interface
+-as follows:
+-<PRE>typedef union
+-  {
+-    int *__ip;
+-    union wait *__up;
+-  } wait_status_ptr_t __attribute__ ((__transparent_union__));
+-
+-pid_t wait (wait_status_ptr_t);
+-</PRE>
+-This interface allows either <CODE>int&nbsp;*</CODE> or <CODE>union&nbsp;wait&nbsp;*</CODE>
+-arguments to be passed, using the <CODE>int&nbsp;*</CODE> calling convention.
+-The program can call <CODE>wait</CODE> with arguments of either type:
+-<PRE>int w1 () { int w; return wait (&amp;w); }
+-int w2 () { union wait w; return wait (&amp;w); }
+-</PRE>
+-With this interface, <CODE>wait</CODE>'s implementation might look like this:
+-<PRE>pid_t wait (wait_status_ptr_t p)
+-{
+-  return waitpid (-1, p.__ip, 0);
+-}
+-</PRE>
++interfaces for compatibility reasons, but they may be used for various
++different purposes.
+diff -Nur gnuexts/SEC92_unused.hss fix/gnuexts/SEC92_unused.hss
+--- gnuexts/SEC92_unused.hss	2003-09-16 16:47:36.000000000 +0200
++++ fix/gnuexts/SEC92_unused.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -5,7 +5,7 @@
+ When attached to a type (including a <CODE>union</CODE> or a <CODE>struct</CODE>),
+ this attribute means that variables of that type are meant to appear
+ possibly unused.  GCC will not produce a warning for any variables of
+-that type, even if the variable appears to do nothing.  This is often
+-the case with lock or thread classes, which are usually defined and then
+-not referenced, but contain constructors and destructors that have
+-nontrivial bookkeeping functions.
++that type, even if the variable appears to do nothing.
++<BR><BR>
++The <CODE>unused</CODE> attribute can also be used for <A HREF="$$LINK(SEC85_unused)">functions</A> and
++<A HREF="$$LINK(SEC91_unused)">variables</A>.
+diff -Nur gnuexts/SEC93.hss fix/gnuexts/SEC93.hss
+--- gnuexts/SEC93.hss	2003-09-16 16:47:36.000000000 +0200
++++ fix/gnuexts/SEC93.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -1,5 +1,6 @@
+ [Main]
+-Title=An Inline Function is As Fast As a Macro
++Title=Inline Functions
++Index=inline, __inline__
+ 
+ [Top]
+ By declaring a function <CODE>inline</CODE>, you can direct GCC to
+@@ -31,22 +32,17 @@
+ <B>'-finline-functions'</B>.
+ <BR><BR>
+ Note that certain usages in a function definition can make it unsuitable
+-for inline substitution.  Among these usages are: use of varargs, use of
+-alloca, use of variable sized data types (see <A HREF="$$LINK(SEC76)">Variable Length</A>),
++for inline substitution.  Among these usages are: use of a variable number of arguments, use of
++<A HREF="$$LINK(alloc.h/alloca)">alloca</A>, use of variable sized data types (see <A HREF="$$LINK(SEC76)">Variable Length Arrays</A>),
+ use of computed goto (see <A HREF="$$LINK(SEC65)">Labels as Values</A>), use of nonlocal goto,
+ and nested functions (see <A HREF="$$LINK(SEC66)">Nested Functions</A>).  Using <B>'-Winline'</B>
+ will warn when a function marked <CODE>inline</CODE> could not be substituted,
+ and will give the reason for the failure.
+ <BR><BR>
+-Note that in C and Objective-C, unlike C++, the <CODE>inline</CODE> keyword
++Note that in C (unlike C++), the <CODE>inline</CODE> keyword
+ does not affect the linkage of the function.
+ <BR><BR>
+-GCC automatically inlines member functions defined within the class
+-body of C++ programs even if they are not explicitly declared
+-<CODE>inline</CODE>.  (You can override this with <B>'-fno-default-inline'</B>;
+-see <A HREF="$$INFOLINK(C++ Dialect Options,,Options Controlling C++ Dialect)">Options Controlling C++ Dialect</A>.)
+-<BR><BR>
+-When a function is both inline and <CODE>static</CODE>, if all calls to the
++When a function is both inline and <CODE><A HREF="$$INFOLINK(keywords/static)">static</A></CODE>, if all calls to the
+ function are integrated into the caller, and the function's address is
+ never used, then the function's own assembler code is never referenced.
+ In this case, GCC does not actually output assembler code for the
+@@ -58,14 +54,14 @@
+ usual.  The function must also be compiled as usual if the program
+ refers to its address, because that can't be inlined.
+ <BR><BR>
+-When an inline function is not <CODE>static</CODE>, then the compiler must assume
++When an inline function is not <CODE><A HREF="$$INFOLINK(keywords/static)">static</A></CODE>, then the compiler must assume
+ that there may be calls from other source files; since a global symbol can
+ be defined only once in any program, the function must not be defined in
+ the other source files, so the calls therein cannot be integrated.
+-Therefore, a non-<CODE>static</CODE> inline function is always compiled on its
++Therefore, a non-<CODE><A HREF="$$INFOLINK(keywords/static)">static</A></CODE> inline function is always compiled on its
+ own in the usual fashion.
+ <BR><BR>
+-If you specify both <CODE>inline</CODE> and <CODE>extern</CODE> in the function
++If you specify both <CODE>inline</CODE> and <CODE><A HREF="$$INFOLINK(keywords/extern)">extern</A></CODE> in the function
+ definition, then the definition is used only for inlining.  In no case
+ is the function compiled on its own, not even if you refer to its
+ address explicitly.  Such an address becomes an external reference, as
+@@ -86,7 +82,7 @@
+ that will implement the C99 semantics, though it does not do so yet.)
+ <BR><BR>
+ GCC does not inline any functions when not optimizing unless you specify
+-the <CODE>always_inline</CODE> attribute for the function, like this:
++the <CODE><A HREF="$$LINK(SEC85_always_inline)">always_inline</A></CODE> attribute for the function, like this:
+ <PRE>/* Prototype.  */
+-inline void foo (const char) __attribute__((always_inline));
++inline void foo (const char*) __attribute__((always_inline));
+ </PRE>
+diff -Nur gnuexts/SEC94.hss fix/gnuexts/SEC94.hss
+--- gnuexts/SEC94.hss	2003-09-16 16:47:38.000000000 +0200
++++ fix/gnuexts/SEC94.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -11,15 +11,25 @@
+ appears in a machine description, plus an operand constraint string for
+ each operand.
+ <BR><BR>
+-For example, here is how to use the 68881's <CODE>fsinx</CODE> instruction:
++For the beginning, you will be given here a very illustrative example on how to use the 68881's
++<CODE>fsinx</CODE> instruction (note that this example is not applicable to TI calculators,
++because the MC68000 processor which is built into the TI-89 and TI-92+ does not have this
++instruction, but the example is illustrative anyway):
+ <PRE>asm (&quot;fsinx %1,%0&quot; : &quot;=f&quot; (result) : &quot;f&quot; (angle));
+ </PRE>
+-Here <CODE>angle</CODE> is the C expression for the input operand while
+-<CODE>result</CODE> is that of the output operand.  Each has <CODE>&quot;f&quot;</CODE> as its
++Here <I>angle</I> is the C expression for the input operand while
++<I>result</I> is that of the output operand.  Each has <CODE>&quot;f&quot;</CODE> as its
+ operand constraint, saying that a floating point register is required.
+ The <CODE>=</CODE> in <CODE>=f</CODE> indicates that the operand is an output; all
+ output operands' constraints must use <CODE>=</CODE>.  The constraints use the
+-same language used in the machine description (see <A HREF="$$INFOLINK(Constraints)">Constraints</A>).
++same language used in the machine description (see the section <A HREF="$$LINK(SEC95)">Operand Constraints</A>).
++In this example,
++the compiler will convert this instruction into a sequence of assembly instructions
++which will ensure that the evaluated expression <I>angle</I> is really stored in
++one of the 68881's floating point registers, and which will store the result of the <CODE>fsinx</CODE>
++(which is in some other floating point register) into the expression <I>result</I>
++(note that <I>result</I> need not be a variable; it can be any lvalue expression, for
++example a dereferenced pointer).
+ <BR><BR>
+ Each operand is described by an operand-constraint string followed by
+ the C expression in parentheses.  A colon separates the assembler
+@@ -61,9 +71,33 @@
+ will use the register as the output of the <CODE>asm</CODE>, and then store
+ that register into the output.
+ <BR><BR>
++Here is an another example, which is applicable to TIGCC. Suppose that we
++want to rotate the value of the expression <I>input</I> one bit to the left, and
++to store the result into the expression <I>output</I> (which is an lvalue).
++We can write the following code:
++<PRE>asm ("move.l %1,%%d0; rol #1,%%d0; move.l %%d0,%0" : "=g" (output) : "g" (input));
++</PRE>
++Note that when extended asm constructions are used, the percent sign before the
++register names must be doubled. It is important to say that in the above example
++<I>input</I> and <I>output</I> may be any valid expressions; in the simple case
++when both of them are just global variables, a simple asm construction like
++<PRE>asm ("move.l input,%d0; rol #1,%d0; move.l %d0,output");
++</PRE>
++would be quite enough. Extended asm constructions allow encapsulating them in macros
++which look like functions, like in the following example, which defines a macro <CODE>'rotate'</CODE>
++which acts like a void function:
++<PRE>#define rotate(input, output) \
++({ asm ("move.l %1,%%d0; rol #1,%%d0; move.l %%d0,%0" \
++: "=g" (output) : "g" (input)); })
++</PRE>
+ The ordinary output operands must be write-only; GCC will assume that
+ the values in these operands before the instruction are dead and need
+-not be generated.  Extended asm supports input-output or read-write
++not be generated. That's why the following version of <CODE>'rotate'</CODE>
++macro which accepts just one argument (and which rotates it one bit to the left)
++is quite unreliable:
++<PRE>#define rotate(inout) ({ asm ("rol #1,%0" : "=d" (inout)); })
++</PRE>
++To solve such difficulties, extended asm supports input-output or read-write
+ operands.  Use the constraint character <CODE>+</CODE> to indicate such an
+ operand and list it with the output operands.
+ <BR><BR>
+@@ -104,14 +138,16 @@
+      : [result] &quot;=r&quot;(result)
+      : &quot;r&quot; (test), &quot;r&quot;(new), &quot;[result]&quot;(old));
+ </PRE>
+-Some instructions clobber specific hard registers.  To describe this,
++All the examples given above have a serious drawback: they clobber the register <CODE>'d0'</CODE>.
++If the compiler keeps something important in it (which is very likely), this may cause lots
++of trouble. Of course,
++you can save it on the stack at the beginning and restore it at the end, but there is a much better
++solution which will save clobbered registers only when necessary. To describe clobbered registers,
+ write a third colon after the input operands, followed by the names of
+-the clobbered hard registers (given as strings).  Here is a realistic
+-example for the VAX:
+-<PRE>asm volatile (&quot;movc3 %0,%1,%2&quot;
+-              : /* no outputs */
+-              : &quot;g&quot; (from), &quot;g&quot; (to), &quot;g&quot; (count)
+-              : &quot;r0&quot;, &quot;r1&quot;, &quot;r2&quot;, &quot;r3&quot;, &quot;r4&quot;, &quot;r5&quot;);
++the clobbered registers (given as strings), separated by commas:
++<PRE>#define rotate(input, output) \
++({ asm ("move.l %1,%%d0; rol #1,%%d0; move.l %%d0,%0" \
++: "=g" (output) : "g" (input) : "d0"); })
+ </PRE>
+ You may not write a clobber description in a way that overlaps with an
+ input or output operand.  For example, you may not have an operand
+@@ -126,12 +162,23 @@
+ <CODE>volatile</CODE> for the <CODE>asm</CODE> construct, as described below, to
+ prevent GCC from deleting the <CODE>asm</CODE> statement as unused.
+ <BR><BR>
+-If you refer to a particular hardware register from the assembler code,
++Whenever you refer to a particular hardware register from the assembler code,
+ you will probably have to list the register after the third colon to
+-tell the compiler the register's value is modified.  In some assemblers,
+-the register names begin with <CODE>%</CODE>; to produce one <CODE>%</CODE> in the
+-assembler code, you must write <CODE>%%</CODE> in the input.
+-<BR><BR>
++tell the compiler the register's value is modified.
++Alternatively, you can force the compiler to use any data register instead of
++<CODE>'d0'</CODE>, using the following trick:
++<PRE>#define rotate(input, output) \
++({ register long __temp; \
++asm ("move.l %1,%2; rol #1,%2; move.l %2,%0" \
++: "=g" (output) : "g" (input), "d" (__temp)); })
++</PRE>
++Here, the <CODE>"d"</CODE> constraint ensures that <CODE>'__temp'</CODE> will be stored in
++the data register (note that <CODE>rol</CODE> is applicable only to data registers).
++In fact, there is no need for a temporary register if we forced the output to be in
++a data register, which can be implemented as in the following example:
++<PRE>#define rotate(input, output) \
++({ asm ("move.l %1,%0; rol #1,%0" : "=d" (output) : "g" (input)); })
++</PRE>
+ If your assembler instruction can alter the condition code register, add
+ <CODE>cc</CODE> to the list of clobbered registers.  GCC on some machines
+ represents the condition codes as a specific hardware register;
+@@ -147,55 +194,54 @@
+ inputs or outputs of the <CODE>asm</CODE>, as the <CODE>memory</CODE> clobber does
+ not count as a side-effect of the <CODE>asm</CODE>.
+ <BR><BR>
+-You can put multiple assembler instructions together in a single
+-<CODE>asm</CODE> template, separated by the characters normally used in assembly
+-code for the system.  A combination that works in most places is a newline
+-to break the line, plus a tab character to move to the instruction field
+-(written as <CODE>\n\t</CODE>).  Sometimes semicolons can be used, if the
+-assembler allows semicolons as a line-breaking character.  Note that some
+-assembler dialects use semicolons to start a comment.
++As already mentioned above, you can put multiple assembler instructions together in a single
++<CODE>asm</CODE> template, separated either with newlines or with semicolons
++(the GNU assembler allows semicolons as a line-breaking character).
+ The input operands are guaranteed not to use any of the clobbered
+ registers, and neither will the output operands' addresses, so you can
+ read and write the clobbered registers as many times as you like.  Here
+ is an example of multiple instructions in a template; it assumes the
+-subroutine <CODE>_foo</CODE> accepts arguments in registers 9 and 10:
+-<PRE>asm (&quot;movl %0,r9\n\tmovl %1,r10\n\tcall _foo&quot;
+-     : /* no outputs */
+-     : &quot;g&quot; (from), &quot;g&quot; (to)
+-     : &quot;r9&quot;, &quot;r10&quot;);
++subroutine <CODE>_foo</CODE> accepts arguments in registers a0 and a1:
++<PRE>asm ("move.l %0,%%a0; move.l %1,%%a1; jsr _foo"
++: /* no outputs */
++: "g" (from), "g" (to)
++: "a0", "a1");
+ </PRE>
+-Unless an output operand has the <CODE>&amp;</CODE> constraint modifier, GCC
++Unless an output operand has the <CODE>'&amp;'</CODE> constraint modifier, GCC
+ may allocate it in the same register as an unrelated input operand, on
+ the assumption the inputs are consumed before the outputs are produced.
+ This assumption may be false if the assembler code actually consists of
+-more than one instruction.  In such a case, use <CODE>&amp;</CODE> for each output
+-operand that may not overlap an input.  See <A HREF="$$INFOLINK(Modifiers)">Modifiers</A>.
++more than one instruction.  In such a case, use <CODE>'&amp;'</CODE> for each output
++operand that may not overlap an input.  See the section <A HREF="$$LINK(SEC95_cmc)">Constraint Modifier Characters</A>.
+ <BR><BR>
+ If you want to test the condition code produced by an assembler
+ instruction, you must include a branch and a label in the <CODE>asm</CODE>
+ construct, as follows:
+-<PRE>asm (&quot;clr %0\n\tfrob %1\n\tbeq 0f\n\tmov #1,%0\n0:&quot;
+-     : &quot;g&quot; (result)
+-     : &quot;g&quot; (input));
++<PRE>asm ("clr.l %0; test.l %1; beq 0f; moveq #1,%0; 0:"
++: "g" (result) : "g" (input));
+ </PRE>
+-This assumes your assembler supports local labels, as the GNU assembler
+-and most Unix assemblers do.
+-<BR><BR>
++This assumes your assembler supports local labels, which is true for the
++<A HREF="$$INFOLINK(gnuasm)">GNU Assembler</A> (it uses the suffix <CODE>'f'</CODE> for forward and <CODE>'b'</CODE> for
++backward local labels; see the section about <A HREF="$$INFOLINK(gnuasm/SEC48L)">Local Symbol Names</A>).<BR><BR>
+ Speaking of labels, jumps from one <CODE>asm</CODE> to another are not
+ supported.  The compiler's optimizers do not know about these jumps, and
+ therefore they cannot take account of them when deciding how to
+ optimize.
+ <BR><BR>
+-Usually the most convenient way to use these <CODE>asm</CODE> instructions is to
+-encapsulate them in macros that look like functions.  For example,
+-<PRE>#define sin(x)       \
+-({ double __value, __arg = (x);   \
+-   asm (&quot;fsinx %1,%0&quot;: &quot;=f&quot; (__value): &quot;f&quot; (__arg));  \
+-   __value; })
++As already mentioned, usually the most convenient way to use these
++<CODE>asm</CODE> instructions is to encapsulate them in macros that look like
++functions. Here is an example of how to define a function-looking macro with
++a non-void return type:
++<PRE>#define rotate(x) \
++({ unsigned long __result, __arg=(x);   \
++asm ("move.l %1,%0; rol #1,%0": "=d" (__result): "g" (__arg));  \
++__result; })
+ </PRE>
++This macro acts nearly exactly like a function which takes one <CODE>unsigned long</CODE>
++argument, and which returns an <CODE>unsigned long</CODE> result.
+ Here the variable <CODE>__arg</CODE> is used to make sure that the instruction
+-operates on a proper <CODE>double</CODE> value, and to accept only those
+-arguments <CODE>x</CODE> which can convert automatically to a <CODE>double</CODE>.
++operates on a proper <CODE>unsigned long</CODE> value, and to accept only those
++arguments <CODE>x</CODE> which can convert automatically to an <CODE>unsigned long</CODE>.
+ <BR><BR>
+ Another way to make sure the instruction operates on the correct data
+ type is to use a cast in the <CODE>asm</CODE>.  This is different from using a
+@@ -215,7 +261,8 @@
+ appears not to change, the old value of the variable may be reused later
+ if it happens to be found in a register.
+ <BR><BR>
+-You can prevent an <CODE>asm</CODE> instruction from being deleted, moved
++If you are not happy with this behavior,
++you can prevent an <CODE>asm</CODE> instruction from being deleted, moved
+ significantly, or combined, by writing the keyword <CODE>volatile</CODE> after
+ the <CODE>asm</CODE>.  For example:
+ <PRE>#define get_and_set_priority(new)              \
+@@ -234,13 +281,15 @@
+ prove that control-flow will never reach the location of the
+ instruction.)  In addition, GCC will not reschedule instructions
+ across a volatile <CODE>asm</CODE> instruction.  For example:
+-<PRE>*(volatile int *)addr = foo;
+-asm volatile (&quot;eieio&quot; : : );
+-</PRE>
+-Assume <CODE>addr</CODE> contains the address of a memory mapped device
+-register.  The PowerPC <CODE>eieio</CODE> instruction (Enforce In-order
+-Execution of I/O) tells the CPU to make sure that the store to that
+-device register happens before it issues any other I/O.
++<PRE>#define inline_rowread(x) \
++  ({*(short*)0x600018=(short)(x); \
++  asm volatile("nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop":::"memory"); \
++  ~(*(unsigned char*)0x60001b);})</PRE>
++Here, we can read the keyboard port at 0x60001b only 12 nops after setting
++the keyboard mask at 0x600018. Therefore, we need to make sure that the
++nops get scheduled between the write to 0x600018 and the read to 0x60001b.
++The <CODE>volatile</CODE> keyword makes sure that the instructions get ordered
++in the correct way.
+ <BR><BR>
+ Note that even a volatile <CODE>asm</CODE> instruction can be moved in ways
+ that appear insignificant to the compiler, such as across jump
+@@ -268,6 +317,5 @@
+ an assembler instruction access to the condition code left by previous
+ instructions.
+ <BR><BR>
+-If you are writing a header file that should be includable in ISO C
+-programs, write <CODE>__asm__</CODE> instead of <CODE>asm</CODE>.  See <A HREF="$$LINK(SEC100)">Alternate
+-Keywords</A>.
++You can write write <CODE>__asm__</CODE> instead of <CODE>asm</CODE>.
++See section <A HREF="$$LINK(SEC100)">Alternate Keywords</A>.
+diff -Nur gnuexts/SEC94_asm.hss fix/gnuexts/SEC94_asm.hss
+--- gnuexts/SEC94_asm.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/SEC94_asm.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -0,0 +1,19 @@
++[Main]
++Title=Inline Assembler
++Subsections=SEC94_simple, SEC94, SEC95
++Index=asm, __asm__
++
++[Top]
++GCC introduces a special <CODE>asm</CODE> keyword to support assembler
++instructions within C code.  Roughly, its syntax is:
++<PRE>asm (&quot;<I>instructions</I>&quot; [:<I>output</I>:<I>input</I>]);
++</PRE>
++The <CODE>asm</CODE> keyword may appear between usual lines of code or at
++the top level, outside of any function body.  <I>instructions</I> may
++contain labels and references to global C symbols; in fact, the contents
++of the string are copied directly into the output file.
++
++[Bottom]
++If you are writing a header file that should be includable in programs compiled
++in GCC's strict ISO C mode, write <CODE>__asm__</CODE> instead of <CODE>asm</CODE>.
++See <A HREF="$$LINK(SEC100)">Alternate Keywords</A>.
+diff -Nur gnuexts/SEC94_simple.hss fix/gnuexts/SEC94_simple.hss
+--- gnuexts/SEC94_simple.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/SEC94_simple.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -0,0 +1,33 @@
++[Main]
++Title=Simple Inline Assembler Instructions
++
++[Top]
++The simplest form the <CODE>asm</CODE> keyword is:
++<PRE>asm (&quot;<I>instructions</I>&quot;);
++</PRE>
++where <I>instructions</I> contains one or more assembler instructions
++separated by semicolons or newlines.
++<BR><BR>
++In TIGCC, all register names must be preceded by a percent sign, to avoid
++confusion with C variables named like one of the CPU registers.  For example:
++<PRE>asm (&quot;move.l 0xC8,%a0; move.l (%a0,1656),%a0; jsr (%a0)&quot;);
++</PRE>
++Hexadecimal constants must be written according to C syntax
++(like <CODE>0xC8</CODE>), not using the notation <CODE>$C8</CODE> which is
++common in various assemblers.
++<BR><BR>
++Note that something like
++<PRE>asm (&quot;move.l 0xC8,a0&quot;);
++</PRE>
++will be interpreted quite differently: <CODE>a0</CODE> will be regarded as a C language
++variable, not a register!  Read the documentation about the <A HREF="$$INFOLINK(gnuasm)">GNU Assembler</A>
++for more information about the exact syntax and directives which it accepts;
++since inline assembler instructions are copied directly into the output of the
++compiler, exactly the same features are available.
++<BR><BR>
++Newlines as separators are also accepted in <I>instructions</I>, so the following code is valid as well:
++<PRE>asm (&quot;   move.l 0xC8,%a0
++         move.l (%a0,1656),%a0
++         jsr (%a0)&quot;);
++</PRE>
++See <A HREF="$$LINK(SEC106)">Multi-line Strings</A> for more information.
+diff -Nur gnuexts/SEC95.hss fix/gnuexts/SEC95.hss
+--- gnuexts/SEC95.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/SEC95.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -0,0 +1,13 @@
++[Main]
++Title=Operand Constraints
++Subsections=SEC95_simple, SEC95_cmc
++
++[Top]
++Each match operand in an instruction pattern can specify a
++constraint for the type of operands allowed.  Constraints can say whether
++an operand may be in a register, and which kinds of register; whether the
++operand can be a memory reference, and which kinds of address; whether the
++operand may be an immediate constant, and which possible values it may
++have.  Constraints can also require two operands to match.  Here, only those
++operand constraints which are valid for the Motorola 68000 processor and the
++built-in inline assembly will be described (i.e. those which are applicable to TIGCC).
+diff -Nur gnuexts/SEC95_cmc.hss fix/gnuexts/SEC95_cmc.hss
+--- gnuexts/SEC95_cmc.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/SEC95_cmc.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -0,0 +1,30 @@
++[Main]
++Title=Constraint Modifier Characters
++
++[Top]
++These are the constraint modifier characters which are meaningful for TIGCC:
++<DL>
++<DT><CODE>=</CODE>
++<DD>Means that this operand is write-only for this instruction: the previous
++value is discarded and replaced by output data.
++<BR><BR>
++<DT><CODE>+</CODE>
++<DD>Means that this operand is both read and written by the instruction.
++<BR><BR>
++When the compiler fixes up the operands to satisfy the constraints,
++it needs to know which operands are inputs to the instruction and
++which are outputs from it.  <CODE>=</CODE> identifies an output; <CODE>+</CODE>
++identifies an operand that is both input and output; all other operands
++are assumed to be input only.
++<BR><BR>
++If you specify <CODE>=</CODE> or <CODE>+</CODE> in a constraint, you put it in the
++first character of the constraint string.
++<BR><BR>
++<DT><CODE>&amp;</CODE>
++<DD>Means (in a particular alternative) that this operand is an
++<B>earlyclobber</B> operand, which is modified before the instruction is
++finished using the input operands.  Therefore, this operand may not lie
++in a register that is used as an input operand or as part of any memory
++address.
++<CODE>&amp;</CODE> does not obviate the need to write <CODE>=</CODE>.
++</DL>
+diff -Nur gnuexts/SEC95_simple.hss fix/gnuexts/SEC95_simple.hss
+--- gnuexts/SEC95_simple.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/SEC95_simple.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -0,0 +1,130 @@
++[Main]
++Title=Simple Constraints
++
++[Top]
++The simplest kind of constraint is a string full of letters, each of
++which describes one kind of operand that is permitted.  These are
++the letters that are allowed:
++<DL>
++<DT><CODE>m</CODE>
++<DD>A memory operand is allowed, with any kind of address that the machine
++supports in general.
++<BR><BR>
++<DT><CODE>o</CODE>
++<DD>A memory operand is allowed, but only if the address is
++<U>offsettable</U>.  This means that adding a small integer (actually,
++the width in bytes of the operand, as determined by its machine mode)
++may be added to the address and the result is also a valid memory
++address.
++For example, an address which is constant is offsettable; so is an
++address that is the sum of a register and a constant (as long as a
++slightly larger constant is also within the range of address-offsets
++supported by the machine); but an autoincrement or autodecrement
++address is not offsettable.  More complicated indirect/indexed
++addresses may or may not be offsettable depending on the other
++addressing modes that the machine supports.
++<BR><BR>
++Note that in an output operand which can be matched by another
++operand, the constraint letter <CODE>o</CODE> is valid only when accompanied
++by both <CODE>&lt;</CODE> (if the target machine has predecrement addressing)
++and <CODE>&gt;</CODE> (if the target machine has preincrement addressing).
++<BR><BR>
++<DT><CODE>V</CODE>
++<DD>A memory operand that is not offsettable.  In other words, anything that
++would fit the <CODE>m</CODE> constraint but not the <CODE>o</CODE> constraint.
++<BR><BR>
++<DT><CODE>&lt;</CODE>
++<DD>A memory operand with autodecrement addressing is allowed.
++<BR><BR>
++<DT><CODE>&gt;</CODE>
++<DD>A memory operand with autoincrement addressing is allowed.
++<BR><BR>
++<DT><CODE>r</CODE>
++<DD>A register operand is allowed provided that it is in a general
++register.
++<BR><BR>
++<DT><CODE>d</CODE>
++<DD>A data register is allowed. This is a Motorola-specific constraint.
++<BR><BR>
++<DT><CODE>a</CODE>
++<DD>An address register is allowed. This is a Motorola-specific constraint.
++<BR><BR>
++<DT><CODE>f</CODE>
++<DD>A 68881 floating-point register is allowed, if available (of course, it is not
++available on the TI-89 and TI-92 Plus). This is a Motorola-specific constraint.
++<BR><BR>
++<DT><CODE>i</CODE>
++<DD>An immediate integer operand (one with constant value) is allowed.
++This includes symbolic constants whose values will be known only at
++assembly time.
++<BR><BR>
++<DT><CODE>n</CODE>
++<DD>An immediate integer operand with a known numeric value is allowed.
++Many systems cannot support assembly-time constants for operands less
++than a word wide.  Constraints for these operands should use <CODE>n</CODE>
++rather than <CODE>i</CODE>.
++<BR><BR>
++<DT><CODE>I</CODE>
++<DD>An integer in the range 1 to 8 is allowed. This is a Motorola-specific constraint, and this is
++for example the range permitted as a shift count in the shift instructions.
++<BR><BR>
++<DT><CODE>J</CODE>
++<DD>A 16 bit signed number is allowed. This is a Motorola-specific constraint.
++<BR><BR>
++<DT><CODE>K</CODE>
++<DD>A signed number whose magnitude is greater than 0x80 is allowed. This is a Motorola-specific constraint.
++<BR><BR>
++<DT><CODE>L</CODE>
++<DD>An integer in the range -8 to -1 is allowed. This is a Motorola-specific constraint.
++<BR><BR>
++<DT><CODE>M</CODE>
++<DD>A signed number whose magnitude is greater than 0x100 is allowed. This is a Motorola-specific constraint.
++<BR><BR>
++<DT><CODE>s</CODE>
++<DD>An immediate integer operand whose value is not an explicit integer is
++allowed.
++<BR><BR>
++This might appear strange; if an instruction allows a constant operand with a
++value not known at compile time, it certainly must allow any known
++value.  So why use <CODE>s</CODE> instead of <CODE>i</CODE>?  Sometimes it allows
++better code to be generated.
++For example, on the 68000 in a fullword instruction it is possible to
++use an immediate operand; but if the immediate value is between -128
++and 127, better code results from loading the value into a register and
++using the register. This is because the load into the register can be
++done with a <CODE>'moveq'</CODE> instruction. The GNU team arranges for this to happen
++by defining the letter <CODE>K</CODE> to mean "any integer outside the
++range -128 to 127", and then specifying <CODE>Ks</CODE> in the operand
++constraints. (This constraint is very unlikely to be useful for inline assembly,
++since you cannot use constraints to make GCC choose between 2 different
++inline assembly statements.)
++<BR><BR>
++<DT><CODE>g</CODE>
++<DD>Any register, memory or immediate integer operand is allowed, except for
++registers that are not general registers.
++<BR><BR>
++<DT><CODE>X</CODE>
++<DD>Any operand whatsoever is allowed, even if it does not satisfy
++<CODE>general_operand</CODE>.  This is normally used in the constraint of
++a <CODE>match_scratch</CODE> when certain alternatives will not actually
++require a scratch register.
++<BR><BR>
++<DT><CODE>0</CODE>, <CODE>1</CODE>, <CODE>2</CODE>, ... <CODE>9</CODE>
++<DD>An operand that matches the specified operand number is allowed.  If a
++digit is used together with letters within the same alternative, the
++digit should come last.
++This is called a <B>matching constraint</B> and what it really means is
++that the assembler has only a single operand that fills two roles
++considered separate. More precisely, the two operands that match must
++include one input-only operand and one output-only operand.  Moreover, the digit
++must be a smaller number than the number of the operand that uses it in the
++constraint.
++<BR><BR>
++<DT><CODE>p</CODE>
++<DD>An operand that is a valid memory address is allowed.
++</DL>
++In order to have valid assembler code, each operand must satisfy
++its constraint.  But a failure to do so does not prevent the pattern
++from applying to an instruction pattern.  Instead, it directs the compiler to modify
++the code so that the constraint will be satisfied.  Usually this is
++done by copying an operand into a register.
+diff -Nur gnuexts/SEC96.hss fix/gnuexts/SEC96.hss
+--- gnuexts/SEC96.hss	2003-09-16 16:47:38.000000000 +0200
++++ fix/gnuexts/SEC96.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -9,7 +9,7 @@
+ </PRE>
+ This specifies that the name to be used for the variable <CODE>foo</CODE> in
+ the assembler code should be <CODE>myfoo</CODE> rather than the usual
+-<CODE>_foo</CODE>.
++<CODE>foo</CODE>.
+ <BR><BR>
+ On systems where an underscore is normally prepended to the name of a C
+ function or variable, this feature allows you to define names for the
+@@ -23,12 +23,11 @@
+ future.
+ <BR><BR>
+ You cannot use <CODE>asm</CODE> in this way in a function <I>definition</I>; but
+-you can get the same effect by writing a declaration for the function
++you can get the same effect by writing a <I>declaration</I> for the function
+ before its definition and putting <CODE>asm</CODE> there, like this:
+ <PRE>extern func () asm (&quot;FUNC&quot;);
+ 
+-func (x, y)
+-     int x, y;
++func (int x, int y)
+ /* ... */
+ </PRE>
+ It is up to you to make sure that the assembler names you choose do not
+diff -Nur gnuexts/SEC97.hss fix/gnuexts/SEC97.hss
+--- gnuexts/SEC97.hss	2003-09-16 16:47:38.000000000 +0200
++++ fix/gnuexts/SEC97.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -1,30 +1,9 @@
+ [Main]
+ Title=Variables in Specified Registers
++Subsections=SEC98, SEC99, SEC99a
+ 
+ [Top]
+ GNU C allows you to put a few global variables into specified hardware
+ registers.  You can also specify the register in which an ordinary
+-register variable should be allocated.
+-<UL>
+-<LI>
+-Global register variables reserve registers throughout the program.
+-This may be useful in programs such as programming language
+-interpreters which have a couple of global variables that are accessed
+-very often.
+-<BR><BR>
+-</LI>
+-<LI>
+-Local register variables in specific registers do not reserve the
+-registers.  The compiler's data flow analysis is capable of determining
+-where the specified registers contain live values, and where they are
+-available for other uses.  Stores into local register variables may be deleted
+-when they appear to be dead according to dataflow analysis.  References
+-to local register variables may be deleted or moved or simplified.
+-<BR><BR>
+-These local variables are sometimes convenient for use with the extended
+-<CODE>asm</CODE> feature (see <A HREF="$$INFOLINK(Extended Asm)">Extended Asm</A>), if you want to write one
+-output of the assembler instruction directly into a particular register.
+-(This will work provided the register you specify fits the constraints
+-specified for that operand in the <CODE>asm</CODE>.)
+-</LI>
+-</UL>
++register variable should be allocated.  TIGCC also allows you to specify
++an explicit register for function parameters.
+\ No newline at end of file
+diff -Nur gnuexts/SEC98.hss fix/gnuexts/SEC98.hss
+--- gnuexts/SEC98.hss	2003-09-16 16:47:40.000000000 +0200
++++ fix/gnuexts/SEC98.hss	2003-09-17 01:07:40.000000000 +0200
+@@ -1,23 +1,29 @@
+ [Main]
+ Title=Defining Global Register Variables
+ 
++[Description]
++Global register variables reserve registers throughout the program.
++This may be useful in programs such as programming language
++interpreters which have a couple of global variables that are accessed
++very often.
++
+ [Top]
+ You can define a global register variable in GNU C like this:
+-<PRE>register int *foo asm (&quot;a5&quot;);
++<PRE>register int *foo asm (&quot;a3&quot;);
+ </PRE>
+-Here <CODE>a5</CODE> is the name of the register which should be used.  Choose a
++Here <CODE>a3</CODE> is the name of the register which should be used.  Choose a
+ register which is normally saved and restored by function calls on your
+ machine, so that library routines will not clobber it.
+ <BR><BR>
+ Naturally the register name is cpu-dependent, so you would need to
+ conditionalize your program according to cpu type.  The register
+-<CODE>a5</CODE> would be a good choice on a 68000 for a variable of pointer
++<CODE>a3</CODE> would be a good choice on a 68000 for a variable of pointer
+ type.  On machines with register windows, be sure to choose a &quot;global&quot;
+ register that is not affected magically by the function call mechanism.
+ <BR><BR>
+ In addition, operating systems on one type of cpu may differ in how they
+ name the registers; then you would need additional conditionals.  For
+-example, some 68000 operating systems call this register <CODE>%a5</CODE>.
++example, some 68000 operating systems call this register <CODE>%a3</CODE>.
+ <BR><BR>
+ Eventually there may be a way of asking the compiler to choose a register
+ automatically, but first we need to figure out how it should choose and
+@@ -31,8 +37,8 @@
+ would appear to be dead, but references may be deleted or moved or
+ simplified.
+ <BR><BR>
+-It is not safe to access the global register variables from signal
+-handlers, or from more than one thread of control, because the system
++It is not safe to access the global register variables from interrupt
++handlers, because the system
+ library routines may temporarily use the register for other things (unless
+ you recompile them specially for the task at hand).
+ <BR><BR>
+@@ -42,9 +48,9 @@
+ different source file in which the variable wasn't declared).  This is
+ because <CODE>lose</CODE> might save the register and put some other value there.
+ For example, you can't expect a global register variable to be available in
+-the comparison-function that you pass to <CODE>qsort</CODE>, since <CODE>qsort</CODE>
++the comparison-function that you pass to <A HREF="$$LINK(stdlib.h/qsort)">qsort</A>, since it
+ might have put something else in that register.  (If you are prepared to
+-recompile <CODE>qsort</CODE> with the same global register variable, you can
++recompile it with the same global register variable, you can
+ solve this problem.)
+ <BR><BR>
+ If you want to recompile <CODE>qsort</CODE> or other source files which do not
+@@ -60,13 +66,10 @@
+ program that uses the global register variable must explicitly save and
+ restore the value which belongs to its caller.
+ <BR><BR>
+-On most machines, <CODE>longjmp</CODE> will restore to each global register
+-variable the value it had at the time of the <CODE>setjmp</CODE>.  On some
+-machines, however, <CODE>longjmp</CODE> will not change the value of global
+-register variables.  To be portable, the function that called <CODE>setjmp</CODE>
+-should make other arrangements to save the values of the global register
+-variables, and to restore them in a <CODE>longjmp</CODE>.  This way, the same
+-thing will happen regardless of what <CODE>longjmp</CODE> does.
++Be careful if you use <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A> with global register
++variables, because it will restore to each global register
++variable the value it had at the time of the
++<A HREF="$$LINK(setjmp.h/setjmp)">setjmp</A>.
+ <BR><BR>
+ All global register variable declarations must precede all function
+ definitions.  If such a declaration could appear after function
+@@ -76,10 +79,8 @@
+ Global register variables may not have initial values, because an
+ executable file has no means to supply initial contents for a register.
+ <BR><BR>
+-On the SPARC, there are reports that g3 ... g7 are suitable
+-registers, but certain library functions, such as <CODE>getwd</CODE>, as well
+-as the subroutines for division and remainder, modify g3 and g4.  g1 and
+-g2 are local temporaries.
+-<BR><BR>
+-On the 68000, a2 ... a5 should be suitable, as should d2 ... d7.
++On the Motorola 68000, <CODE>a2</CODE>&nbsp;...&nbsp;<CODE>a5</CODE> should be suitable for global register variables,
++as should <CODE>d3</CODE>&nbsp;...&nbsp;<CODE>d7</CODE>.
+ Of course, it will not do to use more than a few of those.
++Note that <CODE>a5</CODE> is used by
++<CODE><A HREF="$$INFOLINK(httigcc/advanced_optrom)">OPTIMIZE_ROM_CALLS</A></CODE>.
+diff -Nur gnuexts/SEC99.hss fix/gnuexts/SEC99.hss
+--- gnuexts/SEC99.hss	2003-09-16 16:47:40.000000000 +0200
++++ fix/gnuexts/SEC99.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -1,7 +1,22 @@
+ [Main]
+ Title=Specifying Registers for Local Variables
+ 
++[Description]
++Local register variables in specific registers do not reserve the
++registers.  The compiler's data flow analysis is capable of determining
++where the specified registers contain live values, and where they are
++available for other uses.  Stores into local register variables may be deleted
++when they appear to be dead according to dataflow analysis.  References
++to local register variables may be deleted or moved or simplified.
++
+ [Top]
++These local variables are sometimes convenient for use with the extended
++<CODE>asm</CODE> feature (see the section <A HREF="$$LINK(SEC94)">Assembler
++Instructions with C Expression Operands</A>), if you want to write one
++output of the assembler instruction directly into a particular register
++(this will work provided the register you specify fits the constraints
++specified for that operand in the <CODE>asm</CODE> block).
++<BR><BR>
+ You can define a local register variable with a specified register
+ like this:
+ <PRE>register int *foo asm (&quot;a5&quot;);
+@@ -12,9 +27,9 @@
+ <BR><BR>
+ Naturally the register name is cpu-dependent, but this is not a
+ problem, since specific registers are most often useful with explicit
+-assembler instructions (see <A HREF="$$INFOLINK(Extended Asm)">Extended Asm</A>).  Both of these things
+-generally require that you conditionalize your program according to
+-cpu type.
++assembler instructions (see the section <A HREF="$$LINK(SEC94)">Assembler Instructions with C
++Expression Operands</A>), which is CPU-specific as well, and since TIGCC
++only supports exactly one CPU (the Motorola 68000) anyway.
+ <BR><BR>
+ In addition, operating systems on one type of cpu may differ in how they
+ name the registers; then you would need additional conditionals.  For
+diff -Nur gnuexts/SEC99a.hss fix/gnuexts/SEC99a.hss
+--- gnuexts/SEC99a.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/SEC99a.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -0,0 +1,37 @@
++[Main]
++Title=Specifying Registers for Function Parameters
++See Also=SEC85_regparm: regparm
++
++[Description]
++In TIGCC, it is possible to specify explictly where the parameters to a function
++a stored, in a syntax similar to global and local register variables.
++
++[Top]
++TIGCC can pass function parameters either on the stack or through registers.
++You can use the <CODE><A HREF="$$LINK(SEC85_regparm)">regparm</A></CODE> attribute or the <B>'-mregparm'</B>
++compiler switch to let the compiler automatically choose registers for the parameters, but you can
++also tell TIGCC to put a parameter into a specific register.  This can be very handy when
++interfacing with assembly code.  For example, the following assembly function expects its 2
++parameters in the <CODE>d1</CODE> and <CODE>d2</CODE> registers:
++<PRE>asm(".globl add
++add:
++     move.l %d2,%d0
++     add.l %d1,%d0
++     rts");
++</PRE>
++Therefore, its prototype would be:
++<PRE>unsigned long add (unsigned long a asm("d1"), unsigned long b asm("d2"));
++</PRE>
++Explicit register specifications for function parameters are also supported in function headers
++(not only in prototypes).  Therefore, the assembly function above could be replaced by the following
++C equivalent:
++<PRE>unsigned long add (unsigned long a asm("d1"), unsigned long b asm("d2"))
++{
++  return a + b;
++}
++</PRE>
++to pass a register parameter.  The registers do not necessarily need to be
++call-clobbered.  You can also use a2-a5/d3-d7 to pass a register parameter.
++But note that the called function still has to save and restore those registers,
++even if they are used as arguments!  In C code, TIGCC takes care of that
++automatically for you, but in assembly code, it is something you need to remember.
+diff -Nur gnuexts/gnuexts.hss fix/gnuexts/gnuexts.hss
+--- gnuexts/gnuexts.hss	2003-09-16 16:47:24.000000000 +0200
++++ fix/gnuexts/gnuexts.hss	2003-09-17 01:21:12.000000000 +0200
+@@ -1,16 +1,42 @@
+ [Main]
+-Title=Extensions to the C Language Family
++Title=GNU C Language Extensions
++Subsections=SEC63, SEC64, SEC65, SEC66, SEC67, SEC69, SEC70, SEC71, SEC72, SEC73, SEC74, SEC110, SEC111, SEC75, SEC76, SEC77, SEC78, SEC79, SEC80, SEC81, SEC82, SEC84, SEC83, SEC85, SEC91, SEC92, SEC85a, SEC86, SEC87, SEC88, SEC89, SEC90, SEC93, SEC94_asm, SEC96, SEC97, SEC100, SEC101, SEC102, SEC103, SEC104, SEC105, SEC106, SEC107, SEC108, SEC109, history, gnugpl/gnugpl, gnugpl/gnufdl, gnugpl/funding
+ 
+ [Top]
+-GNU C provides several language features not found in ISO standard C.
+-(The <B>'-pedantic'</B> option directs GCC to print a warning message if
+-any of these features is used.)  To test for the availability of these
++This part of the documentation is a modified version of the <A HREF="http://gcc.gnu.org/onlinedocs/gcc/C-Extensions.html">C Extensions</A> section of the <A HREF="http://gcc.gnu.org/onlinedocs/gcc/">GCC Manual</A>.
++Therefore it is licensed under the <A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>.
++<BR><BR>
++TIGCC (like all GNU C compilers) provides several language features not found
++in ISO standard C.  To test for the availability of these
+ features in conditional compilation, check for a predefined macro
+-<CODE>__GNUC__</CODE>, which is always defined under GCC.
++<CODE><A HREF="$$INFOLINK(cpp/SEC15_GNUC)">__GNUC__</A></CODE>, which is always defined under GCC.
++<BR><BR>
++Some features that are in ISO C99 but not C89 are also, as
++extensions, accepted by GCC in C89 mode.
++
++[Bottom]
++Original author: Free Software Foundation, Inc.
++<BR>
++Authors of the modifications: Zeljko Juric, Sebastian Reichelt, and Kevin Kofler
++<BR>
++Published by the TIGCC Team.
++<BR>
++See the <A HREF="$$LINK(history)">History</A> section for details and copyright information.
++<BR><BR>
++Permission is granted to copy, distribute and/or modify this document
++under the terms of the <A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>, Version 1.1 or any
++later version published by the Free Software Foundation; with the Invariant
++Sections being "<A HREF="$$INFOLINK(gnugpl)">GNU General Public License</A>" and "<A HREF="$$INFOLINK(gnugpl/funding)">Funding Free Software</A>", the
++Front-Cover texts being (a) (see below), and with the Back-Cover Texts being
++(b) (see below).  A copy of the license is included in the section entitled
++"<A HREF="$$INFOLINK(gnugpl/gnufdl)">GNU Free Documentation License</A>".
++<BR><BR>
++(a) The FSF's Front-Cover Text is:
++<BR><BR>
++A GNU Manual
+ <BR><BR>
+-These extensions are available in C and Objective-C.  Most of them are
+-also available in C++.  See <A HREF="$$INFOLINK(C++ Extensions,,Extensions to the C++ Language)">Extensions to the
+-C++ Language</A> for extensions that apply <I>only</I> to C++.
++(b) The FSF's Back-Cover Text is:
+ <BR><BR>
+-Some features that are in ISO C99 but not C89 or C++ are also, as
+-extensions, accepted by GCC in C89 mode and in C++.
++You have freedom to copy and modify this GNU Manual, like GNU software.
++Copies published by the Free Software Foundation raise funds for GNU
++development.
+diff -Nur gnuexts/history.hss fix/gnuexts/history.hss
+--- gnuexts/history.hss	1970-01-01 01:00:00.000000000 +0100
++++ fix/gnuexts/history.hss	2003-09-16 22:56:10.000000000 +0200
+@@ -0,0 +1,24 @@
++[Main]
++Title=History
++
++[Top]
++<UL>
++<LI><B>Original Version:</B> <A HREF="http://gcc.gnu.org/onlinedocs/gcc/C-Extensions.html">Extensions to the C Language Family</A>
++<BR><BR>
++Published by the Free Software Foundation
++<BR>
++59 Temple Place - Suite 330
++<BR>
++Boston, MA 02111-1307 USA
++<BR><BR>
++Copyright &copy; 1988, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
++2000, 2001, 2002 Free Software Foundation, Inc.
++<BR><BR>
++</LI>
++<LI><B>Modifications for TIGCC:</B> <A HREF="$$LINK(gnuexts)">GNU C Language Extensions</A>
++<BR><BR>
++Published by the TIGCC Team
++<BR><BR>
++Copyright &copy; 2000, 2001, 2002 Zeljko Juric, Sebastian Reichelt, Kevin Kofler
++</LI>
++</UL>

@@ -1,0 +1,15 @@
+[Main]
+Title=INCOMPAT_CREATES_HANDLES
+
+[Top]
+If your program allocates memory which may not be freed automatically after
+exiting the program, and which does not belong to a
+<A HREF="$$LINK(vat.h/)">VAT</A> symbol or
+<A HREF="$$LINK(homescr.h/)">home screen</A> item, you should write
+<PRE>#define INCOMPAT_CREATES_HANDLES
+</PRE>
+at the top of at least one source file, before including any header file
+from the TIGCC Library. This especially refers to TSRs that allocate memory.
+If a shell or another tool freed the memory, the calculator would crash
+sooner or later. This directive should prevent such tools from automatically
+freeing memory allocated by the program.

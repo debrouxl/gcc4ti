@@ -1,0 +1,30 @@
+[Main]
+Name=WinReOpen
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=short WinReOpen (WINDOW *w, const WIN_RECT *rect, unsigned short Flags, ...);
+
+[ROM Call]
+Index=$22
+
+[Description]
+Reopens an existing window.
+
+[Explanation]
+WinReOpen acts like <A HREF="$$LINK(WinOpen)">WinOpen</A>, but reopens an existing window. Not valid
+for windows created in <A HREF="$$LINK(WinFlags)">WF_SAVE_SCR</A> mode (unless using just to call
+<A HREF="$$LINK(WinOpen)">WinOpen</A>). If the window is not in the "list of windows" then just
+calls <A HREF="$$LINK(WinOpen)">WinOpen</A>. Otherwise, it updates the Client, Window, Clip, and Port
+regions of the window. If the new window is of the same size as the old one, then the Port
+region (DUP_SCR) is not cleared. Returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the window re-opened OK,
+and returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> if not (bad window or not enough memory to enlarge
+DUP_SCR).
+<BR><BR>
+<B>Note:</B> This is the official information by Texas Instruments. I am not sure that I fully
+understood what they want to say. It seems that you can reopen a window on a new place
+(keeping the same size), then redraw the window on a new position using
+<A HREF="$$LINK(WinBackupToScr)">WinBackupToScr</A>.
+
+[References]
+Out=FirstWindow, WinHome, WinOpen, alloc.h/HeapRealloc, graph.h/BitmapInit, graph.h/BitmapSize, mem.h/memset, unknown.h/UpdateWindows, unknown.h/WinRemove

@@ -1,0 +1,26 @@
+[Main]
+Name=exit
+Type=Function
+Subtype=Macro
+Header Files=stdlib.h
+Definition=void exit (short code);
+Real Definition=#define exit(n) ({(n)?_rom_call(void,(short),152)(n):0; __exit();})
+
+[Description]
+Forced termination of the program.
+
+[Explanation]
+exit terminates the program (it may be called from any nesting level). Before termination, any
+registered "exit functions" (posted with <A HREF="$$LINK(atexit)">atexit</A>) are called. ANSI proposes
+that exit also closes all open files. Such behaviour is not implemented here, you need to do
+it manually if necessary.
+<BR><BR>
+<I>code</I> is the exit status. Value of 0 is used to indicate a normal exit. If <I>code</I>
+is nonzero, an error message dialog which corresponds with code <I>code</I> will be displayed
+before exiting. Note that this is not the same as throwing error <I>code</I> using
+<A HREF="$$LINK(error.h/ER_throwVar)">ER_throwVar</A>. Throwing an error is much more "barbaric"
+method for exiting from the program. Among others, by throwing an error, no registered "exit
+functions" will be called.
+
+[References]
+In=abort
