@@ -406,7 +406,6 @@ static BOOLEAN ExportDebuggingInfoFile (const PROGRAM *Program, EXP_FILE *File, 
 	COUNT SymbolCount = 0;
 	SectionOffsets CurrentSectionOffsets;
 	OFFSET SymbolTableOffset;
-	OFFSET StringTableOffset;
 	const SECTION *Section;
 
 	// Check if the file is valid
@@ -433,7 +432,6 @@ static BOOLEAN ExportDebuggingInfoFile (const PROGRAM *Program, EXP_FILE *File, 
 	WriteTI2 (COFFHeader.OptHdrSize, 0);
 	WriteTI2 (COFFHeader.Flags, (COFF_FLAG_32BIT_BE | COFF_FLAG_NO_LINE_NUMBERS));
 	ExportWrite (File, &COFFHeader, sizeof (COFF_HEADER), 1);
-	StringTableOffset = SymbolTableOffset + SymbolCount * sizeof (COFF_SYMBOL);
 
 	// Write the section headers
 	CurrentSectionOffsets.FileOffset = sizeof (COFF_HEADER) + SectionCount * sizeof (COFF_SECTION);
@@ -449,11 +447,12 @@ static BOOLEAN ExportDebuggingInfoFile (const PROGRAM *Program, EXP_FILE *File, 
 	MapToAllSections (Program, PatchRelocOffsetsOut, NULL);
 
 	// Write the symbol table
-	CurrentSectionOffsets.FileOffset = StringTableOffset;
+	CurrentSectionOffsets.FileOffset = 4; // skip the string table size
 	CurrentSectionOffsets.COFFSectionNumber = 0;
 	MapToAllSections (Program, WriteSymbolTable, &CurrentSectionOffsets);
 
 	// Write the string table
+	ExportWriteTI4 (File, CurrentSectionOffsets.FileOffset); // size
 	MapToAllSections (Program, WriteStringTable, File);
 
 	return TRUE;;
