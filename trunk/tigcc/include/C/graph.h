@@ -80,7 +80,6 @@ typedef struct{void*ScrAddr;unsigned char XMax,YMax;short CurFont,CurAttr,CurX,C
 #define DrawStr _rom_call(void,(short,short,const char*,short),1A9)
 #define DrawStrXY DrawStr
 #define DrawStrWidth _rom_call(short,(const char*,short),197)
-#define DrawTo _rom_call(void,(short,short),19C)
 #define FillLines2 _rom_call(void,(const WIN_RECT*,const WIN_RECT*,const SCR_RECT*,short),199)
 #define FillTriangle _rom_call(void,(short,short,short,short,short,short,const SCR_RECT*,short),198)
 #define FontCharWidth _rom_call(short,(short),190)
@@ -90,6 +89,7 @@ typedef struct{void*ScrAddr;unsigned char XMax,YMax;short CurFont,CurAttr,CurX,C
 #define LCD_restore(b) ((void)(_rom_call(void,(),26A)(LCD_MEM,(const void*)(b),(long)LCD_SIZE)))
 #define LCD_save(b) ((void)(_rom_call(void,(),26A)((void*)(b),LCD_MEM,(long)LCD_SIZE)))
 #define LineTo _rom_call(void,(short,short),19C)
+#define DrawTo LineTo
 #define MakeWinRect _rom_call(WIN_RECT*,(short,short,short,short),2C)
 #define MoveTo _rom_call(void,(short,short),19D)
 #define PortRestore _rom_call(void,(void),1A3)

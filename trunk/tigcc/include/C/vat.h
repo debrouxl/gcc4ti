@@ -29,6 +29,10 @@ typedef const ESQ*CESI;
 #define __HAVE_ESI
 typedef ESQ*ESI;
 #endif
+#ifndef __HAVE_GraphModes
+#define __HAVE_GraphModes
+enum GraphModes{GR_FUNC=1,GR_PAR=2,GR_POL=3,GR_SEQ=4,GR_3D=5,GR_DE=6};
+#endif
 #ifndef __HAVE_HANDLE
 #define __HAVE_HANDLE
 typedef unsigned short HANDLE;

@@ -18,6 +18,7 @@
 #include <float.h>
 #include <gdraw.h>
 #include <graph.h>
+#include <graphing.h>
 #include <gray.h>
 #include <homescr.h>
 #include <intr.h>

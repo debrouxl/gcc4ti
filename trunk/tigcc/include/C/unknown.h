@@ -5,6 +5,10 @@
 
 /* Begin Auto-Generated Part */
 #define SYM_LEN 8
+#ifndef __HAVE_Attrs
+#define __HAVE_Attrs
+enum Attrs{A_REVERSE,A_NORMAL,A_XOR,A_SHADED,A_REPLACE,A_OR,A_AND,A_THICK1,A_SHADE_V,A_SHADE_H,A_SHADE_NS,A_SHADE_PS};
+#endif
 #ifndef __HAVE_BITMAP
 #define __HAVE_BITMAP
 typedef struct{unsigned short NumRows,NumCols;unsigned char Data[];}BITMAP;
@@ -17,9 +21,41 @@ typedef unsigned char ESQ;
 #define __HAVE_CESI
 typedef const ESQ*CESI;
 #endif
+#ifndef __HAVE_HANDLE
+#define __HAVE_HANDLE
+typedef unsigned short HANDLE;
+#endif
+#ifndef __HAVE_DB3
+#define __HAVE_DB3
+typedef struct{long cVertices;HANDLE hVertices;long cEdges;HANDLE hEdges;HANDLE hContours;long ciVertices;HANDLE hiVertices;long ciEdges;HANDLE hiEdges;short DCM[3][3];short DCM0[3][3];short DCMhome[3][3];short cDCMangle;unsigned short nSpinDir;unsigned char nSpinSpeed;unsigned char bSpinning;short calp,salp;}DB3;
+#endif
 #ifndef __HAVE_div_t
 #define __HAVE_div_t
 typedef struct{short quot,rem;}div_t;
+#endif
+#ifndef __HAVE_SCR_RECT
+#define __HAVE_SCR_RECT
+typedef union{struct{unsigned char x0,y0,x1,y1;}xy;unsigned long l;}SCR_RECT;
+#endif
+#ifndef __HAVE_SCR_STATE
+#define __HAVE_SCR_STATE
+typedef struct{void*ScrAddr;unsigned char XMax,YMax;short CurFont,CurAttr,CurX,CurY;SCR_RECT CurClip;}SCR_STATE;
+#endif
+#ifndef __HAVE_WINDOW
+#define __HAVE_WINDOW
+typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
+#endif
+#ifndef __HAVE_EQU_DS
+#define __HAVE_EQU_DS
+typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS;
+#endif
+#ifndef __HAVE_WINDOW_AMS1
+#define __HAVE_WINDOW_AMS1
+typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
+#endif
+#ifndef __HAVE_EQU_DS_AMS1
+#define __HAVE_EQU_DS_AMS1
+typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
 #endif
 #ifndef __HAVE_ESI
 #define __HAVE_ESI
@@ -29,9 +65,49 @@ typedef ESQ*ESI;
 #define __HAVE_ESI_Callback_t
 typedef CALLBACK void(*ESI_Callback_t)(ESI);
 #endif
-#ifndef __HAVE_HANDLE
-#define __HAVE_HANDLE
-typedef unsigned short HANDLE;
+#ifndef __HAVE_GrFmtFlags2
+#define __HAVE_GrFmtFlags2
+enum GrFmtFlags2{GR_DE_CUSTOM=0x0010,GR_DE_FIELDS=0x0004,GR_DIRFLD=0x0002,GR_EULER=0x0001};
+#endif
+#ifndef __HAVE_GrFmtFlags
+#define __HAVE_GrFmtFlags
+enum GrFmtFlags{GR_SEQ_TIME=0x8000,GR_SEQ_WEB=0x4000,GR_BUILD_WEB=0x2000,GR_3dEXPAND=0x0800,GR_COORDOFF=0x0080,GR_SIMUL=0x0040,GR_GRIDON=0x0020,GR_AXESOFF=0x0010,GR_AXESBOX=0x0008,GR_LABELSON=0x0004,GR_LEAD_CURSOR=0x0002,GR_COORD_POLAR=0x0001};
+#endif
+#ifndef __HAVE_GrMode3dStyles
+#define __HAVE_GrMode3dStyles
+enum GrMode3dStyles{GR_3D_WIRE_FRAME=0,GR_3D_HIDDEN_SURFACE=1,GR_3D_CONTOUR=2,GR_3D_CONTOUR_WIRE=3,GR_3D_IMPLICIT=4};
+#endif
+#ifndef __HAVE_GR_MODES
+#define __HAVE_GR_MODES
+typedef struct{unsigned short gr_fmt_flags;unsigned char gr_xaxis;signed char gr_yaxis;unsigned short gr_fmt_flags2;unsigned char gr_3dflags;unsigned char pad;}GR_MODES;
+#endif
+#ifndef __HAVE_GraphModes
+#define __HAVE_GraphModes
+enum GraphModes{GR_FUNC=1,GR_PAR=2,GR_POL=3,GR_SEQ=4,GR_3D=5,GR_DE=6};
+#endif
+#ifndef __HAVE_GrSides
+#define __HAVE_GrSides
+typedef enum GrSides{AP_SIDE_A=0,AP_SIDE_B=1,AP_SIDE_UNKNOWN=2};
+#endif
+#ifndef __HAVE_GrWinFlags
+#define __HAVE_GrWinFlags
+enum GrWinFlags{GR_REDRAW=0x0100,GR_DIRTY=0x0080,TAB_DIRTY=0x0040,GR_ADD_TO=0x0020,GR_OPEN=0x0010,GRAPH_FOLDER=0x0008,EYE_DIRTY=0x0004,GR_SHADE_NO_PAN=0x0002,FLDPIC_DIRTY=0x0001};
+#endif
+#ifndef __HAVE_TABLE_WIN_VARS
+#define __HAVE_TABLE_WIN_VARS
+typedef struct{short last_col;short last_row;unsigned short table_xpix;unsigned short table_ypix;unsigned char curtblinc;unsigned char curtblincy;unsigned char col_first;unsigned char col_last;short row_first;short row_last;unsigned char tbfn[10];unsigned char gr_xpix;float orgtblmax;}TABLE_WIN_VARS;
+#endif
+#ifndef __HAVE_TableFlags
+#define __HAVE_TableFlags
+enum TableFlags{TBL_CONNECT_TRC=0x80,TBL_INDEP_ASK=0x40,TBL_NO_MODE_CHANGE=0x20};
+#endif
+#ifndef __HAVE_WinVarEnum
+#define __HAVE_WinVarEnum
+enum WinVarEnum{GR_XMIN=0,GR_XMAX=1,GR_XSCL=2,GR_YMIN=3,R_YMAX=4,GR_YSCL=5,GR_DELTAX=6,GR_DELTAY=7,GR_XRES=8,GR_TMIN=8,GR_T0=8,GR_TMAX=9,GR_TSTEP=10,GR_TPLOT=11,GR_DIFTOL=12,GR_ESTEP=13,GR_FLDRES=14,GR_NCURVES=15,GR_DTIME=16,GR_THETMIN=8,GR_THETMAX=9,GR_THETSTEP=10,GR_XGRID=2,GR_YGRID=5,GR_ZMIN=8,GR_ZMAX=9,GR_ZSCL=10,GR_EYE_THETA=11,GR_EYE_PHI=12,GR_EYE_PSI=13,GR_NCONTOUR=14,GR_XSCALE=15,GR_YSCALE=16,GR_ZSCALE=17,GR_NMIN=8,GR_NMAX=9,GR_NPLOT=10,GR_NSTEP=11};
+#endif
+#ifndef __HAVE_GR_WIN_VARS
+#define __HAVE_GR_WIN_VARS
+typedef struct{float flt_xcursor;float flt_ycursor;float flt_zcursor;float flt_tcursor;float flt_rcursor;float flt_thetacursor;float flt_ncursor;float recip_delx;float recip_dely;float orgxmin;float orgxmax;float panshift;float orgtblst;float tblshift;float tblstart;float deltatbl;float*rngp;float PrevRange[12];float UserRange[29];GR_MODES*gr_modep;WINDOW*grwinp;WINDOW*rngwinp;WINDOW*tblwinp;TABLE_WIN_VARS*tableptr;union{struct{EQU_DS_AMS1 equedDS;unsigned short curinc;unsigned short curincy;unsigned short tblindx;short yaxispix;unsigned short TBL_WidthLimit;HANDLE zval;DB3 DB3z;HANDLE htbinput;HANDLE hfldpic;unsigned short gr_win_flags;unsigned char xmaxpix;unsigned char ymaxpix;unsigned char gr_ref_mask;unsigned char graph_mode;unsigned char gr_side;unsigned char gr_folder_cnt;unsigned char gr_shade_pat;unsigned char rng_xpix;unsigned char rng_ypix;unsigned char tbl_flags;unsigned char tbl_par_flags;unsigned char gr_top_flags;unsigned char ValidCursBits;signed char de_twopass;FUNCID CurFunc;unsigned char PrevZoomMode;}ams1;struct{EQU_DS equedDS;unsigned short curinc;unsigned short curincy;unsigned short tblindx;short yaxispix;unsigned short TBL_WidthLimit;HANDLE zval;DB3 DB3z;HANDLE htbinput;HANDLE hfldpic;unsigned short gr_win_flags;unsigned char xmaxpix;unsigned char ymaxpix;unsigned char gr_ref_mask;unsigned char graph_mode;unsigned char gr_side;unsigned char gr_folder_cnt;unsigned char gr_shade_pat;unsigned char rng_xpix;unsigned char rng_ypix;unsigned char tbl_flags;unsigned char tbl_par_flags;unsigned char gr_top_flags;unsigned char ValidCursBits;signed char de_twopass;FUNCID CurFunc;unsigned char PrevZoomMode;}ams2;};}GR_WIN_VARS;
 #endif
 #ifndef __HAVE_HSym
 #define __HAVE_HSym
@@ -44,14 +120,6 @@ typedef struct{long quot,rem;}ldiv_t;
 #ifndef __HAVE_SCR_COORDS
 #define __HAVE_SCR_COORDS
 typedef unsigned char SCR_COORDS;
-#endif
-#ifndef __HAVE_SCR_RECT
-#define __HAVE_SCR_RECT
-typedef union{struct{unsigned char x0,y0,x1,y1;}xy;unsigned long l;}SCR_RECT;
-#endif
-#ifndef __HAVE_SCR_STATE
-#define __HAVE_SCR_STATE
-typedef struct{void*ScrAddr;unsigned char XMax,YMax;short CurFont,CurAttr,CurX,CurY;SCR_RECT CurClip;}SCR_STATE;
 #endif
 #ifndef __HAVE_SYM_ENTRY
 #define __HAVE_SYM_ENTRY
@@ -69,32 +137,15 @@ typedef short WIN_COORDS;
 #define __HAVE_WIN_RECT
 typedef struct{short x0,y0,x1,y1;}WIN_RECT;
 #endif
-#ifndef __HAVE_WINDOW
-#define __HAVE_WINDOW
-typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
-#endif
-#ifndef __HAVE_WINDOW_AMS1
-#define __HAVE_WINDOW_AMS1
-typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
-#endif
-typedef struct{long cVertices;HANDLE hVertices;long cEdges;HANDLE hEdges;HANDLE hContours;long ciVertices;HANDLE hiVertices;long ciEdges;HANDLE hiEdges;short DCM[3][3];short DCM0[3][3];short DCMhome[3][3];short cDCMangle;unsigned short nSpinDir;unsigned char nSpinSpeed;unsigned char bSpinning;short calp,salp;}DB3;
-typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS;
-typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
 typedef enum{SELECT_ON,SELECT_OFF,SELECT_TOGGLE}EQU_SELECT;
 typedef struct{unsigned char FNum;unsigned char FNum2;unsigned short LNum;unsigned short PlotIndex;unsigned char PlotDir;}FUNCID;
-typedef struct{unsigned short gr_fmt_flags;unsigned char gr_xaxis;signed char gr_yaxis;unsigned short gr_fmt_flags2;unsigned char gr_3dflags;unsigned char pad;}GR_MODES;
-typedef struct{short last_col;short last_row;unsigned short table_xpix;unsigned short table_ypix;unsigned char curtblinc;unsigned char curtblincy;unsigned char col_first;unsigned char col_last;short row_first;short row_last;unsigned char tbfn[10];unsigned char gr_xpix;float orgtblmax;}TABLE_WIN_VARS;
-typedef struct{float flt_xcursor;float flt_ycursor;float flt_zcursor;float flt_tcursor;float flt_rcursor;float flt_thetacursor;float flt_ncursor;float recip_delx;float recip_dely;float orgxmin;float orgxmax;float panshift;float orgtblst;float tblshift;float tblstart;float deltatbl;float*rngp;float PrevRange[12];float UserRange[29];GR_MODES*gr_modep;WINDOW*grwinp;WINDOW*rngwinp;WINDOW*tblwinp;TABLE_WIN_VARS*tableptr;union{struct{EQU_DS_AMS1 equedDS;unsigned short curinc;unsigned short curincy;unsigned short tblindx;short yaxispix;unsigned short TBL_WidthLimit;HANDLE zval;DB3 DB3z;HANDLE htbinput;HANDLE hfldpic;unsigned short gr_win_flags;unsigned char xmaxpix;unsigned char ymaxpix;unsigned char gr_ref_mask;unsigned char graph_mode;unsigned char gr_side;unsigned char gr_folder_cnt;unsigned char gr_shade_pat;unsigned char rng_xpix;unsigned char rng_ypix;unsigned char tbl_flags;unsigned char tbl_par_flags;unsigned char gr_top_flags;unsigned char ValidCursBits;signed char de_twopass;FUNCID CurFunc;unsigned char PrevZoomMode;}ams1;struct{EQU_DS equedDS;unsigned short curinc;unsigned short curincy;unsigned short tblindx;short yaxispix;unsigned short TBL_WidthLimit;HANDLE zval;DB3 DB3z;HANDLE htbinput;HANDLE hfldpic;unsigned short gr_win_flags;unsigned char xmaxpix;unsigned char ymaxpix;unsigned char gr_ref_mask;unsigned char graph_mode;unsigned char gr_side;unsigned char gr_folder_cnt;unsigned char gr_shade_pat;unsigned char rng_xpix;unsigned char rng_ypix;unsigned char tbl_flags;unsigned char tbl_par_flags;unsigned char gr_top_flags;unsigned char ValidCursBits;signed char de_twopass;FUNCID CurFunc;unsigned char PrevZoomMode;}ams2;};}GR_WIN_VARS;
 typedef unsigned long pFrame;
 typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK tag_proc)(void);unsigned long tag_str;}tag_info;
 typedef CALLBACK void(*Two_ESI_Callback_t)(ESI,ESI);
 typedef unsigned short unknown_retval;
-#define gr_active (*((GR_WIN_VARS**)(_rom_call_addr(10B))))
-#define gr_other (*((GR_WIN_VARS**)(_rom_call_addr(10C))))
 #define CharNumber _rom_call(unsigned char,(char,char,unsigned char*),113)
 #define CheckGraphRef _rom_call(short,(const SYM_ENTRY*),7D)
 #define ck_valid_float _rom_call(short,(float*),1E5)
-#define CkValidDelta _rom_call(unsigned char,(float,float,float),1C3)
 #define cleanup_de_mem ({__need_in_use_bit;_rom_call(unknown_retval,(),1EC);})
 #define cleanup_seq_mem ({__need_in_use_bit;_rom_call(unknown_retval,(),1D7);})
 #define convert_to_TI_92 _rom_call(void,(HANDLE),258)
@@ -102,8 +153,6 @@ typedef unsigned short unknown_retval;
 #define cpt_gr_fun ({__need_in_use_bit;_rom_call(unknown_retval,(),1D1);})
 #define cpt_gr_param ({__need_in_use_bit;_rom_call(unknown_retval,(),1D2);})
 #define cpt_gr_polar ({__need_in_use_bit;_rom_call(unknown_retval,(),1D3);})
-#define CptDeltax _rom_call(unsigned char,(GR_WIN_VARS*),1C1)
-#define CptDeltay _rom_call(unsigned char,(GR_WIN_VARS*),1C2)
 #define CptFuncX(x,y) _tios_float_2(1B9,x,y,float,GR_WIN_VARS*)
 #define CptIndep _rom_call(unsigned char,(float*,float*,short),1C9)
 #define CptLastIndepDE _rom_call(unknown_retval,(),1EF)
@@ -128,9 +177,6 @@ typedef unsigned short unknown_retval;
 #define FirstSeqPlot _rom_call(unknown_retval,(),1D6)
 #define fix_loop_displacements _rom_call(void,(ESI),170)
 #define FuncLineFlt _rom_call(unknown_retval,(),1BF)
-#define gdb_len ({__need_in_use_bit;_rom_call(unsigned long,(void),1E0);})
-#define gdb_recall ({__need_in_use_bit;_rom_call(void,(HSym),1E2);})
-#define gdb_store ({__need_in_use_bit;_rom_call(void,(ESI),1E1);})
 #define gen_version _rom_call(unsigned char,(ESI,ESI),259)
 #define GetStatValue ({__need_in_use_bit;_rom_call(unknown_retval,(),11B);})
 #define GetSysGraphRef _rom_call(unsigned short,(short),8A)
@@ -241,7 +287,6 @@ typedef unsigned short unknown_retval;
 #define ReallocExprStruct _rom_call(short,(HANDLE struct,short,ESI),14D)
 #define recall_data_var ({__need_in_use_bit;_rom_call(unknown_retval,(),112);})
 #define Regraph ({__need_in_use_bit;_rom_call(unknown_retval,(),1B6);})
-#define rngLen _rom_call(unsigned long,(char),1DF)
 #define run_one_seq ({__need_in_use_bit;_rom_call(unknown_retval,(),1DB);})
 #define ScrRectDivide _rom_call(SCR_RECT*,(const SCR_RECT*,const SCR_RECT*,__pshort),28)
 #define SearchExprStruct _rom_call(char*,(HANDLE struct,short),14E)
@@ -255,7 +300,6 @@ typedef unsigned short unknown_retval;
 #define spike_in_editor ({__need_in_use_bit;_rom_call(unknown_retval,(),116);})
 #define spike_optionD ({__need_in_use_bit;_rom_call(unknown_retval,(),114);})
 #define spike_titles_in_editor ({__need_in_use_bit;_rom_call(unknown_retval,(),118);})
-#define StepCk _rom_call(void,(float*),1DD)
 #define store_data_var ({__need_in_use_bit;_rom_call(void,(ESI,char),111);})
 #define time_loop ({__need_in_use_bit;_rom_call(unknown_retval,(),1D8);})
 #define tokenize_if_TI_92_or_text _rom_call(unknown_retval,(),265)
@@ -305,7 +349,6 @@ typedef unsigned short unknown_retval;
 #define store_to_subscripted_element ({__need_in_use_bit;_rom_call(void,(CESI,CESI),2B5);})
 #if MIN_AMS>=200
 typedef union{unsigned short*pW;SYM_ENTRY*pS;unsigned char*pB;}FOLDER_TYPE;
-typedef struct{int gr_in_progress:1;int gr_zoom_fit:1;int gr_cpt_seq_flag:1;int stat_in_progress:1;int gr_trace_seq:1;int de_init_conds:1;int gr_cpt_de_flag:1;int new_eqn:1;int de_error:1;}GR_FLAGS;
 enum OO_Indices{OO_APP_FLAGS=1,OO_APP_NAME=2,OO_APP_TOK_NAME=3,OO_APP_PROCESS_EVENT=4,OO_APP_DEFAULT_MENU=5,OO_APP_DEFAULT_MENU_HANDLE=6,OO_APP_EXT_COUNT=7,OO_APP_EXTENSIONS=8,OO_APP_EXT_ENTRIES=9,OO_APP_LOCALIZE=10,OO_APP_UNLOCALIZE=11,OO_APP_CAN_DELETE=12,OO_APP_CAN_MOVE=13,OO_APP_VIEWER=14,OO_APP_ICON=15,OO_APP_EXT_HELP=16,OO_APP_NOTICE_INSTALL=17,OO_APP_ABOUT=18,OO_SFONT=768,OO_LFONT=769,OO_HFONT=770,OO_APP_SFONT=768,OO_APP_LFONT=769,OO_APP_HFONT=770,OO_LANGUAGE=784,OO_DATE_FORMAT=785,OO_BUILTIN_HELP=786,OO_KTLIST=800,OO_CAT_TABLE=801,OO_CAT_INDEX=802,OO_CAT_COUNT=803,OO_CHAR_MENU=816,OO_CHAR_HANDLER=817,OO_APPS_HANDLER=818,OO_FLASH_APPS_HANDLER=819,OO_MATH_HANDLER=820,OO_MEM_HANDLER=821,OO_STO_HANDLER=822,OO_QUIT_HANDLER=823};
 typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFolCount;unsigned char*SymFolder,*SymName;HANDLE SymHandle,HomeHandle,MainHandle,DefTempHandle,DefFolderHandle;unsigned short SymErrCode;BOOL CallStatFree;HANDLE FindHandle;unsigned short DefFolderName[SYM_LEN+1];struct{FOLDER_TYPE Low,High,Cur;unsigned short CurOffset;}Find,Prev;}SymPG_S;
 #define CTypeTable ((unsigned char*const)(_rom_call_addr(442)))
@@ -316,7 +359,6 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define EV_errorCode (*((short*)(_rom_call_addr(46D))))
 #define EV_runningApp (*((short*)(_rom_call_addr(45D))))
 #define FLOATTAB ((float*const)(_rom_call_addr(464)))
-#define gr_flags (*((GR_FLAGS*)(_rom_call_addr(463))))
 #define NG_control (*((unsigned long*)(_rom_call_addr(466))))
 #define OO_firstACB (*((short*)(_rom_call_addr(451))))
 #define OO_SuperFrame (*((pFrame*)(_rom_call_addr(48F))))

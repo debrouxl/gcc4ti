@@ -8,6 +8,10 @@
 #define __HAVE_FindOptions
 enum FindOptions{FO_SINGLE_FOLDER=0x01,FO_RECURSE=0x02,FO_SKIP_TEMPS=0x04,FO_NOTEMPS=0x04,FO_RETURN_TWINS=0x08,FO_CKTWINS=0x08,FO_RETURN_FOLDER=0x10,FO_SKIP_COLLAPSE=0x20};
 #endif
+#ifndef __HAVE_HSym
+#define __HAVE_HSym
+typedef struct{HANDLE folder;unsigned short offset;}HSym;
+#endif
 #ifndef __HAVE_SYM_ENTRY
 #define __HAVE_SYM_ENTRY
 typedef struct{char name[8];unsigned short compat;union{unsigned short flags_n;struct{unsigned int busy:1,local:1,flag1_5:1,flag1_4:1,collapsed:1,twin:1,archived:1,in_view:1;unsigned int folder:1,overwritten:1,checked:1,hidden:1,locked:1,statvar:1,graph_ref_1:1,graph_ref_0:1;}bits;}flags;HANDLE handle;}SYM_ENTRY;
