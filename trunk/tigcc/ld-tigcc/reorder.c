@@ -57,7 +57,7 @@ static int SectionComparisonFunction (const void *Section1Ptr, const void *Secti
 	return (Section2->Relocs.OptRefCount * Section1->Size - Section1->Relocs.OptRefCount * Section2->Size);
 }
 
-COUNT GetRelocCountFromTo (const SECTION *Src, const SECTION *Dest)
+static COUNT GetRelocCountFromTo (const SECTION *Src, const SECTION *Dest)
 {
 	COUNT Result = 0;
 	RELOC *Reloc;
@@ -70,12 +70,12 @@ COUNT GetRelocCountFromTo (const SECTION *Src, const SECTION *Dest)
 	return Result;
 }
 
-COUNT GetRelocCountBetween (const SECTION *Section1, const SECTION *Section2)
+static COUNT GetRelocCountBetween (const SECTION *Section1, const SECTION *Section2)
 {
 	return (GetRelocCountFromTo (Section1, Section2) + GetRelocCountFromTo (Section2, Section1));
 }
 
-BOOLEAN AreSectionsRelated (const SECTION *Section1, const SECTION *Section2)
+static BOOLEAN AreSectionsRelated (const SECTION *Section1, const SECTION *Section2)
 {
 	if (Section1 && Section2)
 	{
@@ -85,12 +85,12 @@ BOOLEAN AreSectionsRelated (const SECTION *Section1, const SECTION *Section2)
 	return FALSE;
 }
 
-BOOLEAN CanMoveSection (const SECTION *Section)
+static BOOLEAN CanMoveSection (const SECTION *Section)
 {
 	return (!(AreSectionsRelated (GetPrev (Section), Section) || AreSectionsRelated (Section, GetNext (Section))));
 }
 
-BOOLEAN CanMoveSectionToFront (const SECTION *Section, const SECTION *Dest)
+static BOOLEAN CanMoveSectionToFront (const SECTION *Section, const SECTION *Dest)
 {
 	if (!(CanMoveSection (Section)))
 		return FALSE;
@@ -108,7 +108,7 @@ BOOLEAN CanMoveSectionToFront (const SECTION *Section, const SECTION *Dest)
 	}
 }
 
-BOOLEAN CanMoveSectionToBack (const SECTION *Section, const SECTION *Dest)
+static BOOLEAN CanMoveSectionToBack (const SECTION *Section, const SECTION *Dest)
 {
 	if (!(CanMoveSection (Section)))
 		return FALSE;
