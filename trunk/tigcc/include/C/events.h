@@ -4,7 +4,8 @@
 #include <default.h>
 
 /* Begin Auto-Generated Part */
-#define ModeSettings ((MO_OPTIONS*const)(long)*(short*)((char*)MO_currentOptions+6))
+#define MO_option ((unsigned short*const)(_rom_call_addr_hack(447,(((unsigned short*const)(long)*(short*)((char*)MO_currentOptions+6))),200)))
+#define ModeSettings ((MO_OPTIONS*const)(_rom_call_addr_hack(447,(((MO_OPTIONS*const)(long)*(short*)((char*)MO_currentOptions+6))),200)))
 #define NULL ((void*)0)
 #ifndef __HAVE_Bool
 #define __HAVE_Bool

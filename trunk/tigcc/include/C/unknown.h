@@ -318,7 +318,6 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define EV_runningApp (*((short*)(_rom_call_addr(45D))))
 #define FLOATTAB ((float*const)(_rom_call_addr(464)))
 #define gr_flags (*((GR_FLAGS*)(_rom_call_addr(463))))
-#define MO_option ((unsigned short*const)(_rom_call_addr(447)))
 #define NG_control (*((unsigned long*)(_rom_call_addr(466))))
 #define OO_firstACB (*((short*)(_rom_call_addr(451))))
 #define OO_SuperFrame (*((pFrame*)(_rom_call_addr(48F))))
