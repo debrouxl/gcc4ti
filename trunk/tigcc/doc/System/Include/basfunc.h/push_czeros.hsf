@@ -16,10 +16,13 @@ Executes TI-Basic 'cZeros' function.
 
 Important note for all solver ROM calls:
 
+<BR>
 When czeros( ) is executed on the command line, the OS provides special treatment for the specified "variable of interest". Part of the "special treatment" is temporarily to promote the "variable of interest" to the top of the ordering. Directly calling push_czeros( ) bypasses this special treatment. This affects solver ROM calls such as push_zeros, push_solve, push_czeros, push_csolve, push_min, push_max, and push_desolve.
 
+<BR>
 For example, the following code for attempting to find an inverse of sqrt(x/(1-x)) gives no solutions:
-
+<BR>
+<PRE>
  push_quantum(X_VAR_TAG);
  var = top_estack;
  push_difference(Integer1Index,var);
@@ -32,14 +35,17 @@ For example, the following code for attempting to find an inverse of sqrt(x/(1-x
  push_substitute_simplify(expr,var,solvevar);
  push_difference(top_estack,var);    //(expr|x=solveaux)-x
  push_czeros(top_estack,solvevar);
-
+</PRE>
+<BR>
 The simplest and most reliable way around this is to do:
-
+<BR>
+<PRE>
  push_expression(var);
  push_expression(expr);
  push_quantum(CZEROS_TAG);
  push_simplify(top_estack);
-
+</PRE>
+<BR>
 The above information was obtained from TI.
 
 [References]
