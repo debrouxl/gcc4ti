@@ -66,8 +66,8 @@ TIOS_UPGRADE_FILE_SUPPORT
 #define GENERIC_H
 
 // This defines the current version of ld-tigcc and ar-tigcc.
-#define PROGRAM_VERSION_STRING "1.06"
-#define COPYRIGHT_NOTICE_STRING "Copyright (C) 2002-2004 Sebastian Reichelt, Kevin Kofler and Billy Charvet"
+#define PROGRAM_VERSION_STRING "1.07"
+#define COPYRIGHT_NOTICE_STRING "Copyright (C) 2002-2005 Sebastian Reichelt, Kevin Kofler and Billy Charvet"
 
 // Handling of user-defined functionality dependencies.
 #ifdef TARGET_DLL
