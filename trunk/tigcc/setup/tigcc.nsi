@@ -330,7 +330,7 @@ SubSectionEnd
 
 Section -AdditionalIcons
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Uninstall TIGCC.lnk" "$INSTDIR\uninst.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -507,7 +507,7 @@ have_inst_dir:
   Delete "$SMPROGRAMS\$ICONS_GROUP\TIGCC Command Line Prompt.pif"
   Delete "$SMPROGRAMS\$ICONS_GROUP\TIGCC Documentation.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\TIGCC IDE.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\Uninstall TIGCC.lnk"
 
   RMDir "$SMPROGRAMS\$ICONS_GROUP"
 
