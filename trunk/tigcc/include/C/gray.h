@@ -65,7 +65,7 @@ enum GrayPlanes{LIGHT_PLANE=0,DARK_PLANE=1};
 #define GrayDBufSetAMSPlane(i,x) (_rom_call(void,(void*,long),1A2)(GrayDBufGetPlane(i,x),0xEF007F))
 #define GrayDBufSetHiddenAMSPlane(x) GrayDBufSetAMSPlane(GrayDBufGetHiddenIdx(),x)
 #define GrayDBufToggle() ((void)(__gray_dbl_offset=(__gray_dbl_offset?0:8)))
-#define GrayDBufToggleSync() ({GrayWaitNSwitches(1);GrayDBufToggle();})
+#define GrayDBufToggleSync() ({short __ishw2=_GrayIsRealHW2();if(__ishw2)GrayWaitNSwitches(1);GrayDBufToggle();if(!__ishw2)GrayWaitNSwitches(1);})
 #define GrayGetInt1Handler() ((INT_HANDLER)(__gray_hw_type?__gray_old_int1_hw2:__gray_old_int1_hw1))
 #define GetGrayInt1Handler GrayGetInt1Handler
 #define GrayGetPlane(x) ((x)?__D_plane:__L_plane)
