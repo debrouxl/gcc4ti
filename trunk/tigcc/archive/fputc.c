@@ -5,13 +5,18 @@
 __ATTR_TIOS_CALLBACK__ short fputc(short c, FILE *f)
 {
   short tmode=!(f->flags&_F_BIN);
+  unsigned short minalloc;
   char *base=f->base,*oldbase=base;
   if(f->flags&_F_ERR) return EOF;
   if(!(f->flags&_F_WRIT)) __FERROR(f);
-  if(peek_w(base)+10>f->alloc)
+  minalloc=peek_w(base)+3;
+  if(minalloc>65520u) __FERROR(f);
+  if(minalloc>f->alloc)
     {
       HeapUnlock(f->handle);
-      if(!HeapRealloc(f->handle,f->alloc+=f->buffincrement)) __FERROR(f);
+      if(f->alloc<=65520u-f->buffincrement) f->alloc+=f->buffincrement;
+      else f->alloc=65520u;
+      if(!HeapRealloc(f->handle,f->alloc)) __FERROR(f);
       base=f->base=HLock(f->handle);
       f->fpos+=base-oldbase;
       oldbase=base;
