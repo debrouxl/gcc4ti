@@ -1,6 +1,7 @@
 /* manip.h: Routines to manipulate the internal data
 
    Copyright (C) 2002-2003 Sebastian Reichelt
+   Copyright (C) 2003-2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,8 +25,7 @@
 
 // Free the program tree.
 void FreeProgram (PROGRAM *Program);
-// Free a section. The section is assumed not to be referenced. Use
-// RemoveSectionIfUnused instead if the section might still be referenced.
+// Free a section. The section is assumed not to be referenced.
 void FreeSection (SECTION *Section);
 // Free a relocation entry.
 void FreeReloc (RELOC *Reloc);
@@ -36,10 +36,6 @@ void FreeRelocRelation (RELOC *Reloc);
 // If a symbol is already known, set the symbol name to its name.
 // Decrease the number of unresolved relocs in the section.
 void FreeLocationSymbolName (SECTION *Section, LOCATION *Location);
-
-// Free a section if it is no longer referenced. Update the ReferencedLibCount
-// accordingly.
-BOOLEAN RemoveSectionIfUnused (SECTION *Section);
 
 // Create a section symbol for the given section, if none has been
 // created yet. If there already is one, set its name accordingly.
@@ -96,9 +92,6 @@ BOOLEAN ResolveRelocs (PROGRAM *Program, BOOLEAN Force);
 void OptimizeLocation (LOCATION *Location);
 // Optimize all relocs to have the least possible target and relation offset.
 void OptimizeRelocs (PROGRAM *Program);
-
-// Remove all unused sections.
-void RemoveUnusedSections (PROGRAM *Program);
 
 // Merge section Src into Dest.
 // Returns Dest if successful.

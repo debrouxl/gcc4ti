@@ -80,8 +80,7 @@ void FreeProgram (PROGRAM *Program)
 	memset (Program, 0, sizeof (PROGRAM));
 }
 
-// Free a section. The section is assumed not to be referenced. Use
-// RemoveSectionIfUnused instead if the section might still be referenced.
+// Free a section. The section is assumed not to be referenced.
 void FreeSection (SECTION *Section)
 {
 	PROGRAM *Program = Section->Parent;
@@ -168,48 +167,6 @@ void FreeLocationSymbolName (SECTION *Section, LOCATION *Location)
 		free ((char *) Location->SymbolName);
 	}
 	Location->SymbolName = (Location->Symbol ? Location->Symbol->Name : NULL);
-}
-
-// Free a section if it is no longer referenced. Update the ReferencedLibCount
-// accordingly.
-BOOLEAN RemoveSectionIfUnused (SECTION *Section)
-{
-	PROGRAM *Program = Section->Parent;
-	SECTION *OtherSection;
-	LIB_CALL *LibCall, *OtherSecLibCall;
-	
-	// Don't free the section if it is still referenced.
-	if (Section->Referenced)
-		return FALSE;
-
-	// If this section references any libraries, and if it was the last one to
-	// reference them, we need to mark the library as no longer referenced.
-	for_each (LibCall, Section->LibCalls)
-	{
-		LIBRARY *Library = LibCall->Library;
-		if (Library->Referenced)
-		{
-			for_each (OtherSection, Program->Sections)
-			{
-				// Not this section!
-				if (OtherSection == Section) continue;
-				for_each (OtherSecLibCall, OtherSection->LibCalls)
-				{
-					// If this library is still referenced, forget it.
-					if (OtherSecLibCall->Library == Library) goto NextLibCall;
-				}
-			}
-			// The library is no longer referenced after this section is removed.
-			Library->Referenced = FALSE;
-			Program->Libraries.ReferencedCount--;
-		}
-NextLibCall:;
-	}
-
-	// Now free the section.
-	FreeSection (Section);
-	
-	return TRUE;
 }
 
 // Create a section symbol for the given section, if none has been
@@ -811,23 +768,6 @@ void OptimizeRelocs (PROGRAM *Program)
 			// Optimize the relation, if any.
 			OptimizeLocation (Reloc->Relation);
 		}
-	}
-}
-
-// Remove all unused sections.
-void RemoveUnusedSections (PROGRAM *Program)
-{
-	SECTION *Section, *NextSection;
-	
-	// For each section...
-	for (Section = GetFirst (Program->Sections); Section; Section = NextSection)
-	{
-		// Get the next section now, since GetNext won't work once the section
-		// has been freed.
-		NextSection = GetNext (Section);
-		
-		// Remove the section if it is unused.
-		RemoveSectionIfUnused (Section);
 	}
 }
 

@@ -23,6 +23,7 @@
 #include "data.h"
 #include "manip.h"
 #include "constmrg.h"
+#include "gcunused.h"
 #include "reorder.h"
 #include "formats/ar.h"
 #include "import/import.h"
