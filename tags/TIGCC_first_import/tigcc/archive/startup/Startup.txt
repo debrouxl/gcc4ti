@@ -1,0 +1,85 @@
+ TIGCC Startup Section Numbers
+===============================
+
+This file covers the numbers of the startup sections
+assigned in this library.
+
+There are two classes of startup sections: library and
+program sections. Library sections may appear in a
+program, too, but program sections may not appear in a
+library. If they do, they are probably never executed.
+Library sections are always included at the beginning,
+in front of program sections.
+
+
+ Library Startup Sections
+--------------------------
+
+ Range         | Used by
+---------------+--------------------------------------
+ 1-5           | Kernel header
+ 11-14         | Optional kernel sections
+ 20            | Nostub DLL header
+ 30-31         | Nostub comment header
+
+
+ Program Startup Sections
+--------------------------
+
+ Range         | Used by
+---------------+--------------------------------------
+ 1             | Entry point
+ 10            | Ghost space execution
+ 15            | Custom relocation methods
+ 20        *   | Jump table optimization
+ 30-35     *   | Calculator detection
+ 38-42     *   | AMS detection
+ 50        *   | Failure message function
+ 60-61     *   | AMS detection
+ 70        *   | Calculator detection
+ 80-82     * x | Register saving
+ 85        * x | ROM call optimization
+ 87        **x | In-use bit setting
+ 90        **  | ROM call relocation
+ 95-99     **  | Data variable support
+ 100       **  | BSS support
+ 110-112   **  | Screen saving
+ 130           | Internal F-Line emulator
+ 140           | Error return support
+ 150-153       | BSS initialization
+ 155           | Reg-relative initialization
+ 160           | User-defined constructors
+ 990           | Register saving for _main
+ 995-996       | Stack pointer saving
+ 1000          | User-defined _main function
+ 1005          | Register saving for _main (restoring)
+ 1010          | User-defined destructors
+ 1015          | Reg-relative uninitialization
+ 1020          | Error return support
+ 1030          | Internal F-Line emulator (cleanup)
+ 1050          | Screen saving (restoring)
+ 1060          | BSS support (cleanup)
+ 1061-1065     | Data variable support (cleanup)
+ 1070          | ROM call relocation (cleanup)
+ 1075        x | In-use bit setting (cleanup)
+ 1080-1082   x | Register saving (restoring)
+ 1090          | Custom relocation methods (cleanup)
+ 1500-1502     | Error return support
+ 9990          | Return value support
+ 9999          | Program return
+               |
+ 10000-10002   | Different independent routines
+ 10010-10013   | AMS detection
+ 10020-10022   | Error messages
+ 10030-10039   | Internal F-Line emulator
+ 10040-10041   | Constructed jsr/jmp
+ 10500-10502   | enter_ghost_space function
+ 20000         | Reference symbols for compression
+
+*  New code between program startup sections 20 and 90
+   may not modify %a0.
+** New code between program startup sections 90 and 110
+   may not modify %a0, or it must reference
+   __optimize_rom_calls.
+x  New code between program startup sections 80 and 120
+   as well as 1040 and 1082 may not modify d3-d5.

@@ -1,0 +1,9 @@
+	.xdef __ld_compressed_relocs_ref,__ld_compressed_bss_refs_ref,__ld_compressed_data_refs_ref,,__ld_compressed_rom_calls_ref
+
+.section _st20000
+__ld_compressed_relocs_ref:
+__ld_compressed_data_refs_ref:
+__ld_compressed_rom_calls_ref:
+
+.section _st150
+__ld_compressed_bss_refs_ref:
