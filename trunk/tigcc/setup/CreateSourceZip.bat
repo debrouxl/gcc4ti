@@ -1,7 +1,7 @@
 @ECHO OFF
 
 SET INFOZIPDIR=E:\zip\zip
-SET ZIPDIR=.
+SET ZIPDIR=E:\TI-89\tigcc-096
 SET A68KSRCDIR=E:\TI-89\A68k\source
 SET PSTARTERSRCDIR=E:\TI-89\pstarter
 SET TTPACKSRCDIR=E:\TI-89\Compilers\tigcc\tt\src\pctools
@@ -17,7 +17,7 @@ FOR %%i IN ("%TTPACKSRCDIR%\..\..\readme.txt" "%TTPACKSRCDIR%\packhead.h" "%TTPA
 
 DEL "%ZIPDIR%\tigccsrc.zip"
 CD ..\doc
-"%INFOZIPDIR%\zip.exe" -9 -r "%ZIPDIR%\doc.zip" Programs System -x CVS
+"%INFOZIPDIR%\zip.exe" -9 -r "doc.zip" Programs System -x CVS
 CD ..\setup
 "%INFOZIPDIR%\zip.exe" -9 -r "%ZIPDIR%\tigccsrc.zip" ..\Readme.txt ..\License.txt a68k ..\archive ..\components ..\doc\doc.zip ..\gcc ..\general ..\hsf2rc ..\ide ..\ld-tigcc pstarter ..\setup\*.nsi ..\setup\*.ini ..\setup\*.bat ..\setup\makeall.pif ..\tigcc ..\tprbuilder ttpack -x CVS
 DEL ..\doc\doc.zip
