@@ -372,7 +372,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.h binutils-2.15.tigcc1/gas/con
         && (s)->sy_symbol.ost_entry.n_scnum == C_ABS_SECTION))
 diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/config/tc-m68k.c
 --- binutils-2.15.orig/gas/config/tc-m68k.c	Mon Jan 26 19:09:30 2004
-+++ binutils-2.15.tigcc1/gas/config/tc-m68k.c	Sun Jan 30 20:31:22 2005
++++ binutils-2.15.tigcc1/gas/config/tc-m68k.c	Sun Jan 30 23:55:30 2005
 @@ -75,6 +75,7 @@
  int flag_want_pic;
  
@@ -454,18 +454,21 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  		      addword (0x4EF9);
  		    }
  		  add_fix ('l', &opP->disp, 0, 0);
-@@ -3817,6 +3849,10 @@
- 			      get_reloc_code (n, the_ins.reloc[m].pcrel,
- 					      the_ins.reloc[m].pic_reloc));
+@@ -3819,6 +3851,13 @@
  	  fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
-+	  /* (TIGCC 20050130) These relocs are by definition the ones which cannot
-+	                      be "relaxed" - or "optimized" in ld-tigcc terms.
-+	                      -- Kevin Kofler */
-+	  fixP->fx_unoptimizable = 1;
  	  if (the_ins.reloc[m].wid == 'B')
  	    fixP->fx_signed = 1;
++	  /* (TIGCC 20050130) These relocs are by definition the ones which cannot
++	                      be "relaxed" - or "optimized" in ld-tigcc terms.
++	                      Excepted from this are byte branches because the
++	                      linker must be able to remove them entirely.
++	                      -- Kevin Kofler */
++	  else
++	    fixP->fx_unoptimizable = 1;
  	}
-@@ -3879,6 +3915,10 @@
+       return;
+     }
+@@ -3879,6 +3918,10 @@
  			      get_reloc_code (wid, the_ins.reloc[m].pcrel,
  					      the_ins.reloc[m].pic_reloc));
  	  fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -476,7 +479,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	}
        (void) frag_var (rs_machine_dependent, 10, 0,
  		       (relax_substateT) (the_ins.fragb[n].fragty),
-@@ -3916,6 +3956,10 @@
+@@ -3916,6 +3959,10 @@
  			  get_reloc_code (wid, the_ins.reloc[m].pcrel,
  					  the_ins.reloc[m].pic_reloc));
        fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -487,7 +490,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
      }
  }
  
-@@ -4405,7 +4449,9 @@
+@@ -4405,7 +4452,9 @@
  
    val = ((val & 0xffffffff) ^ 0x80000000) - 0x80000000;
  
@@ -498,7 +501,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
      fixP->fx_done = 1;
  
  #ifdef OBJ_ELF
-@@ -4428,6 +4474,55 @@
+@@ -4428,6 +4477,55 @@
      return;
  #endif
  
@@ -554,7 +557,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
    switch (fixP->fx_size)
      {
        /* The cast to offsetT below are necessary to make code
-@@ -4455,13 +4550,8 @@
+@@ -4455,13 +4553,8 @@
        BAD_CASE (fixP->fx_size);
      }
  
@@ -570,7 +573,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  
    /* For non-pc-relative values, it's conceivable we might get something
       like "0xff" for a byte field.  So extend the upper part of the range
-@@ -4582,6 +4672,27 @@
+@@ -4582,6 +4675,27 @@
        fragP->fr_opcode[0] ^= 0x01;	/* Invert bcc.  */
        fragP->fr_opcode[1]  = 0x06;	/* Branch offset = 6.  */
  
@@ -598,7 +601,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
        /* JF: these used to be fr_opcode[2,3], but they may be in a
  	   different frag, in which case referring to them is a no-no.
  	   Only fr_opcode[0,1] are guaranteed to work.  */
-@@ -4754,8 +4865,17 @@
+@@ -4754,8 +4868,17 @@
  	    && relaxable_symbol (fragP->fr_symbol))
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), BYTE);
@@ -617,7 +620,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  {
  	    /* Symbol is undefined and we want short ref.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
-@@ -4764,6 +4884,17 @@
+@@ -4764,6 +4887,17 @@
  	  {
  	    /* Symbol is still undefined.  Make it LONG.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), LONG);
@@ -635,7 +638,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  }
  	break;
        }
-@@ -4790,7 +4921,7 @@
+@@ -4790,7 +4924,7 @@
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
  	     && relaxable_symbol (fragP->fr_symbol))
@@ -644,7 +647,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
  	  }
-@@ -4816,7 +4947,8 @@
+@@ -4816,7 +4950,8 @@
      case TAB (ABSTOPCREL, SZ_UNDEF):
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
@@ -654,7 +657,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
  	  {
  	    fragP->fr_subtype = TAB (ABSTOPCREL, SHORT);
  	  }
-@@ -4860,6 +4992,7 @@
+@@ -4860,6 +4995,7 @@
  	    }
  	}
        break;
@@ -662,7 +665,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
      default:
        break;
      }
-@@ -6938,6 +7071,8 @@
+@@ -6938,6 +7074,8 @@
    {"disp-size-default-32", no_argument, NULL, OPTION_DISP_SIZE_DEFAULT_32},
  #define OPTION_PCREL (OPTION_MD_BASE + 7)
    {"pcrel", no_argument, NULL, OPTION_PCREL},
@@ -671,7 +674,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
    {NULL, no_argument, NULL, 0}
  };
  size_t md_longopts_size = sizeof (md_longopts);
-@@ -6952,6 +7087,12 @@
+@@ -6952,6 +7090,12 @@
      case 'l':			/* -l means keep external to 2 bit offset
  				   rather than 16 bit one.  */
        flag_short_refs = 1;
@@ -684,7 +687,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15.tigcc1/gas/conf
        break;
  
      case 'S':			/* -S means that jbsr's always turn into
-@@ -7131,6 +7272,7 @@
+@@ -7131,6 +7275,7 @@
    fprintf (stream, _("\
  680X0 options:\n\
  -l			use 1 word for refs to undefined symbols [default 2]\n\
