@@ -4,17 +4,17 @@
 /* This file is generated automatically. */
 
 #define __TIGCC__ 0
-#define __TIGCC_MINOR__ 95
+#define __TIGCC_MINOR__ 96
 #define __TIGCC_SP__ 0
-#define __TIGCC_BETA__ 0
-#define __TIGCC_VERSION__ 95
-#define __TIGCC_VERSION_STRING__ "TIGCC0.95"
+#define __TIGCC_BETA__ 1
+#define __TIGCC_VERSION__ 96
+#define __TIGCC_VERSION_STRING__ "TIGCC0.96Beta1"
 
 #define __TIGCCLIB__ 2
-#define __TIGCCLIB_MINOR__ 60
+#define __TIGCCLIB_MINOR__ 70
 #define __TIGCCLIB_SP__ 0
-#define __TIGCCLIB_VERSION__ 260
-#define __TIGCCLIB_VERSION_STRING__ "LIB2.6"
+#define __TIGCCLIB_VERSION__ 270
+#define __TIGCCLIB_VERSION_STRING__ "LIB2.7"
 
 #ifdef EMBED_VERSION_STRINGS
 char __tigcc_version__[]=__TIGCC_VERSION_STRING__;
