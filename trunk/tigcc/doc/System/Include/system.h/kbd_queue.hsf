@@ -40,9 +40,12 @@ if (!OSdequeue (&amp;key, kbq))
 does not work with <A HREF="$$LINK(OSdequeue)">OSdequeue</A>. But, Marcos
 Lopez informed me that this is not exactly true. Key repetition feature
 works even with <A HREF="$$LINK(OSdequeue)">OSdequeue</A>, but it will not
-return the keycode itself for the repeated key, but sets an additional
-bit in the keycode, so <I>value</I> becomes <I>value</I>&nbsp;+&nbsp;0x800.
-If you use standard <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> function, this
+return the keycode itself for the repeated key, but add the
+<A HREF="$$LINK(kbd.h/KB_AUTOREPEAT)">KB_AUTOREPEAT</A> "auto-repeat" bit to
+the keycode (more exactly,
+<A HREF="$$LINK(kbd.h/KB_AUTOREPEAT)">KB_AUTOREPEAT</A> is OR'd with the
+keycode), so <I>value</I> becomes <I>value</I>&nbsp;+&nbsp;0x800. If you use
+the standard <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> function, this
 additional bit is masked out and your program will get the keycodes it expects.
 But, it is very simple to mask out this bit manually and make the key repetition
-feature working even with <A HREF="$$LINK(OSdequeue)">OSdequeue</A>.
+feature work even with <A HREF="$$LINK(OSdequeue)">OSdequeue</A>.
