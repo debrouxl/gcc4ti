@@ -44,6 +44,9 @@ SetCompressor lzma
 ; Section manipulation
 !include "Sections.nsh"
 
+; Windows messages
+!include "WinMessages.nsh"
+
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
@@ -67,6 +70,8 @@ var ICONS_GROUP
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\TIGCC Team\TIGCC"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Program Group"
 !insertmacro MUI_PAGE_STARTMENU Application $ICONS_GROUP
+; Path settings page
+Page custom PathSettings
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
@@ -98,11 +103,15 @@ Var A68K_WAS_SELECTED
 Var EXEPACK_SELECTED
 Var EXEPACK_WAS_SELECTED
 
+Var SET_PATH
+
 ; Detect previous installation
 Function .onInit
+!insertmacro MUI_INSTALLOPTIONS_EXTRACT "dlgpth9x.ini"
+!insertmacro MUI_INSTALLOPTIONS_EXTRACT "dlgpthnt.ini"
   ReadRegStr $0 HKCU "Software\SeReSoft\TI-GCC IDE" "Program Folder"
   StrCmp $0 "" noseresoft
-  IntOp $INSTALLED_BEFORE 0 !
+  StrCpy $INSTALLED_BEFORE 1
   StrCpy $INSTDIR $0
   ReadRegStr $0 HKCU "Software\SeReSoft\TI-GCC IDE" "Program Group"
   StrCmp $0 "" noseresoft
@@ -110,7 +119,7 @@ Function .onInit
 noseresoft:
   ReadRegStr $0 HKLM "Software\TIGCC Team\TIGCC" "Program Folder"
   StrCmp $0 "" notigccteam
-  IntOp $INSTALLED_BEFORE 0 !
+  StrCpy $INSTALLED_BEFORE 1
   StrCpy $INSTDIR $0
   ReadRegStr $0 HKLM "Software\TIGCC Team\TIGCC" "Program Group"
   StrCmp $0 "" notigccteam
@@ -127,11 +136,11 @@ tigcc_exists:
   !insertmacro UnselectSection 1
 ide_exists:
   IfFileExists "$INSTDIR\Bin\a68k.exe" 0 a68k_doesnt_exist
-  IntOp $A68K_SELECTED 0 !
+  StrCpy $A68K_SELECTED 1
   !insertmacro SelectSection 5
 a68k_doesnt_exist:
   IfFileExists "$INSTDIR\Bin\pack.exe" 0 exepack_doesnt_exist
-  IntOp $EXEPACK_SELECTED 0 !
+  StrCpy $EXEPACK_SELECTED 1
   !insertmacro SelectSection 6
 exepack_doesnt_exist:
 not_installed_before:
@@ -139,7 +148,7 @@ FunctionEnd
 
 ; Stupid non-Free licenses
 Function .onSelChange
-  IntOp $A68K_WAS_SELECTED $A68K_SELECTED + 0
+  StrCpy $A68K_WAS_SELECTED $A68K_SELECTED
   SectionGetFlags 5 $0
   IntOp $A68K_SELECTED $0 & ${SF_SELECTED}
   IntCmp $A68K_SELECTED 0 a68k_not_selected
@@ -149,14 +158,14 @@ Function .onSelChange
   IntOp $A68K_SELECTED $A68K_SELECTED & 0
 a68k_accepted:
 a68k_not_selected:
-  IntOp $EXEPACK_WAS_SELECTED $EXEPACK_SELECTED + 0
+  StrCpy $EXEPACK_WAS_SELECTED $EXEPACK_SELECTED
   SectionGetFlags 6 $0
   IntOp $EXEPACK_SELECTED $0 & ${SF_SELECTED}
   IntCmp $EXEPACK_SELECTED 0 exepack_not_selected
   IntCmp $EXEPACK_WAS_SELECTED ${SF_SELECTED} exepack_not_selected
   MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL "ExePack License Agreement:$\n$\n(This license applies to the TIGCC Tools Suite, which the ExePack System originates from.)$\n$\nThe Tools in this release may be distributed by any other website for non-commercial use only.$\n$\nThe author makes no representations or warranties about the suitability of the software, either express or implied. The author shall not be liable for any damages suffered as a result of using or distributing this software.$\n$\nIF YOU USE or RE-USE any PART of this SUITE, PLEASE GIVE CREDITS to US INCLUDING a LINK to our WEBSITE (http://tict.ticalc.org)$\n$\n($\"Any other website$\" probably refers to any website other than http://tict.ticalc.org.)$\n$\nPress OK if you accept this license." IDOK exepack_accepted
   !insertmacro UnselectSection 6
-  IntOp $EXEPACK_SELECTED $EXEPACK_SELECTED & 0
+  StrCpy $EXEPACK_SELECTED 0
 exepack_accepted:
 exepack_not_selected:
 FunctionEnd
@@ -275,8 +284,10 @@ Section "Command Line Compiler (TIGCC.EXE)" SEC03
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\TIGCC Command Line Prompt.lnk" "command.com"
   !insertmacro MUI_STARTMENU_WRITE_END
+  IntCmp $SET_PATH 0 no_path
   Push $INSTDIR
   Call AddToPath
+no_path:
 SectionEnd
 
 Section "TIGCC Examples" SEC04
@@ -336,7 +347,69 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "A tool by Thomas Nussbaumer (TICT) which compresses calculator programs"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
+; Convert an NSIS string to a form suitable for use by InstallOptions
+; Usage:
+;   Push <NSIS-string>
+;   Call Nsis2Io
+;   Pop <IO-string>
+Function Nsis2Io
+  Exch $0 ; The source
+  Push $1 ; The output
+  Push $2 ; Temporary char
+  StrCpy $1 "" ; Initialise the output
+loop:
+  StrCpy $2 $0 1 ; Get the next source char
+  StrCmp $2 "" done ; Abort when none left
+    StrCpy $0 $0 "" 1 ; Remove it from the source
+    StrCmp $2 "\" "" +3 ; Back-slash?
+      StrCpy $1 "$1\\"
+      Goto loop
+    StrCmp $2 "$\r" "" +3 ; Carriage return?
+      StrCpy $1 "$1\r"
+      Goto loop
+    StrCmp $2 "$\n" "" +3 ; Line feed?
+      StrCpy $1 "$1\n"
+      Goto loop
+    StrCmp $2 "$\t" "" +3 ; Tab?
+      StrCpy $1 "$1\t"
+      Goto loop
+    StrCpy $1 "$1$2" ; Anything else
+    Goto loop
+done:
+  StrCpy $0 $1
+  Pop $2
+  Pop $1
+  Exch $0
+FunctionEnd
 
+; Path settings window
+Function PathSettings
+  SectionGetFlags 2 $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  IntCmp $0 0 tigcc_not_selected
+  !insertmacro MUI_HEADER_TEXT "PATH Settings" "Choose whether PATH settings for the command line compiler should be added automatically."
+  Call IsNT
+  Pop $0
+  IntCmp $0 0 is9xme
+  StrCpy $2 "dlgpthnt.ini"
+  StrCpy $1 ";$INSTDIR"
+  Goto isnt
+is9xme:
+  StrCpy $2 "dlgpth9x.ini"
+  StrCpy $1 "SET PATH=%PATH%;$INSTDIR"
+isnt:
+  Push $1
+  Call Nsis2Io
+  Pop $1
+  WriteINIStr "$PLUGINSDIR\$2" "Field 3" "Text" $1
+  !insertmacro MUI_INSTALLOPTIONS_INITDIALOG $2
+  Pop $0 ;HWND of dialog
+  !insertmacro MUI_INSTALLOPTIONS_SHOW
+  ReadINIStr $SET_PATH "$PLUGINSDIR\$2" "Field 6" "State"
+tigcc_not_selected:
+FunctionEnd
+
+; Uninstallation
 Function un.onUninstSuccess
   HideWindow
   MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
