@@ -1,0 +1,26 @@
+[Main]
+Name=poke_bchg
+Type=Function
+Subtype=Macro
+Header Files=peekpoke.h
+Definition=void poke_bchg (unsigned char *addr, short bit);
+Real Definition=#define poke_bchg(__dest_addr__,__bit_nr__) ({register char *__addr_temp__=(char *)(__dest_addr__);asm("bchg.b %1,%0":"+dm"(*__addr_temp__):"di"(__bit_nr__));})
+
+[Description]
+Inverts a bit at a memory address.
+
+[Explanation]
+This macro inverts bit <I>bit</I> at memory address <I>addr</I>.
+It is useful if you do not want to store a whole byte at this address, but only
+need to invert the state of a single bit.
+As usual, the rightmost bit of a value is numbered 0, and the leftmost bit is
+7 in this case.
+For example, let's assume the address <I>addr</I> contains the value 0b10011010,
+and you call this macro like this:
+<PRE>poke_bchg (addr, 3);
+</PRE>
+Then the value will be 0b10010010 afterwards. Making the same call again will
+restore the previous value 0b10011010,
+<BR><BR>
+<B>Note:</B> Do not use poke_bchg for sending bits to I/O ports! Use <A HREF="$$LINK(pokeIO_bchg)">pokeIO_bchg</A>
+instead.

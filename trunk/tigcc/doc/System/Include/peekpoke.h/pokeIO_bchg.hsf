@@ -1,0 +1,14 @@
+[Main]
+Name=pokeIO_bchg
+Type=Function
+Subtype=Macro
+Header Files=peekpoke.h
+Definition=void pokeIO_bchg (unsigned char *port, short bit);
+Real Definition=#define pokeIO_bchg(__dest_addr__,__bit_nr__) ({register char *__addr_temp__=(char *)(__dest_addr__);asm("bchg.b %1,%0":"+dm"(*__addr_temp__):"di"(__bit_nr__));})
+
+[Description]
+Inverts a bit in an I/O port.
+
+[Explanation]
+This macro exists because <A HREF="$$LINK(poke_bchg)">poke_bchg</A> is not reliable when sending data to memory-mapped I/O ports.
+See the notes about <A HREF="$$LINK(pokeIO)">pokeIO</A> if you want to know why.
