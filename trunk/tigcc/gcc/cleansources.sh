@@ -10,7 +10,7 @@ rm -f -r contrib
 ls -A gcc/config/ >tmpfiles.lst
 for name in `grep -v -e "^i386$" -e "^m68k$" -e "README" -e "install" -e "libgcc-glibc" -e "dbx" -e "usegas" tmpfiles.lst`; do rm -f -r "gcc/config/$name"; done
 ls -A gcc/config/i386/ >tmpfiles.lst
-for name in `grep -v -e "x-cygwin" -e "xm-cygwin" -e "xm-mingw" tmpfiles.lst`; do rm -f "gcc/config/i386/$name"; done
+for name in `grep -v -e "x-cygwin" -e "x-mingw" -e "xm-cygwin" -e "xm-mingw" -e "host-mingw" tmpfiles.lst`; do rm -f "gcc/config/i386/$name"; done
 ls -A gcc/config/m68k/ >tmpfiles.lst
 for name in `grep -v -e "m68k\.c" -e "t-m68kbare" -e "m68k\.md" -e "^m68k\.h" -e "m68k-coff" -e "m68k-none" -e "m68k-protos" -e "coff\.h" tmpfiles.lst`; do rm -f "gcc/config/m68k/$name"; done
 rm -f -r gcc/fixinc
