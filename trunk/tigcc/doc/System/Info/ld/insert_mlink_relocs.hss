@@ -1,0 +1,42 @@
+[Main]
+Title=__ld_insert_mlink_relocs
+See Also=insert_mlink_bss_refs: __ld_insert_mlink_bss_refs, insert_mlink_data_refs: __ld_insert_mlink_data_refs, insert_kernel_relocs: __ld_insert_kernel_relocs
+
+[Developer Notes]
+Warning: This table is referred to in other places. Please don't change the
+definition of "offset" if you don't know what you are doing. You'll risk
+breaking the definition of __ld_insert_mlink_rom_calls otherwise.
+
+[Top]
+__ld_insert_mlink_relocs inserts relocs in a compressed format known
+from mlink. For more information on inserting and processing relocs, see
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+In the following format description, <I>offset</I> refers to the difference
+in words (half of the difference in bytes) between the start of this reloc
+and the start of the previous reloc. If there is no previous reloc (i.e. for
+the first reloc), <I>offset</I> is the distance in words between this reloc
+and the symbol <CODE>__ld_mlink_relocs_ref</CODE>. This symbol must be
+exported to be found. If it is not found, the entry point is used instead
+(see <A HREF="$$LINK(symbols_ld_entry_point)">__ld_entry_point</A>).
+<UL>
+<LI>For each relocation entry...
+    <UL>
+    <LI>Any of the following, whichever fits:
+        <UL>
+        <LI>For 0 &lt;= <I>offset</I> &lt; 128: <B>1 byte:</B>
+            0x80 + <I>offset</I></LI>
+        <LI>For 128 &lt;= <I>offset</I> &lt; 16384: <B>2 bytes:</B>
+            <I>offset</I> / 128, 0x80 + (<I>offset</I> % 128)</LI>
+        <LI>For 16384 &lt;= <I>offset</I> &lt; 2097152: <B>3 bytes:</B>
+            <I>offset</I> / 16384, (<I>offset</I> % 16384) / 128,
+            0x80 + (<I>offset</I> % 128)</LI>
+        <LI>Anything higher isn't interesting for us because of the 64 KB
+            file size limit.</LI>
+        </UL></LI>
+    </UL></LI>
+<LI><B>1 byte:</B> 0</LI>
+</UL>
+<B>Note:</B> The limitations of
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A> also
+apply to this insertion.
