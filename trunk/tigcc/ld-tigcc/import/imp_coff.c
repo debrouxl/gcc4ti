@@ -175,6 +175,26 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 					Section->DebuggingInfoType = DI_STAB;
 				else if (!strncmp (SectionName, ".stabstr", 8))
 					Section->DebuggingInfoType = DI_STABSTR;
+				else if (!strncmp (SectionName, ".debug_a", 8))
+					Section->DebuggingInfoType = DI_DEBUG_ABBREV;
+					/* (This might also be .debug_aranges, we need to wait for
+					    the section symbol to disambiguate.) */
+				else if (!strncmp (SectionName, ".debug_f", 8))
+					Section->DebuggingInfoType = DI_DEBUG_FRAME;
+				else if (!strncmp (SectionName, ".debug_i", 8))
+					Section->DebuggingInfoType = DI_DEBUG_INFO;
+				else if (!strncmp (SectionName, ".debug_l", 8))
+					Section->DebuggingInfoType = DI_DEBUG_LINE;
+					/* (This might also be .debug_loc, we need to wait for
+					    the section symbol to disambiguate.) */
+				else if (!strncmp (SectionName, ".debug_m", 8))
+					Section->DebuggingInfoType = DI_DEBUG_MACINFO;
+				else if (!strncmp (SectionName, ".debug_p", 8))
+					Section->DebuggingInfoType = DI_DEBUG_PUBNAMES;
+				else if (!strncmp (SectionName, ".debug_s", 8))
+					Section->DebuggingInfoType = DI_DEBUG_STR;
+				else if (!strncmp (SectionName, ".eh_fram", 8))
+					Section->DebuggingInfoType = DI_EH_FRAME;
 #endif
 				Section->CanCutRanges  = AllRelocs;
 				Section->FileName      = FileName;
@@ -277,6 +297,13 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 									SymInfo[CurCOFFSymbolNumber].Symbol = Section->SectionSymbol;
 									// Rename the section symbol to the full section name as stored in the symbol.
 									CreateSectionSymbol (Section, SymName);
+#ifdef DEBUGGING_INFO_SUPPORT
+									// Disambiguate DWARF 2 section names with conflicting 8 char abbreviations.
+									if (!strcmp (SymName, ".debug_aranges"))
+										Section->DebuggingInfoType = DI_DEBUG_ARANGES;
+									else if (!strcmp (SymName, ".debug_loc"))
+										Section->DebuggingInfoType = DI_DEBUG_LOC;
+#endif
 								}
 								else
 								{

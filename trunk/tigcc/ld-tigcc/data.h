@@ -51,11 +51,25 @@ struct GLOBAL_IMPORT;
 typedef enum {PT_NATIVE = 1, PT_NOSTUB = 2, PT_KERNEL = 0, PT_NOSTUB_DLL = 3, PT_FLASH_OS = 4, PT_FARGO = 5} ProgramTypes;
 
 // Debugging Information Section Type Enumeration
-// DI_NONE:       Not debugging information (same as FALSE)
-// DI_STAB:       Stabs symbol table
-// DI_STABSTR:    Stabs string table
-// DI_LAST:       Last debugging information type, for iterating purposes
-typedef enum {DI_NONE = FALSE, DI_STAB = 1, DI_STABSTR = 2, DI_LAST = 2} DebuggingInfoTypes;
+// DI_NONE:           Not debugging information (same as FALSE)
+// DI_STAB:           Stabs symbol table
+// DI_STABSTR:        Stabs string table
+// DI_DEBUG_ABBREV:   DWARF 2 .debug_abbrev section
+// DI_DEBUG_ARANGES:  DWARF 2 .debug_aranges section
+// DI_DEBUG_FRAME:    DWARF 2 .debug_frame section
+// DI_DEBUG_INFO:     DWARF 2 .debug_info section
+// DI_DEBUG_LINE:     DWARF 2 .debug_line section
+// DI_DEBUG_LOC:      DWARF 2 .debug_loc section
+// DI_DEBUG_MACINFO:  DWARF 2 .debug_macinfo section
+// DI_DEBUG_PUBNAMES: DWARF 2 .debug_pubnames section
+// DI_DEBUG_STR:      DWARF 2 .debug_str section
+// DI_EH_FRAME:       DWARF 2 .eh_frame section (used only for debugging in TIGCC)
+// DI_LAST:           Last debugging information type, for iterating purposes
+typedef enum {DI_NONE = FALSE, DI_STAB = 1, DI_STABSTR = 2, DI_DEBUG_ABBREV = 3,
+              DI_DEBUG_ARANGES = 4, DI_DEBUG_FRAME = 5, DI_DEBUG_INFO = 6,
+              DI_DEBUG_LINE = 7, DI_DEBUG_LOC = 8, DI_DEBUG_MACINFO = 9,
+              DI_DEBUG_PUBNAMES = 10, DI_DEBUG_STR = 11, DI_EH_FRAME = 12,
+              DI_LAST = 12} DebuggingInfoTypes;
 
 typedef I4 VERSION;
 

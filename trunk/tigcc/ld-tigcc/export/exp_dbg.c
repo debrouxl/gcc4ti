@@ -73,12 +73,13 @@ static void ApplyIfNonNull(void (*f)(const SECTION *, void *),
 
 static void MapToAllSections(const PROGRAM *Program, void (*f)(const SECTION *, void *), void *UserData)
 {
+	COUNT i;
 	SectionID = 0;
 	ApplyIfNonNull (f, Program->MainSection, UserData);
 	ApplyIfNonNull (f, Program->DataSection, UserData);
 	ApplyIfNonNull (f, Program->BSSSection, UserData);
-	ApplyIfNonNull (f, Program->DebuggingInfoSection[DI_STAB-1], UserData);
-	ApplyIfNonNull (f, Program->DebuggingInfoSection[DI_STABSTR-1], UserData);
+	for (i = 0; i < DI_LAST; i++)
+		ApplyIfNonNull (f, Program->DebuggingInfoSection[i], UserData);
 }
 
 static void CountSectionCOFFSize (const SECTION *Section, void *UserData)
@@ -165,6 +166,8 @@ static void CountSymbols (const SECTION *Section, void *UserData)
 {
 	const SYMBOL *Symbol;
 
+	(*(COUNT *)UserData)++; // section symbol
+
 	for_each (Symbol, Section->Symbols)
 	{
 		(*(COUNT *)UserData)++;
@@ -193,9 +196,14 @@ static void CountSymbolTableOffset (const SECTION *Section, void *UserData)
 static void WriteSectionHeader (const SECTION *Section, void *UserData)
 {
 	static const char SectionNames[MAX_NAMED_SECTION][COFF_SECTION_NAME_LEN] =
-	                  {".text", ".data", ".bss", ".stab", ".stabstr"};
+	                  {".text", ".data", ".bss", ".stab", ".stabstr",
+	                   ".debug_a"/*bbrev*/, ".debug_a"/*ranges*/,
+	                   ".debug_f"/*rame*/, ".debug_i"/*nfo*/, ".debug_l"/*ine*/,
+	                   ".debug_l"/*oc*/, ".debug_m"/*acinfo*/,
+	                   ".debug_p"/*ubnames*/, ".debug_s"/*tr*/, ".eh_fram"/*e*/};
 	static const I4 SectionFlags[MAX_NAMED_SECTION] =
-	                {COFF_SECTION_TEXT, COFF_SECTION_DATA, COFF_SECTION_BSS, 0, 0};
+	                {COFF_SECTION_TEXT, COFF_SECTION_DATA, COFF_SECTION_BSS, 0,
+	                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	SIZE Size = Section->Size;
 	const RELOC *Reloc;
 	COUNT RelocCount = 0;
@@ -263,6 +271,8 @@ static void FindCOFFSymbolNumber (const SECTION *Section, void *UserData)
 	const SYMBOL *Symbol;
 
 	if (((COFFSymbolNumberStruct *)UserData)->Number) return;
+
+	((COFFSymbolNumberStruct *)UserData)->Current++; // section symbol
 
 	for_each (Symbol, Section->Symbols)
 	{
@@ -349,11 +359,46 @@ static void PatchRelocOffsetsOut (const SECTION *Section, void *UserData ATTRIBU
 	}
 }
 
+static const char *SectionFullNames[MAX_NAMED_SECTION] =
+                  {".text", ".data", ".bss", ".stab", ".stabstr",
+                   ".debug_abbrev", ".debug_aranges",
+                   ".debug_frame", ".debug_info", ".debug_line",
+                   ".debug_loc", ".debug_macinfo",
+                   ".debug_pubnames", ".debug_str", ".eh_frame"};
+
 static void WriteSymbolTable (const SECTION *Section, void *UserData)
 {
 	const SYMBOL *Symbol;
 	COUNT COFFSectionNumber = ++(((SectionOffsets *)UserData)->COFFSectionNumber);
 	OFFSET VAddr = VAddrs[COFFSectionNumber];
+
+	// Create a new section symbol with exactly the intended name to get around
+	// the 8 char section name limit.
+	{
+		COFF_SYMBOL COFFSymbol;
+		const char *SectionName = SectionFullNames[SectionID];
+		COUNT NameLen = strlen (SectionName);
+
+		if (NameLen > 8)
+		{
+			// String table entry
+			WriteTI4(*(TI4*)(COFFSymbol.Name.Name), 0);
+			WriteTI4(COFFSymbol.Name.StringRef.StringOffset, ((SectionOffsets *)UserData)->FileOffset);
+			((SectionOffsets *)UserData)->FileOffset += NameLen + 1;
+		}
+		else
+		{
+			memset (COFFSymbol.Name.Name, 0, 8);
+			strncpy (COFFSymbol.Name.Name, SectionName, 8);
+		}
+		WriteTI4 (COFFSymbol.Value, VAddr);
+		WriteTI2 (COFFSymbol.Section, COFFSectionNumber);
+		WriteTI2 (COFFSymbol.Type, 0);
+		WriteTI1 (COFFSymbol.Class, COFF_SYMBOL_LABEL);
+		WriteTI1 (COFFSymbol.AuxSymbolCount, 0);
+
+		ExportWrite (((SectionOffsets *)UserData)->File, &COFFSymbol, sizeof (COFF_SYMBOL), 1);
+	}
 
 	for_each (Symbol, Section->Symbols)
 	{
@@ -385,6 +430,17 @@ static void WriteSymbolTable (const SECTION *Section, void *UserData)
 static void WriteStringTable (const SECTION *Section, void *UserData)
 {
 	const SYMBOL *Symbol;
+
+	// Section symbol
+	{
+		COUNT NameLen = strlen (SectionFullNames[SectionID]);
+
+		if (NameLen > 8)
+		{
+			// String table entry
+			ExportWrite ((EXP_FILE *)UserData, SectionFullNames[SectionID], NameLen + 1, 1);
+		}
+	}
 
 	for_each (Symbol, Section->Symbols)
 	{
