@@ -38,6 +38,12 @@ See <A HREF="$$LINK(WinAttr)">WinAttr</A> command for a more general info about 
 <B>Note:</B> If the window is opened in TTY mode (see <A HREF="$$LINK(WinOpen)">WinOpen</A>), the current printing
 location will be updated, and newline ('\n' or '\r') and formfeed ('\f') characters will be
 handled correctly.
+<BR><BR>
+<B>Note:</B> On all AMS versions, WinChar calls most of the time a subroutine which is exported in the jump 
+table on AMS 2.xx as ROM_CALL_412. It doesn't call it if the window is opened in TTY mode and 
+the character is '\n', '\r' or '\f'. As a consequence, that subroutine is not of much use, as the
+same effect (showing these characters as symbols) can be obtained by unsetting the WF_TTY flag. It
+is mentioned here only for completeness.
 
 [References]
 In=WinCharXY, WinStr, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, textedit.h/TE_handleEvent, textedit.h/TE_open, textedit.h/TE_openFixed, textedit.h/TE_pasteText, textedit.h/TE_select

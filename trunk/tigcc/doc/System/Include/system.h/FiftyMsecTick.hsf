@@ -10,11 +10,13 @@ MinAMS=2.00
 Index=$4FC
 
 [Description]
-A counter incremented by the system auto-int 5 routine.
+A counter incremented by the standard system auto-int 5 routine.
 
 [Explanation]
-FiftyMsecTick represents the number of times <A HREF="$$LINK(intr.h/IntVecs)">AUTO_INT_5</A> was executed since the last reset.<BR>
-Indeed, this variable is changed only by a routine called at reset, and by the system routine for auto-int 5.
+FiftyMsecTick represents the number of times the standard system
+<A HREF="$$LINK(intr.h/IntVecs)">AUTO_INT_5</A> routine was executed since the last reset,
+if FiftyMsecTick was not modified. Indeed, this variable is changed only by a routine called
+at reset, and by the system routine for auto-int 5.
 <BR><BR> 
 This variable is a way to measure a delay, without using a system timer with
 <A HREF="$$LINK(system.h/OSFreeTimer)">OSFreeTimer</A>,
@@ -24,3 +26,7 @@ This variable is a way to measure a delay, without using a system timer with
 <A HREF="$$LINK(system.h/OSTimerRestart)">OSTimerRestart</A>.
 <BR><BR>
 Note also that unlike all the other system timers, FiftyMsecTick is a countup timer.
+<BR><BR>
+Partially emulating FiftyMSecTick on AMS 1.xx is easy with the functions from
+<A HREF="$$LINK(intr.h/)">intr.h</A>. However, to fully emulate the functionality, a
+memory-resident (TSR) program has to be installed.

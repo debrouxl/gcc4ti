@@ -32,9 +32,11 @@ However, if you want to fill an ST_PROGRESS_BAR structure by hand, you can do it
   <LI><I>physwidth</I> is the length in pixels of the progress bar on the screen. It must be equal to <CODE>rect.x1 - rect.x0 + 1</CODE>.</LI>
 </UL>
 Beware that the functions dealing with progress bars are <I>very</I> slow.
-They take more than 20 ms, that is to say more than the time between two timer ticks.
-You can go up to 850 ms for an increment, with a progress bar taking the full screen of the 92+.
-<BR>
+They take more than 20 ms, that is to say half of the time between two timer ticks.
+You can go up to a bit less than 1 second when a progress bar taking the full screen of the 92+ 
+is filled. Filling the screen pixel by pixel with a double loop using logical operations with 
+masks, or better, bit operations, is up to about 10 times faster...
+<BR><BR>
 So it is not a good idea to use these functions if you want to clock the process whose progress is represented by the bar.
 Take a look at the "Progress Bar" example for an implementation demonstrating this pitfall:
 $$EXAMPLE(Progress.c)
