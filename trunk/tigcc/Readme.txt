@@ -60,7 +60,7 @@ appropriate .diff files in this archive using the GNU 'patch' utility ('patch'
 found on Unix systems may also work).
 
 A reduced version of the full GCC source code can be downloaded at:
-http://tigcc.ticalc.org/sources/gcc-3.3.3.tar.bz2
+http://tigcc.ticalc.org/sources/gcc-4.0-20050319.tar.bz2
 Likewise, a reduced version of GNU binutils can be obtained from:
 http://tigcc.ticalc.org/sources/gas-2.15.tar.bz2
 However, if possible, it is better to get the official files from
