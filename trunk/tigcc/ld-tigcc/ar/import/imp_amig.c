@@ -1,6 +1,7 @@
 /* imp_amiga.c: Routines to import an AmigaOS-hunks file
 
-   Copyright (C) 2003 Kevin Kofler and Sebastian Reichelt
+   Copyright (C) 2003-2005 Kevin Kofler
+   Copyright (C) 2003 Sebastian Reichelt
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -140,7 +141,7 @@ BOOLEAN ArImportAmigaOSFile (OBJECT_FILE *ObjectFile)
 								break;
 
 							default:
-								FailWithError("Unsupported AmigaOS symbol type `0x%lX'.",hunkType);
+								FailWithError("Unsupported AmigaOS symbol type `0x%lX'.",(unsigned long)hunkType);
 								break;
 						}
 					}
@@ -161,7 +162,7 @@ BOOLEAN ArImportAmigaOSFile (OBJECT_FILE *ObjectFile)
 				break;
 
 			default:
-				FailWithError("Unsupported AmigaOS hunk type `0x%lX'.",hunkType);
+				FailWithError("Unsupported AmigaOS hunk type `0x%lX'.",(unsigned long)hunkType);
 				break;
 		}
 	}

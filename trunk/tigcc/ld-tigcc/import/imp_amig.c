@@ -1,6 +1,6 @@
 /* imp_amig.c: Routines to import an AmigaOS-hunks file
 
-   Copyright (C) 2002-2003 Kevin Kofler
+   Copyright (C) 2002-2005 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -619,7 +619,7 @@ BOOLEAN ImportAmigaOSFile (PROGRAM *Program, const I1 *File, SIZE FileSize, cons
 
 						// Other symbol types are never used by A68k.
 						default:
-							FailWithError("Unsupported AmigaOS symbol type `0x%lX'.",hunkType);
+							FailWithError("Unsupported AmigaOS symbol type `0x%lX'.",(unsigned long)hunkType);
 							break;
 					}
 
@@ -685,7 +685,7 @@ BOOLEAN ImportAmigaOSFile (PROGRAM *Program, const I1 *File, SIZE FileSize, cons
 
 			// The other hunk types are not well-documented or not applicable here, and A68k never generates them anyway.
 			default:
-				FailWithError("Unsupported AmigaOS hunk type `0x%lX'.",hunkType);
+				FailWithError("Unsupported AmigaOS hunk type `0x%lX'.",(unsigned long)hunkType);
 				break;
 		}
 	}

@@ -1,6 +1,6 @@
 /* fix_cutr.c: Routines for range cutting
 
-   Copyright (C) 2003 Kevin Kofler
+   Copyright (C) 2003-2005 Kevin Kofler
    Portions taken from manip.c, Copyright (C) 2002-2003 Sebastian Reichelt
 
    This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ static void AdjustLocationForRangeCut (RELOC *Reloc, LOCATION *Location, OFFSET 
 		if ((TargetLocation > Start) && (TargetLocation < End))
 		{
 			Warning (GetFileName (Reloc->Parent, Reloc->Location), "Reloc at 0x%lX in section `%s' pointing to %s%+ld in a range which is being optimized away.",
-					 Reloc->Location, Reloc->Parent->SectionSymbol->Name, Location->Symbol->Name, Location->Offset);
+					 (unsigned long) Reloc->Location, Reloc->Parent->SectionSymbol->Name, Location->Symbol->Name, (long) Location->Offset);
 			// Set location value to Start.
 			Location->Offset = Start - SymbolLocation;
 		}
@@ -151,7 +151,7 @@ void CutRange (SECTION *Section, OFFSET Start, OFFSET End)
 			if (Symbol->Location < End)
 			{
 				Symbol->Location = Start;
-				Warning (GetFileName (Section, Symbol->Location), "Symbol `%s' at 0x%lX in section `%s' in a range which is being optimized away.", Symbol->Name, Symbol->Location, Section->SectionSymbol->Name);
+				Warning (GetFileName (Section, Symbol->Location), "Symbol `%s' at 0x%lX in section `%s' in a range which is being optimized away.", Symbol->Name, (unsigned long) Symbol->Location, Section->SectionSymbol->Name);
 			}
 			// If the position was behind the range, adjust it.
 			else
@@ -170,7 +170,7 @@ void CutRange (SECTION *Section, OFFSET Start, OFFSET End)
 		{ \
 			if (Item->Location < End) \
 			{ \
-				Warning (GetFileName (Item->Parent, Item->Location), "%s at 0x%lX in section `%s' in a range which is being optimized away.", ItemName, Item->Location, Section->SectionSymbol->Name); \
+				Warning (GetFileName (Item->Parent, Item->Location), "%s at 0x%lX in section `%s' in a range which is being optimized away.", ItemName, (unsigned long) Item->Location, Section->SectionSymbol->Name); \
 				if (Item->Location > Start) \
 					Item->Location = Start; \
 			} \

@@ -167,7 +167,7 @@ static BOOLEAN EmitCompressedRelocFromActualOffset (SECTION *Section, OFFSET Off
 	{
 		Error (Section->FileName, (Offset >= 0) ? "Cannot emit overlapping absolute relocs (offset `0x%lx', need offset >=4)."
 		                                        : "Invalid internal reloc sorting order (offset `-0x%lx', need positive offset).",
-		       (Offset >= 0) ? Offset : -Offset);
+		       (Offset >= 0) ? (long)Offset : -(long)Offset);
 		return FALSE;
 	}
 	
@@ -198,19 +198,19 @@ static BOOLEAN EmitCompressedFormatRelocs (LIST_MODEL *Model, SECTION *SourceSec
 			
 			if (BaseAddress & 1)
 			{
-				Error (Section->FileName, "Invalid base address `0x%lx'. Even base address needed.", BaseAddress);
+				Error (Section->FileName, "Invalid base address `0x%lx'. Even base address needed.", (long) BaseAddress);
 				return FALSE;
 			}
 			
 			if (Offset & 1)
 			{
-				Error (Section->FileName, "Odd offset between base address `0x%lx' and first absolute reloc `0x%lx'. Even offset needed.", BaseAddress, Offset);
+				Error (Section->FileName, "Odd offset between base address `0x%lx' and first absolute reloc `0x%lx'. Even offset needed.", (long) BaseAddress, (long) Offset);
 				return FALSE;
 			}
 			
 			if (Offset < BaseAddress)
 			{
-				Error (Section->FileName, "Cannot emit absolute reloc located at `0x%lx' before base address.", Offset);
+				Error (Section->FileName, "Cannot emit absolute reloc located at `0x%lx' before base address.", (long) Offset);
 				return FALSE;
 			}
 			
@@ -954,7 +954,7 @@ static BOOLEAN EmitMlinkRelocFromActualOffset (SECTION *Section, OFFSET Offset)
 	if (Offset < 0)
 	{
 		Error (Section->FileName, "Invalid internal reloc sorting order (offset `-0x%lx', need positive offset).",
-		       -Offset);
+		       -(long)Offset);
 		return FALSE;
 	}
 	
@@ -985,19 +985,19 @@ static BOOLEAN EmitMlinkFormatRelocs (LIST_MODEL *Model, SECTION *SourceSection,
 			
 			if (BaseAddress & 1)
 			{
-				Error (Section->FileName, "Invalid base address `0x%lx'. Even base address needed.", BaseAddress);
+				Error (Section->FileName, "Invalid base address `0x%lx'. Even base address needed.", (long) BaseAddress);
 				return FALSE;
 			}
 			
 			if (Offset & 1)
 			{
-				Error (Section->FileName, "Odd offset between base address `0x%lx' and first absolute reloc `0x%lx'. Even offset needed.", BaseAddress, Offset);
+				Error (Section->FileName, "Odd offset between base address `0x%lx' and first absolute reloc `0x%lx'. Even offset needed.", (long) BaseAddress, (long) Offset);
 				return FALSE;
 			}
 			
 			if (Offset < BaseAddress)
 			{
-				Error (Section->FileName, "Cannot emit absolute reloc located at `0x%lx' before base address.", Offset);
+				Error (Section->FileName, "Cannot emit absolute reloc located at `0x%lx' before base address.", (long) Offset);
 				return FALSE;
 			}
 			
