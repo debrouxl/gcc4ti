@@ -18,7 +18,7 @@ Strictly speaking, in "nostub" mode it is not a real variable but smart macro, a
 works like it is a variable. The expression stack is the place in the memory where TI keeps
 expressions during evaluation. All statements are tokenised before being executed
 (interpreted). Instructions are reduced to (byte sized) quanta and parsed into Reverse
-Polish Notation (RPN). This is a common technique in interpreted languagues. Expressions,
+Polish Notation (RPN). This is a common technique in interpreted languages. Expressions,
 functions, etc. are all stored in RPN form, to allow for efficient operation of the expressions
 stack. See below for more details about organization of the expression stack.
 <BR><BR>
@@ -32,7 +32,7 @@ When a file is interpreted the end of the variable is found and it is processed 
 expression stack. It is then processed recursively, producing a simplified version on the real
 expression stack. Expressions are therefore interpreted from the top (high memory) recursively.
 <BR><BR>
-As an artefact of expressions processing mechhanism, the arguments of the called program are
+As an artefact of expressions processing mechanism, the arguments of the called program are
 kept also on the expression stack. It grows upwards, and the last argument is stored first.
 After the assembly program is called, the image of the expression stack is as follows:
 <UL>
@@ -111,7 +111,7 @@ and terms like <I>arg1</I>&nbsp;<I>operator</I>&nbsp;<I>arg2</I> are stored as
 The situation is analogous for unary operators.
 Note that a "pointer to an expression" is a pointer to the <B>last byte</B> of the expression!
 When a function (or operator) has variable number of arguments, <A HREF="$$LINK(Tags)">END_TAG</A> is used to indicate "no more arguments".
-See <A HREF="$$LINK(Tags)">Tags</A> for complete list of various tags. This will be ilustrated with
+See <A HREF="$$LINK(Tags)">Tags</A> for complete list of various tags. This will be illustrated with
 some examples:
 <BR><BR>
 <TABLE CLASS="NOBORDER">
@@ -164,19 +164,19 @@ transformed into an equivalent form called "internal canonic form". In such form
 for example, all constants are always in front of variables, e.g. <CODE>'x*3'</CODE> and
 <CODE>'x+3'</CODE> becomes <CODE>'3*x'</CODE> and <CODE>'3+x'</CODE> (although
 the second example will be printed as <CODE>'x+3'</CODE>). Also, expressions like <CODE>'x/y'</CODE> or
-<CODE>'x-y'</CODE> in internal canonic form do not contain substractions and divisions.
+<CODE>'x-y'</CODE> in internal canonic form do not contain subtractions and divisions.
 As the parameter list (when the program is called from TI-Basic) is always in internal
 canonic form, such expressions will never be observed as-is in parameter lists
 etc. because they will be converted before passing them to the program. A lot of functions
 for algebraic manipulations automatically convert the expression in the internal canonic form,
-but when this is not true, you can always force the conversion using explicite call to
+but when this is not true, you can always force the conversion using explicit call to
 <A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A> function. Note that the reverse conversion
 (i.e. back from the canonic form into a regular form) is performed anytime when you try to
 print out the expression. Here is the list of the most common transformations which appears
 during the transformation into the internal canonic form:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
-<TR><TD>Expression</TD><TD>Standard canonnic form</TD></TR>
+<TR><TD>Expression</TD><TD>Standard canonic form</TD></TR>
 <TR><TD>-x</TD><TD>(-1)*x</TD></TR>
 <TR><TD>x-y</TD><TD>x+y*(-1)</TD></TR>
 <TR><TD>x/y</TD><TD>x*y^(-1)</TD></TR>
