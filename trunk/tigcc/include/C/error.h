@@ -214,6 +214,11 @@ typedef struct ErrorFrameStruct{unsigned long A2,A3,A4,A5,A6,A7;unsigned long D3
 #endif
 /* End Auto-Generated Part */
 
+#if __GNUC__>=4
+#undef ER_throw
+#define ER_throw(err_no) __builtin_ER_throw(err_no)
+#endif
+
 #define ER_THROW(n) ER_throw(n)
 
 #endif
