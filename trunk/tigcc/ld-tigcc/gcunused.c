@@ -116,3 +116,41 @@ void RemoveUnusedSections (PROGRAM *Program)
 	}
 }
 
+// The following 2 functions are currently needed only for external data
+// variable support.
+#ifdef DATA_VAR_SUPPORT
+
+// Mark the section containing __main as Referenced. This is a kludge
+// compensating for the fact that the startup section referencing __main has not
+// been imported at that stage.
+void MarkMainSection (PROGRAM *Program)
+{
+	SECTION *Section;
+		
+	// For each section...
+	for_each (Section, Program->Sections)
+	{
+		SYMBOL *Symbol;
+			
+		// For each symbol...
+		for_each (Symbol, Section->Symbols)
+		{
+			// If the name matches, we have found the right symbol.
+			if (Symbol->Exported && (!(strcmp ("__main", Symbol->Name))))
+				MarkSection (Section);
+		}
+	}
+}
+
+// Clear the Referenced flag of all sections, in order to be able to run a
+// second RemoveUnusedSections pass at a later point.
+void ResetReferencedFlags (PROGRAM *Program)
+{
+	SECTION *Section;
+
+	for_each (Section, Program->Sections)
+		Section->Referenced = FALSE;
+}
+
+#endif /* DATA_VAR_SUPPORT */
+

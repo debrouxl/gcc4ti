@@ -242,6 +242,20 @@ int main (int ArgCount, const char **Args)
 			// sections.
 			if (DatVarInfo->Name)
 			{
+				if (OptInfo->RemoveUnused && (!(Program.Frozen)))
+				{
+					// Mark the section containing __main as referenced.
+					MarkMainSection (&Program);
+					// Remove unreferenced sections now, before constant merging
+					// and section merging make it impossible.
+					RemoveUnusedSections (&Program);
+					// Reset the Referenced flags so we can do another GC pass
+					// when the imports are done.
+					ResetReferencedFlags (&Program);
+					
+					DoSpecialDump (1, "(early-cut)");
+				}
+				
 				if (OptInfo->MergeConstants && (!(Program.Frozen)))
 				{
 					// Merge constants now, as we can't do it anymore after
