@@ -1,0 +1,180 @@
+Changelog of the TIGCC-local changes to Binutils (2.14 branch):
+
+2004-09-20  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/read.c (emit_expr): Mark relocs for constants unoptimizable.
+	* gas/write.h (struct fix): Add fx_unoptimizable field.
+	* gas/write.c (fix_new_internal): Initialize it.
+	* include/coff/internal.h (R_UNOPTIMIZABLE): New reloc flag.
+	* gas/config/tc-m68k.c (tc_coff_fix2rtype): Handle unoptimizable relocs.
+	  (md_assemble): Mark destination operand relocs unoptimizable.
+
+2004-09-05  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/as.h (segment_name): Change to function to allow arbitrary number of sections.
+	* gas/subsegs.c (seg_name, segment_name): Likewise.
+	* gas/symbols.h (SEGMENT_TO_SYMBOL_TYPE): Likewise.
+	* gas/config/obj-coff.c (seg_N_TYPE, SEGMENT_TO_SYMBOL_TYPE): Likewise.
+	  (seg_info_off_by_4, SEG_INFO_FROM_SECTION_NUMBER): Likewise.
+	* gas/config/obj-coff.h (C_REGISTER_SECTION): Redefine to N_SEGMENTS+10.
+	* gas/as.h (SEG_NORMAL): Redefine to use SEG_LAST.
+	  (N_SEGMENTS, SEG_LIST, SEG_LAST): Bump segment limit from 120 to 1024.
+
+2004-08-07  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/config/tc-m68k.c (md_apply_fix3): Don't add/subtract the value of a common symbol,
+	                                        it is a size, not a position.
+
+2004-07-25  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/config/obj-coff.h (S_FORCE_RELOC): Force relocs for symbols in mergeable sections.
+	* gas/config/obj-coff.c (yank_symbols): Clear the SF_LOCAL flag if the symbol is in a
+                                                mergeable section.
+
+2004-07-24  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* include/coff/internal.h (STYP_MERGEABLE, STYP_UNALIGNED): New TIGCC section flags.
+	* gas/config/obj-coff.c (obj_coff_section): Use them ("m" and "u" codes).
+	* gas/config/obj-coff.h (S_IS_LOCAL): Always output local symbols in mergeable sections.
+
+2004-07-19  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/config/obj-coff.h (S_FORCE_RELOC): Don't force relocs for absolute symbols if
+	                                         !flag_all_relocs.
+	* gas/expr.c (expr): Don't optimize address differences if flag_all_relocs.
+	* gas/symbols.c (resolve_symbol_value): Error out on operations other than + or - on an
+	                                        address or address difference if flag_all_relocs.
+
+2004-06-25  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/as.h (N_SEGMENTS, SEG_NORMAL, SEG_LIST, SEG_LAST): Bump segment limit from 40 to 120.
+	* gas/subsegs.c (MANY_SEGMENTS): Increase segment limit.
+	* gas/config/obj-coff.c (seg_N_TYPE, seg_info_off_by_4): Likewise.
+	* gas/config/obj-coff.h (C_REGISTER_SECTION): Likewise.
+
+	* gas/config/obj-coff.c (obj_coff_add_segment): Use the full name, not the truncated name,
+	                                                for merging of identically-named sections.
+
+2003-09-09  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/config/tc-m68k.c (md_estimate_size_before_relax): Only create the symbol in the next
+	                                                        frag for conditional jumps.
+            Also handle conditional jumps to variables in the same segment.
+
+2003-09-08  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/config/tc-m68k.c (md_convert_frag_1): Comment Sebastian Reichelt's change.
+	  (md_estimate_size_before_relax): Likewise.
+
+2003-09-08  Sebastian Reichelt  <Sebastian@tigcc.ticalc.org>
+
+	* gas/config/tc-m68k.c (flag_short_jumps): New variable.
+	  (md_estimate_size_before_relax): Use it instead of flag_short_refs for jump shortening.
+	                                   Handle flag_short_refs in the ABSTOPCREL case.
+	  (md_longopts): Add --short-jumps (OPTION_SHORT_JUMPS).
+	  (md_parse_option): Handle --short-jumps, make -l imply it.
+	  (md_show_usage): Add --short-jumps.
+
+	* gas/frags.h: (struct frag): Add fr_start_symbol member.
+	* gas/config/tc-m68k.c (md_convert_frag_1): Create the jbCC PC-relative reloc using it
+	                                       (in the next frag), not the section symbol of sec.
+	                                       Revert 2003-09-02 addition of segT sec parameter.
+	  (md_convert_frag): Revert 2003-09-02 change ("Pass sec parameter on to
+	                     md_convert_frag_1").
+	  (md_estimate_size_before_relax): For LONG references, create a symbol in the next frag.
+
+2003-09-02  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/config/tc-m68k.c (m68k_ip): Create PC-relative reloc for the branch in a jbCC.
+	  (md_convert_frag_1): Likewise. Add segT sec parameter.
+	  (md_convert_frag): Pass sec parameter on to md_convert_frag_1.
+
+2003-09-01  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* opcodes/m68k-opc.c (m68k_opcodes): Move 2002-05-12 exgl (exg.l) alias for exg...
+	  (m68k_aliases): ... here. Add abcdb (abcd.b) alias for abcd.
+	* gas/listing.c (listing_listing): Add 1 to the width for the terminating '\0' character.
+
+2003-08-07  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/config/obj-coff.c (do_relocs_for): Do convert references to local symbols we aren't
+                                            going to output into references to the section symbol.
+
+2003-07-17  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/expr.c (expr): Add optimization of subtraction of .set symbols.
+	* gas/config/obj-coff.c (fixup_segment): Zero out add_symbolP only if !TC_FORCE_RELOCATION.
+	  (c_dot_file_symbol [!BFD_ASSEMBLER]): If flag_all_relocs, xdef __ld_all_relocs.
+	* gas/config/tc-m68k.c (md_apply_fix3): Fix offset computation (don't subtract
+	      fixP->fx_frag->fr_address, subtract subtrahend twice instead to compensate for later
+	      incorrect computations in obj-coff.c).
+	    Disable: "Fix up subtraction of the dot symbol by changing the reloc to PC-relative."
+	             (TIGCC 20030716), because it is unnecessary and probably wrong.
+
+2003-07-16  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* gas/as.c (show_usage, parse_args): Add --all-relocs switch.
+	* gas/as.h (flag_all_relocs): New variable.
+	* gas/config/obj-coff.h (S_IS_LOCAL): Output even internal symbols when flag_keep_locals.
+	  (S_FORCE_RELOC): Never reduce or eliminate relocs in all-relocs mode.
+	* gas/config/obj-coff.c (fixup_segment): Take TC_FORCE_RELOCATION_SUB_LOCAL and
+	                                         UNDEFINED_DIFFERENCE_OK into account.
+	                                         Reuse fx_im_disp to turn off range checking on the
+	                                         68k.
+	  (do_relocs_for): Don't convert references to references to the section symbol.
+	* gas/config/tc-m68k.h (UNDEFINED_DIFFERENCE_OK): Define.
+	  (TC_FORCE_RELOCATION, TC_FORCE_RELOCATION_ABS, TC_FORCE_RELOCATION_LOCAL,
+	   TC_FORCE_RELOCATION_SUB_SAME, TC_FORCE_RELOCATION_SUB_LOCAL, TC_FORCE_RELOCATION):
+	    Define. Force relocs in all-relocs mode.
+	* gas/config/tc-m68k.c (tc_coff_fix2rtype): Handle word and byte negative relocs.
+	  (md_apply_fix3): We aren't done when we still have something to subtract.
+	                   Split address differences into its components.
+	                   Fix up subtraction of the dot symbol by changing the reloc to
+	                   PC-relative.
+	                   Reuse fx_im_disp to turn off range checking.
+	* gas/write.c (adjust_reloc_syms): Only convert relocs to section symbol relocs if we 
+	                                   aren't going to output the symbol they refer to.
+	* include/coff/internal.h (R_RELWORD_NEG, R_RELBYTE_NEG): Define as TIGCC extensions.
+
+2003-07-12  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* Don't pad sections. ld-tigcc aligns sections independently of their size:
+	  gas/config/obj-coff.c (SUB_SEGMENT_ALIGN for write_object_file): Set to 0, not 1.
+	  gas/write.c (subsegs_finish): Always skip alignment code.
+
+2003-07-12  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* Merge TIGCC patchset:
+
+	  2003-01-06  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	  * gas/config/obj-coff.c (coff_frob_section): Don't pad sections. ld-tigcc aligns
+	                                               sections independently of their size.
+
+	  2002-05-28  Sebastian Reichelt  <Sebastian@tigcc.ticalc.org>
+
+	  * opcodes/configure.in: Use m68k-dis.c as a "unique file" rather than z8k-dis.c. We
+	                          don't distribute the latter.
+	  * opcodes/configure: Likewise.
+
+	  2002-05-12  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	  * opcodes/m68k-opc.c (m68k_opcodes): Add exgl (exg.l) alias for exg.
+
+	  2002-01-20  Sebastian Reichelt  <Sebastian@tigcc.ticalc.org>
+
+	  * opcodes/m68k-opc.c (m68k_opcodes): Optimization: Add clr.l %dn as an alias for moveq.
+
+	  2002-01-10  Stephan Effelsberg  <b012414@dvz.fh-koeln.de>
+
+	  * opcodes/m68k-opc.c (m68k_opcodes): Fix cmpi operand constraints when aliased as cmp. 
+	                                       (Don't allow PC-relative or indexed PC-relative
+                                               second operand.)
+
+	  2001-09-01  Sebastian Reichelt  <Sebastian@tigcc.ticalc.org>
+
+	  * bfd/config.bfd: Remove targ_selvecs for m68k-*-*-coff*.
+
+2003-07-12  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+	* Import Binutils 2.14 release.

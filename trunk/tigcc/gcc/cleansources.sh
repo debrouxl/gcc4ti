@@ -86,6 +86,7 @@ ls -A bfd/coff-* >tmpfiles.lst
 for name in `grep -v -e "m68k" tmpfiles.lst`; do rm -f "$name"; done
 ls -A bfd/cpu-* >tmpfiles.lst
 for name in `grep -v -e "m68k" tmpfiles.lst`; do rm -f "$name"; done
+rm -f -r cpu
 rm -f gas/*aout*
 rm -f gas/*bout*
 rm -f gas/*elf*
