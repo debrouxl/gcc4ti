@@ -20,17 +20,17 @@ enum fileMode{FM_CLOSED=0,FM_READ=1,FM_WRITE=2,FM_APPEND=3,FM_READ_ACCESS=1,FM_W
 typedef struct fileStruct{unsigned short dataLen;unsigned short dataPos;unsigned short bufSize;HANDLE dataH;unsigned char fileFlags,fileMode;unsigned short fileStatus;HSym hSym;char type[5];}FILES;
 enum FileStatusEnum{FS_OK=0x0000,FS_EOF=0xFFFF,FS_ERROR=0xFFFE,FS_BAD_NAME=0xFFFD,FS_MEMORY=0xFFFC,FS_NOT_FOUND=0xFFFB};
 #if MIN_AMS>=200
-#define FAccess ({__need_in_use_bit;_rom_call(unsigned short,(char*,short,char*),3D4);})
+#define FAccess ({__need_in_use_bit;_rom_call(unsigned short,(const char*,short,const char*),3D4);})
 #define FClose _rom_call(unsigned short,(FILES*),3D5)
-#define FCreate ({__need_in_use_bit;_rom_call(unsigned short,(char*,char*),3D6);})
+#define FCreate ({__need_in_use_bit;_rom_call(unsigned short,(const char*,const char*),3D6);})
 #define FDelete ({__need_in_use_bit;_rom_call(unsigned short,(const char*),3D7);})
 #define FEof _rom_call(short,(FILES*),3D8)
-#define FFindFirst _rom_call(SYM_ENTRY*,(short,char*,char*),3D9)
+#define FFindFirst _rom_call(SYM_ENTRY*,(short,const char*,const char*),3D9)
 #define FFindNext _rom_call(SYM_ENTRY*,(void),3DA)
 #define FGetC _rom_call(unsigned short,(FILES*),3DB)
 #define FGetPos _rom_call(unsigned short,(FILES*),3DC)
 #define FGetSize _rom_call(unsigned short,(FILES*),3DD)
-#define FOpen ({__need_in_use_bit;_rom_call(unsigned short,(const char*,FILES*,short,char*),3DE);})
+#define FOpen ({__need_in_use_bit;_rom_call(unsigned short,(const char*,FILES*,short,const char*),3DE);})
 #define FPutC _rom_call(unsigned short,(short,FILES*),3DF)
 #define FRead _rom_call(unsigned short,(void*,short,FILES*),3E0)
 #define FSetBufSize _rom_call(unsigned short,(FILES*,short),3E2)
@@ -39,7 +39,7 @@ enum FileStatusEnum{FS_OK=0x0000,FS_EOF=0xFFFF,FS_ERROR=0xFFFE,FS_BAD_NAME=0xFFF
 #define FSetVer _rom_call(unsigned char,(FILES*,char),3E4)
 #define FStatus _rom_call(unsigned short,(FILES*),3E5)
 #define FType ({__need_in_use_bit;_rom_call(unsigned short,(const char*,char*),3E6);})
-#define FWrite _rom_call(unsigned short,(void*,short,FILES*),3E7)
+#define FWrite _rom_call(unsigned short,(const void*,short,FILES*),3E7)
 #endif
 /* End Auto-Generated Part */
 
