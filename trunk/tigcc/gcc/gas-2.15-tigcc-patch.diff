@@ -783,14 +783,14 @@ diff -Naur binutils-2.15.orig/gas/configure binutils-2.15-src/gas/configure
  
 diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
 --- binutils-2.15.orig/gas/dwarf2dbg.c	Fri Feb 13 16:12:46 2004
-+++ binutils-2.15-src/gas/dwarf2dbg.c	Sun Apr  3 06:01:44 2005
++++ binutils-2.15-src/gas/dwarf2dbg.c	Thu Apr  7 17:28:32 2005
 @@ -52,7 +52,15 @@
  # define DWARF2_ADDR_SIZE(bfd) (bfd_arch_bits_per_address (bfd) / 8)
  #endif
  
 -#ifdef BFD_ASSEMBLER
 +#ifndef BFD_ASSEMBLER
-+# define section_symbol(SEC) seg_info(SEC)->dot
++# define section_symbol(SEC) seg_info(SEC)->dwarf2_secsym
 +#endif
 +
 +#ifdef __MINGW32__
@@ -801,7 +801,59 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
  #include "subsegs.h"
  
-@@ -1363,15 +1371,51 @@
+@@ -1056,6 +1064,7 @@
+   subseg_set (line_seg, 0);
+ 
+   line_start = symbol_temp_new_now ();
++  seg_info (line_seg)->dwarf2_secsym = line_start; /* (TIGCC 20050407) */
+   prologue_end = symbol_temp_make ();
+   line_end = symbol_temp_make ();
+ 
+@@ -1211,15 +1220,19 @@
+ {
+   subseg_set (abbrev_seg, 0);
+ 
++  seg_info (abbrev_seg)->dwarf2_secsym = symbol_temp_new_now (); /* (TIGCC 20050407) */
++
+   out_uleb128 (1);
+   out_uleb128 (DW_TAG_compile_unit);
+   out_byte (DW_CHILDREN_no);
+   out_abbrev (DW_AT_stmt_list, DW_FORM_data4);
++#if 0 /* (TIGCC 20050407) */
+   if (all_segs->next == NULL)
+     {
+       out_abbrev (DW_AT_low_pc, DW_FORM_addr);
+       out_abbrev (DW_AT_high_pc, DW_FORM_addr);
+     }
++#endif
+   out_abbrev (DW_AT_name, DW_FORM_string);
+   out_abbrev (DW_AT_comp_dir, DW_FORM_string);
+   out_abbrev (DW_AT_producer, DW_FORM_string);
+@@ -1248,6 +1261,7 @@
+   subseg_set (info_seg, 0);
+ 
+   info_start = symbol_temp_new_now ();
++  seg_info (info_seg)->dwarf2_secsym = info_start; /* (TIGCC 20050407) */
+   info_end = symbol_temp_make ();
+ 
+   /* Compilation Unit length.  */
+@@ -1296,6 +1310,7 @@
+   /* ??? sizeof_offset */
+   TC_DWARF2_EMIT_OFFSET (section_symbol (line_seg), 4);
+ 
++#if 0 /* (TIGCC 20050407) */
+   /* These two attributes may only be emitted if all of the code is
+      contiguous.  Multiple sections are not that.  */
+   if (all_segs->next == NULL)
+@@ -1312,6 +1327,7 @@
+       expr.X_add_number = 0;
+       emit_expr (&expr, sizeof_address);
+     }
++#endif
+ 
+   /* DW_AT_name.  We don't have the actual file name that was present
+      on the command line, so assume files[1] is the main input file.
+@@ -1363,15 +1379,51 @@
         below.  */
    if (all_segs == NULL
        && debug_type != DEBUG_DWARF2
@@ -853,7 +905,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
    /* For each subsection, chain the debug entries together.  */
    for (s = all_segs; s; s = s->next)
-@@ -1400,9 +1444,11 @@
+@@ -1400,9 +1452,11 @@
        abbrev_seg = subseg_new (".debug_abbrev", 0);
        aranges_seg = subseg_new (".debug_aranges", 0);
  
@@ -987,6 +1039,17 @@ diff -Naur binutils-2.15.orig/gas/subsegs.c binutils-2.15-src/gas/subsegs.c
  #else /* BFD_ASSEMBLER */
  
  /* Gas segment information for bfd_abs_section_ptr and
+diff -Naur binutils-2.15.orig/gas/subsegs.h binutils-2.15-src/gas/subsegs.h
+--- binutils-2.15.orig/gas/subsegs.h	Wed Dec  3 03:39:58 2003
++++ binutils-2.15-src/gas/subsegs.h	Thu Apr  7 17:19:28 2005
+@@ -89,6 +89,7 @@
+ #endif
+ 
+   symbolS *dot;
++  symbolS *dwarf2_secsym; /* (TIGCC 20050407) */
+ 
+   struct lineno_list *lineno_list_head;
+   struct lineno_list *lineno_list_tail;
 diff -Naur binutils-2.15.orig/gas/symbols.c binutils-2.15-src/gas/symbols.c
 --- binutils-2.15.orig/gas/symbols.c	Sun Nov 30 19:07:12 2003
 +++ binutils-2.15-src/gas/symbols.c	Sun Jan 30 14:10:52 2005

@@ -2376,7 +2376,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k-ti.h gcc-4.0-20050319-src/
 +/* end of m68k-ti.h */
 diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc/config/m68k/m68k.c
 --- gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c	Thu Feb 24 01:50:32 2005
-+++ gcc-4.0-20050319-src/gcc/config/m68k/m68k.c	Wed Mar 23 00:21:02 2005
++++ gcc-4.0-20050319-src/gcc/config/m68k/m68k.c	Thu Apr  7 23:59:18 2005
 @@ -43,6 +43,11 @@
  #include "target-def.h"
  #include "debug.h"
@@ -2597,7 +2597,17 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
    if (flag_pic && regno == PIC_OFFSET_TABLE_REGNUM)
      {
        if (current_function_uses_pic_offset_table)
-@@ -631,6 +789,11 @@
+@@ -510,7 +668,8 @@
+ 
+       if (dwarf2out_do_frame ())
+ 	{
+-	  cfa_offset += current_frame.size + 4;
++	  /* (TIGCC 20050407) This +4 seems wrong from my tests. */
++	  cfa_offset += current_frame.size /*+ 4*/;
+ 	  dwarf2out_def_cfa ("", STACK_POINTER_REGNUM, cfa_offset);
+ 	}
+     } /* !frame_pointer_needed */
+@@ -631,6 +790,11 @@
  	    }
  	}
      }
@@ -2609,7 +2619,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  }
  
  /* Return true if this function's epilogue can be output as RTL.  */
-@@ -670,9 +833,11 @@
+@@ -670,9 +834,11 @@
      insn = prev_nonnote_insn (insn);
    if (insn && GET_CODE (insn) == BARRIER)
      {
@@ -2621,7 +2631,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
        return;
      }
  
-@@ -969,8 +1134,17 @@
+@@ -969,8 +1135,17 @@
         * We'll use the -Os command-line flag to decide which to generate.
         * Both sequences take the same time to execute on the ColdFire.
         */
@@ -2640,7 +2650,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
    else if ((flag_pic == 1) || TARGET_68020)
  #if defined(USE_GAS)
      out = "bsr.l %0@PLTPC";
-@@ -1423,11 +1597,11 @@
+@@ -1423,11 +1598,11 @@
  
  typedef enum { MOVL, SWAP, NEGW, NOTW, NOTB, MOVQ, MVS, MVZ } CONST_METHOD;
  
@@ -2654,7 +2664,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  const_method (rtx constant)
  {
    int i;
-@@ -1529,10 +1703,15 @@
+@@ -1529,10 +1704,15 @@
         for add and the time for shift, taking away a little more because
         sometimes move insns are needed.  */
      /* div?.w is relatively cheaper on 68000 counted in COSTS_N_INSNS terms.  */
@@ -2673,7 +2683,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  
      case PLUS:
        /* An lea costs about three times as much as a simple add.  */
-@@ -1563,11 +1742,15 @@
+@@ -1563,11 +1743,15 @@
          {
  	  if (GET_CODE (XEXP (x, 1)) == CONST_INT)
  	    {
@@ -2691,7 +2701,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  	    }
  	  else
  	    *total = COSTS_N_INSNS (10); /* worst case */
-@@ -1600,10 +1783,10 @@
+@@ -1600,10 +1784,10 @@
          *total = COSTS_N_INSNS (MULL_COST);
        return true;
  
@@ -2704,7 +2714,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
        if (GET_MODE (x) == QImode || GET_MODE (x) == HImode)
          *total = COSTS_N_INSNS (DIVW_COST);	/* div.w */
        else if (TARGET_CF_HWDIV)
-@@ -1612,6 +1795,16 @@
+@@ -1612,6 +1796,16 @@
  	*total = COSTS_N_INSNS (43);		/* div.l */
        return true;
  
@@ -2721,7 +2731,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
      default:
        return false;
      }
-@@ -1828,6 +2021,24 @@
+@@ -1828,6 +2022,24 @@
    return "move%.b %1,%0";
  }
  
@@ -2746,7 +2756,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  const char *
  output_move_stricthi (rtx *operands)
  {
-@@ -1852,6 +2063,17 @@
+@@ -1852,6 +2064,17 @@
    return "move%.b %1,%0";
  }
  
@@ -2764,7 +2774,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  /* Return the best assembler insn template
     for moving operands[1] into operands[0] as a fullword.  */
  
-@@ -1930,10 +2152,14 @@
+@@ -1930,10 +2153,14 @@
        operands[0] = XEXP (XEXP (operands[0], 0), 0);
        if (size == 12)
          output_asm_insn ("sub%.l #12,%0", operands);
@@ -2780,7 +2790,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
        else if (GET_MODE (operands[0]) == DFmode)
  	operands[0] = gen_rtx_MEM (DFmode, operands[0]);
        else
-@@ -1945,10 +2171,14 @@
+@@ -1945,10 +2172,14 @@
        operands[1] = XEXP (XEXP (operands[1], 0), 0);
        if (size == 12)
          output_asm_insn ("sub%.l #12,%1", operands);
@@ -2795,7 +2805,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
        else if (GET_MODE (operands[1]) == DFmode)
  	operands[1] = gen_rtx_MEM (DFmode, operands[1]);
        else
-@@ -1984,7 +2214,7 @@
+@@ -1984,7 +2215,7 @@
        else if (optype0 == OFFSOP)
  	{
  	  middlehalf[0] = adjust_address (operands[0], SImode, 4);
@@ -2804,7 +2814,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  	}
        else
  	{
-@@ -2000,7 +2230,7 @@
+@@ -2000,7 +2231,7 @@
        else if (optype1 == OFFSOP)
  	{
  	  middlehalf[1] = adjust_address (operands[1], SImode, 4);
@@ -2813,7 +2823,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  	}
        else if (optype1 == CNSTOP)
  	{
-@@ -2032,8 +2262,66 @@
+@@ -2032,8 +2263,66 @@
  	  latehalf[1] = operands[1];
  	}
      }
@@ -2882,7 +2892,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
      {
        if (optype0 == REGOP)
  	latehalf[0] = gen_rtx_REG (SImode, REGNO (operands[0]) + 1);
-@@ -2058,7 +2346,16 @@
+@@ -2058,7 +2347,16 @@
    if (optype0 == PUSHOP
        && REGNO (XEXP (XEXP (operands[0], 0), 0)) == STACK_POINTER_REGNUM
        && reg_overlap_mentioned_p (stack_pointer_rtx, operands[1]))
@@ -2899,7 +2909,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  
    /* For (set (reg:DI N) (mem:DI ... (reg:SI N) ...)),
       if the upper part of reg N does not appear in the MEM, arrange to
-@@ -2086,6 +2383,12 @@
+@@ -2086,6 +2384,12 @@
  	      middlehalf[1] = adjust_address (operands[1], DImode, size - 8);
  	      latehalf[1] = adjust_address (operands[1], DImode, size - 4);
  	    }
@@ -2912,7 +2922,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  	  else
  	    {
  	      operands[1] = gen_rtx_MEM (DImode, latehalf[0]);
-@@ -2116,6 +2419,30 @@
+@@ -2116,6 +2420,30 @@
  	  output_asm_insn (singlemove_string (middlehalf), middlehalf);
  	  return "";
  	}
@@ -2943,7 +2953,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
        else if (reg_overlap_mentioned_p (testlow, XEXP (operands[1], 0)))
  	/* If the low half of dest is mentioned in the source memory
  	   address, the arrange to emit the move late half first.  */
-@@ -2139,21 +2466,24 @@
+@@ -2139,21 +2467,24 @@
        /* Make any unoffsettable addresses point at high-numbered word.  */
        if (addreg0)
  	{
@@ -2971,7 +2981,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  
        /* Undo the adds we just did.  */
        if (addreg0)
-@@ -2161,7 +2491,7 @@
+@@ -2161,7 +2492,7 @@
        if (addreg1)
  	output_asm_insn ("subq%.l #4,%0", &addreg1);
  
@@ -2980,7 +2990,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  	{
  	  output_asm_insn (singlemove_string (middlehalf), middlehalf);
  	  if (addreg0)
-@@ -2179,7 +2509,7 @@
+@@ -2179,7 +2510,7 @@
    output_asm_insn (singlemove_string (operands), operands);
  
    /* Do the middle one of the three words for long double */
@@ -2989,7 +2999,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
      {
        if (addreg0)
  	output_asm_insn ("addq%.l #4,%0", &addreg0);
-@@ -2196,19 +2526,22 @@
+@@ -2196,19 +2527,22 @@
      output_asm_insn ("addq%.l #4,%0", &addreg1);
  
    /* Do that word.  */
@@ -3015,7 +3025,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
          output_asm_insn ("subq%.l #8,%0", &addreg1);
        else
          output_asm_insn ("subq%.l #4,%0", &addreg1);
-@@ -2539,6 +2872,8 @@
+@@ -2539,6 +2873,8 @@
  int
  floating_exact_log2 (rtx x)
  {
@@ -3024,7 +3034,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
    REAL_VALUE_TYPE r, r1;
    int exp;
  
-@@ -2553,6 +2888,7 @@
+@@ -2553,6 +2889,7 @@
      return exp;
  
    return 0;
@@ -3032,7 +3042,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  }
  
  /* A C compound statement to output to stdio stream STREAM the
-@@ -2599,6 +2935,8 @@
+@@ -2599,6 +2936,8 @@
     'x' for float insn (print a CONST_DOUBLE as a float rather than in hex),
         or print pair of registers as rx:ry.
  
@@ -3041,7 +3051,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
     */
  
  void
-@@ -2639,6 +2977,14 @@
+@@ -2639,6 +2978,14 @@
  	abort ();
        output_addr_const (file, XEXP (op, 0));
      }
@@ -3056,7 +3066,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
    else if (GET_CODE (op) == REG)
      {
        if (letter == 'R')
-@@ -2651,13 +2997,24 @@
+@@ -2651,13 +2998,24 @@
    else if (GET_CODE (op) == MEM)
      {
        output_address (XEXP (op, 0));
@@ -3081,7 +3091,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
    else if (GET_CODE (op) == CONST_DOUBLE && GET_MODE (op) == SFmode)
      {
        REAL_VALUE_TYPE r;
-@@ -2676,6 +3033,7 @@
+@@ -2676,6 +3034,7 @@
        REAL_VALUE_FROM_CONST_DOUBLE (r, op);
        ASM_OUTPUT_DOUBLE_OPERAND (file, r);
      }
@@ -3089,7 +3099,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
    else
      {
        /* Use `print_operand_address' instead of `output_addr_const'
-@@ -3065,7 +3423,7 @@
+@@ -3065,7 +3424,7 @@
  	  && (INTVAL (op) >= 0 && INTVAL (op) <= 0xffffffffL));
  #else
    return (GET_CODE (op) == CONST_INT
@@ -3098,7 +3108,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  #endif
  }
  
-@@ -3212,6 +3570,176 @@
+@@ -3212,6 +3571,176 @@
  	  || GET_CODE (op) == CONST);
  }
  
@@ -3275,7 +3285,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  const char *
  output_andsi3 (rtx *operands)
  {
-@@ -3332,13 +3860,28 @@
+@@ -3332,13 +3861,28 @@
  			     tree decl ATTRIBUTE_UNUSED)
  {
    char flagchar;
@@ -3307,7 +3317,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
  }
  
  #endif /* M68K_TARGET_COFF */
-@@ -3391,7 +3934,7 @@
+@@ -3391,7 +3935,7 @@
    if (flag_pic)
      {
        if (TARGET_PCREL)
@@ -3316,7 +3326,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/config/m68k/m68k.c gcc-4.0-20050319-src/gcc
        else if ((flag_pic == 1) || TARGET_68020)
  	{
  	  if (MOTOROLA)
-@@ -3449,3 +3992,119 @@
+@@ -3449,3 +3993,119 @@
  
    return 1;
  }
