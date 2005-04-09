@@ -4775,10 +4775,39 @@ diff -Naur gcc-4.0-20050319.orig/gcc/diagnostic.c gcc-4.0-20050319-src/gcc/diagn
        exit (FATAL_EXIT_CODE);
  
      case DK_FATAL:
+diff -Naur gcc-4.0-20050319.orig/gcc/dwarf2.h gcc-4.0-20050319-src/gcc/dwarf2.h
+--- gcc-4.0-20050319.orig/gcc/dwarf2.h	Wed Oct  6 22:27:14 2004
++++ gcc-4.0-20050319-src/gcc/dwarf2.h	Sat Apr  9 03:44:58 2005
+@@ -352,6 +352,7 @@
+     DW_AT_body_begin = 0x2105,
+     DW_AT_body_end   = 0x2106,
+     DW_AT_GNU_vector = 0x2107,
++    DW_AT_regparm_location = 0x2120,
+     /* VMS extensions.  */
+     DW_AT_VMS_rtnbeg_pd_address = 0x2201,
+     /* UPC extension.  */
 diff -Naur gcc-4.0-20050319.orig/gcc/dwarf2out.c gcc-4.0-20050319-src/gcc/dwarf2out.c
 --- gcc-4.0-20050319.orig/gcc/dwarf2out.c	Fri Mar  4 15:28:42 2005
-+++ gcc-4.0-20050319-src/gcc/dwarf2out.c	Sun Apr  3 07:36:56 2005
-@@ -9570,14 +9570,7 @@
++++ gcc-4.0-20050319-src/gcc/dwarf2out.c	Sat Apr  9 03:41:14 2005
+@@ -3993,7 +3993,7 @@
+ static void decls_for_scope (tree, dw_die_ref, int);
+ static int is_redundant_typedef (tree);
+ static void gen_namespace_die (tree);
+-static void gen_decl_die (tree, dw_die_ref);
++static dw_die_ref gen_decl_die (tree, dw_die_ref);
+ static dw_die_ref force_decl_die (tree);
+ static dw_die_ref force_type_die (tree);
+ static dw_die_ref setup_namespace_context (tree, dw_die_ref);
+@@ -4486,6 +4486,8 @@
+       return "DW_AT_body_end";
+     case DW_AT_GNU_vector:
+       return "DW_AT_GNU_vector";
++    case DW_AT_regparm_location:
++      return "DW_AT_regparm_location";
+ 
+     case DW_AT_VMS_rtnbeg_pd_address:
+       return "DW_AT_VMS_rtnbeg_pd_address";
+@@ -9570,14 +9572,7 @@
    int i;
  
    REAL_VALUE_FROM_CONST_DOUBLE (rv, rtl);
@@ -4794,7 +4823,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/dwarf2out.c gcc-4.0-20050319-src/gcc/dwarf2
  }
  
  /* Attach a DW_AT_const_value attribute for a variable or a parameter which
-@@ -9616,7 +9609,7 @@
+@@ -9616,7 +9611,7 @@
  	    unsigned char *array = ggc_alloc (length);
  
  	    insert_float (rtl, array);
@@ -4803,6 +4832,140 @@ diff -Naur gcc-4.0-20050319.orig/gcc/dwarf2out.c gcc-4.0-20050319-src/gcc/dwarf2
  	  }
  	else
  	  {
+@@ -11078,6 +11073,10 @@
+    DW_TAG_unspecified_parameters DIE) to represent the types of the formal
+    parameters as specified in some function type specification (except for
+    those which appear as part of a function *definition*).  */
++/* (TIGCC 20050409) We also want to generate DW_AT_regparm_location
++   information for register parameters so GDB can call the function
++   correctly. We don't use DW_AT_location in order not to conflict with
++   the location list support. */
+ 
+ static void
+ gen_formal_types_die (tree function_or_method_type, dw_die_ref context_die)
+@@ -11086,15 +11085,21 @@
+   tree formal_type = NULL;
+   tree first_parm_type;
+   tree arg;
++  tree function_or_method_decl = NULL_TREE;
++  CUMULATIVE_ARGS cum;
+ 
+   if (TREE_CODE (function_or_method_type) == FUNCTION_DECL)
+     {
++      function_or_method_decl = function_or_method_type;
+       arg = DECL_ARGUMENTS (function_or_method_type);
+       function_or_method_type = TREE_TYPE (function_or_method_type);
+     }
+   else
+     arg = NULL_TREE;
+ 
++  if (function_or_method_decl)
++    INIT_CUMULATIVE_ARGS (cum, function_or_method_type, NULL, function_or_method_decl, 0);
++
+   first_parm_type = TYPE_ARG_TYPES (function_or_method_type);
+ 
+   /* Make our first pass over the list of formal parameter types and output a
+@@ -11114,6 +11119,17 @@
+ 	  || (arg && DECL_ARTIFICIAL (arg)))
+ 	add_AT_flag (parm_die, DW_AT_artificial, 1);
+ 
++      if (function_or_method_decl)
++        {
++          rtx argrtx = FUNCTION_ARG(cum, TYPE_MODE (formal_type), formal_type, 0);
++          if (argrtx && GET_CODE (argrtx) == REG && REGNO (argrtx) < FIRST_PSEUDO_REGISTER)
++            {
++              add_AT_location_description (parm_die, DW_AT_regparm_location, reg_loc_descriptor (argrtx));
++            }
++
++          FUNCTION_ARG_ADVANCE(cum, 0, 0, 0);
++        }
++
+       link = TREE_CHAIN (link);
+       if (arg)
+ 	arg = TREE_CHAIN (arg);
+@@ -11203,6 +11219,10 @@
+ 
+ /* Generate a DIE to represent a declared function (either file-scope or
+    block-local).  */
++/* (TIGCC 20050409) We also want to generate DW_AT_regparm_location
++   information for register parameters so GDB can call the function
++   correctly. We don't use DW_AT_location in order not to conflict with
++   the location list support. */
+ 
+ static void
+ gen_subprogram_die (tree decl, dw_die_ref context_die)
+@@ -11216,6 +11236,7 @@
+   dw_die_ref old_die = lookup_decl_die (decl);
+   int declaration = (current_function_decl != decl
+ 		     || class_or_namespace_scope_p (context_die));
++  CUMULATIVE_ARGS cum;
+ 
+   /* It is possible to have both DECL_ABSTRACT and DECLARATION be true if we
+      started to generate the abstract instance of an inline, decided to output
+@@ -11416,6 +11437,8 @@
+       tree arg_decls = DECL_ARGUMENTS (decl);
+       tree parm;
+ 
++      INIT_CUMULATIVE_ARGS (cum, TREE_TYPE (decl), NULL, decl, 0);
++
+       /* When generating DIEs, generate the unspecified_parameters DIE
+ 	 instead if we come across the arg "__builtin_va_alist" */
+       for (parm = arg_decls; parm; parm = TREE_CHAIN (parm))
+@@ -11426,7 +11449,16 @@
+ 			    "__builtin_va_alist"))
+ 	      gen_unspecified_parameters_die (parm, subr_die);
+ 	    else
+-	      gen_decl_die (parm, subr_die);
++	      {
++	        dw_die_ref parm_die = gen_decl_die (parm, subr_die);
++	        rtx argrtx = FUNCTION_ARG(cum, TYPE_MODE (TREE_TYPE (parm)), TREE_TYPE (parm), 0);
++	        if (parm_die && argrtx && GET_CODE (argrtx) == REG && REGNO (argrtx) < FIRST_PSEUDO_REGISTER)
++	          {
++	            add_AT_location_description (parm_die, DW_AT_regparm_location, reg_loc_descriptor (argrtx));
++	          }
++	      }
++
++	    FUNCTION_ARG_ADVANCE(cum, 0, 0, 0);
+ 	  }
+ 
+       /* Decide whether we need an unspecified_parameters DIE at the end.
+@@ -12599,14 +12631,15 @@
+ }
+ 
+ /* Generate Dwarf debug information for a decl described by DECL.  */
++/* (TIGCC 20050409) Return the DIE for the parameter case. */
+ 
+-static void
++static dw_die_ref
+ gen_decl_die (tree decl, dw_die_ref context_die)
+ {
+   tree origin;
+ 
+   if (DECL_P (decl) && DECL_IGNORED_P (decl))
+-    return;
++    return NULL;
+ 
+   switch (TREE_CODE (decl))
+     {
+@@ -12749,8 +12782,7 @@
+ 
+     case PARM_DECL:
+       gen_type_die (TREE_TYPE (decl), context_die);
+-      gen_formal_parameter_die (decl, context_die);
+-      break;
++      return gen_formal_parameter_die (decl, context_die);
+ 
+     case NAMESPACE_DECL:
+       gen_namespace_die (decl);
+@@ -12761,6 +12793,8 @@
+       gcc_assert ((int)TREE_CODE (decl) > NUM_TREE_CODES);
+       break;
+     }
++
++    return NULL;
+ }
+ 
+ /* Add Ada "use" clause information for SGI Workshop debugger.  */
 diff -Naur gcc-4.0-20050319.orig/gcc/emit-rtl.c gcc-4.0-20050319-src/gcc/emit-rtl.c
 --- gcc-4.0-20050319.orig/gcc/emit-rtl.c	Fri Feb 18 06:58:34 2005
 +++ gcc-4.0-20050319-src/gcc/emit-rtl.c	Wed Mar 23 00:21:02 2005
