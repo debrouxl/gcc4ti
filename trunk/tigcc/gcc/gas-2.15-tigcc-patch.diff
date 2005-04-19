@@ -783,7 +783,7 @@ diff -Naur binutils-2.15.orig/gas/configure binutils-2.15-src/gas/configure
  
 diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
 --- binutils-2.15.orig/gas/dwarf2dbg.c	Fri Feb 13 16:12:46 2004
-+++ binutils-2.15-src/gas/dwarf2dbg.c	Thu Apr  7 17:28:32 2005
++++ binutils-2.15-src/gas/dwarf2dbg.c	Tue Apr 19 02:28:04 2005
 @@ -52,7 +52,15 @@
  # define DWARF2_ADDR_SIZE(bfd) (bfd_arch_bits_per_address (bfd) / 8)
  #endif
@@ -801,7 +801,35 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
  #include "subsegs.h"
  
-@@ -1056,6 +1064,7 @@
+@@ -961,7 +969,9 @@
+       if (1 /* line != e->loc.line || changed */)
+ 	{
+ 	  int line_delta = e->loc.line - line;
+-	  if (frag == NULL)
++	  /* (TIGCC 20050415) Always use DW_LNE_set_address, as everything else is
++	     incompatible with linker optimization. -- Kevin Kofler */
++	  if (1 /*frag == NULL*/)
+ 	    {
+ 	      out_set_addr (seg, e->frag, e->frag_ofs);
+ 	      out_inc_line_addr (line_delta, 0);
+@@ -991,11 +1001,16 @@
+   /* Emit a DW_LNE_end_sequence for the end of the section.  */
+   last_frag = last_frag_for_seg (seg);
+   last_frag_ofs = get_frag_fix (last_frag);
++#if 0 /* (TIGCC 20050419) */
+   if (frag == last_frag)
+     out_inc_line_addr (INT_MAX, last_frag_ofs - frag_ofs);
+   else
+     relax_inc_line_addr (INT_MAX, seg, last_frag, last_frag_ofs,
+ 			 frag, frag_ofs);
++#else
++  out_set_addr (seg, last_frag, last_frag_ofs);
++  out_inc_line_addr (INT_MAX, 0);
++#endif
+ }
+ 
+ /* Emit the directory and file tables for .debug_line.  */
+@@ -1056,6 +1071,7 @@
    subseg_set (line_seg, 0);
  
    line_start = symbol_temp_new_now ();
@@ -809,7 +837,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    prologue_end = symbol_temp_make ();
    line_end = symbol_temp_make ();
  
-@@ -1211,15 +1220,19 @@
+@@ -1211,15 +1227,19 @@
  {
    subseg_set (abbrev_seg, 0);
  
@@ -829,7 +857,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    out_abbrev (DW_AT_name, DW_FORM_string);
    out_abbrev (DW_AT_comp_dir, DW_FORM_string);
    out_abbrev (DW_AT_producer, DW_FORM_string);
-@@ -1248,6 +1261,7 @@
+@@ -1248,6 +1268,7 @@
    subseg_set (info_seg, 0);
  
    info_start = symbol_temp_new_now ();
@@ -837,7 +865,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    info_end = symbol_temp_make ();
  
    /* Compilation Unit length.  */
-@@ -1296,6 +1310,7 @@
+@@ -1296,6 +1317,7 @@
    /* ??? sizeof_offset */
    TC_DWARF2_EMIT_OFFSET (section_symbol (line_seg), 4);
  
@@ -845,7 +873,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    /* These two attributes may only be emitted if all of the code is
       contiguous.  Multiple sections are not that.  */
    if (all_segs->next == NULL)
-@@ -1312,6 +1327,7 @@
+@@ -1312,6 +1334,7 @@
        expr.X_add_number = 0;
        emit_expr (&expr, sizeof_address);
      }
@@ -853,7 +881,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
    /* DW_AT_name.  We don't have the actual file name that was present
       on the command line, so assume files[1] is the main input file.
-@@ -1363,15 +1379,51 @@
+@@ -1363,15 +1386,51 @@
         below.  */
    if (all_segs == NULL
        && debug_type != DEBUG_DWARF2
@@ -905,7 +933,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
    /* For each subsection, chain the debug entries together.  */
    for (s = all_segs; s; s = s->next)
-@@ -1400,9 +1452,11 @@
+@@ -1400,9 +1459,11 @@
        abbrev_seg = subseg_new (".debug_abbrev", 0);
        aranges_seg = subseg_new (".debug_aranges", 0);
  
