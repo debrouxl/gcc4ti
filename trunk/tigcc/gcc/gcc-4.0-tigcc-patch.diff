@@ -8058,8 +8058,24 @@ diff -Naur gcc-4.0-20050319.orig/gcc/system.h gcc-4.0-20050319-src/gcc/system.h
  	LANG_HOOKS_MAYBE_BUILD_CLEANUP LANG_HOOKS_UPDATE_DECL_AFTER_SAVING \
 diff -Naur gcc-4.0-20050319.orig/gcc/toplev.c gcc-4.0-20050319-src/gcc/toplev.c
 --- gcc-4.0-20050319.orig/gcc/toplev.c	Wed Mar 16 20:36:20 2005
-+++ gcc-4.0-20050319-src/gcc/toplev.c	Wed Mar 23 00:21:06 2005
-@@ -1937,7 +1937,7 @@
++++ gcc-4.0-20050319-src/gcc/toplev.c	Wed Apr 20 01:57:22 2005
+@@ -438,6 +438,15 @@
+     }
+ 
+   src_pwd = xstrdup (pwd);
++/* (TIGCC 20050420) Eliminate duplicate backslashes. */
++#ifdef __WIN32__
++  if (strstr (src_pwd, "\\\\"))
++    {
++      char *p = (char *)src_pwd;
++      while ((p = strstr (p, "\\\\")))
++        memmove (p, p + 1, strlen (p));
++    }
++#endif
+   return true;
+ }
+ 
+@@ -1937,7 +1946,7 @@
        flag_prefetch_loop_arrays = 0;
      }
  
