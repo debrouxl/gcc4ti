@@ -16,9 +16,11 @@ const
 
 	llffTIOS        = 0;
 	llffTIOSUpgrade = 1;
+	llffGDBCOFF     = 2;
 
-	llfrMain = 0;
-	llfrData = 1;
+	llfrMain          = 0;
+	llfrData          = 1;
+	llfrDebuggingInfo = 2;
 
 	llmtError   = 0;
 	llmtWarning = 1;
