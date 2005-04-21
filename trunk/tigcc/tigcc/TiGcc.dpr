@@ -223,6 +223,7 @@ type
 
 var
 	LinkOutputFiles: array [TCalcDest, TFileRole] of TLinkOutputFile;
+	LinkDebugFile: TLinkOutputFile;
 
 function LinkLibGetOutputFile(var DestFile: TLinkLibDestFile; FileSize, DestCalc, FileRole, FileFormat, FileType: LongInt; Extension: PChar; Executable: WordBool; var EffectiveSize: LongInt): WordBool; cdecl;
 var
@@ -235,6 +236,16 @@ begin
 			EffectiveSize := 2 + FileSize + 1;
 		llffTIOSUpgrade:
 			EffectiveSize := FileSize + SizeOF (TCalcOSFooter);
+		llffGDBCOFF:
+			EffectiveSize := FileSize;
+			with LinkDebugFile do begin
+				if not Assigned (Data) then
+					Data := TMemoryStream.Create;
+				Data.Size := FileSize;
+				DestFile.Data := Data.Memory;
+			end;
+			Result := True;
+			Exit;
 		else
 			Exit;
 	end;
@@ -364,6 +375,13 @@ begin
 				OutputStream.Free;
 			end;
 		end;
+end;
+
+procedure HandleDebugContents(const DestFile: string);
+begin
+	with LinkDebugFile do
+		if Assigned (Data) then
+			Data.SaveToFile (DestFile + '.dbg');
 end;
 
 procedure CreatePackStarter(const DestFile, StarterFileName, FolderName, VarName, PackVar: string; CalcDests: TCalcDests);
@@ -801,6 +819,7 @@ begin
 											LinkOutputFiles[CurCalcDest,frMain].Data := nil;
 											LinkOutputFiles[CurCalcDest,frData].Data := nil;
 										end;
+										LinkDebugFile.Data := nil;
 										try
 											if LinkLibLinkFiles (ObjectFileArray, ArchiveFileArray, LinkLibErrorMessage, LinkLibGetOutputFile, nil, NativeMode, FlashOSMode, FargoMode, DataVarInfo, OptimizeInfo, OmitBSSInit) <> 0 then
 												Fatal;
@@ -809,6 +828,9 @@ begin
 													Include (CalcDests, CurCalcDest);
 													HandleContents (DestFile, FolderName, VarName, DataFolderName, DataVarName, Pack and (CurCalcDest <> cdTI92), PackVarName, CurCalcDest);
 												end;
+											if Assigned (LinkDebugFile.Data) then begin
+												HandleDebugContents (DestFile);
+											end;
 										finally
 											for CurCalcDest := FirstCalcDest to LastCalcDest do begin
 												if Assigned (LinkOutputFiles[CurCalcDest,frMain].Data) then
@@ -818,6 +840,9 @@ begin
 												LinkOutputFiles[CurCalcDest,frMain].Data := nil;
 												LinkOutputFiles[CurCalcDest,frData].Data := nil;
 											end;
+											if Assigned (LinkDebugFile.Data) then
+												LinkDebugFile.Data.Free;
+											LinkDebugFile.Data := nil;
 										end;
 									finally
 										FreePPChar (ArchiveFileArray);
