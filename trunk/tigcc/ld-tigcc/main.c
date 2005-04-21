@@ -18,12 +18,6 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-#ifdef DEBUGGING_INFO_SUPPORT
-#ifdef TARGET_EMBEDDED
-#error Debugging information is not yet supported for link.dll.
-#endif
-#endif
-
 #include "generic.h"
 #include "intrface.h"
 #include "data.h"
@@ -260,10 +254,6 @@ int main (int ArgCount, const char **Args)
 						Program.HaveDebuggingInfo = TRUE;
 					}
 				}
-			}
-			if (Program.HaveDebuggingInfo)
-			{
-				Warning (NULL, "C debugging support is experimental.");
 			}
 #endif
 
