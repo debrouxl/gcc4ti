@@ -63,6 +63,13 @@ static OFFSET VAddrs[MAX_NAMED_SECTION+1];
 
 static COUNT SectionID;
 
+static const char *SectionFullNames[MAX_NAMED_SECTION] =
+                  {".text", ".data", ".bss", ".stab", ".stabstr",
+                   ".debug_abbrev", ".debug_aranges",
+                   ".debug_frame", ".debug_info", ".debug_line",
+                   ".debug_loc", ".debug_macinfo",
+                   ".debug_pubnames", ".debug_str", ".eh_frame"};
+
 // These really ought to be written in LISP rather than C, but...
 static void ApplyIfNonNull(void (*f)(const SECTION *, void *),
                            const SECTION *Section, void *UserData)
@@ -89,12 +96,22 @@ static void CountSectionCOFFSize (const SECTION *Section, void *UserData)
 	const SYMBOL *Symbol;
 	const RELOC *Reloc;
 
-	// The accumulated size should always be at least sizeof(COFF_HEADER).
+	// The accumulated size should always be at least sizeof(COFF_HEADER) + 4.
 	// Everything else means there was an error.
 	if (!*(SIZE *)UserData)
 		return;
 
 	Size += Section->Size;
+
+	// Section symbol
+	{
+		COUNT NameLen = strlen (SectionFullNames[SectionID]);
+		// Symbol table entry
+		Size += sizeof (COFF_SYMBOL);
+		// String table entry
+		if (NameLen > 8)
+			Size += NameLen + 1;
+	}
 
 	for_each (Symbol, Section->Symbols)
 	{
@@ -133,7 +150,8 @@ static void CountSectionCOFFSize (const SECTION *Section, void *UserData)
 // Call this function once to receive necessary error messages.
 static SIZE GetDebuggingInfoFileSize (const PROGRAM *Program)
 {
-	SIZE Size = sizeof(COFF_HEADER);
+	// The "+ 4" is for the size of the string table.
+	SIZE Size = sizeof(COFF_HEADER) + 4;
 
 	MapToAllSections (Program, CountSectionCOFFSize, &Size);
 
@@ -359,13 +377,6 @@ static void PatchRelocOffsetsOut (const SECTION *Section, void *UserData ATTRIBU
 			WriteTI4 (*(TI4 *)(Section->Data + Reloc->Location), 0);
 	}
 }
-
-static const char *SectionFullNames[MAX_NAMED_SECTION] =
-                  {".text", ".data", ".bss", ".stab", ".stabstr",
-                   ".debug_abbrev", ".debug_aranges",
-                   ".debug_frame", ".debug_info", ".debug_line",
-                   ".debug_loc", ".debug_macinfo",
-                   ".debug_pubnames", ".debug_str", ".eh_frame"};
 
 static void WriteSymbolTable (const SECTION *Section, void *UserData)
 {
