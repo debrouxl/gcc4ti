@@ -237,15 +237,17 @@ begin
 		llffTIOSUpgrade:
 			EffectiveSize := FileSize + SizeOF (TCalcOSFooter);
 		llffGDBCOFF:
-			EffectiveSize := FileSize;
-			with LinkDebugFile do begin
-				if not Assigned (Data) then
-					Data := TMemoryStream.Create;
-				Data.Size := FileSize;
-				DestFile.Data := Data.Memory;
-			end;
-			Result := True;
-			Exit;
+      begin
+			  EffectiveSize := FileSize;
+		  	with LinkDebugFile do begin
+	  			if not Assigned (Data) then
+  					Data := TMemoryStream.Create;
+				  Data.Size := FileSize;
+		  		DestFile.Data := Data.Memory;
+			  end;
+	  		Result := True;
+  			Exit;
+      end;
 		else
 			Exit;
 	end;
