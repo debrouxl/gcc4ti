@@ -242,20 +242,17 @@ int main (int ArgCount, const char **Args)
 			// sections of each type.
 			{
 				DebuggingInfoTypes i;
-				for (i = 0; i < DI_LAST; i++)
+				for (i = 1; i < DI_LAST; i++)
 				{
 					Program.DebuggingInfoSection[i] = MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, i + 1);
 					if (Program.DebuggingInfoSection[i])
 					{
 						Program.DebuggingInfoSection[i]->Handled = TRUE;
-						// FIXME: How should we remove unused sections with debugging information in place?
-						//        The linker will probably have to understand the debugging information formats up to some point.
-						Program.DebuggingInfoSection[i]->Essential = TRUE;
 						Program.HaveDebuggingInfo = TRUE;
 					}
 				}
 			}
-#endif
+#endif /* DEBUGGING_INFO_SUPPORT */
 
 #ifdef DATA_VAR_SUPPORT
 			// If we want a separate data variable, merge all data
@@ -272,6 +269,16 @@ int main (int ArgCount, const char **Args)
 					// Reset the Referenced flags so we can do another GC pass
 					// when the imports are done.
 					ResetReferencedFlags (&Program);
+
+#ifdef DEBUGGING_INFO_SUPPORT
+					if (Program.HaveDebuggingInfo)
+					{
+						// Merge all unused sections into a .deleted section.
+						Program.DebuggingInfoSection[0] = MergeAllSections (&Program, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, 1);
+						if (Program.DebuggingInfoSection[0])
+							Program.DebuggingInfoSection[0]->Handled = TRUE;
+					}
+#endif /* DEBUGGING_INFO_SUPPORT */
 					
 					DoSpecialDump (1, "(early-cut)");
 				}
@@ -347,6 +354,19 @@ int main (int ArgCount, const char **Args)
 					// Remove unreferenced sections.
 					RemoveUnusedSections (&Program);
 					
+#ifdef DEBUGGING_INFO_SUPPORT
+					if (Program.HaveDebuggingInfo)
+					{
+						// Merge all unused sections into a .deleted section.
+						// Remove the section from early-cutting if we have one.
+						if (Program.DebuggingInfoSection[0])
+							Program.DebuggingInfoSection[0]->Handled = FALSE;
+						Program.DebuggingInfoSection[0] = MergeAllSections (&Program, Program.DebuggingInfoSection[0], TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, 1);
+						if (Program.DebuggingInfoSection[0])
+							Program.DebuggingInfoSection[0]->Handled = TRUE;
+					}
+#endif /* DEBUGGING_INFO_SUPPORT */
+
 					DoSpecialDump (4, "(cut)");
 				}
 				

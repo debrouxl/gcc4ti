@@ -50,7 +50,7 @@
 #include <string.h>
 
 #define MAX_NAMED_SECTION (3+DI_LAST)
-#define FIRST_SECTION_ID_WITH_ZERO_VADDR 3
+#define FIRST_SECTION_ID_WITH_ZERO_VADDR 4
 
 typedef struct {
 	OFFSET FileOffset;
@@ -64,11 +64,12 @@ static OFFSET VAddrs[MAX_NAMED_SECTION+1];
 static COUNT SectionID;
 
 static const char *SectionFullNames[MAX_NAMED_SECTION] =
-                  {".text", ".data", ".bss", ".stab", ".stabstr",
+                  {".text", ".data", ".bss", ".deleted", ".stab", ".stabstr",
                    ".debug_abbrev", ".debug_aranges",
                    ".debug_frame", ".debug_info", ".debug_line",
                    ".debug_loc", ".debug_macinfo",
-                   ".debug_pubnames", ".debug_str", ".eh_frame"};
+                   ".debug_pubnames", ".debug_ranges", ".debug_str",
+                   ".eh_frame"};
 
 // These really ought to be written in LISP rather than C, but...
 static void ApplyIfNonNull(void (*f)(const SECTION *, void *),
@@ -215,11 +216,12 @@ static void CountSymbolTableOffset (const SECTION *Section, void *UserData)
 static void WriteSectionHeader (const SECTION *Section, void *UserData)
 {
 	static const char SectionNames[MAX_NAMED_SECTION][COFF_SECTION_NAME_LEN] =
-	                  {".text", ".data", ".bss", ".stab", ".stabstr",
-	                   ".debug_a"/*bbrev*/, ".debug_a"/*ranges*/,
+	                  {".text", ".data", ".bss", ".deleted", ".stab",
+	                   ".stabstr", ".debug_a"/*bbrev*/, ".debug_a"/*ranges*/,
 	                   ".debug_f"/*rame*/, ".debug_i"/*nfo*/, ".debug_l"/*ine*/,
 	                   ".debug_l"/*oc*/, ".debug_m"/*acinfo*/,
-	                   ".debug_p"/*ubnames*/, ".debug_s"/*tr*/, ".eh_fram"/*e*/};
+	                   ".debug_p"/*ubnames*/, ".debug_r"/*anges*/,
+	                   ".debug_s"/*tr*/, ".eh_fram"/*e*/};
 	static const I4 SectionFlags[MAX_NAMED_SECTION] =
 	                {COFF_SECTION_TEXT, COFF_SECTION_DATA, COFF_SECTION_BSS, 0,
 	                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};

@@ -52,6 +52,7 @@ typedef enum {PT_NATIVE = 1, PT_NOSTUB = 2, PT_KERNEL = 0, PT_NOSTUB_DLL = 3, PT
 
 // Debugging Information Section Type Enumeration
 // DI_NONE:           Not debugging information (same as FALSE)
+// DI_DELETED:        Deleted section (referenced from debugging info only)
 // DI_STAB:           Stabs symbol table
 // DI_STABSTR:        Stabs string table
 // DI_DEBUG_ABBREV:   DWARF 2 .debug_abbrev section
@@ -62,14 +63,16 @@ typedef enum {PT_NATIVE = 1, PT_NOSTUB = 2, PT_KERNEL = 0, PT_NOSTUB_DLL = 3, PT
 // DI_DEBUG_LOC:      DWARF 2 .debug_loc section
 // DI_DEBUG_MACINFO:  DWARF 2 .debug_macinfo section
 // DI_DEBUG_PUBNAMES: DWARF 2 .debug_pubnames section
+// DI_DEBUG_RANGES:   DWARF 2 .debug_ranges section
 // DI_DEBUG_STR:      DWARF 2 .debug_str section
 // DI_EH_FRAME:       DWARF 2 .eh_frame section (used only for debugging in TIGCC)
 // DI_LAST:           Last debugging information type, for iterating purposes
-typedef enum {DI_NONE = FALSE, DI_STAB = 1, DI_STABSTR = 2, DI_DEBUG_ABBREV = 3,
-              DI_DEBUG_ARANGES = 4, DI_DEBUG_FRAME = 5, DI_DEBUG_INFO = 6,
-              DI_DEBUG_LINE = 7, DI_DEBUG_LOC = 8, DI_DEBUG_MACINFO = 9,
-              DI_DEBUG_PUBNAMES = 10, DI_DEBUG_STR = 11, DI_EH_FRAME = 12,
-              DI_LAST = 12} DebuggingInfoTypes;
+typedef enum {DI_NONE = FALSE, DI_DELETED = 1, DI_STAB = 2, DI_STABSTR = 3,
+              DI_DEBUG_ABBREV = 4, DI_DEBUG_ARANGES = 5, DI_DEBUG_FRAME = 6,
+              DI_DEBUG_INFO = 7, DI_DEBUG_LINE = 8, DI_DEBUG_LOC = 9,
+              DI_DEBUG_MACINFO = 10, DI_DEBUG_PUBNAMES = 11,
+              DI_DEBUG_RANGES = 12, DI_DEBUG_STR = 13, DI_EH_FRAME = 14,
+              DI_LAST = 14} DebuggingInfoTypes;
 
 typedef I4 VERSION;
 

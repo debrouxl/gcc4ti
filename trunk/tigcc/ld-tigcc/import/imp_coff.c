@@ -191,6 +191,8 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 					Section->DebuggingInfoType = DI_DEBUG_MACINFO;
 				else if (!strncmp (SectionName, ".debug_p", 8))
 					Section->DebuggingInfoType = DI_DEBUG_PUBNAMES;
+				else if (!strncmp (SectionName, ".debug_r", 8))
+					Section->DebuggingInfoType = DI_DEBUG_RANGES;
 				else if (!strncmp (SectionName, ".debug_s", 8))
 					Section->DebuggingInfoType = DI_DEBUG_STR;
 				else if (!strncmp (SectionName, ".eh_fram", 8))

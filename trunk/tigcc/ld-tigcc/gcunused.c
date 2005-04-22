@@ -37,8 +37,9 @@ static void MarkSection (SECTION *Section)
 {
 	RELOC *Reloc;
 
-	// If the section is already marked, return immediately.
-	if (Section->Referenced)
+	// If the section is already marked, or if it is a debugging information
+	// section, return immediately.
+	if (Section->Referenced || Section->DebuggingInfoType)
 		return;
 
 	// Mark the section right now to avoid infinite recursion.
@@ -89,8 +90,14 @@ static void RemoveSectionIfUnused (SECTION *Section)
 NextLibCall:;
 	}
 
-	// Now free the section.
-	FreeSection (Section);
+	// Now free the section, or mark it as deleted if we need to keep it for
+	// debugging information purposes.
+#ifdef DEBUGGING_INFO_SUPPORT
+	if (Program->HaveDebuggingInfo)
+		Section->DebuggingInfoType = DI_DELETED;
+	else
+#endif /* DEBUGGING_INFO_SUPPORT */
+		FreeSection (Section);
 }
 
 // Remove all unused sections.
@@ -100,6 +107,10 @@ void RemoveUnusedSections (PROGRAM *Program)
 	
 	for_each (Section, Program->Sections)
 	{
+		// Ignore debugging information sections.
+		if (Section->DebuggingInfoType)
+			continue;
+
 		// If the section is an essential section, mark it (and all sections it
 		// references) as referenced.
 		if (Section->Essential)
@@ -113,6 +124,10 @@ void RemoveUnusedSections (PROGRAM *Program)
 		// has been freed.
 		NextSection = GetNext (Section);
 		
+		// Ignore debugging information sections.
+		if (Section->DebuggingInfoType)
+			continue;
+
 		// Remove the section if it is unused.
 		RemoveSectionIfUnused (Section);
 	}
@@ -134,6 +149,10 @@ void MarkMainSection (PROGRAM *Program)
 	{
 		SYMBOL *Symbol;
 			
+		// Ignore debugging information sections.
+		if (Section->DebuggingInfoType)
+			continue;
+
 		// For each symbol...
 		for_each (Symbol, Section->Symbols)
 		{
@@ -151,7 +170,13 @@ void ResetReferencedFlags (PROGRAM *Program)
 	SECTION *Section;
 
 	for_each (Section, Program->Sections)
+	{
+		// Ignore debugging information sections.
+		if (Section->DebuggingInfoType)
+			continue;
+
 		Section->Referenced = FALSE;
+	}
 }
 
 #endif /* DATA_VAR_SUPPORT */
