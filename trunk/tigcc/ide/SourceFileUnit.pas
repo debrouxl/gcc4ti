@@ -1512,7 +1512,7 @@ begin
 			for I := 1 to Length (FileName) do begin
 				C := FileName [I];
 				if (C = '\') then
-					EscapedRealFN := EscapedRealFN + '\\';
+					EscapedRealFN := EscapedRealFN + '\\'
 				else
 					EscapedRealFN := EscapedRealFN + C;
 			end;
@@ -1530,6 +1530,7 @@ begin
 					Write (PChar(#13#10)^, 2);
 			finally
 				Free;
+			end;
 		end else
 {$IFDEF CanSplit}
 		if SplitFiles then begin

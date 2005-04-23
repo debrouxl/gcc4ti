@@ -569,7 +569,6 @@ begin
 			EffectiveSize := 2 + FileSize + 1;
 		llffTIOSUpgrade:
 			EffectiveSize := FileSize + SizeOf (TCalcOSFooter);
-			EffectiveSize := FileSize + SizeOF (TCalcOSFooter);
 		llffGDBCOFF:
 			begin
 				EffectiveSize := FileSize;
