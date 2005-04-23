@@ -138,7 +138,6 @@ type
 		procedure TestChange; override;
 		procedure AskForReload; virtual;
 		procedure UpdateEditor; virtual;
-		function GetLineContents(StartLine, EndLine: Integer): string;
 		function GetCompiledLineStart(Line: Integer): Integer; virtual;
 		property TextEditor: TMemoComponent read GetTextEditor;
 		property Content: string read GetContent write SetContent;
@@ -199,9 +198,6 @@ type
 	end;
 
 	TCSourceFile = class(TSourceTextSourceFile)
-	private
-		FSFileChangedLines: TIntegerList;
-		FSFileLineChanges: TIntegerList;
 	protected
 		CurErrFunction: string;
 		InAssemblingState: Boolean;
@@ -209,9 +205,6 @@ type
 		class function GetCompilable: Boolean; override;
 		procedure SetModified(const Value: Boolean); override;
 		function GetContentType: TSourceFileType; override;
-		procedure SFileLineChange(StartLine, Change: Integer);
-		procedure SFileMapLine(var Line: Integer);
-		procedure SFileClear;
 		procedure ProcessErrorLine(Line: string); override;
 		procedure ProcessSFile(const SourceFile, DestFile: string);
 	public
@@ -893,17 +886,6 @@ end;
 function TTextSourceFile.GetEditor: TWinControl;
 begin
 	Result := TextEditor;
-end;
-
-function TTextSourceFile.GetLineContents(StartLine, EndLine: Integer): string;
-var
-	Start: Integer;
-begin
-	if Assigned (TextEditor) then begin
-		Start := GetCompiledLineStart (StartLine);
-		Result := Copy (TextEditor.Text, Start, GetCompiledLineStart (EndLine + 1) - Start);
-	end else
-		Result := '';
 end;
 
 class function TTextSourceFile.GetPrintable: Boolean;
@@ -1727,7 +1709,7 @@ begin
 		if AssumeUndefined then
 			Switches := Switches + ' -Werror-implicit-function-declaration';
 		if DebugInfo then
-			Switches := Switches + ' -gcoff -mcoff-abslines';
+			Switches := Switches + ' -gdwarf-2 -g3 -fasynchronous-unwind-tables';
 		if ProjectTarget = ptFargo then
 			Switches := Switches + ' -DFARGO'
 		else if ProjectTarget = ptFlashOS then
@@ -1761,6 +1743,8 @@ begin
 				Switches := Switches + ' --all-relocs';
 			if OptimizeReturns or (ProjectTarget = ptArchive) then
 				Switches := Switches + ' --keep-locals';
+			if DebugInfo then
+				Switches := Switches + ' --gdwarf2';
 			try
 				MainConsole.StartProcess (WithBackslash (TIGCCFolder) + AsLocation + 'As.exe', '-I ' + Folder + ' ' + Switches + ' "' + Folder + 'tempprog.s" -o ' + Temp + 'tempprog.o', WithoutBackslash (WithBackslash (TIGCCFolder) + AsLocation));
 				WaitForMainConsole ('Compilation');
@@ -1776,7 +1760,6 @@ begin
 			end;
 			ProcessErrors (MainConsole.LastErrText);
 		end;
-		SFileClear;
 		CompUpdate;
 		try
 			if FileExists (Folder + 'TEMPPROG.C') then
@@ -1790,12 +1773,6 @@ begin
 		ShowDefaultMessageBox ('Cannot find compiler.', 'Error', mtProgramError);
 	if OperationSuccessful and not OperationCancelled then
 		Invalidated := False;
-end;
-
-destructor TCSourceFile.Destroy;
-begin
-	SFileClear;
-	inherited;
 end;
 
 class function TCSourceFile.GetClassFilter: string;
@@ -1914,8 +1891,6 @@ begin
 					try
 						S := Copy (Line, 1, Pos (':', Line) - 1);
 						P := StrToInt (S);
-						if InAssemblingState then
-							SFileMapLine (P);
 						Delete (Line, 1, Length (S) + 1);
 						if (Length (Line) > 0) and (Line [1] in ['0'..'9']) then try
 							S := Copy (Line, 1, Pos (':', Line) - 1);
@@ -1988,8 +1963,6 @@ begin
 			OperationSuccessful := False;
 		end;
 		SaveToFile (SourceFile);
-		if DebugInfo then
-			ParseDebugSFile (L, SFileLineChange, nil, GetLineContents);
 		SaveToFile (DestFile);
 	finally
 		Free;
@@ -2017,36 +1990,6 @@ begin
 			Invalidate;
 		Modifying := False;
 	end;
-end;
-
-procedure TCSourceFile.SFileClear;
-begin
-	if Assigned (FSFileChangedLines) then
-		FSFileChangedLines.Free;
-	if Assigned (FSFileLineChanges) then
-		FSFileLineChanges.Free;
-	FSFileChangedLines := nil;
-	FSFileLineChanges := nil;
-end;
-
-procedure TCSourceFile.SFileLineChange(StartLine, Change: Integer);
-begin
-	if not Assigned (FSFileChangedLines) then
-		FSFileChangedLines := TIntegerList.Create;
-	if not Assigned (FSFileLineChanges) then
-		FSFileLineChanges := TIntegerList.Create;
-	FSFileChangedLines.Add (StartLine);
-	FSFileLineChanges.Add (Change);
-end;
-
-procedure TCSourceFile.SFileMapLine(var Line: Integer);
-var
-	I: Integer;
-begin
-	if Assigned (FSFileChangedLines) and Assigned (FSFileLineChanges) then
-		for I := 0 to FSFileChangedLines.Count - 1 do
-			if Line > FSFileChangedLines.Items [I] then
-				Inc (Line, FSFileLineChanges.Items [I]);
 end;
 
 procedure TCSourceFile.UpdateEditor;

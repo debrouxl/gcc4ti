@@ -2286,7 +2286,7 @@ begin
 			try
 				if FileExists (Temp + 'TEMPPROG.PCK') then
 					DeleteFile (Temp + 'TEMPPROG.PCK');
-				if OperationSuccessful and (not OperationCancelled) and DeleteAssemblyFiles and (not DebugInfo) then
+				if OperationSuccessful and (not OperationCancelled) and DeleteAssemblyFiles then
 					with SourceFiles do
 						for I := 0 to Count - 1 do
 							with TSourceFile (Items [I]) do

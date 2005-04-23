@@ -21,9 +21,6 @@ type
 
 	PBoolean = ^Boolean;
 
-	TLineChangeEvent = procedure(StartLine, Change: Integer) of object;
-	TLineContentsEvent = function(StartLine, EndLine: Integer): string of object;
-
 type
 	TCalcInt1 = packed record
 		Int: Byte;
@@ -123,10 +120,7 @@ const
 	MaxCalcAllocBlock = $FFF0;
 
 procedure ParseSFile(Contents: TStringList);
-procedure ParseDebugSFile(Contents: TStringList; OnLineChange: TLineChangeEvent; LineContents: TStringList; OnGetLineContents: TLineContentsEvent);
 procedure ParsePStarter(const InputFile: string; const OutputFile: string; const PackVar: string);
-
-procedure ParseDebugSFileDisk(Contents: TStringList; const SourceFileName: string);
 
 function GetCalcVarSize(ContentLength: LongWord; const Extension: string = ''): LongWord;
 function GetTransferFileSize(ContentLength: LongWord; const Extension: string = ''; OutputBin: Boolean = False): LongWord;
@@ -252,84 +246,6 @@ begin
 	end;
 end;
 
-procedure ParseDebugSFile(Contents: TStringList; OnLineChange: TLineChangeEvent; LineContents: TStringList; OnGetLineContents: TLineContentsEvent);
-function GetLineContents(StartLine, EndLine: Integer): string;
-var
-	I: Integer;
-begin
-	if Assigned (OnGetLineContents) then
-		Result := OnGetLineContents (StartLine, EndLine)
-	else if Assigned (LineContents) then begin
-		Result := '';
-		for I := StartLine - 1 to EndLine - 1 do
-			if (I >= 0) and (I < LineContents.Count) then
-				Insert (LineContents.Strings [I] + #13#10, Result, Length (Result) + 1);
-		Delete (Result, Length (Result) - 1, 2);
-	end else
-		Result := '';
-end;
-var
-	I,
-	P,
-	LastLine,
-	RecontinueLine,
-	LastDebugLine,
-	CurDebugLine: Integer;
-	S: string;
-begin
-	LastLine := -1;
-	LastDebugLine := -1;
-	RecontinueLine := -1;
-	I := 0;
-	with Contents do
-		while I <= Count do begin
-			if (I < Count) and (Copy (Strings [I], 1, Length (#9'.def'#9)) = #9'.def'#9) then begin
-				Delete (I);
-				if Assigned (OnLineChange) then
-					OnLineChange (I, -1);
-				Dec (I);
-			end else if (I >= Count) or (Copy (Strings [I], 1, Length (#9'.ln'#9)) = #9'.ln'#9) then begin
-				if I < Count then begin
-					S := Strings [I];
-					System.Delete (S, 1, Length (#9'.ln'#9));
-					try
-						CurDebugLine := StrToInt (S);
-					except
-						CurDebugLine := LastDebugLine;
-					end;
-					System.Insert (LineIndicator, S, 1);
-					System.Insert (#9, S, Length (S) + 1);
-					Strings [I] := S;
-				end else
-					CurDebugLine := LastDebugLine + 1;
-				if (LastLine >= 0) and (CurDebugLine >= 0) then begin
-					S := Strings [LastLine];
-					if CurDebugLine < LastDebugLine then begin
-						System.Insert (StringReplace (Trim (GetLineContents (LastDebugLine, LastDebugLine)), #9, '', [rfReplaceAll]) + ' ...', S, Length (S) + 1);
-						RecontinueLine := LastDebugLine;
-					end else begin
-						if (RecontinueLine >= 0) and (CurDebugLine >= RecontinueLine) then begin
-							System.Insert (StringReplace (Trim (GetLineContents (LastDebugLine, LastDebugLine)) + ' ...', #9, '', [rfReplaceAll]), S, Length (S) + 1);
-							RecontinueLine := -1;
-						end else
-							System.Insert (StringReplace (Trim (GetLineContents (LastDebugLine, CurDebugLine - 1)), #9, '', [rfReplaceAll]), S, Length (S) + 1);
-					end;
-					repeat
-						P := Pos (#10, S);
-						if P <= 0 then
-							P := Pos (#13, S);
-						if P > 0 then
-							S [P] := ' ';
-					until P <= 0;
-					Strings [LastLine] := S;
-				end;
-				LastLine := I;
-				LastDebugLine := CurDebugLine;
-			end;
-			Inc (I);
-		end;
-end;
-
 procedure ParsePStarter(const InputFile: string; const OutputFile: string; const PackVar: string);
 const
 	TempProg = 'TEMPPROG';
@@ -358,19 +274,6 @@ begin
 		ObjectFile.SaveToFile (OutputFile);
 	finally
 		ObjectFile.Free;
-	end;
-end;
-
-procedure ParseDebugSFileDisk(Contents: TStringList; const SourceFileName: string);
-var
-	L: TStringList;
-begin
-	L := TStringList.Create;
-	with L do try
-		LoadFromFile (SourceFileName);
-		ParseDebugSFile (Contents, nil, L, nil);
-	finally
-		Free;
 	end;
 end;
 

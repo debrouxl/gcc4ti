@@ -718,8 +718,10 @@ begin
 			if (GCCFiles.Count > 0) or (Pos ('--', GCCLine) > 0) then begin
 				if (Pos (' -S', GCCLine) <= 0) and (Pos (' -E', GCCLine) <= 0) then
 					Insert (' -S', GCCLine, Length (GCCLine) + 1);
-				if DebugInfo then
-					Insert (' -gcoff -mcoff-abslines', GCCLine, Length (GCCLine) + 1);
+				if DebugInfo then begin
+					Insert (' -gdwarf-2 -g3 -fasynchronous-unwind-tables', GCCLine, Length (GCCLine) + 1);
+					Insert (' --gdwarf2', AsLine, Length (AsLine) + 1);
+				end;
 				if Length (DataVar) > 0 then
 					Insert (' -mno-merge-sections', GCCLine, Length (GCCLine) + 1);
 				if FlashOSMode then
@@ -738,15 +740,12 @@ begin
 					if FileExists (T) then begin
 						if GCCFile then begin
 							if Assemble then begin
-								if not DebugInfo then
-									DelFiles.Add (T);
+								DelFiles.Add (T);
 							end;
 							L := TStringList.Create;
 							with L do try
 								LoadFromFile (T);
 								ParseSFile (L);
-								if DebugInfo then
-									ParseDebugSFileDisk (L, S);
 								SaveToFile (T);
 							finally
 								Free;
