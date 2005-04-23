@@ -2003,11 +2003,11 @@ var MainFiles: array [TCalcDest] of string;
 				CompUpdate;
 			end;
 	end;
-	procedure HandleDebugContents(const DestFile: string);
+	procedure HandleDebugContents(const ProjectFile: string);
 	begin
 		with LinkDebugFile do
 			if Assigned (Data) then
-				Data.SaveToFile (DestFile + '.dbg');
+				Data.SaveToFile (ChangeFileExt (ProjectFile, '.dbg'));
 	end;
 	procedure CreatePackStarter(const ProjectFile, StarterFileName, FolderName, VarName, PackVar: string; CalcDests: TCalcDests);
 	var
@@ -2214,7 +2214,7 @@ begin
 									end;
 							if Assigned (LinkDebugFile.Data) then begin
 								if OperationSuccessful and (not OperationCancelled) then begin
-									HandleDebugContents (DestFile);
+									HandleDebugContents (ProjectFile);
 								end;
 							end;
 						end;
