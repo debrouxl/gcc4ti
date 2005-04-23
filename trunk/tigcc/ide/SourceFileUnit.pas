@@ -208,7 +208,6 @@ type
 		procedure ProcessErrorLine(Line: string); override;
 		procedure ProcessSFile(const SourceFile, DestFile: string);
 	public
-		destructor Destroy; override;
 		class function GetClassFilter: string; override;
 		class function GetClassItemName: string; override;
 		class function GetClassTreeIndex: Integer; override;
@@ -1505,7 +1504,7 @@ var
 begin
 	try
 {$IFDEF CanSplit}
-		if SplitFiles then begin
+		if SplitFiles and not DebugInfo then begin
 			case ContentType of
 				ftCFile: begin
 					if not Assigned (LineStartList) then
@@ -2029,6 +2028,8 @@ begin
 			Switches := Switches + ' --all-relocs';
 		if OptimizeReturns or (ProjectTarget = ptArchive) then
 			Switches := Switches + ' --keep-locals';
+		if DebugInfo then
+			Switches := Switches + ' --gdwarf2';
 		MainConsole.Title := 'Assembler';
 		try
 			MainConsole.StartProcess (WithBackslash (TIGCCFolder) + AsLocation + 'As.exe', '-I ' + Folder + ' ' + Switches + ' "' + Folder + 'tempprog.s" -o ' + Temp + 'tempprog.o', WithoutBackslash (WithBackslash (TIGCCFolder) + AsLocation));
