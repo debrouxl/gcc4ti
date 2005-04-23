@@ -127,7 +127,7 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 			// Section is empty.
 			// Check if the number of relocs is empty as well. If not, there
 			// is probably an error in the object file.
-			if (!(IsZeroI4 (CurCOFFSection->RelocCount)))
+			if (!(IsZeroI2 (CurCOFFSection->RelocCount)))
 				Warning (FileName, "Empty section %ld has relocs.", (long) CurCOFFSectionNumber);
 		}
 		else
