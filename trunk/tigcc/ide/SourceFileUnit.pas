@@ -1462,8 +1462,8 @@ type
 	TCharMode = (cmNone, cmNormalText, cmNumber, cmMultiSymbol, cmString, cmChar, cmComment, cmUnchangeableLine, cmExtUnchangeableLine, cmExtUnchangeableLineString, cmTrigraph);
 var
 	S: string;
-{$IFDEF CanSplit}
 	C: Char;
+{$IFDEF CanSplit}
 	CurPos: Integer;
 	CurMode: TCharMode;
 	AtLineStart: Boolean;
@@ -1497,14 +1497,42 @@ begin
 	end;
 end;
 var
-	I: Integer;
 	B,
 	NoInsert: Boolean;
 {$ENDIF}
+var
+	I: Integer;
+	EscapedRealFN: string;
 begin
 	try
+		if DebugInfo then begin
+			S := Content;
+			CreatePathFor (FN);
+			EscapedRealFN := '';
+			for I := 1 to Length (FileName) do begin
+				C := FileName [I];
+				if (C = '\') then
+					EscapedRealFN := EscapedRealFN + '\\';
+				else
+					EscapedRealFN := EscapedRealFN + C;
+			end;
+			with TFileStream.Create (FN, fmCreate or fmShareExclusive) do try
+				case ContentType of
+					ftCFile:
+						S := '#line 1 "' + EscapedRealFN + '"' + #13#10 + S;
+					ftQuillFile:
+						S := '#line 1 "' + EscapedRealFN + '"' + #13#10 + S;
+					ftGNUAsmFile:
+						S := '.ln 1 "' + EscapedRealFN + '"' + #13#10 + S;
+				end;
+				Write (PChar(S)^, Length (S));
+				if ContentType = ftCFile then
+					Write (PChar(#13#10)^, 2);
+			finally
+				Free;
+		end else
 {$IFDEF CanSplit}
-		if SplitFiles and not DebugInfo then begin
+		if SplitFiles then begin
 			case ContentType of
 				ftCFile: begin
 					if not Assigned (LineStartList) then
