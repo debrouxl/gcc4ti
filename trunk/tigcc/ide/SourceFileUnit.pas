@@ -1523,7 +1523,7 @@ begin
 					ftQuillFile:
 						S := '#line 1 "' + EscapedRealFN + '"' + #13#10 + S;
 					ftGNUAsmFile:
-						S := '.ln 1 "' + EscapedRealFN + '"' + #13#10 + S;
+						S := '.appfile "' + EscapedRealFN + '"; .appline 1' + #13#10 + S;
 				end;
 				Write (PChar(S)^, Length (S));
 				if ContentType = ftCFile then
