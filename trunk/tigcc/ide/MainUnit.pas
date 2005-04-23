@@ -519,6 +519,7 @@ var
 	ProcID: Cardinal;
 	SendWin: HWnd;
 	LinkOutputFiles: array [TCalcDest, TFileRole] of TLinkOutputFile;
+	LinkDebugFile: TLinkOutputFile;
 
 function EnumWindowsFunc(Win: HWnd; Param: Integer): Bool; stdcall;
 var
@@ -568,6 +569,19 @@ begin
 			EffectiveSize := 2 + FileSize + 1;
 		llffTIOSUpgrade:
 			EffectiveSize := FileSize + SizeOf (TCalcOSFooter);
+			EffectiveSize := FileSize + SizeOF (TCalcOSFooter);
+		llffGDBCOFF:
+			begin
+				EffectiveSize := FileSize;
+			  	with LinkDebugFile do begin
+		  			if not Assigned (Data) then
+	  					Data := TMemoryStream.Create;
+					  Data.Size := FileSize;
+			  		DestFile.Data := Data.Memory;
+				  end;
+		  		Result := True;
+	  			Exit;
+			end;
 		else
 			Exit;
 	end;
@@ -1990,6 +2004,12 @@ var MainFiles: array [TCalcDest] of string;
 				CompUpdate;
 			end;
 	end;
+	procedure HandleDebugContents(const DestFile: string);
+	begin
+		with LinkDebugFile do
+			if Assigned (Data) then
+				Data.SaveToFile (DestFile + '.dbg');
+	end;
 	procedure CreatePackStarter(const ProjectFile, StarterFileName, FolderName, VarName, PackVar: string; CalcDests: TCalcDests);
 	var
 		CurCalcDest: TCalcDest;
@@ -2159,6 +2179,7 @@ begin
 						LinkOutputFiles[CurCalcDest,frMain].Data := nil;
 						LinkOutputFiles[CurCalcDest,frData].Data := nil;
 					end;
+					LinkDebugFile.Data := nil;
 					try
 						FillChar (DataVarInfo, SizeOf (DataVarInfo), 0);
 						FillChar (OptimizeInfo, SizeOf (OptimizeInfo), 0);
@@ -2192,6 +2213,11 @@ begin
 										Include (CalcDests, CurCalcDest);
 										HandleContents (ProjectFile, FolderName, VarName, DataFolderName, DataVarName, Pack and (ssPack in SpecialSupport) and (CurCalcDest <> cdTI92), PackVar, CurCalcDest);
 									end;
+							if Assigned (LinkDebugFile.Data) then begin
+								if OperationSuccessful and (not OperationCancelled) then begin
+									HandleDebugContents (DestFile);
+								end;
+							end;
 						end;
 					finally
 						for CurCalcDest := FirstCalcDest to LastCalcDest do begin
@@ -2201,6 +2227,9 @@ begin
 								LinkOutputFiles[CurCalcDest,frData].Data.Free;
 							LinkOutputFiles[CurCalcDest,frMain].Data := nil;
 							LinkOutputFiles[CurCalcDest,frData].Data := nil;
+							if Assigned (LinkDebugFile.Data) then
+								LinkDebugFile.Data.Free;
+							LinkDebugFile.Data := nil;
 						end;
 					end;
 				end;
