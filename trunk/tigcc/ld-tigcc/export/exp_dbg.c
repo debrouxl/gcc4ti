@@ -223,8 +223,8 @@ static void WriteSectionHeader (const SECTION *Section, void *UserData)
 	                   ".debug_p"/*ubnames*/, ".debug_r"/*anges*/,
 	                   ".debug_s"/*tr*/, ".eh_fram"/*e*/};
 	static const I4 SectionFlags[MAX_NAMED_SECTION] =
-	                {COFF_SECTION_TEXT, COFF_SECTION_DATA, COFF_SECTION_BSS, 0,
-	                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	                {COFF_SECTION_TEXT, COFF_SECTION_DATA, COFF_SECTION_BSS,
+	                 COFF_SECTION_TEXT, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	SIZE Size = Section->Size;
 	const RELOC *Reloc;
 	COUNT RelocCount = 0;
