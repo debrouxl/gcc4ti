@@ -4788,7 +4788,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/dwarf2.h gcc-4.0-20050319-src/gcc/dwarf2.h
      /* UPC extension.  */
 diff -Naur gcc-4.0-20050319.orig/gcc/dwarf2out.c gcc-4.0-20050319-src/gcc/dwarf2out.c
 --- gcc-4.0-20050319.orig/gcc/dwarf2out.c	Fri Mar  4 15:28:42 2005
-+++ gcc-4.0-20050319-src/gcc/dwarf2out.c	Sat Apr  9 03:41:14 2005
++++ gcc-4.0-20050319-src/gcc/dwarf2out.c	Sun Apr 24 03:34:26 2005
 @@ -3993,7 +3993,7 @@
  static void decls_for_scope (tree, dw_die_ref, int);
  static int is_redundant_typedef (tree);
@@ -4966,6 +4966,31 @@ diff -Naur gcc-4.0-20050319.orig/gcc/dwarf2out.c gcc-4.0-20050319-src/gcc/dwarf2
  }
  
  /* Add Ada "use" clause information for SGI Workshop debugger.  */
+@@ -13158,7 +13192,10 @@
+   if (debug_info_level >= DINFO_LEVEL_NORMAL
+       && line != 0)
+     {
+-      function_section (current_function_decl);
++      /* (TIGCC 20050424) We also get called for top-level ASM with no
++                          current_function_decl, so don't crash in that case. */
++      if (current_function_decl)
++        function_section (current_function_decl);
+ 
+       /* If requested, emit something human-readable.  */
+       if (flag_debug_asm)
+@@ -13178,10 +13215,10 @@
+ 	  line_info_table_in_use++;
+ 
+ 	  /* Indicate that multiple line number tables exist.  */
+-	  if (DECL_SECTION_NAME (current_function_decl))
++	  if (current_function_decl && DECL_SECTION_NAME (current_function_decl))
+ 	    separate_line_info_table_in_use++;
+ 	}
+-      else if (DECL_SECTION_NAME (current_function_decl))
++      else if (current_function_decl && DECL_SECTION_NAME (current_function_decl))
+ 	{
+ 	  dw_separate_line_info_ref line_info;
+ 	  targetm.asm_out.internal_label (asm_out_file, SEPARATE_LINE_CODE_LABEL,
 diff -Naur gcc-4.0-20050319.orig/gcc/emit-rtl.c gcc-4.0-20050319-src/gcc/emit-rtl.c
 --- gcc-4.0-20050319.orig/gcc/emit-rtl.c	Fri Feb 18 06:58:34 2005
 +++ gcc-4.0-20050319-src/gcc/emit-rtl.c	Wed Mar 23 00:21:02 2005
@@ -8058,7 +8083,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/system.h gcc-4.0-20050319-src/gcc/system.h
  	LANG_HOOKS_MAYBE_BUILD_CLEANUP LANG_HOOKS_UPDATE_DECL_AFTER_SAVING \
 diff -Naur gcc-4.0-20050319.orig/gcc/toplev.c gcc-4.0-20050319-src/gcc/toplev.c
 --- gcc-4.0-20050319.orig/gcc/toplev.c	Wed Mar 16 20:36:20 2005
-+++ gcc-4.0-20050319-src/gcc/toplev.c	Wed Apr 20 01:57:22 2005
++++ gcc-4.0-20050319-src/gcc/toplev.c	Fri Apr 22 19:52:40 2005
 @@ -438,6 +438,15 @@
      }
  
@@ -8263,7 +8288,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/tree.h gcc-4.0-20050319-src/gcc/tree.h
  extern unsigned int expr_align (tree);
 diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
 --- gcc-4.0-20050319.orig/gcc/varasm.c	Fri Mar 18 18:15:02 2005
-+++ gcc-4.0-20050319-src/gcc/varasm.c	Wed Mar 23 00:21:06 2005
++++ gcc-4.0-20050319-src/gcc/varasm.c	Sun Apr 24 03:32:24 2005
 @@ -202,6 +202,46 @@
  EXTRA_SECTION_FUNCTIONS
  #endif
@@ -8380,7 +8405,33 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
  
    readonly_data_section ();
  }
-@@ -1445,7 +1526,15 @@
+@@ -1020,12 +1101,25 @@
+ void
+ assemble_asm (tree string)
+ {
++  /* (TIGCC 20050424) Emit proper .loc directives for top-level asm statements,
++     so GNU as won't try to make up its own and cause conflicts. */
++  if (debug_hooks == &dwarf2_debug_hooks)
++    (*debug_hooks->source_line) (input_location.line, input_location.file);
++
++  /* (TIGCC 20050424) Now switch to the text section, so the asm won't end up in
++                      some unknown section. */
++  text_section ();
++
+   app_enable ();
+ 
+   if (TREE_CODE (string) == ADDR_EXPR)
+     string = TREE_OPERAND (string, 0);
+ 
+   fprintf (asm_out_file, "\t%s\n", TREE_STRING_POINTER (string));
++
++  /* (TIGCC 20050424) And now forget the section we've set. There's no telling
++                      what section the asm switched to. */
++  in_section = no_section;
+ }
+ 
+ /* Record an element in the table of global destructors.  SYMBOL is
+@@ -1445,7 +1539,15 @@
  
    if (destination != asm_dest_common)
      {
@@ -8397,7 +8448,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
        /* Custom sections don't belong here.  */
        if (DECL_SECTION_NAME (decl))
          return false;
-@@ -1696,7 +1785,24 @@
+@@ -1696,7 +1798,24 @@
      }
  
    /* Switch to the appropriate section.  */
@@ -8423,7 +8474,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
    variable_section (decl, reloc);
  
    /* dbxout.c needs to know this.  */
-@@ -2140,7 +2246,16 @@
+@@ -2140,7 +2259,16 @@
  void
  assemble_real (REAL_VALUE_TYPE d, enum machine_mode mode, unsigned int align)
  {
@@ -8441,7 +8492,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
    int i;
    int bitsize, nelts, nunits, units_per;
  
-@@ -2175,6 +2290,7 @@
+@@ -2175,6 +2303,7 @@
        assemble_integer (GEN_INT (data[i]), MIN (nunits, units_per), align, 1);
        nunits -= units_per;
      }
@@ -8449,7 +8500,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
  }
  
  /* Given an expression EXP with a constant value,
-@@ -3147,7 +3263,7 @@
+@@ -3147,7 +3276,7 @@
  /* Worker function for output_constant_pool.  Emit POOL.  */
  
  static void
@@ -8458,7 +8509,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
  {
    rtx x, tmp;
  
-@@ -3190,8 +3306,19 @@
+@@ -3190,8 +3319,19 @@
      }
  
    /* First switch to correct section.  */
@@ -8479,7 +8530,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
  #ifdef ASM_OUTPUT_SPECIAL_POOL_ENTRY
    ASM_OUTPUT_SPECIAL_POOL_ENTRY (asm_out_file, x, desc->mode,
  				 desc->align, desc->labelno, done);
-@@ -3306,7 +3433,7 @@
+@@ -3306,7 +3446,7 @@
  /* Write all the constants in the constant pool.  */
  
  void
@@ -8488,7 +8539,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
  		      tree fndecl ATTRIBUTE_UNUSED)
  {
    struct rtx_constant_pool *pool = cfun->varasm->pool;
-@@ -3322,7 +3449,7 @@
+@@ -3322,7 +3462,7 @@
  #endif
  
    for (desc = pool->first; desc ; desc = desc->next)
@@ -8497,7 +8548,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
  
  #ifdef ASM_OUTPUT_POOL_EPILOGUE
    ASM_OUTPUT_POOL_EPILOGUE (asm_out_file, fnname, fndecl, pool->offset);
-@@ -3366,10 +3493,18 @@
+@@ -3366,10 +3506,18 @@
      case MINUS_EXPR:
        reloc = compute_reloc_for_constant (TREE_OPERAND (exp, 0));
        reloc2 = compute_reloc_for_constant (TREE_OPERAND (exp, 1));
@@ -8516,7 +8567,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
  	reloc |= reloc2;
        break;
  
-@@ -4741,6 +4876,31 @@
+@@ -4741,6 +4889,31 @@
  	  || strcmp (name, ".preinit_array") == 0))
      flags |= SECTION_NOTYPE;
  
@@ -8548,7 +8599,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
    return flags;
  }
  
-@@ -4862,18 +5022,51 @@
+@@ -4862,18 +5035,51 @@
  {
    bool readonly = false;
  
@@ -8606,7 +8657,7 @@ diff -Naur gcc-4.0-20050319.orig/gcc/varasm.c gcc-4.0-20050319-src/gcc/varasm.c
      }
    else if (TREE_CODE (decl) == STRING_CST)
      readonly = true;
-@@ -4884,44 +5077,11 @@
+@@ -4884,44 +5090,11 @@
      readonly_data_section ();
    else
      data_section ();
