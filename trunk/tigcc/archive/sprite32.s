@@ -2,6 +2,7 @@
 #NO_APP
 	.text
 tigcc_compiled.:
+	.text
 #APP
 	.set _A_LINE,0xA000
 #NO_APP
@@ -9,69 +10,67 @@ tigcc_compiled.:
 	.even
 	.globl	Sprite32
 Sprite32:
-	movm.l #0x1e20,-(%sp)
-	move.w %d2,%d5
-	move.l %a0,%a2
-	move.w %d3,%d6
+	movm.l #0x1f3e,-(%sp)
+	move.w %d2,%a6
+	move.l %a0,%a4
+	move.w %d3,%d7
 	muls.w #30,%d1
 	lea (%a1,%d1.w),%a0
 	move.w %d0,%d1
 	asr.w #3,%d1
 	and.l #65534,%d1
 	add.l %d1,%a0
-	move.w %d0,%d4
-	and.w #15,%d4
-	moveq.l #32,%d0
-	sub.w %d4,%d0
-	move.w %d0,%a1
+	move.w %d0,%d6
+	and.w #15,%d6
+	moveq #32,%d0
+	sub.w %d6,%d0
+	move.w %d0,%a5
+	lea (4,%a0),%a1
+	clr.w %d0
 	jbra .L2
-	.even
-.L10:
-	move.l (%a2)+,%d1
-	cmp.w #2,%d6
-	jbne .L6
+.L3:
+	move.l (%a4)+,%d1
+	moveq #0,%d3
+	move.w %d6,%d3
+	move.l (%a0),%d2
+	moveq #0,%d4
+	move.w %a5,%d4
+	lea (30,%a0),%a2
+	move.w %d0,%d5
+	addq.w #1,%d5
+	lea (30,%a1),%a3
+	cmp.w #2,%d7
+	jbne .L4
 	not.l %d1
-	moveq.l #15,%d0
-	and.l %d4,%d0
-	move.l %d1,%d2
-	lsr.l %d0,%d2
-	move.l %d2,%d0
+	move.l %d1,%d0
+	lsr.l %d3,%d0
 	not.l %d0
-	and.l %d0,(%a0)
-	clr.l %d0
-	move.w %a1,%d0
-	lsl.l %d0,%d1
+	and.l %d0,%d2
+	move.l %d2,(%a0)
+	lsl.l %d4,%d1
 	not.l %d1
-	and.l %d1,4(%a0)
-	jbra .L4
-	.even
-.L6:
-	moveq.l #15,%d0
-	and.l %d4,%d0
-	move.l %d1,%d2
-	lsr.l %d0,%d2
-	clr.l %d0
-	move.w %a1,%d0
-	move.l %d1,%d3
-	lsl.l %d0,%d3
-	move.l (%a0),%d1
-	move.l 4(%a0),%d0
-	tst.w %d6
-	jbne .L8
-	eor.l %d2,%d1
-	move.l %d1,(%a0)
-	eor.l %d3,%d0
-	jbra .L11
-	.even
-.L8:
-	or.l %d2,%d1
-	move.l %d1,(%a0)
-	or.l %d3,%d0
-.L11:
-	move.l %d0,4(%a0)
+	and.l %d1,(%a1)
+	jbra .L6
 .L4:
-	lea (30,%a0),%a0
+	move.l %d1,%d0
+	lsr.l %d3,%d0
+	lsl.l %d4,%d1
+	tst.w %d7
+	jbne .L7
+	eor.l %d0,%d2
+	move.l %d2,(%a0)
+	eor.l %d1,(%a1)
+	jbra .L6
+.L7:
+	or.l %d0,%d2
+	move.l %d2,(%a0)
+	or.l %d1,(%a1)
+.L6:
+	move.l %a2,%a0
+	move.w %d5,%d0
+	move.l %a3,%a1
 .L2:
-	dbra %d5,.L10
-	movm.l (%sp)+,#0x478
+	cmp.w %a6,%d0
+	jbne .L3
+	movm.l (%sp)+,#0x7cf8
 	rts

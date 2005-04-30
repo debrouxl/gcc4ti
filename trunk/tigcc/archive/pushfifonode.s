@@ -2,6 +2,7 @@
 #NO_APP
 	.text
 tigcc_compiled.:
+	.text
 #APP
 	.set _A_LINE,0xA000
 #NO_APP
@@ -15,8 +16,7 @@ __get_HS_pushEmptyFIFONode:
 	move.l 1084(%a2),%a1
 	lea (256,%a1),%a3
 	jbra .L2
-	.even
-.L8:
+.L3:
 	cmp.w #20154,(%a1)
 	jbne .L4
 	addq.l #2,%a1
@@ -28,9 +28,10 @@ __get_HS_pushEmptyFIFONode:
 	addq.l #2,%a1
 .L2:
 	cmp.l %a1,%a3
-	jbhi .L8
+	jbhi .L3
+#APP
 	.word _A_LINE+410
-	.even
+#NO_APP
 .L9:
 	move.l (%sp)+,%a2
 	move.l (%sp)+,%a3

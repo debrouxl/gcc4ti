@@ -2,6 +2,7 @@
 #NO_APP
 	.text
 tigcc_compiled.:
+	.text
 #APP
 	.set _A_LINE,0xA000
 #NO_APP
@@ -10,10 +11,9 @@ tigcc_compiled.:
 	.globl	fsetbufsize
 fsetbufsize:
 	tst.w %d0
-	jbeq .L1
+	jbeq .L5
 	cmp.w #0,%a0
-	jbeq .L1
+	jbeq .L5
 	move.w %d0,18(%a0)
-.L1:
+.L5:
 	rts
-	nop

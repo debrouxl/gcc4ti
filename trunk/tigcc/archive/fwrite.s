@@ -2,6 +2,7 @@
 #NO_APP
 	.text
 tigcc_compiled.:
+	.text
 #APP
 	.set _A_LINE,0xA000
 #NO_APP
@@ -9,40 +10,43 @@ tigcc_compiled.:
 	.even
 	.globl	fwrite
 fwrite:
-	movm.l #0x1f30,-(%sp)
-	move.l %a0,%a3
-	move.w %d0,%d7
-	move.w %d1,%d6
-	move.l %a1,%a2
+	movm.l #0x1f38,-(%sp)
+	move.l %a0,%d4
+	move.w %d0,%a4
+	move.w %d1,%d7
+	move.l %a1,%a3
 	move.w 10(%a1),%d0
-	move.w %d0,%d4
-	and.w #64,%d4
+	move.w %d0,%d3
+	and.w #64,%d3
 	or.w #64,%d0
 	move.w %d0,10(%a1)
-	clr.w %d5
+	moveq #0,%d5
 	jbra .L2
-	.even
-.L12:
-	move.l %a2,-(%sp)
+.L3:
 	clr.w %d0
-	move.b (%a3)+,%d0
+	move.b (%a2)+,%d0
+	move.l %a3,-(%sp)
 	move.w %d0,-(%sp)
 	jbsr fputc
 	addq.l #6,%sp
 	tst.w %d0
-	jblt .L11
-	addq.w #1,%d3
-.L6:
-	cmp.w %d3,%d7
-	jbhi .L12
-	addq.w #1,%d5
+	jblt .L4
+.L5:
+	move.w %a2,%d0
+	sub.w %d4,%d0
+	cmp.w %a4,%d0
+	jbcs .L3
+	addq.l #1,%d5
+	move.l %a2,%d4
 .L2:
-	clr.w %d3
-	cmp.w %d5,%d6
-	jbhi .L6
-.L11:
-	or.w #-65,%d4
-	and.w %d4,10(%a2)
-	move.w %d5,%d0
-	movm.l (%sp)+,#0xcf8
+	move.w %d5,%d6
+	cmp.w %d5,%d7
+	jbls .L4
+	move.l %d4,%a2
+	jbra .L5
+.L4:
+	or.w #-65,%d3
+	and.w %d3,10(%a3)
+	move.w %d6,%d0
+	movm.l (%sp)+,#0x1cf8
 	rts

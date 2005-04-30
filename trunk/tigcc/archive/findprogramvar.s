@@ -2,6 +2,7 @@
 #NO_APP
 	.text
 tigcc_compiled.:
+	.text
 #APP
 	.set _A_LINE,0xA000
 #NO_APP
@@ -23,8 +24,7 @@ FindProgramVar:
 	move.l %a0,%a2
 	addq.l #6,%sp
 	jbra .L2
-	.even
-.L7:
+.L3:
 	move.w 12(%a2),%d5
 	move.l 200.w,%a0
 	move.w %d5,-(%sp)
@@ -40,9 +40,8 @@ FindProgramVar:
 	jbsr (%a0)
 	add.l %d3,%d0
 	addq.l #2,%sp
-	move.l %a2,%d1
 	cmp.l %d4,%d0
-	jbhi .L1
+	jbhi .L6
 .L4:
 	move.l 200.w,%a0
 	move.l 436(%a0),%a0
@@ -50,9 +49,8 @@ FindProgramVar:
 	move.l %a0,%a2
 .L2:
 	cmp.w #0,%a2
-	jbne .L7
-	moveq.l #0,%d1
-.L1:
-	move.l %d1,%a0
+	jbne .L3
+.L6:
+	move.l %a2,%a0
 	movm.l (%sp)+,#0x438
 	rts
