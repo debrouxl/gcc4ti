@@ -151,10 +151,9 @@ non-standard options:
   previous releases.
 
 -g
-  The '-g' switch in GCC turns on debugging information; in TIGCC the COFF
-  format will be used in all cases. If you use this option in TIGCC, the .s
-  file will not be deleted, but instead it will be filled with lines from
-  the C source along with file offsets as comments.
+  The '-g' switch in GCC turns on debugging information in the preferred
+  format for the target. In TIGCC, this is DWARF 2, which can be used with a
+  GDB-enabled TiEmu.
 
 -standalone
   Do not link against tigcc.a. All of GCC's internal functions are
