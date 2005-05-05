@@ -2016,7 +2016,7 @@ diff -Naur gcc-4.0.0.orig/gcc/collect2.c gcc-4.0.0-src/gcc/collect2.c
    int_handler  = (void (*) (int)) signal (SIGINT,  SIG_IGN);
 diff -Naur gcc-4.0.0.orig/gcc/combine.c gcc-4.0.0-src/gcc/combine.c
 --- gcc-4.0.0.orig/gcc/combine.c	Sun Apr 17 09:43:18 2005
-+++ gcc-4.0.0-src/gcc/combine.c	Sat Apr 30 00:26:34 2005
++++ gcc-4.0.0-src/gcc/combine.c	Sat Apr 30 02:17:14 2005
 @@ -4228,8 +4228,10 @@
        /* x - 0 is the same as x unless x's mode has signed zeros and
  	 allows rounding towards -infinity.  Under those conditions,
@@ -4803,7 +4803,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2.h gcc-4.0.0-src/gcc/dwarf2.h
      /* UPC extension.  */
 diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
 --- gcc-4.0.0.orig/gcc/dwarf2out.c	Mon Apr  4 10:44:28 2005
-+++ gcc-4.0.0-src/gcc/dwarf2out.c	Sat Apr 30 00:26:36 2005
++++ gcc-4.0.0-src/gcc/dwarf2out.c	Thu May  5 18:51:54 2005
 @@ -3999,7 +3999,7 @@
  static void decls_for_scope (tree, dw_die_ref, int);
  static int is_redundant_typedef (tree);
@@ -5006,6 +5006,25 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  	{
  	  dw_separate_line_info_ref line_info;
  	  targetm.asm_out.internal_label (asm_out_file, SEPARATE_LINE_CODE_LABEL,
+@@ -13296,13 +13333,15 @@
+ 
+   if (debug_info_level >= DINFO_LEVEL_VERBOSE)
+     {
++      int fileno;
+       named_section_flags (DEBUG_MACINFO_SECTION, SECTION_DEBUG);
+       dw2_asm_output_data (1, DW_MACINFO_start_file, "Start new file");
+       dw2_asm_output_data_uleb128 (lineno, "Included from line number %d",
+ 				   lineno);
+-      maybe_emit_file (lookup_filename (filename));
+-      dw2_asm_output_data_uleb128 (lookup_filename (filename),
+-				   "Filename we just started");
++      /* (TIGCC 20050505) The file number used by maybe_emit_file is not
++                          necessarily the one we passed to it. */
++      fileno = maybe_emit_file (lookup_filename (filename));
++      dw2_asm_output_data_uleb128 (fileno, "Filename we just started");
+     }
+ }
+ 
 diff -Naur gcc-4.0.0.orig/gcc/emit-rtl.c gcc-4.0.0-src/gcc/emit-rtl.c
 --- gcc-4.0.0.orig/gcc/emit-rtl.c	Fri Feb 18 06:58:34 2005
 +++ gcc-4.0.0-src/gcc/emit-rtl.c	Sat Apr 30 00:26:36 2005
