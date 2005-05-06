@@ -402,7 +402,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.h binutils-2.15-src/gas/config
         && (s)->sy_symbol.ost_entry.n_scnum == C_ABS_SECTION))
 diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/tc-m68k.c
 --- binutils-2.15.orig/gas/config/tc-m68k.c	Mon Jan 26 18:09:30 2004
-+++ binutils-2.15-src/gas/config/tc-m68k.c	Sun Apr  3 10:50:10 2005
++++ binutils-2.15-src/gas/config/tc-m68k.c	Sat May  7 01:37:30 2005
 @@ -75,6 +75,7 @@
  int flag_want_pic;
  
@@ -623,7 +623,26 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  
    /* For non-pc-relative values, it's conceivable we might get something
       like "0xff" for a byte field.  So extend the upper part of the range
-@@ -4582,6 +4679,27 @@
+@@ -4470,7 +4567,17 @@
+   if (! fixP->fx_pcrel && ! fixP->fx_signed)
+     upper_limit = upper_limit * 2 + 1;
+ 
+-  if ((addressT) val > upper_limit
++  /* (TIGCC 20050507) We can't properly range-check PC-relative relocs in
++     all-relocs mode because of COFF VMA annoyances. Ideally, the section
++     contents should be just unrelocated offsets which can be properly
++     range-checked, but unfortunately COFF is designed with unrelocated use in
++     mind and relocation as an afterthought. And moreover, we need to
++     range-check in the linker anyway, as only the linker knows the final
++     section disposition. So let's just let the linker worry about
++     range-checking. */
++  if (fixP->fx_pcrel)
++    fixP->fx_im_disp = 1;
++  else if ((addressT) val > upper_limit
+       && (val > 0 || val < lower_limit))
+     as_bad_where (fixP->fx_file, fixP->fx_line, _("value out of range"));
+ 
+@@ -4582,6 +4689,27 @@
        fragP->fr_opcode[0] ^= 0x01;	/* Invert bcc.  */
        fragP->fr_opcode[1]  = 0x06;	/* Branch offset = 6.  */
  
@@ -651,7 +670,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
        /* JF: these used to be fr_opcode[2,3], but they may be in a
  	   different frag, in which case referring to them is a no-no.
  	   Only fr_opcode[0,1] are guaranteed to work.  */
-@@ -4754,8 +4872,17 @@
+@@ -4754,8 +4882,17 @@
  	    && relaxable_symbol (fragP->fr_symbol))
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), BYTE);
@@ -670,7 +689,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    /* Symbol is undefined and we want short ref.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
-@@ -4764,6 +4891,17 @@
+@@ -4764,6 +4901,17 @@
  	  {
  	    /* Symbol is still undefined.  Make it LONG.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), LONG);
@@ -688,7 +707,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  }
  	break;
        }
-@@ -4790,7 +4928,7 @@
+@@ -4790,7 +4938,7 @@
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
  	     && relaxable_symbol (fragP->fr_symbol))
@@ -697,7 +716,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
  	  }
-@@ -4816,7 +4954,8 @@
+@@ -4816,7 +4964,8 @@
      case TAB (ABSTOPCREL, SZ_UNDEF):
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
@@ -707,7 +726,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    fragP->fr_subtype = TAB (ABSTOPCREL, SHORT);
  	  }
-@@ -4860,6 +4999,7 @@
+@@ -4860,6 +5009,7 @@
  	    }
  	}
        break;
@@ -715,7 +734,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
      default:
        break;
      }
-@@ -6938,6 +7078,8 @@
+@@ -6938,6 +7088,8 @@
    {"disp-size-default-32", no_argument, NULL, OPTION_DISP_SIZE_DEFAULT_32},
  #define OPTION_PCREL (OPTION_MD_BASE + 7)
    {"pcrel", no_argument, NULL, OPTION_PCREL},
@@ -724,7 +743,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
    {NULL, no_argument, NULL, 0}
  };
  size_t md_longopts_size = sizeof (md_longopts);
-@@ -6952,6 +7094,12 @@
+@@ -6952,6 +7104,12 @@
      case 'l':			/* -l means keep external to 2 bit offset
  				   rather than 16 bit one.  */
        flag_short_refs = 1;
@@ -737,7 +756,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
        break;
  
      case 'S':			/* -S means that jbsr's always turn into
-@@ -7131,6 +7279,7 @@
+@@ -7131,6 +7289,7 @@
    fprintf (stream, _("\
  680X0 options:\n\
  -l			use 1 word for refs to undefined symbols [default 2]\n\
@@ -783,7 +802,7 @@ diff -Naur binutils-2.15.orig/gas/configure binutils-2.15-src/gas/configure
  
 diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
 --- binutils-2.15.orig/gas/dwarf2dbg.c	Fri Feb 13 16:12:46 2004
-+++ binutils-2.15-src/gas/dwarf2dbg.c	Tue Apr 19 02:28:04 2005
++++ binutils-2.15-src/gas/dwarf2dbg.c	Sun Apr 24 02:54:26 2005
 @@ -52,7 +52,15 @@
  # define DWARF2_ADDR_SIZE(bfd) (bfd_arch_bits_per_address (bfd) / 8)
  #endif
