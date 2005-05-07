@@ -4803,8 +4803,28 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2.h gcc-4.0.0-src/gcc/dwarf2.h
      /* UPC extension.  */
 diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
 --- gcc-4.0.0.orig/gcc/dwarf2out.c	Mon Apr  4 10:44:28 2005
-+++ gcc-4.0.0-src/gcc/dwarf2out.c	Thu May  5 18:51:54 2005
-@@ -3999,7 +3999,7 @@
++++ gcc-4.0.0-src/gcc/dwarf2out.c	Sat May  7 02:13:26 2005
+@@ -2094,8 +2094,11 @@
+      emit any EH unwind information.  Note that if exceptions aren't
+      enabled, we won't have collected nothrow information, and if we
+      asked for asynchronous tables, we always want this info.  */
++  /* (TIGCC 20050507) We want unwinding tables for debugging purposes only,
++     so we don't want an .eh_frame section we didn't ask for. */
+   if (for_eh)
+     {
++#if 0
+       bool any_eh_needed = !flag_exceptions || flag_asynchronous_unwind_tables;
+ 
+       for (i = 0; i < fde_table_in_use; i++)
+@@ -2108,6 +2111,7 @@
+ 	  any_eh_needed = true;
+ 
+       if (! any_eh_needed)
++#endif /* 0 */
+ 	return;
+     }
+ 
+@@ -3999,7 +4003,7 @@
  static void decls_for_scope (tree, dw_die_ref, int);
  static int is_redundant_typedef (tree);
  static void gen_namespace_die (tree);
@@ -4813,7 +4833,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  static dw_die_ref force_decl_die (tree);
  static dw_die_ref force_type_die (tree);
  static dw_die_ref setup_namespace_context (tree, dw_die_ref);
-@@ -4492,6 +4492,8 @@
+@@ -4492,6 +4496,8 @@
        return "DW_AT_body_end";
      case DW_AT_GNU_vector:
        return "DW_AT_GNU_vector";
@@ -4822,7 +4842,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  
      case DW_AT_VMS_rtnbeg_pd_address:
        return "DW_AT_VMS_rtnbeg_pd_address";
-@@ -9576,14 +9578,7 @@
+@@ -9576,14 +9582,7 @@
    int i;
  
    REAL_VALUE_FROM_CONST_DOUBLE (rv, rtl);
@@ -4838,7 +4858,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  }
  
  /* Attach a DW_AT_const_value attribute for a variable or a parameter which
-@@ -9622,7 +9617,7 @@
+@@ -9622,7 +9621,7 @@
  	    unsigned char *array = ggc_alloc (length);
  
  	    insert_float (rtl, array);
@@ -4847,7 +4867,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  	  }
  	else
  	  {
-@@ -11080,6 +11075,10 @@
+@@ -11080,6 +11079,10 @@
     DW_TAG_unspecified_parameters DIE) to represent the types of the formal
     parameters as specified in some function type specification (except for
     those which appear as part of a function *definition*).  */
@@ -4858,7 +4878,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  
  static void
  gen_formal_types_die (tree function_or_method_type, dw_die_ref context_die)
-@@ -11088,15 +11087,21 @@
+@@ -11088,15 +11091,21 @@
    tree formal_type = NULL;
    tree first_parm_type;
    tree arg;
@@ -4880,7 +4900,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
    first_parm_type = TYPE_ARG_TYPES (function_or_method_type);
  
    /* Make our first pass over the list of formal parameter types and output a
-@@ -11116,6 +11121,17 @@
+@@ -11116,6 +11125,17 @@
  	  || (arg && DECL_ARTIFICIAL (arg)))
  	add_AT_flag (parm_die, DW_AT_artificial, 1);
  
@@ -4898,7 +4918,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
        link = TREE_CHAIN (link);
        if (arg)
  	arg = TREE_CHAIN (arg);
-@@ -11219,6 +11235,10 @@
+@@ -11219,6 +11239,10 @@
  
  /* Generate a DIE to represent a declared function (either file-scope or
     block-local).  */
@@ -4909,7 +4929,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  
  static void
  gen_subprogram_die (tree decl, dw_die_ref context_die)
-@@ -11232,6 +11252,7 @@
+@@ -11232,6 +11256,7 @@
    dw_die_ref old_die = lookup_decl_die (decl);
    int declaration = (current_function_decl != decl
  		     || class_or_namespace_scope_p (context_die));
@@ -4917,7 +4937,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  
    /* It is possible to have both DECL_ABSTRACT and DECLARATION be true if we
       started to generate the abstract instance of an inline, decided to output
-@@ -11432,6 +11453,8 @@
+@@ -11432,6 +11457,8 @@
        tree arg_decls = DECL_ARGUMENTS (decl);
        tree parm;
  
@@ -4926,7 +4946,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
        /* When generating DIEs, generate the unspecified_parameters DIE
  	 instead if we come across the arg "__builtin_va_alist" */
        for (parm = arg_decls; parm; parm = TREE_CHAIN (parm))
-@@ -11442,7 +11465,16 @@
+@@ -11442,7 +11469,16 @@
  			    "__builtin_va_alist"))
  	      gen_unspecified_parameters_die (parm, subr_die);
  	    else
@@ -4944,7 +4964,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  	  }
  
        /* Decide whether we need an unspecified_parameters DIE at the end.
-@@ -12620,14 +12652,15 @@
+@@ -12620,14 +12656,15 @@
  }
  
  /* Generate Dwarf debug information for a decl described by DECL.  */
@@ -4962,7 +4982,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  
    switch (TREE_CODE (decl))
      {
-@@ -12770,8 +12803,7 @@
+@@ -12770,8 +12807,7 @@
  
      case PARM_DECL:
        gen_type_die (TREE_TYPE (decl), context_die);
@@ -4972,7 +4992,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  
      case NAMESPACE_DECL:
        gen_namespace_die (decl);
-@@ -12782,6 +12814,8 @@
+@@ -12782,6 +12818,8 @@
        gcc_assert ((int)TREE_CODE (decl) > NUM_TREE_CODES);
        break;
      }
@@ -4981,7 +5001,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  }
  
  /* Add Ada "use" clause information for SGI Workshop debugger.  */
-@@ -13201,7 +13235,10 @@
+@@ -13201,7 +13239,10 @@
    if (debug_info_level >= DINFO_LEVEL_NORMAL
        && line != 0)
      {
@@ -4993,7 +5013,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  
        /* If requested, emit something human-readable.  */
        if (flag_debug_asm)
-@@ -13221,10 +13258,10 @@
+@@ -13221,10 +13262,10 @@
  	  line_info_table_in_use++;
  
  	  /* Indicate that multiple line number tables exist.  */
@@ -5006,7 +5026,7 @@ diff -Naur gcc-4.0.0.orig/gcc/dwarf2out.c gcc-4.0.0-src/gcc/dwarf2out.c
  	{
  	  dw_separate_line_info_ref line_info;
  	  targetm.asm_out.internal_label (asm_out_file, SEPARATE_LINE_CODE_LABEL,
-@@ -13296,13 +13333,15 @@
+@@ -13296,13 +13337,15 @@
  
    if (debug_info_level >= DINFO_LEVEL_VERBOSE)
      {
