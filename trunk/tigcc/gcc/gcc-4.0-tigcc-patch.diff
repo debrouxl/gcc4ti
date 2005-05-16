@@ -2161,8 +2161,8 @@ diff -Naur gcc-4.0.0.orig/gcc/config/m68k/m68k-protos.h gcc-4.0.0-src/gcc/config
  extern void print_operand_address (FILE *, rtx);
 diff -Naur gcc-4.0.0.orig/gcc/config/m68k/m68k-ti.h gcc-4.0.0-src/gcc/config/m68k/m68k-ti.h
 --- gcc-4.0.0.orig/gcc/config/m68k/m68k-ti.h	Thu Jan  1 01:00:00 1970
-+++ gcc-4.0.0-src/gcc/config/m68k/m68k-ti.h	Sat Apr 30 00:26:34 2005
-@@ -0,0 +1,211 @@
++++ gcc-4.0.0-src/gcc/config/m68k/m68k-ti.h	Tue May 17 00:31:32 2005
+@@ -0,0 +1,213 @@
 +/* Definitions of target machine for GNU compiler.
 +   TI-68k architecture (68000),
 +   COFF object files and debugging version.
@@ -2269,6 +2269,7 @@ diff -Naur gcc-4.0.0.orig/gcc/config/m68k/m68k-ti.h gcc-4.0.0-src/gcc/config/m68
 +	if (TARGET_NO_BSS && ((NAME) [0] != '_')) \
 +	{ \
 +		long i; \
++		data_section (); \
 +		fputs (".globl ", (FILE)); \
 +		assemble_name ((FILE), (NAME)); \
 +		fputs ("\n\t.even\n", (FILE)); \
@@ -2294,6 +2295,7 @@ diff -Naur gcc-4.0.0.orig/gcc/config/m68k/m68k-ti.h gcc-4.0.0-src/gcc/config/m68
 +	if (TARGET_NO_BSS) \
 +	{ \
 +		long i; \
++		data_section (); \
 +		fputs ("\t.even\n", (FILE)); \
 +		assemble_name ((FILE), (NAME)); \
 +		fputs (":\n", (FILE)); \
@@ -8342,7 +8344,7 @@ diff -Naur gcc-4.0.0.orig/gcc/tree.h gcc-4.0.0-src/gcc/tree.h
  extern unsigned int expr_align (tree);
 diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
 --- gcc-4.0.0.orig/gcc/varasm.c	Fri Apr  1 14:41:10 2005
-+++ gcc-4.0.0-src/gcc/varasm.c	Sat Apr 30 00:26:38 2005
++++ gcc-4.0.0-src/gcc/varasm.c	Tue May 17 00:50:36 2005
 @@ -202,6 +202,46 @@
  EXTRA_SECTION_FUNCTIONS
  #endif
@@ -8485,9 +8487,13 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
  }
  
  /* Record an element in the table of global destructors.  SYMBOL is
-@@ -1445,7 +1539,15 @@
+@@ -1443,9 +1537,18 @@
+ 	destination = asm_dest_common;
+     }
  
-   if (destination != asm_dest_common)
+-  if (destination != asm_dest_common)
++  /* (TIGCC 20050517) See below for why the TARGET_NO_BSS is necessary here. */
++  if (destination != asm_dest_common || (flag_data_sections && TARGET_NO_BSS))
      {
 -      resolve_unique_section (decl, 0, flag_data_sections);
 +      /* (TIGCC 20040620) Common symbols are handled by our linker as separate
@@ -8502,7 +8508,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
        /* Custom sections don't belong here.  */
        if (DECL_SECTION_NAME (decl))
          return false;
-@@ -1696,7 +1798,24 @@
+@@ -1696,7 +1799,24 @@
      }
  
    /* Switch to the appropriate section.  */
@@ -8528,7 +8534,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
    variable_section (decl, reloc);
  
    /* dbxout.c needs to know this.  */
-@@ -2144,7 +2263,16 @@
+@@ -2144,7 +2264,16 @@
  void
  assemble_real (REAL_VALUE_TYPE d, enum machine_mode mode, unsigned int align)
  {
@@ -8546,7 +8552,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
    int i;
    int bitsize, nelts, nunits, units_per;
  
-@@ -2179,6 +2307,7 @@
+@@ -2179,6 +2308,7 @@
        assemble_integer (GEN_INT (data[i]), MIN (nunits, units_per), align, 1);
        nunits -= units_per;
      }
@@ -8554,7 +8560,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
  }
  
  /* Given an expression EXP with a constant value,
-@@ -3151,7 +3280,7 @@
+@@ -3151,7 +3281,7 @@
  /* Worker function for output_constant_pool.  Emit POOL.  */
  
  static void
@@ -8563,7 +8569,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
  {
    rtx x, tmp;
  
-@@ -3194,8 +3323,19 @@
+@@ -3194,8 +3324,19 @@
      }
  
    /* First switch to correct section.  */
@@ -8584,7 +8590,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
  #ifdef ASM_OUTPUT_SPECIAL_POOL_ENTRY
    ASM_OUTPUT_SPECIAL_POOL_ENTRY (asm_out_file, x, desc->mode,
  				 desc->align, desc->labelno, done);
-@@ -3310,7 +3450,7 @@
+@@ -3310,7 +3451,7 @@
  /* Write all the constants in the constant pool.  */
  
  void
@@ -8593,7 +8599,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
  		      tree fndecl ATTRIBUTE_UNUSED)
  {
    struct rtx_constant_pool *pool = cfun->varasm->pool;
-@@ -3326,7 +3466,7 @@
+@@ -3326,7 +3467,7 @@
  #endif
  
    for (desc = pool->first; desc ; desc = desc->next)
@@ -8602,7 +8608,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
  
  #ifdef ASM_OUTPUT_POOL_EPILOGUE
    ASM_OUTPUT_POOL_EPILOGUE (asm_out_file, fnname, fndecl, pool->offset);
-@@ -3370,10 +3510,18 @@
+@@ -3370,10 +3511,18 @@
      case MINUS_EXPR:
        reloc = compute_reloc_for_constant (TREE_OPERAND (exp, 0));
        reloc2 = compute_reloc_for_constant (TREE_OPERAND (exp, 1));
@@ -8621,7 +8627,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
  	reloc |= reloc2;
        break;
  
-@@ -4745,6 +4893,31 @@
+@@ -4745,6 +4894,31 @@
  	  || strcmp (name, ".preinit_array") == 0))
      flags |= SECTION_NOTYPE;
  
@@ -8638,7 +8644,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
 +      break;
 +    }
 +
-+  if (TREE_CODE (DECL_INITIAL (decl)) == CONSTRUCTOR)
++  if (DECL_INITIAL (decl) && TREE_CODE (DECL_INITIAL (decl)) == CONSTRUCTOR)
 +    {
 +      /* (TIGCC 20040727) Put compound literals in mergeable sections in global
 +                          compound literal mode. -- Kevin Kofler
@@ -8653,7 +8659,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
    return flags;
  }
  
-@@ -4866,18 +5039,51 @@
+@@ -4866,18 +5040,51 @@
  {
    bool readonly = false;
  
@@ -8711,7 +8717,7 @@ diff -Naur gcc-4.0.0.orig/gcc/varasm.c gcc-4.0.0-src/gcc/varasm.c
      }
    else if (TREE_CODE (decl) == STRING_CST)
      readonly = true;
-@@ -4888,44 +5094,11 @@
+@@ -4888,44 +5095,11 @@
      readonly_data_section ();
    else
      data_section ();
