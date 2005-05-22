@@ -3396,6 +3396,7 @@ begin
 							+ '#define COMMENT_PROGRAM_NAME   "Place your program name here."'#13#10
 							+ '#define COMMENT_VERSION_STRING "Place your version string here."'#13#10
 							+ '#define COMMENT_VERSION_NUMBER 0,0,0,0 /* major, minor, revision, subrevision */'#13#10
+							+ '#define COMMENT_AUTHORS        "Place your author name(s) here."'#13#10
 							+ '#define COMMENT_BW_ICON \'#13#10
 							+ #9'{0b0000000000000000, \'#13#10;
 						for I := 1 to 14 do
