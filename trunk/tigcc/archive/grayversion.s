@@ -5,4 +5,4 @@ tigcc_compiled.:
 	.globl	__gray_version
 	.text
 __gray_version:
-	.ascii "[TIGCCLIB GraySupport v3.51 Apr 30 2005 02:34:11]\0"
+	.ascii "[TIGCCLIB GraySupport v3.51 May 22 2005 06:52:44]\0"
