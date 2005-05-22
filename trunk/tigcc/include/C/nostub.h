@@ -115,10 +115,7 @@ _INCLUDE_PATCH(__special_error_return_support_ams_1);
 #define _bw_icon        _nostub_data__0004
 #define _grayscale_icon _nostub_data__0005
 #define _incompat_flags _nostub_data__0006
-
-#if 0 /* WARNING: DO NOT enable this before official standardization! */
 #define _authors        _nostub_data__0007
-#endif
 
 #define __TEXTSEC__ __attribute__((__section__(".text")))
 
@@ -182,10 +179,8 @@ __TEXTSEC__ short _grayscale_icon[2][16] = {COMMENT_GRAY_ICON};
 __TEXTSEC__ unsigned long _incompat_flags = (COMMENT_INCOMPAT_FLAGS);
 #endif
 
-#if 0
 #ifdef COMMENT_AUTHORS
 __TEXTSEC__ char _authors[] = (COMMENT_AUTHORS);
-#endif
 #endif
 
 #endif
