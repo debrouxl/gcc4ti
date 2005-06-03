@@ -802,7 +802,7 @@ diff -Naur binutils-2.15.orig/gas/configure binutils-2.15-src/gas/configure
  
 diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
 --- binutils-2.15.orig/gas/dwarf2dbg.c	Fri Feb 13 16:12:46 2004
-+++ binutils-2.15-src/gas/dwarf2dbg.c	Sun Apr 24 02:54:26 2005
++++ binutils-2.15-src/gas/dwarf2dbg.c	Fri Jun  3 07:53:20 2005
 @@ -52,7 +52,15 @@
  # define DWARF2_ADDR_SIZE(bfd) (bfd_arch_bits_per_address (bfd) / 8)
  #endif
@@ -820,7 +820,21 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
  #include "subsegs.h"
  
-@@ -961,7 +969,9 @@
+@@ -330,6 +338,13 @@
+   dwarf2_gen_line_info (frag_now_fix () - size, &loc);
+ }
+ 
++void
++dwarf2_emit_insn_if_loc_seen (int size)
++{
++  if (loc_directive_seen)
++    dwarf2_emit_insn (size);
++}
++
+ /* Get a .debug_line file number for FILENAME.  If NUM is nonzero,
+    allocate it on that file table slot, otherwise return the first
+    empty one.  */
+@@ -961,7 +976,9 @@
        if (1 /* line != e->loc.line || changed */)
  	{
  	  int line_delta = e->loc.line - line;
@@ -831,7 +845,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  	    {
  	      out_set_addr (seg, e->frag, e->frag_ofs);
  	      out_inc_line_addr (line_delta, 0);
-@@ -991,11 +1001,16 @@
+@@ -991,11 +1008,16 @@
    /* Emit a DW_LNE_end_sequence for the end of the section.  */
    last_frag = last_frag_for_seg (seg);
    last_frag_ofs = get_frag_fix (last_frag);
@@ -848,7 +862,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  }
  
  /* Emit the directory and file tables for .debug_line.  */
-@@ -1056,6 +1071,7 @@
+@@ -1056,6 +1078,7 @@
    subseg_set (line_seg, 0);
  
    line_start = symbol_temp_new_now ();
@@ -856,7 +870,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    prologue_end = symbol_temp_make ();
    line_end = symbol_temp_make ();
  
-@@ -1211,15 +1227,19 @@
+@@ -1211,15 +1234,19 @@
  {
    subseg_set (abbrev_seg, 0);
  
@@ -876,7 +890,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    out_abbrev (DW_AT_name, DW_FORM_string);
    out_abbrev (DW_AT_comp_dir, DW_FORM_string);
    out_abbrev (DW_AT_producer, DW_FORM_string);
-@@ -1248,6 +1268,7 @@
+@@ -1248,6 +1275,7 @@
    subseg_set (info_seg, 0);
  
    info_start = symbol_temp_new_now ();
@@ -884,7 +898,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    info_end = symbol_temp_make ();
  
    /* Compilation Unit length.  */
-@@ -1296,6 +1317,7 @@
+@@ -1296,6 +1324,7 @@
    /* ??? sizeof_offset */
    TC_DWARF2_EMIT_OFFSET (section_symbol (line_seg), 4);
  
@@ -892,7 +906,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    /* These two attributes may only be emitted if all of the code is
       contiguous.  Multiple sections are not that.  */
    if (all_segs->next == NULL)
-@@ -1312,6 +1334,7 @@
+@@ -1312,6 +1341,7 @@
        expr.X_add_number = 0;
        emit_expr (&expr, sizeof_address);
      }
@@ -900,7 +914,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
    /* DW_AT_name.  We don't have the actual file name that was present
       on the command line, so assume files[1] is the main input file.
-@@ -1363,15 +1386,51 @@
+@@ -1363,15 +1393,51 @@
         below.  */
    if (all_segs == NULL
        && debug_type != DEBUG_DWARF2
@@ -952,7 +966,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
    /* For each subsection, chain the debug entries together.  */
    for (s = all_segs; s; s = s->next)
-@@ -1400,9 +1459,11 @@
+@@ -1400,9 +1466,11 @@
        abbrev_seg = subseg_new (".debug_abbrev", 0);
        aranges_seg = subseg_new (".debug_aranges", 0);
  
@@ -963,6 +977,17 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
 +#endif
  
        record_alignment (aranges_seg, ffs (2 * sizeof_address) - 1);
+ 
+diff -Naur binutils-2.15.orig/gas/dwarf2dbg.h binutils-2.15-src/gas/dwarf2dbg.h
+--- binutils-2.15.orig/gas/dwarf2dbg.h	Fri Nov 21 13:28:34 2003
++++ binutils-2.15-src/gas/dwarf2dbg.h	Fri Jun  3 07:53:42 2005
+@@ -61,6 +61,7 @@
+ 
+ /* Must be called for each generated instruction.  */
+ extern void dwarf2_emit_insn (int);
++extern void dwarf2_emit_insn_if_loc_seen (int);
+ 
+ extern void dwarf2_finish (void);
  
 diff -Naur binutils-2.15.orig/gas/expr.c binutils-2.15-src/gas/expr.c
 --- binutils-2.15.orig/gas/expr.c	Mon May 17 21:36:06 2004
@@ -1036,7 +1061,7 @@ diff -Naur binutils-2.15.orig/gas/listing.c binutils-2.15-src/gas/listing.c
        switch (list->edict)
 diff -Naur binutils-2.15.orig/gas/read.c binutils-2.15-src/gas/read.c
 --- binutils-2.15.orig/gas/read.c	Mon May 17 21:36:08 2004
-+++ binutils-2.15-src/gas/read.c	Fri Jun  3 03:57:28 2005
++++ binutils-2.15-src/gas/read.c	Fri Jun  3 07:55:10 2005
 @@ -43,6 +43,7 @@
  #include "obstack.h"
  #include "listing.h"
@@ -1049,11 +1074,11 @@ diff -Naur binutils-2.15.orig/gas/read.c binutils-2.15-src/gas/read.c
  void
  cons (int size)
  {
-+  /* (TIGCC 20050603) Call dwarf2_emit_insn unless we are in a debugging info
-+                      section. -- Kevin Kofler */
++  /* (TIGCC 20050603) Call dwarf2_emit_insn_if_loc_seen unless we are in a
++                      debugging info section. -- Kevin Kofler */
 +  const char *segname = seg_info (now_seg)->scnhdr.s_name;
 +  if (strncmp (segname, ".debug_", 7) && strncmp (segname, ".eh_", 4))
-+    dwarf2_emit_insn (size);
++    dwarf2_emit_insn_if_loc_seen (size);
    cons_worker (size, 0);
  }
  
