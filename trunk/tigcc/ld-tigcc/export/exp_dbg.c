@@ -102,7 +102,8 @@ static void CountSectionCOFFSize (const SECTION *Section, void *UserData)
 	if (!*(SIZE *)UserData)
 		return;
 
-	Size += Section->Size;
+	if (Section->Data)
+		Size += Section->Size;
 
 	// Section symbol
 	{
@@ -196,8 +197,11 @@ static void CountSymbols (const SECTION *Section, void *UserData)
 
 static void CountSymbolTableOffset (const SECTION *Section, void *UserData)
 {
-	SIZE Size = Section->Size;
+	SIZE Size = 0;
 	const RELOC *Reloc;
+
+	if (Section->Data)
+		Size = Section->Size;
 
 	for_each (Reloc, Section->Relocs)
 	{
@@ -225,7 +229,7 @@ static void WriteSectionHeader (const SECTION *Section, void *UserData)
 	static const I4 SectionFlags[MAX_NAMED_SECTION] =
 	                {COFF_SECTION_TEXT, COFF_SECTION_DATA, COFF_SECTION_BSS,
 	                 COFF_SECTION_TEXT, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	SIZE Size = Section->Size;
+	SIZE Size = 0;
 	const RELOC *Reloc;
 	COUNT RelocCount = 0;
 	COFF_SECTION COFFSectionHeader;
@@ -233,6 +237,9 @@ static void WriteSectionHeader (const SECTION *Section, void *UserData)
 	               ((SectionOffsets *)UserData)->VirtualOffset : 0;
 
 	VAddrs[++(((SectionOffsets *)UserData)->COFFSectionNumber)] = VAddr;
+
+	if (Section->Data)
+		Size = Section->Size;
 
 	for_each (Reloc, Section->Relocs)
 	{
@@ -250,8 +257,16 @@ static void WriteSectionHeader (const SECTION *Section, void *UserData)
 	WriteTI4 (COFFSectionHeader.PhysicalAddress, ((SectionOffsets *)UserData)->VirtualOffset);
 	WriteTI4 (COFFSectionHeader.VirtualAddress, VAddr);
 	WriteTI4 (COFFSectionHeader.Size, Section->Size);
-	WriteTI4 (COFFSectionHeader.PData, ((SectionOffsets *)UserData)->FileOffset);
-	WriteTI4 (COFFSectionHeader.PRelocs, ((SectionOffsets *)UserData)->FileOffset + Section->Size);
+	if (Section->Data)
+	{
+		WriteTI4 (COFFSectionHeader.PData, ((SectionOffsets *)UserData)->FileOffset);
+		WriteTI4 (COFFSectionHeader.PRelocs, ((SectionOffsets *)UserData)->FileOffset + Section->Size);
+	}
+	else
+	{
+		WriteTI4 (COFFSectionHeader.PData, 0);
+		WriteTI4 (COFFSectionHeader.PRelocs, ((SectionOffsets *)UserData)->FileOffset);
+	}
 	WriteTI4 (COFFSectionHeader.PLines, 0);
 	WriteTI2 (COFFSectionHeader.RelocCount, RelocCount);
 	WriteTI2 (COFFSectionHeader.LineCount, 0);
@@ -344,7 +359,8 @@ static void WriteSectionContents (const SECTION *Section, void *UserData)
 	OFFSET VAddr = VAddrs[COFFSectionNumber];
 
 	// Write section data.
-	ExportWrite (((SectionOffsets *)UserData)->File, Section->Data, Section->Size, 1);
+	if (Section->Data)
+		ExportWrite (((SectionOffsets *)UserData)->File, Section->Data, Section->Size, 1);
 
 	// Write reloc table.
 	for_each (Reloc, Section->Relocs)
