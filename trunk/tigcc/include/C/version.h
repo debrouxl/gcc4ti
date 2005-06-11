@@ -1,14 +1,12 @@
 #ifndef __VERSION_H
 #define __VERSION_H
 
-/* This file is generated automatically. */
-
 #define __TIGCC__ 0
 #define __TIGCC_MINOR__ 96
 #define __TIGCC_SP__ 0
-#define __TIGCC_BETA__ 3
+#define __TIGCC_BETA__ 5
 #define __TIGCC_VERSION__ 96
-#define __TIGCC_VERSION_STRING__ "TIGCC0.96Beta3"
+#define __TIGCC_VERSION_STRING__ "TIGCC0.96Beta5"
 
 #define __TIGCCLIB__ 2
 #define __TIGCCLIB_MINOR__ 70
