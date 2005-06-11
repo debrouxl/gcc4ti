@@ -400,7 +400,7 @@ diff -Naur binutils-2.16.orig/gas/config/obj-coff.h binutils-2.16-src/gas/config
         && (s)->sy_symbol.ost_entry.n_scnum == C_ABS_SECTION))
 diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/tc-m68k.c
 --- binutils-2.16.orig/gas/config/tc-m68k.c	Tue Mar 22 15:31:48 2005
-+++ binutils-2.16-src/gas/config/tc-m68k.c	Sat Jun 11 06:45:02 2005
++++ binutils-2.16-src/gas/config/tc-m68k.c	Sat Jun 11 13:37:16 2005
 @@ -79,6 +79,7 @@
  int flag_want_pic;
  
@@ -538,7 +538,16 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
      }
  }
  
-@@ -4619,7 +4670,9 @@
+@@ -4126,6 +4177,8 @@
+     return ret;
+   if (op1 < op2)
+     return -1;
++  if (op1 > op2)
++    return 1; /* (TIGCC 200505611) This is required for Windows. -- Kevin Kofler */
+   return 0;
+ }
+ 
+@@ -4619,7 +4672,9 @@
  
    val = SEXT (val);
  
@@ -549,7 +558,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
      fixP->fx_done = 1;
  
  #ifdef OBJ_ELF
-@@ -4642,6 +4695,55 @@
+@@ -4642,6 +4697,55 @@
      return;
  #endif
  
@@ -605,7 +614,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
    switch (fixP->fx_size)
      {
        /* The cast to offsetT below are necessary to make code
-@@ -4669,13 +4771,8 @@
+@@ -4669,13 +4773,8 @@
        BAD_CASE (fixP->fx_size);
      }
  
@@ -621,7 +630,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
  
    /* For non-pc-relative values, it's conceivable we might get something
       like "0xff" for a byte field.  So extend the upper part of the range
-@@ -4684,7 +4781,17 @@
+@@ -4684,7 +4783,17 @@
    if (! fixP->fx_pcrel && ! fixP->fx_signed)
      upper_limit = upper_limit * 2 + 1;
  
@@ -640,7 +649,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
        && (val > 0 || val < lower_limit))
      as_bad_where (fixP->fx_file, fixP->fx_line, _("value out of range"));
  
-@@ -4795,6 +4902,27 @@
+@@ -4795,6 +4904,27 @@
        fragP->fr_opcode[0] ^= 0x01;	/* Invert bcc.  */
        fragP->fr_opcode[1]  = 0x06;	/* Branch offset = 6.  */
  
@@ -668,7 +677,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
        /* JF: these used to be fr_opcode[2,3], but they may be in a
  	   different frag, in which case referring to them is a no-no.
  	   Only fr_opcode[0,1] are guaranteed to work.  */
-@@ -4963,8 +5091,17 @@
+@@ -4963,8 +5093,17 @@
  	    && relaxable_symbol (fragP->fr_symbol))
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), BYTE);
@@ -687,7 +696,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
  	  {
  	    /* Symbol is undefined and we want short ref.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
-@@ -4973,6 +5110,17 @@
+@@ -4973,6 +5112,17 @@
  	  {
  	    /* Symbol is still undefined.  Make it LONG.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), LONG);
@@ -705,7 +714,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
  	  }
  	break;
        }
-@@ -4999,7 +5147,7 @@
+@@ -4999,7 +5149,7 @@
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
  	     && relaxable_symbol (fragP->fr_symbol))
@@ -714,7 +723,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
  	  }
-@@ -5025,7 +5173,8 @@
+@@ -5025,7 +5175,8 @@
      case TAB (ABSTOPCREL, SZ_UNDEF):
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
@@ -724,7 +733,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
  	  {
  	    fragP->fr_subtype = TAB (ABSTOPCREL, SHORT);
  	  }
-@@ -5069,6 +5218,7 @@
+@@ -5069,6 +5220,7 @@
  	    }
  	}
        break;
@@ -732,7 +741,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
      default:
        break;
      }
-@@ -7067,6 +7217,8 @@
+@@ -7067,6 +7219,8 @@
    {"disp-size-default-32", no_argument, NULL, OPTION_DISP_SIZE_DEFAULT_32},
  #define OPTION_PCREL (OPTION_MD_BASE + 7)
    {"pcrel", no_argument, NULL, OPTION_PCREL},
@@ -741,7 +750,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
    {NULL, no_argument, NULL, 0}
  };
  size_t md_longopts_size = sizeof (md_longopts);
-@@ -7079,6 +7231,12 @@
+@@ -7079,6 +7233,12 @@
      case 'l':			/* -l means keep external to 2 bit offset
  				   rather than 16 bit one.  */
        flag_short_refs = 1;
@@ -754,7 +763,7 @@ diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/
        break;
  
      case 'S':			/* -S means that jbsr's always turn into
-@@ -7255,6 +7413,7 @@
+@@ -7255,6 +7415,7 @@
    fprintf (stream, _("\
  680X0 options:\n\
  -l			use 1 word for refs to undefined symbols [default 2]\n\
@@ -1202,7 +1211,7 @@ diff -Naur binutils-2.16.orig/gas/symbols.h binutils-2.16-src/gas/symbols.h
  
 diff -Naur binutils-2.16.orig/gas/write.c binutils-2.16-src/gas/write.c
 --- binutils-2.16.orig/gas/write.c	Thu Mar  3 01:29:52 2005
-+++ binutils-2.16-src/gas/write.c	Sat Jun 11 06:26:32 2005
++++ binutils-2.16-src/gas/write.c	Sat Jun 11 13:26:22 2005
 @@ -217,6 +217,7 @@
  #if defined(NEED_FX_R_TYPE) || defined (BFD_ASSEMBLER)
    fixP->fx_r_type = r_type;
