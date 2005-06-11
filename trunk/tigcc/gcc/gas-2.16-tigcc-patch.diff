@@ -1,7 +1,7 @@
-diff -Naur binutils-2.15.orig/bfd/config.bfd binutils-2.15-src/bfd/config.bfd
---- binutils-2.15.orig/bfd/config.bfd	Mon May 17 21:35:56 2004
-+++ binutils-2.15-src/bfd/config.bfd	Sun Jan 30 14:10:52 2005
-@@ -672,7 +672,6 @@
+diff -Naur binutils-2.16.orig/bfd/config.bfd binutils-2.16-src/bfd/config.bfd
+--- binutils-2.16.orig/bfd/config.bfd	Mon Jan 31 17:18:46 2005
++++ binutils-2.16-src/bfd/config.bfd	Sat Jun 11 06:26:30 2005
+@@ -708,7 +708,6 @@
      ;;
    m68*-*-coff* | m68*-*-sysv*)
      targ_defvec=m68kcoff_vec
@@ -9,10 +9,10 @@ diff -Naur binutils-2.15.orig/bfd/config.bfd binutils-2.15-src/bfd/config.bfd
      ;;
    m68*-*-hpux*)
      targ_defvec=hp300hpux_vec
-diff -Naur binutils-2.15.orig/gas/as.c binutils-2.15-src/gas/as.c
---- binutils-2.15.orig/gas/as.c	Mon Oct 27 12:45:16 2003
-+++ binutils-2.15-src/gas/as.c	Sun Jan 30 14:13:00 2005
-@@ -244,6 +244,10 @@
+diff -Naur binutils-2.16.orig/gas/as.c binutils-2.16-src/gas/as.c
+--- binutils-2.16.orig/gas/as.c	Thu Mar  3 01:29:52 2005
++++ binutils-2.16-src/gas/as.c	Sat Jun 11 06:49:34 2005
+@@ -251,6 +251,10 @@
                        	  s      include symbols\n\
                        	  =FILE  list to FILE (must be last sub-option)\n"));
  
@@ -21,30 +21,28 @@ diff -Naur binutils-2.15.orig/gas/as.c binutils-2.15-src/gas/as.c
 +  --all-relocs            output all relocs, implies --keep-locals (-L)\n"));
 +
    fprintf (stream, _("\
-   -D                      produce assembler debugging messages\n"));
+   --alternate             initially turn on alternate macro syntax\n"));
    fprintf (stream, _("\
-@@ -414,7 +418,8 @@
-       OPTION_TARGET_HELP,
+@@ -426,7 +430,8 @@
        OPTION_EXECSTACK,
        OPTION_NOEXECSTACK,
+       OPTION_ALTERNATE,
 -      OPTION_WARN_FATAL
 +      OPTION_WARN_FATAL,
 +      OPTION_ALL_RELOCS /* (TIGCC 20030716) */
+     /* When you add options here, check that they do
+        not collide with OPTION_MD_BASE.  See as.h.  */
      };
-   
-   static const struct option std_longopts[] =
-@@ -457,7 +462,9 @@
-     {"execstack", no_argument, NULL, OPTION_EXECSTACK},
-     {"noexecstack", no_argument, NULL, OPTION_NOEXECSTACK},
- #endif
--    {"fatal-warnings", no_argument, NULL, OPTION_WARN_FATAL}
-+    {"fatal-warnings", no_argument, NULL, OPTION_WARN_FATAL},
+@@ -442,6 +447,8 @@
+        necessary because -a=<FILE> is a valid switch but getopt would
+        normally reject it since --alternate does not take an argument.  */
+     ,{"a", optional_argument, NULL, 'a'}
 +/* (TIGCC 20030716) */
-+    {"all-relocs", no_argument, NULL, OPTION_ALL_RELOCS}
-     /* When you add options here, check that they do not collide with
-        OPTION_MD_BASE.  See as.h.  */
-   };
-@@ -803,6 +810,12 @@
++    ,{"all-relocs", no_argument, NULL, OPTION_ALL_RELOCS}
+     ,{"defsym", required_argument, NULL, OPTION_DEFSYM}
+     ,{"dump-config", no_argument, NULL, OPTION_DUMPCONFIG}
+     ,{"emulation", required_argument, NULL, OPTION_EMULATION}
+@@ -864,6 +871,12 @@
  
  	case 'X':
  	  /* -X means treat warnings as errors.  */
@@ -57,10 +55,10 @@ diff -Naur binutils-2.15.orig/gas/as.c binutils-2.15-src/gas/as.c
  	  break;
  	}
      }
-diff -Naur binutils-2.15.orig/gas/as.h binutils-2.15-src/gas/as.h
---- binutils-2.15.orig/gas/as.h	Sun Nov 23 02:14:20 2003
-+++ binutils-2.15-src/gas/as.h	Sun Jan 30 14:16:48 2005
-@@ -261,16 +261,22 @@
+diff -Naur binutils-2.16.orig/gas/as.h binutils-2.16-src/gas/as.h
+--- binutils-2.16.orig/gas/as.h	Wed Apr 13 19:58:40 2005
++++ binutils-2.16-src/gas/as.h	Sat Jun 11 06:26:30 2005
+@@ -244,16 +244,22 @@
  
  #ifdef MANY_SEGMENTS
  #include "bfd.h"
@@ -90,7 +88,7 @@ diff -Naur binutils-2.15.orig/gas/as.h binutils-2.15-src/gas/as.h
  #else
  #define N_SEGMENTS 3
  #define SEG_NORMAL(x) ((x) == SEG_TEXT || (x) == SEG_DATA || (x) == SEG_BSS)
-@@ -310,8 +316,13 @@
+@@ -294,8 +300,13 @@
  #ifdef BFD_ASSEMBLER
  #define segment_name(SEG)	bfd_get_section_name (stdoutput, SEG)
  #else
@@ -105,7 +103,7 @@ diff -Naur binutils-2.15.orig/gas/as.h binutils-2.15-src/gas/as.h
  #endif
  
  #ifndef BFD_ASSEMBLER
-@@ -477,6 +488,9 @@
+@@ -481,6 +492,9 @@
  
  extern enum debug_info_type debug_type;
  extern int use_gnu_debug_info_extensions;
@@ -115,19 +113,19 @@ diff -Naur binutils-2.15.orig/gas/as.h binutils-2.15-src/gas/as.h
  
  /* Maximum level of macro nesting.  */
  extern int max_macro_nest;
-diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config/obj-coff.c
---- binutils-2.15.orig/gas/config/obj-coff.c	Thu Nov 20 00:01:54 2003
-+++ binutils-2.15-src/gas/config/obj-coff.c	Sun Apr  3 11:17:52 2005
-@@ -1556,7 +1556,7 @@
+diff -Naur binutils-2.16.orig/gas/config/obj-coff.c binutils-2.16-src/gas/config/obj-coff.c
+--- binutils-2.16.orig/gas/config/obj-coff.c	Tue Mar  1 11:24:30 2005
++++ binutils-2.16-src/gas/config/obj-coff.c	Sat Jun 11 06:26:30 2005
+@@ -1695,7 +1695,7 @@
       section alignment, then skip this step, as TICOFF does.  */
-   size = bfd_get_section_size_before_reloc (sec);
+   size = bfd_get_section_size (sec);
    mask = ((bfd_vma) 1 << align_power) - 1;
 -#if !defined(TICOFF)
 +#if 0 /*!defined(TICOFF)*/
    if (size & mask)
      {
        bfd_vma new_size;
-@@ -1699,14 +1699,20 @@
+@@ -1834,14 +1834,20 @@
  /* This vector is used to turn a gas internal segment number into a
     section number suitable for insertion into a coff symbol table.
     This must correspond to seg_info_off_by_4.  */
@@ -148,7 +146,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
    C_UNDEF_SECTION,		/* SEG_UNKNOWN */
    C_UNDEF_SECTION,		/* SEG_GOOF */
    C_UNDEF_SECTION,		/* SEG_EXPR */
-@@ -1716,6 +1722,13 @@
+@@ -1851,6 +1857,13 @@
    C_REGISTER_SECTION,		/* SEG_REGISTER */
  };
  
@@ -162,7 +160,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  int function_lineoff = -1;	/* Offset in line#s where the last function
  				   started (the odd entry for line #0) */
  
-@@ -1783,6 +1796,8 @@
+@@ -1918,6 +1931,8 @@
   SEG_DEBUG,
   SEG_ABSOLUTE,
   SEG_UNKNOWN,
@@ -171,7 +169,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
   SEG_E0,  SEG_E1,  SEG_E2,  SEG_E3,  SEG_E4,
   SEG_E5,  SEG_E6,  SEG_E7,  SEG_E8,  SEG_E9,
   SEG_E10, SEG_E11, SEG_E12, SEG_E13, SEG_E14,
-@@ -1801,9 +1816,19 @@
+@@ -1936,9 +1951,19 @@
   (segT) 0,
   (segT) 0,
   SEG_REGISTER
@@ -192,7 +190,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  
  static relax_addressT relax_align PARAMS ((relax_addressT, long));
  
-@@ -1876,6 +1901,12 @@
+@@ -2010,6 +2035,12 @@
  	    size += off;
  	  }
  	  break;
@@ -205,7 +203,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  	default:
  	  BAD_CASE (frag->fr_type);
  	  break;
-@@ -2025,8 +2056,11 @@
+@@ -2159,8 +2190,11 @@
  					S_GET_NAME (symbol_ptr));
  			    }
  
@@ -218,7 +216,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  			    intr.r_symndx = dot->sy_number;
  			  else
  			    intr.r_symndx = symbol_ptr->sy_number;
-@@ -2175,6 +2209,16 @@
+@@ -2309,6 +2343,16 @@
  		    }
  
  		  break;
@@ -235,7 +233,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		case rs_space:
  		case rs_fill:
  		case rs_align:
-@@ -3094,6 +3138,11 @@
+@@ -3218,6 +3262,11 @@
        tc_frob_coff_symbol (symbolP);
  #endif
  
@@ -247,7 +245,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
        /* We must put the external symbols apart. The loader
  	 does not bomb if we do not. But the references in
  	 the endndx field for a .bb symbol are not corrected
-@@ -3435,7 +3484,7 @@
+@@ -3559,7 +3608,7 @@
    (!(FRCHAIN)->frch_next || (FRCHAIN)->frch_next->frch_seg != (SEG)	\
     ? get_recorded_alignment (SEG) : 0)
  #else
@@ -256,7 +254,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  #endif
  #endif
  
-@@ -3652,7 +3701,9 @@
+@@ -3767,7 +3816,9 @@
  {
    unsigned int i;
  
@@ -267,7 +265,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
    char buf[SCNNMLEN + 1];
  
    strncpy (buf, name, SCNNMLEN);
-@@ -3755,6 +3806,9 @@
+@@ -3870,6 +3921,9 @@
  		case 'w': flags |= STYP_DATA;   break;
  		case 'x': flags |= STYP_TEXT;   break;
  		case 'r': flags |= STYP_LIT;	break;
@@ -277,7 +275,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		default:
  		  as_warn(_("unknown section attribute '%c'"),
  			  *input_line_pointer);
-@@ -3915,6 +3969,13 @@
+@@ -4029,6 +4083,13 @@
        symbol_remove (symbolP, &symbol_rootP, &symbol_lastP);
        symbol_insert (symbolP, symbol_rootP, &symbol_rootP, &symbol_lastP);
      }
@@ -291,7 +289,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  }
  
  /* Build a 'section static' symbol.  */
-@@ -4291,10 +4352,13 @@
+@@ -4344,10 +4405,13 @@
  #endif /* TC_I960 */
  	      add_number += S_GET_VALUE (add_symbolP) -
  		S_GET_VALUE (sub_symbolP);
@@ -306,16 +304,16 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		  fixP->fx_addsy = NULL;
  		  fixP->fx_subsy = NULL;
  		  fixP->fx_done = 1;
-@@ -4319,6 +4383,8 @@
- #endif
- 		       )
+@@ -4368,6 +4432,8 @@
+ #ifdef DIFF_EXPR_OK
+ 	      else if (S_GET_SEGMENT (sub_symbolP) == this_segment_type)
  		{
 +/* (TIGCC 20030716) Take TC_FORCE_RELOCATION_SUB_LOCAL into account. -- Kevin Kofler  */
 +		 if (!TC_FORCE_RELOCATION_SUB_LOCAL (fixP)) {
  		  /* Make it pc-relative.  */
  		  add_number += (md_pcrel_from (fixP)
  				 - S_GET_VALUE (sub_symbolP));
-@@ -4326,15 +4392,19 @@
+@@ -4375,15 +4441,19 @@
  		  fixP->fx_pcrel = 1;
  		  sub_symbolP = 0;
  		  fixP->fx_subsy = 0;
@@ -335,7 +333,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  		}
  	    }
  	}
-@@ -4473,7 +4543,13 @@
+@@ -4522,7 +4592,13 @@
  
        md_apply_fix3 (fixP, (valueT *) & add_number, this_segment_type);
  
@@ -350,10 +348,10 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.c binutils-2.15-src/gas/config
  	{
  #ifndef TC_M88K
  	  /* The m88k uses the offset field of the reloc to get around
-diff -Naur binutils-2.15.orig/gas/config/obj-coff.h binutils-2.15-src/gas/config/obj-coff.h
---- binutils-2.15.orig/gas/config/obj-coff.h	Thu Nov 20 00:01:54 2003
-+++ binutils-2.15-src/gas/config/obj-coff.h	Sun Jan 30 14:10:52 2005
-@@ -477,7 +477,8 @@
+diff -Naur binutils-2.16.orig/gas/config/obj-coff.h binutils-2.16-src/gas/config/obj-coff.h
+--- binutils-2.16.orig/gas/config/obj-coff.h	Thu Mar  3 11:47:48 2005
++++ binutils-2.16-src/gas/config/obj-coff.h	Sat Jun 11 06:26:30 2005
+@@ -487,7 +487,8 @@
  #define C_DEBUG_SECTION		N_DEBUG
  #define C_NTV_SECTION		N_TV
  #define C_PTV_SECTION		P_TV
@@ -363,7 +361,7 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.h binutils-2.15-src/gas/config
  
  /* Macros to extract information from a symbol table entry.
     This syntactic indirection allows independence regarding a.out or coff.
-@@ -500,20 +501,31 @@
+@@ -510,20 +511,31 @@
  /* Return true for symbols that should not be reduced to section
     symbols or eliminated from expressions, because they may be
     overridden by the linker.  */
@@ -400,10 +398,10 @@ diff -Naur binutils-2.15.orig/gas/config/obj-coff.h binutils-2.15-src/gas/config
     || (flag_strip_local_absolute \
         && !S_IS_EXTERNAL(s) \
         && (s)->sy_symbol.ost_entry.n_scnum == C_ABS_SECTION))
-diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/tc-m68k.c
---- binutils-2.15.orig/gas/config/tc-m68k.c	Mon Jan 26 18:09:30 2004
-+++ binutils-2.15-src/gas/config/tc-m68k.c	Sat May  7 01:37:30 2005
-@@ -75,6 +75,7 @@
+diff -Naur binutils-2.16.orig/gas/config/tc-m68k.c binutils-2.16-src/gas/config/tc-m68k.c
+--- binutils-2.16.orig/gas/config/tc-m68k.c	Tue Mar 22 15:31:48 2005
++++ binutils-2.16-src/gas/config/tc-m68k.c	Sat Jun 11 06:45:02 2005
+@@ -79,6 +79,7 @@
  int flag_want_pic;
  
  static int flag_short_refs;	/* -l option.  */
@@ -411,7 +409,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  static int flag_long_jumps;	/* -S option.  */
  static int flag_keep_pcrel;	/* --pcrel option.  */
  
-@@ -565,6 +566,10 @@
+@@ -579,6 +580,10 @@
    {"extend", float_cons, 'x'},
    {"ldouble", float_cons, 'x'},
  
@@ -422,9 +420,9 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
    /* The following pseudo-ops are supported for MRI compatibility.  */
    {"chip", s_chip, 0},
    {"comline", s_space, 1},
-@@ -700,15 +705,24 @@
- tc_coff_fix2rtype (fixP)
-      fixS *fixP;
+@@ -777,15 +782,24 @@
+ short
+ tc_coff_fix2rtype (fixS *fixP)
  {
 +/* (TIGCC 20040920) Handle unoptimizable relocs.  -- Kevin Kofler */
 +  short isunopt;
@@ -445,12 +443,12 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  : fixP->fx_size == 2 ? R_DIR16
  	  : R_DIR32);
  #else
--  return (fixP->fx_pcrel ?
-+  return isunopt | (fixP->fx_pcrel ?
- 	  (fixP->fx_size == 1 ? R_PCRBYTE :
- 	   fixP->fx_size == 2 ? R_PCRWORD :
- 	   R_PCRLONG) :
-@@ -2611,6 +2625,7 @@
+-  return (fixP->fx_pcrel
++  return isunopt | (fixP->fx_pcrel
+ 	  ? (fixP->fx_size == 1 ? R_PCRBYTE
+ 	     : fixP->fx_size == 2 ? R_PCRWORD
+ 	     : R_PCRLONG)
+@@ -2759,6 +2773,7 @@
  	      add_fix ('B', &opP->disp, 1, -1);
  	      break;
  	    case 'W':
@@ -458,7 +456,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	      add_fix ('w', &opP->disp, 1, 0);
  	      addword (0);
  	      break;
-@@ -2623,6 +2638,20 @@
+@@ -2771,6 +2786,20 @@
  	      addword (0);
  	      addword (0);
  	      break;
@@ -479,7 +477,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	    case 'g':
  	      if (subs (&opP->disp))	/* We can't relax it.  */
  		goto long_branch;
-@@ -2645,8 +2674,15 @@
+@@ -2793,8 +2822,15 @@
  		    the_ins.opcode[0] = 0x4EB9;
  		  else					/* jCC */
  		    {
@@ -495,7 +493,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  		      addword (0x4EF9);
  		    }
  		  add_fix ('l', &opP->disp, 0, 0);
-@@ -3766,7 +3802,7 @@
+@@ -3955,7 +3991,7 @@
        current_label = NULL;
      }
  
@@ -504,7 +502,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
    /* Tie dwarf2 debug info to the address at the start of the insn.  */
    dwarf2_emit_insn (0);
  #endif
-@@ -3819,6 +3855,13 @@
+@@ -4008,6 +4044,13 @@
  	  fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
  	  if (the_ins.reloc[m].wid == 'B')
  	    fixP->fx_signed = 1;
@@ -518,7 +516,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	}
        return;
      }
-@@ -3879,6 +3922,10 @@
+@@ -4068,6 +4111,10 @@
  			      get_reloc_code (wid, the_ins.reloc[m].pcrel,
  					      the_ins.reloc[m].pic_reloc));
  	  fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -529,7 +527,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	}
        (void) frag_var (rs_machine_dependent, 10, 0,
  		       (relax_substateT) (the_ins.fragb[n].fragty),
-@@ -3916,6 +3963,10 @@
+@@ -4105,6 +4152,10 @@
  			  get_reloc_code (wid, the_ins.reloc[m].pcrel,
  					  the_ins.reloc[m].pic_reloc));
        fixP->fx_pcrel_adjust = the_ins.reloc[m].pcrel_fix;
@@ -540,9 +538,9 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
      }
  }
  
-@@ -4405,7 +4456,9 @@
+@@ -4619,7 +4670,9 @@
  
-   val = ((val & 0xffffffff) ^ 0x80000000) - 0x80000000;
+   val = SEXT (val);
  
 -  if (fixP->fx_addsy == NULL && fixP->fx_pcrel == 0)
 +/* (TIGCC 20030716) We aren't done when we still have something to subtract.
@@ -551,7 +549,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
      fixP->fx_done = 1;
  
  #ifdef OBJ_ELF
-@@ -4428,6 +4481,55 @@
+@@ -4642,6 +4695,55 @@
      return;
  #endif
  
@@ -607,7 +605,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
    switch (fixP->fx_size)
      {
        /* The cast to offsetT below are necessary to make code
-@@ -4455,13 +4557,8 @@
+@@ -4669,13 +4771,8 @@
        BAD_CASE (fixP->fx_size);
      }
  
@@ -623,7 +621,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  
    /* For non-pc-relative values, it's conceivable we might get something
       like "0xff" for a byte field.  So extend the upper part of the range
-@@ -4470,7 +4567,17 @@
+@@ -4684,7 +4781,17 @@
    if (! fixP->fx_pcrel && ! fixP->fx_signed)
      upper_limit = upper_limit * 2 + 1;
  
@@ -642,7 +640,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
        && (val > 0 || val < lower_limit))
      as_bad_where (fixP->fx_file, fixP->fx_line, _("value out of range"));
  
-@@ -4582,6 +4689,27 @@
+@@ -4795,6 +4902,27 @@
        fragP->fr_opcode[0] ^= 0x01;	/* Invert bcc.  */
        fragP->fr_opcode[1]  = 0x06;	/* Branch offset = 6.  */
  
@@ -670,7 +668,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
        /* JF: these used to be fr_opcode[2,3], but they may be in a
  	   different frag, in which case referring to them is a no-no.
  	   Only fr_opcode[0,1] are guaranteed to work.  */
-@@ -4754,8 +4882,17 @@
+@@ -4963,8 +5091,17 @@
  	    && relaxable_symbol (fragP->fr_symbol))
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), BYTE);
@@ -689,7 +687,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    /* Symbol is undefined and we want short ref.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
-@@ -4764,6 +4901,17 @@
+@@ -4973,6 +5110,17 @@
  	  {
  	    /* Symbol is still undefined.  Make it LONG.  */
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), LONG);
@@ -707,7 +705,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  }
  	break;
        }
-@@ -4790,7 +4938,7 @@
+@@ -4999,7 +5147,7 @@
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
  	     && relaxable_symbol (fragP->fr_symbol))
@@ -716,7 +714,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    fragP->fr_subtype = TAB (TABTYPE (fragP->fr_subtype), SHORT);
  	  }
-@@ -4816,7 +4964,8 @@
+@@ -5025,7 +5173,8 @@
      case TAB (ABSTOPCREL, SZ_UNDEF):
        {
  	if ((S_GET_SEGMENT (fragP->fr_symbol) == segment
@@ -726,7 +724,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
  	  {
  	    fragP->fr_subtype = TAB (ABSTOPCREL, SHORT);
  	  }
-@@ -4860,6 +5009,7 @@
+@@ -5069,6 +5218,7 @@
  	    }
  	}
        break;
@@ -734,7 +732,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
      default:
        break;
      }
-@@ -6938,6 +7088,8 @@
+@@ -7067,6 +7217,8 @@
    {"disp-size-default-32", no_argument, NULL, OPTION_DISP_SIZE_DEFAULT_32},
  #define OPTION_PCREL (OPTION_MD_BASE + 7)
    {"pcrel", no_argument, NULL, OPTION_PCREL},
@@ -743,7 +741,7 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
    {NULL, no_argument, NULL, 0}
  };
  size_t md_longopts_size = sizeof (md_longopts);
-@@ -6952,6 +7104,12 @@
+@@ -7079,6 +7231,12 @@
      case 'l':			/* -l means keep external to 2 bit offset
  				   rather than 16 bit one.  */
        flag_short_refs = 1;
@@ -756,18 +754,18 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.c binutils-2.15-src/gas/config/
        break;
  
      case 'S':			/* -S means that jbsr's always turn into
-@@ -7131,6 +7289,7 @@
+@@ -7255,6 +7413,7 @@
    fprintf (stream, _("\
  680X0 options:\n\
  -l			use 1 word for refs to undefined symbols [default 2]\n\
 +--short-jumps		use 1 word for jumps to undefined symbols [default 2]\n\
  -m68000 | -m68008 | -m68010 | -m68020 | -m68030 | -m68040 | -m68060 |\n\
  -m68302 | -m68331 | -m68332 | -m68333 | -m68340 | -m68360 | -mcpu32 |\n\
- -m5200  | -m5202  | -m5204  | -m5206  | -m5206e | -m528x  | -m5307  |\n\
-diff -Naur binutils-2.15.orig/gas/config/tc-m68k.h binutils-2.15-src/gas/config/tc-m68k.h
---- binutils-2.15.orig/gas/config/tc-m68k.h	Mon Jan 26 18:09:30 2004
-+++ binutils-2.15-src/gas/config/tc-m68k.h	Sun Jan 30 14:23:30 2005
-@@ -235,3 +235,20 @@
+ -m5200  | -m5202  | -m5204  | -m5206  | -m5206e | -m521x  | -m5249  |\n\
+diff -Naur binutils-2.16.orig/gas/config/tc-m68k.h binutils-2.16-src/gas/config/tc-m68k.h
+--- binutils-2.16.orig/gas/config/tc-m68k.h	Tue Mar  1 22:35:20 2005
++++ binutils-2.16-src/gas/config/tc-m68k.h	Sat Jun 11 06:26:30 2005
+@@ -234,3 +234,20 @@
  
  #define tc_cfi_frame_initial_instructions tc_m68k_frame_initial_instructions
  extern void tc_m68k_frame_initial_instructions (void);
@@ -788,10 +786,10 @@ diff -Naur binutils-2.15.orig/gas/config/tc-m68k.h binutils-2.15-src/gas/config/
 +  (TC_FORCE_RELOCATION (FIX))
 +/* (END TIGCC 20030716) */
 +
-diff -Naur binutils-2.15.orig/gas/configure binutils-2.15-src/gas/configure
---- binutils-2.15.orig/gas/configure	Mon May 17 21:36:06 2004
-+++ binutils-2.15-src/gas/configure	Sun Jan 30 15:54:10 2005
-@@ -10872,7 +10872,7 @@
+diff -Naur binutils-2.16.orig/gas/configure binutils-2.16-src/gas/configure
+--- binutils-2.16.orig/gas/configure	Tue Mar  1 00:43:50 2005
++++ binutils-2.16-src/gas/configure	Sat Jun 11 06:26:30 2005
+@@ -10839,7 +10839,7 @@
  
  
  
@@ -800,10 +798,10 @@ diff -Naur binutils-2.15.orig/gas/configure binutils-2.15-src/gas/configure
  
            ac_config_commands="$ac_config_commands default"
  
-diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
---- binutils-2.15.orig/gas/dwarf2dbg.c	Fri Feb 13 16:12:46 2004
-+++ binutils-2.15-src/gas/dwarf2dbg.c	Fri Jun  3 07:53:20 2005
-@@ -52,7 +52,15 @@
+diff -Naur binutils-2.16.orig/gas/dwarf2dbg.c binutils-2.16-src/gas/dwarf2dbg.c
+--- binutils-2.16.orig/gas/dwarf2dbg.c	Thu Mar  3 01:29:52 2005
++++ binutils-2.16-src/gas/dwarf2dbg.c	Sat Jun 11 07:03:04 2005
+@@ -53,7 +53,15 @@
  # define DWARF2_ADDR_SIZE(bfd) (bfd_arch_bits_per_address (bfd) / 8)
  #endif
  
@@ -820,7 +818,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
  #include "subsegs.h"
  
-@@ -330,6 +338,13 @@
+@@ -331,6 +339,13 @@
    dwarf2_gen_line_info (frag_now_fix () - size, &loc);
  }
  
@@ -834,7 +832,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  /* Get a .debug_line file number for FILENAME.  If NUM is nonzero,
     allocate it on that file table slot, otherwise return the first
     empty one.  */
-@@ -961,7 +976,9 @@
+@@ -962,7 +977,9 @@
        if (1 /* line != e->loc.line || changed */)
  	{
  	  int line_delta = e->loc.line - line;
@@ -845,7 +843,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  	    {
  	      out_set_addr (seg, e->frag, e->frag_ofs);
  	      out_inc_line_addr (line_delta, 0);
-@@ -991,11 +1008,16 @@
+@@ -992,11 +1009,16 @@
    /* Emit a DW_LNE_end_sequence for the end of the section.  */
    last_frag = last_frag_for_seg (seg);
    last_frag_ofs = get_frag_fix (last_frag);
@@ -862,7 +860,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  }
  
  /* Emit the directory and file tables for .debug_line.  */
-@@ -1056,6 +1078,7 @@
+@@ -1057,6 +1079,7 @@
    subseg_set (line_seg, 0);
  
    line_start = symbol_temp_new_now ();
@@ -870,7 +868,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    prologue_end = symbol_temp_make ();
    line_end = symbol_temp_make ();
  
-@@ -1211,15 +1234,19 @@
+@@ -1212,15 +1235,19 @@
  {
    subseg_set (abbrev_seg, 0);
  
@@ -890,7 +888,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    out_abbrev (DW_AT_name, DW_FORM_string);
    out_abbrev (DW_AT_comp_dir, DW_FORM_string);
    out_abbrev (DW_AT_producer, DW_FORM_string);
-@@ -1248,6 +1275,7 @@
+@@ -1249,6 +1276,7 @@
    subseg_set (info_seg, 0);
  
    info_start = symbol_temp_new_now ();
@@ -898,7 +896,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    info_end = symbol_temp_make ();
  
    /* Compilation Unit length.  */
-@@ -1296,6 +1324,7 @@
+@@ -1297,6 +1325,7 @@
    /* ??? sizeof_offset */
    TC_DWARF2_EMIT_OFFSET (section_symbol (line_seg), 4);
  
@@ -906,7 +904,7 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    /* These two attributes may only be emitted if all of the code is
       contiguous.  Multiple sections are not that.  */
    if (all_segs->next == NULL)
-@@ -1312,6 +1341,7 @@
+@@ -1313,6 +1342,7 @@
        expr.X_add_number = 0;
        emit_expr (&expr, sizeof_address);
      }
@@ -914,41 +912,45 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
  
    /* DW_AT_name.  We don't have the actual file name that was present
       on the command line, so assume files[1] is the main input file.
-@@ -1363,15 +1393,51 @@
-        below.  */
-   if (all_segs == NULL
-       && debug_type != DEBUG_DWARF2
+@@ -1366,8 +1396,37 @@
+   segT info_seg;
+   int emit_other_sections = 0;
+ 
 +#ifdef BFD_ASSEMBLER
-       && bfd_get_section_by_name (stdoutput, ".debug_info") == NULL)
+   info_seg = bfd_get_section_by_name (stdoutput, ".debug_info");
+   emit_other_sections = info_seg == NULL || !seg_not_empty_p (info_seg);
 +#else
 +/* (TIGCC 20050403) Yes, this is ugly, it is mostly copied out of subseg_new and
 +                    should be in its own function. -- Kevin Kofler */
-+      && !({
-+            int have_debug_info = 0, i;
-+            for (i = 0; i < (int) SEG_MAXIMUM_ORDINAL; i++)
-+              {
-+                const char *s;
++  int i;
++  info_seg = (segT)(-1);
++  for (i = 0; i < (int) SEG_MAXIMUM_ORDINAL; i++)
++    {
++      const char *s;
 +
-+                s = segment_name ((segT) i);
-+                if (strcmp (".debug_info", s) == 0
-+                    || (strcmp ("debug_info", s) == 0))
-+                  	{
-+                      have_debug_info = 1;
-+                      break;
-+                    }
++      s = segment_name ((segT) i);
++      if (strcmp (".debug_info", s) == 0
++          || (strcmp ("debug_info", s) == 0))
++        {
++          info_seg = (segT) i;
++          break;
++        }
 +#ifdef obj_segment_name
-+                s = obj_segment_name ((segT) i);
-+                if (strcmp (".debug_info", s) == 0
-+                    || (strcmp ("debug_info", s) == 0))
-+                  	{
-+                      have_debug_info = 1;
-+                      break;
-+                    }
++      s = obj_segment_name ((segT) i);
++      if (strcmp (".debug_info", s) == 0
++          || (strcmp ("debug_info", s) == 0))
++        {
++          info_seg = (segT) i;
++          break;
++        }
 +#endif
-+                }
-+            have_debug_info;
-+      }))
++    }
++  emit_other_sections = info_seg == (segT)(-1) || !seg_not_empty_p (info_seg);
 +#endif
+ 
+   if (!all_segs && emit_other_sections)
+     /* There is no line information and no non-empty .debug_info
+@@ -1375,11 +1434,17 @@
      return;
  
    /* Calculate the size of an address for the target machine.  */
@@ -961,26 +963,29 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.c binutils-2.15-src/gas/dwarf2dbg.c
    /* Create and switch to the line number section.  */
    line_seg = subseg_new (".debug_line", 0);
 +#ifdef BFD_ASSEMBLER
-   bfd_set_section_flags (stdoutput, line_seg, SEC_READONLY);
+   bfd_set_section_flags (stdoutput, line_seg, SEC_READONLY | SEC_DEBUGGING);
 +#endif
  
    /* For each subsection, chain the debug entries together.  */
    for (s = all_segs; s; s = s->next)
-@@ -1400,9 +1466,11 @@
+@@ -1410,12 +1475,14 @@
        abbrev_seg = subseg_new (".debug_abbrev", 0);
        aranges_seg = subseg_new (".debug_aranges", 0);
  
 +#ifdef BFD_ASSEMBLER
-       bfd_set_section_flags (stdoutput, info_seg, SEC_READONLY);
-       bfd_set_section_flags (stdoutput, abbrev_seg, SEC_READONLY);
-       bfd_set_section_flags (stdoutput, aranges_seg, SEC_READONLY);
+       bfd_set_section_flags (stdoutput, info_seg,
+ 			     SEC_READONLY | SEC_DEBUGGING);
+       bfd_set_section_flags (stdoutput, abbrev_seg,
+ 			     SEC_READONLY | SEC_DEBUGGING);
+       bfd_set_section_flags (stdoutput, aranges_seg,
+ 			     SEC_READONLY | SEC_DEBUGGING);
 +#endif
  
        record_alignment (aranges_seg, ffs (2 * sizeof_address) - 1);
  
-diff -Naur binutils-2.15.orig/gas/dwarf2dbg.h binutils-2.15-src/gas/dwarf2dbg.h
---- binutils-2.15.orig/gas/dwarf2dbg.h	Fri Nov 21 13:28:34 2003
-+++ binutils-2.15-src/gas/dwarf2dbg.h	Fri Jun  3 07:53:42 2005
+diff -Naur binutils-2.16.orig/gas/dwarf2dbg.h binutils-2.16-src/gas/dwarf2dbg.h
+--- binutils-2.16.orig/gas/dwarf2dbg.h	Thu Mar  3 01:29:52 2005
++++ binutils-2.16-src/gas/dwarf2dbg.h	Sat Jun 11 06:26:32 2005
 @@ -61,6 +61,7 @@
  
  /* Must be called for each generated instruction.  */
@@ -989,10 +994,10 @@ diff -Naur binutils-2.15.orig/gas/dwarf2dbg.h binutils-2.15-src/gas/dwarf2dbg.h
  
  extern void dwarf2_finish (void);
  
-diff -Naur binutils-2.15.orig/gas/expr.c binutils-2.15-src/gas/expr.c
---- binutils-2.15.orig/gas/expr.c	Mon May 17 21:36:06 2004
-+++ binutils-2.15-src/gas/expr.c	Sun Jan 30 14:10:52 2005
-@@ -1728,8 +1728,11 @@
+diff -Naur binutils-2.16.orig/gas/expr.c binutils-2.16-src/gas/expr.c
+--- binutils-2.16.orig/gas/expr.c	Thu Mar  3 17:22:12 2005
++++ binutils-2.16-src/gas/expr.c	Sat Jun 11 06:26:32 2005
+@@ -1751,8 +1751,11 @@
  	  /* X + constant.  */
  	  resultP->X_add_number += right.X_add_number;
  	}
@@ -1006,7 +1011,7 @@ diff -Naur binutils-2.15.orig/gas/expr.c binutils-2.15-src/gas/expr.c
  	       && right.X_op == O_symbol
  	       && resultP->X_op == O_symbol
  	       && (symbol_get_frag (right.X_add_symbol)
-@@ -1825,6 +1828,15 @@
+@@ -1848,6 +1851,15 @@
  		       && right.X_add_number == 0)))
  	{
  	  /* Symbol OP symbol.  */
@@ -1022,9 +1027,9 @@ diff -Naur binutils-2.15.orig/gas/expr.c binutils-2.15-src/gas/expr.c
  	  resultP->X_op = op_left;
  	  resultP->X_op_symbol = right.X_add_symbol;
  	  if (op_left == O_add)
-diff -Naur binutils-2.15.orig/gas/frags.h binutils-2.15-src/gas/frags.h
---- binutils-2.15.orig/gas/frags.h	Fri Jan 23 12:52:18 2004
-+++ binutils-2.15-src/gas/frags.h	Sun Jan 30 14:10:52 2005
+diff -Naur binutils-2.16.orig/gas/frags.h binutils-2.16-src/gas/frags.h
+--- binutils-2.16.orig/gas/frags.h	Thu Mar  3 01:29:52 2005
++++ binutils-2.16-src/gas/frags.h	Sat Jun 11 06:26:32 2005
 @@ -66,6 +66,9 @@
    char *fr_file;
    unsigned int fr_line;
@@ -1035,10 +1040,10 @@ diff -Naur binutils-2.15.orig/gas/frags.h binutils-2.15-src/gas/frags.h
  #ifndef NO_LISTING
    struct list_info_struct *line;
  #endif
-diff -Naur binutils-2.15.orig/gas/listing.c binutils-2.15-src/gas/listing.c
---- binutils-2.15.orig/gas/listing.c	Fri Dec 19 15:23:40 2003
-+++ binutils-2.15-src/gas/listing.c	Sun Jan 30 14:10:52 2005
-@@ -948,7 +948,8 @@
+diff -Naur binutils-2.16.orig/gas/listing.c binutils-2.16-src/gas/listing.c
+--- binutils-2.16.orig/gas/listing.c	Thu Mar  3 01:29:52 2005
++++ binutils-2.16-src/gas/listing.c	Sat Jun 11 06:26:32 2005
+@@ -944,7 +944,8 @@
    int show_listing = 1;
    unsigned int width;
  
@@ -1048,7 +1053,7 @@ diff -Naur binutils-2.15.orig/gas/listing.c binutils-2.15-src/gas/listing.c
    data_buffer = xmalloc (MAX_BYTES);
    eject = 1;
    list = head;
-@@ -966,8 +967,8 @@
+@@ -962,8 +963,8 @@
      {
        unsigned int list_line;
  
@@ -1059,10 +1064,10 @@ diff -Naur binutils-2.15.orig/gas/listing.c binutils-2.15-src/gas/listing.c
  
        list_line = list->line;
        switch (list->edict)
-diff -Naur binutils-2.15.orig/gas/read.c binutils-2.15-src/gas/read.c
---- binutils-2.15.orig/gas/read.c	Mon May 17 21:36:08 2004
-+++ binutils-2.15-src/gas/read.c	Fri Jun  3 07:55:10 2005
-@@ -43,6 +43,7 @@
+diff -Naur binutils-2.16.orig/gas/read.c binutils-2.16-src/gas/read.c
+--- binutils-2.16.orig/gas/read.c	Wed Apr 13 19:58:40 2005
++++ binutils-2.16-src/gas/read.c	Sat Jun 11 06:26:32 2005
+@@ -40,6 +40,7 @@
  #include "obstack.h"
  #include "listing.h"
  #include "ecoff.h"
@@ -1070,7 +1075,7 @@ diff -Naur binutils-2.15.orig/gas/read.c binutils-2.15-src/gas/read.c
  #include "dw2gencfi.h"
  
  #ifndef TC_START_LABEL
-@@ -3299,6 +3300,11 @@
+@@ -3427,6 +3428,11 @@
  void
  cons (int size)
  {
@@ -1082,7 +1087,7 @@ diff -Naur binutils-2.15.orig/gas/read.c binutils-2.15-src/gas/read.c
    cons_worker (size, 0);
  }
  
-@@ -3653,8 +3659,9 @@
+@@ -3768,8 +3774,9 @@
  #define TC_CONS_RELOC 0
  #endif
  #endif
@@ -1093,9 +1098,9 @@ diff -Naur binutils-2.15.orig/gas/read.c binutils-2.15-src/gas/read.c
  #endif /* TC_CONS_FIX_NEW */
  #endif /* BFD_ASSEMBLER */
      }
-diff -Naur binutils-2.15.orig/gas/subsegs.c binutils-2.15-src/gas/subsegs.c
---- binutils-2.15.orig/gas/subsegs.c	Wed Dec  3 03:39:58 2003
-+++ binutils-2.15-src/gas/subsegs.c	Sun Jan 30 14:10:52 2005
+diff -Naur binutils-2.16.orig/gas/subsegs.c binutils-2.16-src/gas/subsegs.c
+--- binutils-2.16.orig/gas/subsegs.c	Thu Mar  3 11:47:44 2005
++++ binutils-2.16-src/gas/subsegs.c	Sat Jun 11 06:26:32 2005
 @@ -41,6 +41,8 @@
  
  #endif /* MANY_SEGMENTS */
@@ -1131,9 +1136,9 @@ diff -Naur binutils-2.15.orig/gas/subsegs.c binutils-2.15-src/gas/subsegs.c
  #else /* BFD_ASSEMBLER */
  
  /* Gas segment information for bfd_abs_section_ptr and
-diff -Naur binutils-2.15.orig/gas/subsegs.h binutils-2.15-src/gas/subsegs.h
---- binutils-2.15.orig/gas/subsegs.h	Wed Dec  3 03:39:58 2003
-+++ binutils-2.15-src/gas/subsegs.h	Thu Apr  7 17:19:28 2005
+diff -Naur binutils-2.16.orig/gas/subsegs.h binutils-2.16-src/gas/subsegs.h
+--- binutils-2.16.orig/gas/subsegs.h	Thu Feb 17 13:46:00 2005
++++ binutils-2.16-src/gas/subsegs.h	Sat Jun 11 06:26:32 2005
 @@ -89,6 +89,7 @@
  #endif
  
@@ -1142,10 +1147,10 @@ diff -Naur binutils-2.15.orig/gas/subsegs.h binutils-2.15-src/gas/subsegs.h
  
    struct lineno_list *lineno_list_head;
    struct lineno_list *lineno_list_tail;
-diff -Naur binutils-2.15.orig/gas/symbols.c binutils-2.15-src/gas/symbols.c
---- binutils-2.15.orig/gas/symbols.c	Sun Nov 30 19:07:12 2003
-+++ binutils-2.15-src/gas/symbols.c	Sun Jan 30 14:10:52 2005
-@@ -1137,6 +1137,14 @@
+diff -Naur binutils-2.16.orig/gas/symbols.c binutils-2.16-src/gas/symbols.c
+--- binutils-2.16.orig/gas/symbols.c	Wed Apr 13 19:58:40 2005
++++ binutils-2.16-src/gas/symbols.c	Sat Jun 11 06:26:32 2005
+@@ -1143,6 +1143,14 @@
  		       || add_symbol == op_symbol)))
  	    report_op_error (symp, add_symbol, op_symbol);
  
@@ -1160,9 +1165,9 @@ diff -Naur binutils-2.15.orig/gas/symbols.c binutils-2.15-src/gas/symbols.c
  	  if (final_seg == expr_section || final_seg == undefined_section)
  	    final_seg = absolute_section;
  
-diff -Naur binutils-2.15.orig/gas/symbols.h binutils-2.15-src/gas/symbols.h
---- binutils-2.15.orig/gas/symbols.h	Sun Nov 30 19:07:12 2003
-+++ binutils-2.15-src/gas/symbols.h	Sun Jan 30 14:10:52 2005
+diff -Naur binutils-2.16.orig/gas/symbols.h binutils-2.16-src/gas/symbols.h
+--- binutils-2.16.orig/gas/symbols.h	Wed Apr 13 19:58:40 2005
++++ binutils-2.16-src/gas/symbols.h	Sat Jun 11 06:26:32 2005
 @@ -144,11 +144,16 @@
  /*
   * Current means for getting from symbols to segments and vice verse.
@@ -1180,10 +1185,10 @@ diff -Naur binutils-2.15.orig/gas/symbols.h binutils-2.15-src/gas/symbols.h
  
  #define	N_REGISTER	30	/* Fake N_TYPE value for SEG_REGISTER */
  
-diff -Naur binutils-2.15.orig/gas/write.c binutils-2.15-src/gas/write.c
---- binutils-2.15.orig/gas/write.c	Sat Dec  6 16:16:50 2003
-+++ binutils-2.15-src/gas/write.c	Sun Jan 30 14:10:52 2005
-@@ -222,6 +222,7 @@
+diff -Naur binutils-2.16.orig/gas/write.c binutils-2.16-src/gas/write.c
+--- binutils-2.16.orig/gas/write.c	Thu Mar  3 01:29:52 2005
++++ binutils-2.16-src/gas/write.c	Sat Jun 11 06:26:32 2005
+@@ -217,6 +217,7 @@
  #if defined(NEED_FX_R_TYPE) || defined (BFD_ASSEMBLER)
    fixP->fx_r_type = r_type;
  #endif
@@ -1191,7 +1196,7 @@ diff -Naur binutils-2.15.orig/gas/write.c binutils-2.15-src/gas/write.c
    fixP->fx_im_disp = 0;
    fixP->fx_pcrel_adjust = 0;
    fixP->fx_bit_fixP = 0;
-@@ -833,6 +834,11 @@
+@@ -831,6 +832,11 @@
  	    continue;
  	  }
  
@@ -1203,7 +1208,7 @@ diff -Naur binutils-2.15.orig/gas/write.c binutils-2.15-src/gas/write.c
  	/* Don't try to reduce relocs which refer to non-local symbols
             in .linkonce sections.  It can lead to confusion when a
             debugging section refers to a .linkonce section.  I hope
-@@ -1383,7 +1389,7 @@
+@@ -1381,7 +1387,7 @@
        /* This now gets called even if we had errors.  In that case,
           any alignment is meaningless, and, moreover, will look weird
           if we are generating a listing.  */
@@ -1212,9 +1217,9 @@ diff -Naur binutils-2.15.orig/gas/write.c binutils-2.15-src/gas/write.c
  	{
  	  alignment = SUB_SEGMENT_ALIGN (now_seg, frchainP);
  #ifdef BFD_ASSEMBLER
-diff -Naur binutils-2.15.orig/gas/write.h binutils-2.15-src/gas/write.h
---- binutils-2.15.orig/gas/write.h	Sat Dec  6 16:16:50 2003
-+++ binutils-2.15-src/gas/write.h	Sun Jan 30 14:10:52 2005
+diff -Naur binutils-2.16.orig/gas/write.h binutils-2.16-src/gas/write.h
+--- binutils-2.16.orig/gas/write.h	Thu Mar  3 01:29:52 2005
++++ binutils-2.16-src/gas/write.h	Sat Jun 11 06:26:32 2005
 @@ -71,9 +71,12 @@
       look into it for version 2.6.  */
    unsigned fx_plt : 1;
@@ -1229,10 +1234,10 @@ diff -Naur binutils-2.15.orig/gas/write.h binutils-2.15-src/gas/write.h
  
    /* A bit for the CPU specific code.
       This probably can be folded into tc_fix_data, below.  */
-diff -Naur binutils-2.15.orig/include/coff/internal.h binutils-2.15-src/include/coff/internal.h
---- binutils-2.15.orig/include/coff/internal.h	Tue Dec  2 10:49:14 2003
-+++ binutils-2.15-src/include/coff/internal.h	Sun Jan 30 14:10:52 2005
-@@ -349,6 +349,9 @@
+diff -Naur binutils-2.16.orig/include/coff/internal.h binutils-2.16-src/include/coff/internal.h
+--- binutils-2.16.orig/include/coff/internal.h	Thu Mar  3 11:58:04 2005
++++ binutils-2.16-src/include/coff/internal.h	Sat Jun 11 06:26:32 2005
+@@ -350,6 +350,9 @@
  
  #define STYP_LIT	0x8020	/* Literal data (like STYP_TEXT) */
  
@@ -1242,7 +1247,7 @@ diff -Naur binutils-2.15.orig/include/coff/internal.h binutils-2.15-src/include/
  
  /********************** LINE NUMBERS **********************/
  
-@@ -741,5 +744,10 @@
+@@ -743,5 +746,10 @@
  #define R_W65_PCR16	9
  
  #define R_W65_DP       10  /* direct page 8 bits only   */
@@ -1253,120 +1258,120 @@ diff -Naur binutils-2.15.orig/include/coff/internal.h binutils-2.15-src/include/
 +#define R_UNOPTIMIZABLE 0x8000
  
  #endif /* GNU_COFF_INTERNAL_H */
-diff -Naur binutils-2.15.orig/opcodes/configure binutils-2.15-src/opcodes/configure
---- binutils-2.15.orig/opcodes/configure	Tue Aug  5 11:39:30 2003
-+++ binutils-2.15-src/opcodes/configure	Sun Jan 30 14:10:52 2005
-@@ -487,7 +487,7 @@
+diff -Naur binutils-2.16.orig/opcodes/configure binutils-2.16-src/opcodes/configure
+--- binutils-2.16.orig/opcodes/configure	Mon Jan 31 20:30:36 2005
++++ binutils-2.16-src/opcodes/configure	Sat Jun 11 07:05:40 2005
+@@ -271,7 +271,7 @@
+ PACKAGE_STRING=
+ PACKAGE_BUGREPORT=
  
- # A filename unique to this package, relative to the directory that
- # configure is in, which we can look for to find out if srcdir is correct.
--ac_unique_file=z8k-dis.c
-+ac_unique_file=m68k-dis.c
+-ac_unique_file="z8k-dis.c"
++ac_unique_file="m68k-dis.c"
+ # Factoring default headers for most tests.
+ ac_includes_default="\
+ #include <stdio.h>
+diff -Naur binutils-2.16.orig/opcodes/configure.in binutils-2.16-src/opcodes/configure.in
+--- binutils-2.16.orig/opcodes/configure.in	Mon Nov  8 13:17:36 2004
++++ binutils-2.16-src/opcodes/configure.in	Sat Jun 11 07:06:26 2005
+@@ -3,7 +3,7 @@
  
- # Find the source files, if location was not specified.
- if test -z "$srcdir"; then
-diff -Naur binutils-2.15.orig/opcodes/configure.in binutils-2.15-src/opcodes/configure.in
---- binutils-2.15.orig/opcodes/configure.in	Tue Aug  5 11:39:30 2003
-+++ binutils-2.15-src/opcodes/configure.in	Sun Jan 30 14:10:52 2005
-@@ -2,7 +2,7 @@
- dnl
+ AC_PREREQ(2.59)
+ AC_INIT
+-AC_CONFIG_SRCDIR([z8k-dis.c])
++AC_CONFIG_SRCDIR([m68k-dis.c])
  
- AC_PREREQ(2.13)
--AC_INIT(z8k-dis.c)
-+AC_INIT(m68k-dis.c)
- 
- AC_CANONICAL_SYSTEM
+ AC_CANONICAL_TARGET
  AC_ISC_POSIX
-diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15-src/opcodes/m68k-opc.c
---- binutils-2.15.orig/opcodes/m68k-opc.c	Thu Nov  6 04:32:06 2003
-+++ binutils-2.15-src/opcodes/m68k-opc.c	Sun Jan 30 19:04:06 2005
+diff -Naur binutils-2.16.orig/opcodes/m68k-opc.c binutils-2.16-src/opcodes/m68k-opc.c
+--- binutils-2.16.orig/opcodes/m68k-opc.c	Mon May 24 16:33:22 2004
++++ binutils-2.16-src/opcodes/m68k-opc.c	Sat Jun 11 07:20:18 2005
 @@ -116,6 +116,22 @@
- {"asrl",	one(0160200),	one(0170770), "QdDs", m68000up | mcf },
- {"asrl",	one(0160240),	one(0170770), "DdDs", m68000up | mcf },
+ {"asrl", 2,	one(0160200),	one(0170770), "QdDs", m68000up | mcfisa_a },
+ {"asrl", 2,	one(0160240),	one(0170770), "DdDs", m68000up | mcfisa_a },
  
 +/* (TIGCC 20050130) New branch type: variable-size, word by default. */
-+{"bhi",	one(0061000),	one(0177777), "BG", m68000up | mcf },
-+{"bls",	one(0061400),	one(0177777), "BG", m68000up | mcf },
-+{"bcc",	one(0062000),	one(0177777), "BG", m68000up | mcf },
-+{"bcs",	one(0062400),	one(0177777), "BG", m68000up | mcf },
-+{"bne",	one(0063000),	one(0177777), "BG", m68000up | mcf },
-+{"beq",	one(0063400),	one(0177777), "BG", m68000up | mcf },
-+{"bvc",	one(0064000),	one(0177777), "BG", m68000up | mcf },
-+{"bvs",	one(0064400),	one(0177777), "BG", m68000up | mcf },
-+{"bpl",	one(0065000),	one(0177777), "BG", m68000up | mcf },
-+{"bmi",	one(0065400),	one(0177777), "BG", m68000up | mcf },
-+{"bge",	one(0066000),	one(0177777), "BG", m68000up | mcf },
-+{"blt",	one(0066400),	one(0177777), "BG", m68000up | mcf },
-+{"bgt",	one(0067000),	one(0177777), "BG", m68000up | mcf },
-+{"ble",	one(0067400),	one(0177777), "BG", m68000up | mcf },
++{"bhi",	2, one(0061000),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bls",	2, one(0061400),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bcc",	2, one(0062000),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bcs",	2, one(0062400),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bne",	2, one(0063000),	one(0177777), "BG", m68000up | mcfisa_a },
++{"beq",	2, one(0063400),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bvc",	2, one(0064000),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bvs",	2, one(0064400),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bpl",	2, one(0065000),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bmi",	2, one(0065400),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bge",	2, one(0066000),	one(0177777), "BG", m68000up | mcfisa_a },
++{"blt",	2, one(0066400),	one(0177777), "BG", m68000up | mcfisa_a },
++{"bgt",	2, one(0067000),	one(0177777), "BG", m68000up | mcfisa_a },
++{"ble",	2, one(0067400),	one(0177777), "BG", m68000up | mcfisa_a },
 +
- {"bhiw",	one(0061000),	one(0177777), "BW", m68000up | mcf },
- {"blsw",	one(0061400),	one(0177777), "BW", m68000up | mcf },
- {"bccw",	one(0062000),	one(0177777), "BW", m68000up | mcf },
+ {"bhiw", 2,	one(0061000),	one(0177777), "BW", m68000up | mcfisa_a },
+ {"blsw", 2,	one(0061400),	one(0177777), "BW", m68000up | mcfisa_a },
+ {"bccw", 2,	one(0062000),	one(0177777), "BW", m68000up | mcfisa_a },
 @@ -199,6 +215,8 @@
  
- {"bkpt",	one(0044110),	one(0177770), "ts", m68010up },
+ {"bkpt", 2,	one(0044110),	one(0177770), "ts", m68010up },
  
 +/* (TIGCC 20050130) New branch type: variable-size, word by default. */
-+{"bra",	one(0060000),	one(0177777), "BG", m68000up | mcf },
- {"braw",	one(0060000),	one(0177777), "BW", m68000up | mcf },
- {"bral",	one(0060377),	one(0177777), "BL", m68020up | cpu32 | mcfv4up},
- {"bras",	one(0060000),	one(0177400), "BB", m68000up | mcf },
++{"bra",	2, one(0060000),	one(0177777), "BG", m68000up | mcfisa_a },
+ {"braw", 2,	one(0060000),	one(0177777), "BW", m68000up | mcfisa_a },
+ {"bral", 2,	one(0060377),	one(0177777), "BL", m68020up | cpu32 | mcfisa_b},
+ {"bras", 2,	one(0060000),	one(0177400), "BB", m68000up | mcfisa_a },
 @@ -208,6 +226,8 @@
- {"bset",	one(0004300),	one(0177700), "#b$s", m68000up },
- {"bset",	one(0004300),	one(0177700), "#bqs", mcf },
+ {"bset", 4,	one(0004300),	one(0177700), "#b$s", m68000up },
+ {"bset", 4,	one(0004300),	one(0177700), "#bqs", mcfisa_a },
  
 +/* (TIGCC 20050130) New branch type: variable-size, word by default. */
-+{"bsr",	one(0060400),	one(0177777), "BG", m68000up | mcf },
- {"bsrw",	one(0060400),	one(0177777), "BW", m68000up | mcf },
- {"bsrl",	one(0060777),	one(0177777), "BL", m68020up | cpu32 | mcfv4up},
- {"bsrs",	one(0060400),	one(0177400), "BB", m68000up | mcf },
++{"bsr",	2, one(0060400),	one(0177777), "BG", m68000up | mcfisa_a },
+ {"bsrw", 2,	one(0060400),	one(0177777), "BW", m68000up | mcfisa_a },
+ {"bsrl", 2,	one(0060777),	one(0177777), "BL", m68020up | cpu32 | mcfisa_b},
+ {"bsrs", 2,	one(0060400),	one(0177400), "BB", m68000up | mcfisa_a },
 @@ -254,6 +274,7 @@
  
- {"clrb",	one(0041000),	one(0177700), "$s", m68000up | mcf },
- {"clrw",	one(0041100),	one(0177700), "$s", m68000up | mcf },
-+{"clrl",	one(0070000),	one(0170477), "Dd", m68000 },
- {"clrl",	one(0041200),	one(0177700), "$s", m68000up | mcf },
+ {"clrb", 2,	one(0041000),	one(0177700), "$s", m68000up | mcfisa_a },
+ {"clrw", 2,	one(0041100),	one(0177700), "$s", m68000up | mcfisa_a },
++{"clrl", 2,	one(0070000),	one(0170477), "Dd", m68000 },
+ {"clrl", 2,	one(0041200),	one(0177700), "$s", m68000up | mcfisa_a },
  
- {"cmp2b",	two(0000300,0), two(0177700,07777), "!sR1", m68020up | cpu32 },
+ {"cmp2b", 4,	two(0000300,0), two(0177700,07777), "!sR1", m68020up | cpu32 },
 @@ -263,11 +284,11 @@
- {"cmpaw",	one(0130300),	one(0170700), "*wAd", m68000up },
- {"cmpal",	one(0130700),	one(0170700), "*lAd", m68000up | mcf },
+ {"cmpaw", 2,	one(0130300),	one(0170700), "*wAd", m68000up },
+ {"cmpal", 2,	one(0130700),	one(0170700), "*lAd", m68000up | mcfisa_a },
  
--{"cmpib",	one(0006000),	one(0177700), "#b@s", m68000up },
-+{"cmpib",	one(0006000),	one(0177700), "#b$s", m68000up },
- {"cmpib",	one(0006000),	one(0177700), "#bDs", mcfv4up },
--{"cmpiw",	one(0006100),	one(0177700), "#w@s", m68000up },
-+{"cmpiw",	one(0006100),	one(0177700), "#w$s", m68000up },
- {"cmpiw",	one(0006100),	one(0177700), "#wDs", mcfv4up },
--{"cmpil",	one(0006200),	one(0177700), "#l@s", m68000up },
-+{"cmpil",	one(0006200),	one(0177700), "#l$s", m68000up },
- {"cmpil",	one(0006200),	one(0177700), "#lDs", mcf },
+-{"cmpib", 4,	one(0006000),	one(0177700), "#b@s", m68000up },
++{"cmpib", 4,	one(0006000),	one(0177700), "#b$s", m68000up },
+ {"cmpib", 4,	one(0006000),	one(0177700), "#bDs", mcfisa_b },
+-{"cmpiw", 4,	one(0006100),	one(0177700), "#w@s", m68000up },
++{"cmpiw", 4,	one(0006100),	one(0177700), "#w$s", m68000up },
+ {"cmpiw", 4,	one(0006100),	one(0177700), "#wDs", mcfisa_b },
+-{"cmpil", 6,	one(0006200),	one(0177700), "#l@s", m68000up },
++{"cmpil", 6,	one(0006200),	one(0177700), "#l$s", m68000up },
+ {"cmpil", 6,	one(0006200),	one(0177700), "#lDs", mcfisa_a },
  
- {"cmpmb",	one(0130410),	one(0170770), "+s+d", m68000up },
+ {"cmpmb", 2,	one(0130410),	one(0170770), "+s+d", m68000up },
 @@ -275,18 +296,18 @@
- {"cmpml",	one(0130610),	one(0170770), "+s+d", m68000up },
+ {"cmpml", 2,	one(0130610),	one(0170770), "+s+d", m68000up },
  
  /* The cmp opcode can generate the cmpa, cmpm, and cmpi instructions.  */
--{"cmpb",	one(0006000),	one(0177700), "#b@s", m68000up },
-+{"cmpb",	one(0006000),	one(0177700), "#b$s", m68000up },
- {"cmpb",	one(0006000),	one(0177700), "#bDs", mcfv4up },
- {"cmpb",	one(0130410),	one(0170770), "+s+d", m68000up },
- {"cmpb",	one(0130000),	one(0170700), ";bDd", m68000up },
- {"cmpb",	one(0130000),	one(0170700), "*bDd", mcfv4up },
- {"cmpw",	one(0130300),	one(0170700), "*wAd", m68000up },
--{"cmpw",	one(0006100),	one(0177700), "#w@s", m68000up },
-+{"cmpw",	one(0006100),	one(0177700), "#w$s", m68000up },
- {"cmpw",	one(0006100),	one(0177700), "#wDs", mcfv4up },
- {"cmpw",	one(0130510),	one(0170770), "+s+d", m68000up },
- {"cmpw",	one(0130100),	one(0170700), "*wDd", m68000up | mcfv4up },
- {"cmpl",	one(0130700),	one(0170700), "*lAd", m68000up | mcf },
--{"cmpl",	one(0006200),	one(0177700), "#l@s", m68000up },
-+{"cmpl",	one(0006200),	one(0177700), "#l$s", m68000up },
- {"cmpl",	one(0006200),	one(0177700), "#lDs", mcf },
- {"cmpl",	one(0130610),	one(0170770), "+s+d", m68000up },
- {"cmpl",	one(0130200),	one(0170700), "*lDd", m68000up | mcf },
-@@ -2187,6 +2208,7 @@
+-{"cmpb", 4,	one(0006000),	one(0177700), "#b@s", m68000up },
++{"cmpb", 4,	one(0006000),	one(0177700), "#b$s", m68000up },
+ {"cmpb", 4,	one(0006000),	one(0177700), "#bDs", mcfisa_b },
+ {"cmpb", 2,	one(0130410),	one(0170770), "+s+d", m68000up },
+ {"cmpb", 2,	one(0130000),	one(0170700), ";bDd", m68000up },
+ {"cmpb", 2,	one(0130000),	one(0170700), "*bDd", mcfisa_b },
+ {"cmpw", 2,	one(0130300),	one(0170700), "*wAd", m68000up },
+-{"cmpw", 4,	one(0006100),	one(0177700), "#w@s", m68000up },
++{"cmpw", 4,	one(0006100),	one(0177700), "#w$s", m68000up },
+ {"cmpw", 4,	one(0006100),	one(0177700), "#wDs", mcfisa_b },
+ {"cmpw", 2,	one(0130510),	one(0170770), "+s+d", m68000up },
+ {"cmpw", 2,	one(0130100),	one(0170700), "*wDd", m68000up | mcfisa_b },
+ {"cmpl", 2,	one(0130700),	one(0170700), "*lAd", m68000up | mcfisa_a },
+-{"cmpl", 6,	one(0006200),	one(0177700), "#l@s", m68000up },
++{"cmpl", 6,	one(0006200),	one(0177700), "#l$s", m68000up },
+ {"cmpl", 6,	one(0006200),	one(0177700), "#lDs", mcfisa_a },
+ {"cmpl", 2,	one(0130610),	one(0170770), "+s+d", m68000up },
+ {"cmpl", 2,	one(0130200),	one(0170700), "*lDd", m68000up | mcfisa_a },
+@@ -2181,6 +2202,7 @@
  
  const struct m68k_opcode_alias m68k_opcode_aliases[] =
  {
@@ -1374,7 +1379,7 @@ diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15-src/opcodes/m68k-
    { "add",	"addw", },
    { "adda",	"addaw", },
    { "addi",	"addiw", },
-@@ -2194,22 +2216,6 @@
+@@ -2188,22 +2210,6 @@
    { "addx",	"addxw", },
    { "asl",	"aslw", },
    { "asr",	"asrw", },
@@ -1397,7 +1402,7 @@ diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15-src/opcodes/m68k-
    { "bhib",	"bhis", },
    { "blsb",	"blss", },
    { "bccb",	"bccs", },
-@@ -2226,17 +2232,17 @@
+@@ -2220,17 +2226,17 @@
    { "bleb",	"bles", },
    { "brab",	"bras", },
    { "bsrb",	"bsrs", },
@@ -1418,7 +1423,7 @@ diff -Naur binutils-2.15.orig/opcodes/m68k-opc.c binutils-2.15-src/opcodes/m68k-
    { "brs",	"bras", },
    { "brb",	"bras", },
    { "brw",	"braw", },
-@@ -2285,6 +2291,7 @@
+@@ -2279,6 +2285,7 @@
    { "tdivsl",	"divsl", },
    { "divs",	"divsw", },
    { "divu",	"divuw", },
