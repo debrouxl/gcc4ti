@@ -8,7 +8,7 @@
 | compatible with HW1/HW2 on all AMS versions up to 2.05
 |
 |
-| $Id: gray.s,v 1.1.1.1 2004-12-22 22:49:27 kevinkofler Exp $
+| $Id: gray.s,v 1.2 2005-06-11 03:51:59 kevinkofler Exp $
 |******************************************************************************
 
 |------------------------------------------------------------------------------
@@ -31,7 +31,7 @@
 GrayOn:
 	movem.l  %d2-%d7/%a2-%a6,-(%a7)
 	lea      (__switch_cnt,%pc),%a0       | reset plane switch counter to 0
-	move.l   #0,(%a0)
+	clr.l	   (%a0)
 	bsr.s    __gray_check_hw_version      | evaluate HW version and store it
 	lea      (__gray_hw_type,%pc),%a0
 	move.w   %d0,(%a0)
@@ -73,18 +73,18 @@ __gray_check_hw_version:
 	beq.s    __gray_patches_for_hw1 | if not 1, it is HW2 (or an unknown HW)
     |--------------------------------------------------------------------------
     | check for VTI (trick suggested by Julien Muchembled)
+    | optimized by Lionel Debroux
     |--------------------------------------------------------------------------
-	trap     #12         | enter supervisor mode. returns old (%sr) in %d0.w
-	move.w   #0x3000,%sr | set a non-existing flag in %sr (but keep s-flag)
-	swap     %d0         | save %d0.w content in upper part of %d0
-	move.w   %sr,%d0     | get %sr content and check for non-existing flag
-	btst     #12,%d0     | this non-existing flag can only be set on the VTI
-	beq.s    __gray_hw2type_detected  | flag not set -> no VTI
+	trap   #12         | enter supervisor mode. returns old (%sr) in %d0.w
+	move.w #0x3000,%sr | set a non-existing flag in %sr (but keep s-flag !!)
+	move.w %d0,%d1     | save %d0.w content in %d1
+	move.w %sr,%d0     | get %sr content and check for non-existing flag
+	move.w %d1,%sr     | restore old %sr.
+	lsl.w  #3,%d0
+	bpl.s  __gray_hw2type_detected  | flag not set -> no VTI
     |--------------------------------------------------------------------------
     | HW1 detected
     |--------------------------------------------------------------------------
-	swap     %d0          | restore old %sr content and return 0
-	move.w   %d0,%sr
 	moveq    #0,%d0
     |--------------------------------------------------------------------------
     | patches code for HW1 version
@@ -97,14 +97,12 @@ __gray_check_hw_version:
 __gray_patches_for_hw1:
 	lea (__gray_size_to_allocate,%pc),%a0
 	move.w #0x0f08,(%a0)
-	move.w #0,(__gray_size_to_add-__gray_size_to_allocate,%a0)
+	clr.w (__gray_size_to_add-__gray_size_to_allocate,%a0)
 	rts
     |--------------------------------------------------------------------------
     | HW2 detected
     |--------------------------------------------------------------------------
 __gray_hw2type_detected:
-	swap     %d0         | restore old %sr content and set return to 1
-	move.w   %d0,%sr
 .ifdef ALWAYS_HW2_TESTING
 __always_hw2_proceed:
 .endif
@@ -153,12 +151,12 @@ __gray_store:
 	cmp.b    #8,%d0
 	beq.s    __gray_proceed_old      | for value 8 we do nothing (dark plane
 	                                 | stays active)
-	lea (__D_plane,%pc),%a0
+	lea      (__D_plane,%pc),%a0
     |--------------------------------------------------------------------------
     | doublebuffer extension ... add content of __gray_dbl_offset to %d0
     |--------------------------------------------------------------------------
-	add.w  (__gray_dbl_offset-__D_plane,%a0),%d0
-	suba.w %d0,%a0
+	add.w    (__gray_dbl_offset-__D_plane,%a0),%d0
+	suba.w   %d0,%a0
 	move.l   (%a0),%d0               | load the address of this plane
 	lsr.l    #3,%d0                  | reduce to address / 8
 	move.w   %d0,0x600010            | set new plane startaddress
@@ -202,11 +200,10 @@ __gray_init_mem:
     | HeapAllocHigh(HW1=3848 bytes or HW2=7688 bytes)
     |--------------------------------------------------------------------------
 	movea.l  0xc8,%a0
-	lea      (0x92*4,%a0),%a0 /* HeapAllocHigh */
+	movea.l  (0x92*4,%a0),%a2 /* HeapAllocHigh */
 	.word    0x4878                       | opcode of "PEA #value"
 __gray_size_to_allocate:                      | the size gets patched !!
 	.word    0x1e08
-	movea.l  (%a0),%a2
 	jsr      (%a2)
 	addq.w   #4,%a7
 	move.w   %d0,(%a5)+                   | store handle in handle variable
@@ -217,8 +214,7 @@ __gray_size_to_allocate:                      | the size gets patched !!
     |--------------------------------------------------------------------------
 	move.w   %d0,-(%a7)
 	movea.l  0xc8,%a0
-	lea      (0x96*4,%a0),%a0 /* HeapDeref */
-	movea.l  (%a0),%a2
+	movea.l  (0x96*4,%a0),%a2 /* HeapDeref */
 	jsr      (%a2)
 	addq.l   #2,%a7
     |--------------------------------------------------------------------------
@@ -384,7 +380,7 @@ __gray_perform_copying:
 	neg.w    %d1
 	movea.l  (__gray_used_mem,%pc,%d1.w),%a0
 
-	lea      0x4C00,%a1
+	lea      0x4C00.w,%a1
 	adda.w   %d0,%a0
 	adda.w   %d0,%a1
 	movem.l  (%a0)+,%d0-%d7/%a2-%a6
@@ -474,7 +470,6 @@ __gray_init_handler:
 	lea      (__L_plane,%pc),%a0
 	move.w   #0x3BF,%d1
 	move.w   (__gray_hw_type,%pc),%d0
-	tst.w    %d0
 	beq.s    __gray_init_hw1_handler
 
     |--------------------------------------------------------------------------
@@ -488,7 +483,7 @@ __gray_init_handler:
     |--------------------------------------------------------------------------
 	movea.l  (__gray_used_mem,%pc),%a1
 	move.l   %a1,(0x4,%a0)               | set __D_plane
-	movea.w  #0x4C00,%a0
+	lea      0x4C00.w,%a0
 	move.w   %d1,%d0
 __gray_cpy_d_plane:
 	move.l   (%a0)+,(%a1)+
@@ -515,9 +510,11 @@ __gray_init_hw1_handler:
 	lea      (__gray_int1_handler_hw1,%pc),%a0
 	move.l   0x64,(__gray_old_int1_hw1 - __gray_int1_handler_hw1,%a0)
 __gray_init_proceed:
-	bclr.b   #2,0x600001
-	move.l   %a0,0x64:w
-	bset.b   #2,0x600001
+	move.l   %a0,%d2
+	lea      0x600001,%a0
+	bclr.b   #2,(%a0)
+	move.l   %d2,0x64:w
+	bset.b   #2,(%a0)
 __gray_clr_l_plane:
     |--------------------------------------------------------------------------
     | clear light plane (done for both HW types)
@@ -530,8 +527,7 @@ __gray_clr_l_plane:
 	move.l   #0xEF007F,-(%a7)
 	move.l   (__D_plane,%pc),-(%a7)
 	movea.l  0xC8,%a0
-	lea      (0x1A2*4,%a0),%a0 /* PortSet */
-	movea.l  (%a0),%a1
+	movea.l  (0x1A2*4,%a0),%a1 /* PortSet */
 	jsr      (%a1)
 	addq.w   #8,%a7
 __gray_ok:
@@ -550,17 +546,17 @@ GrayOff:
 	lea      (__gray_handle,%pc),%a3
 	tst.w    (%a3)
 	beq      __gray_off_out                   | no handle? -> nothing to do
+	lea      0x600001,%a0
 	move.w   (__gray_hw_type,%pc),%d0
-	tst.w    %d0
 	beq.s    __gray_hw1_cleanup
     |--------------------------------------------------------------------------
     | cleanup for HW2 calcs
     |--------------------------------------------------------------------------
-	bclr.b   #2,0x600001
+	bclr.b   #2,(%a0)
 	move.l   (__gray_old_int1_hw2,%pc),0x64:w   | restore old INT1 handler
-	bset.b   #2,0x600001
+	bset.b   #2,(%a0)
 	movea.l  (__D_plane,%pc),%a1
-	movea.w  #0x4C00,%a0
+	lea      0x4C00.w,%a0
 	move.w   #0x3BF,%d0                   | copy content of darkplane to 0x4c00
 __gray_dark2lcd:
 	move.l   (%a1)+,(%a0)+
@@ -571,30 +567,29 @@ __gray_dark2lcd:
     | set it)
     |--------------------------------------------------------------------------
 __gray_hw1_cleanup:
-	move.w   #0x980,0x600010                    | restore used plane to 0x4c00
+	move.w   #0x980,(0x600010-0x600001,%a0)    | restore used plane to 0x4c00
 	move.l   (__gray_old_int1_hw1,%pc),0x40064  | restore old INT1 handler
 	| (We can use 0x40064 here because it is HW1 only.)
 
 __gray_continue_cleanup:
 	lea      (__L_plane,%pc),%a0  | restore plane pointers to 0x4c00 for sure
-	move.l   #0x04c00,(%a0)+
-	move.l   #0x04c00,(%a0)+
-	move.l   #0x04c00,(%a0)
+	lea      0x4C00.w,%a1
+	move.l   %a1,(%a0)+
+	move.l   %a1,(%a0)+
+	move.l   %a1,(%a0)
     |--------------------------------------------------------------------------
     | HeapFree(__gray_handle)
     |--------------------------------------------------------------------------
 	movea.l  0xc8,%a0
-	lea      (0x97*4,%a0),%a0 /* HeapFree */
+	movea.l  (0x97*4,%a0),%a2 /* HeapFree */
 	move.w   (%a3),-(%a7)
-	move.l   (%a0),%a2
 	jsr      (%a2)
 	addq.l   #2,%a7
     |--------------------------------------------------------------------------
     | PortRestore()
     |--------------------------------------------------------------------------
 	movea.l  0xc8,%a0
-	lea      (0x1A3*4,%a0),%a0 /* PortRestore */
-	move.l   (%a0),%a2
+	movea.l  (0x1A3*4,%a0),%a2 /* PortRestore */
 	jsr      (%a2)
 	clr.l    (%a3)                     | 0->handle AND(!!) 0->__gray_dbl_offset
 	lea      (__gray_sync_n_count,%pc),%a0
@@ -608,6 +603,12 @@ __gray_off_out:
 | #############################################################################
 |
 | $Log: not supported by cvs2svn $
+| Revision 3.13 2005/06/11 05:52:33  Kevin Kofler
+| Removed commented-out junk.
+|
+| Revision 3.12 2005/06/07 16:51:00  Lionel Debroux
+| Optimized the routine for size: saved 40 bytes.
+|
 | Revision 3.11 2004/02/25 03:49:03  Kevin Kofler
 | Don't use 0x40000 to set interrupts on code path that affect HW3.
 | Use 0xE00000 as ROM_base mask instead of 0x600000.
