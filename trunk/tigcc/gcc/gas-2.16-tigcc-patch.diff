@@ -996,7 +996,7 @@ diff -Naur binutils-2.16.orig/gas/dwarf2dbg.h binutils-2.16-src/gas/dwarf2dbg.h
  
 diff -Naur binutils-2.16.orig/gas/expr.c binutils-2.16-src/gas/expr.c
 --- binutils-2.16.orig/gas/expr.c	Thu Mar  3 17:22:12 2005
-+++ binutils-2.16-src/gas/expr.c	Sat Jun 11 06:26:32 2005
++++ binutils-2.16-src/gas/expr.c	Sat Jun 11 09:09:46 2005
 @@ -1751,8 +1751,11 @@
  	  /* X + constant.  */
  	  resultP->X_add_number += right.X_add_number;
@@ -1066,7 +1066,7 @@ diff -Naur binutils-2.16.orig/gas/listing.c binutils-2.16-src/gas/listing.c
        switch (list->edict)
 diff -Naur binutils-2.16.orig/gas/read.c binutils-2.16-src/gas/read.c
 --- binutils-2.16.orig/gas/read.c	Wed Apr 13 19:58:40 2005
-+++ binutils-2.16-src/gas/read.c	Sat Jun 11 06:26:32 2005
++++ binutils-2.16-src/gas/read.c	Sat Jun 11 09:20:12 2005
 @@ -40,6 +40,7 @@
  #include "obstack.h"
  #include "listing.h"
@@ -1075,7 +1075,22 @@ diff -Naur binutils-2.16.orig/gas/read.c binutils-2.16-src/gas/read.c
  #include "dw2gencfi.h"
  
  #ifndef TC_START_LABEL
-@@ -3427,6 +3428,11 @@
+@@ -3273,6 +3274,14 @@
+ 	{
+ 	  symbolS *s = exp.X_add_symbol;
+ 
++	  /* (TIGCC 20050611) Don't evaluate defined+const here, as this breaks
++	                      all-relocs mode. -- Kevin Kofler */
++	  if (exp.X_add_number != 0)
++	    {
++	      symbol_set_value_expression (symbolP, &exp);
++	      break;
++	    }
++
+ 	  S_SET_SEGMENT (symbolP, seg);
+ 	  S_SET_VALUE (symbolP, exp.X_add_number + S_GET_VALUE (s));
+ 	  symbol_set_frag (symbolP, symbol_get_frag (s));
+@@ -3427,6 +3436,11 @@
  void
  cons (int size)
  {
@@ -1087,7 +1102,7 @@ diff -Naur binutils-2.16.orig/gas/read.c binutils-2.16-src/gas/read.c
    cons_worker (size, 0);
  }
  
-@@ -3768,8 +3774,9 @@
+@@ -3768,8 +3782,9 @@
  #define TC_CONS_RELOC 0
  #endif
  #endif
