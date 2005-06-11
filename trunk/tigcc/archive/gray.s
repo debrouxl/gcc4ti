@@ -7,8 +7,6 @@
 |
 | compatible with HW1/HW2 on all AMS versions up to 2.05
 |
-|
-| $Id: gray.s,v 1.2 2005-06-11 03:51:59 kevinkofler Exp $
 |******************************************************************************
 
 |------------------------------------------------------------------------------
@@ -602,9 +600,9 @@ __gray_off_out:
 |  Revision History
 | #############################################################################
 |
-| $Log: not supported by cvs2svn $
-| Revision 3.13 2005/06/11 05:52:33  Kevin Kofler
+| Revision 3.13 2005/06/11 05:58:27  Kevin Kofler
 | Removed commented-out junk.
+| Remove Id and Log tags.
 |
 | Revision 3.12 2005/06/07 16:51:00  Lionel Debroux
 | Optimized the routine for size: saved 40 bytes.
