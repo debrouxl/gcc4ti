@@ -36,12 +36,7 @@ extern unsigned char PRG_getStart(void)__ATTR_LIB_C__;
 #define PRG_setStart(x) (*((volatile unsigned char*)0x600017)=(x))
 #define SetIntVec(i,h) ({asm volatile ("bclr.b #2,0x600001");(void) (*(INT_HANDLER*)(i) = (h));asm volatile ("bset.b #2,0x600001");})
 #define TRAP(TrapNo) ((long)(TrapNo)*4+0x80)
-#define DEFINE_INT_HANDLER(name) extern _DEREF_INT_HANDLER name[]; asm(".xdef __ref_all___custom_int_handlers;.text;.even;"#name":move.w #0x2700,%sr;movem.l %d0-%d7/%a0-%a6,-(%sp);move.l 0xC8,%a5;jbsr __"#name"_body__;movem.l (%sp)+,%d0-%d7/%a0-%a6;rte"); void __##name##_body__(void)
-/* End Auto-Generated Part */
-
-#if __GNUC__>=4
-#undef DEFINE_INT_HANDLER
 #define DEFINE_INT_HANDLER(name) extern _DEREF_INT_HANDLER name[]; asm(".xdef __ref_all___custom_int_handlers;"); void __##name##_body__ (void) asm( #name ); __attribute__((__interrupt_handler__)) void __##name##_body__ (void)
-#endif
+/* End Auto-Generated Part */
 
 #endif

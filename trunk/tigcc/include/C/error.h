@@ -3,9 +3,6 @@
 
 #include <default.h>
 
-#define __CONST_INT_TO_ERR_LABEL(x) _ER_CODE_##x
-#define _ER_throw(err_no) ({extern void __CONST_INT_TO_ERR_LABEL(err_no);goto*(&(__CONST_INT_TO_ERR_LABEL(err_no)));})
-
 /* Begin Auto-Generated Part */
 #ifndef __HAVE_Bool
 #define __HAVE_Bool
@@ -199,7 +196,7 @@ typedef struct ErrorFrameStruct{unsigned long A2,A3,A4,A5,A6,A7;unsigned long D3
 #define DIVISION_BUG_ERROR 1020
 #define ER_catch _rom_call(short,(void*),154)
 #define ER_success _rom_call(void,(void),155)
-#define ER_throw(err_no) _ER_throw(err_no)
+#define ER_throw(err_no) __builtin_ER_throw(err_no)
 #define ER_throwVar _rom_call_attr(void,(short),__attribute__((__noreturn__)),153)
 #define ERD_dialog ({__need_in_use_bit;_rom_call(short,(short,short),151);})
 #define ERD_process ({__need_in_use_bit;_rom_call(void,(short),152);})
@@ -213,11 +210,6 @@ typedef struct ErrorFrameStruct{unsigned long A2,A3,A4,A5,A6,A7;unsigned long D3
 #define find_error_message _rom_call(const char*,(short),2C1)
 #endif
 /* End Auto-Generated Part */
-
-#if __GNUC__>=4
-#undef ER_throw
-#define ER_throw(err_no) __builtin_ER_throw(err_no)
-#endif
 
 #define ER_THROW(n) ER_throw(n)
 
