@@ -809,7 +809,7 @@ diff -Naur binutils-2.16.orig/gas/configure binutils-2.16-src/gas/configure
  
 diff -Naur binutils-2.16.orig/gas/dwarf2dbg.c binutils-2.16-src/gas/dwarf2dbg.c
 --- binutils-2.16.orig/gas/dwarf2dbg.c	Thu Mar  3 01:29:52 2005
-+++ binutils-2.16-src/gas/dwarf2dbg.c	Sat Jun 11 07:03:04 2005
++++ binutils-2.16-src/gas/dwarf2dbg.c	Sat Jun 25 21:15:02 2005
 @@ -53,7 +53,15 @@
  # define DWARF2_ADDR_SIZE(bfd) (bfd_arch_bits_per_address (bfd) / 8)
  #endif
@@ -1075,7 +1075,7 @@ diff -Naur binutils-2.16.orig/gas/listing.c binutils-2.16-src/gas/listing.c
        switch (list->edict)
 diff -Naur binutils-2.16.orig/gas/read.c binutils-2.16-src/gas/read.c
 --- binutils-2.16.orig/gas/read.c	Wed Apr 13 19:58:40 2005
-+++ binutils-2.16-src/gas/read.c	Sat Jun 11 09:20:12 2005
++++ binutils-2.16-src/gas/read.c	Sat Jun 25 21:15:46 2005
 @@ -40,6 +40,7 @@
  #include "obstack.h"
  #include "listing.h"
@@ -1099,19 +1099,21 @@ diff -Naur binutils-2.16.orig/gas/read.c binutils-2.16-src/gas/read.c
  	  S_SET_SEGMENT (symbolP, seg);
  	  S_SET_VALUE (symbolP, exp.X_add_number + S_GET_VALUE (s));
  	  symbol_set_frag (symbolP, symbol_get_frag (s));
-@@ -3427,6 +3436,11 @@
+@@ -3427,7 +3436,13 @@
  void
  cons (int size)
  {
 +  /* (TIGCC 20050603) Call dwarf2_emit_insn_if_loc_seen unless we are in a
 +                      debugging info section. -- Kevin Kofler */
-+  const char *segname = seg_info (now_seg)->scnhdr.s_name;
++  const char *segname;
+   cons_worker (size, 0);
++  segname = seg_info (now_seg)->scnhdr.s_name;
 +  if (strncmp (segname, ".debug_", 7) && strncmp (segname, ".eh_", 4))
 +    dwarf2_emit_insn_if_loc_seen (size);
-   cons_worker (size, 0);
  }
  
-@@ -3768,8 +3782,9 @@
+ void
+@@ -3768,8 +3783,9 @@
  #define TC_CONS_RELOC 0
  #endif
  #endif
