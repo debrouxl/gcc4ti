@@ -121,8 +121,7 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 		// This is very important, as we cannot omit it.
 		StartupNumber = GetStartupSectionNumber (CurCOFFSection->Name, sizeof (CurCOFFSection->Name));
 		
-		// Omit empty sections to simplify the output.
-		if ((!StartupNumber) && (IsZeroI4 (CurCOFFSection->Size)))
+		if (IsZeroI4 (CurCOFFSection->Size))
 		{
 			// Section is empty.
 			// Check if the number of relocs is empty as well. If not, there
@@ -130,13 +129,12 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 			if (!(IsZeroI2 (CurCOFFSection->RelocCount)))
 				Warning (FileName, "Empty section %ld has relocs.", (long) CurCOFFSectionNumber);
 		}
-		else
+
 		{
-			// Section is not empty (or a startup section).
 			I4 Flags = ReadTI4 (CurCOFFSection->Flags);
 			
 			// Try to allocate data for the section, if necessary.
-			BOOLEAN HasData = (!(Flags & COFF_SECTION_BSS)) && (!(IsZeroI4 (CurCOFFSection->PData)));
+			BOOLEAN HasData = (!(Flags & COFF_SECTION_BSS)) && (!IsZeroI4 (CurCOFFSection->Size)) && (!(IsZeroI4 (CurCOFFSection->PData)));
 			SIZE Size = ReadTI4 (CurCOFFSection->Size);
 			I1 *Data = NULL;
 			
@@ -271,23 +269,6 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 							SECTION *Section = SecInfo[SymSection-1].Section;
 							
 							// The symbol is a real label in a real section.
-							// First, check whether we didn't omit the section.
-							// If we did, no problem; we need to give an error only if
-							// someone actually uses the symbol (in a reloc).
-
-							// However, for debugging information support, we
-							// need to at least try to relocate the symbol to
-							// somewhere if it was in an empty section:
-							if (!SymVal && !Section)
-							{
-								while (SymSection <= FileInfo.SectionCount)
-								{
-									Section = SecInfo[SymSection-1].Section;
-									if (Section) break;
-									SymSection++;
-								}
-							}
-
 							if (Section)
 							{
 								BOOLEAN Exported = (ReadTI1 (CurCOFFSymbol->Class) == COFF_SYMBOL_EXTERNAL);
@@ -322,6 +303,8 @@ BOOLEAN ImportCOFFFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const c
 									SymInfo[CurCOFFSymbolNumber].Symbol = Symbol;
 								}
 							}
+							else
+								Warning (FileName, "Ignoring symbol in unimported section number %ld.", (long) SymSection);
 						}
 						else
 							Warning (FileName, "Ignoring symbol in nonexisting section number %ld.", (long) SymSection);
