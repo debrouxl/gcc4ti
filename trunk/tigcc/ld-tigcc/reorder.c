@@ -464,6 +464,7 @@ static SI1 ReorderSectionsRecurse(PROGRAM *Program, COUNT SectionCount,
 				{
 					Sections[RecursionDepth++] = RemainingSection;
 				}
+				free(TaggedSections);
 				return 1;
   			}
 			// Compute an estimation of the savings for placing each of the sections
@@ -488,6 +489,7 @@ static SI1 ReorderSectionsRecurse(PROGRAM *Program, COUNT SectionCount,
 				{
 					Warning(NULL, "Impossible section arrangement rejected at "
 					              "recursion depth %ld.", (long) RecursionDepth);
+					free(TaggedSections);
 					return 0;
 				}
 				if (CurrentSection->StartupNumber == StartupNumber)

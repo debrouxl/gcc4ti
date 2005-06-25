@@ -65,6 +65,12 @@ void MergeConstants (PROGRAM *Program)
 			OFFSET Constant1Start = Symbol1->Location, Constant1End, Constant1Length;
 			SECTION *Section2, *NextSection2;
 			NextSymbol1 = FindSymbolAtPos (Section1, Symbol1->Location + 1, TRUE);
+			if (Constant1Start < 0)
+			{
+				Warning (Section1->FileName, "Symbol at negative location -0x%lx",
+				         - (long) Symbol1->Location);
+				continue;
+			}
 			Constant1End = NextSymbol1 ? NextSymbol1->Location : Section1->Size;
 			Constant1Length = Constant1End - Constant1Start;
 			// Loop through all constants in the following sections.
@@ -78,6 +84,12 @@ void MergeConstants (PROGRAM *Program)
 					// Compute the length of the constant.
 					OFFSET Constant2Start = Symbol2->Location, Constant2End, Constant2Length;
 					NextSymbol2 = FindSymbolAtPos (Section2, Symbol2->Location + 1, TRUE);
+					if (Constant2Start < 0)
+					{
+						Warning (Section2->FileName, "Symbol at negative location -0x%lx",
+						         - (long) Symbol2->Location);
+						continue;
+					}
 					Constant2End = NextSymbol2 ? NextSymbol2->Location : Section2->Size;
 					Constant2Length = Constant2End - Constant2Start;
 					// Check if one constant is a prefix of the other.
