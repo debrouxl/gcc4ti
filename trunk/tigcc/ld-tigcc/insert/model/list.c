@@ -77,7 +77,7 @@ OFFSET RelocListModel (SECTION *SourceSection, RELOC **NextItem, RELOC_USER_DATA
 		if ((CurReloc->Location >= 0) && (CurReloc->Location + CurReloc->Size <= SourceSection->Size))
 		{
 			// Ignore relocs which we will not emit.
-			if (!(CurReloc->Relative || CurReloc->Target.Builtin))
+			if (!(CurReloc->Relative || CurReloc->Target.Builtin || CurReloc->Parent->DebuggingInfoType || (CurReloc->Target.Symbol && CurReloc->Target.Symbol->Parent->DebuggingInfoType)))
 			{
 				// We can only emit 4-byte absolute relocs.
 				// Everything else would need to be specified in the user data structure.
