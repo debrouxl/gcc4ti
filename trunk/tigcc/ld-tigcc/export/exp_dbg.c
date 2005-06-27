@@ -166,18 +166,6 @@ static void CompareSections (const SECTION *Section, void *UserData)
 		*(const SECTION **)UserData = NULL;
 }
 
-static void CheckForInvalidSectionContents (const SECTION *Section, void *UserData ATTRIBUTE_UNUSED)
-{
-	if (!(IsEmpty (Section->ROMCalls)))
-		Warning (Section->FileName, "Can't emit debugging information for ROM calls.");
-	
-	if (!(IsEmpty (Section->RAMCalls)))
-		Warning (Section->FileName, "Can't emit debugging information for RAM calls.");
-	
-	if (!(IsEmpty (Section->LibCalls)))
-		Warning (Section->FileName, "Can't emit debugging information for library calls.");
-}
-
 static void AddOne (const SECTION *Section ATTRIBUTE_UNUSED, void *UserData)
 {
 	(*(COUNT *)UserData)++;
@@ -503,7 +491,6 @@ static BOOLEAN ExportDebuggingInfoFile (const PROGRAM *Program, EXP_FILE *File, 
 			Warning (Section->FileName, "Ignoring unmerged section %s",
 			         Section->SectionSymbol->Name);
 	}
-	MapToAllSections (Program, CheckForInvalidSectionContents, NULL);
 
 	// Write the COFF header
 	MapToAllSections (Program, AddOne, &SectionCount);
