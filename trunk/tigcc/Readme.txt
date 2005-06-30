@@ -62,7 +62,7 @@ found on Unix systems may also work).
 A reduced version of the full GCC source code can be downloaded at:
 http://tigcc.ticalc.org/sources/gcc-4.0.0.tar.bz2
 Likewise, a reduced version of GNU binutils can be obtained from:
-http://tigcc.ticalc.org/sources/gas-2.16.tar.bz2
+http://tigcc.ticalc.org/sources/gas-2.16.1.tar.bz2
 However, if possible, it is better to get the official files from
 http://www.gnu.org/. There you can also get the very latest versions of these
 programs, but it is recommended to use the exact versions our patch was tested
