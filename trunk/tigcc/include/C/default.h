@@ -329,6 +329,29 @@ typedef union
 typedef long *__plong;
 typedef unsigned long *__pulong;
 
+typedef union
+  {
+    const short *__sp;
+    const int *__ip;
+#ifndef STRICT_POINTERS
+    const unsigned short *__usp;
+    const unsigned int *__uip;
+#endif
+  } __cpshort __attribute__((__transparent_union__));
+
+typedef union
+  {
+    const unsigned short *__sp;
+    const unsigned int *__ip;
+#ifndef STRICT_POINTERS
+    const short *__ssp;
+    const int *__sip;
+#endif
+  } __cpushort __attribute__((__transparent_union__));
+
+typedef const long *__cplong;
+typedef const unsigned long *__cpulong;
+
 #else
 
 typedef short *__pshort;
@@ -353,6 +376,29 @@ typedef union
     int *__sip;
 #endif
   } __pulong __attribute__((__transparent_union__));
+
+typedef const short *__cpshort;
+typedef const unsigned short *__cpushort;
+
+typedef union
+  {
+    const long *__lp;
+    const int *__ip;
+#ifndef STRICT_POINTERS
+    const unsigned long *__ulp;
+    const unsigned int *__uip;
+#endif
+  } __cplong __attribute__((__transparent_union__));
+
+typedef union
+  {
+    const unsigned long *__lp;
+    const unsigned int *__ip;
+#ifndef STRICT_POINTERS
+    const long *__slp;
+    const int *__sip;
+#endif
+  } __cpulong __attribute__((__transparent_union__));
 
 #endif
 

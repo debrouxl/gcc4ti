@@ -13,8 +13,8 @@
 // Main Function
 void _main(void)
 {
-  static unsigned char sprite[] = {0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF};
-  static unsigned char imask[] = {(unsigned char)~0xFF,(unsigned char)~0xFF,
+  static const unsigned char sprite[] = {0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF};
+  static const unsigned char imask[] = {(unsigned char)~0xFF,(unsigned char)~0xFF,
     (unsigned char)~0xFF,(unsigned char)~0xFF,(unsigned char)~0xFF,
     (unsigned char)~0xFF,(unsigned char)~0xFF,(unsigned char)~0xFF};
   int i;

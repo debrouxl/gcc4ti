@@ -3,7 +3,8 @@ Name=Sprite32
 Type=Function
 Subtype=tigcc.a
 Header Files=sprites.h
-Definition=void Sprite32 (short x, short y, short height, unsigned long *sprite, void *vm_addr, short mode);
+Definition=void Sprite32 (short x, short y, short height, const unsigned long *sprite, void *vm_addr, short mode);
+Real Definition=extern void Sprite32(short,short,short,__cpulong,void*,short)__ATTR_LIB_C__;
 
 [Description]
 Draws a sprite with a width of 32 pixels or less on the screen.
@@ -12,7 +13,7 @@ Draws a sprite with a width of 32 pixels or less on the screen.
 Sprite32 works exactly like <A HREF="$$LINK(Sprite8)">Sprite8</A>, but it takes sprites with a width of 32 pixels.
 <I>sprite</I> is now a pointer to the array of unsigned long integers which defines the sprite.
 So, to define a sprite (or sprite mask), use something like
-<PRE>static unsigned long sprite[] = {...};
+<PRE>static const unsigned long sprite[] = {...};
 </PRE>
 <B>Note:</B> If you define a sprite mask and invert it with the '~' operator, you need to take
 care of the possibility of the first two bytes being zero in one constant. In this case, the constant will

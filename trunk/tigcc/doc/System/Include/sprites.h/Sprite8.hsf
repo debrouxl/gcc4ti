@@ -3,7 +3,7 @@ Name=Sprite8
 Type=Function
 Subtype=tigcc.a
 Header Files=sprites.h
-Definition=void Sprite8 (short x, short y, short height, unsigned char *sprite, void *vm_addr, short mode);
+Definition=void Sprite8 (short x, short y, short height, const unsigned char *sprite, void *vm_addr, short mode);
 
 [Description]
 Draws a sprite with a width of 8 pixels or less on the screen.
@@ -72,12 +72,12 @@ if you add the <B>'L'</B> suffix (see the respective info about <A HREF="$$LINK(
 Without this notation, you must use 0x00 in Sprite8, but 0xFF00 in <A HREF="$$LINK(Sprite16)">Sprite16</A>, and
 0xFFFFFF00 in <A HREF="$$LINK(Sprite32)">Sprite32</A>. This is why a notation like ~0xFF is more universal.
 <BR><BR>
-Starting from TIGCC v0.91, you can use binary numbers to define your sprites. On the one hand, this is clearly
-<B>not recommended</B> since it makes the program incompatible with other C dialects
-as well as previous versions of TIGCC. On the other hand, it makes designing a sprite much easier
+Starting from TIGCC v0.91, you can use binary numbers to define your sprites. On the one hand,
+it makes the program incompatible with other C dialects as well as previous (ancient) versions of
+TIGCC. On the other hand, it makes designing a sprite much easier
 and also allows for editing the sprite at a later time without having to reconvert it.
 The binary representation of the sprite presented above would look like this:
-<PRE>static unsigned char sprite[]={
+<PRE>static const unsigned char sprite[]={
 0b11111111,
 0b10000001,
 0b10000001,
