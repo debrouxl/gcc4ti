@@ -7,7 +7,7 @@ tigcc_compiled.:
 	.set _A_LINE,0xA000
 #NO_APP
 	.text
-buff.1358:
+buff.1372:
 	.skip 10
 	.text
 	.even
@@ -17,7 +17,7 @@ tmpnam:
 	move.l %d3,-(%sp)
 	move.l %a0,%d3
 .L2:
-	lea buff.1358+1,%a2
+	lea buff.1372+1,%a2
 .L3:
 	jbsr rand
 	moveq #25,%d2
@@ -27,7 +27,7 @@ tmpnam:
 	swap %d1
 	add.b #97,%d1
 	move.b %d1,(%a2)+
-	cmp.l #buff.1358+9,%a2
+	cmp.l #buff.1372+9,%a2
 	jbne .L3
 #APP
 	.xdef __ref_all___set_file_in_use_bit
@@ -39,7 +39,7 @@ tmpnam:
 	addq.l #4,%sp
 	tst.w %d0
 	jbne .L2
-	move.l #buff.1358+1,%d0
+	move.l #buff.1372+1,%d0
 	tst.l %d3
 	jbeq .L8
 	move.l 200.w,%a0
