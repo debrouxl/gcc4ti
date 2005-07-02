@@ -1,6 +1,6 @@
 #include <sprites.h>
 
-__ATTR_LIB_C__ void Sprite32(short x, short y, short h, unsigned long *sprite, void *buff, short mode)
+__ATTR_LIB_C__ void Sprite32(short x, short y, short h, const unsigned long *sprite, void *buff, short mode)
 {
   long addr=(long)buff+30*y+((x>>3)&0xfffe);
   unsigned long data,d1,d2;
