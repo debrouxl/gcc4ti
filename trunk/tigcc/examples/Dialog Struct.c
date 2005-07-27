@@ -21,7 +21,7 @@ void _main(void)
   
   #define ItemsNum 3
   #define MyStrings "EXAMPLE\0EnterYourName (max. 20 chars)\0Your name"
-  static SIZED_DIALOG(ItemsNum,offsetof(SIZED_DIALOG(ItemsNum,0),String)) DialogWindow={offsetof(SIZED_DIALOG(ItemsNum,0),String), ItemsNum,130, 50,NoCallBack,
+  static SIZED_DIALOG(ItemsNum,sizeof(MyString)) DialogWindow={offsetof(SIZED_DIALOG(ItemsNum,0),String), ItemsNum,130, 50,NoCallBack,
   {
   {//Title
   	D_HEADER,DF_SKIP,0,0,{.dHeader={0,BT_OK,BT_CANCEL}}
