@@ -22,6 +22,7 @@
 #include <unistd.h> 
 #ifdef __WIN32__
 #include <windows.h>
+#undef IGNORE
 #endif
 
 #define fatal(s) ({fprintf(stderr,(s)); return 1;})
@@ -154,9 +155,58 @@ int main(int argc, char *argv[])
   /* Translate arguments */
   int i;
   for (i=1; i<argc; i++) {
-    argstr=dynstrcat(argstr," ");
+#define IGNORE(a) if (!strncmp(argv[i],(a),2)) continue;
+#define FAIL(a) if (!strncmp(argv[i],a,2)) {free(argstr);fatal("switch " a " not supported");}
 #define CONVERT(a,b) if (!strcmp(argv[i],(a))) argstr=dynstrcat(argstr,(b)); else
-    /* default: */ {
+#define PARSE(a) else if (!strncmp(argv[i],(a),2)) {char *arg=argv[i]+2;
+
+    IGNORE("-e")
+    IGNORE("-f")
+    IGNORE("-g")
+    IGNORE("-n")
+    IGNORE("-p")
+    IGNORE("-q")
+    IGNORE("-r")
+    IGNORE("-s")
+    IGNORE("-t")
+    IGNORE("-w")
+    IGNORE("-z")
+    FAIL("-h");
+    FAIL("-m");
+    argstr=dynstrcat(argstr," ");
+    CONVERT("-a","--all-relocs")
+    CONVERT("-k","-Z")
+    CONVERT("-u","--unaligned")
+    CONVERT("-y","--statistics")
+    if (!strncmp(argv[i],"-d",2)) argstr=dynstrcat(argstr,"-L");
+    PARSE("-i")
+      const char *incpath=strtok(arg,",;");
+      argstr=dynstrcat(argstr,"-I ");
+      argstr=dynargcat(argstr,incpath);
+      while ((incpath=strtok(NULL,",;"))) {
+        argstr=dynstrcat(argstr," -I ");
+        argstr=dynargcat(argstr,incpath);
+      }
+    }
+    PARSE("-o")
+      argstr=dynstrcat(argstr,"-o ");
+      argstr=dynargcat(argstr,arg);
+    }
+    PARSE("-l")
+      argstr=dynstrcat(argstr,"-ahl=");
+      argstr=dynargcat(argstr,arg);
+    }
+    PARSE("-x")
+      argstr=dynstrcat(argstr,"-a=");
+      argstr=dynargcat(argstr,arg);
+    }
+    PARSE("-v")
+      char *p;
+      argstr=dynstrcat(argstr,"--defsym ");
+      if ((p=strchr(arg,','))) *p='=';
+      if ((p=strchr(arg,';'))) *p='=';
+      argstr=dynargcat(argstr,arg);
+    } else {
       argstr=dynargcat(argstr,argv[i]);
     }
   }
