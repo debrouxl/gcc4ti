@@ -11,11 +11,15 @@ diff -Naur binutils-2.16.1.orig/bfd/config.bfd binutils-2.16.1-src/bfd/config.bf
      targ_defvec=hp300hpux_vec
 diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
 --- binutils-2.16.1.orig/gas/as.c	Thu Mar  3 01:29:52 2005
-+++ binutils-2.16.1-src/gas/as.c	Thu Jun 30 23:40:16 2005
-@@ -251,6 +251,10 @@
++++ binutils-2.16.1-src/gas/as.c	Sun Jul 31 18:40:42 2005
+@@ -251,6 +251,14 @@
                        	  s      include symbols\n\
                        	  =FILE  list to FILE (must be last sub-option)\n"));
  
++/* (TIGCC 20050732) */
++  fprintf (stream, _("\
++  --a68k                  assemble in A68k compatibility mode\n"));
++
 +/* (TIGCC 20030716) */
 +  fprintf (stream, _("\
 +  --all-relocs            output all relocs, implies --keep-locals (-L)\n"));
@@ -23,26 +27,39 @@ diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
    fprintf (stream, _("\
    --alternate             initially turn on alternate macro syntax\n"));
    fprintf (stream, _("\
-@@ -426,7 +430,8 @@
+@@ -426,7 +434,9 @@
        OPTION_EXECSTACK,
        OPTION_NOEXECSTACK,
        OPTION_ALTERNATE,
 -      OPTION_WARN_FATAL
 +      OPTION_WARN_FATAL,
-+      OPTION_ALL_RELOCS /* (TIGCC 20030716) */
++      OPTION_ALL_RELOCS, /* (TIGCC 20030716) */
++      OPTION_A68K /* (TIGCC 20050731) */
      /* When you add options here, check that they do
         not collide with OPTION_MD_BASE.  See as.h.  */
      };
-@@ -442,6 +447,8 @@
+@@ -442,6 +452,10 @@
         necessary because -a=<FILE> is a valid switch but getopt would
         normally reject it since --alternate does not take an argument.  */
      ,{"a", optional_argument, NULL, 'a'}
++/* (TIGCC 20050731) */
++    ,{"a68k", no_argument, NULL, OPTION_A68K}
 +/* (TIGCC 20030716) */
 +    ,{"all-relocs", no_argument, NULL, OPTION_ALL_RELOCS}
      ,{"defsym", required_argument, NULL, OPTION_DEFSYM}
      ,{"dump-config", no_argument, NULL, OPTION_DUMPCONFIG}
      ,{"emulation", required_argument, NULL, OPTION_EMULATION}
-@@ -864,6 +871,12 @@
+@@ -735,6 +749,9 @@
+ 	  listing_lhs_cont_lines = atoi (optarg);
+ 	  break;
+ 
++	case OPTION_A68K: /* (TIGCC 20050731) */
++	  flag_a68k = 1;
++	  /* fall through */
+ 	case 'M':
+ 	  flag_mri = 1;
+ #ifdef TC_M68K
+@@ -864,6 +881,12 @@
  
  	case 'X':
  	  /* -X means treat warnings as errors.  */
@@ -57,7 +74,7 @@ diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
      }
 diff -Naur binutils-2.16.1.orig/gas/as.h binutils-2.16.1-src/gas/as.h
 --- binutils-2.16.1.orig/gas/as.h	Wed Apr 13 19:58:40 2005
-+++ binutils-2.16.1-src/gas/as.h	Thu Jun 30 23:40:16 2005
++++ binutils-2.16.1-src/gas/as.h	Sun Jul 31 18:40:04 2005
 @@ -244,16 +244,22 @@
  
  #ifdef MANY_SEGMENTS
@@ -103,13 +120,16 @@ diff -Naur binutils-2.16.1.orig/gas/as.h binutils-2.16.1-src/gas/as.h
  #endif
  
  #ifndef BFD_ASSEMBLER
-@@ -481,6 +492,9 @@
+@@ -481,6 +492,12 @@
  
  extern enum debug_info_type debug_type;
  extern int use_gnu_debug_info_extensions;
 +
 +/* (TIGCC 20030716) True if all relocs should be retained.  */
 +COMMON unsigned char flag_all_relocs; /* --all-relocs */
++
++/* (TIGCC 20050731) True if assembling in A68k compatibility mode.  */
++COMMON unsigned char flag_a68k; /* --a68k */
  
  /* Maximum level of macro nesting.  */
  extern int max_macro_nest;
