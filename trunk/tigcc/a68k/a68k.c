@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
   argstr=dynstrcat(argstr," --a68k");
 
   /* Translate arguments */
-  int i;
+  int i, ogiven=0, filearg=0, quiet=0;
   for (i=1; i<argc; i++) {
 #define IGNORE(a) if (!strncmp(argv[i],(a),2)) continue;
 #define FAIL(a) if (!strncmp(argv[i],a,2)) {free(argstr);fatal("switch " a " not supported");}
@@ -171,6 +171,7 @@ int main(int argc, char *argv[])
     IGNORE("-t")
     IGNORE("-w")
     IGNORE("-z")
+    if (!strcmp(argv[i],"-q")) {quiet=1; continue;}
     FAIL("-h");
     FAIL("-m");
     argstr=dynstrcat(argstr," ");
@@ -189,6 +190,7 @@ int main(int argc, char *argv[])
       }
     }
     PARSE("-o")
+      ogiven=1;
       argstr=dynstrcat(argstr,"-o ");
       argstr=dynargcat(argstr,arg);
     }
@@ -207,11 +209,25 @@ int main(int argc, char *argv[])
       if ((p=strchr(arg,';'))) *p='=';
       argstr=dynargcat(argstr,arg);
     } else {
+      if (filearg) {free(argstr); fatal("too many file names");}
+      filearg=i;
       argstr=dynargcat(argstr,argv[i]);
     }
   }
+
+  /* Name a default output file */
+  if (!ogiven && filearg) {
+    char ofile[strlen(argv[filearg])+1];
+    strcpy(ofile,argv[filearg]);
+    char *p=strrchr(ofile,'.');
+    if (!p || !p[1]) {free(argstr); fatal("invalid file name");}
+    strcpy(p+1,"o");
+    argstr=dynstrcat(argstr," -o ");
+    argstr=dynargcat(argstr,ofile);
+  }
  
   /* Run GNU as */
+  if (!quiet) printf("A68k compatibility wrapper Copyright 2005 Kevin Kofler\n\nAssembling ...\n");
   int exitcode=run_cmdline(argstr);
   free(argstr);
 
