@@ -630,8 +630,12 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 			// Resolve "has_...s".
 			else if ((!(strncmp (SymName, "has_", sizeof ("has_") - 1))) && (SymName [SymNameLength - 1] == 's'))
 			{
-				if (GetBuiltinValue (Program, SymName + (sizeof ("has_") - 1), SymNameLength - 1 - (sizeof ("has_") - 1), &NewValue, -1))
-					HasValue = (NewValue || Program->ResolveAllBuiltins);
+				if (Program->ResolveAllBuiltins)
+				{
+					Program->Frozen = TRUE;
+					if (GetBuiltinValue (Program, SymName + (sizeof ("has_") - 1), SymNameLength - 1 - (sizeof ("has_") - 1), &NewValue, -1))
+						HasValue = TRUE;
+				}
 			}
 			// Resolve "..._count".
 			else if ((SymNameLength > ((SIZE) (sizeof ("_count") - 1))) && (!(strcmp (SymName + SymNameLength - (sizeof ("_count") - 1), "_count"))))
