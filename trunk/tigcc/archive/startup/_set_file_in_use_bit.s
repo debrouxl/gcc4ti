@@ -74,6 +74,7 @@ __symbol_search_loop__:
 | Add the size of the variable to %a0.
 | Note that we would actually need to add 2 more bytes to skip the size
 | field, but we make up for that by using a <= comparison.
+	moveq #0,%d0
 	move.w (%a0),%d0
 	add.l %d0,%a0
 | If the end address is lower than the address we are looking for, the
