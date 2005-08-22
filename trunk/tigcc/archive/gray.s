@@ -27,6 +27,8 @@
 | EXPORTED: GrayOn function (turn grayscales on) - trashes d1/a0/a1
 |==============================================================================
 GrayOn:
+	move.w   (__gray_handle,%pc),%d0   | if __gray_handle is not 0 we have
+	bne      __gray_return_immediately | already allocated memory -> out here
 	movem.l  %d2-%d7/%a2-%a6,-(%a7)
 	lea      (__switch_cnt,%pc),%a0       | reset plane switch counter to 0
 	clr.l	   (%a0)
@@ -191,9 +193,7 @@ __switch_cnt:
 |                                                        __gray_init_handler)
 |==============================================================================
 __gray_init_mem:
-	lea      (__gray_handle,%pc),%a5            | if __gray_handle is not 0
-	tst.w    (%a5)                              | we have already allocated
-	bne.s    __gray_init_return                 | memory -> out here
+	lea      (__gray_handle,%pc),%a5
     |--------------------------------------------------------------------------
     | HeapAllocHigh(HW1=3848 bytes or HW2=7688 bytes)
     |--------------------------------------------------------------------------
@@ -533,6 +533,7 @@ __gray_ok:
 	lea (__L_plane2,%pc),%a1
 	move.l (%a0)+,(%a1)+        | copy __L_plane to __L_plane2
 	move.l (%a0)+,(%a1)+        | copy __D_plane to __D_plane2
+__gray_return_immediately:
 	moveq    #0x1,%d0
 	rts
 |==============================================================================
@@ -599,6 +600,10 @@ __gray_off_out:
 | #############################################################################
 |  Revision History
 | #############################################################################
+|
+| Revision 3.15 2005/08/22 20:23:40  Kevin Kofler
+| Bumped version to 3.53.
+| Fixed calls to GrayOn with grayscale already enabled.
 |
 | Revision 3.14 2005/07/02 02:56:36  Kevin Kofler
 | Bumped version to 3.52.
