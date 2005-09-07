@@ -113,7 +113,7 @@ void MergeConstants (PROGRAM *Program)
 							InsertBefore (Section1->Symbols, CurSymbol, NextSymbol1);
 						}
 						// Delete Constant2.
-						if (Constant2Length == Section2->Size)
+						if (Constant2Length == Section2->Size && !NextSymbol2)
 						{
 							// Move the section symbol. We are deleting the section, so we need to
 							// put the symbol somewhere else. It should never be referenced anyway,
@@ -156,7 +156,7 @@ void MergeConstants (PROGRAM *Program)
 							InsertBefore (Section2->Symbols, CurSymbol, NextSymbol2);
 						}
 						// Delete Constant1.
-						if (Constant1Length == Section1->Size)
+						if (Constant1Length == Section1->Size && !NextSymbol1)
 						{
 							// Move the section symbol. We are deleting the section, so we need to
 							// put the symbol somewhere else. It should never be referenced anyway,
@@ -234,7 +234,7 @@ FreeAndOutOfMem:
 							}
 						}
 						// Delete Constant1.
-						if (Constant1Length == Section1->Size)
+						if (Constant1Length == Section1->Size && !NextSymbol1)
 						{
 							// Move the section symbol. We are deleting the section, so we need to
 							// put the symbol somewhere else. It should never be referenced anyway,
@@ -255,7 +255,7 @@ FreeAndOutOfMem:
 							FinalizeRangeCutting (Section1);
 						}
 						// Delete Constant2.
-						if (Constant2Length == Section2->Size)
+						if (Constant2Length == Section2->Size && !NextSymbol2)
 						{
 							// Move the section symbol. We are deleting the section, so we need to
 							// put the symbol somewhere else. It should never be referenced anyway,
