@@ -2380,7 +2380,7 @@ diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k-ti.h gcc-4.0-20050922-src/
 +/* end of m68k-ti.h */
 diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k.c gcc-4.0-20050922-src/gcc/config/m68k/m68k.c
 --- gcc-4.0-20050922.orig/gcc/config/m68k/m68k.c	Tue Jul 26 06:40:44 2005
-+++ gcc-4.0-20050922-src/gcc/config/m68k/m68k.c	Sat Sep 24 15:38:52 2005
++++ gcc-4.0-20050922-src/gcc/config/m68k/m68k.c	Sat Sep 24 22:26:18 2005
 @@ -43,6 +43,11 @@
  #include "target-def.h"
  #include "debug.h"
@@ -3337,7 +3337,19 @@ diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k.c gcc-4.0-20050922-src/gcc
        else if ((flag_pic == 1) || TARGET_68020)
  	{
  	  if (MOTOROLA)
-@@ -3482,3 +4033,127 @@
+@@ -3466,7 +4017,10 @@
+     {
+ 	/* Address Registers, can't hold bytes, can hold aggregate if
+ 	   fits in.  */
+-	if (GET_MODE_SIZE (mode) == 1)
++	/* (TIGCC 20050924) We can put bytes in address registers on non-Coldfire.
++	   GCC just uses word moves where appropriate. This always worked for us.
++	   -- Kevin Kofler */
++	if (TARGET_COLDFIRE && GET_MODE_SIZE (mode) == 1)
+ 	  return false;
+ 	if (regno + GET_MODE_SIZE (mode) / 4 <= 16)
+ 	  return true;
+@@ -3482,3 +4036,127 @@
      }
    return false;
  }
