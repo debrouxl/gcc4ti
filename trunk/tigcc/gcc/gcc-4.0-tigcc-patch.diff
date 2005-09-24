@@ -1,6 +1,6 @@
-diff -Naur gcc-4.0-20050630.orig/config.guess gcc-4.0-20050630-src/config.guess
---- gcc-4.0-20050630.orig/config.guess	Tue Nov 16 00:57:00 2004
-+++ gcc-4.0-20050630-src/config.guess	Fri Jul  1 04:33:40 2005
+diff -Naur gcc-4.0-20050922.orig/config.guess gcc-4.0-20050922-src/config.guess
+--- gcc-4.0-20050922.orig/config.guess	Tue Nov 16 00:57:00 2004
++++ gcc-4.0-20050922-src/config.guess	Sat Sep 24 15:38:52 2005
 @@ -784,7 +784,7 @@
  	echo ${UNAME_MACHINE}-pc-cygwin
  	exit 0 ;;
@@ -10,9 +10,9 @@ diff -Naur gcc-4.0-20050630.orig/config.guess gcc-4.0-20050630-src/config.guess
  	exit 0 ;;
      i*:PW*:*)
  	echo ${UNAME_MACHINE}-pc-pw32
-diff -Naur gcc-4.0-20050630.orig/gcc/attribs.c gcc-4.0-20050630-src/gcc/attribs.c
---- gcc-4.0-20050630.orig/gcc/attribs.c	Thu Dec  9 22:55:40 2004
-+++ gcc-4.0-20050630-src/gcc/attribs.c	Fri Jul  1 04:33:40 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/attribs.c gcc-4.0-20050922-src/gcc/attribs.c
+--- gcc-4.0-20050922.orig/gcc/attribs.c	Thu Dec  9 22:55:40 2004
++++ gcc-4.0-20050922-src/gcc/attribs.c	Sat Sep 24 15:38:52 2005
 @@ -131,7 +131,11 @@
     information, in the form of a bitwise OR of flags in enum attribute_flags
     from tree.h.  Depending on these flags, some attributes may be
@@ -37,9 +37,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/attribs.c gcc-4.0-20050630-src/gcc/attribs.
  
    for (a = attributes; a; a = TREE_CHAIN (a))
      {
-diff -Naur gcc-4.0-20050630.orig/gcc/builtin-attrs.def gcc-4.0-20050630-src/gcc/builtin-attrs.def
---- gcc-4.0-20050630.orig/gcc/builtin-attrs.def	Fri Oct 15 16:47:06 2004
-+++ gcc-4.0-20050630-src/gcc/builtin-attrs.def	Fri Jul  1 04:33:40 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/builtin-attrs.def gcc-4.0-20050922-src/gcc/builtin-attrs.def
+--- gcc-4.0-20050922.orig/gcc/builtin-attrs.def	Fri Oct 15 16:47:06 2004
++++ gcc-4.0-20050922-src/gcc/builtin-attrs.def	Sat Sep 24 15:38:52 2005
 @@ -55,6 +55,7 @@
  DEF_ATTR_FOR_INT (2)
  DEF_ATTR_FOR_INT (3)
@@ -104,9 +104,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtin-attrs.def gcc-4.0-20050630-src/gcc/
 +DEF_C89_ATTR (vfscanf, ATTR_FORMAT_SCANF_2_0)
 +DEF_C89_ATTR (vsscanf, ATTR_FORMAT_SCANF_2_0)
  
-diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtins.c
---- gcc-4.0-20050630.orig/gcc/builtins.c	Fri May 27 20:05:48 2005
-+++ gcc-4.0-20050630-src/gcc/builtins.c	Fri Jul  1 05:06:14 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/builtins.c gcc-4.0-20050922-src/gcc/builtins.c
+--- gcc-4.0-20050922.orig/gcc/builtins.c	Sun Aug 28 13:08:54 2005
++++ gcc-4.0-20050922-src/gcc/builtins.c	Sat Sep 24 16:14:06 2005
 @@ -47,6 +47,7 @@
  #include "langhooks.h"
  #include "basic-block.h"
@@ -118,7 +118,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
 @@ -79,7 +80,9 @@
  static rtx c_readstr (const char *, enum machine_mode);
  static int target_char_cast (tree, char *);
- static rtx get_memory_rtx (tree);
+ static rtx get_memory_rtx (tree, tree);
 +#if 0
  static tree build_string_literal (int, const char *);
 +#endif /* 0 */
@@ -233,7 +233,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Return the alignment in bits of EXP, a pointer valued expression.
     But don't return more than MAX_ALIGN no matter what.
-@@ -1054,7 +1081,13 @@
+@@ -1130,7 +1157,13 @@
  	size += GET_MODE_SIZE (Pmode);
  
        for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
@@ -248,7 +248,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  	  {
  	    mode = reg_raw_mode[regno];
  
-@@ -1508,6 +1541,7 @@
+@@ -1584,6 +1617,7 @@
  tree
  mathfn_built_in (tree type, enum built_in_function fn)
  {
@@ -256,7 +256,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
    enum built_in_function fcode, fcodef, fcodel;
  
    switch (fn)
-@@ -1598,9 +1632,11 @@
+@@ -1674,9 +1708,11 @@
    else if (TYPE_MAIN_VARIANT (type) == long_double_type_node)
      return implicit_built_in_decls[fcodel];
    else
@@ -268,7 +268,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* If errno must be maintained, expand the RTL to check if the result,
     TARGET, of a built-in function call, EXP, is NaN, and if so set
     errno to EDOM.  */
-@@ -2595,6 +2631,7 @@
+@@ -2671,6 +2707,7 @@
      }
    return 0;
  }
@@ -276,7 +276,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Callback routine for store_by_pieces.  Read GET_MODE_BITSIZE (MODE)
     bytes from constant string DATA + OFFSET and return it as target
-@@ -2687,6 +2724,7 @@
+@@ -2763,6 +2800,7 @@
      }
  }
  
@@ -284,7 +284,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Expand a call to the mempcpy builtin, with arguments in ARGLIST.
     Return 0 if we failed the caller should emit a normal call,
     otherwise try to get the result in TARGET, if convenient (and in
-@@ -3109,6 +3147,7 @@
+@@ -3185,6 +3223,7 @@
      }
    return 0;
  }
@@ -292,7 +292,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Callback routine for store_by_pieces.  Read GET_MODE_BITSIZE (MODE)
     bytes from constant string DATA + OFFSET and return it as target
-@@ -3259,6 +3298,7 @@
+@@ -3335,6 +3374,7 @@
      }
  }
  
@@ -300,7 +300,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Expand expression EXP, which is a call to the bzero builtin.  Return 0
     if we failed the caller should emit a normal call.  */
  
-@@ -3759,6 +3799,7 @@
+@@ -3835,6 +3875,7 @@
      }
    return 0;
  }
@@ -308,7 +308,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Expand a call to __builtin_saveregs, generating the result in TARGET,
     if that's convenient.  */
-@@ -4311,6 +4352,7 @@
+@@ -4387,6 +4428,7 @@
    return convert_to_mode (target_mode, target, 0);
  }
  
@@ -316,7 +316,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* If the string passed to fputs is a constant and is one character
     long, we attempt to transform this call into __builtin_fputc().  */
  
-@@ -4327,6 +4369,7 @@
+@@ -4403,6 +4445,7 @@
      }
    return 0;
  }
@@ -324,7 +324,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Expand a call to __builtin_expect.  We return our argument and emit a
     NOTE_INSN_EXPECTED_VALUE note.  This is the expansion of __builtin_expect in
-@@ -4499,6 +4542,35 @@
+@@ -4575,6 +4618,35 @@
    emit_barrier ();
  }
  
@@ -360,7 +360,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Expand a call to fabs, fabsf or fabsl with arguments ARGLIST.
     Return 0 if a normal call should be emitted rather than expanding
     the function inline.  If convenient, the result should be placed
-@@ -4855,6 +4927,7 @@
+@@ -4931,6 +5003,7 @@
  
    return 0;
  }
@@ -368,7 +368,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Expand a call to either the entry or exit function profiler.  */
  
-@@ -4959,6 +5032,7 @@
+@@ -5035,6 +5108,7 @@
    return tramp;
  }
  
@@ -376,7 +376,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Expand a call to the built-in signbit, signbitf or signbitl function.
     Return NULL_RTX if a normal call should be emitted rather than expanding
     the function in-line.  EXP is the expression that is a call to the builtin
-@@ -5112,6 +5186,7 @@
+@@ -5188,6 +5262,7 @@
  
    return expand_call (call, target, ignore);
  }
@@ -384,7 +384,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Expand an expression EXP that calls a built-in function,
     with result going to TARGET if that's convenient
-@@ -5171,6 +5246,7 @@
+@@ -5247,6 +5322,7 @@
  
    switch (fcode)
      {
@@ -392,7 +392,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_FABS:
      case BUILT_IN_FABSF:
      case BUILT_IN_FABSL:
-@@ -5316,6 +5392,7 @@
+@@ -5392,6 +5468,7 @@
        if (target)
  	return target;
        break;
@@ -400,7 +400,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
      case BUILT_IN_APPLY_ARGS:
        return expand_builtin_apply_args ();
-@@ -5452,6 +5529,7 @@
+@@ -5528,6 +5605,7 @@
  	return target;
        break;
  
@@ -408,7 +408,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_STRLEN:
        target = expand_builtin_strlen (arglist, target, target_mode);
        if (target)
-@@ -5525,6 +5603,7 @@
+@@ -5601,6 +5679,7 @@
        if (target)
  	return target;
        break;
@@ -416,7 +416,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
      case BUILT_IN_MEMCPY:
        target = expand_builtin_memcpy (exp, target, mode);
-@@ -5532,6 +5611,7 @@
+@@ -5608,6 +5687,7 @@
  	return target;
        break;
  
@@ -424,7 +424,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_MEMPCPY:
        target = expand_builtin_mempcpy (arglist, TREE_TYPE (exp), target, mode, /*endp=*/ 1);
        if (target)
-@@ -5550,6 +5630,7 @@
+@@ -5626,6 +5706,7 @@
        if (target)
  	return target;
        break;
@@ -432,7 +432,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
      case BUILT_IN_MEMSET:
        target = expand_builtin_memset (arglist, target, mode, exp);
-@@ -5557,6 +5638,7 @@
+@@ -5633,6 +5714,7 @@
  	return target;
        break;
  
@@ -440,7 +440,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_BZERO:
        target = expand_builtin_bzero (exp);
        if (target)
-@@ -5581,6 +5663,7 @@
+@@ -5657,6 +5739,7 @@
        if (target)
  	return target;
        break;
@@ -448,7 +448,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
      case BUILT_IN_SETJMP:
        target = expand_builtin_setjmp (arglist, target);
-@@ -5634,6 +5717,7 @@
+@@ -5710,6 +5793,7 @@
        expand_builtin_trap ();
        return const0_rtx;
  
@@ -456,7 +456,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_PRINTF:
        target = expand_builtin_printf (exp, target, mode, false);
        if (target)
-@@ -5682,6 +5766,7 @@
+@@ -5758,6 +5842,7 @@
        if (target)
  	return target;
        break;
@@ -464,7 +464,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
        /* Various hooks for the DWARF 2 __throw routine.  */
      case BUILT_IN_UNWIND_INIT:
-@@ -5734,6 +5819,7 @@
+@@ -5810,6 +5895,7 @@
      case BUILT_IN_ADJUST_TRAMPOLINE:
        return expand_builtin_adjust_trampoline (arglist);
  
@@ -472,7 +472,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_FORK:
      case BUILT_IN_EXECL:
      case BUILT_IN_EXECV:
-@@ -5745,6 +5831,11 @@
+@@ -5821,6 +5907,11 @@
        if (target)
  	return target;
        break;
@@ -484,7 +484,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
      default:	/* just do library call, if unknown builtin */
        break;
-@@ -5764,6 +5855,7 @@
+@@ -5840,6 +5931,7 @@
  enum built_in_function
  builtin_mathfn_code (tree t)
  {
@@ -492,7 +492,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
    tree fndecl, arglist, parmlist;
    tree argtype, parmtype;
  
-@@ -5818,13 +5910,16 @@
+@@ -5894,13 +5986,16 @@
  	    return END_BUILTINS;
  	}
        else
@@ -509,7 +509,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  }
  
  /* Fold a call to __builtin_constant_p, if we know it will evaluate to a
-@@ -5924,6 +6019,7 @@
+@@ -6000,6 +6095,7 @@
  			type_to_class (TREE_TYPE (TREE_VALUE (arglist))));
  }
  
@@ -517,7 +517,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Fold a call to __builtin_strlen.  */
  
  static tree
-@@ -6626,6 +6722,7 @@
+@@ -6702,6 +6798,7 @@
  
    return fold_fixed_mathfn (exp);
  }
@@ -525,7 +525,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Fold function call to builtin ffs, clz, ctz, popcount and parity
     and their long and long long variants (i.e. ffsl and ffsll).
-@@ -6733,6 +6830,7 @@
+@@ -6809,6 +6906,7 @@
    return NULL_TREE;
  }
  
@@ -533,7 +533,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Return true if EXPR is the real constant contained in VALUE.  */
  
  static bool
-@@ -7109,6 +7207,7 @@
+@@ -7185,6 +7283,7 @@
  
    return 0;
  }
@@ -541,7 +541,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Fold function call to builtin memcpy.  Return
     NULL_TREE if no simplification can be made.  */
-@@ -7138,6 +7237,7 @@
+@@ -7214,6 +7313,7 @@
    return 0;
  }
  
@@ -549,7 +549,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Fold function call to builtin mempcpy.  Return
     NULL_TREE if no simplification can be made.  */
  
-@@ -7865,6 +7965,7 @@
+@@ -7941,6 +8041,7 @@
    return fold (build1 (TRUTH_NOT_EXPR, type,
  		       fold (build2 (code, type, arg0, arg1))));
  }
@@ -557,7 +557,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Fold a call to one of the external complex multiply libcalls.  */
  
-@@ -7923,6 +8024,7 @@
+@@ -7999,6 +8100,7 @@
    fcode = DECL_FUNCTION_CODE (fndecl);
    switch (fcode)
      {
@@ -565,7 +565,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_FPUTS:
        return fold_builtin_fputs (arglist, ignore, false, NULL_TREE);
  
-@@ -7973,6 +8075,7 @@
+@@ -8049,6 +8151,7 @@
  
      case BUILT_IN_SPRINTF:
        return fold_builtin_sprintf (arglist, ignore);
@@ -573,7 +573,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
      case BUILT_IN_CONSTANT_P:
        {
-@@ -7994,6 +8097,7 @@
+@@ -8070,6 +8173,7 @@
      case BUILT_IN_CLASSIFY_TYPE:
        return fold_builtin_classify_type (arglist);
  
@@ -581,7 +581,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_STRLEN:
        return fold_builtin_strlen (arglist);
  
-@@ -8172,6 +8276,7 @@
+@@ -8248,6 +8352,7 @@
      case BUILT_IN_LLRINTF:
      case BUILT_IN_LLRINTL:
        return fold_fixed_mathfn (exp);
@@ -589,7 +589,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
      case BUILT_IN_FFS:
      case BUILT_IN_FFSL:
-@@ -8193,6 +8298,7 @@
+@@ -8269,6 +8374,7 @@
      case BUILT_IN_MEMCPY:
        return fold_builtin_memcpy (exp);
  
@@ -597,7 +597,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
      case BUILT_IN_MEMPCPY:
        return fold_builtin_mempcpy (arglist, type, /*endp=*/1);
  
-@@ -8245,6 +8351,7 @@
+@@ -8321,6 +8427,7 @@
        return fold_builtin_unordered_cmp (exp, UNEQ_EXPR, EQ_EXPR);
      case BUILT_IN_ISUNORDERED:
        return fold_builtin_unordered_cmp (exp, UNORDERED_EXPR, NOP_EXPR);
@@ -605,7 +605,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
        /* We do the folding for va_start in the expander.  */
      case BUILT_IN_VA_START:
-@@ -8388,6 +8495,7 @@
+@@ -8464,6 +8571,7 @@
      return false;
  }
  
@@ -613,7 +613,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Simplify a call to the strstr builtin.
  
     Return 0 if no simplification was possible, otherwise return the
-@@ -8918,6 +9026,7 @@
+@@ -8994,6 +9102,7 @@
       hence there's no need to cast the result to integer_type_node.  */
    return build_function_call_expr (fn, arglist);
  }
@@ -621,7 +621,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  
  /* Fold the new_arg's arguments (ARGLIST). Returns true if there was an error
     produced.  False otherwise.  This is done so that we don't output the error
-@@ -8987,6 +9096,7 @@
+@@ -9063,6 +9172,7 @@
  }
  
  
@@ -629,15 +629,15 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.c gcc-4.0-20050630-src/gcc/builtin
  /* Simplify a call to the sprintf builtin.
  
     Return 0 if no simplification was possible, otherwise return the
-@@ -9068,3 +9178,5 @@
+@@ -9144,3 +9254,5 @@
    else
      return call;
  }
 +#endif /* 0 */
 +
-diff -Naur gcc-4.0-20050630.orig/gcc/builtins.def gcc-4.0-20050630-src/gcc/builtins.def
---- gcc-4.0-20050630.orig/gcc/builtins.def	Thu Feb 10 18:59:04 2005
-+++ gcc-4.0-20050630-src/gcc/builtins.def	Fri Jul  1 04:33:40 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/builtins.def gcc-4.0-20050922-src/gcc/builtins.def
+--- gcc-4.0-20050922.orig/gcc/builtins.def	Thu Feb 10 18:59:04 2005
++++ gcc-4.0-20050922-src/gcc/builtins.def	Sat Sep 24 15:38:52 2005
 @@ -477,6 +477,7 @@
  DEF_LIB_BUILTIN        (BUILT_IN_STRSPN, "strspn", BT_FN_SIZE_CONST_STRING_CONST_STRING, ATTR_PURE_NOTHROW_NONNULL_1_2)
  DEF_LIB_BUILTIN        (BUILT_IN_STRSTR, "strstr", BT_FN_STRING_CONST_STRING_CONST_STRING, ATTR_PURE_NOTHROW_NONNULL_1_2)
@@ -674,9 +674,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/builtins.def gcc-4.0-20050630-src/gcc/built
  
  /* Implementing nested functions.  */
  DEF_BUILTIN_STUB (BUILT_IN_INIT_TRAMPOLINE, "__builtin_init_trampoline")
-diff -Naur gcc-4.0-20050630.orig/gcc/c-common.c gcc-4.0-20050630-src/gcc/c-common.c
---- gcc-4.0-20050630.orig/gcc/c-common.c	Mon Jun  6 21:20:08 2005
-+++ gcc-4.0-20050630-src/gcc/c-common.c	Fri Jul  1 04:33:40 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-common.c gcc-4.0-20050922-src/gcc/c-common.c
+--- gcc-4.0-20050922.orig/gcc/c-common.c	Thu Sep  1 18:46:46 2005
++++ gcc-4.0-20050922-src/gcc/c-common.c	Sat Sep 24 15:38:52 2005
 @@ -2894,16 +2894,20 @@
  #define DEF_ATTR_INT(ENUM, VALUE) ENUM,
  #define DEF_ATTR_IDENT(ENUM, STRING) ENUM,
@@ -698,9 +698,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-common.c gcc-4.0-20050630-src/gcc/c-commo
  static void c_init_attributes (void);
  
  /* Build tree nodes and builtin functions common to both C and C++ language
-@@ -3231,7 +3235,8 @@
- #undef DEF_FUNCTION_TYPE_VAR_3
+@@ -3232,7 +3236,8 @@
  #undef DEF_POINTER_TYPE
+   builtin_types[(int) BT_LAST] = NULL_TREE;
  
 -  c_init_attributes ();
 +  if (!c_attrs_initialized)
@@ -708,7 +708,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-common.c gcc-4.0-20050630-src/gcc/c-commo
  
  #define DEF_BUILTIN(ENUM, NAME, CLASS, TYPE, LIBTYPE, BOTH_P, FALLBACK_P, \
  		    NONANSI_P, ATTRS, IMPLICIT, COND)			\
-@@ -3920,11 +3925,40 @@
+@@ -3946,11 +3951,40 @@
      = tree_cons (built_in_attributes[(int) PURPOSE],	\
  		 built_in_attributes[(int) VALUE],	\
  		 built_in_attributes[(int) CHAIN]);
@@ -749,9 +749,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-common.c gcc-4.0-20050630-src/gcc/c-commo
  }
  
  /* Attribute handlers common to C front ends.  */
-diff -Naur gcc-4.0-20050630.orig/gcc/c-common.h gcc-4.0-20050630-src/gcc/c-common.h
---- gcc-4.0-20050630.orig/gcc/c-common.h	Sun May  1 03:11:54 2005
-+++ gcc-4.0-20050630-src/gcc/c-common.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-common.h gcc-4.0-20050922-src/gcc/c-common.h
+--- gcc-4.0-20050922.orig/gcc/c-common.h	Mon Jul 11 16:28:38 2005
++++ gcc-4.0-20050922-src/gcc/c-common.h	Sat Sep 24 15:38:52 2005
 @@ -642,6 +642,7 @@
  extern void set_Wformat (int);
  extern tree handle_format_attribute (tree *, tree, tree, int, bool *);
@@ -760,9 +760,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-common.h gcc-4.0-20050630-src/gcc/c-commo
  extern int c_common_handle_option (size_t code, const char *arg, int value);
  extern bool c_common_missing_argument (const char *opt, size_t code);
  extern tree c_common_type_for_mode (enum machine_mode, int);
-diff -Naur gcc-4.0-20050630.orig/gcc/c-cppbuiltin.c gcc-4.0-20050630-src/gcc/c-cppbuiltin.c
---- gcc-4.0-20050630.orig/gcc/c-cppbuiltin.c	Fri Jan 21 16:57:02 2005
-+++ gcc-4.0-20050630-src/gcc/c-cppbuiltin.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-cppbuiltin.c gcc-4.0-20050922-src/gcc/c-cppbuiltin.c
+--- gcc-4.0-20050922.orig/gcc/c-cppbuiltin.c	Fri Jan 21 16:57:02 2005
++++ gcc-4.0-20050922-src/gcc/c-cppbuiltin.c	Sat Sep 24 15:38:52 2005
 @@ -51,9 +51,11 @@
  static void builtin_define_with_value_n (const char *, const char *,
  					 size_t);
@@ -807,10 +807,10 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-cppbuiltin.c gcc-4.0-20050630-src/gcc/c-c
  
  /* Define MAX for TYPE based on the precision of the type.  IS_LONG is
     1 for type "long" and 2 for "long long".  We have to handle
-diff -Naur gcc-4.0-20050630.orig/gcc/c-decl.c gcc-4.0-20050630-src/gcc/c-decl.c
---- gcc-4.0-20050630.orig/gcc/c-decl.c	Mon Jun  6 21:20:16 2005
-+++ gcc-4.0-20050630-src/gcc/c-decl.c	Fri Jul  1 04:33:42 2005
-@@ -2393,7 +2393,6 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/c-decl.c gcc-4.0-20050922-src/gcc/c-decl.c
+--- gcc-4.0-20050922.orig/gcc/c-decl.c	Fri Sep  9 02:51:44 2005
++++ gcc-4.0-20050922-src/gcc/c-decl.c	Sat Sep 24 15:38:52 2005
+@@ -2396,7 +2396,6 @@
  void
  undeclared_variable (tree id)
  {
@@ -818,7 +818,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-decl.c gcc-4.0-20050630-src/gcc/c-decl.c
    struct c_scope *scope;
  
    if (current_function_decl == 0)
-@@ -2405,13 +2404,6 @@
+@@ -2408,13 +2407,6 @@
      {
        error ("%qE undeclared (first use in this function)", id);
  
@@ -832,7 +832,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-decl.c gcc-4.0-20050630-src/gcc/c-decl.c
        /* If we are parsing old-style parameter decls, current_function_decl
           will be nonnull but current_function_scope will be null.  */
        scope = current_function_scope ? current_function_scope : current_scope;
-@@ -2716,7 +2708,7 @@
+@@ -2719,7 +2711,7 @@
  
    input_location = save_loc;
  
@@ -841,7 +841,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-decl.c gcc-4.0-20050630-src/gcc/c-decl.c
  
    make_fname_decl = c_make_fname_decl;
    start_fname_decls ();
-@@ -2811,6 +2803,18 @@
+@@ -2814,6 +2806,18 @@
  
    return decl;
  }
@@ -860,7 +860,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-decl.c gcc-4.0-20050630-src/gcc/c-decl.c
  
  /* Called when a declaration is seen that contains no names to declare.
     If its type is a reference to a structure, union or enum inherited
-@@ -3559,10 +3563,86 @@
+@@ -3562,10 +3566,86 @@
  push_parm_decl (const struct c_parm *parm)
  {
    tree decl;
@@ -947,7 +947,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-decl.c gcc-4.0-20050630-src/gcc/c-decl.c
    decl = pushdecl (decl);
  
    finish_decl (decl, NULL_TREE, NULL_TREE);
-@@ -3614,7 +3694,11 @@
+@@ -3617,7 +3697,11 @@
    DECL_CONTEXT (decl) = current_function_decl;
    TREE_USED (decl) = 1;
    TREE_TYPE (decl) = type;
@@ -960,7 +960,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-decl.c gcc-4.0-20050630-src/gcc/c-decl.c
    store_init_value (decl, init);
  
    if (TREE_CODE (type) == ARRAY_TYPE && !COMPLETE_TYPE_P (type))
-@@ -6802,12 +6886,13 @@
+@@ -6832,12 +6916,13 @@
  
  struct c_parm *
  build_c_parm (struct c_declspecs *specs, tree attrs,
@@ -975,9 +975,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-decl.c gcc-4.0-20050630-src/gcc/c-decl.c
    return ret;
  }
  
-diff -Naur gcc-4.0-20050630.orig/gcc/c-format.c gcc-4.0-20050630-src/gcc/c-format.c
---- gcc-4.0-20050630.orig/gcc/c-format.c	Wed Apr 27 02:00:44 2005
-+++ gcc-4.0-20050630-src/gcc/c-format.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-format.c gcc-4.0-20050922-src/gcc/c-format.c
+--- gcc-4.0-20050922.orig/gcc/c-format.c	Wed Apr 27 02:00:44 2005
++++ gcc-4.0-20050922-src/gcc/c-format.c	Sat Sep 24 15:38:52 2005
 @@ -284,16 +284,12 @@
  } format_wanted_type;
  
@@ -1188,9 +1188,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-format.c gcc-4.0-20050630-src/gcc/c-forma
  	continue;
        /* Likewise, "signed char", "unsigned char" and "char" are
  	 equivalent but the above test won't consider them equivalent.  */
-diff -Naur gcc-4.0-20050630.orig/gcc/c-incpath.c gcc-4.0-20050630-src/gcc/c-incpath.c
---- gcc-4.0-20050630.orig/gcc/c-incpath.c	Sun Jan 23 15:05:26 2005
-+++ gcc-4.0-20050630-src/gcc/c-incpath.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-incpath.c gcc-4.0-20050922-src/gcc/c-incpath.c
+--- gcc-4.0-20050922.orig/gcc/c-incpath.c	Sun Jan 23 15:05:26 2005
++++ gcc-4.0-20050922-src/gcc/c-incpath.c	Sat Sep 24 15:38:52 2005
 @@ -335,9 +335,13 @@
       function does not recognize a directory that ends in a backslash
       (unless it is a drive root dir, such "c:\").  Forward slashes,
@@ -1230,9 +1230,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-incpath.c gcc-4.0-20050630-src/gcc/c-incp
      add_standard_paths (sysroot, iprefix, cxx_stdinc);
  
    target_c_incpath.extra_includes (sysroot, iprefix, stdinc);
-diff -Naur gcc-4.0-20050630.orig/gcc/c-lang.c gcc-4.0-20050630-src/gcc/c-lang.c
---- gcc-4.0-20050630.orig/gcc/c-lang.c	Tue Jan 18 11:35:58 2005
-+++ gcc-4.0-20050630-src/gcc/c-lang.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-lang.c gcc-4.0-20050922-src/gcc/c-lang.c
+--- gcc-4.0-20050922.orig/gcc/c-lang.c	Tue Jan 18 11:35:58 2005
++++ gcc-4.0-20050922-src/gcc/c-lang.c	Sat Sep 24 15:38:52 2005
 @@ -45,6 +45,8 @@
  #define LANG_HOOKS_NAME "GNU C"
  #undef LANG_HOOKS_INIT
@@ -1242,9 +1242,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-lang.c gcc-4.0-20050630-src/gcc/c-lang.c
  
  /* Each front end provides its own lang hook initializer.  */
  const struct lang_hooks lang_hooks = LANG_HOOKS_INITIALIZER;
-diff -Naur gcc-4.0-20050630.orig/gcc/c-lex.c gcc-4.0-20050630-src/gcc/c-lex.c
---- gcc-4.0-20050630.orig/gcc/c-lex.c	Wed Oct 27 19:24:20 2004
-+++ gcc-4.0-20050630-src/gcc/c-lex.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-lex.c gcc-4.0-20050922-src/gcc/c-lex.c
+--- gcc-4.0-20050922.orig/gcc/c-lex.c	Wed Oct 27 19:24:20 2004
++++ gcc-4.0-20050922-src/gcc/c-lex.c	Sat Sep 24 15:38:52 2005
 @@ -432,7 +432,7 @@
  	cppchar_t c = tok->val.str.text[0];
  
@@ -1254,9 +1254,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-lex.c gcc-4.0-20050630-src/gcc/c-lex.c
  	else if (ISGRAPH (c))
  	  error ("stray %qc in program", (int) c);
  	else
-diff -Naur gcc-4.0-20050630.orig/gcc/c-opts.c gcc-4.0-20050630-src/gcc/c-opts.c
---- gcc-4.0-20050630.orig/gcc/c-opts.c	Sun May  1 03:11:56 2005
-+++ gcc-4.0-20050630-src/gcc/c-opts.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-opts.c gcc-4.0-20050922-src/gcc/c-opts.c
+--- gcc-4.0-20050922.orig/gcc/c-opts.c	Sun May  1 03:11:56 2005
++++ gcc-4.0-20050922-src/gcc/c-opts.c	Sat Sep 24 15:38:52 2005
 @@ -219,6 +219,9 @@
       before passing on command-line options to cpplib.  */
    cpp_opts->warn_dollars = 0;
@@ -1310,9 +1310,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-opts.c gcc-4.0-20050630-src/gcc/c-opts.c
  
    if (flag_preprocess_only)
      {
-diff -Naur gcc-4.0-20050630.orig/gcc/c-parse.in gcc-4.0-20050630-src/gcc/c-parse.in
---- gcc-4.0-20050630.orig/gcc/c-parse.in	Wed Jan  5 17:08:34 2005
-+++ gcc-4.0-20050630-src/gcc/c-parse.in	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-parse.in gcc-4.0-20050922-src/gcc/c-parse.in
+--- gcc-4.0-20050922.orig/gcc/c-parse.in	Wed Jan  5 17:08:34 2005
++++ gcc-4.0-20050922-src/gcc/c-parse.in	Sat Sep 24 15:38:52 2005
 @@ -29,7 +29,7 @@
     written by AT&T, but I have never seen it.  */
  
@@ -1438,9 +1438,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-parse.in gcc-4.0-20050630-src/gcc/c-parse
  
  setspecs_fp:
  	  setspecs
-diff -Naur gcc-4.0-20050630.orig/gcc/c-ppoutput.c gcc-4.0-20050630-src/gcc/c-ppoutput.c
---- gcc-4.0-20050630.orig/gcc/c-ppoutput.c	Sun Nov 28 23:29:40 2004
-+++ gcc-4.0-20050630-src/gcc/c-ppoutput.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-ppoutput.c gcc-4.0-20050922-src/gcc/c-ppoutput.c
+--- gcc-4.0-20050922.orig/gcc/c-ppoutput.c	Sun Nov 28 23:29:40 2004
++++ gcc-4.0-20050922-src/gcc/c-ppoutput.c	Sat Sep 24 15:38:52 2005
 @@ -174,7 +174,8 @@
        print.prev = token;
        cpp_output_token (token, print.outf);
@@ -1451,10 +1451,10 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-ppoutput.c gcc-4.0-20050630-src/gcc/c-ppo
  	account_for_newlines (token->val.str.text, token->val.str.len);
      }
  }
-diff -Naur gcc-4.0-20050630.orig/gcc/c-pretty-print.c gcc-4.0-20050630-src/gcc/c-pretty-print.c
---- gcc-4.0-20050630.orig/gcc/c-pretty-print.c	Mon Feb 21 14:39:46 2005
-+++ gcc-4.0-20050630-src/gcc/c-pretty-print.c	Fri Jul  1 04:33:42 2005
-@@ -872,8 +872,7 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/c-pretty-print.c gcc-4.0-20050922-src/gcc/c-pretty-print.c
+--- gcc-4.0-20050922.orig/gcc/c-pretty-print.c	Sat Jul 16 18:04:22 2005
++++ gcc-4.0-20050922-src/gcc/c-pretty-print.c	Sat Sep 24 15:38:52 2005
+@@ -883,8 +883,7 @@
  static void
  pp_c_floating_constant (c_pretty_printer *pp, tree r)
  {
@@ -1464,7 +1464,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-pretty-print.c gcc-4.0-20050630-src/gcc/c
    pp_string (pp, pp_buffer(pp)->digit_buffer);
    if (TREE_TYPE (r) == float_type_node)
      pp_character (pp, 'f');
-@@ -1923,6 +1922,17 @@
+@@ -1934,6 +1933,17 @@
  
      case TARGET_EXPR:
        pp_postfix_expression (pp, TREE_OPERAND (e, 1));
@@ -1482,9 +1482,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-pretty-print.c gcc-4.0-20050630-src/gcc/c
        break;
  
      default:
-diff -Naur gcc-4.0-20050630.orig/gcc/c-tree.h gcc-4.0-20050630-src/gcc/c-tree.h
---- gcc-4.0-20050630.orig/gcc/c-tree.h	Mon May  2 21:45:04 2005
-+++ gcc-4.0-20050630-src/gcc/c-tree.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-tree.h gcc-4.0-20050922-src/gcc/c-tree.h
+--- gcc-4.0-20050922.orig/gcc/c-tree.h	Fri Jul  8 15:07:34 2005
++++ gcc-4.0-20050922-src/gcc/c-tree.h	Sat Sep 24 15:38:52 2005
 @@ -354,6 +354,8 @@
    tree attrs;
    /* The declarator.  */
@@ -1511,9 +1511,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-tree.h gcc-4.0-20050630-src/gcc/c-tree.h
  extern struct c_declarator *build_attrs_declarator (tree,
  						    struct c_declarator *);
  extern struct c_declarator *build_function_declarator (struct c_arg_info *,
-diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typeck.c
---- gcc-4.0-20050630.orig/gcc/c-typeck.c	Mon Jun  6 21:20:20 2005
-+++ gcc-4.0-20050630-src/gcc/c-typeck.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c-typeck.c gcc-4.0-20050922-src/gcc/c-typeck.c
+--- gcc-4.0-20050922.orig/gcc/c-typeck.c	Tue Sep  6 22:10:50 2005
++++ gcc-4.0-20050922-src/gcc/c-typeck.c	Sat Sep 24 15:38:52 2005
 @@ -84,6 +84,8 @@
  static tree lookup_field (tree, tree);
  static tree convert_arguments (tree, tree, tree, tree);
@@ -1523,7 +1523,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  static tree convert_for_assignment (tree, tree, enum impl_conv, tree, tree,
  				    int);
  static tree valid_compound_expr_initializer (tree, tree);
-@@ -2005,6 +2007,7 @@
+@@ -2006,6 +2008,7 @@
    /* fntype now gets the type of function pointed to.  */
    fntype = TREE_TYPE (fntype);
  
@@ -1531,7 +1531,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
    /* Check that the function is called through a compatible prototype.
       If it is not, replace the call by a trap, wrapped up in a compound
       expression if necessary.  This has the nice side-effect to prevent
-@@ -2049,6 +2052,7 @@
+@@ -2050,6 +2053,7 @@
  	  return build2 (COMPOUND_EXPR, return_type, trap, rhs);
  	}
      }
@@ -1539,7 +1539,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  
    /* Convert the parameters to the types declared in the
       function prototype, or apply default promotions.  */
-@@ -2595,6 +2599,12 @@
+@@ -2597,6 +2601,12 @@
      case POSTINCREMENT_EXPR:
      case PREDECREMENT_EXPR:
      case POSTDECREMENT_EXPR:
@@ -1552,7 +1552,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  
        /* Increment or decrement the real part of the value,
  	 and don't change the imaginary part.  */
-@@ -2663,6 +2673,57 @@
+@@ -2665,6 +2675,57 @@
  
  	inc = convert (argtype, inc);
  
@@ -1610,7 +1610,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  	/* Complain about anything else that is not a true lvalue.  */
  	if (!lvalue_or_else (arg, ((code == PREINCREMENT_EXPR
  				    || code == POSTINCREMENT_EXPR)
-@@ -2709,6 +2770,12 @@
+@@ -2711,6 +2772,12 @@
  				  TREE_OPERAND (arg, 1), 1);
  	}
  
@@ -1623,7 +1623,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
        /* Anything not already handled and not a true memory reference
  	 or a non-lvalue array is an error.  */
        else if (typecode != FUNCTION_TYPE && !flag
-@@ -2797,6 +2864,69 @@
+@@ -2796,6 +2863,69 @@
      }
  }
  
@@ -1693,7 +1693,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  /* Give an error for storing in something that is 'const'.  */
  
  static void
-@@ -3062,7 +3192,7 @@
+@@ -3061,7 +3191,7 @@
      op2 = convert_and_check (result_type, op2);
  
    if (TREE_CODE (ifexp) == INTEGER_CST)
@@ -1702,7 +1702,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  
    return fold (build3 (COND_EXPR, result_type, ifexp, op1, op2));
  }
-@@ -3323,8 +3453,8 @@
+@@ -3322,8 +3452,8 @@
  	}
      }
  
@@ -1713,7 +1713,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
      value = non_lvalue (value);
  
    return value;
-@@ -3376,6 +3506,45 @@
+@@ -3375,6 +3505,45 @@
  
    newrhs = rhs;
  
@@ -1759,7 +1759,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
    /* If a binary op has been requested, combine the old LHS value with the RHS
       producing the value we should actually store into the LHS.  */
  
-@@ -3385,6 +3554,42 @@
+@@ -3384,6 +3553,42 @@
        newrhs = build_binary_op (modifycode, lhs, rhs, 1);
      }
  
@@ -1802,7 +1802,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
    if (!lvalue_or_else (lhs, lv_assign))
      return error_mark_node;
  
-@@ -4102,10 +4307,11 @@
+@@ -4101,10 +4306,11 @@
  {
    char *ofwhat;
  
@@ -1816,7 +1816,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  }
  
  /* Issue a pedantic warning for a bad initializer component.
-@@ -4117,10 +4323,11 @@
+@@ -4116,10 +4322,11 @@
  {
    char *ofwhat;
  
@@ -1830,7 +1830,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  }
  
  /* Issue a warning for a bad initializer component.
-@@ -4132,10 +4339,11 @@
+@@ -4131,10 +4338,11 @@
  {
    char *ofwhat;
  
@@ -1844,9 +1844,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c-typeck.c gcc-4.0-20050630-src/gcc/c-typec
  }
  
  /* If TYPE is an array type and EXPR is a parenthesized string
-diff -Naur gcc-4.0-20050630.orig/gcc/c.opt gcc-4.0-20050630-src/gcc/c.opt
---- gcc-4.0-20050630.orig/gcc/c.opt	Sun May  1 03:11:56 2005
-+++ gcc-4.0-20050630-src/gcc/c.opt	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/c.opt gcc-4.0-20050922-src/gcc/c.opt
+--- gcc-4.0-20050922.orig/gcc/c.opt	Sun May  1 03:11:56 2005
++++ gcc-4.0-20050922-src/gcc/c.opt	Sat Sep 24 15:38:52 2005
 @@ -435,7 +435,7 @@
  Give strings the type \"array of char\"
  
@@ -1867,9 +1867,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/c.opt gcc-4.0-20050630-src/gcc/c.opt
  
  fbuiltin
  C ObjC C++ ObjC++
-diff -Naur gcc-4.0-20050630.orig/gcc/cfgexpand.c gcc-4.0-20050630-src/gcc/cfgexpand.c
---- gcc-4.0-20050630.orig/gcc/cfgexpand.c	Thu Feb 24 21:47:18 2005
-+++ gcc-4.0-20050630-src/gcc/cfgexpand.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/cfgexpand.c gcc-4.0-20050922-src/gcc/cfgexpand.c
+--- gcc-4.0-20050922.orig/gcc/cfgexpand.c	Thu Aug 18 11:50:50 2005
++++ gcc-4.0-20050922-src/gcc/cfgexpand.c	Sat Sep 24 15:38:52 2005
 @@ -1129,6 +1129,23 @@
  	    }
  	  else
@@ -1894,9 +1894,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/cfgexpand.c gcc-4.0-20050630-src/gcc/cfgexp
  	      last = get_last_insn ();
  	      expand_expr_stmt (stmt);
  	      maybe_dump_rtl_for_tree_stmt (stmt, last);
-diff -Naur gcc-4.0-20050630.orig/gcc/collect2.c gcc-4.0-20050630-src/gcc/collect2.c
---- gcc-4.0-20050630.orig/gcc/collect2.c	Mon Jun  6 21:20:26 2005
-+++ gcc-4.0-20050630-src/gcc/collect2.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/collect2.c gcc-4.0-20050922-src/gcc/collect2.c
+--- gcc-4.0-20050922.orig/gcc/collect2.c	Mon Jun  6 21:20:26 2005
++++ gcc-4.0-20050922-src/gcc/collect2.c	Sat Sep 24 15:38:52 2005
 @@ -143,6 +143,64 @@
  #define SCAN_LIBRARIES
  #endif
@@ -2014,9 +2014,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/collect2.c gcc-4.0-20050630-src/gcc/collect
  
    /* Parent context from here on.  */
    int_handler  = (void (*) (int)) signal (SIGINT,  SIG_IGN);
-diff -Naur gcc-4.0-20050630.orig/gcc/combine.c gcc-4.0-20050630-src/gcc/combine.c
---- gcc-4.0-20050630.orig/gcc/combine.c	Wed May  4 09:29:12 2005
-+++ gcc-4.0-20050630-src/gcc/combine.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/combine.c gcc-4.0-20050922-src/gcc/combine.c
+--- gcc-4.0-20050922.orig/gcc/combine.c	Sat Aug 27 17:17:36 2005
++++ gcc-4.0-20050922-src/gcc/combine.c	Sat Sep 24 15:38:52 2005
 @@ -4228,8 +4228,10 @@
        /* x - 0 is the same as x unless x's mode has signed zeros and
  	 allows rounding towards -infinity.  Under those conditions,
@@ -2029,9 +2029,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/combine.c gcc-4.0-20050630-src/gcc/combine.
  	  && XEXP (x, 1) == CONST0_RTX (GET_MODE (XEXP (x, 0))))
  	return XEXP (x, 0);
        break;
-diff -Naur gcc-4.0-20050630.orig/gcc/common.opt gcc-4.0-20050630-src/gcc/common.opt
---- gcc-4.0-20050630.orig/gcc/common.opt	Wed Apr  6 21:35:30 2005
-+++ gcc-4.0-20050630-src/gcc/common.opt	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/common.opt gcc-4.0-20050922-src/gcc/common.opt
+--- gcc-4.0-20050922.orig/gcc/common.opt	Fri Sep  2 10:12:24 2005
++++ gcc-4.0-20050922-src/gcc/common.opt	Sat Sep 24 15:38:52 2005
 @@ -424,6 +424,14 @@
  Perform global common subexpression elimination after register allocation
  has finished.
@@ -2047,7 +2047,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/common.opt gcc-4.0-20050630-src/gcc/common.
  fguess-branch-probability
  Common Report Var(flag_guess_branch_prob)
  Enable guessing of branch probabilities
-@@ -515,6 +523,10 @@
+@@ -519,6 +527,10 @@
  Common Report Var(flag_merge_constants,2) Init(1)
  Attempt to merge identical constants and constant variables
  
@@ -2058,7 +2058,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/common.opt gcc-4.0-20050630-src/gcc/common.
  fmerge-constants
  Common Report Var(flag_merge_constants,1) VarExists
  Attempt to merge identical constants across compilation units
-@@ -543,6 +555,10 @@
+@@ -547,6 +559,10 @@
  Common RejectNegative Report Var(flag_mudflap_ignore_reads)
  Ignore read operations when inserting mudflap instrumentation.
  
@@ -2069,7 +2069,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/common.opt gcc-4.0-20050630-src/gcc/common.
  freschedule-modulo-scheduled-loops
  Common Report Var(flag_resched_modulo_sched)
  Enable/Disable the traditional scheduling in loops that already passed modulo scheduling
-@@ -952,7 +968,7 @@
+@@ -956,7 +972,7 @@
  Assume signed arithmetic overflow wraps around
  
  fzero-initialized-in-bss
@@ -2078,9 +2078,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/common.opt gcc-4.0-20050630-src/gcc/common.
  Put zero initialized data in the bss section
  
  g
-diff -Naur gcc-4.0-20050630.orig/gcc/config/dbxcoff.h gcc-4.0-20050630-src/gcc/config/dbxcoff.h
---- gcc-4.0-20050630.orig/gcc/config/dbxcoff.h	Sun Oct 24 03:42:46 2004
-+++ gcc-4.0-20050630-src/gcc/config/dbxcoff.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/dbxcoff.h gcc-4.0-20050922-src/gcc/config/dbxcoff.h
+--- gcc-4.0-20050922.orig/gcc/config/dbxcoff.h	Sun Oct 24 03:42:46 2004
++++ gcc-4.0-20050922-src/gcc/config/dbxcoff.h	Sat Sep 24 15:38:52 2005
 @@ -48,8 +48,13 @@
  
  /* Like block addresses, stabs line numbers are relative to the
@@ -2096,9 +2096,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/dbxcoff.h gcc-4.0-20050630-src/gcc/c
  
  /* When generating stabs debugging, use N_BINCL entries.  */
  
-diff -Naur gcc-4.0-20050630.orig/gcc/config/i386/xm-mingw32.h gcc-4.0-20050630-src/gcc/config/i386/xm-mingw32.h
---- gcc-4.0-20050630.orig/gcc/config/i386/xm-mingw32.h	Wed Nov 24 04:31:58 2004
-+++ gcc-4.0-20050630-src/gcc/config/i386/xm-mingw32.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/i386/xm-mingw32.h gcc-4.0-20050922-src/gcc/config/i386/xm-mingw32.h
+--- gcc-4.0-20050922.orig/gcc/config/i386/xm-mingw32.h	Wed Nov 24 04:31:58 2004
++++ gcc-4.0-20050922-src/gcc/config/i386/xm-mingw32.h	Sat Sep 24 15:38:52 2005
 @@ -20,6 +20,10 @@
  Software Foundation, 59 Temple Place - Suite 330, Boston, MA
  02111-1307, USA.  */
@@ -2110,9 +2110,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/i386/xm-mingw32.h gcc-4.0-20050630-s
  #define HOST_EXECUTABLE_SUFFIX ".exe"
  
  #undef PATH_SEPARATOR
-diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k-modes.def gcc-4.0-20050630-src/gcc/config/m68k/m68k-modes.def
---- gcc-4.0-20050630.orig/gcc/config/m68k/m68k-modes.def	Sun Oct 17 20:09:40 2004
-+++ gcc-4.0-20050630-src/gcc/config/m68k/m68k-modes.def	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k-modes.def gcc-4.0-20050922-src/gcc/config/m68k/m68k-modes.def
+--- gcc-4.0-20050922.orig/gcc/config/m68k/m68k-modes.def	Sun Oct 17 20:09:40 2004
++++ gcc-4.0-20050922-src/gcc/config/m68k/m68k-modes.def	Sat Sep 24 15:38:52 2005
 @@ -18,5 +18,6 @@
  the Free Software Foundation, 59 Temple Place - Suite 330,
  Boston, MA 02111-1307, USA.  */
@@ -2122,9 +2122,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k-modes.def gcc-4.0-20050630
 +FLOAT_MODE (BF, 10, 0);
 +FLOAT_MODE (XF, 12, 0);
 +
-diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k-none.h gcc-4.0-20050630-src/gcc/config/m68k/m68k-none.h
---- gcc-4.0-20050630.orig/gcc/config/m68k/m68k-none.h	Sat Oct 11 05:06:44 2003
-+++ gcc-4.0-20050630-src/gcc/config/m68k/m68k-none.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k-none.h gcc-4.0-20050922-src/gcc/config/m68k/m68k-none.h
+--- gcc-4.0-20050922.orig/gcc/config/m68k/m68k-none.h	Sat Oct 11 05:06:44 2003
++++ gcc-4.0-20050922-src/gcc/config/m68k/m68k-none.h	Sat Sep 24 15:38:52 2005
 @@ -18,10 +18,12 @@
  the Free Software Foundation, 59 Temple Place - Suite 330,
  Boston, MA 02111-1307, USA.  */
@@ -2142,9 +2142,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k-none.h gcc-4.0-20050630-sr
  
  /* These are values set by the configure script in TARGET_CPU_DEFAULT.
     They are (sequential integer + (desired value for TARGET_DEFAULT) << 4).  */
-diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k-protos.h gcc-4.0-20050630-src/gcc/config/m68k/m68k-protos.h
---- gcc-4.0-20050630.orig/gcc/config/m68k/m68k-protos.h	Fri Oct 22 14:47:24 2004
-+++ gcc-4.0-20050630-src/gcc/config/m68k/m68k-protos.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k-protos.h gcc-4.0-20050922-src/gcc/config/m68k/m68k-protos.h
+--- gcc-4.0-20050922.orig/gcc/config/m68k/m68k-protos.h	Tue Jul 26 06:40:44 2005
++++ gcc-4.0-20050922-src/gcc/config/m68k/m68k-protos.h	Sat Sep 24 15:38:52 2005
 @@ -44,6 +44,13 @@
  extern int floating_exact_log2 (rtx);
  extern bool strict_low_part_peephole_ok (enum machine_mode mode, rtx first_insn, rtx target);
@@ -2159,9 +2159,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k-protos.h gcc-4.0-20050630-
  /* Functions from m68k.c used in macros.  */
  extern int standard_68881_constant_p (rtx);
  extern void print_operand_address (FILE *, rtx);
-diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k-ti.h gcc-4.0-20050630-src/gcc/config/m68k/m68k-ti.h
---- gcc-4.0-20050630.orig/gcc/config/m68k/m68k-ti.h	Thu Jan  1 01:00:00 1970
-+++ gcc-4.0-20050630-src/gcc/config/m68k/m68k-ti.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k-ti.h gcc-4.0-20050922-src/gcc/config/m68k/m68k-ti.h
+--- gcc-4.0-20050922.orig/gcc/config/m68k/m68k-ti.h	Thu Jan  1 01:00:00 1970
++++ gcc-4.0-20050922-src/gcc/config/m68k/m68k-ti.h	Sat Sep 24 15:38:52 2005
 @@ -0,0 +1,215 @@
 +/* Definitions of target machine for GNU compiler.
 +   TI-68k architecture (68000),
@@ -2378,9 +2378,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k-ti.h gcc-4.0-20050630-src/
 +#define DWARF2_UNWIND_INFO 1
 +
 +/* end of m68k-ti.h */
-diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.c gcc-4.0-20050630-src/gcc/config/m68k/m68k.c
---- gcc-4.0-20050630.orig/gcc/config/m68k/m68k.c	Thu Feb 24 01:50:32 2005
-+++ gcc-4.0-20050630-src/gcc/config/m68k/m68k.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k.c gcc-4.0-20050922-src/gcc/config/m68k/m68k.c
+--- gcc-4.0-20050922.orig/gcc/config/m68k/m68k.c	Tue Jul 26 06:40:44 2005
++++ gcc-4.0-20050922-src/gcc/config/m68k/m68k.c	Sat Sep 24 15:38:52 2005
 @@ -43,6 +43,11 @@
  #include "target-def.h"
  #include "debug.h"
@@ -3337,9 +3337,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.c gcc-4.0-20050630-src/gcc
        else if ((flag_pic == 1) || TARGET_68020)
  	{
  	  if (MOTOROLA)
-@@ -3449,3 +4000,127 @@
- 
-   return 1;
+@@ -3482,3 +4033,127 @@
+     }
+   return false;
  }
 +
 +/* begin-TIGCC-local (regparms): explicit register specification for parameters */
@@ -3465,9 +3465,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.c gcc-4.0-20050630-src/gcc
 +  return (GET_CODE (r) != CONST_DOUBLE);
 +}
 +
-diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc/config/m68k/m68k.h
---- gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h	Thu Dec 30 03:07:52 2004
-+++ gcc-4.0-20050630-src/gcc/config/m68k/m68k.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k.h gcc-4.0-20050922-src/gcc/config/m68k/m68k.h
+--- gcc-4.0-20050922.orig/gcc/config/m68k/m68k.h	Tue Jul 26 06:40:42 2005
++++ gcc-4.0-20050922-src/gcc/config/m68k/m68k.h	Sat Sep 24 15:38:52 2005
 @@ -224,6 +224,44 @@
  #define MASK_ID_SHARED_LIBRARY	(1<<18)
  #define TARGET_ID_SHARED_LIBRARY	(target_flags & MASK_ID_SHARED_LIBRARY)
@@ -3633,7 +3633,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc
  
  /* 1 for registers that have pervasive standard uses
     and are not available for the register allocator.
-@@ -604,6 +700,9 @@
+@@ -601,6 +697,9 @@
     `S' is for operands that satisfy 'm' when -mpcrel is in effect.
     `T' is for operands that satisfy 's' when -mpcrel is not in effect.
     `U' is for register offset addressing.  */
@@ -3643,7 +3643,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc
  #define EXTRA_CONSTRAINT(OP,CODE)			\
    (((CODE) == 'S')					\
     ? (TARGET_PCREL					\
-@@ -613,7 +712,7 @@
+@@ -610,7 +709,7 @@
  	  || GET_CODE (XEXP (OP, 0)) == CONST))		\
     : 							\
    (((CODE) == 'T')					\
@@ -3652,7 +3652,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc
        && (GET_CODE (OP) == SYMBOL_REF			\
  	  || GET_CODE (OP) == LABEL_REF			\
  	  || GET_CODE (OP) == CONST))			\
-@@ -715,24 +814,59 @@
+@@ -712,24 +811,59 @@
  
  #define PCC_STATIC_STRUCT_RETURN
  
@@ -3726,7 +3726,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc
  
  #define FUNCTION_PROFILER(FILE, LABELNO)  \
    asm_fprintf (FILE, "\tlea %LLP%d,%Ra0\n\tjsr mcount\n", (LABELNO))
-@@ -868,7 +1002,11 @@
+@@ -865,7 +999,11 @@
  
  /* Nonzero if the constant value X is a legitimate general operand.
     It is given that X satisfies CONSTANT_P or is a CONST_DOUBLE.  */
@@ -3739,7 +3739,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc
  
  #ifndef REG_OK_STRICT
  #define PCREL_GENERAL_OPERAND_OK 0
-@@ -1179,15 +1317,19 @@
+@@ -1176,15 +1314,19 @@
  #define ASM_OUTPUT_SKIP(FILE,SIZE)  \
    fprintf (FILE, "\t.skip %u\n", (int)(SIZE))
  
@@ -3759,7 +3759,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc
  
  /* Output a float value (represented as a C double) as an immediate operand.
     This macro is m68k-specific.  */
-@@ -1259,6 +1401,8 @@
+@@ -1256,6 +1398,8 @@
  
  /* Variables in m68k.c */
  extern const char *m68k_library_id_string;
@@ -3768,7 +3768,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc
  extern int m68k_last_compare_had_fp_operands;
  
  
-@@ -1278,4 +1422,8 @@
+@@ -1275,4 +1419,8 @@
    {"extend_operator", {SIGN_EXTEND, ZERO_EXTEND}},			\
    {"symbolic_operand", {SYMBOL_REF, LABEL_REF, CONST}},			\
    {"post_inc_operand", {MEM}},						\
@@ -3778,9 +3778,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.h gcc-4.0-20050630-src/gcc
 +  {"extended_address_operand", {CONST_INT, CONST_DOUBLE, CONST, SYMBOL_REF, \
 +                                LABEL_REF, SUBREG, REG, MEM, \
 +                                PLUS, MINUS, MULT}},
-diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.md gcc-4.0-20050630-src/gcc/config/m68k/m68k.md
---- gcc-4.0-20050630.orig/gcc/config/m68k/m68k.md	Fri Aug  6 09:14:56 2004
-+++ gcc-4.0-20050630-src/gcc/config/m68k/m68k.md	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/m68k/m68k.md gcc-4.0-20050922-src/gcc/config/m68k/m68k.md
+--- gcc-4.0-20050922.orig/gcc/config/m68k/m68k.md	Tue Jul 26 06:40:42 2005
++++ gcc-4.0-20050922-src/gcc/config/m68k/m68k.md	Sat Sep 24 15:38:52 2005
 @@ -327,20 +327,22 @@
                   (match_operand:SI 1 "general_src_operand" "mSr,mSa,KTr,Ksr,>")))]
    "!TARGET_COLDFIRE"
@@ -4348,9 +4348,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/m68k/m68k.md gcc-4.0-20050630-src/gc
 +  [(set (strict_low_part (match_dup 0)) (const_int 0))]
 +  "")
 +
-diff -Naur gcc-4.0-20050630.orig/gcc/config/smapbcd.h gcc-4.0-20050630-src/gcc/config/smapbcd.h
---- gcc-4.0-20050630.orig/gcc/config/smapbcd.h	Thu Jan  1 01:00:00 1970
-+++ gcc-4.0-20050630-src/gcc/config/smapbcd.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/config/smapbcd.h gcc-4.0-20050922-src/gcc/config/smapbcd.h
+--- gcc-4.0-20050922.orig/gcc/config/smapbcd.h	Thu Jan  1 01:00:00 1970
++++ gcc-4.0-20050922-src/gcc/config/smapbcd.h	Sat Sep 24 15:38:52 2005
 @@ -0,0 +1,369 @@
 +/* Definitions for SMAP II BCD support in the GNU C Compiler.
 +   These macros implement software BCD floating point support;
@@ -4721,10 +4721,10 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config/smapbcd.h gcc-4.0-20050630-src/gcc/c
 +#define REAL_MODE_FORMAT_COMPOSITE_P(dummy) (0)
 +
 +/* end of smapbcd.h */
-diff -Naur gcc-4.0-20050630.orig/gcc/config.gcc gcc-4.0-20050630-src/gcc/config.gcc
---- gcc-4.0-20050630.orig/gcc/config.gcc	Thu May  5 22:11:50 2005
-+++ gcc-4.0-20050630-src/gcc/config.gcc	Fri Jul  1 04:33:42 2005
-@@ -1321,7 +1321,7 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/config.gcc gcc-4.0-20050922-src/gcc/config.gcc
+--- gcc-4.0-20050922.orig/gcc/config.gcc	Tue Aug  9 12:57:04 2005
++++ gcc-4.0-20050922-src/gcc/config.gcc	Sat Sep 24 15:38:54 2005
+@@ -1332,7 +1332,7 @@
  m68k-*-coff*)
  	tmake_file=m68k/t-m68kbare
  	tm_defines="MOTOROLA USE_GAS"
@@ -4733,9 +4733,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/config.gcc gcc-4.0-20050630-src/gcc/config.
  	use_fixproto=yes
  	;;
  m68020-*-elf* | m68k-*-elf*)
-diff -Naur gcc-4.0-20050630.orig/gcc/convert.c gcc-4.0-20050630-src/gcc/convert.c
---- gcc-4.0-20050630.orig/gcc/convert.c	Thu Feb 17 23:56:38 2005
-+++ gcc-4.0-20050630-src/gcc/convert.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/convert.c gcc-4.0-20050922-src/gcc/convert.c
+--- gcc-4.0-20050922.orig/gcc/convert.c	Tue Aug 23 20:01:26 2005
++++ gcc-4.0-20050922-src/gcc/convert.c	Sat Sep 24 15:38:54 2005
 @@ -77,6 +77,9 @@
  {
    tree sub, expt, subt;
@@ -4754,9 +4754,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/convert.c gcc-4.0-20050630-src/gcc/convert.
  
    if (TREE_CODE (exp) != NOP_EXPR
        && TREE_CODE (exp) != CONVERT_EXPR)
-diff -Naur gcc-4.0-20050630.orig/gcc/cppdefault.c gcc-4.0-20050630-src/gcc/cppdefault.c
---- gcc-4.0-20050630.orig/gcc/cppdefault.c	Wed Nov  3 03:23:48 2004
-+++ gcc-4.0-20050630-src/gcc/cppdefault.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/cppdefault.c gcc-4.0-20050922-src/gcc/cppdefault.c
+--- gcc-4.0-20050922.orig/gcc/cppdefault.c	Wed Nov  3 03:23:48 2004
++++ gcc-4.0-20050922-src/gcc/cppdefault.c	Sat Sep 24 15:38:54 2005
 @@ -46,6 +46,7 @@
  = INCLUDE_DEFAULTS;
  #else
@@ -4779,9 +4779,28 @@ diff -Naur gcc-4.0-20050630.orig/gcc/cppdefault.c gcc-4.0-20050630-src/gcc/cppde
  const char cpp_GCC_INCLUDE_DIR[] = GCC_INCLUDE_DIR;
  const size_t cpp_GCC_INCLUDE_DIR_len = sizeof GCC_INCLUDE_DIR - 8;
  #else
-diff -Naur gcc-4.0-20050630.orig/gcc/diagnostic.c gcc-4.0-20050630-src/gcc/diagnostic.c
---- gcc-4.0-20050630.orig/gcc/diagnostic.c	Mon Jun  6 21:20:26 2005
-+++ gcc-4.0-20050630-src/gcc/diagnostic.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/defaults.h gcc-4.0-20050922-src/gcc/defaults.h
+--- gcc-4.0-20050922.orig/gcc/defaults.h	Thu Feb 24 21:47:18 2005
++++ gcc-4.0-20050922-src/gcc/defaults.h	Sat Sep 24 17:20:06 2005
+@@ -840,4 +840,15 @@
+ #define MAX_OFILE_ALIGNMENT BIGGEST_ALIGNMENT
+ #endif
+ 
++/* On most machines, the CFA coincides with the first incoming parm.  */
++#ifndef ARG_POINTER_CFA_OFFSET
++#define ARG_POINTER_CFA_OFFSET(FNDECL) FIRST_PARM_OFFSET (FNDECL)
++#endif
++
++/* The offset from the incoming value of %sp to the top of the stack frame
++   for the current function.  */
++#ifndef INCOMING_FRAME_SP_OFFSET
++#define INCOMING_FRAME_SP_OFFSET 0
++#endif
++
+ #endif  /* ! GCC_DEFAULTS_H */
+diff -Naur gcc-4.0-20050922.orig/gcc/diagnostic.c gcc-4.0-20050922-src/gcc/diagnostic.c
+--- gcc-4.0-20050922.orig/gcc/diagnostic.c	Mon Jun  6 21:20:26 2005
++++ gcc-4.0-20050922-src/gcc/diagnostic.c	Sat Sep 24 15:38:54 2005
 @@ -234,9 +234,8 @@
        if (context->abort_on_error)
  	real_abort ();
@@ -4794,9 +4813,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/diagnostic.c gcc-4.0-20050630-src/gcc/diagn
        exit (FATAL_EXIT_CODE);
  
      case DK_FATAL:
-diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2.h gcc-4.0-20050630-src/gcc/dwarf2.h
---- gcc-4.0-20050630.orig/gcc/dwarf2.h	Wed Oct  6 22:27:14 2004
-+++ gcc-4.0-20050630-src/gcc/dwarf2.h	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/dwarf2.h gcc-4.0-20050922-src/gcc/dwarf2.h
+--- gcc-4.0-20050922.orig/gcc/dwarf2.h	Wed Oct  6 22:27:14 2004
++++ gcc-4.0-20050922-src/gcc/dwarf2.h	Sat Sep 24 15:38:54 2005
 @@ -352,6 +352,7 @@
      DW_AT_body_begin = 0x2105,
      DW_AT_body_end   = 0x2106,
@@ -4805,10 +4824,92 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2.h gcc-4.0-20050630-src/gcc/dwarf2.h
      /* VMS extensions.  */
      DW_AT_VMS_rtnbeg_pd_address = 0x2201,
      /* UPC extension.  */
-diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2out.c
---- gcc-4.0-20050630.orig/gcc/dwarf2out.c	Mon May 16 06:32:28 2005
-+++ gcc-4.0-20050630-src/gcc/dwarf2out.c	Fri Jul  1 04:33:42 2005
-@@ -2095,8 +2095,11 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/dwarf2out.c gcc-4.0-20050922-src/gcc/dwarf2out.c
+--- gcc-4.0-20050922.orig/gcc/dwarf2out.c	Thu Sep  1 16:04:38 2005
++++ gcc-4.0-20050922-src/gcc/dwarf2out.c	Sat Sep 24 17:20:06 2005
+@@ -235,9 +235,9 @@
+    of this structure.  */
+ typedef struct cfa_loc GTY(())
+ {
+-  unsigned long reg;
+   HOST_WIDE_INT offset;
+   HOST_WIDE_INT base_offset;
++  unsigned int reg;
+   int indirect;            /* 1 if CFA is accessed via a dereference.  */
+ } dw_cfa_location;
+ 
+@@ -427,12 +427,6 @@
+ #ifndef DWARF_FRAME_REGNUM
+ #define DWARF_FRAME_REGNUM(REG) DBX_REGISTER_NUMBER (REG)
+ #endif
+-
+-/* The offset from the incoming value of %sp to the top of the stack frame
+-   for the current function.  */
+-#ifndef INCOMING_FRAME_SP_OFFSET
+-#define INCOMING_FRAME_SP_OFFSET 0
+-#endif
+ 
+ /* Hook used by __throw.  */
+ 
+@@ -659,7 +653,7 @@
+ 
+ /* Subroutine of lookup_cfa.  */
+ 
+-static inline void
++static void
+ lookup_cfa_1 (dw_cfi_ref cfi, dw_cfa_location *loc)
+ {
+   switch (cfi->dw_cfi_opc)
+@@ -689,7 +683,7 @@
+ {
+   dw_cfi_ref cfi;
+ 
+-  loc->reg = (unsigned long) -1;
++  loc->reg = INVALID_REGNUM;
+   loc->offset = 0;
+   loc->indirect = 0;
+   loc->base_offset = 0;
+@@ -733,6 +727,18 @@
+   def_cfa_1 (label, &loc);
+ }
+ 
++/* Determine if two dw_cfa_location structures define the same data.  */
++
++static bool
++cfa_equal_p (const dw_cfa_location *loc1, const dw_cfa_location *loc2)
++{
++  return (loc1->reg == loc2->reg
++	  && loc1->offset == loc2->offset
++	  && loc1->indirect == loc2->indirect
++	  && (loc1->indirect == 0
++	      || loc1->base_offset == loc2->base_offset));
++}
++
+ /* This routine does the actual work.  The CFA is now calculated from
+    the dw_cfa_location structure.  */
+ 
+@@ -752,9 +758,7 @@
+   lookup_cfa (&old_cfa);
+ 
+   /* If nothing changed, no need to issue any call frame instructions.  */
+-  if (loc.reg == old_cfa.reg && loc.offset == old_cfa.offset
+-      && loc.indirect == old_cfa.indirect
+-      && (loc.indirect == 0 || loc.base_offset == old_cfa.base_offset))
++  if (cfa_equal_p (&loc, &old_cfa))
+     return;
+ 
+   cfi = new_cfi ();
+@@ -769,7 +773,8 @@
+     }
+ 
+ #ifndef MIPS_DEBUGGING_INFO  /* SGI dbx thinks this means no offset.  */
+-  else if (loc.offset == old_cfa.offset && old_cfa.reg != (unsigned long) -1
++  else if (loc.offset == old_cfa.offset
++	   && old_cfa.reg != INVALID_REGNUM
+ 	   && !loc.indirect)
+     {
+       /* Construct a "DW_CFA_def_cfa_register <register>" instruction,
+@@ -2095,8 +2100,11 @@
       emit any EH unwind information.  Note that if exceptions aren't
       enabled, we won't have collected nothrow information, and if we
       asked for asynchronous tables, we always want this info.  */
@@ -4820,7 +4921,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
        bool any_eh_needed = !flag_exceptions || flag_asynchronous_unwind_tables;
  
        for (i = 0; i < fde_table_in_use; i++)
-@@ -2109,6 +2112,7 @@
+@@ -2109,6 +2117,7 @@
  	  any_eh_needed = true;
  
        if (! any_eh_needed)
@@ -4828,7 +4929,90 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  	return;
      }
  
-@@ -4001,7 +4005,7 @@
+@@ -3264,27 +3273,40 @@
+ {
+   struct dw_loc_descr_struct *head, *tmp;
+ 
+-  gcc_assert (cfa->indirect);
+-
+-  if (cfa->base_offset)
++  if (cfa->indirect)
+     {
+-      if (cfa->reg <= 31)
+-	head = new_loc_descr (DW_OP_breg0 + cfa->reg, cfa->base_offset, 0);
++      if (cfa->base_offset)
++	{
++	  if (cfa->reg <= 31)
++	    head = new_loc_descr (DW_OP_breg0 + cfa->reg, cfa->base_offset, 0);
++	  else
++	    head = new_loc_descr (DW_OP_bregx, cfa->reg, cfa->base_offset);
++	}
++      else if (cfa->reg <= 31)
++	head = new_loc_descr (DW_OP_reg0 + cfa->reg, 0, 0);
+       else
+-	head = new_loc_descr (DW_OP_bregx, cfa->reg, cfa->base_offset);
++	head = new_loc_descr (DW_OP_regx, cfa->reg, 0);
++
++      head->dw_loc_oprnd1.val_class = dw_val_class_const;
++      tmp = new_loc_descr (DW_OP_deref, 0, 0);
++      add_loc_descr (&head, tmp);
++      if (cfa->offset != 0)
++	{
++	  tmp = new_loc_descr (DW_OP_plus_uconst, cfa->offset, 0);
++	  add_loc_descr (&head, tmp);
++	}
+     }
+-  else if (cfa->reg <= 31)
+-    head = new_loc_descr (DW_OP_reg0 + cfa->reg, 0, 0);
+   else
+-    head = new_loc_descr (DW_OP_regx, cfa->reg, 0);
+-
+-  head->dw_loc_oprnd1.val_class = dw_val_class_const;
+-  tmp = new_loc_descr (DW_OP_deref, 0, 0);
+-  add_loc_descr (&head, tmp);
+-  if (cfa->offset != 0)
+     {
+-      tmp = new_loc_descr (DW_OP_plus_uconst, cfa->offset, 0);
+-      add_loc_descr (&head, tmp);
++      if (cfa->offset == 0)
++	if (cfa->reg <= 31)
++	  head = new_loc_descr (DW_OP_reg0 + cfa->reg, 0, 0);
++	else
++	  head = new_loc_descr (DW_OP_regx, cfa->reg, 0);
++      else if (cfa->reg <= 31)
++	head = new_loc_descr (DW_OP_breg0 + cfa->reg, cfa->offset, 0);
++      else
++	head = new_loc_descr (DW_OP_bregx, cfa->reg, cfa->offset);
+     }
+ 
+   return head;
+@@ -3777,6 +3799,10 @@
+ 
+ #ifdef DWARF2_DEBUGGING_INFO
+ 
++/* Offset from the "steady-state frame pointer" to the CFA,
++   within the current function.  */
++static HOST_WIDE_INT frame_pointer_cfa_offset;
++
+ /* Forward declarations for functions defined in this file.  */
+ 
+ static int is_pseudo_reg (rtx);
+@@ -3922,11 +3948,11 @@
+ static dw_loc_descr_ref one_reg_loc_descriptor (unsigned int);
+ static dw_loc_descr_ref multiple_reg_loc_descriptor (rtx, rtx);
+ static dw_loc_descr_ref int_loc_descriptor (HOST_WIDE_INT);
+-static dw_loc_descr_ref based_loc_descr (unsigned, HOST_WIDE_INT, bool);
++static dw_loc_descr_ref based_loc_descr (rtx, HOST_WIDE_INT);
+ static int is_based_loc (rtx);
+-static dw_loc_descr_ref mem_loc_descriptor (rtx, enum machine_mode mode, bool);
++static dw_loc_descr_ref mem_loc_descriptor (rtx, enum machine_mode mode);
+ static dw_loc_descr_ref concat_loc_descriptor (rtx, rtx);
+-static dw_loc_descr_ref loc_descriptor (rtx, bool);
++static dw_loc_descr_ref loc_descriptor (rtx);
+ static dw_loc_descr_ref loc_descriptor_from_tree_1 (tree, int);
+ static dw_loc_descr_ref loc_descriptor_from_tree (tree);
+ static HOST_WIDE_INT ceiling (HOST_WIDE_INT, unsigned int);
+@@ -4001,7 +4027,7 @@
  static void decls_for_scope (tree, dw_die_ref, int);
  static int is_redundant_typedef (tree);
  static void gen_namespace_die (tree);
@@ -4837,7 +5021,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  static dw_die_ref force_decl_die (tree);
  static dw_die_ref force_type_die (tree);
  static dw_die_ref setup_namespace_context (tree, dw_die_ref);
-@@ -4494,6 +4498,8 @@
+@@ -4494,6 +4520,8 @@
        return "DW_AT_body_end";
      case DW_AT_GNU_vector:
        return "DW_AT_GNU_vector";
@@ -4846,7 +5030,276 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  
      case DW_AT_VMS_rtnbeg_pd_address:
        return "DW_AT_VMS_rtnbeg_pd_address";
-@@ -9578,14 +9584,7 @@
+@@ -8342,8 +8370,18 @@
+ {
+   unsigned regno = REGNO (rtl);
+ 
++  /* We do not want to see registers that should have been eliminated.  */
++  gcc_assert (HARD_FRAME_POINTER_REGNUM == ARG_POINTER_REGNUM
++	      || rtl != arg_pointer_rtx);
++  gcc_assert (HARD_FRAME_POINTER_REGNUM == FRAME_POINTER_REGNUM
++	      || rtl != frame_pointer_rtx);
++
+   gcc_assert (regno < FIRST_PSEUDO_REGISTER);
+ 
++#ifdef LEAF_REG_REMAP
++  regno = LEAF_REG_REMAP (regno);
++#endif
++
+   return DBX_REGISTER_NUMBER (regno);
+ }
+ 
+@@ -8373,20 +8411,17 @@
+ static dw_loc_descr_ref
+ reg_loc_descriptor (rtx rtl)
+ {
+-  unsigned reg;
+   rtx regs;
+ 
+   if (REGNO (rtl) >= FIRST_PSEUDO_REGISTER)
+     return 0;
+ 
+-  reg = dbx_reg_number (rtl);
+   regs = targetm.dwarf_register_span (rtl);
+ 
+-  if (hard_regno_nregs[REGNO (rtl)][GET_MODE (rtl)] > 1
+-      || regs)
++  if (hard_regno_nregs[REGNO (rtl)][GET_MODE (rtl)] > 1 || regs)
+     return multiple_reg_loc_descriptor (rtl, regs);
+   else
+-    return one_reg_loc_descriptor (reg);
++    return one_reg_loc_descriptor (dbx_reg_number (rtl));
+ }
+ 
+ /* Return a location descriptor that designates a machine register for
+@@ -8490,25 +8525,53 @@
+   return new_loc_descr (op, i, 0);
+ }
+ 
++/* Return an offset from an eliminable register to the post-prologue
++   frame pointer.  */
++
++static HOST_WIDE_INT
++eliminate_reg_to_offset (rtx reg)
++{
++  HOST_WIDE_INT offset = 0;
++
++  reg = eliminate_regs (reg, VOIDmode, NULL_RTX);
++  if (GET_CODE (reg) == PLUS)
++    {
++      offset = INTVAL (XEXP (reg, 1));
++      reg = XEXP (reg, 0);
++    }
++  gcc_assert (reg == (frame_pointer_needed ? hard_frame_pointer_rtx
++		      : stack_pointer_rtx));
++
++  return offset;
++}
++
+ /* Return a location descriptor that designates a base+offset location.  */
+ 
+ static dw_loc_descr_ref
+-based_loc_descr (unsigned int reg, HOST_WIDE_INT offset, bool can_use_fbreg)
++based_loc_descr (rtx reg, HOST_WIDE_INT offset)
+ {
+   dw_loc_descr_ref loc_result;
+-  /* For the "frame base", we use the frame pointer or stack pointer
+-     registers, since the RTL for local variables is relative to one of
+-     them.  */
+-  unsigned fp_reg = DBX_REGISTER_NUMBER (frame_pointer_needed
+-					 ? HARD_FRAME_POINTER_REGNUM
+-					 : STACK_POINTER_REGNUM);
+-
+-  if (reg == fp_reg && can_use_fbreg)
+-    loc_result = new_loc_descr (DW_OP_fbreg, offset, 0);
+-  else if (reg <= 31)
+-    loc_result = new_loc_descr (DW_OP_breg0 + reg, offset, 0);
++
++  /* We only use "frame base" when we're sure we're talking about the
++     post-prologue local stack frame.  We do this by *not* running
++     register elimination until this point, and recognizing the special
++     argument pointer and soft frame pointer rtx's.  */
++  if (reg == arg_pointer_rtx || reg == frame_pointer_rtx)
++    {
++      offset += eliminate_reg_to_offset (reg);
++      offset += frame_pointer_cfa_offset;
++
++      loc_result = new_loc_descr (DW_OP_fbreg, offset, 0);
++    }
+   else
+-    loc_result = new_loc_descr (DW_OP_bregx, reg, offset);
++    {
++      unsigned int regno = dbx_reg_number (reg);
++
++      if (regno <= 31)
++	loc_result = new_loc_descr (DW_OP_breg0 + regno, offset, 0);
++      else
++	loc_result = new_loc_descr (DW_OP_bregx, regno, offset);
++    }
+ 
+   return loc_result;
+ }
+@@ -8537,15 +8600,13 @@
+    MODE is the mode of the memory reference, needed to handle some
+    autoincrement addressing modes.
+ 
+-   CAN_USE_FBREG is a flag whether we can use DW_AT_frame_base in the location
+-   list for RTL. We can't use it when we are emitting location list for
+-   virtual variable frame_base_decl (i.e. a location list for DW_AT_frame_base)
+-   which describes how frame base changes when !frame_pointer_needed.
++   CAN_USE_FBREG is a flag whether we can use DW_AT_frame_base in the
++   location list for RTL.
+ 
+    Return 0 if we can't represent the location.  */
+ 
+ static dw_loc_descr_ref
+-mem_loc_descriptor (rtx rtl, enum machine_mode mode, bool can_use_fbreg)
++mem_loc_descriptor (rtx rtl, enum machine_mode mode)
+ {
+   dw_loc_descr_ref mem_loc_result = NULL;
+   enum dwarf_location_atom op;
+@@ -8592,13 +8653,11 @@
+ 	 memory) so DWARF consumers need to be aware of the subtle
+ 	 distinction between OP_REG and OP_BASEREG.  */
+       if (REGNO (rtl) < FIRST_PSEUDO_REGISTER)
+-	mem_loc_result = based_loc_descr (dbx_reg_number (rtl), 0,
+-					  can_use_fbreg);
++	mem_loc_result = based_loc_descr (rtl, 0);
+       break;
+ 
+     case MEM:
+-      mem_loc_result = mem_loc_descriptor (XEXP (rtl, 0), GET_MODE (rtl),
+-					   can_use_fbreg);
++      mem_loc_result = mem_loc_descriptor (XEXP (rtl, 0), GET_MODE (rtl));
+       if (mem_loc_result != 0)
+ 	add_loc_descr (&mem_loc_result, new_loc_descr (DW_OP_deref, 0, 0));
+       break;
+@@ -8664,13 +8723,11 @@
+     case PLUS:
+     plus:
+       if (is_based_loc (rtl))
+-	mem_loc_result = based_loc_descr (dbx_reg_number (XEXP (rtl, 0)),
+-					  INTVAL (XEXP (rtl, 1)),
+-					  can_use_fbreg);
++	mem_loc_result = based_loc_descr (XEXP (rtl, 0),
++					  INTVAL (XEXP (rtl, 1)));
+       else
+ 	{
+-	  mem_loc_result = mem_loc_descriptor (XEXP (rtl, 0), mode,
+-					       can_use_fbreg);
++	  mem_loc_result = mem_loc_descriptor (XEXP (rtl, 0), mode);
+ 	  if (mem_loc_result == 0)
+ 	    break;
+ 
+@@ -8682,8 +8739,7 @@
+ 	  else
+ 	    {
+ 	      add_loc_descr (&mem_loc_result,
+-			     mem_loc_descriptor (XEXP (rtl, 1), mode,
+-						 can_use_fbreg));
++			     mem_loc_descriptor (XEXP (rtl, 1), mode));
+ 	      add_loc_descr (&mem_loc_result,
+ 			     new_loc_descr (DW_OP_plus, 0, 0));
+ 	    }
+@@ -8710,10 +8766,8 @@
+ 
+     do_binop:
+       {
+-	dw_loc_descr_ref op0 = mem_loc_descriptor (XEXP (rtl, 0), mode,
+-						   can_use_fbreg);
+-	dw_loc_descr_ref op1 = mem_loc_descriptor (XEXP (rtl, 1), mode,
+-						   can_use_fbreg);
++	dw_loc_descr_ref op0 = mem_loc_descriptor (XEXP (rtl, 0), mode);
++	dw_loc_descr_ref op1 = mem_loc_descriptor (XEXP (rtl, 1), mode);
+ 
+ 	if (op0 == 0 || op1 == 0)
+ 	  break;
+@@ -8742,8 +8796,8 @@
+ concat_loc_descriptor (rtx x0, rtx x1)
+ {
+   dw_loc_descr_ref cc_loc_result = NULL;
+-  dw_loc_descr_ref x0_ref = loc_descriptor (x0, false);
+-  dw_loc_descr_ref x1_ref = loc_descriptor (x1, false);
++  dw_loc_descr_ref x0_ref = loc_descriptor (x0);
++  dw_loc_descr_ref x1_ref = loc_descriptor (x1);
+ 
+   if (x0_ref == 0 || x1_ref == 0)
+     return 0;
+@@ -8766,7 +8820,7 @@
+    If we don't know how to describe it, return 0.  */
+ 
+ static dw_loc_descr_ref
+-loc_descriptor (rtx rtl, bool can_use_fbreg)
++loc_descriptor (rtx rtl)
+ {
+   dw_loc_descr_ref loc_result = NULL;
+ 
+@@ -8787,8 +8841,7 @@
+       break;
+ 
+     case MEM:
+-      loc_result = mem_loc_descriptor (XEXP (rtl, 0), GET_MODE (rtl),
+-				       can_use_fbreg);
++      loc_result = mem_loc_descriptor (XEXP (rtl, 0), GET_MODE (rtl));
+       break;
+ 
+     case CONCAT:
+@@ -8799,7 +8852,7 @@
+       /* Single part.  */
+       if (GET_CODE (XEXP (rtl, 1)) != PARALLEL)
+ 	{
+-	  loc_result = loc_descriptor (XEXP (XEXP (rtl, 1), 0), can_use_fbreg);
++	  loc_result = loc_descriptor (XEXP (XEXP (rtl, 1), 0));
+ 	  break;
+ 	}
+ 
+@@ -8814,16 +8867,14 @@
+ 	int i;
+ 
+ 	/* Create the first one, so we have something to add to.  */
+-	loc_result = loc_descriptor (XEXP (RTVEC_ELT (par_elems, 0), 0),
+-				     can_use_fbreg);
++	loc_result = loc_descriptor (XEXP (RTVEC_ELT (par_elems, 0), 0));
+ 	mode = GET_MODE (XEXP (RTVEC_ELT (par_elems, 0), 0));
+ 	add_loc_descr_op_piece (&loc_result, GET_MODE_SIZE (mode));
+ 	for (i = 1; i < num_elem; i++)
+ 	  {
+ 	    dw_loc_descr_ref temp;
+ 
+-	    temp = loc_descriptor (XEXP (RTVEC_ELT (par_elems, i), 0),
+-				   can_use_fbreg);
++	    temp = loc_descriptor (XEXP (RTVEC_ELT (par_elems, i), 0));
+ 	    add_loc_descr (&loc_result, temp);
+ 	    mode = GET_MODE (XEXP (RTVEC_ELT (par_elems, i), 0));
+ 	    add_loc_descr_op_piece (&loc_result, GET_MODE_SIZE (mode));
+@@ -8955,7 +9006,7 @@
+ 
+ 	    /* Certain constructs can only be represented at top-level.  */
+ 	    if (want_address == 2)
+-	      return loc_descriptor (rtl, false);
++	      return loc_descriptor (rtl);
+ 
+ 	    mode = GET_MODE (rtl);
+ 	    if (MEM_P (rtl))
+@@ -8963,7 +9014,7 @@
+ 		rtl = XEXP (rtl, 0);
+ 		have_address = 1;
+ 	      }
+-	    ret = mem_loc_descriptor (rtl, mode, false);
++	    ret = mem_loc_descriptor (rtl, mode);
+ 	  }
+       }
+       break;
+@@ -9042,7 +9093,7 @@
+ 	  return 0;
+ 	mode = GET_MODE (rtl);
+ 	rtl = XEXP (rtl, 0);
+-	ret = mem_loc_descriptor (rtl, mode, false);
++	ret = mem_loc_descriptor (rtl, mode);
+ 	have_address = 1;
+ 	break;
+       }
+@@ -9591,14 +9642,7 @@
    int i;
  
    REAL_VALUE_FROM_CONST_DOUBLE (rv, rtl);
@@ -4862,7 +5315,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  }
  
  /* Attach a DW_AT_const_value attribute for a variable or a parameter which
-@@ -9624,7 +9623,7 @@
+@@ -9637,7 +9681,7 @@
  	    unsigned char *array = ggc_alloc (length);
  
  	    insert_float (rtl, array);
@@ -4871,7 +5324,309 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  	  }
  	else
  	  {
-@@ -11082,6 +11081,10 @@
+@@ -9932,19 +9976,10 @@
+ 			   plus_constant (XEXP (rtl, 0), rsize-dsize));
+     }
+ 
+-  if (rtl != NULL_RTX)
+-    {
+-      rtl = eliminate_regs (rtl, 0, NULL_RTX);
+-#ifdef LEAF_REG_REMAP
+-      if (current_function_uses_only_leaf_regs)
+-	leaf_renumber_regs_insn (rtl);
+-#endif
+-    }
+-
+   /* A variable with no DECL_RTL but a DECL_INITIAL is a compile-time constant,
+      and will have been substituted directly into all expressions that use it.
+      C does not have such a concept, but C++ and other languages do.  */
+-  else if (TREE_CODE (decl) == VAR_DECL && DECL_INITIAL (decl))
++  if (!rtl && TREE_CODE (decl) == VAR_DECL && DECL_INITIAL (decl))
+     {
+       /* If a variable is initialized with a string constant without embedded
+ 	 zeros, build CONST_STRING.  */
+@@ -9992,29 +10027,34 @@
+   return rtl;
+ }
+ 
+-/* Return true if DECL's containing function has a frame base attribute.
+-   Return false otherwise.  */
++/* We need to figure out what section we should use as the base for the
++   address ranges where a given location is valid.
++   1. If this particular DECL has a section associated with it, use that.
++   2. If this function has a section associated with it, use that.
++   3. Otherwise, use the text section.
++   XXX: If you split a variable across multiple sections, we won't notice.  */
+ 
+-static bool
+-containing_function_has_frame_base (tree decl)
++static const char *
++secname_for_decl (tree decl)
+ {
+-  tree declcontext = decl_function_context (decl);
+-  dw_die_ref context;
+-  dw_attr_ref attr;
+-  
+-  if (!declcontext)
+-    return false;
++  const char *secname;
+ 
+-  context = lookup_decl_die (declcontext);
+-  if (!context)
+-    return false;
++  if (DECL_SECTION_NAME (decl))
++    {
++      tree sectree = DECL_SECTION_NAME (decl);
++      secname = TREE_STRING_POINTER (sectree);
++    }
++  else if (current_function_decl && DECL_SECTION_NAME (current_function_decl))
++    {
++      tree sectree = DECL_SECTION_NAME (current_function_decl);
++      secname = TREE_STRING_POINTER (sectree);
++    }
++  else
++    secname = text_section_label;
+ 
+-  for (attr = context->die_attr; attr; attr = attr->dw_attr_next)
+-    if (attr->dw_attr == DW_AT_frame_base)
+-      return true;
+-  return false;
++  return secname;
+ }
+-  
++
+ /* Generate *either* a DW_AT_location attribute or else a DW_AT_const_value
+    data attribute for a variable or a parameter.  We generate the
+    DW_AT_const_value attribute only in those cases where the given variable
+@@ -10033,7 +10073,6 @@
+   rtx rtl;
+   dw_loc_descr_ref descr;
+   var_loc_list *loc_list;
+-  bool can_use_fb;
+   struct var_loc_node *node;
+   if (TREE_CODE (decl) == ERROR_MARK)
+     return;
+@@ -10041,8 +10080,6 @@
+   gcc_assert (TREE_CODE (decl) == VAR_DECL || TREE_CODE (decl) == PARM_DECL
+ 	      || TREE_CODE (decl) == RESULT_DECL);
+ 	     
+-  can_use_fb = containing_function_has_frame_base (decl);
+-
+   /* See if we possibly have multiple locations for this variable.  */
+   loc_list = lookup_decl_loc (decl);
+ 
+@@ -10050,36 +10087,10 @@
+      differ.  */
+   if (loc_list && loc_list->first != loc_list->last)
+     {
+-      const char *secname;
+-      const char *endname;
++      const char *endname, *secname;
+       dw_loc_list_ref list;
+       rtx varloc;
+ 
+-
+-      /* We need to figure out what section we should use as the base
+-	 for the address ranges where a given location is valid.
+-	 1. If this particular DECL has a section associated with it,
+-	 use that.
+-	 2. If this function has a section associated with it, use
+-	 that.
+-	 3. Otherwise, use the text section.
+-	 XXX: If you split a variable across multiple sections, this
+-	 won't notice.  */
+-
+-      if (DECL_SECTION_NAME (decl))
+-	{
+-	  tree sectree = DECL_SECTION_NAME (decl);
+-	  secname = TREE_STRING_POINTER (sectree);
+-	}
+-      else if (current_function_decl
+-	       && DECL_SECTION_NAME (current_function_decl))
+-	{
+-	  tree sectree = DECL_SECTION_NAME (current_function_decl);
+-	  secname = TREE_STRING_POINTER (sectree);
+-	}
+-      else
+-	secname = text_section_label;
+-
+       /* Now that we know what section we are using for a base,
+          actually construct the list of locations.
+ 	 The first location information is what is passed to the
+@@ -10093,7 +10104,9 @@
+ 
+       node = loc_list->first;
+       varloc = NOTE_VAR_LOCATION (node->var_loc_note);
+-      list = new_loc_list (loc_descriptor (varloc, can_use_fb),
++      secname = secname_for_decl (decl);
++
++      list = new_loc_list (loc_descriptor (varloc),
+ 			   node->label, node->next->label, secname, 1);
+       node = node->next;
+ 
+@@ -10103,9 +10116,7 @@
+ 	    /* The variable has a location between NODE->LABEL and
+ 	       NODE->NEXT->LABEL.  */
+ 	    varloc = NOTE_VAR_LOCATION (node->var_loc_note);
+-	    add_loc_descr_to_loc_list (&list,
+-				       loc_descriptor (varloc,
+-						       can_use_fb),
++	    add_loc_descr_to_loc_list (&list, loc_descriptor (varloc),
+ 				       node->label, node->next->label, secname);
+ 	  }
+ 
+@@ -10124,9 +10135,7 @@
+ 					   current_function_funcdef_no);
+ 	      endname = ggc_strdup (label_id);
+ 	    }
+-	  add_loc_descr_to_loc_list (&list,
+-				     loc_descriptor (varloc,
+-						     can_use_fb),
++	  add_loc_descr_to_loc_list (&list, loc_descriptor (varloc),
+ 				     node->label, endname, secname);
+ 	}
+ 
+@@ -10145,25 +10154,27 @@
+       return;
+     }
+   
+-  /* We couldn't get any rtl, and we had no >1 element location list, so try
+-     directly generating the location description from the tree.  */
+-  descr = loc_descriptor_from_tree (decl);
+-  if (descr)
+-    {
+-      add_AT_location_description (die, attr, descr);
+-      return;
+-    }
+-  
+-  /* Lastly, if we have tried to generate the location otherwise, and it
++  /* If we have tried to generate the location otherwise, and it
+      didn't work out (we wouldn't be here if we did), and we have a one entry
+      location list, try generating a location from that.  */
+   if (loc_list && loc_list->first)
+     {
+       node = loc_list->first;
+-      descr = loc_descriptor (NOTE_VAR_LOCATION (node->var_loc_note), 
+-			      can_use_fb);
++      descr = loc_descriptor (NOTE_VAR_LOCATION (node->var_loc_note));
+       if (descr)
+-	add_AT_location_description (die, attr, descr);
++	{
++	  add_AT_location_description (die, attr, descr);
++	  return;
++	}
++    }
++
++  /* We couldn't get any rtl, so try directly generating the location
++     description from the tree.  */
++  descr = loc_descriptor_from_tree (decl);
++  if (descr)
++    {
++      add_AT_location_description (die, attr, descr);
++      return;
+     }
+ }
+ 
+@@ -10195,6 +10206,98 @@
+ 		      TREE_INT_CST_LOW (init));
+ }
+ 
++/* Convert the CFI instructions for the current function into a location
++   list.  This is used for DW_AT_frame_base when we targeting a dwarf2
++   consumer that does not support the dwarf3 DW_OP_call_frame_cfa.  */
++
++static dw_loc_list_ref
++convert_cfa_to_loc_list (void)
++{
++  dw_fde_ref fde;
++  dw_loc_list_ref list, *list_tail;
++  dw_cfi_ref cfi;
++  dw_cfa_location last_cfa, next_cfa;
++  const char *start_label, *last_label, *section;
++
++  fde = &fde_table[fde_table_in_use - 1];
++
++  section = secname_for_decl (current_function_decl);
++  list_tail = &list;
++  list = NULL;
++
++  next_cfa.reg = INVALID_REGNUM;
++  next_cfa.offset = 0;
++  next_cfa.indirect = 0;
++  next_cfa.base_offset = 0;
++
++  start_label = fde->dw_fde_begin;
++
++  /* ??? Bald assumption that the CIE opcode list does not contain
++     advance opcodes.  */
++  for (cfi = cie_cfi_head; cfi; cfi = cfi->dw_cfi_next)
++    lookup_cfa_1 (cfi, &next_cfa);
++
++  last_cfa = next_cfa;
++  last_label = start_label;
++
++  for (cfi = fde->dw_fde_cfi; cfi; cfi = cfi->dw_cfi_next)
++    switch (cfi->dw_cfi_opc)
++      {
++      case DW_CFA_advance_loc1:
++      case DW_CFA_advance_loc2:
++      case DW_CFA_advance_loc4:
++	if (!cfa_equal_p (&last_cfa, &next_cfa))
++	  {
++	    *list_tail = new_loc_list (build_cfa_loc (&last_cfa), start_label,
++				       last_label, section, list == NULL);
++
++	    list_tail = &(*list_tail)->dw_loc_next;
++	    last_cfa = next_cfa;
++	    start_label = last_label;
++	  }
++	last_label = cfi->dw_cfi_oprnd1.dw_cfi_addr;
++	break;
++
++      case DW_CFA_advance_loc:
++	/* The encoding is complex enough that we should never emit this.  */
++      case DW_CFA_remember_state:
++      case DW_CFA_restore_state:
++	/* We don't handle these two in this function.  It would be possible
++	   if it were to be required.  */
++	gcc_unreachable ();
++
++      default:
++	lookup_cfa_1 (cfi, &next_cfa);
++	break;
++      }
++
++  if (!cfa_equal_p (&last_cfa, &next_cfa))
++    {
++      *list_tail = new_loc_list (build_cfa_loc (&last_cfa), start_label,
++				 last_label, section, list == NULL);
++      list_tail = &(*list_tail)->dw_loc_next;
++      start_label = last_label;
++    }
++  *list_tail = new_loc_list (build_cfa_loc (&next_cfa), start_label,
++			     fde->dw_fde_end, section, list == NULL);
++
++  return list;
++}
++
++/* Compute a displacement from the "steady-state frame pointer" to
++   the CFA, and store it in frame_pointer_cfa_offset.  */
++
++static void
++compute_frame_pointer_to_cfa_displacement (void)
++{
++  HOST_WIDE_INT offset;
++
++  offset = eliminate_reg_to_offset (arg_pointer_rtx);
++  offset += ARG_POINTER_CFA_OFFSET (current_function_decl);
++
++  frame_pointer_cfa_offset = -offset;
++}
++
+ /* Generate a DW_AT_name attribute given some string value to be included as
+    the value of the attribute.  */
+ 
+@@ -11095,6 +11198,10 @@
     DW_TAG_unspecified_parameters DIE) to represent the types of the formal
     parameters as specified in some function type specification (except for
     those which appear as part of a function *definition*).  */
@@ -4882,7 +5637,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  
  static void
  gen_formal_types_die (tree function_or_method_type, dw_die_ref context_die)
-@@ -11090,15 +11093,21 @@
+@@ -11103,15 +11210,21 @@
    tree formal_type = NULL;
    tree first_parm_type;
    tree arg;
@@ -4904,7 +5659,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
    first_parm_type = TYPE_ARG_TYPES (function_or_method_type);
  
    /* Make our first pass over the list of formal parameter types and output a
-@@ -11118,6 +11127,17 @@
+@@ -11131,6 +11244,17 @@
  	  || (arg && DECL_ARTIFICIAL (arg)))
  	add_AT_flag (parm_die, DW_AT_artificial, 1);
  
@@ -4922,7 +5677,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
        link = TREE_CHAIN (link);
        if (arg)
  	arg = TREE_CHAIN (arg);
-@@ -11221,6 +11241,10 @@
+@@ -11234,6 +11358,10 @@
  
  /* Generate a DIE to represent a declared function (either file-scope or
     block-local).  */
@@ -4933,7 +5688,13 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  
  static void
  gen_subprogram_die (tree decl, dw_die_ref context_die)
-@@ -11234,6 +11258,7 @@
+@@ -11241,12 +11369,12 @@
+   char label_id[MAX_ARTIFICIAL_LABEL_BYTES];
+   tree origin = decl_ultimate_origin (decl);
+   dw_die_ref subr_die;
+-  rtx fp_reg;
+   tree fn_arg_types;
+   tree outer_scope;
    dw_die_ref old_die = lookup_decl_die (decl);
    int declaration = (current_function_decl != decl
  		     || class_or_namespace_scope_p (context_die));
@@ -4941,7 +5702,54 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  
    /* It is possible to have both DECL_ABSTRACT and DECLARATION be true if we
       started to generate the abstract instance of an inline, decided to output
-@@ -11434,6 +11459,8 @@
+@@ -11404,20 +11532,32 @@
+       add_AT_fde_ref (subr_die, DW_AT_MIPS_fde, current_funcdef_fde);
+ #endif
+ 
+-      /* Define the "frame base" location for this routine.  We use the
+-	 frame pointer or stack pointer registers, since the RTL for local
+-	 variables is relative to one of them.  */
+-      if (frame_base_decl && lookup_decl_loc (frame_base_decl) != NULL)
+-	{
+-	  add_location_or_const_value_attribute (subr_die, frame_base_decl,
+-						 DW_AT_frame_base);
+-	}
+-      else
+-	{
+-	  fp_reg
+-	    = frame_pointer_needed ? hard_frame_pointer_rtx : stack_pointer_rtx;
+-	  add_AT_loc (subr_die, DW_AT_frame_base, reg_loc_descriptor (fp_reg));
+-	}
++      /* We define the "frame base" as the function's CFA.  This is more
++	 convenient for several reasons: (1) It's stable across the prologue
++	 and epilogue, which makes it better than just a frame pointer,
++	 (2) With dwarf3, there exists a one-byte encoding that allows us
++	 to reference the .debug_frame data by proxy, but failing that,
++	 (3) We can at least reuse the code inspection and interpretation
++	 code that determines the CFA position at various points in the
++	 function.  */
++      /* ??? Use some command-line or configury switch to enable the use
++	 of dwarf3 DW_OP_call_frame_cfa.  At present there are no dwarf
++	 consumers that understand it; fall back to "pure" dwarf2 and
++	 convert the CFA data into a location list.  */
++      {
++	dw_loc_list_ref list = convert_cfa_to_loc_list ();
++	if (list->dw_loc_next)
++	  add_AT_loc_list (subr_die, DW_AT_frame_base, list);
++	else
++	  add_AT_loc (subr_die, DW_AT_frame_base, list->expr);
++      }
++
++      /* Compute a displacement from the "steady-state frame pointer" to
++	 the CFA.  The former is what all stack slots and argument slots
++	 will reference in the rtl; the later is what we've told the 
++	 debugger about.  We'll need to adjust all frame_base references
++	 by this displacement.  */
++      compute_frame_pointer_to_cfa_displacement ();
+ 
+       if (cfun->static_chain_decl)
+ 	add_AT_location_description (subr_die, DW_AT_static_link,
+@@ -11447,6 +11587,8 @@
        tree arg_decls = DECL_ARGUMENTS (decl);
        tree parm;
  
@@ -4950,7 +5758,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
        /* When generating DIEs, generate the unspecified_parameters DIE
  	 instead if we come across the arg "__builtin_va_alist" */
        for (parm = arg_decls; parm; parm = TREE_CHAIN (parm))
-@@ -11444,7 +11471,16 @@
+@@ -11457,7 +11599,16 @@
  			    "__builtin_va_alist"))
  	      gen_unspecified_parameters_die (parm, subr_die);
  	    else
@@ -4968,7 +5776,115 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  	  }
  
        /* Decide whether we need an unspecified_parameters DIE at the end.
-@@ -12627,14 +12663,15 @@
+@@ -11662,41 +11813,63 @@
+     }
+ }
+ 
+-/* Generate a DIE for a lexical block.  */
++/* A helper function for gen_inlined_subroutine_die.  Add source coordinate
++   attributes to the DIE for a block STMT, to describe where the inlined
++   function was called from.  This is similar to add_src_coords_attributes.  */
+ 
+-static void
+-gen_lexical_block_die (tree stmt, dw_die_ref context_die, int depth)
++static inline void
++add_call_src_coords_attributes (tree stmt, dw_die_ref die)
++{
++  expanded_location s = expand_location (BLOCK_SOURCE_LOCATION (stmt));
++  unsigned file_index = lookup_filename (s.file);
++
++  add_AT_unsigned (die, DW_AT_call_file, file_index);
++  add_AT_unsigned (die, DW_AT_call_line, s.line);
++}
++
++/* A helper function for gen_lexical_block_die and gen_inlined_subroutine_die.
++   Add low_pc and high_pc attributes to the DIE for a block STMT.  */
++
++static inline void
++add_high_low_attributes (tree stmt, dw_die_ref die)
+ {
+-  dw_die_ref stmt_die = new_die (DW_TAG_lexical_block, context_die, stmt);
+   char label[MAX_ARTIFICIAL_LABEL_BYTES];
+ 
+-  if (! BLOCK_ABSTRACT (stmt))
++  if (BLOCK_FRAGMENT_CHAIN (stmt))
+     {
+-      if (BLOCK_FRAGMENT_CHAIN (stmt))
+-	{
+-	  tree chain;
++      tree chain;
+ 
+-	  add_AT_range_list (stmt_die, DW_AT_ranges, add_ranges (stmt));
++      add_AT_range_list (die, DW_AT_ranges, add_ranges (stmt));
+ 
+-	  chain = BLOCK_FRAGMENT_CHAIN (stmt);
+-	  do
+-	    {
+-	      add_ranges (chain);
+-	      chain = BLOCK_FRAGMENT_CHAIN (chain);
+-	    }
+-	  while (chain);
+-	  add_ranges (NULL);
+-	}
+-      else
++      chain = BLOCK_FRAGMENT_CHAIN (stmt);
++      do
+ 	{
+-	  ASM_GENERATE_INTERNAL_LABEL (label, BLOCK_BEGIN_LABEL,
+-				       BLOCK_NUMBER (stmt));
+-	  add_AT_lbl_id (stmt_die, DW_AT_low_pc, label);
+-	  ASM_GENERATE_INTERNAL_LABEL (label, BLOCK_END_LABEL,
+-				       BLOCK_NUMBER (stmt));
+-	  add_AT_lbl_id (stmt_die, DW_AT_high_pc, label);
++	  add_ranges (chain);
++	  chain = BLOCK_FRAGMENT_CHAIN (chain);
+ 	}
++      while (chain);
++      add_ranges (NULL);
+     }
++  else
++    {
++      ASM_GENERATE_INTERNAL_LABEL (label, BLOCK_BEGIN_LABEL,
++				   BLOCK_NUMBER (stmt));
++      add_AT_lbl_id (die, DW_AT_low_pc, label);
++      ASM_GENERATE_INTERNAL_LABEL (label, BLOCK_END_LABEL,
++				   BLOCK_NUMBER (stmt));
++      add_AT_lbl_id (die, DW_AT_high_pc, label);
++    }
++}
++
++/* Generate a DIE for a lexical block.  */
++
++static void
++gen_lexical_block_die (tree stmt, dw_die_ref context_die, int depth)
++{
++  dw_die_ref stmt_die = new_die (DW_TAG_lexical_block, context_die, stmt);
++
++  if (! BLOCK_ABSTRACT (stmt))
++    add_high_low_attributes (stmt, stmt_die);
+ 
+   decls_for_scope (stmt, stmt_die, depth);
+ }
+@@ -11718,15 +11891,11 @@
+     {
+       dw_die_ref subr_die
+ 	= new_die (DW_TAG_inlined_subroutine, context_die, stmt);
+-      char label[MAX_ARTIFICIAL_LABEL_BYTES];
+ 
+       add_abstract_origin_attribute (subr_die, decl);
+-      ASM_GENERATE_INTERNAL_LABEL (label, BLOCK_BEGIN_LABEL,
+-				   BLOCK_NUMBER (stmt));
+-      add_AT_lbl_id (subr_die, DW_AT_low_pc, label);
+-      ASM_GENERATE_INTERNAL_LABEL (label, BLOCK_END_LABEL,
+-				   BLOCK_NUMBER (stmt));
+-      add_AT_lbl_id (subr_die, DW_AT_high_pc, label);
++      add_high_low_attributes (stmt, subr_die);
++      add_call_src_coords_attributes (stmt, subr_die);
++
+       decls_for_scope (stmt, subr_die, depth);
+       current_function_has_inlines = 1;
+     }
+@@ -12659,14 +12828,15 @@
  }
  
  /* Generate Dwarf debug information for a decl described by DECL.  */
@@ -4986,7 +5902,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  
    switch (TREE_CODE (decl))
      {
-@@ -12777,8 +12814,7 @@
+@@ -12809,8 +12979,7 @@
  
      case PARM_DECL:
        gen_type_die (TREE_TYPE (decl), context_die);
@@ -4996,7 +5912,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  
      case NAMESPACE_DECL:
        gen_namespace_die (decl);
-@@ -12789,6 +12825,8 @@
+@@ -12821,6 +12990,8 @@
        gcc_assert ((int)TREE_CODE (decl) > NUM_TREE_CODES);
        break;
      }
@@ -5005,7 +5921,29 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  }
  
  /* Add Ada "use" clause information for SGI Workshop debugger.  */
-@@ -13208,7 +13246,10 @@
+@@ -13138,6 +13309,12 @@
+   return i;
+ }
+ 
++/* If the assembler will construct the file table, then translate the compiler
++   internal file table number into the assembler file table number, and emit
++   a .file directive if we haven't already emitted one yet.  The file table
++   numbers are different because we prune debug info for unused variables and
++   types, which may include filenames.  */
++
+ static int
+ maybe_emit_file (int fileno)
+ {
+@@ -13158,6 +13335,8 @@
+     return fileno;
+ }
+ 
++/* Initialize the compiler internal file table.  */
++
+ static void
+ init_file_table (void)
+ {
+@@ -13240,7 +13419,10 @@
    if (debug_info_level >= DINFO_LEVEL_NORMAL
        && line != 0)
      {
@@ -5017,7 +5955,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  
        /* If requested, emit something human-readable.  */
        if (flag_debug_asm)
-@@ -13228,10 +13269,10 @@
+@@ -13260,10 +13442,10 @@
  	  line_info_table_in_use++;
  
  	  /* Indicate that multiple line number tables exist.  */
@@ -5030,7 +5968,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
  	{
  	  dw_separate_line_info_ref line_info;
  	  targetm.asm_out.internal_label (asm_out_file, SEPARATE_LINE_CODE_LABEL,
-@@ -13303,13 +13344,15 @@
+@@ -13335,13 +13517,15 @@
  
    if (debug_info_level >= DINFO_LEVEL_VERBOSE)
      {
@@ -5049,9 +5987,18 @@ diff -Naur gcc-4.0-20050630.orig/gcc/dwarf2out.c gcc-4.0-20050630-src/gcc/dwarf2
      }
  }
  
-diff -Naur gcc-4.0-20050630.orig/gcc/emit-rtl.c gcc-4.0-20050630-src/gcc/emit-rtl.c
---- gcc-4.0-20050630.orig/gcc/emit-rtl.c	Fri Feb 18 06:58:34 2005
-+++ gcc-4.0-20050630-src/gcc/emit-rtl.c	Fri Jul  1 04:33:42 2005
+@@ -13519,7 +13703,7 @@
+ 	     Make sure that it will get emitted.  */
+ 	  prune_unused_types_mark (a->dw_attr_val.v.val_die_ref.die, 1);
+ 	}
+-      else if (a->dw_attr == DW_AT_decl_file)
++      else if (a->dw_attr == DW_AT_decl_file || a->dw_attr == DW_AT_call_file)
+ 	{
+ 	  /* A reference to a file.  Make sure the file name is emitted.  */
+ 	  a->dw_attr_val.v.val_unsigned =
+diff -Naur gcc-4.0-20050922.orig/gcc/emit-rtl.c gcc-4.0-20050922-src/gcc/emit-rtl.c
+--- gcc-4.0-20050922.orig/gcc/emit-rtl.c	Fri Feb 18 06:58:34 2005
++++ gcc-4.0-20050922-src/gcc/emit-rtl.c	Sat Sep 24 15:38:54 2005
 @@ -103,8 +103,10 @@
  REAL_VALUE_TYPE dconstm2;
  REAL_VALUE_TYPE dconsthalf;
@@ -5159,9 +6106,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/emit-rtl.c gcc-4.0-20050630-src/gcc/emit-rt
  
    for (i = 0; i < (int) ARRAY_SIZE (const_tiny_rtx); i++)
      {
-diff -Naur gcc-4.0-20050630.orig/gcc/explow.c gcc-4.0-20050630-src/gcc/explow.c
---- gcc-4.0-20050630.orig/gcc/explow.c	Tue Jan 18 11:36:08 2005
-+++ gcc-4.0-20050630-src/gcc/explow.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/explow.c gcc-4.0-20050922-src/gcc/explow.c
+--- gcc-4.0-20050922.orig/gcc/explow.c	Tue Jan 18 11:36:08 2005
++++ gcc-4.0-20050922-src/gcc/explow.c	Sat Sep 24 15:38:54 2005
 @@ -573,6 +573,10 @@
  {
    rtx temp = gen_reg_rtx (mode);
@@ -5181,9 +6128,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/explow.c gcc-4.0-20050630-src/gcc/explow.c
    return temp;
  }
  
-diff -Naur gcc-4.0-20050630.orig/gcc/expr.c gcc-4.0-20050630-src/gcc/expr.c
---- gcc-4.0-20050630.orig/gcc/expr.c	Wed May  4 09:35:16 2005
-+++ gcc-4.0-20050630-src/gcc/expr.c	Fri Jul  1 04:33:42 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/expr.c gcc-4.0-20050922-src/gcc/expr.c
+--- gcc-4.0-20050922.orig/gcc/expr.c	Sat Sep 10 03:03:28 2005
++++ gcc-4.0-20050922-src/gcc/expr.c	Sat Sep 24 15:38:54 2005
 @@ -720,7 +720,7 @@
    if (GET_MODE (x) != VOIDmode)
      oldmode = GET_MODE (x);
@@ -5348,9 +6295,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/expr.c gcc-4.0-20050630-src/gcc/expr.c
        int args_offset = INTVAL (args_so_far);
        int skip;
  
-diff -Naur gcc-4.0-20050630.orig/gcc/final.c gcc-4.0-20050630-src/gcc/final.c
---- gcc-4.0-20050630.orig/gcc/final.c	Mon Jun  6 21:20:28 2005
-+++ gcc-4.0-20050630-src/gcc/final.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/final.c gcc-4.0-20050922-src/gcc/final.c
+--- gcc-4.0-20050922.orig/gcc/final.c	Mon Jun  6 21:20:28 2005
++++ gcc-4.0-20050922-src/gcc/final.c	Sat Sep 24 15:38:54 2005
 @@ -3120,11 +3120,23 @@
  	    else if (letter == 'l')
  	      output_asm_label (operands[opnum]);
@@ -5402,9 +6349,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/final.c gcc-4.0-20050630-src/gcc/final.c
      }
  }
  
-diff -Naur gcc-4.0-20050630.orig/gcc/flags.h gcc-4.0-20050630-src/gcc/flags.h
---- gcc-4.0-20050630.orig/gcc/flags.h	Sun Feb 13 19:05:02 2005
-+++ gcc-4.0-20050630-src/gcc/flags.h	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/flags.h gcc-4.0-20050922-src/gcc/flags.h
+--- gcc-4.0-20050922.orig/gcc/flags.h	Sun Feb 13 19:05:02 2005
++++ gcc-4.0-20050922-src/gcc/flags.h	Sat Sep 24 15:38:54 2005
 @@ -288,4 +288,10 @@
  #define HONOR_SIGN_DEPENDENT_ROUNDING(MODE) \
    (MODE_HAS_SIGN_DEPENDENT_ROUNDING (MODE) && flag_rounding_math)
@@ -5416,9 +6363,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/flags.h gcc-4.0-20050630-src/gcc/flags.h
 +extern int flag_merge_constant_pools;
 +
  #endif /* ! GCC_FLAGS_H */
-diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-const.c
---- gcc-4.0-20050630.orig/gcc/fold-const.c	Fri Jun 24 05:44:42 2005
-+++ gcc-4.0-20050630-src/gcc/fold-const.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/fold-const.c gcc-4.0-20050922-src/gcc/fold-const.c
+--- gcc-4.0-20050922.orig/gcc/fold-const.c	Fri Sep  9 11:25:02 2005
++++ gcc-4.0-20050922-src/gcc/fold-const.c	Sat Sep 24 15:38:54 2005
 @@ -1523,7 +1523,7 @@
        if ((flag_rounding_math
  	   || (REAL_MODE_FORMAT_COMPOSITE_P (mode)
@@ -5459,7 +6406,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  pedantic_non_lvalue (tree x)
  {
    if (pedantic_lvalues)
-@@ -5548,6 +5552,10 @@
+@@ -5557,6 +5561,10 @@
    if (!HONOR_SIGNED_ZEROS (TYPE_MODE (type)))
      return true;
  
@@ -5470,7 +6417,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
    /* Treat x + -0 as x - 0 and x - -0 as x + 0.  */
    if (TREE_CODE (addend) == REAL_CST
        && REAL_VALUE_MINUS_ZERO (TREE_REAL_CST (addend)))
-@@ -5733,6 +5741,7 @@
+@@ -5742,6 +5750,7 @@
  	}
        break;
  
@@ -5478,7 +6425,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
      case EQ_EXPR:
      case GE_EXPR:
        /* x == +Inf and x >= +Inf are always equal to x > DBL_MAX.  */
-@@ -5761,6 +5770,7 @@
+@@ -5770,6 +5779,7 @@
        temp = fold (build2 (neg ? LT_EXPR : GT_EXPR, type,
  			   arg0, build_real (TREE_TYPE (arg0), max)));
        return fold (build1 (TRUTH_NOT_EXPR, type, temp));
@@ -5486,7 +6433,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  
      default:
        break;
-@@ -6634,6 +6644,21 @@
+@@ -6643,6 +6653,21 @@
    return fold_complex_div_parts (type, ar, ai, br, bi, code);
  }
  
@@ -5508,7 +6455,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  /* Perform constant folding and related simplification of EXPR.
     The related simplifications include x*1 => x, x*0 => 0, etc.,
     and application of the associative law.
-@@ -7801,8 +7826,11 @@
+@@ -7810,8 +7835,11 @@
  	     when x is NaN, since x * 0 is also NaN.  Nor are they the
  	     same in modes with signed zeros, since multiplying a
  	     negative value by 0 gives -0, not +0.  */
@@ -5521,7 +6468,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  	      && real_zerop (arg1))
  	    return omit_one_operand (type, arg1, arg0);
  	  /* In IEEE floating point, x*1 is not equivalent to x for snans.  */
-@@ -8819,7 +8847,7 @@
+@@ -8842,7 +8870,7 @@
  				   build_real (TREE_TYPE (arg1), dconst0)));
  
  	    /* x != NaN is always true, other ops are always false.  */
@@ -5530,7 +6477,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  		&& ! HONOR_SNANS (TYPE_MODE (TREE_TYPE (arg1))))
  	      {
  		tem = (code == NE_EXPR) ? integer_one_node : integer_zero_node;
-@@ -9592,7 +9620,7 @@
+@@ -9615,7 +9643,7 @@
  
        /* If the first operand is NaN, the result is constant.  */
        if (TREE_CODE (arg0) == REAL_CST
@@ -5539,7 +6486,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  	  && (code != LTGT_EXPR || ! flag_trapping_math))
  	{
  	  t1 = (code == ORDERED_EXPR || code == LTGT_EXPR)
-@@ -9603,7 +9631,7 @@
+@@ -9626,7 +9654,7 @@
  
        /* If the second operand is NaN, the result is constant.  */
        if (TREE_CODE (arg1) == REAL_CST
@@ -5548,7 +6495,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  	  && (code != LTGT_EXPR || ! flag_trapping_math))
  	{
  	  t1 = (code == ORDERED_EXPR || code == LTGT_EXPR)
-@@ -9803,12 +9831,12 @@
+@@ -9827,12 +9855,12 @@
      case COMPOUND_EXPR:
        /* When pedantic, a compound expression can be neither an lvalue
  	 nor an integer constant expression.  */
@@ -5565,7 +6512,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  
      case COMPLEX_EXPR:
        if (wins)
-@@ -10841,8 +10869,11 @@
+@@ -10865,8 +10893,11 @@
        if (! FLOAT_TYPE_P (type) && integer_zerop (op1))
  	return omit_one_operand (type, op1, op0);
        else
@@ -5578,7 +6525,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  	    && real_zerop (op1))
  	  return omit_one_operand (type, op1, op0);
  
-@@ -11190,7 +11221,11 @@
+@@ -11214,7 +11245,11 @@
        }
  
      case REAL_CST:
@@ -5591,7 +6538,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
        break;
  
      default:
-@@ -11236,10 +11271,14 @@
+@@ -11260,10 +11295,14 @@
        break;
  
      case REAL_CST:
@@ -5610,7 +6557,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
        break;
  
      default:
-@@ -11287,7 +11326,7 @@
+@@ -11311,7 +11350,7 @@
        const REAL_VALUE_TYPE *c1 = TREE_REAL_CST_PTR (op1);
  
        /* Handle the cases where either operand is a NaN.  */
@@ -5619,10 +6566,23 @@ diff -Naur gcc-4.0-20050630.orig/gcc/fold-const.c gcc-4.0-20050630-src/gcc/fold-
  	{
  	  switch (code)
  	    {
-diff -Naur gcc-4.0-20050630.orig/gcc/function.c gcc-4.0-20050630-src/gcc/function.c
---- gcc-4.0-20050630.orig/gcc/function.c	Thu Mar 10 15:11:04 2005
-+++ gcc-4.0-20050630-src/gcc/function.c	Fri Jul  1 04:33:44 2005
-@@ -5593,3 +5593,28 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/function.c gcc-4.0-20050922-src/gcc/function.c
+--- gcc-4.0-20050922.orig/gcc/function.c	Thu Mar 10 15:11:04 2005
++++ gcc-4.0-20050922-src/gcc/function.c	Sat Sep 24 17:20:06 2005
+@@ -1220,12 +1220,6 @@
+ #endif
+ #endif
+ 
+-/* On most machines, the CFA coincides with the first incoming parm.  */
+-
+-#ifndef ARG_POINTER_CFA_OFFSET
+-#define ARG_POINTER_CFA_OFFSET(FNDECL) FIRST_PARM_OFFSET (FNDECL)
+-#endif
+-
+ 
+ /* Pass through the INSNS of function FNDECL and convert virtual register
+    references to hard register references.  */
+@@ -5593,3 +5587,28 @@
  }
  
  #include "gt-function.h"
@@ -5651,9 +6611,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/function.c gcc-4.0-20050630-src/gcc/functio
 +  return 0;
 +}
 +/* end-TIGCC-local (regparms) */
-diff -Naur gcc-4.0-20050630.orig/gcc/function.h gcc-4.0-20050630-src/gcc/function.h
---- gcc-4.0-20050630.orig/gcc/function.h	Sun Feb 20 11:09:16 2005
-+++ gcc-4.0-20050630-src/gcc/function.h	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/function.h gcc-4.0-20050922-src/gcc/function.h
+--- gcc-4.0-20050922.orig/gcc/function.h	Sun Feb 20 11:09:16 2005
++++ gcc-4.0-20050922-src/gcc/function.h	Sat Sep 24 15:38:54 2005
 @@ -545,4 +545,10 @@
  extern bool reference_callee_copied (CUMULATIVE_ARGS *, enum machine_mode,
  				     tree, bool);
@@ -5665,9 +6625,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/function.h gcc-4.0-20050630-src/gcc/functio
 +/* end-TIGCC-local (regparms) */
 +
  #endif  /* GCC_FUNCTION_H */
-diff -Naur gcc-4.0-20050630.orig/gcc/gcc.c gcc-4.0-20050630-src/gcc/gcc.c
---- gcc-4.0-20050630.orig/gcc/gcc.c	Mon Jun  6 21:20:28 2005
-+++ gcc-4.0-20050630-src/gcc/gcc.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/gcc.c gcc-4.0-20050922-src/gcc/gcc.c
+--- gcc-4.0-20050922.orig/gcc/gcc.c	Mon Jun  6 21:20:28 2005
++++ gcc-4.0-20050922-src/gcc/gcc.c	Sat Sep 24 15:38:54 2005
 @@ -1452,6 +1452,7 @@
  #define MD_STARTFILE_PREFIX_1 ""
  #endif
@@ -5809,9 +6769,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/gcc.c gcc-4.0-20050630-src/gcc/gcc.c
        printf (_("programs: %s\n"), build_search_list (&exec_prefixes, "", 0));
        printf (_("libraries: %s\n"), build_search_list (&startfile_prefixes, "", 0));
        return (0);
-diff -Naur gcc-4.0-20050630.orig/gcc/gcse.c gcc-4.0-20050630-src/gcc/gcse.c
---- gcc-4.0-20050630.orig/gcc/gcse.c	Thu Feb 24 21:47:24 2005
-+++ gcc-4.0-20050630-src/gcc/gcse.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/gcse.c gcc-4.0-20050922-src/gcc/gcse.c
+--- gcc-4.0-20050922.orig/gcc/gcse.c	Thu Jul 21 08:53:24 2005
++++ gcc-4.0-20050922-src/gcc/gcse.c	Sat Sep 24 15:38:54 2005
 @@ -3035,11 +3035,14 @@
    rtx newreg = NULL, newcnst = NULL;
  
@@ -5829,9 +6789,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/gcse.c gcc-4.0-20050630-src/gcc/gcse.c
      {
        cselib_val *val = cselib_lookup (x, GET_MODE (x), 0);
        struct elt_loc_list *l;
-diff -Naur gcc-4.0-20050630.orig/gcc/genmodes.c gcc-4.0-20050630-src/gcc/genmodes.c
---- gcc-4.0-20050630.orig/gcc/genmodes.c	Fri Oct 15 16:47:06 2004
-+++ gcc-4.0-20050630-src/gcc/genmodes.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/genmodes.c gcc-4.0-20050922-src/gcc/genmodes.c
+--- gcc-4.0-20050922.orig/gcc/genmodes.c	Fri Oct 15 16:47:06 2004
++++ gcc-4.0-20050922-src/gcc/genmodes.c	Sat Sep 24 15:38:54 2005
 @@ -1033,6 +1033,7 @@
  static void
  emit_real_format_for_mode (void)
@@ -5861,9 +6821,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/genmodes.c gcc-4.0-20050630-src/gcc/genmode
  
    puts ("}");
  }
-diff -Naur gcc-4.0-20050630.orig/gcc/gimplify.c gcc-4.0-20050630-src/gcc/gimplify.c
---- gcc-4.0-20050630.orig/gcc/gimplify.c	Tue Jun 14 19:07:52 2005
-+++ gcc-4.0-20050630-src/gcc/gimplify.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/gimplify.c gcc-4.0-20050922-src/gcc/gimplify.c
+--- gcc-4.0-20050922.orig/gcc/gimplify.c	Fri Sep  2 17:34:38 2005
++++ gcc-4.0-20050922-src/gcc/gimplify.c	Sat Sep 24 15:38:54 2005
 @@ -1777,6 +1777,7 @@
    /* There is a sequence point before the call, so any side effects in
       the calling expression must occur before the actual call.  Force
@@ -5885,9 +6845,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/gimplify.c gcc-4.0-20050630-src/gcc/gimplif
  
    /* Try this again in case gimplification exposed something.  */
    if (ret != GS_ERROR && decl && DECL_BUILT_IN (decl))
-diff -Naur gcc-4.0-20050630.orig/gcc/ifcvt.c gcc-4.0-20050630-src/gcc/ifcvt.c
---- gcc-4.0-20050630.orig/gcc/ifcvt.c	Tue Jan 25 23:09:06 2005
-+++ gcc-4.0-20050630-src/gcc/ifcvt.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/ifcvt.c gcc-4.0-20050922-src/gcc/ifcvt.c
+--- gcc-4.0-20050922.orig/gcc/ifcvt.c	Tue Jan 25 23:09:06 2005
++++ gcc-4.0-20050922-src/gcc/ifcvt.c	Sat Sep 24 15:38:54 2005
 @@ -1898,6 +1898,16 @@
    if (MEM_P (op))
      return ! side_effects_p (XEXP (op, 0));
@@ -5927,10 +6887,10 @@ diff -Naur gcc-4.0-20050630.orig/gcc/ifcvt.c gcc-4.0-20050630-src/gcc/ifcvt.c
  	    }
  	  if (insn == end)
  	    break;
-diff -Naur gcc-4.0-20050630.orig/gcc/langhooks-def.h gcc-4.0-20050630-src/gcc/langhooks-def.h
---- gcc-4.0-20050630.orig/gcc/langhooks-def.h	Sun Feb 20 17:01:14 2005
-+++ gcc-4.0-20050630-src/gcc/langhooks-def.h	Fri Jul  1 04:33:44 2005
-@@ -106,6 +106,7 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/langhooks-def.h gcc-4.0-20050922-src/gcc/langhooks-def.h
+--- gcc-4.0-20050922.orig/gcc/langhooks-def.h	Fri Jul  8 15:07:46 2005
++++ gcc-4.0-20050922-src/gcc/langhooks-def.h	Sat Sep 24 15:38:54 2005
+@@ -107,6 +107,7 @@
  #define LANG_HOOKS_SAFE_FROM_P		lhd_safe_from_p
  #define LANG_HOOKS_FINISH_INCOMPLETE_DECL lhd_do_nothing_t
  #define LANG_HOOKS_STATICP		lhd_staticp
@@ -5938,7 +6898,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/langhooks-def.h gcc-4.0-20050630-src/gcc/la
  #define LANG_HOOKS_DUP_LANG_SPECIFIC_DECL lhd_do_nothing_t
  #define LANG_HOOKS_SET_DECL_ASSEMBLER_NAME lhd_set_decl_assembler_name
  #define LANG_HOOKS_CAN_USE_BIT_FIELDS_P lhd_can_use_bit_fields_p
-@@ -268,6 +269,7 @@
+@@ -270,6 +271,7 @@
    LANG_HOOKS_EXPAND_EXPR, \
    LANG_HOOKS_EXPAND_DECL, \
    LANG_HOOKS_TRUTHVALUE_CONVERSION, \
@@ -5946,9 +6906,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/langhooks-def.h gcc-4.0-20050630-src/gcc/la
    LANG_HOOKS_SAFE_FROM_P, \
    LANG_HOOKS_FINISH_INCOMPLETE_DECL, \
    LANG_HOOKS_MARK_ADDRESSABLE, \
-diff -Naur gcc-4.0-20050630.orig/gcc/langhooks.h gcc-4.0-20050630-src/gcc/langhooks.h
---- gcc-4.0-20050630.orig/gcc/langhooks.h	Mon Feb 21 14:39:50 2005
-+++ gcc-4.0-20050630-src/gcc/langhooks.h	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/langhooks.h gcc-4.0-20050922-src/gcc/langhooks.h
+--- gcc-4.0-20050922.orig/gcc/langhooks.h	Fri Jul  8 15:07:46 2005
++++ gcc-4.0-20050922-src/gcc/langhooks.h	Sat Sep 24 15:38:54 2005
 @@ -290,6 +290,10 @@
       error_mark_node).  */
    tree (*truthvalue_conversion) (tree);
@@ -5960,9 +6920,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/langhooks.h gcc-4.0-20050630-src/gcc/langho
    /* Hook called by safe_from_p for language-specific tree codes.  It is
       up to the language front-end to install a hook if it has any such
       codes that safe_from_p needs to know about.  Since same_from_p will
-diff -Naur gcc-4.0-20050630.orig/gcc/loop.c gcc-4.0-20050630-src/gcc/loop.c
---- gcc-4.0-20050630.orig/gcc/loop.c	Thu Apr 14 08:14:28 2005
-+++ gcc-4.0-20050630-src/gcc/loop.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/loop.c gcc-4.0-20050922-src/gcc/loop.c
+--- gcc-4.0-20050922.orig/gcc/loop.c	Fri Aug 26 09:33:22 2005
++++ gcc-4.0-20050922-src/gcc/loop.c	Sat Sep 24 15:38:54 2005
 @@ -1289,6 +1289,13 @@
  			  == INSN_UID (regs->array[regno].single_usage))
  		      && regs->array[regno].set_in_loop == 1
@@ -5977,9 +6937,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/loop.c gcc-4.0-20050630-src/gcc/loop.c
  		      && ! side_effects_p (SET_SRC (set))
  		      && ! find_reg_note (p, REG_RETVAL, NULL_RTX)
  		      && (! SMALL_REGISTER_CLASSES
-diff -Naur gcc-4.0-20050630.orig/gcc/machmode.def gcc-4.0-20050630-src/gcc/machmode.def
---- gcc-4.0-20050630.orig/gcc/machmode.def	Fri Oct 15 16:47:08 2004
-+++ gcc-4.0-20050630-src/gcc/machmode.def	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/machmode.def gcc-4.0-20050922-src/gcc/machmode.def
+--- gcc-4.0-20050922.orig/gcc/machmode.def	Fri Oct 15 16:47:08 2004
++++ gcc-4.0-20050922-src/gcc/machmode.def	Sat Sep 24 15:38:54 2005
 @@ -170,8 +170,8 @@
     These are the IEEE mappings.  They can be overridden with
     RESET_FLOAT_FORMAT or at runtime (in OVERRIDE_OPTIONS).  */
@@ -5991,9 +6951,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/machmode.def gcc-4.0-20050630-src/gcc/machm
  
  /* Basic CC modes.
     FIXME define this only for targets that need it.  */
-diff -Naur gcc-4.0-20050630.orig/gcc/optabs.c gcc-4.0-20050630-src/gcc/optabs.c
---- gcc-4.0-20050630.orig/gcc/optabs.c	Sat Feb 12 11:34:20 2005
-+++ gcc-4.0-20050630-src/gcc/optabs.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/optabs.c gcc-4.0-20050922-src/gcc/optabs.c
+--- gcc-4.0-20050922.orig/gcc/optabs.c	Sat Feb 12 11:34:20 2005
++++ gcc-4.0-20050922-src/gcc/optabs.c	Sat Sep 24 15:38:54 2005
 @@ -1653,7 +1653,7 @@
    /* Look for a wider mode of the same class for which it appears we can do
       the operation.  */
@@ -6138,9 +7098,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/optabs.c gcc-4.0-20050630-src/gcc/optabs.c
  				 MODE_INT, MODE_FLOAT);
    init_interclass_conv_libfuncs (sfix_optab, "fix",
  				 MODE_FLOAT, MODE_INT);
-diff -Naur gcc-4.0-20050630.orig/gcc/opts.c gcc-4.0-20050630-src/gcc/opts.c
---- gcc-4.0-20050630.orig/gcc/opts.c	Thu Feb 24 09:24:12 2005
-+++ gcc-4.0-20050630-src/gcc/opts.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/opts.c gcc-4.0-20050922-src/gcc/opts.c
+--- gcc-4.0-20050922.orig/gcc/opts.c	Thu Feb 24 09:24:12 2005
++++ gcc-4.0-20050922-src/gcc/opts.c	Sat Sep 24 15:38:54 2005
 @@ -533,7 +533,12 @@
  #endif
        flag_regmove = 1;
@@ -6210,9 +7170,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/opts.c gcc-4.0-20050630-src/gcc/opts.c
        break;
  
      case OPT_fvisibility_:
-diff -Naur gcc-4.0-20050630.orig/gcc/output.h gcc-4.0-20050630-src/gcc/output.h
---- gcc-4.0-20050630.orig/gcc/output.h	Tue Jan 18 11:36:16 2005
-+++ gcc-4.0-20050630-src/gcc/output.h	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/output.h gcc-4.0-20050922-src/gcc/output.h
+--- gcc-4.0-20050922.orig/gcc/output.h	Tue Jan 18 11:36:16 2005
++++ gcc-4.0-20050922-src/gcc/output.h	Sat Sep 24 15:38:54 2005
 @@ -327,7 +327,7 @@
  #define assemble_aligned_integer(SIZE, VALUE) \
    assemble_integer (VALUE, SIZE, (SIZE) * BITS_PER_UNIT, 1)
@@ -6222,9 +7182,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/output.h gcc-4.0-20050630-src/gcc/output.h
  /* Assemble the floating-point constant D into an object of size MODE.  */
  extern void assemble_real (REAL_VALUE_TYPE, enum machine_mode, unsigned);
  #endif
-diff -Naur gcc-4.0-20050630.orig/gcc/postreload.c gcc-4.0-20050630-src/gcc/postreload.c
---- gcc-4.0-20050630.orig/gcc/postreload.c	Fri Apr 29 20:38:44 2005
-+++ gcc-4.0-20050630-src/gcc/postreload.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/postreload.c gcc-4.0-20050922-src/gcc/postreload.c
+--- gcc-4.0-20050922.orig/gcc/postreload.c	Fri Apr 29 20:38:44 2005
++++ gcc-4.0-20050922-src/gcc/postreload.c	Sat Sep 24 15:38:54 2005
 @@ -1188,6 +1188,9 @@
         && TRULY_NOOP_TRUNCATION (GET_MODE_BITSIZE (OUTMODE), \
  				 GET_MODE_BITSIZE (INMODE))))
@@ -6255,9 +7215,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/postreload.c gcc-4.0-20050630-src/gcc/postr
  			    {
  			      rtx narrow_reg = gen_rtx_REG (narrow_mode,
  							    REGNO (reg));
-diff -Naur gcc-4.0-20050630.orig/gcc/print-rtl.c gcc-4.0-20050630-src/gcc/print-rtl.c
---- gcc-4.0-20050630.orig/gcc/print-rtl.c	Thu Sep 23 16:34:18 2004
-+++ gcc-4.0-20050630-src/gcc/print-rtl.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/print-rtl.c gcc-4.0-20050922-src/gcc/print-rtl.c
+--- gcc-4.0-20050922.orig/gcc/print-rtl.c	Thu Sep 23 16:34:18 2004
++++ gcc-4.0-20050922-src/gcc/print-rtl.c	Sat Sep 24 15:38:54 2005
 @@ -588,6 +588,9 @@
  	{
  	  char s[60];
@@ -6276,9 +7236,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/print-rtl.c gcc-4.0-20050630-src/gcc/print-
  	}
        break;
  #endif
-diff -Naur gcc-4.0-20050630.orig/gcc/print-tree.c gcc-4.0-20050630-src/gcc/print-tree.c
---- gcc-4.0-20050630.orig/gcc/print-tree.c	Thu Feb 24 18:53:40 2005
-+++ gcc-4.0-20050630-src/gcc/print-tree.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/print-tree.c gcc-4.0-20050922-src/gcc/print-tree.c
+--- gcc-4.0-20050922.orig/gcc/print-tree.c	Thu Feb 24 18:53:40 2005
++++ gcc-4.0-20050922-src/gcc/print-tree.c	Sat Sep 24 15:38:54 2005
 @@ -133,7 +133,7 @@
        else
  	{
@@ -6297,9 +7257,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/print-tree.c gcc-4.0-20050630-src/gcc/print
  		fprintf (file, " %s", string);
  	      }
  	  }
-diff -Naur gcc-4.0-20050630.orig/gcc/real.c gcc-4.0-20050630-src/gcc/real.c
---- gcc-4.0-20050630.orig/gcc/real.c	Tue Jan 25 20:21:54 2005
-+++ gcc-4.0-20050630-src/gcc/real.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/real.c gcc-4.0-20050922-src/gcc/real.c
+--- gcc-4.0-20050922.orig/gcc/real.c	Mon Sep 19 18:56:14 2005
++++ gcc-4.0-20050922-src/gcc/real.c	Sat Sep 24 15:38:54 2005
 @@ -72,6 +72,7 @@
     adjust the significand to match.  */
  
@@ -7594,7 +8554,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/real.c gcc-4.0-20050630-src/gcc/real.c
  /* Returns 10**2**N.  */
  
  static const REAL_VALUE_TYPE *
-@@ -2471,6 +3579,7 @@
+@@ -2483,6 +3591,7 @@
  
    return fmt->p * fmt->log2_b;
  }
@@ -7602,7 +8562,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/real.c gcc-4.0-20050630-src/gcc/real.c
  
  /* Return a hash value for the given real value.  */
  /* ??? The "unsigned int" return value is intended to be hashval_t,
-@@ -2479,6 +3588,12 @@
+@@ -2491,6 +3600,12 @@
  unsigned int
  real_hash (const REAL_VALUE_TYPE *r)
  {
@@ -7615,7 +8575,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/real.c gcc-4.0-20050630-src/gcc/real.c
    unsigned int h;
    size_t i;
  
-@@ -2515,8 +3630,10 @@
+@@ -2527,8 +3642,10 @@
        h ^= r->sig[i];
  
    return h;
@@ -7626,15 +8586,15 @@ diff -Naur gcc-4.0-20050630.orig/gcc/real.c gcc-4.0-20050630-src/gcc/real.c
  /* IEEE single-precision format.  */
  
  static void encode_ieee_single (const struct real_format *fmt,
-@@ -4666,4 +5783,5 @@
+@@ -4678,4 +5795,5 @@
  {
    r->sign = x->sign;
  }
 +#endif /* 0 */
  
-diff -Naur gcc-4.0-20050630.orig/gcc/real.h gcc-4.0-20050630-src/gcc/real.h
---- gcc-4.0-20050630.orig/gcc/real.h	Thu Feb  3 06:44:34 2005
-+++ gcc-4.0-20050630-src/gcc/real.h	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/real.h gcc-4.0-20050922-src/gcc/real.h
+--- gcc-4.0-20050922.orig/gcc/real.h	Thu Feb  3 06:44:34 2005
++++ gcc-4.0-20050922-src/gcc/real.h	Sat Sep 24 15:38:54 2005
 @@ -22,6 +22,22 @@
  #ifndef GCC_REAL_H
  #define GCC_REAL_H
@@ -7794,9 +8754,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/real.h gcc-4.0-20050630-src/gcc/real.h
 +#endif /* 0 */
  
  #endif /* ! GCC_REAL_H */
-diff -Naur gcc-4.0-20050630.orig/gcc/rtlanal.c gcc-4.0-20050630-src/gcc/rtlanal.c
---- gcc-4.0-20050630.orig/gcc/rtlanal.c	Wed Jun  8 01:48:26 2005
-+++ gcc-4.0-20050630-src/gcc/rtlanal.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/rtlanal.c gcc-4.0-20050922-src/gcc/rtlanal.c
+--- gcc-4.0-20050922.orig/gcc/rtlanal.c	Tue Aug 16 10:45:58 2005
++++ gcc-4.0-20050922-src/gcc/rtlanal.c	Sat Sep 24 15:38:54 2005
 @@ -3066,6 +3066,19 @@
    if (offset == 0 || nregs_xmode == nregs_ymode)
      return 0;
@@ -7846,9 +8806,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/rtlanal.c gcc-4.0-20050630-src/gcc/rtlanal.
  
    /* This should always pass, otherwise we don't know how to verify the
       constraint.  These conditions may be relaxed but subreg_offset would
-diff -Naur gcc-4.0-20050630.orig/gcc/sdbout.c gcc-4.0-20050630-src/gcc/sdbout.c
---- gcc-4.0-20050630.orig/gcc/sdbout.c	Wed Mar 23 01:38:50 2005
-+++ gcc-4.0-20050630-src/gcc/sdbout.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/sdbout.c gcc-4.0-20050922-src/gcc/sdbout.c
+--- gcc-4.0-20050922.orig/gcc/sdbout.c	Wed Mar 23 01:38:50 2005
++++ gcc-4.0-20050922-src/gcc/sdbout.c	Sat Sep 24 15:38:54 2005
 @@ -1540,9 +1540,7 @@
  #ifdef SDB_OUTPUT_SOURCE_LINE
        SDB_OUTPUT_SOURCE_LINE (asm_out_file, line);
@@ -7860,10 +8820,10 @@ diff -Naur gcc-4.0-20050630.orig/gcc/sdbout.c gcc-4.0-20050630-src/gcc/sdbout.c
  #endif
      }
  }
-diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/simplify-rtx.c
---- gcc-4.0-20050630.orig/gcc/simplify-rtx.c	Mon Apr 25 00:15:04 2005
-+++ gcc-4.0-20050630-src/gcc/simplify-rtx.c	Fri Jul  1 04:33:44 2005
-@@ -436,7 +436,7 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/simplify-rtx.c gcc-4.0-20050922-src/gcc/simplify-rtx.c
+--- gcc-4.0-20050922.orig/gcc/simplify-rtx.c	Tue Sep  6 21:44:28 2005
++++ gcc-4.0-20050922-src/gcc/simplify-rtx.c	Sat Sep 24 15:38:54 2005
+@@ -444,7 +444,7 @@
  	lv = CONST_DOUBLE_LOW (trueop),  hv = CONST_DOUBLE_HIGH (trueop);
  
        REAL_VALUE_FROM_INT (d, lv, hv, mode);
@@ -7872,7 +8832,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
        return CONST_DOUBLE_FROM_REAL_VALUE (d, mode);
      }
    else if (code == UNSIGNED_FLOAT && GET_MODE (trueop) == VOIDmode
-@@ -464,7 +464,7 @@
+@@ -472,7 +472,7 @@
  	hv = 0, lv &= GET_MODE_MASK (op_mode);
  
        REAL_VALUE_FROM_UNSIGNED_INT (d, lv, hv, mode);
@@ -7881,7 +8841,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
        return CONST_DOUBLE_FROM_REAL_VALUE (d, mode);
      }
  
-@@ -728,11 +728,7 @@
+@@ -736,11 +736,7 @@
        switch (code)
  	{
  	case SQRT:
@@ -7894,7 +8854,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	case ABS:
  	  d = REAL_VALUE_ABS (d);
  	  break;
-@@ -740,7 +736,7 @@
+@@ -748,7 +744,7 @@
  	  d = REAL_VALUE_NEGATE (d);
  	  break;
  	case FLOAT_TRUNCATE:
@@ -7903,7 +8863,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	  break;
  	case FLOAT_EXTEND:
  	  /* All this does is change the mode.  */
-@@ -750,6 +746,7 @@
+@@ -758,6 +754,7 @@
  	  break;
  	case NOT:
  	  {
@@ -7911,7 +8871,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	    long tmp[4];
  	    int i;
  
-@@ -757,6 +754,11 @@
+@@ -765,6 +762,11 @@
  	    for (i = 0; i < 4; i++)
  	      tmp[i] = ~tmp[i];
  	    real_from_target (&d, tmp, mode);
@@ -7923,7 +8883,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	  }
  	  break;
  	default:
-@@ -781,7 +783,7 @@
+@@ -789,7 +791,7 @@
        switch (code)
  	{
  	case FIX:
@@ -7932,7 +8892,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	    return const0_rtx;
  
  	  /* Test against the signed upper bound.  */
-@@ -826,7 +828,7 @@
+@@ -834,7 +836,7 @@
  	  break;
  
  	case UNSIGNED_FIX:
@@ -7941,7 +8901,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	    return const0_rtx;
  
  	  /* Test against the unsigned upper bound.  */
-@@ -968,14 +970,15 @@
+@@ -976,14 +978,15 @@
  	     both +0, (minus Y X) is the same as (minus X Y).  If the
  	     rounding mode is towards +infinity (or -infinity) then the two
  	     expressions will be rounded differently.  */
@@ -7959,7 +8919,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	      && !HONOR_SIGN_DEPENDENT_ROUNDING (mode))
  	    {
  	      /* (neg (plus A C)) is simplified to (minus -C A).  */
-@@ -1258,6 +1261,7 @@
+@@ -1266,6 +1269,7 @@
  	  || code == IOR
  	  || code == XOR)
  	{
@@ -7967,7 +8927,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	  long tmp0[4];
  	  long tmp1[4];
  	  REAL_VALUE_TYPE r;
-@@ -1285,6 +1289,30 @@
+@@ -1293,6 +1297,30 @@
  	      }
  	    }
  	   real_from_target (&r, tmp0, mode);
@@ -7998,7 +8958,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	   return CONST_DOUBLE_FROM_REAL_VALUE (r, mode);
  	}
        else
-@@ -1353,7 +1381,7 @@
+@@ -1361,7 +1389,7 @@
  	  if ((flag_rounding_math
  	       || (REAL_MODE_FORMAT_COMPOSITE_P (mode)
  		   && !flag_unsafe_math_optimizations))
@@ -8007,7 +8967,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	    return NULL_RTX;
  
  	  return CONST_DOUBLE_FROM_REAL_VALUE (result, mode);
-@@ -1709,8 +1737,10 @@
+@@ -1717,8 +1745,10 @@
  	  /* Subtracting 0 has no effect unless the mode has signed zeros
  	     and supports rounding towards -infinity.  In such a case,
  	     0 - 0 is -0.  */
@@ -8019,7 +8979,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	      && trueop1 == CONST0_RTX (mode))
  	    return op0;
  
-@@ -1848,8 +1878,11 @@
+@@ -1856,8 +1886,11 @@
  	     x is NaN, since x * 0 is then also NaN.  Nor is it valid
  	     when the mode has signed zeros, since multiplying a negative
  	     number by 0 will give -0, not 0.  */
@@ -8032,7 +8992,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	      && trueop1 == CONST0_RTX (mode)
  	      && ! side_effects_p (op0))
  	    return op1;
-@@ -3050,7 +3083,7 @@
+@@ -3058,7 +3091,7 @@
        REAL_VALUE_FROM_CONST_DOUBLE (d1, trueop1);
  
        /* Comparisons are unordered iff at least one of the values is NaN.  */
@@ -8041,7 +9001,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	switch (code)
  	  {
  	  case UNEQ:
-@@ -3569,13 +3602,14 @@
+@@ -3577,13 +3610,14 @@
  	    }
  	  else
  	    {
@@ -8057,7 +9017,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	      real_to_target (tmp, CONST_DOUBLE_REAL_VALUE (el),
  			      GET_MODE (el));
  
-@@ -3597,6 +3631,14 @@
+@@ -3605,6 +3639,14 @@
  		 zero.  */
  	      for (; i < elem_bitsize; i += value_bit)
  		*vp++ = 0;
@@ -8072,7 +9032,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	    }
  	  break;
  	  
-@@ -3692,6 +3734,7 @@
+@@ -3700,6 +3742,7 @@
  	case MODE_FLOAT:
  	  {
  	    REAL_VALUE_TYPE r;
@@ -8080,7 +9040,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	    long tmp[max_bitsize / 32];
  	    
  	    /* real_from_target wants its input in words affected by
-@@ -3711,6 +3754,14 @@
+@@ -3719,6 +3762,14 @@
  	      }
  
  	    real_from_target (&r, tmp, outer_submode);
@@ -8095,9 +9055,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/simplify-rtx.c gcc-4.0-20050630-src/gcc/sim
  	    elems[elem] = CONST_DOUBLE_FROM_REAL_VALUE (r, outer_submode);
  	  }
  	  break;
-diff -Naur gcc-4.0-20050630.orig/gcc/stmt.c gcc-4.0-20050630-src/gcc/stmt.c
---- gcc-4.0-20050630.orig/gcc/stmt.c	Thu Mar 10 00:17:58 2005
-+++ gcc-4.0-20050630-src/gcc/stmt.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/stmt.c gcc-4.0-20050922-src/gcc/stmt.c
+--- gcc-4.0-20050922.orig/gcc/stmt.c	Thu Mar 10 00:17:58 2005
++++ gcc-4.0-20050922-src/gcc/stmt.c	Sat Sep 24 15:38:54 2005
 @@ -2491,6 +2491,9 @@
  	  use_cost_table
  	    = (TREE_CODE (orig_type) != ENUMERAL_TYPE
@@ -8127,9 +9087,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/stmt.c gcc-4.0-20050630-src/gcc/stmt.c
  		{
  		  emit_cmp_and_jump_insns (index,
  					   convert_modes
-diff -Naur gcc-4.0-20050630.orig/gcc/system.h gcc-4.0-20050630-src/gcc/system.h
---- gcc-4.0-20050630.orig/gcc/system.h	Mon Apr 25 00:53:46 2005
-+++ gcc-4.0-20050630-src/gcc/system.h	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/system.h gcc-4.0-20050922-src/gcc/system.h
+--- gcc-4.0-20050922.orig/gcc/system.h	Mon Apr 25 00:53:46 2005
++++ gcc-4.0-20050922-src/gcc/system.h	Sat Sep 24 15:38:54 2005
 @@ -739,7 +739,7 @@
  
  /* Hooks that are no longer used.  */
@@ -8139,9 +9099,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/system.h gcc-4.0-20050630-src/gcc/system.h
  	LANG_HOOKS_TREE_INLINING_ESTIMATE_NUM_INSNS \
  	LANG_HOOKS_PUSHLEVEL LANG_HOOKS_SET_BLOCK \
  	LANG_HOOKS_MAYBE_BUILD_CLEANUP LANG_HOOKS_UPDATE_DECL_AFTER_SAVING \
-diff -Naur gcc-4.0-20050630.orig/gcc/toplev.c gcc-4.0-20050630-src/gcc/toplev.c
---- gcc-4.0-20050630.orig/gcc/toplev.c	Tue Apr 26 02:30:16 2005
-+++ gcc-4.0-20050630-src/gcc/toplev.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/toplev.c gcc-4.0-20050922-src/gcc/toplev.c
+--- gcc-4.0-20050922.orig/gcc/toplev.c	Fri Sep  9 02:51:44 2005
++++ gcc-4.0-20050922-src/gcc/toplev.c	Sat Sep 24 15:38:54 2005
 @@ -438,6 +438,15 @@
      }
  
@@ -8158,22 +9118,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/toplev.c gcc-4.0-20050630-src/gcc/toplev.c
    return true;
  }
  
-@@ -825,12 +834,14 @@
-     {
-       decl = vec[i];
- 
-+#if 0 /* (TIGCC 20050627) We need debugging info for BSS variables. -- Kevin Kofler */
-       /* Do not emit debug information about variables that are in
- 	 static storage, but not defined.  */
-       if (TREE_CODE (decl) == VAR_DECL
- 	  && TREE_STATIC (decl)
- 	  && !TREE_ASM_WRITTEN (decl))
- 	DECL_IGNORED_P (decl) = 1;
-+#endif /* 0 */
-  
-       /* Warn about any function
- 	 declared static but not defined.
-@@ -1942,7 +1953,7 @@
+@@ -1954,7 +1963,7 @@
        flag_prefetch_loop_arrays = 0;
      }
  
@@ -8182,10 +9127,18 @@ diff -Naur gcc-4.0-20050630.orig/gcc/toplev.c gcc-4.0-20050630-src/gcc/toplev.c
    if (flag_function_sections && write_symbols != NO_DEBUG)
      warning ("-ffunction-sections may affect debugging on some targets");
  #endif
-diff -Naur gcc-4.0-20050630.orig/gcc/tree-inline.c gcc-4.0-20050630-src/gcc/tree-inline.c
---- gcc-4.0-20050630.orig/gcc/tree-inline.c	Mon Jun  6 21:20:32 2005
-+++ gcc-4.0-20050630-src/gcc/tree-inline.c	Fri Jul  1 04:33:44 2005
-@@ -1591,6 +1591,48 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/tree-inline.c gcc-4.0-20050922-src/gcc/tree-inline.c
+--- gcc-4.0-20050922.orig/gcc/tree-inline.c	Sat Jul  9 01:38:56 2005
++++ gcc-4.0-20050922-src/gcc/tree-inline.c	Sat Sep 24 16:48:42 2005
+@@ -385,6 +385,7 @@
+   new_block = make_node (BLOCK);
+   TREE_USED (new_block) = TREE_USED (old_block);
+   BLOCK_ABSTRACT_ORIGIN (new_block) = old_block;
++  BLOCK_SOURCE_LOCATION (new_block) = BLOCK_SOURCE_LOCATION (old_block);
+   *block = new_block;
+ 
+   /* Remap its variables.  */
+@@ -1591,6 +1592,48 @@
      verify_cgraph_node (edge->callee);
  #endif
  
@@ -8234,9 +9187,17 @@ diff -Naur gcc-4.0-20050630.orig/gcc/tree-inline.c gcc-4.0-20050630-src/gcc/tree
    if (! lang_hooks.tree_inlining.start_inlining (fn))
      goto egress;
  
-diff -Naur gcc-4.0-20050630.orig/gcc/tree-pretty-print.c gcc-4.0-20050630-src/gcc/tree-pretty-print.c
---- gcc-4.0-20050630.orig/gcc/tree-pretty-print.c	Thu Dec  9 10:54:36 2004
-+++ gcc-4.0-20050630-src/gcc/tree-pretty-print.c	Fri Jul  1 04:33:44 2005
+@@ -1602,6 +1645,7 @@
+   expr = build (BIND_EXPR, void_type_node, NULL_TREE,
+ 		stmt, make_node (BLOCK));
+   BLOCK_ABSTRACT_ORIGIN (BIND_EXPR_BLOCK (expr)) = fn;
++  BLOCK_SOURCE_LOCATION (BIND_EXPR_BLOCK (expr)) = input_location;
+ 
+   /* Local declarations will be replaced by their equivalents in this
+      map.  */
+diff -Naur gcc-4.0-20050922.orig/gcc/tree-pretty-print.c gcc-4.0-20050922-src/gcc/tree-pretty-print.c
+--- gcc-4.0-20050922.orig/gcc/tree-pretty-print.c	Thu Dec  9 10:54:36 2004
++++ gcc-4.0-20050922-src/gcc/tree-pretty-print.c	Sat Sep 24 15:38:54 2005
 @@ -550,7 +550,7 @@
  	else
  	  {
@@ -8246,9 +9207,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/tree-pretty-print.c gcc-4.0-20050630-src/gc
  	    pp_string (buffer, string);
  	  }
  #else
-diff -Naur gcc-4.0-20050630.orig/gcc/tree-ssa-ccp.c gcc-4.0-20050630-src/gcc/tree-ssa-ccp.c
---- gcc-4.0-20050630.orig/gcc/tree-ssa-ccp.c	Sun Apr 24 14:46:06 2005
-+++ gcc-4.0-20050630-src/gcc/tree-ssa-ccp.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/tree-ssa-ccp.c gcc-4.0-20050922-src/gcc/tree-ssa-ccp.c
+--- gcc-4.0-20050922.orig/gcc/tree-ssa-ccp.c	Sun Apr 24 14:46:06 2005
++++ gcc-4.0-20050922-src/gcc/tree-ssa-ccp.c	Sat Sep 24 15:38:54 2005
 @@ -1919,6 +1919,7 @@
  static tree
  ccp_fold_builtin (tree stmt, tree fn)
@@ -8267,10 +9228,10 @@ diff -Naur gcc-4.0-20050630.orig/gcc/tree-ssa-ccp.c gcc-4.0-20050630-src/gcc/tre
  }
  
  
-diff -Naur gcc-4.0-20050630.orig/gcc/tree-ssa-dom.c gcc-4.0-20050630-src/gcc/tree-ssa-dom.c
---- gcc-4.0-20050630.orig/gcc/tree-ssa-dom.c	Thu Feb 24 21:47:26 2005
-+++ gcc-4.0-20050630-src/gcc/tree-ssa-dom.c	Fri Jul  1 04:33:44 2005
-@@ -2966,6 +2966,19 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/tree-ssa-dom.c gcc-4.0-20050922-src/gcc/tree-ssa-dom.c
+--- gcc-4.0-20050922.orig/gcc/tree-ssa-dom.c	Fri Jul  1 21:01:24 2005
++++ gcc-4.0-20050922-src/gcc/tree-ssa-dom.c	Sat Sep 24 15:38:54 2005
+@@ -2988,6 +2988,19 @@
  			|| TREE_CODE (stmt) == COND_EXPR
  			|| TREE_CODE (stmt) == SWITCH_EXPR));
  
@@ -8290,9 +9251,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/tree-ssa-dom.c gcc-4.0-20050630-src/gcc/tre
    if (may_optimize_p)
      may_have_exposed_new_symbols
        |= eliminate_redundant_computations (walk_data, stmt, ann);
-diff -Naur gcc-4.0-20050630.orig/gcc/tree-ssa-pre.c gcc-4.0-20050630-src/gcc/tree-ssa-pre.c
---- gcc-4.0-20050630.orig/gcc/tree-ssa-pre.c	Fri May 13 01:33:22 2005
-+++ gcc-4.0-20050630-src/gcc/tree-ssa-pre.c	Fri Jul  1 04:33:44 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/tree-ssa-pre.c gcc-4.0-20050922-src/gcc/tree-ssa-pre.c
+--- gcc-4.0-20050922.orig/gcc/tree-ssa-pre.c	Fri May 13 01:33:22 2005
++++ gcc-4.0-20050922-src/gcc/tree-ssa-pre.c	Sat Sep 24 15:38:54 2005
 @@ -2018,6 +2018,19 @@
  	      tree *rhs_p = &TREE_OPERAND (stmt, 1);
  	      tree sprime;
@@ -8313,10 +9274,10 @@ diff -Naur gcc-4.0-20050630.orig/gcc/tree-ssa-pre.c gcc-4.0-20050630-src/gcc/tre
  	      sprime = bitmap_find_leader (AVAIL_OUT (b),
  					   vn_lookup (lhs, NULL));
  	      if (sprime 
-diff -Naur gcc-4.0-20050630.orig/gcc/tree.c gcc-4.0-20050630-src/gcc/tree.c
---- gcc-4.0-20050630.orig/gcc/tree.c	Fri Jun 17 01:19:32 2005
-+++ gcc-4.0-20050630-src/gcc/tree.c	Fri Jul  1 04:33:44 2005
-@@ -1182,7 +1182,7 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/tree.c gcc-4.0-20050922-src/gcc/tree.c
+--- gcc-4.0-20050922.orig/gcc/tree.c	Mon Sep 12 10:01:52 2005
++++ gcc-4.0-20050922-src/gcc/tree.c	Sat Sep 24 15:38:56 2005
+@@ -1184,7 +1184,7 @@
  
    return ((TREE_CODE (expr) == REAL_CST
  	   && ! TREE_CONSTANT_OVERFLOW (expr)
@@ -8325,7 +9286,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/tree.c gcc-4.0-20050630-src/gcc/tree.c
  	  || (TREE_CODE (expr) == COMPLEX_CST
  	      && real_zerop (TREE_REALPART (expr))
  	      && real_zerop (TREE_IMAGPART (expr))));
-@@ -6066,17 +6066,14 @@
+@@ -6076,17 +6076,14 @@
        return integer_zerop (init);
  
      case REAL_CST:
@@ -8348,10 +9309,39 @@ diff -Naur gcc-4.0-20050630.orig/gcc/tree.c gcc-4.0-20050630-src/gcc/tree.c
  
      case VECTOR_CST:
        for (elt = TREE_VECTOR_CST_ELTS (init); elt; elt = TREE_CHAIN (elt))
-diff -Naur gcc-4.0-20050630.orig/gcc/tree.h gcc-4.0-20050630-src/gcc/tree.h
---- gcc-4.0-20050630.orig/gcc/tree.h	Wed Mar 16 20:36:28 2005
-+++ gcc-4.0-20050630-src/gcc/tree.h	Fri Jul  1 04:33:44 2005
-@@ -3162,6 +3162,7 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/tree.h gcc-4.0-20050922-src/gcc/tree.h
+--- gcc-4.0-20050922.orig/gcc/tree.h	Tue Aug 23 09:39:40 2005
++++ gcc-4.0-20050922-src/gcc/tree.h	Sat Sep 24 17:20:06 2005
+@@ -1473,6 +1473,12 @@
+ #define BLOCK_FRAGMENT_ORIGIN(NODE) (BLOCK_CHECK (NODE)->block.fragment_origin)
+ #define BLOCK_FRAGMENT_CHAIN(NODE) (BLOCK_CHECK (NODE)->block.fragment_chain)
+ 
++/* For an inlined function, this gives the location where it was called
++   from.  This is only set in the top level block, which corresponds to the
++   inlined function scope.  This is used in the debug output routines.  */
++
++#define BLOCK_SOURCE_LOCATION(NODE) (BLOCK_CHECK (NODE)->block.locus)
++
+ struct tree_block GTY(())
+ {
+   struct tree_common common;
+@@ -1487,6 +1493,7 @@
+   tree abstract_origin;
+   tree fragment_origin;
+   tree fragment_chain;
++  location_t locus;
+ };
+ 
+ /* Define fields and accessors for nodes representing data types.  */
+@@ -2743,7 +2750,6 @@
+ 
+ #define NULL_TREE (tree) NULL
+ 
+-extern GTY(()) tree frame_base_decl;
+ extern tree decl_assembler_name (tree);
+ 
+ /* Compute the number of bytes occupied by 'node'.  This routine only
+@@ -3162,6 +3168,7 @@
  /* Return an expr equal to X but certainly not valid as an lvalue.  */
  
  extern tree non_lvalue (tree);
@@ -8359,10 +9349,267 @@ diff -Naur gcc-4.0-20050630.orig/gcc/tree.h gcc-4.0-20050630-src/gcc/tree.h
  
  extern tree convert (tree, tree);
  extern unsigned int expr_align (tree);
-diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
---- gcc-4.0-20050630.orig/gcc/varasm.c	Tue May 17 09:03:32 2005
-+++ gcc-4.0-20050630-src/gcc/varasm.c	Fri Jul  1 04:33:44 2005
-@@ -202,6 +202,46 @@
+diff -Naur gcc-4.0-20050922.orig/gcc/var-tracking.c gcc-4.0-20050922-src/gcc/var-tracking.c
+--- gcc-4.0-20050922.orig/gcc/var-tracking.c	Sat Jul  9 10:44:26 2005
++++ gcc-4.0-20050922-src/gcc/var-tracking.c	Sat Sep 24 17:20:06 2005
+@@ -266,19 +266,12 @@
+ /* Shall notes be emitted?  */
+ static bool emit_notes;
+ 
+-/* Fake variable for stack pointer.  */
+-tree frame_base_decl;
+-
+-/* Stack adjust caused by function prologue.  */
+-static HOST_WIDE_INT frame_stack_adjust;
+-
+ /* Local function prototypes.  */
+ static void stack_adjust_offset_pre_post (rtx, HOST_WIDE_INT *,
+ 					  HOST_WIDE_INT *);
+ static void insn_stack_adjust_offset_pre_post (rtx, HOST_WIDE_INT *,
+ 					       HOST_WIDE_INT *);
+ static void bb_stack_adjust_offset (basic_block);
+-static HOST_WIDE_INT prologue_stack_adjust (void);
+ static bool vt_stack_adjustments (void);
+ static rtx adjust_stack_reference (rtx, HOST_WIDE_INT);
+ static hashval_t variable_htab_hash (const void *);
+@@ -333,7 +326,6 @@
+ static void dump_dataflow_sets (void);
+ 
+ static void variable_was_changed (variable, htab_t);
+-static void set_frame_base_location (dataflow_set *, rtx);
+ static void set_variable_part (dataflow_set *, rtx, tree, HOST_WIDE_INT);
+ static void delete_variable_part (dataflow_set *, rtx, tree, HOST_WIDE_INT);
+ static int emit_note_insn_var_location (void **, void *);
+@@ -489,38 +481,6 @@
+   VTI (bb)->out.stack_adjust = offset;
+ }
+ 
+-/* Compute stack adjustment caused by function prologue.  */
+-
+-static HOST_WIDE_INT
+-prologue_stack_adjust (void)
+-{
+-  HOST_WIDE_INT offset = 0;
+-  basic_block bb = ENTRY_BLOCK_PTR->next_bb;
+-  rtx insn;
+-  rtx end;
+-
+-  if (!BB_END (bb))
+-    return 0;
+-
+-  end = NEXT_INSN (BB_END (bb));
+-  for (insn = BB_HEAD (bb); insn != end; insn = NEXT_INSN (insn))
+-    {
+-      if (NOTE_P (insn)
+-	  && NOTE_LINE_NUMBER (insn) == NOTE_INSN_PROLOGUE_END)
+-	break;
+-
+-      if (INSN_P (insn))
+-	{
+-	  HOST_WIDE_INT tmp;
+-
+-	  insn_stack_adjust_offset_pre_post (insn, &tmp, &tmp);
+-	  offset += tmp;
+-	}
+-    }
+-
+-  return offset;
+-}
+-
+ /* Compute stack adjustments for all blocks by traversing DFS tree.
+    Return true when the adjustments on all incoming edges are consistent.
+    Heavily borrowed from flow_depth_first_order_compute.  */
+@@ -533,7 +493,7 @@
+ 
+   /* Initialize entry block.  */
+   VTI (ENTRY_BLOCK_PTR)->visited = true;
+-  VTI (ENTRY_BLOCK_PTR)->out.stack_adjust = frame_stack_adjust;
++  VTI (ENTRY_BLOCK_PTR)->out.stack_adjust = INCOMING_FRAME_SP_OFFSET;
+ 
+   /* Allocate stack for back-tracking up CFG.  */
+   stack = xmalloc ((n_basic_blocks + 1) * sizeof (edge_iterator));
+@@ -587,27 +547,23 @@
+   return true;
+ }
+ 
+-/* Adjust stack reference MEM by ADJUSTMENT bytes and return the new rtx.  */
++/* Adjust stack reference MEM by ADJUSTMENT bytes and make it relative
++   to the argument pointer.  Return the new rtx.  */
+ 
+ static rtx
+ adjust_stack_reference (rtx mem, HOST_WIDE_INT adjustment)
+ {
+-  rtx adjusted_mem;
+-  rtx tmp;
++  rtx addr, cfa, tmp;
+ 
+-  if (adjustment == 0)
+-    return mem;
++  adjustment -= ARG_POINTER_CFA_OFFSET (current_function_decl);
++  cfa = plus_constant (arg_pointer_rtx, adjustment);
+ 
+-  adjusted_mem = copy_rtx (mem);
+-  XEXP (adjusted_mem, 0) = replace_rtx (XEXP (adjusted_mem, 0),
+-					stack_pointer_rtx,
+-					gen_rtx_PLUS (Pmode, stack_pointer_rtx,
+-						      GEN_INT (adjustment)));
+-  tmp = simplify_rtx (XEXP (adjusted_mem, 0));
++  addr = replace_rtx (copy_rtx (XEXP (mem, 0)), stack_pointer_rtx, cfa);
++  tmp = simplify_rtx (addr);
+   if (tmp)
+-    XEXP (adjusted_mem, 0) = tmp;
++    addr = tmp;
+ 
+-  return adjusted_mem;
++  return replace_equiv_address_nv (mem, addr);
+ }
+ 
+ /* The hash function for variable_htab, computes the hash value
+@@ -1673,14 +1629,7 @@
+ 	    break;
+ 
+ 	  case MO_ADJUST:
+-	    {
+-	      rtx base;
+-
+-	      out->stack_adjust += VTI (bb)->mos[i].u.adjust;
+-	      base = gen_rtx_MEM (Pmode, plus_constant (stack_pointer_rtx,
+-							out->stack_adjust));
+-	      set_frame_base_location (out, base);
+-	    }
++	    out->stack_adjust += VTI (bb)->mos[i].u.adjust;
+ 	    break;
+ 	}
+     }
+@@ -1803,8 +1752,7 @@
+   for (; list; list = list->next)
+     {
+       print_mem_expr (dump_file, list->decl);
+-      fprintf (dump_file, "+");
+-      fprintf (dump_file, HOST_WIDE_INT_PRINT_DEC, list->offset);
++      fprintf (dump_file, "+" HOST_WIDE_INT_PRINT_DEC, list->offset);
+     }
+   fprintf (dump_file, "\n");
+ }
+@@ -1854,9 +1802,8 @@
+ {
+   int i;
+ 
+-  fprintf (dump_file, "Stack adjustment: ");
+-  fprintf (dump_file, HOST_WIDE_INT_PRINT_DEC, set->stack_adjust);
+-  fprintf (dump_file, "\n");
++  fprintf (dump_file, "Stack adjustment: " HOST_WIDE_INT_PRINT_DEC "\n",
++	   set->stack_adjust);
+   for (i = 1; i < FIRST_PSEUDO_REGISTER; i++)
+     {
+       if (set->regs[i])
+@@ -1938,37 +1885,6 @@
+     }
+ }
+ 
+-/* Set the location of frame_base_decl to LOC in dataflow set SET.  This
+-   function expects that frame_base_decl has already one location for offset 0
+-   in the variable table.  */
+-
+-static void
+-set_frame_base_location (dataflow_set *set, rtx loc)
+-{
+-  variable var;
+-  
+-  var = htab_find_with_hash (set->vars, frame_base_decl,
+-			     VARIABLE_HASH_VAL (frame_base_decl));
+-#ifdef ENABLE_CHECKING
+-  if (!var)
+-    abort ();
+-  if (var->n_var_parts != 1)
+-    abort ();
+-  if (var->var_part[0].offset != 0)
+-    abort ();
+-  if (!var->var_part[0].loc_chain)
+-    abort ();
+-#endif
+-
+-  /* If frame_base_decl is shared unshare it first.  */
+-  if (var->refcount > 1)
+-    var = unshare_variable (set, var);
+-
+-  var->var_part[0].loc_chain->loc = loc;
+-  var->var_part[0].cur_loc = loc;
+-  variable_was_changed (var, set->vars);
+-}
+-
+ /* Set the part of variable's location in the dataflow set SET.  The variable
+    part is specified by variable's declaration DECL and offset OFFSET and the
+    part's location by LOC.  */
+@@ -2499,15 +2415,7 @@
+ 	    break;
+ 
+ 	  case MO_ADJUST:
+-	    {
+-	      rtx base;
+-
+-	      set.stack_adjust += VTI (bb)->mos[i].u.adjust;
+-	      base = gen_rtx_MEM (Pmode, plus_constant (stack_pointer_rtx,
+-							set.stack_adjust));
+-	      set_frame_base_location (&set, base);
+-	      emit_notes_for_changes (insn, EMIT_NOTE_AFTER_INSN);
+-	    }
++	    set.stack_adjust += VTI (bb)->mos[i].u.adjust;
+ 	    break;
+ 	}
+     }
+@@ -2617,7 +2525,6 @@
+ 	abort ();
+ #endif
+ 
+-      incoming = eliminate_regs (incoming, 0, NULL_RTX);
+       out = &VTI (ENTRY_BLOCK_PTR)->out;
+ 
+       if (REG_P (incoming))
+@@ -2631,9 +2538,7 @@
+ 	  set_variable_part (out, incoming, parm, offset);
+ 	}
+       else if (MEM_P (incoming))
+-	{
+-	  set_variable_part (out, incoming, parm, offset);
+-	}
++	set_variable_part (out, incoming, parm, offset);
+     }
+ }
+ 
+@@ -2778,28 +2683,6 @@
+   changed_variables = htab_create (10, variable_htab_hash, variable_htab_eq,
+ 				   NULL);
+   vt_add_function_parameters ();
+-
+-  if (!frame_pointer_needed)
+-    {
+-      rtx base;
+-
+-      /* Create fake variable for tracking stack pointer changes.  */
+-      frame_base_decl = make_node (VAR_DECL);
+-      DECL_NAME (frame_base_decl) = get_identifier ("___frame_base_decl");
+-      TREE_TYPE (frame_base_decl) = char_type_node;
+-      DECL_ARTIFICIAL (frame_base_decl) = 1;
+-      DECL_IGNORED_P (frame_base_decl) = 1;
+-
+-      /* Set its initial "location".  */
+-      frame_stack_adjust = -prologue_stack_adjust ();
+-      base = gen_rtx_MEM (Pmode, plus_constant (stack_pointer_rtx,
+-						frame_stack_adjust));
+-      set_variable_part (&VTI (ENTRY_BLOCK_PTR)->out, base, frame_base_decl, 0);
+-    }
+-  else
+-    {
+-      frame_base_decl = NULL;
+-    }
+ }
+ 
+ /* Free the data structures needed for variable tracking.  */
+diff -Naur gcc-4.0-20050922.orig/gcc/varasm.c gcc-4.0-20050922-src/gcc/varasm.c
+--- gcc-4.0-20050922.orig/gcc/varasm.c	Fri Jul 22 21:32:58 2005
++++ gcc-4.0-20050922-src/gcc/varasm.c	Sat Sep 24 15:38:56 2005
+@@ -205,6 +205,46 @@
  EXTRA_SECTION_FUNCTIONS
  #endif
  
@@ -8409,7 +9656,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  /* Tell assembler to switch to text section.  */
  
  void
-@@ -660,6 +700,26 @@
+@@ -663,6 +703,26 @@
  			  unsigned HOST_WIDE_INT align ATTRIBUTE_UNUSED,
  			  unsigned int flags ATTRIBUTE_UNUSED)
  {
@@ -8436,7 +9683,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
    if (HAVE_GAS_SHF_MERGE && flag_merge_constants
        && TREE_CODE (decl) == STRING_CST
        && TREE_CODE (TREE_TYPE (decl)) == ARRAY_TYPE
-@@ -722,6 +782,7 @@
+@@ -725,6 +785,7 @@
  	    }
  	}
      }
@@ -8444,7 +9691,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  
    readonly_data_section ();
  }
-@@ -733,6 +794,25 @@
+@@ -736,6 +797,25 @@
  			    unsigned HOST_WIDE_INT align ATTRIBUTE_UNUSED,
  			    unsigned int flags ATTRIBUTE_UNUSED)
  {
@@ -8470,7 +9717,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
    unsigned int modesize = GET_MODE_BITSIZE (mode);
  
    if (HAVE_GAS_SHF_MERGE && flag_merge_constants
-@@ -750,6 +830,7 @@
+@@ -753,6 +833,7 @@
        named_section_flags (name, flags);
        return;
      }
@@ -8478,7 +9725,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  
    readonly_data_section ();
  }
-@@ -1020,12 +1101,25 @@
+@@ -1023,12 +1104,25 @@
  void
  assemble_asm (tree string)
  {
@@ -8504,7 +9751,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  }
  
  /* Record an element in the table of global destructors.  SYMBOL is
-@@ -1443,9 +1537,18 @@
+@@ -1446,9 +1540,18 @@
  	destination = asm_dest_common;
      }
  
@@ -8525,7 +9772,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
        /* Custom sections don't belong here.  */
        if (DECL_SECTION_NAME (decl))
          return false;
-@@ -1696,7 +1799,24 @@
+@@ -1699,7 +1802,24 @@
      }
  
    /* Switch to the appropriate section.  */
@@ -8551,7 +9798,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
    variable_section (decl, reloc);
  
    /* dbxout.c needs to know this.  */
-@@ -2150,7 +2270,16 @@
+@@ -2153,7 +2273,16 @@
  void
  assemble_real (REAL_VALUE_TYPE d, enum machine_mode mode, unsigned int align)
  {
@@ -8569,7 +9816,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
    int i;
    int bitsize, nelts, nunits, units_per;
  
-@@ -2185,6 +2314,7 @@
+@@ -2188,6 +2317,7 @@
        assemble_integer (GEN_INT (data[i]), MIN (nunits, units_per), align, 1);
        nunits -= units_per;
      }
@@ -8577,7 +9824,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  }
  
  /* Given an expression EXP with a constant value,
-@@ -3168,7 +3298,7 @@
+@@ -3171,7 +3301,7 @@
  /* Worker function for output_constant_pool.  Emit POOL.  */
  
  static void
@@ -8586,7 +9833,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  {
    rtx x, tmp;
  
-@@ -3211,8 +3341,19 @@
+@@ -3214,8 +3344,19 @@
      }
  
    /* First switch to correct section.  */
@@ -8607,7 +9854,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  #ifdef ASM_OUTPUT_SPECIAL_POOL_ENTRY
    ASM_OUTPUT_SPECIAL_POOL_ENTRY (asm_out_file, x, desc->mode,
  				 desc->align, desc->labelno, done);
-@@ -3327,7 +3468,7 @@
+@@ -3330,7 +3471,7 @@
  /* Write all the constants in the constant pool.  */
  
  void
@@ -8616,7 +9863,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  		      tree fndecl ATTRIBUTE_UNUSED)
  {
    struct rtx_constant_pool *pool = cfun->varasm->pool;
-@@ -3343,7 +3484,7 @@
+@@ -3346,7 +3487,7 @@
  #endif
  
    for (desc = pool->first; desc ; desc = desc->next)
@@ -8625,7 +9872,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  
  #ifdef ASM_OUTPUT_POOL_EPILOGUE
    ASM_OUTPUT_POOL_EPILOGUE (asm_out_file, fnname, fndecl, pool->offset);
-@@ -3387,10 +3528,18 @@
+@@ -3390,10 +3531,18 @@
      case MINUS_EXPR:
        reloc = compute_reloc_for_constant (TREE_OPERAND (exp, 0));
        reloc2 = compute_reloc_for_constant (TREE_OPERAND (exp, 1));
@@ -8644,7 +9891,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  	reloc |= reloc2;
        break;
  
-@@ -4779,6 +4928,31 @@
+@@ -4784,6 +4933,31 @@
  	  || strcmp (name, ".preinit_array") == 0))
      flags |= SECTION_NOTYPE;
  
@@ -8676,7 +9923,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
    return flags;
  }
  
-@@ -4900,18 +5074,51 @@
+@@ -4905,18 +5079,51 @@
  {
    bool readonly = false;
  
@@ -8734,7 +9981,7 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
      }
    else if (TREE_CODE (decl) == STRING_CST)
      readonly = true;
-@@ -4922,44 +5129,11 @@
+@@ -4927,44 +5134,11 @@
      readonly_data_section ();
    else
      data_section ();
@@ -8780,15 +10027,15 @@ diff -Naur gcc-4.0-20050630.orig/gcc/varasm.c gcc-4.0-20050630-src/gcc/varasm.c
  
  static enum section_category
  categorize_decl_for_section (tree, int, int);
-diff -Naur gcc-4.0-20050630.orig/gcc/version.c gcc-4.0-20050630-src/gcc/version.c
---- gcc-4.0-20050630.orig/gcc/version.c	Thu Jun 30 02:16:06 2005
-+++ gcc-4.0-20050630-src/gcc/version.c	Fri Jul  1 05:02:10 2005
+diff -Naur gcc-4.0-20050922.orig/gcc/version.c gcc-4.0-20050922-src/gcc/version.c
+--- gcc-4.0-20050922.orig/gcc/version.c	Wed Sep 21 05:58:56 2005
++++ gcc-4.0-20050922-src/gcc/version.c	Sat Sep 24 16:28:34 2005
 @@ -5,7 +5,7 @@
     please modify this string to indicate that, e.g. by putting your
     organization's name in parentheses at the end of the string.  */
  
--const char version_string[] = "4.0.1 20050630 (prerelease)";
-+const char version_string[] = "4.0.1 20050630 (TIGCC prerelease)";
+-const char version_string[] = "4.0.2";
++const char version_string[] = "4.0.2 (TIGCC RC)";
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
@@ -8798,9 +10045,9 @@ diff -Naur gcc-4.0-20050630.orig/gcc/version.c gcc-4.0-20050630-src/gcc/version.
  
 -const char bug_report_url[] = "<URL:http://gcc.gnu.org/bugs.html>";
 +const char bug_report_url[] = "http://tigcc.ticalc.org/";
-diff -Naur gcc-4.0-20050630.orig/libcpp/directives.c gcc-4.0-20050630-src/libcpp/directives.c
---- gcc-4.0-20050630.orig/libcpp/directives.c	Mon Feb 28 19:25:22 2005
-+++ gcc-4.0-20050630-src/libcpp/directives.c	Fri Jul  1 04:33:46 2005
+diff -Naur gcc-4.0-20050922.orig/libcpp/directives.c gcc-4.0-20050922-src/libcpp/directives.c
+--- gcc-4.0-20050922.orig/libcpp/directives.c	Mon Feb 28 19:25:22 2005
++++ gcc-4.0-20050922-src/libcpp/directives.c	Sat Sep 24 15:38:56 2005
 @@ -1070,6 +1070,7 @@
  _cpp_init_internal_pragmas (cpp_reader *pfile)
  {
@@ -8809,9 +10056,9 @@ diff -Naur gcc-4.0-20050630.orig/libcpp/directives.c gcc-4.0-20050630-src/libcpp
    register_pragma (pfile, 0, "once", do_pragma_once, false, true);
  
    /* New GCC-specific pragmas should be put in the GCC namespace.  */
-diff -Naur gcc-4.0-20050630.orig/libcpp/expr.c gcc-4.0-20050630-src/libcpp/expr.c
---- gcc-4.0-20050630.orig/libcpp/expr.c	Sun Jul  4 14:57:46 2004
-+++ gcc-4.0-20050630-src/libcpp/expr.c	Fri Jul  1 04:33:46 2005
+diff -Naur gcc-4.0-20050922.orig/libcpp/expr.c gcc-4.0-20050922-src/libcpp/expr.c
+--- gcc-4.0-20050922.orig/libcpp/expr.c	Sun Jul  4 14:57:46 2004
++++ gcc-4.0-20050922-src/libcpp/expr.c	Sat Sep 24 15:38:56 2005
 @@ -171,6 +171,13 @@
  	  radix = 16;
  	  str++;
@@ -8870,9 +10117,9 @@ diff -Naur gcc-4.0-20050630.orig/libcpp/expr.c gcc-4.0-20050630-src/libcpp/expr.
  	  p += 2;
  	}
  
-diff -Naur gcc-4.0-20050630.orig/libcpp/files.c gcc-4.0-20050630-src/libcpp/files.c
---- gcc-4.0-20050630.orig/libcpp/files.c	Mon Feb 14 14:43:56 2005
-+++ gcc-4.0-20050630-src/libcpp/files.c	Fri Jul  1 04:33:46 2005
+diff -Naur gcc-4.0-20050922.orig/libcpp/files.c gcc-4.0-20050922-src/libcpp/files.c
+--- gcc-4.0-20050922.orig/libcpp/files.c	Tue Aug 30 08:35:42 2005
++++ gcc-4.0-20050922-src/libcpp/files.c	Sat Sep 24 15:38:56 2005
 @@ -47,6 +47,11 @@
  #  define set_stdin_to_binary_mode() /* Nothing */
  #endif
@@ -8885,9 +10132,9 @@ diff -Naur gcc-4.0-20050630.orig/libcpp/files.c gcc-4.0-20050630-src/libcpp/file
  /* This structure represents a file searched for by CPP, whether it
     exists or not.  An instance may be pointed to by more than one
     file_hash_entry; at present no reference count is kept.  */
-diff -Naur gcc-4.0-20050630.orig/libcpp/include/cpplib.h gcc-4.0-20050630-src/libcpp/include/cpplib.h
---- gcc-4.0-20050630.orig/libcpp/include/cpplib.h	Sun Feb 20 17:01:32 2005
-+++ gcc-4.0-20050630-src/libcpp/include/cpplib.h	Fri Jul  1 04:33:46 2005
+diff -Naur gcc-4.0-20050922.orig/libcpp/include/cpplib.h gcc-4.0-20050922-src/libcpp/include/cpplib.h
+--- gcc-4.0-20050922.orig/libcpp/include/cpplib.h	Sun Feb 20 17:01:32 2005
++++ gcc-4.0-20050922-src/libcpp/include/cpplib.h	Sat Sep 24 15:38:56 2005
 @@ -379,6 +379,9 @@
    /* True if dependencies should be restored from a precompiled header.  */
    bool restore_pch_deps;
@@ -8914,9 +10161,9 @@ diff -Naur gcc-4.0-20050630.orig/libcpp/include/cpplib.h gcc-4.0-20050630-src/li
  
  /* In cpphash.c */
  
-diff -Naur gcc-4.0-20050630.orig/libcpp/init.c gcc-4.0-20050630-src/libcpp/init.c
---- gcc-4.0-20050630.orig/libcpp/init.c	Mon Feb 14 14:43:56 2005
-+++ gcc-4.0-20050630-src/libcpp/init.c	Fri Jul  1 04:33:46 2005
+diff -Naur gcc-4.0-20050922.orig/libcpp/init.c gcc-4.0-20050922-src/libcpp/init.c
+--- gcc-4.0-20050922.orig/libcpp/init.c	Mon Feb 14 14:43:56 2005
++++ gcc-4.0-20050922-src/libcpp/init.c	Sat Sep 24 15:38:56 2005
 @@ -153,6 +153,7 @@
    CPP_OPTION (pfile, dollars_in_ident) = 1;
    CPP_OPTION (pfile, warn_dollars) = 1;
@@ -8925,9 +10172,9 @@ diff -Naur gcc-4.0-20050630.orig/libcpp/init.c gcc-4.0-20050630-src/libcpp/init.
  
    /* Default CPP arithmetic to something sensible for the host for the
       benefit of dumb users like fix-header.  */
-diff -Naur gcc-4.0-20050630.orig/libcpp/internal.h gcc-4.0-20050630-src/libcpp/internal.h
---- gcc-4.0-20050630.orig/libcpp/internal.h	Mon Feb 14 14:43:56 2005
-+++ gcc-4.0-20050630-src/libcpp/internal.h	Fri Jul  1 04:33:46 2005
+diff -Naur gcc-4.0-20050922.orig/libcpp/internal.h gcc-4.0-20050922-src/libcpp/internal.h
+--- gcc-4.0-20050922.orig/libcpp/internal.h	Mon Feb 14 14:43:56 2005
++++ gcc-4.0-20050922-src/libcpp/internal.h	Sat Sep 24 15:38:56 2005
 @@ -372,6 +372,11 @@
    /* Error counter for exit code.  */
    unsigned int errors;
@@ -8940,9 +10187,9 @@ diff -Naur gcc-4.0-20050630.orig/libcpp/internal.h gcc-4.0-20050630-src/libcpp/i
    /* Buffer to hold macro definition string.  */
    unsigned char *macro_buffer;
    unsigned int macro_buffer_len;
-diff -Naur gcc-4.0-20050630.orig/libcpp/lex.c gcc-4.0-20050630-src/libcpp/lex.c
---- gcc-4.0-20050630.orig/libcpp/lex.c	Thu Sep  9 21:16:54 2004
-+++ gcc-4.0-20050630-src/libcpp/lex.c	Fri Jul  1 04:33:46 2005
+diff -Naur gcc-4.0-20050922.orig/libcpp/lex.c gcc-4.0-20050922-src/libcpp/lex.c
+--- gcc-4.0-20050922.orig/libcpp/lex.c	Thu Sep  9 21:16:54 2004
++++ gcc-4.0-20050922-src/libcpp/lex.c	Sat Sep 24 15:38:56 2005
 @@ -215,7 +215,11 @@
      }
  
@@ -9073,9 +10320,9 @@ diff -Naur gcc-4.0-20050630.orig/libcpp/lex.c gcc-4.0-20050630-src/libcpp/lex.c
 +    }
 +}
 +
-diff -Naur gcc-4.0-20050630.orig/libcpp/macro.c gcc-4.0-20050630-src/libcpp/macro.c
---- gcc-4.0-20050630.orig/libcpp/macro.c	Wed Apr  6 07:54:16 2005
-+++ gcc-4.0-20050630-src/libcpp/macro.c	Fri Jul  1 04:33:46 2005
+diff -Naur gcc-4.0-20050922.orig/libcpp/macro.c gcc-4.0-20050922-src/libcpp/macro.c
+--- gcc-4.0-20050922.orig/libcpp/macro.c	Wed Apr  6 07:54:16 2005
++++ gcc-4.0-20050922-src/libcpp/macro.c	Sat Sep 24 15:38:56 2005
 @@ -781,6 +781,11 @@
    macro_arg *arg;
    _cpp_buff *buff;
