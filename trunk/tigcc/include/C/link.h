@@ -29,7 +29,7 @@ typedef unsigned long size_t;
 #define __HAVE_SYM_STR
 typedef CESI SYM_STR;
 #endif
-typedef struct{unsigned short hVar;union{const void*pVar;struct{unsigned short FindFlags;unsigned short NameSym;}DirVars;}extra;const char*VarName;unsigned short VarSize;unsigned short Index;unsigned short Unknown;unsigned char VarType;unsigned char VarCompat;}LIO_CTX;
+typedef struct{unsigned short hVar;union{const void*pVar;struct{unsigned short FindFlags;unsigned short NameSym;}DirVars;}extra;const char*VarName;unsigned long VarSize;unsigned short Index;unsigned short Unknown;unsigned char VarType;unsigned char VarCompat;}LIO_CTX;
 #define getcalc ({__need_in_use_bit;_rom_call(void,(SYM_STR),54);})
 #define LIO_Get _rom_call(unsigned short,(LIO_CTX*),57)
 #define LIO_GetMultiple ({__need_in_use_bit;_rom_call(short,(LIO_CTX*),59);})
