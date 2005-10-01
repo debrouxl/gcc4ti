@@ -167,15 +167,17 @@ var
 
 procedure Execute(const CommandLine: string);
 var
-	TempStr: array [0..255] of Char;
+	TempStr: array [0..1] of Char;
 	WriteResult: Cardinal;
 	StartupInfo: TStartupInfo;
 	ProcessInfo: TProcessInformation;
 begin
 	if FileExists (Copy (CommandLine, 1, Pos (' ', CommandLine))) then begin
 		if PrintCommands then begin
-			StrPLCopy (TempStr, CommandLine + #13#10, 255);
-			WriteFile (GetStdHandle (Std_Output_Handle), TempStr, Length (CommandLine) + 2, WriteResult, nil);
+			WriteFile (GetStdHandle (Std_Output_Handle), PChar(CommandLine)^, Length (CommandLine), WriteResult, nil);
+			TempStr[0] := #13;
+			TempStr[1] := #10;
+			WriteFile (GetStdHandle (Std_Output_Handle), TempStr, 2, WriteResult, nil);
 		end;
 		FillChar (StartupInfo, SizeOf (StartupInfo), 0);
 		with StartupInfo do begin
