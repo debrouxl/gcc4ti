@@ -199,21 +199,13 @@ can compile and modify them to learn how to use TIGCC. Most of them can also
 be found at some place in the documentation, with explanations and in some
 sort of context.
 
-8. Missing Features
--------------------
-
-There are still some restrictions:
-
-- The library is very advanced, but not totally finished yet.
-- There is still no C debugger.
-
-9. Bug Reports
+8. Bug Reports
 --------------
 
 There may still be some bugs in the linker, in tigcc.exe, and in the IDE. If
 you encounter a bug, please use the bug report form on tigcc.ticalc.org.
 
-10. History
+9. History
 -----------
 
 See http://tigcc.ticalc.org/doc/info.html#history
