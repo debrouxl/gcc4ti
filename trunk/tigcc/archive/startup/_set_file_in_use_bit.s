@@ -85,12 +85,14 @@ __symbol_search_loop__:
 	moveq #1,%d0
 | If %d3.w is 0, clear the in-use bit.
 	move.l %d5,%a0
+	lea 11(%a0),%a0
 	tst.w %d3
 	jbeq __clear_bit__
 | Otherwise, store the previous value in %d3, set the bit, and quit.
-	move.b (%a0,11),%d3
-	and.w #0x10,%d3
-	or.b #0x10,(%a0,11)
+	moveq #0x10,%d1
+	move.b (%a0),%d3
+	and.w %d1,%d3
+	or.b %d1,(%a0)
 	rts
 __skip_symbol__:
 | Call SymFindNext.
@@ -99,6 +101,6 @@ __skip_symbol__:
 | Go to beginning of loop.
 	jra __symbol_search_loop__
 __clear_bit__:
-	and.b #0xEF,(%a0,11)
+	and.b #0xEF,(%a0)
 __symbol_search_done__:
 	rts
