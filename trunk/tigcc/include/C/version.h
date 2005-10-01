@@ -4,9 +4,9 @@
 #define __TIGCC__ 0
 #define __TIGCC_MINOR__ 96
 #define __TIGCC_SP__ 0
-#define __TIGCC_BETA__ 5
+#define __TIGCC_BETA__ 6
 #define __TIGCC_VERSION__ 96
-#define __TIGCC_VERSION_STRING__ "TIGCC0.96Beta5"
+#define __TIGCC_VERSION_STRING__ "TIGCC0.96Beta6"
 
 #define __TIGCCLIB__ 2
 #define __TIGCCLIB_MINOR__ 70
