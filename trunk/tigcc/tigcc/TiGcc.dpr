@@ -563,7 +563,7 @@ begin
 							KeepObjectFiles := True;
 							SaveTemps := True;
 							Insert (' ' + Enquote (S), GCCLine, Length (GCCLine) + 1);
-						end else if (S = '-include') or (S = '--param') then begin
+						end else if (S = '-include') or (S = '--param') or (S = '-isystem') then begin
 							if I < ParamCount then begin
 								Inc (I);
 								Insert (' ' + Enquote (S) + ' ' + Enquote (ParamStr (I)), GCCLine, Length (GCCLine) + 1);
