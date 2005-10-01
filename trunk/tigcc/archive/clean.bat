@@ -1,0 +1,1 @@
+tprbuilder --clean tigcc.tpr
