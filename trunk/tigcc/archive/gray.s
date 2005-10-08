@@ -29,18 +29,19 @@
 GrayOn:
 	move.w   (__gray_handle,%pc),%d0   | if __gray_handle is not 0 we have
 	bne      __gray_return_immediately | already allocated memory -> out here
-	movem.l  %d2-%d7/%a2-%a6,-(%a7)
+	move.l   %a5,-(%sp)                   | we have more than 2 ROM_CALLs
+	move.l   0xc8.w,%a5                   | so we should optimize
 	lea      (__switch_cnt,%pc),%a0       | reset plane switch counter to 0
 	clr.l	   (%a0)
 	bsr.s    __gray_check_hw_version      | evaluate HW version and store it
 	lea      (__gray_hw_type,%pc),%a0
 	move.w   %d0,(%a0)
 	bsr      __gray_init_mem              | allocate and initialize memory
-	movem.l  (%a7)+,%d2-%d7/%a2-%a6
+	move.l   (%sp)+,%a5
 	move.w   (__gray_handle,%pc),%d0
 	bne      __gray_init_handler          | jump to interrupt handler setup if
 	                                      | memory was allocated correctly
-	moveq    #0x0,%d0                     | otherwise return 0 (GrayOn failed)
+	|moveq   #0x0,%d0                     | otherwise return 0 (GrayOn failed)
 	rts
 |==============================================================================
 | checks for HW version (VTI is treated as HW1, because port 0x70001D is not
@@ -59,7 +60,7 @@ __gray_check_hw_version:
 .ifdef ALWAYS_HW2_TESTING
 	bra.s __always_hw2_proceed
 .endif
-	move.l   0xc8,%d0
+	move.l   %a5,%d0
 	and.l    #0xE00000,%d0          | get the ROM base
 	move.l   %d0,%a0
 	moveq    #0,%d0
@@ -193,27 +194,25 @@ __switch_cnt:
 |                                                        __gray_init_handler)
 |==============================================================================
 __gray_init_mem:
-	lea      (__gray_handle,%pc),%a5
     |--------------------------------------------------------------------------
     | HeapAllocHigh(HW1=3848 bytes or HW2=7688 bytes)
     |--------------------------------------------------------------------------
-	movea.l  0xc8,%a0
-	movea.l  (0x92*4,%a0),%a2 /* HeapAllocHigh */
+	movea.l  (0x92*4,%a5),%a0 /* HeapAllocHigh */
 	.word    0x4878                       | opcode of "PEA #value"
 __gray_size_to_allocate:                      | the size gets patched !!
 	.word    0x1e08
-	jsr      (%a2)
+	jsr      (%a0)
 	addq.w   #4,%a7
-	move.w   %d0,(%a5)+                   | store handle in handle variable
+	lea      (__gray_handle,%pc),%a0
+	move.w   %d0,(%a0)+                   | store handle in handle variable
 	beq.s    __gray_init_return           | alloc failed (handle=0) -> out here
-	clr.w    (%a5)                        | clears __gray_dbl_offset
+	clr.w    (%a0)                        | clears __gray_dbl_offset
     |--------------------------------------------------------------------------
     | HeapDeref(__gray_handle)
     |--------------------------------------------------------------------------
 	move.w   %d0,-(%a7)
-	movea.l  0xc8,%a0
-	movea.l  (0x96*4,%a0),%a2 /* HeapDeref */
-	jsr      (%a2)
+	movea.l  (0x96*4,%a5),%a0 /* HeapDeref */
+	jsr      (%a0)
 	addq.l   #2,%a7
     |--------------------------------------------------------------------------
     | align memory address to next 8-byte boundary and store address in
@@ -541,10 +540,11 @@ __gray_return_immediately:
 |            NOTE: ALWAYS returns 1 !!
 |==============================================================================
 GrayOff:
-	movem.l  %a2-%a3,-(%a7)
-	lea      (__gray_handle,%pc),%a3
-	tst.w    (%a3)
-	beq      __gray_off_out                   | no handle? -> nothing to do
+	lea      (__gray_handle,%pc),%a0
+	tst.w    (%a0)
+	beq      __gray_return_immediately | no handle? -> nothing to do
+	move.w   (%a0),-(%a7)
+	clr.l    (%a0)                     | 0->handle AND(!!) 0->__gray_dbl_offset
 	lea      0x600001,%a0
 	move.w   (__gray_hw_type,%pc),%d0
 	beq.s    __gray_hw1_cleanup
@@ -580,26 +580,28 @@ __gray_continue_cleanup:
     | HeapFree(__gray_handle)
     |--------------------------------------------------------------------------
 	movea.l  0xc8,%a0
-	movea.l  (0x97*4,%a0),%a2 /* HeapFree */
-	move.w   (%a3),-(%a7)
-	jsr      (%a2)
+	movea.l  (0x97*4,%a0),%a0 /* HeapFree */
+	jsr      (%a0)
 	addq.l   #2,%a7
     |--------------------------------------------------------------------------
     | PortRestore()
     |--------------------------------------------------------------------------
 	movea.l  0xc8,%a0
-	movea.l  (0x1A3*4,%a0),%a2 /* PortRestore */
-	jsr      (%a2)
-	clr.l    (%a3)                     | 0->handle AND(!!) 0->__gray_dbl_offset
+	movea.l  (0x1A3*4,%a0),%a0 /* PortRestore */
+	jsr      (%a0)
 	lea      (__gray_sync_n_count,%pc),%a0
 	clr.l    (%a0)
 __gray_off_out:
-	movem.l  (%a7)+,%a2-%a3
 	jbra     __gray_ok
 
 | #############################################################################
 |  Revision History
 | #############################################################################
+|
+| Revision 3.16 2005/10/09 01:48:20  Kevin Kofler
+| Bumped version to 3.54.
+| Size optimization by Jesse Frey (register saving, ROM_CALL optimization),
+| spelling/typo fixes by Kevin Kofler.
 |
 | Revision 3.15 2005/08/22 20:23:40  Kevin Kofler
 | Bumped version to 3.53.
