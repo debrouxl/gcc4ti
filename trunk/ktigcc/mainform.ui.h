@@ -153,28 +153,23 @@ class DnDListView : public QListView {
   public:
   DnDListView ( QWidget * parent = 0, const char * name = 0, WFlags f = 0 )
           : QListView(parent,name,f) {}
-  bool acceptDrop(const QMimeSource *mime) const {
-    puts("acceptDrop called");
-    return (mime->provides("x-ktigcc-folder")
-            ||mime->provides("x-ktigcc-file"));
-  }
   protected:
   virtual QDragObject *dragObject() {
-    puts("dragObject called");
-    QStoredDrag *storedDrag=new QStoredDrag("x-ktigcc-folder");
-    QByteArray data(sizeof(QListViewItem*));
+    QStoredDrag *storedDrag=new QStoredDrag("x-ktigcc-folder", this);
+    static QByteArray data(sizeof(QListViewItem*));
     data.duplicate(reinterpret_cast<char *>(&currentListItem),
                    sizeof(QListViewItem*));
     storedDrag->setEncodedData(data);
-    storedDrag->drag();
-    puts("dragObject returning");
     return storedDrag;
   }
   virtual void dropped (QDropEvent *e) {
     puts("dropped called");
   }
-  virtual void dragEnterEvent ( QDragEnterEvent * ) {
+  virtual void dragEnterEvent (QDragEnterEvent *e) {
     puts("dragEnterEvent called");
+    /*if (e->provides("x-ktigcc-folder")
+        ||e->provides("x-ktigcc-file"))
+	  e->accept();*/
   }
 };
 
