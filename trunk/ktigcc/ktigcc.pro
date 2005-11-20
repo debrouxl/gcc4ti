@@ -1,10 +1,16 @@
+TEMPLATE	= app
+LANGUAGE	= C++
+
+CONFIG	+= qt warn_on release
+
+unix:LIBS	+= -lktexteditor
+
+unix:INCLUDEPATH	+= /usr/include/kde
+
 SOURCES	+= ktigcc.cpp
-unix {
-  UI_DIR = .ui
-  MOC_DIR = .moc
-  OBJECTS_DIR = .obj
-}
+
 FORMS	= mainform.ui
+
 IMAGES	= images/00 \
 	images/01 \
 	images/02 \
@@ -42,8 +48,9 @@ IMAGES	= images/00 \
 	images/files.png \
 	images/filet.png \
 	images/filex.png
-TEMPLATE	=app
-CONFIG	+= qt warn_on release
-unix:INCLUDEPATH	+= /usr/include/kde
-unix:LIBS	+= -lktexteditor
-LANGUAGE	= C++
+
+unix {
+  UI_DIR = .ui
+  MOC_DIR = .moc
+  OBJECTS_DIR = .obj
+}

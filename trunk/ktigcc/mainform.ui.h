@@ -31,8 +31,15 @@
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qdragobject.h>
+#include <kparts/factory.h>
+#include <klibloader.h>
+#include <kate/document.h>
+#include <kate/view.h>
+#include <kconfig.h>
 #include <cstdio>
+#include <cstdlib>
 using std::puts;
+using std::exit;
 
 extern const char *tigcc_base;
 extern const char *quill_drv;
@@ -146,6 +153,7 @@ static QListViewItem *othFilesListItem;
 static QListViewItem *currentListItem;
 static QLabel *leftStatusLabel;
 static QLabel *rightStatusLabel;
+static Kate::View* m_view;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 
 class DnDListView : public QListView {
@@ -226,6 +234,12 @@ void MainForm::init()
   folderListItem=new ListViewFolder(rootListItem,folderListItem);
   othFilesListItem=folderListItem;
   folderListItem->setText(0,"Other Files");
+  KParts::Factory* factory = (KParts::Factory *)
+      KLibLoader::self()->factory ("libkatepart");
+  if (!factory) exit(1);
+  KTextEditor::Document *doc = (KTextEditor::Document *)
+      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
+  m_view = (Kate::View *) doc->createView( splitter, 0L );
   startTimer(100);
 }
 
@@ -380,22 +394,21 @@ void MainForm::fileTreeClicked(QListViewItem *item)
   if (currentListItem && currentListItem->rtti()==0x716CC0)
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (currentListItem && currentListItem->rtti()==0x716CC1)
-    static_cast<ListViewFile *>(currentListItem)->textBuffer=kTextEdit1->text();
+    static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
   if (item->rtti()==0x716CC0) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
-    kTextEdit1->setEnabled(FALSE);
-    kTextEdit1->setText("");
-    kTextEdit1->setPaletteBackgroundColor(QColor(230,230,230));
+    m_view->setEnabled(FALSE);
+    m_view->setPaletteBackgroundColor(QColor(230,230,230));
   } else if (item->rtti()==0x716CC1) {
     fileNewFolderAction->setEnabled(TRUE);
-    kTextEdit1->setEnabled(TRUE);
-    kTextEdit1->setText(static_cast<ListViewFile *>(item)->textBuffer);
-    kTextEdit1->setPaletteBackgroundColor(QColor(255,255,255));
+    m_view->setEnabled(TRUE);
+    m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
+    m_view->setPaletteBackgroundColor(QColor(255,255,255));
   } else {
     fileNewFolderAction->setEnabled(FALSE);
-    kTextEdit1->setText("");
-    kTextEdit1->setPaletteBackgroundColor(QColor(230,230,230));
+    m_view->getDoc()->setText("");
+    m_view->setPaletteBackgroundColor(QColor(230,230,230));
   }
   currentListItem=item;
   updateLeftStatusLabel();
@@ -470,7 +483,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
   parent->setOpen(TRUE);
   fileTreeClicked(newFile);
   newFile->startRename(0);
-  kTextEdit1->setText(text);
+  m_view->getDoc()->setText(text);
   fileCount++;
   QListViewItem *category=parent;
   while (category->parent()->rtti()==0x716CC0) category=category->parent();
