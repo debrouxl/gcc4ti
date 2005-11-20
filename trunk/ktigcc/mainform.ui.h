@@ -184,6 +184,15 @@ class DnDListView : public QListView {
 void MainForm::init()
 {  
   fileNewFolderAction->setEnabled(FALSE);
+  KParts::Factory* factory = (KParts::Factory *)
+      KLibLoader::self()->factory ("libkatepart");
+  if (!factory) exit(1);
+  KTextEditor::Document *doc = (KTextEditor::Document *)
+      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
+  m_view = (Kate::View *) doc->createView( splitter, 0L );
+  m_view->setEnabled(FALSE);
+  m_view->setPaletteBackgroundColor(QColor(230,230,230));
+  m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,0,0));
   QValueList<int> list;
   list.append(150);
   list.append(500);
@@ -234,12 +243,6 @@ void MainForm::init()
   folderListItem=new ListViewFolder(rootListItem,folderListItem);
   othFilesListItem=folderListItem;
   folderListItem->setText(0,"Other Files");
-  KParts::Factory* factory = (KParts::Factory *)
-      KLibLoader::self()->factory ("libkatepart");
-  if (!factory) exit(1);
-  KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
-  m_view = (Kate::View *) doc->createView( splitter, 0L );
   startTimer(100);
 }
 
@@ -399,6 +402,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(FALSE);
+    m_view->getDoc()->setText("");
     m_view->setPaletteBackgroundColor(QColor(230,230,230));
   } else if (item->rtti()==0x716CC1) {
     fileNewFolderAction->setEnabled(TRUE);
@@ -407,6 +411,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     m_view->setPaletteBackgroundColor(QColor(255,255,255));
   } else {
     fileNewFolderAction->setEnabled(FALSE);
+    m_view->setEnabled(FALSE);
     m_view->getDoc()->setText("");
     m_view->setPaletteBackgroundColor(QColor(230,230,230));
   }
