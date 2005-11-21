@@ -247,17 +247,6 @@ void MainForm::init()
   startTimer(100);
 }
 
-void MainForm::destroy()
-{
-  Kate::Document *doc=m_view->getDoc();
-  delete m_view;
-  delete doc;
-  delete leftStatusLabel;
-  delete rightStatusLabel;
-  delete rootListItem;
-  delete khelpmenu;
-}
-
 void MainForm::fileNewProject()
 {
   rootListItem->setText(0,"Project1");
@@ -347,7 +336,7 @@ void MainForm::editCut()
 
 void MainForm::editCopy()
 {
-  
+
 }
 
 void MainForm::editPaste()
@@ -366,6 +355,16 @@ void MainForm::helpIndex()
 }
 
 void MainForm::helpContents()
+{
+  
+}
+
+void MainForm::helpSearch()
+{
+
+}
+
+void MainForm::helpNews()
 {
   
 }
