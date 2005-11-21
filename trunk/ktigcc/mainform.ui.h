@@ -558,6 +558,8 @@ void MainForm::newFile( QListViewItem *parent )
                  "\"Place your version string here.\"\n"
                  "#define COMMENT_VERSION_NUMBER 0,0,0,0 "
                  "/* major, minor, revision, subrevision */\n"
+                 "#define COMMENT_AUTHORS        "
+                 "\"Place your author name(s) here.\"\n"
                  "#define COMMENT_BW_ICON \\\n"
                  "\t{0b0000000000000000, \\\n"
                  "\t 0b0000000000000000, \\\n"
