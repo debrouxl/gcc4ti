@@ -79,18 +79,7 @@ class ListViewFolder : public QListViewItem {
     setDropEnabled(TRUE);
   }
   virtual int rtti(void) const {return 0x716CC0;}
-  virtual bool acceptDrop(const QMimeSource *mime) const {
-    puts("folder acceptDrop called");
-    return (mime->provides("x-ktigcc-folder")
-            ||mime->provides("x-ktigcc-file"));
-  }
   protected:
-  virtual void dropped (QDropEvent *e) {
-    puts("folder dropped called");
-  }
-  virtual void dragEnterEvent ( QDragEnterEvent * ) {
-    puts("folder dragEnterEvent called");
-  }
 };
 
 class ListViewFile : public QListViewItem {
@@ -126,19 +115,8 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   virtual int rtti(void) const {return 0x716CC1;}
-  bool acceptDrop(const QMimeSource *mime) const {
-    puts("file acceptDrop called");
-    return (mime->provides("x-ktigcc-folder")
-            ||mime->provides("x-ktigcc-file"));
-  }
   QString textBuffer;
   protected:
-  virtual void dropped (QDropEvent *e) {
-    puts("file dropped called");
-  }
-  virtual void dragEnterEvent ( QDragEnterEvent * ) {
-    puts("file dragEnterEvent called");
-  }
 };
 
 // These should be instance variables in clean C++, but QT Designer won't let me
@@ -167,21 +145,25 @@ class DnDListView : public QListView {
           : QListView(parent,name,f) {}
   protected:
   virtual QDragObject *dragObject() {
+    QListViewItem *currItem=selectedItem();
+    if (currItem==rootListItem || currItem->parent()==rootListItem)
+      return NULL;
     QStoredDrag *storedDrag=new QStoredDrag("x-ktigcc-folder", this);
     static QByteArray data(sizeof(QListViewItem*));
-    data.duplicate(reinterpret_cast<char *>(&currentListItem),
+    data.duplicate(reinterpret_cast<char *>(currItem),
                    sizeof(QListViewItem*));
     storedDrag->setEncodedData(data);
     return storedDrag;
   }
-  virtual void dropped (QDropEvent *e) {
-    puts("dropped called");
+  virtual void dropEvent (QDropEvent *e) {
+    if (e->source()==this) {
+      puts("dropEvent called");
+    } else e->ignore();
   }
   virtual void dragEnterEvent (QDragEnterEvent *e) {
-    puts("dragEnterEvent called");
-    /*if (e->provides("x-ktigcc-folder")
-        ||e->provides("x-ktigcc-file"))
-	  e->accept();*/
+    if (e->source()==this&&(e->provides("x-ktigcc-folder")
+                            ||e->provides("x-ktigcc-file")))
+	  e->accept();
   }
 };
 
