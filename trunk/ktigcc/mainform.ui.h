@@ -196,11 +196,11 @@ void MainForm::init()
   m_view = (Kate::View *) doc->createView( splitter, 0L );
   m_view->setEnabled(FALSE);
   m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,0,0));
-  write_temp_file("config.tmp","Highlighting=None\n[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
+  write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
   KConfig kconfig(QString(tempdir)+"/config.tmp",true);
   m_view->getDoc()->readConfig(&kconfig);
-  m_view->getDoc()->readSessionConfig(&kconfig);
   delete_temp_file("config.tmp");
+  m_view->getDoc()->setHlMode(0);
   QValueList<int> list;
   list.append(150);
   list.append(500);
@@ -411,29 +411,44 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(FALSE);
     m_view->getDoc()->setText("");
-    write_temp_file("config.tmp","Highlighting=None\n[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
+    write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
     KConfig kconfig(QString(tempdir)+"/config.tmp",true);
     m_view->getDoc()->readConfig(&kconfig);
-    m_view->getDoc()->readSessionConfig(&kconfig);
     delete_temp_file("config.tmp");
+    m_view->getDoc()->setHlMode(0);
   } else if (item->rtti()==0x716CC1) {
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(TRUE);
     m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
-    write_temp_file("config.tmp","Highlighting=None\n[Kate Renderer Defaults]\nSchema=kate - Normal\n",0);
+    QListViewItem *category=item->parent();
+    while (category->parent()->rtti()==0x716CC0) category=category->parent();
+    const char *buffer=static_cast<ListViewFile *>(item)->textBuffer;
+    write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=kate - Normal\n",0);
     KConfig kconfig(QString(tempdir)+"/config.tmp",true);
     m_view->getDoc()->readConfig(&kconfig);
-    m_view->getDoc()->readSessionConfig(&kconfig);
     delete_temp_file("config.tmp");
+    uint cnt=m_view->getDoc()->hlModeCount(), i;
+    for (i=0; i<cnt; i++) {
+      if (!m_view->getDoc()->hlModeName(i).compare(
+          ((category==sFilesListItem||(category==hFilesListItem&&buffer&&*buffer=='|'))?
+             "GNU Assembler 68k":
+           (category==asmFilesListItem||(category==hFilesListItem&&buffer&&*buffer==';'))?
+             "Motorola Assembler 68k":
+           (category==cFilesListItem||category==hFilesListItem)?
+             "C":
+           "None"))) break;
+    }
+    if (i==cnt) i=0;
+    m_view->getDoc()->setHlMode(i);
   } else {
     fileNewFolderAction->setEnabled(FALSE);
     m_view->setEnabled(FALSE);
     m_view->getDoc()->setText("");
-    write_temp_file("config.tmp","Highlighting=None\n[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
+    write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
     KConfig kconfig(QString(tempdir)+"/config.tmp",true);
     m_view->getDoc()->readConfig(&kconfig);
-    m_view->getDoc()->readSessionConfig(&kconfig);
     delete_temp_file("config.tmp");
+    m_view->getDoc()->setHlMode(0);
 }
   currentListItem=item;
   updateLeftStatusLabel();
@@ -506,6 +521,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
   newFile->setText(0,"New File");
   newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
   parent->setOpen(TRUE);
+  newFile->textBuffer=text;
   fileTreeClicked(newFile);
   newFile->startRename(0);
   m_view->getDoc()->setText(text);

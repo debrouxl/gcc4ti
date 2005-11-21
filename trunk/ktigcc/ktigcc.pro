@@ -54,3 +54,7 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 }
+
+syntaxfiles.path = /usr/share/apps/katepart/syntax/
+syntaxfiles.files = gnuasm68k.xml masm68k.xml
+INSTALLS += syntaxfiles
