@@ -36,6 +36,7 @@
 #include <kate/document.h>
 #include <kate/view.h>
 #include <kconfig.h>
+#include <ktexteditor/configinterfaceextension.h>
 #include <cstdio>
 #include <cstdlib>
 using std::puts;
@@ -43,6 +44,9 @@ using std::exit;
 
 extern const char *tigcc_base;
 extern const char *quill_drv;
+extern char tempdir[];
+extern void write_temp_file(const char *filename, const char *data, const size_t len);
+extern void delete_temp_file(const char *filename);
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
@@ -191,8 +195,12 @@ void MainForm::init()
       factory->createPart( 0, "", this, "", "KTextEditor::Document" );
   m_view = (Kate::View *) doc->createView( splitter, 0L );
   m_view->setEnabled(FALSE);
-  m_view->setPaletteBackgroundColor(QColor(230,230,230));
   m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,0,0));
+  write_temp_file("config.tmp","Highlighting=None\n[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
+  KConfig kconfig(QString(tempdir)+"/config.tmp",true);
+  m_view->getDoc()->readConfig(&kconfig);
+  m_view->getDoc()->readSessionConfig(&kconfig);
+  delete_temp_file("config.tmp");
   QValueList<int> list;
   list.append(150);
   list.append(500);
@@ -403,18 +411,30 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(FALSE);
     m_view->getDoc()->setText("");
-    m_view->setPaletteBackgroundColor(QColor(230,230,230));
+    write_temp_file("config.tmp","Highlighting=None\n[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
+    KConfig kconfig(QString(tempdir)+"/config.tmp",true);
+    m_view->getDoc()->readConfig(&kconfig);
+    m_view->getDoc()->readSessionConfig(&kconfig);
+    delete_temp_file("config.tmp");
   } else if (item->rtti()==0x716CC1) {
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(TRUE);
     m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
-    m_view->setPaletteBackgroundColor(QColor(255,255,255));
+    write_temp_file("config.tmp","Highlighting=None\n[Kate Renderer Defaults]\nSchema=kate - Normal\n",0);
+    KConfig kconfig(QString(tempdir)+"/config.tmp",true);
+    m_view->getDoc()->readConfig(&kconfig);
+    m_view->getDoc()->readSessionConfig(&kconfig);
+    delete_temp_file("config.tmp");
   } else {
     fileNewFolderAction->setEnabled(FALSE);
     m_view->setEnabled(FALSE);
     m_view->getDoc()->setText("");
-    m_view->setPaletteBackgroundColor(QColor(230,230,230));
-  }
+    write_temp_file("config.tmp","Highlighting=None\n[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
+    KConfig kconfig(QString(tempdir)+"/config.tmp",true);
+    m_view->getDoc()->readConfig(&kconfig);
+    m_view->getDoc()->readSessionConfig(&kconfig);
+    delete_temp_file("config.tmp");
+}
   currentListItem=item;
   updateLeftStatusLabel();
 }
@@ -555,7 +575,7 @@ void MainForm::newFile( QListViewItem *parent )
                  "\t 0b0000000000000000, \\\n"
                  "\t 0b0000000000000000, \\\n"
                  "\t 0b0000000000000000, \\\n"
-                 "\t 0b0000000000000000},\n"
+                 "\t 0b0000000000000000}, \\\n"
                  "\t{0b0000000000000000, \\\n"
                  "\t 0b0000000000000000, \\\n"
                  "\t 0b0000000000000000, \\\n"
