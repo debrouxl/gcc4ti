@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on release
+CONFIG	+= qt warn_on debug
 
 unix:LIBS	+= -lktexteditor
 
@@ -58,3 +58,8 @@ unix {
 syntaxfiles.path = /usr/share/apps/katepart/syntax/
 syntaxfiles.files = gnuasm68k.xml masm68k.xml
 INSTALLS += syntaxfiles
+
+QMAKE_CXXFLAGS_DEBUG = -Os -g -Wno-non-virtual-dtor
+QMAKE_CXXFLAGS_RELEASE = -Os -s -fomit-frame-pointer -Wno-non-virtual-dtor
+
+QMAKE_LFLAGS_RELEASE = -s
