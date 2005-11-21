@@ -157,7 +157,13 @@ class DnDListView : public QListView {
   }
   virtual void dropEvent (QDropEvent *e) {
     if (e->source()==this) {
-      puts("dropEvent called");
+      QPoint vp=contentsToViewport(e->pos());
+      QListViewItem *item=itemAt(vp);
+      if (item && item->rtti()==0x716CC0) {
+        // drop on file
+      } else if (item && item->rtti()==0x716CC1) {
+        // drop on folder
+      } else e->ignore();
     } else e->ignore();
   }
   virtual void dragEnterEvent (QDragEnterEvent *e) {
