@@ -37,6 +37,8 @@
 #include <kate/view.h>
 #include <kconfig.h>
 #include <ktexteditor/configinterfaceextension.h>
+#include <kaboutdata.h>
+#include <khelpmenu.h>
 #include <cstdio>
 #include <cstdlib>
 using std::puts;
@@ -47,6 +49,7 @@ extern const char *quill_drv;
 extern char tempdir[];
 extern void write_temp_file(const char *filename, const char *data, const size_t len);
 extern void delete_temp_file(const char *filename);
+extern KAboutData *pabout;
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
@@ -136,6 +139,7 @@ static QListViewItem *currentListItem;
 static QLabel *leftStatusLabel;
 static QLabel *rightStatusLabel;
 static Kate::View* m_view;
+static KHelpMenu *khelpmenu;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 
 class DnDListView : public QListView {
@@ -239,7 +243,19 @@ void MainForm::init()
   folderListItem=new ListViewFolder(rootListItem,folderListItem);
   othFilesListItem=folderListItem;
   folderListItem->setText(0,"Other Files");
+  khelpmenu=new KHelpMenu(this,pabout);
   startTimer(100);
+}
+
+void MainForm::destroy()
+{
+  Kate::Document *doc=m_view->getDoc();
+  delete m_view;
+  delete doc;
+  delete leftStatusLabel;
+  delete rightStatusLabel;
+  delete rootListItem;
+  delete khelpmenu;
 }
 
 void MainForm::fileNewProject()
@@ -356,7 +372,7 @@ void MainForm::helpContents()
 
 void MainForm::helpAbout()
 {
-  
+  khelpmenu->aboutApplication();
 }
 
 void MainForm::updateSizes()
