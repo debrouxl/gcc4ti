@@ -59,6 +59,10 @@ syntaxfiles.path = /usr/share/apps/katepart/syntax/
 syntaxfiles.files = gnuasm68k.xml masm68k.xml
 INSTALLS += syntaxfiles
 
+executable.path = /usr/local/tigcc/bin
+executable.files = ktigcc
+INSTALLS += executable
+
 QMAKE_CXXFLAGS_DEBUG = -Os -g -Wno-non-virtual-dtor
 QMAKE_CXXFLAGS_RELEASE = -Os -s -fomit-frame-pointer -Wno-non-virtual-dtor
 
