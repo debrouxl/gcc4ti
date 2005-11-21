@@ -434,7 +434,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
              "GNU Assembler 68k":
            (category==asmFilesListItem||(category==hFilesListItem&&buffer&&*buffer==';'))?
              "Motorola Assembler 68k":
-           (category==cFilesListItem||category==hFilesListItem)?
+           (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
              "C":
            "None"))) break;
     }
