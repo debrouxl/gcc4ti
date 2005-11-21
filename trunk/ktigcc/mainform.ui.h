@@ -31,6 +31,7 @@
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qdragobject.h>
+#include <qassistantclient.h> 
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -49,6 +50,7 @@ extern const char *quill_drv;
 extern char tempdir[];
 extern void write_temp_file(const char *filename, const char *data, const size_t len);
 extern void delete_temp_file(const char *filename);
+extern void force_qt_assistant_page(int n);
 extern KAboutData *pabout;
 
 // All the methods are inline because otherwise QT Designer will mistake them
@@ -140,6 +142,7 @@ static QLabel *leftStatusLabel;
 static QLabel *rightStatusLabel;
 static Kate::View* m_view;
 static KHelpMenu *khelpmenu;
+static QAssistantClient *assistant;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 
 class DnDListView : public QListView {
@@ -244,7 +247,23 @@ void MainForm::init()
   othFilesListItem=folderListItem;
   folderListItem->setText(0,"Other Files");
   khelpmenu=new KHelpMenu(this,pabout);
+  assistant = new QAssistantClient("",this);
+  QStringList args(QString("-profile"));
+  args.append(QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
+  assistant->setArguments(args);
   startTimer(100);
+}
+
+void MainForm::destroy()
+{
+  Kate::Document *doc=m_view->getDoc();
+  delete m_view;
+  delete doc;
+  delete leftStatusLabel;
+  delete rightStatusLabel;
+  delete rootListItem;
+  delete khelpmenu;
+  delete assistant;
 }
 
 void MainForm::fileNewProject()
@@ -349,19 +368,27 @@ void MainForm::editFind()
   
 }
 
-void MainForm::helpIndex()
+void MainForm::helpDocumentation()
 {
-  
+  assistant->openAssistant();
 }
 
 void MainForm::helpContents()
 {
-  
+  force_qt_assistant_page(0);
+  assistant->openAssistant();
+}
+
+void MainForm::helpIndex()
+{
+  force_qt_assistant_page(1);
+  assistant->openAssistant();
 }
 
 void MainForm::helpSearch()
 {
-
+  force_qt_assistant_page(3);
+  assistant->openAssistant();
 }
 
 void MainForm::helpNews()

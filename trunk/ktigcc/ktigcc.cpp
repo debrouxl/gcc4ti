@@ -98,6 +98,7 @@ int main( int argc, char *argv[] )
   char fname[strlen(home)+32];
   sprintf(fname,"%s/.kde/share/config/kateschemarc",home);
   FILE *f=fopen(fname,"r+b");
+  if (!f) f=fopen(fname,"w+b");
   if (!f) exit(1);
   fseek(f,0,SEEK_END);
   size_t flen=ftell(f);
@@ -159,4 +160,29 @@ void delete_temp_file(const char *filename)
   char buffer[strlen(tempdir)+strlen(filename)+2];
   sprintf(buffer,"%s/%s",tempdir,filename);
   if (unlink(buffer)) {fputs("Fatal error: Can't delete temp file!\n",stderr); exit(1);}
+}
+
+void force_qt_assistant_page(int n)
+{
+  char *home=getenv("HOME");
+  char fname[strlen(home)+20];
+  sprintf(fname,"%s/.qt/qt_assistantrc",home);
+  FILE *f=fopen(fname,"r+b");
+  if (!f) f=fopen(fname,"w+b");
+  if (!f) exit(1);
+  fseek(f,0,SEEK_END);
+  size_t flen=ftell(f);
+  fseek(f,0,SEEK_SET);
+  char buffer[flen+1];
+  memset(buffer,0,flen+1);
+  if (fread(buffer,1,flen,f)<flen) exit(1);
+  char *p=strstr(buffer,"SideBarPage=");
+  if (p) {
+    fseek(f,p-buffer+12,SEEK_SET);
+    fputc('0'+n,f);
+  } else {
+    fseek(f,0,SEEK_END);
+    fprintf(f,"\n\n[3.3]\nSideBarPage=%d\n",n);
+  }
+  fclose(f);
 }

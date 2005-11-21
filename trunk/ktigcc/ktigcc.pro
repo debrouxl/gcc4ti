@@ -3,7 +3,7 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on debug
 
-unix:LIBS	+= -lktexteditor
+unix:LIBS	+= -lktexteditor -lqassistantclient
 
 unix:INCLUDEPATH	+= /usr/include/kde
 
