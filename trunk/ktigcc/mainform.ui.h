@@ -436,11 +436,6 @@ void MainForm::filePrint()
   
 }
 
-void MainForm::fileExit()
-{
-  
-}
-
 void MainForm::editUndo()
 {
   
