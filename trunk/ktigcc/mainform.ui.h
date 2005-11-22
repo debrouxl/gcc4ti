@@ -53,6 +53,18 @@ extern void delete_temp_file(const char *filename);
 extern void force_qt_assistant_page(int n);
 extern KAboutData *pabout;
 
+#define IS_CATEGORY(item) ((item) && ((item)==hFilesListItem \
+                                      || (item)==cFilesListItem \
+                                      || (item)==sFilesListItem \
+                                      || (item)==asmFilesListItem \
+                                      || (item)==qllFilesListItem \
+                                      || (item)==oFilesListItem \
+                                      || (item)==aFilesListItem \
+                                      || (item)==txtFilesListItem \
+                                      || (item)==othFilesListItem))
+#define IS_FOLDER(item) ((item) && (item)->rtti()==0x716CC0)
+#define IS_FILE(item) ((item) && (item)->rtti()==0x716CC1)
+
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
 class ListViewFolder : public QListViewItem {
@@ -155,27 +167,53 @@ class DnDListView : public QListView {
     QListViewItem *currItem=selectedItem();
     if (currItem==rootListItem || currItem->parent()==rootListItem)
       return NULL;
-    QStoredDrag *storedDrag=new QStoredDrag("x-ktigcc-folder", this);
+    QStoredDrag *storedDrag=new QStoredDrag("x-ktigcc-dnd", this);
     static QByteArray data(sizeof(QListViewItem*));
-    data.duplicate(reinterpret_cast<char *>(currItem),
+    data.duplicate(reinterpret_cast<char *>(&currItem),
                    sizeof(QListViewItem*));
     storedDrag->setEncodedData(data);
     return storedDrag;
   }
   virtual void dropEvent (QDropEvent *e) {
-    if (e->source()==this) {
-      QPoint vp=contentsToViewport(e->pos());
-      QListViewItem *item=itemAt(vp);
-      if (item && item->rtti()==0x716CC0) {
-        // drop on file
-      } else if (item && item->rtti()==0x716CC1) {
-        // drop on folder
+    if (e->source()==this && e->provides("x-ktigcc-dnd")) {
+      QListViewItem *currItem;
+      currItem = *reinterpret_cast<QListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
+      if (IS_FOLDER(currItem)) {
+        // dropping folder
+        // can only drop on folder or category
+        QPoint vp=contentsToViewport(e->pos());
+        QListViewItem *item=itemAt(vp);
+        if (IS_FOLDER(item) || IS_CATEGORY(item)) {
+          // need same category
+          QListViewItem *srcCategory=currItem;
+          while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
+          QListViewItem *destCategory=item;
+          while (destCategory->parent()->rtti()==0x716CC0) destCategory=destCategory->parent();
+          if (srcCategory == destCategory) {
+            // can't move folder into itself
+            for (QListViewItem *destFolder=item; destFolder->rtti()==0x716CC0; destFolder=destFolder->parent()) {
+              if (destFolder==currItem) goto ignore;
+            }
+            // move folder
+            e->accept();
+            currItem->parent()->takeItem(currItem);
+            item->insertItem(currItem);
+          } else {ignore: e->ignore();}
+        } else e->ignore();
+      } else if (IS_FILE(currItem)) {
+        // dropping file
+        QPoint vp=contentsToViewport(e->pos());
+        QListViewItem *item=itemAt(vp);
+        if (IS_FOLDER(item)) {
+          // drop on folder
+        } else if (IS_FILE(item)) {
+          // drop on file
+        } else e->ignore();
       } else e->ignore();
     } else e->ignore();
   }
   virtual void dragEnterEvent (QDragEnterEvent *e) {
-    if (e->source()==this&&(e->provides("x-ktigcc-folder")
-                            ||e->provides("x-ktigcc-file")))
+    if (e->source()==this&&(e->provides("x-ktigcc-dnd")))
 	  e->accept();
   }
 };
@@ -209,6 +247,7 @@ void MainForm::init()
   statusBar()->setSizeGripEnabled(FALSE);
   fileTree->setSorting(-1);
   fileTree->setColumnWidthMode(0,QListView::Maximum);
+  fileTree->header()->hide();
   rootListItem=new QListViewItem(fileTree);
   rootListItem->setText(0,"Project1");
   rootListItem->setPixmap(0,QPixmap::fromMimeSource("tpr.png"));
@@ -436,7 +475,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (currentListItem && currentListItem->rtti()==0x716CC1)
     static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
-  if (item->rtti()==0x716CC0) {
+  if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(FALSE);
@@ -446,7 +485,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     m_view->getDoc()->readConfig(&kconfig);
     delete_temp_file("config.tmp");
     m_view->getDoc()->setHlMode(0);
-  } else if (item->rtti()==0x716CC1) {
+  } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(TRUE);
     m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
@@ -487,10 +526,10 @@ void MainForm::fileTreeClicked(QListViewItem *item)
 
 void MainForm::fileNewFolder()
 {
-  if (currentListItem->rtti()==0x716CC1)
+  if (IS_FILE(currentListItem))
     currentListItem=currentListItem->parent();
   QListViewItem *item=NULL, *next=currentListItem->firstChild();
-  for (; next && next->rtti()==0x716CC0; next=item->nextSibling())
+  for (; IS_FOLDER(next); next=item->nextSibling())
     item=next;
   QListViewItem *newFolder=item?new ListViewFolder(currentListItem,item)
                            :new ListViewFolder(currentListItem);
@@ -507,7 +546,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
                                             int unused_col)
 {
   fileTreeClicked(item);
-  if (item && item->rtti()==0x716CC0) {
+  if (IS_FOLDER(item)) {
     QPopupMenu menu;
     menu.insertItem("New &Folder",0);
     menu.insertItem("New F&ile",1);
@@ -515,10 +554,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
     while (category->parent()->rtti()==0x716CC0) category=category->parent();
     if (category==oFilesListItem || category==aFilesListItem
         || category==othFilesListItem) menu.setItemEnabled(1,FALSE);
-    if (!(item==hFilesListItem || item==cFilesListItem || item==sFilesListItem
-          || item==asmFilesListItem || item && item==qllFilesListItem
-          || item==oFilesListItem || item==aFilesListItem
-          || item==txtFilesListItem || item==othFilesListItem)) {
+    if (!IS_CATEGORY(item)) {
       menu.insertSeparator();
       menu.insertItem("&Remove",2);
       menu.insertItem("Re&name",3);
@@ -704,7 +740,7 @@ void MainForm::updateLeftStatusLabel()
   QString text=QString::number(fileCount)+QString(" File")
                +QString(fileCount!=1?"s":"")+QString(" Total");
   QListViewItem *category=currentListItem;
-  if (currentListItem->rtti()==0x716CC0||currentListItem->rtti()==0x716CC1) {
+  if (IS_FOLDER(currentListItem)||IS_FILE(currentListItem)) {
     while (category->parent()->rtti()==0x716CC0) category=category->parent();
     text+=QString(", ")+QString::number(category==hFilesListItem?hFileCount:
                                         category==cFilesListItem?cFileCount:
