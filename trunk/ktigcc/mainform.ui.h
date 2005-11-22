@@ -154,6 +154,7 @@ static QLabel *leftStatusLabel;
 static QLabel *rightStatusLabel;
 static Kate::View* m_view;
 static KHelpMenu *khelpmenu;
+static QPopupMenu *te_popup;
 static QAssistantClient *assistant;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 
@@ -298,6 +299,24 @@ void MainForm::init()
   m_view->getDoc()->readConfig(&kconfig);
   delete_temp_file("config.tmp");
   m_view->getDoc()->setHlMode(0);
+  te_popup = new QPopupMenu(this);
+  te_popup->insertItem("&Open file at cursor",0);
+  te_popup->insertItem("&Find symbol declaration",1);
+  te_popup->insertSeparator();
+  te_popup->insertItem("&Undo",2);
+  te_popup->insertItem("&Redo",3);
+  te_popup->insertSeparator();
+  te_popup->insertItem("&Clear",4);
+  te_popup->insertItem("Cu&t",5);
+  te_popup->insertItem("Cop&y",6);
+  te_popup->insertItem("&Paste",7);
+  te_popup->insertSeparator();
+  te_popup->insertItem("&Select all",8);
+  te_popup->insertSeparator();
+  te_popup->insertItem("&Increase indent",9);
+  te_popup->insertItem("&Decrease indent",10);
+  m_view->installPopup(te_popup);
+  connect(te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
   QValueList<int> list;
   list.append(150);
   list.append(500);
@@ -362,11 +381,27 @@ void MainForm::destroy()
   Kate::Document *doc=m_view->getDoc();
   delete m_view;
   delete doc;
+  delete te_popup;
   delete leftStatusLabel;
   delete rightStatusLabel;
   delete rootListItem;
   delete khelpmenu;
   delete assistant;
+}
+
+void MainForm::te_popup_aboutToShow()
+{
+  te_popup->setItemEnabled(0,findOpenFileAtCursorAction->isEnabled());
+  te_popup->setItemEnabled(1,findFindSymbolDeclarationAction->isEnabled());
+  te_popup->setItemEnabled(2,editUndoAction->isEnabled());
+  te_popup->setItemEnabled(3,editRedoAction->isEnabled());
+  te_popup->setItemEnabled(4,editClearAction->isEnabled());
+  te_popup->setItemEnabled(5,editCutAction->isEnabled());
+  te_popup->setItemEnabled(6,editCopyAction->isEnabled());
+  te_popup->setItemEnabled(7,editPasteAction->isEnabled());
+  te_popup->setItemEnabled(8,editSelectAllAction->isEnabled());
+  te_popup->setItemEnabled(9,editIncreaseIndentAction->isEnabled());
+  te_popup->setItemEnabled(10,editDecreaseIndentAction->isEnabled());
 }
 
 void MainForm::fileNewProject()
@@ -464,6 +499,11 @@ void MainForm::editPaste()
 void MainForm::editFind()
 {
   
+}
+
+void MainForm::findFindSymbolDeclaration()
+{
+
 }
 
 void MainForm::helpDocumentation()

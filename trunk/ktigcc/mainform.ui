@@ -108,6 +108,7 @@
         <action name="findFunctionsAction"/>
         <separator/>
         <action name="findOpenFileAtCursorAction"/>
+        <action name="findFindSymbolDeclarationAction"/>
     </item>
     <item text="&amp;Project" name="PopupMenu_2">
         <action name="projectAddFilesAction"/>
@@ -1114,6 +1115,20 @@
             <string>Open the documentation of TIGCC</string>
         </property>
     </action>
+    <action>
+        <property name="name">
+            <cstring>findFindSymbolDeclarationAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>F&amp;ind symbol declaration</string>
+        </property>
+        <property name="menuText">
+            <string>F&amp;ind symbol declaration</string>
+        </property>
+    </action>
 </actions>
 <connections>
     <connection>
@@ -1290,6 +1305,12 @@
         <receiver>MainForm</receiver>
         <slot>helpDocumentation()</slot>
     </connection>
+    <connection>
+        <sender>findFindSymbolDeclarationAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>findFindSymbolDeclaration()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">mainform.ui.h</include>
@@ -1297,6 +1318,7 @@
 <slots>
     <slot>init()</slot>
     <slot>destroy()</slot>
+    <slot>te_popup_aboutToShow()</slot>
     <slot>fileNewProject()</slot>
     <slot>fileOpen()</slot>
     <slot>fileSave()</slot>
@@ -1308,6 +1330,7 @@
     <slot>editCopy()</slot>
     <slot>editPaste()</slot>
     <slot>editFind()</slot>
+    <slot>findFindSymbolDeclaration()</slot>
     <slot>helpDocumentation()</slot>
     <slot>helpContents()</slot>
     <slot>helpIndex()</slot>
