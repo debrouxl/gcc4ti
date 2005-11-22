@@ -102,7 +102,7 @@ class ListViewFolder : public QListViewItem {
 class ListViewFile : public QListViewItem {
   public:
   ListViewFile(QListView *parent) : QListViewItem(parent),
-                                    cursorLine(1), cursorCol(1)
+                                    cursorLine(1), cursorCol(0)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));    
     setDragEnabled(TRUE);
@@ -110,7 +110,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent) : QListViewItem(parent),
-                                        cursorLine(1), cursorCol(1)
+                                        cursorLine(1), cursorCol(0)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDragEnabled(TRUE);
@@ -118,7 +118,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListView *parent, QListViewItem *after)
-          : QListViewItem(parent, after), cursorLine(1), cursorCol(1)
+          : QListViewItem(parent, after), cursorLine(1), cursorCol(0)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDropEnabled(TRUE);
@@ -126,7 +126,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent, QListViewItem *after)
-          : QListViewItem(parent, after), cursorLine(1), cursorCol(1)
+          : QListViewItem(parent, after), cursorLine(1), cursorCol(0)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDragEnabled(TRUE);
@@ -596,8 +596,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (IS_FILE(currentListItem)) {
     static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
-    m_view->cursorPosition(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
-                           &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
+    m_view->cursorPositionReal(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
+                               &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
   }
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
@@ -633,8 +633,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     }
     if (i==cnt) i=0;
     m_view->getDoc()->setHlMode(i);
-    m_view->setCursorPosition(static_cast<ListViewFile *>(item)->cursorLine,
-                              static_cast<ListViewFile *>(item)->cursorCol);
+    m_view->setCursorPositionReal(static_cast<ListViewFile *>(item)->cursorLine,
+                                  static_cast<ListViewFile *>(item)->cursorCol);
   } else {
     fileNewFolderAction->setEnabled(FALSE);
     m_view->setEnabled(FALSE);
@@ -909,15 +909,17 @@ void MainForm::updateRightStatusLabel()
     if (category==hFilesListItem||category==cFilesListItem
         ||category==sFilesListItem||category==asmFilesListItem
         ||category==qllFilesListItem||category==txtFilesListItem) {
+      unsigned int line, col;
+      m_view->cursorPositionReal(&line,&col);
       rowStatusLabel->show();
       rowStatusLabel->setMaximumWidth(30);
-      rowStatusLabel->setText(QString("%1").arg(static_cast<ListViewFile*>(currentListItem)->cursorLine));
+      rowStatusLabel->setText(QString("%1").arg(line));
       colStatusLabel->show();
       colStatusLabel->setMaximumWidth(30);
-      colStatusLabel->setText(QString("%1").arg(static_cast<ListViewFile*>(currentListItem)->cursorCol));
+      colStatusLabel->setText(QString("%1").arg(col+1));
       charsStatusLabel->show();
       charsStatusLabel->setMaximumWidth(100);
-      charsStatusLabel->setText(QString("%1 Characters").arg(static_cast<ListViewFile*>(currentListItem)->textBuffer.length()));
+      charsStatusLabel->setText(QString("%1 Characters").arg(m_view->getDoc()->text().length()));
       rightStatusLabel->setMaximumWidth(rightStatusSize-160);
     } else {
       rowStatusLabel->hide();
@@ -932,9 +934,9 @@ void MainForm::updateRightStatusLabel()
 void MainForm::m_view_cursorPositionChanged()
 {
   unsigned int line, col;
-  m_view->cursorPosition(&line,&col);
+  m_view->cursorPositionReal(&line,&col);
   rowStatusLabel->setText(QString("%1").arg(line));
-  colStatusLabel->setText(QString("%1").arg(col));
+  colStatusLabel->setText(QString("%1").arg(col+1));
 }
 
 void MainForm::m_view_textChanged()
