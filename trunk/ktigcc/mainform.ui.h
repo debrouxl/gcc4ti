@@ -101,14 +101,16 @@ class ListViewFolder : public QListViewItem {
 
 class ListViewFile : public QListViewItem {
   public:
-  ListViewFile(QListView *parent) : QListViewItem(parent)
+  ListViewFile(QListView *parent) : QListViewItem(parent),
+                                    cursorLine(1), cursorCol(1)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));    
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
   }
-  ListViewFile(QListViewItem *parent) : QListViewItem(parent)
+  ListViewFile(QListViewItem *parent) : QListViewItem(parent),
+                                        cursorLine(1), cursorCol(1)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDragEnabled(TRUE);
@@ -116,7 +118,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListView *parent, QListViewItem *after)
-          : QListViewItem(parent, after)
+          : QListViewItem(parent, after), cursorLine(1), cursorCol(1)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDropEnabled(TRUE);
@@ -124,7 +126,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent, QListViewItem *after)
-          : QListViewItem(parent, after)
+          : QListViewItem(parent, after), cursorLine(1), cursorCol(1)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDragEnabled(TRUE);
@@ -133,6 +135,7 @@ class ListViewFile : public QListViewItem {
   }
   virtual int rtti(void) const {return 0x716CC1;}
   QString textBuffer;
+  unsigned int cursorLine, cursorCol;
   protected:
 };
 
@@ -302,6 +305,7 @@ void MainForm::init()
   m_view->getDoc()->readConfig(&kconfig);
   delete_temp_file("config.tmp");
   m_view->getDoc()->setHlMode(0);
+  connect(m_view,SIGNAL(cursorPositionChanged()),this,SLOT(m_view_cursorPositionChanged()));
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
   te_popup->insertItem("&Find symbol declaration",1);
@@ -587,10 +591,13 @@ void MainForm::timerEvent(QTimerEvent *event)
 void MainForm::fileTreeClicked(QListViewItem *item)
 {
   if (!item) return;
-  if (currentListItem && currentListItem->rtti()==0x716CC0)
+  if (IS_FOLDER(currentListItem))
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
-  if (currentListItem && currentListItem->rtti()==0x716CC1)
+  if (IS_FILE(currentListItem)) {
     static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
+    m_view->cursorPosition(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
+                           &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
+  }
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
@@ -625,6 +632,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     }
     if (i==cnt) i=0;
     m_view->getDoc()->setHlMode(i);
+    m_view->setCursorPosition(static_cast<ListViewFile *>(item)->cursorLine,
+                              static_cast<ListViewFile *>(item)->cursorCol);
   } else {
     fileNewFolderAction->setEnabled(FALSE);
     m_view->setEnabled(FALSE);
@@ -634,7 +643,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     m_view->getDoc()->readConfig(&kconfig);
     delete_temp_file("config.tmp");
     m_view->getDoc()->setHlMode(0);
-}
+  }
   currentListItem=item;
   updateLeftStatusLabel();
   updateRightStatusLabel();
@@ -901,8 +910,10 @@ void MainForm::updateRightStatusLabel()
         ||category==qllFilesListItem||category==txtFilesListItem) {
       rowStatusLabel->show();
       rowStatusLabel->setMaximumWidth(30);
+      rowStatusLabel->setText(QString("%1").arg(static_cast<ListViewFile*>(currentListItem)->cursorLine));
       colStatusLabel->show();
       colStatusLabel->setMaximumWidth(30);
+      colStatusLabel->setText(QString("%1").arg(static_cast<ListViewFile*>(currentListItem)->cursorCol));
       charsStatusLabel->show();
       charsStatusLabel->setMaximumWidth(100);
       charsStatusLabel->setText(QString("%1 Characters").arg(static_cast<ListViewFile*>(currentListItem)->textBuffer.length()));
@@ -915,6 +926,14 @@ void MainForm::updateRightStatusLabel()
     }
     rightStatusLabel->setText("file name");
   }
+}
+
+void MainForm::m_view_cursorPositionChanged()
+{
+  unsigned int line, col;
+  m_view->cursorPosition(&line,&col);
+  rowStatusLabel->setText(QString("%1").arg(line));
+  colStatusLabel->setText(QString("%1").arg(col));
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
