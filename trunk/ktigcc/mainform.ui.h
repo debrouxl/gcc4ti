@@ -306,6 +306,7 @@ void MainForm::init()
   delete_temp_file("config.tmp");
   m_view->getDoc()->setHlMode(0);
   connect(m_view,SIGNAL(cursorPositionChanged()),this,SLOT(m_view_cursorPositionChanged()));
+  connect(m_view->getDoc(),SIGNAL(textChanged()),this,SLOT(m_view_textChanged()));
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
   te_popup->insertItem("&Find symbol declaration",1);
@@ -934,6 +935,11 @@ void MainForm::m_view_cursorPositionChanged()
   m_view->cursorPosition(&line,&col);
   rowStatusLabel->setText(QString("%1").arg(line));
   colStatusLabel->setText(QString("%1").arg(col));
+}
+
+void MainForm::m_view_textChanged()
+{
+  charsStatusLabel->setText(QString("%1 Characters").arg(m_view->getDoc()->text().length()));
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
