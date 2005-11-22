@@ -151,6 +151,9 @@ static QListViewItem *txtFilesListItem;
 static QListViewItem *othFilesListItem;
 static QListViewItem *currentListItem;
 static QLabel *leftStatusLabel;
+static QLabel *rowStatusLabel;
+static QLabel *colStatusLabel;
+static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
 static Kate::View* m_view;
 static KHelpMenu *khelpmenu;
@@ -179,12 +182,12 @@ class DnDListView : public QListView {
     if (e->source()==this && e->provides("x-ktigcc-dnd")) {
       QListViewItem *currItem;
       currItem = *reinterpret_cast<QListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
-      if (IS_FOLDER(currItem)) {
+      if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
         // dropping folder
         // can only drop on folder or category
         QPoint vp=contentsToViewport(e->pos());
         QListViewItem *item=itemAt(vp);
-        if (IS_FOLDER(item) || IS_CATEGORY(item)) {
+        if (IS_FOLDER(item)) {
           // need same category
           QListViewItem *srcCategory=currItem;
           while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
@@ -246,12 +249,12 @@ class DnDListView : public QListView {
     if (e->source()==this && e->provides("x-ktigcc-dnd")) {
       QListViewItem *currItem;
       currItem = *reinterpret_cast<QListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
-      if (IS_FOLDER(currItem)) {
+      if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
         // dropping folder
         // can only drop on folder or category
         QPoint vp=contentsToViewport(e->pos());
         QListViewItem *item=itemAt(vp);
-        if (IS_FOLDER(item) || IS_CATEGORY(item)) {
+        if (IS_FOLDER(item)) {
           // need same category
           QListViewItem *srcCategory=currItem;
           while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
@@ -324,6 +327,17 @@ void MainForm::init()
   leftStatusLabel=new QLabel("0 Files Total",this);
   leftStatusLabel->setMaximumWidth(splitter->sizes().first());
   statusBar()->addWidget(leftStatusLabel,1);
+  rowStatusLabel=new QLabel("",this);
+  rowStatusLabel->setAlignment(Qt::AlignRight);
+  statusBar()->addWidget(rowStatusLabel,1);
+  rowStatusLabel->hide();
+  colStatusLabel=new QLabel("",this);
+  colStatusLabel->setAlignment(Qt::AlignRight);
+  statusBar()->addWidget(colStatusLabel,1);
+  colStatusLabel->hide();
+  charsStatusLabel=new QLabel("",this);
+  statusBar()->addWidget(charsStatusLabel,1);
+  charsStatusLabel->hide();
   rightStatusLabel=new QLabel("",this);
   rightStatusLabel->setMaximumWidth(splitter->sizes().last());
   statusBar()->addWidget(rightStatusLabel,1);
@@ -383,6 +397,9 @@ void MainForm::destroy()
   delete doc;
   delete te_popup;
   delete leftStatusLabel;
+  delete rowStatusLabel;
+  delete colStatusLabel;
+  delete charsStatusLabel;
   delete rightStatusLabel;
   delete rootListItem;
   delete khelpmenu;
@@ -620,6 +637,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
 }
   currentListItem=item;
   updateLeftStatusLabel();
+  updateRightStatusLabel();
 }
 
 
@@ -853,6 +871,50 @@ void MainForm::updateLeftStatusLabel()
           +QString(" in Category");
   }
   leftStatusLabel->setText(text);
+}
+
+void MainForm::updateRightStatusLabel()
+{
+  int leftSize=splitter->sizes().first();
+  int rightSize=splitter->sizes().last();
+  int totalSize=leftSize+rightSize;
+  int mySize=size().width();
+  int rightStatusSize=rightSize*mySize/totalSize-10>0?
+                      rightSize*mySize/totalSize-10:0;
+  if (currentListItem==rootListItem) {
+    rowStatusLabel->hide();
+    colStatusLabel->hide();
+    charsStatusLabel->hide();
+    rightStatusLabel->setMaximumWidth(rightStatusSize);
+    rightStatusLabel->setText("project file name");
+  } else if (IS_FOLDER(currentListItem)) {
+    rowStatusLabel->hide();
+    colStatusLabel->hide();
+    charsStatusLabel->hide();
+    rightStatusLabel->setMaximumWidth(rightStatusSize);
+    rightStatusLabel->setText("");
+  } else if (IS_FILE(currentListItem)) {
+    QListViewItem *category=currentListItem;
+    while (category->parent()->rtti()==0x716CC0) category=category->parent();
+    if (category==hFilesListItem||category==cFilesListItem
+        ||category==sFilesListItem||category==asmFilesListItem
+        ||category==qllFilesListItem||category==txtFilesListItem) {
+      rowStatusLabel->show();
+      rowStatusLabel->setMaximumWidth(30);
+      colStatusLabel->show();
+      colStatusLabel->setMaximumWidth(30);
+      charsStatusLabel->show();
+      charsStatusLabel->setMaximumWidth(100);
+      charsStatusLabel->setText(QString("%1 Characters").arg(static_cast<ListViewFile*>(currentListItem)->textBuffer.length()));
+      rightStatusLabel->setMaximumWidth(rightStatusSize-160);
+    } else {
+      rowStatusLabel->hide();
+      colStatusLabel->hide();
+      charsStatusLabel->hide();
+      rightStatusLabel->setMaximumWidth(rightStatusSize);
+    }
+    rightStatusLabel->setText("file name");
+  }
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
