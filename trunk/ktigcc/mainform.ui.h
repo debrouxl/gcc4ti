@@ -206,8 +206,33 @@ class DnDListView : public QListView {
         QListViewItem *item=itemAt(vp);
         if (IS_FOLDER(item)) {
           // drop on folder
+          // move file
+          e->accept();
+          currItem->parent()->takeItem(currItem);
+          item->insertItem(currItem);
         } else if (IS_FILE(item)) {
           // drop on file
+          // need same parent, but different items
+          if (currItem->parent() == item->parent()
+              && currItem != item) {
+            // reorder files
+            // figure out which one is the first
+            for (QListViewItem *i=currItem->parent()->firstChild();i;
+                 i=i->nextSibling()) {
+              if (i==currItem) {
+                // currItem is first, move currItem after item
+                e->accept();
+                currItem->moveItem(item);
+                break;
+              } else if (i==item) {
+                // item is first, move currItem before item
+                e->accept();
+                currItem->moveItem(item);
+                item->moveItem(currItem);
+                break;
+              }
+            }
+          } else e->ignore();
         } else e->ignore();
       } else e->ignore();
     } else e->ignore();
@@ -215,6 +240,45 @@ class DnDListView : public QListView {
   virtual void dragEnterEvent (QDragEnterEvent *e) {
     if (e->source()==this&&(e->provides("x-ktigcc-dnd")))
 	  e->accept();
+  }
+  virtual void dragMoveEvent (QDragMoveEvent *e) {
+    if (e->source()==this && e->provides("x-ktigcc-dnd")) {
+      QListViewItem *currItem;
+      currItem = *reinterpret_cast<QListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
+      if (IS_FOLDER(currItem)) {
+        // dropping folder
+        // can only drop on folder or category
+        QPoint vp=contentsToViewport(e->pos());
+        QListViewItem *item=itemAt(vp);
+        if (IS_FOLDER(item) || IS_CATEGORY(item)) {
+          // need same category
+          QListViewItem *srcCategory=currItem;
+          while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
+          QListViewItem *destCategory=item;
+          while (destCategory->parent()->rtti()==0x716CC0) destCategory=destCategory->parent();
+          if (srcCategory == destCategory) {
+            // can't move folder into itself
+            for (QListViewItem *destFolder=item; destFolder->rtti()==0x716CC0; destFolder=destFolder->parent()) {
+              if (destFolder==currItem) goto ignore;
+            }
+            e->accept();
+          } else {ignore: e->ignore();}
+        } else e->ignore();
+      } else if (IS_FILE(currItem)) {
+        // dropping file
+        QPoint vp=contentsToViewport(e->pos());
+        QListViewItem *item=itemAt(vp);
+        if (IS_FOLDER(item)) {
+          // drop on folder
+          e->accept();
+        } else if (IS_FILE(item)) {
+          // drop on file
+          // need same parent, but different items
+          if (currItem->parent() == item->parent()
+              && currItem != item) e->accept(); else e->ignore();
+        } else e->ignore();
+      } else e->ignore();
+    } else e->ignore();
   }
 };
 
