@@ -136,6 +136,7 @@ class ListViewFile : public QListViewItem {
   virtual int rtti(void) const {return 0x716CC1;}
   QString textBuffer;
   unsigned int cursorLine, cursorCol;
+  QString fileName; // full name of the file
   protected:
 };
 
@@ -927,7 +928,7 @@ void MainForm::updateRightStatusLabel()
       charsStatusLabel->hide();
       rightStatusLabel->setMaximumWidth(rightStatusSize);
     }
-    rightStatusLabel->setText("file name");
+    rightStatusLabel->setText(static_cast<ListViewFile *>(currentListItem)->fileName);
   }
 }
 

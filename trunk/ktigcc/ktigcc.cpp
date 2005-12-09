@@ -24,6 +24,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#include <qtextcodec.h>
 #include "mainform.h"
 using namespace std;
 void qCleanupImages_ktigcc();
@@ -36,6 +37,10 @@ KAboutData *pabout;
 
 int main( int argc, char *argv[] )
 {
+  // We're doing plenty of C string <-> QString conversions, let's make sure
+  // they're not lossy!
+  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+
   KAboutData about("KTIGCC","TIGCC IDE for KDE","1.00",
   "TIGCC C and ASM SDK", KAboutData::License_GPL,
   "Copyright (C) 2004-2005 Kevin Kofler. All rights reserved.\n"
