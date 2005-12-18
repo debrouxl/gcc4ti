@@ -1,0 +1,98 @@
+DARWIN / MAC OS X PLATFORM SPECIFIC NOTES FOR TIGCC:
+====================================================
+
+Purpose of this document
+------------------------
+
+This document gives installation instructions specific to the Darwin / Mac OS X
+platform. This is necessary because, while compiling TIGCC is easy on most Unix-
+style operating systems, and while TIGCC can also be compiled on Darwin / OS X,
+installation on Darwin / OS X is unfortunately not an easy task. Please make
+sure you:
+1. read README, README.linux (which also applies to other Unix-style operating
+   systems than Linux, such as Darwin / OS X) and INSTALL
+2. read this document carefully
+3. start the installation only AFTER having read all these documents at least
+   once
+4. follow each of the steps given here
+5. report any problems you encounter to me. I do not have a Macintosh to test
+   TIGCC on (the only platforms I can test on are Windows/x86 and Linux/x86), so
+   I have to rely on user reports for other platforms.
+
+
+Credits
+-------
+
+Before I start, I have to mention the following people who helped me provide
+those instructions (as I said, I cannot test on OS X myself):
+- James Longstreet (generationxyu): He was the first to get TIGCC to compile on
+                                    OS X (with my help), and most of the
+                                    instructions below result from that
+                                    compilation session.
+- The GCC developers: Most of the tips about how to get GCC to compile with
+                      Apple's patched GCC shipped with OS X are in their
+                      platform-specific build notes. (Some of the needed flags
+                      are hidden in a comment in their target-specific settings
+                      for STAGE1_CFLAGS though - unfortunately, there is no
+                      "stage 1" when building a cross-compiler like TIGCC, so
+                      the flags have to be specified manually.)
+- Christian Walther: He reminded me that I should mention gcc-core should be
+                     used (not the full gcc compiler collection), and reported
+                     trouble with using '-s' in $CFLAGS.
+                     He also provided up-to-date information for OS X 10.2 and
+                     10.3.
+- James Longstreet, Christian Walther and Alfredo Aldundo for providing small
+  source code patches to fix compiling problems on Darwin / OS X.
+- Schlum for testing TIGCC 0.95 Beta 1 r1 on OS X.
+
+
+Instructions
+------------
+
+These are the instructions provided by the people listed above. Please report
+any errors in those instructions to me. Note that those are for OS X, running
+Apple's patched GCC. If you are running unpatched FSF GCC and/or other GNU
+utilities on Darwin, some steps might turn out not to be necessary.
+
+1. Use the full GCC-core (gcc-core ONLY, NOT full gcc with all the programming
+   language frontends - TIGCC only supports C at the moment) and Binutils
+   sources from a GNU mirror. Our local copy at tigcc.ticalc.org only supports
+   the platforms for which we are distributing binaries (for space reasons, and
+   because that's enough to comply with the GPL). I might add the necessary host
+   headers for OS X to our local copy at a later time though.
+2. Use the tar utility to unpack the GCC and Binutils tarballs (follow the build
+   instructions in README.linux). Stuffit Expander apparently does some strange
+   things when untarring (such as not extracting GCC to a gcc-3.2 subdirectory
+   as it should).
+3. For the shell, any shell should work. I got success reports for the old
+   default tcsh (Christian Walther), sh (James Longstreet) and the current
+   default bash (Schlum, Christian Walther). However, sh/bash is a more standard
+   shell and less likely to cause problems than tcsh. (Note that Apple changed
+   their default shell from tcsh to bash in OS X 10.3, probably for that very
+   reason.)
+4. Under older OS X versions (10.2 and older), you need to increase the stack
+   limit. Under csh/tcsh, you can do it with the following command:
+     limit stack 800
+   Under sh/bash, you can do it with the following command:
+     ulimit -s 800
+   The default stack limit on those versions of OS X was too low to compile GCC.
+   This is reportedly fixed since OS X 10.3 at least (the default stack limit is
+   now set to 8192, which is even more than enough), so you can skip this step
+   if you are running OS X 10.3 or higher.
+You now have 2 options. Either use the source installation wizard (Install),
+which does the rest for you, or follow the remaining instructions below:
+5. When using Apple's GCC, set CC to 'cc -no-cpp-precomp'. The Apple
+   preprocessor has bugs which keep huge projects like GCC and Binutils from
+   getting compiled correctly.
+6. Add the -DHAVE_DESIGNATED_INITIALIZERS=0 flag to $CC or $CFLAGS (needed when
+   building GCC with Apple's GCC, and it won't hurt when building the rest of
+   TIGCC, since only GCC tests for that #define).
+7. Don't forget to set $TIGCC, $PATH and $CFLAGS as explained in INSTALL. Also
+   note that the '-s' flag was not supported in older versions of the OS X
+   toolchain (OS X 10.1 or older). If you have that problem, use only CFLAGS=-Os
+   and run the 'strip' utility on the executables in $TIGCC/bin afterwards, the
+   result is the same. But this has reportedly been fixed in OS X 10.2.
+8. Only when done with all this, run the install script (Install_All).
+
+
+        Kevin Kofler, maintainer of TIGCC for Linux, Unix and OS X

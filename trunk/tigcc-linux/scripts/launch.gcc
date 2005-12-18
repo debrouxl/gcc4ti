@@ -1,0 +1,49 @@
+#! /bin/sh
+#
+# This script launches configure with the right arguments
+# The tree must have been patched before doing this.
+#
+echo TIGCC script: Configuring, compiling and installing gcc...
+
+CFLAGS_FOR_BUILD="$CFLAGS"
+export CFLAGS_FOR_BUILD
+CC_FOR_BUILD="$CC"
+export CC_FOR_BUILD
+
+mkdir ../build; mkdir ../build/gcc;
+cd ../build/gcc; ../../download/gcc.ti/configure --prefix=$TIGCC --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap
+
+if [ $? -ne 0 ]
+    then echo "TIGCC script: Error while configuring GCC"
+    exit 1
+fi
+
+#GCC 4.0 is very annoying because of its habit to configure subdirectories only during make.
+#This keeps us from patching the generated makefile in advance.
+#So we have to call make 3 times to get it to work with our removed directories.
+
+make
+echo You should have seen an error. This is normal. TIGCC installation continues.
+
+# Create dummy libiberty testsuite makefile
+rm -f libiberty/testsuite/Makefile
+echo all: >libiberty/testsuite/Makefile
+
+make
+echo You should have seen an error. This is normal. TIGCC installation continues.
+
+# Create dummy build-libiberty testsuite makefile
+rm -f `ls -d build-*`/libiberty/testsuite/Makefile
+echo all: >`ls -d build-*`/libiberty/testsuite/Makefile
+
+make
+echo You should have seen an error. This is normal. TIGCC installation continues.
+
+cd ../../scripts
+
+# Finish gcc installation
+mkdir $TIGCC/bin/
+cp ../build/gcc/gcc/cc1  $TIGCC/bin/
+cp ../build/gcc/gcc/xgcc $TIGCC/bin/gcc
+
+echo Done.

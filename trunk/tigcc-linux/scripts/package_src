@@ -1,0 +1,14 @@
+#! /bin/sh
+#
+# This script creates a tarball of the source
+#
+echo TIGCC script: Packaging source:
+echo clamscan...
+clamscan -ir --exclude=../build --exclude=../download ..
+echo tar...
+cd ..
+tar cf tigcc_src.tar scripts sources tigcclib tt AUTHORS BUGS CHANGELOG COPYING DIRECTORIES HOWTO INSTALL README README.linux README.osX;
+echo bzip2...
+rm -f tigcc_src.tar.bz2
+bzip2 -9 tigcc_src.tar;
+echo Done.
