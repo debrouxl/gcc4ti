@@ -1,0 +1,286 @@
+HOW TO COMPILE AND INSTALL TIGCC FROM SOURCE
+============================================
+
+Please note: read README.linux first. The instructions below apply only to
+compiling and installing the whole package from source if you need to do that. I
+recommend installing from binaries if possible.
+
+
+REQUIREMENTS
+------------
+
+You must have the following programs before you attempt
+to install tigcc-unix.
+
+REQUIRED:
+	1. gcc 2.95 or later (other compilers are NOT supported)
+
+	2. binutils 2.8 or later (gnu or equivalent --
+	   ld, ar, as, etc.)
+
+	3. gnu patch (Solaris patch will NOT work)
+
+	4. bzip2 (to decompress this archive)
+
+	5. tar (gnu tar is best, but Solaris and SGI should be okay)
+
+	6. gnu make
+
+	7. At least 130 MB of free space (archive expands to over 80,
+	build can take another 30-40 depending upon architecture)
+
+	8. bison or yacc
+
+	9. flex
+
+OPTIONAL:
+	10. Windows or (not tested) WINE to compile the documentation from
+	    source (optional: the source distribution includes pre-generated
+	    HTML documentation)
+
+	11. A dialog executable (any of: kdialog, xdialog, gdialog, cdialog or
+	    dialog), if and only if you want to use the wizard (optional: the
+	    wizard now uses plain bash if no dialog executable is available)
+
+If you run into any problems, please contact me and let me know
+where the install failed...
+
+If you want to recompile TIGCC-Linux, you will need to dowload:
+	gcc-core-4.0.2.tar.bz2 (gcc-core, full gcc may not compile !)
+	binutils-2.16.1.tar.bz2
+
+Depending on your machine, compilation can take some time !
+
+
+INSTALLING TIGCC FOR UNIX
+-------------------------
+
+The installation should be very simple. The package has worked on
+Linux, Solaris 8, and SGI IRIX 6 to try and make the scripts
+compatible. UN*X provides some things better, some things worse. Let we know
+if you have a problem with the worse...
+
+First, extract the source to a directory of your choosing such as /tmp.
+
+Unpack binutils & gcc-core packages to the download/ directory as this, and
+create symlinks download/gcc.ti and download/binutils.ti pointing to them.
+Note that the sources on tigcc.ticalc.org ONLY support Linux/x86 and Windows, so
+you will need the COMPLETE GCC (gcc-core only, not the whole compiler
+collection) and Binutils sources from a GNU mirror for all other platforms. So,
+you should have done it like this:
+
+	mkdir /tmp/tigcc-src
+	cd /tmp/tigcc-src
+	# substitute the directory you are using for /tmp
+	bunzip2 tigcc-src.tar.bz2
+	tar xfv tigcc-src.tar
+	mkdir download
+	cd download
+	bunzip2 binutils-2.16.1.tar.bz2 gcc-core-4.0.2.tar.bz2
+	tar xvf binutils-2.16.1.tar
+	tar xvf gcc-core-4.0.2.tar
+	ln -s binutils-2.16.1 binutils.ti
+	ln -s gcc-4.0.2 gcc.ti
+	cd ..
+
+At this point, you have 2 options:
+
+1. Use the installation wizard
+------------------------------
+
+All you need to do now is:
+	cd scripts; ./Install
+and follow the instructions. If you want a text-mode install on a system with
+KDE installed, you can use:
+	cd scripts; DIALOG=dialog ./Install
+to tell the script to use the text-mode (curses) dialog instead of kdialog.
+
+You will be prompted for:
+* the destination directory you want to install TIGCC to ($TIGCC)
+* the bootstrap compiler ($CC) you want to compile TIGCC with (usually "gcc")
+* the optimization flags ($CFLAGS) you want to compile TIGCC with (read the GCC
+  documentation or just use the defaults)
+
+The wizard will ask you whether you want to apply the TIGCC patch. The answer is
+usually "Yes". It will be "No" only if you are rebuilding the same source for a
+second (or more) time.
+
+When done, the wizard will ask you whether you want to add your $TIGCC setting
+to bashrc. If you answer "Yes", you are done here, you only need to restart
+bash. If you prefer to do things by hand, answer "No" and follow the
+instructions in section 2.1 below. (If you selected "No", but changed your mind,
+you can also run envreg by hand afterwards.)
+
+2. Use the install scripts directly
+-----------------------------------
+
+2.1. Environment variable settings
+----------------------------------
+
+Now, set the environment variable TIGCC to the directory you want to install
+TIGCC into (for example /usr/local/tigcc). You need to set this variable in your
+profile, because the compilation stage needs it to find some tools and tigcc
+front-end needs it to find the header files.
+
+If you use bash, add it to your .bashrc file in your home
+directory. You could also use your .profile or .login if
+you have those. If you use tcsh or csh, put it in your
+.cshrc file (or if you use .tcshrc, put it there).
+
+I've never used korn shell. You're on your own if you do.
+
+For bash/sh users
+
+	export TIGCC=/usr/local/tigcc
+	export PATH=$PATH:$TIGCC/bin
+
+For csh/tcsh users
+
+	setenv TIGCC /usr/local/tigcc
+	set path=($path $TIGCC/bin)
+
+I've had problems using setenv to reset the path in tcsh.
+setenv path "$path ${TIGCC}/bin"
+doesn't seem to work.
+
+You may need to logout and log back in for that to take
+effect. Or you can resource your profile.
+
+	source ~/.profile
+	source ~/.bashrc
+	source ~/.cshrc
+	source ~/.tcshrc
+
+You only need to resource the file you changed.
+
+2.2. Installation
+-----------------
+
+The hard part should be over. Now, just change into the directory
+you extracted tigcc into
+
+	cd /tmp/tigcc-src
+
+Optionally, you can now rebuild the HTML documentation from source: the required
+source code is in tigcclib/doc/source.tar.bz2 in your source tree. See the last
+section below for instructions to compile the documentation. Note that the tools
+to compile the documentation from source are for Windows only, so you will need
+Windows (or maybe WINE; I have not tested whether it works for those tools
+though) if you want to build the documentation from source. Unless of course you
+manage to port the Delphi sources of those tools yourself.
+Note that it comes precompiled, so you need not do this. (As for platform-
+independence: the documentation is "compiled" into platform-independent HTML
+files, so compiling it from source should usually not be necessary.)
+
+And run the installation script...
+
+	export CFLAGS='-Os -s'
+	cd scripts; ./Install_All
+
+Assuming you have all the required tools, you should have yourself
+a tigcc build in 5 - 60 minutes.
+
+I don't know how much time it will take you. It took less than
+10 minutes on a Linux system with a Pentium II 450 and 128 MB RAM.
+But, it took 45 minutes on a Linux system with a K6 233 and 112MB RAM.
+
+It took nearly 40 minutes on a Solaris Sparc 400 with 256 MB RAM,
+but it had to read off a network with many other users, so that
+may have had some impact on compile time.
+
+It took over an hour on an SGI O2 machine. I would assume it's due
+to the slow SGI c compiler, which binutils and gcc will try and
+compile themselves with. Since you have a recent version of gcc,
+try setting CC=gcc and CXX=g++ to speed things up. You must have
+gcc 2.95 or above for this to work.
+
+I hope this installation goes smoothly for you.
+
+2.3. ALTERNATE WAY for installation
+-----------------------------------
+
+The following is the "hard" way to do step 2.2. It is used primarily for
+development purposes. You can use this if you experience some problems with the
+automated script.
+
+At first, you will have to register a variable depending on the location you
+want to install TIGCC
+
+	export TIGCC=/usr/local/tigcc
+	export PATH=$PATH:$TIGCC/bin
+	export CFLAGS='-Os -s'
+
+Next, simply go into the scripts directory.
+Then you must apply the patch supplied with this package:
+
+	./Install_step_1
+
+Next, compile binutils and gcc. This may take a while...
+
+	./Install_step_2
+
+If everything went correctly, you now should have a working Tigcc for Linux
+compiler. For installing the TIGCC library, simply launch:
+
+	./Install_step_3
+
+If you want to be able to use it, you should add /usr/local/tigcc to your
+PATH. The compiler is named m68k-coff-gcc, to avoid namecollision with your
+system's gcc. The other utilities follow the same naming.
+
+You may need the TIGCC Tools Suite utilities (required for using the tigcc
+front-end). Simply do:
+
+	./Install_step_4
+
+At last, you have to install the full documentation by
+
+	./Install_step_5
+
+
+REBUILDING THE DOCUMENTATION FROM ITS TRUE SOURCE (REQUIRES WINDOWS)
+--------------------------------------------------------------------
+
+This section is lifted from Sebastian's Readme.txt accompanying the Windows
+source release. Note that the Linux/Unix source release includes pre-generated
+HTML documentation, so you only need to rebuild it if you modify the hs? files.
+
+First, modify the file HelpSystem.ini in the 'Programs' subfolder of the
+'Doc' folder to reflect your actual folder names. It exists so that the
+'Programs' folder can reside at any given place on the hard disk.
+Then, you need to call all 'Update...' programs once.
+
+UpdateInclude.exe and UpdateInfo.exe take one or more complete file name(s)
+as parameters. The actual names of the files are discarded, and the remaining
+folder name is the folder to be updated. If the first parameter is '/ALL' or
+no parameters are specified, all folders are updated, and in case of
+UpdateInclude.exe, a header file index is generated.
+
+UpdateKeywords.exe and UpdateIndex.exe do not take any parameters.
+
+To compile the documentation, download the HTML Help Workshop from
+http://msdn.microsoft.com. Then compile the project in the 'System\CHMFiles'
+folder.
+
+Tools to make editing help system files more convenient are also included in
+this distribution.
+
+A tools to create help system files from the original GNU Texinfo documents
+is included as well, but it might need a recompilation to work with future
+versions of the documentation. Anyway, the .texi files should be in the
+current directory, and you should specify one of them in the command line.
+The appropriate subfolders need to exist (e.g. gnuexts).
+
+If you need detailed information about the file formats, look at the
+Readme.txt file in the documentation folder.
+
+When done with building the CHM documentation, you can convert it to the QT
+assistant format using my converters:
+cd srcdir/doc/converter # substitute the directory you are using for srcdir
+gcc -Os -s -Wall -W -Wwrite-strings chm2dcf.c -o chm2dcf # compile chm2dcf
+cd ../html
+../converter/chm2dcf # convert the CHM to a Documentation Content File (DCF)
+../converter/dcf2adp # convert the DCF to an Assistant Document Profile (ADP)
+(There is also a script called updatedoc to automate the copying and
+converting of the documentation.)
+WARNING: chm2dcf is slooooow. You have been warned.

@@ -1,0 +1,162 @@
+Changelog for TIGCC-FrontEnd For Linux
+
+- 2005-10-02, version 1.3.1 (Kevin Kofler)
+        * Now handling -isystem correctly.
+
+- 2005-04-30, version 1.3.0 (Kevin Kofler)
+        * -g now generates debugging information in DWARF 2 format instead of
+          assembly files patched by parser.
+        * Fixed the default output name (first source file, not the last one).
+
+- 2004-11-13, version 1.2.9 (Kevin Kofler)
+        * Now works properly again if no -Wa and/or -WA switch is used (no more
+          strlen(NULL) segfault).
+
+- 2004-10-31, version 1.2.8 (Kevin Kofler)
+        * -v is now passed to GCC and ttpack.
+        * Added -v0 switch which does the same as the old -v did.
+        * -q no longer eats error messages.
+        * -Wa/-WA switches are now properly passed to each invocation of the
+          respective assembler, not just the first.
+
+- 2004-09-23, version 1.2.7 (Kevin Kofler)
+        * Added TIGCC/*nix package version to --version output.
+          NOTE: This will get updated without further entries in this changelog.
+                Please refer to the main changelog for updates to TIGCC_VERSION.
+        * Zapping leftover Titanium launchers when relinking.
+
+- 2004-09-06, version 1.2.6 (Kevin Kofler)
+        * Disabled support for separate Titanium launchers.
+
+- 2004-08-06, version 1.2.5 (Kevin Kofler)
+        * Added support for constant merging (pass --merge-constants to linker).
+
+- 2004-06-22, version 1.2.4 (Kevin Kofler)
+        * Fixed handling of output files.
+
+- 2004-06-11, version 1.2.3 (Kevin Kofler)
+        * Added support for section reordering.
+
+- 2004-04-15, version 1.2.2 (Kevin Kofler)
+        * Added support for Flash OS upgrades: --flash-os switch, flashos.a.
+        * Fixed all-reloc mode enabling. (It didn't do anything.)
+        * Adding --keep-locals/-d switch when return optimization is enabled or
+          a static library is being created.
+        * Now defining -DFARGO for --fargo and -DFLASH_OS for --flash-os.
+
+- 2004-03-14, version 1.2.1 (Kevin Kofler)
+        * Fixed -pack switch (was broken by the new linker).
+        * Added support for Titanium ExePack.
+
+- 2003-12-24, version 1.2.0 (Kevin Kofler)
+        * Adapt to new debugging information parser.
+
+- 2003-10-19, version 1.1.10 (Kevin Kofler)
+        * Only guess outfile from first arg if do_link is true.
+
+- 2003-09-27, version 1.1.9 (Kevin Kofler)
+        * Removed autoconf and automake junk. Added custom makefile.
+        * Warning fixes (added parentheses around assignments used as a truth
+          value, changed integers in parse_pstarter to unsigned).
+        * Removed no longer used BIN_BASE.
+        * Added error message on execv failure.
+        * Removed now unneeded A68k object file conversion (amigaos-objcopy).
+        * Merged convert() into ld().
+        * ar() now uses ar-tigcc instead of ar.
+        * -S -o and -c -o now work (patch by Nils Gesbert).
+        * Using tigcc to link object files only (tigcc file1.o file2.o) now
+          works (patch by Nils Gesbert).
+        * Removed -Wl switch.
+        * ld() now uses ld-tigcc instead of ld and obj2ti.
+        * Handling ld-tigcc arguments like gcc arguments (allows to pass
+          arguments down to the linker).
+        * Handle --param GCC flag like -include and -x.
+        * Now running parser on the pre-linking .o files.
+        * Fixed buffer overflow bug for tigcc.a filename.
+        * Added support for Fargo, All-Relocs and external data variables.
+        * Removed _nostub DLL kludge, because the new linker fully handled them.
+        * Added --output as a synonym for -o.
+        * Fixed -g flag: now passing -mcoff-abslines to GCC as intended.
+        * Fixed handling of default output file (moved to parse_args).
+        * pack() now uses ld-tigcc instead of obj2ti.
+        * Fixed passing of -B to GCC.
+        * Fixed copy&paste typo in cleanup phase (src instead of asm/a68k).
+        * Now escaping argument during -v output.
+
+- 2003-09-18, version 1.1.8 (Kevin Kofler)
+        * Patches by Nils Gesbert:
+          - completely removed -8 and -9 flags.
+          - fixed various buffer overflow and shell metacharacter bugs.
+        * Removed obsolete handling of -bsr flag. (It already had no effect.)
+        * Added deprecation warning for use of -Wl, a linker switch is imminent.
+        * Now passing -B to GCC as suggested by Sebastian Reichelt.
+
+- 2002-11-30, version 1.1.7 (Kevin Kofler)
+        * Removed documentation of -8 and -9 flags, because they only apply when
+          the linker supports them, which is not the case with obj2ti.
+        * tigcc -E now works as documented.
+        * tigcc -g now deletes tempfile.o (unless -keep is specified as well).
+
+- 2002-11-16, version 1.1.6 (Kevin Kofler)
+        * Fixed bug which caused "tigcc -pack testppg testprog.c" to generate
+          files with a .c.??z double-extension.
+        * Added support for a $TIGCC/include/s GNU assembly include directory.
+        * Now escaping arguments passed to GCC in order to allow -D switches
+          with definitions containing spaces or other shell metacharacters.
+
+- 2002-09-17, version 1.1.5 (Kevin Kofler)
+        * Allowing --standalone and --outputbin as synonyms for -standalone and
+          -outputbin.
+        * Implemented correct passing of -include and -x to GCC.
+        * Implemented correct passing of -8 and -9 to Obj2Ti.
+        * Implemented -keep, --keep, -save-temps and --save-temps switches.
+        * Now deleting object files by default (to match the behavior of the
+          Windows version). Use -keep if you want to keep them.
+
+- 2002-07-07, version 1.1.4 (Kevin Kofler):
+        Added support for _nostub DLLs.
+        Added support for Zeljko Juric's Quill Adventure Writer.
+
+- 2002-06-28, version 1.1.3 (Kevin Kofler):
+        Added -ar option.
+
+- 2002-03-25, version 1.1.2 (Romain Liévin):
+        Add-on in change_extension: packing works fine now.
+
+- 2002-03-21, version 1.1.1 (Romain Liévin):
+        Bug fix with obj2ti and long filenames.
+
+- 2002-02-22, version 1.1.0 (Romain Liévin):
+        New TIGCC switches:
+        -Wa, --> passage de parametres a GNU as
+        -Wl, --> passage de parametres a GNU ld
+        -WA, --> passage de parametres a A68k
+        A68k support finished and little bug fixes.
+        Minor improvements: support long filenames with spaces.
+        Parsing of pstarter file added
+        Added patching and -g (COFF & .s parsing) support.
+
+- 2001-12-23, version 1.0.0 (Romain Liévin):
+        John David Ratlif has written a better tigcc front-end so I kept it.
+        Version numbering restart from 1.0.
+
+-----
+
+- 2001-08-30, version 1.1.1 (Romain Liévin):
+        Use JM's linker instead of Vassor's one for converting pstarter.o
+        (EXEpacking).
+
+- 2001-08-24, version 1.1.0 (Romain Liévin):
+        Code is stable.
+
+- 2001-08-23, version 1.0.2 (Romain Liévin):
+        A bug with realloc (segfault) has been fixed.
+
+- 2001-08-22, version 1.0.1 (Romain Liévin):
+        tigcc front-end finished.
+        Added links so that anyone can read manpages.
+
+- 2001-08-21, version 1.0.0 (Romain Liévin):
+        I have written a TIGCC front-end for Linux.
+        Should be equivalent to the tigcc.exe of Windows which has been
+        written in Delphi by Sebastian Reichelt.

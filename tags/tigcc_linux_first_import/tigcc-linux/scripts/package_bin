@@ -1,0 +1,18 @@
+#! /bin/sh
+#
+# This script creates a tarball of all binaries.
+#
+echo TIGCC script: Packaging binaries:
+#echo stripping...
+#strip $TIGCC/bin/*
+echo clamscan...
+clamscan -ir $TIGCC
+echo tar...
+OLDPWD="`pwd`"
+cd $TIGCC
+tar -c --exclude=projects/* --exclude=bin/quill.drv -f "$OLDPWD/../tigcc_bin.tar" bin doc examples include lib projects
+cd "$OLDPWD"
+echo bzip2...
+rm -f ../tigcc_bin.tar.bz2
+bzip2 -9 ../tigcc_bin.tar
+echo Done.

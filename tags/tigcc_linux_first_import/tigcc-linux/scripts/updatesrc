@@ -1,0 +1,115 @@
+#!/bin/sh
+
+TIGCCCVSDIR=../../tigcccvs
+TIGCCLIBDIR=/e/TI-89/Compilers/tigcc/Lib
+A68KSRCDIR=/e/TI-89/a68k/source
+PSTARTERSRCDIR=/e/TI-89/pstarter
+TIGCCLINUXCVSDIR=../../tigcc-linux-cvs
+
+
+# TIGCCLIB components in CVS
+echo Updating archive \(tigcclib/src\)...
+rm -rf ../tigcclib/src/*
+cp -prf $TIGCCCVSDIR/archive/* ../tigcclib/src
+rm -rf ../tigcclib/src/CVS ../tigcclib/src/startup/CVS
+
+echo Updating examples...
+rm -rf ../tigcclib/examples/*
+cp -prf $TIGCCCVSDIR/examples/* ../tigcclib/examples
+rm -rf ../tigcclib/examples/CVS
+
+echo Updating hsf2rc...
+rm -rf ../tigcclib/hsf2rc/*
+cp -prf $TIGCCCVSDIR/hsf2rc/* ../tigcclib/hsf2rc
+rm -rf ../tigcclib/hsf2rc/CVS
+
+echo Updating include...
+rm -rf ../tigcclib/include/*
+cp -prf $TIGCCCVSDIR/include/C ../tigcclib/include/c
+cp -prf $TIGCCCVSDIR/include/ASM ../tigcclib/include/asm
+cp -prf $TIGCCCVSDIR/include/S ../tigcclib/include/s
+rm -rf ../tigcclib/include/CVS ../tigcclib/include/asm/CVS ../tigcclib/include/c/CVS \
+       ../tigcclib/include/c/Completion ../tigcclib/include/s/CVS
+
+
+# Toolchain components in CVS
+echo Updating gcc \(TIGCC patches\)...
+rm -rf ../sources/gcc/*
+cp -prf $TIGCCCVSDIR/gcc/* ../sources/gcc
+rm -rf ../sources/gcc/CVS
+
+echo Updating ld-tigcc...
+rm -rf ../sources/ld-tigcc/*
+cp -prf $TIGCCCVSDIR/ld-tigcc/* ../sources/ld-tigcc
+rm -rf ../sources/ld-tigcc/CVS ../sources/ld-tigcc/ar/CVS ../sources/ld-tigcc/ar/export/CVS \
+       ../sources/ld-tigcc/ar/import/CVS ../sources/ld-tigcc/bincode/CVS ../sources/ld-tigcc/export/CVS \
+       ../sources/ld-tigcc/formats/CVS ../sources/ld-tigcc/import/CVS ../sources/ld-tigcc/insert/CVS \
+       ../sources/ld-tigcc/insert/model/CVS
+
+echo Updating tprbuilder...
+rm -rf ../sources/tprbuilder/*
+cp -prf $TIGCCCVSDIR/tprbuilder/* ../sources/tprbuilder
+rm -rf ../sources/tprbuilder/CVS ../sources/tprbuilder/src/CVS
+
+
+# Other components in CVS
+echo Updating readme...
+rm -f ../README
+cp -pf $TIGCCCVSDIR/readme/Readme.txt ../README
+
+
+# Components out of CVS
+echo Updating lib...
+rm -rf ../tigcclib/lib/*
+cp -pf $TIGCCLIBDIR/tigcc.a $TIGCCLIBDIR/pstarter.o ../tigcclib/lib
+
+echo Updating a68k...
+rm -rf ../sources/a68k/*
+cp -prf $A68KSRCDIR/* ../sources/a68k
+
+echo Updating pstarter...
+rm -rf ../tigcclib/pstarter/*
+cp -prf $PSTARTERSRCDIR/LGPL.txt $PSTARTERSRCDIR/pstarter.s $PSTARTERSRCDIR/pstarter.tpr $PSTARTERSRCDIR/pstarter.txt $PSTARTERSRCDIR/pst-ttup.h $PSTARTERSRCDIR/ttunpack ../tigcclib/pstarter
+
+
+# Components in Linux/*nix CVS
+echo Updating envreg...
+rm -rf ../sources/envreg/*
+cp -prf $TIGCCLINUXCVSDIR/sources/envreg/* ../sources/envreg
+rm -rf ../sources/envreg/CVS ../sources/envreg/src/CVS
+
+echo Updating patcher...
+rm -rf ../sources/patcher/*
+cp -prf $TIGCCLINUXCVSDIR/sources/patcher/* ../sources/patcher
+rm -rf ../sources/patcher/CVS ../sources/patcher/src/CVS
+
+echo Updating tigcc...
+rm -rf ../sources/tigcc/*
+cp -prf $TIGCCLINUXCVSDIR/sources/tigcc/* ../sources/tigcc
+rm -rf ../sources/tigcc/CVS ../sources/tigcc/src/CVS
+
+echo Updating source directory list...
+cp -prf $TIGCCLINUXCVSDIR/sources/DIRECTORIES ../sources/
+
+echo Updating text documentation...
+cp -prf $TIGCCLINUXCVSDIR/AUTHORS ../
+cp -prf $TIGCCLINUXCVSDIR/BUGS ../
+cp -prf $TIGCCLINUXCVSDIR/CHANGELOG ../
+cp -prf $TIGCCLINUXCVSDIR/COPYING ../
+cp -prf $TIGCCLINUXCVSDIR/DIRECTORIES ../
+cp -prf $TIGCCLINUXCVSDIR/HOWTO ../
+cp -prf $TIGCCLINUXCVSDIR/INSTALL ../
+cp -prf $TIGCCLINUXCVSDIR/README.linux ../
+cp -prf $TIGCCLINUXCVSDIR/README.osX ../
+
+echo Updating installation wizard...
+cp -prf $TIGCCLINUXCVSDIR/Install.sh ../
+chmod +x ../Install.sh
+
+echo Updating scripts...
+rm -rf ./*
+cp -prf $TIGCCLINUXCVSDIR/scripts/* .
+rm -rf CVS
+chmod +x [^S]*
+
+echo Done.

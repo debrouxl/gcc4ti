@@ -1,0 +1,70 @@
+#! /bin/sh
+#
+# This script launch configure with the right arguments
+# The tree must have been patched before doing this.
+#
+echo TIGCC script: Configuring, compiling and installing binutils...
+mkdir ../build; mkdir ../build/binutils;
+cd ../build/binutils; ../../download/binutils.ti/configure --disable-serial-configure --prefix=$TIGCC --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
+
+if [ $? -ne 0 ]
+    then echo "TIGCC script: Error while configuring"
+    exit 1
+fi
+
+#Binutils 2.14 is very annoying because of its habit to configure subdirectories only during make.
+#This keeps us from patching the generated makefile in advance.
+#So we have to call make 5 times to get it to work with our removed directories.
+
+make
+
+echo You should have seen an error. This is normal. TIGCC installation continues.
+
+# Create dummy libiberty testuite makefile
+rm -f libiberty/testsuite/Makefile
+echo all: >libiberty/testsuite/Makefile
+
+make
+
+echo You should have seen an error. This is normal. TIGCC installation continues.
+
+# We do not want to install any documentation. It is redundant with our HTML documentation.
+rm -f bfd/doc/Makefile
+echo all: >bfd/doc/Makefile
+# We do not want any po (NLS) makefiles either: we do not use any NLS anyway
+mkdir bfd/po
+rm -f bfd/po/Makefile
+echo all: >bfd/po/Makefile
+
+make
+
+echo You should have seen an error. This is normal. TIGCC installation continues.
+
+# We do not want any po (NLS) makefiles: we do not use any NLS anyway
+rm -f opcodes/po/Makefile
+echo all: >opcodes/po/Makefile
+
+make
+
+echo You should have seen an error. This is normal. TIGCC installation continues.
+
+# We do not want to install any documentation. It is redundant with our HTML documentation.
+mkdir gas/doc
+rm -f gas/doc/Makefile
+echo all: >gas/doc/Makefile
+# We do not want any po (NLS) makefiles either: we do not use any NLS anyway
+mkdir gas/po
+rm -f gas/po/Makefile
+echo all: >gas/po/Makefile
+
+#Now this one should really work...
+make
+if [ $? -ne 0 ]
+    then echo "TIGCC script: Error while making"
+    exit 2
+fi
+
+mkdir $TIGCC/bin/
+cp gas/as-new $TIGCC/bin/as
+
+echo Done.

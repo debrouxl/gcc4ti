@@ -1,0 +1,44 @@
+#!/bin/sh
+TIGCCCVSDIR=/e/TI-89/tigcccvs
+WINDOCDIR=/e/TI-89/tigccdoc
+
+echo Creating documentation source tarball...
+rm -f ../tigcclib/doc/source.tar.bz2
+OLDPWD=`pwd`
+cd $TIGCCCVSDIR/doc
+tar -c --exclude='[cC][vV][sS]' --exclude='.*/[cC][vV][sS]' -f source.tar Programs System
+bzip2 -9 source.tar
+cd $OLDPWD
+mv -f $TIGCCCVSDIR/doc/source.tar.bz2 ../tigcclib/doc/source.tar.bz2
+
+echo Copying documentation files...
+echo -n .
+rm -f ../tigcclib/doc/html/[a-e]*
+echo -n .
+rm -f ../tigcclib/doc/html/[f-j]*
+echo -n .
+rm -f ../tigcclib/doc/html/[k-o]*
+echo -n .
+rm -f ../tigcclib/doc/html/[p-t]*
+echo -n .
+rm -f ../tigcclib/doc/html/[u-z]*
+echo -n .
+cp -pf $WINDOCDIR/CHMFiles/[a-e]*.html ../tigcclib/doc/html/
+echo -n .
+cp -pf $WINDOCDIR/CHMFiles/[f-j]*.html ../tigcclib/doc/html/
+echo -n .
+cp -pf $WINDOCDIR/CHMFiles/[k-o]*.html ../tigcclib/doc/html/
+echo -n .
+cp -pf $WINDOCDIR/CHMFiles/[p-t]*.html ../tigcclib/doc/html/
+echo -n .
+cp -pf $WINDOCDIR/CHMFiles/[u-z]*.html ../tigcclib/doc/html/
+echo -n .
+cp -pf $WINDOCDIR/CHMFiles/*.css $WINDOCDIR/CHMFiles/*.gif \
+ $WINDOCDIR/CHMFiles/Contents.hhc $WINDOCDIR/CHMFiles/Index.hhk \
+ ../tigcclib/doc/html/
+echo .
+cd ../tigcclib/doc/html
+echo Converting...
+../converter/chm2dcf
+../converter/dcf2adp
+echo Done.
