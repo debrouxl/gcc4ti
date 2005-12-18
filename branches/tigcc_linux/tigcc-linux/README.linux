@@ -1,0 +1,232 @@
+LINUX/UNIX/OS X PLATFORM SPECIFIC NOTES FOR TIGCC:
+==================================================
+
+Note
+----
+
+	The current release SHOULD WORK on all Linux/Unix platforms, including
+	MacOS X.
+	Official binaries are provided ONLY for Linux/x86, so you will need to
+	compile TIGCC from source on other platforms, unless an unofficial
+	binary is made available for your platform.
+
+
+Copyright of the port:
+----------------------
+
+	The following copyright applies to the compilation and to the platform-
+	specific tools:
+
+	  TIGCC for Linux/Unix - GCC port targeting the TI89/89Ti/92+/V200
+	  Copyright (C) 2000 Henri Moilanen
+	  Copyright (C) 2001-2002 Romain Liévin
+	  Copyright (C) 2002-2005 Kevin Kofler
+	  Some parts from John David Ratliff (TechnoPlaza tutorials)
+
+
+History
+-------
+
+	Henri Moilanen:
+	I like Linux. TIGCC wasn't available as a Linux version, so I had to
+	create it. It hadn't source included, so I couldn't do any changes,
+	and I had to start from scratch. Couple of days of hacking and
+	searching the net, TIGCC For Linux was born. But as I worked alone - I
+	had no hurry. It waited in the depths of my HD for a month until one
+	person, Leonard Stiles, posted a question whether there is a ti-gcc
+	for linux available.
+	That was the push to get the job done. Like it or don't.
+
+	Romain Liévin:
+	I was developing TiLP (formerly GtkTiLink) when Henri was beginning
+	to develop its TiGCC.
+	Henri and some other people asked me whether I could develop a TI
+	emulator for Linux. I have done it.
+	Now, Henri asked me to take over the development of TiGCC/Linux.
+	As you can see, I have accepted and I am now the official maintainer.
+
+	John David Ratliff:
+	Ported & tested on various UNIXes.
+
+	Kevin Kofler:
+	Since Romain no longer had the time to work on TIGCC for Linux, and
+	since I always wanted it to be handled by someone of the TIGCC team, I
+	decided to take over the project. I am planning to work on getting it
+	to run again on platform/*nix combinations other than x86/Linux (now
+	achieved), and to implement all features known from the Win32 version
+	(IDE still missing, everything else done). See
+	http://tigcc.ticalc.org/linux/ for the current status of the project.
+
+
+Installation
+------------
+
+	Installing from the binary RPM:
+	-------------------------------
+
+	* into /usr/local/tigcc (requires root privileges): rpm -ivh tigcc*.rpm
+	* into ~/tigcc (user HOME dir): rpm -ivh tigcc*.rpm --prefix ~/tigcc
+
+	Installing from binaries with the setup wizard:
+	-----------------------------------------------
+
+	* Download tigcc_bin.tar.bz2 and Install.sh into the same directory.
+	* Make sure Install.sh is executable:
+	  chmod 755 Install.sh
+	* Run Install.sh:
+	  ./Install.sh
+	  and follow the instructions. If you want a text-mode install on a
+	  system with KDE installed, you can use:
+	  DIALOG=dialog ./Install.sh
+	  to tell the script to use the text-mode (curses) dialog instead of
+	  kdialog.
+
+	  You will be prompted for the destination directory you want to install
+	  TIGCC to ($TIGCC). Then the wizard will extract the files there.
+	  When done, the wizard will ask you whether you want to add your $TIGCC
+	  setting to bashrc. If you answer "Yes", you are done here, you only
+	  need to restart bash. If you prefer to do things by hand, answer "No"
+	  and follow the instructions below. (If you selected "No", but changed
+	  your mind, you can also run envreg by hand afterwards.)
+
+	Installing from binaries without the setup wizard:
+	--------------------------------------------------
+
+	First, copy your full tigcc binary package to '/'. You can use a
+	directory of your chosing but you will have to move the uncompressed
+	files.
+	Then, install it by:
+
+		bunzip2 tigcc_bin.tar.bz2
+		tar xvf tigcc_bin.tar
+
+	Now, set the environment variable TIGCC to the directory you
+	extracted into. You need to set this variable in your profile,
+	because the tigcc front-end needs it to find the header files.
+
+	If you use bash, add it to your .bashrc file in your home
+	directory. You could also use your .profile or .login if
+	you have those. If you use tcsh or csh, put it in your
+	.cshrc file (or if you use .tcshrc, put it there).
+
+	I've never used korn shell. You're on your own if you do.
+
+	For bash/sh users
+
+		export TIGCC=/usr/local/tigcc
+		export PATH=$PATH:$TIGCC/bin
+
+	For csh/tcsh users
+
+		setenv TIGCC /usr/local/tigcc
+		set path=($path $TIGCC/bin)
+
+	I've had problems using setenv to reset the path in tcsh.
+	setenv path "$path ${TIGCC}/bin"
+	doesn't seem to work.
+
+	You may need to logout and log back in for that to take
+	effect. Or you can resource your profile.
+
+		source ~/.profile
+		source ~/.bashrc
+		source ~/.cshrc
+		source ~/.tcshrc
+
+	You only need to resource the file you changed.
+
+
+	Compiling and installing from source:
+	-------------------------------------
+
+	See the INSTALL file for instructions for building from source.
+	Note that I recommend to use the binary release when possible though.
+
+
+Available programs
+------------------
+
+- a68k: AmigaOS assembler
+- as: GNU assembler
+- ar-tigcc: TIGCC archiver
+- gcc: GNU compiler
+- ld-tigcc: TIGCC linker
+- patcher: patches .s files generated by gcc (mainly for internal use)
+- tigcc: the front-end for using TIGCC
+- tprbuilder: a program for building .tpr files (Tigcc PRoject).
+- tt*: a lot of utilities from the TIGCC Tools Suite
+
+Only tigcc and tprbuilder are intended to be called directly. The TIGCC Tools
+Suite might be distributed separately in the future (as it is for Windows). Its
+continued presence as a part of the TIGCC for Linux/Unix package is not
+guaranteed. All other tools are intended to be called through the tigcc frontend
+only.
+
+In addition, there is a shell script called tigccdoc, which will open the HTML
+documentation in QT Assistant 3.2 or higher, a help viewer offering the same
+features Microsoft HTML Help offers under Windows: content hierarchy, alphabetic
+index and full-text search. The GPL version of QT Assistant can be obtained for
+free from http://www.trolltech.com . For binary packages, check with your
+Linux distributor or operating system vendor.
+
+For QT Assistant versions older than 3.2, you can manually add qt-assistant.dcf
+to your documentation sources. However, this has the disadvantage that the index
+and the full-text search will mix entries from the QT documentation with entries
+from the TIGCC documentation, so it is recommended to use QT Assistant 3.2 and
+tigccdoc instead.
+
+
+Usage
+-----
+
+	Simply call tigcc and pass your filenames and any desired flags (the
+	flags listed here are the minimum recommended flags for all TIGCC
+	programs):
+
+	'tigcc -Os -ffunction-sections -fdata-sections --optimize-code
+	--cut-ranges --reorder-sections --merge-constants --remove-unused
+	-Wall -W -Wwrite-strings test.c'
+
+
+	Once you have created your program, you can test it on an emulator 
+	(such as TiEmu) or directly on your calculator. For this, you have to 
+	transfer the program using a linking program (such as TiLP).
+
+
+Examples
+--------
+
+	You will find in the examples directory some projects which come from 
+	the TIGCC/Win32 SDK. You can build them by:
+
+		'tprbuilder myproject.tpr'
+
+	If you have installed TiLP (http://lpg.ticalc.org/prj_tilp), you can 
+	load the program. Simply do a 'tilp -cmdline foo.89z' (console) or 
+	'tilp foo.89z) (X11).
+
+
+Development platform used for the binary release
+------------------------------------------------
+
+	Machine: Pentium III running Fedora Core 4
+	Compiler: gcc version 4.0.1-4.fc4 (Fedora Core 4) (rpm -q gcc)
+	Kernel: Linux 2.6.13-1.1526_FC4 for i686 (Fedora Core 4) (uname -a)
+	Libc: glibc 2.3.5-10.3 for i686 (Fedora Core 4) (rpm -q glibc)
+
+
+Thanks
+------
+
+	By Romain Liévin:
+	  Rudolf Polzer   He was the first guy to test my (Romain) first release
+	                  of TIGCC and has helped me to understand the patch
+	                  mechanism.
+	  Kevin Kofler    Some information about the tipatch mechanism.
+
+	By Kevin Kofler:
+	  I would like to thank my collegues from the TIGCC team (Sebastian
+	  Reichelt, Zeljko Juric, ...) and the previous maintainers of TIGCC for
+	  Linux (Henri Moilanen, Romain Liévin) for the excellent work done,
+	  which allows me to release this package.
+

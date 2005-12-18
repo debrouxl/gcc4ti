@@ -1,0 +1,55 @@
+#! /bin/sh
+#
+# Apply the patch to the original sources (download directory)
+#
+echo TIGCC script: Applying patch to original sources...
+cd ../download; 
+# Binutils
+echo Patching binutils...
+cd binutils.ti
+echo Removing unneeded directories
+rm -f .brik
+rm -f md5.sum
+rm -f -r INSTALL
+rm -f -r libiberty/testsuite
+rm -f -r maintainer-scripts
+rm -f -r bfd/doc
+rm -f -r bfd/po
+rm -f -r binutils
+rm -f -r cpu
+rm -f -r etc
+rm -f -r gas/doc
+rm -f -r gas/po
+rm -f -r gas/testsuite
+rm -f -r gprof
+rm -f -r include/nlm
+rm -f -r include/regs
+rm -f -r ld
+rm -f -r opcodes/po
+rm -f -r texinfo
+echo Applying TIGCC patch
+patch -p1 < ../../sources/gcc/gas-2.16-tigcc-patch.diff
+cd ..
+# Gcc
+echo Patching GCC...
+cd gcc.ti
+echo Removing unneeded directories
+rm -f .brik
+rm -f md5.sum
+rm -f -r INSTALL
+rm -f -r fixincludes
+rm -f -r gcc/ginclude
+rm -f -r gcc/po
+rm -f -r gcc/doc
+rm -f -r gcc/treelang
+rm -f -r libcpp/po
+rm -f -r libiberty/testsuite
+rm -f -r maintainer-scripts
+rm -f -r etc
+rm -f -r gprof
+rm -f -r include/nlm
+rm -f -r include/regs
+rm -f -r texinfo
+echo Applying TIGCC patch
+patch -p1 < ../../sources/gcc/gcc-4.0-tigcc-patch.diff
+echo Done.
