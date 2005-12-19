@@ -12,7 +12,7 @@ for name in `grep -v -e "^i386$" -e "^m68k$" -e "README" -e "install" -e "libgcc
 ls -A gcc/config/i386/ >tmpfiles.lst
 for name in `grep -v -e "x-cygwin" -e "x-mingw" -e "xm-cygwin" -e "xm-mingw" -e "host-mingw" tmpfiles.lst`; do rm -f "gcc/config/i386/$name"; done
 ls -A gcc/config/m68k/ >tmpfiles.lst
-for name in `grep -v -e "m68k\.c" -e "t-m68kbare" -e "m68k\.md" -e "^m68k\.h" -e "m68k-coff" -e "m68k-none" -e "m68k-protos" -e "coff\.h" -e m68k-modes tmpfiles.lst`; do rm -f "gcc/config/m68k/$name"; done
+for name in `grep -v -e "m68k\.c" -e "t-m68kbare" -e "m68k\.md" -e "^m68k\.h" -e "m68k-coff" -e "m68k-none" -e "m68k-protos" -e "coff\.h" -e m68k-modes -e "predicates\.md" tmpfiles.lst`; do rm -f "gcc/config/m68k/$name"; done
 rm -f -r gcc/fixinc
 rm -f -r fixincludes
 rm -f -r gcc/ginclude
