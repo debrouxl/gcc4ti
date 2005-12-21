@@ -102,11 +102,11 @@ Changelog of the TIGCC-local changes to GCC (4.1 branch):
         * config/m68k/m68k.h: Don't add extended_address_operand to PREDICATE_CODES anymore.
                               Don't define MASK_* and TARGET_* (except MASK_REG_RELATIVE,
                               TARGET_REG_RELATIVE) anymore.
+          (TARGET_DIRECTFLOAT): Define to always 0 (not supported yet).
           (TARGET_SWITCHES, TARGET_OPTIONS): Move options to...
         * config/m68k/m68k.opt: ... here. Remove "-mnoalign-int", "-mnopcrel", "-mnotios", "-mnoregparm",
-                                "-mnomerge-sections", "-mnomerge-to-data", "-mnorodata-to-text",
-                                "-mnobss" (use "-mno-*" with the dash instead). Enable negative for
-                                "-mcoff-abslines".
+                                "-mnomerge-sections", "-mnomerge-to-data", "-mnorodata-to-text" (use
+                                "-mno-*" with the dash instead). Enable negative for "-mcoff-abslines".
         * Revert broken part of PR debug/24070 fix:
           2005-10-06  Richard Henderson  <rth@redhat.com>
             PR debug/24070
@@ -124,3 +124,21 @@ Changelog of the TIGCC-local changes to GCC (4.1 branch):
         * config/m68k/m68k.c (output_move_double, floating_exact_log2): Use gcc_unreachable instead of
                                                                         abort.
         * config/smapbcd.h (REAL_VALUE_TO_TARGET_SINGLE, REAL_VALUE_TO_TARGET_DOUBLE): Likewise.
+          (UNSIGNED_INF, POSITIVE_INF, NEGATIVE_INF, NAN, REAL_VALUE_LDEXP, REAL_VALUE_UNSIGNED_FIX,
+          REAL_VALUE_RNDZINT, REAL_VALUE_TO_TARGET_LONG_DOUBLE, REAL_VALUE_TO_TARGET_SMAP_BCD):
+            Add ull suffix to big numbers to get rid of warnings.
+        * c-decl.c (c_insert_default_attributes): Use ISO C90 prototype.
+        * c-typeck.c (build_modify_expr): Update parameters for default_function_array_conversion call.
+        * expr.c (emit_block_move_via_libcall, clear_storage_via_libcall): Fix use of uninitialized
+                                                                           variable.
+        * real.c (real_value_dtof): Add ull suffix to big number to get rid of warning.
+          (real_value_htof): Delete unused variable "exp2".
+          (real_from_integer): Delete unused variable "i".
+        * simplify-rtx.c (simplify_const_binary_operation): Declare tmp1 pointer const.
+          (simplify_immed_subreg): Declare tmp pointer const.
+        * tree-object-size.c (alloc_object_size): Don't handle BUILT_IN_CALLOC.
+          (pass_through_call): Don't handle BUILT_IN_*_CHK.
+        * optabs.c (lowpart_subreg_maybe_copy, expand_copysign_absneg): Disable.
+        * config/m68k/m68k.c (m68k_handle_stkparm_attribute, m68k_handle_regparm_attribute): Update
+            calls to warning().
+          (m68k_save_reg, m68k_output_function_prologue): Fix pointer signedness mismatch.

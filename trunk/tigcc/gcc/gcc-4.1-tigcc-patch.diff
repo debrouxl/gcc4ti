@@ -84,7 +84,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtin-attrs.def gcc-4.1-20051216-src/gcc/
 +
 diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtins.c
 --- gcc-4.1-20051216.orig/gcc/builtins.c	2005-12-01 03:32:58.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/builtins.c	2005-12-21 04:08:08.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/builtins.c	2005-12-21 05:30:41.000000000 +0100
 @@ -47,6 +47,7 @@
  #include "langhooks.h"
  #include "basic-block.h"
@@ -180,7 +180,17 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  static rtx expand_builtin_fabs (tree, rtx, rtx);
  static rtx expand_builtin_signbit (tree, rtx);
  static tree fold_builtin_cabs (tree, tree);
-@@ -177,8 +197,10 @@
+@@ -161,7 +181,9 @@
+ static tree fold_builtin_round (tree, tree);
+ static tree fold_builtin_int_roundingfn (tree, tree);
+ static tree fold_builtin_bitop (tree, tree);
++#endif /* 0 */
+ static tree fold_builtin_memcpy (tree, tree);
++#if 0
+ static tree fold_builtin_mempcpy (tree, tree, int);
+ static tree fold_builtin_memmove (tree, tree);
+ static tree fold_builtin_strchr (tree, tree);
+@@ -177,8 +199,10 @@
  static tree fold_builtin_abs (tree, tree);
  static tree fold_builtin_unordered_cmp (tree, tree, enum tree_code,
  					enum tree_code);
@@ -191,7 +201,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  static tree fold_builtin_strpbrk (tree, tree);
  static tree fold_builtin_strstr (tree, tree);
  static tree fold_builtin_strrchr (tree, tree);
-@@ -208,6 +230,10 @@
+@@ -208,6 +232,10 @@
  static char target_percent_c[3];
  static char target_percent_s[3];
  static char target_percent_s_newline[4];
@@ -202,7 +212,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Return true if NODE should be considered for inline expansion regardless
     of the optimization level.  This means whenever a function is invoked with
-@@ -1177,7 +1203,13 @@
+@@ -1177,7 +1205,13 @@
  	size += GET_MODE_SIZE (Pmode);
  
        for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
@@ -217,7 +227,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  	  {
  	    mode = reg_raw_mode[regno];
  
-@@ -1630,6 +1662,7 @@
+@@ -1630,6 +1664,7 @@
  tree
  mathfn_built_in (tree type, enum built_in_function fn)
  {
@@ -225,7 +235,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
    enum built_in_function fcode, fcodef, fcodel;
  
    switch (fn)
-@@ -1724,9 +1757,11 @@
+@@ -1724,9 +1759,11 @@
    else if (TYPE_MAIN_VARIANT (type) == long_double_type_node)
      return implicit_built_in_decls[fcodel];
    else
@@ -237,7 +247,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* If errno must be maintained, expand the RTL to check if the result,
     TARGET, of a built-in function call, EXP, is NaN, and if so set
     errno to EDOM.  */
-@@ -2837,6 +2872,7 @@
+@@ -2837,6 +2874,7 @@
      }
    return 0;
  }
@@ -245,7 +255,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Callback routine for store_by_pieces.  Read GET_MODE_BITSIZE (MODE)
     bytes from constant string DATA + OFFSET and return it as target
-@@ -2930,6 +2966,7 @@
+@@ -2930,6 +2968,7 @@
      }
  }
  
@@ -253,7 +263,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Expand a call to the mempcpy builtin, with arguments in ARGLIST.
     Return 0 if we failed; the caller should emit a normal call,
     otherwise try to get the result in TARGET, if convenient (and in
-@@ -3353,6 +3390,7 @@
+@@ -3353,6 +3392,7 @@
      }
    return 0;
  }
@@ -261,7 +271,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Callback routine for store_by_pieces.  Read GET_MODE_BITSIZE (MODE)
     bytes from constant string DATA + OFFSET and return it as target
-@@ -3500,6 +3538,7 @@
+@@ -3500,6 +3540,7 @@
      }
  }
  
@@ -269,7 +279,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Expand expression EXP, which is a call to the bzero builtin.  Return 0
     if we failed the caller should emit a normal call.  */
  
-@@ -4031,6 +4070,7 @@
+@@ -4031,6 +4072,7 @@
      }
    return 0;
  }
@@ -277,7 +287,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Expand a call to __builtin_saveregs, generating the result in TARGET,
     if that's convenient.  */
-@@ -4584,6 +4624,7 @@
+@@ -4584,6 +4626,7 @@
    return convert_to_mode (target_mode, target, 0);
  }
  
@@ -285,7 +295,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* If the string passed to fputs is a constant and is one character
     long, we attempt to transform this call into __builtin_fputc().  */
  
-@@ -4600,6 +4641,7 @@
+@@ -4600,6 +4643,7 @@
      }
    return 0;
  }
@@ -293,7 +303,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Expand a call to __builtin_expect.  We return our argument and emit a
     NOTE_INSN_EXPECTED_VALUE note.  This is the expansion of __builtin_expect in
-@@ -4772,6 +4814,35 @@
+@@ -4772,6 +4816,35 @@
    emit_barrier ();
  }
  
@@ -329,7 +339,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Expand a call to fabs, fabsf or fabsl with arguments ARGLIST.
     Return 0 if a normal call should be emitted rather than expanding
     the function inline.  If convenient, the result should be placed
-@@ -5140,6 +5211,7 @@
+@@ -5140,6 +5213,7 @@
  
    return 0;
  }
@@ -337,7 +347,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Expand a call to either the entry or exit function profiler.  */
  
-@@ -5244,6 +5316,7 @@
+@@ -5244,6 +5318,7 @@
    return tramp;
  }
  
@@ -345,7 +355,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Expand a call to the built-in signbit, signbitf or signbitl function.
     Return NULL_RTX if a normal call should be emitted rather than expanding
     the function in-line.  EXP is the expression that is a call to the builtin
-@@ -5579,6 +5652,7 @@
+@@ -5579,6 +5654,7 @@
    expand_builtin_synchronize ();
    emit_move_insn (mem, val);
  }
@@ -353,7 +363,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Expand an expression EXP that calls a built-in function,
     with result going to TARGET if that's convenient
-@@ -5638,6 +5712,7 @@
+@@ -5638,6 +5714,7 @@
  
    switch (fcode)
      {
@@ -361,7 +371,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_FABS:
      case BUILT_IN_FABSF:
      case BUILT_IN_FABSL:
-@@ -5806,6 +5881,7 @@
+@@ -5806,6 +5883,7 @@
        if (target)
  	return target;
        break;
@@ -369,7 +379,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_APPLY_ARGS:
        return expand_builtin_apply_args ();
-@@ -5942,6 +6018,7 @@
+@@ -5942,6 +6020,7 @@
  	return target;
        break;
  
@@ -377,7 +387,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_STRLEN:
        target = expand_builtin_strlen (arglist, target, target_mode);
        if (target)
-@@ -6015,6 +6092,7 @@
+@@ -6015,6 +6094,7 @@
        if (target)
  	return target;
        break;
@@ -385,7 +395,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_MEMCPY:
        target = expand_builtin_memcpy (exp, target, mode);
-@@ -6022,6 +6100,7 @@
+@@ -6022,6 +6102,7 @@
  	return target;
        break;
  
@@ -393,7 +403,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_MEMPCPY:
        target = expand_builtin_mempcpy (arglist, TREE_TYPE (exp), target, mode, /*endp=*/ 1);
        if (target)
-@@ -6040,6 +6119,7 @@
+@@ -6040,6 +6121,7 @@
        if (target)
  	return target;
        break;
@@ -401,7 +411,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_MEMSET:
        target = expand_builtin_memset (arglist, target, mode, exp);
-@@ -6047,6 +6127,7 @@
+@@ -6047,6 +6129,7 @@
  	return target;
        break;
  
@@ -409,7 +419,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_BZERO:
        target = expand_builtin_bzero (exp);
        if (target)
-@@ -6071,6 +6152,7 @@
+@@ -6071,6 +6154,7 @@
        if (target)
  	return target;
        break;
@@ -417,7 +427,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_SETJMP:
        target = expand_builtin_setjmp (arglist, target);
-@@ -6124,6 +6206,7 @@
+@@ -6124,6 +6208,7 @@
        expand_builtin_trap ();
        return const0_rtx;
  
@@ -425,7 +435,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_PRINTF:
        target = expand_builtin_printf (exp, target, mode, false);
        if (target)
-@@ -6172,6 +6255,7 @@
+@@ -6172,6 +6257,7 @@
        if (target)
  	return target;
        break;
@@ -433,7 +443,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
        /* Various hooks for the DWARF 2 __throw routine.  */
      case BUILT_IN_UNWIND_INIT:
-@@ -6224,6 +6308,7 @@
+@@ -6224,6 +6310,7 @@
      case BUILT_IN_ADJUST_TRAMPOLINE:
        return expand_builtin_adjust_trampoline (arglist);
  
@@ -441,7 +451,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_FORK:
      case BUILT_IN_EXECL:
      case BUILT_IN_EXECV:
-@@ -6440,6 +6525,11 @@
+@@ -6440,6 +6527,11 @@
      case BUILT_IN_VSPRINTF_CHK:
        maybe_emit_sprintf_chk_warning (exp, fcode);
        break;
@@ -453,7 +463,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      default:	/* just do library call, if unknown builtin */
        break;
-@@ -6459,6 +6549,7 @@
+@@ -6459,6 +6551,7 @@
  enum built_in_function
  builtin_mathfn_code (tree t)
  {
@@ -461,7 +471,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
    tree fndecl, arglist, parmlist;
    tree argtype, parmtype;
  
-@@ -6513,13 +6604,16 @@
+@@ -6513,13 +6606,16 @@
  	    return END_BUILTINS;
  	}
        else
@@ -478,7 +488,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  }
  
  /* Fold a call to __builtin_constant_p, if we know it will evaluate to a
-@@ -6619,6 +6713,7 @@
+@@ -6619,6 +6715,7 @@
  			type_to_class (TREE_TYPE (TREE_VALUE (arglist))));
  }
  
@@ -486,7 +496,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Fold a call to __builtin_strlen.  */
  
  static tree
-@@ -7388,6 +7483,7 @@
+@@ -7388,6 +7485,7 @@
  
    return fold_fixed_mathfn (fndecl, arglist);
  }
@@ -494,7 +504,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Fold function call to builtin ffs, clz, ctz, popcount and parity
     and their long and long long variants (i.e. ffsl and ffsll).
-@@ -7493,6 +7589,7 @@
+@@ -7493,6 +7591,7 @@
    return NULL_TREE;
  }
  
@@ -502,7 +512,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Return true if EXPR is the real constant contained in VALUE.  */
  
  static bool
-@@ -7883,6 +7980,7 @@
+@@ -7883,6 +7982,7 @@
  
    return 0;
  }
@@ -510,7 +520,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Fold function call to builtin memcpy.  Return
     NULL_TREE if no simplification can be made.  */
-@@ -7911,6 +8009,7 @@
+@@ -7911,6 +8011,7 @@
    return 0;
  }
  
@@ -518,7 +528,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Fold function call to builtin mempcpy.  Return
     NULL_TREE if no simplification can be made.  */
  
-@@ -8644,6 +8743,7 @@
+@@ -8644,6 +8745,7 @@
    return fold_build1 (TRUTH_NOT_EXPR, type,
  		      fold_build2 (code, type, arg0, arg1));
  }
@@ -526,7 +536,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Used by constant folding to simplify calls to builtin functions.  EXP is
     the CALL_EXPR of a call to a builtin function.  IGNORE is true if the
-@@ -8662,6 +8762,7 @@
+@@ -8662,6 +8764,7 @@
    fcode = DECL_FUNCTION_CODE (fndecl);
    switch (fcode)
      {
@@ -534,7 +544,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_FPUTS:
        return fold_builtin_fputs (arglist, ignore, false, NULL_TREE);
  
-@@ -8712,6 +8813,7 @@
+@@ -8712,6 +8815,7 @@
  
      case BUILT_IN_SPRINTF:
        return fold_builtin_sprintf (arglist, ignore);
@@ -542,7 +552,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_CONSTANT_P:
        {
-@@ -8733,6 +8835,7 @@
+@@ -8733,6 +8837,7 @@
      case BUILT_IN_CLASSIFY_TYPE:
        return fold_builtin_classify_type (arglist);
  
@@ -550,7 +560,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_STRLEN:
        return fold_builtin_strlen (arglist);
  
-@@ -8923,6 +9026,7 @@
+@@ -8923,6 +9028,7 @@
      case BUILT_IN_LLRINTF:
      case BUILT_IN_LLRINTL:
        return fold_fixed_mathfn (fndecl, arglist);
@@ -558,7 +568,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_FFS:
      case BUILT_IN_FFSL:
-@@ -8944,6 +9048,7 @@
+@@ -8944,6 +9050,7 @@
      case BUILT_IN_MEMCPY:
        return fold_builtin_memcpy (fndecl, arglist);
  
@@ -566,7 +576,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_MEMPCPY:
        return fold_builtin_mempcpy (arglist, type, /*endp=*/1);
  
-@@ -8997,11 +9102,13 @@
+@@ -8997,11 +9104,13 @@
      case BUILT_IN_ISUNORDERED:
        return fold_builtin_unordered_cmp (fndecl, arglist, UNORDERED_EXPR,
  					 NOP_EXPR);
@@ -580,7 +590,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_OBJECT_SIZE:
        return fold_builtin_object_size (arglist);
      case BUILT_IN_MEMCPY_CHK:
-@@ -9043,6 +9150,7 @@
+@@ -9043,6 +9152,7 @@
      case BUILT_IN_VFPRINTF_CHK:
        return fold_builtin_fprintf (fndecl, arglist, ignore,
  				   DECL_FUNCTION_CODE (fndecl));
@@ -588,7 +598,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      default:
        break;
-@@ -9173,6 +9281,7 @@
+@@ -9173,6 +9283,7 @@
      return false;
  }
  
@@ -596,7 +606,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Simplify a call to the strstr builtin.
  
     Return 0 if no simplification was possible, otherwise return the
-@@ -9711,6 +9820,7 @@
+@@ -9711,6 +9822,7 @@
       hence there's no need to cast the result to integer_type_node.  */
    return build_function_call_expr (fn, arglist);
  }
@@ -604,7 +614,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Fold the new_arg's arguments (ARGLIST). Returns true if there was an error
     produced.  False otherwise.  This is done so that we don't output the error
-@@ -9780,6 +9890,7 @@
+@@ -9780,6 +9892,7 @@
  }
  
  
@@ -612,7 +622,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Simplify a call to the sprintf builtin.
  
     Return 0 if no simplification was possible, otherwise return the
-@@ -11062,3 +11173,5 @@
+@@ -11062,3 +11175,5 @@
      }
    return true;
  }
@@ -620,7 +630,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
 +
 diff -Naur gcc-4.1-20051216.orig/gcc/builtins.def gcc-4.1-20051216-src/gcc/builtins.def
 --- gcc-4.1-20051216.orig/gcc/builtins.def	2005-07-24 10:36:33.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/builtins.def	2005-12-21 04:11:25.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/builtins.def	2005-12-21 06:23:12.000000000 +0100
 @@ -507,6 +507,7 @@
  DEF_LIB_BUILTIN        (BUILT_IN_STRSPN, "strspn", BT_FN_SIZE_CONST_STRING_CONST_STRING, ATTR_PURE_NOTHROW_NONNULL)
  DEF_LIB_BUILTIN        (BUILT_IN_STRSTR, "strstr", BT_FN_STRING_CONST_STRING_CONST_STRING, ATTR_PURE_NOTHROW_NONNULL)
@@ -657,14 +667,14 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.def gcc-4.1-20051216-src/gcc/built
  /* Implementing nested functions.  */
  DEF_BUILTIN_STUB (BUILT_IN_INIT_TRAMPOLINE, "__builtin_init_trampoline")
  DEF_BUILTIN_STUB (BUILT_IN_ADJUST_TRAMPOLINE, "__builtin_adjust_trampoline")
-@@ -668,6 +675,7 @@
- DEF_BUILTIN_STUB (BUILT_IN_STACK_SAVE, "__builtin_stack_save")
- DEF_BUILTIN_STUB (BUILT_IN_STACK_RESTORE, "__builtin_stack_restore")
+@@ -670,6 +677,7 @@
  
-+#if 0
  /* Object size checking builtins.  */
  DEF_GCC_BUILTIN	       (BUILT_IN_OBJECT_SIZE, "object_size", BT_FN_SIZE_CONST_PTR_INT, ATTR_PURE_NOTHROW_LIST)
++#if 0
  DEF_EXT_LIB_BUILTIN    (BUILT_IN_MEMCPY_CHK, "__memcpy_chk", BT_FN_PTR_PTR_CONST_PTR_SIZE_SIZE, ATTR_NOTHROW_NONNULL)
+ DEF_EXT_LIB_BUILTIN    (BUILT_IN_MEMMOVE_CHK, "__memmove_chk", BT_FN_PTR_PTR_CONST_PTR_SIZE_SIZE, ATTR_NOTHROW_NONNULL)
+ DEF_EXT_LIB_BUILTIN    (BUILT_IN_MEMPCPY_CHK, "__mempcpy_chk", BT_FN_PTR_PTR_CONST_PTR_SIZE_SIZE, ATTR_NOTHROW_NONNULL)
 @@ -687,6 +695,7 @@
  DEF_EXT_LIB_BUILTIN    (BUILT_IN_PRINTF_CHK, "__printf_chk", BT_FN_INT_INT_CONST_STRING_VAR, ATTR_FORMAT_PRINTF_2_3)
  DEF_EXT_LIB_BUILTIN    (BUILT_IN_VFPRINTF_CHK, "__vfprintf_chk", BT_FN_INT_FILEPTR_INT_CONST_STRING_VALIST_ARG, ATTR_FORMAT_PRINTF_3_0)
@@ -808,7 +818,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-cppbuiltin.c gcc-4.1-20051216-src/gcc/c-c
     1 for type "long" and 2 for "long long".  We have to handle
 diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
 --- gcc-4.1-20051216.orig/gcc/c-decl.c	2005-11-30 11:29:09.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-decl.c	2005-12-19 00:27:27.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/c-decl.c	2005-12-21 05:13:33.000000000 +0100
 @@ -2418,7 +2418,6 @@
  void
  undeclared_variable (tree id, location_t loc)
@@ -840,7 +850,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
  
    make_fname_decl = c_make_fname_decl;
    start_fname_decls ();
-@@ -2825,6 +2817,18 @@
+@@ -2825,6 +2817,17 @@
  
    return decl;
  }
@@ -849,8 +859,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
 +   attributes.  */
 +
 +void
-+c_insert_default_attributes (decl)
-+     tree decl;
++c_insert_default_attributes (tree decl)
 +{
 +  if (!TREE_PUBLIC (decl))
 +    return;
@@ -859,7 +868,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
  
  /* Called when a declaration is seen that contains no names to declare.
     If its type is a reference to a structure, union or enum inherited
-@@ -3573,10 +3577,86 @@
+@@ -3573,10 +3576,86 @@
  push_parm_decl (const struct c_parm *parm)
  {
    tree decl;
@@ -946,7 +955,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
    decl = pushdecl (decl);
  
    finish_decl (decl, NULL_TREE, NULL_TREE);
-@@ -3628,7 +3708,11 @@
+@@ -3628,7 +3707,11 @@
    DECL_CONTEXT (decl) = current_function_decl;
    TREE_USED (decl) = 1;
    TREE_TYPE (decl) = type;
@@ -959,7 +968,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
    store_init_value (decl, init);
  
    if (TREE_CODE (type) == ARRAY_TYPE && !COMPLETE_TYPE_P (type))
-@@ -6854,12 +6938,13 @@
+@@ -6854,12 +6937,13 @@
  
  struct c_parm *
  build_c_parm (struct c_declspecs *specs, tree attrs,
@@ -1378,7 +1387,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/i386/xm-mingw32.h gcc-4.1-20051216-s
  #undef PATH_SEPARATOR
 diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc/config/m68k/m68k.c
 --- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c	2005-07-12 01:32:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.c	2005-12-21 04:40:24.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.c	2005-12-21 06:37:31.000000000 +0100
 @@ -43,6 +43,11 @@
  #include "target-def.h"
  #include "debug.h"
@@ -1498,7 +1507,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +      && TREE_CODE (*node) != FIELD_DECL
 +      && TREE_CODE (*node) != TYPE_DECL)
 +    {
-+      warning ("`%s' attribute only applies to functions",
++      warning (0, "`%s' attribute only applies to functions",
 +	       IDENTIFIER_POINTER (name));
 +      *no_add_attrs = true;
 +    }
@@ -1523,7 +1532,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +      && TREE_CODE (*node) != FIELD_DECL
 +      && TREE_CODE (*node) != TYPE_DECL)
 +    {
-+      warning ("`%s' attribute only applies to functions",
++      warning (0, "`%s' attribute only applies to functions",
 +	       IDENTIFIER_POINTER (name));
 +      *no_add_attrs = true;
 +    }
@@ -1600,7 +1609,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  {
 +  /* (TIGCC 20050208) Handle OPTIMIZE_ROM_CALLS. Register #13 is %a5. */
 +  if (interrupt_handler && regno == 13 && global_regs[13]
-+      && cpp_defined (parse_in, "OPTIMIZE_ROM_CALLS", 18))
++      && cpp_defined (parse_in, (unsigned char *)"OPTIMIZE_ROM_CALLS", 18))
 +    return true;
 +
    if (flag_pic && regno == PIC_OFFSET_TABLE_REGNUM)
@@ -1623,7 +1632,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +
 +  /* (TIGCC 20050208) Handle OPTIMIZE_ROM_CALLS. Register #13 is %a5. */
 +  if (global_regs[13] && m68k_interrupt_function_p (current_function_decl)
-+      && cpp_defined (parse_in, "OPTIMIZE_ROM_CALLS", 18))
++      && cpp_defined (parse_in, (unsigned char *)"OPTIMIZE_ROM_CALLS", 18))
 +    asm_fprintf (stream, "\tmove.l 200.w,%%a5\n");
  }
  
@@ -2458,8 +2467,8 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +
 diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc/config/m68k/m68k.h
 --- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h	2005-07-12 01:32:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.h	2005-12-19 02:42:39.000000000 +0100
-@@ -113,6 +113,10 @@
++++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.h	2005-12-21 05:06:54.000000000 +0100
+@@ -113,6 +113,12 @@
  /* Set the default.  */
  #define INT_OP_GROUP INT_OP_DOT_WORD
  
@@ -2467,10 +2476,12 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
 +#define MASK_REG_RELATIVE	(1<<30)
 +#define TARGET_REG_RELATIVE	(target_flags & MASK_REG_RELATIVE)
 +
++#define TARGET_DIRECTFLOAT 0 /* not supported yet */
++
  /* Compile for a CPU32.  A 68020 without bitfields is a good
     heuristic for a CPU32.  */
  #define TARGET_CPU32	(TARGET_68020 && !TARGET_BITFIELD)
-@@ -126,6 +130,8 @@
+@@ -126,6 +132,8 @@
  /* These are meant to be redefined in the host dependent files */
  #define SUBTARGET_OVERRIDE_OPTIONS
  
@@ -2479,7 +2490,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
  /* target machine storage layout */
  
  #define LONG_DOUBLE_TYPE_SIZE 80
-@@ -141,7 +147,7 @@
+@@ -141,7 +149,7 @@
  
  #define UNITS_PER_WORD 4
  
@@ -2488,7 +2499,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
  #define STACK_BOUNDARY 16
  #define FUNCTION_BOUNDARY 16
  #define EMPTY_FIELD_BOUNDARY 16
-@@ -175,7 +181,9 @@
+@@ -175,7 +183,9 @@
  #define FIRST_PSEUDO_REGISTER 25
  
  /* All m68k targets (except AmigaOS) use %a5 as the PIC register  */
@@ -2499,7 +2510,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
  
  /* 1 for registers that have pervasive standard uses
     and are not available for the register allocator.
-@@ -375,6 +383,9 @@
+@@ -375,6 +385,9 @@
     `S' is for operands that satisfy 'm' when -mpcrel is in effect.
     `T' is for operands that satisfy 's' when -mpcrel is not in effect.
     `U' is for register offset addressing.  */
@@ -2509,7 +2520,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
  #define EXTRA_CONSTRAINT(OP,CODE)			\
    (((CODE) == 'S')					\
     ? (TARGET_PCREL					\
-@@ -384,7 +395,7 @@
+@@ -384,7 +397,7 @@
  	  || GET_CODE (XEXP (OP, 0)) == CONST))		\
     : 							\
    (((CODE) == 'T')					\
@@ -2518,7 +2529,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
        && (GET_CODE (OP) == SYMBOL_REF			\
  	  || GET_CODE (OP) == LABEL_REF			\
  	  || GET_CODE (OP) == CONST))			\
-@@ -486,24 +497,59 @@
+@@ -486,24 +499,59 @@
  
  #define PCC_STATIC_STRUCT_RETURN
  
@@ -2593,7 +2604,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
  
  #define FUNCTION_PROFILER(FILE, LABELNO)  \
    asm_fprintf (FILE, "\tlea %LLP%d,%Ra0\n\tjsr mcount\n", (LABELNO))
-@@ -639,7 +685,11 @@
+@@ -639,7 +687,11 @@
  
  /* Nonzero if the constant value X is a legitimate general operand.
     It is given that X satisfies CONSTANT_P or is a CONST_DOUBLE.  */
@@ -2606,7 +2617,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
  
  #ifndef REG_OK_STRICT
  #define PCREL_GENERAL_OPERAND_OK 0
-@@ -950,15 +1000,19 @@
+@@ -950,15 +1002,19 @@
  #define ASM_OUTPUT_SKIP(FILE,SIZE)  \
    fprintf (FILE, "\t.skip %u\n", (int)(SIZE))
  
@@ -2626,7 +2637,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
  
  /* Output a float value (represented as a C double) as an immediate operand.
     This macro is m68k-specific.  */
-@@ -1030,4 +1084,6 @@
+@@ -1030,4 +1086,6 @@
  
  /* Variables in m68k.c */
  extern const char *m68k_library_id_string;
@@ -3237,13 +3248,13 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-none.h gcc-4.1-20051216-sr
     They are (sequential integer + (desired value for TARGET_DEFAULT) << 4).  */
 diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt gcc-4.1-20051216-src/gcc/config/m68k/m68k.opt
 --- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt	2005-12-19 02:06:37.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.opt	2005-12-19 02:42:18.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.opt	2005-12-21 06:04:41.000000000 +0100
 @@ -92,6 +92,10 @@
  Target Report RejectNegative Mask(BITFIELD)
  Use the bit-field instructions
  
 +mbss
-+Target Report InverseMask(BSS)
++Target Report InverseMask(NO_BSS)
 +Output common/lcomm (BSS) symbols for uninitialized data
 +
  mc68000
@@ -3260,7 +3271,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt gcc-4.1-20051216-src/g
  mcpu32
  Target RejectNegative
  Generate code for a cpu32
-@@ -108,10 +116,26 @@
+@@ -108,10 +116,30 @@
  Target Report Mask(ID_SHARED_LIBRARY)
  Enable ID based shared library
  
@@ -3280,14 +3291,18 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt gcc-4.1-20051216-src/g
  Target RejectNegative InverseMask(BITFIELD)
  Do not use the bit-field instructions
  
++mnobss
++Target Report Mask(NO_BSS)
++Don't output common/lcomm (BSS) symbols for uninitialized data
++
 +mnolong
-+Target Report RejectNegative Mask(SHORT)
++Target Report RejectNegative Mask(SHORT) MaskExists
 +Consider type 'int' to be 16 bits wide
 +
  mnortd
  Target RejectNegative InverseMask(RTD)
  Use normal calling convention
-@@ -124,6 +148,18 @@
+@@ -124,6 +152,18 @@
  Target Report Mask(PCREL)
  Generate pc-relative code
  
@@ -3306,7 +3321,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt gcc-4.1-20051216-src/g
  mrtd
  Target Report RejectNegative Mask(RTD)
  Use different calling convention using 'rtd'
-@@ -137,7 +173,7 @@
+@@ -137,7 +177,7 @@
  ID of shared library to build
  
  mshort
@@ -3315,7 +3330,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt gcc-4.1-20051216-src/g
  Consider type 'int' to be 16 bits wide
  
  msoft-float
-@@ -147,3 +183,7 @@
+@@ -147,3 +187,7 @@
  mstrict-align
  Target Report Mask(STRICT_ALIGNMENT)
  Do not use unaligned memory references
@@ -3596,7 +3611,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/predicates.md gcc-4.1-20051216-
 +})
 diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/config/smapbcd.h
 --- gcc-4.1-20051216.orig/gcc/config/smapbcd.h	1970-01-01 01:00:00.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/smapbcd.h	2005-12-21 04:43:27.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/config/smapbcd.h	2005-12-21 05:11:44.000000000 +0100
 @@ -0,0 +1,369 @@
 +/* Definitions for SMAP II BCD support in the GNU C Compiler.
 +   These macros implement software BCD floating point support;
@@ -3656,11 +3671,11 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +#define POSITIVE_ZERO (__extension__(smap_bcd_float){0,0})
 +#define NEGATIVE_ZERO (__extension__(smap_bcd_float){0x8000,0})
 +
-+#define UNSIGNED_INF (__extension__(smap_bcd_float){0x7FFF,0xAA00CC0000000000})
-+#define POSITIVE_INF (__extension__(smap_bcd_float){0x7FFF,0xAA00BB0000000000})
-+#define NEGATIVE_INF (__extension__(smap_bcd_float){0xFFFF,0xAA00BB0000000000})
++#define UNSIGNED_INF (__extension__(smap_bcd_float){0x7FFF,0xAA00CC0000000000ull})
++#define POSITIVE_INF (__extension__(smap_bcd_float){0x7FFF,0xAA00BB0000000000ull})
++#define NEGATIVE_INF (__extension__(smap_bcd_float){0xFFFF,0xAA00BB0000000000ull})
 +
-+#define NAN (__extension__(smap_bcd_float){0x7FFF,0xAA00000000000000})
++#define NAN (__extension__(smap_bcd_float){0x7FFF,0xAA00000000000000ull})
 +
 +#ifndef REAL_INFINITY
 +#define REAL_INFINITY
@@ -3769,7 +3784,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +		if (tempscale > 0) \
 +			for (scale = 0; scale < tempscale; scale++) \
 +			{ \
-+				if (__tempx.mantissa >= 0x5000000000000000) \
++				if (__tempx.mantissa >= 0x5000000000000000ull) \
 +				{ \
 +					__tempx.mantissa /= 0x10; \
 +					__tempx.exponent++; \
@@ -3783,7 +3798,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +					help += carry; \
 +					carry = help / 10; \
 +					__tempx.mantissa += ((unsigned long long) (help % 10)) * pmul; \
-+					if (pmul >= 0x1000000000000000) \
++					if (pmul >= 0x1000000000000000ull) \
 +						break; \
 +				} \
 +			} \
@@ -3791,7 +3806,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +			for (scale = 0; scale > tempscale; scale--) \
 +			{ \
 +				carry = 0; \
-+				for (pmul = 0x1000000000000000; pmul > 0; pmul /= 0x10) \
++				for (pmul = 0x1000000000000000ull; pmul > 0; pmul /= 0x10) \
 +				{ \
 +					help = (__tempx.mantissa / pmul) & 0xF; \
 +					__tempx.mantissa -= ((unsigned long long) help) * pmul; \
@@ -3799,7 +3814,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +					__tempx.mantissa += ((unsigned long long) (help / 2)) * pmul; \
 +					carry = (help % 2) * 10; \
 +				} \
-+				if (__tempx.mantissa < 0x1000000000000000) \
++				if (__tempx.mantissa < 0x1000000000000000ull) \
 +				{ \
 +					__tempx.mantissa *= 0x10; \
 +					__tempx.mantissa += carry / 2; \
@@ -3821,7 +3836,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +__extension__ ({ \
 +	register unsigned int r = 0; \
 +	signed char i; \
-+	unsigned long long mpmul = 0x1000000000000000; \
++	unsigned long long mpmul = 0x1000000000000000ull; \
 +	if (((x.exponent & 0x7FFF) >= 0x4000) && ((x.exponent & 0x7FFF) < 0x4016)) \
 +	{ \
 +		for (i = 0; i <= (x.exponent & 0x7FFF) - 0x4000; i++) \
@@ -3840,7 +3855,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +__extension__ ({ \
 +	REAL_VALUE_TYPE r = ZERO; \
 +	signed char i; \
-+	unsigned long long mpmul = 0x1000000000000000; \
++	unsigned long long mpmul = 0x1000000000000000ull; \
 +	r.exponent = (x).exponent; \
 +	if (((r.exponent & 0x7FFF) >= 0x4000) && ((r.exponent & 0x7FFF) < 0x4016)) \
 +	{ \
@@ -3904,14 +3919,14 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +#define REAL_VALUE_TO_TARGET_LONG_DOUBLE(IN, OUT) \
 +do { \
 +	REAL_VALUE_TYPE f = (IN); \
-+	(OUT)[0] = f.exponent * 0x10000 + ((unsigned short) (f.mantissa / 0x1000000000000)), (OUT)[1] = (unsigned long) (f.mantissa / 0x10000), (OUT)[2] = ((unsigned short) (f.mantissa)) * 0x10000; \
++	(OUT)[0] = f.exponent * 0x10000 + ((unsigned short) (f.mantissa / 0x1000000000000ull)), (OUT)[1] = (unsigned long) (f.mantissa / 0x10000), (OUT)[2] = ((unsigned short) (f.mantissa)) * 0x10000; \
 +} while (0)
 +
 +#undef REAL_VALUE_TO_TARGET_SMAP_BCD
 +#define REAL_VALUE_TO_TARGET_SMAP_BCD(IN, OUT) \
 +do { \
 +	REAL_VALUE_TYPE f = (IN); \
-+	(OUT)[0] = f.exponent, (OUT)[1] = (unsigned long) (f.mantissa / 0x100000000), (OUT)[2] = (unsigned long) (f.mantissa); \
++	(OUT)[0] = f.exponent, (OUT)[1] = (unsigned long) (f.mantissa / 0x100000000ull), (OUT)[2] = (unsigned long) (f.mantissa); \
 +} while (0)
 +
 +#define REAL_VALUE_TO_STRING(IN, OUT) \
@@ -4217,7 +4232,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-tree.h gcc-4.1-20051216-src/gcc/c-tree.h
  extern struct c_declarator *build_function_declarator (struct c_arg_info *,
 diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typeck.c
 --- gcc-4.1-20051216.orig/gcc/c-typeck.c	2005-12-08 12:24:07.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-typeck.c	2005-12-19 00:34:06.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/c-typeck.c	2005-12-21 05:26:58.000000000 +0100
 @@ -83,6 +83,8 @@
  static tree lookup_field (tree, tree);
  static tree convert_arguments (tree, tree, tree, tree);
@@ -4454,7 +4469,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
    /* If a binary op has been requested, combine the old LHS value with the RHS
       producing the value we should actually store into the LHS.  */
  
-@@ -3548,6 +3717,42 @@
+@@ -3548,6 +3717,45 @@
        newrhs = build_binary_op (modifycode, lhs, rhs, 1);
      }
  
@@ -4474,10 +4489,13 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
 +    case FIX_FLOOR_EXPR:
 +    case FIX_ROUND_EXPR:
 +    case FIX_CEIL_EXPR:
-+      newrhs = default_function_array_conversion (newrhs);
 +      {
++	struct c_expr newrhs_expr;
 +	tree inner_lhs = TREE_OPERAND (lhs, 0);
 +	tree result;
++	newrhs_expr.value = newrhs;
++	newrhs_expr = default_function_array_conversion (newrhs_expr);
++	newrhs = newrhs_expr.value;
 +	result = build_modify_expr (inner_lhs, NOP_EXPR,
 +				    convert (TREE_TYPE (inner_lhs),
 +					     convert (lhstype, newrhs)));
@@ -4497,7 +4515,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
    if (!lvalue_or_else (lhs, lv_assign))
      return error_mark_node;
  
-@@ -4343,10 +4548,11 @@
+@@ -4343,10 +4551,11 @@
  {
    char *ofwhat;
  
@@ -4511,7 +4529,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
  }
  
  /* Issue a pedantic warning for a bad initializer component.
-@@ -4358,10 +4564,11 @@
+@@ -4358,10 +4567,11 @@
  {
    char *ofwhat;
  
@@ -4525,7 +4543,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
  }
  
  /* Issue a warning for a bad initializer component.
-@@ -4373,10 +4580,11 @@
+@@ -4373,10 +4583,11 @@
  {
    char *ofwhat;
  
@@ -4938,7 +4956,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/explow.c gcc-4.1-20051216-src/gcc/explow.c
  
 diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
 --- gcc-4.1-20051216.orig/gcc/expr.c	2005-12-13 09:17:18.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/expr.c	2005-12-19 01:00:21.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/expr.c	2005-12-21 05:52:18.000000000 +0100
 @@ -748,7 +748,7 @@
    if (GET_MODE (x) != VOIDmode)
      oldmode = GET_MODE (x);
@@ -4973,12 +4991,12 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
    retval = expand_expr (call_expr, NULL_RTX, VOIDmode, 0);
 +#endif /* 0 */
 +
-+  emit_library_call_value (memcpy_libfunc, retval, LCT_NORMAL,
-+                           VOIDmode, 3, dst_addr, Pmode,
-+                           src_addr, Pmode,
-+                           convert_to_mode (TYPE_MODE (sizetype),
-+                                            size, TYPE_UNSIGNED (sizetype)),
-+                           TYPE_MODE (sizetype));
++  retval = emit_library_call_value (memcpy_libfunc, NULL_RTX, LCT_NORMAL,
++                                    VOIDmode, 3, dst_addr, Pmode,
++                                    src_addr, Pmode,
++                                    convert_to_mode (TYPE_MODE (sizetype),
++                                                     size, TYPE_UNSIGNED (sizetype)),
++                                    TYPE_MODE (sizetype));
  
    return retval;
  }
@@ -5007,12 +5025,12 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
 +#endif /* 0 */
 +
 +  /* Note: Our memset libcall expects a short integer zero even with -mlong.  */
-+  emit_library_call_value (memset_libfunc, retval, LCT_NORMAL,
-+                           VOIDmode, 3, object, Pmode,
-+                           const0_rtx, TYPE_MODE (short_integer_type_node),
-+                           convert_to_mode (TYPE_MODE (sizetype),
-+                                            size, TYPE_UNSIGNED (sizetype)),
-+                           TYPE_MODE (sizetype));
++  retval = emit_library_call_value (memset_libfunc, NULL_RTX, LCT_NORMAL,
++                                    VOIDmode, 3, object, Pmode,
++                                    const0_rtx, TYPE_MODE (short_integer_type_node),
++                                    convert_to_mode (TYPE_MODE (sizetype),
++                                                     size, TYPE_UNSIGNED (sizetype)),
++                                    TYPE_MODE (sizetype));
  
    return retval;
  }
@@ -5163,7 +5181,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/flags.h gcc-4.1-20051216-src/gcc/flags.h
  #endif /* ! GCC_FLAGS_H */
 diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-const.c
 --- gcc-4.1-20051216.orig/gcc/fold-const.c	2005-11-26 00:12:32.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/fold-const.c	2005-12-19 03:00:36.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/fold-const.c	2005-12-21 05:34:45.000000000 +0100
 @@ -1555,7 +1555,7 @@
        if ((flag_rounding_math
  	   || (REAL_MODE_FORMAT_COMPOSITE_P (mode)
@@ -5231,64 +5249,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  
      default:
        break;
-@@ -7839,8 +7849,11 @@
- 	     when x is NaN, since x * 0 is also NaN.  Nor are they the
- 	     same in modes with signed zeros, since multiplying a
- 	     negative value by 0 gives -0, not +0.  */
-+	  /* (TIGCC 20050210) We can do this for UNSIGNED_ZERO even when honoring
-+	                      signed zeros. */
- 	  if (!HONOR_NANS (TYPE_MODE (TREE_TYPE (arg0)))
--	      && !HONOR_SIGNED_ZEROS (TYPE_MODE (TREE_TYPE (arg0)))
-+	      && (!HONOR_SIGNED_ZEROS (TYPE_MODE (TREE_TYPE (arg0)))
-+	          || real_uzerop (arg1))
- 	      && real_zerop (arg1))
- 	    return omit_one_operand (type, arg1, arg0);
- 	  /* In IEEE floating point, x*1 is not equivalent to x for snans.  */
-@@ -9056,7 +9069,7 @@
- 				  build_real (TREE_TYPE (arg1), dconst0));
- 
- 	    /* x != NaN is always true, other ops are always false.  */
--	    if (REAL_VALUE_ISNAN (cst)
-+	    if (REAL_VALUE_ISNANUINF (cst)
- 		&& ! HONOR_SNANS (TYPE_MODE (TREE_TYPE (arg1))))
- 	      {
- 		tem = (code == NE_EXPR) ? integer_one_node : integer_zero_node;
-@@ -9829,7 +9842,7 @@
- 
-       /* If the first operand is NaN, the result is constant.  */
-       if (TREE_CODE (arg0) == REAL_CST
--	  && REAL_VALUE_ISNAN (TREE_REAL_CST (arg0))
-+	  && REAL_VALUE_ISNANUINF (TREE_REAL_CST (arg0))
- 	  && (code != LTGT_EXPR || ! flag_trapping_math))
- 	{
- 	  t1 = (code == ORDERED_EXPR || code == LTGT_EXPR)
-@@ -9840,7 +9853,7 @@
- 
-       /* If the second operand is NaN, the result is constant.  */
-       if (TREE_CODE (arg1) == REAL_CST
--	  && REAL_VALUE_ISNAN (TREE_REAL_CST (arg1))
-+	  && REAL_VALUE_ISNANUINF (TREE_REAL_CST (arg1))
- 	  && (code != LTGT_EXPR || ! flag_trapping_math))
- 	{
- 	  t1 = (code == ORDERED_EXPR || code == LTGT_EXPR)
-@@ -9878,12 +9891,12 @@
-     case COMPOUND_EXPR:
-       /* When pedantic, a compound expression can be neither an lvalue
- 	 nor an integer constant expression.  */
--      if (TREE_SIDE_EFFECTS (arg0) || TREE_CONSTANT (arg1))
-+      if (TREE_SIDE_EFFECTS (arg0) || pedantic)
- 	return NULL_TREE;
-       /* Don't let (0, 0) be null pointer constant.  */
--      tem = integer_zerop (arg1) ? build1 (NOP_EXPR, type, arg1)
--				 : fold_convert (type, arg1);
--      return pedantic_non_lvalue (tem);
-+      if (integer_zerop (arg1))
-+	return build1 (NOP_EXPR, type, arg1);
-+      return convert (type, arg1);
- 
-     case COMPLEX_EXPR:
-       if (wins)
-@@ -10178,6 +10191,21 @@
+@@ -7017,6 +7027,21 @@
      } /* switch (code) */
  }
  
@@ -5307,9 +5268,66 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
 +	      && real_uzerop (TREE_IMAGPART (expr))));
 +}
 +
- /* Perform constant folding and related simplification of EXPR.
-    The related simplifications include x*1 => x, x*0 => 0, etc.,
-    and application of the associative law.
+ /* Fold a binary expression of code CODE and type TYPE with operands
+    OP0 and OP1.  Return the folded expression if folding is
+    successful.  Otherwise, return NULL_TREE.  */
+@@ -7839,8 +7864,11 @@
+ 	     when x is NaN, since x * 0 is also NaN.  Nor are they the
+ 	     same in modes with signed zeros, since multiplying a
+ 	     negative value by 0 gives -0, not +0.  */
++	  /* (TIGCC 20050210) We can do this for UNSIGNED_ZERO even when honoring
++	                      signed zeros. */
+ 	  if (!HONOR_NANS (TYPE_MODE (TREE_TYPE (arg0)))
+-	      && !HONOR_SIGNED_ZEROS (TYPE_MODE (TREE_TYPE (arg0)))
++	      && (!HONOR_SIGNED_ZEROS (TYPE_MODE (TREE_TYPE (arg0)))
++	          || real_uzerop (arg1))
+ 	      && real_zerop (arg1))
+ 	    return omit_one_operand (type, arg1, arg0);
+ 	  /* In IEEE floating point, x*1 is not equivalent to x for snans.  */
+@@ -9056,7 +9084,7 @@
+ 				  build_real (TREE_TYPE (arg1), dconst0));
+ 
+ 	    /* x != NaN is always true, other ops are always false.  */
+-	    if (REAL_VALUE_ISNAN (cst)
++	    if (REAL_VALUE_ISNANUINF (cst)
+ 		&& ! HONOR_SNANS (TYPE_MODE (TREE_TYPE (arg1))))
+ 	      {
+ 		tem = (code == NE_EXPR) ? integer_one_node : integer_zero_node;
+@@ -9829,7 +9857,7 @@
+ 
+       /* If the first operand is NaN, the result is constant.  */
+       if (TREE_CODE (arg0) == REAL_CST
+-	  && REAL_VALUE_ISNAN (TREE_REAL_CST (arg0))
++	  && REAL_VALUE_ISNANUINF (TREE_REAL_CST (arg0))
+ 	  && (code != LTGT_EXPR || ! flag_trapping_math))
+ 	{
+ 	  t1 = (code == ORDERED_EXPR || code == LTGT_EXPR)
+@@ -9840,7 +9868,7 @@
+ 
+       /* If the second operand is NaN, the result is constant.  */
+       if (TREE_CODE (arg1) == REAL_CST
+-	  && REAL_VALUE_ISNAN (TREE_REAL_CST (arg1))
++	  && REAL_VALUE_ISNANUINF (TREE_REAL_CST (arg1))
+ 	  && (code != LTGT_EXPR || ! flag_trapping_math))
+ 	{
+ 	  t1 = (code == ORDERED_EXPR || code == LTGT_EXPR)
+@@ -9878,12 +9906,12 @@
+     case COMPOUND_EXPR:
+       /* When pedantic, a compound expression can be neither an lvalue
+ 	 nor an integer constant expression.  */
+-      if (TREE_SIDE_EFFECTS (arg0) || TREE_CONSTANT (arg1))
++      if (TREE_SIDE_EFFECTS (arg0) || pedantic)
+ 	return NULL_TREE;
+       /* Don't let (0, 0) be null pointer constant.  */
+-      tem = integer_zerop (arg1) ? build1 (NOP_EXPR, type, arg1)
+-				 : fold_convert (type, arg1);
+-      return pedantic_non_lvalue (tem);
++      if (integer_zerop (arg1))
++	return build1 (NOP_EXPR, type, arg1);
++      return convert (type, arg1);
+ 
+     case COMPLEX_EXPR:
+       if (wins)
 @@ -11269,7 +11297,11 @@
        }
  
@@ -5726,7 +5744,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/machmode.def gcc-4.1-20051216-src/gcc/machm
     FIXME define this only for targets that need it.  */
 diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
 --- gcc-4.1-20051216.orig/gcc/optabs.c	2005-12-01 23:50:31.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/optabs.c	2005-12-18 22:24:47.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/optabs.c	2005-12-21 06:30:16.000000000 +0100
 @@ -1747,7 +1747,7 @@
    /* Look for a wider mode of the same class for which it appears we can do
       the operation.  */
@@ -5745,14 +5763,14 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
      {
        for (wider_mode = GET_MODE_WIDER_MODE (mode); wider_mode != VOIDmode;
  	   wider_mode = GET_MODE_WIDER_MODE (wider_mode))
-@@ -2231,6 +2231,7 @@
-   return ret;
+@@ -2211,6 +2211,7 @@
+   return 0;
  }
  
 +#if 0 /* (TIGCC 20050216) */
- /* Expand a floating point absolute value or negation operation via a
-    logical operation on the sign bit.  */
- 
+ /* Extract the OMODE lowpart from VAL, which has IMODE.  Under certain
+    conditions, VAL may already be a SUBREG against which we cannot generate
+    a further SUBREG.  In this case, we expect forcing the value into a
 @@ -2335,6 +2336,7 @@
  
    return target;
@@ -5813,14 +5831,14 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  
    /* If we have a MAX insn, we can do this as MAX (x, -x).  */
    if (smax_optab->handlers[(int) mode].insn_code != CODE_FOR_nothing
-@@ -2820,6 +2828,7 @@
+@@ -2739,6 +2747,7 @@
+   return target;
  }
  
- 
 +#if 0
- /* A subroutine of expand_copysign, perform the entire copysign operation
-    with integer bitmasks.  BITPOS is the position of the sign bit; OP0_IS_ABS
-    is true if op0 is known to have its sign bit clear.  */
+ /* A subroutine of expand_copysign, perform the copysign operation using the
+    abs and neg primitives advertised to exist on the target.  The assumption
+    is that we have a split register file, and leaving op0 in fp registers,
 @@ -2971,6 +2980,7 @@
    return expand_copysign_bit (mode, op0, op1, target,
  			      fmt->signbit_rw, op0_is_abs);
@@ -6032,7 +6050,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/print-tree.c gcc-4.1-20051216-src/gcc/print
  	  }
 diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
 --- gcc-4.1-20051216.orig/gcc/real.c	2005-09-19 19:01:40.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/real.c	2005-12-18 22:24:50.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/real.c	2005-12-21 05:58:07.000000000 +0100
 @@ -72,6 +72,7 @@
     adjust the significand to match.  */
  
@@ -6894,7 +6912,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
  /* A subroutine of real_to_decimal.  Compute the quotient and remainder
     of NUM / DEN.  Return the quotient and place the remainder in NUM.
     It is expected that NUM / DEN are close enough that the quotient is
-@@ -1749,6 +2461,327 @@
+@@ -1749,6 +2461,326 @@
  
    sprintf (p, "p%+d", exp);
  }
@@ -6904,7 +6922,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
 +{
 +	const char *strpart = string;
 +	unsigned char state = 0;
-+	unsigned long long mpmul = 0x1000000000000000;
++	unsigned long long mpmul = 0x1000000000000000ull;
 +	signed short expshift = -1;
 +	unsigned short exp = 0;
 +	unsigned short expmul = 1;
@@ -7148,7 +7166,6 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
 +	unsigned int negative = 0;
 +	unsigned short exp = 0;
 +	unsigned short expsign = 1;
-+	unsigned long exp2 = 1;
 +	rdiv.digits = xmalloc (1);
 +	*(rdiv.digits) = 1;
 +	while (strpart && *strpart)
@@ -7222,7 +7239,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
  
  /* Initialize R from a decimal or hexadecimal string.  The string is
     assumed to have been syntax checked already.  */
-@@ -1756,6 +2789,17 @@
+@@ -1756,6 +2788,17 @@
  void
  real_from_string (REAL_VALUE_TYPE *r, const char *str)
  {
@@ -7240,7 +7257,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
    int exp = 0;
    bool sign = false;
  
-@@ -1941,6 +2985,7 @@
+@@ -1941,6 +2984,7 @@
   overflow:
    get_inf (r, sign);
    return;
@@ -7248,11 +7265,11 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
  }
  
  /* Legacy.  Similar, but return the result directly.  */
-@@ -1964,6 +3009,67 @@
+@@ -1964,6 +3008,67 @@
  		   unsigned HOST_WIDE_INT low, HOST_WIDE_INT high,
  		   int unsigned_p)
  {
-+  int i, j, e = -1, lastdigit = 0;
++  int j, e = -1, lastdigit = 0;
 +  bool negative = high < 0 && !unsigned_p;
 +  unsigned HOST_WIDE_INT uhigh = (unsigned HOST_WIDE_INT)high;
 +  unsigned HOST_WIDE_INT ulow = low;
@@ -7316,7 +7333,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
    if (low == 0 && high == 0)
      get_zero (r, 0);
    else
-@@ -2001,8 +3107,10 @@
+@@ -2001,8 +3106,10 @@
  
    if (mode != VOIDmode)
      real_convert (r, mode, r);
@@ -7327,7 +7344,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
  /* Returns 10**2**N.  */
  
  static const REAL_VALUE_TYPE *
-@@ -2490,6 +3598,7 @@
+@@ -2490,6 +3597,7 @@
  
    return fmt->p * fmt->log2_b;
  }
@@ -7335,7 +7352,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
  
  /* Return a hash value for the given real value.  */
  /* ??? The "unsigned int" return value is intended to be hashval_t,
-@@ -2498,6 +3607,12 @@
+@@ -2498,6 +3606,12 @@
  unsigned int
  real_hash (const REAL_VALUE_TYPE *r)
  {
@@ -7348,7 +7365,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
    unsigned int h;
    size_t i;
  
-@@ -2534,8 +3649,10 @@
+@@ -2534,8 +3648,10 @@
        h ^= r->sig[i];
  
    return h;
@@ -7359,7 +7376,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
  /* IEEE single-precision format.  */
  
  static void encode_ieee_single (const struct real_format *fmt,
-@@ -4705,4 +5822,5 @@
+@@ -4705,4 +5821,5 @@
  {
    r->sign = x->sign;
  }
@@ -7595,7 +7612,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/sdbout.c gcc-4.1-20051216-src/gcc/sdbout.c
  }
 diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/simplify-rtx.c
 --- gcc-4.1-20051216.orig/gcc/simplify-rtx.c	2005-11-16 18:15:23.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/simplify-rtx.c	2005-12-19 03:19:57.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/simplify-rtx.c	2005-12-21 06:03:17.000000000 +0100
 @@ -494,13 +494,14 @@
  	 both +0, (minus Y X) is the same as (minus X Y).  If the
  	 rounding mode is towards +infinity (or -infinity) then the two
@@ -7699,7 +7716,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
 +                          for 3-sign-zeros. */
        if (!(HONOR_SIGNED_ZEROS (mode)
 -	    && HONOR_SIGN_DEPENDENT_ROUNDING (mode))
-+	    /*&& HONOR_SIGN_DEPENDENT_ROUNDING (mode))*/
++	    /*&& HONOR_SIGN_DEPENDENT_ROUNDING (mode)*/)
  	  && trueop1 == CONST0_RTX (mode))
  	return op0;
  
@@ -7724,13 +7741,14 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
  	  long tmp0[4];
  	  long tmp1[4];
  	  REAL_VALUE_TYPE r;
-@@ -2182,6 +2191,30 @@
+@@ -2182,6 +2191,31 @@
  	      }
  	    }
  	   real_from_target (&r, tmp0, mode);
 +#else
 +	  /* (TIGCC 20050205) Use SMAP BCD representation directly. */
-+	  REAL_VALUE_TYPE *tmp1, r;
++	  const REAL_VALUE_TYPE *tmp1;
++	  REAL_VALUE_TYPE r;
 +
 +	  r = *CONST_DOUBLE_REAL_VALUE (op0);
 +	  tmp1 = CONST_DOUBLE_REAL_VALUE (op1);
@@ -7755,7 +7773,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
  	   return CONST_DOUBLE_FROM_REAL_VALUE (r, mode);
  	}
        else
-@@ -2261,7 +2294,7 @@
+@@ -2261,7 +2295,7 @@
  	  if ((flag_rounding_math
  	       || (REAL_MODE_FORMAT_COMPOSITE_P (mode)
  		   && !flag_unsafe_math_optimizations))
@@ -7764,7 +7782,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
  	    return NULL_RTX;
  
  	  return CONST_DOUBLE_FROM_REAL_VALUE (result, mode);
-@@ -3116,7 +3149,7 @@
+@@ -3116,7 +3150,7 @@
        REAL_VALUE_FROM_CONST_DOUBLE (d1, trueop1);
  
        /* Comparisons are unordered iff at least one of the values is NaN.  */
@@ -7773,12 +7791,12 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
  	switch (code)
  	  {
  	  case UNEQ:
-@@ -3639,13 +3672,14 @@
+@@ -3639,13 +3673,14 @@
  	    }
  	  else
  	    {
 -	      long tmp[max_bitsize / 32];
-+	      REAL_VALUE_TYPE *tmp;
++	      const REAL_VALUE_TYPE *tmp;
  	      int bitsize = GET_MODE_BITSIZE (GET_MODE (el));
  
  	      gcc_assert (GET_MODE_CLASS (GET_MODE (el)) == MODE_FLOAT);
@@ -7789,7 +7807,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
  	      real_to_target (tmp, CONST_DOUBLE_REAL_VALUE (el),
  			      GET_MODE (el));
  
-@@ -3667,6 +3701,14 @@
+@@ -3667,6 +3702,14 @@
  		 zero.  */
  	      for (; i < elem_bitsize; i += value_bit)
  		*vp++ = 0;
@@ -7804,7 +7822,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
  	    }
  	  break;
  	  
-@@ -3764,6 +3806,7 @@
+@@ -3764,6 +3807,7 @@
  	case MODE_FLOAT:
  	  {
  	    REAL_VALUE_TYPE r;
@@ -7812,7 +7830,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
  	    long tmp[max_bitsize / 32];
  	    
  	    /* real_from_target wants its input in words affected by
-@@ -3783,6 +3826,14 @@
+@@ -3783,6 +3827,14 @@
  	      }
  
  	    real_from_target (&r, tmp, outer_submode);
@@ -7997,6 +8015,37 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree-inline.c gcc-4.1-20051216-src/gcc/tree
    /* We will be inlining this callee.  */
  
    id->eh_region = lookup_stmt_eh_region (stmt);
+diff -Naur gcc-4.1-20051216.orig/gcc/tree-object-size.c gcc-4.1-20051216-src/gcc/tree-object-size.c
+--- gcc-4.1-20051216.orig/gcc/tree-object-size.c	2005-07-03 18:11:42.000000000 +0200
++++ gcc-4.1-20051216-src/gcc/tree-object-size.c	2005-12-21 06:20:24.000000000 +0100
+@@ -247,9 +247,11 @@
+ 	arg_mask = 2;
+ 	break;
+ 	*/
++#if 0 /* (TIGCC 20051221) */
+       case BUILT_IN_CALLOC:
+ 	arg_mask = 3;
+ 	break;
++#endif /* 0 */
+       default:
+ 	break;
+       }
+@@ -297,6 +299,7 @@
+       case BUILT_IN_STRNCPY:
+       case BUILT_IN_STRCAT:
+       case BUILT_IN_STRNCAT:
++#if 0 /* (TIGCC 20051221) */
+       case BUILT_IN_MEMCPY_CHK:
+       case BUILT_IN_MEMMOVE_CHK:
+       case BUILT_IN_MEMSET_CHK:
+@@ -304,6 +307,7 @@
+       case BUILT_IN_STRNCPY_CHK:
+       case BUILT_IN_STRCAT_CHK:
+       case BUILT_IN_STRNCAT_CHK:
++#endif /* 0 */
+ 	if (arglist)
+ 	  return TREE_VALUE (arglist);
+ 	break;
 diff -Naur gcc-4.1-20051216.orig/gcc/tree-pretty-print.c gcc-4.1-20051216-src/gcc/tree-pretty-print.c
 --- gcc-4.1-20051216.orig/gcc/tree-pretty-print.c	2005-07-31 22:55:41.000000000 +0200
 +++ gcc-4.1-20051216-src/gcc/tree-pretty-print.c	2005-12-18 22:24:53.000000000 +0100
