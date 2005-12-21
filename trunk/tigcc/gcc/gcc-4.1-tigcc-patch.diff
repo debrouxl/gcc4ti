@@ -1378,7 +1378,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/i386/xm-mingw32.h gcc-4.1-20051216-s
  #undef PATH_SEPARATOR
 diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc/config/m68k/m68k.c
 --- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c	2005-07-12 01:32:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.c	2005-12-19 02:00:46.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.c	2005-12-21 04:40:24.000000000 +0100
 @@ -43,6 +43,11 @@
  #include "target-def.h"
  #include "debug.h"
@@ -1873,7 +1873,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +	      REAL_VALUE_TYPE r;
 +	      long l[3];
 +
-+	      abort ();
++	      gcc_unreachable ();
 +	      REAL_VALUE_FROM_CONST_DOUBLE (r, operands[1]);
 +	      REAL_VALUE_TO_TARGET_LONG_DOUBLE (r, l);
 +	      operands[1] = GEN_INT (l[0]);
@@ -1884,7 +1884,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +	    {
 +	      /* actually, no non-CONST_DOUBLE constant should ever
 +		 appear here.  */
-+	      abort ();
++	      gcc_unreachable ();
 +	      if (GET_CODE (operands[1]) == CONST_INT && INTVAL (operands[1]) < 0)
 +		latehalf[1] = constm1_rtx;
 +	      else
@@ -1951,7 +1951,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +
 +	  /* JRV says this can't happen: */
 +	  if (addreg0 || addreg1)
-+	    abort ();
++	    gcc_unreachable ();
 +
 +	  /* Only the middle reg conflicts; simply put it last. */
 +	  output_asm_insn (singlemove_string (operands), operands);
@@ -2038,7 +2038,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  int
  floating_exact_log2 (rtx x)
  {
-+abort();
++gcc_unreachable();
 +#if 0
    REAL_VALUE_TYPE r, r1;
    int exp;
@@ -3596,7 +3596,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/predicates.md gcc-4.1-20051216-
 +})
 diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/config/smapbcd.h
 --- gcc-4.1-20051216.orig/gcc/config/smapbcd.h	1970-01-01 01:00:00.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/smapbcd.h	2005-12-18 22:24:36.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/config/smapbcd.h	2005-12-21 04:43:27.000000000 +0100
 @@ -0,0 +1,369 @@
 +/* Definitions for SMAP II BCD support in the GNU C Compiler.
 +   These macros implement software BCD floating point support;
@@ -3894,11 +3894,11 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +
 +#undef REAL_VALUE_TO_TARGET_SINGLE
 +#define REAL_VALUE_TO_TARGET_SINGLE(IN, OUT) \
-+	abort();
++	gcc_unreachable();
 +
 +#undef REAL_VALUE_TO_TARGET_DOUBLE
 +#define REAL_VALUE_TO_TARGET_DOUBLE(IN, OUT) \
-+	abort();
++	gcc_unreachable();
 +
 +#undef REAL_VALUE_TO_TARGET_LONG_DOUBLE
 +#define REAL_VALUE_TO_TARGET_LONG_DOUBLE(IN, OUT) \
