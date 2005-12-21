@@ -1,8 +1,6 @@
 Changelog of the TIGCC-local changes to GCC (4.1 branch):
 
-2005-12-18 - 2005-12-20  Kevin Kofler  <Kevin@tigcc.ticalc.org>
-
-WARNING: Patches to the parser (formerly c-parse.in) have NOT been merged yet!
+2005-12-18 - 2005-12-21  Kevin Kofler  <Kevin@tigcc.ticalc.org>
 
         * Import GCC 4.1 20051216 snapshot.
         * Merge changes from GCC 4.0.2 (see ChangeLog-gcc-4.0.txt).
@@ -102,11 +100,13 @@ WARNING: Patches to the parser (formerly c-parse.in) have NOT been merged yet!
                                   Check for "INTVAL (op) >= 0" (possibly wrong?).
         * config/m68k/m68k.c (extended_address_operand): Move to config/m68k/predicates.md.
         * config/m68k/m68k.h: Don't add extended_address_operand to PREDICATE_CODES anymore.
-                              Don't define MASK_* and TARGET_* (except MASK_REG_RELATIVE, TARGET_REG_RELATIVE) anymore.
+                              Don't define MASK_* and TARGET_* (except MASK_REG_RELATIVE,
+                              TARGET_REG_RELATIVE) anymore.
           (TARGET_SWITCHES, TARGET_OPTIONS): Move options to...
         * config/m68k/m68k.opt: ... here. Remove "-mnoalign-int", "-mnopcrel", "-mnotios", "-mnoregparm",
-                                "-mnomerge-sections", "-mnomerge-to-data", "-mnorodata-to-text", "-mnobss" (use
-                                "-mno-*" with the dash instead). Enable negative for "-mcoff-abslines".
+                                "-mnomerge-sections", "-mnomerge-to-data", "-mnorodata-to-text",
+                                "-mnobss" (use "-mno-*" with the dash instead). Enable negative for
+                                "-mcoff-abslines".
         * Revert broken part of PR debug/24070 fix:
           2005-10-06  Richard Henderson  <rth@redhat.com>
             PR debug/24070
@@ -115,3 +115,9 @@ WARNING: Patches to the parser (formerly c-parse.in) have NOT been merged yet!
                       stack-smashing protection builtins.
           (fold_builtins_1): Disable stack-smashing protection builtins.
         * builtins.def: Likewise.
+        * Drop changes to c-parse.in (replaced by c-parser.c).
+        * c-parser.c (c_parser_parameter_declaration): Handle an optional asmspec before the attributes
+                                                       to support register parameters. Pass it to
+                                                       build_c_parm (or NULL if there is none).
+          (c_parser_compound_statement_nostart): Don't error about labels at end of compound statements,
+                                                 only pedwarn if pedantic.

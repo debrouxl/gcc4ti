@@ -4079,6 +4079,44 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-opts.c gcc-4.1-20051216-src/gcc/c-opts.c
  
    if (flag_preprocess_only)
      {
+diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parser.c
+--- gcc-4.1-20051216.orig/gcc/c-parser.c	2005-10-14 23:35:47.000000000 +0200
++++ gcc-4.1-20051216-src/gcc/c-parser.c	2005-12-21 04:31:26.000000000 +0100
+@@ -2527,6 +2527,7 @@
+   struct c_declspecs *specs;
+   struct c_declarator *declarator;
+   tree prefix_attrs;
++  tree maybeasm = NULL_TREE;
+   tree postfix_attrs = NULL_TREE;
+   bool dummy = false;
+   if (!c_parser_next_token_starts_declspecs (parser))
+@@ -2556,10 +2557,14 @@
+       c_parser_skip_until_found (parser, CPP_COMMA, NULL);
+       return NULL;
+     }
++  /* (TIGCC 20051221) Register parameter support. We accept an ASM
++     at this place to specify a register for the parameter. */
++  if (c_parser_next_token_is_keyword (parser, RID_ASM))
++    maybeasm = c_parser_simple_asm_expr (parser);
+   if (c_parser_next_token_is_keyword (parser, RID_ATTRIBUTE))
+     postfix_attrs = c_parser_attributes (parser);
+   return build_c_parm (specs, chainon (postfix_attrs, prefix_attrs),
+-		       declarator);
++		       declarator, maybeasm);
+ }
+ 
+ /* Parse a string literal in an asm expression.  It should not be
+@@ -3315,8 +3320,8 @@
+ 	  c_parser_statement_after_labels (parser);
+ 	}
+     }
+-  if (last_label)
+-    error ("label at end of compound statement");
++  if (last_label && pedantic)
++    pedwarn ("ISO C doesn't allow labels at the end of compound statements");
+   c_parser_consume_token (parser);
+ }
+ 
 diff -Naur gcc-4.1-20051216.orig/gcc/cppdefault.c gcc-4.1-20051216-src/gcc/cppdefault.c
 --- gcc-4.1-20051216.orig/gcc/cppdefault.c	2005-06-25 04:02:01.000000000 +0200
 +++ gcc-4.1-20051216-src/gcc/cppdefault.c	2005-12-18 22:24:36.000000000 +0100
