@@ -4096,7 +4096,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-opts.c gcc-4.1-20051216-src/gcc/c-opts.c
      {
 diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parser.c
 --- gcc-4.1-20051216.orig/gcc/c-parser.c	2005-10-14 23:35:47.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-parser.c	2005-12-22 18:13:48.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/c-parser.c	2005-12-22 23:31:57.000000000 +0100
 @@ -911,14 +911,14 @@
  						      struct c_expr *);
  static struct c_expr c_parser_binary_expression (c_parser *, struct c_expr *);
@@ -4163,7 +4163,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
    /* If the expression begins with a parenthesized type name, it may
       be either a cast or a compound literal; we need to see whether
       the next character is '{' to tell the difference.  If not, it is
-@@ -4488,14 +4490,47 @@
+@@ -4488,14 +4490,28 @@
        if (c_parser_next_token_is (parser, CPP_OPEN_BRACE))
  	return c_parser_postfix_expression_after_paren_type (parser,
  							     type_name);
@@ -4183,37 +4183,18 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
 +static struct c_expr
 +c_parser_cast_expression (c_parser *parser, struct c_expr *after)
 +{
-+  struct c_expr expr;
 +  gcc_assert (!after || c_dialect_objc ());
 +  if (after)
 +    return c_parser_postfix_expression_after_primary (parser, *after, 0);
-+  expr = c_parser_cast_expression_1 (parser, 0);
-+  while (true)
-+    {
-+      switch (c_parser_peek_token (parser)->type)
-+	{
-+	case CPP_PLUS_PLUS:
-+	  /* Postincrement.  */
-+	  c_parser_consume_token (parser);
-+	  expr = default_function_array_conversion (expr);
-+	  expr.value = build_unary_op (POSTINCREMENT_EXPR, expr.value, 0);
-+	  expr.original_code = ERROR_MARK;
-+	  break;
-+	case CPP_MINUS_MINUS:
-+	  /* Postdecrement.  */
-+	  c_parser_consume_token (parser);
-+	  expr = default_function_array_conversion (expr);
-+	  expr.value = build_unary_op (POSTDECREMENT_EXPR, expr.value, 0);
-+	  expr.original_code = ERROR_MARK;
-+	  break;
-+	default:
-+	  return expr;
-+	}
-+    }
++  /* Allow all postfix operators, not just ++ and --. Those with higher
++     priority than casts will already have been parsed first, unless they
++     come after ++ and --, in which case they need to be parsed here. */
++  return c_parser_postfix_expression_after_primary (parser,
++           c_parser_cast_expression_1 (parser, 0), 0);
  }
  
  /* Parse an unary expression (C90 6.3.3, C99 6.5.3).
-@@ -4526,7 +4561,7 @@
+@@ -4526,7 +4542,7 @@
     given later.  */
  
  static struct c_expr
@@ -4222,7 +4203,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
  {
    int ext;
    struct c_expr ret, op;
-@@ -4616,10 +4651,10 @@
+@@ -4616,10 +4632,10 @@
  	  op = default_function_array_conversion (op);
  	  return parser_build_unary_op (IMAGPART_EXPR, op);
  	default:
@@ -4235,7 +4216,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
      }
  }
  
-@@ -4664,7 +4699,7 @@
+@@ -4664,7 +4680,7 @@
      }
    else
      {
@@ -4244,7 +4225,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
      sizeof_expr:
        skip_evaluation--;
        in_sizeof--;
-@@ -4720,7 +4755,7 @@
+@@ -4720,7 +4736,7 @@
    else
      {
        struct c_expr ret;
@@ -4253,7 +4234,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
      alignof_expr:
        skip_evaluation--;
        in_alignof--;
-@@ -4784,7 +4819,7 @@
+@@ -4784,7 +4800,7 @@
  */
  
  static struct c_expr
@@ -4262,7 +4243,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
  {
    struct c_expr expr, e1, e2, e3;
    struct c_type_name *t1, *t2;
-@@ -5181,7 +5216,7 @@
+@@ -5181,7 +5197,7 @@
        expr.original_code = ERROR_MARK;
        break;
      }
@@ -4271,7 +4252,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
  }
  
  /* Parse a postfix expression after a parenthesized type name: the
-@@ -5214,7 +5249,7 @@
+@@ -5214,7 +5230,7 @@
      pedwarn ("ISO C90 forbids compound literals");
    expr.value = build_compound_literal (type, init.value);
    expr.original_code = ERROR_MARK;
@@ -4280,7 +4261,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
  }
  
  /* Parse a postfix expression after the initial primary or compound
-@@ -5222,7 +5257,8 @@
+@@ -5222,7 +5238,8 @@
  
  static struct c_expr
  c_parser_postfix_expression_after_primary (c_parser *parser,
@@ -4290,7 +4271,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
  {
    tree ident, idx, exprlist;
    while (true)
-@@ -5286,6 +5322,9 @@
+@@ -5286,6 +5303,9 @@
  	  expr.original_code = ERROR_MARK;
  	  break;
  	case CPP_PLUS_PLUS:
@@ -4300,7 +4281,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
  	  /* Postincrement.  */
  	  c_parser_consume_token (parser);
  	  expr = default_function_array_conversion (expr);
-@@ -5293,6 +5332,9 @@
+@@ -5293,6 +5313,9 @@
  	  expr.original_code = ERROR_MARK;
  	  break;
  	case CPP_MINUS_MINUS:
@@ -8641,13 +8622,13 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  enum section_category
 diff -Naur gcc-4.1-20051216.orig/gcc/version.c gcc-4.1-20051216-src/gcc/version.c
 --- gcc-4.1-20051216.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/version.c	2005-12-22 15:37:18.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/version.c	2005-12-22 23:28:03.000000000 +0100
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.0-pre2)"
++#define VERSUFFIX " (TIGCC 4.1.0-pre3)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
