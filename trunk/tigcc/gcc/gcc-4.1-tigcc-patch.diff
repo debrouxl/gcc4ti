@@ -4096,7 +4096,25 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-opts.c gcc-4.1-20051216-src/gcc/c-opts.c
      {
 diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parser.c
 --- gcc-4.1-20051216.orig/gcc/c-parser.c	2005-10-14 23:35:47.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-parser.c	2005-12-21 04:31:26.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/c-parser.c	2005-12-22 18:13:48.000000000 +0100
+@@ -911,14 +911,14 @@
+ 						      struct c_expr *);
+ static struct c_expr c_parser_binary_expression (c_parser *, struct c_expr *);
+ static struct c_expr c_parser_cast_expression (c_parser *, struct c_expr *);
+-static struct c_expr c_parser_unary_expression (c_parser *);
++static struct c_expr c_parser_unary_expression (c_parser *, bool in_cast);
+ static struct c_expr c_parser_sizeof_expression (c_parser *);
+ static struct c_expr c_parser_alignof_expression (c_parser *);
+-static struct c_expr c_parser_postfix_expression (c_parser *);
++static struct c_expr c_parser_postfix_expression (c_parser *, bool in_cast);
+ static struct c_expr c_parser_postfix_expression_after_paren_type (c_parser *,
+ 								   struct c_type_name *);
+ static struct c_expr c_parser_postfix_expression_after_primary (c_parser *,
+-								struct c_expr);
++								struct c_expr, bool in_cast);
+ static struct c_expr c_parser_expression (c_parser *);
+ static struct c_expr c_parser_expression_conv (c_parser *);
+ static tree c_parser_expr_list (c_parser *, bool);
 @@ -2527,6 +2527,7 @@
    struct c_declspecs *specs;
    struct c_declarator *declarator;
@@ -4132,6 +4150,166 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
    c_parser_consume_token (parser);
  }
  
+@@ -4461,11 +4466,8 @@
+ */
+ 
+ static struct c_expr
+-c_parser_cast_expression (c_parser *parser, struct c_expr *after)
++c_parser_cast_expression_1 (c_parser *parser, bool in_cast)
+ {
+-  gcc_assert (!after || c_dialect_objc ());
+-  if (after)
+-    return c_parser_postfix_expression_after_primary (parser, *after);
+   /* If the expression begins with a parenthesized type name, it may
+      be either a cast or a compound literal; we need to see whether
+      the next character is '{' to tell the difference.  If not, it is
+@@ -4488,14 +4490,47 @@
+       if (c_parser_next_token_is (parser, CPP_OPEN_BRACE))
+ 	return c_parser_postfix_expression_after_paren_type (parser,
+ 							     type_name);
+-      expr = c_parser_cast_expression (parser, NULL);
++      expr = c_parser_cast_expression_1 (parser, 1);
+       expr = default_function_array_conversion (expr);
+       ret.value = c_cast_expr (type_name, expr.value);
+       ret.original_code = ERROR_MARK;
+       return ret;
+     }
+   else
+-    return c_parser_unary_expression (parser);
++    return c_parser_unary_expression (parser, in_cast);
++}
++
++/* (TIGCC 20051222) Postfix operators apply to casts too. */
++static struct c_expr
++c_parser_cast_expression (c_parser *parser, struct c_expr *after)
++{
++  struct c_expr expr;
++  gcc_assert (!after || c_dialect_objc ());
++  if (after)
++    return c_parser_postfix_expression_after_primary (parser, *after, 0);
++  expr = c_parser_cast_expression_1 (parser, 0);
++  while (true)
++    {
++      switch (c_parser_peek_token (parser)->type)
++	{
++	case CPP_PLUS_PLUS:
++	  /* Postincrement.  */
++	  c_parser_consume_token (parser);
++	  expr = default_function_array_conversion (expr);
++	  expr.value = build_unary_op (POSTINCREMENT_EXPR, expr.value, 0);
++	  expr.original_code = ERROR_MARK;
++	  break;
++	case CPP_MINUS_MINUS:
++	  /* Postdecrement.  */
++	  c_parser_consume_token (parser);
++	  expr = default_function_array_conversion (expr);
++	  expr.value = build_unary_op (POSTDECREMENT_EXPR, expr.value, 0);
++	  expr.original_code = ERROR_MARK;
++	  break;
++	default:
++	  return expr;
++	}
++    }
+ }
+ 
+ /* Parse an unary expression (C90 6.3.3, C99 6.5.3).
+@@ -4526,7 +4561,7 @@
+    given later.  */
+ 
+ static struct c_expr
+-c_parser_unary_expression (c_parser *parser)
++c_parser_unary_expression (c_parser *parser, bool in_cast)
+ {
+   int ext;
+   struct c_expr ret, op;
+@@ -4616,10 +4651,10 @@
+ 	  op = default_function_array_conversion (op);
+ 	  return parser_build_unary_op (IMAGPART_EXPR, op);
+ 	default:
+-	  return c_parser_postfix_expression (parser);
++	  return c_parser_postfix_expression (parser, in_cast);
+ 	}
+     default:
+-      return c_parser_postfix_expression (parser);
++      return c_parser_postfix_expression (parser, in_cast);
+     }
+ }
+ 
+@@ -4664,7 +4699,7 @@
+     }
+   else
+     {
+-      expr = c_parser_unary_expression (parser);
++      expr = c_parser_unary_expression (parser, 0);
+     sizeof_expr:
+       skip_evaluation--;
+       in_sizeof--;
+@@ -4720,7 +4755,7 @@
+   else
+     {
+       struct c_expr ret;
+-      expr = c_parser_unary_expression (parser);
++      expr = c_parser_unary_expression (parser, 0);
+     alignof_expr:
+       skip_evaluation--;
+       in_alignof--;
+@@ -4784,7 +4819,7 @@
+ */
+ 
+ static struct c_expr
+-c_parser_postfix_expression (c_parser *parser)
++c_parser_postfix_expression (c_parser *parser, bool in_cast)
+ {
+   struct c_expr expr, e1, e2, e3;
+   struct c_type_name *t1, *t2;
+@@ -5181,7 +5216,7 @@
+       expr.original_code = ERROR_MARK;
+       break;
+     }
+-  return c_parser_postfix_expression_after_primary (parser, expr);
++  return c_parser_postfix_expression_after_primary (parser, expr, in_cast);
+ }
+ 
+ /* Parse a postfix expression after a parenthesized type name: the
+@@ -5214,7 +5249,7 @@
+     pedwarn ("ISO C90 forbids compound literals");
+   expr.value = build_compound_literal (type, init.value);
+   expr.original_code = ERROR_MARK;
+-  return c_parser_postfix_expression_after_primary (parser, expr);
++  return c_parser_postfix_expression_after_primary (parser, expr, 0);
+ }
+ 
+ /* Parse a postfix expression after the initial primary or compound
+@@ -5222,7 +5257,8 @@
+ 
+ static struct c_expr
+ c_parser_postfix_expression_after_primary (c_parser *parser,
+-					   struct c_expr expr)
++					   struct c_expr expr,
++					   bool in_cast)
+ {
+   tree ident, idx, exprlist;
+   while (true)
+@@ -5286,6 +5322,9 @@
+ 	  expr.original_code = ERROR_MARK;
+ 	  break;
+ 	case CPP_PLUS_PLUS:
++	  /* (TIGCC 20051222) Postincrement has lower priority than casts. */
++	  if (in_cast)
++	    return expr;
+ 	  /* Postincrement.  */
+ 	  c_parser_consume_token (parser);
+ 	  expr = default_function_array_conversion (expr);
+@@ -5293,6 +5332,9 @@
+ 	  expr.original_code = ERROR_MARK;
+ 	  break;
+ 	case CPP_MINUS_MINUS:
++	  /* (TIGCC 20051222) Postdecrement has lower priority than casts. */
++	  if (in_cast)
++	    return expr;
+ 	  /* Postdecrement.  */
+ 	  c_parser_consume_token (parser);
+ 	  expr = default_function_array_conversion (expr);
 diff -Naur gcc-4.1-20051216.orig/gcc/cppdefault.c gcc-4.1-20051216-src/gcc/cppdefault.c
 --- gcc-4.1-20051216.orig/gcc/cppdefault.c	2005-06-25 04:02:01.000000000 +0200
 +++ gcc-4.1-20051216-src/gcc/cppdefault.c	2005-12-18 22:24:36.000000000 +0100
@@ -8463,13 +8641,13 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  enum section_category
 diff -Naur gcc-4.1-20051216.orig/gcc/version.c gcc-4.1-20051216-src/gcc/version.c
 --- gcc-4.1-20051216.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/version.c	2005-12-22 02:47:59.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/version.c	2005-12-22 15:37:18.000000000 +0100
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.0-pre1)"
++#define VERSUFFIX " (TIGCC 4.1.0-pre2)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,

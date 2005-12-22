@@ -2,6 +2,22 @@ Changelog of the TIGCC-local changes to GCC (4.1 branch):
 
 2005-12-22  Kevin Kofler  <Kevin@tigcc.ticalc.org>
 
+        * version.c (VERSUFFIX): Bump to "4.1.0-pre2".
+        * c-parser.c (c_parser_cast_expression): Rename to c_parser_cast_expression_1, don't handle
+                                                 Objective C here.
+          (c_parser_cast_expression): New function. Handle Objective C and postfix operators.
+          (c_parser_unary_expression): Add in_cast argument. Pass it to c_parser_postfix_expression.
+          (c_parser_cast_expression_1, c_parser_sizeof_expression, c_parser_alignof_expression): Update
+            calls to c_parser_unary_expression.
+          (c_parser_postfix_expression): Add in_cast argument. Pass it to
+            c_parser_postfix_expression_after_primary.
+          (c_parser_postfix_expression_after_primary): Add in_cast argument. Only accept postincrement/
+            postdecrement if it is false.
+          (c_parser_cast_expression, c_parser_postfix_expression_after_paren_type): Update calls to
+            postfix_expression_after_primary.
+
+2005-12-22  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
         * version.c (VERSUFFIX): Add "4.1.0-pre1" tag.
 
 2005-12-18 - 2005-12-21  Kevin Kofler  <Kevin@tigcc.ticalc.org>
