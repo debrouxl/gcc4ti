@@ -2646,7 +2646,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
  extern int m68k_last_compare_had_fp_operands;
 diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gcc/config/m68k/m68k.md
 --- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md	2005-11-22 21:53:08.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.md	2005-12-18 22:24:36.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.md	2006-01-05 02:54:06.000000000 +0100
 @@ -329,20 +329,22 @@
                   (match_operand:SI 1 "general_src_operand" "mSr,mSa,KTr,Ksr,>")))]
    "!TARGET_COLDFIRE"
@@ -2743,20 +2743,50 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
  })
  
  (define_expand "cmpdf"
-@@ -693,10 +705,11 @@
+@@ -662,6 +674,12 @@
+ 	       && symbolic_operand (XEXP (operands[0], 0), SImode))
+ 	operands[0] = gen_rtx_MEM (SImode,
+ 			       force_reg (SImode, XEXP (operands[0], 0)));
++      /* (TIGCC 20060105) Don't allow writes of a label directly to memory
++                          either. -- Kevin Kofler  */
++      else if (GET_CODE (operands[0]) == MEM
++	       && !push_operand (operands[0], SImode)
++	       && symbolic_operand (operands[1], SImode))
++	operands[1] = force_reg (SImode, operands[1]);
+     }
+ })
+ 
+@@ -693,16 +711,25 @@
  
  ;; Special case of fullword move, where we need to get a non-GOT PIC
  ;; reference into an address register.
 +;; (TIGCC 20040808) This is also needed for -freg-relative-an. -- Kevin Kofler
++;; (TIGCC 20060105) Make sure we have an address register or a push operand.
++;;                  -- Kevin Kofler
  (define_insn ""
-   [(set (match_operand:SI 0 "nonimmediate_operand" "=a<")
+-  [(set (match_operand:SI 0 "nonimmediate_operand" "=a<")
++  [(set (match_operand:SI 0 "register_operand" "=a")
          (match_operand:SI 1 "pcrel_address" ""))]
 -  "TARGET_PCREL"
 +  "TARGET_PCREL || TARGET_REG_RELATIVE"
  {
-   if (push_operand (operands[0], SImode))
-     return "pea %a1";
-@@ -775,13 +788,49 @@
+-  if (push_operand (operands[0], SImode))
+-    return "pea %a1";
+   return "lea %a1,%0";
+ })
+ 
++(define_insn ""
++  [(set (mem:SI (pre_dec:SI (reg:SI SP_REG)))
++        (match_operand:SI 0 "pcrel_address" ""))]
++  "TARGET_PCREL || TARGET_REG_RELATIVE"
++{
++  return "pea %a0";
++})
++
+ (define_expand "movhi"
+   [(set (match_operand:HI 0 "nonimmediate_operand" "")
+ 	(match_operand:HI 1 "general_operand" ""))]
+@@ -775,13 +802,49 @@
    "TARGET_COLDFIRE"
    "* return output_move_strictqi (operands);")
  
@@ -2806,7 +2836,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
  (define_expand "movsf"
    [(set (match_operand:SF 0 "nonimmediate_operand" "")
  	(match_operand:SF 1 "general_operand" ""))]
-@@ -897,6 +946,34 @@
+@@ -897,6 +960,34 @@
  ;; constants.  Most but not all have output templates that handle constants.
  ;; See also LEGITIMATE_CONSTANT_P.
  
@@ -2841,7 +2871,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
  (define_expand "movxf"
    [(set (match_operand:XF 0 "nonimmediate_operand" "")
  	(match_operand:XF 1 "general_operand" ""))]
-@@ -963,6 +1040,46 @@
+@@ -963,6 +1054,46 @@
  })
  
  (define_insn ""
@@ -2888,7 +2918,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
    [(set (match_operand:XF 0 "nonimmediate_operand" "=rm,rf,&rof<>")
  	(match_operand:XF 1 "nonimmediate_operand" "rf,m,rof<>"))]
    "! TARGET_68881 && ! TARGET_COLDFIRE"
-@@ -1233,9 +1350,12 @@
+@@ -1233,9 +1364,12 @@
    "TARGET_CFV4"
    "mvz%.w %1,%0")
  
@@ -2903,7 +2933,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
    ""
    "#")
  
-@@ -1258,8 +1378,8 @@
+@@ -1258,8 +1392,8 @@
    "mvz%.b %1,%0")
  
  (define_insn "zero_extendqisi2"
@@ -2914,7 +2944,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
    ""
    "#")
  
-@@ -4135,7 +4255,11 @@
+@@ -4135,7 +4269,11 @@
        output_asm_insn (INTVAL (operands[2]) <= 8 ? "asr%.l %2,%0" :
  			"moveq %2,%1\;asr%.l %1,%0", operands);
        output_asm_insn ("mov%.l %0,%1\;smi %0", operands);
@@ -2927,7 +2957,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
  	     TARGET_68020 ? "extb%.l %0" : "ext%.w %0\;ext%.l %0";
      }
  })
-@@ -6320,10 +6444,19 @@
+@@ -6320,10 +6458,19 @@
    return "rtd %0";
  })
  
@@ -2949,7 +2979,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
  
  ;; This should not be used unless the add/sub insns can't be.
  
-@@ -6417,6 +6550,9 @@
+@@ -6417,6 +6564,9 @@
  })
  
  ;; Speed up stack adjust followed by a fullword fixedpoint push.
@@ -2959,7 +2989,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
  
  (define_peephole
    [(set (reg:SI SP_REG) (plus:SI (reg:SI SP_REG)
-@@ -6424,7 +6560,8 @@
+@@ -6424,7 +6574,8 @@
     (set (match_operand:SI 1 "push_operand" "=m")
  	(match_operand:SI 2 "general_operand" "g"))]
    "INTVAL (operands[0]) >= 4
@@ -2969,7 +2999,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
  {
    if (INTVAL (operands[0]) > 4)
      {
-@@ -6460,6 +6597,77 @@
+@@ -6460,6 +6611,77 @@
    return "move%.l %2,%@";
  })
  
@@ -3047,7 +3077,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
  ;; Speed up pushing a single byte but leaving four bytes of space.
  
  (define_peephole
-@@ -7092,3 +7300,166 @@
+@@ -7092,3 +7314,166 @@
    default: gcc_unreachable ();
    }
  })
@@ -8642,13 +8672,13 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  enum section_category
 diff -Naur gcc-4.1-20051216.orig/gcc/version.c gcc-4.1-20051216-src/gcc/version.c
 --- gcc-4.1-20051216.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/version.c	2005-12-24 03:49:35.000000000 +0100
++++ gcc-4.1-20051216-src/gcc/version.c	2006-01-05 01:08:22.000000000 +0100
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.0-pre4)"
++#define VERSUFFIX " (TIGCC 4.1.0-pre5)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
