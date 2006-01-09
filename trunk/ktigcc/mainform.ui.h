@@ -40,11 +40,16 @@
 #include <ktexteditor/configinterfaceextension.h>
 #include <kaboutdata.h>
 #include <khelpmenu.h>
+#include <kfiledialog.h>
 #include <cstdio>
 #include <cstdlib>
 using std::puts;
 using std::exit;
 
+const char *TIGCCOpenProjectFileFilter="*.tpr *.h *.c *.s *.asm *.txt|All TIGCC Files (*.tpr *.h *.c *.s *.asm *.txt)\n*.tpr|TIGCC Projects (*.tpr)\n*.h|Header Files (*.h)\n*.c|C Files (*.c)\n*.s|GNU Assembly Files (*.s)\n*.asm|A68k Assembly Files (*.asm)\nText Files (*.txt)\n*.*|All Files (*.*)";
+const char *TIGCCSaveProjectFilter="*.tpr|TIGCC Projects (*.tpr)\n*.*|All Files (*.*)";
+const char *TIGCCProjectDirectory="/usr/local/tigcc/projects";
+KFileDialog *pfiledialog;
 extern const char *tigcc_base;
 extern const char *quill_drv;
 extern char tempdir[];
@@ -393,6 +398,7 @@ void MainForm::init()
   QStringList args(QString("-profile"));
   args.append(QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
   assistant->setArguments(args);
+  pfiledialog=new KFileDialog(TIGCCProjectDirectory,TIGCCOpenProjectFileFilter,this,"File Dialog",TRUE);
   startTimer(100);
 }
 
@@ -410,6 +416,7 @@ void MainForm::destroy()
   delete rootListItem;
   delete khelpmenu;
   delete assistant;
+  delete pfiledialog;
 }
 
 void MainForm::te_popup_aboutToShow()
@@ -474,8 +481,29 @@ void MainForm::fileNewProject()
   updateLeftStatusLabel();
 }
 
+QString SGetFileName(KFileDialog::OperationMode mode,const QString &fileFilter,const QString &caption)
+{
+  pfiledialog->setFilter(fileFilter);
+  pfiledialog->setOperationMode( mode );
+  pfiledialog->setCaption(caption.isNull() ? i18n("Open") : caption);
+  pfiledialog->setMode(KFile::File | KFile::LocalOnly);
+  pfiledialog->exec();
+  return pfiledialog->selectedFile();
+}
+
+QStringList SGetFileName_Multiple(KFileDialog::OperationMode mode,const QString &fileFilter,const QString &caption)
+{
+  pfiledialog->setFilter(fileFilter);
+  pfiledialog->setOperationMode( mode );
+  pfiledialog->setCaption(caption.isNull() ? i18n("Open") : caption);
+  pfiledialog->setMode(KFile::Files | KFile::LocalOnly);
+  pfiledialog->exec();
+  return pfiledialog->selectedFiles();
+}
+
 void MainForm::fileOpen()
 {
+  QString fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File");
   
 }
 
@@ -486,6 +514,7 @@ void MainForm::fileSave()
 
 void MainForm::fileSaveAs()
 {
+  QString fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save Project");
   
 }
 
