@@ -41,14 +41,21 @@
 #include <kaboutdata.h>
 #include <khelpmenu.h>
 #include <kfiledialog.h>
+#include <kurl.h>
 #include <cstdio>
 #include <cstdlib>
 using std::puts;
 using std::exit;
 
-const char *TIGCCOpenProjectFileFilter="*.tpr *.h *.c *.s *.asm *.txt|All TIGCC Files (*.tpr *.h *.c *.s *.asm *.txt)\n*.tpr|TIGCC Projects (*.tpr)\n*.h|Header Files (*.h)\n*.c|C Files (*.c)\n*.s|GNU Assembly Files (*.s)\n*.asm|A68k Assembly Files (*.asm)\nText Files (*.txt)\n*.*|All Files (*.*)";
-const char *TIGCCSaveProjectFilter="*.tpr|TIGCC Projects (*.tpr)\n*.*|All Files (*.*)";
+enum {TIGCCOpenProjectFileFilter=0,TIGCCSaveProjectFilter};
+const char *TIGCCFileFilters[2]=
+{
+    "*.tpr *.h *.c *.s *.asm *.txt|All TIGCC Files (*.tpr *.h *.c *.s *.asm *.txt)\n*.tpr|TIGCC Projects (*.tpr)\n*.h|Header Files (*.h)\n*.c|C Files (*.c)\n*.s|GNU Assembly Files (*.s)\n*.asm|A68k Assembly Files (*.asm)\nText Files (*.txt)\n*.*|All Files (*.*)",
+    "*.tpr|TIGCC Projects (*.tpr)\n*.*|All Files (*.*)"
+};
 const char *TIGCCProjectDirectory="/usr/local/tigcc/projects";
+QString lastDirectory;
+
 KFileDialog *pfiledialog;
 extern const char *tigcc_base;
 extern const char *quill_drv;
@@ -398,7 +405,7 @@ void MainForm::init()
   QStringList args(QString("-profile"));
   args.append(QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
   assistant->setArguments(args);
-  pfiledialog=new KFileDialog(TIGCCProjectDirectory,TIGCCOpenProjectFileFilter,this,"File Dialog",TRUE);
+  lastDirectory=TIGCCProjectDirectory;
   startTimer(100);
 }
 
@@ -481,29 +488,41 @@ void MainForm::fileNewProject()
   updateLeftStatusLabel();
 }
 
-QString SGetFileName(KFileDialog::OperationMode mode,const QString &fileFilter,const QString &caption)
+QString SGetFileName(KFileDialog::OperationMode mode,short fileFilter,const QString &caption,QWidget *parent)
 {
-  pfiledialog->setFilter(fileFilter);
-  pfiledialog->setOperationMode( mode );
-  pfiledialog->setCaption(caption.isNull() ? i18n("Open") : caption);
-  pfiledialog->setMode(KFile::File | KFile::LocalOnly);
-  pfiledialog->exec();
-  return pfiledialog->selectedFile();
+  QString ret;
+  if (mode==KFileDialog::Opening)
+    ret=KFileDialog::getOpenFileName(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
+  else
+    ret=KFileDialog::getSaveFileName(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
+  if (!ret.isNull())
+  {
+    KURL dir;
+    dir.setPath(ret);
+    dir.setFileName("");
+    lastDirectory=dir.path();
+  }
+  return ret;
 }
 
-QStringList SGetFileName_Multiple(KFileDialog::OperationMode mode,const QString &fileFilter,const QString &caption)
+//no mode, since it you can't save multiple.
+QStringList SGetFileName_Multiple(short fileFilter,const QString &caption,QWidget *parent)
 {
-  pfiledialog->setFilter(fileFilter);
-  pfiledialog->setOperationMode( mode );
-  pfiledialog->setCaption(caption.isNull() ? i18n("Open") : caption);
-  pfiledialog->setMode(KFile::Files | KFile::LocalOnly);
-  pfiledialog->exec();
-  return pfiledialog->selectedFiles();
+  QStringList ret;
+  ret=KFileDialog::getOpenFileNames(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
+  if (!ret.empty())
+  {
+    KURL dir;
+    dir.setPath(ret[0]);
+    dir.setFileName("");
+    lastDirectory=dir.path();
+  }
+  return ret;
 }
 
 void MainForm::fileOpen()
 {
-  QString fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File");
+  QString fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File",this);
   
 }
 
@@ -514,7 +533,7 @@ void MainForm::fileSave()
 
 void MainForm::fileSaveAs()
 {
-  QString fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save Project");
+  QString fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save Project",this);
   
 }
 
