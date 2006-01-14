@@ -44,19 +44,20 @@
 #include <kurl.h>
 #include <cstdio>
 #include <cstdlib>
+#include "tpr.h"
+
 using std::puts;
 using std::exit;
 
 enum {TIGCCOpenProjectFileFilter=0,TIGCCSaveProjectFilter};
-const char *TIGCCFileFilters[2]=
+static const char *TIGCCFileFilters[2]=
 {
     "*.tpr *.h *.c *.s *.asm *.txt|All TIGCC Files (*.tpr *.h *.c *.s *.asm *.txt)\n*.tpr|TIGCC Projects (*.tpr)\n*.h|Header Files (*.h)\n*.c|C Files (*.c)\n*.s|GNU Assembly Files (*.s)\n*.asm|A68k Assembly Files (*.asm)\nText Files (*.txt)\n*.*|All Files (*.*)",
     "*.tpr|TIGCC Projects (*.tpr)\n*.*|All Files (*.*)"
 };
-const char *TIGCCProjectDirectory="/usr/local/tigcc/projects";
-QString lastDirectory;
+static const char *TIGCCProjectDirectory="/usr/local/tigcc/projects";
+static QString lastDirectory;
 
-KFileDialog *pfiledialog;
 extern const char *tigcc_base;
 extern const char *quill_drv;
 extern char tempdir[];
@@ -423,7 +424,6 @@ void MainForm::destroy()
   delete rootListItem;
   delete khelpmenu;
   delete assistant;
-  delete pfiledialog;
 }
 
 void MainForm::te_popup_aboutToShow()
@@ -520,10 +520,35 @@ QStringList SGetFileName_Multiple(short fileFilter,const QString &caption,QWidge
   return ret;
 }
 
+void MainForm::fileOpen_addList(QListViewItem **parent,QStringList &fileList,KURL &dir)
+{
+  int i;
+  KURL tmp;
+  i=fileList.count();
+  while (i-->0)
+  {
+    tmp=dir;
+    tmp.setFileName(fileList[i]);
+    newFile(*parent,fileList[i],tmp.path(),loadFileText(tmp.path()),"fileh.png");
+  }
+}
+
 void MainForm::fileOpen()
 {
   QString fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File",this);
-  
+  KURL dir;
+  dir.setPath(fileName);
+  if (!loadTPR(fileName))
+  {
+    fileOpen_addList(&hFilesListItem,TPRData.h_files,dir);
+    fileOpen_addList(&cFilesListItem,TPRData.c_files,dir);
+    fileOpen_addList(&sFilesListItem,TPRData.s_files,dir);
+    fileOpen_addList(&asmFilesListItem,TPRData.asm_files,dir);
+    fileOpen_addList(&oFilesListItem,TPRData.o_files,dir);
+    fileOpen_addList(&aFilesListItem,TPRData.a_files,dir);
+    fileOpen_addList(&txtFilesListItem,TPRData.txt_files,dir);
+    fileOpen_addList(&othFilesListItem,TPRData.oth_files,dir);
+  }
 }
 
 void MainForm::fileSave()
@@ -753,17 +778,18 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
   }
 }
 
-void MainForm::newFile( QListViewItem *parent, QString text, const char *iconName )
+void MainForm::newFile( QListViewItem * parent, const QString &fileCaption, const QString &fileName,const QString &text, const char * iconName )
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
   for (; next; next=item->nextSibling())
     item=next;
   ListViewFile *newFile=item?new ListViewFile(parent,item)
                         :new ListViewFile(parent);
-  newFile->setText(0,"New File");
+  newFile->setText(0,fileCaption);
   newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
   parent->setOpen(TRUE);
   newFile->textBuffer=text;
+  newFile->fileName=fileName;
   fileTreeClicked(newFile);
   newFile->startRename(0);
   m_view->getDoc()->setText(text);
@@ -776,6 +802,11 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
    category==aFilesListItem?aFileCount:category==txtFilesListItem?txtFileCount:
    othFileCount)++;
   updateLeftStatusLabel();
+}
+
+void MainForm::newFile( QListViewItem *parent, QString text, const char *iconName )
+{
+  newFile(parent,"New File",QString::null,text,iconName);
 }
 
 void MainForm::newFile( QListViewItem *parent )
