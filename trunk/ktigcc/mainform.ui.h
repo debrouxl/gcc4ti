@@ -530,6 +530,35 @@ QStringList MainForm::SGetFileName_Multiple(short fileFilter,const QString &capt
   return ret;
 }
 
+void MainForm::openFile(QListViewItem * parent, const QString &fileCaption, const QString &fileName, const QString &text)
+{
+  QListViewItem *category=parent;
+  parent->setOpen(TRUE);
+  while (category->parent()->rtti()==0x716CC0) {
+    category=category->parent();
+    category->setOpen(TRUE);
+  }
+  QListViewItem *item=NULL, *next=parent->firstChild();
+  for (; next; next=item->nextSibling())
+    item=next;
+  ListViewFile *newFile=item?new ListViewFile(parent,item)
+                        :new ListViewFile(parent);
+  newFile->setText(0,fileCaption);
+  newFile->setPixmap(0,QPixmap::fromMimeSource(
+    category==cFilesListItem||category==qllFilesListItem?"filec.png":
+    category==hFilesListItem?"fileh.png":
+    category==sFilesListItem||category==asmFilesListItem?"files.png":
+    category==txtFilesListItem?"filet.png":"filex.png"));
+  newFile->textBuffer=text;
+  newFile->fileName=fileName;
+  fileCount++;
+  (category==hFilesListItem?hFileCount:category==cFilesListItem?cFileCount:
+   category==sFilesListItem?sFileCount:category==asmFilesListItem?asmFileCount:
+   category==qllFilesListItem?qllFileCount:category==oFilesListItem?oFileCount:
+   category==aFilesListItem?aFileCount:category==txtFilesListItem?txtFileCount:
+   othFileCount)++;
+}
+
 void MainForm::fileOpen_addList(QListViewItem **parent,void *fileListV,void *dir)
 {
   int i,e;
@@ -540,10 +569,9 @@ void MainForm::fileOpen_addList(QListViewItem **parent,void *fileListV,void *dir
   {
     tmp=*reinterpret_cast<const KURL *>(dir);
     tmp.setFileName(fileList->path[i]);
-    newFile(*parent,fileList->path[i],tmp.path(),loadFileText(tmp.path()),"fileh.png");
-    /*eventually, there will be different file icons,
-    but that's not in the way of functionality*/
+    openFile(*parent,fileList->path[i],tmp.path(),loadFileText(tmp.path()));
   }
+  updateLeftStatusLabel();
 }
 
 void MainForm::fileOpen()
@@ -553,6 +581,7 @@ void MainForm::fileOpen()
   dir.setPath(fileName);
   if (!loadTPR(fileName))
   {
+    fileNewProject();
     fileOpen_addList(&hFilesListItem,&TPRData.h_files,&dir);
     fileOpen_addList(&cFilesListItem,&TPRData.c_files,&dir);
     fileOpen_addList(&qllFilesListItem,&TPRData.quill_files,&dir);
@@ -792,18 +821,17 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
   }
 }
 
-void MainForm::newFile( QListViewItem * parent, const QString &fileCaption, const QString &fileName,const QString &text, const char * iconName )
+void MainForm::newFile( QListViewItem *parent, QString text, const char *iconName )
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
   for (; next; next=item->nextSibling())
     item=next;
   ListViewFile *newFile=item?new ListViewFile(parent,item)
                         :new ListViewFile(parent);
-  newFile->setText(0,fileCaption);
+  newFile->setText(0,"New File");
   newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
   parent->setOpen(TRUE);
   newFile->textBuffer=text;
-  newFile->fileName=fileName;
   fileTreeClicked(newFile);
   newFile->startRename(0);
   m_view->getDoc()->setText(text);
@@ -816,11 +844,6 @@ void MainForm::newFile( QListViewItem * parent, const QString &fileCaption, cons
    category==aFilesListItem?aFileCount:category==txtFilesListItem?txtFileCount:
    othFileCount)++;
   updateLeftStatusLabel();
-}
-
-void MainForm::newFile( QListViewItem *parent, QString text, const char *iconName )
-{
-  newFile(parent,"New File",QString::null,text,iconName);
 }
 
 void MainForm::newFile( QListViewItem *parent )
