@@ -381,7 +381,7 @@ void MainForm::init()
   folderListItem->setText(0,"GNU Assembly Files");
   char a68k_path[strlen(tigcc_base)+10];
   sprintf(a68k_path, "%s/bin/a68k", tigcc_base);
-  if(access(quill_drv, F_OK) != -1) {
+  if(access(a68k_path, F_OK) != -1) {
     folderListItem=new ListViewFolder(rootListItem,folderListItem);
     asmFilesListItem=folderListItem;
     folderListItem->setText(0,"A68k Assembly Files");
