@@ -86,16 +86,23 @@ struct tprlibopts
 
 typedef struct
 {
+  QStringList path;
+  QStringList folder;
+} TPRFileList;
+
+typedef struct
+{
   tprSettings settings;
   tprLibOpts libopts;
-  QStringList h_files;
-  QStringList c_files;
-  QStringList s_files;
-  QStringList asm_files;
-  QStringList o_files;
-  QStringList a_files;
-  QStringList txt_files;
-  QStringList oth_files;
+  TPRFileList h_files;
+  TPRFileList c_files;
+  TPRFileList s_files;
+  TPRFileList asm_files;
+  TPRFileList o_files;
+  TPRFileList a_files;
+  TPRFileList txt_files;
+  TPRFileList oth_files;
+  TPRFileList quill_files;
 } TPRDataStruct;
 
 #define loadTPR(fileName) (loadTPRIndirect(fileName,&TPRData))

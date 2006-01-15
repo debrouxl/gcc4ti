@@ -40,13 +40,11 @@ char *find_numbered_param(char *s, const char*t, int *i)
 QString encapsulate_long_filename(const char *file)
 {
     QString s=file;
-
+    int o;
+  
 #ifndef __WIN32__
-   {
-       char *p;
-       while ((p=strchr(s,'\\')))
-           *p='/';
-   }       
+     while ((o=s.find('\\',0,TRUE))>=0)
+         s[o]='/';
 #endif
     
     return s;
@@ -91,10 +89,7 @@ int read_line(FILE *f, char *buffer, int *l)
 //some items from the TSR might still be ignored or not shown here.
 //if you need one of them, add an entry to one of the
 //definition "tables".
-int parse_file(FILE *f,tprSettings &settings,
-    tprLibOpts &libopts,QStringList &h_files,QStringList &c_files,
-    QStringList &s_files,QStringList &asm_files,QStringList &o_files,
-    QStringList &a_files,QStringList &txt_files,QStringList &oth_files)
+int parse_file(FILE *f,TPRDataStruct *dest)
 {
   char buffer[256];
   int l = 1;
@@ -138,8 +133,8 @@ int parse_file(FILE *f,tprSettings &settings,
 #define boolean_param(token,setting) \
             if ( (p=find_param(buffer, token)) ) \
             { \
-                if(!strcmp(p, "0")) settings.setting = FALSE; \
-                else if(!strcmp(p, "1")) settings.setting = TRUE; \
+                if(!strcmp(p, "0")) dest->settings.setting = FALSE; \
+                else if(!strcmp(p, "1")) dest->settings.setting = TRUE; \
                 else return l; \
                 continue; \
             } else
@@ -147,7 +142,7 @@ int parse_file(FILE *f,tprSettings &settings,
 #define string_param(token,setting) \
             if ( (p=find_param(buffer, token)) ) \
             { \
-                if (*p) settings.setting = p; \
+                if (*p) dest->settings.setting = p; \
                 continue; \
             } else
 
@@ -201,8 +196,8 @@ int parse_file(FILE *f,tprSettings &settings,
 #define boolean_param(token,setting) \
             if ( (p=find_param(buffer, token)) ) \
             { \
-                if(!strcmp(p, "0")) libopts.setting = FALSE; \
-                else if(!strcmp(p, "1")) libopts.setting = TRUE; \
+                if(!strcmp(p, "0")) dest->libopts.setting = FALSE; \
+                else if(!strcmp(p, "1")) dest->libopts.setting = TRUE; \
                 else return l; \
                 continue; \
             } else
@@ -212,15 +207,15 @@ int parse_file(FILE *f,tprSettings &settings,
             { \
                 if (!strcmp(p,"None") || !strcmp(p,"AMS") \
                     || !strcmp(p,"Direct")) \
-                    libopts.setting = RT_NONE; \
+                    dest->libopts.setting = RT_NONE; \
                 else if (!strcmp(p, "Precomputed")) \
-                    libopts.setting = RT_PRECOMP; \
+                    dest->libopts.setting = RT_PRECOMP; \
                 else if (!strcmp(p, "Kernel")) \
-                    libopts.setting = RT_KERNEL; \
+                    dest->libopts.setting = RT_KERNEL; \
                 else if (!strcmp(p, "Compressed")) \
-                    libopts.setting = RT_COMPRESSED; \
+                    dest->libopts.setting = RT_COMPRESSED; \
                 else if (!strcmp(p, "F-Line")) \
-                    libopts.setting = RT_FLINE; \
+                    dest->libopts.setting = RT_FLINE; \
                 else if (strcmp(p, "Unknown")) \
                     return l; \
                 continue; \
@@ -237,7 +232,7 @@ int parse_file(FILE *f,tprSettings &settings,
             {
                 int major, minor;
                 if ((strlen(p)==4) && (sscanf(p,"%1d.%2d",&major,&minor)==2))
-                    libopts.minams = major * 100 + minor;
+                    dest->libopts.minams = major * 100 + minor;
                 else
                     return l;
                 continue;
@@ -270,20 +265,23 @@ int parse_file(FILE *f,tprSettings &settings,
             if( (p=find_numbered_param(buffer, "C File %i=", &v)) )
             {
                 QString s = encapsulate_long_filename(p);
-                c_files << s;
+                dest->c_files.path << s;
+                dest->c_files.folder << QString::null;
 
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "C File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                
                 continue;
             }
 
             else if( (p=find_numbered_param(buffer, "GNU Assembler File %i=", &v)) )
             {
                 QString s = encapsulate_long_filename(p);
-                s_files << s;
-
+                dest->s_files.path << s;
+                dest->s_files.folder << QString::null;
+              
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "GNU Assembler File %i Folder=", &v)) )
@@ -294,8 +292,9 @@ int parse_file(FILE *f,tprSettings &settings,
             else if( (p=find_numbered_param(buffer, "Header File %i=", &v)) )
             {
                 QString s = encapsulate_long_filename(p);
-                h_files << s;
-
+                dest->h_files.path << s;
+                dest->h_files.folder << QString::null;
+                
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Header File %i Folder=", &v)) )
@@ -306,8 +305,9 @@ int parse_file(FILE *f,tprSettings &settings,
             else if( (p=find_numbered_param(buffer, "Assembler File %i=", &v)) )
             {
                 QString s = encapsulate_long_filename(p);
-                asm_files << s;
-
+                dest->asm_files.path << s;
+                dest->asm_files.folder << QString::null;
+              
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Assembler File %i Folder=", &v)) )
@@ -318,8 +318,9 @@ int parse_file(FILE *f,tprSettings &settings,
             else if( (p=find_numbered_param(buffer, "Archive File %i=", &v)) )
             {
                 QString s = encapsulate_long_filename(p);
-                a_files << s;
-
+                dest->a_files.path << s;
+                dest->a_files.folder << QString::null;
+              
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Archive File %i Folder=", &v)) )
@@ -330,7 +331,8 @@ int parse_file(FILE *f,tprSettings &settings,
             else if( (p=find_numbered_param(buffer, "Text File %i=", &v)) )
             {
                 QString s = encapsulate_long_filename(p);
-                txt_files << s;
+                dest->txt_files.path << s;
+                dest->txt_files.folder << QString::null;
               
                 continue;
             }
@@ -340,11 +342,12 @@ int parse_file(FILE *f,tprSettings &settings,
             }
 
             else if( (p=find_numbered_param(buffer, "Quill File %i=", &v)) )
-            { // Quill file: treat like C file and add -quill flag
+            {
                 QString s = encapsulate_long_filename(p);
-                o_files << s; //is a quill an object file?
+                dest->quill_files.path << s;
+                dest->quill_files.folder << QString::null;
 
-                settings.quill = TRUE; // -quill flag needed
+                dest->settings.quill = TRUE; // -quill flag needed
 
                 continue;
             }
@@ -356,7 +359,8 @@ int parse_file(FILE *f,tprSettings &settings,
             else if( (p=find_numbered_param(buffer, "Other File %i=", &v)) )
             {
                 QString s = encapsulate_long_filename(p);
-                oth_files << s;
+                dest->oth_files.path << s;
+                dest->oth_files.folder << QString::null;
                 
                 continue;
             }
@@ -383,9 +387,7 @@ short loadTPRIndirect(QString &fileName,TPRDataStruct *dest)
       //fprintf(stderr, "Unable to open this file: <%s>\n", filename); ***to be implemented the KDE way.
       return -1;
   }
-  ret=parse_file(f,dest->settings,dest->libopts,dest->h_files,
-    dest->c_files,dest->s_files,dest->asm_files,dest->o_files,
-    dest->a_files,dest->txt_files,dest->oth_files);
+  ret=parse_file(f,dest);
   fclose(f);
   return ret;
 }

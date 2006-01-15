@@ -520,16 +520,19 @@ QStringList MainForm::SGetFileName_Multiple(short fileFilter,const QString &capt
   return ret;
 }
 
-void MainForm::fileOpen_addList(QListViewItem **parent,const QStringList &fileList,void *dir)
+void MainForm::fileOpen_addList(QListViewItem **parent,void *fileListV,void *dir)
 {
-  int i;
+  int i,e;
   KURL tmp;
-  i=fileList.count();
-  while (i-->0)
+  TPRFileList *fileList=(TPRFileList*)fileListV;
+  e=fileList->path.count();
+  for (i=0;i<e;i++)
   {
     tmp=*reinterpret_cast<const KURL *>(dir);
-    tmp.setFileName(fileList[i]);
-    newFile(*parent,fileList[i],tmp.path(),loadFileText(tmp.path()),"fileh.png");
+    tmp.setFileName(fileList->path[i]);
+    newFile(*parent,fileList->path[i],tmp.path(),loadFileText(tmp.path()),"fileh.png");
+    /*eventually, there will be different file icons,
+    but that's not in the way of functionality*/
   }
 }
 
@@ -540,14 +543,15 @@ void MainForm::fileOpen()
   dir.setPath(fileName);
   if (!loadTPR(fileName))
   {
-    fileOpen_addList(&hFilesListItem,TPRData.h_files,&dir);
-    fileOpen_addList(&cFilesListItem,TPRData.c_files,&dir);
-    fileOpen_addList(&sFilesListItem,TPRData.s_files,&dir);
-    fileOpen_addList(&asmFilesListItem,TPRData.asm_files,&dir);
-    fileOpen_addList(&oFilesListItem,TPRData.o_files,&dir);
-    fileOpen_addList(&aFilesListItem,TPRData.a_files,&dir);
-    fileOpen_addList(&txtFilesListItem,TPRData.txt_files,&dir);
-    fileOpen_addList(&othFilesListItem,TPRData.oth_files,&dir);
+    fileOpen_addList(&hFilesListItem,&TPRData.h_files,&dir);
+    fileOpen_addList(&cFilesListItem,&TPRData.c_files,&dir);
+    fileOpen_addList(&cFilesListItem,&TPRData.quill_files,&dir); //Give quills the special behavior they need later on.
+    fileOpen_addList(&sFilesListItem,&TPRData.s_files,&dir);
+    fileOpen_addList(&asmFilesListItem,&TPRData.asm_files,&dir);
+    fileOpen_addList(&oFilesListItem,&TPRData.o_files,&dir);
+    fileOpen_addList(&aFilesListItem,&TPRData.a_files,&dir);
+    fileOpen_addList(&txtFilesListItem,&TPRData.txt_files,&dir);
+    fileOpen_addList(&othFilesListItem,&TPRData.oth_files,&dir);
   }
 }
 
