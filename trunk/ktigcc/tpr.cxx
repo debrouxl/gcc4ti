@@ -1,3 +1,25 @@
+/*
+   ktigcc - TIGCC IDE for KDE
+   
+   tpr handling routines adapted from tprbuilder
+   Copyright (C) 2002 Romain Liévin
+   Copyright (C) 2002-2006 Kevin Kofler
+   Copyright (C) 2006 Joey Adams
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software Foundation,
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 #include <cstdio>
 #include <cstdlib>
@@ -35,9 +57,8 @@ char *find_numbered_param(char *s, const char*t, int *i)
     return p;
 }
 
-//doesn't really need to encapsulate anymore,
-//this just converts Windows paths to Unix paths if necessary.
-QString encapsulate_long_filename(const char *file)
+// converts Windows paths to Unix paths if necessary.
+QString convert_path_separators(const char *file)
 {
     QString s=file;
     int o;
@@ -264,7 +285,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 
             if( (p=find_numbered_param(buffer, "C File %i=", &v)) )
             {
-                QString s = encapsulate_long_filename(p);
+                QString s = convert_path_separators(p);
                 dest->c_files.path << s;
                 dest->c_files.folder << QString::null;
 
@@ -278,7 +299,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 
             else if( (p=find_numbered_param(buffer, "GNU Assembler File %i=", &v)) )
             {
-                QString s = encapsulate_long_filename(p);
+                QString s = convert_path_separators(p);
                 dest->s_files.path << s;
                 dest->s_files.folder << QString::null;
               
@@ -291,7 +312,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 
             else if( (p=find_numbered_param(buffer, "Header File %i=", &v)) )
             {
-                QString s = encapsulate_long_filename(p);
+                QString s = convert_path_separators(p);
                 dest->h_files.path << s;
                 dest->h_files.folder << QString::null;
                 
@@ -304,7 +325,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 
             else if( (p=find_numbered_param(buffer, "Assembler File %i=", &v)) )
             {
-                QString s = encapsulate_long_filename(p);
+                QString s = convert_path_separators(p);
                 dest->asm_files.path << s;
                 dest->asm_files.folder << QString::null;
               
@@ -317,7 +338,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 
             else if( (p=find_numbered_param(buffer, "Archive File %i=", &v)) )
             {
-                QString s = encapsulate_long_filename(p);
+                QString s = convert_path_separators(p);
                 dest->a_files.path << s;
                 dest->a_files.folder << QString::null;
               
@@ -330,7 +351,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 
             else if( (p=find_numbered_param(buffer, "Text File %i=", &v)) )
             {
-                QString s = encapsulate_long_filename(p);
+                QString s = convert_path_separators(p);
                 dest->txt_files.path << s;
                 dest->txt_files.folder << QString::null;
               
@@ -343,7 +364,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 
             else if( (p=find_numbered_param(buffer, "Quill File %i=", &v)) )
             {
-                QString s = encapsulate_long_filename(p);
+                QString s = convert_path_separators(p);
                 dest->quill_files.path << s;
                 dest->quill_files.folder << QString::null;
 
@@ -358,7 +379,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 
             else if( (p=find_numbered_param(buffer, "Other File %i=", &v)) )
             {
-                QString s = encapsulate_long_filename(p);
+                QString s = convert_path_separators(p);
                 dest->oth_files.path << s;
                 dest->oth_files.folder << QString::null;
                 
@@ -382,7 +403,7 @@ short loadTPRIndirect(QString &fileName,TPRDataStruct *dest)
 {
   FILE *f;
   short ret;
-  f = fopen(fileName, "rt");
+  f = fopen(fileName, "r");
   if(f == NULL) {
       //fprintf(stderr, "Unable to open this file: <%s>\n", filename); ***to be implemented the KDE way.
       return -1;
@@ -397,18 +418,14 @@ TPRDataStruct TPRData;
 QString loadFileText(const char *fileName)
 {
   FILE *f;
-  char buffer[256];
-  short l;
-  QString ret;
-  f=fopen(fileName,"rt");
+  f=fopen(fileName,"rb");
   if (!f)
     return "";
-  while (!feof(f))
-  {
-    l=fread(buffer,1,255,f);
-    buffer[l]=0;
-    ret+=buffer;
-  }
-  fclose(f);
-  return ret;
+  fseek(f,0,SEEK_END);
+  size_t flen=ftell(f);
+  fseek(f,0,SEEK_SET);
+  char buffer[flen+1];
+  memset(buffer,0,flen+1);
+  fread(buffer,1,flen,f);
+  return QString(buffer);
 }
