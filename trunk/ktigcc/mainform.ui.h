@@ -9,7 +9,8 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2004-2005 Kevin Kofler
+   Copyright (C) 2004-2006 Kevin Kofler
+   Copyright (C) 2006 Joey Adams
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -378,9 +379,16 @@ void MainForm::init()
   folderListItem=new ListViewFolder(rootListItem,folderListItem);
   sFilesListItem=folderListItem;
   folderListItem->setText(0,"GNU Assembly Files");
-  folderListItem=new ListViewFolder(rootListItem,folderListItem);
-  asmFilesListItem=folderListItem;
-  folderListItem->setText(0,"A68k Assembly Files");
+  char a68k_path[strlen(tigcc_base)+10];
+  sprintf(a68k_path, "%s/bin/a68k", tigcc_base);
+  if(access(quill_drv, F_OK) != -1) {
+    folderListItem=new ListViewFolder(rootListItem,folderListItem);
+    asmFilesListItem=folderListItem;
+    folderListItem->setText(0,"A68k Assembly Files");
+  } else {
+    qllFilesListItem=NULL;
+    fileNewQuillSourceFileAction->setVisible(FALSE);
+  }
   if (quill_drv) {
     folderListItem=new ListViewFolder(rootListItem,folderListItem);
     qllFilesListItem=folderListItem;
@@ -458,9 +466,11 @@ void MainForm::fileNewProject()
     next=f->nextSibling();
     delete f;
   }
-  for (f=asmFilesListItem->firstChild();f;f=next) {
-    next=f->nextSibling();
-    delete f;
+  if (asmFilesListItem) {
+    for (f=asmFilesListItem->firstChild();f;f=next) {
+      next=f->nextSibling();
+      delete f;
+    }
   }
   if (qllFilesListItem) {
     for (f=qllFilesListItem->firstChild();f;f=next) {
@@ -545,7 +555,7 @@ void MainForm::fileOpen()
   {
     fileOpen_addList(&hFilesListItem,&TPRData.h_files,&dir);
     fileOpen_addList(&cFilesListItem,&TPRData.c_files,&dir);
-    fileOpen_addList(&cFilesListItem,&TPRData.quill_files,&dir); //Give quills the special behavior they need later on.
+    fileOpen_addList(&qllFilesListItem,&TPRData.quill_files,&dir);
     fileOpen_addList(&sFilesListItem,&TPRData.s_files,&dir);
     fileOpen_addList(&asmFilesListItem,&TPRData.asm_files,&dir);
     fileOpen_addList(&oFilesListItem,&TPRData.o_files,&dir);
