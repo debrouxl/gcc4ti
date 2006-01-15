@@ -488,10 +488,10 @@ void MainForm::fileNewProject()
   updateLeftStatusLabel();
 }
 
-QString SGetFileName(KFileDialog::OperationMode mode,short fileFilter,const QString &caption,QWidget *parent)
+QString MainForm::SGetFileName(int mode,short fileFilter,const QString &caption,QWidget *parent)
 {
   QString ret;
-  if (mode==KFileDialog::Opening)
+  if (static_cast<KFileDialog::OperationMode>(mode)==KFileDialog::Opening)
     ret=KFileDialog::getOpenFileName(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
   else
     ret=KFileDialog::getSaveFileName(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
@@ -506,7 +506,7 @@ QString SGetFileName(KFileDialog::OperationMode mode,short fileFilter,const QStr
 }
 
 //no mode, since it you can't save multiple.
-QStringList SGetFileName_Multiple(short fileFilter,const QString &caption,QWidget *parent)
+QStringList MainForm::SGetFileName_Multiple(short fileFilter,const QString &caption,QWidget *parent)
 {
   QStringList ret;
   ret=KFileDialog::getOpenFileNames(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
@@ -520,14 +520,14 @@ QStringList SGetFileName_Multiple(short fileFilter,const QString &caption,QWidge
   return ret;
 }
 
-void MainForm::fileOpen_addList(QListViewItem **parent,QStringList &fileList,KURL &dir)
+void MainForm::fileOpen_addList(QListViewItem **parent,const QStringList &fileList,void *dir)
 {
   int i;
   KURL tmp;
   i=fileList.count();
   while (i-->0)
   {
-    tmp=dir;
+    tmp=*reinterpret_cast<const KURL *>(dir);
     tmp.setFileName(fileList[i]);
     newFile(*parent,fileList[i],tmp.path(),loadFileText(tmp.path()),"fileh.png");
   }
@@ -540,14 +540,14 @@ void MainForm::fileOpen()
   dir.setPath(fileName);
   if (!loadTPR(fileName))
   {
-    fileOpen_addList(&hFilesListItem,TPRData.h_files,dir);
-    fileOpen_addList(&cFilesListItem,TPRData.c_files,dir);
-    fileOpen_addList(&sFilesListItem,TPRData.s_files,dir);
-    fileOpen_addList(&asmFilesListItem,TPRData.asm_files,dir);
-    fileOpen_addList(&oFilesListItem,TPRData.o_files,dir);
-    fileOpen_addList(&aFilesListItem,TPRData.a_files,dir);
-    fileOpen_addList(&txtFilesListItem,TPRData.txt_files,dir);
-    fileOpen_addList(&othFilesListItem,TPRData.oth_files,dir);
+    fileOpen_addList(&hFilesListItem,TPRData.h_files,&dir);
+    fileOpen_addList(&cFilesListItem,TPRData.c_files,&dir);
+    fileOpen_addList(&sFilesListItem,TPRData.s_files,&dir);
+    fileOpen_addList(&asmFilesListItem,TPRData.asm_files,&dir);
+    fileOpen_addList(&oFilesListItem,TPRData.o_files,&dir);
+    fileOpen_addList(&aFilesListItem,TPRData.a_files,&dir);
+    fileOpen_addList(&txtFilesListItem,TPRData.txt_files,&dir);
+    fileOpen_addList(&othFilesListItem,TPRData.oth_files,&dir);
   }
 }
 
