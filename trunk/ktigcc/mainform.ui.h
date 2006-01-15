@@ -76,6 +76,12 @@ extern KAboutData *pabout;
                                       || (item)==aFilesListItem \
                                       || (item)==txtFilesListItem \
                                       || (item)==othFilesListItem))
+#define IS_EDITABLE_CATEGORY(item) ((item) && ((item)==hFilesListItem \
+                                               || (item)==cFilesListItem \
+                                               || (item)==sFilesListItem \
+                                               || (item)==asmFilesListItem \
+                                               || (item)==qllFilesListItem \
+                                               || (item)==txtFilesListItem))
 #define IS_FOLDER(item) ((item) && (item)->rtti()==0x716CC0)
 #define IS_FILE(item) ((item) && (item)->rtti()==0x716CC1)
 
@@ -168,6 +174,7 @@ static QListViewItem *aFilesListItem;
 static QListViewItem *txtFilesListItem;
 static QListViewItem *othFilesListItem;
 static QListViewItem *currentListItem;
+static bool currentListItemEditable;
 static QLabel *leftStatusLabel;
 static QLabel *rowStatusLabel;
 static QLabel *colStatusLabel;
@@ -530,14 +537,8 @@ QStringList MainForm::SGetFileName_Multiple(short fileFilter,const QString &capt
   return ret;
 }
 
-void MainForm::openFile(QListViewItem * parent, const QString &fileCaption, const QString &fileName, const QString &text)
+void MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
-  QListViewItem *category=parent;
-  parent->setOpen(TRUE);
-  while (category->parent()->rtti()==0x716CC0) {
-    category=category->parent();
-    category->setOpen(TRUE);
-  }
   QListViewItem *item=NULL, *next=parent->firstChild();
   for (; next; next=item->nextSibling())
     item=next;
@@ -549,7 +550,8 @@ void MainForm::openFile(QListViewItem * parent, const QString &fileCaption, cons
     category==hFilesListItem?"fileh.png":
     category==sFilesListItem||category==asmFilesListItem?"files.png":
     category==txtFilesListItem?"filet.png":"filex.png"));
-  newFile->textBuffer=text;
+  if (IS_EDITABLE_CATEGORY(category))
+    newFile->textBuffer=loadFileText(fileName);
   newFile->fileName=fileName;
   fileCount++;
   (category==hFilesListItem?hFileCount:category==cFilesListItem?cFileCount:
@@ -559,17 +561,18 @@ void MainForm::openFile(QListViewItem * parent, const QString &fileCaption, cons
    othFileCount)++;
 }
 
-void MainForm::fileOpen_addList(QListViewItem **parent,void *fileListV,void *dir)
+void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *dir)
 {
   int i,e;
   KURL tmp;
   TPRFileList *fileList=(TPRFileList*)fileListV;
   e=fileList->path.count();
+  if (e) category->setOpen(TRUE);
   for (i=0;i<e;i++)
   {
     tmp=*reinterpret_cast<const KURL *>(dir);
     tmp.setFileName(fileList->path[i]);
-    openFile(*parent,fileList->path[i],tmp.path(),loadFileText(tmp.path()));
+    openFile(category,category,fileList->path[i],tmp.path());
   }
   updateLeftStatusLabel();
 }
@@ -582,15 +585,15 @@ void MainForm::fileOpen()
   if (!loadTPR(fileName))
   {
     fileNewProject();
-    fileOpen_addList(&hFilesListItem,&TPRData.h_files,&dir);
-    fileOpen_addList(&cFilesListItem,&TPRData.c_files,&dir);
-    fileOpen_addList(&qllFilesListItem,&TPRData.quill_files,&dir);
-    fileOpen_addList(&sFilesListItem,&TPRData.s_files,&dir);
-    fileOpen_addList(&asmFilesListItem,&TPRData.asm_files,&dir);
-    fileOpen_addList(&oFilesListItem,&TPRData.o_files,&dir);
-    fileOpen_addList(&aFilesListItem,&TPRData.a_files,&dir);
-    fileOpen_addList(&txtFilesListItem,&TPRData.txt_files,&dir);
-    fileOpen_addList(&othFilesListItem,&TPRData.oth_files,&dir);
+    fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir);
+    fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir);
+    fileOpen_addList(qllFilesListItem,&TPRData.quill_files,&dir);
+    fileOpen_addList(sFilesListItem,&TPRData.s_files,&dir);
+    fileOpen_addList(asmFilesListItem,&TPRData.asm_files,&dir);
+    fileOpen_addList(oFilesListItem,&TPRData.o_files,&dir);
+    fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir);
+    fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir);
+    fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir);
   }
 }
 
@@ -712,9 +715,11 @@ void MainForm::fileTreeClicked(QListViewItem *item)
   if (IS_FOLDER(currentListItem))
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (IS_FILE(currentListItem)) {
-    static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
-    m_view->cursorPositionReal(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
-                               &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
+    if (currentListItemEditable) {
+      static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
+      m_view->cursorPositionReal(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
+                                 &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
+    }
   }
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
@@ -729,29 +734,40 @@ void MainForm::fileTreeClicked(QListViewItem *item)
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(TRUE);
-    m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
     QListViewItem *category=item->parent();
     while (category->parent()->rtti()==0x716CC0) category=category->parent();
-    const char *buffer=static_cast<ListViewFile *>(item)->textBuffer;
-    write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=kate - Normal\n",0);
-    KConfig kconfig(QString(tempdir)+"/config.tmp",true);
-    m_view->getDoc()->readConfig(&kconfig);
-    delete_temp_file("config.tmp");
-    uint cnt=m_view->getDoc()->hlModeCount(), i;
-    for (i=0; i<cnt; i++) {
-      if (!m_view->getDoc()->hlModeName(i).compare(
-          ((category==sFilesListItem||(category==hFilesListItem&&buffer&&*buffer=='|'))?
-             "GNU Assembler 68k":
-           (category==asmFilesListItem||(category==hFilesListItem&&buffer&&*buffer==';'))?
-             "Motorola Assembler 68k":
-           (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
-             "C":
-           "None"))) break;
+    if (IS_EDITABLE_CATEGORY(category)) {
+      m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
+      const char *buffer=static_cast<ListViewFile *>(item)->textBuffer;
+      write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=kate - Normal\n",0);
+      KConfig kconfig(QString(tempdir)+"/config.tmp",true);
+      m_view->getDoc()->readConfig(&kconfig);
+      delete_temp_file("config.tmp");
+      uint cnt=m_view->getDoc()->hlModeCount(), i;
+      for (i=0; i<cnt; i++) {
+        if (!m_view->getDoc()->hlModeName(i).compare(
+            ((category==sFilesListItem||(category==hFilesListItem&&buffer&&*buffer=='|'))?
+               "GNU Assembler 68k":
+             (category==asmFilesListItem||(category==hFilesListItem&&buffer&&*buffer==';'))?
+               "Motorola Assembler 68k":
+             (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
+               "C":
+             "None"))) break;
+      }
+      if (i==cnt) i=0;
+      m_view->getDoc()->setHlMode(i);
+      m_view->setCursorPositionReal(static_cast<ListViewFile *>(item)->cursorLine,
+                                    static_cast<ListViewFile *>(item)->cursorCol);
+      currentListItemEditable=TRUE;
+    } else {
+      m_view->getDoc()->setText("");
+      write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
+      KConfig kconfig(QString(tempdir)+"/config.tmp",true);
+      m_view->getDoc()->readConfig(&kconfig);
+      delete_temp_file("config.tmp");
+      m_view->getDoc()->setHlMode(0);
+      currentListItemEditable=FALSE;
     }
-    if (i==cnt) i=0;
-    m_view->getDoc()->setHlMode(i);
-    m_view->setCursorPositionReal(static_cast<ListViewFile *>(item)->cursorLine,
-                                  static_cast<ListViewFile *>(item)->cursorCol);
   } else {
     fileNewFolderAction->setEnabled(FALSE);
     m_view->setEnabled(FALSE);
