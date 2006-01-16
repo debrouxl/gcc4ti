@@ -399,13 +399,12 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 }
 
 //returns 0 on success
-short loadTPR(QString &fileName,TPRDataStruct *dest)
+int loadTPR(QString &fileName,TPRDataStruct *dest)
 {
   FILE *f;
-  short ret;
+  int ret;
   f = fopen(fileName, "r");
   if(f == NULL) {
-      //fprintf(stderr, "Unable to open this file: <%s>\n", filename); ***to be implemented the KDE way.
       return -1;
   }
   ret=parse_file(f,dest);
@@ -418,7 +417,7 @@ QString loadFileText(const char *fileName)
   FILE *f;
   f=fopen(fileName,"rb");
   if (!f)
-    return "";
+    return QString::null;
   fseek(f,0,SEEK_END);
   size_t flen=ftell(f);
   fseek(f,0,SEEK_SET);

@@ -553,8 +553,14 @@ void MainForm::openFile(QListViewItem * category, QListViewItem * parent, const 
     category==hFilesListItem?"fileh.png":
     category==sFilesListItem||category==asmFilesListItem?"files.png":
     category==txtFilesListItem?"filet.png":"filex.png"));
-  if (IS_EDITABLE_CATEGORY(category))
-    newFile->textBuffer=loadFileText(fileName);
+  if (IS_EDITABLE_CATEGORY(category)) {
+    QString fileText=loadFileText(fileName);
+    if (fileText.isNull()) {
+      KMessageBox::sorry(this,QString("Can't open \'%1\'").arg(fileName),"Warning");
+      fileText="";
+    }
+    newFile->textBuffer=fileText;
+  }
   newFile->fileName=fileName;
   fileCount++;
   (category==hFilesListItem?hFileCount:category==cFilesListItem?cFileCount:
@@ -586,29 +592,35 @@ void MainForm::fileOpen()
   QString fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File",this);
   KURL dir;
   dir.setPath(fileName);
-  if (!loadTPR(fileName, &TPRData))
-  {
-    if (TPRData.asm_files.path.count() && !asmFilesListItem) {
-      KMessageBox::error(this,"This project needs A68k, which is not installed.");
-      return;
-    }
-    if (TPRData.quill_files.path.count() && !qllFilesListItem) {
-      KMessageBox::error(this,"This project needs quill.drv, which is not installed.");
-      return;
-    }
-    fileNewProject();
-    fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir);
-    fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir);
-    fileOpen_addList(qllFilesListItem,&TPRData.quill_files,&dir);
-    fileOpen_addList(sFilesListItem,&TPRData.s_files,&dir);
-    fileOpen_addList(asmFilesListItem,&TPRData.asm_files,&dir);
-    fileOpen_addList(oFilesListItem,&TPRData.o_files,&dir);
-    fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir);
-    fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir);
-    fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir);
-    settings=TPRData.settings;
-    libopts=TPRData.libopts;
+  int ret=loadTPR(fileName, &TPRData);
+  if (ret == -1) {
+    KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
+    return;
   }
+  if (ret > 0) {
+    KMessageBox::error(this,QString("Error at line %2 of \'%1\'").arg(fileName).arg(ret));
+    return;
+  }
+  if (TPRData.asm_files.path.count() && !asmFilesListItem) {
+    KMessageBox::error(this,"This project needs A68k, which is not installed.");
+    return;
+  }
+  if (TPRData.quill_files.path.count() && !qllFilesListItem) {
+    KMessageBox::error(this,"This project needs quill.drv, which is not installed.");
+    return;
+  }
+  fileNewProject();
+  fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir);
+  fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir);
+  fileOpen_addList(qllFilesListItem,&TPRData.quill_files,&dir);
+  fileOpen_addList(sFilesListItem,&TPRData.s_files,&dir);
+  fileOpen_addList(asmFilesListItem,&TPRData.asm_files,&dir);
+  fileOpen_addList(oFilesListItem,&TPRData.o_files,&dir);
+  fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir);
+  fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir);
+  fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir);
+  settings=TPRData.settings;
+  libopts=TPRData.libopts;
 }
 
 void MainForm::fileSave()
