@@ -690,11 +690,77 @@ void MainForm::fileOpen()
   updateRightStatusLabel();
 }
 
-void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,void *dir)
+void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const QString &base_dir,QString *open_file)
 {
   TPRFileList *fileList=(TPRFileList*)fileListV;
-  KURL *base_dir=(KURL*)dir;
-  
+  ListViewFile *item=(ListViewFile*)category->firstChild();
+  ListViewFile *next;
+    //Is this a valid conversion to the ListViewFile system?
+  QString folderSpec=QString::null;
+  int o;
+  while (item)
+  {
+    if (IS_FILE(item))
+    {
+      QString relPath=KURL::relativePath(base_dir,item->fileName);
+      QString suffix;
+      o=relPath.findRev('.');
+      if (o>=0)
+      {
+        suffix=relPath.mid(o+1);
+        relPath.truncate(o);
+      }
+      else
+      {
+        suffix=QString::null;
+      }
+      o=relPath.findRev('/');
+      if (o>=0)
+        relPath.truncate(o+1);
+      else
+        relPath.truncate(0);
+      relPath+=item->text(0);
+      relPath+=suffix;
+      
+      fileList->path << relPath;
+      fileList->folder << relPath;
+      
+      if (item==currentListItem)
+        *open_file=item->fileName;
+    }
+    else if (IS_FOLDER(item))
+    {
+      next=(ListViewFile*)item->firstChild();
+      if (next)
+      {
+        if (folderSpec.isEmpty())
+          folderSpec=item->text(0);
+        else
+        {
+          folderSpec+='\\';
+          folderSpec+=item->text(0);
+        }
+        item=next;
+        continue;
+      }
+    }
+fsll_seeknext:
+    next=(ListViewFile*)item->nextSibling();
+    if (!next)
+    {
+      next=(ListViewFile*)item->parent();
+      if (next==category||!next)
+        break;
+      item=next;
+      o=folderSpec.findRev('\\');
+      if (o>=0)
+        folderSpec.truncate(o);
+      else
+        folderSpec.truncate(0);
+      goto fsll_seeknext;
+    }
+    item=next;
+  }
 }
 
 //TODO: Check if there is a project name.  If not, do a save as dialog.
@@ -705,16 +771,19 @@ void MainForm::fileSave()
   int result;
   
   TPRDataStruct TPRData;
-  KURL base_dir(projectFileName);
-  fileSave_loadList(hFilesListItem,&TPRData.h_files,&base_dir);
-  fileSave_loadList(cFilesListItem,&TPRData.c_files,&base_dir);
-  fileSave_loadList(qllFilesListItem,&TPRData.quill_files,&base_dir);
-  fileSave_loadList(sFilesListItem,&TPRData.s_files,&base_dir);
-  fileSave_loadList(asmFilesListItem,&TPRData.asm_files,&base_dir);
-  fileSave_loadList(oFilesListItem,&TPRData.o_files,&base_dir);
-  fileSave_loadList(aFilesListItem,&TPRData.a_files,&base_dir);
-  fileSave_loadList(txtFilesListItem,&TPRData.txt_files,&base_dir);
-  fileSave_loadList(othFilesListItem,&TPRData.oth_files,&base_dir);
+  QString open_file;
+  KURL base_dir_k(projectFileName);
+  base_dir_k.setFileName("");
+  QString base_dir=base_dir_k.path();
+  fileSave_loadList(hFilesListItem,&TPRData.h_files,base_dir,&open_file);
+  fileSave_loadList(cFilesListItem,&TPRData.c_files,base_dir,&open_file);
+  fileSave_loadList(qllFilesListItem,&TPRData.quill_files,base_dir,&open_file);
+  fileSave_loadList(sFilesListItem,&TPRData.s_files,base_dir,&open_file);
+  fileSave_loadList(asmFilesListItem,&TPRData.asm_files,base_dir,&open_file);
+  fileSave_loadList(oFilesListItem,&TPRData.o_files,base_dir,&open_file);
+  fileSave_loadList(aFilesListItem,&TPRData.a_files,base_dir,&open_file);
+  fileSave_loadList(txtFilesListItem,&TPRData.txt_files,base_dir,&open_file);
+  fileSave_loadList(othFilesListItem,&TPRData.oth_files,base_dir,&open_file);
   TPRData.prj_name=rootListItem->text(0);
   TPRData.settings=settings;
   TPRData.libopts=libopts;
