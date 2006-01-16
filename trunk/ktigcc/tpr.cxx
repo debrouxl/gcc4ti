@@ -488,20 +488,12 @@ QString convert_path_separators_save(QString s)
 	return s;
 }
 
-char *grabQString(const QString &s,char **buffer)
+//this is here because QString::ascii() returns "(null)" on a null string.
+const char *smartAscii(const QString &s)
 {
-  int i,e;
-  char *ptr;
-  e=s.length();
-  ptr=(char*)realloc(*buffer,e+1);
-  if (!ptr) return NULL;
-  *buffer=ptr;
-  for (i=0;i<e;i++)
-  {
-    *ptr++=s[i];
-  }
-  ptr[e]=0;
-  return *buffer;
+  if (s.isNull())
+    return "";
+  return s.ascii();
 }
 
 //To do:
@@ -509,21 +501,15 @@ char *grabQString(const QString &s,char **buffer)
 //can a macro have absolutely nothing in it?  that's why I said i there, since it had to be something to do.
 //reloc_param's macro here just puts "None" for the RT_NONE macro, which is probably not entirely correct, but it should work in all cases anyway.
 //some parameters are booleans for if a parameter is defined or not.  should the parameter be shown anyway, even if the associated boolean is false?
-int save_tpr(FILE *f,TPRDataStruct *dest,char **buffer)
+int save_tpr(FILE *f,TPRDataStruct *dest)
 {
 	int i=0,e;
 	QString tmp;
-    char *ptr;
 	
 #define boolean_param(token,setting) fprintf(f,"%s%d\r\n",token,!!dest->settings.setting);
-#define string_vparam(token,var) \
-    { \
-        ptr=grabQString(dest->var,buffer); \
-        if (!ptr) return -2; \
-        fprintf(f,"%s%s\r\n",token,ptr); \
-    }
+#define string_vparam(token,var) fprintf(f,"%s%s\r\n",token,smartAscii(dest->var));
 #define string_param(token,setting) string_vparam(token,settings.setting)
-#define ignore_param(token) i=0;
+#define ignore_param(token) /**/
 	
 	fputs("[Settings]\r\n",f);
 	boolean_param("Archive=",archive)
@@ -623,25 +609,17 @@ int save_tpr(FILE *f,TPRDataStruct *dest,char **buffer)
 #undef reloc_param
 #undef minams_param
 	
-    ptr=grabQString(dest->open_file,buffer);
-    if (!ptr) return -2;
-	fprintf(f,"\r\n[File Editing]\r\nOpen File=%s\r\n\r\n[Included Files]\r\n",ptr);
+	fprintf(f,"\r\n[File Editing]\r\nOpen File=%s\r\n\r\n[Included Files]\r\n",smartAscii(dest->open_file));
 	
 #define filepath_param(token,filetype) \
 	e=dest->filetype.path.count(); \
 	for(i=0;i<e;i++) \
 	{ \
-		tmp=convert_path_separators_save(dest->filetype.path[i]); \
-        ptr=grabQString(tmp,buffer); \
-        if (!ptr) \
-          return -2; \
-		fprintf(f,"%s %ld=%s\r\n",token,(long)(i+1),ptr); \
+		tmp=convert_path_separators_save(smartAscii(dest->filetype.path[i])); \
+		fprintf(f,"%s %ld=%s\r\n",token,(long)(i+1),smartAscii(tmp)); \
 		if (!dest->filetype.folder[i].isEmpty()) \
 		{ \
-          ptr=grabQString(dest->filetype.folder[i],buffer); \
-          if (!ptr) \
-            return -2; \
-          fprintf(f,"%s %ld Folder=%s\r\n",token,(long)(i+1),ptr); \
+          fprintf(f,"%s %ld Folder=%s\r\n",token,(long)(i+1),smartAscii(dest->filetype.folder[i])); \
         } \
 	}
 	
@@ -667,14 +645,12 @@ int saveTPR(QString &fileName,TPRDataStruct *src)
 {
   FILE *f;
   int ret;
-  char *buffer=NULL; //this buffer is used to grab QStrings so that fprintf can handle them.
   f=fopen(fileName,"wb");
   if (!f)
   {
     return -1;
   }
-  ret=save_tpr(f,src,&buffer);
-  free(buffer);
+  ret=save_tpr(f,src);
   fclose(f);
   return ret;
 }

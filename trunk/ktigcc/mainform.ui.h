@@ -692,17 +692,18 @@ void MainForm::fileOpen()
 
 void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const QString &base_dir,QString *open_file)
 {
+  if (!category)
+    return;
   TPRFileList *fileList=(TPRFileList*)fileListV;
-  ListViewFile *item=(ListViewFile*)category->firstChild();
-  ListViewFile *next;
-    //Is this a valid conversion to the ListViewFile system?
+  QListViewItem *item=category->firstChild();
+  QListViewItem *next;
   QString folderSpec=QString::null;
   int o;
   while (item)
   {
     if (IS_FILE(item))
     {
-      QString relPath=KURL::relativePath(base_dir,item->fileName);
+      QString relPath=KURL::relativePath(base_dir,static_cast<ListViewFile *>(item)->fileName);
       QString suffix;
       o=relPath.findRev('.');
       if (o>=0)
@@ -720,17 +721,20 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
       else
         relPath.truncate(0);
       relPath+=item->text(0);
+      relPath+='.';
       relPath+=suffix;
+      if (relPath.find("./")==0)
+        relPath=relPath.mid(2);
       
       fileList->path << relPath;
-      fileList->folder << relPath;
+      fileList->folder << folderSpec;
       
       if (item==currentListItem)
-        *open_file=item->fileName;
+        *open_file=static_cast<ListViewFile *>(item)->fileName;
     }
     else if (IS_FOLDER(item))
     {
-      next=(ListViewFile*)item->firstChild();
+      next=item->firstChild();
       if (next)
       {
         if (folderSpec.isEmpty())
@@ -745,10 +749,10 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
       }
     }
 fsll_seeknext:
-    next=(ListViewFile*)item->nextSibling();
+    next=item->nextSibling();
     if (!next)
     {
-      next=(ListViewFile*)item->parent();
+      next=item->parent();
       if (next==category||!next)
         break;
       item=next;
@@ -785,6 +789,7 @@ void MainForm::fileSave()
   fileSave_loadList(txtFilesListItem,&TPRData.txt_files,base_dir,&open_file);
   fileSave_loadList(othFilesListItem,&TPRData.oth_files,base_dir,&open_file);
   TPRData.prj_name=rootListItem->text(0);
+  TPRData.open_file=open_file;
   TPRData.settings=settings;
   TPRData.libopts=libopts;
   
