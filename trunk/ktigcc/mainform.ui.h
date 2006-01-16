@@ -603,6 +603,7 @@ QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
   newItem=item?new ListViewFolder(parent,item)
               :new ListViewFolder(parent);
   newItem->setText(0,name);
+  newItem->setOpen(TRUE);
   return newItem;
 }
 
