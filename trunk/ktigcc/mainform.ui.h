@@ -230,6 +230,13 @@ class DnDListView : public QListView {
             e->accept();
             currItem->parent()->takeItem(currItem);
             item->insertItem(currItem);
+            // put it at the right place
+            if (currItem->nextSibling()) {
+              QListViewItem *lastItem=currItem->nextSibling();
+              while(lastItem->nextSibling())
+                lastItem=lastItem->nextSibling();
+              currItem->moveItem(lastItem);
+            }
           } else {ignore: e->ignore();}
         } else e->ignore();
       } else if (IS_FILE(currItem)) {
@@ -242,6 +249,13 @@ class DnDListView : public QListView {
           e->accept();
           currItem->parent()->takeItem(currItem);
           item->insertItem(currItem);
+          // put it at the right place
+          if (IS_FILE(currItem->nextSibling())) {
+            QListViewItem *lastItem=currItem->nextSibling();
+            while(IS_FILE(lastItem->nextSibling()))
+              lastItem=lastItem->nextSibling();
+            currItem->moveItem(lastItem);
+          }
         } else if (IS_FILE(item)) {
           // drop on file
           // need same parent, but different items
