@@ -43,8 +43,8 @@ char **asm_files  = NULL;
 char *tigcc_base = NULL;
 int c_file_count=0, s_file_count=0, m_file_count=0, h_file_count=0,
     asm_file_count=0, a_file_count=0, o_file_count=0;
-Settings settings = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0};
-LibOpts libopts = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,RT_NONE,RT_NONE,RT_KERNEL,RT_KERNEL};
+Settings settings = {0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0};
+LibOpts libopts = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,RT_NONE,RT_NONE,RT_KERNEL,RT_KERNEL};
 
 int clean = 0;
 int verbose = 0;
