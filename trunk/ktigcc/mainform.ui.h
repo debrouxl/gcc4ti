@@ -846,7 +846,7 @@ void MainForm::fileNewFolder()
   if (IS_FILE(currentListItem))
     currentListItem=currentListItem->parent();
   QListViewItem *item=NULL, *next=currentListItem->firstChild();
-  for (; IS_FOLDER(next); next=item->nextSibling())
+  for (; next; next=item->nextSibling())
     item=next;
   QListViewItem *newFolder=item?new ListViewFolder(currentListItem,item)
                            :new ListViewFolder(currentListItem);
@@ -897,7 +897,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
 void MainForm::newFile( QListViewItem *parent, QString text, const char *iconName )
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
-  for (; next; next=item->nextSibling())
+  for (; IS_FILE(next); next=item->nextSibling())
     item=next;
   ListViewFile *newFile=item?new ListViewFile(parent,item)
                         :new ListViewFile(parent);
