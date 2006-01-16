@@ -43,6 +43,7 @@
 #include <khelpmenu.h>
 #include <kfiledialog.h>
 #include <kurl.h>
+#include <kmessagebox.h>
 #include <cstdio>
 #include <cstdlib>
 #include "tpr.h"
@@ -185,6 +186,8 @@ static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
 static QAssistantClient *assistant;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
+static tprSettings settings;
+static tprLibOpts libopts;
 
 class DnDListView : public QListView {
   private:
@@ -579,11 +582,20 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
 
 void MainForm::fileOpen()
 {
+  TPRDataStruct TPRData;
   QString fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File",this);
   KURL dir;
   dir.setPath(fileName);
-  if (!loadTPR(fileName))
+  if (!loadTPR(fileName, &TPRData))
   {
+    if (TPRData.asm_files.path.count() && !asmFilesListItem) {
+      KMessageBox::error(this,"This project needs A68k, which is not installed.");
+      return;
+    }
+    if (TPRData.quill_files.path.count() && !qllFilesListItem) {
+      KMessageBox::error(this,"This project needs quill.drv, which is not installed.");
+      return;
+    }
     fileNewProject();
     fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir);
     fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir);
@@ -594,6 +606,8 @@ void MainForm::fileOpen()
     fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir);
     fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir);
     fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir);
+    settings=TPRData.settings;
+    libopts=TPRData.libopts;
   }
 }
 

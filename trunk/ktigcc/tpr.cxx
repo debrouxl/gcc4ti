@@ -399,7 +399,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 }
 
 //returns 0 on success
-short loadTPRIndirect(QString &fileName,TPRDataStruct *dest)
+short loadTPR(QString &fileName,TPRDataStruct *dest)
 {
   FILE *f;
   short ret;
@@ -412,8 +412,6 @@ short loadTPRIndirect(QString &fileName,TPRDataStruct *dest)
   fclose(f);
   return ret;
 }
-
-TPRDataStruct TPRData;
 
 QString loadFileText(const char *fileName)
 {

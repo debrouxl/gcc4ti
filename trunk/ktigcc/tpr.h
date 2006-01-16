@@ -105,8 +105,6 @@ typedef struct
   TPRFileList quill_files;
 } TPRDataStruct;
 
-#define loadTPR(fileName) (loadTPRIndirect(fileName,&TPRData))
-extern TPRDataStruct TPRData;
-short loadTPRIndirect(QString &fileName,TPRDataStruct *dest);
+short loadTPR(QString &fileName,TPRDataStruct *dest);
 
 QString loadFileText(const char *fileName);
