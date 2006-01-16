@@ -188,6 +188,7 @@ static QAssistantClient *assistant;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 static tprSettings settings;
 static tprLibOpts libopts;
+static QString projectFileName;
 
 class DnDListView : public QListView {
   private:
@@ -439,6 +440,7 @@ void MainForm::init()
   args.append(QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
   assistant->setArguments(args);
   lastDirectory=TIGCCProjectDirectory;
+  projectFileName="";
   startTimer(100);
 }
 
@@ -476,6 +478,7 @@ void MainForm::te_popup_aboutToShow()
 void MainForm::fileNewProject()
 {
   rootListItem->setText(0,"Project1");
+  projectFileName="";
   fileTreeClicked(rootListItem);
   QListViewItem *f, *next;
   for (f=hFilesListItem->firstChild();f;f=next) {
@@ -640,7 +643,6 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
     
     openFile(category,parent,caption,tmp.path());
   }
-  updateLeftStatusLabel();
 }
 
 void MainForm::fileOpen()
@@ -676,8 +678,12 @@ void MainForm::fileOpen()
   fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir);
   fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir);
   fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir);
+  rootListItem->setText(0,TPRData.prj_name);
+  projectFileName=fileName;
   settings=TPRData.settings;
   libopts=TPRData.libopts;
+  updateLeftStatusLabel();
+  updateRightStatusLabel();
 }
 
 void MainForm::fileSave()
@@ -1111,7 +1117,7 @@ void MainForm::updateRightStatusLabel()
     colStatusLabel->hide();
     charsStatusLabel->hide();
     rightStatusLabel->setMaximumWidth(rightStatusSize);
-    rightStatusLabel->setText("project file name");
+    rightStatusLabel->setText(projectFileName);
   } else if (IS_FOLDER(currentListItem)) {
     rowStatusLabel->hide();
     colStatusLabel->hide();
