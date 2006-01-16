@@ -655,6 +655,8 @@ void MainForm::fileOpen()
   QString fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File",this);
   KURL dir;
   dir.setPath(fileName);
+  if (fileName.isEmpty())
+    return;
   int ret=loadTPR(fileName, &TPRData);
   if (ret == -1) {
     KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
@@ -690,11 +692,13 @@ void MainForm::fileOpen()
   updateRightStatusLabel();
 }
 
+//loadList also saves the file contents
 void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const QString &base_dir,QString *open_file)
 {
   if (!category)
     return;
   TPRFileList *fileList=(TPRFileList*)fileListV;
+  KURL tmpPath;
   QListViewItem *item=category->firstChild();
   QListViewItem *next;
   QString folderSpec=QString::null;
@@ -725,6 +729,10 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
       relPath+=suffix;
       if (relPath.find("./")==0)
         relPath=relPath.mid(2);
+      
+      tmpPath.setPath(base_dir);
+      tmpPath.setFileName(relPath);
+      saveFileText(tmpPath.path(),static_cast<ListViewFile *>(item)->textBuffer);
       
       fileList->path << relPath;
       fileList->folder << folderSpec;
@@ -769,9 +777,13 @@ fsll_seeknext:
 
 //TODO: Check if there is a project name.  If not, do a save as dialog.
 //TODO: Show error if TPR couldn't be saved.
-//TODO: Resolve TPRData.open_file
 void MainForm::fileSave()
 {
+  if (projectFileName.isEmpty())
+  {
+    fileSaveAs();
+  }
+  
   int result;
   
   TPRDataStruct TPRData;
@@ -779,6 +791,11 @@ void MainForm::fileSave()
   KURL base_dir_k(projectFileName);
   base_dir_k.setFileName("");
   QString base_dir=base_dir_k.path();
+  
+  if (IS_FILE(currentListItem))
+    static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
+    //we don't want to make it so you have to click to another file and back to save the current document properly ;)
+  
   fileSave_loadList(hFilesListItem,&TPRData.h_files,base_dir,&open_file);
   fileSave_loadList(cFilesListItem,&TPRData.c_files,base_dir,&open_file);
   fileSave_loadList(qllFilesListItem,&TPRData.quill_files,base_dir,&open_file);
@@ -799,7 +816,17 @@ void MainForm::fileSave()
 void MainForm::fileSaveAs()
 {
   QString fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save Project",this);
-  
+  if (fileName.isEmpty())
+    return;
+  FILE *testf=fopen(projectFileName,"wb");
+  if (!testf)
+  {
+    KMessageBox::error(this,QString("Can't save to \'%1\'").arg(fileName));
+  }
+  else
+    fclose(testf);
+  projectFileName=fileName;
+  fileSave();
 }
 
 void MainForm::filePrint()

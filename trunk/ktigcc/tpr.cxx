@@ -654,3 +654,15 @@ int saveTPR(QString &fileName,TPRDataStruct *src)
   fclose(f);
   return ret;
 }
+
+int saveFileText(const char *fileName,QString &fileText)
+{
+  FILE *f;
+  const char *s;
+  f=fopen(fileName,"wb");
+  if (!f)
+    return -1;
+  s=smartAscii(fileText);
+  fwrite(s,1,strlen(s),f);
+  return 0;
+}
