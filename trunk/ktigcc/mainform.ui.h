@@ -690,9 +690,36 @@ void MainForm::fileOpen()
   updateRightStatusLabel();
 }
 
+void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,void *dir)
+{
+  TPRFileList *fileList=(TPRFileList*)fileListV;
+  KURL *base_dir=(KURL*)dir;
+  
+}
+
+//TODO: Check if there is a project name.  If not, do a save as dialog.
+//TODO: Show error if TPR couldn't be saved.
+//TODO: Resolve TPRData.open_file
 void MainForm::fileSave()
 {
+  int result;
   
+  TPRDataStruct TPRData;
+  KURL base_dir(projectFileName);
+  fileSave_loadList(hFilesListItem,&TPRData.h_files,&base_dir);
+  fileSave_loadList(cFilesListItem,&TPRData.c_files,&base_dir);
+  fileSave_loadList(qllFilesListItem,&TPRData.quill_files,&base_dir);
+  fileSave_loadList(sFilesListItem,&TPRData.s_files,&base_dir);
+  fileSave_loadList(asmFilesListItem,&TPRData.asm_files,&base_dir);
+  fileSave_loadList(oFilesListItem,&TPRData.o_files,&base_dir);
+  fileSave_loadList(aFilesListItem,&TPRData.a_files,&base_dir);
+  fileSave_loadList(txtFilesListItem,&TPRData.txt_files,&base_dir);
+  fileSave_loadList(othFilesListItem,&TPRData.oth_files,&base_dir);
+  TPRData.prj_name=rootListItem->text(0);
+  TPRData.settings=settings;
+  TPRData.libopts=libopts;
+  
+  result=saveTPR(projectFileName,&TPRData);
 }
 
 void MainForm::fileSaveAs()

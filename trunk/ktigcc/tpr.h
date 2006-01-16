@@ -146,5 +146,6 @@ typedef struct
 } TPRDataStruct;
 
 int loadTPR(QString &fileName,TPRDataStruct *dest);
-
 QString loadFileText(const char *fileName);
+
+int saveTPR(QString &fileName,TPRDataStruct *src);
