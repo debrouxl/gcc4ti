@@ -306,7 +306,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
             }
             else if( (p=find_numbered_param(buffer, "C File %i Folder=", &v)) )
             {
-                
+                dest->c_files.folder[v-1]=p;
                 continue;
             }
 
@@ -319,7 +319,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "GNU Assembler File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                dest->s_files.folder[v-1]=p;
                 continue;
             }
 
@@ -332,7 +333,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Header File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                dest->h_files.folder[v-1]=p;
                 continue;
             }
 
@@ -345,7 +347,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Assembler File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                dest->asm_files.folder[v-1]=p;
                 continue;
             }
 
@@ -358,7 +361,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Object File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                dest->o_files.folder[v-1]=p;
                 continue;
             }
 
@@ -371,7 +375,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Archive File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                dest->a_files.folder[v-1]=p;
                 continue;
             }
 
@@ -384,7 +389,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Text File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                dest->txt_files.folder[v-1]=p;
                 continue;
             }
 
@@ -397,7 +403,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Quill File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                dest->quill_files.folder[v-1]=p;
                 continue;
             }
 
@@ -410,7 +417,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
             else if( (p=find_numbered_param(buffer, "Other File %i Folder=", &v)) )
-            { // ignore folder specification for now
+            {
+                dest->oth_files.folder[v-1]=p;
                 continue;
             }
 
