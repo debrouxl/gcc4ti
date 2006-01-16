@@ -113,9 +113,19 @@ int read_line(FILE *f, char *buffer, int *l)
 int parse_file(FILE *f,TPRDataStruct *dest)
 {
   char buffer[256];
-  int l = 1;
+  int l = 0;
   SectionType stype = SECTION_NONE;
   
+  // Some defaults are different when opening an existing project.
+  dest->settings.cc_switches="";
+  dest->settings.as_switches="";
+  dest->settings.a68k_switches="";
+  dest->libopts.use_ti89=0;
+  dest->libopts.use_ti92p=0;
+  dest->libopts.use_v200=0;
+  dest->libopts.use_minams=0;
+  dest->libopts.save_screen=0;
+
   while(!feof(f)) 
     {
         char *p;
@@ -404,7 +414,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
 
-            else return 1;
+            else return l;
         }
 
     }

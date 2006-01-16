@@ -1,3 +1,25 @@
+/*
+   ktigcc - TIGCC IDE for KDE
+   
+   tpr handling routines adapted from tprbuilder
+   Copyright (C) 2002 Romain Liévin
+   Copyright (C) 2002-2006 Kevin Kofler
+   Copyright (C) 2006 Joey Adams
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software Foundation,
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
 
 /*Structure definitions from tprbuilder source; slightly modified
     to work under C++
@@ -14,13 +36,16 @@ typedef enum SectionType_ SectionType;
 typedef struct tprsettings tprSettings;
 struct tprsettings
 {
-    tprsettings() : archive(0),pack(0),debug_info(0),std_lib(0),
-                    use_data_var(0),copy_data_var(0),copy_data_var_arc(0),
+    tprsettings() : archive(0),pack(0),debug_info(0),std_lib(1),
+                    use_data_var(0),copy_data_var(1),copy_data_var_arc(1),
                     optimize_nops(1),optimize_returns(1),optimize_branches(1),
                     optimize_moves(1),optimize_tests(1),optimize_calcs(1),
                     remove_unused(1),outputbin(0),fargo(0),flash_os(0),
                     cut_ranges(1),reorder_sections(1),merge_constants(1),
-                    initialize_bss(1)
+                    initialize_bss(1),
+                    cc_switches("-Os -Wall -W -Wwrite-strings -ffunction-sections -fdata-sections"),
+                    as_switches(""),
+                    a68k_switches("-g -t")
                   {}
     Boolean archive;         // we want to build an archive
     Boolean pack;            // we want to pack the executable
@@ -65,12 +90,12 @@ typedef enum tprreloctypes tprRelocType;
 typedef struct tprlibopts tprLibOpts;
 struct tprlibopts
 {
-    tprlibopts() : use_ti89(0),use_ti92p(0),use_v200(0),opt_calc_consts(0),
-                   use_kernel(0),use_preos(0),use_minams(0),
+    tprlibopts() : use_ti89(1),use_ti92p(1),use_v200(1),opt_calc_consts(0),
+                   use_kernel(0),use_preos(0),use_minams(1),
                    unofficial_os(0),use_fline_jumps(0),use_4b_fline_jumps(0),
                    use_internal_fline_emu(0),use_return_value(0),
-                   enable_error_return(0),save_screen(0),opt_rom_calls(0),
-                   minams(0),reloc_format(RT_NONE),rom_call_format(RT_NONE),
+                   enable_error_return(0),save_screen(1),opt_rom_calls(0),
+                   minams(100),reloc_format(RT_NONE),rom_call_format(RT_NONE),
                    bss_ref_format(RT_KERNEL),data_ref_format(RT_KERNEL)
                  {}
     Boolean use_ti89;
