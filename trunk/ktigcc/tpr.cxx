@@ -289,7 +289,15 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 #undef reloc_param
         }
 
-        // Ignore [File Editing] section, it is used only for editing.
+        // Keywords in the [File Editing] section
+        if(stype == SECTION_FILEEDIT)
+        {
+            if ( (p=find_param(buffer, "Open File=")) ) \
+            { \
+                if (*p) dest->open_file = p; \
+                continue; \
+            } else return l;
+        }
 
         // Keywords in the [Included Files] section
         if(stype == SECTION_FILES)

@@ -131,6 +131,7 @@ typedef struct
 typedef struct
 {
   QString prj_name;
+  QString open_file;
   tprSettings settings;
   tprLibOpts libopts;
   TPRFileList h_files;

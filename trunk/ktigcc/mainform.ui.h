@@ -557,7 +557,7 @@ QStringList MainForm::SGetFileName_Multiple(short fileFilter,const QString &capt
   return ret;
 }
 
-void MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
+QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
   for (; IS_FILE(next); next=item->nextSibling())
@@ -585,6 +585,7 @@ void MainForm::openFile(QListViewItem * category, QListViewItem * parent, const 
    category==qllFilesListItem?qllFileCount:category==oFilesListItem?oFileCount:
    category==aFilesListItem?aFileCount:category==txtFilesListItem?txtFileCount:
    othFileCount)++;
+  return newFile;
 }
 
 QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
@@ -607,7 +608,7 @@ QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
   return newItem;
 }
 
-void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *dir)
+void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *dir, const QString &open_file)
 {
   int i,e;
   int p;
@@ -642,7 +643,9 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
         parent=createFolder(parent,treePath);
     }
     
-    openFile(category,parent,caption,tmp.path());
+    ListViewFile *newFile=static_cast<ListViewFile *>(openFile(category,parent,caption,tmp.path()));
+    if (!newFile->fileName.compare(open_file))
+      fileTreeClicked(newFile);
   }
 }
 
@@ -670,15 +673,15 @@ void MainForm::fileOpen()
     return;
   }
   fileNewProject();
-  fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir);
-  fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir);
-  fileOpen_addList(qllFilesListItem,&TPRData.quill_files,&dir);
-  fileOpen_addList(sFilesListItem,&TPRData.s_files,&dir);
-  fileOpen_addList(asmFilesListItem,&TPRData.asm_files,&dir);
-  fileOpen_addList(oFilesListItem,&TPRData.o_files,&dir);
-  fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir);
-  fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir);
-  fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir);
+  fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir,TPRData.open_file);
+  fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir,TPRData.open_file);
+  fileOpen_addList(qllFilesListItem,&TPRData.quill_files,&dir,TPRData.open_file);
+  fileOpen_addList(sFilesListItem,&TPRData.s_files,&dir,TPRData.open_file);
+  fileOpen_addList(asmFilesListItem,&TPRData.asm_files,&dir,TPRData.open_file);
+  fileOpen_addList(oFilesListItem,&TPRData.o_files,&dir,TPRData.open_file);
+  fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir,TPRData.open_file);
+  fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir,TPRData.open_file);
+  fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir,TPRData.open_file);
   rootListItem->setText(0,TPRData.prj_name);
   projectFileName=fileName;
   settings=TPRData.settings;
