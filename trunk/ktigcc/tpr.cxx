@@ -160,12 +160,14 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue; \
             } else
 
-#define string_param(token,setting) \
+#define string_vparam(token,var) \
             if ( (p=find_param(buffer, token)) ) \
             { \
-                if (*p) dest->settings.setting = p; \
+                if (*p) dest->var = p; \
                 continue; \
             } else
+
+#define string_param(token,setting) string_vparam(token,settings.setting)
 
 #define ignore_param(token) \
             if( (p=find_param(buffer, token)) ) \
@@ -176,7 +178,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
             boolean_param("Archive=",archive)
             boolean_param("Pack=",pack)
             string_param("Packed Variable=",pack_name)
-            string_param("Project Name=",prj_name)
+            string_vparam("Project Name=",prj_name)
             string_param("GCC Switches=",cc_switches)
             string_param("Assembler Switches=",a68k_switches)
             ignore_param("Linker Switches=") // Obsolete. Ignore.
@@ -208,6 +210,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
             return l;
 
 #undef boolean_param
+#undef string_vparam
 #undef string_param
 #undef ignore_param
         }
@@ -336,6 +339,19 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue;
             }
 
+            else if( (p=find_numbered_param(buffer, "Object File %i=", &v)) )
+            {
+                QString s = convert_path_separators(p);
+                dest->o_files.path << s;
+                dest->o_files.folder << QString::null;
+              
+                continue;
+            }
+            else if( (p=find_numbered_param(buffer, "Object File %i Folder=", &v)) )
+            { // ignore folder specification for now
+                continue;
+            }
+
             else if( (p=find_numbered_param(buffer, "Archive File %i=", &v)) )
             {
                 QString s = convert_path_separators(p);
@@ -367,8 +383,6 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 QString s = convert_path_separators(p);
                 dest->quill_files.path << s;
                 dest->quill_files.folder << QString::null;
-
-                dest->settings.quill = TRUE; // -quill flag needed
 
                 continue;
             }

@@ -14,10 +14,16 @@ typedef enum SectionType_ SectionType;
 typedef struct tprsettings tprSettings;
 struct tprsettings
 {
+    tprsettings() : archive(0),pack(0),debug_info(0),std_lib(0),
+                    use_data_var(0),copy_data_var(0),copy_data_var_arc(0),
+                    optimize_nops(1),optimize_returns(1),optimize_branches(1),
+                    optimize_moves(1),optimize_tests(1),optimize_calcs(1),
+                    remove_unused(1),outputbin(0),fargo(0),flash_os(0),
+                    cut_ranges(1),reorder_sections(1),merge_constants(1),
+                    initialize_bss(1)
+                  {}
     Boolean archive;         // we want to build an archive
-    Boolean quill;           // we want to build a Quill project
     Boolean pack;            // we want to pack the executable
-    Boolean bsr_patch;       // use BSR patches
     Boolean debug_info;      // pass -g option to tigcc
     Boolean std_lib;         // link against tigcc.a
     Boolean use_data_var;
@@ -39,7 +45,6 @@ struct tprsettings
     Boolean initialize_bss;
 
     QString pack_name;
-    QString prj_name;
     QString cc_switches;
     QString as_switches;
     QString a68k_switches;
@@ -60,6 +65,14 @@ typedef enum tprreloctypes tprRelocType;
 typedef struct tprlibopts tprLibOpts;
 struct tprlibopts
 {
+    tprlibopts() : use_ti89(0),use_ti92p(0),use_v200(0),opt_calc_consts(0),
+                   use_kernel(0),use_preos(0),use_minams(0),
+                   unofficial_os(0),use_fline_jumps(0),use_4b_fline_jumps(0),
+                   use_internal_fline_emu(0),use_return_value(0),
+                   enable_error_return(0),save_screen(0),opt_rom_calls(0),
+                   minams(0),reloc_format(RT_NONE),rom_call_format(RT_NONE),
+                   bss_ref_format(RT_KERNEL),data_ref_format(RT_KERNEL)
+                 {}
     Boolean use_ti89;
     Boolean use_ti92p;
     Boolean use_v200;
@@ -92,6 +105,7 @@ typedef struct
 
 typedef struct
 {
+  QString prj_name;
   tprSettings settings;
   tprLibOpts libopts;
   TPRFileList h_files;
