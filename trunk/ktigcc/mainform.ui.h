@@ -570,7 +570,7 @@ void MainForm::openFile(QListViewItem * category, QListViewItem * parent, const 
    othFileCount)++;
 }
 
-QListViewItem *create_folder(QListViewItem *parent,const QString &name)
+QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
 {
   QListViewItem *item=parent->firstChild();
   QListViewItem *startItem=item;
@@ -618,10 +618,10 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
     {
         while ((p=treePath.find('\\'))>=0)
         {
-          parent=create_folder(parent,treePath.left(p));
+          parent=createFolder(parent,treePath.left(p));
           treePath.remove(0,p+1);
         }
-        parent=create_folder(parent,treePath);
+        parent=createFolder(parent,treePath);
     }
     
     openFile(category,parent,caption,tmp.path());
