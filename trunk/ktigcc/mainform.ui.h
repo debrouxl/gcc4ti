@@ -543,7 +543,7 @@ QStringList MainForm::SGetFileName_Multiple(short fileFilter,const QString &capt
 void MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
-  for (; next; next=item->nextSibling())
+  for (; IS_FILE(next); next=item->nextSibling())
     item=next;
   ListViewFile *newFile=item?new ListViewFile(parent,item)
                         :new ListViewFile(parent);
@@ -577,7 +577,7 @@ QListViewItem *create_folder(QListViewItem *parent,const QString &name)
   QListViewItem *newItem;
   for (; item; item=item->nextSibling())
   {
-    if (item->text(0)==name)
+    if (IS_FOLDER(item) && !item->text(0).compare(name))
       return item;
   }
   item=NULL;
