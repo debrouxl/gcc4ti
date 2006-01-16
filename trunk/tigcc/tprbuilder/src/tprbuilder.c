@@ -2,7 +2,7 @@
    tprbuilder - tprbuilder is a MAKE program for TIGCC projects (.tpr files)
 
    Copyright (C) 2002 Romain Liévin
-   Copyright (C) 2002-2005 Kevin Kofler
+   Copyright (C) 2002-2006 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,13 +35,15 @@ char *program_name;
 char **c_files    = NULL;
 char **s_files    = NULL;
 char **h_files    = NULL;
+char **o_files    = NULL;
 char **a_files    = NULL;
 char **asm_files  = NULL;
 
 /* global vars */
 char *tigcc_base = NULL;
-int c_file_count, s_file_count, m_file_count, h_file_count, asm_file_count, a_file_count;
-Settings settings = {0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0};
+int c_file_count=0, s_file_count=0, m_file_count=0, h_file_count=0,
+    asm_file_count=0, a_file_count=0, o_file_count=0;
+Settings settings = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0};
 LibOpts libopts = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,RT_NONE,RT_NONE,RT_KERNEL,RT_KERNEL};
 
 int clean = 0;
@@ -285,7 +287,7 @@ static int decode_switches (int argc, char **argv)
 
   for (c=1;c<argc;c++) {
     if (!strcmp(argv[c],"-V")||!strcmp(argv[c],"--version")) {
-       printf ("tprbuilder 1.0.15\n");
+       printf ("tprbuilder 1.0.16\n");
        exit(0);
     } else if (!strcmp(argv[c],"-h")||!strcmp(argv[c],"--help")) {
        usage(0);
@@ -712,6 +714,19 @@ int parse_file(const char *filename)
                 continue;
             }
 
+            else if( (p=find_numbered_param(buffer, "Object File %i=", &v)) )
+            {
+                char *s = encapsulate_long_filename(p);
+                dyn_file_array_add(s, &o_files, &o_file_count);
+                free(s);
+
+                continue;
+            }
+            else if( (p=find_numbered_param(buffer, "Object File %i Folder=", &v)) )
+            { // ignore folder specification for now
+                continue;
+            }
+
             else if( (p=find_numbered_param(buffer, "Archive File %i=", &v)) )
             {
                 char *s = encapsulate_long_filename(p);
@@ -1023,58 +1038,41 @@ int process_settings(char *outfile, char **pargs)
 /*
    Build command line files (Included Files section)
 */
-int process_files(char **pfiles, char **po_files)
+int process_files(char **pfiles)
 {
 #define files (*pfiles)
-#define o_files (*po_files)
     int i, count;
 
     files=malloc(1);
     if (!files) outofmem();
-    o_files=malloc(1);
-    if (!o_files) outofmem();
-    *files=*o_files=0;
+    *files=0;
 
     /* Process .c files */
     dyn_file_array_size(c_files, &count);
     for(i=0; i<count; i++) {
-        char tmpfile[strlen(c_files[i])+3];
-
         files = dynstrcat(files, c_files[i]);
         files = dynstrcat(files, " ");
-            
-        strcpy(tmpfile, c_files[i]);
-        change_extension(tmpfile, ".o");
-        o_files = dynstrcat(o_files, tmpfile);
-        o_files = dynstrcat(o_files, " ");
     }
 
     /* Process .s files */
     dyn_file_array_size(s_files, &count);
     for(i=0; i<count; i++) {
-        char tmpfile[strlen(s_files[i])+3];
-
         files = dynstrcat(files, s_files[i]);
         files = dynstrcat(files, " ");
-
-        strcpy(tmpfile, s_files[i]);
-        change_extension(tmpfile, ".o");
-        o_files = dynstrcat(o_files, tmpfile);
-        o_files = dynstrcat(o_files, " ");
     }
 
     /* Process .asm files */
     dyn_file_array_size(asm_files, &count);
     for(i=0; i<count; i++) {
-        char tmpfile[strlen(asm_files[i])+3];
-
         files = dynstrcat(files, asm_files[i]);
         files = dynstrcat(files, " ");
+    }
 
-        strcpy(tmpfile, asm_files[i]);
-        change_extension(tmpfile, ".o");
-        o_files = dynstrcat(o_files, tmpfile);
-        o_files = dynstrcat(o_files, " ");
+    /* Process .o files */
+    dyn_file_array_size(o_files, &count);
+    for(i=0; i<count; i++) {
+        files = dynstrcat(files, o_files[i]);
+        files = dynstrcat(files, " ");
     }
 
     /* Process .a files */
@@ -1085,7 +1083,6 @@ int process_files(char **pfiles, char **po_files)
     }
     return 0;
 #undef files
-#undef o_files
 }
 
 /*
@@ -1095,16 +1092,14 @@ void build_files(char *outfile)
 {
     char *options = NULL;
     char *files = NULL;
-    char *o_files = NULL;
 
     process_settings(outfile, &options);
-    process_files(&files, &o_files);
+    process_files(&files);
 
     execute_tigcc(files, options);
 
     free(options);
     free(files);
-    free(o_files);
 }
 
 

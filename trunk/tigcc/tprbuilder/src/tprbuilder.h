@@ -1,7 +1,7 @@
 /*  TPRbuilder - A make program for TIGCC project files (tpr).
  *
  *  Copyright (C) 2002 Romain Liévin
- *  Copyright (C) 2002-2005 Kevin Kofler
+ *  Copyright (C) 2002-2006 Kevin Kofler
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ struct settings
     Boolean archive;         // we want to build an archive
     Boolean quill;           // we want to build a Quill project
     Boolean pack;            // we want to pack the executable
-    Boolean bsr_patch;       // use BSR patches
     Boolean debug_info;      // pass -g option to tigcc
     Boolean std_lib;         // link against tigcc.a
     Boolean use_data_var;
@@ -133,7 +132,7 @@ char *find_numbered_param(char *s, const char *t, int *i);
 
 int process_settings(char *outfile, char **pargs);
 int parse_file(const char *filename);
-int process_files(char **pfiles, char **po_files);
+int process_files(char **pfiles);
 
 void build_files(char *outfile);
 void clean_files(char *outfile);
