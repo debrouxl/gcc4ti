@@ -585,6 +585,7 @@ QListViewItem *create_folder(QListViewItem *parent,const QString &name)
     item=startItem;
   newItem=item?new ListViewFolder(parent,item)
               :new ListViewFolder(parent);
+  newItem->setText(0,name);
   return newItem;
 }
 
