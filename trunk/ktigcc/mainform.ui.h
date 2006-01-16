@@ -570,18 +570,49 @@ void MainForm::openFile(QListViewItem * category, QListViewItem * parent, const 
    othFileCount)++;
 }
 
+QString stripFileNameSuffix(QString fileName)
+{
+  int p=fileName.findRev('.');
+  if (p>=0) fileName.truncate(p);
+  return fileName;
+}
+
 void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *dir)
 {
   int i,e;
+  int p;
   KURL tmp;
   TPRFileList *fileList=(TPRFileList*)fileListV;
+  QString caption;
+  QString treePath;
+  QListViewItem *parent;
   e=fileList->path.count();
   if (e) category->setOpen(TRUE);
   for (i=0;i<e;i++)
   {
     tmp=*reinterpret_cast<const KURL *>(dir);
     tmp.setFileName(fileList->path[i]);
-    openFile(category,category,fileList->path[i],tmp.path());
+    caption=fileList->path[i];
+    p=caption.findRev('.');
+    if (p>=0) caption.truncate(p);
+    p=caption.findRev('/');
+    if (p>=0) caption.remove(0,p+1);
+    treePath=fileList->folder[i].stripWhiteSpace();
+    //check for a backslash at the end and remove it if it's there.
+    if (treePath[treePath.length-1]=='\\')
+      treePath.truncate(treePath.length-1);
+    parent=category;
+    if (!treePath.isEmpty)
+    {
+        while ((p=treePath.find('\\'))>=0)
+        {
+          parent=create_folder(parent,treePath.left(p));
+          parent.remove(0,p+1);
+        }
+        parent=create_folder(parent,treePath)
+    }
+    
+    openFile(category,parent,stripFileNameSuffix(fileList->path[i]),tmp.path());
   }
   updateLeftStatusLabel();
 }
