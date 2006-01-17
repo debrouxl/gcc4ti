@@ -145,8 +145,8 @@ typedef struct
   TPRFileList quill_files;
 } TPRDataStruct;
 
-int loadTPR(QString &fileName,TPRDataStruct *dest);
+int loadTPR(const QString &fileName,TPRDataStruct *dest);
 QString loadFileText(const char *fileName);
 
-int saveTPR(QString &fileName,TPRDataStruct *src);
+int saveTPR(const QString &fileName,TPRDataStruct *src);
 int saveFileText(const char *fileName,QString &fileText);

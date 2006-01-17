@@ -693,11 +693,12 @@ void MainForm::fileOpen()
 }
 
 //loadList also saves the file contents
-void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const QString &base_dir,QString *open_file)
+void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const QString &base_dir,void *dir_new,QString *open_file)
 {
   if (!category)
     return;
   TPRFileList *fileList=(TPRFileList*)fileListV;
+  KURL *new_dir=(KURL*)dir_new;
   KURL tmpPath;
   QListViewItem *item=category->firstChild();
   QListViewItem *next;
@@ -730,7 +731,7 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
       if (relPath.find("./")==0)
         relPath=relPath.mid(2);
       
-      tmpPath.setPath(base_dir);
+      tmpPath=*new_dir;
       tmpPath.setFileName(relPath);
       saveFileText(tmpPath.path(),static_cast<ListViewFile *>(item)->textBuffer);
       
@@ -775,42 +776,64 @@ fsll_seeknext:
   }
 }
 
-//TODO: Check if there is a project name.  If not, do a save as dialog.
-//TODO: Show error if TPR couldn't be saved.
-void MainForm::fileSave()
+
+int MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
 {
-  if (projectFileName.isEmpty())
+  if (lastProj.compare(nextProj))
   {
-    fileSaveAs();
+    FILE *testf=fopen(nextProj,"wb");
+    if (!testf)
+    {
+      KMessageBox::error(this,QString("Can't save to \'%1\'").arg(nextProj));
+    }
+    else
+      fclose(testf);
   }
-  
   int result;
-  
   TPRDataStruct TPRData;
   QString open_file;
-  KURL base_dir_k(projectFileName);
+  KURL base_dir_k(lastProj);
   base_dir_k.setFileName("");
   QString base_dir=base_dir_k.path();
+  KURL new_dir(nextProj);
   
   if (IS_FILE(currentListItem))
     static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
     //we don't want to make it so you have to click to another file and back to save the current document properly ;)
   
-  fileSave_loadList(hFilesListItem,&TPRData.h_files,base_dir,&open_file);
-  fileSave_loadList(cFilesListItem,&TPRData.c_files,base_dir,&open_file);
-  fileSave_loadList(qllFilesListItem,&TPRData.quill_files,base_dir,&open_file);
-  fileSave_loadList(sFilesListItem,&TPRData.s_files,base_dir,&open_file);
-  fileSave_loadList(asmFilesListItem,&TPRData.asm_files,base_dir,&open_file);
-  fileSave_loadList(oFilesListItem,&TPRData.o_files,base_dir,&open_file);
-  fileSave_loadList(aFilesListItem,&TPRData.a_files,base_dir,&open_file);
-  fileSave_loadList(txtFilesListItem,&TPRData.txt_files,base_dir,&open_file);
-  fileSave_loadList(othFilesListItem,&TPRData.oth_files,base_dir,&open_file);
+  fileSave_loadList(hFilesListItem,&TPRData.h_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(cFilesListItem,&TPRData.c_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(qllFilesListItem,&TPRData.quill_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(sFilesListItem,&TPRData.s_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(asmFilesListItem,&TPRData.asm_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(oFilesListItem,&TPRData.o_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(aFilesListItem,&TPRData.a_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(txtFilesListItem,&TPRData.txt_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(othFilesListItem,&TPRData.oth_files,base_dir,&new_dir,&open_file);
   TPRData.prj_name=rootListItem->text(0);
   TPRData.open_file=open_file;
   TPRData.settings=settings;
   TPRData.libopts=libopts;
   
-  result=saveTPR(projectFileName,&TPRData);
+  result=saveTPR(nextProj,&TPRData);
+  
+  return result;
+}
+
+//TODO: Check if there is a project name.  If not, do a save as dialog.
+//TODO: Show error if TPR couldn't be saved.
+void MainForm::fileSave()
+{
+  int result;
+  if (projectFileName.isEmpty())
+  {
+    fileSaveAs();
+  }
+  else
+  {
+    result=fileSave_fromto(projectFileName,projectFileName);
+    
+  }
 }
 
 void MainForm::fileSaveAs()
@@ -818,15 +841,8 @@ void MainForm::fileSaveAs()
   QString fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save Project",this);
   if (fileName.isEmpty())
     return;
-  FILE *testf=fopen(projectFileName,"wb");
-  if (!testf)
-  {
-    KMessageBox::error(this,QString("Can't save to \'%1\'").arg(fileName));
-  }
-  else
-    fclose(testf);
+  fileSave_fromto(projectFileName,fileName);
   projectFileName=fileName;
-  fileSave();
 }
 
 void MainForm::filePrint()

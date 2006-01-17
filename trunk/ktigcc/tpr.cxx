@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
@@ -447,7 +448,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 }
 
 //returns 0 on success
-int loadTPR(QString &fileName,TPRDataStruct *dest)
+int loadTPR(const QString &fileName,TPRDataStruct *dest)
 {
   FILE *f;
   int ret;
@@ -641,7 +642,7 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
 }
 
 //returns 0 on success, -1 if the file isn't there, and -2 if there's not enough memory.
-int saveTPR(QString &fileName,TPRDataStruct *src)
+int saveTPR(const QString &fileName,TPRDataStruct *src)
 {
   FILE *f;
   int ret;
@@ -655,13 +656,45 @@ int saveTPR(QString &fileName,TPRDataStruct *src)
   return ret;
 }
 
+void mkdir_multi(const char *fileName)
+{
+  int l=strlen(fileName);
+  char buffer[l+2];
+  char *ptr;
+
+#ifdef __WIN32__
+  ptr=strchr(fileName,'\\');
+#else
+  ptr=strchr(fileName,'/');
+#endif
+  
+  while (ptr)
+  {
+    memcpy(buffer,fileName,ptr-fileName);
+    buffer[ptr-fileName]=0;
+    mkdir(buffer,S_IRWXU | S_IRWXG | S_IRWXO);
+    
+#ifdef __WIN32__
+    ptr=strchr(ptr+1,'\\');
+#else
+    ptr=strchr(ptr+1,'/');
+#endif
+  }
+}
+
 int saveFileText(const char *fileName,QString &fileText)
 {
   FILE *f;
   const char *s;
+  
   f=fopen(fileName,"wb");
   if (!f)
-    return -1;
+  {
+    mkdir_multi(fileName);
+    f=fopen(fileName,"wb");
+    if (!f)
+        return -1;
+  }
   s=smartAscii(fileText);
   fwrite(s,1,strlen(s),f);
   return 0;
