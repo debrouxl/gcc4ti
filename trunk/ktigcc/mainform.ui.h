@@ -709,30 +709,13 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
     if (IS_FILE(item))
     {
       QString relPath=KURL::relativePath(base_dir,static_cast<ListViewFile *>(item)->fileName);
-      QString suffix;
-      o=relPath.findRev('.');
-      if (o>=0)
-      {
-        suffix=relPath.mid(o+1);
-        relPath.truncate(o);
-      }
-      else
-      {
-        suffix=QString::null;
-      }
-      o=relPath.findRev('/');
-      if (o>=0)
-        relPath.truncate(o+1);
-      else
-        relPath.truncate(0);
-      relPath+=item->text(0);
-      relPath+='.';
-      relPath+=suffix;
+      
       if (relPath.find("./")==0)
         relPath=relPath.mid(2);
       
       tmpPath=*new_dir;
       tmpPath.setFileName(relPath);
+      static_cast<ListViewFile *>(item)->fileName=tmpPath.path();
       saveFileText(tmpPath.path(),static_cast<ListViewFile *>(item)->textBuffer);
       
       fileList->path << relPath;
@@ -957,6 +940,38 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       m_view->cursorPositionReal(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
                                  &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
     }
+    
+    
+    //Rename code.  Move to a slot later
+    
+    
+    QString suffix;
+    QString *fileNameRef=&(static_cast<ListViewFile *>(currentListItem)->fileName);
+    int o;
+    
+    o=fileNameRef->findRev('.');
+    if (o>=0)
+    {
+      suffix=fileNameRef->mid(o+1);
+      fileNameRef->truncate(o);
+    }
+    else
+    {
+      suffix=QString::null;
+    }
+    o=fileNameRef->findRev('/');
+    if (o>=0)
+      fileNameRef->truncate(o+1);
+    else
+      fileNameRef->truncate(0);
+    *fileNameRef+=currentListItem->text(0);
+    *fileNameRef+='.';
+    *fileNameRef+=suffix;
+    
+    
+    //End rename code
+    
+    
   }
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
@@ -1073,23 +1088,129 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
   }
 }
 
+//you put in parent, and it gives you the rest, but you must have a place to put it all.
+void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_category,QStringList *p_allFiles,QString *p_folderPath)
+{
+  QListViewItem *category=parent,*item,*next;
+  QStringList allFiles;
+  QString tmp=QString::null;
+  int o;
+  while (category->parent()->rtti()==0x716CC0) category=category->parent();
+  *p_category=category;
+  item=category->firstChild();
+  while (item)
+  {
+    if (item==parent)
+      *p_folderPath=tmp;
+    if (IS_FILE(item))
+    {
+      allFiles << (static_cast<ListViewFile *>(item)->fileName);
+    }
+    if (IS_FOLDER(item))
+    {
+      next=item->firstChild();
+      if (next)
+      {
+        if (tmp.isEmpty())
+          tmp=item->text(0);
+        else
+        {
+          tmp+='\\';
+          tmp+=item->text(0);
+        }
+        item=next;
+        continue;
+      }
+    }
+mfnf_seeknext:
+    next=item->nextSibling();
+    if (!next)
+    {
+      next=item->parent();
+      if (next==category||!next)
+        break;
+      item=next;
+      o=tmp.findRev('\\');
+      if (o>=0)
+        tmp.truncate(o);
+      else
+        tmp.truncate(0);
+      goto mfnf_seeknext;
+    }
+    item=next;
+  }
+  *p_allFiles=allFiles;
+}
+
 void MainForm::newFile( QListViewItem *parent, QString text, const char *iconName )
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
+  QString tmp,oldtmp,suffix,caption;
+  QStringList allFiles;
+  QListViewItem *category;
+  KURL tmpK;
+  int i;
+  int tryNum;
   for (; IS_FILE(next); next=item->nextSibling())
     item=next;
   ListViewFile *newFile=item?new ListViewFile(parent,item)
                         :new ListViewFile(parent);
-  newFile->setText(0,"New File");
+  extractFileTreeInfo(parent,&category,&allFiles,&tmp);
+  
+  suffix="";
+  if (category==hFilesListItem)
+	suffix="h";
+  else if (category==cFilesListItem)
+    suffix="c";
+  else if (category==sFilesListItem)
+    suffix="s";
+  else if (category==asmFilesListItem)
+    suffix="asm";
+  else if (category==qllFilesListItem)
+    suffix="qll";
+  else if (category==oFilesListItem)
+    suffix="o";
+  else if (category==aFilesListItem)
+    suffix="a";
+  else if (category==txtFilesListItem)
+    suffix="txt";
+  
+  if (!tmp.isEmpty())
+    tmp+='/';
+  tmp+="New File";
+  tmpK.setPath(projectFileName);
+  tmpK.setFileName(tmp);
+  tmp=tmpK.path();
+  if (tmp.findRev('/')==0)
+    tmp=tmp.mid(1);
+  caption="New File";
+  oldtmp=tmp+' ';
+  suffix='.'+suffix;
+  tmp+=suffix;
+  tryNum=1;
+mfnf_retry:
+  for (i=allFiles.count()-1;i>=0;i--)
+  {
+    if (!tmp.compare(allFiles[i]))
+    {
+      tryNum++;
+      tmp=oldtmp+QString("%1").arg(tryNum)+suffix;
+      caption="New File "+QString("%1").arg(tryNum);
+      goto mfnf_retry;
+    }
+  }
+  newFile->fileName=tmp;
+  
+  newFile->setText(0,caption);
   newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
   parent->setOpen(TRUE);
   newFile->textBuffer=text;
   fileTreeClicked(newFile);
   newFile->startRename(0);
+  
   m_view->getDoc()->setText(text);
   fileCount++;
-  QListViewItem *category=parent;
-  while (category->parent()->rtti()==0x716CC0) category=category->parent();
+  
   (category==hFilesListItem?hFileCount:category==cFilesListItem?cFileCount:
    category==sFilesListItem?sFileCount:category==asmFilesListItem?asmFileCount:
    category==qllFilesListItem?qllFileCount:category==oFilesListItem?oFileCount:

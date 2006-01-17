@@ -697,5 +697,6 @@ int saveFileText(const char *fileName,QString &fileText)
   }
   s=smartAscii(fileText);
   fwrite(s,1,strlen(s),f);
+  fclose(f);
   return 0;
 }
