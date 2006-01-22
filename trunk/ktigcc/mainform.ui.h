@@ -1066,11 +1066,45 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
   }
 }
 
+QStringList MainForm::extractAllFileNames(void)
+{
+  QListViewItem *item=rootListItem->firstChild(),*next;
+  QStringList allFiles;
+  while (item)
+  {
+    if (IS_FOLDER(item))
+    {
+      next=item->firstChild();
+      if (next)
+      {
+        item=next;
+        continue;
+      }
+    }
+    if (IS_FILE(item))
+    {
+      allFiles << (static_cast<ListViewFile *>(item)->fileName);
+    }
+    next=item->nextSibling();
+    while (!next)
+    {
+      next=item->parent();
+      if (next==rootListItem||!next)
+      {
+        return allFiles;
+      }
+      item=next;
+      next=item->nextSibling();
+    }
+    item=next;
+  }
+  return allFiles;
+}
+
 //you put in parent, and it gives you the rest, but you must have a place to put it all.
-void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_category,QStringList *p_allFiles,QString *p_folderPath)
+void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_category,QString *p_folderPath)
 {
   QListViewItem *category=parent,*item,*next;
-  QStringList allFiles;
   QString tmp=QString::null;
   int o;
   while (category->parent()->rtti()==0x716CC0) category=category->parent();
@@ -1083,10 +1117,6 @@ void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_categ
       tmp+='/';
       tmp+=item->text(0);
       *p_folderPath=tmp;
-    }
-    if (IS_FILE(item))
-    {
-      allFiles << (static_cast<ListViewFile *>(item)->fileName);
     }
     if (IS_FOLDER(item))
     {
@@ -1121,23 +1151,19 @@ mfnf_seeknext:
     }
     item=next;
   }
-  *p_allFiles=allFiles;
 }
 
 void MainForm::newFile( QListViewItem *parent, QString text, const char *iconName )
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
   QString tmp,oldtmp,suffix,caption;
-  QStringList allFiles;
+  QStringList allFiles=extractAllFileNames();
   QListViewItem *category;
   KURL tmpK;
-  int i;
   int tryNum;
   for (; IS_FILE(next); next=item->nextSibling())
     item=next;
-  ListViewFile *newFile=item?new ListViewFile(parent,item)
-                        :new ListViewFile(parent);
-  extractFileTreeInfo(parent,&category,&allFiles,&tmp);
+  extractFileTreeInfo(parent,&category,&tmp);
   
   suffix="";
   if (category==hFilesListItem)
@@ -1156,6 +1182,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
     suffix="a";
   else if (category==txtFilesListItem)
     suffix="txt";
+  suffix='.'+suffix;
   
   tmp+='/';
   tmp+="New File";
@@ -1170,22 +1197,21 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
     if (tmp[o]=='/')
       tmp=tmp.mid(o+1);
   }
+  
   caption="New File";
   oldtmp=tmp+' ';
-  suffix='.'+suffix;
   tmp+=suffix;
   tryNum=1;
-mfnf_retry:
-  for (i=allFiles.count()-1;i>=0;i--)
+  while (!checkFileName(tmp,allFiles))
   {
-    if (!tmp.compare(allFiles[i]))
-    {
-      tryNum++;
-      tmp=oldtmp+QString("%1").arg(tryNum)+suffix;
-      caption="New File "+QString("%1").arg(tryNum);
-      goto mfnf_retry;
-    }
+    tryNum++;
+    tmp=oldtmp+QString("%1").arg(tryNum)+suffix;
+    caption="New File "+QString("%1").arg(tryNum);
   }
+  
+  ListViewFile *newFile=item?new ListViewFile(parent,item)
+                        :new ListViewFile(parent);
+  
   newFile->fileName=tmp;
   
   newFile->setText(0,caption);

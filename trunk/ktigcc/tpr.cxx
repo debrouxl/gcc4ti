@@ -29,7 +29,6 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qtextcodec.h>
-#include <kurl.h>
 #include "tpr.h"
 
 #define find_param(s_,t_) find_param_ex((s_),(t_),sizeof(t_)-1)
@@ -708,4 +707,47 @@ void kurlNewFileName(KURL &dir,const QString &newFileName)
     dir.setPath(newFileName);
   else
     dir.setFileName(newFileName);
+}
+
+QString pullOutFileSuffix(const QString &srcFileName,QString &destFileName)
+{
+  int a,b;
+  QString ret;
+  destFileName=srcFileName;
+  a=destFileName.findRev('.');
+  b=destFileName.findRev('/');
+  if (a<0)
+    return QString::null;
+  if (a<b)
+    return QString::null;
+  ret=destFileName.mid(a+1);
+  destFileName.truncate(a);
+  return ret;
+}
+#include "kmessagebox.h"
+int checkFileName(const QString &fileName,const QStringList &fileNameList)
+{
+  int i;
+  QString fileName_name,fileName_suffix;
+  QString name,suffix;
+  KMessageBox::sorry(NULL,QString("\'%1\'").arg(fileName),"Warning");
+  fileName_suffix=pullOutFileSuffix(fileName,fileName_name);
+  for (i=fileNameList.count()-1;i>=0;i--)
+  {
+    suffix=pullOutFileSuffix(fileNameList[i],name);
+    if (!suffix.compare("c")||!suffix.compare("s")||!suffix.compare("asm")||!suffix.compare("o"))
+    {
+      if (!fileName_suffix.compare("c")||!fileName_suffix.compare("s")||!fileName_suffix.compare("asm")||!fileName_suffix.compare("o"))
+      {
+        if (!name.compare(fileName_name))
+          return 0;
+      }
+    }
+    else
+    {
+      if (!fileNameList[i].compare(fileName))
+        return 0;
+    }
+  }
+  return 1;
 }

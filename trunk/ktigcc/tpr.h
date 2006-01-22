@@ -152,3 +152,4 @@ int saveTPR(const QString &fileName,TPRDataStruct *src);
 int saveFileText(const char *fileName,QString &fileText);
 
 void kurlNewFileName(KURL &dir,const QString &newFileName);
+int checkFileName(const QString &fileName,const QStringList &fileNameList);
