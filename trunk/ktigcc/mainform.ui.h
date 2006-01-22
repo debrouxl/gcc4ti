@@ -948,36 +948,6 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     }
     
     
-    //Rename code.  Move to a slot later
-    
-    
-    QString suffix;
-    QString *fileNameRef=&(static_cast<ListViewFile *>(currentListItem)->fileName);
-    int o;
-    
-    o=fileNameRef->findRev('.');
-    if (o>=0)
-    {
-      suffix=fileNameRef->mid(o+1);
-      fileNameRef->truncate(o);
-    }
-    else
-    {
-      suffix=QString::null;
-    }
-    o=fileNameRef->findRev('/');
-    if (o>=0)
-      fileNameRef->truncate(o+1);
-    else
-      fileNameRef->truncate(0);
-    *fileNameRef+=currentListItem->text(0);
-    *fileNameRef+='.';
-    *fileNameRef+=suffix;
-    
-    
-    //End rename code
-    
-    
   }
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
@@ -1462,6 +1432,39 @@ void MainForm::m_view_cursorPositionChanged()
 void MainForm::m_view_textChanged()
 {
   charsStatusLabel->setText(QString("%1 Characters").arg(m_view->getDoc()->text().length()));
+}
+
+void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString &newName)
+{
+  if (col)
+    return;
+  if (!IS_FILE(item))
+    return;
+  ListViewFile *theFile=static_cast<ListViewFile *>(item);
+  QString suffix;
+  QString *fileNameRef=&theFile->fileName;
+  int o;
+  
+  o=fileNameRef->findRev('.');
+  if (o>=0)
+  {
+    suffix=fileNameRef->mid(o+1);
+    fileNameRef->truncate(o);
+  }
+  else
+  {
+    suffix=QString::null;
+  }
+  o=fileNameRef->findRev('/');
+  if (o>=0)
+    fileNameRef->truncate(o+1);
+  else
+    fileNameRef->truncate(0);
+  *fileNameRef+=newName;
+  *fileNameRef+='.';
+  *fileNameRef+=suffix;
+  
+  updateRightStatusLabel();
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
