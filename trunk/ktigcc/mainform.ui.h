@@ -1041,7 +1041,9 @@ void MainForm::fileNewFolder()
     currentListItem=currentListItem->parent();
   QListViewItem *item=NULL, *next=currentListItem->firstChild();
   for (; next; next=item->nextSibling())
+  {
     item=next;
+  }
   QListViewItem *newFolder=item?new ListViewFolder(currentListItem,item)
                            :new ListViewFolder(currentListItem);
   newFolder->setText(0,"NewFolder");
@@ -1101,7 +1103,11 @@ void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_categ
   while (item)
   {
     if (item==parent)
+    {
+      tmp+='/';
+      tmp+=item->text(0);
       *p_folderPath=tmp;
+    }
     if (IS_FILE(item))
     {
       allFiles << (static_cast<ListViewFile *>(item)->fileName);
@@ -1115,7 +1121,7 @@ void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_categ
           tmp=item->text(0);
         else
         {
-          tmp+='\\';
+          tmp+='/';
           tmp+=item->text(0);
         }
         item=next;
@@ -1130,7 +1136,7 @@ mfnf_seeknext:
       if (next==category||!next)
         break;
       item=next;
-      o=tmp.findRev('\\');
+      o=tmp.findRev('/');
       if (o>=0)
         tmp.truncate(o);
       else
@@ -1175,14 +1181,19 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
   else if (category==txtFilesListItem)
     suffix="txt";
   
-  if (!tmp.isEmpty())
-    tmp+='/';
+  tmp+='/';
   tmp+="New File";
   tmpK.setPath(projectFileName);
   tmpK.setFileName(tmp);
   tmp=tmpK.path();
-  if (tmp.findRev('/')==0)
-    tmp=tmp.mid(1);
+  if (projectFileName.isEmpty())
+  {
+    short o=0;
+    if (tmp[0]=='.')
+      o=1;
+    if (tmp[o]=='/')
+      tmp=tmp.mid(o+1);
+  }
   caption="New File";
   oldtmp=tmp+' ';
   suffix='.'+suffix;
@@ -1303,52 +1314,65 @@ void MainForm::newFile( QListViewItem *parent )
                  category==txtFilesListItem?"filet.png":"filex.png");
 }
 
+QListViewItem *MainForm::resolveParent(QListViewItem *category)
+{
+  QListViewItem *ret=currentListItem;
+  if (!IS_FILE(ret)&&!IS_FOLDER(ret))
+    return category;
+  if (IS_FILE(ret))
+    ret=ret->parent();
+  QListViewItem *actualCategory=ret;
+  while (IS_FOLDER(actualCategory->parent())) actualCategory=actualCategory->parent();
+  if (actualCategory!=category)
+    return category;
+  return ret;
+}
 
 void MainForm::fileNewCHeader()
 {
-  newFile(hFilesListItem,"// Header File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
+  newFile(resolveParent(hFilesListItem),"// Header File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
 }
 
 
 void MainForm::fileNewGNUAssemblyHeader()
 {
-  newFile(hFilesListItem,"| Header File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
+  newFile(resolveParent(hFilesListItem),"| Header File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
 }
 
 
 void MainForm::fileNewA68kAssemblyHeader()
 {
-  newFile(hFilesListItem,"; Header File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
+  newFile(resolveParent(hFilesListItem),"; Header File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
 }
 
 
 void MainForm::fileNewCSourceFile()
 {
-  newFile(cFilesListItem,"// C Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","filec.png");
+  newFile(resolveParent(cFilesListItem),"// C Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","filec.png");
 }
 
 
 void MainForm::fileNewGNUAssemblySourceFile()
 {
-  newFile(sFilesListItem,"| Assembly Source File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","files.png");
+  newFile(resolveParent(sFilesListItem),"| Assembly Source File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","files.png");
 }
 
 
 void MainForm::fileNewA68kAssemblySourceFile()
 {
-  newFile(asmFilesListItem,"; Assembly Source File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","files.png");
+  newFile(resolveParent(asmFilesListItem),"; Assembly Source File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","files.png");
 }
 
 
 void MainForm::fileNewQuillSourceFile()
 {
-  newFile(qllFilesListItem,"// Quill Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","filec.png");
+  newFile(resolveParent(qllFilesListItem),"// Quill Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","filec.png");
 }
 
 
 void MainForm::fileNewTextFile()
 {
-  newFile(txtFilesListItem,"","filet.png");
+  newFile(resolveParent(txtFilesListItem),"","filet.png");
 }
 
 
