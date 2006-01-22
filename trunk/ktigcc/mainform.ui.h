@@ -622,7 +622,7 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
   for (i=0;i<e;i++)
   {
     tmp=*reinterpret_cast<const KURL *>(dir);
-    tmp.setFileName(fileList->path[i]);
+    kurlNewFileName(tmp,fileList->path[i]);
     caption=fileList->path[i];
     p=caption.findRev('.');
     if (p>=0) caption.truncate(p);
@@ -708,13 +708,19 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
   {
     if (IS_FILE(item))
     {
-      QString relPath=KURL::relativePath(base_dir,static_cast<ListViewFile *>(item)->fileName);
-      
+      QString absPath=static_cast<ListViewFile *>(item)->fileName;
+      QString relPath=KURL::relativePath(base_dir,absPath);
       if (relPath.find("./")==0)
+      {
         relPath=relPath.mid(2);
+      }
+      else if (relPath.find("../")==0)
+      {
+        relPath=absPath;
+      }
       
       tmpPath=*new_dir;
-      tmpPath.setFileName(relPath);
+      kurlNewFileName(tmpPath,relPath);
       static_cast<ListViewFile *>(item)->fileName=tmpPath.path();
       saveFileText(tmpPath.path(),static_cast<ListViewFile *>(item)->textBuffer);
       
@@ -1184,7 +1190,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
   tmp+='/';
   tmp+="New File";
   tmpK.setPath(projectFileName);
-  tmpK.setFileName(tmp);
+  kurlNewFileName(tmpK,tmp);
   tmp=tmpK.path();
   if (projectFileName.isEmpty())
   {

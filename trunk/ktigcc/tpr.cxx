@@ -29,6 +29,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qtextcodec.h>
+#include <kurl.h>
 #include "tpr.h"
 
 #define find_param(s_,t_) find_param_ex((s_),(t_),sizeof(t_)-1)
@@ -699,4 +700,12 @@ int saveFileText(const char *fileName,QString &fileText)
   fwrite(s,1,strlen(s),f);
   fclose(f);
   return 0;
+}
+
+void kurlNewFileName(KURL &dir,const QString &newFileName)
+{
+  if (newFileName[0]=='/')
+    dir.setPath(newFileName);
+  else
+    dir.setFileName(newFileName);
 }
