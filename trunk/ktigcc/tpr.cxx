@@ -734,9 +734,9 @@ int checkFileName(const QString &fileName,const QStringList &fileNameList)
   for (i=fileNameList.count()-1;i>=0;i--)
   {
     suffix=pullOutFileSuffix(fileNameList[i],name);
-    if (!suffix.compare("c")||!suffix.compare("s")||!suffix.compare("asm")||!suffix.compare("o"))
+    if (!suffix.compare("c")||!suffix.compare("s")||!suffix.compare("asm")||!suffix.compare("o")||!suffix.compare("qll"))
     {
-      if (!fileName_suffix.compare("c")||!fileName_suffix.compare("s")||!fileName_suffix.compare("asm")||!fileName_suffix.compare("o"))
+      if (!fileName_suffix.compare("c")||!fileName_suffix.compare("s")||!fileName_suffix.compare("asm")||!fileName_suffix.compare("o")||!fileName_suffix.compare("qll"))
       {
         if (!name.compare(fileName_name))
           return 0;
