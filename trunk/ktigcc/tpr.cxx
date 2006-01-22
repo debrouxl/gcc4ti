@@ -724,13 +724,12 @@ QString pullOutFileSuffix(const QString &srcFileName,QString &destFileName)
   destFileName.truncate(a);
   return ret;
 }
-#include "kmessagebox.h"
+
 int checkFileName(const QString &fileName,const QStringList &fileNameList)
 {
   int i;
   QString fileName_name,fileName_suffix;
   QString name,suffix;
-  KMessageBox::sorry(NULL,QString("\'%1\'").arg(fileName),"Warning");
   fileName_suffix=pullOutFileSuffix(fileName,fileName_name);
   for (i=fileNameList.count()-1;i>=0;i--)
   {
