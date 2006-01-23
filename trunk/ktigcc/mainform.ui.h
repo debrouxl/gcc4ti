@@ -277,6 +277,8 @@ class DnDListView : public QListView {
                 lastItem=lastItem->nextSibling();
               currItem->moveItem(lastItem);
             }
+            // we changed the counters
+            static_cast<MainForm *>(parent())->updateLeftStatusLabel();
           }
         } else if (IS_FILE(item)) {
           // drop on file
