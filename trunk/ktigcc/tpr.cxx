@@ -447,7 +447,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
     return 0;
 }
 
-//returns 0 on success
+// returns 0 on success, -1 if it can't open the TPR and a (positive) line
+// number if there is an error in the TPR
 int loadTPR(const QString &fileName,TPRDataStruct *dest)
 {
   FILE *f;
@@ -498,17 +499,15 @@ const char *smartAscii(const QString &s)
 }
 
 //To do:
-//use macros to merge token with "%d\r\n" and "%s\r\n" instead of adding token to the pattern, which might not be necessary.
-//can a macro have absolutely nothing in it?  that's why I said i there, since it had to be something to do.
 //reloc_param's macro here just puts "None" for the RT_NONE macro, which is probably not entirely correct, but it should work in all cases anyway.
 //some parameters are booleans for if a parameter is defined or not.  should the parameter be shown anyway, even if the associated boolean is false?
 int save_tpr(FILE *f,TPRDataStruct *dest)
 {
-	int i=0,e;
+	unsigned i=0,e;
 	QString tmp;
 	
-#define boolean_param(token,setting) fprintf(f,"%s%d\r\n",token,!!dest->settings.setting);
-#define string_vparam(token,var) fprintf(f,"%s%s\r\n",token,smartAscii(dest->var));
+#define boolean_param(token,setting) fprintf(f,token "%d\r\n",!!dest->settings.setting);
+#define string_vparam(token,var) fprintf(f,token "%s\r\n",smartAscii(dest->var));
 #define string_param(token,setting) string_vparam(token,settings.setting)
 #define ignore_param(token) /**/
 	
@@ -551,25 +550,25 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
 #undef string_param
 #undef ignore_param
 	
-#define boolean_param(token,setting) fprintf(f,"%s%d\r\n",token,!!dest->libopts.setting);
+#define boolean_param(token,setting) fprintf(f,token "%d\r\n",!!dest->libopts.setting);
 	
 #define reloc_param(token,setting) \
 	switch(dest->libopts.setting) \
 	{ \
 	case RT_NONE: \
-		fprintf(f,"%sNone\r\n",token); \
+		fprintf(f,token "None\r\n"); \
 		break; \
 	case RT_PRECOMP: \
-		fprintf(f,"%sPrecomputed\r\n",token); \
+		fprintf(f,token "Precomputed\r\n"); \
 		break; \
 	case RT_KERNEL: \
-		fprintf(f,"%sKernel\r\n",token); \
+		fprintf(f,token "Kernel\r\n"); \
 		break; \
 	case RT_COMPRESSED: \
-		fprintf(f,"%sCompressed\r\n",token); \
+		fprintf(f,token "Compressed\r\n"); \
 		break; \
 	case RT_FLINE: \
-		fprintf(f,"%sF-Line\r\n",token); \
+		fprintf(f,token "F-Line\r\n"); \
 		break; \
 	}
 	
@@ -578,10 +577,7 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
 		int major,minor; \
 		major=dest->libopts.setting/100; \
 		minor=dest->libopts.setting%100; \
-		if (minor<10) \
-			fprintf(f,"%s%d.0%d\r\n",token,major,minor); \
-		else \
-			fprintf(f,"%s%d.%d\r\n",token,major,minor); \
+		fprintf(f,token "%d.%02d\r\n",major,minor); \
 	}
 	
 	fputs("\r\n[Library Options]\r\n",f);
@@ -617,10 +613,10 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
 	for(i=0;i<e;i++) \
 	{ \
 		tmp=convert_path_separators_save(smartAscii(dest->filetype.path[i])); \
-		fprintf(f,"%s %ld=%s\r\n",token,(long)(i+1),smartAscii(tmp)); \
+		fprintf(f,token " %u=%s\r\n",i+1,smartAscii(tmp)); \
 		if (!dest->filetype.folder[i].isEmpty()) \
 		{ \
-          fprintf(f,"%s %ld Folder=%s\r\n",token,(long)(i+1),smartAscii(dest->filetype.folder[i])); \
+          fprintf(f,token " %u Folder=%s\r\n",i+1,smartAscii(dest->filetype.folder[i])); \
         } \
 	}
 	
