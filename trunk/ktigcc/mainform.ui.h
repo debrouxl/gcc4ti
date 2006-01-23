@@ -85,6 +85,15 @@ extern KAboutData *pabout;
                                                || (item)==txtFilesListItem))
 #define IS_FOLDER(item) ((item) && (item)->rtti()==0x716CC0)
 #define IS_FILE(item) ((item) && (item)->rtti()==0x716CC1)
+#define COUNTER_FOR_CATEGORY(category) ((category)==hFilesListItem?hFileCount: \
+                                        (category)==cFilesListItem?cFileCount: \
+                                        (category)==sFilesListItem?sFileCount: \
+                                        (category)==asmFilesListItem?asmFileCount: \
+                                        (category)==qllFilesListItem?qllFileCount: \
+                                        (category)==oFilesListItem?oFileCount: \
+                                        (category)==aFilesListItem?aFileCount: \
+                                        (category)==txtFilesListItem?txtFileCount: \
+                                        othFileCount)
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
@@ -246,16 +255,28 @@ class DnDListView : public QListView {
         QListViewItem *item=itemAt(vp);
         if (IS_FOLDER(item)) {
           // drop on folder
-          // move file
-          e->accept();
-          currItem->parent()->takeItem(currItem);
-          item->insertItem(currItem);
-          // put it at the right place
-          if (IS_FILE(currItem->nextSibling())) {
-            QListViewItem *lastItem=currItem->nextSibling();
-            while(IS_FILE(lastItem->nextSibling()))
-              lastItem=lastItem->nextSibling();
-            currItem->moveItem(lastItem);
+          // don't allow more than one Quill file per project
+          QListViewItem *srcCategory=currItem;
+          while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
+          QListViewItem *destCategory=item;
+          while (destCategory->parent()->rtti()==0x716CC0) destCategory=destCategory->parent();
+          if (qllFilesListItem && srcCategory != qllFilesListItem
+              && destCategory == qllFilesListItem && qllFileCount)
+            e->ignore();
+          else {
+            // move file
+            e->accept();
+            currItem->parent()->takeItem(currItem);
+            COUNTER_FOR_CATEGORY(srcCategory)--;
+            item->insertItem(currItem);
+            COUNTER_FOR_CATEGORY(destCategory)++;
+            // put it at the right place
+            if (IS_FILE(currItem->nextSibling())) {
+              QListViewItem *lastItem=currItem->nextSibling();
+              while(IS_FILE(lastItem->nextSibling()))
+                lastItem=lastItem->nextSibling();
+              currItem->moveItem(lastItem);
+            }
           }
         } else if (IS_FILE(item)) {
           // drop on file
@@ -317,7 +338,16 @@ class DnDListView : public QListView {
         QListViewItem *item=itemAt(vp);
         if (IS_FOLDER(item)) {
           // drop on folder
-          e->accept();
+          // don't allow more than one Quill file per project
+          QListViewItem *srcCategory=currItem;
+          while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
+          QListViewItem *destCategory=item;
+          while (destCategory->parent()->rtti()==0x716CC0) destCategory=destCategory->parent();
+          if (qllFilesListItem && srcCategory != qllFilesListItem
+              && destCategory == qllFilesListItem && qllFileCount)
+            e->ignore();
+          else
+            e->accept();
         } else if (IS_FILE(item)) {
           // drop on file
           // need same parent, but different items
@@ -580,11 +610,7 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
   }
   newFile->fileName=fileName;
   fileCount++;
-  (category==hFilesListItem?hFileCount:category==cFilesListItem?cFileCount:
-   category==sFilesListItem?sFileCount:category==asmFilesListItem?asmFileCount:
-   category==qllFilesListItem?qllFileCount:category==oFilesListItem?oFileCount:
-   category==aFilesListItem?aFileCount:category==txtFilesListItem?txtFileCount:
-   othFileCount)++;
+  COUNTER_FOR_CATEGORY(category)++;
   return newFile;
 }
 
@@ -1174,9 +1200,13 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
     suffix="s";
   else if (category==asmFilesListItem)
     suffix="asm";
-  else if (category==qllFilesListItem)
+  else if (category==qllFilesListItem) {
+    if (qllFileCount) {
+      KMessageBox::error(this,"There may be only one Quill source file in each project.","Quill Error");
+      return;
+    }
     suffix="qll";
-  else if (category==oFilesListItem)
+  } else if (category==oFilesListItem)
     suffix="o";
   else if (category==aFilesListItem)
     suffix="a";
@@ -1224,11 +1254,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
   m_view->getDoc()->setText(text);
   fileCount++;
   
-  (category==hFilesListItem?hFileCount:category==cFilesListItem?cFileCount:
-   category==sFilesListItem?sFileCount:category==asmFilesListItem?asmFileCount:
-   category==qllFilesListItem?qllFileCount:category==oFilesListItem?oFileCount:
-   category==aFilesListItem?aFileCount:category==txtFilesListItem?txtFileCount:
-   othFileCount)++;
+  COUNTER_FOR_CATEGORY(category)++;
   updateLeftStatusLabel();
 }
 
@@ -1385,15 +1411,7 @@ void MainForm::updateLeftStatusLabel()
   QListViewItem *category=currentListItem;
   if (IS_FOLDER(currentListItem)||IS_FILE(currentListItem)) {
     while (category->parent()->rtti()==0x716CC0) category=category->parent();
-    text+=QString(", ")+QString::number(category==hFilesListItem?hFileCount:
-                                        category==cFilesListItem?cFileCount:
-                                        category==sFilesListItem?sFileCount:
-                                        category==asmFilesListItem?asmFileCount:
-                                        category==qllFilesListItem?qllFileCount:
-                                        category==oFilesListItem?oFileCount:
-                                        category==aFilesListItem?aFileCount:
-                                        category==txtFilesListItem?txtFileCount:
-                                        othFileCount)
+    text+=QString(", ")+QString::number(COUNTER_FOR_CATEGORY(category))
           +QString(" in Category");
   }
   leftStatusLabel->setText(text);
