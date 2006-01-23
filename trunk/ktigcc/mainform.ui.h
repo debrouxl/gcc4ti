@@ -774,6 +774,7 @@ int MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
     if (!testf)
     {
       KMessageBox::error(this,QString("Can't save to \'%1\'").arg(nextProj));
+      return -1;
     }
     else
       fclose(testf);
@@ -821,7 +822,6 @@ void MainForm::fileSave()
   else
   {
     result=fileSave_fromto(projectFileName,projectFileName);
-    
   }
 }
 
@@ -1468,27 +1468,47 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
     return;
   ListViewFile *theFile=static_cast<ListViewFile *>(item);
   QString suffix;
-  QString *fileNameRef=&theFile->fileName;
-  int o;
+  QString oldLabel;
+  QString &fileNameRef=theFile->fileName;
+  QString newFileName=fileNameRef;
+  int o,s;
   
-  o=fileNameRef->findRev('.');
-  if (o>=0)
+  o=newFileName.findRev('.');
+  s=newFileName.findRev('/');
+  if (o>=0&&(s<0||o>s))
   {
-    suffix=fileNameRef->mid(o+1);
-    fileNameRef->truncate(o);
+    suffix=newFileName.mid(o+1);
+    newFileName.truncate(o);
   }
   else
   {
     suffix=QString::null;
   }
-  o=fileNameRef->findRev('/');
-  if (o>=0)
-    fileNameRef->truncate(o+1);
+  if (s>=0)
+  {
+    oldLabel=newFileName.mid(s+1);
+    newFileName.truncate(s+1);
+  }
   else
-    fileNameRef->truncate(0);
-  *fileNameRef+=newName;
-  *fileNameRef+='.';
-  *fileNameRef+=suffix;
+  {
+    oldLabel=newFileName;
+    newFileName.truncate(0);
+  }
+  if (!oldLabel.compare(newName))
+    return; //no changes are needed, and we don't want it to complain about the file conflicting with itself!
+  newFileName+=newName;
+  newFileName+='.';
+  newFileName+=suffix;
+  
+  if (checkFileName(newFileName,extractAllFileNames()))
+  {
+    fileNameRef=newFileName;
+  }
+  else
+  {
+    KMessageBox::error(this,"The name you chose conflicts with that of another file.");
+    theFile->setText(0,oldLabel);
+  }
   
   updateRightStatusLabel();
 }
