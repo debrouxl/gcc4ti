@@ -501,9 +501,6 @@ const char *smartAscii(const QString &s)
   return s.ascii();
 }
 
-//To do:
-//reloc_param's macro here just puts "None" for the RT_NONE macro, which is probably not entirely correct, but it should work in all cases anyway.
-//some parameters are booleans for if a parameter is defined or not.  should the parameter be shown anyway, even if the associated boolean is false?
 int save_tpr(FILE *f,TPRDataStruct *dest)
 {
     unsigned i=0,e;
