@@ -242,9 +242,12 @@ int parse_file(FILE *f,TPRDataStruct *dest)
 #define reloc_param(token,setting) \
             if ( (p=find_param(buffer, token)) ) \
             { \
-                if (!strcmp(p,"None") || !strcmp(p,"AMS") \
-                    || !strcmp(p,"Direct")) \
+                if (!strcmp(p,"None")) \
                     dest->libopts.setting = RT_NONE; \
+                else if (!strcmp(p,"Direct")) \
+                    dest->libopts.setting = RT_DIRECT; \
+                else if (!strcmp(p,"AMS")) \
+                    dest->libopts.setting = RT_AMS; \
                 else if (!strcmp(p, "Precomputed")) \
                     dest->libopts.setting = RT_PRECOMP; \
                 else if (!strcmp(p, "Kernel")) \
@@ -558,6 +561,12 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
 	case RT_NONE: \
 		fprintf(f,token "None\r\n"); \
 		break; \
+    case RT_DIRECT: \
+        fprintf(f,"%sDirect\r\n",token); \
+        break; \
+    case RT_AMS: \
+        fprintf(f,"%sAMS",token); \
+        break; \
 	case RT_PRECOMP: \
 		fprintf(f,token "Precomputed\r\n"); \
 		break; \
