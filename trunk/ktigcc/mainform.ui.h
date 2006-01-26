@@ -46,6 +46,7 @@
 #include <kmessagebox.h>
 #include <cstdio>
 #include <cstdlib>
+#include "ktigcc.h"
 #include "tpr.h"
 
 using std::puts;
@@ -59,14 +60,6 @@ static const char *TIGCCFileFilters[2]=
 };
 static const char *TIGCCProjectDirectory="/usr/local/tigcc/projects";
 static QString lastDirectory;
-
-extern const char *tigcc_base;
-extern const char *quill_drv;
-extern char tempdir[];
-extern void write_temp_file(const char *filename, const char *data, const size_t len);
-extern void delete_temp_file(const char *filename);
-extern void force_qt_assistant_page(int n);
-extern KAboutData *pabout;
 
 #define IS_CATEGORY(item) ((item) && ((item)==hFilesListItem \
                                       || (item)==cFilesListItem \

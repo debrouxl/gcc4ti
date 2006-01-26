@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2004-2005 Kevin Kofler
+   Copyright (C) 2004-2006 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ void qInitImages_ktigcc();
 const char *tigcc_base;
 char tempdir[]="/tmp/ktigccXXXXXX";
 char *quill_drv;
+KApplication *papp;
 KAboutData *pabout;
 
 int main( int argc, char *argv[] )
@@ -58,6 +59,7 @@ int main( int argc, char *argv[] )
   pabout=&about;
   KCmdLineArgs::init(argc,argv,&about);
   KApplication app;
+  papp=&app;
   // Readd the images KDE kindly removes...
   qCleanupImages_ktigcc();
   qInitImages_ktigcc();

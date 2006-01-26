@@ -7,7 +7,8 @@ unix:LIBS	+= -lktexteditor -lqassistantclient
 
 unix:INCLUDEPATH	+= /usr/include/kde
 
-HEADERS	+= tpr.h
+HEADERS	+= tpr.h \
+	ktigcc.h
 
 SOURCES	+= ktigcc.cpp \
 	tpr.cxx
