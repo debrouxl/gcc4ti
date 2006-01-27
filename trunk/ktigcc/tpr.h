@@ -97,7 +97,7 @@ struct tprlibopts
                    unofficial_os(0),use_fline_jumps(0),use_4b_fline_jumps(0),
                    use_internal_fline_emu(0),use_return_value(0),
                    enable_error_return(0),save_screen(1),opt_rom_calls(0),
-                   minams(100),reloc_format(RT_NONE),rom_call_format(RT_NONE),
+                   minams(100),reloc_format(RT_AMS),rom_call_format(RT_DIRECT),
                    bss_ref_format(RT_KERNEL),data_ref_format(RT_KERNEL)
                  {}
     Boolean use_ti89;
