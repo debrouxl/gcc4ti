@@ -32,7 +32,8 @@
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qdragobject.h>
-#include <qassistantclient.h> 
+#include <qassistantclient.h>
+#include <qdir.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -1454,28 +1455,23 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
   QString suffix;
   QString oldLabel;
   QString &fileNameRef=theFile->fileName;
+  QString oldFileName=fileNameRef;
   QString newFileName=fileNameRef;
   int o,s;
   
-  o=newFileName.findRev('.');
-  s=newFileName.findRev('/');
-  if (o>=0&&(s<0||o>s))
-  {
-    suffix=newFileName.mid(o+1);
+  o=oldFileName.findRev('.');
+  s=oldFileName.findRev('/');
+  if (o>=0&&(s<0||o>s)) {
+    suffix=oldFileName.mid(o+1);
     newFileName.truncate(o);
-  }
-  else
-  {
+  } else {
     suffix=QString::null;
   }
-  if (s>=0)
-  {
-    oldLabel=newFileName.mid(s+1);
+  if (s>=0) {
+    oldLabel=oldFileName.mid(s+1);
     newFileName.truncate(s+1);
-  }
-  else
-  {
-    oldLabel=newFileName;
+  } else {
+    oldLabel=oldFileName;
     newFileName.truncate(0);
   }
   if (!oldLabel.compare(newName))
@@ -1484,12 +1480,14 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
   newFileName+='.';
   newFileName+=suffix;
   
-  if (checkFileName(newFileName,extractAllFileNames()))
-  {
-    fileNameRef=newFileName;
-  }
-  else
-  {
+  if (checkFileName(newFileName,extractAllFileNames())) {
+    if (newFileName[0]=='/' && !QDir().rename(oldFileName,newFileName)) {
+      KMessageBox::error(this,"Failed to rename the file.");
+      theFile->setText(0,oldLabel);
+    } else {
+      fileNameRef=newFileName;
+    }
+  } else {
     KMessageBox::error(this,"The name you chose conflicts with that of another file.");
     theFile->setText(0,oldLabel);
   }
