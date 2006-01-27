@@ -78,6 +78,9 @@ static QString lastDirectory;
                                                || (item)==txtFilesListItem))
 #define IS_FOLDER(item) ((item) && (item)->rtti()==0x716CC0)
 #define IS_FILE(item) ((item) && (item)->rtti()==0x716CC1)
+#define CATEGORY_OF(category,item) QListViewItem *category=(item); \
+                                   while (category->parent()->rtti()==0x716CC0) \
+                                     category=category->parent()
 #define COUNTER_FOR_CATEGORY(category) ((category)==hFilesListItem?hFileCount: \
                                         (category)==cFilesListItem?cFileCount: \
                                         (category)==sFilesListItem?sFileCount: \
@@ -220,13 +223,11 @@ class DnDListView : public QListView {
         QListViewItem *item=itemAt(vp);
         if (IS_FOLDER(item)) {
           // need same category
-          QListViewItem *srcCategory=currItem;
-          while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
-          QListViewItem *destCategory=item;
-          while (destCategory->parent()->rtti()==0x716CC0) destCategory=destCategory->parent();
+          CATEGORY_OF(srcCategory,currItem);
+          CATEGORY_OF(destCategory,item);
           if (srcCategory == destCategory) {
             // can't move folder into itself
-            for (QListViewItem *destFolder=item; destFolder->rtti()==0x716CC0; destFolder=destFolder->parent()) {
+            for (QListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
               if (destFolder==currItem) goto ignore;
             }
             // move folder
@@ -249,10 +250,8 @@ class DnDListView : public QListView {
         if (IS_FOLDER(item)) {
           // drop on folder
           // don't allow more than one Quill file per project
-          QListViewItem *srcCategory=currItem;
-          while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
-          QListViewItem *destCategory=item;
-          while (destCategory->parent()->rtti()==0x716CC0) destCategory=destCategory->parent();
+          CATEGORY_OF(srcCategory,currItem);
+          CATEGORY_OF(destCategory,item);
           if (qllFilesListItem && srcCategory != qllFilesListItem
               && destCategory == qllFilesListItem && qllFileCount)
             e->ignore();
@@ -315,13 +314,11 @@ class DnDListView : public QListView {
         QListViewItem *item=itemAt(vp);
         if (IS_FOLDER(item)) {
           // need same category
-          QListViewItem *srcCategory=currItem;
-          while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
-          QListViewItem *destCategory=item;
-          while (destCategory->parent()->rtti()==0x716CC0) destCategory=destCategory->parent();
+          CATEGORY_OF(srcCategory,currItem);
+          CATEGORY_OF(destCategory,item);
           if (srcCategory == destCategory) {
             // can't move folder into itself
-            for (QListViewItem *destFolder=item; destFolder->rtti()==0x716CC0; destFolder=destFolder->parent()) {
+            for (QListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
               if (destFolder==currItem) goto ignore;
             }
             e->accept();
@@ -334,10 +331,8 @@ class DnDListView : public QListView {
         if (IS_FOLDER(item)) {
           // drop on folder
           // don't allow more than one Quill file per project
-          QListViewItem *srcCategory=currItem;
-          while (srcCategory->parent()->rtti()==0x716CC0) srcCategory=srcCategory->parent();
-          QListViewItem *destCategory=item;
-          while (destCategory->parent()->rtti()==0x716CC0) destCategory=destCategory->parent();
+          CATEGORY_OF(srcCategory,currItem);
+          CATEGORY_OF(destCategory,item);
           if (qllFilesListItem && srcCategory != qllFilesListItem
               && destCategory == qllFilesListItem && qllFileCount)
             e->ignore();
@@ -964,8 +959,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     m_view->setEnabled(TRUE);
-    QListViewItem *category=item->parent();
-    while (category->parent()->rtti()==0x716CC0) category=category->parent();
+    CATEGORY_OF(category,item->parent());
     if (IS_EDITABLE_CATEGORY(category)) {
       m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
       const char *buffer=static_cast<ListViewFile *>(item)->textBuffer;
@@ -1041,8 +1035,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
     QPopupMenu menu;
     menu.insertItem("New &Folder",0);
     menu.insertItem("New F&ile",1);
-    QListViewItem *category=item;
-    while (category->parent()->rtti()==0x716CC0) category=category->parent();
+    CATEGORY_OF(category,item);
     if (category==oFilesListItem || category==aFilesListItem
         || category==othFilesListItem) menu.setItemEnabled(1,FALSE);
     if (!IS_CATEGORY(item)) {
@@ -1106,10 +1099,10 @@ QStringList MainForm::extractAllFileNames(void)
 //you put in parent, and it gives you the rest, but you must have a place to put it all.
 void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_category,QString *p_folderPath)
 {
-  QListViewItem *category=parent,*item,*next;
+  QListViewItem *item,*next;
   QString tmp=QString::null;
   int o;
-  while (category->parent()->rtti()==0x716CC0) category=category->parent();
+  CATEGORY_OF(category,parent);
   *p_category=category;
   item=category->firstChild();
   while (item)
@@ -1236,8 +1229,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
 
 void MainForm::newFile( QListViewItem *parent )
 {
-  QListViewItem *category=parent;
-  while (category->parent()->rtti()==0x716CC0) category=category->parent();
+  CATEGORY_OF(category,parent);
   newFile(parent,category==txtFilesListItem?"":
                  ((category==hFilesListItem?"// Header File\n//":
                   category==cFilesListItem?"// C Source File\n//":
@@ -1384,9 +1376,8 @@ void MainForm::updateLeftStatusLabel()
 {
   QString text=QString::number(fileCount)+QString(" File")
                +QString(fileCount!=1?"s":"")+QString(" Total");
-  QListViewItem *category=currentListItem;
   if (IS_FOLDER(currentListItem)||IS_FILE(currentListItem)) {
-    while (category->parent()->rtti()==0x716CC0) category=category->parent();
+    CATEGORY_OF(category,currentListItem);
     text+=QString(", ")+QString::number(COUNTER_FOR_CATEGORY(category))
           +QString(" in Category");
   }
@@ -1414,11 +1405,8 @@ void MainForm::updateRightStatusLabel()
     rightStatusLabel->setMaximumWidth(rightStatusSize);
     rightStatusLabel->setText("");
   } else if (IS_FILE(currentListItem)) {
-    QListViewItem *category=currentListItem;
-    while (category->parent()->rtti()==0x716CC0) category=category->parent();
-    if (category==hFilesListItem||category==cFilesListItem
-        ||category==sFilesListItem||category==asmFilesListItem
-        ||category==qllFilesListItem||category==txtFilesListItem) {
+    CATEGORY_OF(category,currentListItem);
+    if (IS_EDITABLE_CATEGORY(category)) {
       unsigned int line, col;
       m_view->cursorPositionReal(&line,&col);
       rowStatusLabel->show();
