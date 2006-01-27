@@ -727,7 +727,6 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,void *d
   {
     if (IS_FILE(item))
     {
-      CATEGORY_OF(category,item);
       QString absPath=static_cast<ListViewFile *>(item)->fileName;
       QString relPath=KURL::relativePath(base_dir,absPath);
       if (relPath.find("./")==0)
