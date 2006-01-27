@@ -53,14 +53,20 @@
 using std::puts;
 using std::exit;
 
-enum {TIGCCOpenProjectFileFilter=0,TIGCCSaveProjectFilter};
-static const char *TIGCCFileFilters[2]=
-{
-    "*.tpr *.h *.c *.s *.asm *.txt|All TIGCC Files (*.tpr *.h *.c *.s *.asm *.txt)\n*.tpr|TIGCC Projects (*.tpr)\n*.h|Header Files (*.h)\n*.c|C Files (*.c)\n*.s|GNU Assembly Files (*.s)\n*.asm|A68k Assembly Files (*.asm)\nText Files (*.txt)\n*.*|All Files (*.*)",
-    "*.tpr|TIGCC Projects (*.tpr)\n*.*|All Files (*.*)"
-};
-static const char *TIGCCProjectDirectory="/usr/local/tigcc/projects";
-static QString lastDirectory;
+#define TIGCC_TPR_Filter "*.tpr|TIGCC Projects (*.tpr)\n"
+#define TIGCC_H_Filter "*.h|Header Files (*.h)\n"
+#define TIGCC_C_Filter "*.c|C Files (*.c)\n"
+#define TIGCC_S_Filter "*.s|GNU Assembly Files (*.s)\n"
+#define TIGCC_ASM_Filter "*.asm|A68k Assembly Files (*.asm)\n"
+#define TIGCC_QLL_Filter "*.qll|Quill Files (*.qll)\n"
+#define TIGCC_O_Filter "*.o|Object Files (*.o)\n"
+#define TIGCC_A_Filter "*.a|Archive Files (*.a)\n"
+#define TIGCC_TXT_Filter "*.txt|Text Files (*.txt)\n"
+#define TIGCCAllFilter "*|All Files (*)"
+
+enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
+
+#define TIGCCProjectDirectory "/usr/local/tigcc/projects"
 
 #define IS_CATEGORY(item) ((item) && ((item)==hFilesListItem \
                                       || (item)==cFilesListItem \
@@ -91,6 +97,15 @@ static QString lastDirectory;
                                         (category)==aFilesListItem?aFileCount: \
                                         (category)==txtFilesListItem?txtFileCount: \
                                         othFileCount)
+#define CATEGORY_INDEX   ((category)==hFilesListItem?0: \
+                          (category)==cFilesListItem?1: \
+                          (category)==sFilesListItem?2: \
+                          (category)==asmFilesListItem?3: \
+                          (category)==qllFilesListItem?4: \
+                          (category)==oFilesListItem?5: \
+                          (category)==aFilesListItem?6: \
+                          (category)==txtFilesListItem?7: \
+                          8)
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
@@ -198,6 +213,7 @@ static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0
 static tprSettings settings;
 static tprLibOpts libopts;
 static QString projectFileName;
+static QString lastDirectory;
 
 class DnDListView : public QListView {
   private:
@@ -465,6 +481,7 @@ void MainForm::init()
   assistant->setArguments(args);
   lastDirectory=TIGCCProjectDirectory;
   projectFileName="";
+  projectIsDirty=FALSE;
   startTimer(100);
 }
 
@@ -549,13 +566,31 @@ void MainForm::fileNewProject()
   updateLeftStatusLabel();
 }
 
-QString MainForm::SGetFileName(int mode,short fileFilter,const QString &caption,QWidget *parent)
+QString MainForm::findFilter(unsigned short job)
+{
+  QString ret;
+  if (job==TIGCCOpenProjectFileFilter)
+  {
+    ret="*.tpr *.h *.c *.s *.asm *.txt|All TIGCC Files (*.tpr *.h *.c *.s *.asm *.txt)\n"
+        TIGCC_TPR_Filter TIGCC_H_Filter TIGCC_C_Filter TIGCC_S_Filter
+        TIGCC_ASM_Filter TIGCC_TXT_Filter TIGCCAllFilter;
+  }
+  else if (job==TIGCCAddFilesFilter)
+  {
+    ret="*.h *.c *.s *.asm *.o *.a *.txt|All TIGCC Files (*.h *.c *.s *.asm *.o *.a *.txt)\n"
+        TIGCC_H_Filter TIGCC_C_Filter TIGCC_S_Filter TIGCC_ASM_Filter
+        TIGCC_O_Filter TIGCC_A_Filter TIGCC_TXT_Filter TIGCCAllFilter;
+  }
+  return ret;
+}
+
+QString MainForm::SGetFileName(int mode,const QString &fileFilter,const QString &caption,QWidget *parent)
 {
   QString ret;
   if (static_cast<KFileDialog::OperationMode>(mode)==KFileDialog::Opening)
-    ret=KFileDialog::getOpenFileName(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
+    ret=KFileDialog::getOpenFileName(lastDirectory,fileFilter,parent,caption);
   else
-    ret=KFileDialog::getSaveFileName(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
+    ret=KFileDialog::getSaveFileName(lastDirectory,fileFilter,parent,caption);
   if (!ret.isNull())
   {
     KURL dir;
@@ -567,10 +602,10 @@ QString MainForm::SGetFileName(int mode,short fileFilter,const QString &caption,
 }
 
 //no mode, since it you can't save multiple.
-QStringList MainForm::SGetFileName_Multiple(short fileFilter,const QString &caption,QWidget *parent)
+QStringList MainForm::SGetFileName_Multiple(const QString &fileFilter,const QString &caption,QWidget *parent)
 {
   QStringList ret;
-  ret=KFileDialog::getOpenFileNames(lastDirectory,TIGCCFileFilters[fileFilter],parent,caption);
+  ret=KFileDialog::getOpenFileNames(lastDirectory,fileFilter,parent,caption);
   if (!ret.empty())
   {
     KURL dir;
@@ -672,7 +707,7 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
 void MainForm::fileOpen()
 {
   TPRDataStruct TPRData;
-  QString fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File",this);
+  QString fileName=SGetFileName(KFileDialog::Opening,findFilter(TIGCCOpenProjectFileFilter),"Open Project/File",this);
   KURL dir;
   dir.setPath(fileName);
   if (fileName.isEmpty())
@@ -831,7 +866,7 @@ void MainForm::fileSave()
 
 void MainForm::fileSaveAs()
 {
-  QString fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save Project",this);
+  QString fileName=SGetFileName(KFileDialog::Saving,TIGCC_TPR_Filter TIGCCAllFilter,"Save Project",this);
   if (fileName.isEmpty())
     return;
   fileSave_to(fileName);
@@ -1218,6 +1253,8 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
                         :new ListViewFile(parent);
   
   newFile->fileName=tmp;
+  newFile->isNew=TRUE;
+  newFile->isDirty=FALSE;
   
   newFile->setText(0,caption);
   newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
