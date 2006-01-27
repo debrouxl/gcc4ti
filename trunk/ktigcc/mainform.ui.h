@@ -164,6 +164,8 @@ class ListViewFile : public QListViewItem {
   QString textBuffer;
   unsigned int cursorLine, cursorCol;
   QString fileName; // full name of the file
+  bool isNew;
+  bool isDirty;
   protected:
 };
 
@@ -182,6 +184,7 @@ static QListViewItem *txtFilesListItem;
 static QListViewItem *othFilesListItem;
 static QListViewItem *currentListItem;
 static bool currentListItemEditable;
+static bool projectIsDirty;
 static QLabel *leftStatusLabel;
 static QLabel *rowStatusLabel;
 static QLabel *colStatusLabel;
