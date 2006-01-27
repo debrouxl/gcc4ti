@@ -1484,7 +1484,7 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
   newFileName+=suffix;
   
   if (checkFileName(newFileName,extractAllFileNames())) {
-    if (newFileName[0]=='/' && !QDir().rename(oldFileName,newFileName)) {
+    if (!theFile->isNew && !QDir().rename(oldFileName,newFileName)) {
       KMessageBox::error(this,"Failed to rename the file.");
       theFile->setText(0,oldLabel);
     } else {
