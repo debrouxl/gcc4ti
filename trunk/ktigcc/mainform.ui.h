@@ -511,7 +511,7 @@ void MainForm::te_popup_aboutToShow()
   te_popup->setItemEnabled(10,editDecreaseIndentAction->isEnabled());
 }
 
-void MainForm::fileNewProject()
+void MainForm::clearProject()
 {
   rootListItem->setText(0,"Project1");
   projectFileName="";
@@ -558,7 +558,13 @@ void MainForm::fileNewProject()
     delete f;
   }
   fileCount=cFileCount=hFileCount=sFileCount=asmFileCount=qllFileCount=oFileCount=aFileCount=txtFileCount=othFileCount=0;
+  projectIsDirty=FALSE;
   updateLeftStatusLabel();
+}
+
+void MainForm::fileNewProject()
+{
+  clearProject();
 }
 
 QString MainForm::findFilter(unsigned short job)
@@ -720,14 +726,9 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
   }
 }
 
-void MainForm::fileOpen()
+void MainForm::openProject(const QString &filename)
 {
   TPRDataStruct TPRData;
-  QString fileName=SGetFileName(KFileDialog::Opening,findFilter(TIGCCOpenProjectFileFilter),"Open Project/File",this);
-  KURL dir;
-  dir.setPath(fileName);
-  if (fileName.isEmpty())
-    return;
   int ret=loadTPR(fileName, &TPRData);
   if (ret == -1) {
     KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
@@ -745,7 +746,7 @@ void MainForm::fileOpen()
     KMessageBox::error(this,"This project needs quill.drv, which is not installed.");
     return;
   }
-  fileNewProject();
+  clearProject();
   fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir,TPRData.open_file);
   fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir,TPRData.open_file);
   fileOpen_addList(qllFilesListItem,&TPRData.quill_files,&dir,TPRData.open_file);
@@ -761,6 +762,16 @@ void MainForm::fileOpen()
   libopts=TPRData.libopts;
   updateLeftStatusLabel();
   updateRightStatusLabel();
+}
+
+void MainForm::fileOpen()
+{
+  QString fileName=SGetFileName(KFileDialog::Opening,findFilter(TIGCCOpenProjectFileFilter),"Open Project/File",this);
+  KURL dir;
+  dir.setPath(fileName);
+  if (fileName.isEmpty())
+    return;
+  openProject(fileName);
 }
 
 //loadList also saves the file contents
