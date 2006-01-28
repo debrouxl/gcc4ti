@@ -842,11 +842,11 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
         relPath=absPath;
       }
       
+      tmpPath=*new_dir;
+      kurlNewFileName(tmpPath,relPath);
       if (tmpPath.path().compare(theFile->fileName)
           || (IS_EDITABLE_CATEGORY(category)
               && (theFile->isDirty || theFile->isNew))) {
-        tmpPath=*new_dir;
-        kurlNewFileName(tmpPath,relPath);
         if (IS_EDITABLE_CATEGORY(category)
             ?saveFileText(tmpPath.path(),theFile->textBuffer)
             :copyFile(theFile->fileName,tmpPath.path()))
