@@ -805,6 +805,7 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
     theFile->fileName=saveFileName;
     theFile->isNew=FALSE;
     theFile->isDirty=FALSE;
+    updateRightStatusLabel();
   }
 }
 
@@ -927,6 +928,7 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
     projectFileName=nextProj;
     projectIsDirty=FALSE;
   }
+  updateRightStatusLabel();
 }
 
 void MainForm::fileSave()
