@@ -481,6 +481,12 @@ void MainForm::init()
   lastDirectory=TIGCCProjectDirectory;
   projectFileName="";
   projectIsDirty=FALSE;
+  pconfig->setGroup("Recent files");
+  QString mostrecent=pconfig->readEntry("Recent file 1");
+  if (!mostrecent.isNull())
+    openProject(mostrecent);
+  else
+    updateRecent();
   startTimer(100);
 }
 
@@ -641,6 +647,51 @@ QStringList MainForm::SGetFileName_Multiple(const QString &fileFilter,const QStr
   return ret;
 }
 
+void MainForm::updateRecent()
+{
+  pconfig->setGroup("Recent files");
+  QString recent=pconfig->readEntry("Recent file 1");
+  if (recent.isNull())
+    fileRecent1Action->setVisible(FALSE);
+  else {
+    QString recentcut=recent.mid(recent.findRev('/')+1);
+    recentcut.truncate(recentcut.findRev('.'));
+    fileRecent1Action->setVisible(TRUE);
+    fileRecent1Action->setText(recentcut);
+    fileRecent1Action->setStatusTip(recent);
+  }
+  recent=pconfig->readEntry("Recent file 2");
+  if (recent.isNull())
+    fileRecent2Action->setVisible(FALSE);
+  else {
+    QString recentcut=recent.mid(recent.findRev('/')+1);
+    recentcut.truncate(recentcut.findRev('.'));
+    fileRecent2Action->setVisible(TRUE);
+    fileRecent2Action->setText(recentcut);
+    fileRecent2Action->setStatusTip(recent);
+  }
+  recent=pconfig->readEntry("Recent file 3");
+  if (recent.isNull())
+    fileRecent3Action->setVisible(FALSE);
+  else {
+    QString recentcut=recent.mid(recent.findRev('/')+1);
+    recentcut.truncate(recentcut.findRev('.'));
+    fileRecent3Action->setVisible(TRUE);
+    fileRecent3Action->setText(recentcut);
+    fileRecent3Action->setStatusTip(recent);
+  }
+  recent=pconfig->readEntry("Recent file 4");
+  if (recent.isNull())
+    fileRecent4Action->setVisible(FALSE);
+  else {
+    QString recentcut=recent.mid(recent.findRev('/')+1);
+    recentcut.truncate(recentcut.findRev('.'));
+    fileRecent4Action->setVisible(TRUE);
+    fileRecent4Action->setText(recentcut);
+    fileRecent4Action->setStatusTip(recent);
+  }
+}
+
 QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
@@ -768,6 +819,22 @@ void MainForm::openProject(const QString &fileName)
   libopts=TPRData.libopts;
   updateLeftStatusLabel();
   updateRightStatusLabel();
+  pconfig->setGroup("Recent files");
+  unsigned i,j;
+  // Find recent file to overwrite. If it isn't one of the first 3, by
+  // elimination, it is the last, thus the test only goes up to <4, not <=4.
+  for (i=1;i<4;i++) {
+    QString recenti=pconfig->readEntry(QString("Recent file %1").arg(i));
+    if (recenti.isNull() || !recenti.compare(fileName))
+      break;
+  }
+  // Move entries up
+  for (j=i;j>1;j--) {
+    pconfig->writeEntry(QString("Recent file %1").arg(j),pconfig->readEntry(QString("Recent file %1").arg(j-1)));
+  }
+  // The first recent file is the current project.
+  pconfig->writeEntry("Recent file 1",fileName);
+  updateRecent();
 }
 
 void MainForm::fileOpen()
@@ -778,6 +845,26 @@ void MainForm::fileOpen()
   if (fileName.isEmpty())
     return;
   openProject(fileName);
+}
+
+void MainForm::fileRecent1()
+{
+  openProject(fileRecent1Action->statusTip());
+}
+
+void MainForm::fileRecent2()
+{
+  openProject(fileRecent2Action->statusTip());
+}
+
+void MainForm::fileRecent3()
+{
+  openProject(fileRecent3Action->statusTip());
+}
+
+void MainForm::fileRecent4()
+{
+  openProject(fileRecent4Action->statusTip());
 }
 
 void MainForm::fileSave_saveAs(QListViewItem *theItem)

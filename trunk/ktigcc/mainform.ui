@@ -673,18 +673,12 @@
         <property name="text">
             <string>Recent File 1</string>
         </property>
-        <property name="menuText">
-            <string>Recent File 1</string>
-        </property>
     </action>
     <action>
         <property name="name">
             <cstring>fileRecent2Action</cstring>
         </property>
         <property name="text">
-            <string>Recent File 2</string>
-        </property>
-        <property name="menuText">
             <string>Recent File 2</string>
         </property>
     </action>
@@ -695,18 +689,12 @@
         <property name="text">
             <string>Recent File 3</string>
         </property>
-        <property name="menuText">
-            <string>Recent File 3</string>
-        </property>
     </action>
     <action>
         <property name="name">
             <cstring>fileRecent4Action</cstring>
         </property>
         <property name="text">
-            <string>Recent File 4</string>
-        </property>
-        <property name="menuText">
             <string>Recent File 4</string>
         </property>
     </action>
@@ -1317,6 +1305,30 @@
         <receiver>MainForm</receiver>
         <slot>fileTreeItemRenamed(QListViewItem*,int,const QString&amp;)</slot>
     </connection>
+    <connection>
+        <sender>fileRecent1Action</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileRecent1()</slot>
+    </connection>
+    <connection>
+        <sender>fileRecent2Action</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileRecent2()</slot>
+    </connection>
+    <connection>
+        <sender>fileRecent3Action</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileRecent3()</slot>
+    </connection>
+    <connection>
+        <sender>fileRecent4Action</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>fileRecent4()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">mainform.ui.h</include>
@@ -1359,16 +1371,21 @@
     <slot>m_view_cursorPositionChanged()</slot>
     <slot>m_view_textChanged()</slot>
     <slot>fileTreeItemRenamed( QListViewItem * item, int col, const QString &amp; newName )</slot>
+    <slot>fileRecent1()</slot>
+    <slot>fileRecent2()</slot>
+    <slot>fileRecent3()</slot>
+    <slot>fileRecent4()</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">clearProject()</function>
     <function access="private" specifier="non virtual" returnType="QString">findFilter( unsigned short job )</function>
     <function returnType="QString">SGetFileName( int mode, const QString &amp; fileFilter, const QString &amp; caption, QWidget * parent )</function>
     <function returnType="QStringList">SGetFileName_Multiple( const QString &amp; fileFilter, const QString &amp; caption, QWidget * parent )</function>
+    <function access="private" specifier="non virtual">updateRecent()</function>
     <function access="private" specifier="non virtual" returnType="QListViewItem *">openFile( QListViewItem * category, QListViewItem * parent, const QString &amp; fileCaption, const QString &amp; fileName )</function>
     <function access="private" specifier="static" returnType="QListViewItem *">createFolder( QListViewItem * parent, const QString &amp; name )</function>
     <function access="private" specifier="non virtual">fileOpen_addList( QListViewItem * category, void * fileListV, void * dir, const QString &amp; open_file )</function>
-    <function access="private" specifier="non virtual">openProject( const QString &amp; filename )</function>
+    <function access="private" specifier="non virtual">openProject( const QString &amp; fileName )</function>
     <function access="private" specifier="non virtual">fileSave_saveAs( QListViewItem * theItem )</function>
     <function access="private" specifier="non virtual">fileSave_loadList( QListViewItem * category, void * fileListV, const QString &amp; base_dir, void * dir_new, QString * open_file )</function>
     <function>fileSave_fromto( const QString &amp; lastProj, const QString &amp; nextProj )</function>

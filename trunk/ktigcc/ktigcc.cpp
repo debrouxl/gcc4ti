@@ -25,6 +25,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qtextcodec.h>
+#include <kconfig.h>
 #include "mainform.h"
 using namespace std;
 void qCleanupImages_ktigcc();
@@ -33,7 +34,7 @@ void qInitImages_ktigcc();
 const char *tigcc_base;
 char tempdir[]="/tmp/ktigccXXXXXX";
 char *quill_drv;
-KApplication *papp;
+KConfig *pconfig;
 KAboutData *pabout;
 
 int main( int argc, char *argv[] )
@@ -59,10 +60,11 @@ int main( int argc, char *argv[] )
   pabout=&about;
   KCmdLineArgs::init(argc,argv,&about);
   KApplication app;
-  papp=&app;
   // Readd the images KDE kindly removes...
   qCleanupImages_ktigcc();
   qInitImages_ktigcc();
+  KConfig config("ktigccrc");
+  pconfig=&config;
   
   if ((tigcc_base = getenv("TIGCC")) == NULL) {
     fprintf(stderr, "Fatal error: TIGCC is not defined in the environment. "

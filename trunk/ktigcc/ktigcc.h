@@ -19,7 +19,7 @@
 */
 
 #include <cstddef>
-#include <kapplication.h>
+#include <kconfig.h>
 #include <kaboutdata.h>
 
 extern const char *tigcc_base;
@@ -28,5 +28,5 @@ extern char tempdir[];
 extern void write_temp_file(const char *filename, const char *data, const size_t len);
 extern void delete_temp_file(const char *filename);
 extern void force_qt_assistant_page(int n);
-extern KApplication *papp;
+extern KConfig *pconfig;
 extern KAboutData *pabout;
