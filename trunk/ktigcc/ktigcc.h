@@ -30,3 +30,4 @@ extern void delete_temp_file(const char *filename);
 extern void force_qt_assistant_page(int n);
 extern KConfig *pconfig;
 extern KAboutData *pabout;
+extern const char *parg;

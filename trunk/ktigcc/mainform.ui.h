@@ -482,11 +482,14 @@ void MainForm::init()
   projectFileName="";
   projectIsDirty=FALSE;
   pconfig->setGroup("Recent files");
-  QString mostrecent=pconfig->readEntry("Current project");
-  if (!mostrecent.isNull() && !mostrecent.isEmpty())
-    openProject(mostrecent);
-  else
-    updateRecent();
+  if (parg)
+    openProject(parg);
+  else {
+    QString mostrecent=pconfig->readEntry("Current project");
+    if (!mostrecent.isNull() && !mostrecent.isEmpty())
+      openProject(mostrecent);
+  }
+  updateRecent();
   startTimer(100);
 }
 

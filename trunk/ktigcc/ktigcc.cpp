@@ -21,6 +21,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
+#include <qstring.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
@@ -31,11 +32,18 @@ using namespace std;
 void qCleanupImages_ktigcc();
 void qInitImages_ktigcc();
 
+static KCmdLineOptions options[] =
+{
+    { "+[file]", "Project or file to open at startup", 0 },
+    KCmdLineLastOption
+};
+
 const char *tigcc_base;
 char tempdir[]="/tmp/ktigccXXXXXX";
 char *quill_drv;
 KConfig *pconfig;
 KAboutData *pabout;
+const char *parg;
 
 int main( int argc, char *argv[] )
 {
@@ -59,6 +67,8 @@ int main( int argc, char *argv[] )
   "http://tigcc.ticalc.org/linux/", "Bugs@tigcc.ticalc.org");
   pabout=&about;
   KCmdLineArgs::init(argc,argv,&about);
+  KCmdLineArgs::addCmdLineOptions(options);
+  KApplication::addCmdLineOptions();
   KApplication app;
   // Readd the images KDE kindly removes...
   qCleanupImages_ktigcc();
@@ -139,6 +149,13 @@ int main( int argc, char *argv[] )
   
   if (!mkdtemp(tempdir)) exit(1);
   
+  KCmdLineArgs *args=KCmdLineArgs::parsedArgs();
+  
+  if (args->count())
+    parg=args->arg(0);
+  else
+    parg=NULL;
+
   MainForm mainForm;
   app.setMainWidget( &mainForm );
   mainForm.show();
