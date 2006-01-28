@@ -506,12 +506,12 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
     unsigned i=0,e;
     QString tmp;
     
-#define boolean_param(token,setting) fprintf(f,token "%d\r\n",!!dest->settings.setting);
-#define string_vparam(token,var) fprintf(f,token "%s\r\n",smartAscii(dest->var));
+#define boolean_param(token,setting) if (fprintf(f,token "%d\r\n",!!dest->settings.setting)<0) return -2;
+#define string_vparam(token,var) if (fprintf(f,token "%s\r\n",smartAscii(dest->var))<0) return -2;
 #define string_param(token,setting) string_vparam(token,settings.setting)
 #define ignore_param(token) /**/
     
-    fputs("[Settings]\r\n",f);
+    if (fputs("[Settings]\r\n",f)<0) return -2;
     boolean_param("Archive=",archive)
     boolean_param("Pack=",pack)
     string_param("Packed Variable=",pack_name)
@@ -550,31 +550,31 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
 #undef string_param
 #undef ignore_param
     
-#define boolean_param(token,setting) fprintf(f,token "%d\r\n",!!dest->libopts.setting);
+#define boolean_param(token,setting) if (fprintf(f,token "%d\r\n",!!dest->libopts.setting)<0) return -2;
     
 #define reloc_param(token,setting) \
     switch(dest->libopts.setting) \
     { \
     case RT_NONE: \
-        fprintf(f,token "None\r\n"); \
+        if (fprintf(f,token "None\r\n")<0) return -2; \
         break; \
     case RT_DIRECT: \
-        fprintf(f,token "Direct\r\n"); \
+        if (fprintf(f,token "Direct\r\n")<0) return -2; \
         break; \
     case RT_AMS: \
-        fprintf(f,token "AMS\r\n"); \
+        if (fprintf(f,token "AMS\r\n")<0) return -2; \
         break; \
     case RT_PRECOMP: \
-        fprintf(f,token "Precomputed\r\n"); \
+        if (fprintf(f,token "Precomputed\r\n")<0) return -2; \
         break; \
     case RT_KERNEL: \
-        fprintf(f,token "Kernel\r\n"); \
+        if (fprintf(f,token "Kernel\r\n")<0) return -2; \
         break; \
     case RT_COMPRESSED: \
-        fprintf(f,token "Compressed\r\n"); \
+        if (fprintf(f,token "Compressed\r\n")<0) return -2; \
         break; \
     case RT_FLINE: \
-        fprintf(f,token "F-Line\r\n"); \
+        if (fprintf(f,token "F-Line\r\n")<0) return -2; \
         break; \
     }
     
@@ -583,10 +583,10 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
         int major,minor; \
         major=dest->libopts.setting/100; \
         minor=dest->libopts.setting%100; \
-        fprintf(f,token "%d.%02d\r\n",major,minor); \
+        if (fprintf(f,token "%d.%02d\r\n",major,minor)<0) return -2; \
     }
     
-    fputs("\r\n[Library Options]\r\n",f);
+    if (fputs("\r\n[Library Options]\r\n",f)<0) return -2;
     boolean_param("Use TI-89=",use_ti89)
     boolean_param("Use TI-92 Plus=",use_ti92p)
     boolean_param("Use V200=",use_v200)
@@ -612,17 +612,17 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
 #undef reloc_param
 #undef minams_param
     
-    fprintf(f,"\r\n[File Editing]\r\nOpen File=%s\r\n\r\n[Included Files]\r\n",smartAscii(dest->open_file));
+    if (fprintf(f,"\r\n[File Editing]\r\nOpen File=%s\r\n\r\n[Included Files]\r\n",smartAscii(dest->open_file))<0) return -2;
     
 #define filepath_param(token,filetype) \
     e=dest->filetype.path.count(); \
     for(i=0;i<e;i++) \
     { \
         tmp=convert_path_separators_save(smartAscii(dest->filetype.path[i])); \
-        fprintf(f,token " %u=%s\r\n",i+1,smartAscii(tmp)); \
+        if (fprintf(f,token " %u=%s\r\n",i+1,smartAscii(tmp))<0) return -2; \
         if (!dest->filetype.folder[i].isEmpty()) \
         { \
-          fprintf(f,token " %u Folder=%s\r\n",i+1,smartAscii(dest->filetype.folder[i])); \
+          if (fprintf(f,token " %u Folder=%s\r\n",i+1,smartAscii(dest->filetype.folder[i]))<0) return -2; \
         } \
     }
     
@@ -638,12 +638,13 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
     
 #undef filepath_param
     
-    fputs("\r\n",f);
+    if (fputs("\r\n",f)<0) return -2;
     
     return 0;
 }
 
-//returns 0 on success, -1 if the file isn't there, and -2 if there's not enough memory.
+//returns 0 on success, -1 if the file couldn't be created or -2 if fprintf,
+//fputs or fclose failed
 int saveTPR(const QString &fileName,TPRDataStruct *src)
 {
   FILE *f;
@@ -654,7 +655,7 @@ int saveTPR(const QString &fileName,TPRDataStruct *src)
     return -1;
   }
   ret=save_tpr(f,src);
-  fclose(f);
+  if (fclose(f)) return -2;
   return ret;
 }
 
@@ -688,6 +689,7 @@ int saveFileText(const char *fileName,QString &fileText)
 {
   FILE *f;
   const char *s;
+  size_t l;
   
   f=fopen(fileName,"wb");
   if (!f)
@@ -698,8 +700,12 @@ int saveFileText(const char *fileName,QString &fileText)
         return -1;
   }
   s=smartAscii(fileText);
-  fwrite(s,1,strlen(s),f);
-  fclose(f);
+  l=fileText.length();
+  if (fwrite(s,1,l,f)<l) {
+    fclose(f);
+    return -2;
+  }
+  if (fclose(f)) return -2;
   return 0;
 }
 
