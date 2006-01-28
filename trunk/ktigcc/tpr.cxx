@@ -758,3 +758,32 @@ int checkFileName(const QString &fileName,const QStringList &fileNameList)
   }
   return 1;
 }
+
+// returns 0 on success, >0 on read failure, <0 on write failure
+int copyFile(const char *src, const char *dest)
+{
+  // This doesn't load everything at once onto the stack because it may be
+  // used for huge binary files, which don't fit on the stack. So we copy 1KB
+  // at a time.
+  FILE *sf=fopen(src,"rb");
+  if (!sf) return 1;
+  FILE *df=fopen(dest,"wb");
+  if (!df) {fclose(sf); return -1;}
+  char buffer[1024];
+  while (!ferror(sf) && !feof(sf)) {
+    size_t bytes_read=fread(buffer,1,1024,sf);
+    if (fwrite(buffer,1,bytes_read,df)<bytes_read) {
+      fclose(df);
+      fclose(sf);
+      return -2;
+    }
+  }
+  if (ferror(sf)) {
+    fclose(df);
+    fclose(sf);
+    return 2;
+  }
+  if (fclose(df)) {fclose(sf); return -3;}
+  if (fclose(sf)) return 3;
+  return 0;
+}

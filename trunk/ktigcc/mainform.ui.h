@@ -792,10 +792,14 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
   category==txtFilesListItem?TIGCC_TXT_Filter TIGCCAllFilter:
   TIGCCAllFilter
   ,"Save Source File",this);
-  if (saveFileName.isEmpty())
-    return;
   ListViewFile *theFile=static_cast<ListViewFile *>(theItem);
-  if (saveFileText(saveFileName,theFile->textBuffer))
+  if (saveFileName.isEmpty()
+      || (!IS_EDITABLE_CATEGORY(category)
+          && !saveFileName.compare(theFile->fileName)))
+    return;
+  if (IS_EDITABLE_CATEGORY(category)
+      ?saveFileText(saveFileName,theFile->textBuffer)
+      :copyFile(theFile->fileName,saveFileName))
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
   else {
     theFile->fileName=saveFileName;
