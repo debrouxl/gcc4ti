@@ -795,10 +795,13 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
   if (saveFileName.isEmpty())
     return;
   ListViewFile *theFile=static_cast<ListViewFile *>(theItem);
-  theFile->fileName=saveFileName;
-  theFile->isNew=FALSE;
-  theFile->isDirty=FALSE;
-  saveFileText(saveFileName,theFile->textBuffer);
+  if (saveFileText(saveFileName,theFile->textBuffer))
+    KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
+  else {
+    theFile->fileName=saveFileName;
+    theFile->isNew=FALSE;
+    theFile->isDirty=FALSE;
+  }
 }
 
 //loadList also saves the file contents
@@ -837,9 +840,12 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,void *d
         tmpPath=*new_dir;
         kurlNewFileName(tmpPath,relPath);
         theFile->fileName=tmpPath.path();
-        saveFileText(tmpPath.path(),theFile->textBuffer);
-        theFile->isNew=FALSE;
-        theFile->isDirty=FALSE;
+        if (saveFileText(tmpPath.path(),theFile->textBuffer))
+          KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
+        else {
+          theFile->isNew=FALSE;
+          theFile->isDirty=FALSE;
+        }
       }
       
       fileList->path << relPath;
@@ -910,8 +916,10 @@ void MainForm::fileSave_to(const QString &nextProj)
   
   if (saveTPR(nextProj,&TPRData))
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(nextProj));
-  else
+  else {
     projectFileName=nextProj;
+    projectIsDirty=FALSE;
+  }
 }
 
 void MainForm::fileSave()
