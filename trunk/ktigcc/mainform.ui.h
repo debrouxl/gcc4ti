@@ -562,15 +562,35 @@ QString MainForm::findFilter(unsigned short job)
   QString ret;
   if (job==TIGCCOpenProjectFileFilter)
   {
-    ret="*.tpr *.h *.c *.s *.asm *.txt|All TIGCC Files (*.tpr *.h *.c *.s *.asm *.txt)\n"
-        TIGCC_TPR_Filter TIGCC_H_Filter TIGCC_C_Filter TIGCC_S_Filter
-        TIGCC_ASM_Filter TIGCC_TXT_Filter TIGCCAllFilter;
+    ret="*.tpr *.h *.c *.s ";
+    if (asmFilesListItem)
+      ret+="*.asm ";
+    if (qllFilesListItem)
+      ret+="*.qll ";
+    ret+="*.txt";
+    ret+="|All TIGCC Files ("+ret+")\n"
+         TIGCC_TPR_Filter TIGCC_H_Filter TIGCC_C_Filter TIGCC_S_Filter;
+    if (asmFilesListItem)
+      ret+=TIGCC_ASM_Filter;
+    if (qllFilesListItem)
+      ret+=TIGCC_QLL_Filter;
+    ret+=TIGCC_TXT_Filter TIGCCAllFilter;
   }
   else if (job==TIGCCAddFilesFilter)
   {
-    ret="*.h *.c *.s *.asm *.o *.a *.txt|All TIGCC Files (*.h *.c *.s *.asm *.o *.a *.txt)\n"
-        TIGCC_H_Filter TIGCC_C_Filter TIGCC_S_Filter TIGCC_ASM_Filter
-        TIGCC_O_Filter TIGCC_A_Filter TIGCC_TXT_Filter TIGCCAllFilter;
+    ret="*.h *.c *.s ";
+    if (asmFilesListItem)
+      ret+="*.asm ";
+    if (qllFilesListItem)
+      ret+="*.qll ";
+    ret+="*.o *.a *.txt";
+    ret+="|All TIGCC Files ("+ret+")\n"
+         TIGCC_H_Filter TIGCC_C_Filter TIGCC_S_Filter;
+    if (asmFilesListItem)
+      ret+=TIGCC_ASM_Filter;
+    if (qllFilesListItem)
+      ret+=TIGCC_QLL_Filter;
+    ret+=TIGCC_O_Filter TIGCC_A_Filter TIGCC_TXT_Filter TIGCCAllFilter;
   }
   return ret;
 }
