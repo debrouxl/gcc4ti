@@ -1208,7 +1208,8 @@ void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_categ
   {
     if (item==parent)
     {
-      tmp+='/';
+      if (!tmp.isEmpty())
+        tmp+='/';
       tmp+=item->text(0);
       *p_folderPath=tmp;
     }
@@ -1564,10 +1565,10 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
     suffix=QString::null;
   }
   if (s>=0) {
-    oldLabel=oldFileName.mid(s+1);
+    oldLabel=newFileName.mid(s+1);
     newFileName.truncate(s+1);
   } else {
-    oldLabel=oldFileName;
+    oldLabel=newFileName;
     newFileName.truncate(0);
   }
   if (!oldLabel.compare(newName))
