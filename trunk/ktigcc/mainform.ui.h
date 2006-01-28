@@ -256,6 +256,7 @@ class DnDListView : public QListView {
                 lastItem=lastItem->nextSibling();
               currItem->moveItem(lastItem);
             }
+            projectIsDirty=TRUE;
           } else {ignore: e->ignore();}
         } else e->ignore();
       } else if (IS_FILE(currItem)) {
@@ -286,6 +287,7 @@ class DnDListView : public QListView {
             }
             // we changed the counters
             static_cast<MainForm *>(parent())->updateLeftStatusLabel();
+            projectIsDirty=TRUE;
           }
         } else if (IS_FILE(item)) {
           // drop on file
@@ -300,12 +302,14 @@ class DnDListView : public QListView {
                 // currItem is first, move currItem after item
                 e->accept();
                 currItem->moveItem(item);
+                projectIsDirty=TRUE;
                 break;
               } else if (i==item) {
                 // item is first, move currItem before item
                 e->accept();
                 currItem->moveItem(item);
                 item->moveItem(currItem);
+                projectIsDirty=TRUE;
                 break;
               }
             }
@@ -806,6 +810,7 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
     theFile->isNew=FALSE;
     theFile->isDirty=FALSE;
     updateRightStatusLabel();
+    projectIsDirty=TRUE;
   }
 }
 
@@ -850,6 +855,7 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
           theFile->fileName=tmpPath.path();
           theFile->isNew=FALSE;
           theFile->isDirty=FALSE;
+          projectIsDirty=TRUE; // in case saving the project fails
         }
       }
       
@@ -1139,6 +1145,7 @@ void MainForm::fileNewFolder()
   currentListItem->setOpen(TRUE);
   fileTreeClicked(newFolder);
   newFolder->startRename(0);
+  projectIsDirty=TRUE;
 }
 
 #define unused_col __attribute__((unused)) col /* stupid QT designer... */
@@ -1335,6 +1342,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
   parent->setOpen(TRUE);
   newFile->textBuffer=text;
   fileTreeClicked(newFile);
+  projectIsDirty=TRUE;
   newFile->startRename(0);
   
   m_view->getDoc()->setText(text);
@@ -1602,6 +1610,7 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
       theFile->setText(0,oldLabel);
     } else {
       fileNameRef=newFileName;
+      projectIsDirty=TRUE;
     }
   } else {
     KMessageBox::error(this,"The name you chose conflicts with that of another file.");
