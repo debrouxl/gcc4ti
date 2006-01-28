@@ -97,15 +97,6 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         (category)==aFilesListItem?aFileCount: \
                                         (category)==txtFilesListItem?txtFileCount: \
                                         othFileCount)
-#define CATEGORY_INDEX   ((category)==hFilesListItem?0: \
-                          (category)==cFilesListItem?1: \
-                          (category)==sFilesListItem?2: \
-                          (category)==asmFilesListItem?3: \
-                          (category)==qllFilesListItem?4: \
-                          (category)==oFilesListItem?5: \
-                          (category)==aFilesListItem?6: \
-                          (category)==txtFilesListItem?7: \
-                          8)
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
