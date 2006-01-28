@@ -782,7 +782,8 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,void *d
   {
     if (IS_FILE(item))
     {
-      QString absPath=static_cast<ListViewFile *>(item)->fileName;
+      ListViewFile *theFile=static_cast<ListViewFile *>(item);
+      QString absPath=theFile->fileName;
       QString relPath=KURL::relativePath(base_dir,absPath);
       if (relPath.find("./")==0)
       {
@@ -793,18 +794,21 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,void *d
         relPath=absPath;
       }
       
-      if (IS_EDITABLE_CATEGORY(category)) {
+      if (IS_EDITABLE_CATEGORY(category)
+          && (theFile->isDirty || theFile->isNew)) {
         tmpPath=*new_dir;
         kurlNewFileName(tmpPath,relPath);
-        static_cast<ListViewFile *>(item)->fileName=tmpPath.path();
-        saveFileText(tmpPath.path(),static_cast<ListViewFile *>(item)->textBuffer);
+        theFile->fileName=tmpPath.path();
+        saveFileText(tmpPath.path(),theFile->textBuffer);
+        theFile->isNew=FALSE;
+        theFile->isDirty=FALSE;
       }
       
       fileList->path << relPath;
       fileList->folder << folderSpec;
       
       if (item==currentListItem)
-        *open_file=static_cast<ListViewFile *>(item)->fileName;
+        *open_file=theFile->fileName;
     }
     else if (IS_FOLDER(item))
     {
