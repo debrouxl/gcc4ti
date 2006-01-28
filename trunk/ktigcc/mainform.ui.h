@@ -1307,7 +1307,8 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
     suffix="txt";
   suffix='.'+suffix;
   
-  tmp+='/';
+  if (!tmp.isEmpty())
+    tmp+='/';
   tmp+="New File";
   tmpK.setPath(projectFileName);
   kurlNewFileName(tmpK,tmp);
