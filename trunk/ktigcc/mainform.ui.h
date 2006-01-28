@@ -836,14 +836,17 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
         relPath=absPath;
       }
       
-      if (IS_EDITABLE_CATEGORY(category)
-          && (theFile->isDirty || theFile->isNew)) {
+      if (tmpPath.path().compare(theFile->fileName)
+          || (IS_EDITABLE_CATEGORY(category)
+              && (theFile->isDirty || theFile->isNew))) {
         tmpPath=*new_dir;
         kurlNewFileName(tmpPath,relPath);
-        theFile->fileName=tmpPath.path();
-        if (saveFileText(tmpPath.path(),theFile->textBuffer))
+        if (IS_EDITABLE_CATEGORY(category)
+            ?saveFileText(tmpPath.path(),theFile->textBuffer)
+            :copyFile(theFile->fileName,tmpPath.path()))
           KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
         else {
+          theFile->fileName=tmpPath.path();
           theFile->isNew=FALSE;
           theFile->isDirty=FALSE;
         }
