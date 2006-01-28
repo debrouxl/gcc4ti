@@ -805,15 +805,12 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
 }
 
 //loadList also saves the file contents
-void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,void *dir_new,QString *open_file)
+void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const QString &base_dir,void *dir_new,QString *open_file)
 {
   if (!category)
     return;
   TPRFileList *fileList=(TPRFileList*)fileListV;
-  KURL *new_dir=reinterpret_cast<KURL*>(dir_new);
-  KURL base_dir_k=*new_dir;
-  base_dir_k.setFileName("");
-  QString base_dir=base_dir_k.path();
+  KURL *new_dir=(KURL*)dir_new;
   KURL tmpPath;
   QListViewItem *item=category->firstChild();
   QListViewItem *next;
@@ -890,25 +887,28 @@ fsll_seeknext:
 }
 
 
-void MainForm::fileSave_to(const QString &nextProj)
+void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
 {
   TPRDataStruct TPRData;
   QString open_file;
+  KURL base_dir_k(lastProj);
+  base_dir_k.setFileName("");
+  QString base_dir=base_dir_k.path();
   KURL new_dir(nextProj);
   
   if (IS_FILE(currentListItem))
     static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
     //we don't want to make it so you have to click to another file and back to save the current document properly ;)
   
-  fileSave_loadList(hFilesListItem,&TPRData.h_files,&new_dir,&open_file);
-  fileSave_loadList(cFilesListItem,&TPRData.c_files,&new_dir,&open_file);
-  fileSave_loadList(qllFilesListItem,&TPRData.quill_files,&new_dir,&open_file);
-  fileSave_loadList(sFilesListItem,&TPRData.s_files,&new_dir,&open_file);
-  fileSave_loadList(asmFilesListItem,&TPRData.asm_files,&new_dir,&open_file);
-  fileSave_loadList(oFilesListItem,&TPRData.o_files,&new_dir,&open_file);
-  fileSave_loadList(aFilesListItem,&TPRData.a_files,&new_dir,&open_file);
-  fileSave_loadList(txtFilesListItem,&TPRData.txt_files,&new_dir,&open_file);
-  fileSave_loadList(othFilesListItem,&TPRData.oth_files,&new_dir,&open_file);
+  fileSave_loadList(hFilesListItem,&TPRData.h_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(cFilesListItem,&TPRData.c_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(qllFilesListItem,&TPRData.quill_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(sFilesListItem,&TPRData.s_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(asmFilesListItem,&TPRData.asm_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(oFilesListItem,&TPRData.o_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(aFilesListItem,&TPRData.a_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(txtFilesListItem,&TPRData.txt_files,base_dir,&new_dir,&open_file);
+  fileSave_loadList(othFilesListItem,&TPRData.oth_files,base_dir,&new_dir,&open_file);
   TPRData.prj_name=rootListItem->text(0);
   TPRData.open_file=open_file;
   TPRData.settings=settings;
@@ -927,7 +927,7 @@ void MainForm::fileSave()
   if (projectFileName.isEmpty())
     fileSaveAs();
   else
-    fileSave_to(projectFileName);
+    fileSave_fromto(projectFileName,projectFileName);
 }
 
 void MainForm::fileSaveAs()
@@ -935,7 +935,7 @@ void MainForm::fileSaveAs()
   QString fileName=SGetFileName(KFileDialog::Saving,TIGCC_TPR_Filter TIGCCAllFilter,"Save Project",this);
   if (fileName.isEmpty())
     return;
-  fileSave_to(fileName);
+  fileSave_fromto(projectFileName,fileName);
 }
 
 void MainForm::filePrint()
