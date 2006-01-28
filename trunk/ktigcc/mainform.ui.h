@@ -482,8 +482,8 @@ void MainForm::init()
   projectFileName="";
   projectIsDirty=FALSE;
   pconfig->setGroup("Recent files");
-  QString mostrecent=pconfig->readEntry("Recent file 1");
-  if (!mostrecent.isNull())
+  QString mostrecent=pconfig->readEntry("Current project");
+  if (!mostrecent.isNull() && !mostrecent.isEmpty())
     openProject(mostrecent);
   else
     updateRecent();
@@ -575,6 +575,8 @@ void MainForm::clearProject()
 void MainForm::fileNewProject()
 {
   clearProject();
+  pconfig->setGroup("Recent files");
+  pconfig->writeEntry("Current project","");
 }
 
 QString MainForm::findFilter(unsigned short job)
@@ -690,6 +692,27 @@ void MainForm::updateRecent()
     fileRecent4Action->setText(recentcut);
     fileRecent4Action->setStatusTip(recent);
   }
+}
+
+void MainForm::addRecent(const QString &fileName)
+{
+  unsigned i,j;
+  pconfig->setGroup("Recent files");
+  // Find recent file to overwrite. If it isn't one of the first 3, by
+  // elimination, it is the last, thus the test only goes up to <4, not <=4.
+  for (i=1;i<4;i++) {
+    QString recenti=pconfig->readEntry(QString("Recent file %1").arg(i));
+    if (recenti.isNull() || !recenti.compare(fileName))
+      break;
+  }
+  // Move entries up
+  for (j=i;j>1;j--) {
+    pconfig->writeEntry(QString("Recent file %1").arg(j),pconfig->readEntry(QString("Recent file %1").arg(j-1)));
+  }
+  // The first recent file is the current project.
+  pconfig->writeEntry("Recent file 1",fileName);
+  pconfig->writeEntry("Current project",fileName);
+  updateRecent();
 }
 
 QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
@@ -819,22 +842,7 @@ void MainForm::openProject(const QString &fileName)
   libopts=TPRData.libopts;
   updateLeftStatusLabel();
   updateRightStatusLabel();
-  pconfig->setGroup("Recent files");
-  unsigned i,j;
-  // Find recent file to overwrite. If it isn't one of the first 3, by
-  // elimination, it is the last, thus the test only goes up to <4, not <=4.
-  for (i=1;i<4;i++) {
-    QString recenti=pconfig->readEntry(QString("Recent file %1").arg(i));
-    if (recenti.isNull() || !recenti.compare(fileName))
-      break;
-  }
-  // Move entries up
-  for (j=i;j>1;j--) {
-    pconfig->writeEntry(QString("Recent file %1").arg(j),pconfig->readEntry(QString("Recent file %1").arg(j-1)));
-  }
-  // The first recent file is the current project.
-  pconfig->writeEntry("Recent file 1",fileName);
-  updateRecent();
+  addRecent(fileName);
 }
 
 void MainForm::fileOpen()
@@ -1023,6 +1031,7 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
   else {
     projectFileName=nextProj;
     projectIsDirty=FALSE;
+    addRecent(nextProj);
   }
   updateRightStatusLabel();
 }
