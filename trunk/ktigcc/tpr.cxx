@@ -254,6 +254,8 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                     dest->libopts.setting = RT_KERNEL; \
                 else if (!strcmp(p, "Compressed")) \
                     dest->libopts.setting = RT_COMPRESSED; \
+                else if (!strcmp(p, "MLink")) \
+                    dest->libopts.setting = RT_MLINK; \
                 else if (!strcmp(p, "F-Line")) \
                     dest->libopts.setting = RT_FLINE; \
                 else if (strcmp(p, "Unknown")) \
@@ -572,6 +574,9 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
         break; \
     case RT_COMPRESSED: \
         if (fprintf(f,token "Compressed\r\n")<0) return -2; \
+        break; \
+    case RT_MLINK: \
+        if (fprintf(f,token "MLink\r\n")<0) return -2; \
         break; \
     case RT_FLINE: \
         if (fprintf(f,token "F-Line\r\n")<0) return -2; \

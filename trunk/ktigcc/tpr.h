@@ -79,12 +79,13 @@ struct tprsettings
 };
 
 enum tprreloctypes {
-  RT_NONE, // None (BSS)
+  RT_NONE, // None (BSS, data var)
   RT_DIRECT, // Direct (ROM_CALLs)
   RT_AMS, // AMS (relocs)
   RT_PRECOMP, // ROM_CALLs only: Precomputed (Optimized)
   RT_KERNEL, // Kernel
   RT_COMPRESSED, // Compressed
+  RT_MLINK, // MLink
   RT_FLINE // ROM_CALLs only: F-Line
 };
 typedef enum tprreloctypes tprRelocType;
