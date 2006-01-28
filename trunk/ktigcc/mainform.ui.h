@@ -726,9 +726,11 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
   }
 }
 
-void MainForm::openProject(const QString &filename)
+void MainForm::openProject(const QString &fileName)
 {
   TPRDataStruct TPRData;
+  KURL dir;
+  dir.setPath(fileName);
   int ret=loadTPR(fileName, &TPRData);
   if (ret == -1) {
     KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
@@ -772,6 +774,31 @@ void MainForm::fileOpen()
   if (fileName.isEmpty())
     return;
   openProject(fileName);
+}
+
+void MainForm::fileSave_saveAs(QListViewItem *theItem)
+{
+  if (!IS_FILE(theItem))
+    return;
+  CATEGORY_OF(category,theItem);
+  QString saveFileName=SGetFileName(KFileDialog::Saving,
+  category==hFilesListItem?TIGCC_H_Filter TIGCCAllFilter:
+  category==cFilesListItem?TIGCC_C_Filter TIGCCAllFilter:
+  category==sFilesListItem?TIGCC_S_Filter TIGCCAllFilter:
+  category==asmFilesListItem?TIGCC_ASM_Filter TIGCCAllFilter:
+  category==qllFilesListItem?TIGCC_QLL_Filter TIGCCAllFilter:
+  category==oFilesListItem?TIGCC_O_Filter TIGCCAllFilter:
+  category==aFilesListItem?TIGCC_A_Filter TIGCCAllFilter:
+  category==txtFilesListItem?TIGCC_TXT_Filter TIGCCAllFilter:
+  TIGCCAllFilter
+  ,"Save Source File",this);
+  if (saveFileName.isEmpty())
+    return;
+  ListViewFile *theFile=static_cast<ListViewFile *>(theItem);
+  theFile->fileName=saveFileName;
+  theFile->isNew=FALSE;
+  theFile->isDirty=FALSE;
+  saveFileText(saveFileName,theFile->textBuffer);
 }
 
 //loadList also saves the file contents
