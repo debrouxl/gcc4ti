@@ -910,9 +910,12 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
   QString base_dir=base_dir_k.path();
   KURL new_dir(nextProj);
   
-  if (IS_FILE(currentListItem))
-    static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
-    //we don't want to make it so you have to click to another file and back to save the current document properly ;)
+  if (IS_FILE(currentListItem)) {
+    //We don't want to make it so you have to click to another file and back to save the current document properly. ;)
+    CATEGORY_OF(category,currentListItem);
+    if (IS_EDITABLE_CATEGORY(category))
+      static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
+  }
   
   fileSave_loadList(hFilesListItem,&TPRData.h_files,base_dir,&new_dir,&open_file);
   fileSave_loadList(cFilesListItem,&TPRData.c_files,base_dir,&new_dir,&open_file);
