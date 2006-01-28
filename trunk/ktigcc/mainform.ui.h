@@ -135,7 +135,8 @@ class ListViewFolder : public QListViewItem {
 class ListViewFile : public QListViewItem {
   public:
   ListViewFile(QListView *parent) : QListViewItem(parent),
-                                    cursorLine(1), cursorCol(0)
+                                    cursorLine(1), cursorCol(0),
+                                    isNew(TRUE), isDirty(FALSE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));    
     setDragEnabled(TRUE);
@@ -143,7 +144,8 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent) : QListViewItem(parent),
-                                        cursorLine(1), cursorCol(0)
+                                        cursorLine(1), cursorCol(0),
+                                        isNew(TRUE), isDirty(FALSE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDragEnabled(TRUE);
@@ -151,7 +153,8 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListView *parent, QListViewItem *after)
-          : QListViewItem(parent, after), cursorLine(1), cursorCol(0)
+          : QListViewItem(parent, after), cursorLine(1), cursorCol(0),
+            isNew(TRUE), isDirty(FALSE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDropEnabled(TRUE);
@@ -159,7 +162,8 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent, QListViewItem *after)
-          : QListViewItem(parent, after), cursorLine(1), cursorCol(0)
+          : QListViewItem(parent, after), cursorLine(1), cursorCol(0),
+            isNew(TRUE), isDirty(FALSE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDragEnabled(TRUE);
@@ -634,6 +638,7 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
     item=next;
   ListViewFile *newFile=item?new ListViewFile(parent,item)
                         :new ListViewFile(parent);
+  newFile->isNew=FALSE;
   newFile->setText(0,fileCaption);
   newFile->setPixmap(0,QPixmap::fromMimeSource(
     category==cFilesListItem||category==qllFilesListItem?"filec.png":
@@ -1264,8 +1269,6 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
                         :new ListViewFile(parent);
   
   newFile->fileName=tmp;
-  newFile->isNew=TRUE;
-  newFile->isDirty=FALSE;
   
   newFile->setText(0,caption);
   newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
