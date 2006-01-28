@@ -426,6 +426,7 @@ void MainForm::init()
   rightStatusLabel->setMaximumWidth(splitter->sizes().last());
   statusBar()->addWidget(rightStatusLabel,1);
   statusBar()->setSizeGripEnabled(FALSE);
+  connect(statusBar(),SIGNAL(messageChanged(const QString &)),this,SLOT(statusBar_messageChanged(const QString &)));
   fileTree->setSorting(-1);
   fileTree->setColumnWidthMode(0,QListView::Maximum);
   fileTree->header()->hide();
@@ -1610,6 +1611,13 @@ void MainForm::updateLeftStatusLabel()
           +QString(" in Category");
   }
   leftStatusLabel->setText(text);
+}
+
+void MainForm::statusBar_messageChanged(const QString & message)
+{
+  if (message.isNull())
+    // Make sure no labels which should be hidden are shown.
+    updateRightStatusLabel();
 }
 
 void MainForm::updateRightStatusLabel()
