@@ -1554,6 +1554,8 @@ void MainForm::m_view_cursorPositionChanged()
 
 void MainForm::m_view_textChanged()
 {
+  if (IS_FILE(currentListItem))
+    static_cast<ListViewFile *>(currentListItem)->isDirty=TRUE;
   charsStatusLabel->setText(QString("%1 Characters").arg(m_view->getDoc()->text().length()));
 }
 
