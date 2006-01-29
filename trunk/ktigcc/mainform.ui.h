@@ -886,19 +886,9 @@ int MainForm::fileSavePrompt(QListViewItem *fileItem)
   int result;
   ListViewFile *theFile=static_cast<ListViewFile *>(fileItem);
   while (theFile->isDirty) { // "while" in case saving fails!
-    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(fileItem->text(0)),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
+    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(theFile->text(0)),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
     if (result==KMessageBox::Yes) {
-        if (theFile->fileName[0]!='/') {
-          fileSave_saveAs(fileItem);
-        }
-        else {
-          if (saveFileText(theFile->fileName,theFile->textBuffer)) {
-            KMessageBox::error(this,QString("Can't save to \'%1\'").arg(fileItem->text(0)));
-          }
-          else {
-            theFile->isDirty=FALSE;
-          }
-        }
+        fileSave_save(fileItem);
     }
     else if (result==KMessageBox::No)
       break;
@@ -912,7 +902,6 @@ int MainForm::fileSavePrompt(QListViewItem *fileItem)
 int MainForm::savePrompt(void)
 {
   int result;
-  
   
   while (projectIsDirty) {
     result=KMessageBox::questionYesNoCancel(this,"The current project has been modified.  Do you want to save the changes?",QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
@@ -940,7 +929,8 @@ int MainForm::savePrompt(void)
     }
     if (IS_FILE(item))
     {
-      fileSavePrompt(item);
+      if (fileSavePrompt(item))
+        return 1;
     }
     next=item->nextSibling();
     while (!next)
@@ -959,11 +949,40 @@ int MainForm::savePrompt(void)
   return 0;
 }
 
+void MainForm::fileSave_save(QListViewItem *theItem)
+{
+  if (!IS_FILE(theItem))
+    return;
+  CATEGORY_OF(category,theItem);
+  if (!IS_EDITABLE_CATEGORY(category))
+    return;
+  //We don't want to make it so you have to click to another file and back to save the current document properly. ;)
+  if (theItem==currentListItem)
+    static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
+  ListViewFile *theFile=static_cast<ListViewFile *>(theItem);
+  if (theFile->fileName[0]!='/') {
+    fileSave_saveAs(theFile);
+  }
+  else {
+    if (saveFileText(theFile->fileName,theFile->textBuffer)) {
+      KMessageBox::error(this,QString("Can't save to \'%1\'").arg(theFile->text(0)));
+    }
+    else {
+      theFile->isNew=FALSE;
+      theFile->isDirty=FALSE;
+      projectIsDirty=TRUE;
+    }
+  }
+}
+
 void MainForm::fileSave_saveAs(QListViewItem *theItem)
 {
   if (!IS_FILE(theItem))
     return;
   CATEGORY_OF(category,theItem);
+  //We don't want to make it so you have to click to another file and back to save the current document properly. ;)
+  if (theItem==currentListItem && IS_EDITABLE_CATEGORY(category))
+      static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
   QString saveFileName=SGetFileName(KFileDialog::Saving,
   category==hFilesListItem?TIGCC_H_Filter TIGCCAllFilter:
   category==cFilesListItem?TIGCC_C_Filter TIGCCAllFilter:
