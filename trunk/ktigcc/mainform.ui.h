@@ -886,11 +886,16 @@ int MainForm::fileSavePrompt(QListViewItem *fileItem)
   while (theFile->isDirty) { // "while" in case saving fails!
     result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(fileItem->text(0)),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
     if (result==KMessageBox::Yes) {
-        if (saveFileText(theFile->fileName,theFile->textBuffer)) {
-          KMessageBox::error(this,QString("Can't save to \'%1\'").arg(fileItem->text(0)));
+        if (theFile->fileName[0]!='/') {
+          fileSave_saveAs(fileItem);
         }
         else {
-          theFile->isDirty=FALSE;
+          if (saveFileText(theFile->fileName,theFile->textBuffer)) {
+            KMessageBox::error(this,QString("Can't save to \'%1\'").arg(fileItem->text(0)));
+          }
+          else {
+            theFile->isDirty=FALSE;
+          }
         }
     }
     else if (result==KMessageBox::No)
