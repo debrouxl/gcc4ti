@@ -1160,6 +1160,16 @@ void MainForm::filePrint()
   
 }
 
+void MainForm::filePreferences()
+{
+  
+}
+
+void MainForm::editClear()
+{
+  
+}
+
 void MainForm::editUndo()
 {
   
@@ -1193,6 +1203,91 @@ void MainForm::editFind()
 void MainForm::findFindSymbolDeclaration()
 {
 
+}
+
+void MainForm::editSelectAll()
+{
+  
+}
+
+void MainForm::increaseIndent()
+{
+  
+}
+
+void MainForm::decreaseIndent()
+{
+  
+}
+
+void MainForm::editReplace()
+{
+  
+}
+
+void MainForm::findFunctions()
+{
+  
+}
+
+void MainForm::openFileAtCursor()
+{
+  
+}
+
+void MainForm::projectAddFiles()
+{
+  
+}
+
+void MainForm::projectCompile()
+{
+  
+}
+
+void MainForm::projectMake()
+{
+  
+}
+
+void MainForm::projectBuild()
+{
+  
+}
+
+void MainForm::errorsAndWarnings()
+{
+  
+}
+
+void MainForm::projectProgramOutput()
+{
+  
+}
+
+void MainForm::projectOptions()
+{
+  
+}
+
+void MainForm::debugRun()
+{
+  
+}
+
+void MainForm::debugPause()
+{
+  
+}
+
+void MainForm::debugReset()
+{
+  
+}
+
+void MainForm::toolsConfigure()
+{
+  
 }
 
 void MainForm::helpDocumentation()
