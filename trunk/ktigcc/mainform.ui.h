@@ -578,6 +578,8 @@ void MainForm::clearProject()
 
 void MainForm::fileNewProject()
 {
+  if (savePrompt())
+    return;
   clearProject();
   pconfig->setGroup("Recent files");
   pconfig->writeEntry("Current project","");
@@ -1807,6 +1809,14 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
   }
   
   updateRightStatusLabel();
+}
+
+void MainForm::closeEvent(QCloseEvent *e)
+{
+  if (savePrompt())
+    e->ignore();
+  else
+    e->accept();
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
