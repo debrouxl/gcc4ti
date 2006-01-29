@@ -879,6 +879,79 @@ void MainForm::fileRecent4()
   openProject(fileRecent4Action->statusTip());
 }
 
+int MainForm::fileSavePrompt(QListViewItem *fileItem)
+{
+  int result;
+  ListViewFile *theFile=static_cast<ListViewFile *>(fileItem);
+  while (theFile->isDirty) { // "while" in case saving fails!
+    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(fileItem->text(0)),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
+    if (result==KMessageBox::Yes) {
+        if (saveFileText(theFile->fileName,theFile->textBuffer)) {
+          KMessageBox::error(this,QString("Can't save to \'%1\'").arg(fileItem->text(0)));
+        }
+        else {
+          theFile->isDirty=FALSE;
+        }
+    }
+    else if (result==KMessageBox::No)
+      break;
+    else
+      return 1;
+  }
+  return 0;
+}
+
+//returns 1 if the current project data should not be cleared out, 0 if it can be cleared out.
+int MainForm::savePrompt(void)
+{
+  int result;
+  
+  
+  while (projectIsDirty) {
+    result=KMessageBox::questionYesNoCancel(this,"The current project has been modified.  Do you want to save the changes?",QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
+    if (result==KMessageBox::Yes) {
+      fileSave();
+    }
+    else if (result==KMessageBox::No) {
+      break;
+    }
+    else
+      return 1;
+  }
+  
+  QListViewItem *item=rootListItem->firstChild(),*next;
+  while (item)
+  {
+    if (IS_FOLDER(item))
+    {
+      next=item->firstChild();
+      if (next)
+      {
+        item=next;
+        continue;
+      }
+    }
+    if (IS_FILE(item))
+    {
+      fileSavePrompt(item);
+    }
+    next=item->nextSibling();
+    while (!next)
+    {
+      next=item->parent();
+      if (next==rootListItem||!next)
+      {
+        return 0;
+      }
+      item=next;
+      next=item->nextSibling();
+    }
+    item=next;
+  }
+  
+  return 0;
+}
+
 void MainForm::fileSave_saveAs(QListViewItem *theItem)
 {
   if (!IS_FILE(theItem))
