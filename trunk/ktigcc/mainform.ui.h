@@ -723,6 +723,11 @@ void MainForm::addRecent(const QString &fileName)
 
 QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
+  if (getPathType(fileName)!=PATH_FILE) { //don't include the file if it can't be accessed!
+    KMessageBox::sorry(this,QString("Can't open \'%1\'").arg(fileName),"Warning");
+    return NULL;
+  }
+  
   QListViewItem *item=NULL, *next=parent->firstChild();
   for (; IS_FILE(next); next=item->nextSibling())
     item=next;
@@ -772,7 +777,7 @@ QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
 void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *dir, const QString &open_file)
 {
   int i,e;
-  int p;
+  int p,pslash;
   KURL tmp;
   TPRFileList *fileList=(TPRFileList*)fileListV;
   QString caption;
@@ -785,10 +790,11 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
     tmp=*reinterpret_cast<const KURL *>(dir);
     kurlNewFileName(tmp,fileList->path[i]);
     caption=fileList->path[i];
+    //fixed suffix truncation for file paths such as "/root/.dot/nodot" so it wouldn't truncate to "/root/"
     p=caption.findRev('.');
-    if (p>=0) caption.truncate(p);
-    p=caption.findRev('/');
-    if (p>=0) caption.remove(0,p+1);
+    pslash=caption.findRev('/');
+    if (p>=0&&p>pslash) caption.truncate(p);
+    if (pslash>=0) caption.remove(0,pslash+1);
     treePath=fileList->folder[i].stripWhiteSpace();
     //check for a backslash at the end and remove it if it's there.
     if (treePath[treePath.length()-1]=='\\')
@@ -805,6 +811,7 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
     }
     
     ListViewFile *newFile=static_cast<ListViewFile *>(openFile(category,parent,caption,tmp.path()));
+    if (!newFile) continue;
     if (!newFile->fileName.compare(open_file))
       fileTreeClicked(newFile);
   }
@@ -1235,9 +1242,67 @@ void MainForm::openFileAtCursor()
   
 }
 
+//returns 1 on success
+int MainForm::projectAddFiles_oneFile(const QString &fileName)
+{
+  int pathType=getPathType(fileName);
+  if (pathType!=PATH_FILE) {
+    if (pathType==PATH_ERROR) {
+      KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
+    }
+    return 0;
+  }
+  QListViewItem *category=othFilesListItem;
+  QString suffix,caption;
+  int p;
+  
+  p=fileName.findRev('/');
+  if (p<0) p=-1;
+  caption=fileName.mid(p+1);
+  p=caption.findRev('.');
+  if (p>=0) {
+    suffix=caption.mid(p+1);
+    caption.truncate(p);
+  }
+  
+  if (!suffix.compare("h"))
+    category=hFilesListItem;
+  else if (!suffix.compare("c"))
+    category=cFilesListItem;
+  else if (!suffix.compare("s"))
+    category=sFilesListItem;
+  else if (!suffix.compare("asm"))
+    category=asmFilesListItem;
+  else if (!suffix.compare("qll"))
+    category=qllFilesListItem;
+  else if (!suffix.compare("o"))
+    category=oFilesListItem;
+  else if (!suffix.compare("a"))
+    category=aFilesListItem;
+  else if (!suffix.compare("txt"))
+    category=txtFilesListItem;
+  
+  if (!category)
+    category=othFilesListItem;
+  
+  if (openFile(category,category,caption,fileName))
+    return 1;
+  return 0;
+}
+
 void MainForm::projectAddFiles()
 {
-  
+  unsigned long i,e;
+  int projectChanged=0;
+  QStringList result=SGetFileName_Multiple(findFilter(TIGCCAddFilesFilter),"Add Files",this);
+  e=result.count();
+  for (i=0;i<e;i++) {
+    if (projectAddFiles_oneFile(result[i]))
+      projectChanged=TRUE;
+  }
+  if (projectChanged) {
+    projectIsDirty=TRUE;
+  }
 }
 
 void MainForm::projectCompile()

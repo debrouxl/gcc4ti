@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/dir.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
@@ -791,4 +792,22 @@ int copyFile(const char *src, const char *dest)
   if (fclose(df)) {fclose(sf); return -3;}
   if (fclose(sf)) return 3;
   return 0;
+}
+
+int getPathType(const QString &thePath)
+{
+  struct stat statvar;
+  int result=stat(thePath,&statvar);
+  if (result)
+    return PATH_ERROR;
+  if (statvar.st_mode&S_IFDIR)
+    return PATH_FOLDER;
+  if (statvar.st_mode&S_IFREG)
+  {
+    FILE *testFile=fopen(thePath,"rb");
+    if (!testFile) return PATH_ERROR;
+    fclose(testFile);
+    return PATH_FILE;
+  }
+  return PATH_ERROR;
 }

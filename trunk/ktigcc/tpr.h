@@ -148,6 +148,8 @@ typedef struct
   TPRFileList quill_files;
 } TPRDataStruct;
 
+enum {PATH_ERROR,PATH_FILE,PATH_FOLDER}; //return types for getPathType
+
 int loadTPR(const QString &fileName,TPRDataStruct *dest);
 QString loadFileText(const char *fileName);
 
@@ -158,3 +160,5 @@ void kurlNewFileName(KURL &dir,const QString &newFileName);
 int checkFileName(const QString &fileName,const QStringList &fileNameList);
 
 int copyFile(const char *src, const char *dest);
+
+int getPathType(const QString &thePath);
