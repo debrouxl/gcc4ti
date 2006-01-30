@@ -865,6 +865,8 @@ void MainForm::openProject(const QString &fileName)
 
 void MainForm::fileOpen()
 {
+  if (savePrompt())
+    return;
   QString fileName=SGetFileName(KFileDialog::Opening,findFilter(TIGCCOpenProjectFileFilter),"Open Project/File",this);
   KURL dir;
   dir.setPath(fileName);
@@ -875,21 +877,29 @@ void MainForm::fileOpen()
 
 void MainForm::fileRecent1()
 {
+  if (savePrompt())
+    return;
   openProject(fileRecent1Action->statusTip());
 }
 
 void MainForm::fileRecent2()
 {
+  if (savePrompt())
+    return;
   openProject(fileRecent2Action->statusTip());
 }
 
 void MainForm::fileRecent3()
 {
+  if (savePrompt())
+    return;
   openProject(fileRecent3Action->statusTip());
 }
 
 void MainForm::fileRecent4()
 {
+  if (savePrompt())
+    return;
   openProject(fileRecent4Action->statusTip());
 }
 
