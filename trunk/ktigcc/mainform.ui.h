@@ -723,11 +723,14 @@ void MainForm::addRecent(const QString &fileName)
 
 QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
-  if (getPathType(fileName)!=PATH_FILE) { //don't include the file if it can't be accessed!
-    KMessageBox::sorry(this,QString("Can't open \'%1\'").arg(fileName),"Warning");
-    return NULL;
+  QString fileText;
+  if (IS_EDITABLE_CATEGORY(category)) {
+    fileText=loadFileText(fileName);
+    if (fileText.isNull()) {
+      KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
+      return NULL;
+    }
   }
-  
   QListViewItem *item=NULL, *next=parent->firstChild();
   for (; IS_FILE(next); next=item->nextSibling())
     item=next;
@@ -740,14 +743,8 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
     category==hFilesListItem?"fileh.png":
     category==sFilesListItem||category==asmFilesListItem?"files.png":
     category==txtFilesListItem?"filet.png":"filex.png"));
-  if (IS_EDITABLE_CATEGORY(category)) {
-    QString fileText=loadFileText(fileName);
-    if (fileText.isNull()) {
-      KMessageBox::sorry(this,QString("Can't open \'%1\'").arg(fileName),"Warning");
-      fileText="";
-    }
+  if (IS_EDITABLE_CATEGORY(category))
     newFile->textBuffer=fileText;
-  }
   newFile->fileName=fileName;
   fileCount++;
   COUNTER_FOR_CATEGORY(category)++;
@@ -1245,13 +1242,6 @@ void MainForm::openFileAtCursor()
 //returns 1 on success
 int MainForm::projectAddFiles_oneFile(const QString &fileName)
 {
-  int pathType=getPathType(fileName);
-  if (pathType!=PATH_FILE) {
-    if (pathType==PATH_ERROR) {
-      KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
-    }
-    return 0;
-  }
   QListViewItem *category=othFilesListItem;
   QString suffix,caption;
   int p;
