@@ -793,3 +793,16 @@ int copyFile(const char *src, const char *dest)
   if (fclose(sf)) return 3;
   return 0;
 }
+
+int getPathType(const QString &thePath)
+{
+  struct stat statvar;
+  int result=stat(thePath,&statvar);
+  if (result)
+    return PATH_ERROR;
+  if (statvar.st_mode&S_IFDIR)
+    return PATH_FOLDER;
+  if (statvar.st_mode&S_IFREG)
+    return PATH_FILE;
+  return PATH_ERROR;
+}

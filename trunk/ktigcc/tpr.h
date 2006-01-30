@@ -160,3 +160,5 @@ void kurlNewFileName(KURL &dir,const QString &newFileName);
 int checkFileName(const QString &fileName,const QStringList &fileNameList);
 
 int copyFile(const char *src, const char *dest);
+
+int getPathType(const QString &thePath);
