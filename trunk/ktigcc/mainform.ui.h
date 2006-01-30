@@ -909,11 +909,10 @@ int MainForm::fileSavePrompt(QListViewItem *fileItem)
   ListViewFile *theFile=static_cast<ListViewFile *>(fileItem);
   while (theFile->isDirty) { // "while" in case saving fails!
     result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(theFile->text(0)),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
-    if (result==KMessageBox::Yes) {
+    if (result==KMessageBox::Yes)
         fileSave_save(fileItem);
-    }
     else if (result==KMessageBox::No)
-      break;
+      theFile->isDirty=FALSE;
     else
       return 1;
   }
@@ -927,12 +926,10 @@ int MainForm::savePrompt(void)
   
   while (projectIsDirty) {
     result=KMessageBox::questionYesNoCancel(this,"The current project has been modified.  Do you want to save the changes?",QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
-    if (result==KMessageBox::Yes) {
+    if (result==KMessageBox::Yes)
       fileSave();
-    }
-    else if (result==KMessageBox::No) {
-      break;
-    }
+    else if (result==KMessageBox::No)
+      projectIsDirty=FALSE;
     else
       return 1;
   }
