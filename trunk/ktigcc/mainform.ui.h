@@ -40,6 +40,7 @@
 #include <kate/view.h>
 #include <kconfig.h>
 #include <ktexteditor/configinterfaceextension.h>
+#include <ktexteditor/dynwordwrapinterface.h>
 #include <kaboutdata.h>
 #include <khelpmenu.h>
 #include <kfiledialog.h>
@@ -384,6 +385,7 @@ void MainForm::init()
   m_view->getDoc()->readConfig(&kconfig);
   delete_temp_file("config.tmp");
   m_view->getDoc()->setHlMode(0);
+  dynWordWrapInterface(m_view)->setDynWordWrap(FALSE);
   connect(m_view,SIGNAL(cursorPositionChanged()),this,SLOT(m_view_cursorPositionChanged()));
   connect(m_view->getDoc(),SIGNAL(textChanged()),this,SLOT(m_view_textChanged()));
   te_popup = new QPopupMenu(this);
