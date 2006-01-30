@@ -1435,9 +1435,10 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       m_view->cursorPositionReal(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
                                  &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
     }
-    
-    
   }
+  // Reset currentListItem so setting the text of the editor won't mark a
+  // file dirty.
+  currentListItem=NULL;
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
