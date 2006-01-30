@@ -1919,7 +1919,7 @@ void MainForm::updateRightStatusLabel()
       charsStatusLabel->show();
       charsStatusLabel->setMaximumWidth(100);
       charsStatusLabel->setText(QString("%1 Characters").arg(m_view->getDoc()->text().length()));
-      rightStatusLabel->setMaximumWidth(rightStatusSize-160);
+      rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
     } else {
       rowStatusLabel->hide();
       colStatusLabel->hide();
