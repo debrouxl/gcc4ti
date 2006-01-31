@@ -8,10 +8,12 @@ unix:LIBS	+= -lktexteditor -lqassistantclient
 unix:INCLUDEPATH	+= /usr/include/kde
 
 HEADERS	+= tpr.h \
-	ktigcc.h
+	ktigcc.h \
+	preferences.h
 
 SOURCES	+= ktigcc.cpp \
-	tpr.cxx
+	tpr.cxx \
+	preferences.cxx
 
 FORMS	= mainform.ui
 
