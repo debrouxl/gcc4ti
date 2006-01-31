@@ -156,7 +156,7 @@
         <action name="fileOpenActionGroup"/>
         <action name="fileSaveAllAction"/>
         <separator/>
-        <action name="filePrintAction"/>
+        <action name="filePrintQuicklyAction"/>
         <separator/>
         <action name="editClearAction"/>
         <action name="editCutAction"/>
@@ -1154,6 +1154,20 @@
             </property>
         </action>
     </actiongroup>
+    <action>
+        <property name="name">
+            <cstring>filePrintQuicklyAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>03</iconset>
+        </property>
+        <property name="text">
+            <string>Print File</string>
+        </property>
+    </action>
 </actions>
 <connections>
     <connection>
@@ -1486,6 +1500,12 @@
         <receiver>MainForm</receiver>
         <slot>toolsConfigure()</slot>
     </connection>
+    <connection>
+        <sender>filePrintQuicklyAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>filePrintQuickly()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">mainform.ui.h</include>
@@ -1552,6 +1572,7 @@
     <slot>m_view_cursorPositionChanged()</slot>
     <slot>m_view_textChanged()</slot>
     <slot>fileTreeItemRenamed( QListViewItem * item, int col, const QString &amp; newName )</slot>
+    <slot>filePrintQuickly()</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">clearProject()</function>

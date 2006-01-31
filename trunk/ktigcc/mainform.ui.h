@@ -1178,7 +1178,13 @@ void MainForm::fileSaveAs()
 
 void MainForm::filePrint()
 {
-  
+  m_view->getDoc()->printDialog();
+}
+
+
+void MainForm::filePrintQuickly()
+{
+  m_view->getDoc()->print();
 }
 
 void MainForm::filePreferences()
@@ -1438,10 +1444,17 @@ void MainForm::fileTreeClicked(QListViewItem *item)
   // Reset currentListItem so setting the text of the editor won't mark a
   // file dirty.
   currentListItem=NULL;
+  // This hack sets the file name for printing.
+#define SETFILENAME(fn) m_view->getDoc()->setModified(FALSE); \
+                        if (m_view->getDoc()->openStream("text/plain",(fn))) \
+                          m_view->getDoc()->closeStream()
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
+    filePrintAction->setEnabled(FALSE);
+    filePrintQuicklyAction->setEnabled(FALSE);
     m_view->setEnabled(FALSE);
+    SETFILENAME("");
     m_view->getDoc()->setText("");
     write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
     KConfig kconfig(QString(tempdir)+"/config.tmp",true);
@@ -1453,6 +1466,9 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     m_view->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
     if (IS_EDITABLE_CATEGORY(category)) {
+      filePrintAction->setEnabled(TRUE);
+      filePrintQuicklyAction->setEnabled(TRUE);
+      SETFILENAME(static_cast<ListViewFile *>(item)->fileName);
       m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
       const char *buffer=static_cast<ListViewFile *>(item)->textBuffer;
       write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=kate - Normal\n",0);
@@ -1476,6 +1492,9 @@ void MainForm::fileTreeClicked(QListViewItem *item)
                                     static_cast<ListViewFile *>(item)->cursorCol);
       currentListItemEditable=TRUE;
     } else {
+      filePrintAction->setEnabled(FALSE);
+      filePrintQuicklyAction->setEnabled(FALSE);
+      SETFILENAME("");
       m_view->getDoc()->setText("");
       write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
       KConfig kconfig(QString(tempdir)+"/config.tmp",true);
@@ -1486,7 +1505,10 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
+    filePrintAction->setEnabled(FALSE);
+    filePrintQuicklyAction->setEnabled(FALSE);
     m_view->setEnabled(FALSE);
+    SETFILENAME("");
     m_view->getDoc()->setText("");
     write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
     KConfig kconfig(QString(tempdir)+"/config.tmp",true);
@@ -1494,6 +1516,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     delete_temp_file("config.tmp");
     m_view->getDoc()->setHlMode(0);
   }
+#undef SETFILENAME
   currentListItem=item;
   updateLeftStatusLabel();
   updateRightStatusLabel();
