@@ -1529,8 +1529,8 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
     menu.insertItem("New &Folder",0);
     menu.insertItem("New F&ile",1);
     CATEGORY_OF(category,item);
-    if (category==oFilesListItem || category==aFilesListItem
-        || category==othFilesListItem) menu.setItemEnabled(1,FALSE);
+    if (!IS_EDITABLE_CATEGORY(category))
+      menu.setItemEnabled(1,FALSE);
     if (!IS_CATEGORY(item)) {
       menu.insertSeparator();
       menu.insertItem("&Remove",2);
@@ -1549,6 +1549,61 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
         fileTreeClicked(fileTree->currentItem());
         break;
       case 3:
+        item->startRename(0);
+    }
+  } else if (IS_FILE(item)) {
+    QPopupMenu menu;
+    ListViewFile *theFile=static_cast<ListViewFile *>(item);
+    menu.insertItem("&Save",0);
+    CATEGORY_OF(category,item);
+    if (!IS_EDITABLE_CATEGORY(category))
+      menu.setItemEnabled(0,FALSE);
+    menu.insertItem("Save &As...",1);
+    menu.insertSeparator();
+    menu.insertItem("&Compile",2);
+    if (category==txtFilesListItem
+        || !IS_EDITABLE_CATEGORY(category))
+      menu.setItemEnabled(2,FALSE);
+    menu.insertSeparator();
+    menu.insertItem("&Remove",3);
+    menu.insertItem("&Delete",4);
+    if (theFile->isNew)
+      menu.setItemEnabled(4,FALSE);
+    menu.insertSeparator();
+    menu.insertItem("Re&name",5);
+    switch (menu.exec(pos)) {
+      case 0:
+        fileSave_save(item);
+        break;
+      case 1:
+        fileSave_saveAs(item);
+        break;
+      case 2:
+        // compiling not implemented yet!
+        break;
+      case 3:
+        if (!fileSavePrompt(item)) {
+          delete item;
+          currentListItem=NULL;
+          fileTreeClicked(fileTree->currentItem());
+        }
+        break;
+      case 4:
+        if (KMessageBox::questionYesNo(this,
+              "Are you sure you want to delete this source file? "
+              "You cannot undo this operation.","Confirm Deletion")
+              ==KMessageBox::Yes) {
+          QString fileName=theFile->fileName;
+          if (QDir().remove(fileName)) {
+            delete item;
+            currentListItem=NULL;
+            fileTreeClicked(fileTree->currentItem());
+          } else
+            KMessageBox::error(this,
+              QString("Error deleting file \'%1\'").arg(fileName));
+        }
+        break;
+      case 5:
         item->startRename(0);
     }
   }
