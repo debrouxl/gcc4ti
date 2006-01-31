@@ -477,10 +477,22 @@ QString loadFileText(const char *fileName)
   fseek(f,0,SEEK_END);
   size_t flen=ftell(f);
   fseek(f,0,SEEK_SET);
-  char buffer[flen+1];
-  memset(buffer,0,flen+1);
-  fread(buffer,1,flen,f);
-  return QString(buffer);
+  char *buffer = new(std::nothrow) char[flen+1]();
+  if (!buffer)
+    return QString::null;
+  QString ret;
+  if (fread(buffer,1,flen,f)<flen)
+    ret=QString::null;
+  else
+    ret=buffer;
+  delete[] buffer;
+  if (!ret.isNull()) {
+    // convert Windows line endings
+    ret=ret.replace("\r\n","\n");
+    // interpret remaining \r characters as Mac line endings
+    ret=ret.replace('\r','\n');
+  }
+  return ret;
 }
 
 
