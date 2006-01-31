@@ -46,6 +46,7 @@
 #include <kfiledialog.h>
 #include <kurl.h>
 #include <kmessagebox.h>
+#include <kdirwatch.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -170,6 +171,11 @@ class ListViewFile : public QListViewItem {
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
+  }
+  virtual ~ListViewFile()
+  {
+    if (fileName[0]=='/')
+      KDirWatch::self()->removeFile(fileName);
   }
   virtual int rtti(void) const {return 0x716CC1;}
   QString textBuffer;
@@ -752,6 +758,7 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
   if (IS_EDITABLE_CATEGORY(category))
     newFile->textBuffer=fileText;
   newFile->fileName=fileName;
+  KDirWatch::self()->addFile(fileName);
   fileCount++;
   COUNTER_FOR_CATEGORY(category)++;
   return newFile;
@@ -985,10 +992,13 @@ void MainForm::fileSave_save(QListViewItem *theItem)
     fileSave_saveAs(theFile);
   }
   else {
+    KDirWatch::self()->removeFile(theFile->fileName);
     if (saveFileText(theFile->fileName,theFile->textBuffer)) {
       KMessageBox::error(this,QString("Can't save to \'%1\'").arg(theFile->text(0)));
+      KDirWatch::self()->addFile(theFile->fileName);
     }
     else {
+      KDirWatch::self()->addFile(theFile->fileName);
       theFile->isNew=FALSE;
       theFile->isDirty=FALSE;
       projectIsDirty=TRUE;
@@ -1020,12 +1030,17 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
       || (!IS_EDITABLE_CATEGORY(category)
           && !saveFileName.compare(theFile->fileName)))
     return;
+  if (theFile->fileName[0]=='/')
+    KDirWatch::self()->removeFile(theFile->fileName);
   if (IS_EDITABLE_CATEGORY(category)
       ?saveFileText(saveFileName,theFile->textBuffer)
-      :copyFile(theFile->fileName,saveFileName))
+      :copyFile(theFile->fileName,saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
-  else {
+    if (theFile->fileName[0]=='/')
+      KDirWatch::self()->addFile(theFile->fileName);
+  } else {
     theFile->fileName=saveFileName;
+    KDirWatch::self()->addFile(saveFileName);
     theFile->isNew=FALSE;
     theFile->isDirty=FALSE;
     updateRightStatusLabel();
@@ -1063,15 +1078,20 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
       
       tmpPath=*new_dir;
       kurlNewFileName(tmpPath,relPath);
+      if (theFile->fileName[0]=='/')
+        KDirWatch::self()->removeFile(theFile->fileName);
       if (tmpPath.path().compare(theFile->fileName)
           || (IS_EDITABLE_CATEGORY(category)
               && (theFile->isDirty || theFile->isNew))) {
         if (IS_EDITABLE_CATEGORY(category)
             ?saveFileText(tmpPath.path(),theFile->textBuffer)
-            :copyFile(theFile->fileName,tmpPath.path()))
+            :copyFile(theFile->fileName,tmpPath.path())) {
           KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
-        else {
+          if (theFile->fileName[0]=='/')
+            KDirWatch::self()->addFile(theFile->fileName);
+        } else {
           theFile->fileName=tmpPath.path();
+          KDirWatch::self()->addFile(theFile->fileName);
           theFile->isNew=FALSE;
           theFile->isDirty=FALSE;
           projectIsDirty=TRUE; // in case saving the project fails
@@ -1619,14 +1639,18 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
               "You cannot undo this operation.","Confirm Deletion")
               ==KMessageBox::Yes) {
           QString fileName=theFile->fileName;
+          KDirWatch::self()->removeFile(fileName);
           if (QDir().remove(fileName)) {
             delete item;
             currentListItem=NULL;
             fileTreeClicked(fileTree->currentItem());
             projectIsDirty=TRUE;
-          } else
+          } else {
             KMessageBox::error(this,
               QString("Error deleting file \'%1\'").arg(fileName));
+            if (fileName[0]=='/')
+              KDirWatch::self()->addFile(fileName);
+          }
         }
         break;
       case 5:
@@ -1788,6 +1812,8 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
                         :new ListViewFile(parent);
   
   newFile->fileName=tmp;
+  if (tmp[0]=='/')
+    KDirWatch::self()->addFile(tmp);
   
   newFile->setText(0,caption);
   newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
@@ -2064,11 +2090,17 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
   newFileName+=suffix;
   
   if (checkFileName(newFileName,extractAllFileNames())) {
+    if (oldFileName[0]=='/')
+      KDirWatch::self()->removeFile(oldFileName);
     if (!theFile->isNew && !QDir().rename(oldFileName,newFileName)) {
       KMessageBox::error(this,"Failed to rename the file.");
       theFile->setText(0,oldLabel);
+      if (oldFileName[0]=='/')
+        KDirWatch::self()->addFile(oldFileName);
     } else {
       fileNameRef=newFileName;
+      if (newFileName[0]=='/')
+        KDirWatch::self()->addFile(newFileName);
       projectIsDirty=TRUE;
     }
   } else {
@@ -2083,8 +2115,10 @@ void MainForm::closeEvent(QCloseEvent *e)
 {
   if (savePrompt())
     e->ignore();
-  else
+  else {
+    clearProject();
     e->accept();
+  }
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
