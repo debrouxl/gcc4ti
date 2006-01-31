@@ -47,9 +47,10 @@ const char *parg;
 
 int main( int argc, char *argv[] )
 {
-  // We're doing plenty of C string <-> QString conversions, let's make sure
-  // they're not lossy!
-  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+  // Match the locale for the default C string <-> QString conversions.
+  // Hopefully it is a .UTF-8 locale, if it isn't, don't complain about
+  // characters lost converting!
+  QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
 
   KAboutData about("KTIGCC","TIGCC IDE for KDE","1.00",
   "TIGCC C and ASM SDK", KAboutData::License_GPL,
