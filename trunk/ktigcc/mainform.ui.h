@@ -1547,6 +1547,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
         delete item;
         currentListItem=NULL;
         fileTreeClicked(fileTree->currentItem());
+        projectIsDirty=TRUE;
         break;
       case 3:
         item->startRename(0);
@@ -1586,6 +1587,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
           delete item;
           currentListItem=NULL;
           fileTreeClicked(fileTree->currentItem());
+          projectIsDirty=TRUE;
         }
         break;
       case 4:
@@ -1598,6 +1600,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
             delete item;
             currentListItem=NULL;
             fileTreeClicked(fileTree->currentItem());
+            projectIsDirty=TRUE;
           } else
             KMessageBox::error(this,
               QString("Error deleting file \'%1\'").arg(fileName));
