@@ -490,6 +490,9 @@ void MainForm::init()
   lastDirectory=TIGCCProjectDirectory;
   projectFileName="";
   projectIsDirty=FALSE;
+  connect(KDirWatch::self(),SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
+  connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
+  KDirWatch::self()->startScan();
   pconfig->setGroup("Recent files");
   if (parg)
     openProject(parg);
@@ -2119,6 +2122,53 @@ void MainForm::closeEvent(QCloseEvent *e)
     clearProject();
     e->accept();
   }
+}
+
+void MainForm::KDirWatch_dirty(const QString &fileName)
+{
+  QListViewItem *item=rootListItem->firstChild(),*next;
+  QStringList allFiles;
+  while (item) {
+    if (IS_FOLDER(item)) {
+      next=item->firstChild();
+      if (next) {
+        item=next;
+        continue;
+      }
+    }
+    if (IS_FILE(item)) {
+      if (!fileName.compare(static_cast<ListViewFile *>(item)->fileName)) {
+        if (KMessageBox::questionYesNo(this,
+              QString("The file \'%1\' has been changed by another program. "
+                      "Do you want to reload it?").arg(fileName),"File Changed")
+              ==KMessageBox::Yes) {
+          QString fileText=loadFileText(fileName);
+          if (fileText.isNull()) {
+            KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
+            return;
+          }
+          if (item==currentListItem)
+            m_view->getDoc()->setText(fileText);
+          else
+            static_cast<ListViewFile *>(item)->textBuffer=fileText;
+        }
+        return;
+      }
+    }
+    next=item->nextSibling();
+    while (!next) {
+      next=item->parent();
+      if (next==rootListItem||!next) {
+        puts("Warning: KDirWatch_dirty called for file not in project tree");
+        return;
+      }
+      item=next;
+      next=item->nextSibling();
+    }
+    item=next;
+  }
+  puts("Warning: KDirWatch_dirty called for file not in project tree");
+  return;
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
