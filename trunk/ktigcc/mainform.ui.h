@@ -200,7 +200,6 @@ static QListViewItem *aFilesListItem;
 static QListViewItem *txtFilesListItem;
 static QListViewItem *othFilesListItem;
 static QListViewItem *currentListItem;
-static bool currentListItemEditable;
 static bool projectIsDirty;
 static QLabel *leftStatusLabel;
 static QLabel *rowStatusLabel;
@@ -276,9 +275,31 @@ class DnDListView : public QListView {
           CATEGORY_OF(srcCategory,currItem);
           CATEGORY_OF(destCategory,item);
           if (qllFilesListItem && srcCategory != qllFilesListItem
-              && destCategory == qllFilesListItem && qllFileCount)
-            e->ignore();
-          else {
+              && destCategory == qllFilesListItem && qllFileCount) {
+            ignore2: e->ignore();
+          } else {
+            // moving from editable to non-editable category -
+            // prompt for saving
+            if (IS_EDITABLE_CATEGORY(srcCategory)
+                && !IS_EDITABLE_CATEGORY(destCategory)) {
+              if (static_cast<MainForm *>(parent()->parent()->parent())->fileSavePrompt(currItem))
+                goto ignore2;
+              if (static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
+                KDirWatch::self()->removeFile(static_cast<ListViewFile *>(currItem)->fileName);
+            }
+            // moving from non-editable to editable category
+            if (!IS_EDITABLE_CATEGORY(srcCategory)
+                && IS_EDITABLE_CATEGORY(destCategory)) {
+              QString textBuffer=loadFileText(static_cast<ListViewFile *>(currItem)->fileName);
+              if (textBuffer.isNull()) {
+                KMessageBox::error(this,QString("Can't open \'%1\'").arg(static_cast<ListViewFile *>(currItem)->fileName));
+                goto ignore2;
+              }
+              static_cast<ListViewFile *>(currItem)->textBuffer=textBuffer;
+              // force reloading the text buffer
+              if (currentListItem==currItem)
+                currentListItem=NULL;
+            }
             // move file
             e->accept();
             currItem->parent()->takeItem(currItem);
@@ -292,9 +313,24 @@ class DnDListView : public QListView {
                 lastItem=lastItem->nextSibling();
               currItem->moveItem(lastItem);
             }
-            // we changed the counters
-            static_cast<MainForm *>(parent())->updateLeftStatusLabel();
             projectIsDirty=TRUE;
+            setSelected(currItem,TRUE);
+            ensureItemVisible(currItem);
+            // update editor and counters
+            static_cast<MainForm *>(parent()->parent()->parent())->fileTreeClicked(currItem);
+            // moving from non-editable to editable category
+            if (!IS_EDITABLE_CATEGORY(srcCategory)
+                && IS_EDITABLE_CATEGORY(destCategory)) {
+              if (static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
+                KDirWatch::self()->addFile(static_cast<ListViewFile *>(currItem)->fileName);
+            }
+            // moving from editable to non-editable category
+            if (IS_EDITABLE_CATEGORY(srcCategory)
+                && !IS_EDITABLE_CATEGORY(destCategory)) {
+              static_cast<ListViewFile *>(currItem)->textBuffer=QString::null;
+              static_cast<ListViewFile *>(currItem)->cursorLine=0;
+              static_cast<ListViewFile *>(currItem)->cursorCol=0;
+            }
           }
         } else if (IS_FILE(item)) {
           // drop on file
@@ -758,10 +794,11 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
     category==hFilesListItem?"fileh.png":
     category==sFilesListItem||category==asmFilesListItem?"files.png":
     category==txtFilesListItem?"filet.png":"filex.png"));
-  if (IS_EDITABLE_CATEGORY(category))
-    newFile->textBuffer=fileText;
   newFile->fileName=fileName;
-  KDirWatch::self()->addFile(fileName);
+  if (IS_EDITABLE_CATEGORY(category)) {
+    newFile->textBuffer=fileText;
+    KDirWatch::self()->addFile(fileName);
+  }
   fileCount++;
   COUNTER_FOR_CATEGORY(category)++;
   return newFile;
@@ -1039,11 +1076,12 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
       ?saveFileText(saveFileName,theFile->textBuffer)
       :copyFile(theFile->fileName,saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
-    if (theFile->fileName[0]=='/')
+    if (IS_EDITABLE_CATEGORY(category) && theFile->fileName[0]=='/')
       KDirWatch::self()->addFile(theFile->fileName);
   } else {
     theFile->fileName=saveFileName;
-    KDirWatch::self()->addFile(saveFileName);
+    if (IS_EDITABLE_CATEGORY(category))
+      KDirWatch::self()->addFile(saveFileName);
     theFile->isNew=FALSE;
     theFile->isDirty=FALSE;
     updateRightStatusLabel();
@@ -1090,11 +1128,12 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
             ?saveFileText(tmpPath.path(),theFile->textBuffer)
             :copyFile(theFile->fileName,tmpPath.path())) {
           KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
-          if (theFile->fileName[0]=='/')
+          if (IS_EDITABLE_CATEGORY(category) && theFile->fileName[0]=='/')
             KDirWatch::self()->addFile(theFile->fileName);
         } else {
           theFile->fileName=tmpPath.path();
-          KDirWatch::self()->addFile(theFile->fileName);
+          if (IS_EDITABLE_CATEGORY(category))
+            KDirWatch::self()->addFile(theFile->fileName);
           theFile->isNew=FALSE;
           theFile->isDirty=FALSE;
           projectIsDirty=TRUE; // in case saving the project fails
@@ -1458,7 +1497,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
   if (IS_FOLDER(currentListItem))
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (IS_FILE(currentListItem)) {
-    if (currentListItemEditable) {
+    CATEGORY_OF(category,currentListItem);
+    if (IS_EDITABLE_CATEGORY(category)) {
       static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
       m_view->cursorPositionReal(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
                                  &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
@@ -1513,7 +1553,6 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       m_view->getDoc()->setHlMode(i);
       m_view->setCursorPositionReal(static_cast<ListViewFile *>(item)->cursorLine,
                                     static_cast<ListViewFile *>(item)->cursorCol);
-      currentListItemEditable=TRUE;
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -1524,7 +1563,6 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       m_view->getDoc()->readConfig(&kconfig);
       delete_temp_file("config.tmp");
       m_view->getDoc()->setHlMode(0);
-      currentListItemEditable=FALSE;
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -1651,7 +1689,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
           } else {
             KMessageBox::error(this,
               QString("Error deleting file \'%1\'").arg(fileName));
-            if (fileName[0]=='/')
+            if (IS_EDITABLE_CATEGORY(category) && fileName[0]=='/')
               KDirWatch::self()->addFile(fileName);
           }
         }
@@ -1815,7 +1853,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
                         :new ListViewFile(parent);
   
   newFile->fileName=tmp;
-  if (tmp[0]=='/')
+  if (IS_EDITABLE_CATEGORY(category) && tmp[0]=='/')
     KDirWatch::self()->addFile(tmp);
   
   newFile->setText(0,caption);
@@ -2093,16 +2131,17 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
   newFileName+=suffix;
   
   if (checkFileName(newFileName,extractAllFileNames())) {
+    CATEGORY_OF(category,item);
     if (oldFileName[0]=='/')
       KDirWatch::self()->removeFile(oldFileName);
     if (!theFile->isNew && !QDir().rename(oldFileName,newFileName)) {
       KMessageBox::error(this,"Failed to rename the file.");
       theFile->setText(0,oldLabel);
-      if (oldFileName[0]=='/')
+      if (IS_EDITABLE_CATEGORY(category) && oldFileName[0]=='/')
         KDirWatch::self()->addFile(oldFileName);
     } else {
       fileNameRef=newFileName;
-      if (newFileName[0]=='/')
+      if (IS_EDITABLE_CATEGORY(category) && newFileName[0]=='/')
         KDirWatch::self()->addFile(newFileName);
       projectIsDirty=TRUE;
     }
@@ -2138,6 +2177,11 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
     }
     if (IS_FILE(item)) {
       if (!fileName.compare(static_cast<ListViewFile *>(item)->fileName)) {
+        CATEGORY_OF(category,item);
+        if (!IS_EDITABLE_CATEGORY(category)) {
+          qWarning("KDirWatch_dirty called for non-editable file");
+          return;
+        }
         if (KMessageBox::questionYesNo(this,
               QString("The file \'%1\' has been changed by another program. "
                       "Do you want to reload it?").arg(fileName),"File Changed")
@@ -2147,6 +2191,8 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
             KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
             return;
           }
+          static_cast<ListViewFile *>(item)->isDirty=FALSE;
+          static_cast<ListViewFile *>(item)->isNew=FALSE;
           if (item==currentListItem)
             m_view->getDoc()->setText(fileText);
           else
@@ -2159,7 +2205,7 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
     while (!next) {
       next=item->parent();
       if (next==rootListItem||!next) {
-        puts("Warning: KDirWatch_dirty called for file not in project tree");
+        qWarning("KDirWatch_dirty called for file not in project tree");
         return;
       }
       item=next;
@@ -2167,7 +2213,7 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
     }
     item=next;
   }
-  puts("Warning: KDirWatch_dirty called for file not in project tree");
+  qWarning("KDirWatch_dirty called for file not in project tree");
   return;
 }
 
