@@ -1070,6 +1070,11 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
       || (!IS_EDITABLE_CATEGORY(category)
           && !saveFileName.compare(theFile->fileName)))
     return;
+  if (saveFileName.compare(theFile->fileName)
+      && !checkFileName(saveFileName,extractAllFileNames())) {
+    KMessageBox::error(this,"The name you chose conflicts with that of another file.");
+    return;
+  }
   if (theFile->fileName[0]=='/')
     KDirWatch::self()->removeFile(theFile->fileName);
   if (IS_EDITABLE_CATEGORY(category)
@@ -1340,6 +1345,11 @@ int MainForm::projectAddFiles_oneFile(const QString &fileName)
     caption.truncate(p);
   }
   
+  if (!checkFileName(fileName,extractAllFileNames())) {
+    KMessageBox::error(this,QString("The file \'%1\' is already included in the project.").arg(caption));
+    return 0;
+  }
+
   if (!suffix.compare("h"))
     category=hFilesListItem;
   else if (!suffix.compare("c"))
@@ -1357,6 +1367,11 @@ int MainForm::projectAddFiles_oneFile(const QString &fileName)
   else if (!suffix.compare("txt"))
     category=txtFilesListItem;
   
+  if (qllFileCount) {
+    KMessageBox::error(this,"There may be only one Quill source file in each project.","Quill Error");
+    return 0;
+  }
+
   if (!category)
     category=othFilesListItem;
   
