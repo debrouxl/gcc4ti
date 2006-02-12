@@ -99,6 +99,12 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         (category)==aFilesListItem?aFileCount: \
                                         (category)==txtFilesListItem?txtFileCount: \
                                         othFileCount)
+#define CURRENT_VIEW (IS_FILE(currentListItem)?({ \
+                        CATEGORY_OF(category,currentListItem); \
+                        IS_EDITABLE_CATEGORY(category)? \
+                          static_cast<ListViewFile *>(currentListItem)->kateView \
+                          :m_view; \
+                      }):m_view)
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
@@ -137,7 +143,6 @@ class ListViewFolder : public QListViewItem {
 class ListViewFile : public QListViewItem {
   public:
   ListViewFile(QListView *parent) : QListViewItem(parent),
-                                    cursorLine(1), cursorCol(0),
                                     isNew(TRUE), isDirty(FALSE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));    
@@ -146,7 +151,6 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent) : QListViewItem(parent),
-                                        cursorLine(1), cursorCol(0),
                                         isNew(TRUE), isDirty(FALSE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
@@ -155,8 +159,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListView *parent, QListViewItem *after)
-          : QListViewItem(parent, after), cursorLine(1), cursorCol(0),
-            isNew(TRUE), isDirty(FALSE)
+          : QListViewItem(parent, after), isNew(TRUE), isDirty(FALSE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDropEnabled(TRUE);
@@ -164,7 +167,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent, QListViewItem *after)
-          : QListViewItem(parent, after), cursorLine(1), cursorCol(0),
+          : QListViewItem(parent, after), kateView(NULL),
             isNew(TRUE), isDirty(FALSE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
@@ -176,10 +179,14 @@ class ListViewFile : public QListViewItem {
   {
     if (fileName[0]=='/')
       KDirWatch::self()->removeFile(fileName);
+    if (kateView) {
+      Kate::Document *doc=kateView->getDoc();
+      delete kateView;
+      delete doc;
+    }
   }
   virtual int rtti(void) const {return 0x716CC1;}
-  QString textBuffer;
-  unsigned int cursorLine, cursorCol;
+  Kate::View *kateView;
   QString fileName; // full name of the file
   bool isNew;
   bool isDirty;
@@ -206,6 +213,7 @@ static QLabel *rowStatusLabel;
 static QLabel *colStatusLabel;
 static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
+static KParts::Factory* factory;
 static Kate::View* m_view;
 static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
@@ -295,7 +303,7 @@ class DnDListView : public QListView {
                 KMessageBox::error(this,QString("Can't open \'%1\'").arg(static_cast<ListViewFile *>(currItem)->fileName));
                 goto ignore2;
               }
-              static_cast<ListViewFile *>(currItem)->textBuffer=textBuffer;
+              static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<Kate::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,textBuffer,destCategory));
               // force reloading the text buffer
               if (currentListItem==currItem)
                 currentListItem=NULL;
@@ -327,9 +335,10 @@ class DnDListView : public QListView {
             // moving from editable to non-editable category
             if (IS_EDITABLE_CATEGORY(srcCategory)
                 && !IS_EDITABLE_CATEGORY(destCategory)) {
-              static_cast<ListViewFile *>(currItem)->textBuffer=QString::null;
-              static_cast<ListViewFile *>(currItem)->cursorLine=0;
-              static_cast<ListViewFile *>(currItem)->cursorCol=0;
+              Kate::Document *doc=static_cast<ListViewFile *>(currItem)->kateView->getDoc();
+              delete static_cast<ListViewFile *>(currItem)->kateView;
+              delete doc;
+              static_cast<ListViewFile *>(currItem)->kateView=NULL;
             }
           }
         } else if (IS_FILE(item)) {
@@ -414,7 +423,7 @@ class DnDListView : public QListView {
 void MainForm::init()
 {  
   fileNewFolderAction->setEnabled(FALSE);
-  KParts::Factory* factory = (KParts::Factory *)
+  factory = (KParts::Factory *)
       KLibLoader::self()->factory ("libkatepart");
   if (!factory) exit(1);
   KTextEditor::Document *doc = (KTextEditor::Document *)
@@ -428,8 +437,8 @@ void MainForm::init()
   delete_temp_file("config.tmp");
   m_view->getDoc()->setHlMode(0);
   dynWordWrapInterface(m_view)->setDynWordWrap(FALSE);
-  connect(m_view,SIGNAL(cursorPositionChanged()),this,SLOT(m_view_cursorPositionChanged()));
-  connect(m_view->getDoc(),SIGNAL(textChanged()),this,SLOT(m_view_textChanged()));
+  connect(m_view,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
+  connect(m_view->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
   te_popup->insertItem("&Find symbol declaration",1);
@@ -796,7 +805,7 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
     category==txtFilesListItem?"filet.png":"filex.png"));
   newFile->fileName=fileName;
   if (IS_EDITABLE_CATEGORY(category)) {
-    newFile->textBuffer=fileText;
+    newFile->kateView=reinterpret_cast<Kate::View *>(createView(fileName,fileText,category));
     KDirWatch::self()->addFile(fileName);
   }
   fileCount++;
@@ -822,6 +831,46 @@ QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
   newItem->setText(0,name);
   newItem->setOpen(TRUE);
   return newItem;
+}
+
+void *MainForm::createView(const QString &fileName, const QString &fileText, QListViewItem *category)
+{
+  // Create Document object.
+  KTextEditor::Document *doc = (KTextEditor::Document *)
+      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
+  // Set the file name for printing.
+  doc->setModified(FALSE);
+  if (doc->openStream("text/plain",fileName))
+    doc->closeStream();
+  // Create View object.
+  Kate::View *newView = (Kate::View *) doc->createView( splitter, 0L );
+  newView->hide();
+  newView->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,0,0));
+  // Set highlighting mode.
+  uint cnt=newView->getDoc()->hlModeCount(), i;
+  for (i=0; i<cnt; i++) {
+    if (!newView->getDoc()->hlModeName(i).compare(
+        ((category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+           "GNU Assembler 68k":
+         (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+           "Motorola Assembler 68k":
+         (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
+           "C":
+         "None"))) break;
+  }
+  if (i==cnt) i=0;
+  newView->getDoc()->setHlMode(i);
+  // Set options.
+  dynWordWrapInterface(newView)->setDynWordWrap(FALSE);
+  connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
+  connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
+  newView->installPopup(te_popup);
+  // Set text.
+  QListViewItem *cli=currentListItem;
+  currentListItem=NULL; // avoid isDirty being set incorrectly
+  newView->getDoc()->setText(fileText);
+  currentListItem=cli;
+  return newView;
 }
 
 void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *dir, const QString &open_file)
@@ -1024,16 +1073,13 @@ void MainForm::fileSave_save(QListViewItem *theItem)
   CATEGORY_OF(category,theItem);
   if (!IS_EDITABLE_CATEGORY(category))
     return;
-  //We don't want to make it so you have to click to another file and back to save the current document properly. ;)
-  if (theItem==currentListItem)
-    static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
   ListViewFile *theFile=static_cast<ListViewFile *>(theItem);
   if (theFile->fileName[0]!='/') {
     fileSave_saveAs(theFile);
   }
   else {
     KDirWatch::self()->removeFile(theFile->fileName);
-    if (saveFileText(theFile->fileName,theFile->textBuffer)) {
+    if (saveFileText(theFile->fileName,theFile->kateView->getDoc()->text())) {
       KMessageBox::error(this,QString("Can't save to \'%1\'").arg(theFile->text(0)));
       KDirWatch::self()->addFile(theFile->fileName);
     }
@@ -1051,9 +1097,6 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
   if (!IS_FILE(theItem))
     return;
   CATEGORY_OF(category,theItem);
-  //We don't want to make it so you have to click to another file and back to save the current document properly. ;)
-  if (theItem==currentListItem && IS_EDITABLE_CATEGORY(category))
-      static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
   QString saveFileName=SGetFileName(KFileDialog::Saving,
   category==hFilesListItem?TIGCC_H_Filter TIGCCAllFilter:
   category==cFilesListItem?TIGCC_C_Filter TIGCCAllFilter:
@@ -1078,12 +1121,23 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
   if (theFile->fileName[0]=='/')
     KDirWatch::self()->removeFile(theFile->fileName);
   if (IS_EDITABLE_CATEGORY(category)
-      ?saveFileText(saveFileName,theFile->textBuffer)
+      ?saveFileText(saveFileName,theFile->kateView->getDoc()->text())
       :copyFile(theFile->fileName,saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
     if (IS_EDITABLE_CATEGORY(category) && theFile->fileName[0]=='/')
       KDirWatch::self()->addFile(theFile->fileName);
   } else {
+    if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)) {
+      // Update the file name for printing.
+      unsigned int line,col,hlMode;
+      hlMode=theFile->kateView->getDoc()->hlMode();
+      theFile->kateView->cursorPositionReal(&line,&col);
+      theFile->kateView->getDoc()->setModified(FALSE);
+      if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
+        theFile->kateView->getDoc()->closeStream();
+      theFile->kateView->getDoc()->setHlMode(hlMode);
+      theFile->kateView->setCursorPositionReal(line,col);
+    }
     theFile->fileName=saveFileName;
     if (IS_EDITABLE_CATEGORY(category))
       KDirWatch::self()->addFile(saveFileName);
@@ -1130,13 +1184,25 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
           || (IS_EDITABLE_CATEGORY(category)
               && (theFile->isDirty || theFile->isNew))) {
         if (IS_EDITABLE_CATEGORY(category)
-            ?saveFileText(tmpPath.path(),theFile->textBuffer)
+            ?saveFileText(tmpPath.path(),theFile->kateView->getDoc()->text())
             :copyFile(theFile->fileName,tmpPath.path())) {
           KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
           if (IS_EDITABLE_CATEGORY(category) && theFile->fileName[0]=='/')
             KDirWatch::self()->addFile(theFile->fileName);
         } else {
-          theFile->fileName=tmpPath.path();
+          QString saveFileName=tmpPath.path();
+          if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)) {
+            // Update the file name for printing.
+            unsigned int line,col,hlMode;
+            hlMode=theFile->kateView->getDoc()->hlMode();
+            theFile->kateView->cursorPositionReal(&line,&col);
+            theFile->kateView->getDoc()->setModified(FALSE);
+            if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
+              theFile->kateView->getDoc()->closeStream();
+            theFile->kateView->getDoc()->setHlMode(hlMode);
+            theFile->kateView->setCursorPositionReal(line,col);
+          }
+          theFile->fileName=saveFileName;
           if (IS_EDITABLE_CATEGORY(category))
             KDirWatch::self()->addFile(theFile->fileName);
           theFile->isNew=FALSE;
@@ -1196,13 +1262,6 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
   QString base_dir=base_dir_k.path();
   KURL new_dir(nextProj);
   
-  if (IS_FILE(currentListItem)) {
-    //We don't want to make it so you have to click to another file and back to save the current document properly. ;)
-    CATEGORY_OF(category,currentListItem);
-    if (IS_EDITABLE_CATEGORY(category))
-      static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
-  }
-  
   fileSave_loadList(hFilesListItem,&TPRData.h_files,base_dir,&new_dir,&open_file);
   fileSave_loadList(cFilesListItem,&TPRData.c_files,base_dir,&new_dir,&open_file);
   fileSave_loadList(qllFilesListItem,&TPRData.quill_files,base_dir,&new_dir,&open_file);
@@ -1245,13 +1304,13 @@ void MainForm::fileSaveAs()
 
 void MainForm::filePrint()
 {
-  m_view->getDoc()->printDialog();
+  CURRENT_VIEW->getDoc()->printDialog();
 }
 
 
 void MainForm::filePrintQuickly()
 {
-  m_view->getDoc()->print();
+  CURRENT_VIEW->getDoc()->print();
 }
 
 void MainForm::filePreferences()
@@ -1513,86 +1572,53 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (IS_FILE(currentListItem)) {
     CATEGORY_OF(category,currentListItem);
-    if (IS_EDITABLE_CATEGORY(category)) {
-      static_cast<ListViewFile *>(currentListItem)->textBuffer=m_view->getDoc()->text();
-      m_view->cursorPositionReal(&(static_cast<ListViewFile *>(currentListItem)->cursorLine),
-                                 &(static_cast<ListViewFile *>(currentListItem)->cursorCol));
-    }
+    if (IS_EDITABLE_CATEGORY(category))
+      static_cast<ListViewFile *>(currentListItem)->kateView->hide();
   }
   // Reset currentListItem so setting the text of the editor won't mark a
   // file dirty.
   currentListItem=NULL;
-  // This hack sets the file name for printing.
-#define SETFILENAME(fn) m_view->getDoc()->setModified(FALSE); \
-                        if (m_view->getDoc()->openStream("text/plain",(fn))) \
-                          m_view->getDoc()->closeStream()
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
     filePrintAction->setEnabled(FALSE);
     filePrintQuicklyAction->setEnabled(FALSE);
-    m_view->setEnabled(FALSE);
-    SETFILENAME("");
-    m_view->getDoc()->setText("");
+    m_view->show();
     write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
     KConfig kconfig(QString(tempdir)+"/config.tmp",true);
     m_view->getDoc()->readConfig(&kconfig);
     delete_temp_file("config.tmp");
-    m_view->getDoc()->setHlMode(0);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
-    m_view->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
     if (IS_EDITABLE_CATEGORY(category)) {
       filePrintAction->setEnabled(TRUE);
       filePrintQuicklyAction->setEnabled(TRUE);
-      SETFILENAME(static_cast<ListViewFile *>(item)->fileName);
-      m_view->getDoc()->setText(static_cast<ListViewFile *>(item)->textBuffer);
-      const char *buffer=static_cast<ListViewFile *>(item)->textBuffer;
+      m_view->hide();
+      static_cast<ListViewFile *>(item)->kateView->show();
       write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=kate - Normal\n",0);
       KConfig kconfig(QString(tempdir)+"/config.tmp",true);
       m_view->getDoc()->readConfig(&kconfig);
       delete_temp_file("config.tmp");
-      uint cnt=m_view->getDoc()->hlModeCount(), i;
-      for (i=0; i<cnt; i++) {
-        if (!m_view->getDoc()->hlModeName(i).compare(
-            ((category==sFilesListItem||(category==hFilesListItem&&buffer&&*buffer=='|'))?
-               "GNU Assembler 68k":
-             (category==asmFilesListItem||(category==hFilesListItem&&buffer&&*buffer==';'))?
-               "Motorola Assembler 68k":
-             (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
-               "C":
-             "None"))) break;
-      }
-      if (i==cnt) i=0;
-      m_view->getDoc()->setHlMode(i);
-      m_view->setCursorPositionReal(static_cast<ListViewFile *>(item)->cursorLine,
-                                    static_cast<ListViewFile *>(item)->cursorCol);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
-      SETFILENAME("");
-      m_view->getDoc()->setText("");
+      m_view->show();
       write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
       KConfig kconfig(QString(tempdir)+"/config.tmp",true);
       m_view->getDoc()->readConfig(&kconfig);
       delete_temp_file("config.tmp");
-      m_view->getDoc()->setHlMode(0);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
     filePrintAction->setEnabled(FALSE);
     filePrintQuicklyAction->setEnabled(FALSE);
-    m_view->setEnabled(FALSE);
-    SETFILENAME("");
-    m_view->getDoc()->setText("");
+    m_view->show();
     write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
     KConfig kconfig(QString(tempdir)+"/config.tmp",true);
     m_view->getDoc()->readConfig(&kconfig);
     delete_temp_file("config.tmp");
-    m_view->getDoc()->setHlMode(0);
   }
-#undef SETFILENAME
   currentListItem=item;
   updateLeftStatusLabel();
   updateRightStatusLabel();
@@ -1874,12 +1900,11 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
   newFile->setText(0,caption);
   newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
   parent->setOpen(TRUE);
-  newFile->textBuffer=text;
+  newFile->kateView=reinterpret_cast<Kate::View *>(createView(tmp,text,category));
   fileTreeClicked(newFile);
   projectIsDirty=TRUE;
   newFile->startRename(0);
   
-  m_view->getDoc()->setText(text);
   fileCount++;
   
   COUNTER_FOR_CATEGORY(category)++;
@@ -2074,7 +2099,7 @@ void MainForm::updateRightStatusLabel()
     CATEGORY_OF(category,currentListItem);
     if (IS_EDITABLE_CATEGORY(category)) {
       unsigned int line, col;
-      m_view->cursorPositionReal(&line,&col);
+      CURRENT_VIEW->cursorPositionReal(&line,&col);
       rowStatusLabel->show();
       rowStatusLabel->setMaximumWidth(30);
       rowStatusLabel->setText(QString("%1").arg(line));
@@ -2083,7 +2108,7 @@ void MainForm::updateRightStatusLabel()
       colStatusLabel->setText(QString("%1").arg(col+1));
       charsStatusLabel->show();
       charsStatusLabel->setMaximumWidth(100);
-      charsStatusLabel->setText(QString("%1 Characters").arg(m_view->getDoc()->text().length()));
+      charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
       rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
     } else {
       rowStatusLabel->hide();
@@ -2095,19 +2120,19 @@ void MainForm::updateRightStatusLabel()
   }
 }
 
-void MainForm::m_view_cursorPositionChanged()
+void MainForm::current_view_cursorPositionChanged()
 {
   unsigned int line, col;
-  m_view->cursorPositionReal(&line,&col);
+  CURRENT_VIEW->cursorPositionReal(&line,&col);
   rowStatusLabel->setText(QString("%1").arg(line));
   colStatusLabel->setText(QString("%1").arg(col+1));
 }
 
-void MainForm::m_view_textChanged()
+void MainForm::current_view_textChanged()
 {
   if (IS_FILE(currentListItem))
     static_cast<ListViewFile *>(currentListItem)->isDirty=TRUE;
-  charsStatusLabel->setText(QString("%1 Characters").arg(m_view->getDoc()->text().length()));
+  charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
 }
 
 void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString &newName)
@@ -2208,10 +2233,10 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
           }
           static_cast<ListViewFile *>(item)->isDirty=FALSE;
           static_cast<ListViewFile *>(item)->isNew=FALSE;
-          if (item==currentListItem)
-            m_view->getDoc()->setText(fileText);
-          else
-            static_cast<ListViewFile *>(item)->textBuffer=fileText;
+          QListViewItem *cli=currentListItem;
+          currentListItem=NULL; // avoid isDirty being set incorrectly
+          static_cast<ListViewFile *>(item)->kateView->getDoc()->setText(fileText);
+          currentListItem=cli;
         }
         return;
       }

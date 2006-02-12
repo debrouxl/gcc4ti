@@ -703,7 +703,7 @@ void mkdir_multi(const char *fileName)
   }
 }
 
-int saveFileText(const char *fileName,QString &fileText)
+int saveFileText(const char *fileName,const QString &fileText)
 {
   FILE *f;
   const char *s;
