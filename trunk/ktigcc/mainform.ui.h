@@ -2071,7 +2071,7 @@ void MainForm::updateRightStatusLabel()
       CURRENT_VIEW->cursorPositionReal(&line,&col);
       rowStatusLabel->show();
       rowStatusLabel->setMaximumWidth(30);
-      rowStatusLabel->setText(QString("%1").arg(line));
+      rowStatusLabel->setText(QString("%1").arg(line+1));
       colStatusLabel->show();
       colStatusLabel->setMaximumWidth(30);
       colStatusLabel->setText(QString("%1").arg(col+1));
@@ -2094,7 +2094,7 @@ void MainForm::current_view_cursorPositionChanged()
   if (CURRENT_VIEW) {
     unsigned int line, col;
     CURRENT_VIEW->cursorPositionReal(&line,&col);
-    rowStatusLabel->setText(QString("%1").arg(line));
+    rowStatusLabel->setText(QString("%1").arg(line+1));
     colStatusLabel->setText(QString("%1").arg(col+1));
   }
 }
