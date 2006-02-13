@@ -138,7 +138,7 @@ class ListViewFolder : public QListViewItem {
 class ListViewFile : public QListViewItem {
   public:
   ListViewFile(QListView *parent) : QListViewItem(parent),
-                                    isNew(TRUE), isDirty(FALSE)
+                                    isNew(TRUE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));    
     setDragEnabled(TRUE);
@@ -146,7 +146,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent) : QListViewItem(parent),
-                                        isNew(TRUE), isDirty(FALSE)
+                                        isNew(TRUE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDragEnabled(TRUE);
@@ -154,7 +154,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListView *parent, QListViewItem *after)
-          : QListViewItem(parent, after), isNew(TRUE), isDirty(FALSE)
+          : QListViewItem(parent, after), isNew(TRUE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDropEnabled(TRUE);
@@ -163,7 +163,7 @@ class ListViewFile : public QListViewItem {
   }
   ListViewFile(QListViewItem *parent, QListViewItem *after)
           : QListViewItem(parent, after), kateView(NULL),
-            isNew(TRUE), isDirty(FALSE)
+            isNew(TRUE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDragEnabled(TRUE);
@@ -184,7 +184,6 @@ class ListViewFile : public QListViewItem {
   Kate::View *kateView;
   QString fileName; // full name of the file
   bool isNew;
-  bool isDirty;
   protected:
 };
 
@@ -842,11 +841,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   newView->installPopup(te_popup);
   // Set text.
-  QListViewItem *cli=currentListItem;
-  currentListItem=NULL; // avoid isDirty being set incorrectly
   newView->getDoc()->setText(fileText);
+  newView->getDoc()->setModified(FALSE);
   newView->setCursorPositionReal(0,0);
-  currentListItem=cli;
   return newView;
 }
 
@@ -982,12 +979,13 @@ int MainForm::fileSavePrompt(QListViewItem *fileItem)
 {
   int result;
   ListViewFile *theFile=static_cast<ListViewFile *>(fileItem);
-  while (theFile->isDirty) { // "while" in case saving fails!
+  if (!theFile->kateView) return 0;
+  while (theFile->kateView->getDoc()->isModified()) { // "while" in case saving fails!
     result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(theFile->text(0)),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
     if (result==KMessageBox::Yes)
         fileSave_save(fileItem);
     else if (result==KMessageBox::No)
-      theFile->isDirty=FALSE;
+      theFile->kateView->getDoc()->setModified(FALSE);
     else
       return 1;
   }
@@ -1063,7 +1061,7 @@ void MainForm::fileSave_save(QListViewItem *theItem)
     else {
       KDirWatch::self()->addFile(theFile->fileName);
       theFile->isNew=FALSE;
-      theFile->isDirty=FALSE;
+      theFile->kateView->getDoc()->setModified(FALSE);
       projectIsDirty=TRUE;
     }
   }
@@ -1113,18 +1111,16 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
       theFile->kateView->getDoc()->setModified(FALSE);
       if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
         theFile->kateView->getDoc()->closeStream();
-      QListViewItem *cli=currentListItem;
-      currentListItem=NULL; // avoid isDirty being set incorrectly
       theFile->kateView->getDoc()->setText(fileText);
-      currentListItem=cli;
       theFile->kateView->getDoc()->setHlMode(hlMode);
       theFile->kateView->setCursorPositionReal(line,col);
     }
     theFile->fileName=saveFileName;
-    if (IS_EDITABLE_CATEGORY(category))
+    if (IS_EDITABLE_CATEGORY(category)) {
       KDirWatch::self()->addFile(saveFileName);
+      theFile->kateView->getDoc()->setModified(FALSE);
+    }
     theFile->isNew=FALSE;
-    theFile->isDirty=FALSE;
     updateRightStatusLabel();
     projectIsDirty=TRUE;
   }
@@ -1164,7 +1160,7 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
         KDirWatch::self()->removeFile(theFile->fileName);
       if (tmpPath.path().compare(theFile->fileName)
           || (IS_EDITABLE_CATEGORY(category)
-              && (theFile->isDirty || theFile->isNew))) {
+              && (theFile->kateView->getDoc()->isModified() || theFile->isNew))) {
         if (IS_EDITABLE_CATEGORY(category)
             ?saveFileText(tmpPath.path(),theFile->kateView->getDoc()->text())
             :copyFile(theFile->fileName,tmpPath.path())) {
@@ -1182,18 +1178,16 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
             theFile->kateView->getDoc()->setModified(FALSE);
             if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
               theFile->kateView->getDoc()->closeStream();
-            QListViewItem *cli=currentListItem;
-            currentListItem=NULL; // avoid isDirty being set incorrectly
             theFile->kateView->getDoc()->setText(fileText);
-            currentListItem=cli;
             theFile->kateView->getDoc()->setHlMode(hlMode);
             theFile->kateView->setCursorPositionReal(line,col);
           }
           theFile->fileName=saveFileName;
-          if (IS_EDITABLE_CATEGORY(category))
+          if (IS_EDITABLE_CATEGORY(category)) {
             KDirWatch::self()->addFile(theFile->fileName);
+            theFile->kateView->getDoc()->setModified(FALSE);
+          }
           theFile->isNew=FALSE;
-          theFile->isDirty=FALSE;
           projectIsDirty=TRUE; // in case saving the project fails
         }
       }
@@ -2101,11 +2095,8 @@ void MainForm::current_view_cursorPositionChanged()
 
 void MainForm::current_view_textChanged()
 {
-  if (CURRENT_VIEW) {
-    if (IS_FILE(currentListItem))
-      static_cast<ListViewFile *>(currentListItem)->isDirty=TRUE;
+  if (CURRENT_VIEW)
     charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
-  }
 }
 
 void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString &newName)
@@ -2155,7 +2146,8 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
     } else {
       fileNameRef=newFileName;
       // Update the file name for printing.
-      unsigned int line,col,hlMode;
+      unsigned int line,col,hlMode,modified;
+      modified=theFile->kateView->getDoc()->isModified();
       QString fileText=theFile->kateView->getDoc()->text();
       hlMode=theFile->kateView->getDoc()->hlMode();
       theFile->kateView->cursorPositionReal(&line,&col);
@@ -2168,6 +2160,7 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
       currentListItem=cli;
       theFile->kateView->getDoc()->setHlMode(hlMode);
       theFile->kateView->setCursorPositionReal(line,col);
+      theFile->kateView->getDoc()->setModified(modified);
       if (IS_EDITABLE_CATEGORY(category) && newFileName[0]=='/')
         KDirWatch::self()->addFile(newFileName);
       projectIsDirty=TRUE;
@@ -2218,12 +2211,9 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
             KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
             return;
           }
-          static_cast<ListViewFile *>(item)->isDirty=FALSE;
           static_cast<ListViewFile *>(item)->isNew=FALSE;
-          QListViewItem *cli=currentListItem;
-          currentListItem=NULL; // avoid isDirty being set incorrectly
           static_cast<ListViewFile *>(item)->kateView->getDoc()->setText(fileText);
-          currentListItem=cli;
+          static_cast<ListViewFile *>(item)->kateView->getDoc()->setModified(FALSE);
         }
         return;
       }
