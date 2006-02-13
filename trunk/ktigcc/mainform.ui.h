@@ -2153,6 +2153,20 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
         KDirWatch::self()->addFile(oldFileName);
     } else {
       fileNameRef=newFileName;
+      // Update the file name for printing.
+      unsigned int line,col,hlMode;
+      QString fileText=theFile->kateView->getDoc()->text();
+      hlMode=theFile->kateView->getDoc()->hlMode();
+      theFile->kateView->cursorPositionReal(&line,&col);
+      theFile->kateView->getDoc()->setModified(FALSE);
+      if (theFile->kateView->getDoc()->openStream("text/plain",newFileName))
+        theFile->kateView->getDoc()->closeStream();
+      QListViewItem *cli=currentListItem;
+      currentListItem=NULL; // avoid isDirty being set incorrectly
+      theFile->kateView->getDoc()->setText(fileText);
+      currentListItem=cli;
+      theFile->kateView->getDoc()->setHlMode(hlMode);
+      theFile->kateView->setCursorPositionReal(line,col);
       if (IS_EDITABLE_CATEGORY(category) && newFileName[0]=='/')
         KDirWatch::self()->addFile(newFileName);
       projectIsDirty=TRUE;
