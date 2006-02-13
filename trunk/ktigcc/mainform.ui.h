@@ -845,6 +845,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   QListViewItem *cli=currentListItem;
   currentListItem=NULL; // avoid isDirty being set incorrectly
   newView->getDoc()->setText(fileText);
+  newView->setCursorPositionReal(0,0);
   currentListItem=cli;
   return newView;
 }
