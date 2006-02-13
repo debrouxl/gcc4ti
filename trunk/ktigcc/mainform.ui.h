@@ -99,12 +99,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         (category)==aFilesListItem?aFileCount: \
                                         (category)==txtFilesListItem?txtFileCount: \
                                         othFileCount)
-#define CURRENT_VIEW (IS_FILE(currentListItem)?({ \
-                        CATEGORY_OF(category,currentListItem); \
-                        IS_EDITABLE_CATEGORY(category)? \
-                          static_cast<ListViewFile *>(currentListItem)->kateView \
-                          :m_view; \
-                      }):m_view)
+#define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
@@ -214,7 +209,6 @@ static QLabel *colStatusLabel;
 static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
 static KParts::Factory* factory;
-static Kate::View* m_view;
 static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
 static QAssistantClient *assistant;
@@ -426,19 +420,6 @@ void MainForm::init()
   factory = (KParts::Factory *)
       KLibLoader::self()->factory ("libkatepart");
   if (!factory) exit(1);
-  KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
-  m_view = (Kate::View *) doc->createView( splitter, 0L );
-  m_view->setEnabled(FALSE);
-  m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,0,0));
-  write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
-  KConfig kconfig(QString(tempdir)+"/config.tmp",true);
-  m_view->getDoc()->readConfig(&kconfig);
-  delete_temp_file("config.tmp");
-  m_view->getDoc()->setHlMode(0);
-  dynWordWrapInterface(m_view)->setDynWordWrap(FALSE);
-  connect(m_view,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
-  connect(m_view->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
   te_popup->insertItem("&Find symbol declaration",1);
@@ -455,8 +436,6 @@ void MainForm::init()
   te_popup->insertSeparator();
   te_popup->insertItem("&Increase indent",9);
   te_popup->insertItem("&Decrease indent",10);
-  m_view->installPopup(te_popup);
-  connect(te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
   QValueList<int> list;
   list.append(150);
   list.append(500);
@@ -552,9 +531,6 @@ void MainForm::init()
 
 void MainForm::destroy()
 {
-  Kate::Document *doc=m_view->getDoc();
-  delete m_view;
-  delete doc;
   delete te_popup;
   delete leftStatusLabel;
   delete rowStatusLabel;
@@ -843,9 +819,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   if (doc->openStream("text/plain",fileName))
     doc->closeStream();
   // Create View object.
-  Kate::View *newView = (Kate::View *) doc->createView( splitter, 0L );
+  Kate::View *newView = (Kate::View *) doc->createView( widgetStack, 0L );
   newView->hide();
-  newView->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding,0,0));
+  newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
   // Set highlighting mode.
   uint cnt=newView->getDoc()->hlModeCount(), i;
   for (i=0; i<cnt; i++) {
@@ -1304,13 +1280,13 @@ void MainForm::fileSaveAs()
 
 void MainForm::filePrint()
 {
-  CURRENT_VIEW->getDoc()->printDialog();
+  if (CURRENT_VIEW) CURRENT_VIEW->getDoc()->printDialog();
 }
 
 
 void MainForm::filePrintQuickly()
 {
-  CURRENT_VIEW->getDoc()->print();
+  if (CURRENT_VIEW) CURRENT_VIEW->getDoc()->print();
 }
 
 void MainForm::filePreferences()
@@ -1572,8 +1548,11 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (IS_FILE(currentListItem)) {
     CATEGORY_OF(category,currentListItem);
-    if (IS_EDITABLE_CATEGORY(category))
+    if (IS_EDITABLE_CATEGORY(category)) {
       static_cast<ListViewFile *>(currentListItem)->kateView->hide();
+      widgetStack->removeWidget(static_cast<ListViewFile *>(currentListItem)->kateView);
+      widgetStack->raiseWidget(-1);
+    }
   }
   // Reset currentListItem so setting the text of the editor won't mark a
   // file dirty.
@@ -1583,41 +1562,23 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     fileNewFolderAction->setEnabled(TRUE);
     filePrintAction->setEnabled(FALSE);
     filePrintQuicklyAction->setEnabled(FALSE);
-    m_view->show();
-    write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
-    KConfig kconfig(QString(tempdir)+"/config.tmp",true);
-    m_view->getDoc()->readConfig(&kconfig);
-    delete_temp_file("config.tmp");
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
     if (IS_EDITABLE_CATEGORY(category)) {
       filePrintAction->setEnabled(TRUE);
       filePrintQuicklyAction->setEnabled(TRUE);
-      m_view->hide();
+      widgetStack->addWidget(static_cast<ListViewFile *>(item)->kateView);
       static_cast<ListViewFile *>(item)->kateView->show();
-      write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=kate - Normal\n",0);
-      KConfig kconfig(QString(tempdir)+"/config.tmp",true);
-      m_view->getDoc()->readConfig(&kconfig);
-      delete_temp_file("config.tmp");
+      widgetStack->raiseWidget(static_cast<ListViewFile *>(item)->kateView);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
-      m_view->show();
-      write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
-      KConfig kconfig(QString(tempdir)+"/config.tmp",true);
-      m_view->getDoc()->readConfig(&kconfig);
-      delete_temp_file("config.tmp");
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
     filePrintAction->setEnabled(FALSE);
     filePrintQuicklyAction->setEnabled(FALSE);
-    m_view->show();
-    write_temp_file("config.tmp","[Kate Renderer Defaults]\nSchema=ktigcc - Grayed Out\n",0);
-    KConfig kconfig(QString(tempdir)+"/config.tmp",true);
-    m_view->getDoc()->readConfig(&kconfig);
-    delete_temp_file("config.tmp");
   }
   currentListItem=item;
   updateLeftStatusLabel();
@@ -2097,7 +2058,7 @@ void MainForm::updateRightStatusLabel()
     rightStatusLabel->setText("");
   } else if (IS_FILE(currentListItem)) {
     CATEGORY_OF(category,currentListItem);
-    if (IS_EDITABLE_CATEGORY(category)) {
+    if (IS_EDITABLE_CATEGORY(category) && CURRENT_VIEW) {
       unsigned int line, col;
       CURRENT_VIEW->cursorPositionReal(&line,&col);
       rowStatusLabel->show();
@@ -2122,17 +2083,21 @@ void MainForm::updateRightStatusLabel()
 
 void MainForm::current_view_cursorPositionChanged()
 {
-  unsigned int line, col;
-  CURRENT_VIEW->cursorPositionReal(&line,&col);
-  rowStatusLabel->setText(QString("%1").arg(line));
-  colStatusLabel->setText(QString("%1").arg(col+1));
+  if (CURRENT_VIEW) {
+    unsigned int line, col;
+    CURRENT_VIEW->cursorPositionReal(&line,&col);
+    rowStatusLabel->setText(QString("%1").arg(line));
+    colStatusLabel->setText(QString("%1").arg(col+1));
+  }
 }
 
 void MainForm::current_view_textChanged()
 {
-  if (IS_FILE(currentListItem))
-    static_cast<ListViewFile *>(currentListItem)->isDirty=TRUE;
-  charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+  if (CURRENT_VIEW) {
+    if (IS_FILE(currentListItem))
+      static_cast<ListViewFile *>(currentListItem)->isDirty=TRUE;
+    charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+  }
 }
 
 void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString &newName)

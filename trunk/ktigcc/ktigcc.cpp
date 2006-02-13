@@ -113,41 +113,6 @@ int main( int argc, char *argv[] )
   quill_drv=NULL;
   quill_drv_found:
 
-  /* Make sure the Kate color schema we need exists */
-  char *home=getenv("HOME");
-  char fname[strlen(home)+32];
-  sprintf(fname,"%s/.kde/share/config/kateschemarc",home);
-  FILE *f=fopen(fname,"r+b");
-  if (!f) f=fopen(fname,"w+b");
-  if (!f) exit(1);
-  fseek(f,0,SEEK_END);
-  size_t flen=ftell(f);
-  fseek(f,0,SEEK_SET);
-  char buffer[flen+1];
-  memset(buffer,0,flen+1);
-  if (fread(buffer,1,flen,f)<flen) exit(1);
-  if (!strstr(buffer,"[ktigcc - Grayed Out]\n")) {
-    fseek(f,0,SEEK_END);
-    fputs("\n\n[ktigcc - Grayed Out]\n"
-          "Color Background=230,230,230\n"
-          "Color Highlighted Bracket=255,255,153\n"
-          "Color Highlighted Line=230,230,230\n"
-          "Color Icon Bar=234,233,232\n"
-          "Color Line Number=0,0,0\n"
-          "Color MarkType1=0,0,255\n"
-          "Color MarkType2=255,0,0\n"
-          "Color MarkType3=255,255,0\n"
-          "Color MarkType4=255,0,255\n"
-          "Color MarkType5=160,160,164\n"
-          "Color MarkType6=0,255,0\n"
-          "Color MarkType7=255,0,0\n"
-          "Color Selection=76,89,166\n"
-          "Color Tab Marker=0,0,0\n"
-          "Color Word Wrap Marker=120,120,120\n"
-          "Font=Monospace,10,-1,5,50,0,0,0,1,0\n",f);
-  }
-  fclose(f);
-  
   if (!mkdtemp(tempdir)) exit(1);
   
   KCmdLineArgs *args=KCmdLineArgs::parsedArgs();
