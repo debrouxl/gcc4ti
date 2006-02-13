@@ -1106,11 +1106,16 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
     if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)) {
       // Update the file name for printing.
       unsigned int line,col,hlMode;
+      QString fileText=theFile->kateView->getDoc()->text();
       hlMode=theFile->kateView->getDoc()->hlMode();
       theFile->kateView->cursorPositionReal(&line,&col);
       theFile->kateView->getDoc()->setModified(FALSE);
       if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
         theFile->kateView->getDoc()->closeStream();
+      QListViewItem *cli=currentListItem;
+      currentListItem=NULL; // avoid isDirty being set incorrectly
+      theFile->kateView->getDoc()->setText(fileText);
+      currentListItem=cli;
       theFile->kateView->getDoc()->setHlMode(hlMode);
       theFile->kateView->setCursorPositionReal(line,col);
     }
@@ -1170,11 +1175,16 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
           if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)) {
             // Update the file name for printing.
             unsigned int line,col,hlMode;
+            QString fileText=theFile->kateView->getDoc()->text();
             hlMode=theFile->kateView->getDoc()->hlMode();
             theFile->kateView->cursorPositionReal(&line,&col);
             theFile->kateView->getDoc()->setModified(FALSE);
             if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
               theFile->kateView->getDoc()->closeStream();
+            QListViewItem *cli=currentListItem;
+            currentListItem=NULL; // avoid isDirty being set incorrectly
+            theFile->kateView->getDoc()->setText(fileText);
+            currentListItem=cli;
             theFile->kateView->getDoc()->setHlMode(hlMode);
             theFile->kateView->setCursorPositionReal(line,col);
           }
@@ -1554,9 +1564,6 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       widgetStack->raiseWidget(-1);
     }
   }
-  // Reset currentListItem so setting the text of the editor won't mark a
-  // file dirty.
-  currentListItem=NULL;
   if (IS_FOLDER(item)) {
     item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
