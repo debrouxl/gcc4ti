@@ -439,6 +439,7 @@ void MainForm::init()
   te_popup->insertItem("&Increase indent",9);
   te_popup->insertItem("&Decrease indent",10);
   connect(te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
+  connect(te_popup,SIGNAL(activated(int)),this,SLOT(te_popup_activated(int)));
   QValueList<int> list;
   list.append(150);
   list.append(500);
@@ -560,6 +561,24 @@ void MainForm::te_popup_aboutToShow()
   te_popup->setItemEnabled(8,editSelectAllAction->isEnabled());
   te_popup->setItemEnabled(9,editIncreaseIndentAction->isEnabled());
   te_popup->setItemEnabled(10,editDecreaseIndentAction->isEnabled());
+}
+
+void MainForm::te_popup_activated(int index)
+{
+  switch (index) {
+    case 0: findOpenFileAtCursor(); break;
+    case 1: findFindSymbolDeclaration(); break;
+    case 2: editUndo(); break;
+    case 3: editRedo(); break;
+    case 4: editClear(); break;
+    case 5: editCut(); break;
+    case 6: editCopy(); break;
+    case 7: editPaste(); break;
+    case 8: editSelectAll(); break;
+    case 9: editIncreaseIndent(); break;
+    case 10: editDecreaseIndent(); break;
+    default: break;
+  }
 }
 
 void MainForm::clearProject()
@@ -1313,17 +1332,17 @@ void MainForm::filePreferences()
   
 }
 
-void MainForm::editClear()
-{
-  
-}
-
 void MainForm::editUndo()
 {
   
 }
 
 void MainForm::editRedo()
+{
+  
+}
+
+void MainForm::editClear()
 {
   
 }
@@ -1343,32 +1362,27 @@ void MainForm::editPaste()
   
 }
 
-void MainForm::editFind()
-{
-  
-}
-
-void MainForm::findFindSymbolDeclaration()
-{
-
-}
-
 void MainForm::editSelectAll()
 {
   
 }
 
-void MainForm::increaseIndent()
+void MainForm::editIncreaseIndent()
 {
   
 }
 
-void MainForm::decreaseIndent()
+void MainForm::editDecreaseIndent()
 {
   
 }
 
-void MainForm::editReplace()
+void MainForm::findFind()
+{
+  
+}
+
+void MainForm::findReplace()
 {
   
 }
@@ -1378,9 +1392,14 @@ void MainForm::findFunctions()
   
 }
 
-void MainForm::openFileAtCursor()
+void MainForm::findOpenFileAtCursor()
 {
   
+}
+
+void MainForm::findFindSymbolDeclaration()
+{
+
 }
 
 //returns 1 on success
