@@ -1334,37 +1334,44 @@ void MainForm::filePreferences()
 
 void MainForm::editUndo()
 {
-  
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->getDoc()->undo();
 }
 
 void MainForm::editRedo()
 {
-  
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->getDoc()->redo();
 }
 
 void MainForm::editClear()
 {
-  
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->getDoc()->removeSelectedText();
 }
 
 void MainForm::editCut()
 {
-  
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->cut();
 }
 
 void MainForm::editCopy()
 {
-
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->copy();
 }
 
 void MainForm::editPaste()
 {
-  
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->paste();
 }
 
 void MainForm::editSelectAll()
 {
-  
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->getDoc()->selectAll();
 }
 
 void MainForm::editIncreaseIndent()
