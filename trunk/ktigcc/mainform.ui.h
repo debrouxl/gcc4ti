@@ -598,6 +598,7 @@ void MainForm::te_popup_activated(int index)
 
 void MainForm::accel_activated(int index)
 {
+  // FIXME: This doesn't work for the text box you get when renaming.
   switch (index) {
     case 0: editUndo(); break;
     case 1: editRedo(); break;
