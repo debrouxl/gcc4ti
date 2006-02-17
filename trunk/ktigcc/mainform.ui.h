@@ -36,6 +36,7 @@
 #include <qassistantclient.h>
 #include <qdir.h>
 #include <qclipboard.h>
+#include <qaccel.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -219,6 +220,7 @@ static tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
 static QClipboard *clipboard;
+static QAccel *accel;
 
 class DnDListView : public QListView {
   private:
@@ -523,6 +525,18 @@ void MainForm::init()
   KDirWatch::self()->startScan();
   clipboard=QApplication::clipboard();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
+  accel=new QAccel(this);
+  accel->insertItem(ALT+Key_Backspace,0);
+  accel->setItemEnabled(0,FALSE);
+  accel->insertItem(SHIFT+ALT+Key_Backspace,1);
+  accel->setItemEnabled(1,FALSE);
+  accel->insertItem(SHIFT+Key_Delete,2);
+  accel->setItemEnabled(2,FALSE);
+  accel->insertItem(CTRL+Key_Insert,3);
+  accel->setItemEnabled(3,FALSE);
+  accel->insertItem(SHIFT+Key_Insert,4);
+  accel->setItemEnabled(4,FALSE);
+  connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   pconfig->setGroup("Recent files");
   if (parg)
     openProject(parg);
@@ -537,6 +551,7 @@ void MainForm::init()
 
 void MainForm::destroy()
 {
+  delete accel;
   delete te_popup;
   delete leftStatusLabel;
   delete rowStatusLabel;
@@ -577,6 +592,18 @@ void MainForm::te_popup_activated(int index)
     case 8: editSelectAll(); break;
     case 9: editIncreaseIndent(); break;
     case 10: editDecreaseIndent(); break;
+    default: break;
+  }
+}
+
+void MainForm::accel_activated(int index)
+{
+  switch (index) {
+    case 0: editUndo(); break;
+    case 1: editRedo(); break;
+    case 2: editCut(); break;
+    case 3: editCopy(); break;
+    case 4: editPaste(); break;
     default: break;
   }
 }
@@ -1613,6 +1640,11 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     editSelectAllAction->setEnabled(FALSE);
     editIncreaseIndentAction->setEnabled(FALSE);
     editDecreaseIndentAction->setEnabled(FALSE);
+    accel->setItemEnabled(0,FALSE);
+    accel->setItemEnabled(1,FALSE);
+    accel->setItemEnabled(2,FALSE);
+    accel->setItemEnabled(3,FALSE);
+    accel->setItemEnabled(4,FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
@@ -1632,6 +1664,11 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       editSelectAllAction->setEnabled(TRUE);
       editIncreaseIndentAction->setEnabled(TRUE);
       editDecreaseIndentAction->setEnabled(TRUE);
+      accel->setItemEnabled(0,!!(kateView->getDoc()->undoCount()));
+      accel->setItemEnabled(1,!!(kateView->getDoc()->redoCount()));
+      accel->setItemEnabled(2,kateView->getDoc()->hasSelection());
+      accel->setItemEnabled(3,kateView->getDoc()->hasSelection());
+      accel->setItemEnabled(4,!clipboard->text().isNull());
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -1644,6 +1681,11 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       editSelectAllAction->setEnabled(FALSE);
       editIncreaseIndentAction->setEnabled(FALSE);
       editDecreaseIndentAction->setEnabled(FALSE);
+      accel->setItemEnabled(0,FALSE);
+      accel->setItemEnabled(1,FALSE);
+      accel->setItemEnabled(2,FALSE);
+      accel->setItemEnabled(3,FALSE);
+      accel->setItemEnabled(4,FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -1658,6 +1700,11 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     editSelectAllAction->setEnabled(FALSE);
     editIncreaseIndentAction->setEnabled(FALSE);
     editDecreaseIndentAction->setEnabled(FALSE);
+    accel->setItemEnabled(0,FALSE);
+    accel->setItemEnabled(1,FALSE);
+    accel->setItemEnabled(2,FALSE);
+    accel->setItemEnabled(3,FALSE);
+    accel->setItemEnabled(4,FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();
@@ -2181,6 +2228,8 @@ void MainForm::current_view_undoChanged()
   if (CURRENT_VIEW) {
     editUndoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->undoCount()));
     editRedoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->redoCount()));
+    accel->setItemEnabled(0,!!(CURRENT_VIEW->getDoc()->undoCount()));
+    accel->setItemEnabled(1,!!(CURRENT_VIEW->getDoc()->redoCount()));
   }
 }
 
@@ -2190,6 +2239,8 @@ void MainForm::current_view_selectionChanged()
     editClearAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
     editCutAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
     editCopyAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
+    accel->setItemEnabled(2,CURRENT_VIEW->getDoc()->hasSelection());
+    accel->setItemEnabled(3,CURRENT_VIEW->getDoc()->hasSelection());
   }
 }
 
@@ -2197,6 +2248,7 @@ void MainForm::clipboard_dataChanged()
 {
   if (CURRENT_VIEW) {
     editPasteAction->setEnabled(!clipboard->text().isNull());
+    accel->setItemEnabled(4,!clipboard->text().isNull());
   }
 }
 
