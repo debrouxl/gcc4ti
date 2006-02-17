@@ -27,6 +27,7 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <qapplication.h>
 #include <qlabel.h>
 #include <qstatusbar.h>
 #include <qtimer.h>
@@ -34,6 +35,7 @@
 #include <qdragobject.h>
 #include <qassistantclient.h>
 #include <qdir.h>
+#include <qclipboard.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -216,6 +218,7 @@ static tprSettings settings;
 static tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
+static QClipboard *clipboard;
 
 class DnDListView : public QListView {
   private:
@@ -435,6 +438,7 @@ void MainForm::init()
   te_popup->insertSeparator();
   te_popup->insertItem("&Increase indent",9);
   te_popup->insertItem("&Decrease indent",10);
+  connect(te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
   QValueList<int> list;
   list.append(150);
   list.append(500);
@@ -516,6 +520,8 @@ void MainForm::init()
   connect(KDirWatch::self(),SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   KDirWatch::self()->startScan();
+  clipboard=QApplication::clipboard();
+  connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
   pconfig->setGroup("Recent files");
   if (parg)
     openProject(parg);
@@ -839,10 +845,14 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   dynWordWrapInterface(newView)->setDynWordWrap(FALSE);
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
+  connect(newView->getDoc(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
+  connect(newView->getDoc(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   newView->installPopup(te_popup);
   // Set text.
   newView->getDoc()->setText(fileText);
   newView->getDoc()->setModified(FALSE);
+  newView->getDoc()->clearUndo();
+  newView->getDoc()->clearRedo();
   newView->setCursorPositionReal(0,0);
   return newView;
 }
@@ -1112,6 +1122,8 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
       if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
         theFile->kateView->getDoc()->closeStream();
       theFile->kateView->getDoc()->setText(fileText);
+      theFile->kateView->getDoc()->clearUndo();
+      theFile->kateView->getDoc()->clearRedo();
       theFile->kateView->getDoc()->setHlMode(hlMode);
       theFile->kateView->setCursorPositionReal(line,col);
     }
@@ -1179,6 +1191,8 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
             if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
               theFile->kateView->getDoc()->closeStream();
             theFile->kateView->getDoc()->setText(fileText);
+            theFile->kateView->getDoc()->clearUndo();
+            theFile->kateView->getDoc()->clearRedo();
             theFile->kateView->getDoc()->setHlMode(hlMode);
             theFile->kateView->setCursorPositionReal(line,col);
           }
@@ -1564,23 +1578,60 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     fileNewFolderAction->setEnabled(TRUE);
     filePrintAction->setEnabled(FALSE);
     filePrintQuicklyAction->setEnabled(FALSE);
+    editUndoAction->setEnabled(FALSE);
+    editRedoAction->setEnabled(FALSE);
+    editClearAction->setEnabled(FALSE);
+    editCutAction->setEnabled(FALSE);
+    editCopyAction->setEnabled(FALSE);
+    editPasteAction->setEnabled(FALSE);
+    editSelectAllAction->setEnabled(FALSE);
+    editIncreaseIndentAction->setEnabled(FALSE);
+    editDecreaseIndentAction->setEnabled(FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
     if (IS_EDITABLE_CATEGORY(category)) {
+      Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
       filePrintAction->setEnabled(TRUE);
       filePrintQuicklyAction->setEnabled(TRUE);
-      widgetStack->addWidget(static_cast<ListViewFile *>(item)->kateView);
-      static_cast<ListViewFile *>(item)->kateView->show();
-      widgetStack->raiseWidget(static_cast<ListViewFile *>(item)->kateView);
+      widgetStack->addWidget(kateView);
+      kateView->show();
+      widgetStack->raiseWidget(kateView);
+      editUndoAction->setEnabled(!!(kateView->getDoc()->undoCount()));
+      editRedoAction->setEnabled(!!(kateView->getDoc()->redoCount()));
+      editClearAction->setEnabled(kateView->getDoc()->hasSelection());
+      editCutAction->setEnabled(kateView->getDoc()->hasSelection());
+      editCopyAction->setEnabled(kateView->getDoc()->hasSelection());
+      editPasteAction->setEnabled(!clipboard->text().isNull());
+      editSelectAllAction->setEnabled(TRUE);
+      editIncreaseIndentAction->setEnabled(TRUE);
+      editDecreaseIndentAction->setEnabled(TRUE);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
+      editUndoAction->setEnabled(FALSE);
+      editRedoAction->setEnabled(FALSE);
+      editClearAction->setEnabled(FALSE);
+      editCutAction->setEnabled(FALSE);
+      editCopyAction->setEnabled(FALSE);
+      editPasteAction->setEnabled(FALSE);
+      editSelectAllAction->setEnabled(FALSE);
+      editIncreaseIndentAction->setEnabled(FALSE);
+      editDecreaseIndentAction->setEnabled(FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
     filePrintAction->setEnabled(FALSE);
     filePrintQuicklyAction->setEnabled(FALSE);
+    editUndoAction->setEnabled(FALSE);
+    editRedoAction->setEnabled(FALSE);
+    editClearAction->setEnabled(FALSE);
+    editCutAction->setEnabled(FALSE);
+    editCopyAction->setEnabled(FALSE);
+    editPasteAction->setEnabled(FALSE);
+    editSelectAllAction->setEnabled(FALSE);
+    editIncreaseIndentAction->setEnabled(FALSE);
+    editDecreaseIndentAction->setEnabled(FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();
@@ -2099,6 +2150,30 @@ void MainForm::current_view_textChanged()
     charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
 }
 
+void MainForm::current_view_undoChanged()
+{
+  if (CURRENT_VIEW) {
+    editUndoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->undoCount()));
+    editRedoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->redoCount()));
+  }
+}
+
+void MainForm::current_view_selectionChanged()
+{
+  if (CURRENT_VIEW) {
+    editClearAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
+    editCutAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
+    editCopyAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
+  }
+}
+
+void MainForm::clipboard_dataChanged()
+{
+  if (CURRENT_VIEW) {
+    editPasteAction->setEnabled(!clipboard->text().isNull());
+  }
+}
+
 void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString &newName)
 {
   if (col)
@@ -2154,10 +2229,9 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
       theFile->kateView->getDoc()->setModified(FALSE);
       if (theFile->kateView->getDoc()->openStream("text/plain",newFileName))
         theFile->kateView->getDoc()->closeStream();
-      QListViewItem *cli=currentListItem;
-      currentListItem=NULL; // avoid isDirty being set incorrectly
       theFile->kateView->getDoc()->setText(fileText);
-      currentListItem=cli;
+      theFile->kateView->getDoc()->clearUndo();
+      theFile->kateView->getDoc()->clearRedo();
       theFile->kateView->getDoc()->setHlMode(hlMode);
       theFile->kateView->setCursorPositionReal(line,col);
       theFile->kateView->getDoc()->setModified(modified);
@@ -2214,6 +2288,8 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
           static_cast<ListViewFile *>(item)->isNew=FALSE;
           static_cast<ListViewFile *>(item)->kateView->getDoc()->setText(fileText);
           static_cast<ListViewFile *>(item)->kateView->getDoc()->setModified(FALSE);
+          static_cast<ListViewFile *>(item)->kateView->getDoc()->clearUndo();
+          static_cast<ListViewFile *>(item)->kateView->getDoc()->clearRedo();
         }
         return;
       }
