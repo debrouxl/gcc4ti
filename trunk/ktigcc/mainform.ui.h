@@ -2136,7 +2136,7 @@ void MainForm::fileNewA68kAssemblyHeader()
 
 void MainForm::fileNewCSourceFile()
 {
-  newFile(resolveParent(cFilesListItem),"// C Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","filec.png");
+  newFile(resolveParent(cFilesListItem));
 }
 
 
