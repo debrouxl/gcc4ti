@@ -897,6 +897,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   newView->getDoc()->setHlMode(i);
   // Set options.
   dynWordWrapInterface(newView)->setDynWordWrap(FALSE);
+  newView->setTabWidth(2);
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->getDoc(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
@@ -1416,12 +1417,14 @@ void MainForm::editSelectAll()
 
 void MainForm::editIncreaseIndent()
 {
-  
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->indent();
 }
 
 void MainForm::editDecreaseIndent()
 {
-  
+  if (CURRENT_VIEW)
+    CURRENT_VIEW->unIndent();
 }
 
 void MainForm::findFind()
