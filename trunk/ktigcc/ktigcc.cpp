@@ -52,7 +52,7 @@ int main( int argc, char *argv[] )
   // characters lost converting!
   QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
 
-  KAboutData about("KTIGCC","TIGCC IDE for KDE","1.00",
+  KAboutData about("ktigcc","TIGCC IDE for KDE","1.00",
   "TIGCC C and ASM SDK", KAboutData::License_GPL,
   "Copyright (C) 2004-2006 Kevin Kofler and Joey Adams. All rights reserved.\n"
   "TIGCC Copyright (C) 1999-2005 The TIGCC Team.",
