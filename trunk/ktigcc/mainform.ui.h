@@ -54,6 +54,7 @@
 #include <cstdlib>
 #include "ktigcc.h"
 #include "tpr.h"
+#include "preferences.h"
 
 using std::puts;
 using std::exit;
@@ -222,7 +223,7 @@ static QString projectFileName;
 static QString lastDirectory;
 static QClipboard *clipboard;
 static QAccel *accel;
-static bool lazyLoading=true;
+static TIGCCPrefs preferences;
 
 class DnDListView : public QListView {
   private:
@@ -472,6 +473,7 @@ void MainForm::init()
   fileTree->setSorting(-1);
   fileTree->setColumnWidthMode(0,QListView::Maximum);
   fileTree->header()->hide();
+  loadPreferences(&preferences,pconfig);
   rootListItem=new QListViewItem(fileTree);
   rootListItem->setText(0,"Project1");
   rootListItem->setPixmap(0,QPixmap::fromMimeSource("tpr.png"));
@@ -837,7 +839,7 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
     category==txtFilesListItem?"filet.png":"filex.png"));
   newFile->fileName=fileName;
   if (IS_EDITABLE_CATEGORY(category)) {
-    if (lazyLoading)
+    if (preferences.lazyLoading)
       newFile->textBuffer=fileText;
     else
       newFile->kateView=reinterpret_cast<Kate::View *>(createView(fileName,fileText,category));
@@ -897,7 +899,11 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   newView->getDoc()->setHlMode(i);
   // Set options.
   dynWordWrapInterface(newView)->setDynWordWrap(FALSE);
-  newView->setTabWidth(2);
+  newView->setTabWidth(
+    (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
+    (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
+    8
+  );
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->getDoc(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));

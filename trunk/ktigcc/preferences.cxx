@@ -8,6 +8,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qtextcodec.h>
+#include <kconfig.h>
 #include "preferences.h"
 #include "tpr.h"
 
@@ -105,4 +106,21 @@ int SynToXML(Syn_SettingsForDoc &syn,const QString &destFileName)
     
 	syn_XMLEnd(f);
 	return 0;
+}
+
+void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg)
+{
+  defaultPreferences(prefs);
+}
+
+void savePreferences(TIGCCPrefs *prefs,KConfig *cfg)
+{
+   
+}
+
+void defaultPreferences(TIGCCPrefs *prefs)
+{
+  prefs->lazyLoading=true;
+  prefs->tabWidthC=2;
+  prefs->tabWidthAsm=8;
 }
