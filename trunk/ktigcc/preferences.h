@@ -47,8 +47,8 @@ int SynToXML(Syn_SettingsForDoc &syn,const QString &destFileName);
 typedef struct
 {
   bool lazyLoading;
-  unsigned char tabWidthC;
-  unsigned char tabWidthAsm;
+  unsigned short tabWidthC;
+  unsigned short tabWidthAsm;
 } TIGCCPrefs;
 
 void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg);
