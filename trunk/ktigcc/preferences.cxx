@@ -108,6 +108,1016 @@ int SynToXML(Syn_SettingsForDoc &syn,const QString &destFileName)
     return 0;
 }
 
+Syn_Color syn_rgb(unsigned short r,unsigned short g,unsigned short b)
+{
+  return (Syn_Color){r,g,b,0};
+}
+
+void defaultSynHighlight(TIGCCPrefs *prefs)
+{
+  prefs->synC.enabled=true;
+  prefs->synS.enabled=true;
+  prefs->synASM.enabled=true;
+  prefs->synQLL.enabled=true;
+  
+  prefs->synC.numberColor=syn_rgb(128,0,0);
+  prefs->synS.numberColor=syn_rgb(128,0,0);
+  prefs->synASM.numberColor=syn_rgb(128,0,0);
+  prefs->synQLL.numberColor=syn_rgb(128,64,64);
+  
+  prefs->synC.symbolColor=syn_rgb(128,128,0);
+  prefs->synS.symbolColor=syn_rgb(128,128,0);
+  prefs->synASM.symbolColor=syn_rgb(128,128,0);
+  prefs->synQLL.symbolColor=syn_rgb(128,128,0);
+  
+  prefs->synC.parenthesisColors.clear();
+  prefs->synC.parenthesisColors << syn_rgb(128,0,128) << syn_rgb(0,128,192) << syn_rgb(255,128,128) << syn_rgb(0,128,0);
+  prefs->synS.parenthesisColors=prefs->synC.parenthesisColors;
+  prefs->synASM.parenthesisColors=prefs->synC.parenthesisColors;
+  prefs->synQLL.parenthesisColors.clear();
+  prefs->synQLL.parenthesisColors  << syn_rgb(0,0,0) << syn_rgb(255,0,128);
+  
+  prefs->synC.numberStyle=0;
+  prefs->synS.numberStyle=0;
+  prefs->synASM.numberStyle=0;
+  prefs->synQLL.numberStyle=0;
+  
+  prefs->synC.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  prefs->synS.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  prefs->synASM.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  prefs->synQLL.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  
+  prefs->synC.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  prefs->synS.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  prefs->synASM.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  prefs->synQLL.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  
+  Syn_CustomStyle Comment_Area;
+  Comment_Area.name="Comment Area";
+  Comment_Area.beginning="/*";
+  Comment_Area.ending="*/";
+  Comment_Area.ignoreEndingAfter=0;
+  Comment_Area.switchable=false;
+  Comment_Area.color=syn_rgb(0,128,0);
+  Comment_Area.style=SYNS_CUSTOM|SYNS_ITALIC;
+  Syn_CustomStyle Comment_Line;
+  Comment_Line.name="Comment Line";
+  Comment_Line.beginning="//";
+  Comment_Line.ending="\n";
+  Comment_Line.ignoreEndingAfter=0;
+  Comment_Line.switchable=false;
+  Comment_Line.color=syn_rgb(0,128,0);
+  Comment_Line.style=SYNS_CUSTOM|SYNS_ITALIC;
+  Syn_CustomStyle SCS_String;
+  SCS_String.name="String";
+  SCS_String.beginning="\"";
+  SCS_String.ending="\"";
+  SCS_String.ignoreEndingAfter='\\';
+  SCS_String.switchable=false;
+  SCS_String.color=syn_rgb(128,0,0);
+  SCS_String.style=0;
+  Syn_CustomStyle Character;
+  Character.name="Character";
+  Character.beginning="\'";
+  Character.ending="\'";
+  Character.ignoreEndingAfter='\\';
+  Character.switchable=false;
+  Character.color=syn_rgb(128,0,0);
+  Character.style=0;
+  Syn_CustomStyle Preprocessor_Directive;
+  Preprocessor_Directive.name="Preprocessor Directive";
+  Preprocessor_Directive.beginning="#";
+  Preprocessor_Directive.ending=" ";
+  Preprocessor_Directive.ignoreEndingAfter=0;
+  Preprocessor_Directive.switchable=false;
+  Preprocessor_Directive.color=syn_rgb(0,128,128);
+  Preprocessor_Directive.style=SYNS_CUSTOM|SYNS_BOLD;
+  Syn_CustomStyle Comment_Line_Pipe;
+  Comment_Line_Pipe.name="Comment Line (|)";
+  Comment_Line_Pipe.beginning="|";
+  Comment_Line_Pipe.ending="\n";
+  Comment_Line_Pipe.ignoreEndingAfter=0;
+  Comment_Line_Pipe.switchable=false;
+  Comment_Line_Pipe.color=syn_rgb(0,128,0);
+  Comment_Line_Pipe.style=SYNS_CUSTOM|SYNS_ITALIC;
+  Syn_CustomStyle Comment_Line_Pound;
+  Comment_Line_Pound.name="Comment Line (#)";
+  Comment_Line_Pound.beginning="#";
+  Comment_Line_Pound.ending="\n";
+  Comment_Line_Pound.ignoreEndingAfter=0;
+  Comment_Line_Pound.switchable=false;
+  Comment_Line_Pound.color=syn_rgb(0,128,0);
+  Comment_Line_Pound.style=SYNS_CUSTOM|SYNS_ITALIC;
+  Syn_CustomStyle Comment_Line_Semicolon;
+  Comment_Line_Semicolon.name="Comment";
+  Comment_Line_Semicolon.beginning=";";
+  Comment_Line_Semicolon.ending="\n";
+  Comment_Line_Semicolon.ignoreEndingAfter=0;
+  Comment_Line_Semicolon.switchable=false;
+  Comment_Line_Semicolon.color=syn_rgb(0,128,0);
+  Comment_Line_Semicolon.style=SYNS_CUSTOM|SYNS_ITALIC;
+  Syn_CustomStyle String_DoubleQuoted;
+  String_DoubleQuoted.name="String (double-quoted)";
+  String_DoubleQuoted.beginning="\"";
+  String_DoubleQuoted.ending="\"";
+  String_DoubleQuoted.ignoreEndingAfter=0;
+  String_DoubleQuoted.switchable=false;
+  String_DoubleQuoted.color=syn_rgb(128,0,0);
+  String_DoubleQuoted.style=0;
+  Syn_CustomStyle String_SingleQuoted;
+  String_SingleQuoted.name="String (single-quoted)";
+  String_SingleQuoted.beginning="\'";
+  String_SingleQuoted.ending="\'";
+  String_SingleQuoted.ignoreEndingAfter=0;
+  String_SingleQuoted.switchable=false;
+  String_SingleQuoted.color=syn_rgb(128,0,0);
+  String_SingleQuoted.style=0;
+  Syn_CustomStyle Compiler_Directive;
+  Compiler_Directive.name="Compiler Directive";
+  Compiler_Directive.beginning="#";
+  Compiler_Directive.ending="\n";
+  Compiler_Directive.ignoreEndingAfter='\\';
+  Compiler_Directive.switchable=true;
+  Compiler_Directive.color=syn_rgb(0,128,128);
+  Compiler_Directive.style=SYNS_CUSTOM|SYNS_BOLD;
+  prefs->synC.customStyles.clear();
+  prefs->synS.customStyles.clear();
+  prefs->synASM.customStyles.clear();
+  prefs->synQLL.customStyles.clear();
+  prefs->synC.customStyles << Comment_Area << Comment_Line << SCS_String << Character << Preprocessor_Directive;
+  prefs->synS.customStyles << Comment_Area << Comment_Line_Pipe << Comment_Line_Pound << SCS_String << Character;
+  prefs->synASM.customStyles << Comment_Line_Semicolon << String_DoubleQuoted << String_SingleQuoted;
+  prefs->synQLL.customStyles << Comment_Area << Comment_Line << SCS_String << Character << Compiler_Directive;
+  Syn_WordList C_Keywords;
+  C_Keywords.name="C Keywords";
+  C_Keywords.list="__alignof__\n"
+                  "__asm__\n"
+                  "__attribute__\n"
+                  "__complex__\n"
+                  "__const__\n"
+                  "__extension__\n"
+                  "__imag__\n"
+                  "__inline__\n"
+                  "__label__\n"
+                  "__real__\n"
+                  "__typeof__\n"
+                  "asm\n"
+                  "auto\n"
+                  "break\n"
+                  "case\n"
+                  "char\n"
+                  "const\n"
+                  "continue\n"
+                  "default\n"
+                  "do,double\n"
+                  "else\n"
+                  "enum\n"
+                  "extern\n"
+                  "float\n"
+                  "for,goto\n"
+                  "if,inline\n"
+                  "int,long\n"
+                  "register\n"
+                  "return\n"
+                  "short\n"
+                  "signed\n"
+                  "sizeof\n"
+                  "static\n"
+                  "struct\n"
+                  "switch\n"
+                  "typedef\n"
+                  "typeof\n"
+                  "union\n"
+                  "unsigned\n"
+                  "void\n"
+                  "volatile\n"
+                  "while\n";
+  C_Keywords.color=syn_rgb(0,0,255);
+  C_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
+  C_Keywords.caseSensitive=true;
+  Syn_WordList Data_Movement;
+  Data_Movement.name="Data Movement";
+  Data_Movement.list= "EXG\n"
+                      "LEA\n"
+                      "LINK\n"
+                      "MOV\n"
+                      "MOVE\n"
+                      "MOVEA\n"
+                      "MOVEM\n"
+                      "MOVEP\n"
+                      "MOVEQ\n"
+                      "MOVM\n"
+                      "MOVP\n"
+                      "MOVQ\n"
+                      "PEA\n"
+                      "UNLK\n";
+  Data_Movement.color=syn_rgb(0,0,255);
+  Data_Movement.style=0;
+  Data_Movement.caseSensitive=false;
+  Syn_WordList Integer_Arithmetic;
+  Integer_Arithmetic.name="Integer Arithmetic";
+  Integer_Arithmetic.list="ADD\n"
+                          "ADDA\n"
+                          "ADDI\n"
+                          "ADDQ\n"
+                          "ADDX\n"
+                          "CLR\n"
+                          "CMP\n"
+                          "CMPA\n"
+                          "CMPI\n"
+                          "CMPM\n"
+                          "DIVS\n"
+                          "DIVU\n"
+                          "EXT\n"
+                          "MULS\n"
+                          "MULU\n"
+                          "NEG\n"
+                          "NEGX\n"
+                          "SUB\n"
+                          "SUBA\n"
+                          "SUBI\n"
+                          "SUBQ\n"
+                          "SUBX\n";
+  Integer_Arithmetic.color=syn_rgb(0,0,255);
+  Integer_Arithmetic.style=0;
+  Integer_Arithmetic.caseSensitive=false;
+  Syn_WordList Logical_Instructions;
+  Logical_Instructions.name="Logical Instructions";
+  Logical_Instructions.list="AND\n"
+                            "ANDI\n"
+                            "EOR\n"
+                            "EORI\n"
+                            "NOT\n"
+                            "OR\n"
+                            "ORI\n";
+  Logical_Instructions.color=syn_rgb(0,0,255);
+  Logical_Instructions.style=0;
+  Logical_Instructions.caseSensitive=false;
+  Syn_WordList ShiftRotation_Instructions;
+  ShiftRotation_Instructions.name="Shift/Rotation Instructions";
+  ShiftRotation_Instructions.list="ASL\n"
+                                  "ASR\n"
+                                  "LSL\n"
+                                  "LSR\n"
+                                  "ROL\n"
+                                  "ROR\n"
+                                  "ROXL\n"
+                                  "ROXR\n"
+                                  "SWAP\n";
+  ShiftRotation_Instructions.color=syn_rgb(0,0,255);
+  ShiftRotation_Instructions.style=0;
+  ShiftRotation_Instructions.caseSensitive=false;
+  Syn_WordList Bit_Manipulation;
+  Bit_Manipulation.name="Bit Manipulation";
+  Bit_Manipulation.list="BCHG\n"
+                        "BCLR\n"
+                        "BSET\n"
+                        "BTST\n";
+  Bit_Manipulation.color=syn_rgb(0,0,255);
+  Bit_Manipulation.style=0;
+  Bit_Manipulation.caseSensitive=false;
+  Syn_WordList Program_Control;
+  Program_Control.name="Program Control";
+  Program_Control.list= "BCC\n"
+                        "BCS\n"
+                        "BEQ\n"
+                        "BGE\n"
+                        "BGT\n"
+                        "BHI\n"
+                        "BLE\n"
+                        "BLS\n"
+                        "BLT\n"
+                        "BMI\n"
+                        "BNE\n"
+                        "BPL\n"
+                        "BRA\n"
+                        "BSR\n"
+                        "BVC\n"
+                        "BVS\n"
+                        "JBCC\n"
+                        "JBCS\n"
+                        "JBEQ\n"
+                        "JBGE\n"
+                        "JBGT\n"
+                        "JBHI\n"
+                        "JBLE\n"
+                        "JBLS\n"
+                        "JBLT\n"
+                        "JBMI\n"
+                        "JBNE\n"
+                        "JBPL\n"
+                        "JBRA\n"
+                        "JBSR\n"
+                        "JBVC\n"
+                        "JBVS\n"
+                        "JSR\n"
+                        "JRA\n"
+                        "JMP\n"
+                        "NOP\n"
+                        "RTR\n"
+                        "RTS\n"
+                        "SCC\n"
+                        "SCS\n"
+                        "SEQ\n"
+                        "SF\n"
+                        "SGE\n"
+                        "SGT\n"
+                        "SHI\n"
+                        "SLE\n"
+                        "SLS\n"
+                        "SLT\n"
+                        "SMI\n"
+                        "SNE\n"
+                        "SPL\n"
+                        "ST\n"
+                        "SVC\n"
+                        "SVS\n"
+                        "TST\n"
+                        "JHI\n"
+                        "JLS\n"
+                        "JCC\n"
+                        "JCS\n"
+                        "JNE\n"
+                        "JEQ\n"
+                        "JVC\n"
+                        "JVS\n"
+                        "JPL\n"
+                        "JMI\n"
+                        "JGE\n"
+                        "JLT\n"
+                        "JGT\n"
+                        "JLE\n"
+                        "DBHI\n"
+                        "DBLS\n"
+                        "DBCC\n"
+                        "DBCS\n"
+                        "DBNE\n"
+                        "DBEQ\n"
+                        "DBVC\n"
+                        "DBVS\n"
+                        "DBPL\n"
+                        "DBMI\n"
+                        "DBGE\n"
+                        "DBLT\n"
+                        "DBGT\n"
+                        "DBLE\n"
+                        "DBF\n"
+                        "DBRA\n"
+                        "DBT\n"
+                        "FJNE\n"
+                        "FJEQ\n"
+                        "FJGE\n"
+                        "FJLT\n"
+                        "FJGT\n"
+                        "FJLE\n"
+                        "FJF\n"
+                        "FJT\n"
+                        "FJGL\n"
+                        "FJGLE\n"
+                        "FJNGE\n"
+                        "FJNGL\n"
+                        "FJNGLE\n"
+                        "FJNGT\n"
+                        "FJNLE\n"
+                        "FJNLT\n"
+                        "FJOGE\n"
+                        "FJOGL\n"
+                        "FJOGT\n"
+                        "FJOLE\n"
+                        "FJOLT\n"
+                        "FJOR\n"
+                        "FJSEQ\n"
+                        "FJSF\n"
+                        "FJSNE\n"
+                        "FJST\n"
+                        "FJUEQ\n"
+                        "FJUGE\n"
+                        "FJUGT\n"
+                        "FJULE\n"
+                        "FJULT\n"
+                        "FJUN\n";
+  Program_Control.color=syn_rgb(0,0,255);
+  Program_Control.style=0;
+  Program_Control.caseSensitive=false;
+  Syn_WordList System_Control;
+  System_Control.name="System Control";
+  System_Control.list="ILLEGAL\n"
+                      "RTE\n"
+                      "TRAP\n";
+  System_Control.color=syn_rgb(0,0,255);
+  System_Control.style=0;
+  System_Control.caseSensitive=false;
+  Syn_WordList SWL_Extensions;
+  SWL_Extensions.name="Extensions";
+  SWL_Extensions.list="B\n"
+                      "L\n"
+                      "S\n"
+                      "W\n";
+  SWL_Extensions.color=syn_rgb(0,128,64);
+  SWL_Extensions.style=0;
+  SWL_Extensions.caseSensitive=false;
+  Syn_WordList Assembler_Directives;
+  Assembler_Directives.name="Assembler Directives";
+  Assembler_Directives.list="abort\n"
+                            "align\n"
+                            "ascii\n"
+                            "asciz\n"
+                            "balign\n"
+                            "balignw\n"
+                            "balignl\n"
+                            "byte\n"
+                            "comm\n"
+                            "data\n"
+                            "def\n"
+                            "dim\n"
+                            "double\n"
+                            "eject\n"
+                            "else\n"
+                            "end\n"
+                            "elseif\n"
+                            "endef\n"
+                            "endfunc\n"
+                            "endif\n"
+                            "endm\n"
+                            "endr\n"
+                            "equ\n"
+                            "equiv\n"
+                            "err\n"
+                            "even\n"
+                            "exitm\n"
+                            "extern\n"
+                            "fail\n"
+                            "file\n"
+                            "fill\n"
+                            "float\n"
+                            "func\n"
+                            "global\n"
+                            "hword\n"
+                            "ident\n"
+                            "if\n"
+                            "include\n"
+                            "incbin\n"
+                            "int\n"
+                            "irp\n"
+                            "irpc\n"
+                            "lcomm\n"
+                            "lflags\n"
+                            "line\n"
+                            "ln\n"
+                            "list\n"
+                            "long\n"
+                            "macro\n"
+                            "mri\n"
+                            "nolist\n"
+                            "octa\n"
+                            "org\n"
+                            "p2align\n"
+                            "p2alignw\n"
+                            "p2alignl\n"
+                            "print\n"
+                            "psize\n"
+                            "purgem\n"
+                            "quad\n"
+                            "rept\n"
+                            "sbttl\n"
+                            "scl\n"
+                            "section\n"
+                            "set\n"
+                            "short\n"
+                            "single\n"
+                            "size\n"
+                            "sleb128\n"
+                            "skip\n"
+                            "space\n"
+                            "stabd\n"
+                            "stabn\n"
+                            "stabs\n"
+                            "string\n"
+                            "struct\n"
+                            "tag\n"
+                            "text\n"
+                            "title\n"
+                            "type\n"
+                            "uleb128\n"
+                            "val\n"
+                            "vtable_entry\n"
+                            "word\n";
+  Assembler_Directives.color=syn_rgb(0,0,255);
+  Assembler_Directives.style=SYNS_CUSTOM|SYNS_BOLD;
+  Assembler_Directives.caseSensitive=true;
+  Syn_WordList SWL_Registers;
+  SWL_Registers.name="Registers";
+  SWL_Registers.list= "a0\n"
+                      "a1\n"
+                      "a2\n"
+                      "a3\n"
+                      "a4\n"
+                      "a5\n"
+                      "a6\n"
+                      "a7\n"
+                      "d0\n"
+                      "d1\n"
+                      "d2\n"
+                      "d3\n"
+                      "d4\n"
+                      "d5\n"
+                      "d6\n"
+                      "d7\n"
+                      "fp\n"
+                      "pc\n"
+                      "sp\n"
+                      "sr\n";
+  SWL_Registers.color=syn_rgb(255,0,0);
+  SWL_Registers.style=SYNS_CUSTOM|SYNS_UNDERLINE;
+  SWL_Registers.caseSensitive=false;
+  Syn_WordList Data_Movement_a68k;
+  Data_Movement_a68k.name="Data Movement";
+  Data_Movement_a68k.list= "EXG\n"
+                      "LEA\n"
+                      "LINK\n"
+                      "MOVE\n"
+                      "MOVEA\n"
+                      "MOVEM\n"
+                      "MOVEP\n"
+                      "MOVEQ\n"
+                      "PEA\n"
+                      "UNLK\n";
+  Data_Movement_a68k.color=syn_rgb(0,0,255);
+  Data_Movement_a68k.style=0;
+  Data_Movement_a68k.caseSensitive=false;
+  Syn_WordList ShiftRotation_Instructions_a68k;
+  ShiftRotation_Instructions_a68k.name="Shift/Rotation Instructions";
+  ShiftRotation_Instructions_a68k.list="ASL\n"
+                                  "ASR\n"
+                                  "LSL\n"
+                                  "LSR\n"
+                                  "ROL\n"
+                                  "ROLX\n"
+                                  "ROR\n"
+                                  "RORX\n"
+                                  "ROXL\n"
+                                  "ROXR\n"
+                                  "SWAP\n";
+  ShiftRotation_Instructions_a68k.color=syn_rgb(0,0,255);
+  ShiftRotation_Instructions_a68k.style=0;
+  ShiftRotation_Instructions_a68k.caseSensitive=false;
+  Syn_WordList Program_Control_a68k;
+  Program_Control_a68k.name="Program Control";
+  Program_Control_a68k.list="BCC\n"
+                            "BCS\n"
+                            "BEQ\n"
+                            "BGE\n"
+                            "BGT\n"
+                            "BHI\n"
+                            "BHS\n"
+                            "BLE\n"
+                            "BLO\n"
+                            "BLS\n"
+                            "BLT\n"
+                            "BMI\n"
+                            "BNE\n"
+                            "BPL\n"
+                            "BRA\n"
+                            "BSR\n"
+                            "BVC\n"
+                            "BVS\n"
+                            "DBCC\n"
+                            "DBCS\n"
+                            "DBEQ\n"
+                            "DBF\n"
+                            "DBGE\n"
+                            "DBGT\n"
+                            "DBHI\n"
+                            "DBHS\n"
+                            "DBLE\n"
+                            "DBLO\n"
+                            "DBLS\n"
+                            "DBLT\n"
+                            "DBMI\n"
+                            "DBNE\n"
+                            "DBPL\n"
+                            "DBRA\n"
+                            "DBT\n"
+                            "DBVC\n"
+                            "DBVS\n"
+                            "JMP\n"
+                            "JSR\n"
+                            "NOP\n"
+                            "RTR\n"
+                            "RTS\n"
+                            "SCC\n"
+                            "SCS\n"
+                            "SEQ\n"
+                            "SF\n"
+                            "SGE\n"
+                            "SGT\n"
+                            "SHI\n"
+                            "SHS\n"
+                            "SLE\n"
+                            "SLO\n"
+                            "SLS\n"
+                            "SLT\n"
+                            "SMI\n"
+                            "SNE\n"
+                            "SPL\n"
+                            "ST\n"
+                            "SVC\n"
+                            "SVS\n"
+                            "TST\n";
+  Program_Control_a68k.color=syn_rgb(0,0,255);
+  Program_Control_a68k.style=0;
+  Program_Control_a68k.caseSensitive=false;
+  Syn_WordList Assembler_Directives_a68k;
+  Assembler_Directives_a68k.name="Assembler Directives";
+  Assembler_Directives_a68k.list= "BSS\n"
+                                  "CNOP\n"
+                                  "CSEG\n"
+                                  "DSEG\n"
+                                  "DC\n"
+                                  "DCB\n"
+                                  "DS\n"
+                                  "END\n"
+                                  "ENDC\n"
+                                  "ENDIF\n"
+                                  "ENDM\n"
+                                  "EQU\n"
+                                  "EQUR\n"
+                                  "EVEN\n"
+                                  "FAR\n"
+                                  "IDNT\n"
+                                  "IFC\n"
+                                  "IFD\n"
+                                  "IFEQ\n"
+                                  "IFGE\n"
+                                  "IFGT\n"
+                                  "IFLE\n"
+                                  "IFLT\n"
+                                  "IFNC\n"
+                                  "IFND\n"
+                                  "IFNE\n"
+                                  "INCBIN\n"
+                                  "INCLUDE\n"
+                                  "LIST\n"
+                                  "MACRO\n"
+                                  "NEAR\n"
+                                  "NOLIST\n"
+                                  "ORG\n"
+                                  "PAGE\n"
+                                  "PUBLIC\n"
+                                  "REG\n"
+                                  "RORG\n"
+                                  "SECTION\n"
+                                  "SET\n"
+                                  "SPC\n"
+                                  "TITLE\n"
+                                  "TTL\n"
+                                  "XDEF\n"
+                                  "XREF\n";
+  Assembler_Directives_a68k.color=syn_rgb(0,0,255);
+  Assembler_Directives_a68k.style=SYNS_CUSTOM|SYNS_BOLD;
+  Assembler_Directives_a68k.caseSensitive=false;
+  Syn_WordList SWL_Sections;
+  SWL_Sections.name="Sections";
+  SWL_Sections.list="$$ACTIONS\n"
+                    "$$CONNECTIONS\n"
+                    "$$END\n"
+                    "$$END_TEST\n"
+                    "$$EVENTS\n"
+                    "$$EXTERN\n"
+                    "$$LOCATIONS\n"
+                    "$$MESSAGES\n"
+                    "$$OBJECTS\n"
+                    "$$OLDSTYLE_SYSTEM_MESSAGES\n"
+                    "$$PICTURES\n"
+                    "$$PICTURES_TEST\n"
+                    "$$SYSTEM_MESSAGES\n"
+                    "$$TITLE\n"
+                    "$$VOCABULARY\n";
+  SWL_Sections.color=syn_rgb(255,0,0);
+  SWL_Sections.style=SYNS_CUSTOM|SYNS_BOLD;
+  SWL_Sections.caseSensitive=true;
+  Syn_WordList Section_Specific_Keywords;
+  Section_Specific_Keywords.name="Section-specific Keywords";
+  Section_Specific_Keywords.list= "ACTION\n"
+                                  "BITMAP\n"
+                                  "CBLOCK\n"
+                                  "CONN\n"
+                                  "DEFINE\n"
+                                  "DRAWING\n"
+                                  "END_BITMAP\n"
+                                  "END_CBLOCK\n"
+                                  "END_DRAWING\n"
+                                  "END_PACKED_BITMAP\n"
+                                  "EVENT\n"
+                                  "FROM\n"
+                                  "LOC\n"
+                                  "MSG\n"
+                                  "OBJ\n"
+                                  "PACKED_BITMAP\n"
+                                  "WORD\n";
+  Section_Specific_Keywords.color=syn_rgb(64,128,128);
+  Section_Specific_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
+  Section_Specific_Keywords.caseSensitive=true;
+  Syn_WordList AdditionalKeywords;
+  AdditionalKeywords.name="Additional Keywords";
+  AdditionalKeywords.list="CONTINUE\n"
+                          "ELSE\n";
+  AdditionalKeywords.color=syn_rgb(64,128,128);
+  AdditionalKeywords.style=SYNS_CUSTOM|SYNS_BOLD;
+  AdditionalKeywords.caseSensitive=true;
+  Syn_WordList PredefinedAliases;
+  PredefinedAliases.name="Predefined Aliases";
+  PredefinedAliases.list= "$ALSOSEE\n"
+                          "$ARG\n"
+                          "$CARRIED\n"
+                          "$CENTER\n"
+                          "$CNT1\n"
+                          "$CNT2\n"
+                          "$CNT3\n"
+                          "$CNT4\n"
+                          "$CONT\n"
+                          "$CURLOC\n"
+                          "$DARK\n"
+                          "$DARKCNT\n"
+                          "$DESC\n"
+                          "$DESC_CNT\n"
+                          "$DESC_DARKCNT\n"
+                          "$DESC_NOLIGHTCNT\n"
+                          "$DONE\n"
+                          "$ENDGAME\n"
+                          "$EXIT\n"
+                          "$FAIL\n"
+                          "$FONT\n"
+                          "$FULLSCR\n"
+                          "$GCONTROL\n"
+                          "$LSOURCE\n"
+                          "$MAXCAR\n"
+                          "$NOLIGHTCNT\n"
+                          "$NOUN\n"
+                          "$NOWHERE\n"
+                          "$NULL\n"
+                          "$NUMCAR\n"
+                          "$PROMPT\n"
+                          "$RESTART\n"
+                          "$SCORE\n"
+                          "$SPECIAL\n"
+                          "$SUBROUTINE\n"
+                          "$TURNHI\n"
+                          "$TURNLO\n"
+                          "$VERB\n"
+                          "$WORN\n";
+  PredefinedAliases.color=syn_rgb(128,0,128);
+  PredefinedAliases.style=SYNS_CUSTOM|SYNS_BOLD;
+  PredefinedAliases.caseSensitive=true;
+  Syn_WordList SWL_Conditions;
+  SWL_Conditions.name="Conditions";
+  SWL_Conditions.list="ABSENT\n"
+                      "AT\n"
+                      "ATGT\n"
+                      "ATLT\n"
+                      "CARRIED\n"
+                      "CHANCE\n"
+                      "CREATED\n"
+                      "EQ\n"
+                      "EQWORD\n"
+                      "EXTWORD\n"
+                      "GT\n"
+                      "HERE\n"
+                      "ISAT\n"
+                      "ISDESC\n"
+                      "ISNOTAT\n"
+                      "ISNOTNULL\n"
+                      "ISNULL\n"
+                      "LT\n"
+                      "NEQWORD\n"
+                      "NOTAT\n"
+                      "NOTCARR\n"
+                      "NOTCREATED\n"
+                      "NOTEQ\n"
+                      "NOTHERE\n"
+                      "NOTSAME\n"
+                      "NOTWORN\n"
+                      "NOTZERO\n"
+                      "PRESENT\n"
+                      "SAME\n"
+                      "TRYMOVE\n"
+                      "WORN\n"
+                      "ZERO\n";
+  SWL_Conditions.color=syn_rgb(0,0,255);
+  SWL_Conditions.style=SYNS_CUSTOM|SYNS_BOLD;
+  SWL_Conditions.caseSensitive=true;
+  Syn_WordList SWL_Actions;
+  SWL_Actions.name="Actions";
+  SWL_Actions.list= "ADD\n"
+                    "ALSOSEE\n"
+                    "ANYKEY\n"
+                    "AUTOD\n"
+                    "AUTOG\n"
+                    "AUTOR\n"
+                    "AUTOW\n"
+                    "BIGFONT\n"
+                    "CANCEL\n"
+                    "CLEAR\n"
+                    "CLS\n"
+                    "COPYFF\n"
+                    "COPYFO\n"
+                    "COPYOF\n"
+                    "COPYOO\n"
+                    "CREATE\n"
+                    "DECCAR\n"
+                    "DESC\n"
+                    "DESTROY\n"
+                    "DONE\n"
+                    "DROP\n"
+                    "DROPALL\n"
+                    "END\n"
+                    "ENDDESC\n"
+                    "EXIT\n"
+                    "EXTERN\n"
+                    "GET\n"
+                    "GETWORD\n"
+                    "GOTO\n"
+                    "INCCAR\n"
+                    "INVEN\n"
+                    "LET\n"
+                    "LISTAT\n"
+                    "LISTOBJ\n"
+                    "LOAD\n"
+                    "MAXCAR\n"
+                    "MES\n"
+                    "MESFLAG\n"
+                    "MESSAGE\n"
+                    "MINUS\n"
+                    "NEWLINE\n"
+                    "NOTDONE\n"
+                    "OK\n"
+                    "PAUSE\n"
+                    "PICNORM\n"
+                    "PICOFF\n"
+                    "PICON\n"
+                    "PLACE\n"
+                    "PLUS\n"
+                    "PRINT\n"
+                    "PROMPT\n"
+                    "PUTO\n"
+                    "QUIT\n"
+                    "QVERSION\n"
+                    "RAMLOAD\n"
+                    "RAMSAVE\n"
+                    "RANDOM\n"
+                    "REDRAW\n"
+                    "REMOVE\n"
+                    "RESTART\n"
+                    "SAVE\n"
+                    "SCORE\n"
+                    "SET\n"
+                    "SETNOUN\n"
+                    "SETVERB\n"
+                    "SHOWLOC\n"
+                    "SMLFONT\n"
+                    "SUB\n"
+                    "SWAP\n"
+                    "SYSMESS\n"
+                    "TURNS\n"
+                    "WEAR\n"
+                    "WHATO\n"
+                    "WHEREO\n"
+                    "ZAPSCR\n";
+  SWL_Actions.color=syn_rgb(0,0,160);
+  SWL_Actions.style=SYNS_CUSTOM|SYNS_BOLD;
+  SWL_Actions.caseSensitive=true;
+  Syn_WordList Drawing_Primitives;
+  Drawing_Primitives.name="Drawing primitives";
+  Drawing_Primitives.list="AMOVE\n"
+                          "CALL,ELLIPSE\n"
+                          "FILL,INV_ELLIPSE\n"
+                          "INV_LINE\n"
+                          "INV_PLOT\n"
+                          "INV_RPLOT\n"
+                          "LINE,MOVE\n"
+                          "PLOT,RPLOT\n"
+                          "SHADE,XOR_ELLIPSE\n"
+                          "XOR_LINE\n"
+                          "XOR_PLOT\n"
+                          "XOR_RPLOT\n";
+  Drawing_Primitives.color=syn_rgb(0,64,128);
+  Drawing_Primitives.style=SYNS_CUSTOM|SYNS_BOLD;
+  Drawing_Primitives.caseSensitive=true;
+  Syn_WordList Drawing_Directions;
+  Drawing_Directions.name="Drawing directions";
+  Drawing_Directions.list="DOWN\n"
+                          "DOWN_LEFT\n"
+                          "DOWN_RIGHT\n"
+                          "LEFT\n"
+                          "LEFT_DOWN\n"
+                          "LEFT_UP\n"
+                          "RIGHT\n"
+                          "RIGHT_DOWN\n"
+                          "RIGHT_UP\n"
+                          "UP\n"
+                          "UP_LEFT\n"
+                          "UP_RIGHT\n";
+  Drawing_Directions.color=syn_rgb(0,128,0);
+  Drawing_Directions.style=SYNS_CUSTOM|SYNS_BOLD;
+  Drawing_Directions.caseSensitive=true;
+  Syn_WordList Shading_Patterns;
+  Shading_Patterns.name="Shading patterns";
+  Shading_Patterns.list="$BKSLASHFILL\n"
+                        "$BRICKFILL\n"
+                        "$CHAINFILL\n"
+                        "$CIRCLEFILL\n"
+                        "$CLOSEDASHFILL\n"
+                        "$CLOSEDOTFILL\n"
+                        "$CLOSEWAVEFILL\n"
+                        "$CROSSFILL\n"
+                        "$DASHFILL\n"
+                        "$DOTFILL\n"
+                        "$HATCHFILL\n"
+                        "$INTERLEAVEFILL\n"
+                        "$LIGHTDOTFILL\n"
+                        "$LIGHTLINEFILL\n"
+                        "$LINEFILL\n"
+                        "$SLASHFILL\n"
+                        "$SOLIDFILL\n"
+                        "$SQDOTFILL\n"
+                        "$SQUAREFILL\n"
+                        "$THICKBKSLASHFILL\n"
+                        "$THICKHATCHFILL\n"
+                        "$THICKLINEFILL\n"
+                        "$THICKSLASHFILL\n"
+                        "$VDASHFILL\n"
+                        "$VINTERLEAVEFILL\n"
+                        "$VLDOTFILL\n"
+                        "$VLIGHTLINEFILL\n"
+                        "$VLINEFILL\n"
+                        "$VTHICKLINEFILL\n"
+                        "$WAVEFILL\n"
+                        "$WIDEDOTFILL\n"
+                        "$XMARKFILL\n"
+                        "$ZIGZAGFILL\n";
+  Shading_Patterns.color=syn_rgb(128,0,128);
+  Shading_Patterns.style=SYNS_CUSTOM|SYNS_BOLD;
+  Shading_Patterns.caseSensitive=true;
+  Syn_WordList NonFunctional_Keywords;
+  NonFunctional_Keywords.name="Non-functional keywords";
+  NonFunctional_Keywords.list="BEEP\n"
+                              "BLOCK\n"
+                              "BORDER\n"
+                              "BRIGHT\n"
+                              "FLASH\n"
+                              "INK\n"
+                              "PAPER\n";
+  NonFunctional_Keywords.color=syn_rgb(192,192,192);
+  NonFunctional_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
+  NonFunctional_Keywords.caseSensitive=true;
+  Syn_WordList External_Symbols;
+  External_Symbols.name="External symbols";
+  External_Symbols.list="$ACTIONS$\n"
+                        "$ARG$\n"
+                        "$BMPUT$\n"
+                        "$BPCKPUT$\n"
+                        "$BUFFER$\n"
+                        "$CONNECTIONS$\n"
+                        "$EVENTS$\n"
+                        "$EXTERN$\n"
+                        "$FLAGS$\n"
+                        "$FLAGS_BACKUP$\n"
+                        "$GDF$\n"
+                        "$GETLINE$\n"
+                        "$LOCATIONS$\n"
+                        "$LQL$\n"
+                        "$MAXCAR$\n"
+                        "$MESSAGES$\n"
+                        "$NFLAG$\n"
+                        "$NLOC$\n"
+                        "$NMSG$\n"
+                        "$NOBJ$\n"
+                        "$NSYSMSG$\n"
+                        "$NWORD$\n"
+                        "$OBJECTS$\n"
+                        "$PDRAW$\n"
+                        "$PICTURE$\n"
+                        "$PRINT$\n"
+                        "$RAM_SAVED$\n"
+                        "$SCALEX$\n"
+                        "$SCALEY$\n"
+                        "$SSCR$\n"
+                        "$SYSTEM_MESSAGES$\n"
+                        "$WORDS$\n";
+  External_Symbols.color=syn_rgb(0,128,64);
+  External_Symbols.style=SYNS_CUSTOM|SYNS_BOLD;
+  External_Symbols.caseSensitive=true;
+  
+  prefs->synC.wordLists.clear();
+  prefs->synS.wordLists.clear();
+  prefs->synASM.wordLists.clear();
+  prefs->synQLL.wordLists.clear();
+  prefs->synC.wordLists << C_Keywords;
+  prefs->synS.wordLists << Data_Movement << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions << Bit_Manipulation << Program_Control << System_Control << SWL_Extensions << Assembler_Directives << SWL_Registers;
+  prefs->synASM.wordLists << Data_Movement_a68k << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions_a68k << Bit_Manipulation << Program_Control_a68k << System_Control << SWL_Extensions << Assembler_Directives_a68k << SWL_Registers;
+  prefs->synQLL.wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
+}
+
 void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg)
 {
     if (!cfg->hasGroup("Preferences")) {

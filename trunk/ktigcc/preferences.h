@@ -5,13 +5,17 @@ typedef struct
   unsigned char reserved;
 } Syn_Color;
 
-typedef struct
-{
-	unsigned short custom:1,bold:1,underline:1,italic:1,strikeout:1;
-} Syn_Style;
+#define SYNS_CUSTOM    1
+#define SYNS_BOLD      2
+#define SYNS_UNDERLINE 4
+#define SYNS_ITALIC    8
+#define SYNS_STRIKEOUT 16
+
+typedef unsigned short Syn_Style;
 
 typedef struct
 {
+    QString name;
 	QString beginning;
 	QString ending;
 	char ignoreEndingAfter;
@@ -22,7 +26,8 @@ typedef struct
 
 typedef struct
 {
-	QStringList list;
+    QString name;
+	QString list; //Items are delimited by '\n' characters; blank lines are ignored.
 	Syn_Color color;
 	Syn_Style style;
 	char caseSensitive;
@@ -33,7 +38,7 @@ typedef struct
 	char enabled;
 	Syn_Color numberColor;
 	Syn_Color symbolColor;
-	Syn_Color parenthesisColor;
+	QValueList<Syn_Color> parenthesisColors;
 	Syn_Style numberStyle;
 	Syn_Style symbolStyle;
 	Syn_Style parenthesisStyle;
@@ -49,6 +54,10 @@ typedef struct
   bool lazyLoading;
   unsigned short tabWidthC;
   unsigned short tabWidthAsm;
+  Syn_SettingsForDoc synC;
+  Syn_SettingsForDoc synS;
+  Syn_SettingsForDoc synASM;
+  Syn_SettingsForDoc synQLL;
 } TIGCCPrefs;
 
 void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg);
