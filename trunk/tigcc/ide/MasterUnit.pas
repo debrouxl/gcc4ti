@@ -543,7 +543,7 @@ initialization
 		end;
 		with WordLists.Add do begin
 			Caption := 'Data Movement';
-			Words.CommaText := 'EXG,LEA,LINK,MOV,MOVE,MOVEA,MOVEM,MOVEP,MOVEQ,PEA,UNLK';
+			Words.CommaText := 'EXG,LEA,LINK,MOVE,MOVEA,MOVEM,MOVEP,MOVEQ,PEA,UNLK';
 			Color := clBlue;
 			CustomColor := True;
 			CaseSensitive := False;
