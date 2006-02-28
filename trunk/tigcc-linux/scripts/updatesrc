@@ -3,7 +3,6 @@
 TIGCCCVSDIR=../../tigcccvs
 TIGCCLIBDIR=/e/TI-89/Compilers/tigcc/Lib
 A68KSRCDIR=/e/TI-89/a68k/source
-PSTARTERSRCDIR=/e/TI-89/pstarter
 TIGCCLINUXCVSDIR=../../tigcc-linux-cvs
 
 
@@ -30,6 +29,12 @@ cp -prf $TIGCCCVSDIR/include/ASM ../tigcclib/include/asm
 cp -prf $TIGCCCVSDIR/include/S ../tigcclib/include/s
 rm -rf ../tigcclib/include/CVS ../tigcclib/include/asm/CVS ../tigcclib/include/c/CVS \
        ../tigcclib/include/c/Completion ../tigcclib/include/s/CVS
+
+echo Updating pstarter...
+rm -rf ../tigcclib/pstarter/*
+cp -prf $TIGCCCVSDIR/pstarter/* ../tigcclib/pstarter
+rm -rf ../tigcclib/pstarter/CVS ../tigcclib/pstarter/lzma/CVS ../tigcclib/pstarter/ttunpack/CVS \
+       ../tigcclib/pstarter/ttupfast/CVS
 
 
 # Toolchain components in CVS
@@ -66,10 +71,6 @@ cp -pf $TIGCCLIBDIR/tigcc.a $TIGCCLIBDIR/pstarter.o ../tigcclib/lib
 echo Updating a68k...
 rm -rf ../sources/a68k/*
 cp -prf $A68KSRCDIR/* ../sources/a68k
-
-echo Updating pstarter...
-rm -rf ../tigcclib/pstarter/*
-cp -prf $PSTARTERSRCDIR/LGPL.txt $PSTARTERSRCDIR/pstarter.s $PSTARTERSRCDIR/pstarter.tpr $PSTARTERSRCDIR/pstarter.txt $PSTARTERSRCDIR/pst-ttup.h $PSTARTERSRCDIR/ttunpack ../tigcclib/pstarter
 
 
 # Components in Linux/*nix CVS
