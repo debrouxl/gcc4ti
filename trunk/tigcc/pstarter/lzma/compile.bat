@@ -1,0 +1,1 @@
+tigcc -Os -fomit-frame-pointer -mpcrel -D_LZMA_UINT32_IS_ULONG -S LzmaDecode.c
