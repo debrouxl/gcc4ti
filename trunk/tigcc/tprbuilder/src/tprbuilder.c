@@ -43,7 +43,7 @@ char **asm_files  = NULL;
 char *tigcc_base = NULL;
 int c_file_count=0, s_file_count=0, m_file_count=0, h_file_count=0,
     asm_file_count=0, a_file_count=0, o_file_count=0;
-Settings settings = {0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0};
+Settings settings = {0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0};
 LibOpts libopts = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,RT_NONE,RT_NONE,RT_KERNEL,RT_KERNEL};
 
 int clean = 0;
@@ -91,15 +91,15 @@ int main(int argc, char **argv)
 
     /* GNU stuffs */
     program_name = argv[0];
-    
+
     i = decode_switches (argc, argv);
-    
+
     /* Do some checkings */
     if (argc < 2) {
         fprintf(stderr, "tprbuilder: no input files\n");
         exit(0);
     }
-    
+
     /* Register exit callback */
     if (atexit(safe_exit) != 0) {
         fprintf(stderr, "Fatal error: unable to register safe exit callback\n");
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
         if(!clean) {
             build_files(outfile);
         }
-    
+
         /* Clean-up (if enabled) */
         if(clean) {
             clean_files(outfile);
@@ -136,23 +136,23 @@ int main(int argc, char **argv)
     return 0;
 }
 
-/* 
+/*
    Determine the size of a file array
 */
 int dyn_file_array_size(char **array, int *size)
 {
     char **p;
-    
+
     *size = 0;
     if(array != NULL) {
         for(p=array; *p != NULL; p++, (*size)++);
     }
-    
+
     return *size;
 }
 
-/* 
-   Add a filename to a filename array while maintaing a file count 
+/*
+   Add a filename to a filename array while maintaing a file count
 */
 int dyn_file_array_add(char *file, char ***array, int *file_count)
 {
@@ -166,46 +166,46 @@ int dyn_file_array_add(char *file, char ***array, int *file_count)
     // Resize array
     files = (char **) realloc(files, (nfiles + 2) * sizeof(char *));
     if (files == NULL) outofmem();
-    
+
     // Allocate and copy string
     if ((files[nfiles] = (char *)calloc(len, sizeof(char))) == NULL) outofmem();
-    
+
     // Maintain array consistency
     strcpy(files[nfiles], file);
     files[++nfiles] = NULL;
     *file_count = nfiles;
     *array = files;
-    
+
     return TRUE;
 }
 
-/* 
-   Free a file array and the associated strings 
+/*
+   Free a file array and the associated strings
 */
-void dyn_file_array_free(char **files) 
+void dyn_file_array_free(char **files)
 {
     int i, count;
-    
+
     if(files == NULL) return;
     dyn_file_array_size(files, &count);
-    
+
     for(i=0; i<count; i++) {
         free(files[i]);
     }
-    
+
     free(files);
 }
 
-/* 
+/*
    Encapsulate long filenames with "".
    The returned string must be freed when no longer used
 */
 char* encapsulate_long_filename(const char *file)
 {
     char *s;
-    
+
     if ((s = calloc(strlen(file)+1+2, sizeof(char))) == NULL) outofmem();
-    
+
     if(!strchr(file, ' '))
         strcpy(s, file);
     else {
@@ -219,9 +219,9 @@ char* encapsulate_long_filename(const char *file)
        char *p;
        while ((p=strchr(s,'\\')))
            *p='/';
-   }       
+   }
 #endif
-    
+
     return s;
 }
 
@@ -235,7 +235,7 @@ char* tail_long_filename(char *file)
 
     if( (file[0] != '\"') && (file[strlen(file)] != '\"') )
         return file;
-    
+
     p++;
     memmove(file, p, strlen(p)+1); /* remove first quote */
     p[strlen(p)-1] = '\0';         /* remove last quote */
@@ -258,36 +258,40 @@ static const char *file_extension(const char *filename)
   return p;
 }
 
-/* 
+/*
    Change filename extension and keep long filenames.
    If the filename has no extension, then the extension is append
    Dynamic allocation to do ...
 */
-char *change_extension(char *file, const char *newext) 
+char *change_extension(char *file, const char *newext)
 {
     char *start = (char *)strrchr(file, '.');
     if(start == NULL) {
         start = file; //return file;
     } else {
         sprintf(start, "%s", newext);
-    }    
+    }
 
     if(file[0] == '\"') strcat(start, "\"");
-    
+
     return file;
 }
 
-/* 
+/*
    Set all the option flags according to the switches specified.
-   Return the index of the first non-option argument.  
+   Return the index of the first non-option argument.
 */
 static int decode_switches (int argc, char **argv)
 {
   int c;
+  char * cmdline_cc_switches=malloc(5);
+  if (!cmdline_cc_switches) outofmem();
+
+  cmdline_cc_switches[0] = 0;
 
   for (c=1;c<argc;c++) {
     if (!strcmp(argv[c],"-V")||!strcmp(argv[c],"--version")) {
-       printf ("tprbuilder 1.0.16\n");
+       printf ("tprbuilder 1.0.17\n");
        exit(0);
     } else if (!strcmp(argv[c],"-h")||!strcmp(argv[c],"--help")) {
        usage(0);
@@ -297,10 +301,15 @@ static int decode_switches (int argc, char **argv)
        quiet = 1;
     } else if (!strcmp(argv[c],"-v")||!strcmp(argv[c],"--verbose")) {
        verbose = 1;
+    } else if (!strncmp(argv[c],"-D",2)) {
+       cmdline_cc_switches = dynstrcat(cmdline_cc_switches,argv[c]);
+       cmdline_cc_switches = dynstrcat(cmdline_cc_switches," ");
     } else break;
   }
 
   if (c>=argc) usage(EXIT_FAILURE);
+
+  settings.cmdline_cc_switches = cmdline_cc_switches;
 
   return c;
 }
@@ -319,12 +328,13 @@ Options:\n\
   -V, --version              output version information and exit\n\
   -v, --verbose              enable verbose mode (make tigcc verbose)\n\
   -q, --quiet                enable quiet mode (display nothing)\n\
+  -D[DEFINE]                 pass -D[DEFINE] to compiler\n\
   --clean                    do a cleanup of files\n\
 ");
     exit (status);
 }
 
-/* 
+/*
    Destroy allocated resources (exit callback)
  */
 void safe_exit(void)
@@ -332,11 +342,12 @@ void safe_exit(void)
     free(settings.pack_name);
     free(settings.prj_name);
     free(settings.cc_switches);
+    if (settings.cmdline_cc_switches) free(settings.cmdline_cc_switches);
     free(settings.as_switches);
     free(settings.a68k_switches);
     free(settings.post_build);
     free(settings.data_var);
-    
+
     dyn_file_array_free(c_files);
     dyn_file_array_free(s_files);
     dyn_file_array_free(h_files);
@@ -344,7 +355,7 @@ void safe_exit(void)
     dyn_file_array_free(a_files);
 }
 
-/* 
+/*
    Remove/unlink a file
 */
 int delete(char *filename)
@@ -359,7 +370,7 @@ int delete(char *filename)
     return 0;
 }
 
-/* 
+/*
    Execute a program by calling the shell
 */
 int execute(char *cmdline)
@@ -396,8 +407,8 @@ void execute_tigcc(char *filename, char *args)
 }
 
 
-/* 
-   Strip CR and/or LF terminators 
+/*
+   Strip CR and/or LF terminators
 */
 char* strip(char *str)
 {
@@ -406,7 +417,7 @@ char* strip(char *str)
     if(len > 0)
         if( (str[len-1] == '\r') || (str[len-1] == '\n') )
             str[len-1] = '\0';
-    
+
     if(len > 1)
         if( (str[len-2] == '\r') || (str[len-2] == '\n') )
             str[len-2] = '\0';
@@ -414,16 +425,16 @@ char* strip(char *str)
     return str;
 }
 
-/* 
-   Print an error msg 
+/*
+   Print an error msg
 */
 void stop (int line)
 {
     fprintf(stderr, "Configuration file error at line %i.\n", line);
 }
 
-/* 
-   Read a line from file and do a clean-up 
+/*
+   Read a line from file and do a clean-up
 */
 int read_line(FILE *f, char *buffer, int *l)
 {
@@ -439,12 +450,12 @@ int read_line(FILE *f, char *buffer, int *l)
         strip(buffer);
         (*l)++;
     }
-    
+
     return 0;
 }
 
 
-/* 
+/*
    Find a token in a string and return the subsequent string
 */
 char *find_param_ex(char *s, const char *t, size_t l)
@@ -456,8 +467,8 @@ char *find_param_ex(char *s, const char *t, size_t l)
 }
 
 
-/* 
-   Same as above but this one can extract a number such as scanf 
+/*
+   Same as above but this one can extract a number such as scanf
 */
 char *find_numbered_param(char *s, const char*t, int *i)
 {
@@ -465,20 +476,20 @@ char *find_numbered_param(char *s, const char*t, int *i)
     int endpos = 0;
     int ret = 0;
     char arglist[256];
-    
+
     strcpy(arglist, t);
     strcat(arglist, "%n");
-    
+
     ret = sscanf(s, arglist, i, &endpos);
     if(ret < 1 || !endpos) return NULL;
-    
+
     p = s + endpos;
     return p;
 }
 
 
-/* 
-   Parse a TPR file, fill the Setting structure and the filename arrays 
+/*
+   Parse a TPR file, fill the Setting structure and the filename arrays
 */
 int parse_file(const char *filename)
 {
@@ -486,17 +497,17 @@ int parse_file(const char *filename)
     char buffer[256];
     int l = 0;
     SectionType stype = SECTION_NONE;
-    
+
     f = fopen(filename, "rt");
     if(f == NULL) {
         fprintf(stderr, "Unable to open this file: <%s>\n", filename);
         exit(-1);
     }
-    
-    while(!feof(f)) 
+
+    while(!feof(f))
     {
         char *p;
-          
+
         // Get a line from file
         if(read_line(f, buffer, &l) == EOF) break;
 
@@ -506,25 +517,25 @@ int parse_file(const char *filename)
             stype = SECTION_SETTINGS;
             continue;
         }
-        
+
         if( !strcmp(buffer, "[Library Options]") )
         {
             stype = SECTION_LIBOPTS;
             continue;
         }
-        
+
         if( !strcmp(buffer, "[File Editing]") )
         {
             stype = SECTION_FILEEDIT;
             continue;
         }
-        
+
         if( !strcmp(buffer, "[Included Files]") )
         {
             stype = SECTION_FILES;
             continue;
         }
-        
+
         // Keywords in the [Settings] section
         if(stype == SECTION_SETTINGS) {
 
@@ -588,7 +599,7 @@ int parse_file(const char *filename)
 #undef string_param
 #undef ignore_param
         }
-        
+
         // Keywords in the [Library Options] section
         if(stype == SECTION_LIBOPTS) {
 #define boolean_param(token,setting) \
@@ -803,7 +814,7 @@ int process_settings(char *outfile, char **pargs)
         args = dynstrcat(args, " -pack ");
         args = dynstrcat(args, settings.pack_name);
     }
-    
+
     if (settings.debug_info) {
         args = dynstrcat(args, " -g");
     }
@@ -820,6 +831,11 @@ int process_settings(char *outfile, char **pargs)
     if (settings.cc_switches) {
         args = dynstrcat(args, " ");
         args = dynstrcat(args, settings.cc_switches);
+    }
+
+    if (settings.cmdline_cc_switches) {
+        args = dynstrcat(args, " ");
+        args = dynstrcat(args, settings.cmdline_cc_switches);
     }
 
     if (settings.as_switches) {
@@ -1112,7 +1128,7 @@ void clean_files(char *outfile)
     int i, count;
 
     /* Process .c files */
-    dyn_file_array_size(c_files, &count);    
+    dyn_file_array_size(c_files, &count);
     for(i=0; i<count; i++) {
         char tmpfile[strlen(c_files[i])+3];
 
@@ -1126,7 +1142,7 @@ void clean_files(char *outfile)
     }
 
     /* Process .s files */
-    dyn_file_array_size(s_files, &count);    
+    dyn_file_array_size(s_files, &count);
     for(i=0; i<count; i++) {
         char tmpfile[strlen(s_files[i])+3];
 
@@ -1235,7 +1251,7 @@ static char *dynstrcat(char *s, const char *t)
   p = realloc(s,l);
   if (p) {
     strcat(p,t);
-    return p;    
+    return p;
   } else {
     free(s);
     outofmem();

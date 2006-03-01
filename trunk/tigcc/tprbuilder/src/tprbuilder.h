@@ -62,6 +62,7 @@ struct settings
     char *pack_name;
     char *prj_name;
     char *cc_switches;
+    char *cmdline_cc_switches;
     char *as_switches;
     char *a68k_switches;
     char *post_build;
