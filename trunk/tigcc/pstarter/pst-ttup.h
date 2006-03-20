@@ -216,8 +216,8 @@ jbne invalid_archive
 
 .equ HEADER_SIZE,16
 
-.equ __MAGIC_CHAR1,$54
-.equ __MAGIC_CHAR2,$50
+.equ __MAGIC_CHAR1,0x54
+.equ __MAGIC_CHAR2,0x50
 
 .equ __ERRPCK_OKAY,0
 .equ __ERRPCK_NOESCFOUND,8    |248

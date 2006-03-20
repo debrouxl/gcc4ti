@@ -222,8 +222,8 @@ jbne invalid_archive
 
 .equ HEADER_SIZE,16
 
-.equ __MAGIC_CHAR1,$54
-.equ __MAGIC_CHAR2,$50
+.equ __MAGIC_CHAR1,0x54
+.equ __MAGIC_CHAR2,0x50
 
 .equ __ERRPCK_OKAY,0
 .equ __ERRPCK_NOESCFOUND,8    |248
@@ -547,7 +547,7 @@ __GreaterThanOrEqual32:
 	addq.w	#8,%d7
 __StillInSameByte2345:
 	lsr.w		%d7,%d1
-	and.b		#$7,%d1
+	and.b		#0x7,%d1
 	or.b		%d1,%d0
 |--------------------------------------------------------
 |  for (i=0; i<=rlelen; i++) *outbuffer++ = byte;
