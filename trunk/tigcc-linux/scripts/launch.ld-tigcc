@@ -2,10 +2,19 @@
 #
 # Compile and install the TIGCC linker
 #
+
+isbsd=`uname | grep "BSD"`
+if [ $isbsd = "" ]; then
+	#Assume GNU make
+        make=make
+else
+        make=gmake
+fi
+
 echo Installing TIGCC linker...
 cd ../sources/ld-tigcc
-make -e
+${make} -e
 cp ld-tigcc $TIGCC/bin
 cp ar-tigcc $TIGCC/bin
-make clean
+${make} clean
 echo Done.

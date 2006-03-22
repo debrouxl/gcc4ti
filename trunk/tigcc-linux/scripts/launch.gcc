@@ -3,6 +3,15 @@
 # This script launches configure with the right arguments
 # The tree must have been patched before doing this.
 #
+
+isbsd=`uname | grep "BSD"`
+if [ $isbsd = "" ]; then
+	#Assume GNU make
+        make=make
+else
+        make=gmake
+fi
+
 echo TIGCC script: Configuring, compiling and installing gcc...
 
 CFLAGS_FOR_BUILD="$CFLAGS"
@@ -22,21 +31,21 @@ fi
 #This keeps us from patching the generated makefile in advance.
 #So we have to call make 3 times to get it to work with our removed directories.
 
-make
+${make}
 echo You should have seen an error. This is normal. TIGCC installation continues.
 
 # Create dummy libiberty testsuite makefile
 rm -f libiberty/testsuite/Makefile
 echo all: >libiberty/testsuite/Makefile
 
-make
+${make}
 echo You should have seen an error. This is normal. TIGCC installation continues.
 
 # Create dummy build-libiberty testsuite makefile
 rm -f `ls -d build-*`/libiberty/testsuite/Makefile
 echo all: >`ls -d build-*`/libiberty/testsuite/Makefile
 
-make
+${make}
 echo You should have seen an error. This is normal. TIGCC installation continues.
 
 cd ../../scripts

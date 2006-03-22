@@ -2,9 +2,18 @@
 #
 # Compile and install the A68K assembler
 #
+
+isbsd=`uname | grep "BSD"`
+if [ $isbsd = "" ]; then
+	#Assume GNU make
+        make=make
+else
+        make=gmake
+fi
+
 echo Installing a68k assembler...
 cd ../sources/a68k/
-make -e
+${make} -e
 cp A68k $TIGCC/bin/a68k
-make clean
+${make} clean
 echo Done.

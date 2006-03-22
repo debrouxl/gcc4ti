@@ -2,9 +2,18 @@
 #
 # Compile and install the TIGCC environment registrator
 #
+
+isbsd=`uname | grep "BSD"`
+if [ $isbsd = "" ]; then
+	#Assume GNU make
+        make=make
+else
+        make=gmake
+fi
+
 echo Installing tigcc environment registrator...
 cd ../sources/envreg/src/
-make -e
+${make} -e
 cp envreg $TIGCC/bin
-make clean
+${make} clean
 echo Done.

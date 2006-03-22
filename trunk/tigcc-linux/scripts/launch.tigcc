@@ -2,9 +2,18 @@
 #
 # Compile and install the TIGCC front-end
 #
+
+isbsd=`uname | grep "BSD"`
+if [ $isbsd = "" ]; then
+	#Assume GNU make
+        make=make
+else
+        make=gmake
+fi
+
 echo Installing tigcc front-end...
 cd ../sources/tigcc/src/
-make -e
+${make} -e
 cp tigcc $TIGCC/bin
-make clean
+${make} clean
 echo Done.

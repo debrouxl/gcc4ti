@@ -2,9 +2,18 @@
 #
 # Compile and install the TIGCC patcher
 #
+
+isbsd=`uname | grep "BSD"`
+if [ $isbsd = "" ]; then
+	#Assume GNU make
+        make=make
+else
+        make=gmake
+fi
+
 echo Installing tigcc patcher...
 cd ../sources/patcher/src/
-make -e
+${make} -e
 cp patcher $TIGCC/bin
-make clean
+${make} clean
 echo Done.

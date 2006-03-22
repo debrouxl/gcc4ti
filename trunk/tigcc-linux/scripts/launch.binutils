@@ -3,6 +3,15 @@
 # This script launch configure with the right arguments
 # The tree must have been patched before doing this.
 #
+
+isbsd=`uname | grep "BSD"`
+if [ $isbsd = "" ]; then
+	#Assume GNU make
+        make=make
+else
+        make=gmake
+fi
+
 echo TIGCC script: Configuring, compiling and installing binutils...
 mkdir ../build; mkdir ../build/binutils;
 cd ../build/binutils; ../../download/binutils.ti/configure --disable-serial-configure --prefix=$TIGCC --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
@@ -16,7 +25,7 @@ fi
 #This keeps us from patching the generated makefile in advance.
 #So we have to call make 5 times to get it to work with our removed directories.
 
-make
+${make}
 
 echo You should have seen an error. This is normal. TIGCC installation continues.
 
@@ -24,7 +33,7 @@ echo You should have seen an error. This is normal. TIGCC installation continues
 rm -f libiberty/testsuite/Makefile
 echo all: >libiberty/testsuite/Makefile
 
-make
+${make}
 
 echo You should have seen an error. This is normal. TIGCC installation continues.
 
@@ -36,7 +45,7 @@ mkdir bfd/po
 rm -f bfd/po/Makefile
 echo all: >bfd/po/Makefile
 
-make
+${make}
 
 echo You should have seen an error. This is normal. TIGCC installation continues.
 
@@ -44,7 +53,7 @@ echo You should have seen an error. This is normal. TIGCC installation continues
 rm -f opcodes/po/Makefile
 echo all: >opcodes/po/Makefile
 
-make
+${make}
 
 echo You should have seen an error. This is normal. TIGCC installation continues.
 
@@ -58,7 +67,7 @@ rm -f gas/po/Makefile
 echo all: >gas/po/Makefile
 
 #Now this one should really work...
-make
+${make}
 if [ $? -ne 0 ]
     then echo "TIGCC script: Error while making"
     exit 2
