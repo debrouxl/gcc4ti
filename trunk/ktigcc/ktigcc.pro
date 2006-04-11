@@ -15,7 +15,8 @@ SOURCES	+= ktigcc.cpp \
 	tpr.cxx \
 	preferences.cxx
 
-FORMS	= mainform.ui
+FORMS	= mainform.ui \
+	projectoptions.ui
 
 IMAGES	= images/00 \
 	images/01 \
