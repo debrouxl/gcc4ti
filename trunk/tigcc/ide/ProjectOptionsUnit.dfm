@@ -109,7 +109,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 172
           Width = 129
           Height = 17
-          Caption = '&Function Archive (*.a)'
+          Caption = 'Function &Archive (*.a)'
           TabOrder = 8
           OnClick = TargetRadioButtonClick
         end
