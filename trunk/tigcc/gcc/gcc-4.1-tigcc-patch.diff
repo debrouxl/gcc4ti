@@ -1,6 +1,6 @@
-diff -Naur gcc-4.1-20051216.orig/config.guess gcc-4.1-20051216-src/config.guess
---- gcc-4.1-20051216.orig/config.guess	2005-11-24 13:49:42.000000000 +0100
-+++ gcc-4.1-20051216-src/config.guess	2005-12-18 22:33:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/config.guess gcc-4.1-20060428-src/config.guess
+--- gcc-4.1-20060428.orig/config.guess	2005-11-24 13:49:42.000000000 +0100
++++ gcc-4.1-20060428-src/config.guess	2006-04-30 02:21:07.000000000 +0200
 @@ -770,11 +770,11 @@
  	echo ${UNAME_MACHINE}-pc-cygwin
  	exit ;;
@@ -15,9 +15,9 @@ diff -Naur gcc-4.1-20051216.orig/config.guess gcc-4.1-20051216-src/config.guess
  	exit ;;
      i*:PW*:*)
  	echo ${UNAME_MACHINE}-pc-pw32
-diff -Naur gcc-4.1-20051216.orig/gcc/attribs.c gcc-4.1-20051216-src/gcc/attribs.c
---- gcc-4.1-20051216.orig/gcc/attribs.c	2005-06-25 04:02:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/attribs.c	2005-12-18 22:24:27.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/attribs.c gcc-4.1-20060428-src/gcc/attribs.c
+--- gcc-4.1-20060428.orig/gcc/attribs.c	2005-06-25 04:02:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/attribs.c	2006-04-30 02:21:07.000000000 +0200
 @@ -131,7 +131,11 @@
     information, in the form of a bitwise OR of flags in enum attribute_flags
     from tree.h.  Depending on these flags, some attributes may be
@@ -42,9 +42,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/attribs.c gcc-4.1-20051216-src/gcc/attribs.
    for (a = attributes; a; a = TREE_CHAIN (a))
      {
        tree name = TREE_PURPOSE (a);
-diff -Naur gcc-4.1-20051216.orig/gcc/builtin-attrs.def gcc-4.1-20051216-src/gcc/builtin-attrs.def
---- gcc-4.1-20051216.orig/gcc/builtin-attrs.def	2005-06-27 14:17:39.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/builtin-attrs.def	2005-12-18 22:24:27.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/builtin-attrs.def gcc-4.1-20060428-src/gcc/builtin-attrs.def
+--- gcc-4.1-20060428.orig/gcc/builtin-attrs.def	2005-06-27 14:17:39.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/builtin-attrs.def	2006-04-30 02:21:07.000000000 +0200
 @@ -169,6 +169,10 @@
  DEF_FORMAT_ATTRIBUTE(SCANF,1,1_2)
  DEF_FORMAT_ATTRIBUTE(SCANF,2,2_0)
@@ -82,9 +82,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtin-attrs.def gcc-4.1-20051216-src/gcc/
 +DEF_C89_ATTR (vfscanf, ATTR_FORMAT_SCANF_2_0)
 +DEF_C89_ATTR (vsscanf, ATTR_FORMAT_SCANF_2_0)
 +
-diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtins.c
---- gcc-4.1-20051216.orig/gcc/builtins.c	2005-12-01 03:32:58.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/builtins.c	2005-12-21 05:30:41.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/builtins.c gcc-4.1-20060428-src/gcc/builtins.c
+--- gcc-4.1-20060428.orig/gcc/builtins.c	2006-04-18 16:14:42.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/builtins.c	2006-04-30 02:21:07.000000000 +0200
 @@ -47,6 +47,7 @@
  #include "langhooks.h"
  #include "basic-block.h"
@@ -271,7 +271,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Callback routine for store_by_pieces.  Read GET_MODE_BITSIZE (MODE)
     bytes from constant string DATA + OFFSET and return it as target
-@@ -3500,6 +3540,7 @@
+@@ -3521,6 +3561,7 @@
      }
  }
  
@@ -279,7 +279,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Expand expression EXP, which is a call to the bzero builtin.  Return 0
     if we failed the caller should emit a normal call.  */
  
-@@ -4031,6 +4072,7 @@
+@@ -4054,6 +4095,7 @@
      }
    return 0;
  }
@@ -287,7 +287,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Expand a call to __builtin_saveregs, generating the result in TARGET,
     if that's convenient.  */
-@@ -4584,6 +4626,7 @@
+@@ -4608,6 +4650,7 @@
    return convert_to_mode (target_mode, target, 0);
  }
  
@@ -295,7 +295,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* If the string passed to fputs is a constant and is one character
     long, we attempt to transform this call into __builtin_fputc().  */
  
-@@ -4600,6 +4643,7 @@
+@@ -4624,6 +4667,7 @@
      }
    return 0;
  }
@@ -303,7 +303,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Expand a call to __builtin_expect.  We return our argument and emit a
     NOTE_INSN_EXPECTED_VALUE note.  This is the expansion of __builtin_expect in
-@@ -4772,6 +4816,35 @@
+@@ -4796,6 +4840,35 @@
    emit_barrier ();
  }
  
@@ -339,7 +339,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Expand a call to fabs, fabsf or fabsl with arguments ARGLIST.
     Return 0 if a normal call should be emitted rather than expanding
     the function inline.  If convenient, the result should be placed
-@@ -5140,6 +5213,7 @@
+@@ -5164,6 +5237,7 @@
  
    return 0;
  }
@@ -347,7 +347,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Expand a call to either the entry or exit function profiler.  */
  
-@@ -5244,6 +5318,7 @@
+@@ -5268,6 +5342,7 @@
    return tramp;
  }
  
@@ -355,7 +355,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Expand a call to the built-in signbit, signbitf or signbitl function.
     Return NULL_RTX if a normal call should be emitted rather than expanding
     the function in-line.  EXP is the expression that is a call to the builtin
-@@ -5579,6 +5654,7 @@
+@@ -5603,6 +5678,7 @@
    expand_builtin_synchronize ();
    emit_move_insn (mem, val);
  }
@@ -363,7 +363,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Expand an expression EXP that calls a built-in function,
     with result going to TARGET if that's convenient
-@@ -5638,6 +5714,7 @@
+@@ -5662,6 +5738,7 @@
  
    switch (fcode)
      {
@@ -371,7 +371,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_FABS:
      case BUILT_IN_FABSF:
      case BUILT_IN_FABSL:
-@@ -5806,6 +5883,7 @@
+@@ -5830,6 +5907,7 @@
        if (target)
  	return target;
        break;
@@ -379,7 +379,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_APPLY_ARGS:
        return expand_builtin_apply_args ();
-@@ -5942,6 +6020,7 @@
+@@ -5966,6 +6044,7 @@
  	return target;
        break;
  
@@ -387,7 +387,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_STRLEN:
        target = expand_builtin_strlen (arglist, target, target_mode);
        if (target)
-@@ -6015,6 +6094,7 @@
+@@ -6039,6 +6118,7 @@
        if (target)
  	return target;
        break;
@@ -395,7 +395,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_MEMCPY:
        target = expand_builtin_memcpy (exp, target, mode);
-@@ -6022,6 +6102,7 @@
+@@ -6046,6 +6126,7 @@
  	return target;
        break;
  
@@ -403,7 +403,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_MEMPCPY:
        target = expand_builtin_mempcpy (arglist, TREE_TYPE (exp), target, mode, /*endp=*/ 1);
        if (target)
-@@ -6040,6 +6121,7 @@
+@@ -6064,6 +6145,7 @@
        if (target)
  	return target;
        break;
@@ -411,7 +411,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_MEMSET:
        target = expand_builtin_memset (arglist, target, mode, exp);
-@@ -6047,6 +6129,7 @@
+@@ -6071,6 +6153,7 @@
  	return target;
        break;
  
@@ -419,7 +419,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_BZERO:
        target = expand_builtin_bzero (exp);
        if (target)
-@@ -6071,6 +6154,7 @@
+@@ -6095,6 +6178,7 @@
        if (target)
  	return target;
        break;
@@ -427,7 +427,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_SETJMP:
        target = expand_builtin_setjmp (arglist, target);
-@@ -6124,6 +6208,7 @@
+@@ -6148,6 +6232,7 @@
        expand_builtin_trap ();
        return const0_rtx;
  
@@ -435,7 +435,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_PRINTF:
        target = expand_builtin_printf (exp, target, mode, false);
        if (target)
-@@ -6172,6 +6257,7 @@
+@@ -6196,6 +6281,7 @@
        if (target)
  	return target;
        break;
@@ -443,7 +443,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
        /* Various hooks for the DWARF 2 __throw routine.  */
      case BUILT_IN_UNWIND_INIT:
-@@ -6224,6 +6310,7 @@
+@@ -6248,6 +6334,7 @@
      case BUILT_IN_ADJUST_TRAMPOLINE:
        return expand_builtin_adjust_trampoline (arglist);
  
@@ -451,7 +451,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_FORK:
      case BUILT_IN_EXECL:
      case BUILT_IN_EXECV:
-@@ -6440,6 +6527,11 @@
+@@ -6464,6 +6551,11 @@
      case BUILT_IN_VSPRINTF_CHK:
        maybe_emit_sprintf_chk_warning (exp, fcode);
        break;
@@ -463,7 +463,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      default:	/* just do library call, if unknown builtin */
        break;
-@@ -6459,6 +6551,7 @@
+@@ -6483,6 +6575,7 @@
  enum built_in_function
  builtin_mathfn_code (tree t)
  {
@@ -471,7 +471,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
    tree fndecl, arglist, parmlist;
    tree argtype, parmtype;
  
-@@ -6513,13 +6606,16 @@
+@@ -6537,13 +6630,16 @@
  	    return END_BUILTINS;
  	}
        else
@@ -488,7 +488,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  }
  
  /* Fold a call to __builtin_constant_p, if we know it will evaluate to a
-@@ -6619,6 +6715,7 @@
+@@ -6643,6 +6739,7 @@
  			type_to_class (TREE_TYPE (TREE_VALUE (arglist))));
  }
  
@@ -496,7 +496,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Fold a call to __builtin_strlen.  */
  
  static tree
-@@ -7388,6 +7485,7 @@
+@@ -7412,6 +7509,7 @@
  
    return fold_fixed_mathfn (fndecl, arglist);
  }
@@ -504,7 +504,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Fold function call to builtin ffs, clz, ctz, popcount and parity
     and their long and long long variants (i.e. ffsl and ffsll).
-@@ -7493,6 +7591,7 @@
+@@ -7517,6 +7615,7 @@
    return NULL_TREE;
  }
  
@@ -512,7 +512,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Return true if EXPR is the real constant contained in VALUE.  */
  
  static bool
-@@ -7883,6 +7982,7 @@
+@@ -7907,6 +8006,7 @@
  
    return 0;
  }
@@ -520,7 +520,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Fold function call to builtin memcpy.  Return
     NULL_TREE if no simplification can be made.  */
-@@ -7911,6 +8011,7 @@
+@@ -7935,6 +8035,7 @@
    return 0;
  }
  
@@ -528,7 +528,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Fold function call to builtin mempcpy.  Return
     NULL_TREE if no simplification can be made.  */
  
-@@ -8644,6 +8745,7 @@
+@@ -8668,6 +8769,7 @@
    return fold_build1 (TRUTH_NOT_EXPR, type,
  		      fold_build2 (code, type, arg0, arg1));
  }
@@ -536,7 +536,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Used by constant folding to simplify calls to builtin functions.  EXP is
     the CALL_EXPR of a call to a builtin function.  IGNORE is true if the
-@@ -8662,6 +8764,7 @@
+@@ -8686,6 +8788,7 @@
    fcode = DECL_FUNCTION_CODE (fndecl);
    switch (fcode)
      {
@@ -544,7 +544,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_FPUTS:
        return fold_builtin_fputs (arglist, ignore, false, NULL_TREE);
  
-@@ -8712,6 +8815,7 @@
+@@ -8736,6 +8839,7 @@
  
      case BUILT_IN_SPRINTF:
        return fold_builtin_sprintf (arglist, ignore);
@@ -552,7 +552,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_CONSTANT_P:
        {
-@@ -8733,6 +8837,7 @@
+@@ -8757,6 +8861,7 @@
      case BUILT_IN_CLASSIFY_TYPE:
        return fold_builtin_classify_type (arglist);
  
@@ -560,7 +560,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_STRLEN:
        return fold_builtin_strlen (arglist);
  
-@@ -8923,6 +9028,7 @@
+@@ -8947,6 +9052,7 @@
      case BUILT_IN_LLRINTF:
      case BUILT_IN_LLRINTL:
        return fold_fixed_mathfn (fndecl, arglist);
@@ -568,7 +568,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      case BUILT_IN_FFS:
      case BUILT_IN_FFSL:
-@@ -8944,6 +9050,7 @@
+@@ -8968,6 +9074,7 @@
      case BUILT_IN_MEMCPY:
        return fold_builtin_memcpy (fndecl, arglist);
  
@@ -576,7 +576,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_MEMPCPY:
        return fold_builtin_mempcpy (arglist, type, /*endp=*/1);
  
-@@ -8997,11 +9104,13 @@
+@@ -9021,11 +9128,13 @@
      case BUILT_IN_ISUNORDERED:
        return fold_builtin_unordered_cmp (fndecl, arglist, UNORDERED_EXPR,
  					 NOP_EXPR);
@@ -590,7 +590,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
      case BUILT_IN_OBJECT_SIZE:
        return fold_builtin_object_size (arglist);
      case BUILT_IN_MEMCPY_CHK:
-@@ -9043,6 +9152,7 @@
+@@ -9067,6 +9176,7 @@
      case BUILT_IN_VFPRINTF_CHK:
        return fold_builtin_fprintf (fndecl, arglist, ignore,
  				   DECL_FUNCTION_CODE (fndecl));
@@ -598,7 +598,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
      default:
        break;
-@@ -9173,6 +9283,7 @@
+@@ -9197,6 +9307,7 @@
      return false;
  }
  
@@ -606,7 +606,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Simplify a call to the strstr builtin.
  
     Return 0 if no simplification was possible, otherwise return the
-@@ -9711,6 +9822,7 @@
+@@ -9735,6 +9846,7 @@
       hence there's no need to cast the result to integer_type_node.  */
    return build_function_call_expr (fn, arglist);
  }
@@ -614,7 +614,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  
  /* Fold the new_arg's arguments (ARGLIST). Returns true if there was an error
     produced.  False otherwise.  This is done so that we don't output the error
-@@ -9780,6 +9892,7 @@
+@@ -9804,6 +9916,7 @@
  }
  
  
@@ -622,15 +622,15 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.c gcc-4.1-20051216-src/gcc/builtin
  /* Simplify a call to the sprintf builtin.
  
     Return 0 if no simplification was possible, otherwise return the
-@@ -11062,3 +11175,5 @@
+@@ -11086,3 +11199,5 @@
      }
    return true;
  }
 +#endif /* 0 */
 +
-diff -Naur gcc-4.1-20051216.orig/gcc/builtins.def gcc-4.1-20051216-src/gcc/builtins.def
---- gcc-4.1-20051216.orig/gcc/builtins.def	2005-07-24 10:36:33.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/builtins.def	2005-12-21 06:23:12.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/builtins.def gcc-4.1-20060428-src/gcc/builtins.def
+--- gcc-4.1-20060428.orig/gcc/builtins.def	2005-07-24 10:36:33.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/builtins.def	2006-04-30 02:21:07.000000000 +0200
 @@ -507,6 +507,7 @@
  DEF_LIB_BUILTIN        (BUILT_IN_STRSPN, "strspn", BT_FN_SIZE_CONST_STRING_CONST_STRING, ATTR_PURE_NOTHROW_NONNULL)
  DEF_LIB_BUILTIN        (BUILT_IN_STRSTR, "strstr", BT_FN_STRING_CONST_STRING_CONST_STRING, ATTR_PURE_NOTHROW_NONNULL)
@@ -683,9 +683,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/builtins.def gcc-4.1-20051216-src/gcc/built
  
  /* Profiling hooks.  */
  DEF_BUILTIN_STUB (BUILT_IN_PROFILE_FUNC_ENTER, "profile_func_enter")
-diff -Naur gcc-4.1-20051216.orig/gcc/c-common.c gcc-4.1-20051216-src/gcc/c-common.c
---- gcc-4.1-20051216.orig/gcc/c-common.c	2005-12-08 12:24:07.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-common.c	2005-12-18 22:24:28.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-common.c gcc-4.1-20060428-src/gcc/c-common.c
+--- gcc-4.1-20060428.orig/gcc/c-common.c	2006-01-04 10:16:09.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/c-common.c	2006-04-30 02:21:07.000000000 +0200
 @@ -2934,16 +2934,20 @@
  #define DEF_ATTR_INT(ENUM, VALUE) ENUM,
  #define DEF_ATTR_IDENT(ENUM, STRING) ENUM,
@@ -717,7 +717,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-common.c gcc-4.1-20051216-src/gcc/c-commo
  
  #define DEF_BUILTIN(ENUM, NAME, CLASS, TYPE, LIBTYPE, BOTH_P, FALLBACK_P, \
  		    NONANSI_P, ATTRS, IMPLICIT, COND)			\
-@@ -4037,11 +4042,40 @@
+@@ -4052,11 +4057,40 @@
      = tree_cons (built_in_attributes[(int) PURPOSE],	\
  		 built_in_attributes[(int) VALUE],	\
  		 built_in_attributes[(int) CHAIN]);
@@ -758,9 +758,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-common.c gcc-4.1-20051216-src/gcc/c-commo
  }
  
  /* Attribute handlers common to C front ends.  */
-diff -Naur gcc-4.1-20051216.orig/gcc/c-common.h gcc-4.1-20051216-src/gcc/c-common.h
---- gcc-4.1-20051216.orig/gcc/c-common.h	2005-12-08 12:24:07.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-common.h	2005-12-18 22:24:28.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-common.h gcc-4.1-20060428-src/gcc/c-common.h
+--- gcc-4.1-20060428.orig/gcc/c-common.h	2005-12-27 18:18:05.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/c-common.h	2006-04-30 02:21:07.000000000 +0200
 @@ -632,6 +632,7 @@
  extern void set_Wformat (int);
  extern tree handle_format_attribute (tree *, tree, tree, int, bool *);
@@ -769,9 +769,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-common.h gcc-4.1-20051216-src/gcc/c-commo
  extern int c_common_handle_option (size_t code, const char *arg, int value);
  extern bool c_common_missing_argument (const char *opt, size_t code);
  extern tree c_common_type_for_mode (enum machine_mode, int);
-diff -Naur gcc-4.1-20051216.orig/gcc/c-cppbuiltin.c gcc-4.1-20051216-src/gcc/c-cppbuiltin.c
---- gcc-4.1-20051216.orig/gcc/c-cppbuiltin.c	2005-08-13 22:58:02.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-cppbuiltin.c	2005-12-18 22:24:28.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-cppbuiltin.c gcc-4.1-20060428-src/gcc/c-cppbuiltin.c
+--- gcc-4.1-20060428.orig/gcc/c-cppbuiltin.c	2005-08-13 22:58:02.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/c-cppbuiltin.c	2006-04-30 02:21:07.000000000 +0200
 @@ -51,9 +51,11 @@
  static void builtin_define_with_value_n (const char *, const char *,
  					 size_t);
@@ -816,9 +816,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-cppbuiltin.c gcc-4.1-20051216-src/gcc/c-c
  
  /* Define MAX for TYPE based on the precision of the type.  IS_LONG is
     1 for type "long" and 2 for "long long".  We have to handle
-diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
---- gcc-4.1-20051216.orig/gcc/c-decl.c	2005-11-30 11:29:09.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-decl.c	2005-12-21 05:13:33.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-decl.c gcc-4.1-20060428-src/gcc/c-decl.c
+--- gcc-4.1-20060428.orig/gcc/c-decl.c	2006-01-20 00:48:07.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/c-decl.c	2006-04-30 02:21:08.000000000 +0200
 @@ -2418,7 +2418,6 @@
  void
  undeclared_variable (tree id, location_t loc)
@@ -868,7 +868,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
  
  /* Called when a declaration is seen that contains no names to declare.
     If its type is a reference to a structure, union or enum inherited
-@@ -3573,10 +3576,86 @@
+@@ -3605,10 +3608,86 @@
  push_parm_decl (const struct c_parm *parm)
  {
    tree decl;
@@ -955,7 +955,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
    decl = pushdecl (decl);
  
    finish_decl (decl, NULL_TREE, NULL_TREE);
-@@ -3628,7 +3707,11 @@
+@@ -3658,7 +3737,11 @@
    DECL_CONTEXT (decl) = current_function_decl;
    TREE_USED (decl) = 1;
    TREE_TYPE (decl) = type;
@@ -968,7 +968,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
    store_init_value (decl, init);
  
    if (TREE_CODE (type) == ARRAY_TYPE && !COMPLETE_TYPE_P (type))
-@@ -6854,12 +6937,13 @@
+@@ -6879,12 +6962,13 @@
  
  struct c_parm *
  build_c_parm (struct c_declspecs *specs, tree attrs,
@@ -983,10 +983,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-decl.c gcc-4.1-20051216-src/gcc/c-decl.c
    return ret;
  }
  
-diff -Naur gcc-4.1-20051216.orig/gcc/cfgexpand.c gcc-4.1-20051216-src/gcc/cfgexpand.c
---- gcc-4.1-20051216.orig/gcc/cfgexpand.c	2005-10-19 18:27:10.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/cfgexpand.c	2005-12-18 22:24:35.000000000 +0100
-@@ -1322,6 +1322,23 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/cfgexpand.c gcc-4.1-20060428-src/gcc/cfgexpand.c
+--- gcc-4.1-20060428.orig/gcc/cfgexpand.c	2006-01-23 10:50:07.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/cfgexpand.c	2006-04-30 02:21:08.000000000 +0200
+@@ -1361,6 +1361,23 @@
  	    }
  	  else
  	    {
@@ -1010,9 +1010,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/cfgexpand.c gcc-4.1-20051216-src/gcc/cfgexp
  	      last = get_last_insn ();
  	      expand_expr_stmt (stmt);
  	      maybe_dump_rtl_for_tree_stmt (stmt, last);
-diff -Naur gcc-4.1-20051216.orig/gcc/c-format.c gcc-4.1-20051216-src/gcc/c-format.c
---- gcc-4.1-20051216.orig/gcc/c-format.c	2005-10-26 04:15:02.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-format.c	2005-12-18 22:24:28.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-format.c gcc-4.1-20060428-src/gcc/c-format.c
+--- gcc-4.1-20060428.orig/gcc/c-format.c	2005-10-26 04:15:02.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/c-format.c	2006-04-30 02:21:08.000000000 +0200
 @@ -281,16 +281,12 @@
  } format_wanted_type;
  
@@ -1223,9 +1223,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-format.c gcc-4.1-20051216-src/gcc/c-forma
  	continue;
        /* Likewise, "signed char", "unsigned char" and "char" are
  	 equivalent but the above test won't consider them equivalent.  */
-diff -Naur gcc-4.1-20051216.orig/gcc/c-incpath.c gcc-4.1-20051216-src/gcc/c-incpath.c
---- gcc-4.1-20051216.orig/gcc/c-incpath.c	2005-06-25 04:02:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-incpath.c	2005-12-18 22:24:28.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-incpath.c gcc-4.1-20060428-src/gcc/c-incpath.c
+--- gcc-4.1-20060428.orig/gcc/c-incpath.c	2005-06-25 04:02:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/c-incpath.c	2006-04-30 02:21:08.000000000 +0200
 @@ -335,9 +335,13 @@
       function does not recognize a directory that ends in a backslash
       (unless it is a drive root dir, such "c:\").  Forward slashes,
@@ -1265,9 +1265,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-incpath.c gcc-4.1-20051216-src/gcc/c-incp
      add_standard_paths (sysroot, iprefix, cxx_stdinc);
  
    target_c_incpath.extra_includes (sysroot, iprefix, stdinc);
-diff -Naur gcc-4.1-20051216.orig/gcc/c-lang.c gcc-4.1-20051216-src/gcc/c-lang.c
---- gcc-4.1-20051216.orig/gcc/c-lang.c	2005-07-01 01:09:06.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-lang.c	2005-12-18 22:24:28.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-lang.c gcc-4.1-20060428-src/gcc/c-lang.c
+--- gcc-4.1-20060428.orig/gcc/c-lang.c	2005-07-01 01:09:06.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/c-lang.c	2006-04-30 02:21:08.000000000 +0200
 @@ -44,6 +44,8 @@
  #define LANG_HOOKS_NAME "GNU C"
  #undef LANG_HOOKS_INIT
@@ -1277,9 +1277,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-lang.c gcc-4.1-20051216-src/gcc/c-lang.c
  
  /* Each front end provides its own lang hook initializer.  */
  const struct lang_hooks lang_hooks = LANG_HOOKS_INITIALIZER;
-diff -Naur gcc-4.1-20051216.orig/gcc/c-lex.c gcc-4.1-20051216-src/gcc/c-lex.c
---- gcc-4.1-20051216.orig/gcc/c-lex.c	2005-07-19 22:19:16.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-lex.c	2005-12-18 22:24:28.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-lex.c gcc-4.1-20060428-src/gcc/c-lex.c
+--- gcc-4.1-20060428.orig/gcc/c-lex.c	2005-07-19 22:19:16.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/c-lex.c	2006-04-30 02:21:08.000000000 +0200
 @@ -433,7 +433,7 @@
  	cppchar_t c = tok->val.str.text[0];
  
@@ -1289,9 +1289,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-lex.c gcc-4.1-20051216-src/gcc/c-lex.c
  	else if (ISGRAPH (c))
  	  error ("stray %qc in program", (int) c);
  	else
-diff -Naur gcc-4.1-20051216.orig/gcc/combine.c gcc-4.1-20051216-src/gcc/combine.c
---- gcc-4.1-20051216.orig/gcc/combine.c	2005-12-01 04:24:00.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/combine.c	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/combine.c gcc-4.1-20060428-src/gcc/combine.c
+--- gcc-4.1-20060428.orig/gcc/combine.c	2006-02-24 02:37:22.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/combine.c	2006-04-30 02:21:08.000000000 +0200
 @@ -4396,8 +4396,10 @@
        /* x - 0 is the same as x unless x's mode has signed zeros and
  	 allows rounding towards -infinity.  Under those conditions,
@@ -1304,9 +1304,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/combine.c gcc-4.1-20051216-src/gcc/combine.
  	  && XEXP (x, 1) == CONST0_RTX (GET_MODE (XEXP (x, 0))))
  	return XEXP (x, 0);
        break;
-diff -Naur gcc-4.1-20051216.orig/gcc/common.opt gcc-4.1-20051216-src/gcc/common.opt
---- gcc-4.1-20051216.orig/gcc/common.opt	2005-11-11 18:59:54.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/common.opt	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/common.opt gcc-4.1-20060428-src/gcc/common.opt
+--- gcc-4.1-20060428.orig/gcc/common.opt	2005-11-11 18:59:54.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/common.opt	2006-04-30 02:21:08.000000000 +0200
 @@ -447,6 +447,14 @@
  Perform global common subexpression elimination after register allocation
  has finished
@@ -1353,9 +1353,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/common.opt gcc-4.1-20051216-src/gcc/common.
  Put zero initialized data in the bss section
  
  g
-diff -Naur gcc-4.1-20051216.orig/gcc/config/dbxcoff.h gcc-4.1-20051216-src/gcc/config/dbxcoff.h
---- gcc-4.1-20051216.orig/gcc/config/dbxcoff.h	2005-06-25 03:22:41.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/dbxcoff.h	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/dbxcoff.h gcc-4.1-20060428-src/gcc/config/dbxcoff.h
+--- gcc-4.1-20060428.orig/gcc/config/dbxcoff.h	2005-06-25 03:22:41.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config/dbxcoff.h	2006-04-30 02:21:08.000000000 +0200
 @@ -48,8 +48,13 @@
  
  /* Like block addresses, stabs line numbers are relative to the
@@ -1371,9 +1371,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/dbxcoff.h gcc-4.1-20051216-src/gcc/c
  
  /* When generating stabs debugging, use N_BINCL entries.  */
  
-diff -Naur gcc-4.1-20051216.orig/gcc/config/i386/xm-mingw32.h gcc-4.1-20051216-src/gcc/config/i386/xm-mingw32.h
---- gcc-4.1-20051216.orig/gcc/config/i386/xm-mingw32.h	2005-06-25 03:22:41.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/i386/xm-mingw32.h	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/i386/xm-mingw32.h gcc-4.1-20060428-src/gcc/config/i386/xm-mingw32.h
+--- gcc-4.1-20060428.orig/gcc/config/i386/xm-mingw32.h	2005-06-25 03:22:41.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config/i386/xm-mingw32.h	2006-04-30 02:21:08.000000000 +0200
 @@ -20,6 +20,10 @@
  Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
  02110-1301, USA.  */
@@ -1385,9 +1385,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/i386/xm-mingw32.h gcc-4.1-20051216-s
  #define HOST_EXECUTABLE_SUFFIX ".exe"
  
  #undef PATH_SEPARATOR
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc/config/m68k/m68k.c
---- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c	2005-07-12 01:32:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.c	2005-12-21 06:37:31.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/m68k.c gcc-4.1-20060428-src/gcc/config/m68k/m68k.c
+--- gcc-4.1-20060428.orig/gcc/config/m68k/m68k.c	2005-12-29 16:10:35.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/config/m68k/m68k.c	2006-04-30 03:06:58.000000000 +0200
 @@ -43,6 +43,11 @@
  #include "target-def.h"
  #include "debug.h"
@@ -1649,10 +1649,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
        return;
      }
  
-@@ -1054,8 +1227,17 @@
-        * We'll use the -Os command-line flag to decide which to generate.
-        * Both sequences take the same time to execute on the ColdFire.
-        */
+@@ -1052,8 +1225,17 @@
+          a shorter one that uses a GOT entry or a longer one that doesn't.
+          We use the -Os command-line flag to decide which to generate.
+          Both sequences take the same time to execute on the ColdFire.  */
 +/* (TIGCC 20040222, 20050204) No long branches please... */
 +/* (TIGCC 20050209) FIXME: This should really be handled fully in one place.
 +                           Currently, part of this logic is in the patching code
@@ -1665,10 +1665,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
    else if (TARGET_PCREL)
 -    out = "bsr.l %o0";
 +    out = "bsr %o0";
-   else if ((flag_pic == 1) || TARGET_68020)
+   else if (TARGET_68020)
  #if defined(USE_GAS)
      out = "bsr.l %0@PLTPC";
-@@ -1457,11 +1639,11 @@
+@@ -1455,11 +1637,11 @@
  
  typedef enum { MOVL, SWAP, NEGW, NOTW, NOTB, MOVQ, MVS, MVZ } CONST_METHOD;
  
@@ -1682,7 +1682,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  const_method (rtx constant)
  {
    int i;
-@@ -1563,10 +1745,15 @@
+@@ -1561,10 +1743,15 @@
         for add and the time for shift, taking away a little more because
         sometimes move insns are needed.  */
      /* div?.w is relatively cheaper on 68000 counted in COSTS_N_INSNS terms.  */
@@ -1701,7 +1701,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  
      case PLUS:
        /* An lea costs about three times as much as a simple add.  */
-@@ -1597,11 +1784,15 @@
+@@ -1595,11 +1782,15 @@
          {
  	  if (GET_CODE (XEXP (x, 1)) == CONST_INT)
  	    {
@@ -1719,7 +1719,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  	    }
  	  else
  	    *total = COSTS_N_INSNS (10); /* worst case */
-@@ -1634,10 +1825,10 @@
+@@ -1632,10 +1823,10 @@
          *total = COSTS_N_INSNS (MULL_COST);
        return true;
  
@@ -1732,7 +1732,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
        if (GET_MODE (x) == QImode || GET_MODE (x) == HImode)
          *total = COSTS_N_INSNS (DIVW_COST);	/* div.w */
        else if (TARGET_CF_HWDIV)
-@@ -1646,6 +1837,16 @@
+@@ -1644,6 +1835,16 @@
  	*total = COSTS_N_INSNS (43);		/* div.l */
        return true;
  
@@ -1749,7 +1749,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
      default:
        return false;
      }
-@@ -1862,6 +2063,24 @@
+@@ -1860,6 +2061,24 @@
    return "move%.b %1,%0";
  }
  
@@ -1774,7 +1774,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  const char *
  output_move_stricthi (rtx *operands)
  {
-@@ -1886,6 +2105,17 @@
+@@ -1884,6 +2103,17 @@
    return "move%.b %1,%0";
  }
  
@@ -1792,7 +1792,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  /* Return the best assembler insn template
     for moving operands[1] into operands[0] as a fullword.  */
  
-@@ -1962,10 +2192,14 @@
+@@ -1960,10 +2190,14 @@
        operands[0] = XEXP (XEXP (operands[0], 0), 0);
        if (size == 12)
          output_asm_insn ("sub%.l #12,%0", operands);
@@ -1808,7 +1808,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
        else if (GET_MODE (operands[0]) == DFmode)
  	operands[0] = gen_rtx_MEM (DFmode, operands[0]);
        else
-@@ -1977,10 +2211,14 @@
+@@ -1975,10 +2209,14 @@
        operands[1] = XEXP (XEXP (operands[1], 0), 0);
        if (size == 12)
          output_asm_insn ("sub%.l #12,%1", operands);
@@ -1823,7 +1823,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
        else if (GET_MODE (operands[1]) == DFmode)
  	operands[1] = gen_rtx_MEM (DFmode, operands[1]);
        else
-@@ -2016,7 +2254,7 @@
+@@ -2014,7 +2252,7 @@
        else if (optype0 == OFFSOP)
  	{
  	  middlehalf[0] = adjust_address (operands[0], SImode, 4);
@@ -1832,7 +1832,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  	}
        else
  	{
-@@ -2032,7 +2270,7 @@
+@@ -2030,7 +2268,7 @@
        else if (optype1 == OFFSOP)
  	{
  	  middlehalf[1] = adjust_address (operands[1], SImode, 4);
@@ -1841,7 +1841,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  	}
        else if (optype1 == CNSTOP)
  	{
-@@ -2060,8 +2298,66 @@
+@@ -2058,8 +2296,66 @@
  	  latehalf[1] = operands[1];
  	}
      }
@@ -1910,7 +1910,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
      {
        if (optype0 == REGOP)
  	latehalf[0] = gen_rtx_REG (SImode, REGNO (operands[0]) + 1);
-@@ -2086,7 +2382,16 @@
+@@ -2084,7 +2380,16 @@
    if (optype0 == PUSHOP
        && REGNO (XEXP (XEXP (operands[0], 0), 0)) == STACK_POINTER_REGNUM
        && reg_overlap_mentioned_p (stack_pointer_rtx, operands[1]))
@@ -1927,7 +1927,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  
    /* For (set (reg:DI N) (mem:DI ... (reg:SI N) ...)),
       if the upper part of reg N does not appear in the MEM, arrange to
-@@ -2114,6 +2419,12 @@
+@@ -2112,6 +2417,12 @@
  	      middlehalf[1] = adjust_address (operands[1], DImode, size - 8);
  	      latehalf[1] = adjust_address (operands[1], DImode, size - 4);
  	    }
@@ -1940,7 +1940,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  	  else
  	    {
  	      operands[1] = gen_rtx_MEM (DImode, latehalf[0]);
-@@ -2143,6 +2454,30 @@
+@@ -2141,6 +2452,30 @@
  	  output_asm_insn (singlemove_string (middlehalf), middlehalf);
  	  return "";
  	}
@@ -1971,7 +1971,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
        else if (reg_overlap_mentioned_p (testlow, XEXP (operands[1], 0)))
  	/* If the low half of dest is mentioned in the source memory
  	   address, the arrange to emit the move late half first.  */
-@@ -2166,21 +2501,24 @@
+@@ -2164,21 +2499,24 @@
        /* Make any unoffsettable addresses point at high-numbered word.  */
        if (addreg0)
  	{
@@ -1999,7 +1999,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  
        /* Undo the adds we just did.  */
        if (addreg0)
-@@ -2188,7 +2526,7 @@
+@@ -2186,7 +2524,7 @@
        if (addreg1)
  	output_asm_insn ("subq%.l #4,%0", &addreg1);
  
@@ -2008,7 +2008,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  	{
  	  output_asm_insn (singlemove_string (middlehalf), middlehalf);
  	  if (addreg0)
-@@ -2206,7 +2544,7 @@
+@@ -2204,7 +2542,7 @@
    output_asm_insn (singlemove_string (operands), operands);
  
    /* Do the middle one of the three words for long double */
@@ -2017,7 +2017,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
      {
        if (addreg0)
  	output_asm_insn ("addq%.l #4,%0", &addreg0);
-@@ -2223,19 +2561,22 @@
+@@ -2221,19 +2559,22 @@
      output_asm_insn ("addq%.l #4,%0", &addreg1);
  
    /* Do that word.  */
@@ -2043,7 +2043,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
          output_asm_insn ("subq%.l #8,%0", &addreg1);
        else
          output_asm_insn ("subq%.l #4,%0", &addreg1);
-@@ -2565,6 +2906,8 @@
+@@ -2563,6 +2904,8 @@
  int
  floating_exact_log2 (rtx x)
  {
@@ -2052,7 +2052,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
    REAL_VALUE_TYPE r, r1;
    int exp;
  
-@@ -2579,6 +2922,7 @@
+@@ -2577,6 +2920,7 @@
      return exp;
  
    return 0;
@@ -2060,7 +2060,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  }
  
  /* A C compound statement to output to stdio stream STREAM the
-@@ -2625,6 +2969,8 @@
+@@ -2623,6 +2967,8 @@
     'x' for float insn (print a CONST_DOUBLE as a float rather than in hex),
         or print pair of registers as rx:ry.
  
@@ -2069,7 +2069,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
     */
  
  void
-@@ -2665,6 +3011,14 @@
+@@ -2663,6 +3009,14 @@
  		  && TARGET_PCREL);
        output_addr_const (file, XEXP (op, 0));
      }
@@ -2084,7 +2084,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
    else if (GET_CODE (op) == REG)
      {
        if (letter == 'R')
-@@ -2677,13 +3031,24 @@
+@@ -2675,13 +3029,24 @@
    else if (GET_CODE (op) == MEM)
      {
        output_address (XEXP (op, 0));
@@ -2109,7 +2109,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
    else if (GET_CODE (op) == CONST_DOUBLE && GET_MODE (op) == SFmode)
      {
        REAL_VALUE_TYPE r;
-@@ -2702,6 +3067,7 @@
+@@ -2700,6 +3065,7 @@
        REAL_VALUE_FROM_CONST_DOUBLE (r, op);
        ASM_OUTPUT_DOUBLE_OPERAND (file, r);
      }
@@ -2117,8 +2117,8 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
    else
      {
        /* Use `print_operand_address' instead of `output_addr_const'
-@@ -3199,6 +3565,166 @@
-   return "or%.l %2,%0";
+@@ -3232,6 +3598,166 @@
+   return "eor%.l %2,%0";
  }
  
 +/* Argument-passing support functions.  */
@@ -2281,10 +2281,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +  return 0;
 +}
 +
- const char *
- output_xorsi3 (rtx *operands)
- {
-@@ -3243,13 +3769,28 @@
+ #ifdef M68K_TARGET_COFF
+ 
+ /* Output assembly to switch to section NAME with attribute FLAGS.  */
+@@ -3241,13 +3767,28 @@
  			     tree decl ATTRIBUTE_UNUSED)
  {
    char flagchar;
@@ -2316,7 +2316,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  }
  
  #endif /* M68K_TARGET_COFF */
-@@ -3302,7 +3843,7 @@
+@@ -3300,7 +3841,7 @@
    if (flag_pic)
      {
        if (TARGET_PCREL)
@@ -2325,7 +2325,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
        else if ((flag_pic == 1) || TARGET_68020)
  	{
  	  if (MOTOROLA)
-@@ -3377,7 +3918,10 @@
+@@ -3375,7 +3916,10 @@
      {
  	/* Address Registers, can't hold bytes, can hold aggregate if
  	   fits in.  */
@@ -2337,7 +2337,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
  	  return false;
  	if (regno + GET_MODE_SIZE (mode) / 4 <= 16)
  	  return true;
-@@ -3393,3 +3937,127 @@
+@@ -3391,3 +3935,127 @@
      }
    return false;
  }
@@ -2465,9 +2465,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.c gcc-4.1-20051216-src/gcc
 +  return (GET_CODE (r) != CONST_DOUBLE);
 +}
 +
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc/config/m68k/m68k.h
---- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h	2005-07-12 01:32:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.h	2005-12-21 05:06:54.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/m68k.h gcc-4.1-20060428-src/gcc/config/m68k/m68k.h
+--- gcc-4.1-20060428.orig/gcc/config/m68k/m68k.h	2005-07-12 01:32:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config/m68k/m68k.h	2006-04-30 02:21:08.000000000 +0200
 @@ -113,6 +113,12 @@
  /* Set the default.  */
  #define INT_OP_GROUP INT_OP_DOT_WORD
@@ -2644,9 +2644,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.h gcc-4.1-20051216-src/gcc
 +extern const char *m68k_regparm_string;
 +extern int m68k_regparm;
  extern int m68k_last_compare_had_fp_operands;
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gcc/config/m68k/m68k.md
---- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md	2005-11-22 21:53:08.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.md	2006-01-05 02:54:06.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/m68k.md gcc-4.1-20060428-src/gcc/config/m68k/m68k.md
+--- gcc-4.1-20060428.orig/gcc/config/m68k/m68k.md	2005-11-22 21:53:08.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/config/m68k/m68k.md	2006-04-30 02:21:08.000000000 +0200
 @@ -329,20 +329,22 @@
                   (match_operand:SI 1 "general_src_operand" "mSr,mSa,KTr,Ksr,>")))]
    "!TARGET_COLDFIRE"
@@ -3244,9 +3244,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.md gcc-4.1-20051216-src/gc
 +  [(set (strict_low_part (match_dup 0)) (const_int 0))]
 +  "")
 +
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-modes.def gcc-4.1-20051216-src/gcc/config/m68k/m68k-modes.def
---- gcc-4.1-20051216.orig/gcc/config/m68k/m68k-modes.def	2005-06-25 03:22:41.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k-modes.def	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/m68k-modes.def gcc-4.1-20060428-src/gcc/config/m68k/m68k-modes.def
+--- gcc-4.1-20060428.orig/gcc/config/m68k/m68k-modes.def	2005-06-25 03:22:41.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config/m68k/m68k-modes.def	2006-04-30 02:21:08.000000000 +0200
 @@ -18,5 +18,6 @@
  the Free Software Foundation, 51 Franklin Street, Fifth Floor,
  Boston, MA 02110-1301, USA.  */
@@ -3256,9 +3256,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-modes.def gcc-4.1-20051216
 +FLOAT_MODE (BF, 10, 0);
 +FLOAT_MODE (XF, 12, 0);
 +
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-none.h gcc-4.1-20051216-src/gcc/config/m68k/m68k-none.h
---- gcc-4.1-20051216.orig/gcc/config/m68k/m68k-none.h	2005-06-25 03:22:41.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k-none.h	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/m68k-none.h gcc-4.1-20060428-src/gcc/config/m68k/m68k-none.h
+--- gcc-4.1-20060428.orig/gcc/config/m68k/m68k-none.h	2005-06-25 03:22:41.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config/m68k/m68k-none.h	2006-04-30 02:21:08.000000000 +0200
 @@ -18,10 +18,12 @@
  the Free Software Foundation, 51 Franklin Street, Fifth Floor,
  Boston, MA 02110-1301, USA.  */
@@ -3276,9 +3276,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-none.h gcc-4.1-20051216-sr
  
  /* These are values set by the configure script in TARGET_CPU_DEFAULT.
     They are (sequential integer + (desired value for TARGET_DEFAULT) << 4).  */
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt gcc-4.1-20051216-src/gcc/config/m68k/m68k.opt
---- gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt	2005-12-19 02:06:37.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k.opt	2005-12-21 06:04:41.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/m68k.opt gcc-4.1-20060428-src/gcc/config/m68k/m68k.opt
+--- gcc-4.1-20060428.orig/gcc/config/m68k/m68k.opt	2005-06-25 03:22:41.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config/m68k/m68k.opt	2006-04-30 02:21:08.000000000 +0200
 @@ -92,6 +92,10 @@
  Target Report RejectNegative Mask(BITFIELD)
  Use the bit-field instructions
@@ -3368,9 +3368,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k.opt gcc-4.1-20051216-src/g
 +mtios
 +Target Report Mask(TIOS)
 +Enable TIOS interoperability
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-protos.h gcc-4.1-20051216-src/gcc/config/m68k/m68k-protos.h
---- gcc-4.1-20051216.orig/gcc/config/m68k/m68k-protos.h	2005-07-12 01:32:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k-protos.h	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/m68k-protos.h gcc-4.1-20060428-src/gcc/config/m68k/m68k-protos.h
+--- gcc-4.1-20060428.orig/gcc/config/m68k/m68k-protos.h	2005-07-12 01:32:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config/m68k/m68k-protos.h	2006-04-30 02:21:08.000000000 +0200
 @@ -44,6 +44,13 @@
  extern int floating_exact_log2 (rtx);
  extern bool strict_low_part_peephole_ok (enum machine_mode mode, rtx first_insn, rtx target);
@@ -3385,9 +3385,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-protos.h gcc-4.1-20051216-
  /* Functions from m68k.c used in macros.  */
  extern int standard_68881_constant_p (rtx);
  extern void print_operand_address (FILE *, rtx);
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-ti.h gcc-4.1-20051216-src/gcc/config/m68k/m68k-ti.h
---- gcc-4.1-20051216.orig/gcc/config/m68k/m68k-ti.h	1970-01-01 01:00:00.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/m68k/m68k-ti.h	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/m68k-ti.h gcc-4.1-20060428-src/gcc/config/m68k/m68k-ti.h
+--- gcc-4.1-20060428.orig/gcc/config/m68k/m68k-ti.h	1970-01-01 01:00:00.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/config/m68k/m68k-ti.h	2006-04-30 02:21:08.000000000 +0200
 @@ -0,0 +1,215 @@
 +/* Definitions of target machine for GNU compiler.
 +   TI-68k architecture (68000),
@@ -3604,9 +3604,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/m68k-ti.h gcc-4.1-20051216-src/
 +#define DWARF2_UNWIND_INFO 1
 +
 +/* end of m68k-ti.h */
-diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/predicates.md gcc-4.1-20051216-src/gcc/config/m68k/predicates.md
---- gcc-4.1-20051216.orig/gcc/config/m68k/predicates.md	2005-12-19 01:42:58.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/m68k/predicates.md	2005-12-19 02:04:39.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/m68k/predicates.md gcc-4.1-20060428-src/gcc/config/m68k/predicates.md
+--- gcc-4.1-20060428.orig/gcc/config/m68k/predicates.md	2005-06-25 03:22:41.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config/m68k/predicates.md	2006-04-30 02:21:08.000000000 +0200
 @@ -88,7 +88,7 @@
  ;; hosted on 64-bit machines.
  
@@ -3639,9 +3639,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/m68k/predicates.md gcc-4.1-20051216-
 +    return 1;
 +  return address_operand (op, mode);
 +})
-diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/config/smapbcd.h
---- gcc-4.1-20051216.orig/gcc/config/smapbcd.h	1970-01-01 01:00:00.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config/smapbcd.h	2005-12-21 05:11:44.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/config/smapbcd.h gcc-4.1-20060428-src/gcc/config/smapbcd.h
+--- gcc-4.1-20060428.orig/gcc/config/smapbcd.h	1970-01-01 01:00:00.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/config/smapbcd.h	2006-04-30 02:21:08.000000000 +0200
 @@ -0,0 +1,369 @@
 +/* Definitions for SMAP II BCD support in the GNU C Compiler.
 +   These macros implement software BCD floating point support;
@@ -4012,10 +4012,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config/smapbcd.h gcc-4.1-20051216-src/gcc/c
 +#define REAL_MODE_FORMAT_COMPOSITE_P(dummy) (0)
 +
 +/* end of smapbcd.h */
-diff -Naur gcc-4.1-20051216.orig/gcc/config.gcc gcc-4.1-20051216-src/gcc/config.gcc
---- gcc-4.1-20051216.orig/gcc/config.gcc	2005-12-16 14:51:19.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/config.gcc	2005-12-18 22:24:36.000000000 +0100
-@@ -1374,7 +1374,7 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/config.gcc gcc-4.1-20060428-src/gcc/config.gcc
+--- gcc-4.1-20060428.orig/gcc/config.gcc	2006-04-09 20:56:23.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/config.gcc	2006-04-30 02:21:08.000000000 +0200
+@@ -1385,7 +1385,7 @@
  m68k-*-coff*)
  	tmake_file=m68k/t-m68kbare
  	tm_defines="MOTOROLA USE_GAS"
@@ -4024,9 +4024,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/config.gcc gcc-4.1-20051216-src/gcc/config.
  	use_fixproto=yes
  	;;
  m68020-*-elf* | m68k-*-elf*)
-diff -Naur gcc-4.1-20051216.orig/gcc/convert.c gcc-4.1-20051216-src/gcc/convert.c
---- gcc-4.1-20051216.orig/gcc/convert.c	2005-10-11 20:14:57.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/convert.c	2005-12-18 22:24:36.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/convert.c gcc-4.1-20060428-src/gcc/convert.c
+--- gcc-4.1-20060428.orig/gcc/convert.c	2006-01-09 05:37:09.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/convert.c	2006-04-30 02:21:08.000000000 +0200
 @@ -73,6 +73,9 @@
  {
    tree sub, expt, subt;
@@ -4045,18 +4045,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/convert.c gcc-4.1-20051216-src/gcc/convert.
  
    if (TREE_CODE (exp) != NOP_EXPR
        && TREE_CODE (exp) != CONVERT_EXPR)
-diff -Naur gcc-4.1-20051216.orig/gcc/c.opt gcc-4.1-20051216-src/gcc/c.opt
---- gcc-4.1-20051216.orig/gcc/c.opt	2005-11-15 20:14:59.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c.opt	2005-12-19 00:46:06.000000000 +0100
-@@ -420,7 +420,7 @@
- Give strings the type \"array of char\"
- 
- Wpointer-sign
--C ObjC Var(warn_pointer_sign) Init(1)
-+C ObjC Var(warn_pointer_sign) Init(0)
- Warn when a pointer differs in signedness in an assignment
- 
- ansi
+diff -Naur gcc-4.1-20060428.orig/gcc/c.opt gcc-4.1-20060428-src/gcc/c.opt
+--- gcc-4.1-20060428.orig/gcc/c.opt	2006-01-26 20:06:06.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/c.opt	2006-04-30 02:21:08.000000000 +0200
 @@ -446,6 +446,10 @@
  C ObjC C++ ObjC++
  Recognize the \"asm\" keyword
@@ -4068,9 +4059,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c.opt gcc-4.1-20051216-src/gcc/c.opt
  fbuiltin
  C ObjC C++ ObjC++
  Recognize built-in functions
-diff -Naur gcc-4.1-20051216.orig/gcc/c-opts.c gcc-4.1-20051216-src/gcc/c-opts.c
---- gcc-4.1-20051216.orig/gcc/c-opts.c	2005-11-04 09:29:16.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-opts.c	2005-12-18 22:24:28.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-opts.c gcc-4.1-20060428-src/gcc/c-opts.c
+--- gcc-4.1-20060428.orig/gcc/c-opts.c	2006-01-26 20:06:06.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/c-opts.c	2006-04-30 02:53:23.000000000 +0200
 @@ -222,6 +222,9 @@
       before passing on command-line options to cpplib.  */
    cpp_opts->warn_dollars = 0;
@@ -4091,16 +4082,27 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-opts.c gcc-4.1-20051216-src/gcc/c-opts.c
  	}
        break;
  
-@@ -874,6 +879,8 @@
+@@ -414,8 +419,10 @@
+       cpp_opts->warn_num_sign_change = value;
+       cpp_opts->warn_multichar = value;	/* Was C++ only.  */
+ 
++#if 0 /* (TIGCC 20060430) */
+       if (warn_pointer_sign == -1)
+ 	warn_pointer_sign = 1;
++#endif /* 0 */
+       break;
+ 
+     case OPT_Wcomment:
+@@ -877,6 +884,8 @@
      case OPT_pedantic:
        cpp_opts->pedantic = 1;
        cpp_opts->warn_endif_labels = 1;
 +      /* (TIGCC 20050217) No Microsoft extensions if -pedantic. */
 +      flag_ms_extensions = 0;
+       if (warn_pointer_sign == -1)
+ 	warn_pointer_sign = 1;
        break;
- 
-     case OPT_print_objc_runtime_info:
-@@ -935,6 +942,10 @@
+@@ -940,6 +949,10 @@
      case OPT_v:
        verbose = true;
        break;
@@ -4111,7 +4113,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-opts.c gcc-4.1-20051216-src/gcc/c-opts.c
      }
  
    return result;
-@@ -1010,10 +1021,12 @@
+@@ -1020,10 +1033,12 @@
  	       "-Wformat-security ignored without -Wformat");
      }
  
@@ -4124,9 +4126,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-opts.c gcc-4.1-20051216-src/gcc/c-opts.c
  
    if (flag_preprocess_only)
      {
-diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parser.c
---- gcc-4.1-20051216.orig/gcc/c-parser.c	2005-10-14 23:35:47.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-parser.c	2005-12-22 23:31:57.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-parser.c gcc-4.1-20060428-src/gcc/c-parser.c
+--- gcc-4.1-20060428.orig/gcc/c-parser.c	2005-10-14 23:35:47.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/c-parser.c	2006-04-30 02:21:08.000000000 +0200
 @@ -911,14 +911,14 @@
  						      struct c_expr *);
  static struct c_expr c_parser_binary_expression (c_parser *, struct c_expr *);
@@ -4321,9 +4323,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-parser.c gcc-4.1-20051216-src/gcc/c-parse
  	  /* Postdecrement.  */
  	  c_parser_consume_token (parser);
  	  expr = default_function_array_conversion (expr);
-diff -Naur gcc-4.1-20051216.orig/gcc/cppdefault.c gcc-4.1-20051216-src/gcc/cppdefault.c
---- gcc-4.1-20051216.orig/gcc/cppdefault.c	2005-06-25 04:02:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/cppdefault.c	2005-12-18 22:24:36.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/cppdefault.c gcc-4.1-20060428-src/gcc/cppdefault.c
+--- gcc-4.1-20060428.orig/gcc/cppdefault.c	2005-06-25 04:02:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/cppdefault.c	2006-04-30 02:21:08.000000000 +0200
 @@ -46,6 +46,7 @@
  = INCLUDE_DEFAULTS;
  #else
@@ -4346,9 +4348,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/cppdefault.c gcc-4.1-20051216-src/gcc/cppde
  const char cpp_GCC_INCLUDE_DIR[] = GCC_INCLUDE_DIR;
  const size_t cpp_GCC_INCLUDE_DIR_len = sizeof GCC_INCLUDE_DIR - 8;
  #else
-diff -Naur gcc-4.1-20051216.orig/gcc/c-ppoutput.c gcc-4.1-20051216-src/gcc/c-ppoutput.c
---- gcc-4.1-20051216.orig/gcc/c-ppoutput.c	2005-10-14 16:56:45.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/c-ppoutput.c	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-ppoutput.c gcc-4.1-20060428-src/gcc/c-ppoutput.c
+--- gcc-4.1-20060428.orig/gcc/c-ppoutput.c	2005-10-14 16:56:45.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/c-ppoutput.c	2006-04-30 02:21:08.000000000 +0200
 @@ -174,7 +174,8 @@
        print.prev = token;
        cpp_output_token (token, print.outf);
@@ -4359,9 +4361,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-ppoutput.c gcc-4.1-20051216-src/gcc/c-ppo
  	account_for_newlines (token->val.str.text, token->val.str.len);
      }
  }
-diff -Naur gcc-4.1-20051216.orig/gcc/c-pretty-print.c gcc-4.1-20051216-src/gcc/c-pretty-print.c
---- gcc-4.1-20051216.orig/gcc/c-pretty-print.c	2005-11-03 04:30:36.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-pretty-print.c	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-pretty-print.c gcc-4.1-20060428-src/gcc/c-pretty-print.c
+--- gcc-4.1-20060428.orig/gcc/c-pretty-print.c	2005-11-03 04:30:36.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/c-pretty-print.c	2006-04-30 02:21:08.000000000 +0200
 @@ -904,8 +904,7 @@
  static void
  pp_c_floating_constant (c_pretty_printer *pp, tree r)
@@ -4390,9 +4392,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-pretty-print.c gcc-4.1-20051216-src/gcc/c
      default:
        pp_unsupported_tree (pp, e);
        break;
-diff -Naur gcc-4.1-20051216.orig/gcc/c-tree.h gcc-4.1-20051216-src/gcc/c-tree.h
---- gcc-4.1-20051216.orig/gcc/c-tree.h	2005-11-19 00:40:29.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-tree.h	2005-12-18 22:24:35.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-tree.h gcc-4.1-20060428-src/gcc/c-tree.h
+--- gcc-4.1-20060428.orig/gcc/c-tree.h	2005-11-19 00:40:29.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/c-tree.h	2006-04-30 02:21:08.000000000 +0200
 @@ -353,6 +353,8 @@
    tree attrs;
    /* The declarator.  */
@@ -4419,9 +4421,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-tree.h gcc-4.1-20051216-src/gcc/c-tree.h
  extern struct c_declarator *build_attrs_declarator (tree,
  						    struct c_declarator *);
  extern struct c_declarator *build_function_declarator (struct c_arg_info *,
-diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typeck.c
---- gcc-4.1-20051216.orig/gcc/c-typeck.c	2005-12-08 12:24:07.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/c-typeck.c	2005-12-21 05:26:58.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/c-typeck.c gcc-4.1-20060428-src/gcc/c-typeck.c
+--- gcc-4.1-20060428.orig/gcc/c-typeck.c	2006-04-22 01:05:30.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/c-typeck.c	2006-04-30 02:21:09.000000000 +0200
 @@ -83,6 +83,8 @@
  static tree lookup_field (tree, tree);
  static tree convert_arguments (tree, tree, tree, tree);
@@ -4531,7 +4533,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
        /* Anything not already handled and not a true memory reference
  	 or a non-lvalue array is an error.  */
        else if (typecode != FUNCTION_TYPE && !flag
-@@ -2977,6 +3044,69 @@
+@@ -2982,6 +3049,69 @@
      }
  }
  
@@ -4601,7 +4603,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
  /* Give an error for storing in something that is 'const'.  */
  
  static void
-@@ -3490,8 +3620,8 @@
+@@ -3495,8 +3625,8 @@
  	}
      }
  
@@ -4612,7 +4614,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
      value = non_lvalue (value);
  
    return value;
-@@ -3539,6 +3669,45 @@
+@@ -3544,6 +3674,45 @@
  
    newrhs = rhs;
  
@@ -4658,7 +4660,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
    /* If a binary op has been requested, combine the old LHS value with the RHS
       producing the value we should actually store into the LHS.  */
  
-@@ -3548,6 +3717,45 @@
+@@ -3553,6 +3722,45 @@
        newrhs = build_binary_op (modifycode, lhs, rhs, 1);
      }
  
@@ -4704,7 +4706,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
    if (!lvalue_or_else (lhs, lv_assign))
      return error_mark_node;
  
-@@ -4343,10 +4551,11 @@
+@@ -4348,10 +4556,11 @@
  {
    char *ofwhat;
  
@@ -4718,7 +4720,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
  }
  
  /* Issue a pedantic warning for a bad initializer component.
-@@ -4358,10 +4567,11 @@
+@@ -4363,10 +4572,11 @@
  {
    char *ofwhat;
  
@@ -4732,7 +4734,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
  }
  
  /* Issue a warning for a bad initializer component.
-@@ -4373,10 +4583,11 @@
+@@ -4378,10 +4588,11 @@
  {
    char *ofwhat;
  
@@ -4746,9 +4748,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/c-typeck.c gcc-4.1-20051216-src/gcc/c-typec
  }
  
  /* If TYPE is an array type and EXPR is a parenthesized string
-diff -Naur gcc-4.1-20051216.orig/gcc/diagnostic.c gcc-4.1-20051216-src/gcc/diagnostic.c
---- gcc-4.1-20051216.orig/gcc/diagnostic.c	2005-11-04 00:08:18.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/diagnostic.c	2005-12-18 22:24:36.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/diagnostic.c gcc-4.1-20060428-src/gcc/diagnostic.c
+--- gcc-4.1-20060428.orig/gcc/diagnostic.c	2005-11-04 00:08:18.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/diagnostic.c	2006-04-30 02:21:09.000000000 +0200
 @@ -252,9 +252,8 @@
        if (context->abort_on_error)
  	real_abort ();
@@ -4761,9 +4763,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/diagnostic.c gcc-4.1-20051216-src/gcc/diagn
        exit (FATAL_EXIT_CODE);
  
      case DK_FATAL:
-diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2.h gcc-4.1-20051216-src/gcc/dwarf2.h
---- gcc-4.1-20051216.orig/gcc/dwarf2.h	2005-06-25 04:02:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/dwarf2.h	2005-12-18 22:24:36.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/dwarf2.h gcc-4.1-20060428-src/gcc/dwarf2.h
+--- gcc-4.1-20060428.orig/gcc/dwarf2.h	2005-06-25 04:02:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/dwarf2.h	2006-04-30 02:21:09.000000000 +0200
 @@ -352,6 +352,7 @@
      DW_AT_body_begin = 0x2105,
      DW_AT_body_end   = 0x2106,
@@ -4772,10 +4774,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2.h gcc-4.1-20051216-src/gcc/dwarf2.h
      /* VMS extensions.  */
      DW_AT_VMS_rtnbeg_pd_address = 0x2201,
      /* UPC extension.  */
-diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2out.c
---- gcc-4.1-20051216.orig/gcc/dwarf2out.c	2005-12-09 00:47:48.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/dwarf2out.c	2005-12-20 16:36:14.000000000 +0100
-@@ -2164,8 +2164,11 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/dwarf2out.c gcc-4.1-20060428-src/gcc/dwarf2out.c
+--- gcc-4.1-20060428.orig/gcc/dwarf2out.c	2006-04-10 15:21:13.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/dwarf2out.c	2006-04-30 02:21:09.000000000 +0200
+@@ -2175,8 +2175,11 @@
       emit any EH unwind information.  Note that if exceptions aren't
       enabled, we won't have collected nothrow information, and if we
       asked for asynchronous tables, we always want this info.  */
@@ -4787,7 +4789,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
        bool any_eh_needed = !flag_exceptions || flag_asynchronous_unwind_tables;
  
        for (i = 0; i < fde_table_in_use; i++)
-@@ -2178,6 +2181,7 @@
+@@ -2189,6 +2192,7 @@
  	  any_eh_needed = true;
  
        if (! any_eh_needed)
@@ -4795,7 +4797,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  	return;
      }
  
-@@ -4139,7 +4143,7 @@
+@@ -4165,7 +4169,7 @@
  static void decls_for_scope (tree, dw_die_ref, int);
  static int is_redundant_typedef (tree);
  static void gen_namespace_die (tree);
@@ -4804,7 +4806,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  static dw_die_ref force_decl_die (tree);
  static dw_die_ref force_type_die (tree);
  static dw_die_ref setup_namespace_context (tree, dw_die_ref);
-@@ -4640,6 +4644,8 @@
+@@ -4666,6 +4670,8 @@
        return "DW_AT_body_end";
      case DW_AT_GNU_vector:
        return "DW_AT_GNU_vector";
@@ -4813,7 +4815,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  
      case DW_AT_VMS_rtnbeg_pd_address:
        return "DW_AT_VMS_rtnbeg_pd_address";
-@@ -9746,14 +9752,7 @@
+@@ -9757,14 +9763,7 @@
    int i;
  
    REAL_VALUE_FROM_CONST_DOUBLE (rv, rtl);
@@ -4829,7 +4831,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  }
  
  /* Attach a DW_AT_const_value attribute for a variable or a parameter which
-@@ -9792,7 +9791,7 @@
+@@ -9803,7 +9802,7 @@
  	    unsigned char *array = ggc_alloc (length);
  
  	    insert_float (rtl, array);
@@ -4838,7 +4840,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  	  }
  	else
  	  {
-@@ -11338,6 +11337,10 @@
+@@ -11347,6 +11346,10 @@
     DW_TAG_unspecified_parameters DIE) to represent the types of the formal
     parameters as specified in some function type specification (except for
     those which appear as part of a function *definition*).  */
@@ -4849,7 +4851,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  
  static void
  gen_formal_types_die (tree function_or_method_type, dw_die_ref context_die)
-@@ -11346,15 +11349,21 @@
+@@ -11355,15 +11358,21 @@
    tree formal_type = NULL;
    tree first_parm_type;
    tree arg;
@@ -4871,7 +4873,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
    first_parm_type = TYPE_ARG_TYPES (function_or_method_type);
  
    /* Make our first pass over the list of formal parameter types and output a
-@@ -11374,6 +11383,17 @@
+@@ -11383,6 +11392,17 @@
  	  || (arg && DECL_ARTIFICIAL (arg)))
  	add_AT_flag (parm_die, DW_AT_artificial, 1);
  
@@ -4889,7 +4891,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
        link = TREE_CHAIN (link);
        if (arg)
  	arg = TREE_CHAIN (arg);
-@@ -11477,6 +11497,10 @@
+@@ -11486,6 +11506,10 @@
  
  /* Generate a DIE to represent a declared function (either file-scope or
     block-local).  */
@@ -4900,7 +4902,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  
  static void
  gen_subprogram_die (tree decl, dw_die_ref context_die)
-@@ -11489,6 +11513,7 @@
+@@ -11498,6 +11522,7 @@
    dw_die_ref old_die = lookup_decl_die (decl);
    int declaration = (current_function_decl != decl
  		     || class_or_namespace_scope_p (context_die));
@@ -4908,7 +4910,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  
    /* It is possible to have both DECL_ABSTRACT and DECLARATION be true if we
       started to generate the abstract instance of an inline, decided to output
-@@ -11739,6 +11764,8 @@
+@@ -11736,6 +11761,8 @@
        tree arg_decls = DECL_ARGUMENTS (decl);
        tree parm;
  
@@ -4917,7 +4919,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
        /* When generating DIEs, generate the unspecified_parameters DIE
  	 instead if we come across the arg "__builtin_va_alist" */
        for (parm = arg_decls; parm; parm = TREE_CHAIN (parm))
-@@ -11749,7 +11776,16 @@
+@@ -11746,7 +11773,16 @@
  			    "__builtin_va_alist"))
  	      gen_unspecified_parameters_die (parm, subr_die);
  	    else
@@ -4935,7 +4937,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  	  }
  
        /* Decide whether we need an unspecified_parameters DIE at the end.
-@@ -12977,14 +13013,15 @@
+@@ -12974,14 +13010,15 @@
  }
  
  /* Generate Dwarf debug information for a decl described by DECL.  */
@@ -4953,7 +4955,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  
    switch (TREE_CODE (decl))
      {
-@@ -13127,8 +13164,7 @@
+@@ -13124,8 +13161,7 @@
  
      case PARM_DECL:
        gen_type_die (TREE_TYPE (decl), context_die);
@@ -4963,7 +4965,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  
      case NAMESPACE_DECL:
        gen_namespace_die (decl);
-@@ -13139,6 +13175,8 @@
+@@ -13136,6 +13172,8 @@
        gcc_assert ((int)TREE_CODE (decl) > NUM_TREE_CODES);
        break;
      }
@@ -4972,7 +4974,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  }
  
  /* Add Ada "use" clause information for SGI Workshop debugger.  */
-@@ -13461,9 +13499,12 @@
+@@ -13458,9 +13496,12 @@
       unused debug types, then we must emit .file here.  If we are eliminating
       unused debug types, then this will be done by the maybe_emit_file call in
       prune_unused_types_walk_attribs.  */
@@ -4986,7 +4988,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  
    return i;
  }
-@@ -13586,7 +13627,10 @@
+@@ -13583,7 +13624,10 @@
    if (debug_info_level >= DINFO_LEVEL_NORMAL
        && line != 0)
      {
@@ -4998,7 +5000,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  
        /* If requested, emit something human-readable.  */
        if (flag_debug_asm)
-@@ -13606,10 +13650,10 @@
+@@ -13603,10 +13647,10 @@
  	  line_info_table_in_use++;
  
  	  /* Indicate that multiple line number tables exist.  */
@@ -5011,9 +5013,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/dwarf2out.c gcc-4.1-20051216-src/gcc/dwarf2
  	{
  	  dw_separate_line_info_ref line_info;
  	  targetm.asm_out.internal_label (asm_out_file, SEPARATE_LINE_CODE_LABEL,
-diff -Naur gcc-4.1-20051216.orig/gcc/emit-rtl.c gcc-4.1-20051216-src/gcc/emit-rtl.c
---- gcc-4.1-20051216.orig/gcc/emit-rtl.c	2005-09-05 18:45:20.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/emit-rtl.c	2005-12-18 22:24:40.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/emit-rtl.c gcc-4.1-20060428-src/gcc/emit-rtl.c
+--- gcc-4.1-20060428.orig/gcc/emit-rtl.c	2006-01-03 23:37:46.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/emit-rtl.c	2006-04-30 02:21:09.000000000 +0200
 @@ -104,8 +104,10 @@
  REAL_VALUE_TYPE dconstm2;
  REAL_VALUE_TYPE dconsthalf;
@@ -5036,7 +5038,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/emit-rtl.c gcc-4.1-20051216-src/gcc/emit-rt
  }
  
  /* Returns a hash code for X (which is a really a mem_attrs *).  */
-@@ -1331,10 +1333,62 @@
+@@ -1334,10 +1336,62 @@
        && (GET_MODE_SIZE (mode) < UNITS_PER_WORD))
      return 0;
  
@@ -5100,7 +5102,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/emit-rtl.c gcc-4.1-20051216-src/gcc/emit-rt
  
    /* Form a new MEM at the requested address.  */
    if (MEM_P (op))
-@@ -5307,17 +5361,17 @@
+@@ -5310,17 +5364,17 @@
    REAL_VALUE_FROM_INT (dconstm1, -1, -1, double_mode);
    REAL_VALUE_FROM_INT (dconstm2, -2, -1, double_mode);
  
@@ -5121,9 +5123,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/emit-rtl.c gcc-4.1-20051216-src/gcc/emit-rt
  
    for (i = 0; i < (int) ARRAY_SIZE (const_tiny_rtx); i++)
      {
-diff -Naur gcc-4.1-20051216.orig/gcc/explow.c gcc-4.1-20051216-src/gcc/explow.c
---- gcc-4.1-20051216.orig/gcc/explow.c	2005-08-02 22:39:24.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/explow.c	2005-12-18 22:24:40.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/explow.c gcc-4.1-20060428-src/gcc/explow.c
+--- gcc-4.1-20060428.orig/gcc/explow.c	2005-08-02 22:39:24.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/explow.c	2006-04-30 02:21:09.000000000 +0200
 @@ -569,6 +569,10 @@
  {
    rtx temp = gen_reg_rtx (mode);
@@ -5143,9 +5145,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/explow.c gcc-4.1-20051216-src/gcc/explow.c
    return temp;
  }
  
-diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
---- gcc-4.1-20051216.orig/gcc/expr.c	2005-12-13 09:17:18.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/expr.c	2005-12-21 05:52:18.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/expr.c gcc-4.1-20060428-src/gcc/expr.c
+--- gcc-4.1-20060428.orig/gcc/expr.c	2006-03-22 05:22:40.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/expr.c	2006-04-30 02:21:09.000000000 +0200
 @@ -748,7 +748,7 @@
    if (GET_MODE (x) != VOIDmode)
      oldmode = GET_MODE (x);
@@ -5189,7 +5191,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
  
    return retval;
  }
-@@ -2498,6 +2507,7 @@
+@@ -2500,6 +2509,7 @@
  
    object = copy_to_mode_reg (Pmode, XEXP (object, 0));
  
@@ -5197,7 +5199,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
    size_mode = TYPE_MODE (sizetype);
    size = convert_to_mode (size_mode, size, 1);
    size = copy_to_mode_reg (size_mode, size);
-@@ -2506,7 +2516,8 @@
+@@ -2508,7 +2518,8 @@
       memset in this context.  This could be a user call to memset and
       the user may wish to examine the return value from memset.  For
       targets where libcalls and normal calls have different conventions
@@ -5207,7 +5209,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
  
    object_tree = make_tree (ptr_type_node, object);
    size_tree = make_tree (sizetype, size);
-@@ -2523,6 +2534,15 @@
+@@ -2525,6 +2536,15 @@
    CALL_EXPR_TAILCALL (call_expr) = tailcall;
  
    retval = expand_expr (call_expr, NULL_RTX, VOIDmode, 0);
@@ -5223,7 +5225,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
  
    return retval;
  }
-@@ -2541,8 +2561,10 @@
+@@ -2543,8 +2563,10 @@
        tree fn, args;
  
        fn = get_identifier ("memset");
@@ -5235,7 +5237,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
  				       NULL_TREE);
  
        fn = build_decl (FUNCTION_DECL, fn, args);
-@@ -2950,14 +2972,21 @@
+@@ -2954,14 +2976,21 @@
    if (push_operand (x, mode))
      return emit_move_complex_push (mode, x, y);
  
@@ -5262,7 +5264,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
      try_int = false;
    /* Is possible if both are registers (or subregs of registers).  */
    else if (register_operand (x, mode) && register_operand (y, mode))
-@@ -2975,18 +3004,7 @@
+@@ -2979,18 +3008,7 @@
  
    if (try_int)
      {
@@ -5282,7 +5284,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
        if (ret)
  	return ret;
      }
-@@ -3226,6 +3244,9 @@
+@@ -3230,6 +3248,9 @@
    else
      oldcost = rtx_cost (force_const_mem (dstmode, y), SET);
  
@@ -5292,7 +5294,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
    for (srcmode = GET_CLASS_NARROWEST_MODE (GET_MODE_CLASS (orig_srcmode));
         srcmode != orig_srcmode;
         srcmode = GET_MODE_WIDER_MODE (srcmode))
-@@ -3275,6 +3296,7 @@
+@@ -3279,6 +3300,7 @@
  
        return last_insn;
      }
@@ -5300,10 +5302,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/expr.c gcc-4.1-20051216-src/gcc/expr.c
  
    return NULL_RTX;
  }
-diff -Naur gcc-4.1-20051216.orig/gcc/final.c gcc-4.1-20051216-src/gcc/final.c
---- gcc-4.1-20051216.orig/gcc/final.c	2005-11-09 18:11:53.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/final.c	2005-12-18 22:24:40.000000000 +0100
-@@ -3079,11 +3079,23 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/final.c gcc-4.1-20060428-src/gcc/final.c
+--- gcc-4.1-20060428.orig/gcc/final.c	2005-12-20 05:51:27.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/final.c	2006-04-30 02:21:09.000000000 +0200
+@@ -3091,11 +3091,23 @@
  	    else if (letter == 'l')
  	      output_asm_label (operands[opnum]);
  	    else if (letter == 'a')
@@ -5327,7 +5329,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/final.c gcc-4.1-20051216-src/gcc/final.c
  		else
  		  output_operand (operands[opnum], 'c');
  	      }
-@@ -3096,6 +3108,9 @@
+@@ -3108,6 +3120,9 @@
  		  {
  		    putc ('-', asm_out_file);
  		    output_addr_const (asm_out_file, operands[opnum]);
@@ -5337,7 +5339,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/final.c gcc-4.1-20051216-src/gcc/final.c
  		  }
  	      }
  	    else
-@@ -3607,6 +3622,8 @@
+@@ -3619,6 +3634,8 @@
      }
    else
      {
@@ -5346,7 +5348,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/final.c gcc-4.1-20051216-src/gcc/final.c
        REAL_VALUE_TYPE r;
        long l[2];
        REAL_VALUE_FROM_CONST_DOUBLE (r, value);
-@@ -3635,6 +3652,7 @@
+@@ -3647,6 +3664,7 @@
  
        *first = GEN_INT (l[0]);
        *second = GEN_INT (l[1]);
@@ -5354,9 +5356,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/final.c gcc-4.1-20051216-src/gcc/final.c
      }
  }
  
-diff -Naur gcc-4.1-20051216.orig/gcc/flags.h gcc-4.1-20051216-src/gcc/flags.h
---- gcc-4.1-20051216.orig/gcc/flags.h	2005-06-29 05:01:27.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/flags.h	2005-12-18 22:24:40.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/flags.h gcc-4.1-20060428-src/gcc/flags.h
+--- gcc-4.1-20060428.orig/gcc/flags.h	2005-06-29 05:01:27.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/flags.h	2006-04-30 02:21:09.000000000 +0200
 @@ -287,4 +287,10 @@
  #define HONOR_SIGN_DEPENDENT_ROUNDING(MODE) \
    (MODE_HAS_SIGN_DEPENDENT_ROUNDING (MODE) && flag_rounding_math)
@@ -5368,9 +5370,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/flags.h gcc-4.1-20051216-src/gcc/flags.h
 +extern int flag_merge_constant_pools;
 +
  #endif /* ! GCC_FLAGS_H */
-diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-const.c
---- gcc-4.1-20051216.orig/gcc/fold-const.c	2005-11-26 00:12:32.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/fold-const.c	2005-12-21 05:34:45.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/fold-const.c gcc-4.1-20060428-src/gcc/fold-const.c
+--- gcc-4.1-20060428.orig/gcc/fold-const.c	2006-04-25 01:16:29.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/fold-const.c	2006-04-30 02:21:09.000000000 +0200
 @@ -1555,7 +1555,7 @@
        if ((flag_rounding_math
  	   || (REAL_MODE_FORMAT_COMPOSITE_P (mode)
@@ -5411,7 +5413,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  pedantic_non_lvalue (tree x)
  {
    if (pedantic_lvalues)
-@@ -5711,6 +5715,10 @@
+@@ -5714,6 +5718,10 @@
    if (!HONOR_SIGNED_ZEROS (TYPE_MODE (type)))
      return true;
  
@@ -5422,7 +5424,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
    /* Treat x + -0 as x - 0 and x - -0 as x + 0.  */
    if (TREE_CODE (addend) == REAL_CST
        && REAL_VALUE_MINUS_ZERO (TREE_REAL_CST (addend)))
-@@ -5896,6 +5904,7 @@
+@@ -5899,6 +5907,7 @@
  	}
        break;
  
@@ -5430,7 +5432,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
      case EQ_EXPR:
      case GE_EXPR:
        /* x == +Inf and x >= +Inf are always equal to x > DBL_MAX.  */
-@@ -5924,6 +5933,7 @@
+@@ -5927,6 +5936,7 @@
        temp = fold_build2 (neg ? LT_EXPR : GT_EXPR, type,
  			  arg0, build_real (TREE_TYPE (arg0), max));
        return fold_build1 (TRUTH_NOT_EXPR, type, temp);
@@ -5438,7 +5440,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  
      default:
        break;
-@@ -7017,6 +7027,21 @@
+@@ -7020,6 +7030,21 @@
      } /* switch (code) */
  }
  
@@ -5460,7 +5462,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  /* Fold a binary expression of code CODE and type TYPE with operands
     OP0 and OP1.  Return the folded expression if folding is
     successful.  Otherwise, return NULL_TREE.  */
-@@ -7839,8 +7864,11 @@
+@@ -7842,8 +7867,11 @@
  	     when x is NaN, since x * 0 is also NaN.  Nor are they the
  	     same in modes with signed zeros, since multiplying a
  	     negative value by 0 gives -0, not +0.  */
@@ -5473,7 +5475,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  	      && real_zerop (arg1))
  	    return omit_one_operand (type, arg1, arg0);
  	  /* In IEEE floating point, x*1 is not equivalent to x for snans.  */
-@@ -9056,7 +9084,7 @@
+@@ -9060,7 +9088,7 @@
  				  build_real (TREE_TYPE (arg1), dconst0));
  
  	    /* x != NaN is always true, other ops are always false.  */
@@ -5482,7 +5484,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  		&& ! HONOR_SNANS (TYPE_MODE (TREE_TYPE (arg1))))
  	      {
  		tem = (code == NE_EXPR) ? integer_one_node : integer_zero_node;
-@@ -9829,7 +9857,7 @@
+@@ -9833,7 +9861,7 @@
  
        /* If the first operand is NaN, the result is constant.  */
        if (TREE_CODE (arg0) == REAL_CST
@@ -5491,7 +5493,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  	  && (code != LTGT_EXPR || ! flag_trapping_math))
  	{
  	  t1 = (code == ORDERED_EXPR || code == LTGT_EXPR)
-@@ -9840,7 +9868,7 @@
+@@ -9844,7 +9872,7 @@
  
        /* If the second operand is NaN, the result is constant.  */
        if (TREE_CODE (arg1) == REAL_CST
@@ -5500,7 +5502,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  	  && (code != LTGT_EXPR || ! flag_trapping_math))
  	{
  	  t1 = (code == ORDERED_EXPR || code == LTGT_EXPR)
-@@ -9878,12 +9906,12 @@
+@@ -9882,12 +9910,12 @@
      case COMPOUND_EXPR:
        /* When pedantic, a compound expression can be neither an lvalue
  	 nor an integer constant expression.  */
@@ -5517,7 +5519,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  
      case COMPLEX_EXPR:
        if (wins)
-@@ -11269,7 +11297,11 @@
+@@ -11281,7 +11309,11 @@
        }
  
      case REAL_CST:
@@ -5530,7 +5532,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
        break;
  
      default:
-@@ -11315,10 +11347,14 @@
+@@ -11327,10 +11359,14 @@
        break;
  
      case REAL_CST:
@@ -5549,7 +5551,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
        break;
  
      default:
-@@ -11366,7 +11402,7 @@
+@@ -11378,7 +11414,7 @@
        const REAL_VALUE_TYPE *c1 = TREE_REAL_CST_PTR (op1);
  
        /* Handle the cases where either operand is a NaN.  */
@@ -5558,10 +5560,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/fold-const.c gcc-4.1-20051216-src/gcc/fold-
  	{
  	  switch (code)
  	    {
-diff -Naur gcc-4.1-20051216.orig/gcc/function.c gcc-4.1-20051216-src/gcc/function.c
---- gcc-4.1-20051216.orig/gcc/function.c	2005-12-02 07:16:21.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/function.c	2005-12-18 22:24:47.000000000 +0100
-@@ -5557,3 +5557,28 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/function.c gcc-4.1-20060428-src/gcc/function.c
+--- gcc-4.1-20060428.orig/gcc/function.c	2006-01-04 10:13:56.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/function.c	2006-04-30 02:21:09.000000000 +0200
+@@ -5585,3 +5585,28 @@
  
  
  #include "gt-function.h"
@@ -5590,9 +5592,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/function.c gcc-4.1-20051216-src/gcc/functio
 +  return 0;
 +}
 +/* end-TIGCC-local (regparms) */
-diff -Naur gcc-4.1-20051216.orig/gcc/function.h gcc-4.1-20051216-src/gcc/function.h
---- gcc-4.1-20051216.orig/gcc/function.h	2005-08-19 23:16:20.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/function.h	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/function.h gcc-4.1-20060428-src/gcc/function.h
+--- gcc-4.1-20060428.orig/gcc/function.h	2005-08-19 23:16:20.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/function.h	2006-04-30 02:21:10.000000000 +0200
 @@ -574,4 +574,10 @@
  extern bool reference_callee_copied (CUMULATIVE_ARGS *, enum machine_mode,
  				     tree, bool);
@@ -5604,9 +5606,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/function.h gcc-4.1-20051216-src/gcc/functio
 +/* end-TIGCC-local (regparms) */
 +
  #endif  /* GCC_FUNCTION_H */
-diff -Naur gcc-4.1-20051216.orig/gcc/gcc.c gcc-4.1-20051216-src/gcc/gcc.c
---- gcc-4.1-20051216.orig/gcc/gcc.c	2005-11-19 21:44:07.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/gcc.c	2005-12-19 01:04:29.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/gcc.c gcc-4.1-20060428-src/gcc/gcc.c
+--- gcc-4.1-20060428.orig/gcc/gcc.c	2006-01-21 19:29:08.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/gcc.c	2006-04-30 02:21:10.000000000 +0200
 @@ -1458,6 +1458,7 @@
  #define MD_STARTFILE_PREFIX_1 ""
  #endif
@@ -5749,9 +5751,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/gcc.c gcc-4.1-20051216-src/gcc/gcc.c
        printf (_("programs: %s\n"), build_search_list (&exec_prefixes, "", 0));
        printf (_("libraries: %s\n"), build_search_list (&startfile_prefixes, "", 0));
        return (0);
-diff -Naur gcc-4.1-20051216.orig/gcc/gcse.c gcc-4.1-20051216-src/gcc/gcse.c
---- gcc-4.1-20051216.orig/gcc/gcse.c	2005-11-12 20:29:30.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/gcse.c	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/gcse.c gcc-4.1-20060428-src/gcc/gcse.c
+--- gcc-4.1-20060428.orig/gcc/gcse.c	2006-01-16 10:37:10.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/gcse.c	2006-04-30 02:21:10.000000000 +0200
 @@ -3053,11 +3053,14 @@
    rtx newreg = NULL, newcnst = NULL;
  
@@ -5769,9 +5771,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/gcse.c gcc-4.1-20051216-src/gcc/gcse.c
      {
        cselib_val *val = cselib_lookup (x, GET_MODE (x), 0);
        struct elt_loc_list *l;
-diff -Naur gcc-4.1-20051216.orig/gcc/genmodes.c gcc-4.1-20051216-src/gcc/genmodes.c
---- gcc-4.1-20051216.orig/gcc/genmodes.c	2005-06-25 04:02:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/genmodes.c	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/genmodes.c gcc-4.1-20060428-src/gcc/genmodes.c
+--- gcc-4.1-20060428.orig/gcc/genmodes.c	2005-06-25 04:02:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/genmodes.c	2006-04-30 02:21:10.000000000 +0200
 @@ -1068,6 +1068,7 @@
  static void
  emit_real_format_for_mode (void)
@@ -5801,10 +5803,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/genmodes.c gcc-4.1-20051216-src/gcc/genmode
  
    puts ("}");
  }
-diff -Naur gcc-4.1-20051216.orig/gcc/gimplify.c gcc-4.1-20051216-src/gcc/gimplify.c
---- gcc-4.1-20051216.orig/gcc/gimplify.c	2005-11-11 18:14:49.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/gimplify.c	2005-12-18 22:24:47.000000000 +0100
-@@ -1899,6 +1899,7 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/gimplify.c gcc-4.1-20060428-src/gcc/gimplify.c
+--- gcc-4.1-20060428.orig/gcc/gimplify.c	2006-04-05 15:41:27.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/gimplify.c	2006-04-30 02:21:10.000000000 +0200
+@@ -1898,6 +1898,7 @@
    /* There is a sequence point before the call, so any side effects in
       the calling expression must occur before the actual call.  Force
       gimplify_expr to use an internal post queue.  */
@@ -5812,7 +5814,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/gimplify.c gcc-4.1-20051216-src/gcc/gimplif
    ret = gimplify_expr (&TREE_OPERAND (*expr_p, 0), pre_p, NULL,
  		       is_gimple_call_addr, fb_rvalue);
  
-@@ -1917,6 +1918,12 @@
+@@ -1916,6 +1917,12 @@
    if (PUSH_ARGS_REVERSED)
      TREE_OPERAND (*expr_p, 1) = nreverse (TREE_OPERAND (*expr_p, 1));
  
@@ -5823,11 +5825,11 @@ diff -Naur gcc-4.1-20051216.orig/gcc/gimplify.c gcc-4.1-20051216-src/gcc/gimplif
 +		       is_gimple_call_addr, fb_rvalue);
 +
    /* Try this again in case gimplification exposed something.  */
-   if (ret != GS_ERROR && decl && DECL_BUILT_IN (decl))
+   if (ret != GS_ERROR)
      {
-diff -Naur gcc-4.1-20051216.orig/gcc/ifcvt.c gcc-4.1-20051216-src/gcc/ifcvt.c
---- gcc-4.1-20051216.orig/gcc/ifcvt.c	2005-11-09 22:34:31.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/ifcvt.c	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/ifcvt.c gcc-4.1-20060428-src/gcc/ifcvt.c
+--- gcc-4.1-20060428.orig/gcc/ifcvt.c	2005-11-09 22:34:31.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/ifcvt.c	2006-04-30 02:21:10.000000000 +0200
 @@ -2026,6 +2026,16 @@
    if (MEM_P (op))
      return ! side_effects_p (XEXP (op, 0));
@@ -5867,9 +5869,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/ifcvt.c gcc-4.1-20051216-src/gcc/ifcvt.c
  	    }
  	  if (insn == end)
  	    break;
-diff -Naur gcc-4.1-20051216.orig/gcc/langhooks-def.h gcc-4.1-20051216-src/gcc/langhooks-def.h
---- gcc-4.1-20051216.orig/gcc/langhooks-def.h	2005-11-19 00:40:29.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/langhooks-def.h	2005-12-19 01:07:11.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/langhooks-def.h gcc-4.1-20060428-src/gcc/langhooks-def.h
+--- gcc-4.1-20060428.orig/gcc/langhooks-def.h	2005-11-19 00:40:29.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/langhooks-def.h	2006-04-30 02:21:10.000000000 +0200
 @@ -107,6 +107,7 @@
  #define LANG_HOOKS_SAFE_FROM_P		lhd_safe_from_p
  #define LANG_HOOKS_FINISH_INCOMPLETE_DECL lhd_do_nothing_t
@@ -5886,9 +5888,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/langhooks-def.h gcc-4.1-20051216-src/gcc/la
    LANG_HOOKS_SAFE_FROM_P, \
    LANG_HOOKS_FINISH_INCOMPLETE_DECL, \
    LANG_HOOKS_MARK_ADDRESSABLE, \
-diff -Naur gcc-4.1-20051216.orig/gcc/langhooks.h gcc-4.1-20051216-src/gcc/langhooks.h
---- gcc-4.1-20051216.orig/gcc/langhooks.h	2005-11-19 00:40:29.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/langhooks.h	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/langhooks.h gcc-4.1-20060428-src/gcc/langhooks.h
+--- gcc-4.1-20060428.orig/gcc/langhooks.h	2005-11-19 00:40:29.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/langhooks.h	2006-04-30 02:21:10.000000000 +0200
 @@ -283,6 +283,10 @@
       1 if handled, 0 otherwise.  */
    int (*expand_decl) (tree);
@@ -5900,9 +5902,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/langhooks.h gcc-4.1-20051216-src/gcc/langho
    /* Hook called by safe_from_p for language-specific tree codes.  It is
       up to the language front-end to install a hook if it has any such
       codes that safe_from_p needs to know about.  Since same_from_p will
-diff -Naur gcc-4.1-20051216.orig/gcc/loop.c gcc-4.1-20051216-src/gcc/loop.c
---- gcc-4.1-20051216.orig/gcc/loop.c	2005-12-16 13:14:15.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/loop.c	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/loop.c gcc-4.1-20060428-src/gcc/loop.c
+--- gcc-4.1-20060428.orig/gcc/loop.c	2005-12-16 13:14:15.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/loop.c	2006-04-30 02:21:10.000000000 +0200
 @@ -1296,6 +1296,13 @@
  		      && REGNO_LAST_UID (regno) == INSN_UID (user)
  		      && regs->array[regno].set_in_loop == 1
@@ -5917,9 +5919,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/loop.c gcc-4.1-20051216-src/gcc/loop.c
  		      && ! side_effects_p (SET_SRC (set))
  		      && ! find_reg_note (p, REG_RETVAL, NULL_RTX)
  		      && (!SMALL_REGISTER_CLASSES
-diff -Naur gcc-4.1-20051216.orig/gcc/machmode.def gcc-4.1-20051216-src/gcc/machmode.def
---- gcc-4.1-20051216.orig/gcc/machmode.def	2005-06-25 04:02:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/machmode.def	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/machmode.def gcc-4.1-20060428-src/gcc/machmode.def
+--- gcc-4.1-20060428.orig/gcc/machmode.def	2005-06-25 04:02:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/machmode.def	2006-04-30 02:21:10.000000000 +0200
 @@ -170,8 +170,8 @@
     These are the IEEE mappings.  They can be overridden with
     RESET_FLOAT_FORMAT or at runtime (in OVERRIDE_OPTIONS).  */
@@ -5931,10 +5933,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/machmode.def gcc-4.1-20051216-src/gcc/machm
  
  /* Basic CC modes.
     FIXME define this only for targets that need it.  */
-diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
---- gcc-4.1-20051216.orig/gcc/optabs.c	2005-12-01 23:50:31.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/optabs.c	2005-12-21 06:30:16.000000000 +0100
-@@ -1747,7 +1747,7 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/optabs.c gcc-4.1-20060428-src/gcc/optabs.c
+--- gcc-4.1-20060428.orig/gcc/optabs.c	2006-01-31 22:59:53.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/optabs.c	2006-04-30 02:21:10.000000000 +0200
+@@ -1739,7 +1739,7 @@
    /* Look for a wider mode of the same class for which it appears we can do
       the operation.  */
  
@@ -5943,7 +5945,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
      {
        for (wider_mode = GET_MODE_WIDER_MODE (mode); wider_mode != VOIDmode;
  	   wider_mode = GET_MODE_WIDER_MODE (wider_mode))
-@@ -2043,7 +2043,7 @@
+@@ -2035,7 +2035,7 @@
  
    /* It can't be done in this mode.  Can we do it in a wider mode?  */
  
@@ -5952,7 +5954,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
      {
        for (wider_mode = GET_MODE_WIDER_MODE (mode); wider_mode != VOIDmode;
  	   wider_mode = GET_MODE_WIDER_MODE (wider_mode))
-@@ -2211,6 +2211,7 @@
+@@ -2203,6 +2203,7 @@
    return 0;
  }
  
@@ -5960,7 +5962,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  /* Extract the OMODE lowpart from VAL, which has IMODE.  Under certain
     conditions, VAL may already be a SUBREG against which we cannot generate
     a further SUBREG.  In this case, we expect forcing the value into a
-@@ -2335,6 +2336,7 @@
+@@ -2327,6 +2328,7 @@
  
    return target;
  }
@@ -5968,7 +5970,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  
  /* Generate code to perform an operation specified by UNOPTAB
     on operand OP0, with result having machine-mode MODE.
-@@ -2412,7 +2414,7 @@
+@@ -2404,7 +2406,7 @@
  	goto try_libcall;
      }
  
@@ -5977,7 +5979,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
      for (wider_mode = GET_MODE_WIDER_MODE (mode); wider_mode != VOIDmode;
  	 wider_mode = GET_MODE_WIDER_MODE (wider_mode))
        {
-@@ -2488,13 +2490,16 @@
+@@ -2480,13 +2482,16 @@
  
    if (unoptab->code == NEG)
      {
@@ -5994,7 +5996,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  
        /* If there is no negation pattern, and we have no negative zero,
  	 try subtracting from zero.  */
-@@ -2551,7 +2556,7 @@
+@@ -2543,7 +2548,7 @@
  
    /* It can't be done in this mode.  Can we do it in a wider mode?  */
  
@@ -6003,7 +6005,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
      {
        for (wider_mode = GET_MODE_WIDER_MODE (mode); wider_mode != VOIDmode;
  	   wider_mode = GET_MODE_WIDER_MODE (wider_mode))
-@@ -2640,13 +2645,16 @@
+@@ -2632,13 +2637,16 @@
    if (temp != 0)
      return temp;
  
@@ -6020,7 +6022,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  
    /* If we have a MAX insn, we can do this as MAX (x, -x).  */
    if (smax_optab->handlers[(int) mode].insn_code != CODE_FOR_nothing
-@@ -2739,6 +2747,7 @@
+@@ -2731,6 +2739,7 @@
    return target;
  }
  
@@ -6028,7 +6030,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  /* A subroutine of expand_copysign, perform the copysign operation using the
     abs and neg primitives advertised to exist on the target.  The assumption
     is that we have a split register file, and leaving op0 in fp registers,
-@@ -2971,6 +2980,7 @@
+@@ -2963,6 +2972,7 @@
    return expand_copysign_bit (mode, op0, op1, target,
  			      fmt->signbit_rw, op0_is_abs);
  }
@@ -6036,7 +6038,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  
  /* Generate an instruction whose insn-code is INSN_CODE,
     with two operands: an output TARGET and an input OP0.
-@@ -4351,6 +4361,7 @@
+@@ -4349,6 +4359,7 @@
  	  }
        }
  
@@ -6044,7 +6046,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
    /* Unsigned integer, and no way to convert directly.
       Convert as signed, then conditionally adjust the result.  */
    if (unsignedp)
-@@ -4455,6 +4466,7 @@
+@@ -4453,6 +4464,7 @@
        emit_label (label);
        goto done;
      }
@@ -6052,7 +6054,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  
    /* No hardware instruction available; call a library routine.  */
      {
-@@ -4545,6 +4557,7 @@
+@@ -4543,6 +4555,7 @@
  	  }
        }
  
@@ -6060,7 +6062,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
    /* For an unsigned conversion, there is one more way to do it.
       If we have a signed conversion, we generate code that compares
       the real value to the largest representable positive number.  If if
-@@ -4628,6 +4641,7 @@
+@@ -4626,6 +4639,7 @@
  
  	  return;
  	}
@@ -6068,7 +6070,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
  
    /* We can't do it with an insn, so use a library call.  But first ensure
       that the mode of TO is at least as wide as SImode, since those are the
-@@ -5231,6 +5245,9 @@
+@@ -5229,6 +5243,9 @@
    /* Conversions.  */
    init_interclass_conv_libfuncs (sfloat_optab, "float",
  				 MODE_INT, MODE_FLOAT);
@@ -6078,9 +6080,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/optabs.c gcc-4.1-20051216-src/gcc/optabs.c
    init_interclass_conv_libfuncs (sfix_optab, "fix",
  				 MODE_FLOAT, MODE_INT);
    init_interclass_conv_libfuncs (ufix_optab, "fixuns",
-diff -Naur gcc-4.1-20051216.orig/gcc/opts.c gcc-4.1-20051216-src/gcc/opts.c
---- gcc-4.1-20051216.orig/gcc/opts.c	2005-12-06 12:28:18.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/opts.c	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/opts.c gcc-4.1-20060428-src/gcc/opts.c
+--- gcc-4.1-20060428.orig/gcc/opts.c	2005-12-06 12:28:18.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/opts.c	2006-04-30 02:21:10.000000000 +0200
 @@ -570,7 +570,12 @@
  #endif
        flag_regmove = 1;
@@ -6150,9 +6152,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/opts.c gcc-4.1-20051216-src/gcc/opts.c
      case OPT_fvisibility_:
        {
          if (!strcmp(arg, "default"))
-diff -Naur gcc-4.1-20051216.orig/gcc/output.h gcc-4.1-20051216-src/gcc/output.h
---- gcc-4.1-20051216.orig/gcc/output.h	2005-10-26 09:03:30.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/output.h	2005-12-18 22:24:47.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/output.h gcc-4.1-20060428-src/gcc/output.h
+--- gcc-4.1-20060428.orig/gcc/output.h	2005-10-26 09:03:30.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/output.h	2006-04-30 02:21:10.000000000 +0200
 @@ -334,7 +334,7 @@
  #define assemble_aligned_integer(SIZE, VALUE) \
    assemble_integer (VALUE, SIZE, (SIZE) * BITS_PER_UNIT, 1)
@@ -6162,9 +6164,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/output.h gcc-4.1-20051216-src/gcc/output.h
  /* Assemble the floating-point constant D into an object of size MODE.  */
  extern void assemble_real (REAL_VALUE_TYPE, enum machine_mode, unsigned);
  #endif
-diff -Naur gcc-4.1-20051216.orig/gcc/postreload.c gcc-4.1-20051216-src/gcc/postreload.c
---- gcc-4.1-20051216.orig/gcc/postreload.c	2005-11-18 14:14:39.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/postreload.c	2005-12-18 22:24:50.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/postreload.c gcc-4.1-20060428-src/gcc/postreload.c
+--- gcc-4.1-20060428.orig/gcc/postreload.c	2005-11-18 14:14:39.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/postreload.c	2006-04-30 02:21:10.000000000 +0200
 @@ -1189,6 +1189,9 @@
         && TRULY_NOOP_TRUNCATION (GET_MODE_BITSIZE (OUTMODE), \
  				 GET_MODE_BITSIZE (INMODE))))
@@ -6195,9 +6197,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/postreload.c gcc-4.1-20051216-src/gcc/postr
  			    {
  			      rtx narrow_reg = gen_rtx_REG (narrow_mode,
  							    REGNO (reg));
-diff -Naur gcc-4.1-20051216.orig/gcc/print-rtl.c gcc-4.1-20051216-src/gcc/print-rtl.c
---- gcc-4.1-20051216.orig/gcc/print-rtl.c	2005-08-16 02:13:53.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/print-rtl.c	2005-12-18 22:24:50.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/print-rtl.c gcc-4.1-20060428-src/gcc/print-rtl.c
+--- gcc-4.1-20060428.orig/gcc/print-rtl.c	2005-08-16 02:13:53.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/print-rtl.c	2006-04-30 02:21:10.000000000 +0200
 @@ -586,6 +586,9 @@
  	{
  	  char s[60];
@@ -6216,9 +6218,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/print-rtl.c gcc-4.1-20051216-src/gcc/print-
  	}
        break;
  #endif
-diff -Naur gcc-4.1-20051216.orig/gcc/print-tree.c gcc-4.1-20051216-src/gcc/print-tree.c
---- gcc-4.1-20051216.orig/gcc/print-tree.c	2005-10-13 01:34:09.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/print-tree.c	2005-12-18 22:24:50.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/print-tree.c gcc-4.1-20060428-src/gcc/print-tree.c
+--- gcc-4.1-20060428.orig/gcc/print-tree.c	2005-10-13 01:34:09.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/print-tree.c	2006-04-30 02:21:10.000000000 +0200
 @@ -134,7 +134,7 @@
        else
  	{
@@ -6237,9 +6239,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/print-tree.c gcc-4.1-20051216-src/gcc/print
  		fprintf (file, " %s", string);
  	      }
  	  }
-diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
---- gcc-4.1-20051216.orig/gcc/real.c	2005-09-19 19:01:40.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/real.c	2005-12-21 05:58:07.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/real.c gcc-4.1-20060428-src/gcc/real.c
+--- gcc-4.1-20060428.orig/gcc/real.c	2005-09-19 19:01:40.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/real.c	2006-04-30 02:21:11.000000000 +0200
 @@ -72,6 +72,7 @@
     adjust the significand to match.  */
  
@@ -7571,9 +7573,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.c gcc-4.1-20051216-src/gcc/real.c
  }
 +#endif /* 0 */
  
-diff -Naur gcc-4.1-20051216.orig/gcc/real.h gcc-4.1-20051216-src/gcc/real.h
---- gcc-4.1-20051216.orig/gcc/real.h	2005-08-01 23:16:31.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/real.h	2005-12-18 22:24:50.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/real.h gcc-4.1-20060428-src/gcc/real.h
+--- gcc-4.1-20060428.orig/gcc/real.h	2005-08-01 23:16:31.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/real.h	2006-04-30 02:21:11.000000000 +0200
 @@ -22,6 +22,22 @@
  #ifndef GCC_REAL_H
  #define GCC_REAL_H
@@ -7733,9 +7735,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/real.h gcc-4.1-20051216-src/gcc/real.h
 +#endif /* 0 */
  
  #endif /* ! GCC_REAL_H */
-diff -Naur gcc-4.1-20051216.orig/gcc/rtlanal.c gcc-4.1-20051216-src/gcc/rtlanal.c
---- gcc-4.1-20051216.orig/gcc/rtlanal.c	2005-11-03 12:31:46.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/rtlanal.c	2005-12-19 01:11:06.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/rtlanal.c gcc-4.1-20060428-src/gcc/rtlanal.c
+--- gcc-4.1-20060428.orig/gcc/rtlanal.c	2005-11-03 12:31:46.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/rtlanal.c	2006-04-30 02:21:11.000000000 +0200
 @@ -3183,6 +3183,19 @@
    if (offset == 0 || nregs_xmode == nregs_ymode)
      return 0;
@@ -7785,9 +7787,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/rtlanal.c gcc-4.1-20051216-src/gcc/rtlanal.
    /* Lowpart subregs are otherwise valid.  */
    if (offset == subreg_lowpart_offset (ymode, xmode))
      return true;
-diff -Naur gcc-4.1-20051216.orig/gcc/sdbout.c gcc-4.1-20051216-src/gcc/sdbout.c
---- gcc-4.1-20051216.orig/gcc/sdbout.c	2005-06-25 04:02:01.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/sdbout.c	2005-12-18 22:24:50.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/sdbout.c gcc-4.1-20060428-src/gcc/sdbout.c
+--- gcc-4.1-20060428.orig/gcc/sdbout.c	2005-06-25 04:02:01.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/sdbout.c	2006-04-30 02:21:11.000000000 +0200
 @@ -1541,9 +1541,7 @@
  #ifdef SDB_OUTPUT_SOURCE_LINE
        SDB_OUTPUT_SOURCE_LINE (asm_out_file, line);
@@ -7799,9 +7801,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/sdbout.c gcc-4.1-20051216-src/gcc/sdbout.c
  #endif
      }
  }
-diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/simplify-rtx.c
---- gcc-4.1-20051216.orig/gcc/simplify-rtx.c	2005-11-16 18:15:23.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/simplify-rtx.c	2005-12-21 06:03:17.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/simplify-rtx.c gcc-4.1-20060428-src/gcc/simplify-rtx.c
+--- gcc-4.1-20060428.orig/gcc/simplify-rtx.c	2005-11-16 18:15:23.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/simplify-rtx.c	2006-04-30 02:21:11.000000000 +0200
 @@ -494,13 +494,14 @@
  	 both +0, (minus Y X) is the same as (minus X Y).  If the
  	 rounding mode is towards +infinity (or -infinity) then the two
@@ -8034,10 +8036,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/simplify-rtx.c gcc-4.1-20051216-src/gcc/sim
  	    elems[elem] = CONST_DOUBLE_FROM_REAL_VALUE (r, outer_submode);
  	  }
  	  break;
-diff -Naur gcc-4.1-20051216.orig/gcc/stmt.c gcc-4.1-20051216-src/gcc/stmt.c
---- gcc-4.1-20051216.orig/gcc/stmt.c	2005-08-06 13:31:49.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/stmt.c	2005-12-18 22:24:50.000000000 +0100
-@@ -2484,6 +2484,9 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/stmt.c gcc-4.1-20060428-src/gcc/stmt.c
+--- gcc-4.1-20060428.orig/gcc/stmt.c	2006-03-14 20:19:14.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/stmt.c	2006-04-30 02:21:11.000000000 +0200
+@@ -2511,6 +2511,9 @@
  	  use_cost_table
  	    = (TREE_CODE (orig_type) != ENUMERAL_TYPE
  	       && estimate_case_costs (case_list));
@@ -8047,7 +8049,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/stmt.c gcc-4.1-20051216-src/gcc/stmt.c
  	  balance_case_nodes (&case_list, NULL);
  	  emit_case_nodes (index, case_list, default_label, index_type);
  	  emit_jump (default_label);
-@@ -3048,10 +3051,17 @@
+@@ -3079,10 +3082,17 @@
  	     does not have any children and is single valued; it would
  	     cost too much space to save so little time.  */
  
@@ -8066,9 +8068,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/stmt.c gcc-4.1-20051216-src/gcc/stmt.c
  		{
  		  emit_cmp_and_jump_insns (index,
  					   convert_modes
-diff -Naur gcc-4.1-20051216.orig/gcc/system.h gcc-4.1-20051216-src/gcc/system.h
---- gcc-4.1-20051216.orig/gcc/system.h	2005-08-16 02:13:53.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/system.h	2005-12-18 22:24:50.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/system.h gcc-4.1-20060428-src/gcc/system.h
+--- gcc-4.1-20060428.orig/gcc/system.h	2005-08-16 02:13:53.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/system.h	2006-04-30 02:21:11.000000000 +0200
 @@ -732,7 +732,7 @@
  
  /* Hooks that are no longer used.  */
@@ -8078,10 +8080,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/system.h gcc-4.1-20051216-src/gcc/system.h
  	LANG_HOOKS_TREE_INLINING_ESTIMATE_NUM_INSNS \
  	LANG_HOOKS_PUSHLEVEL LANG_HOOKS_SET_BLOCK \
  	LANG_HOOKS_MAYBE_BUILD_CLEANUP LANG_HOOKS_UPDATE_DECL_AFTER_SAVING \
-diff -Naur gcc-4.1-20051216.orig/gcc/toplev.c gcc-4.1-20051216-src/gcc/toplev.c
---- gcc-4.1-20051216.orig/gcc/toplev.c	2005-11-09 07:30:03.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/toplev.c	2005-12-24 03:52:46.000000000 +0100
-@@ -414,6 +414,15 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/toplev.c gcc-4.1-20060428-src/gcc/toplev.c
+--- gcc-4.1-20060428.orig/gcc/toplev.c	2006-02-04 23:13:20.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/toplev.c	2006-04-30 02:21:11.000000000 +0200
+@@ -415,6 +415,15 @@
      }
  
    src_pwd = xstrdup (pwd);
@@ -8097,7 +8099,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/toplev.c gcc-4.1-20051216-src/gcc/toplev.c
    return true;
  }
  
-@@ -1759,7 +1768,7 @@
+@@ -1760,7 +1769,7 @@
        flag_prefetch_loop_arrays = 0;
      }
  
@@ -8106,7 +8108,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/toplev.c gcc-4.1-20051216-src/gcc/toplev.c
    if (flag_function_sections && write_symbols != NO_DEBUG)
      warning (0, "-ffunction-sections may affect debugging on some targets");
  #endif
-@@ -1782,6 +1791,11 @@
+@@ -1783,6 +1792,11 @@
    if (!flag_stack_protect)
      warn_stack_protect = 0;
  
@@ -8118,7 +8120,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/toplev.c gcc-4.1-20051216-src/gcc/toplev.c
    /* ??? Unwind info is not correct around the CFG unless either a frame
       pointer is present or A_O_A is set.  Fixing this requires rewriting
       unwind info generation to be aware of the CFG and propagating states
-@@ -1793,6 +1807,7 @@
+@@ -1794,6 +1808,7 @@
  	       "for correctness");
        flag_omit_frame_pointer = 0;
      }
@@ -8126,9 +8128,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/toplev.c gcc-4.1-20051216-src/gcc/toplev.c
  }
  
  /* Initialize the compiler back end.  */
-diff -Naur gcc-4.1-20051216.orig/gcc/tree.c gcc-4.1-20051216-src/gcc/tree.c
---- gcc-4.1-20051216.orig/gcc/tree.c	2005-12-07 12:37:53.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/tree.c	2005-12-18 22:24:53.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/tree.c gcc-4.1-20060428-src/gcc/tree.c
+--- gcc-4.1-20060428.orig/gcc/tree.c	2006-04-04 19:40:00.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/tree.c	2006-04-30 02:21:11.000000000 +0200
 @@ -1374,7 +1374,7 @@
  
    return ((TREE_CODE (expr) == REAL_CST
@@ -8138,7 +8140,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree.c gcc-4.1-20051216-src/gcc/tree.c
  	  || (TREE_CODE (expr) == COMPLEX_CST
  	      && real_zerop (TREE_REALPART (expr))
  	      && real_zerop (TREE_IMAGPART (expr))));
-@@ -6604,17 +6604,14 @@
+@@ -6605,17 +6605,14 @@
        return integer_zerop (init);
  
      case REAL_CST:
@@ -8161,9 +8163,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree.c gcc-4.1-20051216-src/gcc/tree.c
  
      case VECTOR_CST:
        for (elt = TREE_VECTOR_CST_ELTS (init); elt; elt = TREE_CHAIN (elt))
-diff -Naur gcc-4.1-20051216.orig/gcc/tree.h gcc-4.1-20051216-src/gcc/tree.h
---- gcc-4.1-20051216.orig/gcc/tree.h	2005-11-09 21:13:41.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/tree.h	2005-12-19 00:22:07.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/tree.h gcc-4.1-20060428-src/gcc/tree.h
+--- gcc-4.1-20060428.orig/gcc/tree.h	2006-02-14 15:36:15.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/tree.h	2006-04-30 02:21:11.000000000 +0200
 @@ -3477,6 +3477,7 @@
  /* Return an expr equal to X but certainly not valid as an lvalue.  */
  
@@ -8172,10 +8174,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree.h gcc-4.1-20051216-src/gcc/tree.h
  
  extern tree convert (tree, tree);
  extern unsigned int expr_align (tree);
-diff -Naur gcc-4.1-20051216.orig/gcc/tree-inline.c gcc-4.1-20051216-src/gcc/tree-inline.c
---- gcc-4.1-20051216.orig/gcc/tree-inline.c	2005-10-31 15:05:12.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/tree-inline.c	2005-12-19 01:15:28.000000000 +0100
-@@ -2044,6 +2044,48 @@
+diff -Naur gcc-4.1-20060428.orig/gcc/tree-inline.c gcc-4.1-20060428-src/gcc/tree-inline.c
+--- gcc-4.1-20060428.orig/gcc/tree-inline.c	2006-04-28 13:43:43.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/tree-inline.c	2006-04-30 02:21:11.000000000 +0200
+@@ -2057,6 +2057,48 @@
      verify_cgraph_node (cg_edge->callee);
  #endif
  
@@ -8224,9 +8226,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree-inline.c gcc-4.1-20051216-src/gcc/tree
    /* We will be inlining this callee.  */
  
    id->eh_region = lookup_stmt_eh_region (stmt);
-diff -Naur gcc-4.1-20051216.orig/gcc/tree-object-size.c gcc-4.1-20051216-src/gcc/tree-object-size.c
---- gcc-4.1-20051216.orig/gcc/tree-object-size.c	2005-07-03 18:11:42.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/tree-object-size.c	2005-12-21 06:20:24.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/tree-object-size.c gcc-4.1-20060428-src/gcc/tree-object-size.c
+--- gcc-4.1-20060428.orig/gcc/tree-object-size.c	2005-07-03 18:11:42.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/tree-object-size.c	2006-04-30 02:21:12.000000000 +0200
 @@ -247,9 +247,11 @@
  	arg_mask = 2;
  	break;
@@ -8255,9 +8257,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree-object-size.c gcc-4.1-20051216-src/gcc
  	if (arglist)
  	  return TREE_VALUE (arglist);
  	break;
-diff -Naur gcc-4.1-20051216.orig/gcc/tree-pretty-print.c gcc-4.1-20051216-src/gcc/tree-pretty-print.c
---- gcc-4.1-20051216.orig/gcc/tree-pretty-print.c	2005-07-31 22:55:41.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/tree-pretty-print.c	2005-12-18 22:24:53.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/tree-pretty-print.c gcc-4.1-20060428-src/gcc/tree-pretty-print.c
+--- gcc-4.1-20060428.orig/gcc/tree-pretty-print.c	2005-07-31 22:55:41.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/tree-pretty-print.c	2006-04-30 02:21:12.000000000 +0200
 @@ -608,7 +608,7 @@
  	else
  	  {
@@ -8267,9 +8269,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree-pretty-print.c gcc-4.1-20051216-src/gc
  	    pp_string (buffer, string);
  	  }
  #else
-diff -Naur gcc-4.1-20051216.orig/gcc/tree-ssa-ccp.c gcc-4.1-20051216-src/gcc/tree-ssa-ccp.c
---- gcc-4.1-20051216.orig/gcc/tree-ssa-ccp.c	2005-11-22 17:56:48.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/tree-ssa-ccp.c	2005-12-19 01:18:23.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/tree-ssa-ccp.c gcc-4.1-20060428-src/gcc/tree-ssa-ccp.c
+--- gcc-4.1-20060428.orig/gcc/tree-ssa-ccp.c	2005-11-22 17:56:48.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/tree-ssa-ccp.c	2006-04-30 02:21:12.000000000 +0200
 @@ -2123,6 +2123,7 @@
  static tree
  ccp_fold_builtin (tree stmt, tree fn)
@@ -8288,9 +8290,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree-ssa-ccp.c gcc-4.1-20051216-src/gcc/tre
  }
  
  
-diff -Naur gcc-4.1-20051216.orig/gcc/tree-ssa-dom.c gcc-4.1-20051216-src/gcc/tree-ssa-dom.c
---- gcc-4.1-20051216.orig/gcc/tree-ssa-dom.c	2005-11-18 14:32:05.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/tree-ssa-dom.c	2005-12-18 22:24:53.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/tree-ssa-dom.c gcc-4.1-20060428-src/gcc/tree-ssa-dom.c
+--- gcc-4.1-20060428.orig/gcc/tree-ssa-dom.c	2006-04-20 00:34:41.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/tree-ssa-dom.c	2006-04-30 02:21:12.000000000 +0200
 @@ -2978,6 +2978,19 @@
  			|| TREE_CODE (stmt) == COND_EXPR
  			|| TREE_CODE (stmt) == SWITCH_EXPR));
@@ -8311,9 +8313,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree-ssa-dom.c gcc-4.1-20051216-src/gcc/tre
    if (may_optimize_p)
      may_have_exposed_new_symbols
        |= eliminate_redundant_computations (stmt, ann);
-diff -Naur gcc-4.1-20051216.orig/gcc/tree-ssa-pre.c gcc-4.1-20051216-src/gcc/tree-ssa-pre.c
---- gcc-4.1-20051216.orig/gcc/tree-ssa-pre.c	2005-10-19 05:34:50.000000000 +0200
-+++ gcc-4.1-20051216-src/gcc/tree-ssa-pre.c	2005-12-18 22:24:53.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/tree-ssa-pre.c gcc-4.1-20060428-src/gcc/tree-ssa-pre.c
+--- gcc-4.1-20060428.orig/gcc/tree-ssa-pre.c	2005-10-19 05:34:50.000000000 +0200
++++ gcc-4.1-20060428-src/gcc/tree-ssa-pre.c	2006-04-30 02:21:12.000000000 +0200
 @@ -2394,6 +2394,19 @@
  	      tree *rhs_p = &TREE_OPERAND (stmt, 1);
  	      tree sprime;
@@ -8334,9 +8336,9 @@ diff -Naur gcc-4.1-20051216.orig/gcc/tree-ssa-pre.c gcc-4.1-20051216-src/gcc/tre
  	      sprime = bitmap_find_leader (AVAIL_OUT (b),
  					   vn_lookup (lhs, NULL));
  	      if (sprime 
-diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
---- gcc-4.1-20051216.orig/gcc/varasm.c	2005-12-15 23:33:44.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/varasm.c	2005-12-19 01:24:34.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/varasm.c gcc-4.1-20060428-src/gcc/varasm.c
+--- gcc-4.1-20060428.orig/gcc/varasm.c	2006-03-14 20:25:25.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/varasm.c	2006-04-30 02:21:12.000000000 +0200
 @@ -681,6 +681,26 @@
  			  unsigned HOST_WIDE_INT align ATTRIBUTE_UNUSED,
  			  unsigned int flags ATTRIBUTE_UNUSED)
@@ -8505,7 +8507,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  }
  
  /* Given an expression EXP with a constant value,
-@@ -3307,7 +3397,7 @@
+@@ -3309,7 +3399,7 @@
  /* Worker function for output_constant_pool.  Emit POOL.  */
  
  static void
@@ -8514,7 +8516,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  {
    rtx x, tmp;
  
-@@ -3346,8 +3436,19 @@
+@@ -3348,8 +3438,19 @@
      }
  
    /* First switch to correct section.  */
@@ -8535,7 +8537,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  #ifdef ASM_OUTPUT_SPECIAL_POOL_ENTRY
    ASM_OUTPUT_SPECIAL_POOL_ENTRY (asm_out_file, x, desc->mode,
  				 desc->align, desc->labelno, done);
-@@ -3462,7 +3563,7 @@
+@@ -3464,7 +3565,7 @@
  /* Write all the constants in the constant pool.  */
  
  void
@@ -8544,7 +8546,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  		      tree fndecl ATTRIBUTE_UNUSED)
  {
    struct rtx_constant_pool *pool = cfun->varasm->pool;
-@@ -3478,7 +3579,7 @@
+@@ -3480,7 +3581,7 @@
  #endif
  
    for (desc = pool->first; desc ; desc = desc->next)
@@ -8553,7 +8555,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  
  #ifdef ASM_OUTPUT_POOL_EPILOGUE
    ASM_OUTPUT_POOL_EPILOGUE (asm_out_file, fnname, fndecl, pool->offset);
-@@ -3522,10 +3623,18 @@
+@@ -3524,10 +3625,18 @@
      case MINUS_EXPR:
        reloc = compute_reloc_for_constant (TREE_OPERAND (exp, 0));
        reloc2 = compute_reloc_for_constant (TREE_OPERAND (exp, 1));
@@ -8572,7 +8574,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  	reloc |= reloc2;
        break;
  
-@@ -5110,6 +5219,31 @@
+@@ -5118,6 +5227,31 @@
  	  || strcmp (name, ".preinit_array") == 0))
      flags |= SECTION_NOTYPE;
  
@@ -8604,7 +8606,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
    return flags;
  }
  
-@@ -5231,18 +5365,51 @@
+@@ -5239,18 +5373,51 @@
  {
    bool readonly = false;
  
@@ -8662,7 +8664,7 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
      }
    else if (TREE_CODE (decl) == STRING_CST)
      readonly = true;
-@@ -5253,6 +5420,7 @@
+@@ -5261,6 +5428,7 @@
      readonly_data_section ();
    else
      data_section ();
@@ -8670,15 +8672,15 @@ diff -Naur gcc-4.1-20051216.orig/gcc/varasm.c gcc-4.1-20051216-src/gcc/varasm.c
  }
  
  enum section_category
-diff -Naur gcc-4.1-20051216.orig/gcc/version.c gcc-4.1-20051216-src/gcc/version.c
---- gcc-4.1-20051216.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1-20051216-src/gcc/version.c	2006-01-05 01:08:22.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/gcc/version.c gcc-4.1-20060428-src/gcc/version.c
+--- gcc-4.1-20060428.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
++++ gcc-4.1-20060428-src/gcc/version.c	2006-04-30 03:16:35.000000000 +0200
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.0-pre5)"
++#define VERSUFFIX " (TIGCC 4.1.1-pre6)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
@@ -8691,10 +8693,10 @@ diff -Naur gcc-4.1-20051216.orig/gcc/version.c gcc-4.1-20051216-src/gcc/version.
  
  /* The complete version string, assembled from several pieces.
     BASEVER, DATESTAMP, and DEVPHASE are defined by the Makefile.  */
-diff -Naur gcc-4.1-20051216.orig/libcpp/directives.c gcc-4.1-20051216-src/libcpp/directives.c
---- gcc-4.1-20051216.orig/libcpp/directives.c	2005-10-04 20:06:19.000000000 +0200
-+++ gcc-4.1-20051216-src/libcpp/directives.c	2005-12-18 22:24:57.000000000 +0100
-@@ -1138,6 +1138,7 @@
+diff -Naur gcc-4.1-20060428.orig/libcpp/directives.c gcc-4.1-20060428-src/libcpp/directives.c
+--- gcc-4.1-20060428.orig/libcpp/directives.c	2006-01-01 01:00:56.000000000 +0100
++++ gcc-4.1-20060428-src/libcpp/directives.c	2006-04-30 02:21:12.000000000 +0200
+@@ -1139,6 +1139,7 @@
  _cpp_init_internal_pragmas (cpp_reader *pfile)
  {
    /* Pragmas in the global namespace.  */
@@ -8702,9 +8704,9 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/directives.c gcc-4.1-20051216-src/libcpp
    register_pragma (pfile, 0, "once", do_pragma_once, false, true);
  
    /* New GCC-specific pragmas should be put in the GCC namespace.  */
-diff -Naur gcc-4.1-20051216.orig/libcpp/expr.c gcc-4.1-20051216-src/libcpp/expr.c
---- gcc-4.1-20051216.orig/libcpp/expr.c	2005-06-29 04:34:39.000000000 +0200
-+++ gcc-4.1-20051216-src/libcpp/expr.c	2005-12-18 22:24:57.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/libcpp/expr.c gcc-4.1-20060428-src/libcpp/expr.c
+--- gcc-4.1-20060428.orig/libcpp/expr.c	2005-06-29 04:34:39.000000000 +0200
++++ gcc-4.1-20060428-src/libcpp/expr.c	2006-04-30 02:21:12.000000000 +0200
 @@ -171,6 +171,13 @@
  	  radix = 16;
  	  str++;
@@ -8763,9 +8765,9 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/expr.c gcc-4.1-20051216-src/libcpp/expr.
  
        /* We can add a digit to numbers strictly less than this without
  	 needing the precision and slowness of double integers.  */
-diff -Naur gcc-4.1-20051216.orig/libcpp/files.c gcc-4.1-20051216-src/libcpp/files.c
---- gcc-4.1-20051216.orig/libcpp/files.c	2005-11-04 03:10:19.000000000 +0100
-+++ gcc-4.1-20051216-src/libcpp/files.c	2005-12-18 22:24:57.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/libcpp/files.c gcc-4.1-20060428-src/libcpp/files.c
+--- gcc-4.1-20060428.orig/libcpp/files.c	2005-11-04 03:10:19.000000000 +0100
++++ gcc-4.1-20060428-src/libcpp/files.c	2006-04-30 02:21:12.000000000 +0200
 @@ -48,6 +48,11 @@
  #  define set_stdin_to_binary_mode() /* Nothing */
  #endif
@@ -8778,9 +8780,9 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/files.c gcc-4.1-20051216-src/libcpp/file
  /* This structure represents a file searched for by CPP, whether it
     exists or not.  An instance may be pointed to by more than one
     file_hash_entry; at present no reference count is kept.  */
-diff -Naur gcc-4.1-20051216.orig/libcpp/include/cpplib.h gcc-4.1-20051216-src/libcpp/include/cpplib.h
---- gcc-4.1-20051216.orig/libcpp/include/cpplib.h	2005-11-14 17:28:55.000000000 +0100
-+++ gcc-4.1-20051216-src/libcpp/include/cpplib.h	2005-12-18 22:24:57.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/libcpp/include/cpplib.h gcc-4.1-20060428-src/libcpp/include/cpplib.h
+--- gcc-4.1-20060428.orig/libcpp/include/cpplib.h	2005-11-14 17:28:55.000000000 +0100
++++ gcc-4.1-20060428-src/libcpp/include/cpplib.h	2006-04-30 02:21:12.000000000 +0200
 @@ -399,6 +399,9 @@
    /* True if dependencies should be restored from a precompiled header.  */
    bool restore_pch_deps;
@@ -8807,9 +8809,9 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/include/cpplib.h gcc-4.1-20051216-src/li
  
  /* In cpphash.c */
  
-diff -Naur gcc-4.1-20051216.orig/libcpp/init.c gcc-4.1-20051216-src/libcpp/init.c
---- gcc-4.1-20051216.orig/libcpp/init.c	2005-11-09 07:30:03.000000000 +0100
-+++ gcc-4.1-20051216-src/libcpp/init.c	2005-12-19 00:14:12.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/libcpp/init.c gcc-4.1-20060428-src/libcpp/init.c
+--- gcc-4.1-20060428.orig/libcpp/init.c	2006-01-23 22:51:10.000000000 +0100
++++ gcc-4.1-20060428-src/libcpp/init.c	2006-04-30 02:21:12.000000000 +0200
 @@ -160,6 +160,7 @@
    CPP_OPTION (pfile, warn_dollars) = 1;
    CPP_OPTION (pfile, warn_variadic_macros) = 1;
@@ -8818,9 +8820,9 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/init.c gcc-4.1-20051216-src/libcpp/init.
  
    /* Default CPP arithmetic to something sensible for the host for the
       benefit of dumb users like fix-header.  */
-diff -Naur gcc-4.1-20051216.orig/libcpp/internal.h gcc-4.1-20051216-src/libcpp/internal.h
---- gcc-4.1-20051216.orig/libcpp/internal.h	2005-10-21 19:54:20.000000000 +0200
-+++ gcc-4.1-20051216-src/libcpp/internal.h	2005-12-18 22:24:57.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/libcpp/internal.h gcc-4.1-20060428-src/libcpp/internal.h
+--- gcc-4.1-20060428.orig/libcpp/internal.h	2005-10-21 19:54:20.000000000 +0200
++++ gcc-4.1-20060428-src/libcpp/internal.h	2006-04-30 02:21:12.000000000 +0200
 @@ -372,6 +372,11 @@
    /* Error counter for exit code.  */
    unsigned int errors;
@@ -8833,9 +8835,9 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/internal.h gcc-4.1-20051216-src/libcpp/i
    /* Buffer to hold macro definition string.  */
    unsigned char *macro_buffer;
    unsigned int macro_buffer_len;
-diff -Naur gcc-4.1-20051216.orig/libcpp/lex.c gcc-4.1-20051216-src/libcpp/lex.c
---- gcc-4.1-20051216.orig/libcpp/lex.c	2005-09-20 22:31:37.000000000 +0200
-+++ gcc-4.1-20051216-src/libcpp/lex.c	2005-12-18 22:24:57.000000000 +0100
+diff -Naur gcc-4.1-20060428.orig/libcpp/lex.c gcc-4.1-20060428-src/libcpp/lex.c
+--- gcc-4.1-20060428.orig/libcpp/lex.c	2005-09-20 22:31:37.000000000 +0200
++++ gcc-4.1-20060428-src/libcpp/lex.c	2006-04-30 02:21:12.000000000 +0200
 @@ -212,7 +212,11 @@
      }
  
@@ -8966,10 +8968,10 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/lex.c gcc-4.1-20051216-src/libcpp/lex.c
 +    }
 +}
 +
-diff -Naur gcc-4.1-20051216.orig/libcpp/macro.c gcc-4.1-20051216-src/libcpp/macro.c
---- gcc-4.1-20051216.orig/libcpp/macro.c	2005-11-04 01:23:01.000000000 +0100
-+++ gcc-4.1-20051216-src/libcpp/macro.c	2005-12-18 22:24:57.000000000 +0100
-@@ -772,6 +772,11 @@
+diff -Naur gcc-4.1-20060428.orig/libcpp/macro.c gcc-4.1-20060428-src/libcpp/macro.c
+--- gcc-4.1-20060428.orig/libcpp/macro.c	2006-01-23 22:51:10.000000000 +0100
++++ gcc-4.1-20060428-src/libcpp/macro.c	2006-04-30 02:21:12.000000000 +0200
+@@ -768,6 +768,11 @@
    macro_arg *arg;
    _cpp_buff *buff;
  
@@ -8981,7 +8983,7 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/macro.c gcc-4.1-20051216-src/libcpp/macr
    /* First, fully macro-expand arguments, calculating the number of
       tokens in the final expansion as we go.  The ordering of the if
       statements below is subtle; we must handle stringification before
-@@ -805,6 +810,33 @@
+@@ -801,6 +806,33 @@
  	  }
        }
  
@@ -9015,7 +9017,7 @@ diff -Naur gcc-4.1-20051216.orig/libcpp/macro.c gcc-4.1-20051216-src/libcpp/macr
    /* Now allocate space for the expansion, copy the tokens and replace
       the arguments.  */
    buff = _cpp_get_buff (pfile, total * sizeof (cpp_token *));
-@@ -891,7 +923,10 @@
+@@ -887,7 +919,10 @@
      if (args[i].expanded)
        free (args[i].expanded);
  
