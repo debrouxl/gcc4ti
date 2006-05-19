@@ -661,6 +661,14 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
     return 0;
 }
 
+void newSettings(tprSettings *settings,tprLibOpts *libopts)
+{
+  tprSettings newSettings;
+  tprLibOpts newLibOpts;
+  *settings=newSettings;
+  *libopts=newLibOpts;
+}
+
 //returns 0 on success, -1 if the file couldn't be created or -2 if fprintf,
 //fputs or fclose failed
 int saveTPR(const QString &fileName,TPRDataStruct *src)

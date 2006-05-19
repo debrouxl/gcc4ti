@@ -618,6 +618,7 @@ void MainForm::accel_activated(int index)
 
 void MainForm::clearProject()
 {
+  newSettings(&settings,&libopts);
   rootListItem->setText(0,"Project1");
   projectFileName="";
   fileTreeClicked(rootListItem);

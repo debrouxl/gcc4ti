@@ -152,6 +152,8 @@ enum {PATH_ERROR,PATH_FILE,PATH_FOLDER}; //return types for getPathType
 
 const char *smartAscii(const QString &s);
 
+void newSettings(tprSettings *settings,tprLibOpts *libopts);
+
 int loadTPR(const QString &fileName,TPRDataStruct *dest);
 QString loadFileText(const char *fileName);
 
