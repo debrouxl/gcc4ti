@@ -20,9 +20,12 @@ extern tprSettings settings;
 #define UnwrapLabel(theQLabel) ((theQLabel)->setAlignment((theQLabel)->alignment()&~WordBreak))
 //Qt automatically sets RichText labels to have word wrap, which makes labels with underlines in them look bad.  This simply undoes the wrapping.
 
-//accelerators that need to be destroyed at the end
-QAccel *altO;
-QAccel *altC;
+//manually created accelerators
+QAccel *AOncalcVariableName_1;
+QAccel *AOncalcVariableName_2;
+QAccel *AGCCSwitches;
+QAccel *AAsSwitches;
+QAccel *AA68kSwitches;
 
 void ProjectOptions::init()
 {
@@ -30,7 +33,9 @@ void ProjectOptions::init()
   //Qt automatically sets QLabels to wrapped when they are RichText.  This undoes this change.
   UnwrapLabel(LOncalcVariableName_1);
   UnwrapLabel(LOncalcVariableName_2);
-  
+  UnwrapLabel(LGCCSwitches);
+  UnwrapLabel(LAsSwitches);
+  UnwrapLabel(LA68kSwitches);
   //Toggle controls to match settings.
   //Tab: General
   OncalcVariableName_1->setText(settings.data_var);
@@ -78,16 +83,24 @@ void ProjectOptions::init()
   CheckOncalcNames();
   UpdateVisibilities();
   //Create accelerators for text boxes manually
-  altO=new QAccel(PO_TabWidget->page(0));
-  altO->connectItem(altO->insertItem(ALT+Key_O),OncalcVariableName_1,SLOT(setFocus()));
-  altC=new QAccel(PO_TabWidget->page(0));
-  altC->connectItem(altC->insertItem(ALT+Key_C),OncalcVariableName_2,SLOT(setFocus()));
+  QAccel *accel; //for temporarily holding the accelerator pointer
+  #define MakeAccelerator(destaccelptr,thewidget,thepage,thekey) destaccelptr=accel=new QAccel(PO_TabWidget->page(thepage)); \
+    accel->connectItem(accel->insertItem(thekey),thewidget,SLOT(setFocus()));
+  MakeAccelerator(AOncalcVariableName_1,OncalcVariableName_1,0,ALT+Key_V);
+  MakeAccelerator(AOncalcVariableName_2,OncalcVariableName_2,0,ALT+Key_I);
+  MakeAccelerator(AGCCSwitches,GCCSwitches,1,ALT+Key_G);
+  MakeAccelerator(AAsSwitches,AsSwitches,1,ALT+Key_S);
+  MakeAccelerator(AA68kSwitches,A68kSwitches,1,ALT+Key_A);
+  #undef MakeAccelerator
 }
 
 void ProjectOptions::destroy()
 {
-  delete(altO);
-  delete(altC);
+  delete(AOncalcVariableName_1);
+  delete(AOncalcVariableName_2);
+  delete(AGCCSwitches);
+  delete(AAsSwitches);
+  delete(AA68kSwitches);
   if (result()!=QDialog::Accepted)
     return;
   //Save settings
@@ -127,6 +140,8 @@ void ProjectOptions::destroy()
 void ProjectOptions::RegularProgramToggle()
 {
   int state;
+  buttonOk->setAccel(0);
+  buttonOk->setText("OK");
   state=RegularProgram->isOn()?TRUE:FALSE;
   if (!state)
   {
@@ -173,13 +188,9 @@ void ProjectOptions::CheckOncalcNames()
   Boolean edvon=OncalcVariableName_1->isEnabled();
   Boolean compon=OncalcVariableName_2->isEnabled();
   if ((edvon&&edvname.isEmpty()) || (compon&&compname.isEmpty()) || (edvon&&compon&&!edvname.compare(compname)))
-  {
     buttonOk->setEnabled(FALSE);
-  }
   else
-  {
     buttonOk->setEnabled(TRUE);
-  }
 }
 
 
