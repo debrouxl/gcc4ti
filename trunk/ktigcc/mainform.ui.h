@@ -55,6 +55,7 @@
 #include "ktigcc.h"
 #include "tpr.h"
 #include "preferences.h"
+#include "projectoptions.h"
 
 using std::puts;
 using std::exit;
@@ -217,7 +218,7 @@ static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
 static QAssistantClient *assistant;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
-static tprSettings settings;
+tprSettings settings; //static is turned off here so ProjectOptions can access it.
 static tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
@@ -1551,7 +1552,8 @@ void MainForm::projectProgramOutput()
 
 void MainForm::projectOptions()
 {
-  
+  ProjectOptions projectoptions(this);
+  projectoptions.exec();
 }
 
 void MainForm::debugRun()
