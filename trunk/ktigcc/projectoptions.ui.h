@@ -14,6 +14,7 @@
 #include <kmessagebox.h>
 #include <kurl.h>
 #include "tpr.h"
+#include "programoptions.h"
 
 extern tprSettings settings;
 
@@ -207,9 +208,9 @@ void ProjectOptions::UpdateVisibilities()
   Boolean regularprogram=RegularProgram->isOn();
   Boolean functionarchive=FunctionArchive->isOn();
   if (regularprogram)
-    ProgramOptions->show();
+    ProgramOptionsButton->show();
   else
-    ProgramOptions->hide();
+    ProgramOptionsButton->hide();
   PO_TabWidget->setTabEnabled(PO_TabWidget->page(2),!functionarchive);
   PO_TabWidget->setTabEnabled(PO_TabWidget->page(3),!functionarchive);
   
@@ -217,5 +218,7 @@ void ProjectOptions::UpdateVisibilities()
 
 void ProjectOptions::ProgramOptionsFunc()
 {
-  
+  ProgramOptions *programoptions=new ProgramOptions(this);
+  programoptions->exec();
+  delete(programoptions);
 }
