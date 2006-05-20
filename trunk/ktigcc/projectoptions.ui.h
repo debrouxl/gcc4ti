@@ -18,6 +18,9 @@
 
 extern tprSettings settings;
 
+ProgramOptions *programoptions;
+//the program options subdialog is created at initialization of a ProjectOptions and remains existant until the ProjectOptions is destroyed.
+
 #define UnwrapLabel(theQLabel) ((theQLabel)->setAlignment((theQLabel)->alignment()&~WordBreak))
 //Qt automatically sets RichText labels to have word wrap, which makes labels with underlines in them look bad.  This simply undoes the wrapping.
 
@@ -83,7 +86,11 @@ void ProjectOptions::init()
     ExternalDataVariable->setEnabled(FALSE);
     CompressProgram->setEnabled(FALSE);
   }
+  //Tab: Compilation
   
+  //Create the Program Options dialog
+  programoptions=new ProgramOptions(this);
+  programoptions->TabWidget->setCurrentPage(4); //the original TIGCC IDE went to the BSS/Relocs section the first time you opened Program Options, so this will too.
   //Update stuff
   CheckOncalcNames();
   UpdateVisibilities();
@@ -110,6 +117,7 @@ void ProjectOptions::destroy()
   delete(AA68kSwitches);
   delete(ACallAfterBuilding);
   delete(AParameters);
+  delete(programoptions);
   if (result()!=QDialog::Accepted)
     return;
   //Save settings
@@ -144,6 +152,8 @@ void ProjectOptions::destroy()
       settings.copy_data_var_arc=TRUE;
   }
   settings.pack_name=OncalcVariableName_2->text();
+  //Tab: Compilation
+  
 }
 
 void ProjectOptions::RegularProgramToggle()
@@ -218,7 +228,5 @@ void ProjectOptions::UpdateVisibilities()
 
 void ProjectOptions::ProgramOptionsFunc()
 {
-  ProgramOptions *programoptions=new ProgramOptions(this);
   programoptions->exec();
-  delete(programoptions);
 }
