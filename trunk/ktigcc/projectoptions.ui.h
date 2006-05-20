@@ -26,6 +26,8 @@ QAccel *AOncalcVariableName_2;
 QAccel *AGCCSwitches;
 QAccel *AAsSwitches;
 QAccel *AA68kSwitches;
+QAccel *ACallAfterBuilding;
+QAccel *AParameters;
 
 void ProjectOptions::init()
 {
@@ -36,6 +38,8 @@ void ProjectOptions::init()
   UnwrapLabel(LGCCSwitches);
   UnwrapLabel(LAsSwitches);
   UnwrapLabel(LA68kSwitches);
+  UnwrapLabel(LCallAfterBuilding);
+  UnwrapLabel(LParameters);
   //Toggle controls to match settings.
   //Tab: General
   OncalcVariableName_1->setText(settings.data_var);
@@ -91,6 +95,8 @@ void ProjectOptions::init()
   MakeAccelerator(AGCCSwitches,GCCSwitches,1,ALT+Key_G);
   MakeAccelerator(AAsSwitches,AsSwitches,1,ALT+Key_S);
   MakeAccelerator(AA68kSwitches,A68kSwitches,1,ALT+Key_A);
+  MakeAccelerator(ACallAfterBuilding,CallAfterBuilding,3,ALT+Key_A);
+  MakeAccelerator(AParameters,Parameters,3,ALT+Key_R);
   #undef MakeAccelerator
 }
 
@@ -101,6 +107,8 @@ void ProjectOptions::destroy()
   delete(AGCCSwitches);
   delete(AAsSwitches);
   delete(AA68kSwitches);
+  delete(ACallAfterBuilding);
+  delete(AParameters);
   if (result()!=QDialog::Accepted)
     return;
   //Save settings
@@ -204,5 +212,10 @@ void ProjectOptions::UpdateVisibilities()
     ProgramOptions->hide();
   PO_TabWidget->setTabEnabled(PO_TabWidget->page(2),!functionarchive);
   PO_TabWidget->setTabEnabled(PO_TabWidget->page(3),!functionarchive);
+  
+}
+
+void ProjectOptions::ProgramOptionsFunc()
+{
   
 }

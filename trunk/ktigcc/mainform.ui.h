@@ -1553,8 +1553,11 @@ void MainForm::projectProgramOutput()
 
 void MainForm::projectOptions()
 {
-  ProjectOptions projectoptions(this);
-  projectoptions.exec();
+  //You CANNOT create projectoptions in the stack.  I tried it, and it causes a crash when you try to close the dialog.
+  //PS: Last time I checked, sizeof(ProjectOptions)==508
+  ProjectOptions *projectoptions=new ProjectOptions(this);
+  projectoptions->exec();
+  delete(projectoptions);
 }
 
 void MainForm::debugRun()
