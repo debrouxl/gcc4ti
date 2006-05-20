@@ -26,7 +26,7 @@ object ProgramOptionsForm: TProgramOptionsForm
     Top = 8
     Width = 281
     Height = 289
-    ActivePage = BSSFormatSheet
+    ActivePage = WelcomeSheet
     Anchors = [akLeft, akTop, akRight, akBottom]
     ParentShowHint = False
     ShowHint = True
