@@ -35,7 +35,6 @@ QAccel *AParameters;
 
 void ProjectOptions::init()
 {
-  Boolean isregular;
   //Qt automatically sets QLabels to wrapped when they are RichText.  This undoes this change.
   UnwrapLabel(LOncalcVariableName_1);
   UnwrapLabel(LOncalcVariableName_2);
@@ -45,6 +44,46 @@ void ProjectOptions::init()
   UnwrapLabel(LCallAfterBuilding);
   UnwrapLabel(LParameters);
   //Toggle controls to match settings.
+  ImportSettings();
+  //Create the Program Options dialog and toggle its controls
+  programoptions=new ProgramOptions(this);
+  programoptions->ImportSettings();
+  //Update stuff
+  CheckOncalcNames();
+  UpdateVisibilities();
+  //Create accelerators for text boxes manually
+  QAccel *accel; //for temporarily holding the accelerator pointer
+  #define MakeAccelerator(destaccelptr,thewidget,thepage,thekey) destaccelptr=accel=new QAccel(PO_TabWidget->page(thepage)); \
+    accel->connectItem(accel->insertItem(thekey),thewidget,SLOT(setFocus()));
+  MakeAccelerator(AOncalcVariableName_1,OncalcVariableName_1,0,ALT+Key_V);
+  MakeAccelerator(AOncalcVariableName_2,OncalcVariableName_2,0,ALT+Key_I);
+  MakeAccelerator(AGCCSwitches,GCCSwitches,1,ALT+Key_G);
+  MakeAccelerator(AAsSwitches,AsSwitches,1,ALT+Key_S);
+  MakeAccelerator(AA68kSwitches,A68kSwitches,1,ALT+Key_A);
+  MakeAccelerator(ACallAfterBuilding,CallAfterBuilding,3,ALT+Key_A);
+  MakeAccelerator(AParameters,Parameters,3,ALT+Key_R);
+  #undef MakeAccelerator
+}
+
+void ProjectOptions::destroy()
+{
+  delete(AOncalcVariableName_1);
+  delete(AOncalcVariableName_2);
+  delete(AGCCSwitches);
+  delete(AAsSwitches);
+  delete(AA68kSwitches);
+  delete(ACallAfterBuilding);
+  delete(AParameters);
+  delete(programoptions);
+  if (result()!=QDialog::Accepted)
+    return;
+  //Save settings
+  ExportSettings();
+}
+
+void ProjectOptions::ImportSettings(void)
+{
+  Boolean isregular;
   //Tab: General
   OncalcVariableName_1->setText(settings.data_var);
   if (settings.copy_data_var)
@@ -87,40 +126,45 @@ void ProjectOptions::init()
     CompressProgram->setEnabled(FALSE);
   }
   //Tab: Compilation
-  
-  //Create the Program Options dialog
-  programoptions=new ProgramOptions(this);
-  programoptions->TabWidget->setCurrentPage(4); //the original TIGCC IDE went to the BSS/Relocs section the first time you opened Program Options, so this will too.
-  //Update stuff
-  CheckOncalcNames();
-  UpdateVisibilities();
-  //Create accelerators for text boxes manually
-  QAccel *accel; //for temporarily holding the accelerator pointer
-  #define MakeAccelerator(destaccelptr,thewidget,thepage,thekey) destaccelptr=accel=new QAccel(PO_TabWidget->page(thepage)); \
-    accel->connectItem(accel->insertItem(thekey),thewidget,SLOT(setFocus()));
-  MakeAccelerator(AOncalcVariableName_1,OncalcVariableName_1,0,ALT+Key_V);
-  MakeAccelerator(AOncalcVariableName_2,OncalcVariableName_2,0,ALT+Key_I);
-  MakeAccelerator(AGCCSwitches,GCCSwitches,1,ALT+Key_G);
-  MakeAccelerator(AAsSwitches,AsSwitches,1,ALT+Key_S);
-  MakeAccelerator(AA68kSwitches,A68kSwitches,1,ALT+Key_A);
-  MakeAccelerator(ACallAfterBuilding,CallAfterBuilding,3,ALT+Key_A);
-  MakeAccelerator(AParameters,Parameters,3,ALT+Key_R);
-  #undef MakeAccelerator
+  GCCSwitches->setText(settings.cc_switches);
+  AsSwitches->setText(settings.as_switches);
+  A68kSwitches->setText(settings.a68k_switches);
+  if (settings.debug_info)
+    GenerateDebugInformation->toggle();
+  //Tab: Linking
+  if (settings.optimize_nops)
+    NOPs->toggle();
+  if (settings.optimize_returns)
+    ReturnSequences->toggle();
+  if (settings.optimize_branches)
+    Branches->toggle();
+  if (settings.optimize_moves)
+    MoveLoadPushInstructions->toggle();
+  if (settings.optimize_tests)
+    TestCompareInstructions->toggle();
+  if (settings.optimize_calcs)
+    CalculationInstructions->toggle();
+  if (settings.remove_unused)
+    RemoveUnusedSections->toggle();
+  if (settings.reorder_sections)
+    ReorderSections->toggle();
+  if (settings.cut_ranges)
+    CutUnusedRanges->toggle();
+  if (settings.merge_constants)
+    MergeConstants->toggle();
+  if (settings.std_lib)
+    LinkAgainstStandardLibrary->toggle();
+  if (settings.initialize_bss)
+    InitializeBSSSection->toggle();
+  if (settings.outputbin)
+    OutputVariableImageWithoutWrapper->toggle();
+  //Tab: Post-Build
+  CallAfterBuilding->setText(settings.post_build);
+  Parameters->setText(settings.cmd_line);
 }
 
-void ProjectOptions::destroy()
+void ProjectOptions::ExportSettings(void)
 {
-  delete(AOncalcVariableName_1);
-  delete(AOncalcVariableName_2);
-  delete(AGCCSwitches);
-  delete(AAsSwitches);
-  delete(AA68kSwitches);
-  delete(ACallAfterBuilding);
-  delete(AParameters);
-  delete(programoptions);
-  if (result()!=QDialog::Accepted)
-    return;
-  //Save settings
   //Tab: General
   settings.fargo=FALSE;
   settings.flash_os=FALSE;

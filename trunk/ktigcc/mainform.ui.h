@@ -219,7 +219,7 @@ static QPopupMenu *te_popup;
 static QAssistantClient *assistant;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 tprSettings settings; //static is turned off here so ProjectOptions can access it.
-static tprLibOpts libopts;
+tprLibOpts libopts; //static is turned off here so ProgramOptions can access it.
 static QString projectFileName;
 static QString lastDirectory;
 static QClipboard *clipboard;
