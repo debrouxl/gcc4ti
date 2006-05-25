@@ -42,28 +42,8 @@ extern tprSettings settings;
 ProgramOptions *programoptions;
 //the program options subdialog is created at initialization of a ProjectOptions and remains existant until the ProjectOptions is destroyed.
 
-#define UnwrapLabel(theQLabel) ((theQLabel)->setAlignment((theQLabel)->alignment()&~WordBreak))
-//Qt automatically sets RichText labels to have word wrap, which makes labels with underlines in them look bad.  This simply undoes the wrapping.
-
-//manually created accelerators
-QAccel *AOncalcVariableName_1;
-QAccel *AOncalcVariableName_2;
-QAccel *AGCCSwitches;
-QAccel *AAsSwitches;
-QAccel *AA68kSwitches;
-QAccel *ACallAfterBuilding;
-QAccel *AParameters;
-
 void ProjectOptions::init()
 {
-  //Qt automatically sets QLabels to wrapped when they are RichText.  This undoes this change.
-  UnwrapLabel(LOncalcVariableName_1);
-  UnwrapLabel(LOncalcVariableName_2);
-  UnwrapLabel(LGCCSwitches);
-  UnwrapLabel(LAsSwitches);
-  UnwrapLabel(LA68kSwitches);
-  UnwrapLabel(LCallAfterBuilding);
-  UnwrapLabel(LParameters);
   //Toggle controls to match settings.
   ImportSettings();
   //Create the Program Options dialog and toggle its controls
@@ -72,29 +52,10 @@ void ProjectOptions::init()
   //Update stuff
   CheckOncalcNames();
   UpdateVisibilities();
-  //Create accelerators for text boxes manually
-  QAccel *accel; //for temporarily holding the accelerator pointer
-  #define MakeAccelerator(destaccelptr,thewidget,thepage,thekey) destaccelptr=accel=new QAccel(PO_TabWidget->page(thepage)); \
-    accel->connectItem(accel->insertItem(thekey),thewidget,SLOT(setFocus()));
-  MakeAccelerator(AOncalcVariableName_1,OncalcVariableName_1,0,ALT+Key_V);
-  MakeAccelerator(AOncalcVariableName_2,OncalcVariableName_2,0,ALT+Key_I);
-  MakeAccelerator(AGCCSwitches,GCCSwitches,1,ALT+Key_G);
-  MakeAccelerator(AAsSwitches,AsSwitches,1,ALT+Key_S);
-  MakeAccelerator(AA68kSwitches,A68kSwitches,1,ALT+Key_A);
-  MakeAccelerator(ACallAfterBuilding,CallAfterBuilding,3,ALT+Key_A);
-  MakeAccelerator(AParameters,Parameters,3,ALT+Key_R);
-  #undef MakeAccelerator
 }
 
 void ProjectOptions::destroy()
 {
-  delete(AOncalcVariableName_1);
-  delete(AOncalcVariableName_2);
-  delete(AGCCSwitches);
-  delete(AAsSwitches);
-  delete(AA68kSwitches);
-  delete(ACallAfterBuilding);
-  delete(AParameters);
   delete(programoptions);
   if (result()!=QDialog::Accepted)
     return;
