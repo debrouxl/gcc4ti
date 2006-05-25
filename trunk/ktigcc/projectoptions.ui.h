@@ -145,6 +145,11 @@ void ProjectOptions::ImportSettings(void)
   Parameters->setText(settings.cmd_line);
 }
 
+#define ExportCheckbox(checkwidget,settingvariable) if (checkwidget->isOn()) \
+settings.settingvariable=TRUE; \
+else \
+settings.settingvariable=FALSE;
+
 void ProjectOptions::ExportSettings(void)
 {
   //Tab: General
@@ -179,8 +184,29 @@ void ProjectOptions::ExportSettings(void)
   }
   settings.pack_name=OncalcVariableName_2->text();
   //Tab: Compilation
-  
+  settings.cc_switches=GCCSwitches->text();
+  settings.as_switches=AsSwitches->text();
+  settings.a68k_switches=A68kSwitches->text();
+  ExportCheckbox(GenerateDebugInformation,debug_info);
+  //Tab: Linking
+  ExportCheckbox(NOPs,optimize_nops);
+  ExportCheckbox(ReturnSequences,optimize_returns);
+  ExportCheckbox(Branches,optimize_branches);
+  ExportCheckbox(MoveLoadPushInstructions,optimize_moves);
+  ExportCheckbox(TestCompareInstructions,optimize_tests);
+  ExportCheckbox(CalculationInstructions,optimize_calcs);
+  ExportCheckbox(RemoveUnusedSections,remove_unused);
+  ExportCheckbox(ReorderSections,reorder_sections);
+  ExportCheckbox(CutUnusedRanges,cut_ranges);
+  ExportCheckbox(MergeConstants,merge_constants);
+  ExportCheckbox(LinkAgainstStandardLibrary,std_lib);
+  ExportCheckbox(InitializeBSSSection,initialize_bss);
+  ExportCheckbox(OutputVariableImageWithoutWrapper,outputbin);
+  //Tab: Post-Build
+  settings.post_build=CallAfterBuilding->text();
+  settings.cmd_line=Parameters->text();
 }
+#undef ExportCheckbox
 
 void ProjectOptions::RegularProgramToggle()
 {
