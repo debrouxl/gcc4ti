@@ -148,7 +148,7 @@ typedef struct
   TPRFileList quill_files;
 } TPRDataStruct;
 
-enum {PATH_ERROR,PATH_FILE,PATH_FOLDER}; //return types for getPathType
+enum {PATH_ERROR,PATH_NOTFOUND,PATH_FILE,PATH_FOLDER}; //return types for getPathType
 
 const char *smartAscii(const QString &s);
 

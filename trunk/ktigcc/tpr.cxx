@@ -23,6 +23,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cerrno>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/dir.h>
@@ -819,7 +820,7 @@ int getPathType(const QString &thePath)
   struct stat statvar;
   int result=stat(thePath,&statvar);
   if (result)
-    return PATH_ERROR;
+    return errno==ENOENT?PATH_NOTFOUND:PATH_ERROR;
   if (statvar.st_mode&S_IFDIR)
     return PATH_FOLDER;
   if (statvar.st_mode&S_IFREG)

@@ -816,9 +816,15 @@ void MainForm::addRecent(const QString &fileName)
 QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
   QString fileText;
-  if (getPathType(fileName)!=PATH_FILE) {
-    KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
-    return NULL;
+  switch (getPathType(fileName)) {
+    case PATH_FILE: // OK
+      break;
+    case PATH_NOTFOUND:
+      KMessageBox::error(this,QString("File \'%1\' not found").arg(fileName));
+      return NULL;
+    default:
+      KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
+      return NULL;
   }
   if (IS_EDITABLE_CATEGORY(category)) {
     fileText=loadFileText(fileName);
@@ -968,9 +974,15 @@ void MainForm::openProject(const QString &fileName)
   TPRDataStruct TPRData;
   KURL dir;
   dir.setPath(fileName);
-  if (getPathType(fileName)!=PATH_FILE) {
-    KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
-    return;
+  switch (getPathType(fileName)) {
+    case PATH_FILE: // OK
+      break;
+    case PATH_NOTFOUND:
+      KMessageBox::error(this,QString("File \'%1\' not found").arg(fileName));
+      return;
+    default:
+      KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
+      return;
   }
   int ret=loadTPR(fileName, &TPRData);
   if (ret == -1) {
