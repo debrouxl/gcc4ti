@@ -36,17 +36,13 @@
 
 extern tprLibOpts libopts;
 
-void ProgramOptions::ImportSettings(void)
+void ProgramOptions::ImportSettings()
 {
   //Tab: Calculator
-  if (libopts.use_ti89)
-    TI89->setChecked(TRUE);
-  if (libopts.use_ti92p)
-    TI92Plus->setChecked(TRUE);
-  if (libopts.use_v200)
-    V200->setChecked(TRUE);
-  if (libopts.opt_calc_consts)
-    OptimizeCalcConsts->setChecked(TRUE);
+  TI89->setChecked(libopts.use_ti89);
+  TI92Plus->setChecked(libopts.use_ti92p);
+  V200->setChecked(libopts.use_v200);
+  OptimizeCalcConsts->setChecked(libopts.opt_calc_consts);
   //Tab: Operating System
   if (libopts.use_preos)
     PreOS->setChecked(TRUE);
@@ -54,11 +50,10 @@ void ProgramOptions::ImportSettings(void)
     RecentDoorsCompatibleKernels->setChecked(TRUE);
   else
     AnyNoKernel->setChecked(TRUE);
-  if (libopts.use_minams)
-    CMinimumAMSVersion->setChecked(TRUE);
+  CMinimumAMSVersion->setChecked(libopts.use_minams);
   MinimumAMSVersion->setText(QString("%1.%2%3").arg(libopts.minams/100).arg((libopts.minams/10)%10).arg(libopts.minams%10));
-  if (libopts.unofficial_os)
-    UnofficialOSSupport->setChecked(TRUE);
+  MinimumAMSVersion->setEnabled(libopts.use_minams);
+  UnofficialOSSupport->setChecked(libopts.unofficial_os);
   //Tab: Reloc Format
   if (libopts.reloc_format==RT_KERNEL)
     RelocKernel->setChecked(TRUE);
@@ -68,10 +63,8 @@ void ProgramOptions::ImportSettings(void)
     RelocMlink->setChecked(TRUE);
   else
     RelocAMS->setChecked(TRUE);
-  if (libopts.use_fline_jumps)
-    UseFLineJumps->setChecked(TRUE);
-  if (libopts.use_4b_fline_jumps)
-    Use4ByteFLineJumps->setChecked(TRUE);
+  UseFLineJumps->setChecked(libopts.use_fline_jumps);
+  Use4ByteFLineJumps->setChecked(libopts.use_4b_fline_jumps);
   if (libopts.rom_call_format==RT_KERNEL)
     ROMCallKernel->setChecked(TRUE);
   else if (libopts.rom_call_format==RT_COMPRESSED)
@@ -82,10 +75,8 @@ void ProgramOptions::ImportSettings(void)
     ROMCallFLine->setChecked(TRUE);
   else
     ROMCallDirect->setChecked(TRUE);
-  if (libopts.opt_rom_calls)
-    OptimizeROMCalls->setChecked(TRUE);
-  if (libopts.use_internal_fline_emu)
-    UseInternalFLineEmulator->setChecked(TRUE);
+  OptimizeROMCalls->setChecked(libopts.opt_rom_calls);
+  UseInternalFLineEmulator->setChecked(libopts.use_internal_fline_emu);
   //Tab: BSS/Data Format
   if (libopts.bss_ref_format==RT_KERNEL)
     BSSKernel->setChecked(TRUE);
@@ -106,8 +97,69 @@ void ProgramOptions::ImportSettings(void)
     HomeCustomValue->setChecked(TRUE);
   else
     HomeDone->setChecked(TRUE);
-  if (libopts.enable_error_return)
-    EnableReturningErrors->setChecked(TRUE);
-  if (libopts.save_screen)
-    SaveScreen->setChecked(TRUE);
+  EnableReturningErrors->setChecked(libopts.enable_error_return);
+  SaveScreen->setChecked(libopts.save_screen);
+}
+
+void ProgramOptions::ExportSettings()
+{
+  //Tab: Calculator
+  libopts.use_ti89=TI89->isChecked();
+  libopts.use_ti92p=TI92Plus->isChecked();
+  libopts.use_v200=V200->isChecked();
+  libopts.opt_calc_consts=OptimizeCalcConsts->isChecked();
+  //Tab: Operating System
+  libopts.use_preos=PreOS->isChecked();
+  libopts.use_kernel=RecentDoorsCompatibleKernels->isChecked();
+  libopts.use_minams=CMinimumAMSVersion->isChecked();
+  QString minams=MinimumAMSVersion->text();
+  libopts.minams=minams.section('.',1,1).toUInt()*100+minams.section('.',2,2).toUInt();
+  libopts.unofficial_os=UnofficialOSSupport->isChecked();
+  //Tab: Reloc Format
+  if (RelocKernel->isChecked())
+    libopts.reloc_format=RT_KERNEL;
+  else if (RelocCompressed->isChecked())
+    libopts.reloc_format=RT_COMPRESSED;
+  else if (RelocMlink->isChecked())
+    libopts.reloc_format=RT_MLINK;
+  else
+    libopts.reloc_format=RT_AMS;
+  libopts.use_fline_jumps=UseFLineJumps->isChecked();
+  libopts.use_4b_fline_jumps=Use4ByteFLineJumps->isChecked();
+  if (ROMCallKernel->isChecked())
+    libopts.rom_call_format=RT_KERNEL;
+  else if (ROMCallCompressed->isChecked())
+    libopts.rom_call_format=RT_COMPRESSED;
+  else if (ROMCallMlink->isChecked())
+    libopts.rom_call_format=RT_MLINK;
+  else if (ROMCallFLine->isChecked())
+    libopts.rom_call_format=RT_FLINE;
+  else
+    libopts.rom_call_format=RT_DIRECT;
+  libopts.opt_rom_calls=OptimizeROMCalls->isChecked();
+  libopts.use_internal_fline_emu=UseInternalFLineEmulator->isChecked();
+  //Tab: BSS/Data Format
+  if (BSSKernel->isChecked())
+    libopts.bss_ref_format=RT_KERNEL;
+  else if (BSSCompressed->isChecked())
+    libopts.bss_ref_format=RT_COMPRESSED;
+  else if (BSSMlink->isChecked())
+    libopts.bss_ref_format=RT_MLINK;
+  else
+    libopts.bss_ref_format=RT_NONE;
+  if (BSSDataCompressed->isChecked())
+    libopts.data_ref_format=RT_COMPRESSED;
+  else if (BSSDataMlink->isChecked())
+    libopts.data_ref_format=RT_MLINK;
+  else
+    libopts.data_ref_format=RT_KERNEL;
+  //Tab: Home Screen
+  libopts.use_return_value=HomeCustomValue->isChecked();
+  libopts.enable_error_return=EnableReturningErrors->isChecked();
+  libopts.save_screen=SaveScreen->isChecked();
+}
+
+void ProgramOptions::CMinimumAMSVersion_toggled(bool on)
+{
+  MinimumAMSVersion->setEnabled(on);
 }
