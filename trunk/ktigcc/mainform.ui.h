@@ -108,29 +108,29 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
-class ListViewFolder : public QListViewItem {
+class ListViewFolder : public KListViewItem {
   public:
-  ListViewFolder(QListView *parent) : QListViewItem(parent)
+  ListViewFolder(QListView *parent) : KListViewItem(parent)
   {
     setPixmap(0,QPixmap::fromMimeSource("folder1.png"));    
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
-  ListViewFolder(QListViewItem *parent) : QListViewItem(parent)
+  ListViewFolder(QListViewItem *parent) : KListViewItem(parent)
   {
     setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
   ListViewFolder(QListView *parent, QListViewItem *after)
-          : QListViewItem(parent, after)
+          : KListViewItem(parent, after)
   {
     setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
     setDropEnabled(TRUE);
     setDragEnabled(TRUE);
   }
   ListViewFolder(QListViewItem *parent, QListViewItem *after)
-          : QListViewItem(parent, after)
+          : KListViewItem(parent, after)
   {
     setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
     setDragEnabled(TRUE);
@@ -140,9 +140,9 @@ class ListViewFolder : public QListViewItem {
   protected:
 };
 
-class ListViewFile : public QListViewItem {
+class ListViewFile : public KListViewItem {
   public:
-  ListViewFile(QListView *parent) : QListViewItem(parent),
+  ListViewFile(QListView *parent) : KListViewItem(parent),
                                     kateView(NULL), isNew(TRUE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));    
@@ -150,7 +150,7 @@ class ListViewFile : public QListViewItem {
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
   }
-  ListViewFile(QListViewItem *parent) : QListViewItem(parent),
+  ListViewFile(QListViewItem *parent) : KListViewItem(parent),
                                         kateView(NULL), isNew(TRUE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
@@ -159,7 +159,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListView *parent, QListViewItem *after)
-          : QListViewItem(parent, after), kateView(NULL), isNew(TRUE)
+          : KListViewItem(parent, after), kateView(NULL), isNew(TRUE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
     setDropEnabled(TRUE);
@@ -167,7 +167,7 @@ class ListViewFile : public QListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent, QListViewItem *after)
-          : QListViewItem(parent, after), kateView(NULL),
+          : KListViewItem(parent, after), kateView(NULL),
             isNew(TRUE)
   {
     setPixmap(0,QPixmap::fromMimeSource("filex.png"));
@@ -226,11 +226,11 @@ static QClipboard *clipboard;
 static QAccel *accel;
 static TIGCCPrefs preferences;
 
-class DnDListView : public QListView {
+class DnDListView : public KListView {
   private:
   public:
-  DnDListView ( QWidget * parent = 0, const char * name = 0, WFlags f = 0 )
-          : QListView(parent,name,f) {}
+  DnDListView ( QWidget * parent = 0, const char * name = 0)
+          : KListView(parent,name) {}
   protected:
   virtual QDragObject *dragObject() {
     QListViewItem *currItem=selectedItem();
@@ -606,13 +606,15 @@ void MainForm::te_popup_activated(int index)
 void MainForm::accel_activated(int index)
 {
   // FIXME: This doesn't work for the text box you get when renaming.
-  switch (index) {
-    case 0: editUndo(); break;
-    case 1: editRedo(); break;
-    case 2: editCut(); break;
-    case 3: editCopy(); break;
-    case 4: editPaste(); break;
-    default: break;
+  if (CURRENT_VIEW && CURRENT_VIEW->hasFocus()) {
+    switch (index) {
+      case 0: editUndo(); break;
+      case 1: editRedo(); break;
+      case 2: editCut(); break;
+      case 3: editCopy(); break;
+      case 4: editPaste(); break;
+      default: break;
+    }
   }
 }
 
@@ -823,8 +825,8 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
       KMessageBox::error(this,QString("File \'%1\' not found").arg(fileName));
       return NULL;
     default:
-      KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
-      return NULL;
+    KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
+    return NULL;
   }
   if (IS_EDITABLE_CATEGORY(category)) {
     fileText=loadFileText(fileName);
@@ -981,8 +983,8 @@ void MainForm::openProject(const QString &fileName)
       KMessageBox::error(this,QString("File \'%1\' not found").arg(fileName));
       return;
     default:
-      KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
-      return;
+    KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
+    return;
   }
   int ret=loadTPR(fileName, &TPRData);
   if (ret == -1) {
@@ -2440,4 +2442,4 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
-#define QListView DnDListView
+#define KListView DnDListView
