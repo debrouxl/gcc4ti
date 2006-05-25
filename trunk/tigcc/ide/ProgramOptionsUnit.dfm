@@ -32,7 +32,7 @@ object ProgramOptionsForm: TProgramOptionsForm
     ShowHint = True
     TabOrder = 0
     object WelcomeSheet: TTabSheet
-      Caption = 'Welcome'
+      Caption = '&Welcome'
       ImageIndex = 5
       DesignSize = (
         273
@@ -65,7 +65,7 @@ object ProgramOptionsForm: TProgramOptionsForm
       end
     end
     object CalculatorSheet: TTabSheet
-      Caption = 'Calculator'
+      Caption = 'C&alculator'
       DesignSize = (
         273
         261)
@@ -149,7 +149,7 @@ object ProgramOptionsForm: TProgramOptionsForm
         Width = 169
         Height = 17
         Hint = 'OPTIMIZE_CALC_CONSTS'
-        Caption = 'Optimize Calculator Constants'
+        Caption = '&Optimize Calculator Constants'
         Checked = True
         State = cbChecked
         TabOrder = 3
@@ -157,7 +157,7 @@ object ProgramOptionsForm: TProgramOptionsForm
       end
     end
     object OSSheet: TTabSheet
-      Caption = 'Operating System'
+      Caption = 'Operating &System'
       ImageIndex = 1
       DesignSize = (
         273
@@ -177,7 +177,7 @@ object ProgramOptionsForm: TProgramOptionsForm
         Top = 48
         Width = 233
         Height = 17
-        Caption = '&Any/no kernel'
+        Caption = 'Any/no &kernel'
         Checked = True
         TabOrder = 0
         TabStop = True
@@ -235,13 +235,13 @@ object ProgramOptionsForm: TProgramOptionsForm
         Width = 217
         Height = 17
         Hint = 'UNOFFICIAL_OS_SUPPORT'
-        Caption = 'Force unofficial operating system support'
+        Caption = '&Force unofficial operating system support'
         TabOrder = 5
         OnMouseDown = ItemMouseDown
       end
     end
     object RelocFormatSheet: TTabSheet
-      Caption = 'Reloc Format'
+      Caption = '&Reloc Format'
       ImageIndex = 2
       object Panel2: TPanel
         Left = 8
@@ -264,7 +264,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Top = 16
           Width = 233
           Height = 16
-          Caption = 'AMS (large calls, no stub)'
+          Caption = 'AMS (large calls, &no stub)'
           Checked = True
           TabOrder = 0
           TabStop = True
@@ -277,7 +277,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'KERNEL_FORMAT_RELOCS'
-          Caption = 'Kernel (medium calls, medium stub)'
+          Caption = '&Kernel (medium calls, medium stub)'
           TabOrder = 1
           OnClick = RelocRadioButtonClick
           OnMouseDown = ItemMouseDown
@@ -288,7 +288,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'COMPRESSED_FORMAT_RELOCS'
-          Caption = 'Compressed (smallest calls, large stub)'
+          Caption = 'C&ompressed (smallest calls, large stub)'
           TabOrder = 2
           OnClick = RelocRadioButtonClick
           OnMouseDown = ItemMouseDown
@@ -299,7 +299,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 17
           Hint = 'USE_FLINE_JUMPS'
-          Caption = 'F-Line (very small calls, no stub, but slow)'
+          Caption = '&F-Line (very small calls, no stub, but slow)'
           TabOrder = 3
           OnClick = RelocFLineJumpsCheckBoxClick
           OnMouseDown = ItemMouseDown
@@ -310,7 +310,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 217
           Height = 17
           Hint = 'USE_4_BYTE_FLINE_JUMPS'
-          Caption = '4-Byte F-Line (even smaller)  (!)'
+          Caption = '&4-Byte F-Line (even smaller)  (!)'
           Enabled = False
           TabOrder = 4
           OnClick = RelocRadioButtonClick
@@ -322,7 +322,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'MLINK_FORMAT_RELOCS'
-          Caption = 'Mlink (small calls, medium stub)'
+          Caption = '&Mlink (small calls, medium stub)'
           TabOrder = 5
           OnClick = RelocRadioButtonClick
           OnMouseDown = ItemMouseDown
@@ -349,7 +349,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Top = 16
           Width = 233
           Height = 16
-          Caption = 'Direct (large calls, no stub)'
+          Caption = '&Direct (large calls, no stub)'
           Checked = True
           TabOrder = 0
           TabStop = True
@@ -362,7 +362,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'KERNEL_FORMAT_ROM_CALLS'
-          Caption = 'Kernel (medium calls, medium stub)'
+          Caption = 'K&ernel (medium calls, medium stub)'
           TabOrder = 1
           OnClick = RelocRadioButtonClick
           OnMouseDown = ItemMouseDown
@@ -373,7 +373,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'COMPRESSED_FORMAT_ROM_CALLS'
-          Caption = 'Compressed (smallest calls, large stub)'
+          Caption = 'Com&pressed (smallest calls, large stub)'
           TabOrder = 2
           OnClick = RelocRadioButtonClick
           OnMouseDown = ItemMouseDown
@@ -384,7 +384,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'USE_FLINE_ROM_CALLS'
-          Caption = 'F-Line (very small calls, no stub, but slow)'
+          Caption = 'F-&Line (very small calls, no stub, but slow)'
           TabOrder = 3
           OnClick = RelocRadioButtonClick
           OnMouseDown = ItemMouseDown
@@ -395,7 +395,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 17
           Hint = 'OPTIMIZE_ROM_CALLS'
-          Caption = 'Optimized (medium calls, very small stub)  (!)'
+          Caption = 'Op&timized (medium calls, very small stub)  (!)'
           TabOrder = 4
           OnMouseDown = ItemMouseDown
         end
@@ -405,7 +405,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'MLINK_FORMAT_ROM_CALLS'
-          Caption = 'Mlink (small calls, medium stub)'
+          Caption = 'Ml&ink (small calls, medium stub)'
           TabOrder = 5
           OnClick = RelocRadioButtonClick
           OnMouseDown = ItemMouseDown
@@ -417,14 +417,14 @@ object ProgramOptionsForm: TProgramOptionsForm
         Width = 249
         Height = 17
         Hint = 'USE_INTERNAL_FLINE_EMULATOR'
-        Caption = 'Use internal F-Line emulator'
+        Caption = '&Use internal F-Line emulator'
         Enabled = False
         TabOrder = 2
         OnMouseDown = ItemMouseDown
       end
     end
     object BSSFormatSheet: TTabSheet
-      Caption = 'BSS/Data Format'
+      Caption = '&BSS/Data Format'
       ImageIndex = 3
       object Panel1: TPanel
         Left = 8
@@ -450,7 +450,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'KERNEL_FORMAT_BSS'
-          Caption = 'Kernel (medium calls, medium stub)'
+          Caption = '&Kernel (medium calls, medium stub)'
           Checked = True
           TabOrder = 1
           TabStop = True
@@ -462,7 +462,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'COMPRESSED_FORMAT_BSS'
-          Caption = 'Compressed (smallest calls, large stub)'
+          Caption = 'C&ompressed (smallest calls, large stub)'
           TabOrder = 2
           OnMouseDown = ItemMouseDown
         end
@@ -472,7 +472,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'MERGE_BSS'
-          Caption = 'Merge BSS section with data section'
+          Caption = '&Merge BSS section with data section'
           TabOrder = 0
           OnMouseDown = ItemMouseDown
         end
@@ -482,7 +482,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'MLINK_FORMAT_BSS'
-          Caption = 'Mlink (small calls, medium stub)'
+          Caption = 'M&link (small calls, medium stub)'
           TabOrder = 3
           OnMouseDown = ItemMouseDown
         end
@@ -511,7 +511,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'KERNEL_FORMAT_DATA_VAR'
-          Caption = 'Kernel (medium calls, medium stub)'
+          Caption = 'K&ernel (medium calls, medium stub)'
           Checked = True
           TabOrder = 0
           TabStop = True
@@ -523,7 +523,7 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'COMPRESSED_FORMAT_DATA_VAR'
-          Caption = 'Compressed (smallest calls, large stub)'
+          Caption = 'Com&pressed (smallest calls, large stub)'
           TabOrder = 1
           OnMouseDown = ItemMouseDown
         end
@@ -533,14 +533,14 @@ object ProgramOptionsForm: TProgramOptionsForm
           Width = 233
           Height = 16
           Hint = 'MLINK_FORMAT_DATA_VAR'
-          Caption = 'Mlink (small calls, medium stub)'
+          Caption = 'Ml&ink (small calls, medium stub)'
           TabOrder = 2
           OnMouseDown = ItemMouseDown
         end
       end
     end
     object HomeScreenSheet: TTabSheet
-      Caption = 'Home Screen'
+      Caption = '&Home Screen'
       ImageIndex = 4
       DesignSize = (
         273

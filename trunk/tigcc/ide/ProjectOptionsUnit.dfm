@@ -72,7 +72,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 116
           Width = 109
           Height = 13
-          Caption = 'O&n-calc variable name:'
+          Caption = 'On-calc &variable name:'
           Enabled = False
           FocusControl = PackVarEdit
         end
@@ -81,7 +81,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 60
           Width = 109
           Height = 13
-          Caption = '&On-calc variable name:'
+          Caption = 'On-calc var&iable name:'
           Enabled = False
           FocusControl = DataVarEdit
         end
@@ -90,7 +90,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 80
           Width = 60
           Height = 13
-          Caption = 'Cr&eate copy:'
+          Caption = 'Create copy:'
           Enabled = False
         end
         object ExecutableRadioButton: TRadioButton
@@ -109,7 +109,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 172
           Width = 129
           Height = 17
-          Caption = 'Function &Archive (*.a)'
+          Caption = '&Function Archive (*.a)'
           TabOrder = 8
           OnClick = TargetRadioButtonClick
         end
@@ -118,7 +118,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 96
           Width = 145
           Height = 17
-          Caption = 'Co&mpress program (*.??y)'
+          Caption = 'Compre&ss program (*.??y)'
           TabOrder = 4
           OnClick = PackCheckBoxClick
         end
@@ -165,7 +165,7 @@ object ProjectOptionsForm: TProjectOptionsForm
             Top = 0
             Width = 46
             Height = 15
-            Caption = 'never'
+            Caption = 'n&ever'
             Enabled = False
             TabOrder = 0
           end
@@ -174,7 +174,7 @@ object ProjectOptionsForm: TProjectOptionsForm
             Top = 0
             Width = 68
             Height = 15
-            Caption = 'if archived'
+            Caption = 'if arc&hived'
             Checked = True
             Enabled = False
             TabOrder = 1
@@ -185,7 +185,7 @@ object ProjectOptionsForm: TProjectOptionsForm
             Top = 0
             Width = 51
             Height = 15
-            Caption = 'always'
+            Caption = '&always'
             Enabled = False
             TabOrder = 2
           end
@@ -195,7 +195,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 154
           Width = 201
           Height = 17
-          Caption = '&Fargo Program (*.92p)  (experimental)'
+          Caption = 'Far&go Program (*.92p)  (experimental)'
           TabOrder = 7
           Visible = False
           OnClick = TargetRadioButtonClick
@@ -213,7 +213,7 @@ object ProjectOptionsForm: TProjectOptionsForm
       end
     end
     object CompilationSheet: TTabSheet
-      Caption = '&Compilation'
+      Caption = 'Co&mpilation'
       ImageIndex = 1
       DesignSize = (
         337
@@ -308,7 +308,7 @@ object ProjectOptionsForm: TProjectOptionsForm
         Top = 151
         Width = 193
         Height = 17
-        Caption = 'Link against &standard library (tigcc.a)'
+        Caption = 'Lin&k against standard library (tigcc.a)'
         Checked = True
         State = cbChecked
         TabOrder = 1
@@ -326,7 +326,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 20
           Width = 49
           Height = 17
-          Caption = '&NOPs'
+          Caption = 'NOP&s'
           Checked = True
           State = cbChecked
           TabOrder = 0
@@ -356,7 +356,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 20
           Width = 161
           Height = 17
-          Caption = '&Move/Load/Push Instructions'
+          Caption = 'Move/Load/Pus&h Instructions'
           Checked = True
           State = cbChecked
           TabOrder = 3
@@ -396,7 +396,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 86
           Width = 113
           Height = 17
-          Caption = 'Cut &unused ranges'
+          Caption = 'Cut unuse&d ranges'
           Checked = True
           State = cbChecked
           TabOrder = 8
@@ -406,7 +406,7 @@ object ProjectOptionsForm: TProjectOptionsForm
           Top = 106
           Width = 105
           Height = 17
-          Caption = 'Re&order sections'
+          Caption = 'R&eorder sections'
           Checked = True
           State = cbChecked
           TabOrder = 7
@@ -435,7 +435,7 @@ object ProjectOptionsForm: TProjectOptionsForm
         Top = 168
         Width = 121
         Height = 17
-        Caption = 'Initialize BSS section'
+        Caption = '&Initialize BSS section'
         Checked = True
         State = cbChecked
         TabOrder = 2
@@ -453,7 +453,7 @@ object ProjectOptionsForm: TProjectOptionsForm
         Width = 305
         Height = 73
         Anchors = [akLeft, akTop, akRight]
-        Caption = 'P&ost-Build Processing'
+        Caption = 'Po&st-Build Processing'
         TabOrder = 0
         DesignSize = (
           305
