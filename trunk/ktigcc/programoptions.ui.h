@@ -113,7 +113,7 @@ void ProgramOptions::ExportSettings()
   libopts.use_kernel=RecentDoorsCompatibleKernels->isChecked();
   libopts.use_minams=CMinimumAMSVersion->isChecked();
   QString minams=MinimumAMSVersion->text();
-  libopts.minams=minams.section('.',1,1).toUInt()*100+minams.section('.',2,2).toUInt();
+  libopts.minams=minams.section('.',0,0).toUInt()*100+minams.section('.',1,1).toUInt();
   libopts.unofficial_os=UnofficialOSSupport->isChecked();
   //Tab: Reloc Format
   if (RelocKernel->isChecked())

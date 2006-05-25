@@ -1567,10 +1567,10 @@ void MainForm::projectProgramOutput()
 
 void MainForm::projectOptions()
 {
-  //You CANNOT create projectoptions in the stack.  I tried it, and it causes a crash when you try to close the dialog.
-  //PS: Last time I checked, sizeof(ProjectOptions)==508
   ProjectOptions *projectoptions=new ProjectOptions(this);
   projectoptions->exec();
+  if (projectoptions->result()==QDialog::Accepted)
+    projectIsDirty=TRUE;
   delete(projectoptions);
 }
 
