@@ -71,23 +71,23 @@ void ProjectOptions::ImportSettings(void)
   if (settings.copy_data_var)
   {
     if (settings.copy_data_var_arc)
-      CreateCopyIfArchived->toggle();
+      CreateCopyIfArchived->setChecked(TRUE);
     else
-      CreateCopyAlways->toggle();
+      CreateCopyAlways->setChecked(TRUE);
   }
   OncalcVariableName_2->setText(settings.pack_name);
   isregular=TRUE;
   if (settings.fargo)
-    FargoProgram->toggle(),isregular=FALSE;
+    FargoProgram->setChecked(TRUE),isregular=FALSE;
   if (settings.flash_os)
-    FlashOperatingSystem->toggle(),isregular=FALSE;
+    FlashOperatingSystem->setChecked(TRUE),isregular=FALSE;
   if (settings.archive)
-    FunctionArchive->toggle(),isregular=FALSE;
+    FunctionArchive->setChecked(TRUE),isregular=FALSE;
   if (isregular)
   {
     if (settings.use_data_var)
     {
-      ExternalDataVariable->toggle();
+      ExternalDataVariable->setChecked(TRUE);
       LOncalcVariableName_1->setEnabled(TRUE);
       OncalcVariableName_1->setEnabled(TRUE);
       LCreateCopyNever->setEnabled(TRUE);
@@ -97,7 +97,7 @@ void ProjectOptions::ImportSettings(void)
     }
     if (settings.pack)
     {
-      CompressProgram->toggle();
+      CompressProgram->setChecked(TRUE);
       LOncalcVariableName_2->setEnabled(TRUE);
       OncalcVariableName_2->setEnabled(TRUE);
     }
@@ -112,34 +112,34 @@ void ProjectOptions::ImportSettings(void)
   AsSwitches->setText(settings.as_switches);
   A68kSwitches->setText(settings.a68k_switches);
   if (settings.debug_info)
-    GenerateDebugInformation->toggle();
+    GenerateDebugInformation->setChecked(TRUE);
   //Tab: Linking
   if (settings.optimize_nops)
-    NOPs->toggle();
+    NOPs->setChecked(TRUE);
   if (settings.optimize_returns)
-    ReturnSequences->toggle();
+    ReturnSequences->setChecked(TRUE);
   if (settings.optimize_branches)
-    Branches->toggle();
+    Branches->setChecked(TRUE);
   if (settings.optimize_moves)
-    MoveLoadPushInstructions->toggle();
+    MoveLoadPushInstructions->setChecked(TRUE);
   if (settings.optimize_tests)
-    TestCompareInstructions->toggle();
+    TestCompareInstructions->setChecked(TRUE);
   if (settings.optimize_calcs)
-    CalculationInstructions->toggle();
+    CalculationInstructions->setChecked(TRUE);
   if (settings.remove_unused)
-    RemoveUnusedSections->toggle();
+    RemoveUnusedSections->setChecked(TRUE);
   if (settings.reorder_sections)
-    ReorderSections->toggle();
+    ReorderSections->setChecked(TRUE);
   if (settings.cut_ranges)
-    CutUnusedRanges->toggle();
+    CutUnusedRanges->setChecked(TRUE);
   if (settings.merge_constants)
-    MergeConstants->toggle();
+    MergeConstants->setChecked(TRUE);
   if (settings.std_lib)
-    LinkAgainstStandardLibrary->toggle();
+    LinkAgainstStandardLibrary->setChecked(TRUE);
   if (settings.initialize_bss)
-    InitializeBSSSection->toggle();
+    InitializeBSSSection->setChecked(TRUE);
   if (settings.outputbin)
-    OutputVariableImageWithoutWrapper->toggle();
+    OutputVariableImageWithoutWrapper->setChecked(TRUE);
   //Tab: Post-Build
   CallAfterBuilding->setText(settings.post_build);
   Parameters->setText(settings.cmd_line);
@@ -217,9 +217,9 @@ void ProjectOptions::RegularProgramToggle()
   if (!state)
   {
     if (ExternalDataVariable->isOn())
-      ExternalDataVariable->toggle();
+      ExternalDataVariable->setChecked(TRUE);
     if (CompressProgram->isOn())
-      CompressProgram->toggle();
+      CompressProgram->setChecked(TRUE);
   }
   ExternalDataVariable->setEnabled(state);
   CompressProgram->setEnabled(state);

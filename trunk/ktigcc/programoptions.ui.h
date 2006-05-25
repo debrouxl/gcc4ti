@@ -40,74 +40,74 @@ void ProgramOptions::ImportSettings(void)
 {
   //Tab: Calculator
   if (libopts.use_ti89)
-    TI89->toggle();
+    TI89->setChecked(TRUE);
   if (libopts.use_ti92p)
-    TI92Plus->toggle();
+    TI92Plus->setChecked(TRUE);
   if (libopts.use_v200)
-    V200->toggle();
+    V200->setChecked(TRUE);
   if (libopts.opt_calc_consts)
-    OptimizeCalcConsts->toggle();
+    OptimizeCalcConsts->setChecked(TRUE);
   //Tab: Operating System
   if (libopts.use_preos)
-    PreOS->toggle();
+    PreOS->setChecked(TRUE);
   else if (libopts.use_kernel)
-    RecentDoorsCompatibleKernels->toggle();
+    RecentDoorsCompatibleKernels->setChecked(TRUE);
   else
-    AnyNoKernel->toggle();
+    AnyNoKernel->setChecked(TRUE);
   if (libopts.use_minams)
-    CMinimumAMSVersion->toggle();
-  MinimumAMSVersion->setText(QString("%1.%2").arg(libopts.minams/100).arg(libopts.minams%100));
+    CMinimumAMSVersion->setChecked(TRUE);
+  MinimumAMSVersion->setText(QString("%1.%2%3").arg(libopts.minams/100).arg((libopts.minams/10)%10).arg(libopts.minams%10));
   if (libopts.unofficial_os)
-    UnofficialOSSupport->toggle();
+    UnofficialOSSupport->setChecked(TRUE);
   //Tab: Reloc Format
   if (libopts.reloc_format==RT_KERNEL)
-    RelocKernel->toggle();
+    RelocKernel->setChecked(TRUE);
   else if (libopts.reloc_format==RT_COMPRESSED)
-    RelocCompressed->toggle();
+    RelocCompressed->setChecked(TRUE);
   else if (libopts.reloc_format==RT_MLINK)
-    RelocMlink->toggle();
+    RelocMlink->setChecked(TRUE);
   else
-    RelocAMS->toggle();
+    RelocAMS->setChecked(TRUE);
   if (libopts.use_fline_jumps)
-    UseFLineJumps->toggle();
+    UseFLineJumps->setChecked(TRUE);
   if (libopts.use_4b_fline_jumps)
-    Use4ByteFLineJumps->toggle();
+    Use4ByteFLineJumps->setChecked(TRUE);
   if (libopts.rom_call_format==RT_KERNEL)
-    ROMCallKernel->toggle();
+    ROMCallKernel->setChecked(TRUE);
   else if (libopts.rom_call_format==RT_COMPRESSED)
-    ROMCallCompressed->toggle();
+    ROMCallCompressed->setChecked(TRUE);
   else if (libopts.rom_call_format==RT_MLINK)
-    ROMCallMlink->toggle();
+    ROMCallMlink->setChecked(TRUE);
   else if (libopts.rom_call_format==RT_FLINE)
-    ROMCallFLine->toggle();
+    ROMCallFLine->setChecked(TRUE);
   else
-    ROMCallDirect->toggle();
+    ROMCallDirect->setChecked(TRUE);
   if (libopts.opt_rom_calls)
-    OptimizeROMCalls->toggle();
+    OptimizeROMCalls->setChecked(TRUE);
   if (libopts.use_internal_fline_emu)
-    UseInternalFLineEmulator->toggle();
+    UseInternalFLineEmulator->setChecked(TRUE);
   //Tab: BSS/Data Format
   if (libopts.bss_ref_format==RT_KERNEL)
-    BSSKernel->toggle();
+    BSSKernel->setChecked(TRUE);
   else if (libopts.bss_ref_format==RT_COMPRESSED)
-    BSSCompressed->toggle();
+    BSSCompressed->setChecked(TRUE);
   else if (libopts.bss_ref_format==RT_MLINK)
-    BSSMlink->toggle();
+    BSSMlink->setChecked(TRUE);
   else
-    BSSMerge->toggle();
+    BSSMerge->setChecked(TRUE);
   if (libopts.data_ref_format==RT_COMPRESSED)
-    BSSDataCompressed->toggle();
+    BSSDataCompressed->setChecked(TRUE);
   else if (libopts.data_ref_format==RT_MLINK)
-    BSSDataMlink->toggle();
+    BSSDataMlink->setChecked(TRUE);
   else
-    BSSDataKernel->toggle();
+    BSSDataKernel->setChecked(TRUE);
   //Tab: Home Screen
   if (libopts.use_return_value)
-    HomeCustomValue->toggle();
+    HomeCustomValue->setChecked(TRUE);
   else
-    HomeDone->toggle();
+    HomeDone->setChecked(TRUE);
   if (libopts.enable_error_return)
-    EnableReturningErrors->toggle();
+    EnableReturningErrors->setChecked(TRUE);
   if (libopts.save_screen)
-    SaveScreen->toggle();
+    SaveScreen->setChecked(TRUE);
 }
