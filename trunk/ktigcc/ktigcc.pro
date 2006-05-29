@@ -3,9 +3,7 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on debug
 
-unix:LIBS	+= -lktexteditor -lqassistantclient
-
-unix:INCLUDEPATH	+= /usr/include/kde
+LIBS	+= -lktexteditor -lqassistantclient
 
 HEADERS	+= tpr.h \
 	ktigcc.h \
@@ -62,6 +60,22 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
+}
+
+KDEPREFIX = $$system(kde-config --prefix)
+
+exists($$KDEPREFIX/include/kde3) {
+  INCLUDEPATH += $$KDEPREFIX/include/kde3
+} else:exists($$KDEPREFIX/include/kde) {
+  INCLUDEPATH += $$KDEPREFIX/include/kde
+} else {
+  INCLUDEPATH += $$KDEPREFIX/include
+}
+
+KDELIBDIR = $$KDEPREFIX/lib$$system(kde-config --libsuffix)
+
+!equals(KDELIBDIR,/usr/lib):!equals(KDELIBDIR,/usr/lib64) {
+  LIBS += -L"$$KDELIBDIR" -Wl,--rpath,"$$KDELIBDIR"
 }
 
 syntaxfiles.path = /usr/share/apps/katepart/syntax/
