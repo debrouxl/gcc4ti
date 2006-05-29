@@ -108,6 +108,11 @@ begin
 		if Checked and not Enabled then
 			RelocKernelRadioButton.Checked := True;
 	end;
+	with RelocMLinkRadioButton do begin
+		Enabled := NostubRadioButton.Checked;
+		if Checked and not Enabled then
+			RelocKernelRadioButton.Checked := True;
+	end;
 	with RelocKernelRadioButton do begin
 		Enabled := not PreOSRadioButton.Checked;
 		if Checked and not Enabled then
@@ -123,6 +128,11 @@ begin
 		if Checked and not Enabled then
 			ROMCallKernelRadioButton.Checked := True;
 	end;
+	with ROMCallMLinkRadioButton do begin
+		Enabled := NostubRadioButton.Checked;
+		if Checked and not Enabled then
+			ROMCallKernelRadioButton.Checked := True;
+	end;
 	with ROMCallKernelRadioButton do begin
 		Enabled := not PreOSRadioButton.Checked;
 		if Checked and not Enabled then
@@ -132,6 +142,11 @@ begin
 		Enabled := not DoorsRadioButton.Checked;
 		if Checked and not Enabled then
 			ROMCallKernelRadioButton.Checked := True;
+	end;
+	with BSSMLinkRadioButton do begin
+		Enabled := NostubRadioButton.Checked;
+		if Checked and not Enabled then
+			BSSKernelRadioButton.Checked := True;
 	end;
 	with BSSKernelRadioButton do begin
 		Enabled := not PreOSRadioButton.Checked;
