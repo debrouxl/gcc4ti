@@ -187,3 +187,23 @@ void force_qt_assistant_page(int n)
   }
   fclose(f);
 }
+
+const char *lookup_doc_keyword(const char *keyword)
+{
+  static char filename[256];
+  memset(filename,0,256);
+  char fname[strlen(tigcc_base)+27];
+  sprintf(fname,"%s/doc/html/qt-assistant.adp",tigcc_base);
+  FILE *f=fopen(fname,"r+b");
+  if (!f) return "";
+  char buffer[32768], keywbuf[32768];
+  while (!feof(f)) {
+    if (!fgets(buffer,32768,f)) {fclose(f); return "";}
+    memset(keywbuf,0,32768);
+    if (sscanf(buffer,"<keyword ref=\"%255[^\"]\">%32767[^<]</keyword>",filename,keywbuf)<2)
+      continue;
+    if (!strcmp(keywbuf,keyword)) {fclose(f); return filename;}
+  }
+  fclose(f);
+  return "";
+}

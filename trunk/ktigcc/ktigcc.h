@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <kconfig.h>
 #include <kaboutdata.h>
+class QAssistantClient;
 
 extern const char *tigcc_base;
 extern const char *quill_drv;
@@ -31,6 +32,8 @@ extern char tempdir[];
 extern void write_temp_file(const char *filename, const char *data, const size_t len);
 extern void delete_temp_file(const char *filename);
 extern void force_qt_assistant_page(int n);
+const char *lookup_doc_keyword(const char *keyword);
 extern KConfig *pconfig;
 extern KAboutData *pabout;
 extern const char *parg;
+extern QAssistantClient *assistant;

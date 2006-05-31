@@ -31,6 +31,12 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
+#include <qapp.h>
+#include <qevent.h>
+#include <qeventloop.h>
+#include <qtooltip.h>
+#include <qassistantclient.h>
+#include "ktigcc.h"
 #include "tpr.h"
 
 extern tprLibOpts libopts;
@@ -292,5 +298,24 @@ void ProgramOptions::RelocSettings_toggled(bool on_unused)
       OptimizeROMCalls->setChecked(FALSE);
     }
     inEvent=FALSE;
+  }
+}
+
+
+void ProgramOptions::mousePressEvent( QMouseEvent * e )
+{
+  if (e->button()==Qt::RightButton) {
+    QWidget *widgetUnderCursor=childAt(e->pos());
+    if (!widgetUnderCursor) return;
+    QString toolTip=QToolTip::textFor(widgetUnderCursor, widgetUnderCursor->mapFromParent(e->pos()));
+    if (toolTip.isEmpty()) return;
+    QString docFile=lookup_doc_keyword(toolTip);
+    if (docFile.isEmpty()) return;
+    force_qt_assistant_page(1);
+    assistant->openAssistant();
+    // wait for it to actually open
+    while (!assistant->isOpen())
+      QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+    assistant->showPage(QString(tigcc_base)+QString("/doc/html/")+docFile);
   }
 }
