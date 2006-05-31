@@ -33,7 +33,6 @@
 
 #include <qaccel.h>
 #include <kmessagebox.h>
-#include <kurl.h>
 #include "tpr.h"
 #include "programoptions.h"
 

@@ -21,6 +21,10 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
+class KURL;
+#include <qstring.h>
+#include <qstringlist.h>
+
 /*Structure definitions from tprbuilder source; slightly modified
     to work under C++
 */
