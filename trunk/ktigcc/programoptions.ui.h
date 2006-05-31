@@ -47,9 +47,9 @@ void ProgramOptions::ImportSettings()
   if (libopts.use_preos)
     PreOS->setChecked(TRUE);
   else if (libopts.use_kernel)
-    RecentDoorsCompatibleKernels->setChecked(TRUE);
+    UseKernel->setChecked(TRUE);
   else
-    AnyNoKernel->setChecked(TRUE);
+    Nostub->setChecked(TRUE);
   CMinimumAMSVersion->setChecked(libopts.use_minams);
   MinimumAMSVersion->setText(QString("%1.%2%3").arg(libopts.minams/100).arg((libopts.minams/10)%10).arg(libopts.minams%10));
   MinimumAMSVersion->setEnabled(libopts.use_minams);
@@ -87,11 +87,11 @@ void ProgramOptions::ImportSettings()
   else
     BSSMerge->setChecked(TRUE);
   if (libopts.data_ref_format==RT_COMPRESSED)
-    BSSDataCompressed->setChecked(TRUE);
+    DataVarCompressed->setChecked(TRUE);
   else if (libopts.data_ref_format==RT_MLINK)
-    BSSDataMlink->setChecked(TRUE);
+    DataVarMlink->setChecked(TRUE);
   else
-    BSSDataKernel->setChecked(TRUE);
+    DataVarKernel->setChecked(TRUE);
   //Tab: Home Screen
   if (libopts.use_return_value)
     HomeCustomValue->setChecked(TRUE);
@@ -110,7 +110,7 @@ void ProgramOptions::ExportSettings()
   libopts.opt_calc_consts=OptimizeCalcConsts->isChecked();
   //Tab: Operating System
   libopts.use_preos=PreOS->isChecked();
-  libopts.use_kernel=RecentDoorsCompatibleKernels->isChecked();
+  libopts.use_kernel=UseKernel->isChecked();
   libopts.use_minams=CMinimumAMSVersion->isChecked();
   QString minams=MinimumAMSVersion->text();
   libopts.minams=minams.section('.',0,0).toUInt()*100+minams.section('.',1,1).toUInt();
@@ -147,9 +147,9 @@ void ProgramOptions::ExportSettings()
     libopts.bss_ref_format=RT_MLINK;
   else
     libopts.bss_ref_format=RT_NONE;
-  if (BSSDataCompressed->isChecked())
+  if (DataVarCompressed->isChecked())
     libopts.data_ref_format=RT_COMPRESSED;
-  else if (BSSDataMlink->isChecked())
+  else if (DataVarMlink->isChecked())
     libopts.data_ref_format=RT_MLINK;
   else
     libopts.data_ref_format=RT_KERNEL;
@@ -162,4 +162,136 @@ void ProgramOptions::ExportSettings()
 void ProgramOptions::CMinimumAMSVersion_toggled(bool on)
 {
   MinimumAMSVersion->setEnabled(on);
+}
+
+#define on_unused on __attribute__((unused))
+
+void ProgramOptions::CalcCheckbox_toggled(bool on_unused)
+{
+  static bool inEvent=FALSE;
+  if (!inEvent) {
+    inEvent=TRUE;
+    unsigned numCalcs=TI89->isChecked()+TI92Plus->isChecked()+V200->isChecked();
+    // OPTIMIZE_CALC_CONSTS makes no sense for only 1 calculator (calculator
+    // constants are already optimized for that calculator at compile-time in
+    // that case, no need to do it at link time).
+    // Moreover, we can't enable it for old projects (no calculator checked,
+    // calculators selected through int _ti89 and such in the code).
+    OptimizeCalcConsts->setEnabled(numCalcs>=2);
+    if (numCalcs<2) OptimizeCalcConsts->setChecked(numCalcs);
+    inEvent=FALSE;
+  }
+}
+
+
+void ProgramOptions::KernelRadiobutton_toggled(bool on_unused)
+{
+  static bool inEvent=FALSE;
+  if (!inEvent) {
+    inEvent=TRUE;
+    bool nostub=Nostub->isChecked();
+    bool kernel=UseKernel->isChecked();
+    bool preos=PreOS->isChecked();
+    // SAVE_SCREEN is currently always on in kernel mode.
+    SaveScreen->setEnabled(nostub);
+    if (!nostub) SaveScreen->setChecked(TRUE);
+    if (kernel) {
+      // Kernel mode, enable kernel reloc types.
+      RelocKernel->setEnabled(TRUE);
+      ROMCallKernel->setEnabled(TRUE);
+      BSSKernel->setEnabled(TRUE);
+      // Default to them if an unsupported reloc type was selected.
+      if (RelocAMS->isChecked() || RelocCompressed->isChecked()
+          || RelocMlink->isChecked())
+        RelocKernel->setChecked(TRUE);
+      if (ROMCallDirect->isChecked() || ROMCallCompressed->isChecked()
+          || ROMCallMlink->isChecked())
+        ROMCallKernel->setChecked(TRUE);
+      if (BSSCompressed->isChecked() || BSSMlink->isChecked())
+        BSSKernel->setChecked(TRUE);
+      // Now disable the unsupported types.
+      RelocAMS->setEnabled(FALSE);
+      RelocCompressed->setEnabled(FALSE);
+      RelocMlink->setEnabled(FALSE);
+      ROMCallDirect->setEnabled(FALSE);
+      ROMCallCompressed->setEnabled(FALSE);
+      ROMCallMlink->setEnabled(FALSE);
+      BSSCompressed->setEnabled(FALSE);
+      BSSMlink->setEnabled(FALSE);
+    } else if (preos) {
+      // Kernel with compressed reloc tables mode, enable compressed reloc types.
+      RelocCompressed->setEnabled(TRUE);
+      ROMCallCompressed->setEnabled(TRUE);
+      BSSCompressed->setEnabled(TRUE);
+      // Default to them if an unsupported reloc type was selected.
+      if (RelocAMS->isChecked() || RelocKernel->isChecked()
+          || RelocMlink->isChecked())
+        RelocCompressed->setChecked(TRUE);
+      if (ROMCallDirect->isChecked() || ROMCallKernel->isChecked()
+          || ROMCallMlink->isChecked())
+        ROMCallCompressed->setChecked(TRUE);
+      if (BSSKernel->isChecked() || BSSMlink->isChecked())
+        BSSCompressed->setChecked(TRUE);
+      // Now disable the unsupported types.
+      RelocAMS->setEnabled(FALSE);
+      RelocKernel->setEnabled(FALSE);
+      RelocMlink->setEnabled(FALSE);
+      ROMCallDirect->setEnabled(FALSE);
+      ROMCallKernel->setEnabled(FALSE);
+      ROMCallMlink->setEnabled(FALSE);
+      BSSKernel->setEnabled(FALSE);
+      BSSMlink->setEnabled(FALSE);
+    } else {
+      // In _nostub mode, all reloc types are allowed.
+      RelocAMS->setEnabled(TRUE);
+      RelocKernel->setEnabled(TRUE);
+      RelocCompressed->setEnabled(TRUE);
+      RelocMlink->setEnabled(TRUE);
+      ROMCallDirect->setEnabled(TRUE);
+      ROMCallKernel->setEnabled(TRUE);
+      ROMCallCompressed->setEnabled(TRUE);
+      ROMCallMlink->setEnabled(TRUE);
+      BSSKernel->setEnabled(TRUE);
+      BSSCompressed->setEnabled(TRUE);
+      BSSMlink->setEnabled(TRUE);
+    }
+    RelocSettings_toggled(0);
+    inEvent=FALSE;
+  }
+}
+
+
+void ProgramOptions::RelocSettings_toggled(bool on_unused)
+{
+  static bool inEvent=FALSE;
+  if (!inEvent) {
+    inEvent=TRUE;
+    // 4-byte F-Line jumps only make sense if F-Line jumps are enabled
+    if (UseFLineJumps->isChecked())
+      Use4ByteFLineJumps->setEnabled(TRUE);
+    else {
+      Use4ByteFLineJumps->setEnabled(FALSE);
+      Use4ByteFLineJumps->setChecked(FALSE);
+    }
+    if (Use4ByteFLineJumps->isChecked()) {
+      // 4-byte F-Line jumps require the internal emulator
+      UseInternalFLineEmulator->setEnabled(FALSE);
+      UseInternalFLineEmulator->setChecked(TRUE);
+    } else if (UseFLineJumps->isChecked() || ROMCallFLine->isChecked()) {
+      // using F-Line instructions where the internal emulator can be used
+      UseInternalFLineEmulator->setEnabled(TRUE);
+    } else {
+      // no F-Line instructions to emulate, internally or otherwise
+      UseInternalFLineEmulator->setEnabled(FALSE);
+      UseInternalFLineEmulator->setChecked(FALSE);
+    }
+    // OPTIMIZE_ROM_CALLS only allowed with direct or F-Line ROM_CALLs in _nostub mode
+    if (Nostub->isChecked() && (ROMCallDirect->isChecked() || ROMCallFLine->isChecked()))
+      OptimizeROMCalls->setEnabled(TRUE);
+    else {
+      OptimizeROMCalls->setEnabled(FALSE);
+      OptimizeROMCalls->setChecked(FALSE);
+    }
+    inEvent=FALSE;
+  }
 }

@@ -454,7 +454,7 @@
                                 </property>
                                 <widget class="QRadioButton">
                                     <property name="name">
-                                        <cstring>AnyNoKernel</cstring>
+                                        <cstring>Nostub</cstring>
                                     </property>
                                     <property name="text">
                                         <string>Any/no &amp;kernel</string>
@@ -465,7 +465,7 @@
                                 </widget>
                                 <widget class="QRadioButton">
                                     <property name="name">
-                                        <cstring>RecentDoorsCompatibleKernels</cstring>
+                                        <cstring>UseKernel</cstring>
                                     </property>
                                     <property name="text">
                                         <string>Recent &amp;Doors-compatible kernels</string>
@@ -812,6 +812,9 @@
                                             <widget class="QCheckBox">
                                                 <property name="name">
                                                     <cstring>Use4ByteFLineJumps</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>false</bool>
                                                 </property>
                                                 <property name="sizePolicy">
                                                     <sizepolicy>
@@ -1237,7 +1240,7 @@
                                     </property>
                                     <widget class="QRadioButton">
                                         <property name="name">
-                                            <cstring>BSSDataKernel</cstring>
+                                            <cstring>DataVarKernel</cstring>
                                         </property>
                                         <property name="text">
                                             <string>K&amp;ernel (medium calls, medium stub)</string>
@@ -1251,7 +1254,7 @@
                                     </widget>
                                     <widget class="QRadioButton">
                                         <property name="name">
-                                            <cstring>BSSDataCompressed</cstring>
+                                            <cstring>DataVarCompressed</cstring>
                                         </property>
                                         <property name="text">
                                             <string>Com&amp;pressed (smallest calls, large stub)</string>
@@ -1265,7 +1268,7 @@
                                     </widget>
                                     <widget class="QRadioButton">
                                         <property name="name">
-                                            <cstring>BSSDataMlink</cstring>
+                                            <cstring>DataVarMlink</cstring>
                                         </property>
                                         <property name="text">
                                             <string>Ml&amp;ink (small calls, medium stub)</string>
@@ -1546,15 +1549,15 @@
                     <cstring>unnamed</cstring>
                 </property>
                 <widget class="QToolButton">
-                  <property name="name">
-                    <cstring>buttonWhatIs</cstring>
-                  </property>
-                  <property name="text">
-                    <string></string>
-                  </property>
-                  <property name="iconSet">
-                    <iconset>whatsthis.png</iconset>
-                  </property>
+                    <property name="name">
+                        <cstring>buttonWhatIs</cstring>
+                    </property>
+                    <property name="text">
+                        <string></string>
+                    </property>
+                    <property name="iconSet">
+                        <iconset>whatsthis.png</iconset>
+                    </property>
                 </widget>
                 <spacer>
                     <property name="name">
@@ -1610,12 +1613,75 @@
         <receiver>ProgramOptions</receiver>
         <slot>CMinimumAMSVersion_toggled(bool)</slot>
     </connection>
+    <connection>
+        <sender>TI89</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>CalcCheckbox_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>TI92Plus</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>CalcCheckbox_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>V200</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>CalcCheckbox_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>Nostub</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>KernelRadiobutton_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>UseKernel</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>KernelRadiobutton_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>PreOS</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>KernelRadiobutton_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>UseFLineJumps</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>RelocSettings_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>ROMCallDirect</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>RelocSettings_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>ROMCallFLine</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>RelocSettings_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>Use4ByteFLineJumps</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ProgramOptions</receiver>
+        <slot>RelocSettings_toggled(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">programoptions.ui.h</include>
 </includes>
 <slots>
     <slot>CMinimumAMSVersion_toggled( bool on )</slot>
+    <slot>CalcCheckbox_toggled( bool on_unused )</slot>
+    <slot>KernelRadiobutton_toggled( bool on_unused )</slot>
+    <slot>RelocSettings_toggled( bool on_unused )</slot>
 </slots>
 <functions>
     <function specifier="non virtual">ImportSettings()</function>
