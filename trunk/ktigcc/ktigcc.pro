@@ -53,8 +53,7 @@ IMAGES	= images/00 \
 	images/fileo.png \
 	images/files.png \
 	images/filet.png \
-	images/filex.png \
-	images/whatsthis.png
+	images/filex.png
 
 unix {
   UI_DIR = .ui
