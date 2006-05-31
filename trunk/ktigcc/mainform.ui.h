@@ -37,6 +37,7 @@
 #include <qdir.h>
 #include <qclipboard.h>
 #include <qaccel.h>
+#include <qeventloop.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -543,6 +544,8 @@ void MainForm::init()
   accel->setItemEnabled(3,FALSE);
   accel->insertItem(SHIFT+Key_Insert,4);
   accel->setItemEnabled(4,FALSE);
+  accel->insertItem(Key_F1,5);
+  accel->setItemEnabled(5,FALSE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   pconfig->setGroup("Recent files");
   if (parg)
@@ -613,6 +616,21 @@ void MainForm::accel_activated(int index)
       case 2: editCut(); break;
       case 3: editCopy(); break;
       case 4: editPaste(); break;
+      case 5: // F1 context help
+      {
+        QString wordUnderCursor=CURRENT_VIEW->currentWord();
+        // always open at least the index
+        force_qt_assistant_page(1);
+        assistant->openAssistant();
+        if (wordUnderCursor.isEmpty()) return;
+        QString docFile=lookup_doc_keyword(wordUnderCursor);
+        if (docFile.isEmpty()) return;
+        // wait for Qt Assistant to actually open
+        while (!assistant->isOpen())
+          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+        assistant->showPage(QString(tigcc_base)+QString("/doc/html/")+docFile);
+        break;
+      }
       default: break;
     }
   }
@@ -1695,6 +1713,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(2,FALSE);
     accel->setItemEnabled(3,FALSE);
     accel->setItemEnabled(4,FALSE);
+    accel->setItemEnabled(5,FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
@@ -1724,6 +1743,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(2,kateView->getDoc()->hasSelection());
       accel->setItemEnabled(3,kateView->getDoc()->hasSelection());
       accel->setItemEnabled(4,!clipboard->text().isNull());
+      accel->setItemEnabled(5,TRUE);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -1741,6 +1761,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(2,FALSE);
       accel->setItemEnabled(3,FALSE);
       accel->setItemEnabled(4,FALSE);
+      accel->setItemEnabled(5,FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -1760,6 +1781,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(2,FALSE);
     accel->setItemEnabled(3,FALSE);
     accel->setItemEnabled(4,FALSE);
+    accel->setItemEnabled(5,FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();
