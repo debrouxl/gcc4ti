@@ -33,6 +33,7 @@
 
 #include <qaccel.h>
 #include <kmessagebox.h>
+#include "ktigcc.h"
 #include "tpr.h"
 #include "programoptions.h"
 
@@ -43,6 +44,8 @@ ProgramOptions *programoptions;
 
 void ProjectOptions::init()
 {
+  if (!have_fargo) FargoProgram->hide();
+  if (!have_flashos) FlashOperatingSystem->hide();
   //Create the Program Options dialog
   programoptions=new ProgramOptions(this);
   //Toggle controls to match settings.

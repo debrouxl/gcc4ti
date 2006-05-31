@@ -42,6 +42,8 @@ static KCmdLineOptions options[] =
 const char *tigcc_base;
 char tempdir[]="/tmp/ktigccXXXXXX";
 char *quill_drv;
+bool have_fargo;
+bool have_flashos;
 KConfig *pconfig;
 KAboutData *pabout;
 const char *parg;
@@ -114,6 +116,12 @@ int main( int argc, char *argv[] )
   quill_drv=NULL;
   quill_drv_found:
 
+  char runtime_archive[strlen(tigcc_base) + 15];
+  sprintf(runtime_archive, "%s/lib/fargo.a", tigcc_base);
+  have_fargo=(access(runtime_archive, F_OK)!=-1);
+  sprintf(runtime_archive, "%s/lib/flashos.a", tigcc_base);
+  have_flashos=(access(runtime_archive, F_OK)!=-1);
+  
   if (!mkdtemp(tempdir)) exit(1);
   
   KCmdLineArgs *args=KCmdLineArgs::parsedArgs();

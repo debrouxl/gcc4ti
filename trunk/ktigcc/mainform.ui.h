@@ -1003,6 +1003,14 @@ void MainForm::openProject(const QString &fileName)
     KMessageBox::error(this,"This project needs quill.drv, which is not installed.");
     return;
   }
+  if (TPRData.settings.fargo && !have_fargo) {
+    KMessageBox::error(this,"This project needs fargo.a, which is not installed.");
+    return;
+  }
+  if (TPRData.settings.flash_os && !have_flashos) {
+    KMessageBox::error(this,"This project needs flashos.a, which is not installed.");
+    return;
+  }
   clearProject();
   fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir,TPRData.open_file);
   fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir,TPRData.open_file);
