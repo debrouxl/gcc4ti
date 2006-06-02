@@ -179,14 +179,23 @@ int parse_file(FILE *f,TPRDataStruct *dest)
                 continue; \
             } else
 
-#define string_vparam(token,var) \
+#define tistring_vparam(token,var) \
             if ( (p=find_param(buffer, token)) ) \
             { \
-                if (*p) dest->var = p; \
+                if (*p) { \
+                  unsigned short *utf16=ticonv_charset_ti_to_utf16(CALC_TI89,p); \
+                  dest->var = QString::fromUcs2(utf16); \
+                  g_free(utf16); \
+                } \
                 continue; \
             } else
 
-#define string_param(token,setting) string_vparam(token,settings.setting)
+#define string_param(token,setting) \
+            if ( (p=find_param(buffer, token)) ) \
+            { \
+                if (*p) dest->settings.setting = p; \
+                continue; \
+            } else
 
 #define ignore_param(token) \
             if( (p=find_param(buffer, token)) ) \
@@ -197,7 +206,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
             boolean_param("Archive=",archive)
             boolean_param("Pack=",pack)
             string_param("Packed Variable=",pack_name)
-            string_vparam("Project Name=",prj_name)
+            tistring_vparam("Project Name=",prj_name)
             string_param("GCC Switches=",cc_switches)
             string_param("Assembler Switches=",a68k_switches)
             ignore_param("Linker Switches=") // Obsolete. Ignore.
@@ -229,7 +238,7 @@ int parse_file(FILE *f,TPRDataStruct *dest)
             return l;
 
 #undef boolean_param
-#undef string_vparam
+#undef tistring_vparam
 #undef string_param
 #undef ignore_param
         }
@@ -538,15 +547,19 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
     QString tmp;
     
 #define boolean_param(token,setting) if (fprintf(f,token "%d\r\n",!!dest->settings.setting)<0) return -2;
-#define string_vparam(token,var) if (fprintf(f,token "%s\r\n",smartAscii(dest->var))<0) return -2;
-#define string_param(token,setting) string_vparam(token,settings.setting)
+#define tistring_vparam(token,var) { \
+        char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,dest->var.ucs2()); \
+        if (fprintf(f,token "%s\r\n",ti)<0) {g_free(ti); return -2;} \
+        g_free(ti); \
+    }
+#define string_param(token,setting) if (fprintf(f,token "%s\r\n",smartAscii(dest->settings.setting))<0) return -2;
 #define ignore_param(token) /**/
     
     if (fputs("[Settings]\r\n",f)<0) return -2;
     boolean_param("Archive=",archive)
     boolean_param("Pack=",pack)
     string_param("Packed Variable=",pack_name)
-    string_vparam("Project Name=",prj_name)
+    tistring_vparam("Project Name=",prj_name)
     string_param("GCC Switches=",cc_switches)
     string_param("Assembler Switches=",a68k_switches)
     ignore_param("Linker Switches=") // Obsolete. Ignore.
@@ -577,7 +590,7 @@ int save_tpr(FILE *f,TPRDataStruct *dest)
     boolean_param("Initialize BSS=",initialize_bss)
     
 #undef boolean_param
-#undef string_vparam
+#undef tistring_vparam
 #undef string_param
 #undef ignore_param
     

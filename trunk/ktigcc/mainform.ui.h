@@ -2421,12 +2421,56 @@ void MainForm::clipboard_dataChanged()
   }
 }
 
-void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString &newName)
+void MainForm::fileTreeItemRenamed( QListViewItem *item, const QString &newName, int col)
 {
   if (col)
     return;
   if (item==rootListItem) {
-    // TODO: Validate name
+    // validate name, fix if invalid
+    QValueList<QChar> validInVarname;
+    #define V(i) validInVarname.append(QChar(i))
+    #define VR(m,n) for(unsigned i=m;i<=n;i++)V(i)
+    VR(48,57); // 0..9
+    VR(65,90); // A..Z
+    V(95); // _
+    VR(97,122); // a..z
+    V(181); // mu
+    VR(192,214); // À..Ö
+    VR(216,246); // Ø..ö
+    VR(248,255); // ø..ÿ
+    VR(0x3b1,0x3b6);V(0x3b8);V(0x3bb);V(0x3be);V(0x3c1);V(0x3c3);V(0x3c4);
+    V(0x3c6);V(0x3c8);V(0x3c9); // small Greek letters
+    V(0x393);V(0x394);V(0x3a0);V(0x3a3);V(0x3a9); // capital Greek letters
+    #undef VR
+    #undef V
+    bool hasFolder=false;
+    int i;
+    QString prjName=newName;
+    for (i=prjName.length();i>=0;i--) {
+      if (prjName[i]=='\\') {
+        if (hasFolder)
+          prjName.remove(i,1);
+        else
+          hasFolder=true;
+      } else if (!validInVarname.contains(prjName[i]))
+        prjName.remove(i,1);
+    }
+    if (prjName[0]=='\\') prjName.remove(0,1);
+    if (!prjName.length()) prjName="Project1";
+    if ((prjName[0]>='0'&&prjName[0]<='9')||prjName[0]=='_')
+      prjName.prepend('X');
+    i=prjName.find('\\');
+    if (i>=0) {
+      if (i>8) {
+        prjName.remove(8,i-8);
+        i=8;
+      }
+      if ((prjName[i+1]>='0'&&prjName[i+1]<='9')||prjName[i+1]=='_')
+        prjName.insert(i+1,'X');
+      prjName.truncate(i+9);
+      if (prjName.length()==(unsigned)i+1) prjName.append("Project1");
+    } else prjName.truncate(8);
+    item->setText(0,prjName);
     projectIsDirty=true;
     return;
   }
