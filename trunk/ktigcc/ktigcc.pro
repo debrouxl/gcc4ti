@@ -79,7 +79,7 @@ KDELIBDIR = $$KDEPREFIX/lib$$system(kde-config --libsuffix)
 
 GLIB2_MINVERSION = 2.0.0
 HAVE_GLIB2 = $$system(pkg-config --atleast-version=$$GLIB2_MINVERSION glib-2.0 && echo yes || echo no)
-!equals(HAVE_GLIB2,yes):error(libticonv $$GLIB2_MINVERSION or higher required.)
+!equals(HAVE_GLIB2,yes):error(glib2 $$GLIB2_MINVERSION or higher required.)
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags glib-2.0)
 LIBS += $$system(pkg-config --libs glib-2.0)
 
