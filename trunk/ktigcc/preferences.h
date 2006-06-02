@@ -78,6 +78,7 @@ typedef struct
   bool lazyLoading;
   unsigned short tabWidthC;
   unsigned short tabWidthAsm;
+  bool useCalcCharset;
   Syn_SettingsForDoc synC;
   Syn_SettingsForDoc synS;
   Syn_SettingsForDoc synASM;
@@ -86,4 +87,3 @@ typedef struct
 
 void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg);
 void savePreferences(TIGCCPrefs *prefs,KConfig *cfg);
-void defaultPreferences(TIGCCPrefs *prefs);

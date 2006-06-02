@@ -82,7 +82,7 @@ int syn_XMLStrList(FILE *f,const QString &name,const QStringList &clist)
 }
 
 //returns 0 on success,-1 on file couldn't be created, and 1 if file couldn't be written to correctly.
-int SynToXML(Syn_SettingsForDoc &syn,const QString &destFileName)
+int SynToXML(Syn_SettingsForDoc &syn __attribute__((unused)),const QString &destFileName)
 {
     FILE *f=fopen(destFileName,"wb");
     if (!f)
@@ -1140,37 +1140,18 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
 
 void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg)
 {
-    if (!cfg->hasGroup("Preferences")) {
-      defaultPreferences(prefs);
-      return;
-    }
     cfg->setGroup("Preferences");
-    
-    if (cfg->hasKey("Lazy Loading"))
-        prefs->lazyLoading=cfg->readBoolEntry("Lazy Loading");
-    else
-        prefs->lazyLoading=true;
-    if (cfg->hasKey("Tab Width Asm"))
-        prefs->tabWidthAsm=cfg->readUnsignedNumEntry("Tab Width Asm");
-    else
-        prefs->tabWidthAsm=8;
-    if (cfg->hasKey("Tab Width C"))
-        prefs->tabWidthC=cfg->readUnsignedNumEntry("Tab Width C");
-    else
-        prefs->tabWidthC=2;
+    prefs->lazyLoading=cfg->readBoolEntry("Lazy Loading",true);
+    prefs->tabWidthAsm=cfg->readUnsignedNumEntry("Tab Width Asm",8);
+    prefs->tabWidthC=cfg->readUnsignedNumEntry("Tab Width C",2);
+    prefs->useCalcCharset=cfg->readBoolEntry("Use Calc Charset",true);
 }
 
 void savePreferences(TIGCCPrefs *prefs,KConfig *cfg)
 {
     cfg->setGroup("Preferences");
     cfg->writeEntry("Lazy Loading",(bool)prefs->lazyLoading);
+    cfg->writeEntry("Use Calc Charset",(bool)prefs->useCalcCharset);
     cfg->writeEntry("Tab Width Asm",(unsigned short)prefs->tabWidthAsm);
     cfg->writeEntry("Tab Width C",(unsigned short)prefs->tabWidthC);
-}
-
-void defaultPreferences(TIGCCPrefs *prefs)
-{
-    prefs->lazyLoading=true;
-    prefs->tabWidthC=2;
-    prefs->tabWidthAsm=8;
 }
