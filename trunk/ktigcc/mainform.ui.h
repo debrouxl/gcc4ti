@@ -138,6 +138,12 @@ class ListViewFolder : public KListViewItem {
     setDropEnabled(TRUE);
   }
   virtual int rtti(void) const {return 0x716CC0;}
+  // Work around gratuitous API difference. Why do I have to do this? That's
+  // what startRename is a virtual method for. KListViewItem should do this.
+  virtual void startRename(int col)
+  {
+    static_cast<KListView *>(listView())->rename(this,col);
+  }
   protected:
 };
 
@@ -191,6 +197,49 @@ class ListViewFile : public KListViewItem {
   QString textBuffer; // for lazy loading
   QString fileName; // full name of the file
   bool isNew;
+  // Work around gratuitous API difference. Why do I have to do this? That's
+  // what startRename is a virtual method for. KListViewItem should do this.
+  virtual void startRename(int col)
+  {
+    static_cast<KListView *>(listView())->rename(this,col);
+  }
+  protected:
+};
+
+class ListViewRoot : public KListViewItem {
+  public:
+  ListViewRoot(QListView *parent) : KListViewItem(parent)
+  {
+    setRenameEnabled(0,TRUE);
+    // dragging not really allowed, but don't let the cursor run around when dragged
+    setDragEnabled(TRUE);
+  }
+  ListViewRoot(QListViewItem *parent) : KListViewItem(parent)
+  {
+    setRenameEnabled(0,TRUE);
+    // dragging not really allowed, but don't let the cursor run around when dragged
+    setDragEnabled(TRUE);
+  }
+  ListViewRoot(QListView *parent, QListViewItem *after)
+          : KListViewItem(parent, after)
+  {
+    setRenameEnabled(0,TRUE);
+    // dragging not really allowed, but don't let the cursor run around when dragged
+    setDragEnabled(TRUE);
+  }
+  ListViewRoot(QListViewItem *parent, QListViewItem *after)
+          : KListViewItem(parent, after)
+  {
+    setRenameEnabled(0,TRUE);
+    // dragging not really allowed, but don't let the cursor run around when dragged
+    setDragEnabled(TRUE);
+  }
+  // Work around gratuitous API difference. Why do I have to do this? That's
+  // what startRename is a virtual method for. KListViewItem should do this.
+  virtual void startRename(int col)
+  {
+    static_cast<KListView *>(listView())->rename(this,col);
+  }
   protected:
 };
 
@@ -475,11 +524,10 @@ void MainForm::init()
   fileTree->setColumnWidthMode(0,QListView::Maximum);
   fileTree->header()->hide();
   loadPreferences(&preferences,pconfig);
-  rootListItem=new QListViewItem(fileTree);
+  rootListItem=new ListViewRoot(fileTree);
   rootListItem->setText(0,"Project1");
   rootListItem->setPixmap(0,QPixmap::fromMimeSource("tpr.png"));
   rootListItem->setOpen(TRUE);
-  rootListItem->setDragEnabled(TRUE);
   QListViewItem *folderListItem=new ListViewFolder(rootListItem);
   hFilesListItem=folderListItem;
   folderListItem->setText(0,"Header Files");
@@ -607,7 +655,6 @@ void MainForm::te_popup_activated(int index)
 
 void MainForm::accel_activated(int index)
 {
-  // FIXME: This doesn't work for the text box you get when renaming.
   if (CURRENT_VIEW && CURRENT_VIEW->hasFocus()) {
     switch (index) {
       case 0: editUndo(); break;
@@ -2332,6 +2379,11 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, int col, const QString 
 {
   if (col)
     return;
+  if (item==rootListItem) {
+    // TODO: Validate name
+    projectIsDirty=true;
+    return;
+  }
   if (!IS_FILE(item))
     return;
   ListViewFile *theFile=static_cast<ListViewFile *>(item);
