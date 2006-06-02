@@ -305,8 +305,7 @@ class DnDListView : public KListView {
       if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
         // dropping folder
         // can only drop on folder or category
-        QPoint vp=contentsToViewport(e->pos());
-        QListViewItem *item=itemAt(vp);
+        QListViewItem *item=itemAt(e->pos());
         if (IS_FOLDER(item)) {
           // need same category
           CATEGORY_OF(srcCategory,currItem);
@@ -332,8 +331,7 @@ class DnDListView : public KListView {
         } else e->ignore();
       } else if (IS_FILE(currItem)) {
         // dropping file
-        QPoint vp=contentsToViewport(e->pos());
-        QListViewItem *item=itemAt(vp);
+        QListViewItem *item=itemAt(e->pos());
         if (IS_FOLDER(item)) {
           // drop on folder
           // don't allow more than one Quill file per project
@@ -461,8 +459,7 @@ class DnDListView : public KListView {
       if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
         // dropping folder
         // can only drop on folder or category
-        QPoint vp=contentsToViewport(e->pos());
-        QListViewItem *item=itemAt(vp);
+        QListViewItem *item=itemAt(e->pos());
         if (IS_FOLDER(item)) {
           // need same category
           CATEGORY_OF(srcCategory,currItem);
@@ -477,8 +474,7 @@ class DnDListView : public KListView {
         } else e->ignore();
       } else if (IS_FILE(currItem)) {
         // dropping file
-        QPoint vp=contentsToViewport(e->pos());
-        QListViewItem *item=itemAt(vp);
+        QListViewItem *item=itemAt(e->pos());
         if (IS_FOLDER(item)) {
           // drop on folder
           // don't allow more than one Quill file per project
