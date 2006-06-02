@@ -32,6 +32,8 @@
 #include "preferences.h"
 #include "tpr.h"
 
+TIGCCPrefs preferences;
+
 //these macros return 0 on success.
 #define syn_XMLStart(f) (fputs( \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" \
@@ -1138,7 +1140,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   prefs->synQLL.wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
 }
 
-void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg)
+void loadPreferences(TIGCCPrefs *prefs, KConfig *cfg)
 {
     cfg->setGroup("Preferences");
     prefs->lazyLoading=cfg->readBoolEntry("Lazy Loading",true);
@@ -1147,11 +1149,11 @@ void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg)
     prefs->useCalcCharset=cfg->readBoolEntry("Use Calc Charset",true);
 }
 
-void savePreferences(TIGCCPrefs *prefs,KConfig *cfg)
+void savePreferences(TIGCCPrefs *prefs, KConfig *cfg)
 {
     cfg->setGroup("Preferences");
     cfg->writeEntry("Lazy Loading",(bool)prefs->lazyLoading);
-    cfg->writeEntry("Use Calc Charset",(bool)prefs->useCalcCharset);
     cfg->writeEntry("Tab Width Asm",(unsigned)prefs->tabWidthAsm);
     cfg->writeEntry("Tab Width C",(unsigned)prefs->tabWidthC);
+    cfg->writeEntry("Use Calc Charset",(bool)prefs->useCalcCharset);
 }

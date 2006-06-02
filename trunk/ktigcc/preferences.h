@@ -87,3 +87,5 @@ typedef struct
 
 void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg);
 void savePreferences(TIGCCPrefs *prefs,KConfig *cfg);
+
+extern TIGCCPrefs preferences;

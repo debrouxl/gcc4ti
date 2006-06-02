@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cerrno>
+#include <cstring>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/dir.h>
@@ -31,7 +32,10 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qtextcodec.h>
+#include <glib.h>
+#include <ticonv.h>
 #include "tpr.h"
+#include "preferences.h"
 
 #define find_param(s_,t_) find_param_ex((s_),(t_),sizeof(t_)-1)
 
@@ -482,11 +486,22 @@ QString loadFileText(const char *fileName)
   if (!buffer)
     return QString::null;
   QString ret;
-  if (fread(buffer,1,flen,f)<flen)
+  if (fread(buffer,1,flen,f)<flen) {
+    delete[] buffer;
     ret=QString::null;
-  else
-    ret=buffer;
-  delete[] buffer;
+  } else {
+    if (preferences.useCalcCharset) {
+      unsigned short *utf16=ticonv_charset_ti_to_utf16(CALC_TI89,buffer);
+      delete[] buffer;
+      if (!utf16)
+        return QString::null;
+      ret=QString::fromUcs2(utf16);
+      g_free(utf16);
+    } else {
+      ret=buffer;
+      delete[] buffer;
+    }
+  }
   if (!ret.isNull()) {
     // convert Windows line endings
     ret=ret.replace("\r\n","\n");
@@ -715,7 +730,6 @@ void mkdir_multi(const char *fileName)
 int saveFileText(const char *fileName,const QString &fileText)
 {
   FILE *f;
-  const char *s;
   size_t l;
   
   f=fopen(fileName,"wb");
@@ -726,11 +740,25 @@ int saveFileText(const char *fileName,const QString &fileText)
     if (!f)
         return -1;
   }
-  s=smartAscii(fileText);
-  l=fileText.length();
-  if (fwrite(s,1,l,f)<l) {
-    fclose(f);
-    return -2;
+  if (preferences.useCalcCharset) {
+    const unsigned short *utf16=fileText.ucs2();
+    if (utf16) {
+      char *s=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
+      l=std::strlen(s);
+      if (fwrite(s,1,l,f)<l) {
+        g_free(s);
+        fclose(f);
+        return -2;
+      }
+      g_free(s);
+    }
+  } else {
+    const char *s=smartAscii(fileText);
+    l=fileText.length();
+    if (fwrite(s,1,l,f)<l) {
+      fclose(f);
+      return -2;
+    }
   }
   if (fclose(f)) return -2;
   return 0;

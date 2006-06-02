@@ -225,7 +225,6 @@ static QString projectFileName;
 static QString lastDirectory;
 static QClipboard *clipboard;
 static QAccel *accel;
-static TIGCCPrefs preferences;
 
 class DnDListView : public KListView {
   private:

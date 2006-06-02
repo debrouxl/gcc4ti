@@ -77,6 +77,18 @@ KDELIBDIR = $$KDEPREFIX/lib$$system(kde-config --libsuffix)
   LIBS += -L"$$KDELIBDIR" -Wl,--rpath,"$$KDELIBDIR"
 }
 
+GLIB2_MINVERSION = 2.0.0
+HAVE_GLIB2 = $$system(pkg-config --atleast-version=$$GLIB2_MINVERSION glib-2.0 && echo yes || echo no)
+!equals(HAVE_GLIB2,yes):error(libticonv $$GLIB2_MINVERSION or higher required.)
+PKGCONFIG_CFLAGS += $$system(pkg-config --cflags glib-2.0)
+LIBS += $$system(pkg-config --libs glib-2.0)
+
+TICONV_MINVERSION = 0.0.1
+HAVE_TICONV = $$system(pkg-config --atleast-version=$$TICONV_MINVERSION ticonv && echo yes || echo no)
+!equals(HAVE_TICONV,yes):error(libticonv $$TICONV_MINVERSION or higher required.)
+PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticonv)
+LIBS += $$system(pkg-config --libs ticonv)
+
 syntaxfiles.path = /usr/share/apps/katepart/syntax/
 syntaxfiles.files = gnuasm68k.xml masm68k.xml
 INSTALLS += syntaxfiles
@@ -85,7 +97,7 @@ executable.path = /usr/local/tigcc/bin
 executable.files = ktigcc
 INSTALLS += executable
 
-QMAKE_CXXFLAGS_DEBUG = -Os -g -Wno-non-virtual-dtor
-QMAKE_CXXFLAGS_RELEASE = -Os -s -fomit-frame-pointer -Wno-non-virtual-dtor
+QMAKE_CXXFLAGS_DEBUG = -Os -g -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
+QMAKE_CXXFLAGS_RELEASE = -Os -s -fomit-frame-pointer -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 
 QMAKE_LFLAGS_RELEASE = -s
