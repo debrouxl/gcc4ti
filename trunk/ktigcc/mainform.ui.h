@@ -280,6 +280,12 @@ class DnDListView : public KListView {
   public:
   DnDListView ( QWidget * parent = 0, const char * name = 0)
           : KListView(parent,name) {}
+  // Make my hand-coded drag&drop code work (public part).
+  // Maybe the built-in drag&drop support in KListView could be made to work as
+  // expected, but for now just bypass it to use the existing code I wrote for
+  // QListView.
+  virtual void takeItem(QListViewItem *i) {QListView::takeItem(i);}
+  virtual void setAcceptDrops(bool on) {QListView::setAcceptDrops(on);}
   protected:
   virtual QDragObject *dragObject() {
     QListViewItem *currItem=selectedItem();
@@ -393,6 +399,27 @@ class DnDListView : public KListView {
                 static_cast<ListViewFile *>(currItem)->kateView=NULL;
               } else static_cast<ListViewFile *>(currItem)->textBuffer=QString::null;
             }
+            // moving from editable to editable category
+            if (IS_EDITABLE_CATEGORY(srcCategory)
+                && IS_EDITABLE_CATEGORY(destCategory)
+                && srcCategory!=destCategory
+                && static_cast<ListViewFile *>(currItem)->kateView) {
+              // update highlighting mode
+              uint cnt=static_cast<ListViewFile *>(currItem)->kateView->getDoc()->hlModeCount(), i;
+              QString fileText=static_cast<ListViewFile *>(currItem)->textBuffer;
+              for (i=0; i<cnt; i++) {
+                if (!static_cast<ListViewFile *>(currItem)->kateView->getDoc()->hlModeName(i).compare(
+                    ((destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+                       "GNU Assembler 68k":
+                     (destCategory==asmFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+                       "Motorola Assembler 68k":
+                     (destCategory==cFilesListItem||destCategory==qllFilesListItem||destCategory==hFilesListItem)?
+                       "C":
+                     "None"))) break;
+              }
+              if (i==cnt) i=0;
+              static_cast<ListViewFile *>(currItem)->kateView->getDoc()->setHlMode(i);
+            }
           }
         } else if (IS_FILE(item)) {
           // drop on file
@@ -470,6 +497,25 @@ class DnDListView : public KListView {
         } else e->ignore();
       } else e->ignore();
     } else e->ignore();
+  }
+  // Make my hand-coded drag&drop code work (protected part).
+  virtual void contentsDragMoveEvent(QDragMoveEvent *e) {
+    QListView::contentsDragMoveEvent(e);
+  }
+  virtual void contentsMouseMoveEvent(QMouseEvent *e) {
+    QListView::contentsMouseMoveEvent(e);
+  }
+  virtual void contentsDragLeaveEvent(QDragLeaveEvent *e) {
+    QListView::contentsDragLeaveEvent(e);
+  }
+  virtual void contentsDropEvent(QDropEvent *e) {
+    QListView::contentsDropEvent(e);
+  }
+  virtual void contentsDragEnterEvent(QDragEnterEvent *e) {
+    QListView::contentsDragEnterEvent(e);
+  }
+  virtual void startDrag() {
+    QListView::startDrag();
   }
 };
 
