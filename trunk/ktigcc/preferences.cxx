@@ -1152,6 +1152,6 @@ void savePreferences(TIGCCPrefs *prefs,KConfig *cfg)
     cfg->setGroup("Preferences");
     cfg->writeEntry("Lazy Loading",(bool)prefs->lazyLoading);
     cfg->writeEntry("Use Calc Charset",(bool)prefs->useCalcCharset);
-    cfg->writeEntry("Tab Width Asm",(unsigned short)prefs->tabWidthAsm);
-    cfg->writeEntry("Tab Width C",(unsigned short)prefs->tabWidthC);
+    cfg->writeEntry("Tab Width Asm",(unsigned)prefs->tabWidthAsm);
+    cfg->writeEntry("Tab Width C",(unsigned)prefs->tabWidthC);
 }
