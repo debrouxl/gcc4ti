@@ -1567,32 +1567,6 @@ void MainForm::editDecreaseIndent()
     CURRENT_VIEW->unIndent();
 }
 
-// These are needed to support KFind/KReplace.
-unsigned MainForm::lineColToPos(unsigned line, unsigned col)
-{
-  if (!CURRENT_VIEW) qFatal("lineColToPos called with no current view!");
-  Kate::Document *doc=CURRENT_VIEW->getDoc();
-  for (unsigned i=0; i<line; i++) {
-    col+=doc->lineLength(i)+1;
-  }
-  return col;
-}
-
-void MainForm::posToLineCol(unsigned pos, unsigned *line, unsigned *col)
-{
-  if (!CURRENT_VIEW) qFatal("posToLineCol called with no current view!");
-  Kate::Document *doc=CURRENT_VIEW->getDoc();
-  unsigned nl=doc->numLines();
-  for (unsigned i=0; i<nl; i++) {
-    unsigned l=doc->lineLength(i);
-    if (pos<=l) {
-      *line=i;
-      *col=pos;
-      return;
-    } else pos-=l+1;
-  }
-}
-
 void MainForm::findFind()
 {
   
