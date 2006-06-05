@@ -1622,7 +1622,7 @@ void MainForm::findFind_next()
         }
       } else {
         findCurrentLine=CURRENT_VIEW->cursorLine();
-        findCurrentCol=CURRENT_VIEW->cursorColumn();
+        findCurrentCol=CURRENT_VIEW->cursorColumnReal();
       }
     } else {
       findCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
@@ -1758,6 +1758,7 @@ void MainForm::findFind_highlight(const QString &unused_text, int matchingindex,
 {
   if (currentListItem!=findCurrentDocument) fileTreeClicked(findCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
+  CURRENT_VIEW->setCursorPositionReal(findCurrentLine,matchingindex+matchedlength);
   CURRENT_VIEW->getDoc()->setSelection(findCurrentLine,matchingindex,
                                        findCurrentLine,matchingindex+matchedlength);
 }
@@ -1803,7 +1804,7 @@ void MainForm::findReplace_next()
       if (kfinddialog->options()&KFindDialog::FromCursor) {
         haveSelection=FALSE;
         findCurrentLine=CURRENT_VIEW->cursorLine();
-        findCurrentCol=CURRENT_VIEW->cursorColumn();
+        findCurrentCol=CURRENT_VIEW->cursorColumnReal();
       } else if (kfinddialog->options()&KFindDialog::SelectedText) {
         haveSelection=TRUE;
         findSelStartLine=CURRENT_VIEW->getDoc()->selStartLine();
@@ -2038,7 +2039,10 @@ void MainForm::timerEvent(QTimerEvent *event)
 void MainForm::fileTreeClicked(QListViewItem *item)
 {
   if (!item) return;
-  if (fileTree->selectedItem()!=item) fileTree->setSelected(item,TRUE);
+  if (fileTree->selectedItem()!=item) {
+    fileTree->setSelected(item,TRUE);
+    fileTree->ensureItemVisible(item);
+  }
   if (IS_FOLDER(currentListItem))
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (IS_FILE(currentListItem)) {
