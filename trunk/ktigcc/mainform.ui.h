@@ -279,7 +279,6 @@ static QString projectFileName;
 static QString lastDirectory;
 static QClipboard *clipboard;
 static QAccel *accel;
-static KFind *kfind;
 static KFindDialog *kfinddialog;
 static KReplace *kreplace;
 static KReplaceDialog *kreplacedialog;
@@ -657,7 +656,6 @@ void MainForm::init()
   }
   updateRecent();
   startTimer(100);
-  kfind = static_cast<KFind *>(NULL);
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplace *>(NULL);
   kreplacedialog = static_cast<KReplaceDialog *>(NULL);
@@ -1583,20 +1581,213 @@ void MainForm::findFind()
   if (kfinddialog)
     KWin::activateWindow(kfinddialog->winId());
   else {
-    kfinddialog=new KFindDialog(false,this,0,
-                                (CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
-                                &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
-                                KFindDialog::SelectedText:0,
-                                QStringList(),
-                                CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
+    // Never set hasSelection because finding in selection doesn't really make
+    // sense with my non-modal find dialog setup.
+    kfinddialog=new KFindDialog(false,this,0,KFindDialog::FromCursor);
     connect(kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
-    connect(kfinddialog, SIGNAL(closeClicked()), this, SLOT(findFind_stop()));
+    connect(kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
     kfinddialog->show();
   }
 }
 
 void MainForm::findFind_next()
 {
+  // Use a local KFind object. The search will need to be restarted next time
+  // this function is called because of the non-modality of the find dialog.
+  KFind *kfind=new KFind(kfinddialog->pattern(),kfinddialog->options(),this,kfinddialog);
+
+  // Initialize.
+  bool findBackwards=!!(kfinddialog->options()&KFindDialog::FindBackwards);
+  int findCurrentCol;
+  kfind=new KFind(kfinddialog->pattern(),kfinddialog->options(),this,kfinddialog);
+  kfind->closeFindNextDialog(); // don't use this, a non-modal KFindDialog is used instead
+  connect(kfind,SIGNAL(highlight(const QString &,int,int)),
+          this,SLOT(findFind_highlight(const QString &,int,int)));
+  // Make sure we have a valid currentListItem.
+  if (!currentListItem) fileTreeClicked(rootListItem);
+  findCurrentDocument=currentListItem;
+  if (CURRENT_VIEW) {
+    if (kfinddialog->options()&KFindDialog::FromCursor) {
+      if (CURRENT_VIEW->getDoc()->hasSelection()) {
+        if (findBackwards) {
+          findCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
+          findCurrentCol=CURRENT_VIEW->getDoc()->selStartCol()-1;
+          if (findCurrentCol==-1) {
+            if (!findCurrentLine) goto skip_data;
+            findCurrentLine--;
+          }
+        } else {
+          findCurrentLine=CURRENT_VIEW->getDoc()->selEndLine();
+          findCurrentCol=CURRENT_VIEW->getDoc()->selEndCol();
+        }
+      } else {
+        findCurrentLine=CURRENT_VIEW->cursorLine();
+        findCurrentCol=CURRENT_VIEW->cursorColumn();
+      }
+    } else {
+      findCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
+      findCurrentCol=-1;
+    }
+    kfind->setData(CURRENT_VIEW->getDoc()->textLine(findCurrentLine),findCurrentCol);
+  } else findCurrentLine=0;
+  skip_data:;
+
+  // Now find the next occurrence.
+  KFind::Result result;
+  Kate::View *currView=CURRENT_VIEW;
+  // We never have a currBuffer here, the current list item is always either
+  // non-editable or instantiated.
+  QStringList currBuffer;
+  unsigned currNumLines=0;
+  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->getDoc()->numLines();
+  do {
+    if (kfind->needData()) {
+      if (findBackwards?!findCurrentLine:(findCurrentLine>=currNumLines)) {
+        if (findBackwards) {
+          // Traverse the file tree in order backwards, restart from the end if
+          // the first file was reached. Stop at currentListItem.
+          if (findCurrentDocument) {
+            QListViewItemIterator lvit(fileTree);
+            QPtrList<QListViewItem> lst;
+            QListViewItem *item;
+            for (item=lvit.current();item&&item!=findCurrentDocument;
+                 item=(++lvit).current()) {
+              lst.prepend(item);
+            }
+            QPtrListIterator<QListViewItem> it(lst);
+            for (findCurrentDocument=it.current();
+                 findCurrentDocument&&findCurrentDocument!=currentListItem;
+                 findCurrentDocument=++it) {
+              if (IS_FILE(findCurrentDocument)) {
+                CATEGORY_OF(category,findCurrentDocument);
+                if (IS_EDITABLE_CATEGORY(category)) goto file_found;
+              }
+            }
+            if (findCurrentDocument) goto not_found;
+          }
+          QListViewItemIterator lvit(currentListItem);
+          QPtrList<QListViewItem> lst;
+          QListViewItem *item;
+          for (item=(++lvit).current();item;item=(++lvit).current()) {
+            lst.prepend(item);
+          }
+          QPtrListIterator<QListViewItem> it(lst);
+          for (findCurrentDocument=it.current();findCurrentDocument;
+               findCurrentDocument=++it) {
+            if (IS_FILE(findCurrentDocument)) {
+              CATEGORY_OF(category,findCurrentDocument);
+              if (IS_EDITABLE_CATEGORY(category)) goto file_found;
+            }
+          }
+          goto not_found;
+        } else {
+          // Traverse the file tree in order, restart from the beginning if
+          // the last file was reached. Stop at currentListItem.
+          if (findCurrentDocument) {
+            QListViewItemIterator it(findCurrentDocument);
+            for (findCurrentDocument=(++it).current();
+                 findCurrentDocument&&findCurrentDocument!=currentListItem;
+                 findCurrentDocument=(++it).current()) {
+              if (IS_FILE(findCurrentDocument)) {
+                CATEGORY_OF(category,findCurrentDocument);
+                if (IS_EDITABLE_CATEGORY(category)) goto file_found;
+              }
+            }
+            if (findCurrentDocument) goto not_found;
+          }
+          {
+            QListViewItemIterator it(fileTree);
+            for (findCurrentDocument=it.current();
+                 findCurrentDocument&&findCurrentDocument!=currentListItem;
+                 findCurrentDocument=(++it).current()) {
+              if (IS_FILE(findCurrentDocument)) {
+                CATEGORY_OF(category,findCurrentDocument);
+                if (IS_EDITABLE_CATEGORY(category)) goto file_found;
+              }
+            }
+          }
+          not_found:
+            // No find in all files. Try currentListItem again because it hasn't
+            // been fully searched yet.
+            if (IS_FILE(currentListItem)) {
+              // currentListItem is always either instantiated or not editable
+              currView=static_cast<ListViewFile *>(currentListItem)->kateView;
+              if (currView) {
+                currNumLines=currView->getDoc()->numLines();
+                findCurrentLine=findBackwards?currNumLines-1:0;
+                do {
+                  if (kfind->needData()) {
+                    if (findBackwards?!findCurrentLine:(findCurrentLine>=currNumLines))
+                      goto not_found_current;
+                    if (findBackwards) findCurrentLine--; else findCurrentLine++;
+                    kfind->setData(currView->getDoc()->textLine(findCurrentLine));
+                  }
+                  result=kfind->find();
+                } while (result==KFind::NoMatch);
+                break;
+              }
+            }
+            not_found_current:
+              KMessageBox::error(this,QString("Text \'%1\' not found").arg(kfinddialog->pattern()));
+              delete kfind;
+              return;
+          file_found:
+            currView=static_cast<ListViewFile *>(findCurrentDocument)->kateView;
+            if (currView) {
+              currNumLines=currView->getDoc()->numLines();
+            } else {
+              currBuffer=QStringList::split('\n',
+                static_cast<ListViewFile *>(findCurrentDocument)->textBuffer,TRUE);
+              currNumLines=currBuffer.count();
+            }
+            findCurrentLine=findBackwards?currNumLines-1:0;
+        }
+      } else if (findBackwards) findCurrentLine--; else findCurrentLine++;
+      if (currView)
+        kfind->setData(currView->getDoc()->textLine(findCurrentLine));
+      else
+        kfind->setData(currBuffer[findCurrentLine]);
+    }
+    result=kfind->find();
+  } while (result==KFind::NoMatch);
+  delete kfind;
+}
+
+#define unused_text text __attribute__((unused))
+void MainForm::findFind_highlight(const QString &unused_text, int matchingindex, int matchedlength)
+{
+  if (currentListItem!=findCurrentDocument) fileTreeClicked(findCurrentDocument);
+  if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
+  CURRENT_VIEW->getDoc()->setSelection(findCurrentLine,matchingindex,
+                                       findCurrentLine,matchingindex+matchedlength);
+}
+  
+void MainForm::findFind_stop()
+{
+  if (kfinddialog) kfinddialog->deleteLater();
+  kfinddialog=static_cast<KFindDialog *>(NULL);
+}
+
+void MainForm::findReplace()
+{
+  if (kreplacedialog)
+    KWin::activateWindow(kreplacedialog->winId());
+  else {
+    kreplacedialog=new KReplaceDialog(this,0,
+                                      (CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
+                                      &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
+                                      KFindDialog::SelectedText:0,
+                                      QStringList(),QStringList(),
+                                      CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
+    connect(kreplacedialog, SIGNAL(okClicked()), this, SLOT(findReplace_next()));
+    connect(kreplacedialog, SIGNAL(cancelClicked()), this, SLOT(findReplace_stop()));
+    kreplacedialog->show();
+  }
+}
+
+void MainForm::findReplace_next()
+{
+#if 0 // Keeping this in case it will be useful for replace.
   static bool haveSelection;
   static unsigned findSelStartLine, findSelEndLine, findSelStartCol, findSelEndCol;
 
@@ -1637,28 +1828,15 @@ void MainForm::findFind_next()
   }
 
   // Now find the next occurrence.
+#endif
 }
 
-#define unused_text text __attribute__((unused))
-void MainForm::findFind_highlight(const QString &unused_text, int matchingindex, int matchedlength)
+void MainForm::findReplace_stop()
 {
-  fileTreeClicked(findCurrentDocument);
-  if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
-  CURRENT_VIEW->getDoc()->setSelection(findCurrentLine,matchingindex,
-                                       findCurrentLine,matchingindex+matchedlength-1);
-}
-  
-void MainForm::findFind_stop()
-{
-  if (kfind) delete kfind;
-  kfind=static_cast<KFind *>(NULL);
-  if (kfinddialog) delete kfinddialog;
-  kfinddialog=static_cast<KFindDialog *>(NULL);
-}
-
-void MainForm::findReplace()
-{
-  
+  if (kreplace) delete kreplace;
+  kreplace=static_cast<KReplace *>(NULL);
+  if (kreplacedialog) kreplacedialog->deleteLater();
+  kreplacedialog=static_cast<KReplaceDialog *>(NULL);
 }
 
 void MainForm::findFunctions()
@@ -1860,6 +2038,7 @@ void MainForm::timerEvent(QTimerEvent *event)
 void MainForm::fileTreeClicked(QListViewItem *item)
 {
   if (!item) return;
+  if (fileTree->selectedItem()!=item) fileTree->setSelected(item,TRUE);
   if (IS_FOLDER(currentListItem))
     currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
   if (IS_FILE(currentListItem)) {
