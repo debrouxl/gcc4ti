@@ -55,6 +55,7 @@
 #include <kfind.h>
 #include <kreplacedialog.h>
 #include <kreplace.h>
+#include <kwin.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -278,6 +279,12 @@ static QString projectFileName;
 static QString lastDirectory;
 static QClipboard *clipboard;
 static QAccel *accel;
+static KFind *kfind;
+static KFindDialog *kfinddialog;
+static KReplace *kreplace;
+static KReplaceDialog *kreplacedialog;
+static QListViewItem *findCurrentDocument;
+static unsigned findCurrentLine;
 
 class DnDListView : public KListView {
   private:
@@ -650,6 +657,10 @@ void MainForm::init()
   }
   updateRecent();
   startTimer(100);
+  kfind = static_cast<KFind *>(NULL);
+  kfinddialog = static_cast<KFindDialog *>(NULL);
+  kreplace = static_cast<KReplace *>(NULL);
+  kreplacedialog = static_cast<KReplaceDialog *>(NULL);
 }
 
 void MainForm::destroy()
@@ -1569,7 +1580,80 @@ void MainForm::editDecreaseIndent()
 
 void MainForm::findFind()
 {
+  if (kfinddialog)
+    KWin::activateWindow(kfinddialog->winId());
+  else {
+    kfinddialog=new KFindDialog(false,this,0,
+                                (CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
+                                &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
+                                KFindDialog::SelectedText:0,
+                                QStringList(),
+                                CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
+    connect(kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
+    connect(kfinddialog, SIGNAL(closeClicked()), this, SLOT(findFind_stop()));
+    kfinddialog->show();
+  }
+}
+
+void MainForm::findFind_next()
+{
+  static bool haveSelection;
+  static unsigned findSelStartLine, findSelEndLine, findSelStartCol, findSelEndCol;
+
+  // Initialize if first "Find".
+  if (!kfind) {
+    int findCurrentCol;
+    kfind=new KFind(kfinddialog->pattern(),kfinddialog->options(),this,kfinddialog);
+    kfind->closeFindNextDialog(); // don't use this, a non-modal KFindDialog is used instead
+    connect(kfind,SIGNAL(highlight(const QString &,int,int)),
+            this,SLOT(findFind_highlight(const QString &,int,int)));
+    findCurrentDocument=currentListItem;
+    if (CURRENT_VIEW) {
+      if (kfinddialog->options()&KFindDialog::FromCursor) {
+        haveSelection=FALSE;
+        findCurrentLine=CURRENT_VIEW->cursorLine();
+        findCurrentCol=CURRENT_VIEW->cursorColumn();
+      } else if (kfinddialog->options()&KFindDialog::SelectedText) {
+        haveSelection=TRUE;
+        findSelStartLine=CURRENT_VIEW->getDoc()->selStartLine();
+        findSelStartCol=CURRENT_VIEW->getDoc()->selStartCol();
+        findSelEndLine=CURRENT_VIEW->getDoc()->selEndLine();
+        findSelEndCol=CURRENT_VIEW->getDoc()->selEndCol();
+        if (kfinddialog->options()&KFindDialog::FindBackwards) {
+          findCurrentLine=findSelEndLine;
+          findCurrentCol=findSelEndCol;
+        } else {
+          findCurrentLine=findSelStartLine;
+          findCurrentCol=findSelStartCol;
+        }
+      } else {
+        haveSelection=FALSE;
+        findCurrentLine=(kfinddialog->options()&KFindDialog::FindBackwards)?
+                        (CURRENT_VIEW->getDoc()->numLines()-1):0;
+        findCurrentCol=-1;
+      }
+      kfind->setData(CURRENT_VIEW->getDoc()->textLine(findCurrentLine),findCurrentCol);
+    } else haveSelection=FALSE;
+  }
+
+  // Now find the next occurrence.
+}
+
+#define unused_text text __attribute__((unused))
+void MainForm::findFind_highlight(const QString &unused_text, int matchingindex, int matchedlength)
+{
+  fileTreeClicked(findCurrentDocument);
+  if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
+  CURRENT_VIEW->getDoc()->setSelection(findCurrentLine,matchingindex,
+                                       findCurrentLine,matchingindex+matchedlength-1);
+}
   
+void MainForm::findFind_stop()
+{
+  if (kfind) delete kfind;
+  kfind=static_cast<KFind *>(NULL);
+  if (kfinddialog) delete kfinddialog;
+  kfinddialog=static_cast<KFindDialog *>(NULL);
 }
 
 void MainForm::findReplace()

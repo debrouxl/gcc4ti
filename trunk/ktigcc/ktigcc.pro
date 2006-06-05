@@ -3,7 +3,7 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on debug
 
-LIBS	+= -lktexteditor -lqassistantclient
+LIBS	+= -lktexteditor -lqassistantclient -lkutils
 
 HEADERS	+= tpr.h \
 	ktigcc.h \
