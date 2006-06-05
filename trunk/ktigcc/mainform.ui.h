@@ -281,7 +281,6 @@ static QClipboard *clipboard;
 static QAccel *accel;
 static KFindDialog *kfinddialog;
 static KReplace *kreplace;
-static KReplaceDialog *kreplacedialog;
 static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
 
@@ -658,7 +657,6 @@ void MainForm::init()
   startTimer(100);
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplace *>(NULL);
-  kreplacedialog = static_cast<KReplaceDialog *>(NULL);
 }
 
 void MainForm::destroy()
@@ -1771,19 +1769,16 @@ void MainForm::findFind_stop()
 
 void MainForm::findReplace()
 {
-  if (kreplacedialog)
-    KWin::activateWindow(kreplacedialog->winId());
-  else {
-    kreplacedialog=new KReplaceDialog(this,0,
-                                      (CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
-                                      &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
-                                      KFindDialog::SelectedText:0,
-                                      QStringList(),QStringList(),
-                                      CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
-    connect(kreplacedialog, SIGNAL(okClicked()), this, SLOT(findReplace_next()));
-    connect(kreplacedialog, SIGNAL(cancelClicked()), this, SLOT(findReplace_stop()));
-    kreplacedialog->show();
-  }
+  KReplaceDialog kreplacedialog(this,0,(CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
+                                       &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
+                                       KFindDialog::SelectedText:0,
+                                       QStringList(),QStringList(),
+                                       CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
+  if (kreplacedialog.exec()!=QDialog::Accepted)
+    return;
+  kreplace=new KReplace(kreplacedialog.pattern(),kreplacedialog.replacement(),
+                        kreplacedialog.options(),this);
+  
 }
 
 void MainForm::findReplace_next()
@@ -1834,10 +1829,8 @@ void MainForm::findReplace_next()
 
 void MainForm::findReplace_stop()
 {
-  if (kreplace) delete kreplace;
+  if (kreplace) kreplace->deleteLater();
   kreplace=static_cast<KReplace *>(NULL);
-  if (kreplacedialog) kreplacedialog->deleteLater();
-  kreplacedialog=static_cast<KReplaceDialog *>(NULL);
 }
 
 void MainForm::findFunctions()
