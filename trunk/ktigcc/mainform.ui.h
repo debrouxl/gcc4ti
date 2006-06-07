@@ -43,8 +43,8 @@
 #include <kate/document.h>
 #include <kate/view.h>
 #include <kconfig.h>
-#include <ktexteditor/configinterfaceextension.h>
 #include <ktexteditor/dynwordwrapinterface.h>
+#include <ktexteditor/editinterfaceext.h>
 #include <kaboutdata.h>
 #include <khelpmenu.h>
 #include <kfiledialog.h>
@@ -111,6 +111,66 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         (category)==txtFilesListItem?txtFileCount: \
                                         othFileCount)
 #define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
+
+static QListViewItem *currentListItem;
+static QListViewItem *replaceCurrentDocument;
+static unsigned replaceCurrentLine;
+class KReplaceWithSelection : public KReplace {
+  public:
+    KReplaceWithSelection(const QString &pattern, const QString &replacement,
+                          long options, QWidget *parent=0) :
+      KReplace(pattern,replacement,options,parent), m_haveSelection(FALSE) {}
+    void setSelection(unsigned selStartLine, unsigned selStartCol,
+                      unsigned selEndLine, unsigned selEndCol)
+    {
+      m_haveSelection=TRUE;
+      m_selStartLine=selStartLine;
+      m_selStartCol=selStartCol;
+      m_selEndLine=selEndLine;
+      m_selEndCol=selEndCol;
+    }
+    void invalidateSelection() {m_haveSelection=FALSE;}
+    bool haveSelection() {
+      // If another document was put under the cursor, invalidate selection.
+      // The m_haveSelection&& is technically redundant, but necessary to avoid
+      // possible undefined behavior if replaceCurrentDocument has been deleted.
+      if (m_haveSelection&&currentListItem!=replaceCurrentDocument)
+        m_haveSelection=FALSE;
+      return m_haveSelection;
+    }
+    unsigned selStartLine() {return m_selStartLine;}
+    unsigned selStartCol() {return m_selStartCol;}
+    unsigned selEndLine() {return m_selEndLine;}
+    unsigned selEndCol() {return m_selEndCol;}
+    // Override to ask for restarting when replacing in a selection.
+    bool shouldRestart(bool forceAsking=FALSE, bool showNumMatches=TRUE)
+    {
+      return KReplace::shouldRestart(forceAsking||m_haveSelection,showNumMatches);
+    }
+  protected:
+    virtual bool validateMatch(const QString &text, int index, int matchedlength)
+    {
+      if (!KReplace::validateMatch(text,index,matchedlength)) return FALSE;
+      // If another document was put under the cursor, invalidate selection.
+      // The m_haveSelection&& is technically redundant, but necessary to avoid
+      // possible undefined behavior if replaceCurrentDocument has been deleted.
+      if (m_haveSelection&&currentListItem!=replaceCurrentDocument)
+        m_haveSelection=FALSE;
+      if (!m_haveSelection) return TRUE;
+      if (replaceCurrentLine==m_selStartLine && replaceCurrentLine==m_selEndLine)
+        return ((unsigned)index>=m_selStartCol)&&((unsigned)index+(unsigned)matchedlength<=m_selEndCol);
+      else if (replaceCurrentLine==m_selStartLine)
+        return ((unsigned)index>=m_selStartCol);
+      else if (replaceCurrentLine==m_selEndLine)
+        return ((unsigned)index+(unsigned)matchedlength<=m_selEndCol);
+      else
+        return (replaceCurrentLine>=m_selStartLine&&replaceCurrentLine<=m_selEndLine);
+    }
+  private:
+    bool m_haveSelection;
+    unsigned m_selStartLine, m_selStartCol, m_selEndLine, m_selEndCol;
+};
+static KReplaceWithSelection *kreplace;
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
@@ -189,6 +249,10 @@ class ListViewFile : public KListViewItem {
   }
   virtual ~ListViewFile()
   {
+    if (kreplace && replaceCurrentDocument==this) {
+      replaceCurrentDocument=static_cast<QListViewItem *>(NULL);
+      kreplace->invalidateSelection();
+    }
     if (fileName[0]=='/')
       KDirWatch::self()->removeFile(fileName);
     if (kateView) {
@@ -261,7 +325,6 @@ static QListViewItem *oFilesListItem;
 static QListViewItem *aFilesListItem;
 static QListViewItem *txtFilesListItem;
 static QListViewItem *othFilesListItem;
-static QListViewItem *currentListItem;
 static bool projectIsDirty;
 static QLabel *leftStatusLabel;
 static QLabel *rowStatusLabel;
@@ -280,7 +343,6 @@ static QString lastDirectory;
 static QClipboard *clipboard;
 static QAccel *accel;
 static KFindDialog *kfinddialog;
-static KReplace *kreplace;
 static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
 
@@ -656,7 +718,7 @@ void MainForm::init()
   updateRecent();
   startTimer(100);
   kfinddialog = static_cast<KFindDialog *>(NULL);
-  kreplace = static_cast<KReplace *>(NULL);
+  kreplace = static_cast<KReplaceWithSelection *>(NULL);
 }
 
 void MainForm::destroy()
@@ -1760,7 +1822,7 @@ void MainForm::findFind_highlight(const QString &unused_text, int matchingindex,
   CURRENT_VIEW->getDoc()->setSelection(findCurrentLine,matchingindex,
                                        findCurrentLine,matchingindex+matchedlength);
 }
-  
+
 void MainForm::findFind_stop()
 {
   if (kfinddialog) kfinddialog->deleteLater();
@@ -1769,68 +1831,327 @@ void MainForm::findFind_stop()
 
 void MainForm::findReplace()
 {
-  KReplaceDialog kreplacedialog(this,0,(CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
-                                       &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
-                                       KFindDialog::SelectedText:0,
+  KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
+                                        &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
+                                        KFindDialog::SelectedText:0)|KFindDialog::FromCursor,
                                        QStringList(),QStringList(),
                                        CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
     return;
-  kreplace=new KReplace(kreplacedialog.pattern(),kreplacedialog.replacement(),
-                        kreplacedialog.options(),this);
-  
+  kreplace=new KReplaceWithSelection(kreplacedialog.pattern(),kreplacedialog.replacement(),
+                                     kreplacedialog.options(),this);
+  // Connect signals to code which handles highlighting of found text, and
+  // on-the-fly replacement.
+  connect(kreplace,SIGNAL(highlight(const QString &,int,int)),
+          this,SLOT(findReplace_highlight(const QString &,int,int)));
+  // Connect findNext signal - called when pressing the button in the dialog.
+  connect(kreplace,SIGNAL(findNext()),this,SLOT(findReplace_next()));
+  // Connect replace signal - called when doing a replacement.
+  connect(kreplace,SIGNAL(replace(const QString &,int,int,int)),
+          this,SLOT(findReplace_replace(const QString &,int,int,int)));
+  // Connect dialogClosed signal - called when closing the Replace Next dialog.
+  connect(kreplace,SIGNAL(dialogClosed()),this,SLOT(findReplace_stop()));
+  // Initialize.
+  bool findBackwards=!!(kreplace->options()&KFindDialog::FindBackwards);
+  int replaceCurrentCol;
+  // Make sure we have a valid currentListItem.
+  if (!currentListItem) fileTreeClicked(rootListItem);
+  replaceCurrentDocument=currentListItem;
+  if (CURRENT_VIEW) {
+    if (kreplace->options()&KFindDialog::SelectedText) {
+      kreplace->setSelection(CURRENT_VIEW->getDoc()->selStartLine(),
+                             CURRENT_VIEW->getDoc()->selStartCol(),
+                             CURRENT_VIEW->getDoc()->selEndLine(),
+                             CURRENT_VIEW->getDoc()->selEndCol());
+      if (findBackwards) {
+        replaceCurrentLine=kreplace->selEndLine();
+        replaceCurrentCol=kreplace->selEndCol();
+      } else {
+        replaceCurrentLine=kreplace->selStartLine();
+        replaceCurrentCol=kreplace->selStartCol();
+      }
+      kreplace->setOptions(kreplace->options()&~KFindDialog::FromCursor);
+    } else if (kreplace->options()&KFindDialog::FromCursor) {
+      if (CURRENT_VIEW->getDoc()->hasSelection()) {
+        if (findBackwards) {
+          replaceCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
+          replaceCurrentCol=CURRENT_VIEW->getDoc()->selStartCol()-1;
+          if (replaceCurrentCol==-1) {
+            if (!replaceCurrentLine) goto skip_data;
+            replaceCurrentLine--;
+          }
+        } else {
+          replaceCurrentLine=CURRENT_VIEW->getDoc()->selEndLine();
+          replaceCurrentCol=CURRENT_VIEW->getDoc()->selEndCol();
+        }
+      } else {
+        replaceCurrentLine=CURRENT_VIEW->cursorLine();
+        replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
+        // Don't prompt for restarting if we actually searched the entire document.
+        if (findBackwards?(replaceCurrentLine==(CURRENT_VIEW->getDoc()->numLines()-1)
+                           && replaceCurrentCol==(CURRENT_VIEW->getDoc()->lineLength(replaceCurrentLine)))
+                         :(!replaceCurrentLine&&!replaceCurrentCol))
+          kreplace->setOptions(kreplace->options()&~KFindDialog::FromCursor);
+      }
+    } else {
+      replaceCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
+      replaceCurrentCol=-1;
+    }
+    kreplace->setData(CURRENT_VIEW->getDoc()->textLine(replaceCurrentLine),replaceCurrentCol);
+  }
+  skip_data:
+    // Now find the next occurrence.
+    findReplace_next(TRUE);
 }
 
 void MainForm::findReplace_next()
 {
-#if 0 // Keeping this in case it will be useful for replace.
-  static bool haveSelection;
-  static unsigned findSelStartLine, findSelEndLine, findSelStartCol, findSelEndCol;
+  findReplace_next(FALSE);
+}
 
-  // Initialize if first "Find".
-  if (!kfind) {
-    int findCurrentCol;
-    kfind=new KFind(kfinddialog->pattern(),kfinddialog->options(),this,kfinddialog);
-    kfind->closeFindNextDialog(); // don't use this, a non-modal KFindDialog is used instead
-    connect(kfind,SIGNAL(highlight(const QString &,int,int)),
-            this,SLOT(findFind_highlight(const QString &,int,int)));
-    findCurrentDocument=currentListItem;
+
+void MainForm::findReplace_next(bool firstTime)
+{
+  // Replace All only works on the current file. Also, if we have a selection,
+  // we only want to work on the file containing the selection.
+  bool global=(kreplace->options()&KReplaceDialog::PromptOnReplace)&&!kreplace->haveSelection();
+  bool findBackwards=!!(kreplace->options()&KFindDialog::FindBackwards);
+
+  // Reinitialize.
+  if (!firstTime) {
+    int replaceCurrentCol;
+    // Make sure we have a valid currentListItem.
+    if (!currentListItem) fileTreeClicked(rootListItem);
+    replaceCurrentDocument=currentListItem;
     if (CURRENT_VIEW) {
-      if (kfinddialog->options()&KFindDialog::FromCursor) {
-        haveSelection=FALSE;
-        findCurrentLine=CURRENT_VIEW->cursorLine();
-        findCurrentCol=CURRENT_VIEW->cursorColumnReal();
-      } else if (kfinddialog->options()&KFindDialog::SelectedText) {
-        haveSelection=TRUE;
-        findSelStartLine=CURRENT_VIEW->getDoc()->selStartLine();
-        findSelStartCol=CURRENT_VIEW->getDoc()->selStartCol();
-        findSelEndLine=CURRENT_VIEW->getDoc()->selEndLine();
-        findSelEndCol=CURRENT_VIEW->getDoc()->selEndCol();
-        if (kfinddialog->options()&KFindDialog::FindBackwards) {
-          findCurrentLine=findSelEndLine;
-          findCurrentCol=findSelEndCol;
+      // Non-first-time always continues from cursor.
+      if (CURRENT_VIEW->getDoc()->hasSelection()) {
+        if (findBackwards) {
+          replaceCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
+          replaceCurrentCol=CURRENT_VIEW->getDoc()->selStartCol()-1;
+          if (replaceCurrentCol==-1) {
+            if (!replaceCurrentLine) goto skip_data;
+            replaceCurrentLine--;
+          }
         } else {
-          findCurrentLine=findSelStartLine;
-          findCurrentCol=findSelStartCol;
+          replaceCurrentLine=CURRENT_VIEW->getDoc()->selEndLine();
+          replaceCurrentCol=CURRENT_VIEW->getDoc()->selEndCol();
         }
       } else {
-        haveSelection=FALSE;
-        findCurrentLine=(kfinddialog->options()&KFindDialog::FindBackwards)?
-                        (CURRENT_VIEW->getDoc()->numLines()-1):0;
-        findCurrentCol=-1;
+        replaceCurrentLine=CURRENT_VIEW->cursorLine();
+        replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
       }
-      kfind->setData(CURRENT_VIEW->getDoc()->textLine(findCurrentLine),findCurrentCol);
-    } else haveSelection=FALSE;
+      kreplace->setData(CURRENT_VIEW->getDoc()->textLine(replaceCurrentLine),replaceCurrentCol);
+    } else replaceCurrentLine=0;
   }
+  skip_data:;
 
   // Now find the next occurrence.
-#endif
+  KFind::Result result;
+  Kate::View *currView=CURRENT_VIEW;
+  // We never have a currBuffer here, the current list item is always either
+  // non-editable or instantiated.
+  QStringList currBuffer;
+  unsigned currNumLines=0;
+  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->getDoc()->numLines();
+  do {
+    if (kreplace->needData()) {
+      if (global) {
+        if (findBackwards?!replaceCurrentLine:(replaceCurrentLine>=currNumLines)) {
+          if (findBackwards) {
+            // Traverse the file tree in order backwards, restart from the end if
+            // the first file was reached. Stop at currentListItem.
+            if (replaceCurrentDocument) {
+              QListViewItemIterator lvit(fileTree);
+              QPtrList<QListViewItem> lst;
+              QListViewItem *item;
+              for (item=lvit.current();item&&item!=replaceCurrentDocument;
+                   item=(++lvit).current()) {
+                lst.prepend(item);
+              }
+              QPtrListIterator<QListViewItem> it(lst);
+              for (replaceCurrentDocument=it.current();
+                   replaceCurrentDocument&&replaceCurrentDocument!=currentListItem;
+                   replaceCurrentDocument=++it) {
+                if (IS_FILE(replaceCurrentDocument)) {
+                  CATEGORY_OF(category,replaceCurrentDocument);
+                  if (IS_EDITABLE_CATEGORY(category)) goto file_found;
+                }
+              }
+              if (replaceCurrentDocument) goto not_found;
+            }
+            QListViewItemIterator lvit(currentListItem);
+            QPtrList<QListViewItem> lst;
+            QListViewItem *item;
+            for (item=(++lvit).current();item;item=(++lvit).current()) {
+              lst.prepend(item);
+            }
+            QPtrListIterator<QListViewItem> it(lst);
+            for (replaceCurrentDocument=it.current();replaceCurrentDocument;
+                 replaceCurrentDocument=++it) {
+              if (IS_FILE(replaceCurrentDocument)) {
+                CATEGORY_OF(category,replaceCurrentDocument);
+                if (IS_EDITABLE_CATEGORY(category)) goto file_found;
+              }
+            }
+            goto not_found;
+          } else {
+            // Traverse the file tree in order, restart from the beginning if
+            // the last file was reached. Stop at currentListItem.
+            if (replaceCurrentDocument) {
+              QListViewItemIterator it(replaceCurrentDocument);
+              for (replaceCurrentDocument=(++it).current();
+                   replaceCurrentDocument&&replaceCurrentDocument!=currentListItem;
+                   replaceCurrentDocument=(++it).current()) {
+                if (IS_FILE(replaceCurrentDocument)) {
+                  CATEGORY_OF(category,replaceCurrentDocument);
+                  if (IS_EDITABLE_CATEGORY(category)) goto file_found;
+                }
+              }
+              if (replaceCurrentDocument) goto not_found;
+            }
+            {
+              QListViewItemIterator it(fileTree);
+              for (replaceCurrentDocument=it.current();
+                   replaceCurrentDocument&&replaceCurrentDocument!=currentListItem;
+                   replaceCurrentDocument=(++it).current()) {
+                if (IS_FILE(replaceCurrentDocument)) {
+                  CATEGORY_OF(category,replaceCurrentDocument);
+                  if (IS_EDITABLE_CATEGORY(category)) goto file_found;
+                }
+              }
+            }
+            not_found:
+              // No find in all files. Try currentListItem again because it hasn't
+              // been fully searched yet.
+              if (IS_FILE(currentListItem)) {
+                // currentListItem is always either instantiated or not editable
+                currView=static_cast<ListViewFile *>(currentListItem)->kateView;
+                if (currView) {
+                  currNumLines=currView->getDoc()->numLines();
+                  replaceCurrentLine=findBackwards?currNumLines-1:0;
+                  do {
+                    if (kreplace->needData()) {
+                      if (findBackwards?!replaceCurrentLine:(replaceCurrentLine>=currNumLines))
+                        goto not_found_current;
+                      if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
+                      kreplace->setData(currView->getDoc()->textLine(replaceCurrentLine));
+                    }
+                    result=kreplace->replace();
+                  } while (result==KFind::NoMatch);
+                  break;
+                }
+              }
+              not_found_current:
+                kreplace->displayFinalDialog();
+                findReplace_stop();
+                return;
+            file_found:
+              currView=static_cast<ListViewFile *>(replaceCurrentDocument)->kateView;
+              if (currView) {
+                currNumLines=currView->getDoc()->numLines();
+              } else {
+                currBuffer=QStringList::split('\n',
+                  static_cast<ListViewFile *>(replaceCurrentDocument)->textBuffer,TRUE);
+                currNumLines=currBuffer.count();
+              }
+              replaceCurrentLine=findBackwards?currNumLines-1:0;
+          }
+        } else if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
+        if (currView)
+          kreplace->setData(currView->getDoc()->textLine(replaceCurrentLine));
+        else
+          kreplace->setData(currBuffer[replaceCurrentLine]);
+      } else { // if not global
+        if (kreplace->haveSelection()
+            ?(findBackwards?(replaceCurrentLine<=kreplace->selStartLine())
+                           :(replaceCurrentLine>=kreplace->selEndLine()))
+            :(findBackwards?!replaceCurrentLine:(replaceCurrentLine>=currNumLines))) {
+          // It makes no sense to prompt for restarting if we aren't actually
+          // searching anywhere.
+          if (CURRENT_VIEW) {
+            if (kreplace->shouldRestart()) {
+              // Drop "From cursor" and "Selected text" options.
+              kreplace->setOptions(kreplace->options()&~(KFindDialog::FromCursor
+                                                         |KFindDialog::SelectedText));
+              kreplace->invalidateSelection();
+              // Reinitialize.
+              replaceCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
+              kreplace->setData(CURRENT_VIEW->getDoc()->textLine(replaceCurrentLine));
+              // Start again as if it was the first time.
+              findReplace_next(TRUE);
+              return;
+            } else {
+              findReplace_stop();
+              return;
+            }
+          } else goto not_found_current;
+        } else if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
+        if (currView)
+          kreplace->setData(currView->getDoc()->textLine(replaceCurrentLine));
+        else
+          kreplace->setData(currBuffer[replaceCurrentLine]);
+      }
+    }
+    result=kreplace->replace();
+  } while (result==KFind::NoMatch);
+}
+
+void MainForm::findReplace_highlight(const QString &unused_text, int matchingindex, int matchedlength)
+{
+  if (currentListItem!=replaceCurrentDocument) fileTreeClicked(replaceCurrentDocument);
+  if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
+  CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,matchingindex+matchedlength);
+  CURRENT_VIEW->getDoc()->setSelection(replaceCurrentLine,matchingindex,
+                                       replaceCurrentLine,matchingindex+matchedlength);
+}
+
+void MainForm::findReplace_replace(const QString &text, int replacementIndex, int replacedLength, int matchedLength)
+{
+  if (currentListItem!=replaceCurrentDocument) fileTreeClicked(replaceCurrentDocument);
+  if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
+  bool update=!!(kreplace->options()&KReplaceDialog::PromptOnReplace);
+  bool haveSelection=kreplace->haveSelection();
+  // The initializations are redundant, but g++ doesn't understand this, and the
+  // self-initialization trick doesn't work either (-Wno-init-self is ignored).
+  unsigned selStartLine=0, selStartCol=0, selEndLine=0, selEndCol=0;
+  if (haveSelection) {
+    selStartLine=kreplace->selStartLine();
+    selStartCol=kreplace->selStartCol();
+    selEndLine=kreplace->selEndLine();
+    selEndCol=kreplace->selEndCol();
+  }
+  KTextEditor::EditInterfaceExt *editinterfaceext=KTextEditor::editInterfaceExt(CURRENT_VIEW->getDoc());
+  editinterfaceext->editBegin();
+  CURRENT_VIEW->getDoc()->insertText(replaceCurrentLine,replacementIndex,
+                                     text.mid(replacementIndex,replacedLength));
+  // We can't put the cursor back now because this breaks editBegin/editEnd.
+  bool updateCursor=(CURRENT_VIEW->cursorLine()==replaceCurrentLine
+                     && CURRENT_VIEW->cursorColumnReal()==(unsigned)replacementIndex+(unsigned)replacedLength);
+  CURRENT_VIEW->getDoc()->removeText(replaceCurrentLine,replacementIndex+replacedLength,
+                                     replaceCurrentLine,replacementIndex+replacedLength+matchedLength);
+  editinterfaceext->editEnd();
+  if (updateCursor)
+    CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,replacementIndex);
+  if (update) {
+    CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,replacementIndex+replacedLength);
+    CURRENT_VIEW->getDoc()->setSelection(replaceCurrentLine,replacementIndex,
+                                         replaceCurrentLine,replacementIndex+replacedLength);
+    CURRENT_VIEW->repaint();
+  }
+  if (haveSelection) {
+    // Restore selection, updating coordinates if necessary.
+    kreplace->setSelection(selStartLine,selStartCol,selEndLine,
+                           (replaceCurrentLine==selEndLine)
+                           ?(selEndCol+replacedLength-matchedLength)
+                           :selEndCol);
+  }
 }
 
 void MainForm::findReplace_stop()
 {
   if (kreplace) kreplace->deleteLater();
-  kreplace=static_cast<KReplace *>(NULL);
+  kreplace=static_cast<KReplaceWithSelection *>(NULL);
 }
 
 void MainForm::findFunctions()
@@ -2650,6 +2971,7 @@ void MainForm::current_view_textChanged()
 {
   if (CURRENT_VIEW)
     charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+  if (kreplace) kreplace->invalidateSelection();
 }
 
 void MainForm::current_view_undoChanged()
