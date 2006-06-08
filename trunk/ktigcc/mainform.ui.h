@@ -723,6 +723,8 @@ void MainForm::init()
 
 void MainForm::destroy()
 {
+  if (kreplace) delete kreplace;
+  if (kfinddialog) delete kfinddialog;
   delete accel;
   delete te_popup;
   delete leftStatusLabel;
@@ -1831,6 +1833,12 @@ void MainForm::findFind_stop()
 
 void MainForm::findReplace()
 {
+  if (kreplace) {
+    KDialogBase *replaceNextDialog=kreplace->replaceNextDialog();
+    if (replaceNextDialog)
+      KWin::activateWindow(replaceNextDialog->winId());
+    return;
+  }
   KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
                                         &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
                                         KFindDialog::SelectedText:0)|KFindDialog::FromCursor,
