@@ -89,7 +89,7 @@ object PreferencesForm: TPreferencesForm
         Top = 139
         Width = 105
         Height = 17
-        Caption = '&Auto-save project'
+        Caption = '&Auto-save project before compiling'
         Checked = True
         State = cbChecked
         TabOrder = 7
