@@ -479,7 +479,7 @@ var
 begin
   Tab := TTabSheet.Create(Self);
   Tab.PageControl := PageController;
-  Tab.Caption := 'Coding';
+  Tab.Caption := 'Co&ding';
 
   Frame := TCodingExt.Create(Self);
   Frame.Parent := Tab;

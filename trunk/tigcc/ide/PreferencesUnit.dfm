@@ -55,7 +55,7 @@ object PreferencesForm: TPreferencesForm
     TabOrder = 2
     OnChange = PageControllerChange
     object GeneralSheet: TTabSheet
-      Caption = 'General'
+      Caption = '&General'
       object StopCompilationBox: TCheckBox
         Left = 16
         Top = 21
@@ -79,7 +79,7 @@ object PreferencesForm: TPreferencesForm
         Top = 216
         Width = 89
         Height = 17
-        Caption = '&Menu bitmaps'
+        Caption = 'Men&u bitmaps'
         Checked = True
         State = cbChecked
         TabOrder = 11
@@ -99,7 +99,7 @@ object PreferencesForm: TPreferencesForm
         Top = 54
         Width = 241
         Height = 17
-        Caption = '&Display messsage after successful compilation'
+        Caption = 'Display &message after successful compilation'
         Checked = True
         State = cbChecked
         TabOrder = 2
@@ -109,7 +109,7 @@ object PreferencesForm: TPreferencesForm
         Top = 88
         Width = 217
         Height = 17
-        Caption = 'Delete &object files after successful linking'
+        Caption = 'Delete o&bject files after successful linking'
         TabOrder = 4
       end
       object DeleteErrorsCheckBox: TCheckBox
@@ -117,7 +117,7 @@ object PreferencesForm: TPreferencesForm
         Top = 174
         Width = 137
         Height = 17
-        Caption = 'Delete &overwritten errors'
+        Caption = 'Delete o&verwritten errors'
         Checked = True
         State = cbChecked
         TabOrder = 9
@@ -127,7 +127,7 @@ object PreferencesForm: TPreferencesForm
         Top = 105
         Width = 233
         Height = 17
-        Caption = 'Split C source files for &error position extraction'
+        Caption = 'S&plit C source files for error position extraction'
         Checked = True
         State = cbChecked
         TabOrder = 5
@@ -170,7 +170,7 @@ object PreferencesForm: TPreferencesForm
       end
     end
     object TransferSheet: TTabSheet
-      Caption = 'Transfer'
+      Caption = '&Transfer'
       ImageIndex = 3
       DesignSize = (
         297
@@ -211,7 +211,7 @@ object PreferencesForm: TPreferencesForm
           Top = 101
           Width = 78
           Height = 93
-          Caption = '&Link Port'
+          Caption = 'Link &Port'
           Enabled = False
           TabOrder = 5
           object PortCOM1Box: TRadioButton
@@ -256,7 +256,7 @@ object PreferencesForm: TPreferencesForm
           Top = 101
           Width = 126
           Height = 93
-          Caption = '&Cable Type'
+          Caption = 'C&able Type'
           Enabled = False
           TabOrder = 6
           object CableBlackBox: TRadioButton
@@ -264,7 +264,7 @@ object PreferencesForm: TPreferencesForm
             Top = 28
             Width = 103
             Height = 17
-            Caption = '&Black Link Cable'
+            Caption = 'Blac&k Link Cable'
             Enabled = False
             TabOrder = 0
           end
@@ -273,7 +273,7 @@ object PreferencesForm: TPreferencesForm
             Top = 52
             Width = 103
             Height = 17
-            Caption = '&Gray Link Cable'
+            Caption = 'Gray &Link Cable'
             Enabled = False
             TabOrder = 1
           end
@@ -308,7 +308,7 @@ object PreferencesForm: TPreferencesForm
       end
     end
     object EditorSheet: TTabSheet
-      Caption = 'Editor'
+      Caption = '&Editor'
       ImageIndex = 1
       DesignSize = (
         297
@@ -318,7 +318,7 @@ object PreferencesForm: TPreferencesForm
         Top = 17
         Width = 55
         Height = 13
-        Caption = 'C &Tab Size:'
+        Caption = 'C Tab &Size:'
         FocusControl = CTabSizeEdit
       end
       object Label3: TLabel
@@ -349,7 +349,7 @@ object PreferencesForm: TPreferencesForm
         Top = 45
         Width = 141
         Height = 17
-        Caption = '&Specify background color'
+        Caption = 'Specify &background color'
         TabOrder = 2
         OnClick = ColorCheckBoxClick
       end
@@ -358,7 +358,7 @@ object PreferencesForm: TPreferencesForm
         Top = 65
         Width = 78
         Height = 25
-        Caption = 'Change...'
+        Caption = 'C&hange...'
         Enabled = False
         TabOrder = 3
         OnClick = ChangeColorButtonClick
@@ -368,7 +368,7 @@ object PreferencesForm: TPreferencesForm
         Top = 141
         Width = 81
         Height = 25
-        Caption = 'Change...'
+        Caption = 'Cha&nge...'
         TabOrder = 5
         OnClick = ChangeFontButtonClick
       end
@@ -411,7 +411,7 @@ object PreferencesForm: TPreferencesForm
         Top = 202
         Width = 145
         Height = 17
-        Caption = '&Automatic '#39'{...}'#39' blocks in C'
+        Caption = 'A&utomatic '#39'{...}'#39' blocks in C'
         Checked = True
         State = cbChecked
         TabOrder = 8
@@ -421,7 +421,7 @@ object PreferencesForm: TPreferencesForm
         Top = 186
         Width = 121
         Height = 17
-        Caption = '&Drag and drop editing'
+        Caption = 'Drag and dro&p editing'
         Checked = True
         State = cbChecked
         TabOrder = 7
@@ -436,14 +436,14 @@ object PreferencesForm: TPreferencesForm
       end
     end
     object SyntaxHighlightingSheet: TTabSheet
-      Caption = 'Syntax Highlighting'
+      Caption = 'S&yntax Highlighting'
       ImageIndex = 2
       object Label5: TLabel
         Left = 16
         Top = 16
         Width = 56
         Height = 13
-        Caption = '&Settings for:'
+        Caption = 'Settings &for:'
         FocusControl = LanguageSelectionBox
       end
       object LanguageSelectionBox: TComboBox
@@ -464,7 +464,7 @@ object PreferencesForm: TPreferencesForm
         Top = 34
         Width = 65
         Height = 17
-        Caption = '&Enabled'
+        Caption = 'Ena&bled'
         Checked = True
         State = cbChecked
         TabOrder = 1
@@ -475,7 +475,7 @@ object PreferencesForm: TPreferencesForm
         Top = 64
         Width = 125
         Height = 25
-        Caption = 'Number Color...'
+        Caption = '&Number Color...'
         TabOrder = 2
         OnClick = Button1Click
       end
@@ -484,7 +484,7 @@ object PreferencesForm: TPreferencesForm
         Top = 64
         Width = 125
         Height = 25
-        Caption = 'Number Style...'
+        Caption = 'N&umber Style...'
         TabOrder = 3
         OnClick = Button2Click
       end
@@ -493,7 +493,7 @@ object PreferencesForm: TPreferencesForm
         Top = 96
         Width = 125
         Height = 25
-        Caption = 'Symbol Color...'
+        Caption = '&Symbol Color...'
         TabOrder = 4
         OnClick = Button3Click
       end
@@ -502,7 +502,7 @@ object PreferencesForm: TPreferencesForm
         Top = 96
         Width = 125
         Height = 25
-        Caption = 'Symbol Style...'
+        Caption = 'Sy&mbol Style...'
         TabOrder = 5
         OnClick = Button4Click
       end
@@ -511,7 +511,7 @@ object PreferencesForm: TPreferencesForm
         Top = 128
         Width = 125
         Height = 25
-        Caption = 'Parenthesis Colors...'
+        Caption = '&Parenthesis Colors...'
         TabOrder = 6
         OnClick = Button5Click
       end
@@ -520,7 +520,7 @@ object PreferencesForm: TPreferencesForm
         Top = 128
         Width = 125
         Height = 25
-        Caption = 'Parenthesis Style...'
+        Caption = 'P&arenthesis Style...'
         TabOrder = 7
         OnClick = Button6Click
       end
@@ -549,7 +549,7 @@ object PreferencesForm: TPreferencesForm
         Top = 160
         Width = 65
         Height = 21
-        Caption = '&New Style'
+        Caption = 'Ne&w Style'
         TabOrder = 9
         OnClick = Button7Click
       end
@@ -567,7 +567,7 @@ object PreferencesForm: TPreferencesForm
         Top = 208
         Width = 65
         Height = 21
-        Caption = '&Edit...'
+        Caption = 'Ed&it...'
         TabOrder = 11
         OnClick = EditItem
       end
