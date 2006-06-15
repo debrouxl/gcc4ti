@@ -501,16 +501,49 @@
                             </spacer>
                         </hbox>
                     </widget>
-                    <widget class="QCheckBox">
+                    <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>bgColor</cstring>
+                            <cstring>layout7</cstring>
                         </property>
-                        <property name="text">
-                            <string>Specify &amp;background color</string>
-                        </property>
-                        <property name="accel">
-                            <string>Alt+B</string>
-                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>useBgColor</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Specify &amp;background color</string>
+                                </property>
+                                <property name="accel">
+                                    <string>Alt+B</string>
+                                </property>
+                            </widget>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>bgColor</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>7</hsizetype>
+                                        <vsizetype>5</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="paletteBackgroundColor">
+                                    <color>
+                                        <red>255</red>
+                                        <green>255</green>
+                                        <blue>255</blue>
+                                    </color>
+                                </property>
+                                <property name="text">
+                                    <string></string>
+                                </property>
+                            </widget>
+                        </hbox>
                     </widget>
                     <widget class="QLayoutWidget">
                         <property name="name">
@@ -525,7 +558,7 @@
                                     <cstring>bgColorChange</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>C&amp;hange</string>
+                                    <string>C&amp;hange...</string>
                                 </property>
                                 <property name="accel">
                                     <string>Alt+H</string>
@@ -612,7 +645,7 @@
                                     <cstring>editorFontChange</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>Cha&amp;nge</string>
+                                    <string>Cha&amp;nge...</string>
                                 </property>
                                 <property name="accel">
                                     <string>Alt+N</string>
@@ -766,12 +799,28 @@
         <receiver>Preferences</receiver>
         <slot>linkTarget_toggled(bool)</slot>
     </connection>
+    <connection>
+        <sender>bgColorChange</sender>
+        <signal>pressed()</signal>
+        <receiver>Preferences</receiver>
+        <slot>bgColorChange_pressed()</slot>
+    </connection>
+    <connection>
+        <sender>editorFontChange</sender>
+        <signal>pressed()</signal>
+        <receiver>Preferences</receiver>
+        <slot>editorFontChange_pressed()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">preferencesdlg.ui.h</include>
 </includes>
 <slots>
-    <slot>linkTarget_toggled( bool on )</slot>
+    <slot>init()</slot>
+    <slot>destroy()</slot>
+    <slot>linkTarget_toggled( bool unused_on )</slot>
+    <slot>bgColorChange_pressed()</slot>
+    <slot>editorFontChange_pressed()</slot>
 </slots>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
