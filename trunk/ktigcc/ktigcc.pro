@@ -63,6 +63,7 @@ unix {
 }
 
 KDEPREFIX = $$system(kde-config --prefix)
+isEmpty(KDEPREFIX):error(KDE 3 kdelibs required.)
 
 exists($$KDEPREFIX/include/kde3) {
   INCLUDEPATH += $$KDEPREFIX/include/kde3
