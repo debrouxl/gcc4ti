@@ -115,7 +115,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
 
 // For some reason, this flag is not in the public ConfigFlags enum.
-#define CF_REMOVE_SPACES_ONLINE 0x4000000
+#define CF_REMOVE_TRAILING_DYN 0x4000000
 
 static QListViewItem *currentListItem;
 static QListViewItem *replaceCurrentDocument;
@@ -1096,9 +1096,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   // Set options.
   newView->setDynWordWrap(FALSE);
   if (preferences.removeTrailingSpaces)
-    newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
+    newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   else
-    newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
+    newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   newView->setTabWidth(
     (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
@@ -1637,9 +1637,9 @@ void MainForm::filePreferences()
           QString fileText=kateView->getDoc()->text();
           CATEGORY_OF(category,item);
           if (preferences.removeTrailingSpaces)
-            kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
+            kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
           else
-            kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
+            kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
           kateView->setTabWidth(
             (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
             (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
