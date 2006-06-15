@@ -45,7 +45,6 @@
 #include <kate/document.h>
 #include <kate/view.h>
 #include <kconfig.h>
-#include <ktexteditor/dynwordwrapinterface.h>
 #include <ktexteditor/editinterfaceext.h>
 #include <ktexteditor/configinterfaceextension.h>
 #include <kaboutdata.h>
@@ -1095,7 +1094,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   if (i==cnt) i=0;
   newView->getDoc()->setHlMode(i);
   // Set options.
-  dynWordWrapInterface(newView)->setDynWordWrap(FALSE);
+  newView->setDynWordWrap(FALSE);
   if (preferences.removeTrailingSpaces)
     newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
   else
