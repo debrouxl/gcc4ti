@@ -520,8 +520,8 @@ QString loadFileText(const char *fileName)
     ret=ret.replace('\r','\n');
     // remove trailing spaces if requested
     if (preferences.removeTrailingSpaces) {
-      ret=ret.replace(QRegExp("\\s*\n"),"\n");
-      ret=ret.remove(QRegExp("\\s*$"));
+      ret=ret.replace(QRegExp("((?!\n)\\s)*\n"),"\n");
+      ret=ret.remove(QRegExp("((?!\n)\\s)*$"));
     }
   }
   return ret;
@@ -754,8 +754,8 @@ int saveFileText(const char *fileName,const QString &fileText)
   // remove trailing spaces if requested
   QString text=fileText;
   if (preferences.removeTrailingSpaces && !text.isNull()) {
-    text=text.replace(QRegExp("\\s*\n"),"\n");
-    text=text.remove(QRegExp("\\s*$"));
+    text=text.replace(QRegExp("((?!\n)\\s)*\n"),"\n");
+    text=text.remove(QRegExp("((?!\n)\\s)*$"));
   }
   
   f=fopen(fileName,"wb");
