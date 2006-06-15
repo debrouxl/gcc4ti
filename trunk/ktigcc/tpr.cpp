@@ -31,6 +31,8 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#include <qstring.h>
+#include <qregexp.h>
 #include <qtextcodec.h>
 #include <glib.h>
 #include <ticonv.h>
@@ -516,6 +518,11 @@ QString loadFileText(const char *fileName)
     ret=ret.replace("\r\n","\n");
     // interpret remaining \r characters as Mac line endings
     ret=ret.replace('\r','\n');
+    // remove trailing spaces if requested
+    if (preferences.removeTrailingSpaces) {
+      ret=ret.replace(QRegExp("\\s*\n"),"\n");
+      ret=ret.remove(QRegExp("\\s*$"));
+    }
   }
   return ret;
 }
@@ -744,6 +751,12 @@ int saveFileText(const char *fileName,const QString &fileText)
 {
   FILE *f;
   size_t l;
+  // remove trailing spaces if requested
+  QString text=fileText;
+  if (preferences.removeTrailingSpaces && !text.isNull()) {
+    text=text.replace(QRegExp("\\s*\n"),"\n");
+    text=text.remove(QRegExp("\\s*$"));
+  }
   
   f=fopen(fileName,"wb");
   if (!f)
@@ -754,7 +767,7 @@ int saveFileText(const char *fileName,const QString &fileText)
         return -1;
   }
   if (preferences.useCalcCharset) {
-    const unsigned short *utf16=fileText.ucs2();
+    const unsigned short *utf16=text.ucs2();
     if (utf16) {
       char *s=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       l=std::strlen(s);
@@ -766,7 +779,7 @@ int saveFileText(const char *fileName,const QString &fileText)
       g_free(s);
     }
   } else {
-    const char *s=smartAscii(fileText);
+    const char *s=smartAscii(text);
     l=fileText.length();
     if (fwrite(s,1,l,f)<l) {
       fclose(f);

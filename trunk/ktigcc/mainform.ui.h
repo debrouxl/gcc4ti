@@ -27,6 +27,8 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
+#include <qstring.h>
+#include <qregexp.h>
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qstatusbar.h>
@@ -112,6 +114,9 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         (category)==txtFilesListItem?txtFileCount: \
                                         othFileCount)
 #define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
+
+// For some reason, this flag is not in the public ConfigFlags enum.
+#define CF_REMOVE_SPACES_ONLINE 0x4000000
 
 static QListViewItem *currentListItem;
 static QListViewItem *replaceCurrentDocument;
@@ -1091,6 +1096,10 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   newView->getDoc()->setHlMode(i);
   // Set options.
   dynWordWrapInterface(newView)->setDynWordWrap(FALSE);
+  if (preferences.removeTrailingSpaces)
+    newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
+  else
+    newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
   newView->setTabWidth(
     (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
@@ -1318,6 +1327,22 @@ int MainForm::savePrompt(void)
   return 0;
 }
 
+void MainForm::removeTrailingSpacesFromView(void *view)
+{
+  if (!preferences.removeTrailingSpaces) return;
+  Kate::View *kateView=reinterpret_cast<Kate::View *>(view);
+  Kate::Document *doc=kateView->getDoc();
+  KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
+  editExt->editBegin();
+  unsigned numLines=doc->numLines();
+  for (unsigned i=0; i<numLines; i++) {
+    QString line=doc->textLine(i);
+    int whitespace=line.find(QRegExp("\\s+$"));
+    if (whitespace>=0) doc->removeText(i,whitespace,i,line.length());
+  }
+  editExt->editEnd();
+}
+
 void MainForm::fileSave_save(QListViewItem *theItem)
 {
   if (!IS_FILE(theItem))
@@ -1338,8 +1363,10 @@ void MainForm::fileSave_save(QListViewItem *theItem)
     else {
       KDirWatch::self()->addFile(theFile->fileName);
       theFile->isNew=FALSE;
-      if (theFile->kateView)
+      if (theFile->kateView) {
+        removeTrailingSpacesFromView(theFile->kateView);
         theFile->kateView->getDoc()->setModified(FALSE);
+      }
       projectIsDirty=TRUE;
     }
   }
@@ -1399,8 +1426,10 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
     theFile->fileName=saveFileName;
     if (IS_EDITABLE_CATEGORY(category)) {
       KDirWatch::self()->addFile(saveFileName);
-      if (theFile->kateView)
+      if (theFile->kateView) {
+        removeTrailingSpacesFromView(theFile->kateView);
         theFile->kateView->getDoc()->setModified(FALSE);
+      }
     }
     theFile->isNew=FALSE;
     updateRightStatusLabel();
@@ -1470,8 +1499,10 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
           theFile->fileName=saveFileName;
           if (IS_EDITABLE_CATEGORY(category)) {
             KDirWatch::self()->addFile(theFile->fileName);
-            if (theFile->kateView)
+            if (theFile->kateView) {
+              removeTrailingSpacesFromView(theFile->kateView);
               theFile->kateView->getDoc()->setModified(FALSE);
+            }
           }
           theFile->isNew=FALSE;
           projectIsDirty=TRUE; // in case saving the project fails
@@ -1605,6 +1636,10 @@ void MainForm::filePreferences()
         if (kateView) {
           QString fileText=kateView->getDoc()->text();
           CATEGORY_OF(category,item);
+          if (preferences.removeTrailingSpaces)
+            kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
+          else
+            kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_SPACES_ONLINE));
           kateView->setTabWidth(
             (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
             (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:

@@ -1265,7 +1265,7 @@ void loadPreferences(void)
   preferences.useCalcCharset=pconfig->readBoolEntry("Use Calc Charset",true);
   preferences.lazyLoading=pconfig->readBoolEntry("Lazy Loading",true);
   preferences.autoBlocks=pconfig->readBoolEntry("Auto Blocks",true);
-  preferences.removeTrailingSpaces=pconfig->readBoolEntry("Remove Trailing Spaces",true);
+  preferences.removeTrailingSpaces=pconfig->readBoolEntry("Remove Trailing Spaces",false);
 
   updateEditorPreferences();
 }
@@ -1273,6 +1273,7 @@ void loadPreferences(void)
 void savePreferences(void)
 {
   pconfig->setGroup("Preferences");
+
   // General
   pconfig->writeEntry("Stop at First Error",(bool)preferences.stopAtFirstError);
   pconfig->writeEntry("Jump to Error",(bool)preferences.jumpToError);
