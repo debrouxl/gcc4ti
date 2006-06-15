@@ -24,6 +24,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <ticables.h>
+class QWidget;
 class KConfig;
 
 typedef struct
@@ -115,7 +116,8 @@ typedef struct
   Syn_SettingsForDoc synQLL;
 } TIGCCPrefs;
 
-void loadPreferences(TIGCCPrefs *prefs,KConfig *cfg);
-void savePreferences(TIGCCPrefs *prefs,KConfig *cfg);
+void loadPreferences(void);
+void savePreferences(void);
+void showPreferencesDialog(QWidget *parent=0);
 
 extern TIGCCPrefs preferences;

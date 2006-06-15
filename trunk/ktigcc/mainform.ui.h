@@ -636,7 +636,7 @@ void MainForm::init()
   fileTree->setSorting(-1);
   fileTree->setColumnWidthMode(0,QListView::Maximum);
   fileTree->header()->hide();
-  loadPreferences(&preferences,pconfig);
+  loadPreferences();
   rootListItem=new ListViewRoot(fileTree);
   rootListItem->setText(0,"Project1");
   rootListItem->setPixmap(0,QPixmap::fromMimeSource("tpr.png"));
@@ -1581,7 +1581,7 @@ void MainForm::filePrintQuickly()
 
 void MainForm::filePreferences()
 {
-  
+  showPreferencesDialog(this);
 }
 
 void MainForm::editUndo()

@@ -29,7 +29,9 @@
 #include <kaboutdata.h>
 #include <qtextcodec.h>
 #include <kconfig.h>
+#include "ktigcc.h"
 #include "preferences.h"
+#include "preferencesdlg.h"
 #include "tpr.h"
 
 TIGCCPrefs preferences;
@@ -1140,20 +1142,29 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   prefs->synQLL.wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
 }
 
-void loadPreferences(TIGCCPrefs *prefs, KConfig *cfg)
+void loadPreferences(void)
 {
-    cfg->setGroup("Preferences");
-    prefs->lazyLoading=cfg->readBoolEntry("Lazy Loading",true);
-    prefs->tabWidthAsm=cfg->readUnsignedNumEntry("Tab Width Asm",8);
-    prefs->tabWidthC=cfg->readUnsignedNumEntry("Tab Width C",2);
-    prefs->useCalcCharset=cfg->readBoolEntry("Use Calc Charset",true);
+  pconfig->setGroup("Preferences");
+  preferences.lazyLoading=pconfig->readBoolEntry("Lazy Loading",true);
+  preferences.tabWidthAsm=pconfig->readUnsignedNumEntry("Tab Width Asm",8);
+  preferences.tabWidthC=pconfig->readUnsignedNumEntry("Tab Width C",2);
+  preferences.useCalcCharset=pconfig->readBoolEntry("Use Calc Charset",true);
 }
 
-void savePreferences(TIGCCPrefs *prefs, KConfig *cfg)
+void savePreferences(void)
 {
-    cfg->setGroup("Preferences");
-    cfg->writeEntry("Lazy Loading",(bool)prefs->lazyLoading);
-    cfg->writeEntry("Tab Width Asm",(unsigned)prefs->tabWidthAsm);
-    cfg->writeEntry("Tab Width C",(unsigned)prefs->tabWidthC);
-    cfg->writeEntry("Use Calc Charset",(bool)prefs->useCalcCharset);
+  pconfig->setGroup("Preferences");
+  pconfig->writeEntry("Lazy Loading",(bool)preferences.lazyLoading);
+  pconfig->writeEntry("Tab Width Asm",(unsigned)preferences.tabWidthAsm);
+  pconfig->writeEntry("Tab Width C",(unsigned)preferences.tabWidthC);
+  pconfig->writeEntry("Use Calc Charset",(bool)preferences.useCalcCharset);
+}
+
+void showPreferencesDialog(QWidget *parent)
+{
+  Preferences *prefdlg=new Preferences(parent);
+  prefdlg->exec();
+  if (prefdlg->result()==QDialog::Accepted)
+    savePreferences();
+  delete(prefdlg);
 }
