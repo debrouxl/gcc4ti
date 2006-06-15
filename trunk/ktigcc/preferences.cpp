@@ -28,6 +28,8 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qtextcodec.h>
+#include <qcolor.h>
+#include <qfont.h>
 #include <kconfig.h>
 #include "ktigcc.h"
 #include "preferences.h"
@@ -1142,29 +1144,172 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   prefs->synQLL.wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
 }
 
+// Update the Kate schema from our internal ones.
+static void updateEditorPreferences(void)
+{
+  KConfig kateschema("kateschemarc");
+  QColor color;
+  if (preferences.useBgColor) {
+    kateschema.setGroup("ktigcc - Normal");
+    kateschema.writeEntry("Color Background",preferences.bgColor);
+    kateschema.writeEntry("Color Highlighted Line",preferences.bgColor);
+  } else {
+    kateschema.setGroup("kate - Normal");
+    color=QColor(255,255,255);
+    color=kateschema.readColorEntry("Color Background",&color);
+    kateschema.setGroup("ktigcc - Normal");
+    kateschema.writeEntry("Color Background",color);
+    kateschema.setGroup("kate - Normal");
+    color=QColor(240,240,240);
+    color=kateschema.readColorEntry("Color Highlighted Line",&color);
+    kateschema.setGroup("ktigcc - Normal");
+    kateschema.writeEntry("Color Highlighted Line",color);
+  }
+  kateschema.setGroup("kate - Normal");
+  color=QColor(255,255,153);
+  color=kateschema.readColorEntry("Color Highlighted Bracket",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color Highlighted Bracket",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(234,233,232);
+  color=kateschema.readColorEntry("Color Icon Bar",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color Icon Bar",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(0,0,0);
+  color=kateschema.readColorEntry("Color Line Number",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color Line Number",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(0,0,255);
+  color=kateschema.readColorEntry("Color MarkType1",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color MarkType1",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(255,0,0);
+  color=kateschema.readColorEntry("Color MarkType2",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color MarkType2",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(255,255,0);
+  color=kateschema.readColorEntry("Color MarkType3",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color MarkType3",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(255,0,255);
+  color=kateschema.readColorEntry("Color MarkType4",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color MarkType4",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(160,160,164);
+  color=kateschema.readColorEntry("Color MarkType5",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color MarkType5",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(0,255,0);
+  color=kateschema.readColorEntry("Color MarkType6",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color MarkType6",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(255,0,0);
+  color=kateschema.readColorEntry("Color MarkType7",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color MarkType7",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(76,89,166);
+  color=kateschema.readColorEntry("Color Selection",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color Selection",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(0,0,0);
+  color=kateschema.readColorEntry("Color Tab Marker",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color Tab Marker",color);
+  kateschema.setGroup("kate - Normal");
+  color=QColor(120,120,120);
+  color=kateschema.readColorEntry("Color Word Wrap Marker",&color);
+  kateschema.setGroup("ktigcc - Normal");
+  kateschema.writeEntry("Color Word Wrap Marker",color);
+  kateschema.writeEntry("Font",preferences.editorFont);
+}
+
 void loadPreferences(void)
 {
   pconfig->setGroup("Preferences");
-  preferences.lazyLoading=pconfig->readBoolEntry("Lazy Loading",true);
-  preferences.tabWidthAsm=pconfig->readUnsignedNumEntry("Tab Width Asm",8);
+
+  // General
+  preferences.stopAtFirstError=pconfig->readBoolEntry("Stop at First Error",false);
+  preferences.jumpToError=pconfig->readBoolEntry("Jump to Error",true);
+  preferences.successMessage=pconfig->readBoolEntry("Success Message",true);
+  preferences.deleteAsmFiles=pconfig->readBoolEntry("Delete Asm Files",true);
+  preferences.deleteObjFiles=pconfig->readBoolEntry("Delete Object Files",false);
+  preferences.splitSourceFiles=pconfig->readBoolEntry("Split Source Files",true);
+  preferences.allowImplicitDeclaration=pconfig->readBoolEntry("Allow Implicit Declaration",true);
+  preferences.autoSave=pconfig->readBoolEntry("Auto Save",true);
+  preferences.downloadHeadlines=pconfig->readBoolEntry("Download Headlines",false);
+  preferences.deleteOverwrittenErrors=pconfig->readBoolEntry("Delete Overwritten Errors",true);
+
+  // Transfer
+  preferences.linkTarget=(LinkTargets)pconfig->readNumEntry("Link Target",LT_NONE);
+  preferences.linkPort=(CablePort)pconfig->readNumEntry("Link Port",PORT_1);
+  preferences.linkCable=(CableModel)pconfig->readNumEntry("Link Cable",CABLE_GRY);
+
+  // Editor
   preferences.tabWidthC=pconfig->readUnsignedNumEntry("Tab Width C",2);
+  preferences.tabWidthAsm=pconfig->readUnsignedNumEntry("Tab Width Asm",8);
+  preferences.useBgColor=pconfig->readBoolEntry("Use Background Color",false);
+  QColor white(255,255,255);
+  preferences.bgColor=pconfig->readColorEntry("Background Color",&white);
+  QFont defaultFont("Monospace",10);
+  preferences.editorFont=pconfig->readFontEntry("Editor Font",&defaultFont);
   preferences.useCalcCharset=pconfig->readBoolEntry("Use Calc Charset",true);
+  preferences.lazyLoading=pconfig->readBoolEntry("Lazy Loading",true);
+  preferences.autoBlocks=pconfig->readBoolEntry("Auto Blocks",true);
+  preferences.removeTrailingSpaces=pconfig->readBoolEntry("Remove Trailing Spaces",true);
+
+  updateEditorPreferences();
 }
 
 void savePreferences(void)
 {
   pconfig->setGroup("Preferences");
-  pconfig->writeEntry("Lazy Loading",(bool)preferences.lazyLoading);
-  pconfig->writeEntry("Tab Width Asm",(unsigned)preferences.tabWidthAsm);
+  // General
+  pconfig->writeEntry("Stop at First Error",(bool)preferences.stopAtFirstError);
+  pconfig->writeEntry("Jump to Error",(bool)preferences.jumpToError);
+  pconfig->writeEntry("Success Message",(bool)preferences.successMessage);
+  pconfig->writeEntry("Delete Asm Files",(bool)preferences.deleteAsmFiles);
+  pconfig->writeEntry("Delete Object Files",(bool)preferences.deleteObjFiles);
+  pconfig->writeEntry("Split Source Files",(bool)preferences.splitSourceFiles);
+  pconfig->writeEntry("Allow Implicit Declaration",(bool)preferences.allowImplicitDeclaration);
+  pconfig->writeEntry("Auto Save",(bool)preferences.autoSave);
+  pconfig->writeEntry("Download Headlines",(bool)preferences.downloadHeadlines);
+  pconfig->writeEntry("Delete Overwritten Errors",(bool)preferences.deleteOverwrittenErrors);
+
+  // Transfer
+  pconfig->writeEntry("Link Target",(int)preferences.linkTarget);
+  pconfig->writeEntry("Link Port",(int)preferences.linkPort);
+  pconfig->writeEntry("Link Cable",(int)preferences.linkCable);
+
+  // Editor
   pconfig->writeEntry("Tab Width C",(unsigned)preferences.tabWidthC);
+  pconfig->writeEntry("Tab Width Asm",(unsigned)preferences.tabWidthAsm);
+  pconfig->writeEntry("Use Background Color",(bool)preferences.useBgColor);
+  pconfig->writeEntry("Background Color",preferences.bgColor);
+  pconfig->writeEntry("Editor Font",preferences.editorFont);
   pconfig->writeEntry("Use Calc Charset",(bool)preferences.useCalcCharset);
+  pconfig->writeEntry("Lazy Loading",(bool)preferences.lazyLoading);
+  pconfig->writeEntry("Auto Blocks",(bool)preferences.autoBlocks);
+  pconfig->writeEntry("Remove Trailing Spaces",(bool)preferences.removeTrailingSpaces);
+
+  updateEditorPreferences();
 }
 
 void showPreferencesDialog(QWidget *parent)
 {
   Preferences *prefdlg=new Preferences(parent);
   prefdlg->exec();
-  if (prefdlg->result()==QDialog::Accepted)
+  int result=prefdlg->result();
+  delete prefdlg;
+  if (result==QDialog::Accepted)
     savePreferences();
-  delete(prefdlg);
 }
