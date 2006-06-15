@@ -118,6 +118,6 @@ typedef struct
 
 void loadPreferences(void);
 void savePreferences(void);
-void showPreferencesDialog(QWidget *parent=0);
+int showPreferencesDialog(QWidget *parent=0);
 
 extern TIGCCPrefs preferences;

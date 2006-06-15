@@ -45,6 +45,7 @@
 #include <kconfig.h>
 #include <ktexteditor/dynwordwrapinterface.h>
 #include <ktexteditor/editinterfaceext.h>
+#include <ktexteditor/configinterfaceextension.h>
 #include <kaboutdata.h>
 #include <khelpmenu.h>
 #include <kfiledialog.h>
@@ -1581,7 +1582,38 @@ void MainForm::filePrintQuickly()
 
 void MainForm::filePreferences()
 {
-  showPreferencesDialog(this);
+  if (showPreferencesDialog(this)==QDialog::Accepted) {
+    // Apply the KatePart preferences.
+    QListViewItemIterator it(fileTree);
+    QListViewItem *item;
+    KTextEditor::Document *doc = (KTextEditor::Document *)
+      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
+    KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
+    unsigned numConfigPages=confInterfaceExt->configPages();
+    for (unsigned i=0; i<numConfigPages; i++) {
+      if (!confInterfaceExt->configPageName(i).compare("Fonts & Colors")) {
+        KTextEditor::ConfigPage *configPage=confInterfaceExt->configPage(i);
+        configPage->apply();
+        delete configPage;
+        break;
+      }
+    }
+    delete doc;
+    for (item=it.current();item;item=(++it).current()) {
+      if (IS_FILE(item)) {
+        Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
+        if (kateView) {
+          QString fileText=kateView->getDoc()->text();
+          CATEGORY_OF(category,item);
+          kateView->setTabWidth(
+            (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
+            (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
+            8
+          );
+        }
+      }
+    }
+  }
 }
 
 void MainForm::editUndo()

@@ -1304,7 +1304,7 @@ void savePreferences(void)
   updateEditorPreferences();
 }
 
-void showPreferencesDialog(QWidget *parent)
+int showPreferencesDialog(QWidget *parent)
 {
   Preferences *prefdlg=new Preferences(parent);
   prefdlg->exec();
@@ -1312,4 +1312,5 @@ void showPreferencesDialog(QWidget *parent)
   delete prefdlg;
   if (result==QDialog::Accepted)
     savePreferences();
+  return result;
 }
