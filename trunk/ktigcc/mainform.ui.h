@@ -711,6 +711,10 @@ void MainForm::init()
   accel->setItemEnabled(4,FALSE);
   accel->insertItem(Key_F1,5);
   accel->setItemEnabled(5,FALSE);
+  accel->insertItem(Key_Enter,6);
+  accel->setItemEnabled(6,FALSE);
+  accel->insertItem(Key_Return,7);
+  accel->setItemEnabled(7,FALSE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   pconfig->setGroup("Recent files");
   if (parg)
@@ -799,8 +803,16 @@ void MainForm::accel_activated(int index)
         assistant->showPage(QString(tigcc_base)+QString("/doc/html/")+docFile);
         break;
       }
+      case 6:
+      case 7:
+        CURRENT_VIEW->keyReturn();
+        current_view_newLineHook();
+        break;
       default: break;
     }
+  } else if (index == 6 || index == 7) {
+    QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Key_Return,'\n',0,"\n");
+    QApplication::postEvent(focusWidget(),keyEvent);
   }
 }
 
@@ -1110,6 +1122,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   connect(newView->getDoc(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   connect(newView->getDoc(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->installPopup(te_popup);
+  newView->installEventFilter(this);
   // Set text.
   newView->getDoc()->setText(fileText);
   newView->getDoc()->setModified(FALSE);
@@ -2468,6 +2481,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(3,FALSE);
     accel->setItemEnabled(4,FALSE);
     accel->setItemEnabled(5,FALSE);
+    accel->setItemEnabled(6,FALSE);
+    accel->setItemEnabled(7,FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
@@ -2498,6 +2513,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(3,kateView->getDoc()->hasSelection());
       accel->setItemEnabled(4,!clipboard->text().isNull());
       accel->setItemEnabled(5,TRUE);
+      accel->setItemEnabled(6,TRUE);
+      accel->setItemEnabled(7,TRUE);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -2516,6 +2533,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(3,FALSE);
       accel->setItemEnabled(4,FALSE);
       accel->setItemEnabled(5,FALSE);
+      accel->setItemEnabled(6,FALSE);
+      accel->setItemEnabled(7,FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -2536,6 +2555,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(3,FALSE);
     accel->setItemEnabled(4,FALSE);
     accel->setItemEnabled(5,FALSE);
+    accel->setItemEnabled(6,FALSE);
+    accel->setItemEnabled(7,FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();
@@ -3087,15 +3108,43 @@ void MainForm::current_view_charactersInteractivelyInserted(int line, int col, c
     if (category==cFilesListItem||category==qllFilesListItem
         ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
       QString indent=doc->textLine(line);
+      // Only if the line was all whitespace, otherwise wait for Enter to be
+      // pressed (prevents annoying the user while typing a string or something).
+      if (indent.contains(QRegExp("^\\s*\\{$"))) {
+        indent=indent.remove('{');
+        QString cursorLine=indent+"\t";
+        KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
+        editExt->editBegin();
+        doc->insertLine(line+1,cursorLine);
+        doc->insertLine(line+2,indent+"}");
+        editExt->editEnd();
+        CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
+      }
+    }
+  }
+}
+
+void MainForm::current_view_newLineHook()
+{
+  unsigned line,col;
+  CURRENT_VIEW->cursorPositionReal(&line,&col);
+  Kate::Document *doc=CURRENT_VIEW->getDoc();
+  if (preferences.autoBlocks && line && doc->textLine(line-1).endsWith("{")) {
+    CATEGORY_OF(category,currentListItem);
+    QString fileText=doc->text();
+    // Only for C files.
+    if (category==cFilesListItem||category==qllFilesListItem
+        ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
+      QString indent=doc->textLine(line-1);
       // Remove everything starting from the first non-whitespace character.
       indent=indent.remove(QRegExp("(?!\\s).*$"));
       QString cursorLine=indent+"\t";
       KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
       editExt->editBegin();
-      doc->insertLine(line+1,cursorLine);
-      doc->insertLine(line+2,indent+"}");
+      doc->insertLine(line,cursorLine);
+      doc->insertText(line+1,0,indent+"}");
       editExt->editEnd();
-      CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
+      CURRENT_VIEW->setCursorPositionReal(line,cursorLine.length());
     }
   }
 }
