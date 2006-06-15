@@ -1109,6 +1109,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->getDoc(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   connect(newView->getDoc(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
+  connect(newView->getDoc(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->installPopup(te_popup);
   // Set text.
   newView->getDoc()->setText(fileText);
@@ -3067,6 +3068,26 @@ void MainForm::current_view_selectionChanged()
     editCopyAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
     accel->setItemEnabled(2,CURRENT_VIEW->getDoc()->hasSelection());
     accel->setItemEnabled(3,CURRENT_VIEW->getDoc()->hasSelection());
+  }
+}
+
+void MainForm::current_view_charactersInteractivelyInserted(int line, int col, const QString &characters)
+{
+  if (CURRENT_VIEW && preferences.autoBlocks && !characters.compare("{")
+      && col==CURRENT_VIEW->getDoc()->lineLength(line)-1) {
+    CATEGORY_OF(category,currentListItem);
+    QString fileText=CURRENT_VIEW->getDoc()->text();
+    // Only for C files.
+    if (category==cFilesListItem||category==qllFilesListItem
+        ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
+      QString indent=CURRENT_VIEW->getDoc()->textLine(line);
+      // Remove everything starting from the first non-whitespace character.
+      indent=indent.remove(QRegExp("(?!\\s).*$"));
+      QString cursorLine=indent+"\t";
+      CURRENT_VIEW->getDoc()->insertLine(line+1,cursorLine);
+      CURRENT_VIEW->getDoc()->insertLine(line+2,indent+"}");
+      CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
+    }
   }
 }
 
