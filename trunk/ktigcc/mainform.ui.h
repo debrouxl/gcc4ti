@@ -3075,17 +3075,21 @@ void MainForm::current_view_charactersInteractivelyInserted(int line, int col, c
 {
   if (CURRENT_VIEW && preferences.autoBlocks && !characters.compare("{")
       && col==CURRENT_VIEW->getDoc()->lineLength(line)-1) {
+    Kate::Document *doc=CURRENT_VIEW->getDoc();
     CATEGORY_OF(category,currentListItem);
-    QString fileText=CURRENT_VIEW->getDoc()->text();
+    QString fileText=doc->text();
     // Only for C files.
     if (category==cFilesListItem||category==qllFilesListItem
         ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
-      QString indent=CURRENT_VIEW->getDoc()->textLine(line);
+      QString indent=doc->textLine(line);
       // Remove everything starting from the first non-whitespace character.
       indent=indent.remove(QRegExp("(?!\\s).*$"));
       QString cursorLine=indent+"\t";
-      CURRENT_VIEW->getDoc()->insertLine(line+1,cursorLine);
-      CURRENT_VIEW->getDoc()->insertLine(line+2,indent+"}");
+      KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
+      editExt->editBegin();
+      doc->insertLine(line+1,cursorLine);
+      doc->insertLine(line+2,indent+"}");
+      editExt->editEnd();
       CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
     }
   }
