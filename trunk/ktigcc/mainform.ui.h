@@ -1122,7 +1122,6 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   connect(newView->getDoc(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   connect(newView->getDoc(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->installPopup(te_popup);
-  newView->installEventFilter(this);
   // Set text.
   newView->getDoc()->setText(fileText);
   newView->getDoc()->setModified(FALSE);
