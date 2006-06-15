@@ -100,7 +100,11 @@ syntaxfiles.path = /usr/share/apps/katepart/syntax/
 syntaxfiles.files = gnuasm68k.xml masm68k.xml
 INSTALLS += syntaxfiles
 
-executable.path = /usr/local/tigcc/bin
+TIGCC = $$(TIGCC)
+isEmpty(TIGCC) {
+  TIGCC = /usr/local/tigcc
+}
+executable.path = $$TIGCC/bin
 executable.files = ktigcc
 INSTALLS += executable
 
