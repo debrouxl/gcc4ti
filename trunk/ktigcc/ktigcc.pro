@@ -10,8 +10,8 @@ HEADERS	+= tpr.h \
 	preferences.h
 
 SOURCES	+= ktigcc.cpp \
-	tpr.cxx \
-	preferences.cxx
+	preferences.cpp \
+	tpr.cpp
 
 FORMS	= mainform.ui \
 	projectoptions.ui \
