@@ -15,7 +15,8 @@ SOURCES	+= ktigcc.cpp \
 
 FORMS	= mainform.ui \
 	projectoptions.ui \
-	programoptions.ui
+	programoptions.ui \
+	preferencesdlg.ui
 
 IMAGES	= images/00 \
 	images/01 \
@@ -88,6 +89,12 @@ HAVE_TICONV = $$system(pkg-config --atleast-version=$$TICONV_MINVERSION ticonv &
 !equals(HAVE_TICONV,yes):error(libticonv $$TICONV_MINVERSION or higher required.)
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticonv)
 LIBS += $$system(pkg-config --libs ticonv)
+
+TICABLES_MINVERSION = 0.0.1
+HAVE_TICABLES = $$system(pkg-config --atleast-version=$$TICABLES_MINVERSION ticables2 && echo yes || echo no)
+!equals(HAVE_TICABLES,yes):error(libticables2 $$TICABLES_MINVERSION or higher required.)
+PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticables2)
+LIBS += $$system(pkg-config --libs ticables2)
 
 syntaxfiles.path = /usr/share/apps/katepart/syntax/
 syntaxfiles.files = gnuasm68k.xml masm68k.xml

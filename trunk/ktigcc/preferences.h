@@ -21,6 +21,9 @@
 
 #include <qstring.h>
 #include <qvaluelist.h>
+#include <qcolor.h>
+#include <qfont.h>
+#include <ticables.h>
 class KConfig;
 
 typedef struct
@@ -73,12 +76,39 @@ typedef struct
 int SynToXML(Syn_SettingsForDoc &syn,const QString &destFileName);
 
 
+enum LinkTargets {LT_NONE, LT_TIEMU, LT_REALCALC};
+
 typedef struct
 {
-  bool lazyLoading;
+  // General
+  bool stopAtFirstError;
+  bool jumpToError;
+  bool successMessage;
+  bool deleteAsmFiles;
+  bool deleteObjFiles;
+  bool splitSourceFiles;
+  bool allowImplicitDeclaration;
+  bool autoSave;
+  bool downloadHeadlines;
+  bool deleteOverwrittenErrors;
+
+  // Transfer
+  LinkTargets linkTarget;
+  CablePort linkPort;
+  CableModel linkCable;
+
+  // Editor
   unsigned short tabWidthC;
   unsigned short tabWidthAsm;
+  bool useBgColor;
+  QColor bgColor;
+  QFont editorFont;
   bool useCalcCharset;
+  bool lazyLoading;
+  bool autoBlocks;
+  bool removeTrailingSpaces;
+
+  // Syntax Highlighting
   Syn_SettingsForDoc synC;
   Syn_SettingsForDoc synS;
   Syn_SettingsForDoc synASM;
