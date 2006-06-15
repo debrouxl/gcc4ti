@@ -1648,6 +1648,12 @@ void MainForm::filePreferences()
         }
       }
     }
+    if (CURRENT_VIEW) {
+      // Force redrawing to get the tab width right, repaint() is ignored for some reason.
+      Kate::View *currView=CURRENT_VIEW;
+      currView->hide();
+      currView->show();
+    }
   }
 }
 
