@@ -113,3 +113,10 @@ QMAKE_CXXFLAGS_DEBUG = -Os -g -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 QMAKE_CXXFLAGS_RELEASE = -Os -s -fomit-frame-pointer -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 
 QMAKE_LFLAGS_RELEASE = -s
+
+DISTFILES += $${syntaxfiles.files} configure COPYING KTIGCC.prj
+
+distbz2.target = dist-bzip2
+distbz2.commands = zcat ktigcc.tar.gz | bzip2 --best -c > ktigcc.tar.bz2
+distbz2.depends = dist	
+QMAKE_EXTRA_UNIX_TARGETS += distbz2
