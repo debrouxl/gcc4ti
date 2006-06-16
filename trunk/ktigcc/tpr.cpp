@@ -41,7 +41,7 @@
 
 #define find_param(s_,t_) find_param_ex((s_),(t_),sizeof(t_)-1)
 
-char *find_param_ex(char *s, const char *t, size_t l)
+static char *find_param_ex(char *s, const char *t, size_t l)
 {
   if (!strncmp(s,t,l))
     return s+l;
@@ -49,7 +49,7 @@ char *find_param_ex(char *s, const char *t, size_t l)
     return NULL;
 }
 
-char *find_numbered_param(char *s, const char*t, int *i)
+static char *find_numbered_param(char *s, const char*t, int *i)
 {
     char *p;
     int endpos = 0;
@@ -67,7 +67,7 @@ char *find_numbered_param(char *s, const char*t, int *i)
 }
 
 // converts Windows paths to Unix paths if necessary.
-QString convert_path_separators(const char *file)
+static QString convert_path_separators(const char *file)
 {
     QString s=file;
     int o;
@@ -80,7 +80,7 @@ QString convert_path_separators(const char *file)
     return s;
 }
 
-char* strip(char *str)
+static char* strip(char *str)
 {
     int len = strlen(str);
 
@@ -98,17 +98,17 @@ char* strip(char *str)
 /* 
    Read a line from file and do a clean-up 
 */
-int read_line(FILE *f, char *buffer, int *l)
+static int read_line(FILE *f, char *buffer, int *l)
 {
     strcpy(buffer, "");
     if(feof(f)) return EOF;
-    fgets(buffer, 256, f);
+    if (!fgets(buffer, 256, f)) return 1;
     strip(buffer);
     (*l)++;
     while( (buffer[0] == '\r') || (buffer[0] == '\n') || (buffer[0] == '\0') )
     {
         if(feof(f)) return EOF;
-        fgets(buffer, 256, f);
+        if (!fgets(buffer, 256, f)) return 1;
         strip(buffer);
         (*l)++;
     }
@@ -121,7 +121,7 @@ int read_line(FILE *f, char *buffer, int *l)
 //definition "tables".
 //If you add an entry here, don't forget to add something to
 //  save_tpr!
-int parse_file(FILE *f,TPRDataStruct *dest)
+static int parse_file(FILE *f,TPRDataStruct *dest)
 {
   char buffer[256];
   int l = 0;
@@ -142,7 +142,9 @@ int parse_file(FILE *f,TPRDataStruct *dest)
         char *p;
           
         // Get a line from file
-        if(read_line(f, buffer, &l) == EOF) break;
+        int result=read_line(f, buffer, &l);
+        if (result == 1) return -1; // error
+        if (result == EOF) break;
 
         // Search for sections
         if( !strcmp(buffer, "[Settings]") )
@@ -528,7 +530,7 @@ QString loadFileText(const char *fileName)
 }
 
 
-QString convert_path_separators_save(QString s)
+static QString convert_path_separators_save(QString s)
 {
     int o;
     
@@ -548,7 +550,7 @@ const char *smartAscii(const QString &s)
   return s.ascii();
 }
 
-int save_tpr(FILE *f,TPRDataStruct *dest)
+static int save_tpr(FILE *f,TPRDataStruct *dest)
 {
     unsigned i=0,e;
     QString tmp;
@@ -721,7 +723,7 @@ int saveTPR(const QString &fileName,TPRDataStruct *src)
   return ret;
 }
 
-void mkdir_multi(const char *fileName)
+static void mkdir_multi(const char *fileName)
 {
   int l=strlen(fileName);
   char buffer[l+2];
@@ -798,7 +800,7 @@ void kurlNewFileName(KURL &dir,const QString &newFileName)
     dir.setFileName(newFileName);
 }
 
-QString pullOutFileSuffix(const QString &srcFileName,QString &destFileName)
+static QString pullOutFileSuffix(const QString &srcFileName,QString &destFileName)
 {
   int a,b;
   QString ret;

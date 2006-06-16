@@ -56,6 +56,13 @@ IMAGES	= images/00 \
 	images/filet.png \
 	images/filex.png
 
+# If this is not used, a build from /usr/.... will generate
+# Makefiles with relative paths for install.  This totally
+# fucks up using INSTALL_ROOT for a staged install.
+# See http://bugs.debian.org/180240
+# (Thanks to Debian for the fix for this qmake stupidity.)
+QMAKE_PROJECT_DEPTH=1
+
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc
@@ -105,18 +112,30 @@ TIGCC = $$(TIGCC)
 isEmpty(TIGCC) {
   TIGCC = /usr/local/tigcc
 }
-executable.path = $$TIGCC/bin
-executable.files = ktigcc
-INSTALLS += executable
+target.path = $$TIGCC/bin
+documentation.path = $$TIGCC/doc/ktigcc
+documentation.files = COPYING
+INSTALLS += target documentation
 
-QMAKE_CXXFLAGS_DEBUG = -Os -g -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
-QMAKE_CXXFLAGS_RELEASE = -Os -s -fomit-frame-pointer -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
+CXXFLAGS = $$(CXXFLAGS)
+isEmpty(CXXFLAGS) {
+  debug {
+    CXXFLAGS = -Os -g
+  } else {
+    CXXFLAGS = -Os -s -fomit-frame-pointer
+  }
+}
+QMAKE_CXXFLAGS_DEBUG = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
+QMAKE_CXXFLAGS_RELEASE = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 
 QMAKE_LFLAGS_RELEASE = -s
 
-DISTFILES += $${syntaxfiles.files} configure COPYING KTIGCC.prj
+DISTFILES += $${syntaxfiles.files} $${documentation.files} configure KTIGCC.prj fedora/ktigcc.spec
 
 distbz2.target = dist-bzip2
 distbz2.commands = zcat ktigcc.tar.gz | bzip2 --best -c > ktigcc.tar.bz2
-distbz2.depends = dist	
-QMAKE_EXTRA_UNIX_TARGETS += distbz2
+distbz2.depends = dist
+rpm.target = rpm
+rpm.commands = rpmbuild -ta ktigcc.tar.bz2
+rpm.depends = distbz2
+QMAKE_EXTRA_UNIX_TARGETS += distbz2 rpm
