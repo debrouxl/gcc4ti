@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <qstring.h>
+#include <qimage.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
@@ -77,6 +78,7 @@ int main( int argc, char *argv[] )
   // Readd the images KDE kindly removes...
   qCleanupImages_ktigcc();
   qInitImages_ktigcc();
+  about.setProgramLogo(QImage::fromMimeSource("icon.png"));
   KConfig config("ktigccrc");
   pconfig=&config;
   
