@@ -102,13 +102,13 @@ static int read_line(FILE *f, char *buffer, int *l)
 {
     strcpy(buffer, "");
     if(feof(f)) return EOF;
-    if (!fgets(buffer, 256, f)) return 1;
+    if (!fgets(buffer, 256, f)) return feof(f)?EOF:1;
     strip(buffer);
     (*l)++;
     while( (buffer[0] == '\r') || (buffer[0] == '\n') || (buffer[0] == '\0') )
     {
         if(feof(f)) return EOF;
-        if (!fgets(buffer, 256, f)) return 1;
+        if (!fgets(buffer, 256, f)) return feof(f)?EOF:1;
         strip(buffer);
         (*l)++;
     }
