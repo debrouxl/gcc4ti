@@ -55,7 +55,8 @@ IMAGES	= images/00 \
 	images/files.png \
 	images/filet.png \
 	images/filex.png \
-	images/icon.png
+	images/icon.png \
+	images/filereplace.png
 
 # If this is not used, a build from /usr/.... will generate
 # Makefiles with relative paths for install.  This totally

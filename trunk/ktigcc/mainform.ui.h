@@ -189,27 +189,27 @@ class ListViewFolder : public KListViewItem {
   public:
   ListViewFolder(QListView *parent) : KListViewItem(parent)
   {
-    setPixmap(0,SYSICON("folder_flat","folder1.png"));
+    setPixmap(0,SYSICON("folder","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
   ListViewFolder(QListViewItem *parent) : KListViewItem(parent)
   {
-    setPixmap(0,SYSICON("folder_flat","folder1.png"));
+    setPixmap(0,SYSICON("folder","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
   ListViewFolder(QListView *parent, QListViewItem *after)
           : KListViewItem(parent, after)
   {
-    setPixmap(0,SYSICON("folder_flat","folder1.png"));
+    setPixmap(0,SYSICON("folder","folder1.png"));
     setDropEnabled(TRUE);
     setDragEnabled(TRUE);
   }
   ListViewFolder(QListViewItem *parent, QListViewItem *after)
           : KListViewItem(parent, after)
   {
-    setPixmap(0,SYSICON("folder_flat","folder1.png"));
+    setPixmap(0,SYSICON("folder","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
@@ -741,6 +741,7 @@ void MainForm::init()
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
     fileNewActionGroup->setIconSet(LOAD_ICON("filenew"));
+    fileMenu->changeItem(fileMenu->idAt(0),LOAD_ICON("filenew"),"&New");
     fileOpenAction->setIconSet(LOAD_ICON("fileopen"));
     fileOpenActionGroup->setIconSet(LOAD_ICON("fileopen"));
     fileSaveAllAction->setIconSet(LOAD_ICON("filesave"));
@@ -758,7 +759,15 @@ void MainForm::init()
     helpDocumentationAction->setIconSet(LOAD_ICON("help"));
     helpSearchAction->setIconSet(LOAD_ICON("filefind"));
     findFindAction->setIconSet(LOAD_ICON("filefind"));
-    findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
+    if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
+      QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
+      int smallSize=IconSize(KIcon::Small);
+      fileReplaceIconSet.setIconSize(QIconSet::Small,QSize(smallSize,smallSize));
+      int largeSize=IconSize(KIcon::MainToolbar);
+      fileReplaceIconSet.setIconSize(QIconSet::Large,QSize(largeSize,largeSize));
+      findReplaceAction->setIconSet(fileReplaceIconSet);
+    } else
+      findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
     helpIndexAction->setIconSet(LOAD_ICON("contents"));
     editUndoAction->setIconSet(LOAD_ICON("undo"));
     editRedoAction->setIconSet(LOAD_ICON("redo"));
@@ -1699,9 +1708,9 @@ void MainForm::filePreferences()
       if (item == rootListItem) {
         item->setPixmap(0,SYSICON("exec","tpr.png"));
       } else if (IS_FOLDER(item)) {
-        // Bluecurve's "folder_open" isn't actually more open than "folder_flat".
+        // Bluecurve's "folder_open" isn't actually more open than "folder".
         item->setPixmap(0,(item==currentListItem)?SYSICON(KIconTheme::current().compare("Bluecurve")?"folder_open":"folder-accept","folder2.png")
-                                                 :SYSICON("folder_flat","folder1.png"));
+                                                 :SYSICON("folder","folder1.png"));
       } else if (IS_FILE(item)) {
         Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
         if (kateView) {
@@ -1737,6 +1746,7 @@ void MainForm::filePreferences()
     setUsesBigPixmaps(preferences.useSystemIcons);
     if (preferences.useSystemIcons) {
       fileNewActionGroup->setIconSet(LOAD_ICON("filenew"));
+      fileMenu->changeItem(fileMenu->idAt(0),LOAD_ICON("filenew"),"&New");
       fileOpenAction->setIconSet(LOAD_ICON("fileopen"));
       fileOpenActionGroup->setIconSet(LOAD_ICON("fileopen"));
       fileSaveAllAction->setIconSet(LOAD_ICON("filesave"));
@@ -1754,7 +1764,15 @@ void MainForm::filePreferences()
       helpDocumentationAction->setIconSet(LOAD_ICON("help"));
       helpSearchAction->setIconSet(LOAD_ICON("filefind"));
       findFindAction->setIconSet(LOAD_ICON("filefind"));
-      findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
+      if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
+        QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
+        int smallSize=IconSize(KIcon::Small);
+        fileReplaceIconSet.setIconSize(QIconSet::Small,QSize(smallSize,smallSize));
+        int largeSize=IconSize(KIcon::MainToolbar);
+        fileReplaceIconSet.setIconSize(QIconSet::Large,QSize(largeSize,largeSize));
+        findReplaceAction->setIconSet(fileReplaceIconSet);
+      } else
+        findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
       helpIndexAction->setIconSet(LOAD_ICON("contents"));
       editUndoAction->setIconSet(LOAD_ICON("undo"));
       editRedoAction->setIconSet(LOAD_ICON("redo"));
@@ -1770,6 +1788,7 @@ void MainForm::filePreferences()
       debugResetAction->setIconSet(LOAD_ICON("player_stop"));
     } else {
       fileNewActionGroup->setIconSet(QIconSet(QPixmap::fromMimeSource("00")));
+      fileMenu->changeItem(fileMenu->idAt(0),QIconSet(QPixmap::fromMimeSource("00")),"&New");
       fileOpenAction->setIconSet(QIconSet(QPixmap::fromMimeSource("01")));
       fileOpenActionGroup->setIconSet(QIconSet(QPixmap::fromMimeSource("01")));
       fileSaveAllAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
@@ -2587,7 +2606,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     fileTree->ensureItemVisible(item);
   }
   if (IS_FOLDER(currentListItem))
-    currentListItem->setPixmap(0,SYSICON("folder_flat","folder1.png"));
+    currentListItem->setPixmap(0,SYSICON("folder","folder1.png"));
   if (IS_FILE(currentListItem)) {
     CATEGORY_OF(category,currentListItem);
     if (IS_EDITABLE_CATEGORY(category) && static_cast<ListViewFile *>(currentListItem)->kateView) {
@@ -2597,7 +2616,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     }
   }
   if (IS_FOLDER(item)) {
-    // Bluecurve's "folder_open" isn't actually more open than "folder_flat".
+    // Bluecurve's "folder_open" isn't actually more open than "folder".
     item->setPixmap(0,SYSICON(KIconTheme::current().compare("Bluecurve")?"folder_open":"folder-accept","folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
     filePrintAction->setEnabled(FALSE);
