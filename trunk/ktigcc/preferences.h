@@ -92,6 +92,7 @@ typedef struct
   bool autoSave;
   bool downloadHeadlines;
   bool deleteOverwrittenErrors;
+  bool useSystemIcons;
 
   // Transfer
   LinkTargets linkTarget;

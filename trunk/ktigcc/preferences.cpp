@@ -1248,6 +1248,7 @@ void loadPreferences(void)
   preferences.autoSave=pconfig->readBoolEntry("Auto Save",true);
   preferences.downloadHeadlines=pconfig->readBoolEntry("Download Headlines",false);
   preferences.deleteOverwrittenErrors=pconfig->readBoolEntry("Delete Overwritten Errors",true);
+  preferences.useSystemIcons=pconfig->readBoolEntry("Use System Icons",false);
 
   // Transfer
   preferences.linkTarget=(LinkTargets)pconfig->readNumEntry("Link Target",LT_NONE);
@@ -1285,6 +1286,7 @@ void savePreferences(void)
   pconfig->writeEntry("Auto Save",(bool)preferences.autoSave);
   pconfig->writeEntry("Download Headlines",(bool)preferences.downloadHeadlines);
   pconfig->writeEntry("Delete Overwritten Errors",(bool)preferences.deleteOverwrittenErrors);
+  pconfig->writeEntry("Use System Icons",(bool)preferences.useSystemIcons);
 
   // Transfer
   pconfig->writeEntry("Link Target",(int)preferences.linkTarget);

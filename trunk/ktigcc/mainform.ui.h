@@ -58,6 +58,9 @@
 #include <kreplacedialog.h>
 #include <kreplace.h>
 #include <kwin.h>
+#include <kglobal.h>
+#include <kicontheme.h>
+#include <kiconloader.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -113,6 +116,9 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         (category)==txtFilesListItem?txtFileCount: \
                                         othFileCount)
 #define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
+
+#define LOAD_ICON(name) (QIconSet(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
+#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small):QPixmap::fromMimeSource((name)))
 
 // For some reason, this flag is not in the public ConfigFlags enum.
 #define CF_REMOVE_TRAILING_DYN 0x4000000
@@ -183,27 +189,27 @@ class ListViewFolder : public KListViewItem {
   public:
   ListViewFolder(QListView *parent) : KListViewItem(parent)
   {
-    setPixmap(0,QPixmap::fromMimeSource("folder1.png"));    
+    setPixmap(0,SYSICON("folder_flat","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
   ListViewFolder(QListViewItem *parent) : KListViewItem(parent)
   {
-    setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
+    setPixmap(0,SYSICON("folder_flat","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
   ListViewFolder(QListView *parent, QListViewItem *after)
           : KListViewItem(parent, after)
   {
-    setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
+    setPixmap(0,SYSICON("folder_flat","folder1.png"));
     setDropEnabled(TRUE);
     setDragEnabled(TRUE);
   }
   ListViewFolder(QListViewItem *parent, QListViewItem *after)
           : KListViewItem(parent, after)
   {
-    setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
+    setPixmap(0,SYSICON("folder_flat","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
@@ -222,7 +228,7 @@ class ListViewFile : public KListViewItem {
   ListViewFile(QListView *parent) : KListViewItem(parent),
                                     kateView(NULL), isNew(TRUE)
   {
-    setPixmap(0,QPixmap::fromMimeSource("filex.png"));    
+    setPixmap(0,SYSICON("unknown","filex.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
@@ -230,7 +236,7 @@ class ListViewFile : public KListViewItem {
   ListViewFile(QListViewItem *parent) : KListViewItem(parent),
                                         kateView(NULL), isNew(TRUE)
   {
-    setPixmap(0,QPixmap::fromMimeSource("filex.png"));
+    setPixmap(0,SYSICON("unknown","filex.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
@@ -238,7 +244,7 @@ class ListViewFile : public KListViewItem {
   ListViewFile(QListView *parent, QListViewItem *after)
           : KListViewItem(parent, after), kateView(NULL), isNew(TRUE)
   {
-    setPixmap(0,QPixmap::fromMimeSource("filex.png"));
+    setPixmap(0,SYSICON("unknown","filex.png"));
     setDropEnabled(TRUE);
     setDragEnabled(TRUE);
     setRenameEnabled(0,TRUE);
@@ -247,7 +253,7 @@ class ListViewFile : public KListViewItem {
           : KListViewItem(parent, after), kateView(NULL),
             isNew(TRUE)
   {
-    setPixmap(0,QPixmap::fromMimeSource("filex.png"));
+    setPixmap(0,SYSICON("unknown","filex.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
@@ -336,7 +342,6 @@ static QLabel *rowStatusLabel;
 static QLabel *colStatusLabel;
 static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
-static KParts::Factory* factory;
 static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
 QAssistantClient *assistant;
@@ -595,9 +600,6 @@ void MainForm::init()
 {  
   loadPreferences();
   fileNewFolderAction->setEnabled(FALSE);
-  factory = (KParts::Factory *)
-      KLibLoader::self()->factory ("libkatepart");
-  if (!factory) exit(1);
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
   te_popup->insertItem("&Find symbol declaration",1);
@@ -644,7 +646,7 @@ void MainForm::init()
   fileTree->header()->hide();
   rootListItem=new ListViewRoot(fileTree);
   rootListItem->setText(0,"Project1");
-  rootListItem->setPixmap(0,QPixmap::fromMimeSource("tpr.png"));
+  rootListItem->setPixmap(0,SYSICON("exec","tpr.png"));
   rootListItem->setOpen(TRUE);
   QListViewItem *folderListItem=new ListViewFolder(rootListItem);
   hFilesListItem=folderListItem;
@@ -728,6 +730,41 @@ void MainForm::init()
   startTimer(100);
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
+  if (preferences.useSystemIcons) {
+    setUsesBigPixmaps(TRUE);
+    fileNewActionGroup->setIconSet(LOAD_ICON("filenew"));
+    fileOpenAction->setIconSet(LOAD_ICON("fileopen"));
+    fileOpenActionGroup->setIconSet(LOAD_ICON("fileopen"));
+    fileSaveAllAction->setIconSet(LOAD_ICON("filesave"));
+    filePrintAction->setIconSet(LOAD_ICON("fileprint"));
+    filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
+    editClearAction->setIconSet(LOAD_ICON("editdelete"));
+    editCutAction->setIconSet(LOAD_ICON("editcut"));
+    editCopyAction->setIconSet(LOAD_ICON("editcopy"));
+    editPasteAction->setIconSet(LOAD_ICON("editpaste"));
+    projectAddFilesAction->setIconSet(LOAD_ICON("edit_add"));
+    projectCompileAction->setIconSet(LOAD_ICON("compfile"));
+    projectMakeAction->setIconSet(LOAD_ICON("make_kdevelop"));
+    projectBuildAction->setIconSet(LOAD_ICON("rebuild"));
+    helpContentsAction->setIconSet(LOAD_ICON("help"));
+    helpDocumentationAction->setIconSet(LOAD_ICON("help"));
+    helpSearchAction->setIconSet(LOAD_ICON("filefind"));
+    findFindAction->setIconSet(LOAD_ICON("filefind"));
+    findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
+    helpIndexAction->setIconSet(LOAD_ICON("contents"));
+    editUndoAction->setIconSet(LOAD_ICON("undo"));
+    editRedoAction->setIconSet(LOAD_ICON("redo"));
+    findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
+    editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
+    editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
+    // stop compilation: "stop"
+    // force-quit compiler: "button_cancel"
+    helpNewsAction->setIconSet(LOAD_ICON("kontact_news"));
+    debugRunAction->setIconSet(LOAD_ICON("player_play"));
+    debugPauseAction->setIconSet(LOAD_ICON("player_pause"));
+    toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
+    debugResetAction->setIconSet(LOAD_ICON("player_stop"));
+  }
 }
 
 void MainForm::destroy()
@@ -1040,11 +1077,13 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
                         :new ListViewFile(parent);
   newFile->isNew=FALSE;
   newFile->setText(0,fileCaption);
-  newFile->setPixmap(0,QPixmap::fromMimeSource(
-    category==cFilesListItem||category==qllFilesListItem?"filec.png":
-    category==hFilesListItem?"fileh.png":
-    category==sFilesListItem||category==asmFilesListItem?"files.png":
-    category==txtFilesListItem?"filet.png":"filex.png"));
+  newFile->setPixmap(0,
+    category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
+    category==hFilesListItem?SYSICON("source_h","fileh.png"):
+    category==sFilesListItem||category==asmFilesListItem?SYSICON("source_s","files.png"):
+    category==txtFilesListItem?SYSICON("txt","filet.png"):
+    category==oFilesListItem||category==aFilesListItem?SYSICON("binary","fileo.png"):
+    SYSICON("unknown","filex.png"));
   newFile->fileName=fileName;
   if (IS_EDITABLE_CATEGORY(category)) {
     if (preferences.lazyLoading)
@@ -1081,6 +1120,9 @@ QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
 void *MainForm::createView(const QString &fileName, const QString &fileText, QListViewItem *category)
 {
   // Create Document object.
+  KParts::Factory *factory = (KParts::Factory *)
+    KLibLoader::self()->factory ("libkatepart");
+  if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
       factory->createPart( 0, "", this, "", "KTextEditor::Document" );
   // Set the file name for printing.
@@ -1626,9 +1668,12 @@ void MainForm::filePrintQuickly()
 void MainForm::filePreferences()
 {
   if (showPreferencesDialog(this)==QDialog::Accepted) {
-    // Apply the KatePart preferences.
+    // Apply the KatePart preferences and treeview icons.
     QListViewItemIterator it(fileTree);
     QListViewItem *item;
+    KParts::Factory *factory = (KParts::Factory *)
+      KLibLoader::self()->factory ("libkatepart");
+    if (!factory) qFatal("Failed to load KatePart");
     KTextEditor::Document *doc = (KTextEditor::Document *)
       factory->createPart( 0, "", this, "", "KTextEditor::Document" );
     KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
@@ -1643,7 +1688,13 @@ void MainForm::filePreferences()
     }
     delete doc;
     for (item=it.current();item;item=(++it).current()) {
-      if (IS_FILE(item)) {
+      if (item == rootListItem) {
+        item->setPixmap(0,SYSICON("exec","tpr.png"));
+      } else if (IS_FOLDER(item)) {
+        // Bluecurve's "folder_open" isn't actually more open than "folder_flat".
+        item->setPixmap(0,(item==currentListItem)?SYSICON(KIconTheme::current().compare("Bluecurve")?"folder_open":"folder-accept","folder2.png")
+                                                 :SYSICON("folder_flat","folder1.png"));
+      } else if (IS_FILE(item)) {
         Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
         if (kateView) {
           QString fileText=kateView->getDoc()->text();
@@ -1658,13 +1709,90 @@ void MainForm::filePreferences()
             8
           );
         }
-      }
+        CATEGORY_OF(category,item);
+        item->setPixmap(0,
+          category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
+          category==hFilesListItem?SYSICON("source_h","fileh.png"):
+          category==sFilesListItem||category==asmFilesListItem?SYSICON("source_s","files.png"):
+          category==txtFilesListItem?SYSICON("txt","filet.png"):
+          category==oFilesListItem||category==aFilesListItem?SYSICON("binary","fileo.png"):
+          SYSICON("unknown","filex.png"));
+      } else qWarning("Internal error: What's this item?");
     }
     if (CURRENT_VIEW) {
       // Force redrawing to get the tab width right, repaint() is ignored for some reason.
       Kate::View *currView=CURRENT_VIEW;
       currView->hide();
       currView->show();
+    }
+    // Apply the icon preferences.
+    setUsesBigPixmaps(preferences.useSystemIcons);
+    if (preferences.useSystemIcons) {
+      fileNewActionGroup->setIconSet(LOAD_ICON("filenew"));
+      fileOpenAction->setIconSet(LOAD_ICON("fileopen"));
+      fileOpenActionGroup->setIconSet(LOAD_ICON("fileopen"));
+      fileSaveAllAction->setIconSet(LOAD_ICON("filesave"));
+      filePrintAction->setIconSet(LOAD_ICON("fileprint"));
+      filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
+      editClearAction->setIconSet(LOAD_ICON("editdelete"));
+      editCutAction->setIconSet(LOAD_ICON("editcut"));
+      editCopyAction->setIconSet(LOAD_ICON("editcopy"));
+      editPasteAction->setIconSet(LOAD_ICON("editpaste"));
+      projectAddFilesAction->setIconSet(LOAD_ICON("edit_add"));
+      projectCompileAction->setIconSet(LOAD_ICON("compfile"));
+      projectMakeAction->setIconSet(LOAD_ICON("make_kdevelop"));
+      projectBuildAction->setIconSet(LOAD_ICON("rebuild"));
+      helpContentsAction->setIconSet(LOAD_ICON("help"));
+      helpDocumentationAction->setIconSet(LOAD_ICON("help"));
+      helpSearchAction->setIconSet(LOAD_ICON("filefind"));
+      findFindAction->setIconSet(LOAD_ICON("filefind"));
+      findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
+      helpIndexAction->setIconSet(LOAD_ICON("contents"));
+      editUndoAction->setIconSet(LOAD_ICON("undo"));
+      editRedoAction->setIconSet(LOAD_ICON("redo"));
+      findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
+      editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
+      editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
+      // stop compilation: "stop"
+      // force-quit compiler: "button_cancel"
+      helpNewsAction->setIconSet(LOAD_ICON("kontact_news"));
+      debugRunAction->setIconSet(LOAD_ICON("player_play"));
+      debugPauseAction->setIconSet(LOAD_ICON("player_pause"));
+      toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
+      debugResetAction->setIconSet(LOAD_ICON("player_stop"));
+    } else {
+      fileNewActionGroup->setIconSet(QIconSet(QPixmap::fromMimeSource("00")));
+      fileOpenAction->setIconSet(QIconSet(QPixmap::fromMimeSource("01")));
+      fileOpenActionGroup->setIconSet(QIconSet(QPixmap::fromMimeSource("01")));
+      fileSaveAllAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
+      filePrintAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
+      filePrintQuicklyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
+      editClearAction->setIconSet(QIconSet(QPixmap::fromMimeSource("04")));
+      editCutAction->setIconSet(QIconSet(QPixmap::fromMimeSource("05")));
+      editCopyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("06")));
+      editPasteAction->setIconSet(QIconSet(QPixmap::fromMimeSource("07")));
+      projectAddFilesAction->setIconSet(QIconSet(QPixmap::fromMimeSource("08")));
+      projectCompileAction->setIconSet(QIconSet(QPixmap::fromMimeSource("09")));
+      projectMakeAction->setIconSet(QIconSet(QPixmap::fromMimeSource("10")));
+      projectBuildAction->setIconSet(QIconSet(QPixmap::fromMimeSource("11")));
+      helpContentsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("12")));
+      helpDocumentationAction->setIconSet(QIconSet(QPixmap::fromMimeSource("12")));
+      helpSearchAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
+      findFindAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
+      findReplaceAction->setIconSet(QIconSet(QPixmap::fromMimeSource("14")));
+      helpIndexAction->setIconSet(QIconSet(QPixmap::fromMimeSource("15")));
+      editUndoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("16")));
+      editRedoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("17")));
+      findFunctionsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("18")));
+      editIncreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("19")));
+      editDecreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("20")));
+      // stop compilation: "21"
+      // force-quit compiler: "22"
+      helpNewsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("23")));
+      debugRunAction->setIconSet(QIconSet(QPixmap::fromMimeSource("24")));
+      debugPauseAction->setIconSet(QIconSet(QPixmap::fromMimeSource("25")));
+      toolsConfigureAction->setIconSet(QIconSet(QPixmap::fromMimeSource("26")));
+      debugResetAction->setIconSet(QIconSet(QPixmap::fromMimeSource("27")));
     }
   }
 }
@@ -2451,7 +2579,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     fileTree->ensureItemVisible(item);
   }
   if (IS_FOLDER(currentListItem))
-    currentListItem->setPixmap(0,QPixmap::fromMimeSource("folder1.png"));
+    currentListItem->setPixmap(0,SYSICON("folder_flat","folder1.png"));
   if (IS_FILE(currentListItem)) {
     CATEGORY_OF(category,currentListItem);
     if (IS_EDITABLE_CATEGORY(category) && static_cast<ListViewFile *>(currentListItem)->kateView) {
@@ -2461,7 +2589,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     }
   }
   if (IS_FOLDER(item)) {
-    item->setPixmap(0,QPixmap::fromMimeSource("folder2.png"));
+    // Bluecurve's "folder_open" isn't actually more open than "folder_flat".
+    item->setPixmap(0,SYSICON(KIconTheme::current().compare("Bluecurve")?"folder_open":"folder-accept","folder2.png"));
     fileNewFolderAction->setEnabled(TRUE);
     filePrintAction->setEnabled(FALSE);
     filePrintQuicklyAction->setEnabled(FALSE);
@@ -2767,7 +2896,7 @@ mfnf_seeknext:
   }
 }
 
-void MainForm::newFile( QListViewItem *parent, QString text, const char *iconName )
+void MainForm::newFile(QListViewItem *parent, QString text, const QPixmap &pixmap)
 {
   QListViewItem *item=NULL, *next=parent->firstChild();
   QString tmp,oldtmp,suffix,caption;
@@ -2836,7 +2965,7 @@ void MainForm::newFile( QListViewItem *parent, QString text, const char *iconNam
     KDirWatch::self()->addFile(tmp);
   
   newFile->setText(0,caption);
-  newFile->setPixmap(0,QPixmap::fromMimeSource(iconName));
+  newFile->setPixmap(0,pixmap);
   parent->setOpen(TRUE);
   newFile->kateView=reinterpret_cast<Kate::View *>(createView(tmp,text,category));
   fileTreeClicked(newFile);
@@ -2925,11 +3054,11 @@ void MainForm::newFile( QListViewItem *parent )
                  "// Main Function\nvoid _main(void)\n{\n"
                  "\t// Place your code here.\n}\n"):"")),
                  category==cFilesListItem||category==qllFilesListItem
-                                                    ?"filec.png":
-                 category==hFilesListItem?"fileh.png":
+                                                    ?SYSICON("source_c","filec.png"):
+                 category==hFilesListItem?SYSICON("source_h","fileh.png"):
                  category==sFilesListItem||category==asmFilesListItem
-                                                    ?"files.png":
-                 category==txtFilesListItem?"filet.png":"filex.png");
+                                                    ?SYSICON("source_s","files.png"):
+                 category==txtFilesListItem?SYSICON("txt","filet.png"):SYSICON("unknown","filex.png"));
 }
 
 QListViewItem *MainForm::resolveParent(QListViewItem *category)
@@ -2948,19 +3077,19 @@ QListViewItem *MainForm::resolveParent(QListViewItem *category)
 
 void MainForm::fileNewCHeader()
 {
-  newFile(resolveParent(hFilesListItem),"// Header File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
+  newFile(resolveParent(hFilesListItem),"// Header File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_h","fileh.png"));
 }
 
 
 void MainForm::fileNewGNUAssemblyHeader()
 {
-  newFile(resolveParent(hFilesListItem),"| Header File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
+  newFile(resolveParent(hFilesListItem),"| Header File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_h","fileh.png"));
 }
 
 
 void MainForm::fileNewA68kAssemblyHeader()
 {
-  newFile(resolveParent(hFilesListItem),"; Header File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","fileh.png");
+  newFile(resolveParent(hFilesListItem),"; Header File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_h","fileh.png"));
 }
 
 
@@ -2972,25 +3101,25 @@ void MainForm::fileNewCSourceFile()
 
 void MainForm::fileNewGNUAssemblySourceFile()
 {
-  newFile(resolveParent(sFilesListItem),"| Assembly Source File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","files.png");
+  newFile(resolveParent(sFilesListItem),"| Assembly Source File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_s","files.png"));
 }
 
 
 void MainForm::fileNewA68kAssemblySourceFile()
 {
-  newFile(resolveParent(asmFilesListItem),"; Assembly Source File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","files.png");
+  newFile(resolveParent(asmFilesListItem),"; Assembly Source File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_s","files.png"));
 }
 
 
 void MainForm::fileNewQuillSourceFile()
 {
-  newFile(resolveParent(qllFilesListItem),"// Quill Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n","filec.png");
+  newFile(resolveParent(qllFilesListItem),"// Quill Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_c","filec.png"));
 }
 
 
 void MainForm::fileNewTextFile()
 {
-  newFile(resolveParent(txtFilesListItem),"","filet.png");
+  newFile(resolveParent(txtFilesListItem),"",SYSICON("txt","filet.png"));
 }
 
 
