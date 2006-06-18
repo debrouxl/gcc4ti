@@ -1131,8 +1131,8 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   KParts::Factory *factory = (KParts::Factory *)
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
-  KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
+  Kate::Document *doc = (Kate::Document *)
+      factory->createPart( 0, "", this, "", "Kate::Document" );
   // Set the file name for printing.
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
@@ -1682,8 +1682,8 @@ void MainForm::filePreferences()
     KParts::Factory *factory = (KParts::Factory *)
       KLibLoader::self()->factory ("libkatepart");
     if (!factory) qFatal("Failed to load KatePart");
-    KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
+    Kate::Document *doc = (Kate::Document *)
+      factory->createPart( 0, "", this, "", "Kate::Document" );
     KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
     unsigned numConfigPages=confInterfaceExt->configPages();
     for (unsigned i=0; i<numConfigPages; i++) {
