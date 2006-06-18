@@ -499,6 +499,14 @@ class DnDListView : public KListView {
               if (i==cnt) i=0;
               static_cast<ListViewFile *>(currItem)->kateView->getDoc()->setHlMode(i);
             }
+            // update icon
+            currItem->setPixmap(0,
+              destCategory==cFilesListItem||destCategory==qllFilesListItem?SYSICON("source_c","filec.png"):
+              destCategory==hFilesListItem?SYSICON("source_h","fileh.png"):
+              destCategory==sFilesListItem||destCategory==asmFilesListItem?SYSICON("source_s","files.png"):
+              destCategory==txtFilesListItem?SYSICON("txt","filet.png"):
+              destCategory==oFilesListItem||destCategory==aFilesListItem?SYSICON("binary","fileo.png"):
+              SYSICON("unknown","filex.png"));
           }
         } else if (IS_FILE(item)) {
           // drop on file
