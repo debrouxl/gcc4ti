@@ -132,7 +132,7 @@ QMAKE_CXXFLAGS_RELEASE = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 
 QMAKE_LFLAGS_RELEASE = -s
 
-DISTFILES += $${syntaxfiles.files} $${documentation.files} configure KTIGCC.prj fedora/ktigcc.spec
+DISTFILES += $${syntaxfiles.files} $${documentation.files} configure KTIGCC.prj fedora/ktigcc.spec images/copyright.txt
 
 distbz2.target = dist-bzip2
 distbz2.commands = zcat ktigcc.tar.gz | bzip2 --best -c > ktigcc.tar.bz2
