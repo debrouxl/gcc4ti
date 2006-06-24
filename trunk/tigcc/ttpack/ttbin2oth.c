@@ -19,7 +19,7 @@
   As a special exception, UNMODIFIED copies of ttbin2oth may also be
   redistributed or sold without source code, for any purpose. (The Lesser
   General Public License restrictions do apply in other respects; for example,
-  they cover modification of the launcher.) This exception notice must be
+  they cover modification of the program.) This exception notice must be
   removed on modified copies of this file.
 
   This program is distributed in the hope that it will be useful,
@@ -56,7 +56,7 @@
 // DON'T EDIT THE NEXT REVISION BY HAND! THIS IS DONE AUTOMATICALLY BY THE
 // CVS SYSTEM !!!
 //-----------------------------------------------------------------------------
-#define CVS_FILE_REVISION "$Revision: 1.1 $"
+#define CVS_FILE_REVISION "$Revision: 1.2 $"
 
 
 //=============================================================================

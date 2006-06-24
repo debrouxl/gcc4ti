@@ -19,7 +19,7 @@
   As a special exception, UNMODIFIED copies of some TIGCC Tools Suite utilities
   may also be redistributed or sold without source code, for any purpose. (The
   Lesser General Public License restrictions do apply in other respects; for
-  example, they cover modification of the launcher.) Please refer to the main
+  example, they cover modification of the program.) Please refer to the main
   source file for the individual utility as to whether this is the case for a
   particular tool. This exception notice must be removed on modified copies of
   this file.

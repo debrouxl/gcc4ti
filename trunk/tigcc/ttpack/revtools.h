@@ -22,7 +22,7 @@
   As a special exception, UNMODIFIED copies of some TIGCC Tools Suite utilities
   may also be redistributed or sold without source code, for any purpose. (The
   Lesser General Public License restrictions do apply in other respects; for
-  example, they cover modification of the launcher.) Please refer to the main
+  example, they cover modification of the program.) Please refer to the main
   source file for the individual utility as to whether this is the case for a
   particular tool. This exception notice must be removed on modified copies of
   this file.
@@ -52,7 +52,7 @@
 // DON'T EDIT THE NEXT REVISION BY HAND! THIS IS DONE AUTOMATICALLY BY THE
 // CVS SYSTEM !!!
 // ----------------------------------------------------------------------------
-// #define CVS_FILE_REVISION "$Revision: 1.1 $"
+// #define CVS_FILE_REVISION "$Revision: 1.2 $"
 //
 // It must be placed AFTER (!!) all includes otherwise the macros may be
 // expanded wrong where you use them. For example: if you have added the above
