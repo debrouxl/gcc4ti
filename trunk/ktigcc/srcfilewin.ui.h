@@ -500,89 +500,87 @@ void SourceFileWindow::filePrintQuickly()
 
 void SourceFileWindow::applyPreferences()
 {
-  if (showPreferencesDialog(this)==QDialog::Accepted) {
-    // Apply the KatePart preferences and treeview icons.
-    KParts::Factory *factory = (KParts::Factory *)
-      KLibLoader::self()->factory ("libkatepart");
-    if (!factory) qFatal("Failed to load KatePart");
-    Kate::Document *doc = (Kate::Document *)
-      factory->createPart( 0, "", this, "", "Kate::Document" );
-    KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
-    unsigned numConfigPages=confInterfaceExt->configPages();
-    for (unsigned i=0; i<numConfigPages; i++) {
-      if (!confInterfaceExt->configPageName(i).compare("Fonts & Colors")) {
-        KTextEditor::ConfigPage *configPage=confInterfaceExt->configPage(i);
-        configPage->apply();
-        delete configPage;
-        break;
-      }
+  // Apply the KatePart preferences and treeview icons.
+  KParts::Factory *factory = (KParts::Factory *)
+    KLibLoader::self()->factory ("libkatepart");
+  if (!factory) qFatal("Failed to load KatePart");
+  Kate::Document *doc = (Kate::Document *)
+    factory->createPart( 0, "", this, "", "Kate::Document" );
+  KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
+  unsigned numConfigPages=confInterfaceExt->configPages();
+  for (unsigned i=0; i<numConfigPages; i++) {
+    if (!confInterfaceExt->configPageName(i).compare("Fonts & Colors")) {
+      KTextEditor::ConfigPage *configPage=confInterfaceExt->configPage(i);
+      configPage->apply();
+      delete configPage;
+      break;
     }
-    delete doc;
-    Kate::View *kateView=CURRENT_VIEW;
-    if (kateView) {
-    }
-    if (CURRENT_VIEW) {
-      Kate::View *currView=CURRENT_VIEW;
-      QString fileText=currView->getDoc()->text();
-      if (preferences.removeTrailingSpaces)
-        currView->getDoc()->setConfigFlags(currView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-      else
-        currView->getDoc()->setConfigFlags(currView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-      currView->setTabWidth(THIS->isASMFile?preferences.tabWidthAsm:
-                            THIS->isCFile?preferences.tabWidthC:8);
-      // Force redrawing to get the tab width right, repaint() is ignored for some reason.
-      currView->hide();
-      currView->show();
-    }
-    // Apply the icon preferences.
-    setUsesBigPixmaps(preferences.useSystemIcons);
-    if (preferences.useSystemIcons) {
-      fileSaveAction->setIconSet(LOAD_ICON("filesave"));
-      fileAddToProjectAction->setIconSet(LOAD_ICON("edit_add"));
-      fileCompileAction->setIconSet(LOAD_ICON("compfile"));
-      filePrintAction->setIconSet(LOAD_ICON("fileprint"));
-      filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
-      editClearAction->setIconSet(LOAD_ICON("editdelete"));
-      editCutAction->setIconSet(LOAD_ICON("editcut"));
-      editCopyAction->setIconSet(LOAD_ICON("editcopy"));
-      editPasteAction->setIconSet(LOAD_ICON("editpaste"));
-      findFindAction->setIconSet(LOAD_ICON("filefind"));
-      if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
-        QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
-        int smallSize=IconSize(KIcon::Small);
-        fileReplaceIconSet.setIconSize(QIconSet::Small,QSize(smallSize,smallSize));
-        int largeSize=IconSize(KIcon::MainToolbar);
-        fileReplaceIconSet.setIconSize(QIconSet::Large,QSize(largeSize,largeSize));
-        findReplaceAction->setIconSet(fileReplaceIconSet);
-      } else
-        findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
-      editUndoAction->setIconSet(LOAD_ICON("undo"));
-      editRedoAction->setIconSet(LOAD_ICON("redo"));
-      findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
-      editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
-      editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
-      // stop compilation: "stop"
-      // force-quit compiler: "button_cancel"
-    } else {
-      fileSaveAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
-      fileAddToProjectAction->setIconSet(QIconSet(QPixmap::fromMimeSource("08")));
-      fileCompileAction->setIconSet(QIconSet(QPixmap::fromMimeSource("09")));
-      filePrintAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
-      filePrintQuicklyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
-      editClearAction->setIconSet(QIconSet(QPixmap::fromMimeSource("04")));
-      editCutAction->setIconSet(QIconSet(QPixmap::fromMimeSource("05")));
-      editCopyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("06")));
-      editPasteAction->setIconSet(QIconSet(QPixmap::fromMimeSource("07")));
-      findFindAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
-      findReplaceAction->setIconSet(QIconSet(QPixmap::fromMimeSource("14")));
-      editUndoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("16")));
-      editRedoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("17")));
-      findFunctionsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("18")));
-      editIncreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("19")));
-      editDecreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("20")));
-      // stop compilation: "21"
-      // force-quit compiler: "22"
-    }
+  }
+  delete doc;
+  Kate::View *kateView=CURRENT_VIEW;
+  if (kateView) {
+  }
+  if (CURRENT_VIEW) {
+    Kate::View *currView=CURRENT_VIEW;
+    QString fileText=currView->getDoc()->text();
+    if (preferences.removeTrailingSpaces)
+      currView->getDoc()->setConfigFlags(currView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
+    else
+      currView->getDoc()->setConfigFlags(currView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
+    currView->setTabWidth(THIS->isASMFile?preferences.tabWidthAsm:
+                          THIS->isCFile?preferences.tabWidthC:8);
+    // Force redrawing to get the tab width right, repaint() is ignored for some reason.
+    currView->hide();
+    currView->show();
+  }
+  // Apply the icon preferences.
+  setUsesBigPixmaps(preferences.useSystemIcons);
+  if (preferences.useSystemIcons) {
+    fileSaveAction->setIconSet(LOAD_ICON("filesave"));
+    fileAddToProjectAction->setIconSet(LOAD_ICON("edit_add"));
+    fileCompileAction->setIconSet(LOAD_ICON("compfile"));
+    filePrintAction->setIconSet(LOAD_ICON("fileprint"));
+    filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
+    editClearAction->setIconSet(LOAD_ICON("editdelete"));
+    editCutAction->setIconSet(LOAD_ICON("editcut"));
+    editCopyAction->setIconSet(LOAD_ICON("editcopy"));
+    editPasteAction->setIconSet(LOAD_ICON("editpaste"));
+    findFindAction->setIconSet(LOAD_ICON("filefind"));
+    if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
+      QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
+      int smallSize=IconSize(KIcon::Small);
+      fileReplaceIconSet.setIconSize(QIconSet::Small,QSize(smallSize,smallSize));
+      int largeSize=IconSize(KIcon::MainToolbar);
+      fileReplaceIconSet.setIconSize(QIconSet::Large,QSize(largeSize,largeSize));
+      findReplaceAction->setIconSet(fileReplaceIconSet);
+    } else
+      findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
+    editUndoAction->setIconSet(LOAD_ICON("undo"));
+    editRedoAction->setIconSet(LOAD_ICON("redo"));
+    findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
+    editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
+    editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
+    // stop compilation: "stop"
+    // force-quit compiler: "button_cancel"
+  } else {
+    fileSaveAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
+    fileAddToProjectAction->setIconSet(QIconSet(QPixmap::fromMimeSource("08")));
+    fileCompileAction->setIconSet(QIconSet(QPixmap::fromMimeSource("09")));
+    filePrintAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
+    filePrintQuicklyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
+    editClearAction->setIconSet(QIconSet(QPixmap::fromMimeSource("04")));
+    editCutAction->setIconSet(QIconSet(QPixmap::fromMimeSource("05")));
+    editCopyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("06")));
+    editPasteAction->setIconSet(QIconSet(QPixmap::fromMimeSource("07")));
+    findFindAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
+    findReplaceAction->setIconSet(QIconSet(QPixmap::fromMimeSource("14")));
+    editUndoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("16")));
+    editRedoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("17")));
+    findFunctionsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("18")));
+    editIncreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("19")));
+    editDecreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("20")));
+    // stop compilation: "21"
+    // force-quit compiler: "22"
   }
 }
 

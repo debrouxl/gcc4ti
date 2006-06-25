@@ -1884,6 +1884,12 @@ void MainForm::filePreferences()
       toolsConfigureAction->setIconSet(QIconSet(QPixmap::fromMimeSource("26")));
       debugResetAction->setIconSet(QIconSet(QPixmap::fromMimeSource("27")));
     }
+    // Apply the preferences to the source file windows.
+    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    SourceFile *sourceFile;
+    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+      sourceFile->applyPreferences();
+    }
   }
 }
 
