@@ -1194,6 +1194,103 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   return newView;
 }
 
+void MainForm::adoptSourceFile(void *srcFile)
+{
+  SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+  QString fileName=sourceFile->fileName;
+  Kate::View *newView=sourceFile->kateView;
+  // Determine category and caption.
+  QListViewItem *category=othFilesListItem;
+  QString suffix,caption;
+  int p;
+  p=fileName.findRev('/');
+  if (p<0) p=-1;
+  caption=fileName.mid(p+1);
+  p=caption.findRev('.');
+  if (p>=0) {
+    suffix=caption.mid(p+1);
+    caption.truncate(p);
+  }
+  if (!checkFileName(fileName,extractAllFileNames())) {
+    KMessageBox::error(this,QString("The file \'%1\' is already included in the project.").arg(caption));
+    return;
+  }
+  if (!suffix.compare("h"))
+    category=hFilesListItem;
+  else if (!suffix.compare("c"))
+    category=cFilesListItem;
+  else if (!suffix.compare("s"))
+    category=sFilesListItem;
+  else if (!suffix.compare("asm"))
+    category=asmFilesListItem;
+  else if (!suffix.compare("qll"))
+    category=qllFilesListItem;
+  else
+    category=txtFilesListItem;
+  if (category && category==qllFilesListItem && qllFileCount) {
+    KMessageBox::error(this,"There may be only one Quill source file in each project.","Quill Error");
+    return;
+  }
+  if (!category)
+    category=txtFilesListItem;
+  // Create file tree entry.
+  QListViewItem *item=NULL, *next=category->firstChild();
+  for (; IS_FILE(next); next=item->nextSibling())
+    item=next;
+  ListViewFile *newFile=item?new ListViewFile(category,item)
+                            :new ListViewFile(category);
+  newFile->isNew=FALSE;
+  newFile->setText(0,caption);
+  newFile->setPixmap(0,
+    category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
+    category==hFilesListItem?SYSICON("source_h","fileh.png"):
+    category==sFilesListItem||category==asmFilesListItem?SYSICON("source_s","files.png"):
+    SYSICON("txt","filet.png"));
+  newFile->fileName=fileName;
+  // Adopt View object.
+  newFile->kateView=newView;
+  newView->hide();
+  newView->reparent(widgetStack,QPoint());
+  newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
+  KDirWatch::self()->addFile(fileName);
+  fileCount++;
+  COUNTER_FOR_CATEGORY(category)++;
+  // Set highlighting mode.
+  QString fileText=newView->getDoc()->text();
+  uint cnt=newView->getDoc()->hlModeCount(), i;
+  for (i=0; i<cnt; i++) {
+    if (!newView->getDoc()->hlModeName(i).compare(
+        ((category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+           "GNU Assembler 68k":
+         (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+           "Motorola Assembler 68k":
+         (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
+           "C":
+         "None"))) break;
+  }
+  if (i==cnt) i=0;
+  newView->getDoc()->setHlMode(i);
+  // Set options.
+  newView->setTabWidth(
+    (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
+    (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
+    8
+  );
+  connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
+  connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
+  connect(newView->getDoc(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
+  connect(newView->getDoc(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
+  connect(newView->getDoc(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
+  newView->installPopup(te_popup);
+  // Mark project dirty.
+  projectIsDirty=TRUE;
+  // Select file.
+  fileTreeClicked(newFile);
+  // Close separate source view.
+  sourceFile->kateView=static_cast<Kate::View *>(NULL);
+  sourceFile->deleteLater();
+}
+
 void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *dir, const QString &open_file)
 {
   int i,e;
@@ -2524,7 +2621,7 @@ int MainForm::projectAddFiles_oneFile(const QString &fileName)
   else if (!suffix.compare("txt"))
     category=txtFilesListItem;
   
-  if (qllFileCount) {
+  if (category && category==qllFilesListItem && qllFileCount) {
     KMessageBox::error(this,"There may be only one Quill source file in each project.","Quill Error");
     return 0;
   }

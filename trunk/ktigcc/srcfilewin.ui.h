@@ -261,6 +261,7 @@ void SourceFileWindow::destroy()
   delete THIS->rightStatusLabel;
   THIS->dirWatch->removeFile(THIS->fileName);
   delete THIS->dirWatch;
+  if (THIS->kateView) delete THIS->kateView->getDoc();
   sourceFiles.remove(THIS);
 }
 
@@ -341,7 +342,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
   Kate::Document *doc = (Kate::Document *)
-      factory->createPart( 0, "", this, "", "Kate::Document" );
+      factory->createPart( 0, "", THIS->mainForm, "", "Kate::Document" );
   // Set the file name for printing.
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
@@ -479,7 +480,7 @@ void SourceFileWindow::fileSaveAs()
 
 void SourceFileWindow::fileAddToProject()
 {
-
+  THIS->mainForm->adoptSourceFile(THIS);
 }
 
 void SourceFileWindow::fileCompile()
