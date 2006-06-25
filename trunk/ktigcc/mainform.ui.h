@@ -350,7 +350,7 @@ tprSettings settings; //static is turned off here so ProjectOptions can access i
 tprLibOpts libopts; //static is turned off here so ProgramOptions can access it.
 static QString projectFileName;
 static QString lastDirectory;
-static QClipboard *clipboard;
+QClipboard *clipboard;
 static QAccel *accel;
 static KFindDialog *kfinddialog;
 static QListViewItem *findCurrentDocument;

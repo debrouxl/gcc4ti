@@ -23,6 +23,7 @@
 #include <kconfig.h>
 #include <kaboutdata.h>
 class QAssistantClient;
+class QClipboard;
 
 extern const char *tigcc_base;
 extern const char *quill_drv;
@@ -37,3 +38,4 @@ extern KConfig *pconfig;
 extern KAboutData *pabout;
 extern const char *parg;
 extern QAssistantClient *assistant;
+extern QClipboard *clipboard;

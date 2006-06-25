@@ -7,7 +7,8 @@ LIBS	+= -lktexteditor -lqassistantclient -lkutils
 
 HEADERS	+= tpr.h \
 	ktigcc.h \
-	preferences.h
+	preferences.h \
+	srcfile.h
 
 SOURCES	+= ktigcc.cpp \
 	preferences.cpp \
