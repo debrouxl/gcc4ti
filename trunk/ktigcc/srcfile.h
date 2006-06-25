@@ -23,6 +23,7 @@
 #include "srcfilewin.h"
 
 #include <qstring.h>
+class MainForm;
 namespace Kate {
   class View;
 }
@@ -34,10 +35,12 @@ class QAccel;
 class KFindDialog;
 
 struct SourceFile : public SourceFileWindow {
-  SourceFile(const QString &fn, const QString &hlm, bool isc, bool isasm) :
-    SourceFileWindow(), fileName(fn), hlMode(hlm), isCFile(isc),
-    isASMFile(isasm) {}
+  SourceFile(MainForm *mainfrm, const QString &fn, const QString &hlm,
+             bool isc, bool isasm) :
+    SourceFileWindow(), mainForm(mainfrm), fileName(fn), hlMode(hlm),
+    isCFile(isc), isASMFile(isasm) {}
 
+  MainForm *mainForm;
   QString fileName;
   QString hlMode;
   bool isCFile;
