@@ -140,7 +140,8 @@ class KReplaceWithSelectionS : public KReplace {
 };
 
 void SourceFileWindow::init()
-{  
+{
+  setCaption(caption()+" - "+THIS->fileName);
   THIS->te_popup = new QPopupMenu(this);
   THIS->te_popup->insertItem("&Open file at cursor",0);
   THIS->te_popup->insertItem("&Find symbol declaration",1);
@@ -445,6 +446,8 @@ void SourceFileWindow::fileSave_saveAs()
       CURRENT_VIEW->getDoc()->clearRedo();
       CURRENT_VIEW->getDoc()->setHlMode(hlMode);
       CURRENT_VIEW->setCursorPositionReal(line,col);
+      // Update the caption
+      setCaption(caption().left(caption().find('-')+2)+saveFileName);
     }
     THIS->fileName=saveFileName;
     KDirWatch::self()->addFile(saveFileName);
