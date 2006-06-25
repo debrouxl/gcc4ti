@@ -62,6 +62,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
+#include "mainform.h"
 #include "tpr.h"
 #include "preferences.h"
 #include "projectoptions.h"
@@ -162,7 +163,6 @@ static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
 static QPopupMenu *te_popup;
 static QString fileName;
-static QString lastDirectory;
 static QClipboard *clipboard;
 static QAccel *accel;
 static KFindDialog *kfinddialog;
@@ -212,7 +212,6 @@ void SourceFileWindow::init()
   statusBar()->addWidget(rightStatusLabel,1);
   statusBar()->setSizeGripEnabled(FALSE);
   connect(statusBar(),SIGNAL(messageChanged(const QString &)),this,SLOT(statusBar_messageChanged(const QString &)));
-  lastDirectory=TIGCCProjectDirectory;
   connect(KDirWatch::self(),SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   KDirWatch::self()->startScan();
@@ -361,38 +360,6 @@ void SourceFileWindow::accel_activated(int index)
   }
 }
 
-QString SourceFileWindow::SGetFileName(int mode,const QString &fileFilter,const QString &caption,QWidget *parent)
-{
-  QString ret;
-  if (static_cast<KFileDialog::OperationMode>(mode)==KFileDialog::Opening)
-    ret=KFileDialog::getOpenFileName(lastDirectory,fileFilter,parent,caption);
-  else
-    ret=KFileDialog::getSaveFileName(lastDirectory,fileFilter,parent,caption);
-  if (!ret.isNull())
-  {
-    KURL dir;
-    dir.setPath(ret);
-    dir.setFileName("");
-    lastDirectory=dir.path();
-  }
-  return ret;
-}
-
-//no mode, since it you can't save multiple.
-QStringList SourceFileWindow::SGetFileName_Multiple(const QString &fileFilter,const QString &caption,QWidget *parent)
-{
-  QStringList ret;
-  ret=KFileDialog::getOpenFileNames(lastDirectory,fileFilter,parent,caption);
-  if (!ret.empty())
-  {
-    KURL dir;
-    dir.setPath(ret[0]);
-    dir.setFileName("");
-    lastDirectory=dir.path();
-  }
-  return ret;
-}
-
 void *SourceFileWindow::createView(const QString &fileName, const QString &fileText, const QString &hlModeName, unsigned tabWidth)
 {
   // Create Document object.
@@ -486,7 +453,7 @@ void SourceFileWindow::fileSave_save()
 
 void SourceFileWindow::fileSave_saveAs()
 {
-  QString saveFileName=SGetFileName(KFileDialog::Saving,
+  QString saveFileName=MainForm::SGetFileName(KFileDialog::Saving,
   TIGCC_H_Filter TIGCC_C_Filter TIGCC_S_Filter TIGCC_ASM_Filter TIGCC_QLL_Filter
   TIGCC_TXT_Filter TIGCCAllFilter,"Save Source File",this);
   if (saveFileName.isEmpty())
