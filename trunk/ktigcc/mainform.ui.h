@@ -84,8 +84,6 @@ using std::exit;
 
 enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 
-#define TIGCCProjectDirectory "/usr/local/tigcc/projects"
-
 #define IS_CATEGORY(item) ((item) && ((item)==hFilesListItem \
                                       || (item)==cFilesListItem \
                                       || (item)==sFilesListItem \
@@ -700,7 +698,7 @@ void MainForm::init()
   QStringList args(QString("-profile"));
   args.append(QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
   assistant->setArguments(args);
-  lastDirectory=TIGCCProjectDirectory;
+  lastDirectory=QString("%1/projects").arg(tigcc_base);
   projectFileName="";
   projectIsDirty=FALSE;
   connect(KDirWatch::self(),SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));

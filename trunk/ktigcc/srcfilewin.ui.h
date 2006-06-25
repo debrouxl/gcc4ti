@@ -85,8 +85,6 @@ using std::exit;
 
 enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 
-#define TIGCCProjectDirectory "/usr/local/tigcc/projects"
-
 #define THIS (static_cast<SourceFile *>(this))
 #define CURRENT_VIEW (THIS->kateView)
 
