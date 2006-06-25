@@ -190,7 +190,7 @@ void SourceFileWindow::initBase()
   connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   KDirWatch::self()->startScan();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
-  layout()->add(CURRENT_VIEW);
+  centralWidget()->layout()->add(CURRENT_VIEW);
   CURRENT_VIEW->show();
   editUndoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->undoCount()));
   editRedoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->redoCount()));
@@ -343,7 +343,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   if (doc->openStream("text/plain",fileName))
     doc->closeStream();
   // Create View object.
-  Kate::View *newView = (Kate::View *) doc->createView( this, 0L );
+  Kate::View *newView = (Kate::View *) doc->createView( centralWidget(), 0L );
   newView->hide();
   newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
   // Set highlighting mode.
