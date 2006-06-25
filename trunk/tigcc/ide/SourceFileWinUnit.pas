@@ -2,6 +2,7 @@
   TIGCC IDE
 
   Copyright (C) 2000-2004 Sebastian Reichelt
+  Copyright (C) 2006 Kevin Kofler
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -786,7 +787,7 @@ begin
 	ActionFindSymbol := TAction.Create(Self);
 	with ActionFindSymbol do begin
 		ActionList := Actions;
-		Caption := 'Find Symbol Declaration';
+		Caption := 'F&ind Symbol Declaration';
 		Category := 'Extension';
 		OnExecute := ActionFindSymbolExecute;
 	end;

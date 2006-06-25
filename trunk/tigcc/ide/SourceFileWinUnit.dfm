@@ -254,14 +254,14 @@ object SourceFileForm: TSourceFileForm
     end
     object ActionFileCompile: TAction
       Category = 'File'
-      Caption = '&Compile'
+      Caption = 'C&ompile'
       Hint = 'Compile|Compile the file'
       ImageIndex = 9
       OnExecute = FileCompile
     end
     object ActionFileAddToProject: TAction
       Category = 'File'
-      Caption = '&Add to Project'
+      Caption = 'A&dd to Project'
       Hint = 'Add to Project|Add this file to the current project'
       ImageIndex = 8
       OnExecute = FileAddToProject
