@@ -3554,7 +3554,6 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
     while (!next) {
       next=item->parent();
       if (next==rootListItem||!next) {
-        qWarning("KDirWatch_dirty called for file not in project tree");
         return;
       }
       item=next;
@@ -3562,7 +3561,6 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
     }
     item=next;
   }
-  qWarning("KDirWatch_dirty called for file not in project tree");
   return;
 }
 

@@ -142,6 +142,7 @@ class KReplaceWithSelectionS : public KReplace {
 void SourceFileWindow::initBase()
 {
   sourceFiles.append(THIS);
+  THIS->dirWatch=new KDirWatch(this);
   setCaption(caption()+" - "+THIS->fileName);
   THIS->te_popup = new QPopupMenu(this);
   THIS->te_popup->insertItem("&Open file at cursor",0);
@@ -186,9 +187,10 @@ void SourceFileWindow::initBase()
   statusBar()->addWidget(THIS->rightStatusLabel,1);
   statusBar()->setSizeGripEnabled(FALSE);
   connect(statusBar(),SIGNAL(messageChanged(const QString &)),this,SLOT(statusBar_messageChanged(const QString &)));
-  connect(KDirWatch::self(),SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
-  connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
-  KDirWatch::self()->startScan();
+  connect(THIS->dirWatch,SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
+  connect(THIS->dirWatch,SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
+  THIS->dirWatch->addFile(THIS->fileName);
+  THIS->dirWatch->startScan();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
   centralWidget()->layout()->add(CURRENT_VIEW);
   CURRENT_VIEW->show();
@@ -257,6 +259,8 @@ void SourceFileWindow::destroy()
   delete THIS->colStatusLabel;
   delete THIS->charsStatusLabel;
   delete THIS->rightStatusLabel;
+  THIS->dirWatch->removeFile(THIS->fileName);
+  delete THIS->dirWatch;
   sourceFiles.remove(THIS);
 }
 
@@ -410,12 +414,12 @@ void SourceFileWindow::removeTrailingSpacesFromView(void *view)
 
 void SourceFileWindow::fileSave_save()
 {
-  KDirWatch::self()->removeFile(THIS->fileName);
+  THIS->dirWatch->removeFile(THIS->fileName);
   if (saveFileText(THIS->fileName,CURRENT_VIEW->getDoc()->text())) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(THIS->fileName));
-    KDirWatch::self()->addFile(THIS->fileName);
+    THIS->dirWatch->addFile(THIS->fileName);
   } else {
-    KDirWatch::self()->addFile(THIS->fileName);
+    THIS->dirWatch->addFile(THIS->fileName);
     removeTrailingSpacesFromView(CURRENT_VIEW);
     CURRENT_VIEW->getDoc()->setModified(FALSE);
   }
@@ -429,11 +433,11 @@ void SourceFileWindow::fileSave_saveAs()
   if (saveFileName.isEmpty())
     return;
   if (THIS->fileName[0]=='/')
-    KDirWatch::self()->removeFile(THIS->fileName);
+    THIS->dirWatch->removeFile(THIS->fileName);
   if (saveFileText(saveFileName,CURRENT_VIEW->getDoc()->text())) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
     if (THIS->fileName[0]=='/')
-      KDirWatch::self()->addFile(THIS->fileName);
+      THIS->dirWatch->addFile(THIS->fileName);
   } else {
     if (saveFileName.compare(THIS->fileName)) {
       // Update the file name for printing.
@@ -453,7 +457,7 @@ void SourceFileWindow::fileSave_saveAs()
       setCaption(caption().left(caption().find('-')+2)+saveFileName);
     }
     THIS->fileName=saveFileName;
-    KDirWatch::self()->addFile(saveFileName);
+    THIS->dirWatch->addFile(saveFileName);
     removeTrailingSpacesFromView(CURRENT_VIEW);
     CURRENT_VIEW->getDoc()->setModified(FALSE);
     updateRightStatusLabel();
@@ -1079,25 +1083,28 @@ void SourceFileWindow::closeEvent(QCloseEvent *e)
 {
   if (savePrompt())
     e->ignore();
-  else
+  else {
     e->accept();
+    deleteLater();
+  }
 }
 
 void SourceFileWindow::KDirWatch_dirty(const QString &fileName)
 {
-  if (KMessageBox::questionYesNo(this,
-        QString("The file \'%1\' has been changed by another program. "
-                "Do you want to reload it?").arg(fileName),"File Changed")
-        ==KMessageBox::Yes) {
-    QString fileText=loadFileText(fileName);
-    if (fileText.isNull()) {
-      KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
-      return;
+  if (!fileName.compare(THIS->fileName)) {
+    if (KMessageBox::questionYesNo(this,
+          QString("The file \'%1\' has been changed by another program. "
+                  "Do you want to reload it?").arg(fileName),"File Changed")
+          ==KMessageBox::Yes) {
+      QString fileText=loadFileText(fileName);
+      if (fileText.isNull()) {
+        KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
+        return;
+      }
+      CURRENT_VIEW->getDoc()->setText(fileText);
+      CURRENT_VIEW->getDoc()->setModified(FALSE);
+      CURRENT_VIEW->getDoc()->clearUndo();
+      CURRENT_VIEW->getDoc()->clearRedo();
     }
-    CURRENT_VIEW->getDoc()->setText(fileText);
-    CURRENT_VIEW->getDoc()->setModified(FALSE);
-    CURRENT_VIEW->getDoc()->clearUndo();
-    CURRENT_VIEW->getDoc()->clearRedo();
   }
-  return;
 }
