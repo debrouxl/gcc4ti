@@ -1409,11 +1409,19 @@ bool MainForm::openProject(const QString &fileName)
       caption.truncate(p);
     }
     
-    if (!checkFileName(fileName,extractAllFileNames())) {
+    if (extractAllFileNames().contains(fileName)) {
       KMessageBox::error(this,QString("The file \'%1\' is already included in the project.").arg(caption));
       return FALSE;
     }
-  
+    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    SourceFile *sourceFile;
+    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+      if (!fileName.compare(sourceFile->fileName)) {
+        KWin::activateWindow(sourceFile->winId());
+        return FALSE;
+      }
+    }
+
     if (!suffix.compare("h"))
       category=hFilesListItem;
     else if (!suffix.compare("c"))
