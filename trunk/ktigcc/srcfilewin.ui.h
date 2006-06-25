@@ -428,16 +428,19 @@ void SourceFileWindow::fileSave_save()
 void SourceFileWindow::fileSave_saveAs()
 {
   QString saveFileName=MainForm::SGetFileName(KFileDialog::Saving,
-  TIGCC_H_Filter TIGCC_C_Filter TIGCC_S_Filter TIGCC_ASM_Filter TIGCC_QLL_Filter
-  TIGCC_TXT_Filter TIGCCAllFilter,"Save Source File",this);
+  (THIS->fileName.endsWith(".h")?TIGCC_H_Filter TIGCCAllFilter:
+  THIS->fileName.endsWith(".c")?TIGCC_C_Filter TIGCCAllFilter:
+  THIS->fileName.endsWith(".s")?TIGCC_S_Filter TIGCCAllFilter:
+  THIS->fileName.endsWith(".asm")?TIGCC_ASM_Filter TIGCCAllFilter:
+  THIS->fileName.endsWith(".qll")?TIGCC_QLL_Filter TIGCCAllFilter:
+  THIS->fileName.endsWith(".txt")?TIGCC_TXT_Filter TIGCCAllFilter:
+  TIGCCAllFilter),"Save Source File",this);
   if (saveFileName.isEmpty())
     return;
-  if (THIS->fileName[0]=='/')
-    THIS->dirWatch->removeFile(THIS->fileName);
+  THIS->dirWatch->removeFile(THIS->fileName);
   if (saveFileText(saveFileName,CURRENT_VIEW->getDoc()->text())) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
-    if (THIS->fileName[0]=='/')
-      THIS->dirWatch->addFile(THIS->fileName);
+    THIS->dirWatch->addFile(THIS->fileName);
   } else {
     if (saveFileName.compare(THIS->fileName)) {
       // Update the file name for printing.
