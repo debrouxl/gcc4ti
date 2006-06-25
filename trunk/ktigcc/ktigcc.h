@@ -20,10 +20,12 @@
 */
 
 #include <cstddef>
+#include <qptrlist.h>
 #include <kconfig.h>
 #include <kaboutdata.h>
 class QAssistantClient;
 class QClipboard;
+class SourceFile;
 
 extern const char *tigcc_base;
 extern const char *quill_drv;
@@ -39,3 +41,4 @@ extern KAboutData *pabout;
 extern const char *parg;
 extern QAssistantClient *assistant;
 extern QClipboard *clipboard;
+extern QPtrList<SourceFile> sourceFiles;

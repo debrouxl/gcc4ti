@@ -35,13 +35,18 @@ class QAccel;
 class KFindDialog;
 
 struct SourceFile : public SourceFileWindow {
-  SourceFile(MainForm *mainfrm, const QString &fn, const QString &hlm,
-             bool isc, bool isasm) :
-    SourceFileWindow(), mainForm(mainfrm), fileName(fn), hlMode(hlm),
-    isCFile(isc), isASMFile(isasm) {}
+  SourceFile(MainForm *mainfrm, const QString &fn, const QString &ft,
+             const QString &hlm, bool isc, bool isasm) :
+    SourceFileWindow(), mainForm(mainfrm), fileName(fn), fileText(ft),
+    hlMode(hlm), isCFile(isc), isASMFile(isasm)
+  {
+    initBase(); // We can do this only after initializing the variables here.
+    show();
+  }
 
   MainForm *mainForm;
   QString fileName;
+  QString fileText;
   QString hlMode;
   bool isCFile;
   bool isASMFile;

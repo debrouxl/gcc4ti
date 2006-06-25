@@ -64,6 +64,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
+#include "srcfile.h"
 #include "tpr.h"
 #include "preferences.h"
 #include "projectoptions.h"
@@ -353,6 +354,7 @@ static QAccel *accel;
 static KFindDialog *kfinddialog;
 static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
+QPtrList<SourceFile> sourceFiles;
 
 class DnDListView : public KListView {
   private:
@@ -725,9 +727,10 @@ void MainForm::init()
   accel->setItemEnabled(7,FALSE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   pconfig->setGroup("Recent files");
-  if (parg)
-    openProject(parg);
-  else {
+  if (parg) {
+    if (!openProject(parg)) goto openRecent;
+  } else {
+    openRecent:;
     QString mostrecent=pconfig->readEntry("Current project");
     if (!mostrecent.isNull() && !mostrecent.isEmpty())
       openProject(mostrecent);
@@ -1231,63 +1234,122 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
   }
 }
 
-void MainForm::openProject(const QString &fileName)
+// Returns TRUE if the file is a project, FALSE if the file is a source file.
+bool MainForm::openProject(const QString &fileName)
 {
   TPRDataStruct TPRData;
   KURL dir;
+  bool isProject=fileName.endsWith(".tpr",FALSE);
   dir.setPath(fileName);
   switch (getPathType(fileName)) {
     case PATH_FILE: // OK
       break;
     case PATH_NOTFOUND:
       KMessageBox::error(this,QString("File \'%1\' not found").arg(fileName));
-      return;
+      return isProject;
     default:
     KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
-    return;
+    return isProject;
   }
-  int ret=loadTPR(fileName, &TPRData);
-  if (ret == -1) {
-    KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
-    return;
+  if (isProject) {
+    int ret=loadTPR(fileName, &TPRData);
+    if (ret == -1) {
+      KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
+      return TRUE;
+    }
+    if (ret > 0) {
+      KMessageBox::error(this,QString("Error at line %2 of \'%1\'").arg(fileName).arg(ret));
+      return TRUE;
+    }
+    if (TPRData.asm_files.path.count() && !asmFilesListItem) {
+      KMessageBox::error(this,"This project needs A68k, which is not installed.");
+      return TRUE;
+    }
+    if (TPRData.quill_files.path.count() && !qllFilesListItem) {
+      KMessageBox::error(this,"This project needs quill.drv, which is not installed.");
+      return TRUE;
+    }
+    if (TPRData.settings.fargo && !have_fargo) {
+      KMessageBox::error(this,"This project needs fargo.a, which is not installed.");
+      return TRUE;
+    }
+    if (TPRData.settings.flash_os && !have_flashos) {
+      KMessageBox::error(this,"This project needs flashos.a, which is not installed.");
+      return TRUE;
+    }
+    clearProject();
+    fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir,TPRData.open_file);
+    fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir,TPRData.open_file);
+    fileOpen_addList(qllFilesListItem,&TPRData.quill_files,&dir,TPRData.open_file);
+    fileOpen_addList(sFilesListItem,&TPRData.s_files,&dir,TPRData.open_file);
+    fileOpen_addList(asmFilesListItem,&TPRData.asm_files,&dir,TPRData.open_file);
+    fileOpen_addList(oFilesListItem,&TPRData.o_files,&dir,TPRData.open_file);
+    fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir,TPRData.open_file);
+    fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir,TPRData.open_file);
+    fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir,TPRData.open_file);
+    rootListItem->setText(0,TPRData.prj_name);
+    projectFileName=fileName;
+    settings=TPRData.settings;
+    libopts=TPRData.libopts;
+    updateLeftStatusLabel();
+    updateRightStatusLabel();
+    addRecent(fileName);
+    return TRUE;
+  } else {
+    QListViewItem *category=othFilesListItem;
+    QString suffix,caption;
+    int p;
+    
+    p=fileName.findRev('/');
+    if (p<0) p=-1;
+    caption=fileName.mid(p+1);
+    p=caption.findRev('.');
+    if (p>=0) {
+      suffix=caption.mid(p+1);
+      caption.truncate(p);
+    }
+    
+    if (!checkFileName(fileName,extractAllFileNames())) {
+      KMessageBox::error(this,QString("The file \'%1\' is already included in the project.").arg(caption));
+      return FALSE;
+    }
+  
+    if (!suffix.compare("h"))
+      category=hFilesListItem;
+    else if (!suffix.compare("c"))
+      category=cFilesListItem;
+    else if (!suffix.compare("s"))
+      category=sFilesListItem;
+    else if (!suffix.compare("asm"))
+      category=asmFilesListItem;
+    else if (!suffix.compare("qll"))
+      category=qllFilesListItem;
+    else if (!suffix.compare("txt"))
+      category=txtFilesListItem;
+    else {
+      KMessageBox::error(this,QString("\'%1\' is not a valid file for opening.").arg(fileName));
+      return FALSE;
+    }
+    QString fileText=loadFileText(fileName);
+    if (fileText.isNull()) {
+      KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
+      return FALSE;
+    }
+    int type=((category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+                2:
+              (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+                3:
+              (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
+                1:
+              0);
+    
+    new SourceFile(this,fileName,fileText,
+                   (type==2)?"GNU Assembler 68k":
+                   (type==3)?"Motorola Assembler 68k":
+                   (type==1)?"C":
+                    "None",(type==1),(type>1));
+    return FALSE;
   }
-  if (ret > 0) {
-    KMessageBox::error(this,QString("Error at line %2 of \'%1\'").arg(fileName).arg(ret));
-    return;
-  }
-  if (TPRData.asm_files.path.count() && !asmFilesListItem) {
-    KMessageBox::error(this,"This project needs A68k, which is not installed.");
-    return;
-  }
-  if (TPRData.quill_files.path.count() && !qllFilesListItem) {
-    KMessageBox::error(this,"This project needs quill.drv, which is not installed.");
-    return;
-  }
-  if (TPRData.settings.fargo && !have_fargo) {
-    KMessageBox::error(this,"This project needs fargo.a, which is not installed.");
-    return;
-  }
-  if (TPRData.settings.flash_os && !have_flashos) {
-    KMessageBox::error(this,"This project needs flashos.a, which is not installed.");
-    return;
-  }
-  clearProject();
-  fileOpen_addList(hFilesListItem,&TPRData.h_files,&dir,TPRData.open_file);
-  fileOpen_addList(cFilesListItem,&TPRData.c_files,&dir,TPRData.open_file);
-  fileOpen_addList(qllFilesListItem,&TPRData.quill_files,&dir,TPRData.open_file);
-  fileOpen_addList(sFilesListItem,&TPRData.s_files,&dir,TPRData.open_file);
-  fileOpen_addList(asmFilesListItem,&TPRData.asm_files,&dir,TPRData.open_file);
-  fileOpen_addList(oFilesListItem,&TPRData.o_files,&dir,TPRData.open_file);
-  fileOpen_addList(aFilesListItem,&TPRData.a_files,&dir,TPRData.open_file);
-  fileOpen_addList(txtFilesListItem,&TPRData.txt_files,&dir,TPRData.open_file);
-  fileOpen_addList(othFilesListItem,&TPRData.oth_files,&dir,TPRData.open_file);
-  rootListItem->setText(0,TPRData.prj_name);
-  projectFileName=fileName;
-  settings=TPRData.settings;
-  libopts=TPRData.libopts;
-  updateLeftStatusLabel();
-  updateRightStatusLabel();
-  addRecent(fileName);
 }
 
 void MainForm::fileOpen()

@@ -139,8 +139,9 @@ class KReplaceWithSelectionS : public KReplace {
     unsigned m_selStartLine, m_selStartCol, m_selEndLine, m_selEndCol;
 };
 
-void SourceFileWindow::init()
+void SourceFileWindow::initBase()
 {
+  sourceFiles.append(THIS);
   setCaption(caption()+" - "+THIS->fileName);
   THIS->te_popup = new QPopupMenu(this);
   THIS->te_popup->insertItem("&Open file at cursor",0);
@@ -160,8 +161,12 @@ void SourceFileWindow::init()
   THIS->te_popup->insertItem("&Decrease indent",10);
   connect(THIS->te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
   connect(THIS->te_popup,SIGNAL(activated(int)),this,SLOT(te_popup_activated(int)));
-  THIS->kateView=reinterpret_cast<Kate::View *>(createView(THIS->fileName,loadFileText(THIS->fileName),THIS->hlMode,
+  THIS->kfinddialog = static_cast<KFindDialog *>(NULL);
+  THIS->kreplace = static_cast<KReplaceWithSelectionS *>(NULL);
+  THIS->kateView=static_cast<Kate::View *>(NULL);
+  THIS->kateView=reinterpret_cast<Kate::View *>(createView(THIS->fileName,THIS->fileText,THIS->hlMode,
   THIS->isASMFile?preferences.tabWidthAsm:THIS->isCFile?preferences.tabWidthC:8));
+  THIS->fileText=QString::null;
   int rightStatusSize=size().width();
   unsigned int line, col;
   CURRENT_VIEW->cursorPositionReal(&line,&col);
@@ -185,8 +190,7 @@ void SourceFileWindow::init()
   connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   KDirWatch::self()->startScan();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
-  QVBoxLayout *layout=new QVBoxLayout(this);
-  layout->addWidget(CURRENT_VIEW);
+  layout()->add(CURRENT_VIEW);
   CURRENT_VIEW->show();
   editUndoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->undoCount()));
   editRedoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->redoCount()));
@@ -212,8 +216,6 @@ void SourceFileWindow::init()
   THIS->accel->setItemEnabled(6,TRUE);
   THIS->accel->setItemEnabled(7,TRUE);
   connect(THIS->accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
-  THIS->kfinddialog = static_cast<KFindDialog *>(NULL);
-  THIS->kreplace = static_cast<KReplaceWithSelectionS *>(NULL);
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
     fileSaveAction->setIconSet(LOAD_ICON("filesave"));
@@ -255,6 +257,7 @@ void SourceFileWindow::destroy()
   delete THIS->colStatusLabel;
   delete THIS->charsStatusLabel;
   delete THIS->rightStatusLabel;
+  sourceFiles.remove(THIS);
 }
 
 void SourceFileWindow::te_popup_aboutToShow()
