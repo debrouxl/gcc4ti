@@ -47,8 +47,6 @@
 #include <kconfig.h>
 #include <ktexteditor/editinterfaceext.h>
 #include <ktexteditor/configinterfaceextension.h>
-#include <kaboutdata.h>
-#include <khelpmenu.h>
 #include <kfiledialog.h>
 #include <kurl.h>
 #include <kmessagebox.h>
@@ -158,12 +156,10 @@ static KReplaceWithSelection *kreplace;
 
 // FIXME: There may be multiple instances of SourceFileWindow, so these have no
 // business of being here.
-static QLabel *leftStatusLabel;
 static QLabel *rowStatusLabel;
 static QLabel *colStatusLabel;
 static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
-static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
 static QString fileName;
 static QString lastDirectory;
@@ -173,10 +169,10 @@ static KFindDialog *kfinddialog;
 static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
 static bool isCFile;
+static bool isASMFile;
 
 void SourceFileWindow::init()
 {  
-  fileNewFolderAction->setEnabled(FALSE);
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
   te_popup->insertItem("&Find symbol declaration",1);
@@ -195,83 +191,74 @@ void SourceFileWindow::init()
   te_popup->insertItem("&Decrease indent",10);
   connect(te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
   connect(te_popup,SIGNAL(activated(int)),this,SLOT(te_popup_activated(int)));
-  QValueList<int> list;
-  list.append(150);
-  list.append(500);
-  splitter->setSizes(list);
-  leftStatusLabel=new QLabel("0 Files Total",this);
-  leftStatusLabel->setMaximumWidth(splitter->sizes().first());
-  statusBar()->addWidget(leftStatusLabel,1);
-  rowStatusLabel=new QLabel("",this);
+  Kate::View *kateView=reinterpret_cast<Kate::View *>(createView(fileName,"","",8));
+  fileName="";
+  int rightStatusSize=size().width();
+  unsigned int line, col;
+  CURRENT_VIEW->cursorPositionReal(&line,&col);
+  rowStatusLabel=new QLabel(QString("%1").arg(line+1),this);
   rowStatusLabel->setAlignment(Qt::AlignRight);
+  rowStatusLabel->setMaximumWidth(30);
   statusBar()->addWidget(rowStatusLabel,1);
-  rowStatusLabel->hide();
-  colStatusLabel=new QLabel("",this);
+  colStatusLabel=new QLabel(QString("%1").arg(col+1),this);
   colStatusLabel->setAlignment(Qt::AlignRight);
+  colStatusLabel->setMaximumWidth(30);
   statusBar()->addWidget(colStatusLabel,1);
-  colStatusLabel->hide();
-  charsStatusLabel=new QLabel("",this);
+  charsStatusLabel=new QLabel(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()),this);
+  charsStatusLabel->setMaximumWidth(100);
   statusBar()->addWidget(charsStatusLabel,1);
-  charsStatusLabel->hide();
-  rightStatusLabel=new QLabel("",this);
-  rightStatusLabel->setMaximumWidth(splitter->sizes().last());
+  rightStatusLabel=new QLabel(fileName,this);
+  rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
   statusBar()->addWidget(rightStatusLabel,1);
   statusBar()->setSizeGripEnabled(FALSE);
   connect(statusBar(),SIGNAL(messageChanged(const QString &)),this,SLOT(statusBar_messageChanged(const QString &)));
-  khelpmenu=new KHelpMenu(this,pabout);
-  assistant = new QAssistantClient("",this);
-  QStringList args(QString("-profile"));
-  args.append(QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
-  assistant->setArguments(args);
   lastDirectory=TIGCCProjectDirectory;
-  fileName="";
   connect(KDirWatch::self(),SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   KDirWatch::self()->startScan();
   clipboard=QApplication::clipboard();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
+  widgetStack->addWidget(kateView);
+  kateView->show();
+  widgetStack->raiseWidget(kateView);
+  editUndoAction->setEnabled(!!(kateView->getDoc()->undoCount()));
+  editRedoAction->setEnabled(!!(kateView->getDoc()->redoCount()));
+  editClearAction->setEnabled(kateView->getDoc()->hasSelection());
+  editCutAction->setEnabled(kateView->getDoc()->hasSelection());
+  editCopyAction->setEnabled(kateView->getDoc()->hasSelection());
+  editPasteAction->setEnabled(!clipboard->text().isNull());
   accel=new QAccel(this);
   accel->insertItem(ALT+Key_Backspace,0);
-  accel->setItemEnabled(0,FALSE);
   accel->insertItem(SHIFT+ALT+Key_Backspace,1);
-  accel->setItemEnabled(1,FALSE);
   accel->insertItem(SHIFT+Key_Delete,2);
-  accel->setItemEnabled(2,FALSE);
   accel->insertItem(CTRL+Key_Insert,3);
-  accel->setItemEnabled(3,FALSE);
   accel->insertItem(SHIFT+Key_Insert,4);
-  accel->setItemEnabled(4,FALSE);
   accel->insertItem(Key_F1,5);
-  accel->setItemEnabled(5,FALSE);
   accel->insertItem(Key_Enter,6);
-  accel->setItemEnabled(6,FALSE);
   accel->insertItem(Key_Return,7);
-  accel->setItemEnabled(7,FALSE);
+  accel->setItemEnabled(0,!!(kateView->getDoc()->undoCount()));
+  accel->setItemEnabled(1,!!(kateView->getDoc()->redoCount()));
+  accel->setItemEnabled(2,kateView->getDoc()->hasSelection());
+  accel->setItemEnabled(3,kateView->getDoc()->hasSelection());
+  accel->setItemEnabled(4,!clipboard->text().isNull());
+  accel->setItemEnabled(5,TRUE);
+  accel->setItemEnabled(6,TRUE);
+  accel->setItemEnabled(7,TRUE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
-  pconfig->setGroup("Recent files");
   startTimer(100);
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
-    fileNewActionGroup->setIconSet(LOAD_ICON("filenew"));
-    fileMenu->changeItem(fileMenu->idAt(0),LOAD_ICON("filenew"),"&New");
-    fileOpenAction->setIconSet(LOAD_ICON("fileopen"));
-    fileOpenActionGroup->setIconSet(LOAD_ICON("fileopen"));
-    fileSaveAllAction->setIconSet(LOAD_ICON("filesave"));
+    fileSaveAction->setIconSet(LOAD_ICON("filesave"));
+    fileAddToProjectAction->setIconSet(LOAD_ICON("edit_add"));
+    fileCompileAction->setIconSet(LOAD_ICON("compfile"));
     filePrintAction->setIconSet(LOAD_ICON("fileprint"));
     filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
     editClearAction->setIconSet(LOAD_ICON("editdelete"));
     editCutAction->setIconSet(LOAD_ICON("editcut"));
     editCopyAction->setIconSet(LOAD_ICON("editcopy"));
     editPasteAction->setIconSet(LOAD_ICON("editpaste"));
-    projectAddFilesAction->setIconSet(LOAD_ICON("edit_add"));
-    projectCompileAction->setIconSet(LOAD_ICON("compfile"));
-    projectMakeAction->setIconSet(LOAD_ICON("make_kdevelop"));
-    projectBuildAction->setIconSet(LOAD_ICON("rebuild"));
-    helpContentsAction->setIconSet(LOAD_ICON("help"));
-    helpDocumentationAction->setIconSet(LOAD_ICON("help"));
-    helpSearchAction->setIconSet(LOAD_ICON("filefind"));
     findFindAction->setIconSet(LOAD_ICON("filefind"));
     if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
       QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
@@ -282,7 +269,6 @@ void SourceFileWindow::init()
       findReplaceAction->setIconSet(fileReplaceIconSet);
     } else
       findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
-    helpIndexAction->setIconSet(LOAD_ICON("contents"));
     editUndoAction->setIconSet(LOAD_ICON("undo"));
     editRedoAction->setIconSet(LOAD_ICON("redo"));
     findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
@@ -290,11 +276,6 @@ void SourceFileWindow::init()
     editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
     // stop compilation: "stop"
     // force-quit compiler: "button_cancel"
-    helpNewsAction->setIconSet(LOAD_ICON("kontact_news"));
-    debugRunAction->setIconSet(LOAD_ICON("player_play"));
-    debugPauseAction->setIconSet(LOAD_ICON("player_pause"));
-    toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
-    debugResetAction->setIconSet(LOAD_ICON("player_stop"));
   }
 }
 
@@ -304,13 +285,10 @@ void SourceFileWindow::destroy()
   if (kfinddialog) delete kfinddialog;
   delete accel;
   delete te_popup;
-  delete leftStatusLabel;
   delete rowStatusLabel;
   delete colStatusLabel;
   delete charsStatusLabel;
   delete rightStatusLabel;
-  delete khelpmenu;
-  delete assistant;
 }
 
 void SourceFileWindow::te_popup_aboutToShow()
@@ -553,6 +531,16 @@ void SourceFileWindow::fileSaveAs()
   fileSave_saveAs();
 }
 
+void SourceFileWindow::fileAddToProject()
+{
+
+}
+
+void SourceFileWindow::fileCompile()
+{
+
+}
+
 void SourceFileWindow::filePrint()
 {
   if (CURRENT_VIEW) CURRENT_VIEW->getDoc()->printDialog();
@@ -564,12 +552,10 @@ void SourceFileWindow::filePrintQuickly()
   if (CURRENT_VIEW) CURRENT_VIEW->getDoc()->print();
 }
 
-void SourceFileWindow::filePreferences()
+void SourceFileWindow::applyPreferences()
 {
-#if 0
   if (showPreferencesDialog(this)==QDialog::Accepted) {
     // Apply the KatePart preferences and treeview icons.
-    QListViewItem *item;
     KParts::Factory *factory = (KParts::Factory *)
       KLibLoader::self()->factory ("libkatepart");
     if (!factory) qFatal("Failed to load KatePart");
@@ -592,16 +578,12 @@ void SourceFileWindow::filePreferences()
     if (CURRENT_VIEW) {
       Kate::View *currView=CURRENT_VIEW;
       QString fileText=currView->getDoc()->text();
-      CATEGORY_OF(category,item);
       if (preferences.removeTrailingSpaces)
         currView->getDoc()->setConfigFlags(currView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
       else
         currView->getDoc()->setConfigFlags(currView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-      currView->setTabWidth(
-        (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
-        (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
-        8
-      );
+      currView->setTabWidth(isASMFile?preferences.tabWidthAsm:
+                            isCFile?preferences.tabWidthC:8);
       // Force redrawing to get the tab width right, repaint() is ignored for some reason.
       currView->hide();
       currView->show();
@@ -609,24 +591,15 @@ void SourceFileWindow::filePreferences()
     // Apply the icon preferences.
     setUsesBigPixmaps(preferences.useSystemIcons);
     if (preferences.useSystemIcons) {
-      fileNewActionGroup->setIconSet(LOAD_ICON("filenew"));
-      fileMenu->changeItem(fileMenu->idAt(0),LOAD_ICON("filenew"),"&New");
-      fileOpenAction->setIconSet(LOAD_ICON("fileopen"));
-      fileOpenActionGroup->setIconSet(LOAD_ICON("fileopen"));
-      fileSaveAllAction->setIconSet(LOAD_ICON("filesave"));
+      fileSaveAction->setIconSet(LOAD_ICON("filesave"));
+      fileAddToProjectAction->setIconSet(LOAD_ICON("edit_add"));
+      fileCompileAction->setIconSet(LOAD_ICON("compfile"));
       filePrintAction->setIconSet(LOAD_ICON("fileprint"));
       filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
       editClearAction->setIconSet(LOAD_ICON("editdelete"));
       editCutAction->setIconSet(LOAD_ICON("editcut"));
       editCopyAction->setIconSet(LOAD_ICON("editcopy"));
       editPasteAction->setIconSet(LOAD_ICON("editpaste"));
-      projectAddFilesAction->setIconSet(LOAD_ICON("edit_add"));
-      projectCompileAction->setIconSet(LOAD_ICON("compfile"));
-      projectMakeAction->setIconSet(LOAD_ICON("make_kdevelop"));
-      projectBuildAction->setIconSet(LOAD_ICON("rebuild"));
-      helpContentsAction->setIconSet(LOAD_ICON("help"));
-      helpDocumentationAction->setIconSet(LOAD_ICON("help"));
-      helpSearchAction->setIconSet(LOAD_ICON("filefind"));
       findFindAction->setIconSet(LOAD_ICON("filefind"));
       if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
         QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
@@ -637,7 +610,6 @@ void SourceFileWindow::filePreferences()
         findReplaceAction->setIconSet(fileReplaceIconSet);
       } else
         findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
-      helpIndexAction->setIconSet(LOAD_ICON("contents"));
       editUndoAction->setIconSet(LOAD_ICON("undo"));
       editRedoAction->setIconSet(LOAD_ICON("redo"));
       findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
@@ -645,33 +617,18 @@ void SourceFileWindow::filePreferences()
       editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
       // stop compilation: "stop"
       // force-quit compiler: "button_cancel"
-      helpNewsAction->setIconSet(LOAD_ICON("kontact_news"));
-      debugRunAction->setIconSet(LOAD_ICON("player_play"));
-      debugPauseAction->setIconSet(LOAD_ICON("player_pause"));
-      toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
-      debugResetAction->setIconSet(LOAD_ICON("player_stop"));
     } else {
-      fileNewActionGroup->setIconSet(QIconSet(QPixmap::fromMimeSource("00")));
-      fileMenu->changeItem(fileMenu->idAt(0),QIconSet(QPixmap::fromMimeSource("00")),"&New");
-      fileOpenAction->setIconSet(QIconSet(QPixmap::fromMimeSource("01")));
-      fileOpenActionGroup->setIconSet(QIconSet(QPixmap::fromMimeSource("01")));
-      fileSaveAllAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
+      fileSaveAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
+      fileAddToProjectAction->setIconSet(QIconSet(QPixmap::fromMimeSource("08")));
+      fileCompileAction->setIconSet(QIconSet(QPixmap::fromMimeSource("09")));
       filePrintAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
       filePrintQuicklyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
       editClearAction->setIconSet(QIconSet(QPixmap::fromMimeSource("04")));
       editCutAction->setIconSet(QIconSet(QPixmap::fromMimeSource("05")));
       editCopyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("06")));
       editPasteAction->setIconSet(QIconSet(QPixmap::fromMimeSource("07")));
-      projectAddFilesAction->setIconSet(QIconSet(QPixmap::fromMimeSource("08")));
-      projectCompileAction->setIconSet(QIconSet(QPixmap::fromMimeSource("09")));
-      projectMakeAction->setIconSet(QIconSet(QPixmap::fromMimeSource("10")));
-      projectBuildAction->setIconSet(QIconSet(QPixmap::fromMimeSource("11")));
-      helpContentsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("12")));
-      helpDocumentationAction->setIconSet(QIconSet(QPixmap::fromMimeSource("12")));
-      helpSearchAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
       findFindAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
       findReplaceAction->setIconSet(QIconSet(QPixmap::fromMimeSource("14")));
-      helpIndexAction->setIconSet(QIconSet(QPixmap::fromMimeSource("15")));
       editUndoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("16")));
       editRedoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("17")));
       findFunctionsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("18")));
@@ -679,14 +636,8 @@ void SourceFileWindow::filePreferences()
       editDecreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("20")));
       // stop compilation: "21"
       // force-quit compiler: "22"
-      helpNewsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("23")));
-      debugRunAction->setIconSet(QIconSet(QPixmap::fromMimeSource("24")));
-      debugPauseAction->setIconSet(QIconSet(QPixmap::fromMimeSource("25")));
-      toolsConfigureAction->setIconSet(QIconSet(QPixmap::fromMimeSource("26")));
-      debugResetAction->setIconSet(QIconSet(QPixmap::fromMimeSource("27")));
     }
   }
-#endif
 }
 
 void SourceFileWindow::editUndo()
@@ -1294,73 +1245,13 @@ void SourceFileWindow::findFindSymbolDeclaration()
 
 }
 
-void SourceFileWindow::errorsAndWarnings()
-{
-  
-}
-
-void SourceFileWindow::debugRun()
-{
-  
-}
-
-void SourceFileWindow::debugPause()
-{
-  
-}
-
-void SourceFileWindow::debugReset()
-{
-  
-}
-
-void SourceFileWindow::toolsConfigure()
-{
-  
-}
-
-void SourceFileWindow::helpDocumentation()
-{
-  assistant->openAssistant();
-}
-
-void SourceFileWindow::helpContents()
-{
-  force_qt_assistant_page(0);
-  assistant->openAssistant();
-}
-
-void SourceFileWindow::helpIndex()
-{
-  force_qt_assistant_page(1);
-  assistant->openAssistant();
-}
-
-void SourceFileWindow::helpSearch()
-{
-  force_qt_assistant_page(3);
-  assistant->openAssistant();
-}
-
-void SourceFileWindow::helpNews()
-{
-  
-}
-
-void SourceFileWindow::helpAbout()
-{
-  khelpmenu->aboutApplication();
-}
-
 void SourceFileWindow::updateSizes()
 {
-  int leftSize=splitter->sizes().first();
-  int rightSize=splitter->sizes().last();
-  int totalSize=leftSize+rightSize;
-  int mySize=size().width();
-  leftStatusLabel->setMaximumWidth(leftSize*mySize/totalSize);
-  rightStatusLabel->setMaximumWidth(rightSize*mySize/totalSize-10>0?
-                                    rightSize*mySize/totalSize-10:0);
+  int rightStatusSize=size().width();
+  rowStatusLabel->setMaximumWidth(30);
+  colStatusLabel->setMaximumWidth(30);
+  charsStatusLabel->setMaximumWidth(100);
+  rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
 }
 
 void SourceFileWindow::resizeEvent(QResizeEvent *event)
@@ -1388,21 +1279,13 @@ void SourceFileWindow::statusBar_messageChanged(const QString & message)
 
 void SourceFileWindow::updateRightStatusLabel()
 {
-  int leftSize=splitter->sizes().first();
-  int rightSize=splitter->sizes().last();
-  int totalSize=leftSize+rightSize;
-  int mySize=size().width();
-  int rightStatusSize=rightSize*mySize/totalSize-10>0?
-                      rightSize*mySize/totalSize-10:0;
+  int rightStatusSize=size().width();
   unsigned int line, col;
   CURRENT_VIEW->cursorPositionReal(&line,&col);
-  rowStatusLabel->show();
   rowStatusLabel->setMaximumWidth(30);
   rowStatusLabel->setText(QString("%1").arg(line+1));
-  colStatusLabel->show();
   colStatusLabel->setMaximumWidth(30);
   colStatusLabel->setText(QString("%1").arg(col+1));
-  charsStatusLabel->show();
   charsStatusLabel->setMaximumWidth(100);
   charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
   rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);

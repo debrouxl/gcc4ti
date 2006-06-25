@@ -47,33 +47,17 @@
         <cstring>menubar</cstring>
     </property>
     <item text="&amp;File" name="fileMenu">
-        <actiongroup name="fileNewActionGroup"/>
-        <item text="&amp;New" name="popupMenu" accel="">
-            <action name="fileNewProjectAction"/>
-            <action name="fileNewFolderAction"/>
-            <action name="fileNewCHeaderAction"/>
-            <action name="fileNewGNUAssemblyHeaderAction"/>
-            <action name="fileNewA68kAssemblyHeaderAction"/>
-            <action name="fileNewCSourceFileAction"/>
-            <action name="fileNewGNUAssemblySourceFileAction"/>
-            <action name="fileNewA68kAssemblySourceFileAction"/>
-            <action name="fileNewQuillSourceFileAction"/>
-            <action name="fileNewTextFileAction"/>
-        </item>
-        <action name="fileOpenAction"/>
-        <action name="fileSaveAllAction"/>
-        <action name="fileSaveProjectAsAction"/>
+        <action name="fileSaveAction"/>
+        <action name="fileSaveAsAction"/>
+        <separator/>
+        <action name="fileAddToProjectAction"/>
+        <separator/>
+        <action name="fileCompileAction"/>
         <separator/>
         <action name="filePrintAction"/>
         <separator/>
-        <action name="filePreferencesAction"/>
+        <action name="fileCloseAction"/>
         <separator/>
-        <action name="fileExitAction"/>
-        <separator/>
-        <action name="fileRecent1Action"/>
-        <action name="fileRecent2Action"/>
-        <action name="fileRecent3Action"/>
-        <action name="fileRecent4Action"/>
     </item>
     <item text="&amp;Edit" name="editMenu">
         <action name="editUndoAction"/>
@@ -98,36 +82,6 @@
         <action name="findOpenFileAtCursorAction"/>
         <action name="findFindSymbolDeclarationAction"/>
     </item>
-    <item text="&amp;Project" name="PopupMenu_2">
-        <action name="projectAddFilesAction"/>
-        <separator/>
-        <action name="projectCompileAction"/>
-        <action name="projectMakeAction"/>
-        <action name="projectBuildAction"/>
-        <separator/>
-        <action name="projectErrorsWarningsAction"/>
-        <action name="projectProgramOutputAction"/>
-        <separator/>
-        <action name="projectOptionsAction"/>
-    </item>
-    <item text="&amp;Debug" name="PopupMenu_3">
-        <action name="debugRunAction"/>
-        <separator/>
-        <action name="debugPauseAction"/>
-        <action name="debugResetAction"/>
-    </item>
-    <item text="&amp;Tools" name="PopupMenu_4">
-        <action name="toolsConfigureAction"/>
-    </item>
-    <item text="&amp;Help" name="helpMenu">
-        <action name="helpContentsAction"/>
-        <action name="helpIndexAction"/>
-        <action name="helpSearchAction"/>
-        <separator/>
-        <action name="helpNewsAction"/>
-        <separator/>
-        <action name="helpAboutAction"/>
-    </item>
 </menubar>
 <toolbars>
     <toolbar dock="2">
@@ -140,9 +94,7 @@
         <property name="label">
             <string>Tools</string>
         </property>
-        <action name="fileNewActionGroup"/>
-        <action name="fileOpenActionGroup"/>
-        <action name="fileSaveAllAction"/>
+        <action name="fileSaveAction"/>
         <separator/>
         <action name="filePrintQuicklyAction"/>
         <separator/>
@@ -158,41 +110,13 @@
         <action name="findReplaceAction"/>
         <action name="findFunctionsAction"/>
         <separator/>
-        <action name="projectAddFilesAction"/>
-        <separator/>
-        <action name="projectMakeAction"/>
-        <action name="projectBuildAction"/>
-        <separator/>
-        <action name="debugRunAction"/>
-        <action name="debugPauseAction"/>
-        <separator/>
-        <action name="helpDocumentationAction"/>
+        <action name="fileAddToProjectAction"/>
     </toolbar>
 </toolbars>
 <actions>
     <action>
         <property name="name">
-            <cstring>fileOpenAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>01</iconset>
-        </property>
-        <property name="text">
-            <string>Open File</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Open...</string>
-        </property>
-        <property name="statusTip">
-            <string>Open an existing project or file</string>
-        </property>
-        <property name="accel">
-            <string>Ctrl+O</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>fileSaveAllAction</cstring>
+            <cstring>fileSaveAction</cstring>
         </property>
         <property name="iconSet">
             <iconset>02</iconset>
@@ -212,7 +136,7 @@
     </action>
     <action>
         <property name="name">
-            <cstring>fileSaveProjectAsAction</cstring>
+            <cstring>fileSaveAsAction</cstring>
         </property>
         <property name="text">
             <string>Save Project As...</string>
@@ -230,9 +154,6 @@
     <action>
         <property name="name">
             <cstring>filePrintAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="iconSet">
             <iconset>03</iconset>
@@ -252,7 +173,7 @@
     </action>
     <action>
         <property name="name">
-            <cstring>fileExitAction</cstring>
+            <cstring>fileCloseAction</cstring>
         </property>
         <property name="text">
             <string>Exit</string>
@@ -270,9 +191,6 @@
     <action>
         <property name="name">
             <cstring>editUndoAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="iconSet">
             <iconset>16</iconset>
@@ -294,9 +212,6 @@
         <property name="name">
             <cstring>editRedoAction</cstring>
         </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
         <property name="iconSet">
             <iconset>17</iconset>
         </property>
@@ -316,9 +231,6 @@
     <action>
         <property name="name">
             <cstring>editCutAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="iconSet">
             <iconset>05</iconset>
@@ -340,9 +252,6 @@
         <property name="name">
             <cstring>editCopyAction</cstring>
         </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
         <property name="iconSet">
             <iconset>06</iconset>
         </property>
@@ -362,9 +271,6 @@
     <action>
         <property name="name">
             <cstring>editPasteAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="iconSet">
             <iconset>07</iconset>
@@ -407,259 +313,7 @@
     </action>
     <action>
         <property name="name">
-            <cstring>helpContentsAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>12</iconset>
-        </property>
-        <property name="text">
-            <string>Contents</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Contents...</string>
-        </property>
-        <property name="statusTip">
-            <string>Display the contents tab of the documentation</string>
-        </property>
-        <property name="accel">
-            <string></string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>helpIndexAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>15</iconset>
-        </property>
-        <property name="text">
-            <string>Index</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Index...</string>
-        </property>
-        <property name="statusTip">
-            <string>Display the index tab of the documentation</string>
-        </property>
-        <property name="accel">
-            <string></string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>helpAboutAction</cstring>
-        </property>
-        <property name="text">
-            <string>About</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;About...</string>
-        </property>
-        <property name="statusTip">
-            <string>Display information about this program</string>
-        </property>
-        <property name="accel">
-            <string></string>
-        </property>
-    </action>
-    <actiongroup>
-        <property name="name">
-            <cstring>fileNewActionGroup</cstring>
-        </property>
-        <property name="on">
-            <bool>false</bool>
-        </property>
-        <property name="iconSet">
-            <iconset>00</iconset>
-        </property>
-        <property name="text">
-            <string>New</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;New</string>
-        </property>
-        <property name="toolTip">
-            <string>New File</string>
-        </property>
-        <property name="statusTip">
-            <string>Create a new file</string>
-        </property>
-        <property name="accel">
-            <string></string>
-        </property>
-        <property name="exclusive">
-            <bool>false</bool>
-        </property>
-        <property name="usesDropDown">
-            <bool>true</bool>
-        </property>
-        <action>
-            <property name="name">
-                <cstring>fileNewProjectAction</cstring>
-            </property>
-            <property name="text">
-                <string>&amp;Project</string>
-            </property>
-            <property name="menuText">
-                <string>&amp;Project</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new project</string>
-            </property>
-            <property name="accel">
-                <string>Ctrl+N</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewFolderAction</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="text">
-                <string>&amp;Folder</string>
-            </property>
-            <property name="menuText">
-                <string>&amp;Folder</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new virtual folder</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewCHeaderAction</cstring>
-            </property>
-            <property name="text">
-                <string>C &amp;Header File</string>
-            </property>
-            <property name="menuText">
-                <string>C &amp;Header File</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new C header file in the current project</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewGNUAssemblyHeaderAction</cstring>
-            </property>
-            <property name="text">
-                <string>G&amp;NU Assembly Header File</string>
-            </property>
-            <property name="menuText">
-                <string>G&amp;NU Assembly Header File</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new GNU assembly header file in the current project</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewA68kAssemblyHeaderAction</cstring>
-            </property>
-            <property name="text">
-                <string>A68&amp;k Assembly &amp;Header File</string>
-            </property>
-            <property name="menuText">
-                <string>A68&amp;k Assembly &amp;Header File</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new A68k assembly header file in the current project</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewCSourceFileAction</cstring>
-            </property>
-            <property name="text">
-                <string>&amp;C Source File</string>
-            </property>
-            <property name="menuText">
-                <string>&amp;C Source File</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new C source file in the current project</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewGNUAssemblySourceFileAction</cstring>
-            </property>
-            <property name="text">
-                <string>&amp;GNU Assembly Source File</string>
-            </property>
-            <property name="menuText">
-                <string>&amp;GNU Assembly Source File</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new GNU assembly source file in the current project</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewA68kAssemblySourceFileAction</cstring>
-            </property>
-            <property name="text">
-                <string>&amp;A68k Assembly Source File</string>
-            </property>
-            <property name="menuText">
-                <string>&amp;A68k Assembly Source File</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new A68k assembly source file in the current project</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewQuillSourceFileAction</cstring>
-            </property>
-            <property name="text">
-                <string>&amp;Quill Source File</string>
-            </property>
-            <property name="menuText">
-                <string>&amp;Quill Source File</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new Quill source file in the current project</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileNewTextFileAction</cstring>
-            </property>
-            <property name="text">
-                <string>&amp;Text File</string>
-            </property>
-            <property name="menuText">
-                <string>&amp;Text File</string>
-            </property>
-            <property name="statusTip">
-                <string>Create a new text file in the current project, for general use</string>
-            </property>
-        </action>
-    </actiongroup>
-    <action>
-        <property name="name">
-            <cstring>filePreferencesAction</cstring>
-        </property>
-        <property name="text">
-            <string>Preferences</string>
-        </property>
-        <property name="menuText">
-            <string>P&amp;references...</string>
-        </property>
-        <property name="statusTip">
-            <string>Change the IDE settings</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
             <cstring>editClearAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="iconSet">
             <iconset>04</iconset>
@@ -678,9 +332,6 @@
         <property name="name">
             <cstring>editSelectAllAction</cstring>
         </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
         <property name="text">
             <string>Select All</string>
         </property>
@@ -697,9 +348,6 @@
     <action>
         <property name="name">
             <cstring>editIncreaseIndentAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="iconSet">
             <iconset>19</iconset>
@@ -720,9 +368,6 @@
     <action>
         <property name="name">
             <cstring>editDecreaseIndentAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="iconSet">
             <iconset>20</iconset>
@@ -767,9 +412,6 @@
         <property name="name">
             <cstring>findFunctionsAction</cstring>
         </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
         <property name="iconSet">
             <iconset>18</iconset>
         </property>
@@ -787,9 +429,6 @@
         <property name="name">
             <cstring>findOpenFileAtCursorAction</cstring>
         </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
         <property name="text">
             <string>Open File at Cursor</string>
         </property>
@@ -805,7 +444,7 @@
     </action>
     <action>
         <property name="name">
-            <cstring>projectAddFilesAction</cstring>
+            <cstring>fileAddToProjectAction</cstring>
         </property>
         <property name="iconSet">
             <iconset>08</iconset>
@@ -822,7 +461,7 @@
     </action>
     <action>
         <property name="name">
-            <cstring>projectCompileAction</cstring>
+            <cstring>fileCompileAction</cstring>
         </property>
         <property name="iconSet">
             <iconset>09</iconset>
@@ -842,229 +481,7 @@
     </action>
     <action>
         <property name="name">
-            <cstring>projectMakeAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>10</iconset>
-        </property>
-        <property name="text">
-            <string>Make</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Make</string>
-        </property>
-        <property name="statusTip">
-            <string>Compile and link together all updated files in the current project, creating an executable file</string>
-        </property>
-        <property name="accel">
-            <string>Ctrl+F9</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>projectBuildAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>11</iconset>
-        </property>
-        <property name="text">
-            <string>Build</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Build</string>
-        </property>
-        <property name="statusTip">
-            <string>Recompile and link together all files in the current project, creating an executable file</string>
-        </property>
-        <property name="accel">
-            <string>Alt+F9</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>projectErrorsWarningsAction</cstring>
-        </property>
-        <property name="toggleAction">
-            <bool>true</bool>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        <property name="text">
-            <string>Errors and Warnings</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Errors and Warnings</string>
-        </property>
-        <property name="statusTip">
-            <string>Show or hide the Errors and Warnings window</string>
-        </property>
-        <property name="accel">
-            <string>Ctrl+E</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>projectProgramOutputAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        <property name="text">
-            <string>Program Output...</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Program Output...</string>
-        </property>
-        <property name="statusTip">
-            <string>Show the output of the compilation tool that was run last</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>projectOptionsAction</cstring>
-        </property>
-        <property name="text">
-            <string>Options...</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Options...</string>
-        </property>
-        <property name="statusTip">
-            <string>Change the settings of the current project</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>debugRunAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>24</iconset>
-        </property>
-        <property name="text">
-            <string>Run</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Run</string>
-        </property>
-        <property name="statusTip">
-            <string>Run the program on the target specified in the project settings</string>
-        </property>
-        <property name="accel">
-            <string>F9</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>debugPauseAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>25</iconset>
-        </property>
-        <property name="text">
-            <string>Pause</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Pause</string>
-        </property>
-        <property name="statusTip">
-            <string>Pause the execution of the program and enter the debugger</string>
-        </property>
-        <property name="accel">
-            <string>Shift+F9</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>debugResetAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>27</iconset>
-        </property>
-        <property name="text">
-            <string>Reset</string>
-        </property>
-        <property name="menuText">
-            <string>Re&amp;set</string>
-        </property>
-        <property name="statusTip">
-            <string>Reset the state of the virtual calculator to the one which was previously saved</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>toolsConfigureAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>26</iconset>
-        </property>
-        <property name="text">
-            <string>Configure</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Configure...</string>
-        </property>
-        <property name="statusTip">
-            <string>Add, edit and remove tools</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>helpSearchAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>13</iconset>
-        </property>
-        <property name="text">
-            <string>&amp;Search</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Search</string>
-        </property>
-        <property name="statusTip">
-            <string>Display the search tab of the documentation</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>helpNewsAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>23</iconset>
-        </property>
-        <property name="text">
-            <string>News</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;News...</string>
-        </property>
-        <property name="statusTip">
-            <string>Obtain the latest headlines from the official TIGCC site</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>helpDocumentationAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>12</iconset>
-        </property>
-        <property name="text">
-            <string>Documentation</string>
-        </property>
-        <property name="menuText">
-            <string>Documentation</string>
-        </property>
-        <property name="statusTip">
-            <string>Open the documentation of TIGCC</string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
             <cstring>findFindSymbolDeclarationAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="text">
             <string>F&amp;ind symbol declaration</string>
@@ -1076,78 +493,9 @@
             <string>Find symbol declaration</string>
         </property>
     </action>
-    <actiongroup>
-        <property name="name">
-            <cstring>fileOpenActionGroup</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>01</iconset>
-        </property>
-        <property name="text">
-            <string>Open File</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Open...</string>
-        </property>
-        <property name="statusTip">
-            <string>Open an existing project or file</string>
-        </property>
-        <property name="exclusive">
-            <bool>false</bool>
-        </property>
-        <property name="usesDropDown">
-            <bool>true</bool>
-        </property>
-        <action>
-            <property name="name">
-                <cstring>fileOpenActionHidden</cstring>
-            </property>
-            <property name="text">
-                <string>Open File</string>
-            </property>
-            <property name="visible">
-                <bool>false</bool>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileRecent1Action</cstring>
-            </property>
-            <property name="text">
-                <string>Recent File 1</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileRecent2Action</cstring>
-            </property>
-            <property name="text">
-                <string>Recent File 2</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileRecent3Action</cstring>
-            </property>
-            <property name="text">
-                <string>Recent File 3</string>
-            </property>
-        </action>
-        <action>
-            <property name="name">
-                <cstring>fileRecent4Action</cstring>
-            </property>
-            <property name="text">
-                <string>Recent File 4</string>
-            </property>
-        </action>
-    </actiongroup>
     <action>
         <property name="name">
             <cstring>filePrintQuicklyAction</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
         </property>
         <property name="iconSet">
             <iconset>03</iconset>
@@ -1158,24 +506,6 @@
     </action>
 </actions>
 <connections>
-    <connection>
-        <sender>debugPauseAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>debugPause()</slot>
-    </connection>
-    <connection>
-        <sender>debugResetAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>debugReset()</slot>
-    </connection>
-    <connection>
-        <sender>debugRunAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>debugRun()</slot>
-    </connection>
     <connection>
         <sender>editClearAction</sender>
         <signal>activated()</signal>
@@ -1231,16 +561,10 @@
         <slot>editUndo()</slot>
     </connection>
     <connection>
-        <sender>fileExitAction</sender>
+        <sender>fileCloseAction</sender>
         <signal>activated()</signal>
         <receiver>SourceFileWindow</receiver>
         <slot>close()</slot>
-    </connection>
-    <connection>
-        <sender>filePreferencesAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>filePreferences()</slot>
     </connection>
     <connection>
         <sender>filePrintAction</sender>
@@ -1249,13 +573,13 @@
         <slot>filePrint()</slot>
     </connection>
     <connection>
-        <sender>fileSaveAllAction</sender>
+        <sender>fileSaveAction</sender>
         <signal>activated()</signal>
         <receiver>SourceFileWindow</receiver>
         <slot>fileSave()</slot>
     </connection>
     <connection>
-        <sender>fileSaveProjectAsAction</sender>
+        <sender>fileSaveAsAction</sender>
         <signal>activated()</signal>
         <receiver>SourceFileWindow</receiver>
         <slot>fileSaveAs()</slot>
@@ -1291,52 +615,16 @@
         <slot>findReplace()</slot>
     </connection>
     <connection>
-        <sender>helpAboutAction</sender>
+        <sender>fileAddToProjectAction</sender>
         <signal>activated()</signal>
         <receiver>SourceFileWindow</receiver>
-        <slot>helpAbout()</slot>
+        <slot>fileAddToProject()</slot>
     </connection>
     <connection>
-        <sender>helpContentsAction</sender>
+        <sender>fileCompileAction</sender>
         <signal>activated()</signal>
         <receiver>SourceFileWindow</receiver>
-        <slot>helpContents()</slot>
-    </connection>
-    <connection>
-        <sender>helpDocumentationAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>helpDocumentation()</slot>
-    </connection>
-    <connection>
-        <sender>helpIndexAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>helpIndex()</slot>
-    </connection>
-    <connection>
-        <sender>helpNewsAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>helpNews()</slot>
-    </connection>
-    <connection>
-        <sender>helpSearchAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>helpSearch()</slot>
-    </connection>
-    <connection>
-        <sender>projectErrorsWarningsAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>errorsAndWarnings()</slot>
-    </connection>
-    <connection>
-        <sender>toolsConfigureAction</sender>
-        <signal>activated()</signal>
-        <receiver>SourceFileWindow</receiver>
-        <slot>toolsConfigure()</slot>
+        <slot>fileCompile()</slot>
     </connection>
     <connection>
         <sender>filePrintQuicklyAction</sender>
@@ -1356,9 +644,10 @@
     <slot>accel_activated( int index )</slot>
     <slot>fileSave()</slot>
     <slot>fileSaveAs()</slot>
+    <slot>fileAddToProject()</slot>
+    <slot>fileCompile()</slot>
     <slot>filePrint()</slot>
     <slot>filePrintQuickly()</slot>
-    <slot>filePreferences()</slot>
     <slot>editUndo()</slot>
     <slot>editRedo()</slot>
     <slot>editClear()</slot>
@@ -1380,17 +669,6 @@
     <slot>findFunctions()</slot>
     <slot>findOpenFileAtCursor()</slot>
     <slot>findFindSymbolDeclaration()</slot>
-    <slot>errorsAndWarnings()</slot>
-    <slot>debugRun()</slot>
-    <slot>debugPause()</slot>
-    <slot>debugReset()</slot>
-    <slot>toolsConfigure()</slot>
-    <slot>helpDocumentation()</slot>
-    <slot>helpContents()</slot>
-    <slot>helpIndex()</slot>
-    <slot>helpSearch()</slot>
-    <slot>helpNews()</slot>
-    <slot>helpAbout()</slot>
     <slot>resizeEvent( QResizeEvent * event )</slot>
     <slot>timerEvent( QTimerEvent * event )</slot>
     <slot>statusBar_messageChanged( const QString &amp; message )</slot>
@@ -1410,6 +688,7 @@
     <function access="private" specifier="non virtual">removeTrailingSpacesFromView( void * view )</function>
     <function access="private" specifier="non virtual">fileSave_save()</function>
     <function access="private" specifier="non virtual">fileSave_saveAs()</function>
+    <function>applyPreferences()</function>
     <function access="private" specifier="non virtual">findReplace_next( bool firstTime )</function>
     <function access="private" specifier="non virtual">updateSizes()</function>
     <function access="private" specifier="non virtual">updateRightStatusLabel()</function>

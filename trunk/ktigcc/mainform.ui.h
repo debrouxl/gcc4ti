@@ -2498,7 +2498,7 @@ void MainForm::projectBuild()
   
 }
 
-void MainForm::errorsAndWarnings()
+void MainForm::projectErrorsAndWarnings()
 {
   
 }
