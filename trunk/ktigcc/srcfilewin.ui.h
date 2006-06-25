@@ -40,6 +40,7 @@
 #include <qclipboard.h>
 #include <qaccel.h>
 #include <qeventloop.h>
+#include <qlayout.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -185,9 +186,9 @@ void SourceFileWindow::init()
   connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   KDirWatch::self()->startScan();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
-  widgetStack->addWidget(CURRENT_VIEW);
+  QVBoxLayout *layout=new QVBoxLayout(this);
+  layout->addWidget(CURRENT_VIEW);
   CURRENT_VIEW->show();
-  widgetStack->raiseWidget(CURRENT_VIEW);
   editUndoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->undoCount()));
   editRedoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->redoCount()));
   editClearAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
@@ -212,7 +213,6 @@ void SourceFileWindow::init()
   THIS->accel->setItemEnabled(6,TRUE);
   THIS->accel->setItemEnabled(7,TRUE);
   connect(THIS->accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
-  startTimer(100);
   THIS->kfinddialog = static_cast<KFindDialog *>(NULL);
   THIS->kreplace = static_cast<KReplaceWithSelectionS *>(NULL);
   if (preferences.useSystemIcons) {
@@ -341,7 +341,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   if (doc->openStream("text/plain",fileName))
     doc->closeStream();
   // Create View object.
-  Kate::View *newView = (Kate::View *) doc->createView( widgetStack, 0L );
+  Kate::View *newView = (Kate::View *) doc->createView( this, 0L );
   newView->hide();
   newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
   // Set highlighting mode.
@@ -952,15 +952,6 @@ void SourceFileWindow::resizeEvent(QResizeEvent *event)
 {
   QMainWindow::resizeEvent(event);
   if (event->size()==event->oldSize()) return;
-  updateSizes();
-}
-
-void SourceFileWindow::timerEvent(QTimerEvent *event)
-{
-  static int lastSplitterPos=-1;
-  QMainWindow::timerEvent(event);
-  if (lastSplitterPos==splitter->sizes().first()) return;
-  lastSplitterPos=splitter->sizes().first();
   updateSizes();
 }
 
