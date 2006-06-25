@@ -787,6 +787,9 @@ void MainForm::init()
 
 void MainForm::destroy()
 {
+  while (!sourceFiles.isEmpty()) {
+    delete sourceFiles.getFirst();
+  }
   if (kreplace) delete kreplace;
   if (kfinddialog) delete kfinddialog;
   delete accel;
