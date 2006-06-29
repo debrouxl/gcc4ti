@@ -73,6 +73,10 @@ unix {
   OBJECTS_DIR = .obj
 }
 
+!exists($$[QT_INSTALL_PREFIX]/include/qassistantclient.h) {
+  error("Qt Assistant 3 headers required, try installing qt3-apps-dev.")
+}
+
 KDEPREFIX = $$system(kde-config --prefix)
 isEmpty(KDEPREFIX):error(KDE 3 kdelibs required.)
 
