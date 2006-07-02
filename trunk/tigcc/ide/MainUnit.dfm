@@ -3451,7 +3451,7 @@ object MainForm: TMainForm
       Caption = '&Stop Compilation'
       Hint = 
         'Stop Compilation|Attempt to stop the compilation process, but wa' +
-        'it until it is finished.'
+        'it until it is finished'
       ImageIndex = 21
       Visible = False
       OnExecute = ProjectStopCompilation
@@ -3461,7 +3461,7 @@ object MainForm: TMainForm
       Caption = '&Force-Quit Compiler'
       Hint = 
         'Force-Quit Compiler|Force-quit the currently running process for' +
-        ' compilation to stop compilation immediately.'
+        ' compilation to stop compilation immediately'
       ImageIndex = 22
       Visible = False
       OnExecute = ProjectForceQuitCompiler
