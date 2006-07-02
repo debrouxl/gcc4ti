@@ -40,6 +40,7 @@
 #include <qclipboard.h>
 #include <qaccel.h>
 #include <qeventloop.h>
+#include <qdockwindow.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -68,6 +69,7 @@
 #include "tpr.h"
 #include "preferences.h"
 #include "projectoptions.h"
+#include "errorlist.h"
 
 using std::puts;
 using std::exit;
@@ -343,6 +345,8 @@ static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
 static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
+static QDockWindow *errorListDock;
+static ErrorList *errorList;
 QAssistantClient *assistant;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 tprSettings settings; //static is turned off here so ProjectOptions can access it.
@@ -783,6 +787,20 @@ void MainForm::init()
     toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
     debugResetAction->setIconSet(LOAD_ICON("player_stop"));
   }
+  errorListDock=new QDockWindow(QDockWindow::InDock,this);
+  errorListDock->setResizeEnabled(TRUE);
+  errorListDock->setCloseMode(QDockWindow::Always);
+  addToolBar(errorListDock,Qt::DockBottom);
+  errorList=new ErrorList(errorListDock);
+  errorListDock->setWidget(errorList);
+  errorList->show();
+  errorListDock->setCaption("Errors and Warnings");
+  errorListDock->hide();
+  setDockEnabled(errorListDock,Qt::DockTop,FALSE);
+  setDockEnabled(errorListDock,Qt::DockLeft,FALSE);
+  setDockEnabled(errorListDock,Qt::DockRight,FALSE);
+  connect(errorListDock,SIGNAL(visibilityChanged(bool)),
+          this,SLOT(projectErrorsAndWarnings(bool)));
 }
 
 void MainForm::destroy()
@@ -802,6 +820,8 @@ void MainForm::destroy()
   delete rootListItem;
   delete khelpmenu;
   delete assistant;
+  delete errorList;
+  delete errorListDock;
 }
 
 void MainForm::te_popup_aboutToShow()
@@ -2672,9 +2692,19 @@ void MainForm::projectBuild()
   
 }
 
-void MainForm::projectErrorsAndWarnings()
+void MainForm::projectErrorsAndWarnings(bool on)
 {
-  
+  static bool lock=FALSE;
+  if (!lock) {
+    lock=TRUE;
+    if (!projectErrorsAndWarningsAction->isEnabled()) on=FALSE;
+    projectErrorsAndWarningsAction->setOn(on);
+    if (on)
+      errorListDock->show();
+    else
+      errorListDock->hide();
+    lock=FALSE;
+  }
 }
 
 void MainForm::projectProgramOutput()

@@ -41,6 +41,13 @@
                 <property name="name">
                     <cstring>fileTree</cstring>
                 </property>
+                <property name="paletteBackgroundColor">
+                    <color>
+                        <red>255</red>
+                        <green>255</green>
+                        <blue>255</blue>
+                    </color>
+                </property>
                 <property name="acceptDrops">
                     <bool>true</bool>
                 </property>
@@ -140,7 +147,7 @@
         <action name="projectMakeAction"/>
         <action name="projectBuildAction"/>
         <separator/>
-        <action name="projectErrorsWarningsAction"/>
+        <action name="projectErrorsAndWarningsAction"/>
         <action name="projectProgramOutputAction"/>
         <separator/>
         <action name="projectOptionsAction"/>
@@ -917,7 +924,7 @@
     </action>
     <action>
         <property name="name">
-            <cstring>projectErrorsWarningsAction</cstring>
+            <cstring>projectErrorsAndWarningsAction</cstring>
         </property>
         <property name="toggleAction">
             <bool>true</bool>
@@ -1497,10 +1504,10 @@
         <slot>projectCompile()</slot>
     </connection>
     <connection>
-        <sender>projectErrorsWarningsAction</sender>
-        <signal>activated()</signal>
+        <sender>projectErrorsAndWarningsAction</sender>
+        <signal>toggled(bool)</signal>
         <receiver>MainForm</receiver>
-        <slot>projectErrorsAndWarnings()</slot>
+        <slot>projectErrorsAndWarnings(bool)</slot>
     </connection>
     <connection>
         <sender>projectMakeAction</sender>
@@ -1578,7 +1585,7 @@
     <slot>projectCompile()</slot>
     <slot>projectMake()</slot>
     <slot>projectBuild()</slot>
-    <slot>projectErrorsAndWarnings()</slot>
+    <slot>projectErrorsAndWarnings( bool on )</slot>
     <slot>projectProgramOutput()</slot>
     <slot>projectOptions()</slot>
     <slot>debugRun()</slot>
@@ -1624,6 +1631,7 @@
     <function access="private" specifier="non virtual" returnType="QListViewItem *">openFile( QListViewItem * category, QListViewItem * parent, const QString &amp; fileCaption, const QString &amp; fileName )</function>
     <function access="private" specifier="static" returnType="QListViewItem *">createFolder( QListViewItem * parent, const QString &amp; name )</function>
     <function specifier="non virtual" returnType="void *">createView( const QString &amp; fileName, const QString &amp; fileText, QListViewItem * category )</function>
+    <function>adoptSourceFile( void * srcFile )</function>
     <function access="private" specifier="non virtual">fileOpen_addList( QListViewItem * category, void * fileListV, void * dir, const QString &amp; open_file )</function>
     <function access="private" specifier="non virtual" returnType="bool">openProject( const QString &amp; fileName )</function>
     <function specifier="non virtual" returnType="int">fileSavePrompt( QListViewItem * fileItem )</function>
@@ -1645,7 +1653,6 @@
     <function access="private" specifier="non virtual">updateRightStatusLabel()</function>
     <function access="private" specifier="non virtual">current_view_newLineHook()</function>
     <function access="protected">closeEvent( QCloseEvent * e )</function>
-    <function>adoptSourceFile(void *srcFile)</function>
 </functions>
 <pixmapinproject/>
 <layoutdefaults spacing="0" margin="0"/>

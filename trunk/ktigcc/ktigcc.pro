@@ -18,7 +18,8 @@ FORMS	= srcfilewin.ui \
 	projectoptions.ui \
 	programoptions.ui \
 	preferencesdlg.ui \
-	mainform.ui
+	mainform.ui \
+	errorlist.ui
 
 IMAGES	= images/00 \
 	images/01 \
