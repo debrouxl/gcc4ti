@@ -779,8 +779,8 @@ void MainForm::init()
     findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
     editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
     editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
-    // stop compilation: "stop"
-    // force-quit compiler: "button_cancel"
+    projectStopCompilationAction->setIconSet(LOAD_ICON("stop"));
+    projectForceQuitAction->setIconSet(LOAD_ICON("button_cancel"));
     helpNewsAction->setIconSet(LOAD_ICON("kontact_news"));
     debugRunAction->setIconSet(LOAD_ICON("player_play"));
     debugPauseAction->setIconSet(LOAD_ICON("player_pause"));
@@ -1967,8 +1967,8 @@ void MainForm::filePreferences()
       findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
       editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
       editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
-      // stop compilation: "stop"
-      // force-quit compiler: "button_cancel"
+      projectStopCompilationAction->setIconSet(LOAD_ICON("stop"));
+      projectForceQuitAction->setIconSet(LOAD_ICON("button_cancel"));
       helpNewsAction->setIconSet(LOAD_ICON("kontact_news"));
       debugRunAction->setIconSet(LOAD_ICON("player_play"));
       debugPauseAction->setIconSet(LOAD_ICON("player_pause"));
@@ -2001,8 +2001,8 @@ void MainForm::filePreferences()
       findFunctionsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("18")));
       editIncreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("19")));
       editDecreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("20")));
-      // stop compilation: "21"
-      // force-quit compiler: "22"
+      projectStopCompilationAction->setIconSet(QIconSet(QPixmap::fromMimeSource("21")));
+      projectForceQuitAction->setIconSet(QIconSet(QPixmap::fromMimeSource("22")));
       helpNewsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("23")));
       debugRunAction->setIconSet(QIconSet(QPixmap::fromMimeSource("24")));
       debugPauseAction->setIconSet(QIconSet(QPixmap::fromMimeSource("25")));
@@ -2690,6 +2690,16 @@ void MainForm::projectMake()
 void MainForm::projectBuild()
 {
   
+}
+
+void MainForm::projectStopCompilation()
+{
+
+}
+
+void MainForm::projectForceQuit()
+{
+
 }
 
 void MainForm::projectErrorsAndWarnings(bool on)

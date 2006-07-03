@@ -146,6 +146,8 @@
         <action name="projectCompileAction"/>
         <action name="projectMakeAction"/>
         <action name="projectBuildAction"/>
+        <action name="projectStopCompilationAction"/>
+        <action name="projectForceQuitAction"/>
         <separator/>
         <action name="projectErrorsAndWarningsAction"/>
         <action name="projectProgramOutputAction"/>
@@ -204,6 +206,8 @@
         <separator/>
         <action name="projectMakeAction"/>
         <action name="projectBuildAction"/>
+        <action name="projectStopCompilationAction"/>
+        <action name="projectForceQuitAction"/>
         <separator/>
         <action name="debugRunAction"/>
         <action name="debugPauseAction"/>
@@ -1201,6 +1205,52 @@
             <string>Print the current source file</string>
         </property>
     </action>
+    <action>
+        <property name="name">
+            <cstring>projectStopCompilationAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>21</iconset>
+        </property>
+        <property name="text">
+            <string>Stop Compilation</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Stop Compilation</string>
+        </property>
+        <property name="statusTip">
+            <string>Attempt to stop the compilation process, but wait until it is finished</string>
+        </property>
+        <property name="visible">
+            <bool>false</bool>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>projectForceQuitAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>22</iconset>
+        </property>
+        <property name="text">
+            <string>Force-Quit Compiler</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;Force-Quit Compiler</string>
+        </property>
+        <property name="statusTip">
+            <string>Force-quit the currently running process for compilation to stop compilation immediately</string>
+        </property>
+        <property name="visible">
+            <bool>false</bool>
+        </property>
+    </action>
 </actions>
 <connections>
     <connection>
@@ -1539,6 +1589,18 @@
         <receiver>MainForm</receiver>
         <slot>filePrintQuickly()</slot>
     </connection>
+    <connection>
+        <sender>projectStopCompilationAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>projectStopCompilation()</slot>
+    </connection>
+    <connection>
+        <sender>projectForceQuitAction</sender>
+        <signal>activated()</signal>
+        <receiver>MainForm</receiver>
+        <slot>projectForceQuit()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">mainform.ui.h</include>
@@ -1585,6 +1647,8 @@
     <slot>projectCompile()</slot>
     <slot>projectMake()</slot>
     <slot>projectBuild()</slot>
+    <slot>projectStopCompilation()</slot>
+    <slot>projectForceQuit()</slot>
     <slot>projectErrorsAndWarnings( bool on )</slot>
     <slot>projectProgramOutput()</slot>
     <slot>projectOptions()</slot>
