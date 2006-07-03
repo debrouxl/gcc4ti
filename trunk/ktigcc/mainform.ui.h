@@ -127,6 +127,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 static QListViewItem *currentListItem;
 static QListViewItem *replaceCurrentDocument;
 static unsigned replaceCurrentLine;
+static bool compiling;
 class KReplaceWithSelection : public KReplace {
   public:
     KReplaceWithSelection(const QString &pattern, const QString &replacement,
@@ -384,7 +385,7 @@ class DnDListView : public KListView {
     return storedDrag;
   }
   virtual void dropEvent (QDropEvent *e) {
-    if (e->source()==this && e->provides("x-ktigcc-dnd")) {
+    if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
       QListViewItem *currItem;
       currItem = *reinterpret_cast<QListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
       if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
@@ -542,11 +543,11 @@ class DnDListView : public KListView {
     } else e->ignore();
   }
   virtual void dragEnterEvent (QDragEnterEvent *e) {
-    if (e->source()==this&&(e->provides("x-ktigcc-dnd")))
+    if (!compiling && e->source()==this&&(e->provides("x-ktigcc-dnd")))
 	  e->accept();
   }
   virtual void dragMoveEvent (QDragMoveEvent *e) {
-    if (e->source()==this && e->provides("x-ktigcc-dnd")) {
+    if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
       QListViewItem *currItem;
       currItem = *reinterpret_cast<QListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
       if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
@@ -609,7 +610,8 @@ class DnDListView : public KListView {
 };
 
 void MainForm::init()
-{  
+{
+  compiling=FALSE;
   loadPreferences();
   fileNewFolderAction->setEnabled(FALSE);
   te_popup = new QPopupMenu(this);
@@ -948,7 +950,7 @@ void MainForm::clearProject()
 
 void MainForm::fileNewProject()
 {
-  if (savePrompt())
+  if (compiling || savePrompt())
     return;
   clearProject();
   pconfig->setGroup("Recent files");
@@ -1216,6 +1218,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
 
 void MainForm::adoptSourceFile(void *srcFile)
 {
+  if (compiling) return;
   SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
   QString fileName=sourceFile->fileName;
   Kate::View *newView=sourceFile->kateView;
@@ -1482,7 +1485,7 @@ bool MainForm::openProject(const QString &fileName)
 
 void MainForm::fileOpen()
 {
-  if (savePrompt())
+  if (compiling || savePrompt())
     return;
   QString fileName=SGetFileName(KFileDialog::Opening,findFilter(TIGCCOpenProjectFileFilter),"Open Project/File",this);
   KURL dir;
@@ -1494,28 +1497,28 @@ void MainForm::fileOpen()
 
 void MainForm::fileRecent1()
 {
-  if (savePrompt())
+  if (compiling || savePrompt())
     return;
   openProject(fileRecent1Action->statusTip());
 }
 
 void MainForm::fileRecent2()
 {
-  if (savePrompt())
+  if (compiling || savePrompt())
     return;
   openProject(fileRecent2Action->statusTip());
 }
 
 void MainForm::fileRecent3()
 {
-  if (savePrompt())
+  if (compiling || savePrompt())
     return;
   openProject(fileRecent3Action->statusTip());
 }
 
 void MainForm::fileRecent4()
 {
-  if (savePrompt())
+  if (compiling || savePrompt())
     return;
   openProject(fileRecent4Action->statusTip());
 }
@@ -2666,6 +2669,7 @@ void MainForm::projectAddFiles()
 {
   unsigned long i,e;
   int projectChanged=0;
+  if (compiling) return;
   QStringList result=SGetFileName_Multiple(findFilter(TIGCCAddFilesFilter),"Add Files",this);
   e=result.count();
   for (i=0;i<e;i++) {
@@ -2677,29 +2681,82 @@ void MainForm::projectAddFiles()
   }
 }
 
+void MainForm::startCompiling()
+{
+  fileNewActionGroup->setEnabled(FALSE);
+  fileOpenAction->setEnabled(FALSE);
+  fileRecent1Action->setEnabled(FALSE);
+  fileRecent2Action->setEnabled(FALSE);
+  fileRecent3Action->setEnabled(FALSE);
+  fileRecent4Action->setEnabled(FALSE);
+  fileOpenActionGroup->setEnabled(FALSE);
+  fileExitAction->setEnabled(FALSE);
+  projectAddFilesAction->setEnabled(FALSE);
+  projectCompileAction->setVisible(FALSE);
+  projectMakeAction->setVisible(FALSE);
+  projectBuildAction->setVisible(FALSE);
+  projectCompileAction->setEnabled(FALSE);
+  projectMakeAction->setEnabled(FALSE);
+  projectBuildAction->setEnabled(FALSE);
+  projectStopCompilationAction->setEnabled(TRUE);
+  projectForceQuitAction->setEnabled(TRUE);
+  projectStopCompilationAction->setVisible(TRUE);
+  projectForceQuitAction->setVisible(TRUE);
+  compiling=TRUE;
+}
+
+void MainForm::stopCompiling()
+{
+  compiling=FALSE;
+  projectStopCompilationAction->setVisible(FALSE);
+  projectForceQuitAction->setVisible(FALSE);
+  projectStopCompilationAction->setEnabled(FALSE);
+  projectForceQuitAction->setEnabled(FALSE);
+  projectCompileAction->setEnabled(TRUE);
+  projectMakeAction->setEnabled(TRUE);
+  projectBuildAction->setEnabled(TRUE);
+  projectCompileAction->setVisible(TRUE);
+  projectMakeAction->setVisible(TRUE);
+  projectBuildAction->setVisible(TRUE);
+  projectAddFilesAction->setEnabled(TRUE);
+  fileExitAction->setEnabled(TRUE);
+  fileOpenActionGroup->setEnabled(TRUE);
+  fileRecent1Action->setEnabled(TRUE);
+  fileRecent2Action->setEnabled(TRUE);
+  fileRecent3Action->setEnabled(TRUE);
+  fileRecent4Action->setEnabled(TRUE);
+  fileOpenAction->setEnabled(TRUE);
+  fileNewActionGroup->setEnabled(TRUE);
+}
+
 void MainForm::projectCompile()
 {
-  
+  if (compiling) return;
+  startCompiling();
 }
 
 void MainForm::projectMake()
 {
-  
+  if (compiling) return;
+  startCompiling();
 }
 
 void MainForm::projectBuild()
 {
-  
+  if (compiling) return;
+  startCompiling();
 }
 
 void MainForm::projectStopCompilation()
 {
-
+  if (!compiling) return;
+  stopCompiling();
 }
 
 void MainForm::projectForceQuit()
 {
-
+  if (!compiling) return;
+  stopCompiling();
 }
 
 void MainForm::projectErrorsAndWarnings(bool on)
@@ -2934,6 +2991,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
 
 void MainForm::fileNewFolder()
 {
+  if (compiling) return;
   if (IS_FILE(currentListItem))
     currentListItem=currentListItem->parent();
   QListViewItem *item=NULL, *next=currentListItem->firstChild();
@@ -2961,12 +3019,17 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
     QPopupMenu menu;
     menu.insertItem("New &Folder",0);
     menu.insertItem("New F&ile",1);
+    if (compiling) {
+      menu.setItemEnabled(0,FALSE);
+      menu.setItemEnabled(1,FALSE);
+    }
     CATEGORY_OF(category,item);
     if (!IS_EDITABLE_CATEGORY(category))
       menu.setItemEnabled(1,FALSE);
     if (!IS_CATEGORY(item)) {
       menu.insertSeparator();
       menu.insertItem("&Remove",2);
+      if (compiling) menu.setItemEnabled(2,FALSE);
       menu.insertItem("Re&name",3);
     }
     switch (menu.exec(pos)) {
@@ -2995,12 +3058,16 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
     menu.insertItem("Save &As...",1);
     menu.insertSeparator();
     menu.insertItem("&Compile",2);
-    if (category==txtFilesListItem
-        || !IS_EDITABLE_CATEGORY(category))
+    if (compiling || category==txtFilesListItem
+                  || !IS_EDITABLE_CATEGORY(category))
       menu.setItemEnabled(2,FALSE);
     menu.insertSeparator();
     menu.insertItem("&Remove",3);
     menu.insertItem("&Delete",4);
+    if (compiling) {
+      menu.setItemEnabled(3,FALSE);
+      menu.setItemEnabled(4,FALSE);
+    }
     if (theFile->isNew)
       menu.setItemEnabled(4,FALSE);
     menu.insertSeparator();
@@ -3318,48 +3385,56 @@ QListViewItem *MainForm::resolveParent(QListViewItem *category)
 
 void MainForm::fileNewCHeader()
 {
+  if (compiling) return;
   newFile(resolveParent(hFilesListItem),"// Header File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_h","fileh.png"));
 }
 
 
 void MainForm::fileNewGNUAssemblyHeader()
 {
+  if (compiling) return;
   newFile(resolveParent(hFilesListItem),"| Header File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_h","fileh.png"));
 }
 
 
 void MainForm::fileNewA68kAssemblyHeader()
 {
+  if (compiling) return;
   newFile(resolveParent(hFilesListItem),"; Header File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_h","fileh.png"));
 }
 
 
 void MainForm::fileNewCSourceFile()
 {
+  if (compiling) return;
   newFile(resolveParent(cFilesListItem));
 }
 
 
 void MainForm::fileNewGNUAssemblySourceFile()
 {
+  if (compiling) return;
   newFile(resolveParent(sFilesListItem),"| Assembly Source File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_s","files.png"));
 }
 
 
 void MainForm::fileNewA68kAssemblySourceFile()
 {
+  if (compiling) return;
   newFile(resolveParent(asmFilesListItem),"; Assembly Source File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_s","files.png"));
 }
 
 
 void MainForm::fileNewQuillSourceFile()
 {
+  if (compiling) return;
   newFile(resolveParent(qllFilesListItem),"// Quill Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source_c","filec.png"));
 }
 
 
 void MainForm::fileNewTextFile()
 {
+  if (compiling) return;
   newFile(resolveParent(txtFilesListItem),"",SYSICON("txt","filet.png"));
 }
 
@@ -3652,7 +3727,7 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, const QString &newName,
 
 void MainForm::closeEvent(QCloseEvent *e)
 {
-  if (savePrompt())
+  if (compiling || savePrompt())
     e->ignore();
   else {
     clearProject();
