@@ -2702,12 +2702,23 @@ void MainForm::startCompiling()
   projectForceQuitAction->setEnabled(TRUE);
   projectStopCompilationAction->setVisible(TRUE);
   projectForceQuitAction->setVisible(TRUE);
+  QPtrListIterator<SourceFile> sfit(sourceFiles);
+  for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+    sourceFile->fileAddToProjectAction->setEnabled(FALSE);
+    sourceFile->fileCompileAction->setEnabled(FALSE);
+  }
   compiling=TRUE;
 }
 
 void MainForm::stopCompiling()
 {
   compiling=FALSE;
+  QPtrListIterator<SourceFile> sfit(sourceFiles);
+  for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+    sourceFile->fileAddToProjectAction->setEnabled(TRUE);
+    sourceFile->fileCompileAction->setEnabled(TRUE);
+    sourceFile->fileCloseAction->setEnabled(TRUE);
+  }
   projectStopCompilationAction->setVisible(FALSE);
   projectForceQuitAction->setVisible(FALSE);
   projectStopCompilationAction->setEnabled(FALSE);
@@ -2744,6 +2755,14 @@ void MainForm::projectMake()
 void MainForm::projectBuild()
 {
   if (compiling) return;
+  startCompiling();
+}
+
+void MainForm::compileSourceFile(void *srcFile)
+{
+  if (compiling) return;
+  SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+  sourceFile->fileCloseAction->setEnabled(FALSE);
   startCompiling();
 }
 

@@ -485,7 +485,7 @@ void SourceFileWindow::fileAddToProject()
 
 void SourceFileWindow::fileCompile()
 {
-
+  THIS->mainForm->compileSourceFile(THIS);
 }
 
 void SourceFileWindow::filePrint()
@@ -1083,7 +1083,7 @@ void SourceFileWindow::clipboard_dataChanged()
 
 void SourceFileWindow::closeEvent(QCloseEvent *e)
 {
-  if (savePrompt())
+  if (!fileCloseAction->isEnabled() || savePrompt())
     e->ignore();
   else {
     e->accept();
