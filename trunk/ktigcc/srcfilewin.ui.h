@@ -475,7 +475,6 @@ void SourceFileWindow::fileAddToProject()
 
 void SourceFileWindow::fileCompile()
 {
-  if (preferences.autoSave) fileSave();
   THIS->mainForm->compileSourceFile(THIS);
 }
 

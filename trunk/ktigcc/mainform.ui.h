@@ -1836,14 +1836,20 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
   TPRData.settings=settings;
   TPRData.libopts=libopts;
   
-  if (saveTPR(nextProj,&TPRData))
+  if (saveTPR(nextProj,&TPRData)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(nextProj));
-  else {
+    updateRightStatusLabel();
+    return;
+  } else {
     projectFileName=nextProj;
     projectIsDirty=FALSE;
     addRecent(nextProj);
   }
   updateRightStatusLabel();
+  QPtrListIterator<SourceFile> sfit(sourceFiles);
+  for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+    sourceFile->fileSave();
+  }
 }
 
 bool MainForm::fileSave()
@@ -2692,6 +2698,11 @@ void MainForm::startCompiling()
     if (!fileSave()) {
       stopCompilingFlag=TRUE;
       return;
+    }
+  } else {
+    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+      sourceFile->fileSave();
     }
   }
   fileNewActionGroup->setEnabled(FALSE);
