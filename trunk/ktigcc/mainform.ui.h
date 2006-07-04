@@ -2681,6 +2681,8 @@ void MainForm::projectAddFiles()
   }
 }
 
+static bool stopCompilingFlag, forceQuitFlag;
+
 void MainForm::startCompiling()
 {
   fileNewActionGroup->setEnabled(FALSE);
@@ -2708,10 +2710,14 @@ void MainForm::startCompiling()
     sourceFile->fileCompileAction->setEnabled(FALSE);
   }
   compiling=TRUE;
+  stopCompilingFlag=FALSE;
+  forceQuitFlag=FALSE;
 }
 
 void MainForm::stopCompiling()
 {
+  stopCompilingFlag=FALSE;
+  forceQuitFlag=FALSE;
   compiling=FALSE;
   QPtrListIterator<SourceFile> sfit(sourceFiles);
   for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
@@ -2744,18 +2750,30 @@ void MainForm::projectCompile()
 {
   if (compiling) return;
   startCompiling();
+  while (!stopCompilingFlag) {
+    QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
+  }
+  stopCompiling();
 }
 
 void MainForm::projectMake()
 {
   if (compiling) return;
   startCompiling();
+  while (!stopCompilingFlag) {
+    QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
+  }
+  stopCompiling();
 }
 
 void MainForm::projectBuild()
 {
   if (compiling) return;
   startCompiling();
+  while (!stopCompilingFlag) {
+    QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
+  }
+  stopCompiling();
 }
 
 void MainForm::compileSourceFile(void *srcFile)
@@ -2764,18 +2782,24 @@ void MainForm::compileSourceFile(void *srcFile)
   SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
   sourceFile->fileCloseAction->setEnabled(FALSE);
   startCompiling();
+  while (!stopCompilingFlag) {
+    
+  }
+  stopCompiling();
 }
 
 void MainForm::projectStopCompilation()
 {
   if (!compiling) return;
-  stopCompiling();
+  stopCompilingFlag=TRUE;
+  projectStopCompilationAction->setEnabled(FALSE);
 }
 
 void MainForm::projectForceQuit()
 {
   if (!compiling) return;
-  stopCompiling();
+  stopCompilingFlag=TRUE;
+  forceQuitFlag=TRUE;
 }
 
 void MainForm::projectErrorsAndWarnings(bool on)
