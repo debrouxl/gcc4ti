@@ -1846,20 +1846,23 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
   updateRightStatusLabel();
 }
 
-void MainForm::fileSave()
+bool MainForm::fileSave()
 {
   if (projectFileName.isEmpty())
-    fileSaveAs();
-  else
+    return fileSaveAs();
+  else {
     fileSave_fromto(projectFileName,projectFileName);
+    return TRUE;
+  }
 }
 
-void MainForm::fileSaveAs()
+bool MainForm::fileSaveAs()
 {
   QString fileName=SGetFileName(KFileDialog::Saving,TIGCC_TPR_Filter TIGCCAllFilter,"Save Project",this);
   if (fileName.isEmpty())
-    return;
+    return FALSE;
   fileSave_fromto(projectFileName,fileName);
+  return TRUE;
 }
 
 void MainForm::filePrint()
@@ -2685,6 +2688,12 @@ static bool stopCompilingFlag, forceQuitFlag;
 
 void MainForm::startCompiling()
 {
+  if (preferences.autoSave) {
+    if (!fileSave()) {
+      stopCompilingFlag=TRUE;
+      return;
+    }
+  }
   fileNewActionGroup->setEnabled(FALSE);
   fileOpenAction->setEnabled(FALSE);
   fileRecent1Action->setEnabled(FALSE);

@@ -388,7 +388,7 @@ int SourceFileWindow::savePrompt(void)
   while (CURRENT_VIEW->getDoc()->isModified()) { // "while" in case saving fails!
     result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(THIS->fileName),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
     if (result==KMessageBox::Yes)
-        fileSave_save();
+        fileSave();
     else if (result==KMessageBox::No)
       CURRENT_VIEW->getDoc()->setModified(FALSE);
     else
@@ -413,7 +413,7 @@ void SourceFileWindow::removeTrailingSpacesFromView(void *view)
   editExt->editEnd();
 }
 
-void SourceFileWindow::fileSave_save()
+void SourceFileWindow::fileSave()
 {
   THIS->dirWatch->removeFile(THIS->fileName);
   if (saveFileText(THIS->fileName,CURRENT_VIEW->getDoc()->text())) {
@@ -426,7 +426,7 @@ void SourceFileWindow::fileSave_save()
   }
 }
 
-void SourceFileWindow::fileSave_saveAs()
+void SourceFileWindow::fileSaveAs()
 {
   QString saveFileName=MainForm::SGetFileName(KFileDialog::Saving,
   (THIS->fileName.endsWith(".h")?TIGCC_H_Filter TIGCCAllFilter:
@@ -468,16 +468,6 @@ void SourceFileWindow::fileSave_saveAs()
   }
 }
 
-void SourceFileWindow::fileSave()
-{
-  fileSave_save();
-}
-
-void SourceFileWindow::fileSaveAs()
-{
-  fileSave_saveAs();
-}
-
 void SourceFileWindow::fileAddToProject()
 {
   THIS->mainForm->adoptSourceFile(THIS);
@@ -485,6 +475,7 @@ void SourceFileWindow::fileAddToProject()
 
 void SourceFileWindow::fileCompile()
 {
+  if (preferences.autoSave) fileSave();
   THIS->mainForm->compileSourceFile(THIS);
 }
 
