@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <qstring.h>
 #include <qimage.h>
+#include <qdir.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
@@ -163,6 +164,30 @@ void delete_temp_file(const char *filename)
   char buffer[strlen(tempdir)+strlen(filename)+2];
   sprintf(buffer,"%s/%s",tempdir,filename);
   if (unlink(buffer)) {fputs("Fatal error: Can't delete temp file!\n",stderr); exit(1);}
+}
+
+static bool clear_dir(const QString &dirname)
+{
+  QDir qdir(dirname);
+  QStringList subdirs=qdir.entryList(QDir::Dirs|QDir::Hidden);
+  for (QStringList::Iterator it=subdirs.begin();it!=subdirs.end();++it) {
+    if ((*it).compare(".") && (*it).compare("..")) {
+      QString subdir=dirname+"/"+*it;
+      if (!clear_dir(subdir)) return FALSE;
+      if (!qdir.rmdir(subdir)) return FALSE;
+    }
+  }
+  QStringList files=qdir.entryList(QDir::Files|QDir::Hidden);
+  for (QStringList::Iterator it=files.begin();it!=files.end();++it) {
+    QString file=dirname+"/"+*it;
+    if (!qdir.remove(file)) return FALSE;
+  }
+  return TRUE;
+}
+
+void clear_temp_dir(void)
+{
+  if (!clear_dir(tempdir)) {fputs("Fatal error: Can't delete temp file!\n",stderr); exit(1);};
 }
 
 void force_qt_assistant_page(int n)

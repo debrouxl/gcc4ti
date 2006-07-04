@@ -2725,6 +2725,7 @@ void MainForm::startCompiling()
 
 void MainForm::stopCompiling()
 {
+  clear_temp_dir();
   stopCompilingFlag=FALSE;
   forceQuitFlag=FALSE;
   compiling=FALSE;
