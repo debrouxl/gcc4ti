@@ -37,9 +37,9 @@ class KDirWatch;
 
 struct SourceFile : public SourceFileWindow {
   SourceFile(MainForm *mainfrm, const QString &fn, const QString &ft,
-             const QString &hlm, bool isc, bool isasm) :
+             const QString &hlm, bool isc, bool iscsrc, bool isasm) :
     SourceFileWindow(), mainForm(mainfrm), fileName(fn), fileText(ft),
-    hlMode(hlm), isCFile(isc), isASMFile(isasm)
+    hlMode(hlm), isCFile(isc), isCSourceFile(iscsrc), isASMFile(isasm)
   {
     initBase(); // We can do this only after initializing the variables here.
     show();
@@ -50,6 +50,7 @@ struct SourceFile : public SourceFileWindow {
   QString fileText;
   QString hlMode;
   bool isCFile;
+  bool isCSourceFile; // as opposed to C header file
   bool isASMFile;
 
   KReplaceWithSelectionS *kreplace;

@@ -1478,7 +1478,7 @@ bool MainForm::openProject(const QString &fileName)
                    (type==2)?"GNU Assembler 68k":
                    (type==3)?"Motorola Assembler 68k":
                    (type==1)?"C":
-                    "None",(type==1),(type>1));
+                    "None",(type==1),(category==cFilesListItem),(type>1));
     return FALSE;
   }
 }
