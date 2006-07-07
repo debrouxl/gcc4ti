@@ -279,6 +279,7 @@ class ListViewFile : public KListViewItem {
   QString textBuffer; // for lazy loading
   QString fileName; // full name of the file
   bool isNew;
+  LineStartList lineStartList;
   // Work around gratuitous API difference. Why do I have to do this? That's
   // what startRename is a virtual method for. KListViewItem should do this.
   virtual void startRename(int col)

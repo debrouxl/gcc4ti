@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include "tpr.h"
 #include "srcfilewin.h"
 
 #include <qstring.h>
@@ -52,6 +53,7 @@ struct SourceFile : public SourceFileWindow {
   void *category;
   bool isCFile;
   bool isASMFile;
+  LineStartList lineStartList;
 
   KReplaceWithSelectionS *kreplace;
   Kate::View *kateView;
