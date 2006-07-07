@@ -36,6 +36,7 @@
 #include <qtextcodec.h>
 #include <glib.h>
 #include <ticonv.h>
+#include "ktigcc.h"
 #include "tpr.h"
 #include "preferences.h"
 
@@ -749,10 +750,38 @@ static void mkdir_multi(const char *fileName)
   }
 }
 
-int saveFileText(const char *fileName,const QString &fileText)
+static int writeToFile(FILE *f, const QString &text)
+{
+  if (preferences.useCalcCharset) {
+    const unsigned short *utf16=text.ucs2();
+    if (utf16) {
+      char *s=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
+      size_t l=std::strlen(s);
+      if (fwrite(s,1,l,f)<l) {
+        g_free(s);
+        return -2;
+      }
+      g_free(s);
+    }
+  } else {
+    const char *s=smartAscii(text);
+    size_t l=text.length();
+    if (fwrite(s,1,l,f)<l) return -2;
+  }
+  return 0;
+}
+
+enum CharModes {cmNone, cmNormalText, cmNumber, cmMultiSymbol, cmString, cmChar,
+                cmComment, cmUnchangeableLine, cmExtUnchangeableLine,
+                cmExtUnchangeableLineString, cmTrigraph};
+
+int saveAndSplitFileText(const char *fileName, const QString &fileText,
+                         bool split, bool addCLineDirective,
+                         bool addASMLineDirective, const QString &origFileName,
+                         LineStartList *pLineStartList)
 {
   FILE *f;
-  size_t l;
+  LineStartList lineStartList;
   // remove trailing spaces if requested
   QString text=fileText;
   if (preferences.removeTrailingSpaces && !text.isNull()) {
@@ -768,28 +797,200 @@ int saveFileText(const char *fileName,const QString &fileText)
     if (!f)
         return -1;
   }
-  if (preferences.useCalcCharset) {
-    const unsigned short *utf16=text.ucs2();
-    if (utf16) {
-      char *s=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
-      l=std::strlen(s);
-      if (fwrite(s,1,l,f)<l) {
-        g_free(s);
-        fclose(f);
-        return -2;
+  if (split && preferences.splitSourceFiles && !settings.debug_info) {
+    unsigned curPos=0, curLine=0, curCol=0, l=text.length();
+    bool atLineStart;
+    CharModes curMode=cmNone;
+
+    #define INSERT_CHAR(ch) do {if (writeToFile(f,QString((ch)))) {fclose(f); return -2;}} while(0)
+    #define INSERT_STRING(str) do {if (writeToFile(f,(str))) {fclose(f); return -2;}} while(0)
+    #define ADD_LINE() do {lineStartList.append(qMakePair(curLine,curCol)); atLineStart=TRUE;} while(0)
+    #define IS_NEWLINE() (text[curPos]=='\n')
+    #define ADD_LINE_NEXT() do {lineStartList.append(qMakePair(curLine+(unsigned)(IS_NEWLINE()),(IS_NEWLINE())?0u:(curCol+1u))); atLineStart=TRUE;} while(0)
+    #define NEW_LINE() do {if((!(atLineStart||IS_NEWLINE())) || (text[curPos]=='#')) {INSERT_CHAR(QChar('\n')); ADD_LINE();} curMode=cmNone;} while(0)
+    #define SET_MULTI_CHAR_MODE(mode) do {if (curMode!=(mode)) {NEW_LINE(); curMode=(mode);}} while(0)
+
+    ADD_LINE(); // Line 0
+    ADD_LINE(); // Line 1
+    for (; curPos<l; curPos++) {
+      bool noInsert=FALSE;
+      QChar c=text[curPos];
+      if (c=='\n')
+        ADD_LINE_NEXT();
+      switch (curMode) {
+        case cmString:
+          if (c=='\"') {
+            bool b=TRUE;
+            unsigned i=curPos-1;
+            while (i && ((text[i]=='\\')||(i>=2&&!text.mid(i-2,3).compare("?""?""/")))) {
+              b=!b;
+              if (text[i]=='\\') --i; else i-=3;
+            }
+            if (b) {
+              curMode=cmNone;
+              noInsert=TRUE;
+              INSERT_STRING(QString(c)+"\n");
+              atLineStart=TRUE;
+              ADD_LINE_NEXT();
+            }
+          }
+          break;
+        case cmChar:
+          if (c=='\'') {
+            bool b=TRUE;
+            unsigned i=curPos-1;
+            while (i && ((text[i]=='\\')||(i>=2&&!text.mid(i-2,3).compare("?""?""/")))) {
+              b=!b;
+              if (text[i]=='\\') --i; else i-=3;
+            }
+            if (b) curMode=cmNone;
+          }
+          break;
+        case cmComment:
+          if ((c=='/')&&(text[curPos-1]=='*')) curMode=cmNone;
+          break;
+        case cmUnchangeableLine:
+          if (c=='\n') curMode=cmNone;
+          break;
+        case cmExtUnchangeableLine:
+          if ((c=='\n')&&(text[curPos-1]!='\\')) curMode=cmNone;
+          else if (c=='\"') curMode=cmExtUnchangeableLineString;
+          break;
+        case cmExtUnchangeableLineString:
+          if (c=='\"') {
+            bool b=TRUE;
+            unsigned i=curPos-1;
+            while (i && ((text[i]=='\\')||(i>=2&&!text.mid(i-2,3).compare("?""?""/")))) {
+              b=!b;
+              if (text[i]=='\\') --i; else i-=3;
+            }
+            if (b) curMode=cmExtUnchangeableLine;
+          }
+          break;
+        case cmTrigraph:
+          if ((c!='?')&&((curPos+1>=l)||(text[curPos+1]!='?'))) curMode=cmNone;
+          break;
+        default:
+          if (!text.mid(curPos,2).compare("//"))
+            SET_MULTI_CHAR_MODE(cmUnchangeableLine);
+          else if (!text.mid(curPos,2).compare("/*"))
+            SET_MULTI_CHAR_MODE(cmComment);
+          else if (!text.mid(curPos,2).compare("?""?""="))
+            SET_MULTI_CHAR_MODE(cmExtUnchangeableLine);
+          else if (!text.mid(curPos,2).compare("?""?")&&(curPos+2<l)
+                   &&QString("()/\'<>!-").contains(text[curPos+2]))
+            SET_MULTI_CHAR_MODE(cmTrigraph);
+          else {
+            switch(c.unicode()) {
+              case ' ':
+              case '\t':
+                if (curPos && text[curPos-1]!=' ' && text[curPos-1]!='\t')
+                  NEW_LINE();
+                break;
+              case 'A' ... 'Z':
+              case 'a' ... 'z':
+              case '0' ... '9':
+              case '_':
+              case '$':
+                if (curMode!=cmNormalText && curMode!=cmNumber) {
+                  NEW_LINE();
+                  if (c>=QChar('0') && c<=QChar('9'))
+                    curMode=cmNumber;
+                  else
+                    curMode=cmNormalText;
+                }
+                break;
+              case '\"':
+                SET_MULTI_CHAR_MODE(cmString);
+                break;
+              case '\'':
+                SET_MULTI_CHAR_MODE(cmChar);
+                break;
+              case '#':
+                SET_MULTI_CHAR_MODE(cmExtUnchangeableLine);
+                break;
+              case '.':
+                if (curMode!=cmNumber) {
+                  if ((curPos+1<l)
+                      &&(text[curPos+1]>=QChar('0')
+                         &&text[curPos+1]<=QChar('9'))) {
+                    NEW_LINE();
+                    curMode=cmNumber;
+                  } else SET_MULTI_CHAR_MODE(cmMultiSymbol);
+                }
+                break;
+              case '+':
+              case '-':
+                if ((curMode!=cmNumber)||(curPos<=1)
+                    ||!QString("eEpP").contains(text[curPos-1]))
+                  SET_MULTI_CHAR_MODE(cmMultiSymbol);
+                break;
+              default:
+                if (QString(",;()[]{}").contains(c)) {
+                  if (curMode!=cmNone) {
+                    NEW_LINE();
+                    curMode=cmNone;
+                  }
+                  if ((curPos+1<l)&&text[curPos+1]!='\n') {
+                    noInsert=TRUE;
+                    INSERT_STRING(QString(c)+"\n");
+                    ADD_LINE_NEXT();
+                  } else SET_MULTI_CHAR_MODE(cmMultiSymbol);
+                }
+                break;
+            }
+          }
+          break;
       }
-      g_free(s);
+      if (!noInsert) {
+        INSERT_CHAR(c);
+        if (c!='\n') atLineStart=FALSE;
+      }
+      if (c=='\n') {
+        curLine++;
+        curCol=0;
+      } else curCol++;
     }
+    NEW_LINE();
+    
+    #undef INSERT_CHAR
+    #undef INSERT_STRING
+    #undef ADD_LINE
+    #undef IS_NEWLINE
+    #undef ADD_LINE_NEXT
+    #undef NEW_LINE
+    #undef SET_MULTI_CHAR_MODE
   } else {
-    const char *s=smartAscii(text);
-    l=fileText.length();
-    if (fwrite(s,1,l,f)<l) {
-      fclose(f);
-      return -2;
+    if ((addCLineDirective || addASMLineDirective) && settings.debug_info) {
+      QString escapedFileName=origFileName, lineDirective;
+      escapedFileName.replace("\\","\\\\");
+      escapedFileName.replace("\"","\\\"");
+      // These have no business to be in a file name, but someone somewhere may
+      // have that very bad idea...
+      escapedFileName.replace("\r","\\r");
+      escapedFileName.replace("\n","\\n");
+      lineDirective=QString(addCLineDirective
+                            ?"#line 1 \"%1\"\n"
+                            :".appfile \"%1\"; .appline 1\n").arg(escapedFileName);
+      // Don't use calc charset for this, it's a host file name.
+      const char *s=smartAscii(escapedFileName);
+      size_t l=escapedFileName.length();
+      if (fwrite(s,1,l,f)<l) return -2;
+    }
+    if (writeToFile(f,text)) {fclose(f); return -2;}
+    if (addCLineDirective) {
+      if (fwrite("\n",1,1,f)<1) {fclose(f); return -2;}
     }
   }
   if (fclose(f)) return -2;
+  if (pLineStartList) *pLineStartList=lineStartList;
   return 0;
+}
+
+int saveFileText(const char *fileName,const QString &fileText)
+{
+  return saveAndSplitFileText(fileName,fileText,FALSE,FALSE,FALSE,QString::null,
+                              static_cast<LineStartList *>(NULL));
 }
 
 void kurlNewFileName(KURL &dir,const QString &newFileName)

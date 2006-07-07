@@ -39,8 +39,6 @@
 #include "ktigcc.h"
 #include "tpr.h"
 
-extern tprLibOpts libopts;
-
 void ProgramOptions::ImportSettings()
 {
   //Tab: Calculator

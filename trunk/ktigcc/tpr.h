@@ -24,6 +24,8 @@
 class KURL;
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qvaluevector.h>
+#include <qpair.h>
 
 /*Structure definitions from tprbuilder source; slightly modified
     to work under C++
@@ -154,6 +156,8 @@ typedef struct
 
 enum {PATH_ERROR,PATH_NOTFOUND,PATH_FILE,PATH_FOLDER}; //return types for getPathType
 
+typedef QValueVector<QPair<unsigned,unsigned> > LineStartList;
+
 const char *smartAscii(const QString &s);
 
 void newSettings(tprSettings *settings,tprLibOpts *libopts);
@@ -162,6 +166,10 @@ int loadTPR(const QString &fileName,TPRDataStruct *dest);
 QString loadFileText(const char *fileName);
 
 int saveTPR(const QString &fileName,TPRDataStruct *src);
+int saveAndSplitFileText(const char *fileName, const QString &fileText,
+                         bool split, bool addCLineDirective,
+                         bool addASMLineDirective, const QString &origFileName,
+                         LineStartList *pLineStartList);
 int saveFileText(const char *fileName,const QString &fileText);
 
 void kurlNewFileName(KURL &dir,const QString &newFileName);

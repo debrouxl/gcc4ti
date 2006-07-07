@@ -26,6 +26,8 @@
 class QAssistantClient;
 class QClipboard;
 class SourceFile;
+typedef struct tprsettings tprSettings;
+typedef struct tprlibopts tprLibOpts;
 
 extern const char *tigcc_base;
 extern const char *quill_drv;
@@ -43,3 +45,5 @@ extern const char *parg;
 extern QAssistantClient *assistant;
 extern QClipboard *clipboard;
 extern QPtrList<SourceFile> sourceFiles;
+extern tprSettings settings;
+extern tprLibOpts libopts;

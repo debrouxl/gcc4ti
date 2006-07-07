@@ -37,8 +37,6 @@
 #include "tpr.h"
 #include "programoptions.h"
 
-extern tprSettings settings;
-
 ProgramOptions *programoptions;
 //the program options subdialog is created at initialization of a ProjectOptions and remains existant until the ProjectOptions is destroyed.
 

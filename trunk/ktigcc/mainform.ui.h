@@ -350,8 +350,8 @@ static QDockWindow *errorListDock;
 static ErrorList *errorList;
 QAssistantClient *assistant;
 static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
-tprSettings settings; //static is turned off here so ProjectOptions can access it.
-tprLibOpts libopts; //static is turned off here so ProgramOptions can access it.
+tprSettings settings;
+tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
 QClipboard *clipboard;
@@ -1478,7 +1478,7 @@ bool MainForm::openProject(const QString &fileName)
                    (type==2)?"GNU Assembler 68k":
                    (type==3)?"Motorola Assembler 68k":
                    (type==1)?"C":
-                    "None",(type==1),(category==cFilesListItem),(type>1));
+                    "None",category,(type==1),(type>1));
     return FALSE;
   }
 }
