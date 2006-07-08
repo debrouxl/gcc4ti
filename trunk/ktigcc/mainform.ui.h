@@ -2748,10 +2748,10 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject, QListViewIt
   } else {
     SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
     origFileName=&(sourceFile->fileName);
-    fileName=QString("%1%2").arg(tempdir)
-                            .arg(origFileName->mid(origFileName->findRev('/')));
     category=reinterpret_cast<QListViewItem *>(sourceFile->category);
     if (pCategory) *pCategory=category;
+    fileName=QString("%1%2").arg(tempdir)
+                            .arg(origFileName->mid(origFileName->findRev('/')));
     fileText=sourceFile->kateView->getDoc()->text();
     pLineStartList=&(sourceFile->lineStartList);
   }
