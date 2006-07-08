@@ -2691,6 +2691,74 @@ void MainForm::projectAddFiles()
   }
 }
 
+QString MainForm::writeTempSourceFile(void *srcFile, bool inProject, QListViewItem **pCategory)
+{
+  const QString *origFileName;
+  QListViewItem *category;
+  QString fileName;
+  QString fileText;
+  LineStartList *pLineStartList=0;
+  if (inProject) {
+    ListViewFile *sourceFile=reinterpret_cast<ListViewFile *>(srcFile);
+    origFileName=&(sourceFile->fileName);
+    CATEGORY_OF(cat,sourceFile);
+    category=cat;
+    if (pCategory) *pCategory=category;
+    QString folder;
+    QListViewItem *item=sourceFile->parent();
+    while (!IS_CATEGORY(item)) {
+      folder.prepend('/');
+      folder.prepend(item->text(0));
+      item=item->parent();
+    }
+    QString ext;
+    // Some categories need fixed extensions.
+    if (category==cFilesListItem) {
+      ext=".c";
+    } else if (category==sFilesListItem) {
+      ext=".s";
+    } else if (category==asmFilesListItem) {
+      ext=".asm";
+    } else if (category==qllFilesListItem) {
+      ext=".qll";
+    } else if (category==oFilesListItem) {
+      ext=".o";
+    } else if (category==aFilesListItem) {
+      ext=".a";
+    } else {
+      // For others (header files in particular), we need to keep whatever
+      // extension the user supplied.
+      int dotPos=origFileName->findRev('.');
+      int slashPos=origFileName->findRev('/');
+      if (dotPos>slashPos) ext=origFileName->mid(dotPos);
+    }
+    fileName=QString("%1/%2%3%4").arg(tempdir).arg(folder)
+                                 .arg(sourceFile->text(0).arg(ext));
+    if (IS_EDITABLE_CATEGORY(category)) {
+      if (sourceFile->kateView) {
+        fileText=sourceFile->kateView->getDoc()->text();
+      } else {
+        fileText=sourceFile->textBuffer;
+      }
+      pLineStartList=&(sourceFile->lineStartList);
+    } else {
+      copyFile(origFileName->ascii(),fileName.ascii());
+      return fileName;
+    }
+  } else {
+    SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+    origFileName=&(sourceFile->fileName);
+    category=reinterpret_cast<QListViewItem *>(sourceFile->category);
+    if (pCategory) *pCategory=category;
+    fileText=sourceFile->kateView->getDoc()->text();
+    pLineStartList=&(sourceFile->lineStartList);
+  }
+  saveAndSplitFileText(fileName.ascii(),fileText,(category==cFilesListItem),
+                       (category==cFilesListItem||category==qllFilesListItem),
+                       (category==sFilesListItem),*origFileName,pLineStartList);
+  return fileName;
+}
+
 static bool stopCompilingFlag, forceQuitFlag;
 
 void MainForm::startCompiling()
