@@ -2733,7 +2733,7 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject, QListViewIt
       if (dotPos>slashPos) ext=origFileName->mid(dotPos);
     }
     fileName=QString("%1/%2%3%4").arg(tempdir).arg(folder)
-                                 .arg(sourceFile->text(0).arg(ext));
+                                 .arg(sourceFile->text(0)).arg(ext);
     if (IS_EDITABLE_CATEGORY(category)) {
       if (sourceFile->kateView) {
         fileText=sourceFile->kateView->getDoc()->text();
@@ -2803,6 +2803,20 @@ void MainForm::startCompiling()
   compiling=TRUE;
   stopCompilingFlag=FALSE;
   forceQuitFlag=FALSE;
+  // Write all the headers and incbin files to the temporary directory.
+  QListViewItemIterator lvit(hFilesListItem);
+  QListViewItem *item;
+  for (item=(++lvit).current();item&&!IS_CATEGORY(item);
+       item=(++lvit).current()) {
+    if (IS_FILE(item))
+      writeTempSourceFile(static_cast<ListViewFile *>(item),TRUE);
+  }
+  lvit=QListViewItemIterator(othFilesListItem);
+  for (item=(++lvit).current();item&&!IS_CATEGORY(item);
+       item=(++lvit).current()) {
+    if (IS_FILE(item))
+      writeTempSourceFile(static_cast<ListViewFile *>(item),TRUE);
+  }
 }
 
 void MainForm::stopCompiling()
