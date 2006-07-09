@@ -2693,6 +2693,11 @@ void MainForm::projectAddFiles()
   }
 }
 
+static bool stopCompilingFlag, forceQuitFlag, errorsCompilingFlag, headersModified;
+static QDateTime newestHeaderTimestamp;
+static QStringList objectFiles;
+static QStringList deletableObjectFiles;
+
 QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
 {
   const QString *origFileName;
@@ -2743,7 +2748,10 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
       }
       pLineStartList=&(sourceFile->lineStartList);
     } else {
-      copyFile(origFileName->ascii(),fileName.ascii());
+      if (copyFile(origFileName->ascii(),fileName.ascii())) {
+        KMessageBox::error(this,"Failed to copy file to temporary directory.");
+        stopCompilingFlag=TRUE;
+      }
       return fileName;
     }
   } else {
@@ -2755,16 +2763,14 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
     fileText=sourceFile->kateView->getDoc()->text();
     pLineStartList=&(sourceFile->lineStartList);
   }
-  saveAndSplitFileText(fileName.ascii(),fileText,(category==cFilesListItem),
-                       (category==cFilesListItem||category==qllFilesListItem),
-                       (category==sFilesListItem),*origFileName,pLineStartList);
+  if (saveAndSplitFileText(fileName.ascii(),fileText,(category==cFilesListItem),
+                           (category==cFilesListItem||category==qllFilesListItem),
+                           (category==sFilesListItem),*origFileName,pLineStartList)) {
+    KMessageBox::error(this,"Failed to write source file to temporary directory.");
+    stopCompilingFlag=TRUE;
+  }
   return fileName;
 }
-
-static bool stopCompilingFlag, forceQuitFlag, headersModified;
-static QDateTime newestHeaderTimestamp;
-static QStringList objectFiles;
-static QStringList deletableObjectFiles;
 
 void MainForm::startCompiling()
 {
@@ -2806,6 +2812,7 @@ void MainForm::startCompiling()
   compiling=TRUE;
   stopCompilingFlag=FALSE;
   forceQuitFlag=FALSE;
+  errorsCompilingFlag=FALSE;
   headersModified=FALSE;
   newestHeaderTimestamp=QDateTime();
   objectFiles.clear();
@@ -2828,6 +2835,7 @@ void MainForm::startCompiling()
           newestHeaderTimestamp=headerTimestamp;
       }
       writeTempSourceFile(static_cast<ListViewFile *>(item),TRUE);
+      if (stopCompilingFlag) return;
     }
   }
   lvit=QListViewItemIterator(othFilesListItem);
@@ -2842,6 +2850,7 @@ void MainForm::startCompiling()
           newestHeaderTimestamp=headerTimestamp;
       }
       writeTempSourceFile(static_cast<ListViewFile *>(item),TRUE);
+      if (stopCompilingFlag) return;
     }
   }
 }
@@ -2851,6 +2860,7 @@ void MainForm::stopCompiling()
   clear_temp_dir();
   stopCompilingFlag=FALSE;
   forceQuitFlag=FALSE;
+  errorsCompilingFlag=FALSE;
   compiling=FALSE;
   QPtrListIterator<SourceFile> sfit(sourceFiles);
   for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
@@ -2886,6 +2896,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
   const QString *origFileName;
   bool modified=FALSE;
   QString shortFileName;
+  if (stopCompilingFlag) return;
   if (inProject) {
     ListViewFile *sourceFile=reinterpret_cast<ListViewFile *>(srcFile);
     CATEGORY_OF(cat,sourceFile);
@@ -2926,6 +2937,15 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     }
     statusBar()->message(QString("Compiling %1...").arg(shortFileName));
     QString fileName=writeTempSourceFile(srcFile,inProject);
+    if (stopCompilingFlag) return;
+    QString tempObjectFile=fileName;
+    dotPos=fileName.findRev('.');
+    slashPos=fileName.findRev('/');
+    if (dotPos>slashPos) tempObjectFile.truncate(dotPos);
+    QString tempAsmFile=tempObjectFile;
+    tempObjectFile.append(".o");
+    tempAsmFile.append(".s");
+    QDir qdir;
     if (category==cFilesListItem) {
       qDebug("Compiling C file");
     } else if (category==sFilesListItem) {
@@ -2935,6 +2955,19 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     } else /*if (category==qllFilesListItem)*/ {
       qDebug("Compiling Quill file");
     }
+    qdir.remove(fileName);
+    if (qdir.exists(tempObjectFile)) {
+      qdir.remove(objectFile);
+      if (copyFile(tempObjectFile.ascii(),objectFile.ascii())) {
+        KMessageBox::error(this,"Failed to copy object file from temporary directory.");
+        stopCompilingFlag=TRUE;
+      }
+      qdir.remove(tempObjectFile);
+    } else {
+      errorsCompilingFlag=TRUE;
+      if (preferences.stopAtFirstError) stopCompilingFlag=TRUE;
+    }
+    if (stopCompilingFlag) return;
     deletableObjectFiles.append(objectFile);
     objectFiles.append(objectFile);
   } else if (category==oFilesListItem || category==aFilesListItem) {
