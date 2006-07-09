@@ -2877,6 +2877,7 @@ void MainForm::stopCompiling()
   fileRecent4Action->setEnabled(TRUE);
   fileOpenAction->setEnabled(TRUE);
   fileNewActionGroup->setEnabled(TRUE);
+  statusBar()->clear();
 }
 
 void MainForm::compileFile(void *srcFile, bool inProject, bool force)
@@ -2884,6 +2885,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
   QListViewItem *category;
   const QString *origFileName;
   bool modified=FALSE;
+  QString shortFileName;
   if (inProject) {
     ListViewFile *sourceFile=reinterpret_cast<ListViewFile *>(srcFile);
     CATEGORY_OF(cat,sourceFile);
@@ -2892,12 +2894,14 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     if ((sourceFile->kateView && sourceFile->kateView->getDoc()->isModified())
         || sourceFile->isNew)
       modified=TRUE;
+    shortFileName=sourceFile->text(0);
   } else {
     SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
     category=reinterpret_cast<QListViewItem *>(sourceFile->category);
     origFileName=&(sourceFile->fileName);
     if (sourceFile->kateView->getDoc()->isModified())
       modified=TRUE;
+    shortFileName=sourceFile->fileName;
   }
   if (category==cFilesListItem || category==sFilesListItem
       || category==asmFilesListItem || category==qllFilesListItem) {
@@ -2920,6 +2924,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
         }
       }
     }
+    statusBar()->message(QString("Compiling %1...").arg(shortFileName));
+    QString fileName=writeTempSourceFile(srcFile,inProject);
     if (category==cFilesListItem) {
       qDebug("Compiling C file");
     } else if (category==sFilesListItem) {
@@ -2972,9 +2978,7 @@ void MainForm::compileSourceFile(void *srcFile)
   SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
   sourceFile->fileCloseAction->setEnabled(FALSE);
   startCompiling();
-  while (!stopCompilingFlag) {
-    
-  }
+  compileFile(sourceFile,FALSE,TRUE);
   stopCompiling();
 }
 

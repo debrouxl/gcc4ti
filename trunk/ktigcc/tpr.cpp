@@ -28,6 +28,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/dir.h>
+#include <qapplication.h>
+#include <qeventloop.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
@@ -950,6 +952,9 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
         curLine++;
         curCol=0;
       } else curCol++;
+      // Allow the UI to respond, splitting is a lengthy operation.
+      if (curPos&127)
+        QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
     }
     NEW_LINE();
     
