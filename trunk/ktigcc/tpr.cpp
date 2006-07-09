@@ -197,6 +197,8 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
                 continue; \
             } else
 
+#define tistring_param(token,setting) tistring_vparam(token,settings.setting)
+
 #define string_param(token,setting) \
             if ( (p=find_param(buffer, token)) ) \
             { \
@@ -222,7 +224,7 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
             ignore_param("BSR Patch=") // Obsolete. Ignore.
             boolean_param("Debug Info=",debug_info)
             boolean_param("Standard Library=",std_lib)
-            string_param("Command Line=",cmd_line)
+            tistring_param("Command Line=",cmd_line)
             string_param("Post-Build Process=",post_build)
             boolean_param("Use Data Variable=",use_data_var)
             string_param("Data Variable=",data_var)
@@ -246,6 +248,7 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
 
 #undef boolean_param
 #undef tistring_vparam
+#undef tistring_param
 #undef string_param
 #undef ignore_param
         }
@@ -564,6 +567,7 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
         if (fprintf(f,token "%s\r\n",ti)<0) {g_free(ti); return -2;} \
         g_free(ti); \
     }
+#define tistring_param(token,setting) tistring_vparam(token,settings.setting)
 #define string_param(token,setting) if (fprintf(f,token "%s\r\n",smartAscii(dest->settings.setting))<0) return -2;
 #define ignore_param(token) /**/
     
@@ -580,7 +584,7 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
     ignore_param("BSR Patch=") // Obsolete. Ignore.
     boolean_param("Debug Info=",debug_info)
     boolean_param("Standard Library=",std_lib)
-    string_param("Command Line=",cmd_line)
+    tistring_param("Command Line=",cmd_line)
     string_param("Post-Build Process=",post_build)
     boolean_param("Use Data Variable=",use_data_var)
     string_param("Data Variable=",data_var)
@@ -603,6 +607,7 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
     
 #undef boolean_param
 #undef tistring_vparam
+#undef tistring_param
 #undef string_param
 #undef ignore_param
     
