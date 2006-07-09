@@ -2693,7 +2693,7 @@ void MainForm::projectAddFiles()
   }
 }
 
-QString MainForm::writeTempSourceFile(void *srcFile, bool inProject, QListViewItem **pCategory)
+QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
 {
   const QString *origFileName;
   QListViewItem *category;
@@ -2705,7 +2705,6 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject, QListViewIt
     origFileName=&(sourceFile->fileName);
     CATEGORY_OF(cat,sourceFile);
     category=cat;
-    if (pCategory) *pCategory=category;
     QString folder;
     QListViewItem *item=sourceFile->parent();
     while (!IS_CATEGORY(item)) {
@@ -2751,7 +2750,6 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject, QListViewIt
     SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
     origFileName=&(sourceFile->fileName);
     category=reinterpret_cast<QListViewItem *>(sourceFile->category);
-    if (pCategory) *pCategory=category;
     fileName=QString("%1%2").arg(tempdir)
                             .arg(origFileName->mid(origFileName->findRev('/')));
     fileText=sourceFile->kateView->getDoc()->text();
@@ -2765,6 +2763,8 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject, QListViewIt
 
 static bool stopCompilingFlag, forceQuitFlag, headersModified;
 static QDateTime newestHeaderTimestamp;
+static QStringList objectFiles;
+static QStringList deletableObjectFiles;
 
 void MainForm::startCompiling()
 {
@@ -2808,14 +2808,17 @@ void MainForm::startCompiling()
   forceQuitFlag=FALSE;
   headersModified=FALSE;
   newestHeaderTimestamp=QDateTime();
+  objectFiles.clear();
+  deletableObjectFiles.clear();
   // Write all the headers and incbin files to the temporary directory.
   QListViewItemIterator lvit(hFilesListItem);
   QListViewItem *item;
   for (item=(++lvit).current();item&&!IS_CATEGORY(item);
        item=(++lvit).current()) {
     if (IS_FILE(item)) {
-      if (static_cast<ListViewFile *>(item)->kateView
-          && static_cast<ListViewFile *>(item)->kateView->getDoc()->isModified())
+      if ((static_cast<ListViewFile *>(item)->kateView
+           && static_cast<ListViewFile *>(item)->kateView->getDoc()->isModified())
+          || static_cast<ListViewFile *>(item)->isNew)
         headersModified=TRUE;
       if (!headersModified) {
         QDateTime headerTimestamp=QFileInfo(static_cast<ListViewFile *>(item)->fileName).lastModified();
@@ -2874,6 +2877,61 @@ void MainForm::stopCompiling()
   fileRecent4Action->setEnabled(TRUE);
   fileOpenAction->setEnabled(TRUE);
   fileNewActionGroup->setEnabled(TRUE);
+}
+
+void MainForm::compileFile(void *srcFile, bool inProject, bool force)
+{
+  QListViewItem *category;
+  const QString *origFileName;
+  bool modified=FALSE;
+  if (inProject) {
+    ListViewFile *sourceFile=reinterpret_cast<ListViewFile *>(srcFile);
+    CATEGORY_OF(cat,sourceFile);
+    category=cat;
+    origFileName=&(sourceFile->fileName);
+    if ((sourceFile->kateView && sourceFile->kateView->getDoc()->isModified())
+        || sourceFile->isNew)
+      modified=TRUE;
+  } else {
+    SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+    category=reinterpret_cast<QListViewItem *>(sourceFile->category);
+    origFileName=&(sourceFile->fileName);
+  }
+  if (category==cFilesListItem || category==sFilesListItem
+      || category==asmFilesListItem || category==qllFilesListItem) {
+    QString objectFile=*origFileName;
+    int dotPos=origFileName->findRev('.');
+    int slashPos=origFileName->findRev('/');
+    if (dotPos>slashPos) objectFile.truncate(dotPos);
+    objectFile.append(".o");
+    // Figure out whether to recompile the file.
+    if (!force && !modified && !headersModified) {
+      QFileInfo objectFileInfo(objectFile);
+      if (objectFileInfo.exists()) {
+        QDateTime timestamp=objectFileInfo.lastModified();
+        if (timestamp.isValid() && (!newestHeaderTimestamp.isValid()
+                                    || timestamp>=newestHeaderTimestamp)) {
+          QDateTime sourceTimestamp=QFileInfo(*origFileName).lastModified();
+          if (sourceTimestamp.isValid() && timestamp>=sourceTimestamp) {
+            return;
+          }
+        }
+      }
+    }
+    if (category==cFilesListItem) {
+      qDebug("Compiling C file");
+    } else if (category==sFilesListItem) {
+      qDebug("Compiling GNU as file");
+    } else if (category==asmFilesListItem) {
+      qDebug("Compiling A68k file");
+    } else /*if (category==qllFilesListItem)*/ {
+      qDebug("Compiling Quill file");
+    }
+    deletableObjectFiles.append(objectFile);
+    objectFiles.append(objectFile);
+  } else if (category==oFilesListItem || category==aFilesListItem) {
+    objectFiles.append(*origFileName);
+  } // else do nothing (ignore all other categories)
 }
 
 void MainForm::projectCompile()
