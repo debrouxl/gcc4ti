@@ -2896,6 +2896,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
     category=reinterpret_cast<QListViewItem *>(sourceFile->category);
     origFileName=&(sourceFile->fileName);
+    if (sourceFile->kateView->getDoc()->isModified())
+      modified=TRUE;
   }
   if (category==cFilesListItem || category==sFilesListItem
       || category==asmFilesListItem || category==qllFilesListItem) {
