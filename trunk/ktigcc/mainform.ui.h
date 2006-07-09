@@ -2697,6 +2697,7 @@ static bool stopCompilingFlag, forceQuitFlag, errorsCompilingFlag, headersModifi
 static QDateTime newestHeaderTimestamp;
 static QStringList objectFiles;
 static QStringList deletableObjectFiles;
+static QStringList deletableAsmFiles;
 
 QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
 {
@@ -2817,6 +2818,7 @@ void MainForm::startCompiling()
   newestHeaderTimestamp=QDateTime();
   objectFiles.clear();
   deletableObjectFiles.clear();
+  deletableAsmFiles.clear();
   // Write all the headers and incbin files to the temporary directory.
   QListViewItemIterator lvit(hFilesListItem);
   QListViewItem *item;
@@ -2858,6 +2860,23 @@ void MainForm::startCompiling()
 void MainForm::stopCompiling()
 {
   clear_temp_dir();
+#if 0
+  // Delete object and assembly files.
+  // FIXME: This should be done only when linking is done.
+  QDir qdir;
+  if (!errorsCompilingFlag && preferences.deleteObjFiles) {
+    for (QStringList::Iterator it=deletableObjectFiles.begin();
+         it!=deletableObjectFiles.end(); ++it) {
+      qdir.remove(*it);
+    }
+  }
+  if (!errorsCompilingFlag && preferences.deleteAsmFiles) {
+    for (QStringList::Iterator it=deletableAsmFiles.begin();
+         it!=deletableAsmFiles.end(); ++it) {
+      qdir.remove(*it);
+    }
+  }
+#endif /* 0 */
   stopCompilingFlag=FALSE;
   forceQuitFlag=FALSE;
   errorsCompilingFlag=FALSE;
@@ -2920,7 +2939,13 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     int dotPos=origFileName->findRev('.');
     int slashPos=origFileName->findRev('/');
     if (dotPos>slashPos) objectFile.truncate(dotPos);
+    QString asmFile=objectFile;
     objectFile.append(".o");
+    deletableObjectFiles.append(objectFile);
+    objectFiles.append(objectFile);
+    asmFile.append(".s");
+    if (category==cFilesListItem || category==qllFilesListItem)
+      deletableAsmFiles.append(asmFile);
     // Figure out whether to recompile the file.
     if (!force && !modified && !headersModified) {
       QFileInfo objectFileInfo(objectFile);
@@ -2946,14 +2971,20 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     tempObjectFile.append(".o");
     tempAsmFile.append(".s");
     QDir qdir;
-    if (category==cFilesListItem) {
-      qDebug("Compiling C file");
-    } else if (category==sFilesListItem) {
-      qDebug("Compiling GNU as file");
+    if (category==sFilesListItem) {
     } else if (category==asmFilesListItem) {
-      qDebug("Compiling A68k file");
-    } else /*if (category==qllFilesListItem)*/ {
-      qDebug("Compiling Quill file");
+    } else /* C or Quill */ {
+      if (qdir.exists(tempAsmFile)) {
+        qdir.remove(asmFile);
+        if (copyFile(tempAsmFile.ascii(),asmFile.ascii())) {
+          KMessageBox::error(this,"Failed to copy assembly file from temporary directory.");
+          stopCompilingFlag=TRUE;
+        }
+        qdir.remove(tempAsmFile);
+      } else {
+        errorsCompilingFlag=TRUE;
+        if (preferences.stopAtFirstError) stopCompilingFlag=TRUE;
+      }
     }
     qdir.remove(fileName);
     if (qdir.exists(tempObjectFile)) {
@@ -2967,9 +2998,6 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
       errorsCompilingFlag=TRUE;
       if (preferences.stopAtFirstError) stopCompilingFlag=TRUE;
     }
-    if (stopCompilingFlag) return;
-    deletableObjectFiles.append(objectFile);
-    objectFiles.append(objectFile);
   } else if (category==oFilesListItem || category==aFilesListItem) {
     objectFiles.append(*origFileName);
   } // else do nothing (ignore all other categories)
