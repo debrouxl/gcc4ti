@@ -41,6 +41,8 @@
 #include <qaccel.h>
 #include <qeventloop.h>
 #include <qdockwindow.h>
+#include <qfileinfo.h>
+#include <qdatetime.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -2761,7 +2763,8 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject, QListViewIt
   return fileName;
 }
 
-static bool stopCompilingFlag, forceQuitFlag;
+static bool stopCompilingFlag, forceQuitFlag, headersModified;
+static QDateTime newestHeaderTimestamp;
 
 void MainForm::startCompiling()
 {
@@ -2803,19 +2806,40 @@ void MainForm::startCompiling()
   compiling=TRUE;
   stopCompilingFlag=FALSE;
   forceQuitFlag=FALSE;
+  headersModified=FALSE;
+  newestHeaderTimestamp=QDateTime();
   // Write all the headers and incbin files to the temporary directory.
   QListViewItemIterator lvit(hFilesListItem);
   QListViewItem *item;
   for (item=(++lvit).current();item&&!IS_CATEGORY(item);
        item=(++lvit).current()) {
-    if (IS_FILE(item))
+    if (IS_FILE(item)) {
+      if (static_cast<ListViewFile *>(item)->kateView
+          && static_cast<ListViewFile *>(item)->kateView->getDoc()->isModified())
+        headersModified=TRUE;
+      if (!headersModified) {
+        QDateTime headerTimestamp=QFileInfo(static_cast<ListViewFile *>(item)->fileName).lastModified();
+        if (!newestHeaderTimestamp.isValid()
+            || (headerTimestamp.isValid()
+                && headerTimestamp>newestHeaderTimestamp))
+          newestHeaderTimestamp=headerTimestamp;
+      }
       writeTempSourceFile(static_cast<ListViewFile *>(item),TRUE);
+    }
   }
   lvit=QListViewItemIterator(othFilesListItem);
   for (item=(++lvit).current();item&&!IS_CATEGORY(item);
        item=(++lvit).current()) {
-    if (IS_FILE(item))
+    if (IS_FILE(item)) {
+      if (!headersModified) {
+        QDateTime headerTimestamp=QFileInfo(static_cast<ListViewFile *>(item)->fileName).lastModified();
+        if (!newestHeaderTimestamp.isValid()
+            || (headerTimestamp.isValid()
+                && headerTimestamp>newestHeaderTimestamp))
+          newestHeaderTimestamp=headerTimestamp;
+      }
       writeTempSourceFile(static_cast<ListViewFile *>(item),TRUE);
+    }
   }
 }
 
