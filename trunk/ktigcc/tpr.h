@@ -180,3 +180,6 @@ int checkFileName(const QString &fileName,const QStringList &fileNameList);
 int copyFile(const char *src, const char *dest);
 
 int getPathType(const QString &thePath);
+
+QStringList process_libopts(void);
+QStringList process_settings(void);

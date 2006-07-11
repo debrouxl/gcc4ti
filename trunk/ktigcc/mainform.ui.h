@@ -43,6 +43,7 @@
 #include <qdockwindow.h>
 #include <qfileinfo.h>
 #include <qdatetime.h>
+#include <qtextcodec.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -64,6 +65,8 @@
 #include <kglobal.h>
 #include <kicontheme.h>
 #include <kiconloader.h>
+#include <kprocio.h>
+#include <kshell.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -2693,11 +2696,12 @@ void MainForm::projectAddFiles()
   }
 }
 
-static bool stopCompilingFlag, forceQuitFlag, errorsCompilingFlag, headersModified;
+static bool stopCompilingFlag, errorsCompilingFlag, headersModified;
 static QDateTime newestHeaderTimestamp;
 static QStringList objectFiles;
 static QStringList deletableObjectFiles;
 static QStringList deletableAsmFiles;
+static KProcIO *procio;
 
 QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
 {
@@ -2812,13 +2816,13 @@ void MainForm::startCompiling()
   }
   compiling=TRUE;
   stopCompilingFlag=FALSE;
-  forceQuitFlag=FALSE;
   errorsCompilingFlag=FALSE;
   headersModified=FALSE;
   newestHeaderTimestamp=QDateTime();
   objectFiles.clear();
   deletableObjectFiles.clear();
   deletableAsmFiles.clear();
+  procio=static_cast<KProcIO *>(NULL);
   // Write all the headers and incbin files to the temporary directory.
   QListViewItemIterator lvit(hFilesListItem);
   QListViewItem *item;
@@ -2878,7 +2882,6 @@ void MainForm::stopCompiling()
   }
 #endif /* 0 */
   stopCompilingFlag=FALSE;
-  forceQuitFlag=FALSE;
   errorsCompilingFlag=FALSE;
   compiling=FALSE;
   QPtrListIterator<SourceFile> sfit(sourceFiles);
@@ -2907,6 +2910,22 @@ void MainForm::stopCompiling()
   fileOpenAction->setEnabled(TRUE);
   fileNewActionGroup->setEnabled(TRUE);
   statusBar()->clear();
+}
+
+void MainForm::procio_processExited()
+{
+  QApplication::eventLoop()->exitLoop();
+}
+
+
+void MainForm::procio_readReady()
+{
+  QString line;
+  while (procio->readln(line)>=0) {
+    // TODO: This needs to be parsed as an error and put into the error window.
+    //       It also needs to be stored for the Program Output dialog.
+    qDebug(line);
+  }
 }
 
 void MainForm::compileFile(void *srcFile, bool inProject, bool force)
@@ -2960,7 +2979,10 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
         }
       }
     }
-    statusBar()->message(QString("Compiling %1...").arg(shortFileName));
+    if (category==sFilesListItem||category==asmFilesListItem)
+      statusBar()->message(QString("Assembling File \'%1\'...").arg(shortFileName));
+    else
+      statusBar()->message(QString("Compiling File \'%1\'...").arg(shortFileName));
     QString fileName=writeTempSourceFile(srcFile,inProject);
     if (stopCompilingFlag) return;
     QString tempObjectFile=fileName;
@@ -2970,21 +2992,182 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     QString tempAsmFile=tempObjectFile;
     tempObjectFile.append(".o");
     tempAsmFile.append(".s");
+    QString fileDir=QFileInfo(fileName).dirPath(TRUE);
     QDir qdir;
-    if (category==sFilesListItem) {
-    } else if (category==asmFilesListItem) {
-    } else /* C or Quill */ {
-      if (qdir.exists(tempAsmFile)) {
-        qdir.remove(asmFile);
-        if (copyFile(tempAsmFile.ascii(),asmFile.ascii())) {
-          KMessageBox::error(this,"Failed to copy assembly file from temporary directory.");
+    if (category==asmFilesListItem) {
+      // Assemble A68k file
+      int err;
+      QStringList args=KShell::splitArgs(settings.a68k_switches,
+                                         KShell::TildeExpand|KShell::AbortOnMeta,
+                                         &err);
+      if (err) {
+        KMessageBox::error(this,"Invalid A68k assembler command line options.");
+        stopCompilingFlag=TRUE;
+      }
+      if (!stopCompilingFlag) {
+        // The QTextCodec has to be passed explicitly, or it will default to
+        // ISO-8859-1 regardless of the locale, which is just broken.
+        procio=new KProcIO(QTextCodec::codecForLocale());
+        // Use MergedStderr instead of Stderr so the messages get ordered
+        // properly.
+        procio->setComm(static_cast<KProcess::Communication>(
+          KProcess::Stdout|KProcess::MergedStderr));
+        procio->setWorkingDirectory(fileDir);
+        *procio<<(QString("%1/bin/a68k").arg(tigcc_base))
+               <<fileName<<(QString("-o%1").arg(tempObjectFile))
+               <<(QString("-i%1/include/asm/").arg(tigcc_base))<<"-q"<<args;
+        if (settings.cut_ranges||settings.archive)
+          *procio<<"-a"; // all relocs
+        if (settings.optimize_returns||settings.archive)
+          *procio<<"-d"; // keep locals
+        connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
+        connect(procio,SIGNAL(readReady(KProcIO*)),this,SLOT(procio_readReady()));
+        procio->start();
+        // We need to block here, but events still need to be handled. The most
+        // effective way to do this is to enter the event loop recursively,
+        // even though it is not recommended by Qt.
+        QApplication::eventLoop()->enterLoop();
+        // This will be reached only after exitLoop() is called.
+        delete procio;
+        procio=static_cast<KProcIO *>(NULL);
+      }
+    } else {
+      bool deleteTempAsmFile=FALSE;
+      QString fileNameToAssemble;
+      if (category==sFilesListItem) {
+        fileNameToAssemble=fileName;
+      } else /* C or Quill */ {
+        // Compile C/Quill file to assembly
+        int err;
+        QStringList args=KShell::splitArgs(settings.cc_switches,
+                                           KShell::TildeExpand|KShell::AbortOnMeta,
+                                           &err);
+        if (err) {
+          KMessageBox::error(this,"Invalid C compiler command line options.");
           stopCompilingFlag=TRUE;
         }
-        qdir.remove(tempAsmFile);
-      } else {
-        errorsCompilingFlag=TRUE;
-        if (preferences.stopAtFirstError) stopCompilingFlag=TRUE;
+        if (!stopCompilingFlag) {
+          // The QTextCodec has to be passed explicitly, or it will default to
+          // ISO-8859-1 regardless of the locale, which is just broken.
+          procio=new KProcIO(QTextCodec::codecForLocale());
+          // Use MergedStderr instead of Stderr so the messages get ordered
+          // properly.
+          procio->setComm(static_cast<KProcess::Communication>(
+            KProcess::Stdout|KProcess::MergedStderr));
+          procio->setWorkingDirectory(fileDir);
+          *procio<<(QString("%1/bin/gcc").arg(tigcc_base))
+                 <<"-S"<<"-I"<<fileDir
+                 <<"-B"<<(QString("%1/bin/").arg(tigcc_base))<<"-I-"
+                 <<"-I"<<(QString("%1/include/c").arg(tigcc_base))<<args;
+          if (category==qllFilesListItem) { // Quill needs special switches.
+            *procio<<"-I"<<(QString("%1/include/quill").arg(tigcc_base))
+                   <<"-include"<<quill_drv;
+          }
+          if (settings.use_data_var)
+            *procio<<"-mno-merge-sections";
+          if (!preferences.allowImplicitDeclaration)
+            *procio<<"-Werror-implicit-function-declaration";
+          if (settings.debug_info)
+            *procio<<"-gdwarf-2"<<"-g3"<<"-fasynchronous-unwind-tables";
+          if (settings.fargo)
+            *procio<<"-DFARGO";
+          else if (settings.flash_os)
+            *procio<<"-DFLASH_OS";
+          else if (!settings.archive) { // This leaves only regular programs.
+            *procio<<process_libopts();
+          }
+          *procio<<fileName<<"-o"<<tempAsmFile;
+          connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
+          connect(procio,SIGNAL(readReady(KProcIO*)),this,SLOT(procio_readReady()));
+          procio->start();
+          // We need to block here, but events still need to be handled. The most
+          // effective way to do this is to enter the event loop recursively,
+          // even though it is not recommended by Qt.
+          QApplication::eventLoop()->enterLoop();
+          // This will be reached only after exitLoop() is called.
+          delete procio;
+          procio=static_cast<KProcIO *>(NULL);
+        }
+        if (!stopCompilingFlag && qdir.exists(tempAsmFile)) {
+          // Run patcher.
+          // The QTextCodec has to be passed explicitly, or it will default to
+          // ISO-8859-1 regardless of the locale, which is just broken.
+          procio=new KProcIO(QTextCodec::codecForLocale());
+          // Use MergedStderr instead of Stderr so the messages get ordered
+          // properly.
+          procio->setComm(static_cast<KProcess::Communication>(
+            KProcess::Stdout|KProcess::MergedStderr));
+          procio->setWorkingDirectory(fileDir);
+          *procio<<(QString("%1/bin/patcher").arg(tigcc_base))
+                 <<tempAsmFile<<"-o"<<tempAsmFile;
+          connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
+          connect(procio,SIGNAL(readReady(KProcIO*)),this,SLOT(procio_readReady()));
+          procio->start();
+          // We need to block here, but events still need to be handled. The most
+          // effective way to do this is to enter the event loop recursively,
+          // even though it is not recommended by Qt.
+          QApplication::eventLoop()->enterLoop();
+          // This will be reached only after exitLoop() is called.
+          delete procio;
+          procio=static_cast<KProcIO *>(NULL);
+        }
+        if (qdir.exists(tempAsmFile)) {
+          if (!stopCompilingFlag) {
+            fileNameToAssemble=tempAsmFile;
+            qdir.remove(asmFile);
+            if (copyFile(tempAsmFile.ascii(),asmFile.ascii())) {
+              KMessageBox::error(this,"Failed to copy assembly file from temporary directory.");
+              stopCompilingFlag=TRUE;
+            }
+          }
+          deleteTempAsmFile=TRUE;
+        } else {
+          errorsCompilingFlag=TRUE;
+          if (preferences.stopAtFirstError) stopCompilingFlag=TRUE;
+        }
       }
+      // Assemble GNU as file
+      if (!stopCompilingFlag && !fileNameToAssemble.isNull()) {
+        int err;
+        QStringList args=KShell::splitArgs(settings.as_switches,
+                                           KShell::TildeExpand|KShell::AbortOnMeta,
+                                           &err);
+        if (err) {
+          KMessageBox::error(this,"Invalid GNU assembler command line options.");
+          stopCompilingFlag=TRUE;
+        }
+        if (!stopCompilingFlag) {
+          // The QTextCodec has to be passed explicitly, or it will default to
+          // ISO-8859-1 regardless of the locale, which is just broken.
+          procio=new KProcIO(QTextCodec::codecForLocale());
+          // Use MergedStderr instead of Stderr so the messages get ordered
+          // properly.
+          procio->setComm(static_cast<KProcess::Communication>(
+            KProcess::Stdout|KProcess::MergedStderr));
+          procio->setWorkingDirectory(fileDir);
+          *procio<<(QString("%1/bin/as").arg(tigcc_base))
+                 <<"-I"<<fileDir<<"-mc68000"
+                 <<"-I"<<(QString("%1/include/s").arg(tigcc_base))<<args;
+          if (settings.cut_ranges||settings.archive)
+            *procio<<"--all-relocs";
+          if (settings.optimize_returns||settings.archive)
+            *procio<<"--keep-locals";
+          if (settings.debug_info)
+            *procio<<"--gdwarf2";
+          *procio<<fileNameToAssemble<<"-o"<<tempObjectFile;
+          connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
+          connect(procio,SIGNAL(readReady(KProcIO*)),this,SLOT(procio_readReady()));
+          procio->start();
+          // We need to block here, but events still need to be handled. The most
+          // effective way to do this is to enter the event loop recursively,
+          // even though it is not recommended by Qt.
+          QApplication::eventLoop()->enterLoop();
+          // This will be reached only after exitLoop() is called.
+          delete procio;
+          procio=static_cast<KProcIO *>(NULL);
+        }
+      }
+      if (deleteTempAsmFile) qdir.remove(tempAsmFile);
     }
     qdir.remove(fileName);
     if (qdir.exists(tempObjectFile)) {
@@ -3054,7 +3237,9 @@ void MainForm::projectForceQuit()
 {
   if (!compiling) return;
   stopCompilingFlag=TRUE;
-  forceQuitFlag=TRUE;
+  if (procio && procio->isRunning()) {
+    procio->kill();
+  }
 }
 
 void MainForm::projectErrorsAndWarnings(bool on)

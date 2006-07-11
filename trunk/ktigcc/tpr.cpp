@@ -34,6 +34,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qregexp.h>
 #include <qtextcodec.h>
 #include <glib.h>
@@ -563,7 +564,8 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
     
 #define boolean_param(token,setting) if (fprintf(f,token "%d\r\n",!!dest->settings.setting)<0) return -2;
 #define tistring_vparam(token,var) { \
-        char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,dest->var.ucs2()); \
+        const unsigned short *utf16=dest->var.ucs2(); \
+        char *ti=utf16?ticonv_charset_utf16_to_ti(CALC_TI89,utf16):reinterpret_cast<char*>(g_malloc0(1)); \
         if (fprintf(f,token "%s\r\n",ti)<0) {g_free(ti); return -2;} \
         g_free(ti); \
     }
@@ -1093,4 +1095,212 @@ int getPathType(const QString &thePath)
   if (statvar.st_mode&S_IFREG)
     return PATH_FILE;
   return PATH_ERROR;
+}
+
+/*
+   Build command line arguments (Library Options section)
+*/
+QStringList process_libopts(void)
+{
+  QStringList args;
+
+  if (libopts.use_ti89) {
+    args.append("-DUSE_TI89");
+  }
+  if (libopts.use_ti92p) {
+    args.append("-DUSE_TI92PLUS");
+  }
+  if (libopts.use_v200) {
+    args.append("-DUSE_V200");
+  }
+
+  if (libopts.opt_calc_consts) {
+    args.append("-DOPTIMIZE_CALC_CONSTS");
+  }
+
+  if (libopts.use_kernel || libopts.use_preos) {
+    args.append("-DUSE_KERNEL");
+  }
+  if (libopts.use_preos) {
+    args.append("-DUSE_PREOS_COMPRESSED_TABLES");
+  }
+
+  if (libopts.use_minams) {
+    args.append(QString("-DMIN_AMS=%1").arg(libopts.minams));
+  }
+
+  if (libopts.unofficial_os) {
+    args.append("-DUNOFFICIAL_OS_SUPPORT");
+  }
+
+  if (libopts.use_preos) {
+    if (libopts.bss_ref_format == RT_NONE)
+      args.append("-DMERGE_BSS");
+  } else {
+    switch (libopts.reloc_format) {
+      case RT_KERNEL:
+        args.append("-DKERNEL_FORMAT_RELOCS");
+        break;
+      case RT_COMPRESSED:
+        args.append("-DCOMPRESSED_FORMAT_RELOCS");
+        break;
+      case RT_MLINK:
+        args.append("-DMLINK_FORMAT_RELOCS");
+        break;
+      case RT_FLINE:
+        args.append("-DUSE_FLINE_JUMPS");
+        break;
+      default:
+        break;
+    }
+    switch (libopts.rom_call_format) {
+      case RT_KERNEL:
+        args.append("-DKERNEL_FORMAT_ROM_CALLS");
+        break;
+      case RT_COMPRESSED:
+        args.append("-DCOMPRESSED_FORMAT_ROM_CALLS");
+        break;
+      case RT_MLINK:
+        args.append("-DMLINK_FORMAT_ROM_CALLS");
+        break;
+      case RT_PRECOMP:
+        args.append("-DOPTIMIZE_ROM_CALLS");
+        break;
+      case RT_FLINE:
+        args.append("-DUSE_FLINE_ROM_CALLS");
+        args.append("-fno-function-cse");
+        break;
+      default:
+        break;
+    }
+    if (libopts.opt_rom_calls) {
+      args.append("-DOPTIMIZE_ROM_CALLS");
+    }
+    switch (libopts.bss_ref_format) {
+      case RT_NONE:
+        args.append("-DMERGE_BSS");
+        break;
+      case RT_KERNEL:
+        args.append("-DKERNEL_FORMAT_BSS");
+        break;
+      case RT_COMPRESSED:
+        args.append("-DCOMPRESSED_FORMAT_BSS");
+        break;
+      case RT_MLINK:
+        args.append("-DMLINK_FORMAT_BSS");
+        break;
+      default:
+        break;
+    }
+  }
+
+  switch (libopts.data_ref_format) {
+    case RT_KERNEL:
+      args.append("-DKERNEL_FORMAT_DATA_VAR");
+      break;
+    case RT_COMPRESSED:
+      args.append("-DCOMPRESSED_FORMAT_DATA_VAR");
+      break;
+    case RT_MLINK:
+      args.append("-DMLINK_FORMAT_DATA_VAR");
+      break;
+    default:
+      break;
+  }
+
+  if (libopts.use_fline_jumps) {
+    args.append("-DUSE_FLINE_JUMPS");
+    if (libopts.use_4b_fline_jumps) {
+      args.append("-DUSE_4BYTE_FLINE_JUMPS");
+    }
+  }
+
+  if (libopts.use_internal_fline_emu) {
+    args.append("-DUSE_INTERNAL_FLINE_EMULATOR");
+  }
+
+  if (libopts.use_return_value) {
+    args.append("-DRETURN_VALUE");
+  }
+
+  if (libopts.enable_error_return) {
+    args.append("-DENABLE_ERROR_RETURN");
+  }
+
+  if (libopts.save_screen) {
+    args.append("-DSAVE_SCREEN");
+  }
+
+  return args;
+}
+
+/*
+   Build linker command line arguments
+*/
+QStringList process_settings(void)
+{
+  QStringList args;
+
+  if (settings.use_data_var && settings.data_var) {
+    args.append("-d ");
+    args.append(settings.data_var);
+    if (!settings.copy_data_var) {
+      args.append("--data-var-copy=never");
+    } else if (!settings.copy_data_var_arc) {
+      args.append("--data-var-copy=always");
+    }
+  }
+
+  if (settings.optimize_nops) {
+    args.append("--optimize-nops");
+  }
+  if (settings.optimize_returns) {
+    args.append("--optimize-returns");
+  }
+  if (settings.optimize_branches) {
+    args.append("--optimize-branches");
+  }
+  if (settings.optimize_moves) {
+    args.append("--optimize-moves");
+  }
+  if (settings.optimize_tests) {
+    args.append("--optimize-tests");
+  }
+  if (settings.optimize_calcs) {
+    args.append("--optimize-calcs");
+  }
+
+  if (settings.remove_unused) {
+    args.append("--remove-unused");
+  }
+
+  if (settings.cut_ranges) {
+    args.append("--cut-ranges");
+  }
+
+  if (settings.reorder_sections) {
+    args.append("--reorder-sections");
+  }
+
+  if (settings.merge_constants) {
+    args.append("--merge-constants");
+  }
+
+  if (settings.outputbin) {
+    args.append("--outputbin");
+  }
+
+  if (!settings.initialize_bss) {
+    args.append("--omit-bss-init");
+  }
+
+  if (settings.fargo) {
+    args.append("--fargo");
+  }
+
+  if (settings.flash_os) {
+    args.append("--flash-os");
+  }
+
+  return args;
 }
