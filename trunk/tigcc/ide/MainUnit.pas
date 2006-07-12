@@ -1633,8 +1633,10 @@ begin
 								SourceFile := AddSourceFile (SourceF, True)
 							else if FileExists (WithBackslash (TIGCCFolder) + CIncludeLocation + ExtractFileName (SourceF)) then
 								SourceFile := AddSourceFile (WithBackslash (TIGCCFolder) + CIncludeLocation + ExtractFileName (SourceF), True)
-							else if FileExists (WithBackslash (TIGCCFolder) + AsmIncludeLocation + ExtractFileName (SourceF)) then
-								SourceFile := AddSourceFile (WithBackslash (TIGCCFolder) + AsmIncludeLocation + ExtractFileName (SourceF), True);
+							else if FileExists (WithBackslash (TIGCCFolder) + ASMIncludeLocation + ExtractFileName (SourceF)) then
+								SourceFile := AddSourceFile (WithBackslash (TIGCCFolder) + ASMIncludeLocation + ExtractFileName (SourceF), True);
+							else if FileExists (WithBackslash (TIGCCFolder) + GASIncludeLocation + ExtractFileName (SourceF)) then
+								SourceFile := AddSourceFile (WithBackslash (TIGCCFolder) + GASIncludeLocation + ExtractFileName (SourceF), True);
 						end;
 					except end;
 					BugType := BugTp;
