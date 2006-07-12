@@ -644,7 +644,35 @@ class ErrorListItem : public KListViewItem {
     setText(2,errFunc=="__exit"?"_exit":
               (errFunc=="__main"?"_main":errFunc));
     if (!errFile.isEmpty() && !errFile.endsWith(".a")) {
-      // TODO: Look for source file.
+      // Look for the source file with the error.
+      if (!findSourceFile(errFile) && errFile.endsWith(".o")) {
+        QString errSrcFile=errFile;
+        int lengthWoExt=errSrcFile.length()-2;
+        errSrcFile.truncate(lengthWoExt);
+        errSrcFile.append(".c");
+        if (!findSourceFile(errSrcFile)) {
+          errSrcFile.truncate(lengthWoExt);
+          errSrcFile.append(".s");
+          if (!findSourceFile(errSrcFile)) {
+            errSrcFile.truncate(lengthWoExt);
+            errSrcFile.append(".asm");
+            findSourceFile(errSrcFile);
+          }
+        }
+      }
+      // Not found. Try to open it instead.
+      // Don't do this if the name ends with ".tpr" because that would cause
+      // openProject to close the current project and load the new one instead.
+      if (!lvFile && !srcFile && !errFile.endsWith(".tpr",FALSE)) {
+        if (errFile.contains('/')&&getPathType(errFile)==PATH_FILE)
+          mainForm->openProject(errFile);
+        else if (getPathType(QString("%1/include/c/%2").arg(tigcc_base).arg(errFile))==PATH_FILE)
+          mainForm->openProject(QString("%1/include/c/%2").arg(tigcc_base).arg(errFile));
+        else if (getPathType(QString("%1/include/asm/%2").arg(tigcc_base).arg(errFile))==PATH_FILE)
+          mainForm->openProject(QString("%1/include/asm/%2").arg(tigcc_base).arg(errFile));
+        else if (getPathType(QString("%1/include/s/%2").arg(tigcc_base).arg(errFile))==PATH_FILE)
+          mainForm->openProject(QString("%1/include/s/%2").arg(tigcc_base).arg(errFile));
+      }
     }
     if (lvFile || srcFile) {
       const LineStartList &lineStartList=lvFile?lvFile->lineStartList
@@ -696,7 +724,47 @@ class ErrorListItem : public KListViewItem {
   SourceFile *srcFile;
   unsigned errorLine;
   unsigned errorColumn;
+  bool findSourceFile(const QString &fileName)
+  {
+    bool inProject;
+    void *sourceFile;
+    bool found=mainForm->findSourceFile(inProject,sourceFile,fileName);
+    if (found) {
+      if (inProject)
+        lvFile=reinterpret_cast<ListViewFile *>(sourceFile);
+      else
+        srcFile=reinterpret_cast<SourceFile *>(sourceFile);
+    }
+    return found;
+  }
 };
+
+bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fileName)
+{
+  bool compareAbsPaths=fileName.contains('/');
+  QListViewItemIterator lvit(fileTree);
+  QListViewItem *item;
+  for (item=lvit.current();item;item=(++lvit).current()) {
+    if (IS_FILE(item)
+        && (compareAbsPaths?fileName==static_cast<ListViewFile *>(item)->fileName
+                           :fileName==QFileInfo(static_cast<ListViewFile *>(item)->fileName).fileName())) {
+      inProject=TRUE;
+      srcFile=static_cast<ListViewFile *>(item);
+      return TRUE;
+    }
+  }
+  QPtrListIterator<SourceFile> sfit(sourceFiles);
+  SourceFile *sourceFile;
+  for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+    if (compareAbsPaths?fileName==sourceFile->fileName
+                       :fileName==QFileInfo(sourceFile->fileName).fileName()) {
+      inProject=FALSE;
+      srcFile=sourceFile;
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
 
 void MainForm::init()
 {
