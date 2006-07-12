@@ -454,6 +454,7 @@ class DnDListView : public KListView {
                 goto ignore2;
               }
               static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<Kate::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,textBuffer,destCategory));
+              MainForm::createErrorCursorsForSourceFile(currItem);
               // force reloading the text buffer
               if (currentListItem==currItem)
                 currentListItem=NULL;
@@ -624,8 +625,8 @@ class ErrorListItem : public KListViewItem {
   ErrorListItem(MainForm *pMainForm, ErrorTypes errType,
                 const QString &errFile, const QString &errFunc,
                 const QString &errMsg, unsigned errLine, unsigned errColumn)
-    : KListViewItem(errorList->errorListView), lvFile(0), srcFile(0),
-      mainForm(pMainForm), errorType(errType), errorLine(0), errorColumn(0)
+    : KListViewItem(errorList->errorListView), lvFile(0), srcFile(0), cursor(0),
+      errorLine(0), errorColumn(0), mainForm(pMainForm), errorType(errType)
   {
     QString errMessage=errMsg.stripWhiteSpace();
     if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].upper();
@@ -686,8 +687,8 @@ class ErrorListItem : public KListViewItem {
         errorLine=pos.first;
         errorColumn=pos.second+errColumn;
       }
-      // TODO: Track range to implement "delete overwritten errors" preference.
-      //       Track location to implement jumpToLocation.
+      createCursor();
+      // TODO: Implement "delete overwritten errors" preference.
     }
     if (preferences.jumpToError && errType==etError
         && errorList->errorListView->selectedItems().isEmpty()) {
@@ -714,17 +715,30 @@ class ErrorListItem : public KListViewItem {
     }
   }
   virtual int rtti(void) const {return static_cast<int>(errorType);}
+  void createCursor(void)
+  {
+    Kate::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
+                           :static_cast<Kate::View *>(NULL));
+    if (kateView) {
+      cursor=kateView->getDoc()->createCursor();
+      cursor->setPosition(errorLine,errorColumn);
+      // TODO: TIGCC IDE has a strange algorithm to look up the token the error
+      //       message is referring to and then skip whitespace up to that
+      //       token. Maybe implement that.
+    }
+  }
   void jumpToLocation(void)
   {
     // TODO: Implement.
   }
   ListViewFile *lvFile;
   SourceFile *srcFile;
+  KTextEditor::Cursor *cursor;
   private:
-  MainForm *mainForm;
-  ErrorTypes errorType;
   unsigned errorLine;
   unsigned errorColumn;
+  MainForm *mainForm;
+  ErrorTypes errorType;
   bool findSourceFile(const QString &fileName)
   {
     bool inProject;
@@ -772,6 +786,18 @@ void MainForm::deleteErrorsForSrcFile(void *srcFile)
     if (static_cast<ErrorListItem *>(errorItem)->srcFile
         ==reinterpret_cast<SourceFile *>(srcFile))
       delete errorItem;
+  }
+}
+
+// And another.
+void MainForm::createErrorCursorsForSourceFile(QListViewItem *item)
+{
+  QListViewItemIterator lvit(errorList->errorListView);
+  QListViewItem *errorItem;
+  for (errorItem=lvit.current();errorItem;errorItem=(++lvit).current()) {
+    if (static_cast<ErrorListItem *>(errorItem)->lvFile
+        ==static_cast<ListViewFile *>(item))
+      static_cast<ErrorListItem *>(errorItem)->createCursor();
   }
 }
 
@@ -3616,6 +3642,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
         kateView=reinterpret_cast<Kate::View *>(createView(static_cast<ListViewFile *>(item)->fileName,static_cast<ListViewFile *>(item)->textBuffer,category));
         static_cast<ListViewFile *>(item)->textBuffer=QString::null;
         static_cast<ListViewFile *>(item)->kateView=kateView;
+        MainForm::createErrorCursorsForSourceFile(item);
       }
       filePrintAction->setEnabled(TRUE);
       filePrintQuicklyAction->setEnabled(TRUE);
