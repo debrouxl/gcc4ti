@@ -59,7 +59,10 @@ IMAGES	= images/00 \
 	images/filet.png \
 	images/filex.png \
 	images/icon.png \
-	images/filereplace.png
+	images/filereplace.png \
+	images/error.png \
+	images/warning.png \
+	images/info.png
 
 # If this is not used, a build from /usr/.... will generate
 # Makefiles with relative paths for install.  This totally

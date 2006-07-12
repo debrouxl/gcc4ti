@@ -125,7 +125,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
 
 #define LOAD_ICON(name) (QIconSet(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
-#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small):QPixmap::fromMimeSource((name)))
+#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small,KIcon::SizeSmall):QPixmap::fromMimeSource((name)))
 
 // For some reason, this flag is not in the public ConfigFlags enum.
 #define CF_REMOVE_TRAILING_DYN 0x4000000
@@ -628,8 +628,17 @@ class ErrorListItem : public KListViewItem {
   {
     QString errMessage=errMsg.stripWhiteSpace();
     if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].upper();
-    // TODO: Set the correct pixmap.
-    setPixmap(0,SYSICON("unknown","filex.png"));
+    switch(errType) {
+      case etError:
+        setPixmap(0,SYSICON("messagebox_critical","error.png"));
+        break;
+      case etWarning:
+        setPixmap(0,SYSICON("messagebox_warning","warning.png"));
+        break;
+      default:
+        setPixmap(0,SYSICON("messagebox_info","info.png"));
+        break;
+    }
     setText(0,errMessage);
     setText(1,errFile);
     setText(2,errFunc=="__exit"?"_exit":
@@ -2100,6 +2109,20 @@ void MainForm::filePreferences()
       debugPauseAction->setIconSet(QIconSet(QPixmap::fromMimeSource("25")));
       toolsConfigureAction->setIconSet(QIconSet(QPixmap::fromMimeSource("26")));
       debugResetAction->setIconSet(QIconSet(QPixmap::fromMimeSource("27")));
+    }
+    it=QListViewItemIterator(errorList->errorListView);
+    for (item=it.current();item;item=(++it).current()) {
+      switch(item->rtti()) {
+        case etError:
+          item->setPixmap(0,SYSICON("messagebox_critical","error.png"));
+          break;
+        case etWarning:
+          item->setPixmap(0,SYSICON("messagebox_warning","warning.png"));
+          break;
+        default:
+          item->setPixmap(0,SYSICON("messagebox_info","info.png"));
+          break;
+      }
     }
     // Apply the preferences to the source file windows.
     QPtrListIterator<SourceFile> sfit(sourceFiles);
