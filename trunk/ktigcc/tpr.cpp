@@ -1241,7 +1241,7 @@ QStringList process_settings(void)
 {
   QStringList args;
 
-  if (settings.use_data_var && settings.data_var) {
+  if (settings.use_data_var && !settings.data_var.isEmpty()) {
     args.append("-d ");
     args.append(settings.data_var);
     if (!settings.copy_data_var) {
