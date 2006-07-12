@@ -28,6 +28,7 @@
 */
 
 #include <qstring.h>
+#include <qpair.h>
 #include <qregexp.h>
 #include <qapplication.h>
 #include <qlabel.h>
@@ -354,8 +355,9 @@ static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
 static QDockWindow *errorListDock;
 static ErrorList *errorList;
+static unsigned errorCountTotal=0,errorCountErrors=0,errorCountWarnings=0;
 QAssistantClient *assistant;
-static int fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
+static unsigned fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 tprSettings settings;
 tprLibOpts libopts;
 static QString projectFileName;
@@ -613,6 +615,78 @@ class DnDListView : public KListView {
   virtual void startDrag() {
     QListView::startDrag();
   }
+};
+
+enum ErrorTypes {etError, etWarning, etInfo};
+class ErrorListItem : public KListViewItem {
+  public:
+  ErrorListItem(MainForm *pMainForm, ErrorTypes errType,
+                const QString &errFile, const QString &errFunc,
+                const QString &errMsg, unsigned errLine, unsigned errColumn)
+    : KListViewItem(errorList->errorListView), mainForm(pMainForm),
+      errorType(errType), lvFile(0), srcFile(0), errorLine(0), errorColumn(0)
+  {
+    QString errMessage=errMsg.stripWhiteSpace();
+    if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].upper();
+    // TODO: Set the correct pixmap.
+    setPixmap(0,SYSICON("unknown","filex.png"));
+    setText(0,errMessage);
+    setText(1,errFile);
+    setText(2,errFunc=="__exit"?"_exit":
+              (errFunc=="__main"?"_main":errFunc));
+    if (!errFile.isEmpty() && !errFile.endsWith(".a")) {
+      // TODO: Look for source file.
+    }
+    if (lvFile || srcFile) {
+      const LineStartList &lineStartList=lvFile?lvFile->lineStartList
+                                               :srcFile->lineStartList;
+      if (lineStartList.isEmpty()) {
+        errorLine=errLine;
+        errorColumn=errColumn;
+      } else if (errLine<lineStartList.count()) {
+        QPair<unsigned,unsigned> pos=lineStartList[errLine];
+        errorLine=pos.first;
+        errorColumn=pos.second+errColumn;
+      }
+      // TODO: Track range to implement "delete overwritten errors" preference.
+      //       Track location to implement jumpToLocation.
+    }
+    if (preferences.jumpToError && errType==etError
+        && errorList->errorListView->selectedItems().isEmpty()) {
+      errorList->errorListView->setSelected(this,TRUE);
+      jumpToLocation();
+    }
+    errorCountTotal++;
+    if (errType==etError) errorCountErrors++;
+    if (errType==etWarning) errorCountWarnings++;
+    errorList->errorCount->setText(QString::number(errorCountErrors));
+    errorList->warningCount->setText(QString::number(errorCountWarnings));
+    mainForm->projectErrorsAndWarningsAction->setEnabled(TRUE);
+    mainForm->projectErrorsAndWarnings(TRUE);
+  }
+  virtual ~ErrorListItem()
+  {
+    if (errorType==etError) errorCountErrors--;
+    if (errorType==etWarning) errorCountWarnings--;
+    errorList->errorCount->setText(QString::number(errorCountErrors));
+    errorList->warningCount->setText(QString::number(errorCountWarnings));
+    if (!--errorCountTotal) {
+      mainForm->projectErrorsAndWarnings(FALSE);
+      mainForm->projectErrorsAndWarningsAction->setEnabled(FALSE);
+    }
+  }
+  virtual int rtti(void) const {return static_cast<int>(errorType);}
+  void jumpToLocation(void)
+  {
+    // TODO: Implement.
+  }
+  private:
+  MainForm *mainForm;
+  ErrorTypes errorType;
+  ListViewFile *lvFile;
+  SourceFile *srcFile;
+  unsigned errorLine;
+  unsigned errorColumn;
 };
 
 void MainForm::init()
