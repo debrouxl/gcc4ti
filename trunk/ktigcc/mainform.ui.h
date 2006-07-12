@@ -268,6 +268,7 @@ class ListViewFile : public KListViewItem {
   }
   virtual ~ListViewFile()
   {
+    MainForm::deleteErrorsForLVFile(this);
     if (kreplace && replaceCurrentDocument==this) {
       replaceCurrentDocument=static_cast<QListViewItem *>(NULL);
       kreplace->invalidateSelection();
@@ -623,8 +624,8 @@ class ErrorListItem : public KListViewItem {
   ErrorListItem(MainForm *pMainForm, ErrorTypes errType,
                 const QString &errFile, const QString &errFunc,
                 const QString &errMsg, unsigned errLine, unsigned errColumn)
-    : KListViewItem(errorList->errorListView), mainForm(pMainForm),
-      errorType(errType), lvFile(0), srcFile(0), errorLine(0), errorColumn(0)
+    : KListViewItem(errorList->errorListView), lvFile(0), srcFile(0),
+      mainForm(pMainForm), errorType(errType), errorLine(0), errorColumn(0)
   {
     QString errMessage=errMsg.stripWhiteSpace();
     if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].upper();
@@ -717,11 +718,11 @@ class ErrorListItem : public KListViewItem {
   {
     // TODO: Implement.
   }
+  ListViewFile *lvFile;
+  SourceFile *srcFile;
   private:
   MainForm *mainForm;
   ErrorTypes errorType;
-  ListViewFile *lvFile;
-  SourceFile *srcFile;
   unsigned errorLine;
   unsigned errorColumn;
   bool findSourceFile(const QString &fileName)
@@ -738,6 +739,41 @@ class ErrorListItem : public KListViewItem {
     return found;
   }
 };
+
+// This static helper function is needed because of limitations of both .ui.h
+// files and C++: we can't have methods of other classes than MainForm here
+// unless we write them into the class definition or Qt Designer gets confused,
+// and C++ won't let 2 classes reference each other in methods declared within
+// the class definition. And item is of type QListViewItem rather than
+// ListViewFile because of another Qt Designer limitation: It isn't possible to
+// use custom types in a .ui file method because it doesn't forward-declare them
+// properly.
+void MainForm::deleteErrorsForLVFile(QListViewItem *item)
+{
+  QListViewItemIterator lvit(errorList->errorListView);
+  QListViewItem *errorItem;
+  while ((errorItem=lvit.current())) {
+    ++lvit;
+    if (static_cast<ErrorListItem *>(errorItem)->lvFile
+        ==static_cast<ListViewFile *>(item))
+      delete errorItem;
+  }
+}
+
+// Another static helper function, in this case because srcfilewin.ui.h doesn't
+// have access to ErrorListItem for similar reasons. (I'd have to duplicate the
+// class definition, one time with inline functions and one time without.)
+void MainForm::deleteErrorsForSrcFile(void *srcFile)
+{
+  QListViewItemIterator lvit(errorList->errorListView);
+  QListViewItem *errorItem;
+  while ((errorItem=lvit.current())) {
+    ++lvit;
+    if (static_cast<ErrorListItem *>(errorItem)->srcFile
+        ==reinterpret_cast<SourceFile *>(srcFile))
+      delete errorItem;
+  }
+}
 
 bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fileName)
 {
@@ -889,17 +925,6 @@ void MainForm::init()
   accel->insertItem(Key_Return,7);
   accel->setItemEnabled(7,FALSE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
-  pconfig->setGroup("Recent files");
-  if (parg) {
-    if (!openProject(parg)) goto openRecent;
-  } else {
-    openRecent:;
-    QString mostrecent=pconfig->readEntry("Current project");
-    if (!mostrecent.isNull() && !mostrecent.isEmpty())
-      openProject(mostrecent);
-  }
-  updateRecent();
-  startTimer(100);
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   if (preferences.useSystemIcons) {
@@ -960,6 +985,17 @@ void MainForm::init()
   setDockEnabled(errorListDock,Qt::DockRight,FALSE);
   connect(errorListDock,SIGNAL(visibilityChanged(bool)),
           this,SLOT(projectErrorsAndWarnings(bool)));
+  pconfig->setGroup("Recent files");
+  if (parg) {
+    if (!openProject(parg)) goto openRecent;
+  } else {
+    openRecent:;
+    QString mostrecent=pconfig->readEntry("Current project");
+    if (!mostrecent.isNull() && !mostrecent.isEmpty())
+      openProject(mostrecent);
+  }
+  updateRecent();
+  startTimer(100);
 }
 
 void MainForm::destroy()
@@ -1059,6 +1095,10 @@ void MainForm::clearProject()
   rootListItem->setText(0,"Project1");
   projectFileName="";
   fileTreeClicked(rootListItem);
+  // Better do this now or the file destructors will have to iterate over the
+  // error list each time, and I'd have to clear the list at the end anyway
+  // because an error might not have a source file assigned.
+  errorList->errorListView->clear();
   QListViewItem *f, *next;
   for (f=hFilesListItem->firstChild();f;f=next) {
     next=f->nextSibling();
@@ -1466,6 +1506,16 @@ void MainForm::adoptSourceFile(void *srcFile)
   projectIsDirty=TRUE;
   // Select file.
   fileTreeClicked(newFile);
+  // Update errors to point to the in-project source file instead of the
+  // external one.
+  QListViewItemIterator lvit(errorList->errorListView);
+  QListViewItem *errorItem;
+  for (errorItem=lvit.current();errorItem;errorItem=(++lvit).current()) {
+    if (static_cast<ErrorListItem *>(errorItem)->srcFile==sourceFile) {
+      static_cast<ErrorListItem *>(errorItem)->srcFile=static_cast<SourceFile *>(NULL);
+      static_cast<ErrorListItem *>(errorItem)->lvFile=newFile;
+    }
+  }
   // Close separate source view.
   sourceFile->kateView=static_cast<Kate::View *>(NULL);
   sourceFile->deleteLater();

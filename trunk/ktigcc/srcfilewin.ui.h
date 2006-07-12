@@ -251,6 +251,7 @@ void SourceFileWindow::initBase()
 
 void SourceFileWindow::destroy()
 {
+  MainForm::deleteErrorsForSrcFile(this);
   if (THIS->kreplace) delete THIS->kreplace;
   if (THIS->kfinddialog) delete THIS->kfinddialog;
   delete THIS->accel;
