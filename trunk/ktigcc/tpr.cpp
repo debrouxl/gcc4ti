@@ -985,8 +985,8 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
                             ?"#line 1 \"%1\"\n"
                             :".appfile \"%1\"; .appline 1\n").arg(escapedFileName);
       // Don't use calc charset for this, it's a host file name.
-      const char *s=smartAscii(escapedFileName);
-      size_t l=escapedFileName.length();
+      const char *s=smartAscii(lineDirective);
+      size_t l=lineDirective.length();
       if (fwrite(s,1,l,f)<l) return -2;
     }
     if (writeToFile(f,text)) {fclose(f); return -2;}
