@@ -137,7 +137,6 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
       static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile=oldModifiedSinceLastCompile; \
   } while(0)
 
-
 // For some reason, this flag is not in the public ConfigFlags enum.
 #define CF_REMOVE_TRAILING_DYN 0x4000000
 
