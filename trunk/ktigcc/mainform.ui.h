@@ -68,6 +68,7 @@
 #include <kiconloader.h>
 #include <kprocio.h>
 #include <kshell.h>
+#include <ktextbrowser.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -76,6 +77,7 @@
 #include "preferences.h"
 #include "projectoptions.h"
 #include "errorlist.h"
+#include "programoutput.h"
 
 using std::puts;
 using std::exit;
@@ -357,6 +359,7 @@ static QPopupMenu *te_popup;
 static QDockWindow *errorListDock;
 static ErrorList *errorList;
 static unsigned errorCountTotal=0,errorCountErrors=0,errorCountWarnings=0;
+static QString programOutput;
 QAssistantClient *assistant;
 static unsigned fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 tprSettings settings;
@@ -1208,6 +1211,8 @@ void MainForm::clearProject()
   // error list each time, and I'd have to clear the list at the end anyway
   // because an error might not have a source file assigned.
   errorList->errorListView->clear();
+  programOutput=QString::null;
+  projectProgramOutputAction->setEnabled(FALSE);
   QListViewItem *f, *next;
   for (f=hFilesListItem->firstChild();f;f=next) {
     next=f->nextSibling();
@@ -3147,6 +3152,8 @@ void MainForm::startCompiling()
   deletableObjectFiles.clear();
   deletableAsmFiles.clear();
   errorList->errorListView->clear();
+  programOutput=QString::null;
+  projectProgramOutputAction->setEnabled(FALSE);
   procio=static_cast<KProcIO *>(NULL);
   // Write all the headers and incbin files to the temporary directory.
   QListViewItemIterator lvit(hFilesListItem);
@@ -3253,7 +3260,9 @@ void MainForm::procio_readReady()
   static QString errorFile;
   QString line;
   while (procio->readln(line)>=0) {
-    // TODO: This needs to be stored for the Program Output dialog.
+    programOutput.append(line);
+    programOutput.append('\n');
+    projectProgramOutputAction->setEnabled(TRUE);
     if (line.isEmpty()) continue;
     // Parse the error message
     switch (a68kErrorLine) {
@@ -3385,7 +3394,7 @@ void MainForm::procio_readReady()
         if (line.contains(QRegExp("^\\s*\\^"))) {
           int caretPos=line.find('^');
           if (errorLine>=0 && errorColumn<0)
-            errorColumn=caretPos-2; // there's an extra tab at the beginning
+            errorColumn=caretPos-1; // there's an extra tab at the beginning
           QString errorMessage=line.mid(caretPos+2);
           if (!errorMessage.endsWith("."))
             errorMessage.append('.');
@@ -3732,7 +3741,9 @@ void MainForm::projectErrorsAndWarnings(bool on)
 
 void MainForm::projectProgramOutput()
 {
-  
+  ProgramOutput programOutputDialog;
+  programOutputDialog.textBrowser->setText(programOutput);
+  programOutputDialog.exec();
 }
 
 void MainForm::projectOptions()
