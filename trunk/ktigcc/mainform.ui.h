@@ -626,7 +626,7 @@ class ErrorListItem : public KListViewItem {
                 const QString &errFile, const QString &errFunc,
                 const QString &errMsg, unsigned errLine, unsigned errColumn)
     : KListViewItem(errorList->errorListView), lvFile(0), srcFile(0), cursor(0),
-      errorLine(0), errorColumn(0), mainForm(pMainForm), errorType(errType)
+      errorLine(-1), errorColumn(0), mainForm(pMainForm), errorType(errType)
   {
     QString errMessage=errMsg.stripWhiteSpace();
     if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].upper();
@@ -676,7 +676,7 @@ class ErrorListItem : public KListViewItem {
           mainForm->openProject(QString("%1/include/s/%2").arg(tigcc_base).arg(errFile));
       }
     }
-    if (lvFile || srcFile) {
+    if (errLine!=(unsigned)-1 && (lvFile || srcFile)) {
       const LineStartList &lineStartList=lvFile?lvFile->lineStartList
                                                :srcFile->lineStartList;
       if (lineStartList.isEmpty()) {
@@ -717,19 +717,51 @@ class ErrorListItem : public KListViewItem {
   virtual int rtti(void) const {return static_cast<int>(errorType);}
   void createCursor(void)
   {
-    Kate::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
-                           :static_cast<Kate::View *>(NULL));
-    if (kateView) {
-      cursor=kateView->getDoc()->createCursor();
-      cursor->setPosition(errorLine,errorColumn);
-      // TODO: TIGCC IDE has a strange algorithm to look up the token the error
-      //       message is referring to and then skip whitespace up to that
-      //       token. Maybe implement that.
+    if (errorLine!=(unsigned)-1) {
+      Kate::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
+                             :static_cast<Kate::View *>(NULL));
+      if (kateView && errorLine<kateView->getDoc()->numLines()) {
+        // Extract the main token for the error message.
+        QString errMessage=text(0);
+        int quotePos=errMessage.find('\'');
+        if (quotePos>=0) {
+          QString token=errMessage.mid(quotePos+1);
+          int quotePos2=token.find('\'');
+          if (quotePos2>=0) {
+            token.truncate(quotePos2);
+            if (!token.isEmpty()) {
+              // Skip whitespace up to this token. TIGCC IDE does that too. Must
+              // have something to do with how source splitting works.
+              unsigned i=errorColumn;
+              QString textLine=kateView->getDoc()->textLine(errorLine);
+              unsigned lineLength=kateView->getDoc()->lineLength(errorLine);
+              unsigned tokenLength=token.length();
+              while ((i<lineLength) && textLine[i].isSpace()
+                     && textLine.mid(i,tokenLength)!=token) i++;
+              if (textLine.mid(i,tokenLength)==token) errorColumn=i;
+            }
+          }
+        }
+        cursor=kateView->getDoc()->createCursor();
+        cursor->setPosition(errorLine,errorColumn);
+      }
     }
   }
   void jumpToLocation(void)
   {
-    // TODO: Implement.
+    // If the error corresponds to a list view file, select it. This will also
+    // instantiate the Kate view and call createCursor for us.
+    if (lvFile) mainForm->fileTreeClicked(lvFile);
+    // If it corresponds to an external source file, activate the window.
+    if (srcFile) KWin::activateWindow(srcFile->winId());
+    // Now jump to the cursor's location if we have one.
+    Kate::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
+                           :static_cast<Kate::View *>(NULL));
+    if (cursor && kateView) {
+      unsigned line,col;
+      cursor->position(&line,&col);
+      kateView->setCursorPositionReal(line,col);
+    }
   }
   ListViewFile *lvFile;
   SourceFile *srcFile;
@@ -799,6 +831,11 @@ void MainForm::createErrorCursorsForSourceFile(QListViewItem *item)
         ==static_cast<ListViewFile *>(item))
       static_cast<ErrorListItem *>(errorItem)->createCursor();
   }
+}
+
+void MainForm::errorListView_clicked(QListViewItem *item)
+{
+  if (item) static_cast<ErrorListItem *>(item)->jumpToLocation();
 }
 
 bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fileName)
