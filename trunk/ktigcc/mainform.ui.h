@@ -236,7 +236,8 @@ class ListViewFolder : public KListViewItem {
 class ListViewFile : public KListViewItem {
   public:
   ListViewFile(QListView *parent) : KListViewItem(parent),
-                                    kateView(NULL), isNew(TRUE)
+                                    kateView(NULL), isNew(TRUE),
+                                    modifiedSinceLastCompile(TRUE)
   {
     setPixmap(0,SYSICON("unknown","filex.png"));
     setDragEnabled(TRUE);
@@ -244,7 +245,8 @@ class ListViewFile : public KListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListViewItem *parent) : KListViewItem(parent),
-                                        kateView(NULL), isNew(TRUE)
+                                        kateView(NULL), isNew(TRUE),
+                                        modifiedSinceLastCompile(TRUE)
   {
     setPixmap(0,SYSICON("unknown","filex.png"));
     setDragEnabled(TRUE);
@@ -252,7 +254,8 @@ class ListViewFile : public KListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(QListView *parent, QListViewItem *after)
-          : KListViewItem(parent, after), kateView(NULL), isNew(TRUE)
+          : KListViewItem(parent, after), kateView(NULL), isNew(TRUE),
+            modifiedSinceLastCompile(TRUE)
   {
     setPixmap(0,SYSICON("unknown","filex.png"));
     setDropEnabled(TRUE);
@@ -261,7 +264,7 @@ class ListViewFile : public KListViewItem {
   }
   ListViewFile(QListViewItem *parent, QListViewItem *after)
           : KListViewItem(parent, after), kateView(NULL),
-            isNew(TRUE)
+            isNew(TRUE), modifiedSinceLastCompile(TRUE)
   {
     setPixmap(0,SYSICON("unknown","filex.png"));
     setDragEnabled(TRUE);
@@ -288,6 +291,7 @@ class ListViewFile : public KListViewItem {
   QString textBuffer; // for lazy loading
   QString fileName; // full name of the file
   bool isNew;
+  bool modifiedSinceLastCompile;
   LineStartList lineStartList;
   // Work around gratuitous API difference. Why do I have to do this? That's
   // what startRename is a virtual method for. KListViewItem should do this.
@@ -356,6 +360,7 @@ static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
 static KHelpMenu *khelpmenu;
 static QPopupMenu *te_popup;
+static bool headersModified;
 static QDockWindow *errorListDock;
 static ErrorList *errorList;
 static unsigned errorCountTotal=0,errorCountErrors=0,errorCountWarnings=0;
@@ -908,6 +913,7 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
 void MainForm::init()
 {
   compiling=FALSE;
+  headersModified=FALSE;
   loadPreferences();
   fileNewFolderAction->setEnabled(FALSE);
   te_popup = new QPopupMenu(this);
@@ -1203,6 +1209,7 @@ void MainForm::accel_activated(int index)
 
 void MainForm::clearProject()
 {
+  headersModified=FALSE;
   newSettings(&settings,&libopts);
   rootListItem->setText(0,"Project1");
   projectFileName="";
@@ -1430,6 +1437,7 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
   ListViewFile *newFile=item?new ListViewFile(parent,item)
                         :new ListViewFile(parent);
   newFile->isNew=FALSE;
+  newFile->modifiedSinceLastCompile=FALSE;
   newFile->setText(0,fileCaption);
   newFile->setPixmap(0,
     category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
@@ -1581,6 +1589,7 @@ void MainForm::adoptSourceFile(void *srcFile)
     category==sFilesListItem||category==asmFilesListItem?SYSICON("source_s","files.png"):
     SYSICON("txt","filet.png"));
   newFile->fileName=fileName;
+  newFile->modifiedSinceLastCompile=newView->getDoc()->isModified();
   // Adopt View object.
   newFile->kateView=newView;
   newView->hide();
@@ -3025,7 +3034,7 @@ void MainForm::projectAddFiles()
   }
 }
 
-static bool stopCompilingFlag, errorsCompilingFlag, headersModified;
+static bool stopCompilingFlag, errorsCompilingFlag;
 static QDateTime newestHeaderTimestamp;
 static QStringList objectFiles;
 static QStringList deletableObjectFiles;
@@ -3146,7 +3155,6 @@ void MainForm::startCompiling()
   compiling=TRUE;
   stopCompilingFlag=FALSE;
   errorsCompilingFlag=FALSE;
-  headersModified=FALSE;
   newestHeaderTimestamp=QDateTime();
   objectFiles.clear();
   deletableObjectFiles.clear();
@@ -3161,9 +3169,7 @@ void MainForm::startCompiling()
   for (item=(++lvit).current();item&&!IS_CATEGORY(item);
        item=(++lvit).current()) {
     if (IS_FILE(item)) {
-      if ((static_cast<ListViewFile *>(item)->kateView
-           && static_cast<ListViewFile *>(item)->kateView->getDoc()->isModified())
-          || static_cast<ListViewFile *>(item)->isNew)
+      if (static_cast<ListViewFile *>(item)->modifiedSinceLastCompile)
         headersModified=TRUE;
       if (!headersModified) {
         QDateTime headerTimestamp=QFileInfo(static_cast<ListViewFile *>(item)->fileName).lastModified();
@@ -3245,6 +3251,7 @@ void MainForm::stopCompiling()
 }
 
 static QString errorFunction;
+static bool errorFlag;
 
 void MainForm::procio_processExited()
 {
@@ -3311,7 +3318,7 @@ void MainForm::procio_readReady()
             if (errorFile.isEmpty()) {
               if (!line.endsWith("."))
                 line.append('.');
-              errorsCompilingFlag=TRUE;
+              errorFlag=TRUE;
               new ErrorListItem(this,line.startsWith("please fill out ",FALSE)?
                                 etInfo:etError,QString::null,QString::null,line,
                                 errorLine,errorColumn);
@@ -3369,7 +3376,7 @@ void MainForm::procio_readReady()
                                        "Undefined reference to ");
                 if (!errorMessage.endsWith("."))
                   errorMessage.append('.');
-                if (errorType==etError) errorsCompilingFlag=TRUE;
+                if (errorType==etError) errorFlag=TRUE;
                 new ErrorListItem(this,errorType,errorFile,errorFunction,
                                   errorMessage,errorLine,errorColumn);
               } else {
@@ -3381,7 +3388,7 @@ void MainForm::procio_readReady()
                 } else {
                   if (!errorMessage.endsWith("."))
                     errorMessage.append('.');
-                  errorsCompilingFlag=TRUE;
+                  errorFlag=TRUE;
                   new ErrorListItem(this,etError,errorFile,QString::null,
                                     errorMessage,errorLine,errorColumn);
                 }
@@ -3398,7 +3405,7 @@ void MainForm::procio_readReady()
           QString errorMessage=line.mid(caretPos+2);
           if (!errorMessage.endsWith("."))
             errorMessage.append('.');
-          errorsCompilingFlag=TRUE;
+          errorFlag=TRUE;
           new ErrorListItem(this,etError,errorFile,QString::null,errorMessage,
                             errorLine,errorColumn);
         }
@@ -3406,8 +3413,10 @@ void MainForm::procio_readReady()
         break;
     }
   }
-  if (errorsCompilingFlag && preferences.stopAtFirstError)
-    stopCompilingFlag=TRUE;
+  if (errorFlag) {
+    errorsCompilingFlag=TRUE;
+    if (preferences.stopAtFirstError) stopCompilingFlag=TRUE;
+  }
 }
 
 void MainForm::compileFile(void *srcFile, bool inProject, bool force)
@@ -3417,13 +3426,13 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
   bool modified=FALSE;
   QString shortFileName;
   if (stopCompilingFlag) return;
+  errorFlag=FALSE;
   if (inProject) {
     ListViewFile *sourceFile=reinterpret_cast<ListViewFile *>(srcFile);
     CATEGORY_OF(cat,sourceFile);
     category=cat;
     origFileName=&(sourceFile->fileName);
-    if ((sourceFile->kateView && sourceFile->kateView->getDoc()->isModified())
-        || sourceFile->isNew)
+    if (sourceFile->modifiedSinceLastCompile)
       modified=TRUE;
     shortFileName=sourceFile->text(0);
   } else {
@@ -3604,6 +3613,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           }
           deleteTempAsmFile=TRUE;
         } else {
+          errorFlag=TRUE;
           errorsCompilingFlag=TRUE;
           if (preferences.stopAtFirstError) stopCompilingFlag=TRUE;
         }
@@ -3660,21 +3670,39 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
       }
       qdir.remove(tempObjectFile);
     } else {
+      errorFlag=TRUE;
       errorsCompilingFlag=TRUE;
       if (preferences.stopAtFirstError) stopCompilingFlag=TRUE;
     }
   } else if (category==oFilesListItem || category==aFilesListItem) {
     objectFiles.append(*origFileName);
   } // else do nothing (ignore all other categories)
+  if (inProject && !errorFlag && !stopCompilingFlag)
+    reinterpret_cast<ListViewFile *>(srcFile)->modifiedSinceLastCompile=FALSE;
+}
+
+void MainForm::compileProject(bool forceAll)
+{
+  QListViewItemIterator lvit(fileTree);
+  QListViewItem *item;
+  for (item=lvit.current(); item&&!stopCompilingFlag; item=(++lvit).current()) {
+    if (IS_FILE(item))
+      compileFile(static_cast<ListViewFile *>(item),TRUE,forceAll);
+  }
+  if (!errorsCompilingFlag && !stopCompilingFlag) headersModified=FALSE;
+}
+
+void MainForm::linkProject()
+{
+  errorFlag=FALSE;
+  // TODO
 }
 
 void MainForm::projectCompile()
 {
   if (compiling) return;
   startCompiling();
-  while (!stopCompilingFlag) {
-    QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
-  }
+  compileProject(FALSE);
   stopCompiling();
 }
 
@@ -3682,9 +3710,8 @@ void MainForm::projectMake()
 {
   if (compiling) return;
   startCompiling();
-  while (!stopCompilingFlag) {
-    QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
-  }
+  compileProject(FALSE);
+  if (!errorsCompilingFlag && !stopCompilingFlag) linkProject();
   stopCompiling();
 }
 
@@ -3692,9 +3719,8 @@ void MainForm::projectBuild()
 {
   if (compiling) return;
   startCompiling();
-  while (!stopCompilingFlag) {
-    QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
-  }
+  compileProject(TRUE);
+  if (!errorsCompilingFlag && !stopCompilingFlag) linkProject();
   stopCompiling();
 }
 
@@ -4485,6 +4511,8 @@ void MainForm::current_view_textChanged()
 {
   if (CURRENT_VIEW) {
     charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+    if (IS_FILE(currentListItem))
+      static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile=TRUE;
     if (preferences.deleteOverwrittenErrors && IS_FILE(currentListItem)
         && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView) {
       ListViewFile *lvFile=static_cast<ListViewFile *>(currentListItem);
