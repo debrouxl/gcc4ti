@@ -129,6 +129,15 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define LOAD_ICON(name) (QIconSet(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
 #define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small,KIcon::SizeSmall):QPixmap::fromMimeSource((name)))
 
+#define SET_TEXT_SAFE(doc,text) do { \
+    bool oldModifiedSinceLastCompile=IS_FILE(currentListItem)? \
+      static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile:FALSE; \
+    (doc)->setText((text)); \
+    if (IS_FILE(currentListItem)) \
+      static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile=oldModifiedSinceLastCompile; \
+  } while(0)
+
+
 // For some reason, this flag is not in the public ConfigFlags enum.
 #define CF_REMOVE_TRAILING_DYN 0x4000000
 
@@ -1527,7 +1536,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   connect(newView->getDoc(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->installPopup(te_popup);
   // Set text.
-  newView->getDoc()->setText(fileText);
+  SET_TEXT_SAFE(newView->getDoc(),fileText);
   newView->getDoc()->setModified(FALSE);
   newView->getDoc()->clearUndo();
   newView->getDoc()->clearRedo();
@@ -2009,7 +2018,7 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
       theFile->kateView->getDoc()->setModified(FALSE);
       if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
         theFile->kateView->getDoc()->closeStream();
-      theFile->kateView->getDoc()->setText(fileText);
+      SET_TEXT_SAFE(theFile->kateView->getDoc(),fileText);
       theFile->kateView->getDoc()->clearUndo();
       theFile->kateView->getDoc()->clearRedo();
       theFile->kateView->getDoc()->setHlMode(hlMode);
@@ -2082,7 +2091,7 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
             theFile->kateView->getDoc()->setModified(FALSE);
             if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
               theFile->kateView->getDoc()->closeStream();
-            theFile->kateView->getDoc()->setText(fileText);
+            SET_TEXT_SAFE(theFile->kateView->getDoc(),fileText);
             theFile->kateView->getDoc()->clearUndo();
             theFile->kateView->getDoc()->clearRedo();
             theFile->kateView->getDoc()->setHlMode(hlMode);
@@ -4719,7 +4728,7 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, const QString &newName,
         theFile->kateView->getDoc()->setModified(FALSE);
         if (theFile->kateView->getDoc()->openStream("text/plain",newFileName))
           theFile->kateView->getDoc()->closeStream();
-        theFile->kateView->getDoc()->setText(fileText);
+        SET_TEXT_SAFE(theFile->kateView->getDoc(),fileText);
         theFile->kateView->getDoc()->clearUndo();
         theFile->kateView->getDoc()->clearRedo();
         theFile->kateView->getDoc()->setHlMode(hlMode);
@@ -4778,7 +4787,7 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
           }
           static_cast<ListViewFile *>(item)->isNew=FALSE;
           if (static_cast<ListViewFile *>(item)->kateView) {
-            static_cast<ListViewFile *>(item)->kateView->getDoc()->setText(fileText);
+            SET_TEXT_SAFE(static_cast<ListViewFile *>(item)->kateView->getDoc(),fileText);
             static_cast<ListViewFile *>(item)->kateView->getDoc()->setModified(FALSE);
             static_cast<ListViewFile *>(item)->kateView->getDoc()->clearUndo();
             static_cast<ListViewFile *>(item)->kateView->getDoc()->clearRedo();
