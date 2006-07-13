@@ -676,6 +676,7 @@ class ErrorListItem : public KListViewItem {
           mainForm->openProject(QString("%1/include/asm/%2").arg(tigcc_base).arg(errFile));
         else if (getPathType(QString("%1/include/s/%2").arg(tigcc_base).arg(errFile))==PATH_FILE)
           mainForm->openProject(QString("%1/include/s/%2").arg(tigcc_base).arg(errFile));
+        findSourceFile(errFile);
       }
     }
     if (errLine!=(unsigned)-1 && (lvFile || srcFile)) {
