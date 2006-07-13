@@ -820,7 +820,6 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
     #define SET_MULTI_CHAR_MODE(mode) do {if (curMode!=(mode)) {NEW_LINE(); curMode=(mode);}} while(0)
 
     ADD_LINE(); // Line 0
-    ADD_LINE(); // Line 1
     for (; curPos<l; curPos++) {
       bool noInsert=FALSE;
       QChar c=text[curPos];

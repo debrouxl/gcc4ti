@@ -679,6 +679,7 @@ class ErrorListItem : public KListViewItem {
       }
     }
     if (errLine!=(unsigned)-1 && (lvFile || srcFile)) {
+      if (errColumn==(unsigned)-1) errColumn=0;
       const LineStartList &lineStartList=lvFile?lvFile->lineStartList
                                                :srcFile->lineStartList;
       if (lineStartList.isEmpty()) {
@@ -1066,6 +1067,7 @@ void MainForm::init()
   setDockEnabled(errorListDock,Qt::DockRight,FALSE);
   connect(errorListDock,SIGNAL(visibilityChanged(bool)),
           this,SLOT(projectErrorsAndWarnings(bool)));
+  errorList->errorListView->setSorting(-1);
   connect(errorList->errorListView,SIGNAL(clicked(QListViewItem *)),
           this,SLOT(errorListView_clicked(QListViewItem *)));
   errorListAccel=new QAccel(errorList->errorListView);
@@ -3217,8 +3219,11 @@ void MainForm::stopCompiling()
   statusBar()->clear();
 }
 
+static QString errorFunction;
+
 void MainForm::procio_processExited()
 {
+  errorFunction=QString::null;
   QApplication::eventLoop()->exitLoop();
 }
 
@@ -3227,7 +3232,7 @@ void MainForm::procio_readReady()
 {
   static unsigned a68kErrorLine=0; // A68k errors are split onto several lines.
   static int errorLine, errorColumn;
-  static QString errorFile, errorFunction;
+  static QString errorFile;
   QString line;
   while (procio->readln(line)>=0) {
     // TODO: This needs to be stored for the Program Output dialog.
@@ -3249,6 +3254,7 @@ void MainForm::procio_readReady()
                       .fileName();
             errorLine=line.mid(line.findRev(' ')+1).toInt()-1;
           }
+          errorFunction=QString::null;
           a68kErrorLine=1;
         } else if (a68kErrorLine==1) {
           // This line contains only a copy of the source line, skip it.
@@ -3256,7 +3262,105 @@ void MainForm::procio_readReady()
         } else {
           if (line.contains("Fatal errors - assembly aborted",FALSE)) break;
           // Not an A68k error, so parse it as a standard *nix-style error.
-          qDebug(line); // TODO
+          // Normalize characters and strip whitespace
+          line=line.stripWhiteSpace();
+          line.replace('`','\''); // backtick
+          line.replace(QChar(0xb4),'\''); // forward apostrophe
+          line.replace('\"','\''); // quote
+          if (line.contains("assembler messages:",FALSE)
+              || line.startsWith("from ",FALSE)
+              || (!preferences.allowImplicitDeclaration
+                  && (line.contains("previous implicit declaration",FALSE)
+                      || line.contains("previously implicitly declared",FALSE))))
+            break;
+          if (line.startsWith("in file",FALSE))
+            errorFunction=QString::null;
+          else {
+            // The regex also supports Windows file names, in case KTIGCC ever
+            // encounters them. Hopefully nobody will try giving it MacOS <=9
+            // file names.
+            int pos=line.find(QRegExp(":(?![/\\\\])"));
+            if (pos>=0) errorFile=line.left(pos);
+            if (errorFile.isEmpty()) {
+              if (!line.endsWith("."))
+                line.append('.');
+              errorsCompilingFlag=TRUE;
+              new ErrorListItem(this,line.startsWith("please fill out ",FALSE)?
+                                etInfo:etError,QString::null,QString::null,line,
+                                errorLine,errorColumn);
+            } else {
+              QString errorMessage;
+              if (errorFile.lower()=="error"||errorFile.lower()=="warning") {
+                errorFile=QString::null;
+                errorMessage=line;
+              } else {
+                errorFile=QFileInfo(errorFile).fileName();
+                errorMessage=line.mid(pos+1);
+              }
+              if (!errorMessage.isEmpty() && errorMessage[0]>='0'
+                                          && errorMessage[0]<='9') {
+                pos=errorMessage.find(':');
+                if (pos>=0) {
+                  bool ok;
+                  errorLine=errorMessage.left(pos).toInt(&ok)-1;
+                  if (ok) {
+                    errorMessage.remove(0,pos+1);
+                    if (!errorMessage.isEmpty() && errorMessage[0]>='0'
+                                                && errorMessage[0]<='9') {
+                      pos=errorMessage.find(':');
+                      if (pos>=0) {
+                        errorColumn=errorMessage.left(pos).toInt(&ok)-1;
+                        if (ok) errorMessage.remove(0,pos+1);
+                      }
+                    }
+                  }
+                }
+                errorMessage=errorMessage.stripWhiteSpace();
+                ErrorTypes errorType=etError;
+                if (errorMessage.startsWith("warning:",FALSE)) {
+                  errorMessage.remove(0,8);
+                  errorMessage=errorMessage.stripWhiteSpace();
+                  errorType=etWarning;
+                } else if (errorMessage.startsWith("error:",FALSE)) {
+                  errorMessage.remove(0,6);
+                  errorMessage=errorMessage.stripWhiteSpace();
+                }
+                if (errorMessage.startsWith("#warning ",FALSE)) {
+                  errorMessage.remove(0,9);
+                  errorType=etWarning;
+                } else if (errorMessage.startsWith("#error ",FALSE))
+                  errorMessage.remove(0,7);
+                if (errorMessage.startsWith("previous declaration of ",FALSE)
+                    || errorMessage.startsWith("possible real start of ",FALSE)
+                    || errorMessage.startsWith("unused variable ",FALSE)
+                    || errorMessage.startsWith("unused parameter ",FALSE)
+                    || errorMessage.contains("previously declared here",FALSE)
+                    || errorMessage.contains("location of the previous definition",FALSE))
+                  errorType=etInfo;
+                if (!preferences.allowImplicitDeclaration)
+                  errorMessage.replace(QRegExp("^implicit declaration of ",FALSE),
+                                       "Undefined reference to ");
+                if (!errorMessage.endsWith("."))
+                  errorMessage.append('.');
+                if (errorType==etError) errorsCompilingFlag=TRUE;
+                new ErrorListItem(this,errorType,errorFile,errorFunction,
+                                  errorMessage,errorLine,errorColumn);
+              } else {
+                if (errorMessage.startsWith(" in function \'",FALSE)
+                    && errorMessage.contains('\'')>1) {
+                  errorFunction=errorMessage.mid(14,errorMessage.find('\'',14)-14);
+                } else if (errorMessage.startsWith(" at top level",FALSE)) {
+                  errorFunction=QString::null;
+                } else {
+                  if (!errorMessage.endsWith("."))
+                    errorMessage.append('.');
+                  errorsCompilingFlag=TRUE;
+                  new ErrorListItem(this,etError,errorFile,QString::null,
+                                    errorMessage,errorLine,errorColumn);
+                }
+              }
+            }
+          }
         }
         break;
       case 2:
@@ -3265,8 +3369,9 @@ void MainForm::procio_readReady()
           if (errorLine>=0 && errorColumn<0)
             errorColumn=caretPos-2; // there's an extra tab at the beginning
           QString errorMessage=line.mid(caretPos+2);
-          if (errorMessage.endsWith("."))
-            errorMessage.truncate(errorMessage.length()-1);
+          if (!errorMessage.endsWith("."))
+            errorMessage.append('.');
+          errorsCompilingFlag=TRUE;
           new ErrorListItem(this,etError,errorFile,QString::null,errorMessage,
                             errorLine,errorColumn);
         }
@@ -3274,6 +3379,8 @@ void MainForm::procio_readReady()
         break;
     }
   }
+  if (errorsCompilingFlag && preferences.stopAtFirstError)
+    stopCompilingFlag=TRUE;
 }
 
 void MainForm::compileFile(void *srcFile, bool inProject, bool force)
