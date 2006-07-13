@@ -625,8 +625,10 @@ class ErrorListItem : public KListViewItem {
   ErrorListItem(MainForm *pMainForm, ErrorTypes errType,
                 const QString &errFile, const QString &errFunc,
                 const QString &errMsg, unsigned errLine, unsigned errColumn)
-    : KListViewItem(errorList->errorListView), lvFile(0), srcFile(0), cursor(0),
-      errorLine(-1), errorColumn(0), mainForm(pMainForm), errorType(errType)
+    : KListViewItem(errorList->errorListView,
+                    errorList->errorListView->lastItem()),
+      lvFile(0), srcFile(0), cursor(0), errorLine(-1), errorColumn(0),
+      mainForm(pMainForm), errorType(errType)
   {
     QString errMessage=errMsg.stripWhiteSpace();
     if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].upper();
@@ -1064,6 +1066,8 @@ void MainForm::init()
   setDockEnabled(errorListDock,Qt::DockRight,FALSE);
   connect(errorListDock,SIGNAL(visibilityChanged(bool)),
           this,SLOT(projectErrorsAndWarnings(bool)));
+  connect(errorList->errorListView,SIGNAL(clicked(QListViewItem *)),
+          this,SLOT(errorListView_clicked(QListViewItem *)));
   errorListAccel=new QAccel(errorList->errorListView);
   errorListAccel->insertItem(CTRL+Key_C,0);
   errorListAccel->insertItem(CTRL+Key_Insert,1);
@@ -3122,6 +3126,7 @@ void MainForm::startCompiling()
   objectFiles.clear();
   deletableObjectFiles.clear();
   deletableAsmFiles.clear();
+  errorList->errorListView->clear();
   procio=static_cast<KProcIO *>(NULL);
   // Write all the headers and incbin files to the temporary directory.
   QListViewItemIterator lvit(hFilesListItem);
@@ -3220,11 +3225,54 @@ void MainForm::procio_processExited()
 
 void MainForm::procio_readReady()
 {
+  static unsigned a68kErrorLine=0; // A68k errors are split onto several lines.
+  static int errorLine, errorColumn;
+  static QString errorFile, errorFunction;
   QString line;
   while (procio->readln(line)>=0) {
-    // TODO: This needs to be parsed as an error and put into the error window.
-    //       It also needs to be stored for the Program Output dialog.
-    qDebug(line);
+    // TODO: This needs to be stored for the Program Output dialog.
+    if (line.isEmpty()) continue;
+    // Parse the error message
+    switch (a68kErrorLine) {
+      default:
+        a68kErrorLine=0;
+      case 0:
+        errorLine=-1;
+        errorColumn=-1;
+        errorFile=QString::null;
+      case 1:
+        if (line.contains(QRegExp(" line [0-9]+$",FALSE))) {
+          if (line.contains("(user macro)",FALSE))
+            errorColumn=0;
+          else if (errorFile.isEmpty()) {
+            errorFile=QFileInfo(line.left(line.findRev(" line ",-1,FALSE)))
+                      .fileName();
+            errorLine=line.mid(line.findRev(' ')+1).toInt()-1;
+          }
+          a68kErrorLine=1;
+        } else if (a68kErrorLine==1) {
+          // This line contains only a copy of the source line, skip it.
+          a68kErrorLine=2;
+        } else {
+          if (line.contains("Fatal errors - assembly aborted",FALSE)) break;
+          // Not an A68k error, so parse it as a standard *nix-style error.
+          qDebug(line); // TODO
+        }
+        break;
+      case 2:
+        if (line.contains(QRegExp("^\\s*\\^"))) {
+          int caretPos=line.find('^');
+          if (errorLine>=0 && errorColumn<0)
+            errorColumn=caretPos-2; // there's an extra tab at the beginning
+          QString errorMessage=line.mid(caretPos+2);
+          if (errorMessage.endsWith("."))
+            errorMessage.truncate(errorMessage.length()-1);
+          new ErrorListItem(this,etError,errorFile,QString::null,errorMessage,
+                            errorLine,errorColumn);
+        }
+        a68kErrorLine=0;
+        break;
+    }
   }
 }
 
