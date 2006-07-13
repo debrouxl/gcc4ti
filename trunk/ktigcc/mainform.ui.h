@@ -692,7 +692,6 @@ class ErrorListItem : public KListViewItem {
         errorColumn=pos.second+errColumn;
       }
       createCursor();
-      // TODO: Implement "delete overwritten errors" preference.
     }
     if (preferences.jumpToError && errType==etError
         && errorList->errorListView->selectedItems().isEmpty()) {
@@ -834,6 +833,24 @@ void MainForm::createErrorCursorsForSourceFile(QListViewItem *item)
     if (static_cast<ErrorListItem *>(errorItem)->lvFile
         ==static_cast<ListViewFile *>(item))
       static_cast<ErrorListItem *>(errorItem)->createCursor();
+  }
+}
+
+// And the last.
+void MainForm::deleteOverwrittenErrorsIn(void *srcFile)
+{
+  SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+  QListViewItemIterator lvit(errorList->errorListView);
+  ErrorListItem *errorItem;
+  while ((errorItem=static_cast<ErrorListItem *>(lvit.current()))) {
+    ++lvit;
+    if (errorItem->srcFile==sourceFile && errorItem->cursor) {
+      unsigned line,col;
+      errorItem->cursor->position(&line,&col);
+      if (sourceFile->kateView->cursorLine()==line
+          && sourceFile->kateView->cursorColumnReal()==col)
+        delete errorItem;
+    }
   }
 }
 
@@ -4455,8 +4472,25 @@ void MainForm::current_view_cursorPositionChanged()
 
 void MainForm::current_view_textChanged()
 {
-  if (CURRENT_VIEW)
+  if (CURRENT_VIEW) {
     charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+    if (preferences.deleteOverwrittenErrors && IS_FILE(currentListItem)
+        && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView) {
+      ListViewFile *lvFile=static_cast<ListViewFile *>(currentListItem);
+      QListViewItemIterator lvit(errorList->errorListView);
+      ErrorListItem *errorItem;
+      while ((errorItem=static_cast<ErrorListItem *>(lvit.current()))) {
+        ++lvit;
+        if (errorItem->lvFile==lvFile && errorItem->cursor) {
+          unsigned line,col;
+          errorItem->cursor->position(&line,&col);
+          if (lvFile->kateView->cursorLine()==line
+              && lvFile->kateView->cursorColumnReal()==col)
+            delete errorItem;
+        }
+      }
+    }
+  }
   if (kreplace) kreplace->invalidateSelection();
 }
 

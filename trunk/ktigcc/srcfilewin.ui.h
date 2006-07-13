@@ -990,8 +990,10 @@ void SourceFileWindow::current_view_cursorPositionChanged()
 
 void SourceFileWindow::current_view_textChanged()
 {
-  if (CURRENT_VIEW)
+  if (CURRENT_VIEW) {
     THIS->charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+    if (preferences.deleteOverwrittenErrors) MainForm::deleteOverwrittenErrorsIn(THIS);
+  }
   if (THIS->kreplace) THIS->kreplace->invalidateSelection();
 }
 
