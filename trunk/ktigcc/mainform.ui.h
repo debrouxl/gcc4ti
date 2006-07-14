@@ -360,7 +360,7 @@ static QListViewItem *oFilesListItem;
 static QListViewItem *aFilesListItem;
 static QListViewItem *txtFilesListItem;
 static QListViewItem *othFilesListItem;
-static bool projectIsDirty;
+static bool projectIsDirty, projectNeedsRelink;
 static QLabel *leftStatusLabel;
 static QLabel *rowStatusLabel;
 static QLabel *colStatusLabel;
@@ -438,6 +438,7 @@ class DnDListView : public KListView {
               currItem->moveItem(lastItem);
             }
             projectIsDirty=TRUE;
+            projectNeedsRelink=TRUE;
           } else {ignore: e->ignore();}
         } else e->ignore();
       } else if (IS_FILE(currItem)) {
@@ -489,6 +490,7 @@ class DnDListView : public KListView {
               currItem->moveItem(lastItem);
             }
             projectIsDirty=TRUE;
+            projectNeedsRelink=TRUE;
             setSelected(currItem,TRUE);
             ensureItemVisible(currItem);
             // update editor and counters
@@ -553,6 +555,7 @@ class DnDListView : public KListView {
                 e->accept();
                 currItem->moveItem(item);
                 projectIsDirty=TRUE;
+                projectNeedsRelink=TRUE;
                 break;
               } else if (i==item) {
                 // item is first, move currItem before item
@@ -560,6 +563,7 @@ class DnDListView : public KListView {
                 currItem->moveItem(item);
                 item->moveItem(currItem);
                 projectIsDirty=TRUE;
+                projectNeedsRelink=TRUE;
                 break;
               }
             }
@@ -1019,6 +1023,7 @@ void MainForm::init()
   lastDirectory=QString("%1/projects").arg(tigcc_base);
   projectFileName="";
   projectIsDirty=FALSE;
+  projectNeedsRelink=FALSE;
   connect(KDirWatch::self(),SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   connect(KDirWatch::self(),SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
   KDirWatch::self()->startScan();
@@ -1271,6 +1276,7 @@ void MainForm::clearProject()
   }
   fileCount=cFileCount=hFileCount=sFileCount=asmFileCount=qllFileCount=oFileCount=aFileCount=txtFileCount=othFileCount=0;
   projectIsDirty=FALSE;
+  projectNeedsRelink=FALSE;
   updateLeftStatusLabel();
 }
 
@@ -1635,6 +1641,7 @@ void MainForm::adoptSourceFile(void *srcFile)
   newView->installPopup(te_popup);
   // Mark project dirty.
   projectIsDirty=TRUE;
+  projectNeedsRelink=TRUE;
   // Select file.
   fileTreeClicked(newFile);
   // Update errors to point to the in-project source file instead of the
@@ -1968,6 +1975,7 @@ void MainForm::fileSave_save(QListViewItem *theItem)
         theFile->kateView->getDoc()->setModified(FALSE);
       }
       projectIsDirty=TRUE;
+      projectNeedsRelink=TRUE;
     }
   }
 }
@@ -2034,6 +2042,7 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
     theFile->isNew=FALSE;
     updateRightStatusLabel();
     projectIsDirty=TRUE;
+    projectNeedsRelink=TRUE;
   }
 }
 
@@ -2106,6 +2115,7 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
           }
           theFile->isNew=FALSE;
           projectIsDirty=TRUE; // in case saving the project fails
+          projectNeedsRelink=TRUE;
         }
       }
       
@@ -3039,6 +3049,7 @@ void MainForm::projectAddFiles()
   }
   if (projectChanged) {
     projectIsDirty=TRUE;
+    projectNeedsRelink=TRUE;
   }
 }
 
@@ -4012,7 +4023,7 @@ void MainForm::linkProject()
       qdir.remove(*it);
     }
   }
-  // TODO: Track projectNeedsRelink flag for later use by debugRun.
+  projectNeedsRelink=FALSE;
 }
 
 void MainForm::projectCompile()
@@ -4105,6 +4116,7 @@ void MainForm::projectOptions()
   projectoptions->exec();
   if (projectoptions->result()==QDialog::Accepted) {
     projectIsDirty=TRUE;
+    projectNeedsRelink=TRUE;
     headersModified=TRUE; // force complete rebuild
   }
   delete(projectoptions);
@@ -4330,6 +4342,7 @@ void MainForm::fileNewFolder()
   fileTreeClicked(newFolder);
   newFolder->startRename(0);
   projectIsDirty=TRUE;
+  projectNeedsRelink=TRUE;
 }
 
 #define unused_col __attribute__((unused)) col /* stupid QT designer... */
@@ -4367,6 +4380,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
         currentListItem=NULL;
         fileTreeClicked(fileTree->currentItem());
         projectIsDirty=TRUE;
+        projectNeedsRelink=TRUE;
         break;
       case 3:
         item->startRename(0);
@@ -4414,6 +4428,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
           currentListItem=NULL;
           fileTreeClicked(fileTree->currentItem());
           projectIsDirty=TRUE;
+          projectNeedsRelink=TRUE;
         }
         break;
       case 4:
@@ -4428,6 +4443,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
             currentListItem=NULL;
             fileTreeClicked(fileTree->currentItem());
             projectIsDirty=TRUE;
+            projectNeedsRelink=TRUE;
           } else {
             KMessageBox::error(this,
               QString("Error deleting file \'%1\'").arg(fileName));
@@ -4604,6 +4620,7 @@ void MainForm::newFile(QListViewItem *parent, QString text, const QPixmap &pixma
   newFile->kateView=reinterpret_cast<Kate::View *>(createView(tmp,text,category));
   fileTreeClicked(newFile);
   projectIsDirty=TRUE;
+  projectNeedsRelink=TRUE;
   newFile->startRename(0);
   
   fileCount++;
@@ -4997,6 +5014,7 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, const QString &newName,
     } else prjName.truncate(8);
     item->setText(0,prjName);
     projectIsDirty=true;
+    projectNeedsRelink=TRUE;
     return;
   }
   if (!IS_FILE(item))
@@ -5061,6 +5079,7 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, const QString &newName,
       if (IS_EDITABLE_CATEGORY(category) && newFileName[0]=='/')
         KDirWatch::self()->addFile(newFileName);
       projectIsDirty=TRUE;
+      projectNeedsRelink=TRUE;
     }
   } else {
     KMessageBox::error(this,"The name you chose conflicts with that of another file.");
