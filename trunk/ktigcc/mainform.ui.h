@@ -3840,6 +3840,18 @@ void MainForm::linkProject()
     procio=static_cast<KProcIO *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
     if (settings.pack) {
+      // Copy over the .dbg file from the temporary directory if it exists.
+      // Current TiEmu can't handle compressed programs, but maybe some day.
+      if (QFileInfo(linkOutput+".dbg").exists()) {
+        if (copyFile(linkOutput+".dbg",
+                     projectBaseName+".dbg")) {
+          new ErrorListItem(this,etError,QString::null,QString::null,
+                            "Failed to copy debug info file from temporary directory.",
+                            -1,-1);
+          errorsCompilingFlag=TRUE;
+        }
+      }
+      if (errorsCompilingFlag || stopCompilingFlag) return;
       statusBar()->message("Compressing...");
       const int numTargets=3;
       char binexts[numTargets][5]={".z89",".z9x",".zv2"};
