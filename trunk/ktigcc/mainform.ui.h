@@ -3512,6 +3512,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
       statusBar()->message(QString("Assembling File \'%1\'...").arg(shortFileName));
     else
       statusBar()->message(QString("Compiling File \'%1\'...").arg(shortFileName));
+    projectNeedsRelink=TRUE;
     QString fileName=writeTempSourceFile(srcFile,inProject);
     if (stopCompilingFlag) return;
     QString tempObjectFile=fileName;
