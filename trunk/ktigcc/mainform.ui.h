@@ -3457,11 +3457,28 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     int dotPos=origFileName->findRev('.');
     int slashPos=origFileName->findRev('/');
     if (dotPos>slashPos) objectFile.truncate(dotPos);
+    // Compute correct file names for unsaved files.
+    if (objectFile[0]!='/') {
+      if (inProject) {
+        ListViewFile *sourceFile=reinterpret_cast<ListViewFile *>(srcFile);
+        QListViewItem *item=sourceFile->parent();
+        while (!IS_CATEGORY(item)) {
+          objectFile.prepend('/');
+          objectFile.prepend(item->text(0));
+          item=item->parent();
+        }
+      }
+      if (!projectFileName.isEmpty()) {
+        objectFile.prepend('/');
+        objectFile.prepend(QFileInfo(projectFileName).dirPath(TRUE));
+      }
+    }
     QString asmFile=objectFile;
     objectFile.append(".o");
     deletableObjectFiles.append(objectFile);
     objectFiles.append(objectFile);
     asmFile.append(".s");
+    mkdir_multi(objectFile);
     if (category==cFilesListItem || category==qllFilesListItem)
       deletableAsmFiles.append(asmFile);
     // Figure out whether to recompile the file.
@@ -3717,6 +3734,10 @@ void MainForm::projectCompile()
 void MainForm::projectMake()
 {
   if (compiling) return;
+  // Can't link a project without saving it first.
+  if (projectFileName.isEmpty()) {
+    if (!fileSave() || projectFileName.isEmpty()) return;
+  }
   startCompiling();
   compileProject(FALSE);
   if (!errorsCompilingFlag && !stopCompilingFlag) linkProject();
@@ -3726,6 +3747,10 @@ void MainForm::projectMake()
 void MainForm::projectBuild()
 {
   if (compiling) return;
+  // Can't link a project without saving it first.
+  if (projectFileName.isEmpty()) {
+    if (!fileSave() || projectFileName.isEmpty()) return;
+  }
   startCompiling();
   compileProject(TRUE);
   if (!errorsCompilingFlag && !stopCompilingFlag) linkProject();

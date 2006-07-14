@@ -35,6 +35,7 @@
 #include <kaboutdata.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qcstring.h>
 #include <qregexp.h>
 #include <qtextcodec.h>
 #include <glib.h>
@@ -215,7 +216,7 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
 
             boolean_param("Archive=",archive)
             boolean_param("Pack=",pack)
-            string_param("Packed Variable=",pack_name)
+            tistring_param("Packed Variable=",pack_name)
             tistring_vparam("Project Name=",prj_name)
             string_param("GCC Switches=",cc_switches)
             string_param("Assembler Switches=",a68k_switches)
@@ -228,7 +229,7 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
             tistring_param("Command Line=",cmd_line)
             string_param("Post-Build Process=",post_build)
             boolean_param("Use Data Variable=",use_data_var)
-            string_param("Data Variable=",data_var)
+            tistring_param("Data Variable=",data_var)
             boolean_param("Copy Data Variable=",copy_data_var)
             boolean_param("Copy Data Variable if Archived=",copy_data_var_arc)
             boolean_param("Optimize NOPs=",optimize_nops)
@@ -576,7 +577,7 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
     if (fputs("[Settings]\r\n",f)<0) return -2;
     boolean_param("Archive=",archive)
     boolean_param("Pack=",pack)
-    string_param("Packed Variable=",pack_name)
+    tistring_param("Packed Variable=",pack_name)
     tistring_vparam("Project Name=",prj_name)
     string_param("GCC Switches=",cc_switches)
     string_param("Assembler Switches=",a68k_switches)
@@ -589,7 +590,7 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
     tistring_param("Command Line=",cmd_line)
     string_param("Post-Build Process=",post_build)
     boolean_param("Use Data Variable=",use_data_var)
-    string_param("Data Variable=",data_var)
+    tistring_param("Data Variable=",data_var)
     boolean_param("Copy Data Variable=",copy_data_var)
     boolean_param("Copy Data Variable if Archived=",copy_data_var_arc)
     boolean_param("Optimize NOPs=",optimize_nops)
@@ -733,7 +734,7 @@ int saveTPR(const QString &fileName,TPRDataStruct *src)
   return ret;
 }
 
-static void mkdir_multi(const char *fileName)
+void mkdir_multi(const char *fileName)
 {
   int l=strlen(fileName);
   char buffer[l+2];
@@ -1236,19 +1237,47 @@ QStringList process_libopts(void)
 /*
    Build linker command line arguments
 */
-QStringList process_settings(void)
+QStringList process_settings(const QString &prjNameUnicode,
+                             QCString &projectName, QCString &dataVarName,
+                             QCString &packName)
 {
   QStringList args;
 
+  // Convert the project name to the calculator charset.
+  {
+    const unsigned short *utf16=prjNameUnicode.ucs2();
+    if (utf16) {
+      char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
+      projectName=ti; // This is a hidden strdup (see QCString::operator=).
+      g_free(ti);
+    } else projectName=QCString();
+  }
+
+  // Convert the PPG name to the calculator charset.
+  {
+    const unsigned short *utf16=settings.pack_name.ucs2();
+    if (utf16) {
+      char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
+      packName=ti; // This is a hidden strdup (see QCString::operator=).
+      g_free(ti);
+    } else packName=QCString();
+  }
+
   if (settings.use_data_var && !settings.data_var.isEmpty()) {
-    args.append("-d ");
-    args.append(settings.data_var);
+    // We can't just append this to the argument list because this needs to be
+    // in the calculator charset.
+    const unsigned short *utf16=settings.data_var.ucs2();
+    if (utf16) {
+      char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
+      dataVarName=ti; // This is a hidden strdup (see QCString::operator=).
+      g_free(ti);
+    } else dataVarName=QCString();
     if (!settings.copy_data_var) {
       args.append("--data-var-copy=never");
     } else if (!settings.copy_data_var_arc) {
       args.append("--data-var-copy=always");
     }
-  }
+  } else dataVarName=QCString();
 
   if (settings.optimize_nops) {
     args.append("--optimize-nops");
@@ -1285,7 +1314,7 @@ QStringList process_settings(void)
     args.append("--merge-constants");
   }
 
-  if (settings.outputbin) {
+  if (settings.outputbin || settings.pack) {
     args.append("--outputbin");
   }
 

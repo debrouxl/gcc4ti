@@ -26,6 +26,7 @@
 class KURL;
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qcstring.h>
 #include <qvaluevector.h>
 #include <qpair.h>
 
@@ -168,6 +169,7 @@ int loadTPR(const QString &fileName,TPRDataStruct *dest);
 QString loadFileText(const char *fileName);
 
 int saveTPR(const QString &fileName,TPRDataStruct *src);
+void mkdir_multi(const char *fileName);
 int saveAndSplitFileText(const char *fileName, const QString &fileText,
                          bool split, bool addCLineDirective,
                          bool addASMLineDirective, const QString &origFileName,
@@ -182,4 +184,6 @@ int copyFile(const char *src, const char *dest);
 int getPathType(const QString &thePath);
 
 QStringList process_libopts(void);
-QStringList process_settings(void);
+QStringList process_settings(const QString &prjNameUnicode,
+                             QCString &projectName, QCString &dataVarName,
+                             QCString &packName);
