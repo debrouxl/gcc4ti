@@ -3953,6 +3953,13 @@ void MainForm::linkProject()
     // Post-build processing.
     statusBar()->message("Calling User-Defined Program...");
     QString postBuild=settings.post_build;
+    // Remove double quotes for TIGCC IDE compatibility. Single quotes will be
+    // added instead.
+    postBuild.replace("\"($TI89FILE)\"","($TI89FILE)",FALSE);
+    postBuild.replace("\"($TI89TIFILE)\"","($TI89TIFILE)",FALSE);
+    postBuild.replace("\"($TI92PLUSFILE)\"","($TI92PLUSFILE)",FALSE);
+    postBuild.replace("\"($V200FILE)\"","($V200FILE)",FALSE);
+    postBuild.replace("\"($TI92FILE)\"","($TI92FILE)",FALSE);
     postBuild.replace("($TI89FILE)",
       KProcess::quote(libopts.use_ti89?projectBaseName+(
         settings.archive?".a":settings.flash_os?"-89.tib":settings.pack?".89y":

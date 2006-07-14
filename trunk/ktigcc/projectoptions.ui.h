@@ -33,6 +33,8 @@
 
 #include <qaccel.h>
 #include <kmessagebox.h>
+#include <kfiledialog.h>
+#include <kprocess.h>
 #include "ktigcc.h"
 #include "tpr.h"
 #include "programoptions.h"
@@ -251,4 +253,14 @@ void ProjectOptions::UpdateVisibilities()
 void ProjectOptions::ProgramOptionsFunc()
 {
   programoptions->exec();
+}
+
+
+void ProjectOptions::browseButton_clicked()
+{
+  QString ret=KFileDialog::getOpenFileName("/usr/bin",
+    "application/x-executable application/x-executable-script",this,
+    "Choose executable");
+  if (!ret.isEmpty())
+    CallAfterBuilding->setText(KProcess::quote(ret)+" \"($TI89File)\" \"($TI92PlusFile)\" \"($V200File)\"");
 }
