@@ -3210,23 +3210,6 @@ void MainForm::startCompiling()
 void MainForm::stopCompiling()
 {
   clear_temp_dir();
-#if 0
-  // Delete object and assembly files.
-  // FIXME: This should be done only when linking is done.
-  QDir qdir;
-  if (!errorsCompilingFlag && preferences.deleteObjFiles) {
-    for (QStringList::Iterator it=deletableObjectFiles.begin();
-         it!=deletableObjectFiles.end(); ++it) {
-      qdir.remove(*it);
-    }
-  }
-  if (!errorsCompilingFlag && preferences.deleteAsmFiles) {
-    for (QStringList::Iterator it=deletableAsmFiles.begin();
-         it!=deletableAsmFiles.end(); ++it) {
-      qdir.remove(*it);
-    }
-  }
-#endif /* 0 */
   stopCompilingFlag=FALSE;
   errorsCompilingFlag=FALSE;
   compiling=FALSE;
@@ -4015,7 +3998,20 @@ void MainForm::linkProject()
     procio=static_cast<KProcIO *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
   }
-  // TODO: Delete ASM/object files.
+  // Delete object and/or assembly files.
+  QDir qdir;
+  if (preferences.deleteObjFiles) {
+    for (QStringList::Iterator it=deletableObjectFiles.begin();
+         it!=deletableObjectFiles.end(); ++it) {
+      qdir.remove(*it);
+    }
+  }
+  if (preferences.deleteAsmFiles) {
+    for (QStringList::Iterator it=deletableAsmFiles.begin();
+         it!=deletableAsmFiles.end(); ++it) {
+      qdir.remove(*it);
+    }
+  }
   // TODO: Track projectNeedsRelink flag for later use by debugRun.
 }
 
