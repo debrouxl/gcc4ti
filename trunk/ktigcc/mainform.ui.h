@@ -4082,7 +4082,10 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
         fileSave_saveAs(item);
         break;
       case 2:
-        // compiling not implemented yet!
+        if (compiling) return;
+        startCompiling();
+        compileFile(theFile,TRUE,TRUE);
+        stopCompiling();
         break;
       case 3:
         if (!fileSavePrompt(item)) {
