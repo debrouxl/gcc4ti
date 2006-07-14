@@ -3526,7 +3526,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                          KShell::TildeExpand|KShell::AbortOnMeta,
                                          &err);
       if (err) {
-        KMessageBox::error(this,"Invalid A68k assembler command line options.");
+        new ErrorListItem(this,etError,QString::null,QString::null,
+                          "Invalid A68k assembler command line options.",-1,-1);
         stopCompilingFlag=TRUE;
       }
       if (!stopCompilingFlag) {
@@ -3568,7 +3569,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                            KShell::TildeExpand|KShell::AbortOnMeta,
                                            &err);
         if (err) {
-          KMessageBox::error(this,"Invalid C compiler command line options.");
+          new ErrorListItem(this,etError,QString::null,QString::null,
+                            "Invalid C compiler command line options.",-1,-1);
           stopCompilingFlag=TRUE;
         }
         if (!stopCompilingFlag) {
@@ -3641,7 +3643,9 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
             fileNameToAssemble=tempAsmFile;
             qdir.remove(asmFile);
             if (copyFile(tempAsmFile.ascii(),asmFile.ascii())) {
-              KMessageBox::error(this,"Failed to copy assembly file from temporary directory.");
+              new ErrorListItem(this,etError,QString::null,QString::null,
+                                "Failed to copy assembly file from temporary directory.",
+                                -1,-1);
               stopCompilingFlag=TRUE;
             }
           }
@@ -3659,7 +3663,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                            KShell::TildeExpand|KShell::AbortOnMeta,
                                            &err);
         if (err) {
-          KMessageBox::error(this,"Invalid GNU assembler command line options.");
+          new ErrorListItem(this,etError,QString::null,QString::null,
+                            "Invalid GNU assembler command line options.",-1,-1);
           stopCompilingFlag=TRUE;
         }
         if (!stopCompilingFlag) {
@@ -3699,7 +3704,9 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     if (qdir.exists(tempObjectFile)) {
       qdir.remove(objectFile);
       if (copyFile(tempObjectFile.ascii(),objectFile.ascii())) {
-        KMessageBox::error(this,"Failed to copy object file from temporary directory.");
+        new ErrorListItem(this,etError,QString::null,QString::null,
+                          "Failed to copy object file from temporary directory.",
+                          -1,-1);
         stopCompilingFlag=TRUE;
       }
       qdir.remove(tempObjectFile);
