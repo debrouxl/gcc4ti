@@ -3740,6 +3740,8 @@ void MainForm::linkProject()
   if (projectBaseName.endsWith(".tpr",FALSE))
     projectBaseName.truncate(projectBaseName.length()-4);
   QString projectDir=QFileInfo(projectFileName).dirPath(TRUE);
+  statusBar()->message(QString("Linking Project \'%1\'...")
+                       .arg(QFileInfo(projectFileName).baseName()));
   if (settings.archive) {
     // Link static library using ar-tigcc.
     // The QTextCodec has to be passed explicitly, or it will default to
@@ -3799,6 +3801,7 @@ void MainForm::linkProject()
     procio=static_cast<KProcIO *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
     if (settings.pack) {
+      statusBar()->message("Compressing...");
       const int numTargets=3;
       char binexts[numTargets][5]={".z89",".z9x",".zv2"};
       char exts[numTargets][5]={".89z",".9xz",".v2z"};
