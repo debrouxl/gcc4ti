@@ -1,8 +1,8 @@
 /*  TIGCC - A front-end for the compiler, assembler, linker and some other
  *  stuffs.
  *  Copyright (C) 2001 John David Ratliff
- *  Copyright (C) 2001-2002  Romain Liévin
- *  Copyright (C) 2002-2005 Kevin Kofler
+ *  Copyright (C) 2001-2002 Romain Liévin
+ *  Copyright (C) 2002-2006 Kevin Kofler
  *  Modified by Nils Gesbert, 2003
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -722,10 +722,11 @@ void ar(void)
   int i, loop;
   char buffer[strlen(outfile) + 3];
   char ar_name[14 + strlen(tigcc_base)];
-  char *argv[4 + obj_files->count + ar_files->count];
+  char *argv[5 + obj_files->count + ar_files->count];
   argv[0] = ar_name;
   argv[1] = "-o";
   argv[2] = buffer;
+  argv[3] = "--no-names";
 
   strcpy(buffer, outfile);
   change_extension(buffer, ".a");
@@ -734,7 +735,7 @@ void ar(void)
 
   sprintf(ar_name, "%s/bin/ar-tigcc", tigcc_base);
 
-  i = 3;
+  i = 4;
 
   for (loop = 0; loop < obj_files->count; loop++)
     argv[i++] = obj_files->files[loop];

@@ -1,8 +1,8 @@
 /*  TIGCC - A front-end for the compiler, assembler, linker and some other
  *  stuffs.
  *  Copyright (C) 2001 John David Ratliff
- *  Copyright (C) 2001-2002  Romain Liévin
- *  Copyright (C) 2002-2004 Kevin Kofler
+ *  Copyright (C) 2001-2002 Romain Liévin
+ *  Copyright (C) 2002-2006 Kevin Kofler
  *  Modified by Nils Gesbert, 2003
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #ifndef _TIGCC_H
 #define _TIGCC_H
 
-#define VERSION "1.3.1"
-#define TIGCC_VERSION "0.96 Beta 6 r1"
+#define VERSION "1.3.2"
+#define TIGCC_VERSION "0.96 Beta 7 r1"
 
 /* global enumerations */
 enum Boolean 	{FALSE,TRUE};
