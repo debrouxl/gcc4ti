@@ -3275,6 +3275,17 @@ void MainForm::procio_readReady()
   static QString errorFile;
   QString line;
   while (procio->readln(line)>=0) {
+    // ld-tigcc doesn't currently know the difference between host charset and
+    // calculator charset, so the variable name won't display properly if it
+    // contains non-ASCII characters. Fix that up.
+    if (ldTigccStatPhase==1
+        && line.stripWhiteSpace().startsWith("Program Variable Name:",FALSE)) {
+      int pos=line.find(':');
+      while (line[++pos]==' ');
+      line.truncate(pos);
+      if (!rootListItem->text(0).contains('/')) line.append("main\\");
+      line.append(rootListItem->text(0));
+    }
     programOutput.append(line);
     programOutput.append('\n');
     projectProgramOutputAction->setEnabled(TRUE);
@@ -3441,8 +3452,7 @@ void MainForm::procio_readReady()
         break;
       case 1:
         // The next line is the first one to display in the dialog. (TIGCC IDE
-        // does the same. We can't display the on-calc file name anyway because
-        // it has already been converted to Unicode using the wrong converter.)
+        // does the same.)
         if (line.stripWhiteSpace().startsWith("Program Variable Name:",FALSE))
           ldTigccStatPhase=2;
         break;
