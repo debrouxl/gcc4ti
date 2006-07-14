@@ -3394,10 +3394,19 @@ void MainForm::procio_readReady()
                 } else if (errorMessage.startsWith(" at top level",FALSE)) {
                   errorFunction=QString::null;
                 } else {
+                  ErrorTypes errorType=etError;
+                  if (errorMessage.startsWith("warning:",FALSE)) {
+                    errorMessage.remove(0,8);
+                    errorMessage=errorMessage.stripWhiteSpace();
+                    errorType=etWarning;
+                  } else if (errorMessage.startsWith("error:",FALSE)) {
+                    errorMessage.remove(0,6);
+                    errorMessage=errorMessage.stripWhiteSpace();
+                  }
                   if (!errorMessage.endsWith("."))
                     errorMessage.append('.');
-                  errorFlag=TRUE;
-                  new ErrorListItem(this,etError,errorFile,QString::null,
+                  if (errorType==etError) errorFlag=TRUE;
+                  new ErrorListItem(this,errorType,errorFile,QString::null,
                                     errorMessage,errorLine,errorColumn);
                 }
               }
@@ -3720,7 +3729,73 @@ void MainForm::compileProject(bool forceAll)
 void MainForm::linkProject()
 {
   errorFlag=FALSE;
-  // TODO
+  QString projectBaseName=projectFileName;
+  if (projectBaseName.endsWith(".tpr",FALSE))
+    projectBaseName.truncate(projectBaseName.length()-4);
+  QString projectDir=QFileInfo(projectFileName).dirPath(TRUE);
+  if (settings.archive) {
+    // Link static library using ar-tigcc.
+    // The QTextCodec has to be passed explicitly, or it will default to
+    // ISO-8859-1 regardless of the locale, which is just broken.
+    procio=new KProcIO(QTextCodec::codecForLocale());
+    // Use MergedStderr instead of Stderr so the messages get ordered
+    // properly.
+    procio->setComm(static_cast<KProcess::Communication>(
+      KProcess::Stdout|KProcess::MergedStderr));
+    procio->setWorkingDirectory(projectDir);
+    *procio<<(QString("%1/bin/ar-tigcc").arg(tigcc_base))
+           <<"-o"<<(projectBaseName+".a")<<"--no-names"<<objectFiles;
+    connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
+    connect(procio,SIGNAL(readReady(KProcIO*)),this,SLOT(procio_readReady()));
+    procio->start();
+    // We need to block here, but events still need to be handled. The most
+    // effective way to do this is to enter the event loop recursively,
+    // even though it is not recommended by Qt.
+    QApplication::eventLoop()->enterLoop();
+    // This will be reached only after exitLoop() is called.
+    delete procio;
+    procio=static_cast<KProcIO *>(NULL);
+  } else {
+    // Link executable using ld-tigcc.
+    QString linkOutput=settings.pack?QString("%1/tempprog").arg(tempdir)
+                                    :projectBaseName;
+    QCString projectName, dataVarName, packName;
+    QStringList linkerOptions=process_settings(rootListItem->text(0),
+                                               projectName,dataVarName,packName);
+    // The QTextCodec has to be passed explicitly, or it will default to
+    // ISO-8859-1 regardless of the locale, which is just broken.
+    procio=new KProcIO(QTextCodec::codecForLocale());
+    // Use MergedStderr instead of Stderr so the messages get ordered
+    // properly.
+    procio->setComm(static_cast<KProcess::Communication>(
+      KProcess::Stdout|KProcess::MergedStderr));
+    procio->setWorkingDirectory(projectDir);
+    *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
+           <<"-o"<<linkOutput<<"-n"<<projectName;
+    if (!dataVarName.isNull()) *procio<<"-d"<<dataVarName;
+    *procio<<linkerOptions<<objectFiles;
+    if (settings.std_lib)
+      *procio<<QString(settings.flash_os?"%1/lib/flashos.a"
+                                        :(settings.fargo?"%1/lib/fargo.a"
+                                                        :"%1/lib/tigcc.a"))
+               .arg(tigcc_base);
+    connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
+    connect(procio,SIGNAL(readReady(KProcIO*)),this,SLOT(procio_readReady()));
+    procio->start();
+    // We need to block here, but events still need to be handled. The most
+    // effective way to do this is to enter the event loop recursively,
+    // even though it is not recommended by Qt.
+    QApplication::eventLoop()->enterLoop();
+    // This will be reached only after exitLoop() is called.
+    delete procio;
+    procio=static_cast<KProcIO *>(NULL);
+    if (settings.pack && !errorsCompilingFlag && !stopCompilingFlag) {
+      // TODO: Pack the executable.
+    }
+  }
+  // TODO: Post-build processing.
+  // TODO: Delete ASM/object files.
+  // TODO: Track projectNeedsRelink flag for later use by debugRun.
 }
 
 void MainForm::projectCompile()
@@ -3741,6 +3816,7 @@ void MainForm::projectMake()
   startCompiling();
   compileProject(FALSE);
   if (!errorsCompilingFlag && !stopCompilingFlag) linkProject();
+  // TODO: Show stats.
   stopCompiling();
 }
 
@@ -3754,6 +3830,7 @@ void MainForm::projectBuild()
   startCompiling();
   compileProject(TRUE);
   if (!errorsCompilingFlag && !stopCompilingFlag) linkProject();
+  // TODO: Show stats.
   stopCompiling();
 }
 
@@ -3809,8 +3886,10 @@ void MainForm::projectOptions()
 {
   ProjectOptions *projectoptions=new ProjectOptions(this);
   projectoptions->exec();
-  if (projectoptions->result()==QDialog::Accepted)
+  if (projectoptions->result()==QDialog::Accepted) {
     projectIsDirty=TRUE;
+    headersModified=TRUE; // force complete rebuild
+  }
   delete(projectoptions);
 }
 
