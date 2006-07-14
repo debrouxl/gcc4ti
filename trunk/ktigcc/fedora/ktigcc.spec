@@ -67,7 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
-* Sat Jul 17 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+* Sat Jul 15 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Require at least kdelibs 3.5.2 (needed for KProcess::MergedStderr).
 
 * Fri Jun 16 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
