@@ -3436,6 +3436,16 @@ void MainForm::procio_readReady()
   }
 }
 
+void MainForm::procio_readReady_recordOnly()
+{
+  QString line;
+  while (procio->readln(line)>=0) {
+    programOutput.append(line);
+    programOutput.append('\n');
+    projectProgramOutputAction->setEnabled(TRUE);
+  }
+}
+
 void MainForm::compileFile(void *srcFile, bool inProject, bool force)
 {
   QListViewItem *category;
@@ -3935,11 +3945,69 @@ void MainForm::linkProject()
         QDir qdir;
         qdir.remove(projectBaseName+"-titanium.89z");
         qdir.remove(projectBaseName+"-Titanium.89z");
-      }        
+      }
     }
   }
   if (errorsCompilingFlag || stopCompilingFlag) return;
-  // TODO: Post-build processing.
+  if (!settings.post_build.isEmpty()) {
+    // Post-build processing.
+    statusBar()->message("Calling User-Defined Program...");
+    QString postBuild=settings.post_build;
+    postBuild.replace("($TI89FILE)",
+      KProcess::quote(libopts.use_ti89?projectBaseName+(
+        settings.archive?".a":settings.flash_os?"-89.tib":settings.pack?".89y":
+        settings.outputbin?".z89":".89z"
+      ):""),FALSE);
+    postBuild.replace("($TI89TIFILE)",
+      KProcess::quote(libopts.use_ti89?projectBaseName+(
+        settings.archive?".a":settings.flash_os?"-89ti.tib":settings.pack?".89y":
+        settings.outputbin?".z89":".89z"
+      ):""),FALSE);
+    postBuild.replace("($TI92PLUSFILE)",
+      KProcess::quote(libopts.use_ti92p?projectBaseName+(
+        settings.archive?".a":settings.flash_os?"-9x.tib":settings.pack?".9xy":
+        settings.outputbin?".z9x":".9xz"
+      ):""),FALSE);
+    postBuild.replace("($V200FILE)",
+      KProcess::quote(libopts.use_v200?projectBaseName+(
+        settings.archive?".a":settings.flash_os?"-v2.tib":settings.pack?".v2y":
+        settings.outputbin?".zv2":".v2z"
+      ):""),FALSE);
+    postBuild.replace("($TI92FILE)",
+      KProcess::quote(settings.fargo?projectBaseName+(
+        settings.outputbin?".p92":".92p"
+      ):""),FALSE);
+    int err;
+    QStringList args=KShell::splitArgs(postBuild,
+                                       KShell::TildeExpand|KShell::AbortOnMeta,
+                                       &err);
+    if (err) {
+      new ErrorListItem(this,etError,QString::null,QString::null,
+                        "Invalid post-build command line.",-1,-1);
+      errorsCompilingFlag=TRUE;
+    }
+    if (errorsCompilingFlag || stopCompilingFlag) return;
+    // The QTextCodec has to be passed explicitly, or it will default to
+    // ISO-8859-1 regardless of the locale, which is just broken.
+    procio=new KProcIO(QTextCodec::codecForLocale());
+    // Use MergedStderr instead of Stderr so the messages get ordered
+    // properly.
+    procio->setComm(static_cast<KProcess::Communication>(
+      KProcess::Stdout|KProcess::MergedStderr));
+    procio->setWorkingDirectory(projectDir);
+    *procio<<args;
+    connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
+    connect(procio,SIGNAL(readReady(KProcIO*)),this,SLOT(procio_readReady_recordOnly()));
+    procio->start();
+    // We need to block here, but events still need to be handled. The most
+    // effective way to do this is to enter the event loop recursively,
+    // even though it is not recommended by Qt.
+    QApplication::eventLoop()->enterLoop();
+    // This will be reached only after exitLoop() is called.
+    delete procio;
+    procio=static_cast<KProcIO *>(NULL);
+    if (errorsCompilingFlag || stopCompilingFlag) return;
+  }
   // TODO: Delete ASM/object files.
   // TODO: Track projectNeedsRelink flag for later use by debugRun.
 }
