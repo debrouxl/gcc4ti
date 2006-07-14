@@ -180,10 +180,11 @@ void kurlNewFileName(KURL &dir,const QString &newFileName);
 int checkFileName(const QString &fileName,const QStringList &fileNameList);
 
 int copyFile(const char *src, const char *dest);
+int insertName(const char *src, const char *dest, const char *name);
 
 int getPathType(const QString &thePath);
 
 QStringList process_libopts(void);
 QStringList process_settings(const QString &prjNameUnicode,
                              QCString &projectName, QCString &dataVarName,
-                             QCString &packName);
+                             QCString &packFolder, QCString &packName);

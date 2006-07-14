@@ -1084,6 +1084,41 @@ int copyFile(const char *src, const char *dest)
   return 0;
 }
 
+// Replaces the first occurrence of "tempprog" in a pstarter or PPG with name.
+// returns 0 on success, >0 on read failure, <0 on write failure
+int insertName(const char *src, const char *dest, const char *name)
+{
+  FILE *sf=std::fopen(src,"rb");
+  if (!sf) return 1;
+  std::fseek(sf,0,SEEK_END);
+  std::size_t flen=std::ftell(sf);
+  std::fseek(sf,0,SEEK_SET);
+  char *buffer = new(std::nothrow) char[flen];
+  if (!buffer) {std::fclose(sf); return 4;}
+  if (std::fread(buffer,1,flen,sf)<flen) {
+    delete[] buffer;
+    std::fclose(sf);
+    return 2;
+  }
+  if (fclose(sf)) {delete[] buffer; return 3;}
+  for (std::size_t i=0; i<=flen-8; i++) {
+    if (!std::memcmp(buffer+i,"tempprog",8)) {
+      std::strncpy(buffer+i,name,8);
+      break; // do only one replacement
+    }
+  }
+  FILE *df=std::fopen(dest,"wb");
+  if (!df) {delete[] buffer; return -1;}
+  if (std::fwrite(buffer,1,flen,df)<flen) {
+    delete[] buffer;
+    std::fclose(df);
+    return -2;
+  }
+  delete[] buffer;
+  if (std::fclose(df)) return -3;
+  return 0;
+}
+
 int getPathType(const QString &thePath)
 {
   struct stat statvar;
@@ -1239,7 +1274,7 @@ QStringList process_libopts(void)
 */
 QStringList process_settings(const QString &prjNameUnicode,
                              QCString &projectName, QCString &dataVarName,
-                             QCString &packName)
+                             QCString &packFolder, QCString &packName)
 {
   QStringList args;
 
@@ -1253,9 +1288,29 @@ QStringList process_settings(const QString &prjNameUnicode,
     } else projectName=QCString();
   }
 
-  // Convert the PPG name to the calculator charset.
+  // Split the PPG name into folder and file.
+  QString packFolderUnicode, packNameUnicode;
+  int slashPos=settings.pack_name.find('\\');
+  if (slashPos>=0) {
+    packFolderUnicode=settings.pack_name.left(slashPos);
+    packNameUnicode=settings.pack_name.mid(slashPos+1);
+  } else {
+    packNameUnicode=settings.pack_name;
+  }
+
+  // Convert the PPG folder name to the calculator charset.
   {
-    const unsigned short *utf16=settings.pack_name.ucs2();
+    const unsigned short *utf16=packFolderUnicode.ucs2();
+    if (utf16) {
+      char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
+      packFolder=ti; // This is a hidden strdup (see QCString::operator=).
+      g_free(ti);
+    } else packFolder=QCString();
+  }
+
+  // Convert the PPG file name to the calculator charset.
+  {
+    const unsigned short *utf16=packNameUnicode.ucs2();
     if (utf16) {
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       packName=ti; // This is a hidden strdup (see QCString::operator=).
