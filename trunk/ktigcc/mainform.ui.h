@@ -3283,7 +3283,7 @@ void MainForm::procio_readReady()
       int pos=line.find(':');
       while (line[++pos]==' ');
       line.truncate(pos);
-      if (!rootListItem->text(0).contains('/')) line.append("main\\");
+      if (!rootListItem->text(0).contains('\\')) line.append("main\\");
       line.append(rootListItem->text(0));
     }
     programOutput.append(line);
