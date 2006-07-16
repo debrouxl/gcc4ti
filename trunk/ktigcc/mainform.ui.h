@@ -1131,6 +1131,11 @@ void MainForm::init()
     debugPauseAction->setEnabled(FALSE);
     debugResetAction->setEnabled(FALSE);
   }
+  if (preferences.linkTarget==LT_NONE) {
+    menuBar()->setItemVisible(5,TRUE); //debugMenu
+    debugRunAction->setVisible(TRUE);
+    debugPauseAction->setVisible(TRUE);
+  }
   pconfig->setGroup("Recent files");
   if (parg) {
     if (!openProject(parg)) goto openRecent;
@@ -1300,9 +1305,9 @@ void MainForm::clearProject()
   fileCount=cFileCount=hFileCount=sFileCount=asmFileCount=qllFileCount=oFileCount=aFileCount=txtFileCount=othFileCount=0;
   projectIsDirty=FALSE;
   projectNeedsRelink=FALSE;
-  menuBar()->setItemVisible(5,TRUE); //debugMenu
-  debugRunAction->setVisible(TRUE);
-  debugPauseAction->setVisible(TRUE);
+  menuBar()->setItemVisible(5,preferences.linkTarget==LT_NONE); //debugMenu
+  debugRunAction->setVisible(preferences.linkTarget==LT_NONE);
+  debugPauseAction->setVisible(preferences.linkTarget==LT_NONE);
   updateLeftStatusLabel();
 }
 
@@ -1785,7 +1790,7 @@ bool MainForm::openProject(const QString &fileName)
     projectFileName=fileName;
     settings=TPRData.settings;
     libopts=TPRData.libopts;
-    bool runnable=!settings.archive&&!settings.flash_os;
+    bool runnable=!settings.archive&&!settings.flash_os&&preferences.linkTarget!=LT_NONE;
     menuBar()->setItemVisible(5,runnable); //debugMenu
     debugRunAction->setVisible(runnable);
     debugPauseAction->setVisible(runnable);
@@ -2422,6 +2427,10 @@ void MainForm::filePreferences()
     // Apply the preferences to the debug menu.
     debugPauseAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
     debugResetAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
+    bool runnable=!settings.archive&&!settings.flash_os&&preferences.linkTarget!=LT_NONE;
+    menuBar()->setItemVisible(5,runnable); //debugMenu
+    debugRunAction->setVisible(runnable);
+    debugPauseAction->setVisible(runnable);
   }
 }
 
@@ -4309,7 +4318,7 @@ void MainForm::projectOptions()
     headersModified=TRUE; // force complete rebuild
   }
   delete(projectoptions);
-  bool runnable=!settings.archive&&!settings.flash_os;
+  bool runnable=!settings.archive&&!settings.flash_os&&preferences.linkTarget!=LT_NONE;
   menuBar()->setItemVisible(5,runnable); //debugMenu
   debugRunAction->setVisible(runnable);
   debugPauseAction->setVisible(runnable);
