@@ -195,7 +195,7 @@ end;
 
 function Runnable: Boolean;
 begin
-	Result := (ProjectTarget <> ptArchive) and (TransferTarget <> ttNone);
+	Result := (ProjectTarget <> ptArchive) and (ProjectTarget <> ptFlashOS) and (TransferTarget <> ttNone);
 end;
 
 function StartsWith(const SubStr: string; var Str: string; CaseSensitive: Boolean; Remove: Boolean): Boolean;
