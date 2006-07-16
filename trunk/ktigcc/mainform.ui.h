@@ -3871,8 +3871,9 @@ void MainForm::linkProject()
     if (errorsCompilingFlag || stopCompilingFlag) return;
     // Rename the data file so it doesn't conflict with PPGs.
     // If the program is compressed, we actually need to relink it without the
-    // outputbin flag. There should be a way to set outputbin only for the main
-    // program in ld-tigcc.
+    // outputbin flag.
+    // FIXME: Use --outputbin-main-only instead when the ld-tigcc supporting it
+    //        gets released.
     if (dataFileGenerated)  {
       if (settings.pack) {
         linkerOptions.remove("--outputbin");
