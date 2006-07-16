@@ -181,16 +181,36 @@ short int process_arg(short int arg, char *argv[], int argc)
     freopen (REDIRECT, "wt", stdout);
     dup2 (STDOUT_FILENO, STDERR_FILENO);
   } else if (!strncmp("-Wa,", cur_arg, 4)) {
-    as_args = strdup (cur_arg);
-    if (!as_args) {
-      fputs ("Fatal error: not enough free memory\n", stderr);
-      exit (-1);
+    if (as_args) {
+      as_args = realloc(as_args, strlen(as_args)+strlen(cur_arg)+2);
+      if (!as_args) {
+        fputs("Fatal error: not enough free memory\n", stderr);
+        exit(-1);
+      }
+      strcat(as_args, ",");
+      strcat(as_args, cur_arg);
+    } else {
+      as_args = strdup(cur_arg);
+      if (!as_args) {
+        fputs("Fatal error: not enough free memory\n", stderr);
+        exit(-1);
+      }
     }
   } else if (!strncmp("-WA,", cur_arg, 4)) {
-    a68k_args = strdup (cur_arg);
-    if (!a68k_args) {
-      fputs ("Fatal error: not enough free memory\n", stderr);
-      exit (-1);
+    if (a68k_args) {
+      a68k_args = realloc(a68k_args, strlen(a68k_args)+strlen(cur_arg)+2);
+      if (!a68k_args) {
+        fputs("Fatal error: not enough free memory\n", stderr);
+        exit(-1);
+      }
+      strcat(a68k_args, ",");
+      strcat(a68k_args, cur_arg);
+    } else {
+      a68k_args = strdup(cur_arg);
+      if (!a68k_args) {
+        fputs("Fatal error: not enough free memory\n", stderr);
+        exit(-1);
+      }
     }
   } else if (!strcmp("-np", cur_arg)) {
     printf("Developer option: no patching enabled !\n");
