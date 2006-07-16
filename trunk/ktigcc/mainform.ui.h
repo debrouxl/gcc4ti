@@ -1121,6 +1121,10 @@ void MainForm::init()
   errorListAccel->insertItem(CTRL+Key_Insert,1);
   connect(errorListAccel,SIGNAL(activated(int)),
           this,SLOT(errorListAccel_activated(int)));
+  if (preferences.linkTarget!=LT_TIEMU) {
+    debugPauseAction->setEnabled(FALSE);
+    debugResetAction->setEnabled(FALSE);
+  }
   pconfig->setGroup("Recent files");
   if (parg) {
     if (!openProject(parg)) goto openRecent;
@@ -1290,6 +1294,9 @@ void MainForm::clearProject()
   fileCount=cFileCount=hFileCount=sFileCount=asmFileCount=qllFileCount=oFileCount=aFileCount=txtFileCount=othFileCount=0;
   projectIsDirty=FALSE;
   projectNeedsRelink=FALSE;
+  menuBar()->setItemVisible(5,TRUE); //debugMenu
+  debugRunAction->setVisible(TRUE);
+  debugPauseAction->setVisible(TRUE);
   updateLeftStatusLabel();
 }
 
@@ -1772,6 +1779,10 @@ bool MainForm::openProject(const QString &fileName)
     projectFileName=fileName;
     settings=TPRData.settings;
     libopts=TPRData.libopts;
+    bool runnable=!settings.archive&&!settings.flash_os;
+    menuBar()->setItemVisible(5,runnable); //debugMenu
+    debugRunAction->setVisible(runnable);
+    debugPauseAction->setVisible(runnable);
     updateLeftStatusLabel();
     updateRightStatusLabel();
     addRecent(fileName);
@@ -2402,6 +2413,9 @@ void MainForm::filePreferences()
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
       sourceFile->applyPreferences();
     }
+    // Apply the preferences to the debug menu.
+    debugPauseAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
+    debugResetAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
   }
 }
 
@@ -3181,6 +3195,9 @@ void MainForm::startCompiling()
   projectForceQuitAction->setEnabled(TRUE);
   projectStopCompilationAction->setVisible(TRUE);
   projectForceQuitAction->setVisible(TRUE);
+  debugRunAction->setEnabled(FALSE);
+  debugPauseAction->setEnabled(FALSE);
+  debugResetAction->setEnabled(FALSE);
   QPtrListIterator<SourceFile> sfit(sourceFiles);
   for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
     sourceFile->fileAddToProjectAction->setEnabled(FALSE);
@@ -3247,6 +3264,9 @@ void MainForm::stopCompiling()
     sourceFile->fileCompileAction->setEnabled(TRUE);
     sourceFile->fileCloseAction->setEnabled(TRUE);
   }
+  debugRunAction->setEnabled(TRUE);
+  debugPauseAction->setEnabled(preferences.linkTarget==LT_TIEMU);
+  debugResetAction->setEnabled(preferences.linkTarget==LT_TIEMU);
   projectStopCompilationAction->setVisible(FALSE);
   projectForceQuitAction->setVisible(FALSE);
   projectStopCompilationAction->setEnabled(FALSE);
@@ -4277,6 +4297,10 @@ void MainForm::projectOptions()
     headersModified=TRUE; // force complete rebuild
   }
   delete(projectoptions);
+  bool runnable=!settings.archive&&!settings.flash_os;
+  menuBar()->setItemVisible(5,runnable); //debugMenu
+  debugRunAction->setVisible(runnable);
+  debugPauseAction->setVisible(runnable);
 }
 
 void MainForm::debugRun()
