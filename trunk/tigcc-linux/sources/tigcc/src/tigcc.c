@@ -603,7 +603,9 @@ void ld(void)
   strcpy(tmpfile, outfile);
   change_extension(tmpfile, "");
 
-  if(outputbin || do_pack)
+  if (do_pack)
+    ld_argv[local_argc++] = "--outputbin-main-only";
+  else if (outputbin)
     ld_argv[local_argc++] = "--outputbin";
 
   ld_argv[local_argc] = NULL;
