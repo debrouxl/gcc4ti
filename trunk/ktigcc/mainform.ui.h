@@ -78,6 +78,7 @@
 #include <dcopclient.h>
 #include <cstdio>
 #include <cstdlib>
+#include <unistd.h>
 #include "ktigcc.h"
 #include "srcfile.h"
 #include "tpr.h"
@@ -4367,7 +4368,8 @@ bool MainForm::sendFiles(QStringList files)
             return FALSE;
           }
           do {
-            QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+            usleep(100000);
+            QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
             if (!tiemuInstance(instanceName)) return FALSE;
           } while (instanceName.isNull());
         }
@@ -4375,6 +4377,8 @@ bool MainForm::sendFiles(QStringList files)
         // Wait for TiEmu to get ready.
         bool ready;
         do {
+          usleep(100000);
+          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
           ready=tiemuDCOP->ready_for_transfers();
           if (!tiemuDCOP->ok()) {
             KMessageBox::error(this,"DCOP function call failed.");
@@ -4386,9 +4390,10 @@ bool MainForm::sendFiles(QStringList files)
         // react. AMS 3.10 is slooooow...
         // FIXME: I really need to figure out a way to detect within TiEmu if
         //        the calculator is actually ready for transfers.
-        QDateTime timeout=QDateTime::currentDateTime().addSecs(21);
+        QDateTime timeout=QDateTime::currentDateTime().addSecs(12);
         do {
-          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+          usleep(100000);
+          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
         } while (QDateTime::currentDateTime()<timeout);
         // Turn the calculator on.
         if (!tiemuDCOP->turn_calc_on() || !tiemuDCOP->ok()) {
@@ -4456,7 +4461,8 @@ bool MainForm::sendFiles(QStringList files)
         // Give the emulated calculator time to react again.
         QDateTime timeout=QDateTime::currentDateTime().addSecs(3);
         do {
-          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+          usleep(100000);
+          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
         } while (QDateTime::currentDateTime()<timeout);
         // Send the files.
         if (settings.debug_info && !settings.pack) {
@@ -4502,9 +4508,10 @@ void MainForm::executeCommand(const QString &command)
         }
         TiEmuDCOP_stub tiemuDCOP(instanceName,"TiEmuDCOP");
         // Give the emulated calculator time to react again.
-        QDateTime timeout=QDateTime::currentDateTime().addSecs(3);
+        QDateTime timeout=QDateTime::currentDateTime().addSecs(1);
         do {
-          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+          usleep(100000);
+          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
         } while (QDateTime::currentDateTime()<timeout);
         // Execute the command.
         if (!tiemuDCOP.execute_command(command) || !tiemuDCOP.ok())
