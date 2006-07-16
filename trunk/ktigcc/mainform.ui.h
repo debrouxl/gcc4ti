@@ -1132,9 +1132,9 @@ void MainForm::init()
     debugResetAction->setEnabled(FALSE);
   }
   if (preferences.linkTarget==LT_NONE) {
-    menuBar()->setItemVisible(5,TRUE); //debugMenu
-    debugRunAction->setVisible(TRUE);
-    debugPauseAction->setVisible(TRUE);
+    menuBar()->setItemVisible(5,FALSE); //debugMenu
+    debugRunAction->setVisible(FALSE);
+    debugPauseAction->setVisible(FALSE);
   }
   pconfig->setGroup("Recent files");
   if (parg) {
