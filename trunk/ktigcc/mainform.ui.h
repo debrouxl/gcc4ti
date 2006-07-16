@@ -4344,9 +4344,215 @@ bool MainForm::tiemuInstance(QCString &instanceName)
   return TRUE;
 }
 
+// Same values as TIGCC, except for CALC_INVALID.
+enum CalculatorModels {CALC_TI89, CALC_TI92P, CALC_TI92, CALC_V200,
+                       CALC_INVALID=-1};
+
+bool MainForm::sendFiles(QStringList files)
+{
+  if (files.isEmpty()) return FALSE;
+
+  // Detect model of linked calculator.
+  CalculatorModels model=CALC_INVALID;
+  QCString instanceName;
+  TiEmuDCOP_stub *tiemuDCOP=0;
+  switch (preferences.linkTarget) {
+    case LT_TIEMU:
+      {
+        // Fire up TiEmu if it isn't running yet.
+        if (!tiemuInstance(instanceName)) return FALSE;
+        if (instanceName.isNull()) {
+          if (!KRun::runCommand("tiemu")) {
+            KMessageBox::error(this,"Can't run TiEmu.");
+            return FALSE;
+          }
+          do {
+            QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+            if (!tiemuInstance(instanceName)) return FALSE;
+          } while (instanceName.isNull());
+        }
+        tiemuDCOP=new TiEmuDCOP_stub(instanceName,"TiEmuDCOP");
+        // Wait for TiEmu to get ready.
+        bool ready;
+        do {
+          ready=tiemuDCOP->ready_for_transfers();
+          if (!tiemuDCOP->ok()) {
+            KMessageBox::error(this,"DCOP function call failed.");
+            delete tiemuDCOP;
+            return FALSE;
+          }
+        } while (!ready);
+        // TiEmu is now ready, but is the emulated calculator? Give it time to
+        // react. AMS 3.10 is slooooow...
+        // FIXME: I really need to figure out a way to detect within TiEmu if
+        //        the calculator is actually ready for transfers.
+        QDateTime timeout=QDateTime::currentDateTime().addSecs(21);
+        do {
+          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+        } while (QDateTime::currentDateTime()<timeout);
+        // Turn the calculator on.
+        if (!tiemuDCOP->turn_calc_on() || !tiemuDCOP->ok()) {
+          KMessageBox::error(this,"DCOP function call failed.");
+          delete tiemuDCOP;
+          return FALSE;
+        }
+        // Now obtain the model from TiEmu.
+        int tiemuCalcType=tiemuDCOP->emulated_calc_type();
+        if (!tiemuCalcType || !tiemuDCOP->ok()) {
+          KMessageBox::error(this,"DCOP function call failed.");
+          delete tiemuDCOP;
+          return FALSE;
+        }
+        switch (tiemuCalcType) {
+          case TIEMU_CALC_TI89:
+          case TIEMU_CALC_TI89t:
+            model=CALC_TI89;
+            break;
+          case TIEMU_CALC_TI92p:
+            model=CALC_TI92P;
+            break;
+          case TIEMU_CALC_V200:
+            model=CALC_V200;
+            break;
+          case TIEMU_CALC_TI92:
+            model=CALC_TI92;
+            break;
+          default:
+            KMessageBox::error(this,"Unknown calculator model.");
+            return FALSE;
+        }
+      }
+      break;
+    case LT_REALCALC:
+      qWarning("LT_REALCALC not implemented yet.");
+      return FALSE;
+    default:
+      qWarning("Bug: sendFiles called with no link target.");
+      return FALSE;
+  }
+
+  // Select the correct files for the model.
+  if (model!=CALC_TI92 && settings.fargo) {
+    KMessageBox::error(this,"Can't send Fargo program to a TI-89/89Ti/92+/V200.");
+    return FALSE;
+  }
+  if ((model==CALC_TI92 || model==CALC_INVALID) && !settings.fargo) {
+    KMessageBox::error(this,"Can't send AMS program to a TI-92.");
+    return FALSE;
+  }
+  for (unsigned i=0; i<files.count(); i++) {
+    if (model==CALC_TI92P) files[i].replace(QRegExp("\\.89(?=.$)"),".9x");
+    else if (model==CALC_V200) files[i].replace(QRegExp("\\.89(?=.$)"),".v2");
+    if (!QFileInfo(files[i]).exists()) {
+      KMessageBox::error(this,"The program was not compiled for the linked calculator.");
+      return FALSE;
+    }
+  }
+
+  // Now actually send the files.
+  switch (preferences.linkTarget) {
+    case LT_TIEMU:
+      {
+        // Give the emulated calculator time to react again.
+        QDateTime timeout=QDateTime::currentDateTime().addSecs(3);
+        do {
+          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+        } while (QDateTime::currentDateTime()<timeout);
+        // Send the files.
+        if (settings.debug_info && !settings.pack) {
+          QString debugInfoName=projectFileName;
+          if (debugInfoName.endsWith(".tpr",FALSE))
+            debugInfoName.truncate(debugInfoName.length()-4);
+          debugInfoName.append(".dbg");
+          if (QFileInfo(debugInfoName).exists()) {
+            QString mainFile=files.first();
+            files.pop_front();
+            if (!tiemuDCOP->debug_file(mainFile) || !tiemuDCOP->ok()) {
+              KMessageBox::error(this,"DCOP function call failed.");
+              delete tiemuDCOP;
+              return FALSE;
+            }
+          }
+        }
+        if (!tiemuDCOP->send_files(files) || !tiemuDCOP->ok()) {
+          KMessageBox::error(this,"DCOP function call failed.");
+          delete tiemuDCOP;
+          return FALSE;
+        }
+      }
+      delete tiemuDCOP;
+      return TRUE;
+    case LT_REALCALC:
+    default:
+      qFatal("Bug: This code in sendFiles should be unreachable!");
+      return FALSE;
+  }
+}
+
+
+void MainForm::executeCommand(const QString &command)
+{
+  switch (preferences.linkTarget) {
+    case LT_TIEMU:
+      {
+        QCString instanceName;
+        if (!tiemuInstance(instanceName)) {
+          KMessageBox::error(this,"TiEmu no longer running.");
+          return;
+        }
+        TiEmuDCOP_stub tiemuDCOP(instanceName,"TiEmuDCOP");
+        // Give the emulated calculator time to react again.
+        QDateTime timeout=QDateTime::currentDateTime().addSecs(3);
+        do {
+          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+        } while (QDateTime::currentDateTime()<timeout);
+        // Execute the command.
+        if (!tiemuDCOP.execute_command(command) || !tiemuDCOP.ok())
+          KMessageBox::error(this,"DCOP function call failed.");
+      }
+      break;
+    case LT_REALCALC:
+      qWarning("LT_REALCALC not implemented yet.");
+      break;
+    default:
+      qWarning("Bug: executeCommand called with no link target.");
+      break;
+  }
+}
+
 void MainForm::debugRun()
 {
-  
+  if (compiling) return;
+  // Can't link a project without saving it first.
+  if (projectFileName.isEmpty()) {
+    if (!fileSave() || projectFileName.isEmpty()) return;
+  }
+  startCompiling();
+  compileProject(FALSE);
+  if (!errorsCompilingFlag && !stopCompilingFlag && projectNeedsRelink)
+    linkProject();
+  bool success=(!errorsCompilingFlag && !stopCompilingFlag);
+  stopCompiling();
+  QString projectBaseName=projectFileName;
+  if (projectBaseName.endsWith(".tpr",FALSE))
+    projectBaseName.truncate(projectBaseName.length()-4);
+  if (success && (QFileInfo(projectBaseName+".89z").exists()
+                  || QFileInfo(projectBaseName+".9xz").exists()
+                  || QFileInfo(projectBaseName+".v2z").exists()
+                  || QFileInfo(projectBaseName+".92p").exists())) {
+    QStringList files;
+    if (settings.fargo)
+      files.append(projectBaseName+".92p");
+    else {
+      files.append(projectBaseName+".89z");
+      if (settings.pack) files.append(projectBaseName+".89y");
+      if (settings.use_data_var) files.append(projectBaseName+"-data.89y");
+    }
+    if (sendFiles(files))
+      executeCommand(QString("%1%2(%3)")
+        .arg(rootListItem->text(0).contains('\\')?"":"main\\")
+        .arg(rootListItem->text(0)).arg(settings.cmd_line));
+  }
 }
 
 void MainForm::debugPause()
