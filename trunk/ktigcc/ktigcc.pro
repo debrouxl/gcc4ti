@@ -8,11 +8,14 @@ LIBS	+= -lktexteditor -lqassistantclient -lkutils
 HEADERS	+= tpr.h \
 	ktigcc.h \
 	preferences.h \
-	srcfile.h
+	srcfile.h \
+	tiemu.h \
+	tiemu_stub.h
 
 SOURCES	+= ktigcc.cpp \
 	preferences.cpp \
-	tpr.cpp
+	tpr.cpp \
+	tiemu_stub.cpp
 
 FORMS	= srcfilewin.ui \
 	projectoptions.ui \
