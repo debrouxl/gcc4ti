@@ -46,6 +46,7 @@
 #include <qdatetime.h>
 #include <qtextcodec.h>
 #include <qstylesheet.h>
+#include <qtimer.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -3295,6 +3296,12 @@ static unsigned ldTigccStatPhase=0;
 
 void MainForm::procio_processExited()
 {
+  // If we're in a modal dialog, let it complete or exiting the event loop will
+  // crash.
+  if (QApplication::eventLoop()->loopLevel()>2) {
+    QTimer::singleShot(100,this,SLOT(procio_processExited()));
+    return;
+  }
   errorFunction=QString::null;
   ldTigccStatPhase=0;
   QApplication::eventLoop()->exitLoop();
