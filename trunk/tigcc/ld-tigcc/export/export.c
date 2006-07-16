@@ -278,6 +278,8 @@ char DataFolder[MAX_NAME_LEN+1] = "", DataName[MAX_NAME_LEN+1] = "data";
 
 // Specifies whether to output only the binary image of the program.
 BOOLEAN OutputBin = FALSE;
+// Specifies whether to output only the binary image of the main file.
+BOOLEAN OutputBinMainOnly = FALSE;
 
 // Maximum length of a file extension.
 #define MAX_FILE_EXT_LEN 3
@@ -285,7 +287,7 @@ BOOLEAN OutputBin = FALSE;
 BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc, unsigned int FileRole, unsigned int FileFormat, unsigned int FileType, const char *Extension, BOOLEAN Executable ATTRIBUTE_UNUSED, I4 *EffectiveSize)
 {
 	// Keep some of the parameters for finalization.
-	File->OutputBin  = OutputBin;
+	File->OutputBin  = OutputBin || (OutputBinMainOnly && FileRole == FR_MAIN);
 	File->FileFormat = FileFormat;
 	File->FileType   = FileType;
 	File->Extension  = Extension;
@@ -390,7 +392,7 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 					CurOutputFileName [FileNameSize++] = '.';
 					
 					// Insert the extension. Reverse in binary mode.
-					if (OutputBin)
+					if (File->OutputBin)
 					{
 						strcpy (CurOutputFileName + FileNameSize, FileExtType);
 						FileNameSize += strlen (FileExtType);
@@ -416,7 +418,7 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 					}
 					
 					// Write the host file header, if desired.
-					if (!OutputBin)
+					if (!File->OutputBin)
 					{
 						TIOS_HOST_FILE_HEADER Header;
 						
@@ -488,7 +490,7 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 #ifdef TIOS_UPGRADE_FILE_SUPPORT
 		case FF_TIOS_UPGRADE:
 			*EffectiveSize = FileSize + sizeof (TIOS_UPGRADE_CALC_FOOTER);
-			if (OutputBin)
+			if (File->OutputBin)
 			{
 				const char *FileExtCalc;
 				
@@ -628,7 +630,7 @@ void FinalizeOutputFile (INT_EXP_FILE *File)
 				}
 				
 				// Write the host file footer, if desired.
-				if (!OutputBin)
+				if (!File->OutputBin)
 				{
 					TIOS_HOST_FILE_FOOTER Footer;
 					

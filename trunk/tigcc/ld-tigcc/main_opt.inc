@@ -2,7 +2,7 @@
 
    Copyright (C) 2002-2004 Sebastian Reichelt
    Copyright (C) 2004 Billy Charvet
-   Copyright (C) 2004 Kevin Kofler
+   Copyright (C) 2004-2006 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -86,6 +86,8 @@
 					        "     --merge-constants    Merge constants and strings to avoid duplication\n"
 					        "     --omit-bss-init      Do not initialize BSS data to zero\n"
 					        "     --outputbin          Create program image without PC header\n"
+					        "     --outputbin-main-only\n"
+					        "                          Create main file w/o PC header (but data file with)\n"
 					        "  -o --output <file>      Write output to <file>.???\n"
 					        "  -n --varname <[folder\\]name>\n"
 					        "                          Name output variable <folder\\name>\n"
@@ -176,6 +178,8 @@
 					OmitBSSInitialization = TRUE;
 				else if (ArgMatches ("outputbin"))
 					OutputBin = TRUE;
+				else if (ArgMatches ("outputbin-main-only"))
+					OutputBinMainOnly = TRUE;
 				else if ((ArgMatches ("output")) || (ArgMatches ("o")))
 				{
 					if ((++CurArg) < ArgCount)
