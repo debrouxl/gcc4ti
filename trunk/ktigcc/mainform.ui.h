@@ -3067,6 +3067,7 @@ void MainForm::projectAddFiles()
 }
 
 static bool stopCompilingFlag, errorsCompilingFlag;
+static bool ti89_targeted, ti92p_targeted, v200_targeted, dataFileGenerated;
 static QString compileStats;
 static QDateTime newestHeaderTimestamp;
 static QStringList objectFiles;
@@ -3194,6 +3195,7 @@ void MainForm::startCompiling()
   deletableAsmFiles.clear();
   errorList->errorListView->clear();
   programOutput=QString::null;
+  ti89_targeted=ti92p_targeted=v200_targeted=dataFileGenerated=FALSE;
   compileStats=QString::null;
   projectProgramOutputAction->setEnabled(FALSE);
   procio=static_cast<KProcIO *>(NULL);
@@ -3462,14 +3464,21 @@ void MainForm::procio_readReady()
         }
         break;
       case 1:
+        line=line.stripWhiteSpace();
+        // Collect targets (the data file renaming needs to know them).
+        if (line=="TI-89") ti89_targeted=TRUE;
+        else if (line=="TI-92 Plus") ti92p_targeted=TRUE;
+        else if (line=="V200") v200_targeted=TRUE;
         // The next line is the first one to display in the dialog. (TIGCC IDE
         // does the same.)
-        if (line.stripWhiteSpace().startsWith("Program Variable Name:",FALSE))
+        else if (line.startsWith("Program Variable Name:",FALSE))
           ldTigccStatPhase=2;
         break;
       case 2:
         compileStats.append(line.simplifyWhiteSpace());
         compileStats.append('\n');
+        if (line.stripWhiteSpace().startsWith("Data Variable Size:",FALSE))
+          dataFileGenerated=TRUE;
         break;
     }
   }
@@ -3860,6 +3869,62 @@ void MainForm::linkProject()
     delete procio;
     procio=static_cast<KProcIO *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
+    // Rename the data file so it doesn't conflict with PPGs.
+    // If the program is compressed, we actually need to relink it without the
+    // outputbin flag. There should be a way to set outputbin only for the main
+    // program in ld-tigcc.
+    if (dataFileGenerated)  {
+      if (settings.pack) {
+        linkerOptions.remove("--outputbin");
+        // The QTextCodec has to be passed explicitly, or it will default to
+        // ISO-8859-1 regardless of the locale, which is just broken.
+        procio=new KProcIO(QTextCodec::codecForLocale());
+        // Use MergedStderr instead of Stderr so the messages get ordered
+        // properly.
+        procio->setComm(static_cast<KProcess::Communication>(
+          KProcess::Stdout|KProcess::MergedStderr));
+        procio->setWorkingDirectory(projectDir);
+        *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
+               <<"-o"<<projectBaseName<<"-n"<<projectName;
+        if (!dataVarName.isNull()) *procio<<"-d"<<dataVarName;
+        *procio<<linkerOptions<<objectFiles;
+        if (settings.std_lib)
+          *procio<<QString(settings.flash_os?"%1/lib/flashos.a"
+                                            :(settings.fargo?"%1/lib/fargo.a"
+                                                            :"%1/lib/tigcc.a"))
+                   .arg(tigcc_base);
+        connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
+        // Don't connect readReady, the errors/warnings have already been displayed!
+        procio->start();
+        // We need to block here, but events still need to be handled. The most
+        // effective way to do this is to enter the event loop recursively,
+        // even though it is not recommended by Qt.
+        QApplication::eventLoop()->enterLoop();
+        // This will be reached only after exitLoop() is called.
+        delete procio;
+        procio=static_cast<KProcIO *>(NULL);
+        if (errorsCompilingFlag || stopCompilingFlag) return;
+      }
+      QDir qdir;
+      const int numTargets=3;
+      bool targeted[numTargets]={ti89_targeted,ti92p_targeted,v200_targeted};
+      char dextsbin[numTargets][5]={".y89",".y9x",".yv2"};
+      char dextswrapped[numTargets][5]={".89y",".9xy",".v2y"};
+      char (*dexts)[5]=(settings.outputbin&&!settings.pack)?dextsbin:dextswrapped;
+      for (int target=0; target<numTargets; target++) {
+        if (targeted[numTargets]) {
+          qdir.remove(projectBaseName+"-data"+dexts[target]);
+          if (!qdir.rename(projectBaseName+dexts[target],
+                           projectBaseName+"-data"+dexts[target])) {
+            new ErrorListItem(this,etError,QString::null,QString::null,
+                              "Failed to rename data file.",
+                              -1,-1);
+            errorsCompilingFlag=TRUE;
+          }
+          if (errorsCompilingFlag || stopCompilingFlag) return;
+        }
+      }
+    }
     if (settings.pack) {
       // Copy over the .dbg file from the temporary directory if it exists.
       // Current TiEmu can't handle compressed programs, but maybe some day.
