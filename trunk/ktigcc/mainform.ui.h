@@ -28,6 +28,8 @@
 */
 
 #include <qstring.h>
+#include <qstringlist.h>
+#include <qcstring.h>
 #include <qpair.h>
 #include <qregexp.h>
 #include <qapplication.h>
@@ -47,6 +49,7 @@
 #include <qtextcodec.h>
 #include <qstylesheet.h>
 #include <qtimer.h>
+#include <kapplication.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -72,6 +75,7 @@
 #include <kshell.h>
 #include <ktextbrowser.h>
 #include <krun.h>
+#include <dcopclient.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -81,6 +85,7 @@
 #include "projectoptions.h"
 #include "errorlist.h"
 #include "programoutput.h"
+#include "tiemu.h"
 
 using std::puts;
 using std::exit;
@@ -4310,6 +4315,26 @@ void MainForm::projectOptions()
   debugPauseAction->setVisible(runnable);
 }
 
+bool MainForm::tiemuInstance(QCString &instanceName)
+{
+  instanceName=QCString();
+  DCOPClient *dcopClient=kapp->dcopClient();
+  if (!dcopClient->isAttached() && !dcopClient->attach()) {
+    KMessageBox::error(this,"Can\'t attach to DCOP.");
+    return FALSE;
+  }
+  QCStringList applist=dcopClient->registeredApplications();
+  QCString appname;
+  QCStringList::iterator it;
+  for (it = applist.begin(); it != applist.end(); ++it) {
+    if ((*it).contains(QRegExp("^tiemu-"))) {
+      instanceName = (*it);
+      break;
+    }
+  }
+  return TRUE;
+}
+
 void MainForm::debugRun()
 {
   
@@ -4317,12 +4342,24 @@ void MainForm::debugRun()
 
 void MainForm::debugPause()
 {
-  
+  // This is enabled only for LT_TIEMU. Run the TiEmu debugger.
+  QCString instanceName;
+  if (!tiemuInstance(instanceName) || instanceName.isNull()) return;
+  TiEmuDCOP_stub tiemuDCOP(instanceName,"TiEmuDCOP");
+  tiemuDCOP.enter_debugger();
+  if (!tiemuDCOP.ok())
+    KMessageBox::error(this,"DCOP function call failed.");
 }
 
 void MainForm::debugReset()
 {
-  
+  // This is enabled only for LT_TIEMU. Reset TiEmu.
+  QCString instanceName;
+  if (!tiemuInstance(instanceName) || instanceName.isNull()) return;
+  TiEmuDCOP_stub tiemuDCOP(instanceName,"TiEmuDCOP");
+  tiemuDCOP.reset_calc(FALSE);
+  if (!tiemuDCOP.ok())
+    KMessageBox::error(this,"DCOP function call failed.");
 }
 
 void MainForm::toolsConfigure()
