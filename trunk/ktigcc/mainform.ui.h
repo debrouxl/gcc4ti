@@ -382,7 +382,7 @@ tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
 QClipboard *clipboard;
-static QAccel *accel, *errorListAccel;
+static QAccel *accel, *fileTreeAccel, *errorListAccel;
 static KFindDialog *kfinddialog;
 static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
@@ -1049,6 +1049,10 @@ void MainForm::init()
   accel->insertItem(Key_Return,7);
   accel->setItemEnabled(7,FALSE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
+  fileTreeAccel=new QAccel(this);
+  fileTreeAccel->insertItem(Key_Delete,0);
+  connect(fileTreeAccel,SIGNAL(activated(int)),
+          this,SLOT(fileTreeAccel_activated(int)));
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   if (preferences.useSystemIcons) {
@@ -1138,6 +1142,7 @@ void MainForm::destroy()
   }
   if (kreplace) delete kreplace;
   if (kfinddialog) delete kfinddialog;
+  delete fileTreeAccel;
   delete accel;
   delete te_popup;
   delete leftStatusLabel;
@@ -1220,6 +1225,12 @@ void MainForm::accel_activated(int index)
     QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Key_Return,'\n',0,"\n");
     QApplication::postEvent(focusWidget(),keyEvent);
   }
+}
+
+void MainForm::fileTreeAccel_activated(int index)
+{
+  QListViewItem *item=fileTree->currentItem();
+  if (!index && item) removeItem(item);
 }
 
 void MainForm::clearProject()
@@ -4425,6 +4436,33 @@ void MainForm::fileNewFolder()
   projectNeedsRelink=TRUE;
 }
 
+bool MainForm::removeItem(QListViewItem *item)
+{
+  if (IS_FOLDER(item) && !IS_CATEGORY(item)) {
+    QListViewItem *child=item->firstChild();
+    while (child) {
+      QListViewItem *nextChild=child->nextSibling();
+      if (!removeItem(child)) return FALSE;
+      child=nextChild;
+    }
+    delete item;
+    currentListItem=NULL;
+    fileTreeClicked(fileTree->currentItem());
+    projectIsDirty=TRUE;
+    projectNeedsRelink=TRUE;
+    return TRUE;
+  } else if (IS_FILE(item)) {
+    if (!fileSavePrompt(item)) {
+      delete item;
+      currentListItem=NULL;
+      fileTreeClicked(fileTree->currentItem());
+      projectIsDirty=TRUE;
+      projectNeedsRelink=TRUE;
+      return TRUE;
+    } else return FALSE;
+  } else return FALSE;
+}
+
 #define unused_col __attribute__((unused)) col /* stupid QT designer... */
 void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
                                             const QPoint &pos,
@@ -4456,11 +4494,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
         newFile(item);
         break;
       case 2:
-        delete item;
-        currentListItem=NULL;
-        fileTreeClicked(fileTree->currentItem());
-        projectIsDirty=TRUE;
-        projectNeedsRelink=TRUE;
+        removeItem(item);
         break;
       case 3:
         item->startRename(0);
@@ -4503,13 +4537,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
         stopCompiling();
         break;
       case 3:
-        if (!fileSavePrompt(item)) {
-          delete item;
-          currentListItem=NULL;
-          fileTreeClicked(fileTree->currentItem());
-          projectIsDirty=TRUE;
-          projectNeedsRelink=TRUE;
-        }
+        removeItem(item);
         break;
       case 4:
         if (KMessageBox::questionYesNo(this,
