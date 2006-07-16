@@ -182,13 +182,13 @@ short int process_arg(short int arg, char *argv[], int argc)
     dup2 (STDOUT_FILENO, STDERR_FILENO);
   } else if (!strncmp("-Wa,", cur_arg, 4)) {
     if (as_args) {
-      as_args = realloc(as_args, strlen(as_args)+strlen(cur_arg)+2);
+      as_args = realloc(as_args, strlen(as_args)+strlen(cur_arg)-2);
       if (!as_args) {
         fputs("Fatal error: not enough free memory\n", stderr);
         exit(-1);
       }
       strcat(as_args, ",");
-      strcat(as_args, cur_arg);
+      strcat(as_args, cur_arg+4);
     } else {
       as_args = strdup(cur_arg);
       if (!as_args) {
@@ -198,13 +198,13 @@ short int process_arg(short int arg, char *argv[], int argc)
     }
   } else if (!strncmp("-WA,", cur_arg, 4)) {
     if (a68k_args) {
-      a68k_args = realloc(a68k_args, strlen(a68k_args)+strlen(cur_arg)+2);
+      a68k_args = realloc(a68k_args, strlen(a68k_args)+strlen(cur_arg)-2);
       if (!a68k_args) {
         fputs("Fatal error: not enough free memory\n", stderr);
         exit(-1);
       }
       strcat(a68k_args, ",");
-      strcat(a68k_args, cur_arg);
+      strcat(a68k_args, cur_arg+4);
     } else {
       a68k_args = strdup(cur_arg);
       if (!a68k_args) {
