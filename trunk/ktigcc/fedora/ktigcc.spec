@@ -11,7 +11,7 @@ Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}.tar.bz2
 Group: Development/Tools
 License: GPL
-BuildRequires: qt-devel >= 1:3.3.0 kdelibs-devel >= 6:3.5.2 glib2-devel >= 2.10.0 libticonv >= 20060524 libticalcs2 >= 20060524 desktop-file-utils >= 0.10
+BuildRequires: qt-devel >= 1:3.3.0 kdelibs-devel >= 6:3.5.2 glib2-devel >= 2.10.0 libticonv >= 20060524 libticables2 >= 20060524 libtifiles2 >= 20060524 libticalcs2 >= 20060524 desktop-file-utils >= 0.10
 Requires: kdelibs >= 6:3.5.2 tigcc >= 1:0.96b06r1 /usr/bin/assistant
 Requires(post): desktop-file-utils >= 0.10
 Requires(postun): desktop-file-utils >= 0.10
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Sat Jul 17 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+BuildRequire all the version 2 tilibs.
+
 * Sat Jul 15 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Require at least kdelibs 3.5.2 (needed for KProcess::MergedStderr).
 
