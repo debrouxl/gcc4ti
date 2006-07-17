@@ -119,6 +119,22 @@ HAVE_TICABLES = $$system(pkg-config --atleast-version=$$TICABLES_MINVERSION tica
 !equals(HAVE_TICABLES,yes):error(libticables2 $$TICABLES_MINVERSION or higher required.)
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticables2)
 LIBS += $$system(pkg-config --libs ticables2)
+# Minimum version for ticables_is_usb_enabled
+TICABLES_IS_USB_ENABLED_MINVERSION = 0.1.3
+HAVE_TICABLES_IS_USB_ENABLED = $$system(pkg-config --atleast-version=$$TICABLES_IS_USB_ENABLED_MINVERSION ticables2 && echo yes || echo no)
+equals(HAVE_TICABLES_IS_USB_ENABLED,yes):PKGCONFIG_CFLAGS += -DHAVE_TICABLES_IS_USB_ENABLED
+
+TIFILES_MINVERSION = 0.0.9
+HAVE_TIFILES = $$system(pkg-config --atleast-version=$$TIFILES_MINVERSION tifiles2 && echo yes || echo no)
+!equals(HAVE_TIFILES,yes):error(libtifiles2 $$TIFILES_MINVERSION or higher required.)
+PKGCONFIG_CFLAGS += $$system(pkg-config --cflags tifiles2)
+LIBS += $$system(pkg-config --libs tifiles2)
+
+TICALCS_MINVERSION = 0.1.0
+HAVE_TICALCS = $$system(pkg-config --atleast-version=$$TICALCS_MINVERSION ticalcs2 && echo yes || echo no)
+!equals(HAVE_TICALCS,yes):error(libticalcs2 $$TICALCS_MINVERSION or higher required.)
+PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticalcs2)
+LIBS += $$system(pkg-config --libs ticalcs2)
 
 syntaxfiles.path = /usr/share/apps/katepart/syntax/
 syntaxfiles.files = gnuasm68k.xml masm68k.xml
