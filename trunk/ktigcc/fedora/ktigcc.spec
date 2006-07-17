@@ -67,7 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
-* Sat Jul 17 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+* Mon Jul 17 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 BuildRequire all the version 2 tilibs.
 
 * Sat Jul 15 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
