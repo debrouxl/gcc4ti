@@ -4491,19 +4491,14 @@ void MainForm::debugRun()
             QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
           } while (QDateTime::currentDateTime()<timeout);
           // Send the files.
-          if (settings.debug_info && !settings.pack) {
-            QString debugInfoName=projectFileName;
-            if (debugInfoName.endsWith(".tpr",FALSE))
-              debugInfoName.truncate(debugInfoName.length()-4);
-            debugInfoName.append(".dbg");
-            if (QFileInfo(debugInfoName).exists()) {
-              QString mainFile=files.first();
-              files.pop_front();
-              if (!tiemuDCOP->debug_file(mainFile) || !tiemuDCOP->ok()) {
-                KMessageBox::error(this,"DCOP function call failed.");
-                delete tiemuDCOP;
-                return;
-              }
+          if (settings.debug_info && !settings.pack
+              && QFileInfo(projectBaseName+".dbg").exists()) {
+            QString mainFile=files.first();
+            files.pop_front();
+            if (!tiemuDCOP->debug_file(mainFile) || !tiemuDCOP->ok()) {
+              KMessageBox::error(this,"DCOP function call failed.");
+              delete tiemuDCOP;
+              return;
             }
           }
           if (!tiemuDCOP->send_files(files) || !tiemuDCOP->ok()) {
