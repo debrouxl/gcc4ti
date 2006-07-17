@@ -79,6 +79,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
+#include <ticonv.h>
+#include <ticables.h>
+#include <tifiles.h>
+#include <ticalcs.h>
 #include "ktigcc.h"
 #include "srcfile.h"
 #include "tpr.h"
@@ -933,6 +937,9 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
 
 void MainForm::init()
 {
+  ticables_library_init();
+  tifiles_library_init();
+  ticalcs_library_init();
   compiling=FALSE;
   headersModified=FALSE;
   loadPreferences();
@@ -1171,6 +1178,9 @@ void MainForm::destroy()
   delete assistant;
   delete errorList;
   delete errorListDock;
+  ticalcs_library_exit();
+  tifiles_library_exit();
+  ticables_library_exit();
 }
 
 void MainForm::te_popup_aboutToShow()
@@ -4345,9 +4355,9 @@ bool MainForm::tiemuInstance(QCString &instanceName)
   return TRUE;
 }
 
-// Same values as TIGCC, except for CALC_INVALID.
-enum CalculatorModels {CALC_TI89, CALC_TI92P, CALC_TI92, CALC_V200,
-                       CALC_INVALID=-1};
+// Same values as TIGCC, except for CALCULATOR_INVALID.
+enum CalculatorModels {CALCULATOR_TI89, CALCULATOR_TI92P, CALCULATOR_TI92,
+                       CALCULATOR_V200, CALCULATOR_INVALID=-1};
 
 void MainForm::debugRun()
 {
@@ -4380,7 +4390,7 @@ void MainForm::debugRun()
     if (files.isEmpty()) return;
   
     // Detect model of linked calculator.
-    CalculatorModels model=CALC_INVALID;
+    CalculatorModels model=CALCULATOR_INVALID;
     QCString instanceName;
     TiEmuDCOP_stub *tiemuDCOP=0;
     switch (preferences.linkTarget) {
@@ -4437,16 +4447,16 @@ void MainForm::debugRun()
           switch (tiemuCalcType) {
             case TIEMU_CALC_TI89:
             case TIEMU_CALC_TI89t:
-              model=CALC_TI89;
+              model=CALCULATOR_TI89;
               break;
             case TIEMU_CALC_TI92p:
-              model=CALC_TI92P;
+              model=CALCULATOR_TI92P;
               break;
             case TIEMU_CALC_V200:
-              model=CALC_V200;
+              model=CALCULATOR_V200;
               break;
             case TIEMU_CALC_TI92:
-              model=CALC_TI92;
+              model=CALCULATOR_TI92;
               break;
             default:
               KMessageBox::error(this,"Unsupported calculator model.");
@@ -4463,17 +4473,17 @@ void MainForm::debugRun()
     }
   
     // Select the correct files for the model.
-    if (model!=CALC_TI92 && settings.fargo) {
+    if (model!=CALCULATOR_TI92 && settings.fargo) {
       KMessageBox::error(this,"Can't send Fargo program to a TI-89/89Ti/92+/V200.");
       return;
     }
-    if ((model==CALC_TI92 || model==CALC_INVALID) && !settings.fargo) {
+    if ((model==CALCULATOR_TI92 || model==CALCULATOR_INVALID) && !settings.fargo) {
       KMessageBox::error(this,"Can't send AMS program to a TI-92.");
       return;
     }
     for (unsigned i=0; i<files.count(); i++) {
-      if (model==CALC_TI92P) files[i].replace(QRegExp("\\.89(?=.$)"),".9x");
-      else if (model==CALC_V200) files[i].replace(QRegExp("\\.89(?=.$)"),".v2");
+      if (model==CALCULATOR_TI92P) files[i].replace(QRegExp("\\.89(?=.$)"),".9x");
+      else if (model==CALCULATOR_V200) files[i].replace(QRegExp("\\.89(?=.$)"),".v2");
       if (!QFileInfo(files[i]).exists()) {
         KMessageBox::error(this,"The program was not compiled for the linked calculator.");
         return;

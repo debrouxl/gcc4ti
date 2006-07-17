@@ -37,6 +37,11 @@
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>
+#ifdef HAVE_TICABLES_IS_USB_ENABLED
+#include <ticables.h>
+#else
+#define ticables_is_usb_enabled() (TRUE)
+#endif
 
 void Preferences::init()
 {
@@ -95,6 +100,17 @@ void Preferences::init()
     case CABLE_USB:
       directLink->setChecked(TRUE);
       break;
+  }
+
+  // Don't allow selecting a USB cable if libticables2 hasn't been compiled
+  // without USB support or if USB support can't be used.
+  if (!ticables_is_usb_enabled()) {
+    if (silverLink->isChecked() || directLink->isChecked()) {
+      grayLink->setChecked(TRUE);
+      targetNone->setChecked(TRUE);
+    }
+    silverLink->setEnabled(FALSE);
+    directLink->setEnabled(FALSE);
   }
   
   // Editor
