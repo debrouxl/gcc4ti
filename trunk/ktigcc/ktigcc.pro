@@ -10,12 +10,14 @@ HEADERS	+= tpr.h \
 	preferences.h \
 	srcfile.h \
 	tiemu.h \
-	tiemu_stub.h
+	tiemu_stub.h \
+	callbacks.h
 
 SOURCES	+= ktigcc.cpp \
 	preferences.cpp \
 	tpr.cpp \
-	tiemu_stub.cpp
+	tiemu_stub.cpp \
+	callbacks.cpp
 
 FORMS	= srcfilewin.ui \
 	projectoptions.ui \

@@ -93,6 +93,7 @@
 #include "errorlist.h"
 #include "programoutput.h"
 #include "tiemu.h"
+#include "callbacks.h"
 
 using std::puts;
 using std::exit;
@@ -4603,6 +4604,7 @@ void MainForm::debugRun()
       case LT_REALCALC:
         {
           ticables_options_set_timeout(cable,DFLT_TIMEOUT<<1);
+          ticalcs_update_set(calc,&ticalcsUpdate);
           for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it) {
             const char *file=*it;
             int err;
@@ -4615,12 +4617,16 @@ void MainForm::debugRun()
               return;
             }
             // Send the file.
+            callbacksInit(this);
             if ((err=ticalcs_calc_send_var2(calc,MODE_NORMAL,file))) {
-              KMessageBox::error(this,tilibsErrorMessage(err));
+              bool cancelled=ticalcsUpdate.cancel;
+              callbacksCleanup();
+              if (!cancelled) KMessageBox::error(this,tilibsErrorMessage(err));
               ticalcs_handle_del(calc);
               ticables_handle_del(cable);
               return;
             }
+            callbacksCleanup();
           }
         }
         break;
