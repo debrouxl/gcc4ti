@@ -78,7 +78,9 @@
 #include <dcopclient.h>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <unistd.h>
+#include <glib.h>
 #include <ticonv.h>
 #include <ticables.h>
 #include <tifiles.h>
@@ -4359,6 +4361,21 @@ bool MainForm::tiemuInstance(QCString &instanceName)
 enum CalculatorModels {CALCULATOR_TI89, CALCULATOR_TI92P, CALCULATOR_TI92,
                        CALCULATOR_V200, CALCULATOR_INVALID=-1};
 
+QString MainForm::tilibsErrorMessage(int err)
+{
+  if (!err) return "No error. (This is a bug, please report.)";
+
+  char *msg=0;
+  if ((err=ticables_error_get(err,&msg))
+      && (err=tifiles_error_get(err,&msg))
+      && (err=ticalcs_error_get(err,&msg)))
+    return "Invalid error code. (This is a bug, please report.)";
+
+  QString ret=msg;
+  g_free(msg);
+  return ret;
+}
+
 void MainForm::debugRun()
 {
   if (compiling) return;
@@ -4393,6 +4410,8 @@ void MainForm::debugRun()
     CalculatorModels model=CALCULATOR_INVALID;
     QCString instanceName;
     TiEmuDCOP_stub *tiemuDCOP=0;
+    CableHandle *cable=0;
+    CalcHandle *calc=0;
     switch (preferences.linkTarget) {
       case LT_TIEMU:
         {
@@ -4465,8 +4484,71 @@ void MainForm::debugRun()
         }
         break;
       case LT_REALCALC:
-        qWarning("LT_REALCALC not implemented yet.");
-        return;
+        {
+          // Allocate handle for the cable.
+          cable=ticables_handle_new(preferences.linkCable,preferences.linkPort);
+          if (!cable) {
+            KMessageBox::error(this,"Failed to allocate cable handle.");
+            return;
+          }
+          // Probe for the connected model.
+          CalcModel tilibsCalcModel=CALC_NONE;
+          int err;
+          if ((err=ticables_cable_open(cable))) {
+            KMessageBox::error(this,tilibsErrorMessage(err));
+            ticables_handle_del(cable);
+            return;
+          }
+          if (preferences.linkCable==CABLE_USB)
+            err=ticalcs_probe_usb_calc(cable,&tilibsCalcModel);
+          else
+            err=ticalcs_probe_calc(cable,&tilibsCalcModel);
+          if (err) {
+            KMessageBox::error(this,tilibsErrorMessage(err));
+            ticables_handle_del(cable);
+            return;
+          }
+          if ((err=ticables_cable_close(cable))) {
+            KMessageBox::error(this,tilibsErrorMessage(err));
+            ticables_handle_del(cable);
+            return;
+          }
+          switch (tilibsCalcModel) {
+            case CALC_TI89:
+            case CALC_TI89T:
+            case CALC_TI89T_USB:
+              model=CALCULATOR_TI89;
+              break;
+            case CALC_TI92P:
+              model=CALCULATOR_TI92P;
+              break;
+            case CALC_V200:
+              model=CALCULATOR_V200;
+              break;
+            case CALC_TI92:
+              model=CALCULATOR_TI92;
+              break;
+            default:
+              KMessageBox::error(this,"Unsupported calculator model.");
+              ticables_handle_del(cable);
+              return;
+          }
+          // Allocate handle for the calculator.
+          calc=ticalcs_handle_new(tilibsCalcModel);
+          if (!calc) {
+            KMessageBox::error(this,"Failed to allocate calculator handle.");
+            ticables_handle_del(cable);
+            return;
+          }
+          // Attach the calculator handle to the cable handle.
+          if ((err=ticalcs_cable_attach(calc,cable))) {
+            KMessageBox::error(this,tilibsErrorMessage(err));
+            ticalcs_handle_del(calc);
+            ticables_handle_del(cable);
+            return;
+          }
+        }
+        break;
       default:
         qWarning("Bug: debugRun called with no link target.");
         return;
@@ -4481,10 +4563,10 @@ void MainForm::debugRun()
       KMessageBox::error(this,"Can't send AMS program to a TI-92.");
       return;
     }
-    for (unsigned i=0; i<files.count(); i++) {
-      if (model==CALCULATOR_TI92P) files[i].replace(QRegExp("\\.89(?=.$)"),".9x");
-      else if (model==CALCULATOR_V200) files[i].replace(QRegExp("\\.89(?=.$)"),".v2");
-      if (!QFileInfo(files[i]).exists()) {
+    for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it) {
+      if (model==CALCULATOR_TI92P) (*it).replace(QRegExp("\\.89(?=.$)"),".9x");
+      else if (model==CALCULATOR_V200) (*it).replace(QRegExp("\\.89(?=.$)"),".v2");
+      if (!QFileInfo(*it).exists()) {
         KMessageBox::error(this,"The program was not compiled for the linked calculator.");
         return;
       }
@@ -4519,6 +4601,29 @@ void MainForm::debugRun()
         }
         break;
       case LT_REALCALC:
+        {
+          ticables_options_set_timeout(cable,DFLT_TIMEOUT<<1);
+          for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it) {
+            const char *file=*it;
+            int err;
+            // libticalcs2 does NO validation on the file, so better do it now.
+            if (!tifiles_file_is_single(file)
+                || !tifiles_calc_is_ti9x(tifiles_file_get_model(file))) {
+              KMessageBox::error(this,QString("File \'%1\' has an invalid format.").arg(file));
+              ticalcs_handle_del(calc);
+              ticables_handle_del(cable);
+              return;
+            }
+            // Send the file.
+            if ((err=ticalcs_calc_send_var2(calc,MODE_NORMAL,file))) {
+              KMessageBox::error(this,tilibsErrorMessage(err));
+              ticalcs_handle_del(calc);
+              ticables_handle_del(cable);
+              return;
+            }
+          }
+        }
+        break;
       default:
         qFatal("Bug: This code in debugRun should be unreachable!");
         return;
@@ -4544,6 +4649,34 @@ void MainForm::debugRun()
         delete tiemuDCOP;
         break;
       case LT_REALCALC:
+        {
+          int err;
+          // Convert the command to the calculator charset.
+          char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,command.ucs2());
+          // Send it character by character.
+          #define SEND_CHAR(c) \
+            if ((err=ticalcs_calc_send_key(calc,(c)))) { \
+              KMessageBox::error(this,tilibsErrorMessage(err)); \
+              g_free(ti); \
+              ticalcs_handle_del(calc); \
+              ticables_handle_del(cable); \
+              return; \
+            }
+          SEND_CHAR(264); // KEY_ESC
+          SEND_CHAR(264); // KEY_ESC
+          SEND_CHAR(model?8273:277); // KEY_HOME
+          SEND_CHAR(263); // KEY_CLEAR
+          SEND_CHAR(263); // KEY_CLEAR
+          for (unsigned char *p=reinterpret_cast<unsigned char *>(ti); *p; p++) {
+            SEND_CHAR(*p);
+          }
+          SEND_CHAR(13); // KEY_ENTER
+          #undef SEND_CHAR
+          g_free(ti);
+        }
+        ticalcs_handle_del(calc);
+        ticables_handle_del(cable);
+        break;
       default:
         qFatal("Bug: This code in debugRun should be unreachable!");
         return;
