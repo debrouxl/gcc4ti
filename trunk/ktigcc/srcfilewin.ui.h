@@ -41,6 +41,7 @@
 #include <qaccel.h>
 #include <qeventloop.h>
 #include <qlayout.h>
+#include <qtoolbutton.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -247,6 +248,16 @@ void SourceFileWindow::initBase()
     // stop compilation: "stop"
     // force-quit compiler: "button_cancel"
   }
+  QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
+    ->child("findFunctionsAction_action_button","QToolButton",FALSE));
+  QPopupMenu *findFunctionsPopup=new QPopupMenu(findFunctionsButton);
+  connect(findFunctionsPopup,SIGNAL(aboutToShow()),
+          this,SLOT(findFunctionsPopup_aboutToShow()));
+  connect(findFunctionsPopup,SIGNAL(activated(int)),
+          this,SLOT(findFunctionsPopup_activated(int)));
+  findFunctionsButton->setPopupDelay(0);
+  findFunctionsButton->setPopup(findFunctionsPopup);
+  if (THIS->isTextFile) findFunctionsAction->setEnabled(FALSE);
 }
 
 void SourceFileWindow::destroy()
@@ -928,6 +939,16 @@ void SourceFileWindow::findReplace_stop()
 void SourceFileWindow::findFunctions()
 {
   
+}
+
+void SourceFileWindow::findFunctionsPopup_aboutToShow()
+{
+
+}
+
+void SourceFileWindow::findFunctionsPopup_activated(int id)
+{
+
 }
 
 void SourceFileWindow::findOpenFileAtCursor()

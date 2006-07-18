@@ -1882,7 +1882,7 @@ bool MainForm::openProject(const QString &fileName)
                    (type==2)?"GNU Assembler 68k":
                    (type==3)?"Motorola Assembler 68k":
                    (type==1)?"C":
-                    "None",category,(type==1),(type>1));
+                    "None",category,(type==1),(type>1),category==txtFilesListItem);
     return FALSE;
   }
 }
