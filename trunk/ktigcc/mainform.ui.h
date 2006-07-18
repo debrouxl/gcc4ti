@@ -95,6 +95,7 @@
 #include "programoutput.h"
 #include "tiemu.h"
 #include "callbacks.h"
+#include "parsing.h"
 
 using std::puts;
 using std::exit;
@@ -402,6 +403,7 @@ static KFindDialog *kfinddialog;
 static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
 QPtrList<SourceFile> sourceFiles;
+static QPopupMenu *findFunctionsPopup;
 
 class DnDListView : public KListView {
   private:
@@ -1119,9 +1121,11 @@ void MainForm::init()
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->child("findFunctionsAction_action_button","QToolButton",FALSE));
-  QPopupMenu *findFunctionsPopup=new QPopupMenu(findFunctionsButton);
+  findFunctionsPopup=new QPopupMenu(findFunctionsButton);
   connect(findFunctionsPopup,SIGNAL(aboutToShow()),
           this,SLOT(findFunctionsPopup_aboutToShow()));
+  connect(findFunctionsPopup,SIGNAL(aboutToHide()),
+          this,SLOT(findFunctionsPopup_aboutToHide()));
   connect(findFunctionsPopup,SIGNAL(activated(int)),
           this,SLOT(findFunctionsPopup_activated(int)));
   findFunctionsButton->setPopupDelay(0);
@@ -3036,6 +3040,8 @@ void MainForm::findReplace_stop()
   kreplace=static_cast<KReplaceWithSelection *>(NULL);
 }
 
+static SourceFileFunctions sourceFileFunctions;
+
 void MainForm::findFunctions()
 {
   
@@ -3043,12 +3049,37 @@ void MainForm::findFunctions()
 
 void MainForm::findFunctionsPopup_aboutToShow()
 {
+  findFunctionsPopup->clear();
+  if (CURRENT_VIEW) {
+    CATEGORY_OF(category,currentListItem);
+    sourceFileFunctions=getFunctions(CURRENT_VIEW->getDoc()->text(),
+      category==asmFilesListItem||category==sFilesListItem);
+    int idx=0;
+    for (SourceFileFunctions::Iterator it=sourceFileFunctions.begin();
+         it!=sourceFileFunctions.end(); ++it,++idx) {
+      findFunctionsPopup->insertItem((*it).name,idx);
+    }
+  }
+}
 
+void MainForm::findFunctionsPopup_aboutToHide()
+{
+  QTimer::singleShot(0,this,SLOT(findFunctionsPopup_aboutToHide_async()));
+}
+
+void MainForm::findFunctionsPopup_aboutToHide_async()
+{
+  findFunctionsPopup->clear();
 }
 
 void MainForm::findFunctionsPopup_activated(int id)
 {
-
+  if (CURRENT_VIEW) {
+    int line=sourceFileFunctions[id].implementationLine>=0
+             ?sourceFileFunctions[id].implementationLine
+             :sourceFileFunctions[id].prototypeLine;
+    CURRENT_VIEW->setCursorPositionReal(line,0);
+  }
 }
 
 void MainForm::findOpenFileAtCursor()

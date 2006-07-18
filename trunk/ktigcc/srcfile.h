@@ -22,6 +22,7 @@
 
 #include "tpr.h"
 #include "srcfilewin.h"
+#include "parsing.h"
 
 #include <qstring.h>
 class MainForm;
@@ -67,4 +68,6 @@ struct SourceFile : public SourceFileWindow {
   KFindDialog *kfinddialog;
   unsigned findCurrentLine;
   KDirWatch *dirWatch;
+  QPopupMenu *findFunctionsPopup;
+  SourceFileFunctions sourceFileFunctions;
 };

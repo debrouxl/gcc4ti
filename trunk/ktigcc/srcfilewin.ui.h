@@ -250,13 +250,15 @@ void SourceFileWindow::initBase()
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->child("findFunctionsAction_action_button","QToolButton",FALSE));
-  QPopupMenu *findFunctionsPopup=new QPopupMenu(findFunctionsButton);
-  connect(findFunctionsPopup,SIGNAL(aboutToShow()),
+  THIS->findFunctionsPopup=new QPopupMenu(findFunctionsButton);
+  connect(THIS->findFunctionsPopup,SIGNAL(aboutToShow()),
           this,SLOT(findFunctionsPopup_aboutToShow()));
-  connect(findFunctionsPopup,SIGNAL(activated(int)),
+  connect(THIS->findFunctionsPopup,SIGNAL(aboutToHide()),
+          this,SLOT(findFunctionsPopup_aboutToHide()));
+  connect(THIS->findFunctionsPopup,SIGNAL(activated(int)),
           this,SLOT(findFunctionsPopup_activated(int)));
   findFunctionsButton->setPopupDelay(0);
-  findFunctionsButton->setPopup(findFunctionsPopup);
+  findFunctionsButton->setPopup(THIS->findFunctionsPopup);
   if (THIS->isTextFile) findFunctionsAction->setEnabled(FALSE);
 }
 
@@ -943,12 +945,32 @@ void SourceFileWindow::findFunctions()
 
 void SourceFileWindow::findFunctionsPopup_aboutToShow()
 {
+  THIS->findFunctionsPopup->clear();
+  THIS->sourceFileFunctions=getFunctions(CURRENT_VIEW->getDoc()->text(),
+                                         THIS->isASMFile);
+  int idx=0;
+  for (SourceFileFunctions::Iterator it=THIS->sourceFileFunctions.begin();
+       it!=THIS->sourceFileFunctions.end(); ++it,++idx) {
+    THIS->findFunctionsPopup->insertItem((*it).name,idx);
+  }
+}
 
+void SourceFileWindow::findFunctionsPopup_aboutToHide()
+{
+  QTimer::singleShot(0,this,SLOT(findFunctionsPopup_aboutToHide_async()));
+}
+
+void SourceFileWindow::findFunctionsPopup_aboutToHide_async()
+{
+  THIS->findFunctionsPopup->clear();
 }
 
 void SourceFileWindow::findFunctionsPopup_activated(int id)
 {
-
+  int line=THIS->sourceFileFunctions[id].implementationLine>=0
+           ?THIS->sourceFileFunctions[id].implementationLine
+           :THIS->sourceFileFunctions[id].prototypeLine;
+  CURRENT_VIEW->setCursorPositionReal(line,0);
 }
 
 void SourceFileWindow::findOpenFileAtCursor()

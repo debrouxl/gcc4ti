@@ -25,6 +25,8 @@
 #include "ktigcc.h"
 #include <qstringlist.h>
 #include <qtextcodec.h>
+#include <qapplication.h>
+#include <qeventloop.h>
 #include <kprocio.h>
 #include <kmessagebox.h>
 #include <unistd.h>
@@ -73,11 +75,14 @@ SourceFileFunctions getCFunctions(const QString &text)
           else
             (*it).implementationLine=lineno;
         } else qWarning("Invalid result from ctags.");
-      } else usleep(1000);
+      } else {
+        usleep(10000);
+        QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,10);
+      }
     }
   }
   delete_temp_file("parser_temp_source.c");
-  return SourceFileFunctions(); // Not implemented yet.
+  return result;
 }  
 
 SourceFileFunctions getASMFunctions(const QString &text)

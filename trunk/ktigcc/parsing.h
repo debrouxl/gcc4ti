@@ -37,4 +37,4 @@ struct SourceFileFunction {
 typedef QValueList<SourceFileFunction> SourceFileFunctions;
 SourceFileFunctions getCFunctions(const QString &text);
 SourceFileFunctions getASMFunctions(const QString &text);
-#define getFunctions(text,isasm) (((isasm)?getCFunctions:getASMFunctions)((text)))
+#define getFunctions(text,isasm) (((isasm)?getASMFunctions:getCFunctions)((text)))
