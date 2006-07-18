@@ -49,6 +49,7 @@
 #include <qtextcodec.h>
 #include <qstylesheet.h>
 #include <qtimer.h>
+#include <qtoolbutton.h>
 #include <kapplication.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
@@ -1116,6 +1117,15 @@ void MainForm::init()
     toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
     debugResetAction->setIconSet(LOAD_ICON("player_stop"));
   }
+  QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
+    ->child("findFunctionsAction_action_button","QToolButton",FALSE));
+  QPopupMenu *findFunctionsPopup=new QPopupMenu(findFunctionsButton);
+  connect(findFunctionsPopup,SIGNAL(aboutToShow()),
+          this,SLOT(findFunctionsPopup_aboutToShow()));
+  connect(findFunctionsPopup,SIGNAL(activated(int)),
+          this,SLOT(findFunctionsPopup_activated(int)));
+  findFunctionsButton->setPopupDelay(0);
+  findFunctionsButton->setPopup(findFunctionsPopup);
   errorListDock=new QDockWindow(QDockWindow::InDock,this);
   errorListDock->setResizeEnabled(TRUE);
   errorListDock->setCloseMode(QDockWindow::Always);
@@ -3031,6 +3041,16 @@ void MainForm::findFunctions()
   
 }
 
+void MainForm::findFunctionsPopup_aboutToShow()
+{
+
+}
+
+void MainForm::findFunctionsPopup_activated(int id)
+{
+
+}
+
 void MainForm::findOpenFileAtCursor()
 {
   
@@ -4810,6 +4830,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     editSelectAllAction->setEnabled(FALSE);
     editIncreaseIndentAction->setEnabled(FALSE);
     editDecreaseIndentAction->setEnabled(FALSE);
+    findFunctionsAction->setEnabled(FALSE);
     accel->setItemEnabled(0,FALSE);
     accel->setItemEnabled(1,FALSE);
     accel->setItemEnabled(2,FALSE);
@@ -4843,6 +4864,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       editSelectAllAction->setEnabled(TRUE);
       editIncreaseIndentAction->setEnabled(TRUE);
       editDecreaseIndentAction->setEnabled(TRUE);
+      findFunctionsAction->setEnabled(category!=txtFilesListItem);
       accel->setItemEnabled(0,!!(kateView->getDoc()->undoCount()));
       accel->setItemEnabled(1,!!(kateView->getDoc()->redoCount()));
       accel->setItemEnabled(2,kateView->getDoc()->hasSelection());
@@ -4863,6 +4885,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       editSelectAllAction->setEnabled(FALSE);
       editIncreaseIndentAction->setEnabled(FALSE);
       editDecreaseIndentAction->setEnabled(FALSE);
+      findFunctionsAction->setEnabled(FALSE);
       accel->setItemEnabled(0,FALSE);
       accel->setItemEnabled(1,FALSE);
       accel->setItemEnabled(2,FALSE);
@@ -4885,6 +4908,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     editSelectAllAction->setEnabled(FALSE);
     editIncreaseIndentAction->setEnabled(FALSE);
     editDecreaseIndentAction->setEnabled(FALSE);
+    findFunctionsAction->setEnabled(FALSE);
     accel->setItemEnabled(0,FALSE);
     accel->setItemEnabled(1,FALSE);
     accel->setItemEnabled(2,FALSE);
