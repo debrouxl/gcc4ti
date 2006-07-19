@@ -23,16 +23,16 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 struct SourceFileFunction {
-  SourceFileFunction() : name(), implementationLine(-1), prototypeLine(-1) {}
+  SourceFileFunction() : name(), prototypeLine(-1), implementationLine(-1) {}
   SourceFileFunction(const QString &n) :
-    name(n), implementationLine(-1), prototypeLine(-1) {}
-  SourceFileFunction(const QString &n, int i, int p) :
-    name(n), implementationLine(i), prototypeLine(p) {}
+    name(n), prototypeLine(-1), implementationLine(-1) {}
+  SourceFileFunction(const QString &n, int p, int i) :
+    name(n), prototypeLine(p), implementationLine(i) {}
   bool operator==(const SourceFileFunction &other) const
     {return name==other.name;}
   QString name;
-  int implementationLine;
   int prototypeLine;
+  int implementationLine;
 };
 typedef QValueList<SourceFileFunction> SourceFileFunctions;
 SourceFileFunctions getCFunctions(const QString &text);

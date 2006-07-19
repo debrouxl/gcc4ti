@@ -42,6 +42,7 @@
 #include <qeventloop.h>
 #include <qlayout.h>
 #include <qtoolbutton.h>
+#include <qlistbox.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -61,6 +62,7 @@
 #include <kglobal.h>
 #include <kicontheme.h>
 #include <kiconloader.h>
+#include <kpushbutton.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -69,6 +71,7 @@
 #include "preferences.h"
 #include "projectoptions.h"
 #include "srcfile.h"
+#include "functions.h"
 
 using std::puts;
 using std::exit;
@@ -940,7 +943,67 @@ void SourceFileWindow::findReplace_stop()
 
 void SourceFileWindow::findFunctions()
 {
-  
+  THIS->functionDialog=new FunctionDialog(this);
+  connect(THIS->functionDialog->functionListBox,SIGNAL(highlighted(int)),
+          this,SLOT(findFunctions_functionListBox_highlighted(int)));
+  connect(THIS->functionDialog->functionListBox,SIGNAL(selected(int)),
+          this,SLOT(findFunctions_functionListBox_selected(int)));
+  connect(THIS->functionDialog->prototypeButton,SIGNAL(clicked()),
+          this,SLOT(findFunctions_prototypeButton_clicked()));
+  connect(THIS->functionDialog->implementationButton,SIGNAL(clicked()),
+          this,SLOT(findFunctions_implementationButton_clicked()));
+  THIS->functionDialog->functionListBox->clear();
+  THIS->sourceFileFunctions=getFunctions(CURRENT_VIEW->getDoc()->text(),
+                                         THIS->isASMFile);
+  for (SourceFileFunctions::Iterator it=THIS->sourceFileFunctions.begin();
+       it!=THIS->sourceFileFunctions.end(); ++it)
+    THIS->functionDialog->functionListBox->insertItem((*it).name);
+  THIS->functionDialog->exec();
+  delete THIS->functionDialog;
+}
+
+void SourceFileWindow::findFunctions_functionListBox_highlighted(int index)
+{
+  if (index>=0) {
+    THIS->functionDialog->prototypeButton->setEnabled(
+      THIS->sourceFileFunctions[index].prototypeLine>=0);
+    THIS->functionDialog->implementationButton->setEnabled(
+      THIS->sourceFileFunctions[index].implementationLine>=0);
+  } else {
+    THIS->functionDialog->prototypeButton->setEnabled(FALSE);
+    THIS->functionDialog->implementationButton->setEnabled(FALSE);
+  }
+}
+
+void SourceFileWindow::findFunctions_functionListBox_selected(int index)
+{
+  if (index>=0) {
+    int line=THIS->sourceFileFunctions[index].implementationLine>=0
+             ?THIS->sourceFileFunctions[index].implementationLine
+             :THIS->sourceFileFunctions[index].prototypeLine;
+    CURRENT_VIEW->setCursorPositionReal(line,0);
+    THIS->functionDialog->accept();
+  }
+}
+
+void SourceFileWindow::findFunctions_prototypeButton_clicked()
+{
+  int index=THIS->functionDialog->functionListBox->currentItem();
+  if (index>=0 && THIS->sourceFileFunctions[index].prototypeLine>=0) {
+    CURRENT_VIEW->setCursorPositionReal(
+      THIS->sourceFileFunctions[index].prototypeLine,0);
+    THIS->functionDialog->accept();
+  }
+}
+
+void SourceFileWindow::findFunctions_implementationButton_clicked()
+{
+  int index=THIS->functionDialog->functionListBox->currentItem();
+  if (index>=0 && THIS->sourceFileFunctions[index].implementationLine>=0) {
+    CURRENT_VIEW->setCursorPositionReal(
+      THIS->sourceFileFunctions[index].implementationLine,0);
+    THIS->functionDialog->accept();
+  }
 }
 
 void SourceFileWindow::findFunctionsPopup_aboutToShow()
@@ -950,9 +1013,8 @@ void SourceFileWindow::findFunctionsPopup_aboutToShow()
                                          THIS->isASMFile);
   int idx=0;
   for (SourceFileFunctions::Iterator it=THIS->sourceFileFunctions.begin();
-       it!=THIS->sourceFileFunctions.end(); ++it,++idx) {
+       it!=THIS->sourceFileFunctions.end(); ++it,++idx)
     THIS->findFunctionsPopup->insertItem((*it).name,idx);
-  }
 }
 
 void SourceFileWindow::findFunctionsPopup_aboutToHide()

@@ -50,6 +50,7 @@
 #include <qstylesheet.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
+#include <qlistbox.h>
 #include <kapplication.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
@@ -76,6 +77,7 @@
 #include <kshell.h>
 #include <ktextbrowser.h>
 #include <krun.h>
+#include <kpushbutton.h>
 #include <dcopclient.h>
 #include <cstdio>
 #include <cstdlib>
@@ -96,6 +98,7 @@
 #include "tiemu.h"
 #include "callbacks.h"
 #include "parsing.h"
+#include "functions.h"
 
 using std::puts;
 using std::exit;
@@ -3041,10 +3044,74 @@ void MainForm::findReplace_stop()
 }
 
 static SourceFileFunctions sourceFileFunctions;
+static FunctionDialog *functionDialog;
 
 void MainForm::findFunctions()
 {
-  
+  if (CURRENT_VIEW) {
+    functionDialog=new FunctionDialog(this);
+    connect(functionDialog->functionListBox,SIGNAL(highlighted(int)),
+            this,SLOT(findFunctions_functionListBox_highlighted(int)));
+    connect(functionDialog->functionListBox,SIGNAL(selected(int)),
+            this,SLOT(findFunctions_functionListBox_selected(int)));
+    connect(functionDialog->prototypeButton,SIGNAL(clicked()),
+            this,SLOT(findFunctions_prototypeButton_clicked()));
+    connect(functionDialog->implementationButton,SIGNAL(clicked()),
+            this,SLOT(findFunctions_implementationButton_clicked()));
+    functionDialog->functionListBox->clear();
+    CATEGORY_OF(category,currentListItem);
+    sourceFileFunctions=getFunctions(CURRENT_VIEW->getDoc()->text(),
+      category==asmFilesListItem||category==sFilesListItem);
+    for (SourceFileFunctions::Iterator it=sourceFileFunctions.begin();
+         it!=sourceFileFunctions.end(); ++it)
+      functionDialog->functionListBox->insertItem((*it).name);
+    functionDialog->exec();
+    delete functionDialog;
+  }
+}
+
+void MainForm::findFunctions_functionListBox_highlighted(int index)
+{
+  if (index>=0) {
+    functionDialog->prototypeButton->setEnabled(
+      sourceFileFunctions[index].prototypeLine>=0);
+    functionDialog->implementationButton->setEnabled(
+      sourceFileFunctions[index].implementationLine>=0);
+  } else {
+    functionDialog->prototypeButton->setEnabled(FALSE);
+    functionDialog->implementationButton->setEnabled(FALSE);
+  }
+}
+
+void MainForm::findFunctions_functionListBox_selected(int index)
+{
+  if (index>=0) {
+    int line=sourceFileFunctions[index].implementationLine>=0
+             ?sourceFileFunctions[index].implementationLine
+             :sourceFileFunctions[index].prototypeLine;
+    CURRENT_VIEW->setCursorPositionReal(line,0);
+    functionDialog->accept();
+  }
+}
+
+void MainForm::findFunctions_prototypeButton_clicked()
+{
+  int index=functionDialog->functionListBox->currentItem();
+  if (index>=0 && sourceFileFunctions[index].prototypeLine>=0) {
+    CURRENT_VIEW->setCursorPositionReal(
+      sourceFileFunctions[index].prototypeLine,0);
+    functionDialog->accept();
+  }
+}
+
+void MainForm::findFunctions_implementationButton_clicked()
+{
+  int index=functionDialog->functionListBox->currentItem();
+  if (index>=0 && sourceFileFunctions[index].implementationLine>=0) {
+    CURRENT_VIEW->setCursorPositionReal(
+      sourceFileFunctions[index].implementationLine,0);
+    functionDialog->accept();
+  }
 }
 
 void MainForm::findFunctionsPopup_aboutToShow()
@@ -3056,9 +3123,8 @@ void MainForm::findFunctionsPopup_aboutToShow()
       category==asmFilesListItem||category==sFilesListItem);
     int idx=0;
     for (SourceFileFunctions::Iterator it=sourceFileFunctions.begin();
-         it!=sourceFileFunctions.end(); ++it,++idx) {
+         it!=sourceFileFunctions.end(); ++it,++idx)
       findFunctionsPopup->insertItem((*it).name,idx);
-    }
   }
 }
 

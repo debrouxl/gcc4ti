@@ -36,6 +36,7 @@ class QClipboard;
 class QAccel;
 class KFindDialog;
 class KDirWatch;
+class FunctionDialog;
 
 struct SourceFile : public SourceFileWindow {
   SourceFile(MainForm *mainfrm, const QString &fn, const QString &ft,
@@ -70,4 +71,5 @@ struct SourceFile : public SourceFileWindow {
   KDirWatch *dirWatch;
   QPopupMenu *findFunctionsPopup;
   SourceFileFunctions sourceFileFunctions;
+  FunctionDialog *functionDialog;
 };

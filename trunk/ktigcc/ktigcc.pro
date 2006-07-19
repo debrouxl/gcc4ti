@@ -27,7 +27,8 @@ FORMS	= srcfilewin.ui \
 	preferencesdlg.ui \
 	mainform.ui \
 	errorlist.ui \
-	programoutput.ui
+	programoutput.ui \
+	functions.ui
 
 IMAGES	= images/00 \
 	images/01 \
