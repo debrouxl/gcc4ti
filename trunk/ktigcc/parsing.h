@@ -21,7 +21,7 @@
 #pragma once
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <qvaluevector.h>
 struct SourceFileFunction {
   SourceFileFunction() : name(), prototypeLine(-1), implementationLine(-1) {}
   SourceFileFunction(const QString &n) :
@@ -30,11 +30,18 @@ struct SourceFileFunction {
     name(n), prototypeLine(p), implementationLine(i) {}
   bool operator==(const SourceFileFunction &other) const
     {return name==other.name;}
+  bool operator!=(const SourceFileFunction &other) const
+    {return name!=other.name;}
   QString name;
   int prototypeLine;
   int implementationLine;
 };
-typedef QValueList<SourceFileFunction> SourceFileFunctions;
+class SourceFileFunctions : public QValueVector<SourceFileFunction> {
+  public:
+    iterator find(const SourceFileFunction &item) {
+      return qFind(begin(),end(),item);
+    }
+};
 SourceFileFunctions getCFunctions(const QString &text);
 SourceFileFunctions getASMFunctions(const QString &text);
 #define getFunctions(text,isasm) (((isasm)?getASMFunctions:getCFunctions)((text)))
