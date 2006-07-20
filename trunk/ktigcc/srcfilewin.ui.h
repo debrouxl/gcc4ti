@@ -248,8 +248,6 @@ void SourceFileWindow::initBase()
     findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
     editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
     editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
-    // stop compilation: "stop"
-    // force-quit compiler: "button_cancel"
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->child("findFunctionsAction_action_button","QToolButton",FALSE));
@@ -568,8 +566,6 @@ void SourceFileWindow::applyPreferences()
     findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
     editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
     editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
-    // stop compilation: "stop"
-    // force-quit compiler: "button_cancel"
   } else {
     fileSaveAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
     fileAddToProjectAction->setIconSet(QIconSet(QPixmap::fromMimeSource("08")));
@@ -587,8 +583,6 @@ void SourceFileWindow::applyPreferences()
     findFunctionsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("18")));
     editIncreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("19")));
     editDecreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("20")));
-    // stop compilation: "21"
-    // force-quit compiler: "22"
   }
 }
 

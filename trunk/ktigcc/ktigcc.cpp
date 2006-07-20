@@ -29,6 +29,10 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qtextcodec.h>
+#include <qiconset.h>
+#include <qsize.h> 
+#include <kicontheme.h>
+#include <kiconloader.h>
 #include <kconfig.h>
 #include "mainform.h"
 using namespace std;
@@ -76,6 +80,10 @@ int main( int argc, char *argv[] )
   KCmdLineArgs::addCmdLineOptions(options);
   KApplication::addCmdLineOptions();
   KApplication app;
+  // Set the preferred large icon size so system toolbar icons don't get
+  // annoying padding.
+  int toolbarIconSize=KIconLoader().currentSize(KIcon::MainToolbar);
+  QIconSet::setIconSize(QIconSet::Large,QSize(toolbarIconSize,toolbarIconSize));
   // Readd the images KDE kindly removes...
   qCleanupImages_ktigcc();
   qInitImages_ktigcc();
