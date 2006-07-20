@@ -46,7 +46,11 @@ SourceFileFunctions getCFunctions(const QString &text)
       KProcess::Stdout|KProcess::MergedStderr));
     procio.setWorkingDirectory(tempdir);
     procio<<"ctags"<<"-f"<<"-"<<"-n"<<"-u"<<"-h"<<".h"<<"--language-force=C"
-           <<"--C-kinds=pf"<<"--fields=k"<<"parser_temp_source.c";
+          <<"--C-kinds=pf"<<"--fields=k"<<"-I"<<"CALLBACK,__ATTR_TIOS__,"
+            "__ATTR_TIOS_NORETURN__,__ATTR_TIOS_CALLBACK__,__ATTR_GCC__,"
+            "__ATTR_LIB_C__,__ATTR_LIB_ASM__,__ATTR_LIB_ASM_NORETURN__,"
+            "__ATTR_LIB_CALLBACK_C__,__ATTR_LIB_CALLBACK_ASM__"
+          <<"parser_temp_source.c";
     if (!procio.start()) {
       delete_temp_file("parser_temp_source.c");
       KMessageBox::error(0,"Could not run ctags.\nThis feature requires "
