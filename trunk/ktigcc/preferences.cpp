@@ -1253,7 +1253,7 @@ void loadPreferences(void)
   preferences.autoSave=pconfig->readBoolEntry("Auto Save",true);
   preferences.downloadHeadlines=pconfig->readBoolEntry("Download Headlines",false);
   preferences.deleteOverwrittenErrors=pconfig->readBoolEntry("Delete Overwritten Errors",true);
-  preferences.useSystemIcons=pconfig->readBoolEntry("Use System Icons",false);
+  preferences.useSystemIcons=pconfig->readBoolEntry("Use System Icons",true);
 
   // Transfer
   preferences.linkTarget=(LinkTargets)pconfig->readNumEntry("Link Target",LT_NONE);
