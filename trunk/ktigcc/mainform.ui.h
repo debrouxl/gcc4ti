@@ -4588,32 +4588,12 @@ void MainForm::debugRun()
         break;
       case LT_REALCALC:
         {
-          // Allocate handle for the cable.
-          cable=ticables_handle_new(preferences.linkCable,preferences.linkPort);
-          if (!cable) {
-            KMessageBox::error(this,"Failed to allocate cable handle.");
-            return;
-          }
           // Probe for the connected model.
           CalcModel tilibsCalcModel=CALC_NONE;
           int err;
-          if ((err=ticables_cable_open(cable))) {
+          if ((err=ticalcs_probe(preferences.linkCable,preferences.linkPort,
+                                 &tilibsCalcModel,TRUE))) {
             KMessageBox::error(this,tilibsErrorMessage(err));
-            ticables_handle_del(cable);
-            return;
-          }
-          if (preferences.linkCable==CABLE_USB)
-            err=ticalcs_probe_usb_calc(cable,&tilibsCalcModel);
-          else
-            err=ticalcs_probe_calc(cable,&tilibsCalcModel);
-          if (err) {
-            KMessageBox::error(this,tilibsErrorMessage(err));
-            ticables_handle_del(cable);
-            return;
-          }
-          if ((err=ticables_cable_close(cable))) {
-            KMessageBox::error(this,tilibsErrorMessage(err));
-            ticables_handle_del(cable);
             return;
           }
           switch (tilibsCalcModel) {
@@ -4633,8 +4613,13 @@ void MainForm::debugRun()
               break;
             default:
               KMessageBox::error(this,"Unsupported calculator model.");
-              ticables_handle_del(cable);
               return;
+          }
+          // Allocate handle for the cable.
+          cable=ticables_handle_new(preferences.linkCable,preferences.linkPort);
+          if (!cable) {
+            KMessageBox::error(this,"Failed to allocate cable handle.");
+            return;
           }
           // Allocate handle for the calculator.
           calc=ticalcs_handle_new(tilibsCalcModel);
@@ -4678,52 +4663,48 @@ void MainForm::debugRun()
     // Now send the files.
     switch (preferences.linkTarget) {
       case LT_TIEMU:
-        {
-          // Send the files.
-          if (settings.debug_info && !settings.pack
-              && QFileInfo(projectBaseName+".dbg").exists()) {
-            QString mainFile=files.first();
-            files.pop_front();
-            if (!tiemuDCOP->debug_file(mainFile) || !tiemuDCOP->ok()) {
-              KMessageBox::error(this,"DCOP function call failed.");
-              delete tiemuDCOP;
-              return;
-            }
-          }
-          if (!tiemuDCOP->send_files(files) || !tiemuDCOP->ok()) {
+        // Send the files.
+        if (settings.debug_info && !settings.pack
+            && QFileInfo(projectBaseName+".dbg").exists()) {
+          QString mainFile=files.first();
+          files.pop_front();
+          if (!tiemuDCOP->debug_file(mainFile) || !tiemuDCOP->ok()) {
             KMessageBox::error(this,"DCOP function call failed.");
             delete tiemuDCOP;
             return;
           }
         }
+        if (!tiemuDCOP->send_files(files) || !tiemuDCOP->ok()) {
+          KMessageBox::error(this,"DCOP function call failed.");
+          delete tiemuDCOP;
+          return;
+        }
         break;
       case LT_REALCALC:
-        {
-          ticables_options_set_timeout(cable,DFLT_TIMEOUT<<2);
-          ticalcs_update_set(calc,&ticalcsUpdate);
-          for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it) {
-            const char *file=*it;
-            int err;
-            // libticalcs2 does NO validation on the file, so better do it now.
-            if (!tifiles_file_is_single(file)
-                || !tifiles_calc_is_ti9x(tifiles_file_get_model(file))) {
-              KMessageBox::error(this,QString("File \'%1\' has an invalid format.").arg(file));
-              ticalcs_handle_del(calc);
-              ticables_handle_del(cable);
-              return;
-            }
-            // Send the file.
-            callbacksInit(this);
-            if ((err=ticalcs_calc_send_var2(calc,MODE_NORMAL,file))) {
-              bool cancelled=ticalcsUpdate.cancel;
-              callbacksCleanup();
-              if (!cancelled) KMessageBox::error(this,tilibsErrorMessage(err));
-              ticalcs_handle_del(calc);
-              ticables_handle_del(cable);
-              return;
-            }
-            callbacksCleanup();
+        ticables_options_set_timeout(cable,DFLT_TIMEOUT<<2);
+        ticalcs_update_set(calc,&ticalcsUpdate);
+        for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it) {
+          const char *file=*it;
+          int err;
+          // libticalcs2 does NO validation on the file, so better do it now.
+          if (!tifiles_file_is_single(file)
+              || !tifiles_calc_is_ti9x(tifiles_file_get_model(file))) {
+            KMessageBox::error(this,QString("File \'%1\' has an invalid format.").arg(file));
+            ticalcs_handle_del(calc);
+            ticables_handle_del(cable);
+            return;
           }
+          // Send the file.
+          callbacksInit(this);
+          if ((err=ticalcs_calc_send_var2(calc,MODE_NORMAL,file))) {
+            bool cancelled=ticalcsUpdate.cancel;
+            callbacksCleanup();
+            if (!cancelled) KMessageBox::error(this,tilibsErrorMessage(err));
+            ticalcs_handle_del(calc);
+            ticables_handle_del(cable);
+            return;
+          }
+          callbacksCleanup();
         }
         break;
       default:
@@ -4737,11 +4718,9 @@ void MainForm::debugRun()
       .arg(rootListItem->text(0)).arg(settings.cmd_line));
     switch (preferences.linkTarget) {
       case LT_TIEMU:
-        {
-          // Execute the command.
-          if (!tiemuDCOP->execute_command(command) || !tiemuDCOP->ok())
-            KMessageBox::error(this,"DCOP function call failed.");
-        }
+        // Execute the command.
+        if (!tiemuDCOP->execute_command(command) || !tiemuDCOP->ok())
+          KMessageBox::error(this,"DCOP function call failed.");
         delete tiemuDCOP;
         break;
       case LT_REALCALC:
