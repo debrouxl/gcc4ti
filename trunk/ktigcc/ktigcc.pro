@@ -131,7 +131,7 @@ HAVE_TIFILES = $$system(pkg-config --atleast-version=$$TIFILES_MINVERSION tifile
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags tifiles2)
 LIBS += $$system(pkg-config --libs tifiles2)
 
-TICALCS_MINVERSION = 0.1.0
+TICALCS_MINVERSION = 0.2.4
 HAVE_TICALCS = $$system(pkg-config --atleast-version=$$TICALCS_MINVERSION ticalcs2 && echo yes || echo no)
 !equals(HAVE_TICALCS,yes):error(libticalcs2 $$TICALCS_MINVERSION or higher required.)
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticalcs2)
