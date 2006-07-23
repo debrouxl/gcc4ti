@@ -86,7 +86,7 @@ unix {
   OBJECTS_DIR = .obj
 }
 
-!exists($$[QT_INSTALL_PREFIX]/include/qassistantclient.h) {
+!exists($$QMAKE_INCDIR_QT/qassistantclient.h) {
   error("Qt Assistant 3 headers required, try installing qt3-apps-dev.")
 }
 
