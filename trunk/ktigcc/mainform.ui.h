@@ -4699,7 +4699,7 @@ void MainForm::debugRun()
         break;
       case LT_REALCALC:
         {
-          ticables_options_set_timeout(cable,DFLT_TIMEOUT<<1);
+          ticables_options_set_timeout(cable,DFLT_TIMEOUT<<2);
           ticalcs_update_set(calc,&ticalcsUpdate);
           for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it) {
             const char *file=*it;

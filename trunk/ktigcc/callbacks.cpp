@@ -37,12 +37,16 @@ static void callback_ticalcs_refresh(void)
 
 static void callback_ticalcs_start(void)
 {
-  ticalcsUpdate.max1=ticalcsUpdate.cnt1=ticalcsUpdate.max2=ticalcsUpdate.max2=0;
+  ticalcsUpdate.max1=ticalcsUpdate.cnt1=
+  ticalcsUpdate.max2=ticalcsUpdate.cnt2=
+  ticalcsUpdate.max2=ticalcsUpdate.cnt3=0;
 }
 
 static void callback_ticalcs_stop(void)
 {
-  ticalcsUpdate.max1=ticalcsUpdate.cnt1=ticalcsUpdate.max2=ticalcsUpdate.max2=0;
+  ticalcsUpdate.max1=ticalcsUpdate.cnt1=
+  ticalcsUpdate.max2=ticalcsUpdate.cnt2=
+  ticalcsUpdate.max2=ticalcsUpdate.cnt3=0;
 }
 
 static void callback_ticalcs_pbar(void)
@@ -54,7 +58,7 @@ static void callback_ticalcs_pbar(void)
 
 static void callback_ticalcs_label(void)
 {
-  sendingProgress->setLabel(ticalcsUpdate.text);
+  sendingProgress->setLabel(QString("Sending \'%1\'").arg(ticalcsUpdate.text));
   callback_ticalcs_refresh();
 }
 
