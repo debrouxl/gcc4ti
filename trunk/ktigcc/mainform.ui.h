@@ -4559,21 +4559,6 @@ void MainForm::debugRun()
               return;
             }
           } while (!ready);
-          // TiEmu is now ready, but is the emulated calculator? Give it time to
-          // react. AMS 3.10 is slooooow...
-          // FIXME: I really need to figure out a way to detect within TiEmu if
-          //        the calculator is actually ready for transfers.
-          QDateTime timeout=QDateTime::currentDateTime().addSecs(12);
-          do {
-            usleep(100000);
-            QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
-          } while (QDateTime::currentDateTime()<timeout);
-          // Turn the calculator on.
-          if (!tiemuDCOP->turn_calc_on() || !tiemuDCOP->ok()) {
-            KMessageBox::error(this,"DCOP function call failed.");
-            delete tiemuDCOP;
-            return;
-          }
           // Now obtain the model from TiEmu.
           int tiemuCalcType=tiemuDCOP->emulated_calc_type();
           if (!tiemuCalcType || !tiemuDCOP->ok()) {
@@ -4694,12 +4679,6 @@ void MainForm::debugRun()
     switch (preferences.linkTarget) {
       case LT_TIEMU:
         {
-          // Give the emulated calculator time to react again.
-          QDateTime timeout=QDateTime::currentDateTime().addSecs(3);
-          do {
-            usleep(100000);
-            QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
-          } while (QDateTime::currentDateTime()<timeout);
           // Send the files.
           if (settings.debug_info && !settings.pack
               && QFileInfo(projectBaseName+".dbg").exists()) {
@@ -4759,12 +4738,6 @@ void MainForm::debugRun()
     switch (preferences.linkTarget) {
       case LT_TIEMU:
         {
-          // Give the emulated calculator time to react again.
-          QDateTime timeout=QDateTime::currentDateTime().addSecs(1);
-          do {
-            usleep(100000);
-            QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
-          } while (QDateTime::currentDateTime()<timeout);
           // Execute the command.
           if (!tiemuDCOP->execute_command(command) || !tiemuDCOP->ok())
             KMessageBox::error(this,"DCOP function call failed.");
