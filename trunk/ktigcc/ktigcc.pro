@@ -119,15 +119,11 @@ HAVE_TICONV = $$system(pkg-config --atleast-version=$$TICONV_MINVERSION ticonv &
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticonv)
 LIBS += $$system(pkg-config --libs ticonv)
 
-TICABLES_MINVERSION = 0.0.1
+TICABLES_MINVERSION = 0.1.3
 HAVE_TICABLES = $$system(pkg-config --atleast-version=$$TICABLES_MINVERSION ticables2 && echo yes || echo no)
 !equals(HAVE_TICABLES,yes):error(libticables2 $$TICABLES_MINVERSION or higher required.)
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticables2)
 LIBS += $$system(pkg-config --libs ticables2)
-# Minimum version for ticables_is_usb_enabled
-TICABLES_IS_USB_ENABLED_MINVERSION = 0.1.3
-HAVE_TICABLES_IS_USB_ENABLED = $$system(pkg-config --atleast-version=$$TICABLES_IS_USB_ENABLED_MINVERSION ticables2 && echo yes || echo no)
-equals(HAVE_TICABLES_IS_USB_ENABLED,yes):PKGCONFIG_CFLAGS += -DHAVE_TICABLES_IS_USB_ENABLED
 
 TIFILES_MINVERSION = 0.0.9
 HAVE_TIFILES = $$system(pkg-config --atleast-version=$$TIFILES_MINVERSION tifiles2 && echo yes || echo no)

@@ -35,11 +35,7 @@
 #include "preferences.h"
 #include "preferencesdlg.h"
 #include "tpr.h"
-#ifdef HAVE_TICABLES_IS_USB_ENABLED
 #include <ticables.h>
-#else
-#define ticables_is_usb_enabled() (TRUE)
-#endif
 
 TIGCCPrefs preferences;
 

@@ -37,11 +37,7 @@
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>
-#ifdef HAVE_TICABLES_IS_USB_ENABLED
 #include <ticables.h>
-#else
-#define ticables_is_usb_enabled() (TRUE)
-#endif
 
 void Preferences::init()
 {
