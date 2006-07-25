@@ -4882,6 +4882,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     editIncreaseIndentAction->setEnabled(FALSE);
     editDecreaseIndentAction->setEnabled(FALSE);
     findFunctionsAction->setEnabled(FALSE);
+    findOpenFileAtCursorAction->setEnabled(FALSE);
+    findFindSymbolDeclarationAction->setEnabled(FALSE);
     accel->setItemEnabled(0,FALSE);
     accel->setItemEnabled(1,FALSE);
     accel->setItemEnabled(2,FALSE);
@@ -4916,6 +4918,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       editIncreaseIndentAction->setEnabled(TRUE);
       editDecreaseIndentAction->setEnabled(TRUE);
       findFunctionsAction->setEnabled(category!=txtFilesListItem);
+      findOpenFileAtCursorAction->setEnabled(TRUE);
+      findFindSymbolDeclarationAction->setEnabled(TRUE);
       accel->setItemEnabled(0,!!(kateView->getDoc()->undoCount()));
       accel->setItemEnabled(1,!!(kateView->getDoc()->redoCount()));
       accel->setItemEnabled(2,kateView->getDoc()->hasSelection());
@@ -4937,6 +4941,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       editIncreaseIndentAction->setEnabled(FALSE);
       editDecreaseIndentAction->setEnabled(FALSE);
       findFunctionsAction->setEnabled(FALSE);
+      findOpenFileAtCursorAction->setEnabled(FALSE);
+      findFindSymbolDeclarationAction->setEnabled(FALSE);
       accel->setItemEnabled(0,FALSE);
       accel->setItemEnabled(1,FALSE);
       accel->setItemEnabled(2,FALSE);
@@ -4960,6 +4966,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     editIncreaseIndentAction->setEnabled(FALSE);
     editDecreaseIndentAction->setEnabled(FALSE);
     findFunctionsAction->setEnabled(FALSE);
+    findOpenFileAtCursorAction->setEnabled(FALSE);
+    findFindSymbolDeclarationAction->setEnabled(FALSE);
     accel->setItemEnabled(0,FALSE);
     accel->setItemEnabled(1,FALSE);
     accel->setItemEnabled(2,FALSE);
