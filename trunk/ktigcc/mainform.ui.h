@@ -407,6 +407,7 @@ static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
 QPtrList<SourceFile> sourceFiles;
 static QPopupMenu *findFunctionsPopup;
+bool have_usb;
 
 class DnDListView : public KListView {
   private:
@@ -949,6 +950,7 @@ void MainForm::init()
   ticables_library_init();
   tifiles_library_init();
   ticalcs_library_init();
+  have_usb=ticables_is_usb_enabled();
   compiling=FALSE;
   headersModified=FALSE;
   loadPreferences();

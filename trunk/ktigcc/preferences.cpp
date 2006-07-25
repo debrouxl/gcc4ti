@@ -35,7 +35,6 @@
 #include "preferences.h"
 #include "preferencesdlg.h"
 #include "tpr.h"
-#include <ticables.h>
 
 TIGCCPrefs preferences;
 
@@ -1257,7 +1256,7 @@ void loadPreferences(void)
   preferences.linkCable=(CableModel)pconfig->readNumEntry("Link Cable",CABLE_GRY);
   // Don't allow selecting a USB cable if libticables2 hasn't been compiled
   // without USB support or if USB support can't be used.
-  if (!ticables_is_usb_enabled()) {
+  if (!have_usb) {
     if (preferences.linkCable==CABLE_SLV || preferences.linkCable==CABLE_USB) {
       preferences.linkCable=CABLE_GRY;
       preferences.linkTarget=LT_NONE;

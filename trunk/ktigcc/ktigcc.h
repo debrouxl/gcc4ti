@@ -33,6 +33,7 @@ extern const char *tigcc_base;
 extern const char *quill_drv;
 extern bool have_fargo;
 extern bool have_flashos;
+extern bool have_usb;
 extern char tempdir[];
 void write_temp_file(const char *filename, const char *data, const size_t len);
 void delete_temp_file(const char *filename);

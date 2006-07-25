@@ -37,7 +37,7 @@
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>
-#include <ticables.h>
+#include "ktigcc.h"
 
 void Preferences::init()
 {
@@ -100,7 +100,7 @@ void Preferences::init()
 
   // Don't allow selecting a USB cable if libticables2 hasn't been compiled
   // without USB support or if USB support can't be used.
-  if (!ticables_is_usb_enabled()) {
+  if (!have_usb) {
     if (silverLink->isChecked() || directLink->isChecked()) {
       grayLink->setChecked(TRUE);
       targetNone->setChecked(TRUE);
