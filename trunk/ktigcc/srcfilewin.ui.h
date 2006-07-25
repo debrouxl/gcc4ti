@@ -1031,7 +1031,27 @@ void SourceFileWindow::findFunctionsPopup_activated(int id)
 
 void SourceFileWindow::findOpenFileAtCursor()
 {
-  
+  unsigned line,col,i;
+  CURRENT_VIEW->cursorPositionReal(&line,&col);
+  QString textLine=CURRENT_VIEW->getDoc()->textLine(line);
+  unsigned l=textLine.length();
+  bool quotesInLine=textLine.contains("\"");
+  QString fileName;
+  for (i=col;i<l;i--) {
+    QChar c=textLine[i];
+    if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
+          || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
+      break;
+    fileName.prepend(c);
+  }
+  for (i=col+1;i<l;i++) {
+    QChar c=textLine[i];
+    if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
+          || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
+      break;
+    fileName.append(c);
+  }
+  THIS->mainForm->findAndOpenFile(fileName,THIS->category);
 }
 
 void SourceFileWindow::findFindSymbolDeclaration()

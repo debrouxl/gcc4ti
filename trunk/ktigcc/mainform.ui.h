@@ -3150,9 +3150,72 @@ void MainForm::findFunctionsPopup_activated(int id)
   }
 }
 
+void MainForm::findAndOpenFile(const QString &fileName, void *category)
+{
+  // Look for the source file with the given name.
+  QString fileNameNoPath=QFileInfo(fileName).fileName();
+  bool inProject;
+  void *sourceFile;
+  if (findSourceFile(inProject,sourceFile,fileNameNoPath)) {
+    if (inProject)
+      fileTreeClicked(reinterpret_cast<ListViewFile *>(sourceFile));
+    else
+      KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+  } else {
+    // Not found. Try to open it instead.
+    // Don't do this if the name ends with ".tpr" because that would cause
+    // openProject to close the current project and load the new one instead.
+    if (!fileName.endsWith(".tpr",FALSE)) {
+      QString fileNameFull=QFileInfo(projectFileName).dir().filePath(fileName);
+      if (getPathType(fileNameFull)==PATH_FILE) {
+        openProject(fileNameFull);
+        if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject)
+           KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+      } else {
+        QListViewItem *cat=reinterpret_cast<QListViewItem *>(category);
+        QString includeDir=(cat==asmFilesListItem)?"asm":
+                           (cat==sFilesListItem)?"s":"c";
+        fileNameFull=QDir(QString("%1/include/%2/").arg(tigcc_base)
+                          .arg(includeDir)).filePath(fileName);
+        if (getPathType(fileNameFull)==PATH_FILE) {
+          openProject(fileNameFull);
+          if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject)
+             KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+        } else {
+          KMessageBox::error(this,QString("File \'%1\' not found.").arg(fileName),
+                             "Search Failed");
+        }
+      }
+    }
+  }
+}
+
 void MainForm::findOpenFileAtCursor()
 {
-  
+  if (CURRENT_VIEW && IS_FILE(currentListItem)) {
+    unsigned line,col,i;
+    CURRENT_VIEW->cursorPositionReal(&line,&col);
+    QString textLine=CURRENT_VIEW->getDoc()->textLine(line);
+    unsigned l=textLine.length();
+    bool quotesInLine=textLine.contains("\"");
+    QString fileName;
+    for (i=col;i<l;i--) {
+      QChar c=textLine[i];
+      if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
+            || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
+        break;
+      fileName.prepend(c);
+    }
+    for (i=col+1;i<l;i++) {
+      QChar c=textLine[i];
+      if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
+            || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
+        break;
+      fileName.append(c);
+    }
+    CATEGORY_OF(category,currentListItem);
+    findAndOpenFile(fileName,category);
+  }
 }
 
 void MainForm::findFindSymbolDeclaration()
