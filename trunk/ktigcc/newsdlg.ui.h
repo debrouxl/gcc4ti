@@ -31,6 +31,7 @@
 */
 
 #include <kcmultidialog.h>
+#include <kcmoduleinfo.h>
 #include <krun.h>
 #include <kurl.h>
 #include <kio/netaccess.h>
@@ -62,6 +63,15 @@ class ColoredListBoxText : public QListBoxText {
     }
   private:
     QColor color;
+};
+
+// This hack overrides the comment so it doesn't get translated while
+// everything else doesn't.
+class ProxyModuleInfo : public KCModuleInfo {
+  public:
+    ProxyModuleInfo() : KCModuleInfo("proxy") {
+      setComment("Configure the proxy servers used");
+    }
 };
 
 bool NewsDialog::loadNews()
@@ -127,9 +137,14 @@ bool NewsDialog::loadNews()
 
 void NewsDialog::proxySettingsButton_clicked()
 {
-  KCMultiDialog proxySettings(this);
-  proxySettings.addModule("proxy");
-  proxySettings.exec();
+  ProxyModuleInfo proxyModuleInfo;
+  if (proxyModuleInfo.moduleName().isNull())
+    KMessageBox::error(this,"This feature requires kdebase.");
+  else {
+    KCMultiDialog proxySettings(this);
+    proxySettings.addModule(proxyModuleInfo);
+    proxySettings.exec();
+  }
 }
 
 void NewsDialog::refreshButton_clicked()
