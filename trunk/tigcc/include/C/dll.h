@@ -10,8 +10,8 @@ extern void*__DLL_body_ptr;
 
 /* Begin Auto-Generated Part */
 enum DLL_ErrorCodes{DLL_OK,DLL_NOTINGHOSTSPACE,DLL_NOTFOUND,DLL_LOCKFAILED,DLL_OUTOFMEM,DLL_ALREADYLOADED,DLL_WRONGVERSION};
-#define _DLL_call(type,args,index) (*(type(*)args)_DLL_entry(index))
 #define _DLL_call_attr(type,args,attr,index) (*(type(*attr)args)_DLL_entry(index))
+#define _DLL_call(type,args,index) (*(type(*)args)_DLL_entry(index))
 #define _DLL_entry(index) (__DLL_interface_ptr->jump_table[index])
 #define _DLL_glbvar(type,index) (*(_DLL_reference(type,index)))
 #define _DLL_reference(type,index) ((type*const)_DLL_entry(index))

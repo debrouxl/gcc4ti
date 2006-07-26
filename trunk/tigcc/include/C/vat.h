@@ -96,6 +96,7 @@ extern SYM_ENTRY *FindProgramVar(void)__ATTR_LIB_C__;
 #define FolderGetCur _rom_call(void,(char*),68)
 #define FolderOp _rom_call(short,(SYM_STR,short),69)
 #define FolderRename _rom_call(short,(const char*,const char*),6A)
+#define GetFuncPrgmBodyPtr _rom_call_hack(ESI,(ESI),43A,(((unsigned char*)_rom_call_addr(290)-52)),200)
 #define HSymDel ({__need_in_use_bit;_rom_call(short,(HSym),5F);})
 #define HSYMtoName _rom_call(short,(HSym,char*),7A)
 #define IsMainFolderStr _rom_call(short,(const char*),77)
@@ -104,6 +105,7 @@ extern SYM_ENTRY *FindProgramVar(void)__ATTR_LIB_C__;
 #define partial_len _rom_call(unsigned long,(const char*,unsigned char*),11C)
 #define QSysProtected _rom_call(short,(ESQ),88)
 #define ResetSymFlags _rom_call(void,(short),8E)
+#define SetOK ({__need_in_use_bit;_rom_call_hack(void,(short),456,((((unsigned char*)_rom_call_addr(1FC)-216))),200);})
 #define StrToTokN _rom_call(ESI,(const char*,unsigned char*),7B)
 #define SymAdd ({__need_in_use_bit;_rom_call(HSym,(SYM_STR),5C);})
 #define SymAddMain ({__need_in_use_bit;_rom_call(HSym,(SYM_STR),5D);})
@@ -130,11 +132,11 @@ extern SYM_ENTRY *FindProgramVar(void)__ATTR_LIB_C__;
 #define ValidateSymName _rom_call(short,(const char*),84)
 #define VarRecall ({__need_in_use_bit;_rom_call(HSym,(SYM_STR,short),85);})
 #define VarStore ({__need_in_use_bit;_rom_call(HSym,(SYM_STR,short,short,...),86);})
+#if MIN_AMS>=101
+#define GetDataType _rom_call_hack(short,(CESI),435,((*(unsigned long*)((unsigned char*)_row_call_addr(319)+134))),200)
 #if MIN_AMS>=200
-#define GetDataType _rom_call(short,(CESI),435)
-#define GetFuncPrgmBodyPtr _rom_call(ESI,(ESI),43A)
-#define SetOK ({__need_in_use_bit;_rom_call(void,(short),456);})
 #define SmapTypeStrings _rom_call(const char*,(short),436)
+#endif
 #endif
 /* End Auto-Generated Part */
 

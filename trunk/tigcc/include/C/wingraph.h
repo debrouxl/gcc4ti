@@ -62,13 +62,13 @@ typedef short WIN_COORDS;
 #define __HAVE_WIN_RECT
 typedef struct{short x0,y0,x1,y1;}WIN_RECT;
 #endif
-#ifndef __HAVE_WINDOW
-#define __HAVE_WINDOW
-typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
-#endif
 #ifndef __HAVE_WINDOW_AMS1
 #define __HAVE_WINDOW_AMS1
 typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
+#endif
+#ifndef __HAVE_WINDOW
+#define __HAVE_WINDOW
+typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
 #endif
 #ifndef __HAVE_WinFlags
 #define __HAVE_WinFlags
@@ -116,6 +116,7 @@ enum WinFlags{WF_SYS_ALLOC=0x0001,WF_STEAL_MEM=0x0002,WF_DONT_REALLOC=0x0004,WF_
 #define WinPixGet _rom_call(short,(WINDOW*,short,short),1F)
 #define WinPixSet _rom_call(void,(WINDOW*,short,short),20)
 #define WinRect _rom_call(void,(WINDOW*,const WIN_RECT*,short),21)
+#define WinRemove _rom_call_hack(void,(WINDOW*,short),414,(((((unsigned char*)_rom_call_addr(B)+14))+*((signed short*)_rom_call_addr(B)+7))),200)
 #define WinReOpen _rom_call(short,(WINDOW*,const WIN_RECT*,short,...),22)
 #define WinScrollH _rom_call(void,(WINDOW*,const WIN_RECT*,short),23)
 #define WinScrollV _rom_call(void,(WINDOW*,const WIN_RECT*,short),24)
@@ -125,7 +126,22 @@ enum WinFlags{WF_SYS_ALLOC=0x0001,WF_STEAL_MEM=0x0002,WF_DONT_REALLOC=0x0004,WF_
 #define WinStrXY _rom_call(void,(WINDOW*,short,short,const char*),26)
 #define WinWidth _rom_call(short,(WINDOW*),291)
 #if MIN_AMS>=200
+#define BitmapSizeExt _rom_call(unsigned short,(const WIN_RECT*),3ED)
+#define RectWinToScrExt _rom_call(SCR_RECT*,(const SCR_RECT*,const WIN_RECT*,SCR_RECT*),415)
 #define SetWinClip _rom_call(void,(WINDOW*,SCR_RECT*),42E)
+#define WinBeginPaint _rom_call(void,(WINDOW*),500)
+#define WinBitmapSizeExt _rom_call(unsigned short,(WINDOW*,const WIN_RECT*),411)
+#define WinEndPaint _rom_call(void,(WINDOW*),501)
+#define WinLineExt _rom_call(void,(WINDOW*,const WIN_RECT*),47C)
+#define WinToScr _rom_call(SCR_RECT*,(const WIN_RECT*,SCR_RECT*),42F)
+#if MIN_AMS>=204
+enum winWriteFlags{WWF_DRAW=1,WWF_WRAP_ON_COMMAS=2
+#if MIN_AMS>=207
+,WWF_WRAP_BACK_TO_ZERO=4
+#endif
+};
+#define WinStrXYWrap _rom_call(short,(WINDOW*,WIN_COORDS,WIN_COORDS,char*,short),5DB)
+#endif
 #endif
 /* End Auto-Generated Part */
 

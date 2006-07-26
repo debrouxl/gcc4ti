@@ -41,19 +41,19 @@ typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned 
 #define __HAVE_ESQ
 typedef unsigned char ESQ;
 #endif
+typedef CALLBACK unsigned short(*CESI_Callback_t)(CESI);
 #ifndef __HAVE_CESI
 #define __HAVE_CESI
 typedef const ESQ*CESI;
-#endif
-typedef CALLBACK unsigned short(*CESI_Callback_t)(CESI);
-#ifndef __HAVE_ESI
-#define __HAVE_ESI
-typedef ESQ*ESI;
 #endif
 typedef CALLBACK unsigned short(*ESI_Callback_Int_t)(ESI,unsigned short);
 #ifndef __HAVE_ESI_Callback_t
 #define __HAVE_ESI_Callback_t
 typedef CALLBACK void(*ESI_Callback_t)(ESI);
+#endif
+#ifndef __HAVE_ESI
+#define __HAVE_ESI
+typedef ESQ*ESI;
 #endif
 #define EStackIndex ESI
 enum ExtTags{INDIR_TAG=0x01,GETKEY_TAG=0x02,GETFOLD_TAG=0x03,SWITCH_TAG=0x04,UNITCONV_TAG=0x05,ORD_TAG=0x06,EXPR_TAG=0x07,CHAR_TAG=0x08,STRING_TAG=0x09,GETTYPE_TAG=0x0A,GETMODE_TAG=0x0B,SETFOLD_TAG=0x0C,PTTEST_TAG=0x0D,PXLTEST_TAG=0x0E,SETGRAPH_TAG=0x0F,SETTABLE_TAG=0x10,SETMODE_TAG=0x11,FORMAT_TAG=0x12,INSTRING_TAG=0x13,APPEND_TAG=0x14,DD_TAG=0x15,EXPR2DMS_TAG=0x16,VEC2RECT_TAG=0x17,VEC2POLAR_TAG=0x18,VEC2CYLIND_TAG=0x19,VEC2SPHERE_TAG=0x1A,PARENTH_START_TAG=0x1B,PARENTH_END_TAG=0x1C,MAT_START_TAG=0x1D,MAT_END_TAG=0x1E,LIST_START_TAG=0x1F,LIST_END_TAG=0x20,COMMA_TAG=0x21,SEMICOLON_TAG=0x22,COMPLEX_ANGLE_TAG=0x23,SINGLE_QUOTE_TAG=0x24,QUOTE_TAG=0x25,POLCPLX_TAG=0x26,TMPCNV_TAG=0x27,DELTA_TMPCNV_TAG=0x28,GETUNITS_TAG=0x29,SETUNITS_TAG=0x2A,BIN_TAG=0x2B,HEX_TAG=0x2C,INT2BIN_TAG=0x2D,INT2DEC_TAG=0x2E,INT2HEX_TAG=0x2F,DET_TOL_TAG=0x30,REF_TOL_TAG=0x31,RREF_TOL_TAG=0x32,SIMULT_TOL_TAG=0x33,GETCONFG_TAG=0x34,V_AUGMENT_TAG=0x35
@@ -167,13 +167,13 @@ enum TokenizeSymNameFlags{TSF_FULLY_QUALIFIED=0x01,TSF_ALLOW_RESERVED=0x02,TSF_P
 #define is_complex_number _rom_call(short,(CESI),2D2)
 #define is_Float_exact_whole_number _rom_call(short,(CESI),2FE)
 #define is_free_of_tag _rom_call(short,(CESI,ESQ),2D4)
-#define is_independent_of _rom_call(short,(CESI,CESI),2D5)
 #define is_independent_of_de_seq_vars _rom_call(short,(CESI),2D6)
 #define is_independent_of_elements _rom_call(short,(CESI,CESI),2D8)
 #define is_independent_of_tail _rom_call(short,(CESI,CESI),2D7)
+#define is_independent_of _rom_call(short,(CESI,CESI),2D5)
 #define is_matrix _rom_call(short,(CESI),3B7)
-#define is_monomial _rom_call(short,(CESI),2D9)
 #define is_monomial_in_kernel _rom_call(short,(CESI),2DA)
+#define is_monomial _rom_call(short,(CESI),2D9)
 #define is_narrowly_independent_of _rom_call(short,(CESI,CESI),2DB)
 #define is_square_matrix _rom_call(short,(CESI),3B8)
 #define is_symmetric ({__need_in_use_bit;_rom_call(short,(CESI,CESI),2DC);})
@@ -187,8 +187,8 @@ enum TokenizeSymNameFlags{TSF_FULLY_QUALIFIED=0x01,TSF_ALLOW_RESERVED=0x02,TSF_P
 #define likely_approx_to_complex_number _rom_call(short,(CESI),307)
 #define likely_approx_to_number _rom_call(short,(CESI),308)
 #define main_gen_var_index _rom_call(ESI,(CESI),2E2)
-#define map_tail _rom_call(void,(ESI_Callback_t,ESI),3BB)
 #define map_tail_Int _rom_call(short,(ESI_Callback_Int_t,ESI,short),3BC)
+#define map_tail _rom_call(void,(ESI_Callback_t,ESI),3BB)
 #define map_unary_over_comparison _rom_call(void,(ESI_Callback_t,ESI),2E3)
 #define min_quantum _rom_call(ESQ,(ESQ,ESQ),2E4)
 #define move_between_to_top _rom_call(void,(ESI,ESI),2E5)
@@ -201,9 +201,9 @@ enum TokenizeSymNameFlags{TSF_FULLY_QUALIFIED=0x01,TSF_ALLOW_RESERVED=0x02,TSF_P
 #define push_expr_quantum _rom_call(void,(CESI,ESQ),2E9)
 #define push_expr2_quantum _rom_call(void,(CESI,CESI,ESQ),2EA)
 #define push_expression(ptr) (MIN_AMS<200?({push_expr_quantum(ptr,NOTHING_TAG);(void)(--top_estack);}):_rom_call(void,(CESI),44D)(ptr))
-#define push_Float _rom_call(void,(float),30A)
 #define push_Float_to_nonneg_int _rom_call(void,(float),30B)
 #define push_Float_to_rat _rom_call(void,(CESI),30C)
+#define push_Float _rom_call(void,(float),30A)
 #define push_internal_simplify ({__need_in_use_bit;_rom_call_hack(void,(CESI),4F8,(*((void*const*)(((const char*)(_rom_call_addr(385)))+22))),200);})
 extern void push_longint(long)__ATTR_LIB_ASM__;
 extern void push_longlongint(long long)__ATTR_LIB_ASM__;

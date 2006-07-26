@@ -24,6 +24,8 @@ enum Timers{USER1_TIMER=1,BATT_TIMER=1,APD_TIMER=2,LIO_TIMER=3,CURSOR_TIMER=4,MI
 ,BP_TIMER=8
 #endif
 };
+#define CTypeTable ((MIN_AMS >= 200)?((const unsigned char *)_rom_call_addr(442)):({unsigned char* __CTypeTable; asm volatile ("moveq #8,%%d0; trap #9; move.l %%a0,%0" : "=a"(__CTypeTable) : : "d0","a0"); (const unsigned char *)__CTypeTable; }))
+#define OSContrastValue *OSContrastAddress
 #define ReleaseDate ((const char*const)(_rom_call_addr_hack(43F,(((MIN_AMS>=101)||(TIOS_entries>0x2AC))?(((const char*const)_rom_call_addr(393))-11):((const char*const)"05/21/1998")),200)))
 #define ReleaseVersion ((const char*const)(_rom_call_addr_hack(440,((((MIN_AMS>=101)||(TIOS_entries>0x2AC))?(((const char*const)_rom_call_addr(393))-16):((const char*const)"1.00"))),200)))
 #define AB_prodid _rom_call(void,(char*),29D)
@@ -45,6 +47,7 @@ extern void *kbd_queue(void)__ATTR_LIB_ASM__;
 #define off _rom_call(void,(void),29A)
 #define OSCheckBreak _rom_call(short,(void),EC)
 #define OSClearBreak _rom_call(void,(void),ED)
+#define OSContrastAddress ({unsigned char* __addr; asm volatile ("moveq #4,%%d0; trap #9; move.l %%a0,%0" : "=a"(__addr):: "d0","a0"); __addr; })
 #define OSContrastDn() ({_rom_call(void,(void),297) (); asm ("":::"d3","d4");})
 #define OSContrastUp() ({_rom_call(void,(void),296) (); asm ("":::"d3","d4");})
 #define OSDisableBreak _rom_call(void,(void),EF)
@@ -72,10 +75,16 @@ extern short OSVRegisterTimer(short asm("d0"),long asm("d3"),Timer_Callback_t as
 #if MIN_AMS>=200
 #define CU_cursorState (*((signed short*)(_rom_call_addr(503))))
 #define FiftyMsecTick (*((volatile unsigned long*)(_rom_call_addr(4FC))))
+#define OSOnBreak (*((unsigned char*)(_rom_call_addr(46E))))
 #define AB_getGateArrayVersion _rom_call(unsigned long,(void),15E)
+#if MIN_AMS>=202
+#define LOC_formatDate _rom_call(void,(const char*,short,short,short,char*),590)
+#define LOC_getLocalDateFormat _rom_call(const char*,(void),58F)
+#define LOC_localVersionDate _rom_call(char*,(char),591)
 #if MIN_AMS>=204
 typedef struct{unsigned short len;unsigned char releaseVersionMajor;unsigned char releaseVersionMinor;unsigned short releaseDateYear;unsigned char releaseDateMonth;unsigned char releaseDateDay;}BASECODE_PARM_BLOCK;
 #define EX_getBasecodeParmBlock _rom_call(const void*,(void),5DA)
+#endif
 #endif
 #endif
 #endif

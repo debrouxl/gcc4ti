@@ -41,29 +41,29 @@ typedef union{struct{unsigned char x0,y0,x1,y1;}xy;unsigned long l;}SCR_RECT;
 #define __HAVE_SCR_STATE
 typedef struct{void*ScrAddr;unsigned char XMax,YMax;short CurFont,CurAttr,CurX,CurY;SCR_RECT CurClip;}SCR_STATE;
 #endif
-#ifndef __HAVE_WINDOW
-#define __HAVE_WINDOW
-typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
-#endif
-#ifndef __HAVE_EQU_DS
-#define __HAVE_EQU_DS
-typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS;
-#endif
 #ifndef __HAVE_WINDOW_AMS1
 #define __HAVE_WINDOW_AMS1
 typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
+#endif
+#ifndef __HAVE_WINDOW
+#define __HAVE_WINDOW
+typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
 #endif
 #ifndef __HAVE_EQU_DS_AMS1
 #define __HAVE_EQU_DS_AMS1
 typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
 #endif
-#ifndef __HAVE_ESI
-#define __HAVE_ESI
-typedef ESQ*ESI;
+#ifndef __HAVE_EQU_DS
+#define __HAVE_EQU_DS
+typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS;
 #endif
 #ifndef __HAVE_ESI_Callback_t
 #define __HAVE_ESI_Callback_t
 typedef CALLBACK void(*ESI_Callback_t)(ESI);
+#endif
+#ifndef __HAVE_ESI
+#define __HAVE_ESI
+typedef ESQ*ESI;
 #endif
 #ifndef __HAVE_FUNCID
 #define __HAVE_FUNCID
@@ -146,6 +146,9 @@ typedef unsigned long pFrame;
 typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK tag_proc)(void);unsigned long tag_str;}tag_info;
 typedef CALLBACK void(*Two_ESI_Callback_t)(ESI,ESI);
 typedef unsigned short unknown_retval;
+#define EV_appA (*((short*)(_rom_call_addr_hack(452,(((unsigned long)*(signed short*)((unsigned char*)_rom_call_addr(D8)+0x20))),200))))
+#define EV_appB (*((short*)(_rom_call_addr_hack(453,(((unsigned long)*(signed short*)((unsigned char*)_rom_call_addr(D8)+0x26))),200))))
+#define EV_appSide (*((unsigned short*)(_rom_call_addr_hack(458,(((unsigned long)*(signed short*)((unsigned char*)_rom_call_addr(D8)+0x1A))),200))))
 #define CharNumber _rom_call(unsigned char,(char,char,unsigned char*),113)
 #define CheckGraphRef _rom_call(short,(const SYM_ENTRY*),7D)
 #define ck_valid_float _rom_call(short,(float*),1E5)
@@ -241,15 +244,15 @@ typedef unsigned short unknown_retval;
 #define GT_Open ({__need_in_use_bit;_rom_call(unknown_retval,(),21B);})
 #define GT_PrintCursor _rom_call(unknown_retval,(),229)
 #define GT_QFloatCursorsInRange _rom_call(unknown_retval,(),218)
-#define GT_Regraph ({__need_in_use_bit;_rom_call(void,(void),219);})
 #define GT_Regraph_if_neccy ({__need_in_use_bit;_rom_call(void,(void),21A);})
+#define GT_Regraph ({__need_in_use_bit;_rom_call(void,(void),219);})
 #define GT_SaveAs ({__need_in_use_bit;_rom_call(unknown_retval,(),21C);})
 #define GT_SelFunc ({__need_in_use_bit;_rom_call(unknown_retval,(),21D);})
 #define GT_Set_Graph_Format _rom_call(unknown_retval,(),228)
 #define GT_SetCursorXY _rom_call(unknown_retval,(),21F)
 #define GT_SetGraphRange _rom_call(unknown_retval,(),21E)
 #define GT_ShowMarkers _rom_call(unknown_retval,(),220)
-#define GT_Trace ({__need_in_use_bit;_rom_call(unknown_retval,(),221);})
+#define GT_Trace ({__need_in_use_bit;_rom_call(short,(short,float*,short),221);})
 #define GT_ValidGraphRanges _rom_call(unknown_retval,(),222)
 #define GT_WinBound _rom_call(unknown_retval,(),223)
 #define GT_WinCursor _rom_call(unknown_retval,(),224)
@@ -354,10 +357,6 @@ typedef unsigned short unknown_retval;
 typedef union{unsigned short*pW;SYM_ENTRY*pS;unsigned char*pB;}FOLDER_TYPE;
 enum OO_Indices{OO_APP_FLAGS=0x1,OO_APP_NAME=0x2,OO_APP_TOK_NAME=0x3,OO_APP_PROCESS_EVENT=0x4,OO_APP_DEFAULT_MENU=0x5,OO_APP_DEFAULT_MENU_HANDLE=0x6,OO_APP_EXT_COUNT=0x7,OO_APP_EXTENSIONS=0x8,OO_APP_EXT_ENTRIES=0x9,OO_APP_LOCALIZE=0xA,OO_APP_UNLOCALIZE=0xB,OO_APP_CAN_DELETE=0xC,OO_APP_CAN_MOVE=0xD,OO_APP_VIEWER=0xE,OO_APP_ICON=0xF,OO_APP_EXT_HELP=0x10,OO_APP_NOTICE_INSTALL=0x11,OO_APP_ABOUT=0x12,OO_SFONT=0x300,OO_LFONT=0x301,OO_HFONT=0x302,OO_APP_SFONT=0x300,OO_APP_LFONT=0x301,OO_APP_HFONT=0x301,OO_LANGUAGE=0x310,OO_DATE_FORMAT=0x311,OO_BUILTIN_HELP=0x312,OO_KTLIST=0x320,OO_CAT_TABLE=0x312,OO_CAT_INDEX=0x322,OO_CAT_COUNT=0x323,OO_CHAR_MENU=0x330,OO_CHAR_HANDLER=0x331,OO_APPS_HANDLER=0x332,OO_FLASH_APPS_HANDLER=0x333,OO_MATH_HANDLER=0x334,OO_MEM_HANDLER=0x335,OO_STO_HANDLER=0x336,OO_QUIT_HANDLER=0x337};
 typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFolCount;unsigned char*SymFolder,*SymName;HANDLE SymHandle,HomeHandle,MainHandle,DefTempHandle,DefFolderHandle;unsigned short SymErrCode;BOOL CallStatFree;HANDLE FindHandle;unsigned short DefFolderName[SYM_LEN+1];struct{FOLDER_TYPE Low,High,Cur;unsigned short CurOffset;}Find,Prev;}SymPG_S;
-#define CTypeTable ((unsigned char*const)(_rom_call_addr(442)))
-#define EV_appA (*((short*)(_rom_call_addr(452))))
-#define EV_appB (*((short*)(_rom_call_addr(453))))
-#define EV_appSide (*((unsigned short*)(_rom_call_addr(458))))
 #define EV_currentApp (*((short*)(_rom_call_addr(45C))))
 #define EV_errorCode (*((short*)(_rom_call_addr(46D))))
 #define EV_runningApp (*((short*)(_rom_call_addr(45D))))
@@ -421,11 +420,6 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define TIOS_EV_getAppID _rom_call(short,(unsigned char const*),454)
 #define TIOS_strtol _rom_call(long,(const char*,char**,short),4FF)
 #define TokenizeName _rom_call(unsigned short,(const char*,unsigned char*),3E9)
-#define WinBeginPaint _rom_call(void,(WINDOW*),500)
-#define WinBitmapSizeExt _rom_call(unsigned short,(WINDOW*,const WIN_RECT*),411)
-#define WinEndPaint _rom_call(void,(WINDOW*),501)
-#define WinLineExt _rom_call(void,(WINDOW*,const WIN_RECT*),47C)
-#define WinRemove _rom_call(void,(WINDOW*,short),414)
 #if MIN_AMS>=202
 #define compare_numbers _rom_call(short,(ESI,ESI),50D)
 #define did_push_approx_inflection_point ({__need_in_use_bit;_rom_call(short,(ESI,ESI,float,float),5B0);})
@@ -438,8 +432,8 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define index_if_pushed_qquad_info ({__need_in_use_bit;_rom_call(ESI,(ESI,ESI,ESI),5A2);})
 #define index_reductum_with_tag_base _rom_call(ESI,(ESI,ESQ,short),59F)
 #define index_rmng_factor _rom_call(ESI,(ESI,ESI),565)
-#define index_rmng_fctrs_start_base _rom_call(ESI,(ESI,ESI),564)
 #define index_rmng_fctrs_start_base_tag _rom_call(ESI,(ESI,ESQ),563)
+#define index_rmng_fctrs_start_base _rom_call(ESI,(ESI,ESI),564)
 #define index_rmng_fctrs_start_fctr_tag _rom_call(ESI,(ESI,ESQ),562)
 #define is_equivalent_to ({__need_in_use_bit;_rom_call(short,(ESI,ESI),578);})
 #define is_neg_lead_numr_coef_re_part _rom_call(short,(ESI),56D)
@@ -450,9 +444,6 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define lead_conjunct_factor_index _rom_call(ESI,(ESI),580)
 #define lead_disjunct_term_index _rom_call(ESI,(ESI),57E)
 #define linear_degree _rom_call(short,(ESI,ESI),571)
-#define LOC_formatDate _rom_call(void,(char const*,short,short,short,char),590)
-#define LOC_getLocalDateFormat _rom_call(const char*,(void),58F)
-#define LOC_localVersionDate _rom_call(char*,(char),591)
 #define next_var_or_kernel_index _rom_call(ESI,(ESI,ESI),56E)
 #define or_onto_top _rom_call(void,(ESI),57B)
 #define push_but_conjunct_factor ({__need_in_use_bit;_rom_call(void,(ESI,ESI),582);})
@@ -470,14 +461,14 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define push_nonconstant_factors ({__need_in_use_bit;_rom_call(void,(ESI),55E);})
 #define push_nonconstant_terms ({__need_in_use_bit;_rom_call(void,(ESI),567);})
 #define push_nonnumeric_factors ({__need_in_use_bit;_rom_call(void,(ESI),55C);})
-#define push_pi _rom_call(void,(void),512)
 #define push_pi_on_quantum ({__need_in_use_bit;_rom_call(void,(ESQ),513);})
+#define push_pi _rom_call(void,(void),512)
 #define push_poly_deg_in_var_or_kernel ({__need_in_use_bit;_rom_call(void,(ESI,ESI),570);})
 #define push_poly_qr ({__need_in_use_bit;_rom_call(ESI,(ESI,ESI,ESI,short),59D);})
 #define push_quantum_as_nonnegative_int _rom_call(void,(ESQ),50E)
 #define push_quantum_pair_as_pos_frac _rom_call(void,(ESQ,ESQ),511)
-#define push_reciprocal ({__need_in_use_bit;_rom_call(void,(ESI),597);})
 #define push_reciprocal_of_quantum _rom_call(void,(ESQ),50F)
+#define push_reciprocal ({__need_in_use_bit;_rom_call(void,(ESI),597);})
 #define push_standardize ({__need_in_use_bit;_rom_call(void,(ESI),558);})
 #define push_trig ({__need_in_use_bit;_rom_call(void,(ESI_Callback_t,ESI),535);})
 #define push_var_kern_tail _rom_call(void,(ESI),56F)
@@ -522,7 +513,6 @@ typedef enum{EV_OFF=0x0001,EV_SUSPEND_PAINTING=0x0002}EV_FLAGS;
 #define TIOS_div _rom_call(div_t,(short,short),5BB)
 #define TIOS_labs _rom_call(long,(long),5BC)
 #define TIOS_ldiv _rom_call(ldiv_t,(long,long),5BD)
-#define WinStrXYWrap _rom_call(short,(WINDOW*,WIN_COORDS,WIN_COORDS,char*,short),5DB)
 #if MIN_AMS>=205
 #define OSCheckLinkOpen _rom_call(unsigned short,(void),5E3)
 #endif
