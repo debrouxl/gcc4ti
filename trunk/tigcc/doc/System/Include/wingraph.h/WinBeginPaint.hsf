@@ -1,0 +1,25 @@
+[Main]
+Name=WinBeginPaint
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=void WinBeginPaint (WINDOW *w);
+MinAMS=2.00
+See Also=WinEndPaint
+
+[ROM Call]
+Index=$500
+
+[Description]
+Saves the current screen state of given window, and prepares the settings for drawing in the LCD memory.
+
+[Explanation]
+WinBeginPaint just saves the current screen state in <CODE>w->savedScrState</CODE>, 
+executes <A HREF="$$LINK(graph.h/PortRestore)">PortRestore</A> and sets the current font to
+<CODE>w->CurFont</CODE>. So, emulating it on AMS 1.xx is easy.<BR>
+WinBeginPaint is always paired with <A HREF="$$LINK(WinEndPaint)">WinEndPaint</A> which restores the screen state.<BR>
+WinBeginPaint is commonly used to respond a CM_ACTIVATE message.
+
+[References]
+Out=graph.h/FontSetSys, graph.h/PortRestore, graph.h/SaveScrState
+In=unknown.h/EV_quit, events.h/EV_defaultHandler

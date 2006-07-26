@@ -1,0 +1,15 @@
+[Main]
+Name=OSContrastAddress
+Type=Function
+Subtype=Macro
+Header Files=system.h
+Definition=unsigned char *OSContrastAddress;
+Real Definition=#define OSContrastAddress ({unsigned char* __addr; asm volatile ("moveq #4,%%d0; trap #9; move.l %%a0,%0" : "=a"(__addr):: "d0","a0"); __addr; })
+See Also=OSContrastUp, OSContrastDn, OSContrastValue
+
+[Description]
+Returns a pointer to the contrast value.
+
+[Explanation]
+It is the address of the byte containing the current contrast (<A HREF="$$LINK(OSContrastValue)">OSContrastValue</A>).<BR>
+See <A HREF="$$LINK(OSContrastValue)">OSContrastValue</A> for more information.

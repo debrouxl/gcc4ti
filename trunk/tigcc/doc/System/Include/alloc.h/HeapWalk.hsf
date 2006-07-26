@@ -5,7 +5,7 @@ Subtype=ROM Call
 Header Files=alloc.h
 Definition=short HeapWalk (short function);
 MinAMS=2.00
-See Also=HeapShuffle, vat.h/
+See Also=HeapShuffle, vat.h/, vat.h/SymFindFolderName, unknown.h/pSymPG, unknown.h/SymPG_S
 
 [ROM Call]
 Index=$12C
@@ -35,9 +35,13 @@ The valid values for <I>function</I>, defined in the enum <A HREF="$$LINK(HeapWa
 </TR>
 <TR>
   <TD VALIGN="TOP">H_WALK_SYM</TD>
-  <TD>AMS 2.04 or higher: The function outputs the entire VAT.</TD>
+  <TD><B>AMS 2.04 or higher</B>: The function outputs the entire VAT.</TD>
 </TR>
 </TABLE>
+<BR>
+HeapWalk called with <I>function</I> as H_WALK_VERIFY, H_WALK_STATUS or H_WALK_DUMP, returns TRUE if the heap is valid, FALSE otherwise.<BR>
 
+<I>HeapWalk(H_WALK_SYM)</I> executes this block of code after verifying the heap. The example "List variables and folders" works on any AMS version, unlike HeapWalk(H_WALK_SYM):
+$$EXAMPLE(List variables and folders.c)
 [References]
 Out=error.h/ER_catch, link.h/LIO_SendData, mem.h/memcpy, stdio.h/sprintf, string.h/strlen, unknown.h/pSymPG, vat.h/SymFindFirst, vat.h/SymFindFolderName, vat.h/SymFindNext

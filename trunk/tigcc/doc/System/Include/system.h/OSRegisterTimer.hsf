@@ -4,6 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=system.h
 Definition=short OSRegisterTimer (short timer_no, unsigned long T);
+See Also=FiftyMsecTick, OSFreeTimer, OSTimerCurVal, OSTimerExpired, OSTimerRestart
 
 [ROM Call]
 Index=$F0
@@ -12,28 +13,52 @@ Index=$F0
 Registers a notify (countdown) timer.
 
 [Explanation]
-TIOS has a 6 notify (countdown) timers, numbered from 1 to 6. OSRegisterTimer initializes the
-timer which ID number is <I>timer_no</I>, and sets its initial value to <I>T</I>.
-Every time the Auto-Int 5 is triggered (20 times per second if you didn't change the
-programable rate generator), the current value of the timer is decremented by 1. When
-the current value reaches zero, nothing special happens, but a flag is set which
-indicates that the timer is expired. This flag may be check using function
-<A HREF="$$LINK(OSTimerExpired)">OSTimerExpired</A>.
-<BR><BR>
-OSRegisterTimer returns <I>timer_no</I> if the registration was successful, else
-returns zero. This happens if you give wrong parameters, or if the timer <I>timer_no</I>
-is already in use. So, you must first free the timer using <A HREF="$$LINK(OSFreeTimer)">OSFreeTimer</A>.
-Notify timers 2, 3, 4 and sometimes 5 are used in TIOS for internal purposes, and it seems that
-timers 1 and 6 are free for use (especially I expected that 6 are surely
-unused, and I am not so sure for timer 1). Timer 5 is sometimes used for measuring
-time in some TI-Basic functions like CyclePic. Timer 4 is used for cursor blinking.
-Timer 3 is used for link communication. Timer 2 is used for automatic power-down (APD)
-counting, so this is an official method to change APD rate to, for example, 100 seconds:
-<PRE>OSFreeTimer (APD_TIMER);
-OSRegisterTimer (APD_TIMER, 100*20);
-</PRE>
-Legal timer numbers (like APD_TIMER) are defined in enum <A HREF="$$LINK(Timers)">Timers</A>, to make a
-program more readable. See also other timer functions for more info.
+TIOS has several notify (countdown) timers. The number of timers is not the same on all AMS versions: 
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B>All AMS versions up to 2.03</B></TD>
+  <TD>6 timers (1 to 6)</TD>
+</TR>
+<TR>
+  <TD><B>AMS 2.04 and 2.05</B></TD>
+  <TD>7 timers (1 to 7)</TD>
+</TR>
+<TR>
+  <TD><B>AMS 2.07, 2.08 and 2.09</B></TD>
+  <TD>8 timers (1 to 8)</TD>
+</TR>
+</TABLE>
+<BR>
+OSRegisterTimer initializes the timer which ID number is <I>timer_no</I>, and sets its initial 
+value to <I>T</I>.
+Every time the Auto-Int 5 is triggered (approximatively 20 times per second if you didn't change
+the programable rate generator), the current value of the timer is decremented by 1. When
+ the current value reaches zero, nothing special happens, but a flag is set which
+ indicates that the timer is expired. This flag may be check using function
+ <A HREF="$$LINK(OSTimerExpired)">OSTimerExpired</A>.
+ <BR><BR>
+ OSRegisterTimer returns <I>timer_no</I> if the registration was successful, else
+ returns zero. This happens if you give wrong parameters, or if the timer <I>timer_no</I>
+is already in use. So, you must first free the timer using <A HREF="$$LINK(OSFreeTimer)">OSFreeTimer</A>.<BR>
+<BR>
+Usual use of the timers:
+<UL>
+<LI><B>Timer 1</B> seems to be free for use on all AMS versions.</LI>
+<LI><B>Timer 2</B> is used for automatic power-down (APD) counting, so this is an official method to 
+change APD rate to, for example, 100 seconds:
+ <PRE>OSFreeTimer (APD_TIMER);
+ OSRegisterTimer (APD_TIMER, 100*20);
+</PRE></LI>
+<LI><B>Timer 3</B> is used for link communication.</LI>
+<LI><B>Timer 4</B> is used for cursor blinking.</LI>
+<LI><B>Timer 5</B> is sometimes used for measuring time in some TI-Basic functions like CyclePic.</LI>
+<LI><B>Timer 6</B> seems to be free for use on all AMS versions.</LI>
+<LI><B>Timer 7</B> is used on AMS 2.04 and above by the standard AUTO_INT_5 routine to launch battery level checking routine every 20 ticks. You shouldn't use it...</LI>
+<LI><B>Timer 8</B> is used on AMS 2.07 and above in particular by the functions related to TI-Navigator.</LI>
+</UL>
+<BR>
+ Legal timer numbers (like APD_TIMER) are defined in enum <A HREF="$$LINK(Timers)">Timers</A>, to make a
+ program more readable. See also other timer functions for more info.
 
 [References]
 In=bascmd.h/cmd_cyclepic, bascmd.h/cmd_sendcalc, bascmd.h/cmd_sendchat, flash.h/BatTooLowFlash, link.h/LIO_RecvData, unknown.h/GT_Trace, unknown.h/Regraph

@@ -1,0 +1,46 @@
+[Main]
+Name=WinToScr
+Type=Function
+Subtype=ROM Call
+Header Files=wingraph.h
+Definition=SCR_RECT *WinToScr (const WIN_RECT *win_rect, SCR_RECT *dest_rect);
+MinAMS=2.00
+
+[ROM Call]
+Index=$42F
+
+[Description]
+Converts a WIN_RECT into a SCR_RECT, clipping the coordinates if necessary.
+
+[Explanation]
+WinToScr converts coordinates (<CODE>shorts</CODE>) in the structure <I>win_rect</I> to the same 
+coordinates (<CODE>unsigned char</CODE>), storing the result in the structure pointed to by 
+<I>dest_rect</I>, except that the coordinates that are negative are clipped to 0, and the 
+coordinates greater than 0xFF are clipped to 0xFF.
+WinToScr returns <I>dest_rect</I> back (but the structure pointed to by it is modified).<BR>
+<BR>
+If you want a WinToScr that works on all AMS versions, you can use:
+<PRE>
+#undef WinToScr
+SCR_RECT *WinToScr (const WIN_RECT *win_rect, SCR_RECT *dest_rect);
+asm("
+WinToScr:
+move.l   4(%sp),%a1
+move.l   8(%sp),%a0
+moveq    #4-1,%d1
+_loop_WTS_:
+move.w   (%a1)+,%d0
+bge.s    _not_negative_WTS_
+moveq    #0,%d0 | clr.w %d0 or eor.w %d0,%d0 are enough and just as fast.
+bra.s    _store_WTS_
+_not_negative_WTS_:
+cmpi.w   #0xFF,%d0
+bls.s    _store_WTS_
+moveq    #-1,%d0
+_store_WTS_:
+move.b   %d0,(%a0)+
+dbf      %d1,_loop_WTS_
+subq.l   #4,%a0
+rts
+");
+</PRE>

@@ -1,0 +1,51 @@
+[Main]
+Name=LOC_formatDate
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=void LOC_formatDate (const char *format, short y, short m, short d, char *date);
+MinAMS=2.02
+See Also=LOC_getLocalDateFormat, LOC_localVersionDate
+
+[ROM Call]
+Index=$590
+
+[Description]
+Formats a date into <I>date</I> according to <I>format</I> string.
+
+[Explanation]
+<I>format</I>: string containing date specifiers:<BR>
+    <B>D</B> : One- or two-digit day of month.<BR>
+    <B>DD</B> : Two-digit day of month (leading zero if necessary).<BR>
+    <B>M</B> : One- or two-digit month.<BR>
+    <B>MM</B> : Two-digit month (leading zero if necessary).<BR>
+    <B>YY</B> : Two-digit year (year without century).<BR>
+    <B>YYYY</B> : Four-digit year.<BR>
+    Any other characters are copied to output.<BR>
+<BR>
+<I><B>y</B></I> : Year.<BR>
+<I><B>m</B></I> : Month.<BR>
+<I><B>d</B></I> : Day of month.<BR>
+<BR>
+Examples:
+<PRE>
+char date[16];
+short y = 2000, m = 6, d = 9;
+LOC_formatDate("M/D/YYYY", y, m, d, date);   // 6/9/2000
+LOC_formatDate("MM/DD/YYYY", y, m, d, date); // 06/09/2000
+LOC_formatDate("YYYY.MM.DD", y, m, d, date); // 2000.06.09
+LOC_formatDate("D-M-YY", y, m, d, date);     // 9-6-00
+LOC_formatDate("MM/YYYY", y, m, d, date);    // 06/2000
+</PRE>
+<BR>
+<B>The ROM_CALL LOC_formatDate is available only on AMS 2.02 and higher.</B><BR>
+<BR>
+<B>Note</B>: LOC_formatDate doesn't check the parameters, as you'll see if you try:
+<PRE>
+LOC_formatDate("MM/DD/YYYY",32767,32767,32767,buffer);
+</PRE>
+if <I>buffer</I> is large enough.
+
+[References]
+Out=stdio.h/sprintf
+In=system.h/LOC_localVersionDate

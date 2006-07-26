@@ -1,0 +1,39 @@
+[Main]
+Name=CTypeTable
+Type=Variable
+Subtype=Macro
+Header Files=system.h
+Definition=const unsigned char *CTypeTable;
+Real Definition=#define CTypeTable ((MIN_AMS >= 200)?((const unsigned char *)_rom_call_addr(442)):({unsigned char* __CTypeTable; asm volatile ("moveq #8,%%d0; trap #9; move.l %%a0,%0" : "=a"(__CTypeTable) : : "d0","a0"); (const unsigned char *)__CTypeTable; }))
+
+[Description]
+A pointer to a table describing the types of the AMS characters.
+
+[Explanation]
+This table contains 256 elements, one for each character.<BR>
+There are nine different values in this table:<BR>
+<B>0x00 (0b00000000)</B>: characters 0x00-0x0A and 0x0C-0x0D. <I><U>These characters are not supposed to occur in any string returned by the system, they are not part of the char menu either.</U></I><BR><BR>
+<B>0x40 (0b01000000)</B>: characters 0x0B, 0x0E, 0x0F, 0x10-0x2F (system characters + some of the operators), 0x3A-0x3F (colon, semicolon...), 0x40 (at sign), 0x5B-0x5E (brackets...), 0x60, 0x7B-0x7F (braces...), 0x95-0xB4 (maths symbols...), 0xB6-0xBF (maths symbols...), 0xD7, 0xF7. <I><U>These symbols are used by the pretty print, or available in the char menu (some are incorrect in expressions)...</U></I><BR><BR>
+<B>0x48 (0b01001000)</B>: character 0x5F (<I><U>question mark</U></I>).<BR><BR>
+<B>0x4C (0b01001100)</B>: characters 0x30-0x39, i.e. <I><U>numerals</U></I>.<BR><BR>
+<B>0x58 (0b01011000)</B>: characters 0xDF and 0xFF (<I><U>�and </U></I>).<BR><BR>
+<B>0x59 (0b01011001)</B>: characters 0x61-0x7B, 0xE0-0xEF, 0xF0-0xF6, 0xF8-0xFE. <I><U>These characters are lowercase letters, accentuated or not.</U></I><BR><BR>
+<B>0x5A (0b01011010)</B>: characters 0x41-0x5B, 0xC0-0xCF, 0xD0-0xD6, 0xD8-0xDE. <I><U>These characters are uppercase letters, accentuated or not.</U></I><BR><BR>
+<B>0x60 (0b01100000)</B>: character 0x8C (pi).<BR><BR>
+<B>0x78 (0b01111000)</B>: characters 0x80-0x8B, 0x8D-0x8F, 0x90-0x94, 0xB5 (). <I><U>These characters are all greek letters (no meaning for the system), without pi (0x60).</U></I><BR><BR>
+<BR>
+To sum up:<BR>
+<B>bit 0</B> set means: '<I><U>character is a lowercase letter</U></I>' (type 0x59).<BR><BR>
+<B>bit 1</B> set means: '<I><U>character is a uppercase letter</U></I>' (type 0x5A).<BR><BR>
+(bits 0 and 1 are mutually exclusive).<BR>
+<B>bit 2</B> set means: '<I><U>character is a numeral</U></I>' (type 0x4C).<BR><BR>
+<B>bit 3</B> set means: '<I><U>character is valid in a symbol name</U></I>' (types 0x00, 0x40 and 0x60 are invalid in symbol names).<BR><BR>
+<B>bit 4</B> set means: '<I><U>character is valid as starting character for a symbol name</U></I>' (types 0x48 and 0x4C are invalid as first character in symbol names).<BR><BR>
+<B>bit 5</B> set means: '<I><U>character is a greek letter</U></I>' (types 0x60 and 0x78).<BR><BR>
+<B>bit 6</B> set means: '<I><U>character is printable</U></I>' (all types except 0x00).<BR><BR>
+<B>bit 7</B> is currently unused.
+<BR><BR><BR>
+<I>Credits go to Zeljko Juric for the trick used to retrieve the address of that table.</I> This wrapper implements ROM_CALL 442 on any AMS version.
+
+[References]
+In=unknown.h/EQU_getNameInfo, unknown.h/GetStatValue, unknown.h/gr_del_locals, unknown.h/GT_Trace, unknown.h/init_unit_system, unknown.h/next_token, unknown.h/nonblank, unknown.h/ParseSymName, unknown.h/push_format, unknown.h/push_parse_prgm_or_func_text, unknown.h/push_user_func, unknown.h/push_var, unknown.h/setup_unit_system, estack.h/is_independent_of_de_seq_vars, estack.h/push_parse_text, events.h/handleVarLinkKey, events.h/MO_digestOptions, gdraw.h/GD_Text, menus.h/MenuKey, statline.h/ST_folder, stdio.h/sprintf, string.h/cmpstri, string.h/stricmp, textedit.h/TE_handleEvent, vat.h/CheckSysFunc, vat.h/FolderCurTemp, vat.h/StrToTokN, vat.h/ValidateSymName, vat.h/VarRecall, vat.h/VarStore, unknown.h/_ROM_CALL_421, unknown.h/_ROM_CALL_4D4
