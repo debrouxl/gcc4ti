@@ -1,5 +1,5 @@
 
-           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 6
+           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 7
           ================================================================
 
 Xavier Vassor       Xavier@tigcc.ticalc.org    (original linker and tigcc)
@@ -34,15 +34,15 @@ Email us at:        Team@tigcc.ticalc.org
 
 Original files Copyright (C) 1999-2005 Xavier Vassor, Niklas Brunlid,
                                        and Jean Canazzi
-ld-tigcc Copyright (C) 2002-2005 Sebastian Reichelt and Kevin Kofler
-Library & Documentation Copyright (C) 2000-2005 Zeljko Juric and contributors
-IDE Copyright (C) 2000-2005 Sebastian Reichelt
+ld-tigcc Copyright (C) 2002-2006 Sebastian Reichelt and Kevin Kofler
+Library & Documentation Copyright (C) 2000-2006 Zeljko Juric and contributors
+IDE Copyright (C) 2000-2006 Sebastian Reichelt and contributors
+TIGCC Tools Suite Copyright (C) 2000-2004 Thomas Nussbaumer
+                                          (http://tict.ticalc.org/)
 
 Included programs with different licenses:
 A68k Copyright (C) 1987-2005 Charlie Gibbs, David Ellsworth, Kevin Kofler,
                              Julien Muchembled, and Paul Froissart
-TIGCC Tools Suite Copyright (C) 2000-2004 Thomas Nussbaumer
-                                          (http://tict.ticalc.org/)
 
 Setup executable created using NSIS (http://nsis.sourceforge.net) and
 compressed using LZMA (http://www.7-zip.org/sdk.html) for the data and UPX
@@ -62,7 +62,10 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-Different licenses apply to A68k and the tools from the TIGCC Tools Suite.
+Some components (TIGCCLIB, ttpack, pstarter) have additional permissions
+beyond the GPL.
+
+A different license applies to A68k.
 
 Official Release: http://www.ticalc.org/pub/win/asm/tigcc.zip
      Source Code: http://www.ticalc.org/pub/win/asm/tigccsrc.zip

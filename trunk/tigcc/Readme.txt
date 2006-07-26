@@ -1,5 +1,5 @@
 
-           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 6
+           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 7
           ================================================================
 
 Xavier Vassor       Xavier@tigcc.ticalc.org    (original linker and tigcc)
@@ -13,15 +13,15 @@ Philipp Winkler     p.winkler@atn.nu           (library help file conversion)
 
 Original files Copyright (C) 1999-2005 Xavier Vassor, Niklas Brunlid,
                                        and Jean Canazzi
-ld-tigcc Copyright (C) 2002-2005 Sebastian Reichelt and Kevin Kofler
-Library & Documentation Copyright (C) 2000-2005 Zeljko Juric and contributors
-IDE Copyright (C) 2000-2005 Sebastian Reichelt
+ld-tigcc Copyright (C) 2002-2006 Sebastian Reichelt and Kevin Kofler
+Library & Documentation Copyright (C) 2000-2006 Zeljko Juric and contributors
+IDE Copyright (C) 2000-2006 Sebastian Reichelt and contributors
+TIGCC Tools Suite Copyright (C) 2000-2004 Thomas Nussbaumer
+                                          (http://tict.ticalc.org/)
 
 Included programs with different licenses:
 A68k Copyright (C) 1987-2005 Charlie Gibbs, David Ellsworth, Kevin Kofler,
                              Julien Muchembled, and Paul Froissart
-TIGCC Tools Suite Copyright (C) 2000-2004 Thomas Nussbaumer
-                                          (http://tict.ticalc.org/)
 
 This archive contains the sources for...
 - the GCC patches ('GCC' folder)
