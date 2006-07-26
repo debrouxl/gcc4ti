@@ -1178,6 +1178,11 @@ void MainForm::init()
   }
   updateRecent();
   startTimer(100);
+  if (preferences.downloadHeadlines) {
+    NewsDialog newsDialog(this);
+    if (newsDialog.loadNews())
+      newsDialog.exec();
+  }
 }
 
 void MainForm::destroy()
@@ -4878,6 +4883,7 @@ void MainForm::helpSearch()
 void MainForm::helpNews()
 {
   NewsDialog newsDialog(this);
+  newsDialog.loadNews();
   newsDialog.exec();
 }
 

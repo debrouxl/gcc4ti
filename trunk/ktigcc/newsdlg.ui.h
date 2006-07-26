@@ -31,6 +31,13 @@
 */
 
 #include <kcmultidialog.h>
+#include <krun.h>
+#include <kurl.h>
+
+bool NewsDialog::loadNews()
+{
+  return FALSE;
+}
 
 void NewsDialog::proxySettingsButton_clicked()
 {
@@ -41,10 +48,10 @@ void NewsDialog::proxySettingsButton_clicked()
 
 void NewsDialog::refreshButton_clicked()
 {
-
+  loadNews();
 }
 
 void NewsDialog::visitButton_clicked()
 {
-
+  KRun::runURL(KURL("http://tigcc.ticalc.org/linux/"),"text/html");
 }
