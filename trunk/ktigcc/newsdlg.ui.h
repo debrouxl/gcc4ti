@@ -98,13 +98,17 @@ bool NewsDialog::loadNews()
       if (!*line) goto done;
       if (std::sscanf(line,"%4u%2u%2u",&y,&m,&d)<3) ERROR("Invalid news file.");
       if (latestHeadline.isNull() || QDate(y,m,d)>latestHeadline) {
-        if (!result) pconfig->writeEntry("Latest Headline",QDateTime(QDate(y,m,d)));
+        if (!result) {
+          pconfig->writeEntry("Latest Headline",QDateTime(QDate(y,m,d)));
+          pconfig->sync();
+        }
         result=itemIsNew=TRUE;
       }
       // Title
       if (!std::fgets(line,32768,f)) ERROR("Invalid news file.");
       ZAP_LF();ZAP_CR();
-      new ColoredListBoxText(newsListBox,line,itemIsNew?Qt::red:Qt::gray);
+      new ColoredListBoxText(newsListBox,QString::fromUtf8(line),
+                             itemIsNew?Qt::red:Qt::gray);
       // Empty line
       if (!std::fgets(line,32768,f)) goto done;
       ZAP_LF();ZAP_CR();

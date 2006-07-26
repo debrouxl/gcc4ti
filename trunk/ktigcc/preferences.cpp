@@ -1312,6 +1312,7 @@ void savePreferences(void)
   pconfig->writeEntry("Auto Blocks",(bool)preferences.autoBlocks);
   pconfig->writeEntry("Remove Trailing Spaces",(bool)preferences.removeTrailingSpaces);
 
+  pconfig->sync();
   updateEditorPreferences();
 }
 

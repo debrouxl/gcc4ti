@@ -1357,6 +1357,7 @@ void MainForm::fileNewProject()
   clearProject();
   pconfig->setGroup("Recent files");
   pconfig->writeEntry("Current project","");
+  pconfig->sync();
 }
 
 QString MainForm::findFilter(unsigned short job)
@@ -1492,6 +1493,7 @@ void MainForm::addRecent(const QString &fileName)
   // The first recent file is the current project.
   pconfig->writeEntry("Recent file 1",fileName);
   pconfig->writeEntry("Current project",fileName);
+  pconfig->sync();
   updateRecent();
 }
 
