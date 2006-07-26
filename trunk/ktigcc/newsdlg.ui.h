@@ -33,10 +33,92 @@
 #include <kcmultidialog.h>
 #include <krun.h>
 #include <kurl.h>
+#include <kio/netaccess.h>
+#include <kmessagebox.h>
+#include <qdatetime.h> 
+#include <qstring.h>
+#include <qlistbox.h>
+#include <qcolor.h>
+#include <qpainter.h>
+#include <qpen.h>
+#include <cstdio>
+#include <cstring>
+#include "ktigcc.h"
+
+class ColoredListBoxText : public QListBoxText {
+  public:
+    ColoredListBoxText(QListBox *listbox, const QString &text,
+                       const QColor &textColor)
+      : QListBoxText(listbox,text), color(textColor) {}
+    virtual ~ColoredListBoxText() {}
+  protected:
+    virtual void paint(QPainter *painter) {
+      QPen oldPen=painter->pen();
+      QPen pen=oldPen;
+      pen.setColor(color);
+      painter->setPen(pen);
+      QListBoxText::paint(painter);
+      painter->setPen(oldPen);
+    }
+  private:
+    QColor color;
+};
 
 bool NewsDialog::loadNews()
 {
-  return FALSE;
+  QString tmpFile;
+  bool result=FALSE;
+  pconfig->setGroup("News Headlines");
+  QDateTime defaultDateTime;
+  QDate latestHeadline=pconfig->readDateTimeEntry("Latest Headline",
+                                                  &defaultDateTime).date();
+  if(KIO::NetAccess::download(
+      KURL("http://tigcc.ticalc.org/linux/newsheadlines.txt"),tmpFile,this)) {
+    #define ERROR(s) do {KMessageBox::error(this,(s)); goto done;} while(0)
+    #define ZAP_LF() do {char *p=line+(std::strlen(line)-1); if (*p=='\n') *p=0;} while(0)
+    #define ZAP_CR() do {char *p=line+(std::strlen(line)-1); if (*p=='\r') *p=0;} while(0)
+    std::FILE *f=std::fopen(tmpFile,"r");
+    if (!f) ERROR("Downloading news failed.");
+    char line[32768];
+    // "TIGCC News Format"
+    if (!std::fgets(line,32768,f)) ERROR("Invalid news file.");
+    ZAP_LF();ZAP_CR();
+    if (std::strcmp(line,"TIGCC News Format")) ERROR("Invalid news file.");
+    // Empty line
+    if (!std::fgets(line,32768,f)) ERROR("Invalid news file.");
+    ZAP_LF();ZAP_CR();
+    if (*line) ERROR("Invalid news file.");
+    newsListBox->clear();
+    while (1) {
+      bool itemIsNew=FALSE;
+      unsigned y,m,d;
+      // Date
+      if (!std::fgets(line,32768,f)) goto done;
+      ZAP_LF();ZAP_CR();
+      if (!*line) goto done;
+      if (std::sscanf(line,"%4u%2u%2u",&y,&m,&d)<3) ERROR("Invalid news file.");
+      if (latestHeadline.isNull() || QDate(y,m,d)>latestHeadline) {
+        if (!result) pconfig->writeEntry("Latest Headline",QDateTime(QDate(y,m,d)));
+        result=itemIsNew=TRUE;
+      }
+      // Title
+      if (!std::fgets(line,32768,f)) ERROR("Invalid news file.");
+      ZAP_LF();ZAP_CR();
+      new ColoredListBoxText(newsListBox,line,itemIsNew?Qt::red:Qt::gray);
+      // Empty line
+      if (!std::fgets(line,32768,f)) goto done;
+      ZAP_LF();ZAP_CR();
+      if (*line) ERROR("Invalid news file.");
+    }
+    #undef ERROR
+    #undef ZAP_LF
+    #undef ZAP_CR
+    done: if (f) std::fclose(f);
+    KIO::NetAccess::removeTempFile(tmpFile);
+  } else {
+    KMessageBox::error(this,KIO::NetAccess::lastErrorString());
+  }
+  return result;
 }
 
 void NewsDialog::proxySettingsButton_clicked()
