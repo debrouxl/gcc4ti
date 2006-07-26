@@ -72,7 +72,8 @@ IMAGES	= images/00 \
 	images/filereplace.png \
 	images/error.png \
 	images/warning.png \
-	images/info.png
+	images/info.png \
+	images/ktigcc.png
 
 # If this is not used, a build from /usr/.... will generate
 # Makefiles with relative paths for install.  This totally

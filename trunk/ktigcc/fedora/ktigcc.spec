@@ -31,8 +31,10 @@ make
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 mkdir -p $RPM_BUILD_ROOT
 make install INSTALL_ROOT=$RPM_BUILD_ROOT
-mkdir -p ${RPM_BUILD_ROOT}/usr/share/applications
-cat >${RPM_BUILD_ROOT}/usr/share/applications/ktigcc.desktop <<EOF
+mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/icons
+cp -pf images/ktigcc.png ${RPM_BUILD_ROOT}%{_datadir}/icons/ktigcc.png
+mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/applications
+cat >${RPM_BUILD_ROOT}%{_datadir}/applications/ktigcc.desktop <<EOF
 [Desktop Entry]
 Name=KTIGCC
 Comment=TIGCC IDE for KDE
@@ -41,13 +43,13 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 Exec=%{tigccdir}/bin/ktigcc
-Icon=kdevelop
+Icon=%{_datadir}/icons/ktigcc.png
 Terminal=false
 Categories=Development;
 EOF
 desktop-file-install --delete-original --vendor tigcc     \
   --dir ${RPM_BUILD_ROOT}%{_datadir}/applications          \
-  ${RPM_BUILD_ROOT}/usr/share/applications/ktigcc.desktop
+  ${RPM_BUILD_ROOT}%{_datadir}/applications/ktigcc.desktop
 
 %post
 update-desktop-database %{_datadir}/applications > /dev/null 2>&1 || :
@@ -63,12 +65,14 @@ rm -rf $RPM_BUILD_ROOT
 %{tigccdir}/bin/ktigcc
 %{_datadir}/apps/katepart/syntax/gnuasm68k.xml
 %{_datadir}/apps/katepart/syntax/masm68k.xml
+%{_datadir}/icons/ktigcc.png
 %{_datadir}/applications/tigcc-ktigcc.desktop
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
 * Wed Jul 26 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Require kdebase (needed at least for proxy settings).
+Install icon and use it in the .desktop file.
 
 * Sun Jul 23 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Use libti*-devel instead of libti* in BuildRequires.

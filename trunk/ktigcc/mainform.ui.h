@@ -948,6 +948,8 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
 
 void MainForm::init()
 {
+  setIcon(QPixmap::fromMimeSource("icon.png"));
+  KWin::setIcons(winId(),*(icon()),QPixmap::fromMimeSource("ktigcc.png"));
   ticables_library_init();
   tifiles_library_init();
   ticalcs_library_init();
