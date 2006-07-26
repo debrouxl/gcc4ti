@@ -99,6 +99,7 @@
 #include "callbacks.h"
 #include "parsing.h"
 #include "functions.h"
+#include "newsdlg.h"
 
 using std::puts;
 using std::exit;
@@ -4876,7 +4877,8 @@ void MainForm::helpSearch()
 
 void MainForm::helpNews()
 {
-  
+  NewsDialog newsDialog(this);
+  newsDialog.exec();
 }
 
 void MainForm::helpAbout()

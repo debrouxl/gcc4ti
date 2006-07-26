@@ -12,7 +12,7 @@ Source: %{name}.tar.bz2
 Group: Development/Tools
 License: GPL
 BuildRequires: qt-devel >= 1:3.3.0 kdelibs-devel >= 6:3.5.2 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
-Requires: kdelibs >= 6:3.5.2 tigcc >= 1:0.96b06r1 /usr/bin/assistant ctags
+Requires: kdelibs >= 6:3.5.2 kdebase >= 6:3.5.2 tigcc >= 1:0.96b06r1 /usr/bin/assistant ctags
 Requires(post): desktop-file-utils >= 0.10
 Requires(postun): desktop-file-utils >= 0.10
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Wed Jul 26 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Require kdebase (needed at least for proxy settings).
+
 * Sun Jul 23 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Use libti*-devel instead of libti* in BuildRequires.
 BuildRequire libti* 20060723.

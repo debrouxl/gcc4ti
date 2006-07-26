@@ -28,7 +28,8 @@ FORMS	= srcfilewin.ui \
 	mainform.ui \
 	errorlist.ui \
 	programoutput.ui \
-	functions.ui
+	functions.ui \
+	newsdlg.ui
 
 IMAGES	= images/00 \
 	images/01 \
