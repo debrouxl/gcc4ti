@@ -13,6 +13,20 @@ fi
 
 echo Installing TIGCC linker...
 cd ../sources/ld-tigcc
+
+# OS X requires a switch to enable nested functions. ld-tigcc doesn't actually
+# require an executable stack, but Apple's compiler is not clever enough to
+# make the distinction.
+if [ -z "$CC" ]
+then CC="gcc"
+fi
+if [ -z "$CFLAGS" ]
+then CFLAGS="-Os -s -fno-exceptions"
+fi
+if $CC -v --help 2>/dev/null | grep fnested-functions >/dev/null
+then export CFLAGS="$CFLAGS -fnested-functions"
+fi
+
 ${make} -e
 cp ld-tigcc $TIGCC/bin
 cp ar-tigcc $TIGCC/bin
