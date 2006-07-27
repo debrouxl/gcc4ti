@@ -2143,11 +2143,11 @@ void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const Q
       ListViewFile *theFile=static_cast<ListViewFile *>(item);
       QString absPath=theFile->fileName;
       QString relPath=KURL::relativePath(base_dir,absPath);
-      if (relPath.find("./")==0)
+      if (relPath.startsWith("./"))
       {
         relPath=relPath.mid(2);
       }
-      else if (relPath.find("../")==0)
+      else if (relPath.startsWith("../"))
       {
         relPath=absPath;
       }
@@ -2293,7 +2293,7 @@ bool MainForm::fileSaveAs()
   QString fileName=SGetFileName(KFileDialog::Saving,TIGCC_TPR_Filter TIGCCAllFilter,"Save Project",this);
   if (fileName.isEmpty())
     return FALSE;
-  fileSave_fromto(projectFileName,fileName);
+  fileSave_fromto(projectFileName.isEmpty()?fileName:projectFileName,fileName);
   return TRUE;
 }
 
