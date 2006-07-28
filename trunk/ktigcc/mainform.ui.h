@@ -1171,7 +1171,8 @@ void MainForm::init()
   }
   pconfig->setGroup("Recent files");
   if (parg) {
-    if (!openProject(parg)) goto openRecent;
+    QString fileName=QDir().absFilePath(parg);
+    if (!openProject(fileName)) goto openRecent;
   } else {
     openRecent:;
     QString mostrecent=pconfig->readEntry("Current project");
