@@ -1400,18 +1400,16 @@
 .set bcdsub, 0xb7
 .set bcdlong, 0xbc
 
+.set ST_showHelp, 0xE6
+.set DrawTo, 0x19C
+.set flush_link, 0x24D
+.set receive, 0x24F
+.set reset_link, 0x24C
+.set transmit, 0x250
+.set tx_free, 0x252
+
 .set SymFindFoldername, 0x6F
 .set MakeHsym, 0x282
-
-.set _bcd_math, 0xB5
-.set _ds16u16, 0x2A4
-.set _ms16u16, 0x2A5
-.set _du16u16, 0x2A6
-.set _mu16u16, 0x2A7
-.set _ds32s32, 0x2A8
-.set _ms32s32, 0x2A9
-.set _du32u32, 0x2AA
-.set _mu32u32, 0x2AB
 
 .set LCD_MEM, 0x4c00
 .set ACTIVITY_IDLE, 0
