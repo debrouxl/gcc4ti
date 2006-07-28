@@ -191,7 +191,7 @@ object AboutForm: TAboutForm
       Top = 44
       Width = 209
       Height = 15
-      Caption = 'Copyright © 1999-2005 The TIGCC Team'
+      Caption = 'Copyright © 1999-2006 The TIGCC Team'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -12
