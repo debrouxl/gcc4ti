@@ -30,7 +30,7 @@
 !define TIGCCDIR "../../tigcc-win32"
 !define TIGCCCVSDIR ".."
 
-SetCompressor lzma
+SetCompressor /SOLID lzma
 
 !packhdr tmpexe.tmp "upx --best -q tmpexe.tmp"
 

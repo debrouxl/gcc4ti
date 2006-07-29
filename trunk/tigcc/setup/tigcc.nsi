@@ -31,7 +31,7 @@
 !define TIGCCDIR "E:\TI-89\Compilers\TIGCC"
 !define TIGCCCVSDIR "E:\TI-89\tigcccvs"
 
-SetCompressor lzma
+SetCompressor /SOLID lzma
 
 !packhdr tmpexe.tmp "${UPXDIR}\upx.exe --best -q tmpexe.tmp"
 
