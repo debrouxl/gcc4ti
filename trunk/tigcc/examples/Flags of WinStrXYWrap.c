@@ -7,7 +7,7 @@
 #define SAVE_SCREEN           // Save/Restore LCD Contents
 #define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
 #define NO_CALC_DETECT
-#define MIN_AMS 204           // Compile for AMS 2.04 or higher
+#define MIN_AMS 207           // Compile for AMS 2.07 or higher
 
 #include <tigcclib.h>         // Include All Header Files
 

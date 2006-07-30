@@ -140,7 +140,7 @@ enum winWriteFlags{WWF_DRAW=1,WWF_WRAP_ON_COMMAS=2
 ,WWF_WRAP_BACK_TO_ZERO=4
 #endif
 };
-#define WinStrXYWrap _rom_call(short,(WINDOW*,WIN_COORDS,WIN_COORDS,char*,short),5DB)
+#define WinStrXYWrap _rom_call(short,(WINDOW*,WIN_COORDS,WIN_COORDS,const char*,short),5DB)
 #endif
 #endif
 /* End Auto-Generated Part */
