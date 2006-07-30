@@ -64,7 +64,7 @@ int main( int argc, char *argv[] )
   KAboutData about("ktigcc","TIGCC IDE for KDE","1.00",
   "TIGCC C and ASM SDK", KAboutData::License_GPL,
   "Copyright (C) 2004-2006 Kevin Kofler and Joey Adams. All rights reserved.\n"
-  "TIGCC Copyright (C) 1999-2005 The TIGCC Team.",
+  "TIGCC Copyright (C) 1999-2006 The TIGCC Team.",
   "Original linker by Xavier and Niklas\n"
   "Compiler modifications by Jean, Sebastian and Kevin\n"
   "Linker by Sebastian and Kevin\n"
