@@ -4118,42 +4118,7 @@ void MainForm::linkProject()
     procio=static_cast<KProcIO *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
     // Rename the data file so it doesn't conflict with PPGs.
-    // If the program is compressed, we actually need to relink it without the
-    // outputbin flag.
-    // FIXME: Use --outputbin-main-only instead when the ld-tigcc supporting it
-    //        gets released.
     if (dataFileGenerated)  {
-      if (settings.pack) {
-        linkerOptions.remove("--outputbin");
-        // The QTextCodec has to be passed explicitly, or it will default to
-        // ISO-8859-1 regardless of the locale, which is just broken.
-        procio=new KProcIO(QTextCodec::codecForLocale());
-        // Use MergedStderr instead of Stderr so the messages get ordered
-        // properly.
-        procio->setComm(static_cast<KProcess::Communication>(
-          KProcess::Stdout|KProcess::MergedStderr));
-        procio->setWorkingDirectory(projectDir);
-        *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
-               <<"-o"<<projectBaseName<<"-n"<<projectName;
-        if (!dataVarName.isNull()) *procio<<"-d"<<dataVarName;
-        *procio<<linkerOptions<<objectFiles;
-        if (settings.std_lib)
-          *procio<<QString(settings.flash_os?"%1/lib/flashos.a"
-                                            :(settings.fargo?"%1/lib/fargo.a"
-                                                            :"%1/lib/tigcc.a"))
-                   .arg(tigcc_base);
-        connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
-        // Don't connect readReady, the errors/warnings have already been displayed!
-        procio->start();
-        // We need to block here, but events still need to be handled. The most
-        // effective way to do this is to enter the event loop recursively,
-        // even though it is not recommended by Qt.
-        QApplication::eventLoop()->enterLoop();
-        // This will be reached only after exitLoop() is called.
-        delete procio;
-        procio=static_cast<KProcIO *>(NULL);
-        if (errorsCompilingFlag || stopCompilingFlag) return;
-      }
       QDir qdir;
       const int numTargets=3;
       bool targeted[numTargets]={ti89_targeted,ti92p_targeted,v200_targeted};
@@ -4163,7 +4128,7 @@ void MainForm::linkProject()
       for (int target=0; target<numTargets; target++) {
         if (targeted[numTargets]) {
           qdir.remove(projectBaseName+"-data"+dexts[target]);
-          if (!qdir.rename(projectBaseName+dexts[target],
+          if (!qdir.rename(linkOutput+dexts[target],
                            projectBaseName+"-data"+dexts[target])) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to rename data file.",

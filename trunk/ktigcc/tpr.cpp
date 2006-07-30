@@ -1369,7 +1369,9 @@ QStringList process_settings(const QString &prjNameUnicode,
     args.append("--merge-constants");
   }
 
-  if (settings.outputbin || settings.pack) {
+  if (settings.pack) {
+    args.append("--outputbin-main-only");
+  } else if (settings.outputbin) {
     args.append("--outputbin");
   }
 
