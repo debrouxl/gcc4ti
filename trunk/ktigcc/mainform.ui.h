@@ -78,6 +78,7 @@
 #include <ktextbrowser.h>
 #include <krun.h>
 #include <kpushbutton.h>
+#include <kmacroexpander.h>
 #include <dcopclient.h>
 #include <cstdio>
 #include <cstdlib>
@@ -4884,7 +4885,48 @@ void MainForm::toolsMenu_highlighted(int id)
 
 void MainForm::toolsMenu_activated(int id)
 {
-
+  if (id!=toolsMenu->idAt(0) && id!=toolsMenu->idAt(1)) {
+    const Tool &tool=tools[id];
+    KProcess process(this);
+    int err;
+    QStringList args=KShell::splitArgs(tool.commandLine,
+                                       KShell::TildeExpand|KShell::AbortOnMeta,
+                                       &err);
+    if (err) {
+      KMessageBox::error(this,"Invalid command line.");
+      return;
+    }
+    if (tool.runInTerminal) {
+      KConfigGroup globalConfigGeneral(KGlobal::config(),"General");
+      QString terminal=globalConfigGeneral.readPathEntry("TerminalApplication",
+                                                         "konsole");
+      if (terminal=="konsole")
+        terminal+=" -caption=%c";
+      QMap<QChar,QString> map;
+      map.insert('c',tool.title);
+      map.insert('i',"");
+      map.insert('m',"");
+      terminal=KMacroExpander::expandMacrosShellQuote(terminal,map);
+      if (terminal.isNull()) {
+        KMessageBox::error(this,"Invalid terminal specification.");
+        return;
+      }
+      QStringList termargs=KShell::splitArgs(terminal,
+                                             KShell::TildeExpand|KShell::AbortOnMeta,
+                                             &err);
+      if (err) {
+        KMessageBox::error(this,"Invalid terminal specification.");
+        return;
+      }
+      process << termargs << "-e" << "sh" << "-c"
+              << (tool.commandLine+" ; echo Press Return to close... ; read");
+    } else
+      process << args;
+    if (!tool.workingDirectory.isEmpty())
+      process.setWorkingDirectory(tool.workingDirectory);
+    if (!process.start(KProcess::DontCare))
+      KMessageBox::error(this,QString("Can't run \'%1\'.").arg(tool.commandLine));
+  }
 }
 
 void MainForm::toolsMenu_aboutToHide()
