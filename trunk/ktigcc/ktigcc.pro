@@ -29,7 +29,9 @@ FORMS	= srcfilewin.ui \
 	errorlist.ui \
 	programoutput.ui \
 	functions.ui \
-	newsdlg.ui
+	newsdlg.ui \
+	toolsdlg.ui \
+	toolprops.ui
 
 IMAGES	= images/00 \
 	images/01 \
