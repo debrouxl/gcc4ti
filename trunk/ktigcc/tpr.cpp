@@ -990,9 +990,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
       if (fwrite(s,1,l,f)<l) return -2;
     }
     if (writeToFile(f,text)) {fclose(f); return -2;}
-    if (addCLineDirective) {
-      if (fwrite("\n",1,1,f)<1) {fclose(f); return -2;}
-    }
+    if (fwrite("\n",1,1,f)<1) {fclose(f); return -2;}
   }
   if (fclose(f)) return -2;
   if (pLineStartList) *pLineStartList=lineStartList;
