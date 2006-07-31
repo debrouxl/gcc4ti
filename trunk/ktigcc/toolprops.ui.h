@@ -29,3 +29,41 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
+
+#include <ktextedit.h>
+#include <kurl.h>
+#include <kurlrequester.h>
+#include "ktigcc.h"
+
+void ToolProperties::init()
+{
+  if (toolIndex>=0) {
+    Tool &tool=tempTools[toolIndex];
+    toolTitle->setText(tool.title);
+    commandLine->setText(tool.commandLine);
+    if (!tool.workingDirectory.isEmpty())
+      workingDirectory->setKURL(KURL::fromPathOrURL(tool.workingDirectory));
+    runInTerminal->setChecked(tool.runInTerminal);
+  }
+}
+
+void ToolProperties::accept()
+{
+  Tool tool(toolTitle->text(),commandLine->text(),
+            workingDirectory->url().isEmpty()?QString():
+            KURL(workingDirectory->url()).path(),runInTerminal->isChecked());
+  if (toolIndex>=0)
+    tempTools[toolIndex]=tool;
+  else
+    tempTools.append(tool);
+  QDialog::accept();
+}
+
+void ToolProperties::validate()
+{
+  okButton->setEnabled(!toolTitle->text().isEmpty()
+                       && !commandLine->text().isEmpty()
+                       && (workingDirectory->url().isEmpty()
+                           || (KURL(workingDirectory->url()).isValid()
+                               && KURL(workingDirectory->url()).isLocalFile())));
+}

@@ -37,11 +37,13 @@
 void ToolsDialog::init()
 {
   tempTools=tools;
+  listView->clear();
   listView->setSorting(-1);
   Tools::iterator it;
   for(it=tempTools.begin(); it!=tempTools.end(); ++it)
-    new KListViewItem(listView,(*it).title,(*it).commandLine,
-                      (*it).workingDirectory,(*it).runInTerminal?"Yes":"No");
+    new KListViewItem(listView,listView->lastItem(),(*it).title,
+                      (*it).commandLine,(*it).workingDirectory,
+                      (*it).runInTerminal?"Yes":"No");
 }
 
 void ToolsDialog::addButton_clicked()
@@ -49,13 +51,26 @@ void ToolsDialog::addButton_clicked()
   toolIndex=-1;
   ToolProperties toolProperties;
   toolProperties.exec();
-  listView_selectionChanged(); // set the real toolIndex again
+  if (toolProperties.result()==QDialog::Accepted) {
+    Tool &newTool=tempTools.last();
+    new KListViewItem(listView,listView->lastItem(),newTool.title,
+                      newTool.commandLine,newTool.workingDirectory,
+                      newTool.runInTerminal?"Yes":"No");
+  } else listView_selectionChanged(); // set the real toolIndex again
 }
 
 void ToolsDialog::editButton_clicked()
 {
   ToolProperties toolProperties;
   toolProperties.exec();
+  if (toolProperties.result()==QDialog::Accepted) {
+    Tool &newTool=tempTools[toolIndex];
+    QListViewItem *toolItem=listView->selectedItem();
+    toolItem->setText(0,newTool.title);
+    toolItem->setText(1,newTool.commandLine);
+    toolItem->setText(2,newTool.workingDirectory);
+    toolItem->setText(3,newTool.runInTerminal?"Yes":"No");
+  }
 }
 
 void ToolsDialog::removeButton_clicked()

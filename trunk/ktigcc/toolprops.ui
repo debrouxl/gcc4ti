@@ -157,6 +157,9 @@
                     <property name="name">
                         <cstring>okButton</cstring>
                     </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
                     <property name="text">
                         <string>&amp;OK</string>
                     </property>
@@ -198,10 +201,42 @@
         <receiver>ToolProperties</receiver>
         <slot>reject()</slot>
     </connection>
+    <connection>
+        <sender>toolTitle</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>ToolProperties</receiver>
+        <slot>validate()</slot>
+    </connection>
+    <connection>
+        <sender>commandLine</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>ToolProperties</receiver>
+        <slot>validate()</slot>
+    </connection>
+    <connection>
+        <sender>workingDirectory</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>ToolProperties</receiver>
+        <slot>validate()</slot>
+    </connection>
 </connections>
+<tabstops>
+    <tabstop>toolTitle</tabstop>
+    <tabstop>commandLine</tabstop>
+    <tabstop>workingDirectory</tabstop>
+    <tabstop>runInTerminal</tabstop>
+    <tabstop>browseButton</tabstop>
+    <tabstop>okButton</tabstop>
+    <tabstop>cancelButton</tabstop>
+</tabstops>
 <includes>
     <include location="local" impldecl="in implementation">toolprops.ui.h</include>
 </includes>
+<slots>
+    <slot>init()</slot>
+    <slot>accept()</slot>
+    <slot>validate()</slot>
+</slots>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
