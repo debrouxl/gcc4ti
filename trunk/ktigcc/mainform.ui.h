@@ -1183,6 +1183,17 @@ void MainForm::init()
       openProject(mostrecent);
   }
   updateRecent();
+  pconfig->setGroup("Tools");
+  unsigned toolCount=pconfig->readUnsignedNumEntry("Count",0);
+  tools.resize(toolCount);
+  for (unsigned idx=0; idx<toolCount; idx++) {
+    pconfig->setGroup(QString("Tool %1").arg(idx));
+    Tool &tool=tools[idx];
+    tool.title=pconfig->readEntry("Title");
+    tool.commandLine=pconfig->readEntry("Command Line");
+    tool.workingDirectory=pconfig->readEntry("Working Directory");
+    tool.runInTerminal=pconfig->readBoolEntry("Terminal");
+  }
   startTimer(100);
   if (preferences.downloadHeadlines) {
     NewsDialog newsDialog(this);
@@ -4829,6 +4840,20 @@ void MainForm::toolsConfigure()
 {
   ToolsDialog toolsDialog(this);
   toolsDialog.exec();
+  if (toolsDialog.result()==QDialog::Accepted) {
+    pconfig->setGroup("Tools");
+    unsigned toolCount=tools.count();
+    pconfig->writeEntry("Count",toolCount);
+    for (unsigned idx=0; idx<toolCount; idx++) {
+      pconfig->setGroup(QString("Tool %1").arg(idx));
+      Tool &tool=tools[idx];
+      pconfig->writeEntry("Title",tool.title);
+      pconfig->writeEntry("Command Line",tool.commandLine);
+      pconfig->writeEntry("Working Directory",tool.workingDirectory);
+      pconfig->writeEntry("Terminal",tool.runInTerminal);
+      pconfig->sync();
+    }
+  }
 }
 
 void MainForm::helpDocumentation()
