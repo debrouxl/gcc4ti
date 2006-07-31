@@ -33,6 +33,8 @@
 #include <ktextedit.h>
 #include <kurl.h>
 #include <kurlrequester.h>
+#include <kfiledialog.h>
+#include <kprocess.h>
 #include "ktigcc.h"
 
 void ToolProperties::init()
@@ -66,4 +68,13 @@ void ToolProperties::validate()
                        && (workingDirectory->url().isEmpty()
                            || (KURL(workingDirectory->url()).isValid()
                                && KURL(workingDirectory->url()).isLocalFile())));
+}
+
+void ToolProperties::browseButton_clicked()
+{
+  QString ret=KFileDialog::getOpenFileName("/usr/bin",
+    "application/x-executable application/x-executable-script",this,
+    "Choose executable");
+  if (!ret.isEmpty())
+    commandLine->setText(KProcess::quote(ret));
 }
