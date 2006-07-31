@@ -1194,6 +1194,8 @@ void MainForm::init()
     tool.workingDirectory=pconfig->readEntry("Working Directory");
     tool.runInTerminal=pconfig->readBoolEntry("Terminal");
   }
+  updateToolsMenu();
+  connect(toolsMenu,SIGNAL(activated(int)),this,SLOT(toolsMenu_activated(int)));
   startTimer(100);
   if (preferences.downloadHeadlines) {
     NewsDialog newsDialog(this);
@@ -4853,7 +4855,41 @@ void MainForm::toolsConfigure()
       pconfig->writeEntry("Terminal",tool.runInTerminal);
       pconfig->sync();
     }
+    updateToolsMenu();
   }
+}
+
+void MainForm::updateToolsMenu()
+{
+  toolsMenu->clear();
+  toolsConfigureAction->addTo(toolsMenu);
+  unsigned toolCount=tools.count();
+  if (toolCount) toolsMenu->insertSeparator();
+  for (unsigned idx=0; idx<toolCount; idx++)
+    toolsMenu->insertItem(tools[idx].title,idx);
+  disconnect(toolsMenu,SIGNAL(highlighted(int)),0,0);
+  connect(toolsMenu,SIGNAL(highlighted(int)),
+          this,SLOT(toolsMenu_highlighted(int)));
+  disconnect(toolsMenu,SIGNAL(aboutToHide()),0,0);
+  connect(toolsMenu,SIGNAL(aboutToHide()),this,SLOT(toolsMenu_aboutToHide()));
+}
+
+void MainForm::toolsMenu_highlighted(int id)
+{
+  if (id==toolsMenu->idAt(0))
+    statusBar()->message(toolsConfigureAction->statusTip());
+  else if (id!=toolsMenu->idAt(1))
+    statusBar()->message(tools[id].commandLine);
+}
+
+void MainForm::toolsMenu_activated(int id)
+{
+
+}
+
+void MainForm::toolsMenu_aboutToHide()
+{
+  statusBar()->clear();
 }
 
 void MainForm::helpDocumentation()
