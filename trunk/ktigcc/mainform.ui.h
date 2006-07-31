@@ -99,6 +99,7 @@
 #include "callbacks.h"
 #include "parsing.h"
 #include "functions.h"
+#include "toolsdlg.h"
 #include "newsdlg.h"
 
 using std::puts;
@@ -409,6 +410,8 @@ static unsigned findCurrentLine;
 QPtrList<SourceFile> sourceFiles;
 static QPopupMenu *findFunctionsPopup;
 bool have_usb;
+Tools tools, tempTools;
+int toolIndex;
 
 class DnDListView : public KListView {
   private:
@@ -4824,7 +4827,8 @@ void MainForm::debugReset()
 
 void MainForm::toolsConfigure()
 {
-  
+  ToolsDialog toolsDialog(this);
+  toolsDialog.exec();
 }
 
 void MainForm::helpDocumentation()

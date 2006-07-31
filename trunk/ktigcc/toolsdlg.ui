@@ -25,7 +25,7 @@
                     <string>Title</string>
                 </property>
                 <property name="clickable">
-                    <bool>true</bool>
+                    <bool>false</bool>
                 </property>
                 <property name="resizable">
                     <bool>true</bool>
@@ -36,7 +36,7 @@
                     <string>Command Line</string>
                 </property>
                 <property name="clickable">
-                    <bool>true</bool>
+                    <bool>false</bool>
                 </property>
                 <property name="resizable">
                     <bool>true</bool>
@@ -47,7 +47,7 @@
                     <string>Working Directory</string>
                 </property>
                 <property name="clickable">
-                    <bool>true</bool>
+                    <bool>false</bool>
                 </property>
                 <property name="resizable">
                     <bool>true</bool>
@@ -58,7 +58,7 @@
                     <string>Terminal</string>
                 </property>
                 <property name="clickable">
-                    <bool>true</bool>
+                    <bool>false</bool>
                 </property>
                 <property name="resizable">
                     <bool>true</bool>
@@ -66,6 +66,12 @@
             </column>
             <property name="name">
                 <cstring>listView</cstring>
+            </property>
+            <property name="allColumnsShowFocus">
+                <bool>true</bool>
+            </property>
+            <property name="itemsMovable">
+                <bool>false</bool>
             </property>
         </widget>
         <widget class="QLayoutWidget">
@@ -91,6 +97,9 @@
                     <property name="name">
                         <cstring>editButton</cstring>
                     </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
                     <property name="text">
                         <string>&amp;Edit...</string>
                     </property>
@@ -101,6 +110,9 @@
                 <widget class="KPushButton">
                     <property name="name">
                         <cstring>removeButton</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
                     </property>
                     <property name="text">
                         <string>&amp;Remove</string>
@@ -171,7 +183,42 @@
         <receiver>ToolsDialog</receiver>
         <slot>reject()</slot>
     </connection>
+    <connection>
+        <sender>addButton</sender>
+        <signal>clicked()</signal>
+        <receiver>ToolsDialog</receiver>
+        <slot>addButton_clicked()</slot>
+    </connection>
+    <connection>
+        <sender>editButton</sender>
+        <signal>clicked()</signal>
+        <receiver>ToolsDialog</receiver>
+        <slot>editButton_clicked()</slot>
+    </connection>
+    <connection>
+        <sender>removeButton</sender>
+        <signal>clicked()</signal>
+        <receiver>ToolsDialog</receiver>
+        <slot>removeButton_clicked()</slot>
+    </connection>
+    <connection>
+        <sender>listView</sender>
+        <signal>selectionChanged()</signal>
+        <receiver>ToolsDialog</receiver>
+        <slot>listView_selectionChanged()</slot>
+    </connection>
 </connections>
+<includes>
+    <include location="local" impldecl="in implementation">toolsdlg.ui.h</include>
+</includes>
+<slots>
+    <slot>init()</slot>
+    <slot>addButton_clicked()</slot>
+    <slot>editButton_clicked()</slot>
+    <slot>removeButton_clicked()</slot>
+    <slot>listView_selectionChanged()</slot>
+    <slot>accept()</slot>
+</slots>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>

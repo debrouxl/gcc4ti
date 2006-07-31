@@ -23,6 +23,8 @@
 #include <qptrlist.h>
 #include <kconfig.h>
 #include <kaboutdata.h>
+#include <qstring.h>
+#include <qvaluevector.h>
 class QAssistantClient;
 class QClipboard;
 class SourceFile;
@@ -48,3 +50,16 @@ extern QClipboard *clipboard;
 extern QPtrList<SourceFile> sourceFiles;
 extern tprSettings settings;
 extern tprLibOpts libopts;
+
+struct Tool {
+  Tool() : title(), commandLine(), workingDirectory(), runInTerminal(false) {}
+  Tool(const QString &t, const QString &c, const QString &w, bool r) :
+    title(t), commandLine(c), workingDirectory(w), runInTerminal(r) {}
+  QString title;
+  QString commandLine;
+  QString workingDirectory;
+  bool runInTerminal;
+};
+typedef QValueVector<Tool> Tools;
+extern Tools tools, tempTools;
+extern int toolIndex;
