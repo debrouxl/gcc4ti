@@ -33,7 +33,7 @@ object ToolPropertiesForm: TToolPropertiesForm
     Width = 73
     Height = 13
     Alignment = taRightJustify
-    Caption = '&Command Line:'
+    Caption = 'Command &Line:'
   end
   object Label3: TLabel
     Left = 18
@@ -124,7 +124,7 @@ object ToolPropertiesForm: TToolPropertiesForm
     Width = 59
     Height = 21
     Anchors = [akTop, akRight]
-    Caption = 'Browse...'
+    Caption = '&Browse...'
     TabOrder = 6
     OnClick = CommandLineBrowseButtonClick
   end
@@ -134,7 +134,7 @@ object ToolPropertiesForm: TToolPropertiesForm
     Width = 59
     Height = 21
     Anchors = [akTop, akRight]
-    Caption = 'Browse...'
+    Caption = 'B&rowse...'
     TabOrder = 7
     OnClick = WorkingDirBrowseButtonClick
   end
