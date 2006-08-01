@@ -2292,7 +2292,8 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
   updateRightStatusLabel();
   QPtrListIterator<SourceFile> sfit(sourceFiles);
   for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
-    sourceFile->fileSave();
+    if (sourceFile->kateView->getDoc()->isModified())
+      sourceFile->fileSave();
   }
 }
 
