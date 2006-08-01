@@ -1972,9 +1972,9 @@ int MainForm::fileSavePrompt(QListViewItem *fileItem)
   while (theFile->kateView->getDoc()->isModified()) { // "while" in case saving fails!
     result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(theFile->text(0)),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
     if (result==KMessageBox::Yes)
-        fileSave_save(fileItem);
+      fileSave_save(fileItem);
     else if (result==KMessageBox::No)
-      theFile->kateView->getDoc()->setModified(FALSE);
+      return 0;
     else
       return 1;
   }
@@ -1991,7 +1991,7 @@ int MainForm::savePrompt(void)
     if (result==KMessageBox::Yes)
       fileSave();
     else if (result==KMessageBox::No)
-      projectIsDirty=FALSE;
+      return 0;
     else
       return 1;
   }

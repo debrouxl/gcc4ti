@@ -407,7 +407,7 @@ int SourceFileWindow::savePrompt(void)
     if (result==KMessageBox::Yes)
         fileSave();
     else if (result==KMessageBox::No)
-      CURRENT_VIEW->getDoc()->setModified(FALSE);
+      return 0;
     else
       return 1;
   }
