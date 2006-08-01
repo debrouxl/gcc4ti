@@ -2646,7 +2646,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.h gcc-4.1-20060728-src/gcc
  extern int m68k_last_compare_had_fp_operands;
 diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gcc/config/m68k/m68k.md
 --- gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md	2005-11-22 21:53:08.000000000 +0100
-+++ gcc-4.1-20060728-src/gcc/config/m68k/m68k.md	2006-07-29 01:04:08.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/config/m68k/m68k.md	2006-08-01 01:35:26.000000000 +0200
 @@ -329,20 +329,22 @@
                   (match_operand:SI 1 "general_src_operand" "mSr,mSa,KTr,Ksr,>")))]
    "!TARGET_COLDFIRE"
@@ -2786,7 +2786,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
  (define_expand "movhi"
    [(set (match_operand:HI 0 "nonimmediate_operand" "")
  	(match_operand:HI 1 "general_operand" ""))]
-@@ -775,13 +802,49 @@
+@@ -775,13 +802,63 @@
    "TARGET_COLDFIRE"
    "* return output_move_strictqi (operands);")
  
@@ -2796,6 +2796,8 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
 +;;                  The distinction between register_operand and
 +;;                  const_int_operand is because of paradoxical subreg
 +;;                  technicalities.
++;; (TIGCC 20060801) We can accept SUBREGs with the register optimization only
++;;                  if the SUBREG_BYTE is odd.
 +
  (define_expand "pushqi1"
 +  [(match_operand:QI 0 "general_operand" "")]
@@ -2803,12 +2805,11 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
 +"{
 +  if (const_int_operand (operands[0], QImode))
 +    emit_insn (gen_pushqi1_imm (operands[0]));
-+  else if (register_operand (operands[0], QImode)) {
-+    if (GET_CODE (operands[0]) == SUBREG)
-+      emit_insn (gen_pushqi1_reg (SUBREG_REG (operands[0])));
-+    else
-+      emit_insn (gen_pushqi1_reg (operands[0]));
-+  } else
++  else if (register_operand (operands[0], QImode)
++           && (GET_CODE (operands[0]) != SUBREG
++               || (SUBREG_BYTE(operands[0]) & 1)))
++    emit_insn (gen_pushqi1_reg (operands[0]));
++  else
 +    emit_insn (gen_pushqi1_mem (operands[0]));
 +  DONE;
 +}")
@@ -2827,16 +2828,29 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
 +  "")
 +
 +;; Yes, this is a paradoxical subreg.
++;; (TIGCC 20060801) Well, not always. We could have a true subreg, and then we
++;;                  need to adjust SUBREG_BYTE.
++;;                  SUBREG_BYTE(operands[0]) - 1 is always positive because
++;;                  SUBREG_BYTE(operands[0]) is unsigned and odd.
 +(define_expand "pushqi1_reg"
 +  [(set (mem:HI (pre_dec:SI (reg:SI SP_REG)))
-+	(subreg:HI (match_operand:QI 0 "register_operand" "") 0))]
++	(match_operand:QI 0 "register_operand" ""))]
 +  "!TARGET_COLDFIRE"
-+  "")
++"{
++  {
++    unsigned offset = 0;
++    if (GET_CODE (operands[0]) == SUBREG) {
++      offset = SUBREG_BYTE(operands[0]) - 1;
++      operands[0] = SUBREG_REG (operands[0]);
++    }
++    operands[0] = gen_rtx_SUBREG (HImode, operands[0], offset);
++  }
++}")
 +
  (define_expand "movsf"
    [(set (match_operand:SF 0 "nonimmediate_operand" "")
  	(match_operand:SF 1 "general_operand" ""))]
-@@ -897,6 +960,34 @@
+@@ -897,6 +974,34 @@
  ;; constants.  Most but not all have output templates that handle constants.
  ;; See also LEGITIMATE_CONSTANT_P.
  
@@ -2871,7 +2885,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
  (define_expand "movxf"
    [(set (match_operand:XF 0 "nonimmediate_operand" "")
  	(match_operand:XF 1 "general_operand" ""))]
-@@ -963,6 +1054,46 @@
+@@ -963,6 +1068,46 @@
  })
  
  (define_insn ""
@@ -2918,7 +2932,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
    [(set (match_operand:XF 0 "nonimmediate_operand" "=rm,rf,&rof<>")
  	(match_operand:XF 1 "nonimmediate_operand" "rf,m,rof<>"))]
    "! TARGET_68881 && ! TARGET_COLDFIRE"
-@@ -1233,9 +1364,12 @@
+@@ -1233,9 +1378,12 @@
    "TARGET_CFV4"
    "mvz%.w %1,%0")
  
@@ -2933,7 +2947,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
    ""
    "#")
  
-@@ -1258,8 +1392,8 @@
+@@ -1258,8 +1406,8 @@
    "mvz%.b %1,%0")
  
  (define_insn "zero_extendqisi2"
@@ -2944,7 +2958,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
    ""
    "#")
  
-@@ -4135,7 +4269,11 @@
+@@ -4135,7 +4283,11 @@
        output_asm_insn (INTVAL (operands[2]) <= 8 ? "asr%.l %2,%0" :
  			"moveq %2,%1\;asr%.l %1,%0", operands);
        output_asm_insn ("mov%.l %0,%1\;smi %0", operands);
@@ -2957,7 +2971,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
  	     TARGET_68020 ? "extb%.l %0" : "ext%.w %0\;ext%.l %0";
      }
  })
-@@ -6320,10 +6458,19 @@
+@@ -6320,10 +6472,19 @@
    return "rtd %0";
  })
  
@@ -2979,7 +2993,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
  
  ;; This should not be used unless the add/sub insns can't be.
  
-@@ -6417,6 +6564,9 @@
+@@ -6417,6 +6578,9 @@
  })
  
  ;; Speed up stack adjust followed by a fullword fixedpoint push.
@@ -2989,7 +3003,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
  
  (define_peephole
    [(set (reg:SI SP_REG) (plus:SI (reg:SI SP_REG)
-@@ -6424,7 +6574,8 @@
+@@ -6424,7 +6588,8 @@
     (set (match_operand:SI 1 "push_operand" "=m")
  	(match_operand:SI 2 "general_operand" "g"))]
    "INTVAL (operands[0]) >= 4
@@ -2999,7 +3013,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
  {
    if (INTVAL (operands[0]) > 4)
      {
-@@ -6460,6 +6611,77 @@
+@@ -6460,6 +6625,77 @@
    return "move%.l %2,%@";
  })
  
@@ -3077,7 +3091,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.md gcc-4.1-20060728-src/gc
  ;; Speed up pushing a single byte but leaving four bytes of space.
  
  (define_peephole
-@@ -7092,3 +7314,166 @@
+@@ -7092,3 +7328,166 @@
    default: gcc_unreachable ();
    }
  })
@@ -8674,13 +8688,13 @@ diff -Naur gcc-4.1-20060728.orig/gcc/varasm.c gcc-4.1-20060728-src/gcc/varasm.c
  enum section_category
 diff -Naur gcc-4.1-20060728.orig/gcc/version.c gcc-4.1-20060728-src/gcc/version.c
 --- gcc-4.1-20060728.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1-20060728-src/gcc/version.c	2006-07-29 01:06:19.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/version.c	2006-08-01 01:48:37.000000000 +0200
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.2-pre7)"
++#define VERSUFFIX " (TIGCC 4.1.2-pre8)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
