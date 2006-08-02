@@ -133,7 +133,7 @@ extern SYM_ENTRY *FindProgramVar(void)__ATTR_LIB_C__;
 #define VarRecall ({__need_in_use_bit;_rom_call(HSym,(SYM_STR,short),85);})
 #define VarStore ({__need_in_use_bit;_rom_call(HSym,(SYM_STR,short,short,...),86);})
 #if MIN_AMS>=101
-#define GetDataType _rom_call_hack(short,(CESI),435,((*(unsigned long*)((unsigned char*)_row_call_addr(319)+134))),200)
+#define GetDataType _rom_call_hack(short,(CESI),435,((*(unsigned long*)((unsigned char*)_rom_call_addr(319)+134))),200)
 #if MIN_AMS>=200
 #define SmapTypeStrings _rom_call(const char*,(short),436)
 #endif
