@@ -134,11 +134,6 @@ int SynToXML(Syn_SettingsForDoc &syn __attribute__((unused)),const QString &dest
     return 0;
 }
 
-Syn_Color syn_rgb(unsigned short r,unsigned short g,unsigned short b)
-{
-  return (Syn_Color){r,g,b,0};
-}
-
 void defaultSynHighlight(TIGCCPrefs *prefs)
 {
   prefs->synC.enabled=true;
@@ -146,22 +141,22 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   prefs->synASM.enabled=true;
   prefs->synQLL.enabled=true;
   
-  prefs->synC.numberColor=syn_rgb(128,0,0);
-  prefs->synS.numberColor=syn_rgb(128,0,0);
-  prefs->synASM.numberColor=syn_rgb(128,0,0);
-  prefs->synQLL.numberColor=syn_rgb(128,64,64);
+  prefs->synC.numberColor=QColor(128,0,0);
+  prefs->synS.numberColor=QColor(128,0,0);
+  prefs->synASM.numberColor=QColor(128,0,0);
+  prefs->synQLL.numberColor=QColor(128,64,64);
   
-  prefs->synC.symbolColor=syn_rgb(128,128,0);
-  prefs->synS.symbolColor=syn_rgb(128,128,0);
-  prefs->synASM.symbolColor=syn_rgb(128,128,0);
-  prefs->synQLL.symbolColor=syn_rgb(128,128,0);
+  prefs->synC.symbolColor=QColor(128,128,0);
+  prefs->synS.symbolColor=QColor(128,128,0);
+  prefs->synASM.symbolColor=QColor(128,128,0);
+  prefs->synQLL.symbolColor=QColor(128,128,0);
   
   prefs->synC.parenthesisColors.clear();
-  prefs->synC.parenthesisColors << syn_rgb(128,0,128) << syn_rgb(0,128,192) << syn_rgb(255,128,128) << syn_rgb(0,128,0);
+  prefs->synC.parenthesisColors << QColor(128,0,128) << QColor(0,128,192) << QColor(255,128,128) << QColor(0,128,0);
   prefs->synS.parenthesisColors=prefs->synC.parenthesisColors;
   prefs->synASM.parenthesisColors=prefs->synC.parenthesisColors;
   prefs->synQLL.parenthesisColors.clear();
-  prefs->synQLL.parenthesisColors  << syn_rgb(0,0,0) << syn_rgb(255,0,128);
+  prefs->synQLL.parenthesisColors  << QColor(0,0,0) << QColor(255,0,128);
   
   prefs->synC.numberStyle=0;
   prefs->synS.numberStyle=0;
@@ -184,7 +179,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Comment_Area.ending="*/";
   Comment_Area.ignoreEndingAfter=0;
   Comment_Area.switchable=false;
-  Comment_Area.color=syn_rgb(0,128,0);
+  Comment_Area.color=QColor(0,128,0);
   Comment_Area.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle Comment_Line;
   Comment_Line.name="Comment Line";
@@ -192,7 +187,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Comment_Line.ending="\n";
   Comment_Line.ignoreEndingAfter=0;
   Comment_Line.switchable=false;
-  Comment_Line.color=syn_rgb(0,128,0);
+  Comment_Line.color=QColor(0,128,0);
   Comment_Line.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle SCS_String;
   SCS_String.name="String";
@@ -200,7 +195,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   SCS_String.ending="\"";
   SCS_String.ignoreEndingAfter='\\';
   SCS_String.switchable=false;
-  SCS_String.color=syn_rgb(128,0,0);
+  SCS_String.color=QColor(128,0,0);
   SCS_String.style=0;
   Syn_CustomStyle Character;
   Character.name="Character";
@@ -208,7 +203,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Character.ending="\'";
   Character.ignoreEndingAfter='\\';
   Character.switchable=false;
-  Character.color=syn_rgb(128,0,0);
+  Character.color=QColor(128,0,0);
   Character.style=0;
   Syn_CustomStyle Preprocessor_Directive;
   Preprocessor_Directive.name="Preprocessor Directive";
@@ -216,7 +211,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Preprocessor_Directive.ending=" ";
   Preprocessor_Directive.ignoreEndingAfter=0;
   Preprocessor_Directive.switchable=false;
-  Preprocessor_Directive.color=syn_rgb(0,128,128);
+  Preprocessor_Directive.color=QColor(0,128,128);
   Preprocessor_Directive.style=SYNS_CUSTOM|SYNS_BOLD;
   Syn_CustomStyle Comment_Line_Pipe;
   Comment_Line_Pipe.name="Comment Line (|)";
@@ -224,7 +219,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Comment_Line_Pipe.ending="\n";
   Comment_Line_Pipe.ignoreEndingAfter=0;
   Comment_Line_Pipe.switchable=false;
-  Comment_Line_Pipe.color=syn_rgb(0,128,0);
+  Comment_Line_Pipe.color=QColor(0,128,0);
   Comment_Line_Pipe.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle Comment_Line_Pound;
   Comment_Line_Pound.name="Comment Line (#)";
@@ -232,7 +227,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Comment_Line_Pound.ending="\n";
   Comment_Line_Pound.ignoreEndingAfter=0;
   Comment_Line_Pound.switchable=false;
-  Comment_Line_Pound.color=syn_rgb(0,128,0);
+  Comment_Line_Pound.color=QColor(0,128,0);
   Comment_Line_Pound.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle Comment_Line_Semicolon;
   Comment_Line_Semicolon.name="Comment";
@@ -240,7 +235,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Comment_Line_Semicolon.ending="\n";
   Comment_Line_Semicolon.ignoreEndingAfter=0;
   Comment_Line_Semicolon.switchable=false;
-  Comment_Line_Semicolon.color=syn_rgb(0,128,0);
+  Comment_Line_Semicolon.color=QColor(0,128,0);
   Comment_Line_Semicolon.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle String_DoubleQuoted;
   String_DoubleQuoted.name="String (double-quoted)";
@@ -248,7 +243,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   String_DoubleQuoted.ending="\"";
   String_DoubleQuoted.ignoreEndingAfter=0;
   String_DoubleQuoted.switchable=false;
-  String_DoubleQuoted.color=syn_rgb(128,0,0);
+  String_DoubleQuoted.color=QColor(128,0,0);
   String_DoubleQuoted.style=0;
   Syn_CustomStyle String_SingleQuoted;
   String_SingleQuoted.name="String (single-quoted)";
@@ -256,7 +251,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   String_SingleQuoted.ending="\'";
   String_SingleQuoted.ignoreEndingAfter=0;
   String_SingleQuoted.switchable=false;
-  String_SingleQuoted.color=syn_rgb(128,0,0);
+  String_SingleQuoted.color=QColor(128,0,0);
   String_SingleQuoted.style=0;
   Syn_CustomStyle Compiler_Directive;
   Compiler_Directive.name="Compiler Directive";
@@ -264,7 +259,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Compiler_Directive.ending="\n";
   Compiler_Directive.ignoreEndingAfter='\\';
   Compiler_Directive.switchable=true;
-  Compiler_Directive.color=syn_rgb(0,128,128);
+  Compiler_Directive.color=QColor(0,128,128);
   Compiler_Directive.style=SYNS_CUSTOM|SYNS_BOLD;
   prefs->synC.customStyles.clear();
   prefs->synS.customStyles.clear();
@@ -318,7 +313,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                   "void\n"
                   "volatile\n"
                   "while\n";
-  C_Keywords.color=syn_rgb(0,0,255);
+  C_Keywords.color=QColor(0,0,255);
   C_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   C_Keywords.caseSensitive=true;
   Syn_WordList Data_Movement;
@@ -337,7 +332,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                       "MOVQ\n"
                       "PEA\n"
                       "UNLK\n";
-  Data_Movement.color=syn_rgb(0,0,255);
+  Data_Movement.color=QColor(0,0,255);
   Data_Movement.style=0;
   Data_Movement.caseSensitive=false;
   Syn_WordList Integer_Arithmetic;
@@ -364,7 +359,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                           "SUBI\n"
                           "SUBQ\n"
                           "SUBX\n";
-  Integer_Arithmetic.color=syn_rgb(0,0,255);
+  Integer_Arithmetic.color=QColor(0,0,255);
   Integer_Arithmetic.style=0;
   Integer_Arithmetic.caseSensitive=false;
   Syn_WordList Logical_Instructions;
@@ -376,7 +371,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                             "NOT\n"
                             "OR\n"
                             "ORI\n";
-  Logical_Instructions.color=syn_rgb(0,0,255);
+  Logical_Instructions.color=QColor(0,0,255);
   Logical_Instructions.style=0;
   Logical_Instructions.caseSensitive=false;
   Syn_WordList ShiftRotation_Instructions;
@@ -390,7 +385,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                                   "ROXL\n"
                                   "ROXR\n"
                                   "SWAP\n";
-  ShiftRotation_Instructions.color=syn_rgb(0,0,255);
+  ShiftRotation_Instructions.color=QColor(0,0,255);
   ShiftRotation_Instructions.style=0;
   ShiftRotation_Instructions.caseSensitive=false;
   Syn_WordList Bit_Manipulation;
@@ -399,7 +394,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                         "BCLR\n"
                         "BSET\n"
                         "BTST\n";
-  Bit_Manipulation.color=syn_rgb(0,0,255);
+  Bit_Manipulation.color=QColor(0,0,255);
   Bit_Manipulation.style=0;
   Bit_Manipulation.caseSensitive=false;
   Syn_WordList Program_Control;
@@ -522,7 +517,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                         "FJULE\n"
                         "FJULT\n"
                         "FJUN\n";
-  Program_Control.color=syn_rgb(0,0,255);
+  Program_Control.color=QColor(0,0,255);
   Program_Control.style=0;
   Program_Control.caseSensitive=false;
   Syn_WordList System_Control;
@@ -530,7 +525,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   System_Control.list="ILLEGAL\n"
                       "RTE\n"
                       "TRAP\n";
-  System_Control.color=syn_rgb(0,0,255);
+  System_Control.color=QColor(0,0,255);
   System_Control.style=0;
   System_Control.caseSensitive=false;
   Syn_WordList SWL_Extensions;
@@ -539,7 +534,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                       "L\n"
                       "S\n"
                       "W\n";
-  SWL_Extensions.color=syn_rgb(0,128,64);
+  SWL_Extensions.color=QColor(0,128,64);
   SWL_Extensions.style=0;
   SWL_Extensions.caseSensitive=false;
   Syn_WordList Assembler_Directives;
@@ -628,7 +623,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                             "val\n"
                             "vtable_entry\n"
                             "word\n";
-  Assembler_Directives.color=syn_rgb(0,0,255);
+  Assembler_Directives.color=QColor(0,0,255);
   Assembler_Directives.style=SYNS_CUSTOM|SYNS_BOLD;
   Assembler_Directives.caseSensitive=true;
   Syn_WordList SWL_Registers;
@@ -653,7 +648,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                       "pc\n"
                       "sp\n"
                       "sr\n";
-  SWL_Registers.color=syn_rgb(255,0,0);
+  SWL_Registers.color=QColor(255,0,0);
   SWL_Registers.style=SYNS_CUSTOM|SYNS_UNDERLINE;
   SWL_Registers.caseSensitive=false;
   Syn_WordList Data_Movement_a68k;
@@ -668,7 +663,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                       "MOVEQ\n"
                       "PEA\n"
                       "UNLK\n";
-  Data_Movement_a68k.color=syn_rgb(0,0,255);
+  Data_Movement_a68k.color=QColor(0,0,255);
   Data_Movement_a68k.style=0;
   Data_Movement_a68k.caseSensitive=false;
   Syn_WordList ShiftRotation_Instructions_a68k;
@@ -684,7 +679,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                                   "ROXL\n"
                                   "ROXR\n"
                                   "SWAP\n";
-  ShiftRotation_Instructions_a68k.color=syn_rgb(0,0,255);
+  ShiftRotation_Instructions_a68k.color=QColor(0,0,255);
   ShiftRotation_Instructions_a68k.style=0;
   ShiftRotation_Instructions_a68k.caseSensitive=false;
   Syn_WordList Program_Control_a68k;
@@ -750,7 +745,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                             "SVC\n"
                             "SVS\n"
                             "TST\n";
-  Program_Control_a68k.color=syn_rgb(0,0,255);
+  Program_Control_a68k.color=QColor(0,0,255);
   Program_Control_a68k.style=0;
   Program_Control_a68k.caseSensitive=false;
   Syn_WordList Assembler_Directives_a68k;
@@ -799,7 +794,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                                   "TTL\n"
                                   "XDEF\n"
                                   "XREF\n";
-  Assembler_Directives_a68k.color=syn_rgb(0,0,255);
+  Assembler_Directives_a68k.color=QColor(0,0,255);
   Assembler_Directives_a68k.style=SYNS_CUSTOM|SYNS_BOLD;
   Assembler_Directives_a68k.caseSensitive=false;
   Syn_WordList SWL_Sections;
@@ -819,7 +814,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                     "$$SYSTEM_MESSAGES\n"
                     "$$TITLE\n"
                     "$$VOCABULARY\n";
-  SWL_Sections.color=syn_rgb(255,0,0);
+  SWL_Sections.color=QColor(255,0,0);
   SWL_Sections.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Sections.caseSensitive=true;
   Syn_WordList Section_Specific_Keywords;
@@ -841,14 +836,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                                   "OBJ\n"
                                   "PACKED_BITMAP\n"
                                   "WORD\n";
-  Section_Specific_Keywords.color=syn_rgb(64,128,128);
+  Section_Specific_Keywords.color=QColor(64,128,128);
   Section_Specific_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   Section_Specific_Keywords.caseSensitive=true;
   Syn_WordList AdditionalKeywords;
   AdditionalKeywords.name="Additional Keywords";
   AdditionalKeywords.list="CONTINUE\n"
                           "ELSE\n";
-  AdditionalKeywords.color=syn_rgb(64,128,128);
+  AdditionalKeywords.color=QColor(64,128,128);
   AdditionalKeywords.style=SYNS_CUSTOM|SYNS_BOLD;
   AdditionalKeywords.caseSensitive=true;
   Syn_WordList PredefinedAliases;
@@ -892,7 +887,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                           "$TURNLO\n"
                           "$VERB\n"
                           "$WORN\n";
-  PredefinedAliases.color=syn_rgb(128,0,128);
+  PredefinedAliases.color=QColor(128,0,128);
   PredefinedAliases.style=SYNS_CUSTOM|SYNS_BOLD;
   PredefinedAliases.caseSensitive=true;
   Syn_WordList SWL_Conditions;
@@ -929,7 +924,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                       "TRYMOVE\n"
                       "WORN\n"
                       "ZERO\n";
-  SWL_Conditions.color=syn_rgb(0,0,255);
+  SWL_Conditions.color=QColor(0,0,255);
   SWL_Conditions.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Conditions.caseSensitive=true;
   Syn_WordList SWL_Actions;
@@ -1009,7 +1004,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                     "WHATO\n"
                     "WHEREO\n"
                     "ZAPSCR\n";
-  SWL_Actions.color=syn_rgb(0,0,160);
+  SWL_Actions.color=QColor(0,0,160);
   SWL_Actions.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Actions.caseSensitive=true;
   Syn_WordList Drawing_Primitives;
@@ -1026,7 +1021,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                           "XOR_LINE\n"
                           "XOR_PLOT\n"
                           "XOR_RPLOT\n";
-  Drawing_Primitives.color=syn_rgb(0,64,128);
+  Drawing_Primitives.color=QColor(0,64,128);
   Drawing_Primitives.style=SYNS_CUSTOM|SYNS_BOLD;
   Drawing_Primitives.caseSensitive=true;
   Syn_WordList Drawing_Directions;
@@ -1043,7 +1038,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                           "UP\n"
                           "UP_LEFT\n"
                           "UP_RIGHT\n";
-  Drawing_Directions.color=syn_rgb(0,128,0);
+  Drawing_Directions.color=QColor(0,128,0);
   Drawing_Directions.style=SYNS_CUSTOM|SYNS_BOLD;
   Drawing_Directions.caseSensitive=true;
   Syn_WordList Shading_Patterns;
@@ -1081,7 +1076,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                         "$WIDEDOTFILL\n"
                         "$XMARKFILL\n"
                         "$ZIGZAGFILL\n";
-  Shading_Patterns.color=syn_rgb(128,0,128);
+  Shading_Patterns.color=QColor(128,0,128);
   Shading_Patterns.style=SYNS_CUSTOM|SYNS_BOLD;
   Shading_Patterns.caseSensitive=true;
   Syn_WordList NonFunctional_Keywords;
@@ -1093,7 +1088,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                               "FLASH\n"
                               "INK\n"
                               "PAPER\n";
-  NonFunctional_Keywords.color=syn_rgb(192,192,192);
+  NonFunctional_Keywords.color=QColor(192,192,192);
   NonFunctional_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   NonFunctional_Keywords.caseSensitive=true;
   Syn_WordList External_Symbols;
@@ -1130,7 +1125,7 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                         "$SSCR$\n"
                         "$SYSTEM_MESSAGES$\n"
                         "$WORDS$\n";
-  External_Symbols.color=syn_rgb(0,128,64);
+  External_Symbols.color=QColor(0,128,64);
   External_Symbols.style=SYNS_CUSTOM|SYNS_BOLD;
   External_Symbols.caseSensitive=true;
   

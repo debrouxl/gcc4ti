@@ -27,12 +27,6 @@
 class QWidget;
 class KConfig;
 
-typedef struct
-{
-  unsigned char r,g,b;
-  unsigned char reserved;
-} Syn_Color;
-
 #define SYNS_CUSTOM    1
 #define SYNS_BOLD      2
 #define SYNS_UNDERLINE 4
@@ -46,9 +40,9 @@ typedef struct
     QString name;
 	QString beginning;
 	QString ending;
-	char ignoreEndingAfter;
-	char switchable;
-	Syn_Color color;
+	QChar ignoreEndingAfter;
+	bool switchable;
+	QColor color;
 	Syn_Style style;
 } Syn_CustomStyle;
 
@@ -56,17 +50,17 @@ typedef struct
 {
     QString name;
 	QString list; //Items are delimited by '\n' characters; blank lines are ignored.
-	Syn_Color color;
+	QColor color;
 	Syn_Style style;
-	char caseSensitive;
+	bool caseSensitive;
 } Syn_WordList;
 
 typedef struct
 {
-	char enabled;
-	Syn_Color numberColor;
-	Syn_Color symbolColor;
-	QValueList<Syn_Color> parenthesisColors;
+	bool enabled;
+	QColor numberColor;
+	QColor symbolColor;
+	QValueList<QColor> parenthesisColors;
 	Syn_Style numberStyle;
 	Syn_Style symbolStyle;
 	Syn_Style parenthesisStyle;
