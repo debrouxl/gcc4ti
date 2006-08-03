@@ -38,36 +38,36 @@ typedef unsigned short Syn_Style;
 
 typedef struct
 {
-    QString name;
-	QString beginning;
-	QString ending;
-	QChar ignoreEndingAfter;
-	bool switchable;
-    bool lineStartOnly;
-	QColor color;
-	Syn_Style style;
+  QString name;
+  QString beginning;
+  QString ending;
+  QChar ignoreEndingAfter;
+  bool switchable;
+  bool lineStartOnly;
+  QColor color;
+  Syn_Style style;
 } Syn_CustomStyle;
 
 typedef struct
 {
-    QString name;
-	QStringList list;
-	QColor color;
-	Syn_Style style;
-	bool caseSensitive;
+  QString name;
+  QStringList list;
+  QColor color;
+  Syn_Style style;
+  bool caseSensitive;
 } Syn_WordList;
 
 typedef struct
 {
-	bool enabled;
-	QColor numberColor;
-	QColor symbolColor;
-	QValueList<QColor> parenthesisColors;
-	Syn_Style numberStyle;
-	Syn_Style symbolStyle;
-	Syn_Style parenthesisStyle;
-	QValueList<Syn_CustomStyle> customStyles;
-	QValueList<Syn_WordList> wordLists;
+  bool enabled;
+  QColor numberColor;
+  QColor symbolColor;
+  QValueList<QColor> parenthesisColors;
+  Syn_Style numberStyle;
+  Syn_Style symbolStyle;
+  Syn_Style parenthesisStyle;
+  QValueList<Syn_CustomStyle> customStyles;
+  QValueList<Syn_WordList> wordLists;
 } Syn_SettingsForDoc;
 
 int SynToXML(Syn_SettingsForDoc &syn,const QString &destFileName);
