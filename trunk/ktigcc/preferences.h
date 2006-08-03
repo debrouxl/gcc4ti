@@ -20,6 +20,7 @@
 */
 
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qvaluelist.h>
 #include <qcolor.h>
 #include <qfont.h>
@@ -49,7 +50,7 @@ typedef struct
 typedef struct
 {
     QString name;
-	QString list; //Items are delimited by '\n' characters; blank lines are ignored.
+	QStringList list;
 	QColor color;
 	Syn_Style style;
 	bool caseSensitive;

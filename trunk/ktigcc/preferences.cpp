@@ -134,44 +134,44 @@ int SynToXML(Syn_SettingsForDoc &syn __attribute__((unused)),const QString &dest
     return 0;
 }
 
-void defaultSynHighlight(TIGCCPrefs *prefs)
+static void defaultSynHighlight(void)
 {
-  prefs->synC.enabled=true;
-  prefs->synS.enabled=true;
-  prefs->synASM.enabled=true;
-  prefs->synQLL.enabled=true;
+  preferences.synC.enabled=true;
+  preferences.synS.enabled=true;
+  preferences.synASM.enabled=true;
+  preferences.synQLL.enabled=true;
   
-  prefs->synC.numberColor=QColor(128,0,0);
-  prefs->synS.numberColor=QColor(128,0,0);
-  prefs->synASM.numberColor=QColor(128,0,0);
-  prefs->synQLL.numberColor=QColor(128,64,64);
+  preferences.synC.numberColor=QColor(128,0,0);
+  preferences.synS.numberColor=QColor(128,0,0);
+  preferences.synASM.numberColor=QColor(128,0,0);
+  preferences.synQLL.numberColor=QColor(128,64,64);
   
-  prefs->synC.symbolColor=QColor(128,128,0);
-  prefs->synS.symbolColor=QColor(128,128,0);
-  prefs->synASM.symbolColor=QColor(128,128,0);
-  prefs->synQLL.symbolColor=QColor(128,128,0);
+  preferences.synC.symbolColor=QColor(128,128,0);
+  preferences.synS.symbolColor=QColor(128,128,0);
+  preferences.synASM.symbolColor=QColor(128,128,0);
+  preferences.synQLL.symbolColor=QColor(128,128,0);
   
-  prefs->synC.parenthesisColors.clear();
-  prefs->synC.parenthesisColors << QColor(128,0,128) << QColor(0,128,192) << QColor(255,128,128) << QColor(0,128,0);
-  prefs->synS.parenthesisColors=prefs->synC.parenthesisColors;
-  prefs->synASM.parenthesisColors=prefs->synC.parenthesisColors;
-  prefs->synQLL.parenthesisColors.clear();
-  prefs->synQLL.parenthesisColors  << QColor(0,0,0) << QColor(255,0,128);
+  preferences.synC.parenthesisColors.clear();
+  preferences.synC.parenthesisColors << QColor(128,0,128) << QColor(0,128,192) << QColor(255,128,128) << QColor(0,128,0);
+  preferences.synS.parenthesisColors=preferences.synC.parenthesisColors;
+  preferences.synASM.parenthesisColors=preferences.synC.parenthesisColors;
+  preferences.synQLL.parenthesisColors.clear();
+  preferences.synQLL.parenthesisColors  << QColor(0,0,0) << QColor(255,0,128);
   
-  prefs->synC.numberStyle=0;
-  prefs->synS.numberStyle=0;
-  prefs->synASM.numberStyle=0;
-  prefs->synQLL.numberStyle=0;
+  preferences.synC.numberStyle=0;
+  preferences.synS.numberStyle=0;
+  preferences.synASM.numberStyle=0;
+  preferences.synQLL.numberStyle=0;
   
-  prefs->synC.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
-  prefs->synS.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
-  prefs->synASM.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
-  prefs->synQLL.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  preferences.synC.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  preferences.synS.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  preferences.synASM.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  preferences.synQLL.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
   
-  prefs->synC.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
-  prefs->synS.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
-  prefs->synASM.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
-  prefs->synQLL.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  preferences.synC.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  preferences.synS.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  preferences.synASM.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  preferences.synQLL.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
   
   Syn_CustomStyle Comment_Area;
   Comment_Area.name="Comment Area";
@@ -261,17 +261,18 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
   Compiler_Directive.switchable=true;
   Compiler_Directive.color=QColor(0,128,128);
   Compiler_Directive.style=SYNS_CUSTOM|SYNS_BOLD;
-  prefs->synC.customStyles.clear();
-  prefs->synS.customStyles.clear();
-  prefs->synASM.customStyles.clear();
-  prefs->synQLL.customStyles.clear();
-  prefs->synC.customStyles << Comment_Area << Comment_Line << SCS_String << Character << Preprocessor_Directive;
-  prefs->synS.customStyles << Comment_Area << Comment_Line_Pipe << Comment_Line_Pound << SCS_String << Character;
-  prefs->synASM.customStyles << Comment_Line_Semicolon << String_DoubleQuoted << String_SingleQuoted;
-  prefs->synQLL.customStyles << Comment_Area << Comment_Line << SCS_String << Character << Compiler_Directive;
+  preferences.synC.customStyles.clear();
+  preferences.synS.customStyles.clear();
+  preferences.synASM.customStyles.clear();
+  preferences.synQLL.customStyles.clear();
+  preferences.synC.customStyles << Comment_Area << Comment_Line << SCS_String << Character << Preprocessor_Directive;
+  preferences.synS.customStyles << Comment_Area << Comment_Line_Pipe << Comment_Line_Pound << SCS_String << Character;
+  preferences.synASM.customStyles << Comment_Line_Semicolon << String_DoubleQuoted << String_SingleQuoted;
+  preferences.synQLL.customStyles << Comment_Area << Comment_Line << SCS_String << Character << Compiler_Directive;
   Syn_WordList C_Keywords;
   C_Keywords.name="C Keywords";
-  C_Keywords.list="__alignof__\n"
+  C_Keywords.list=QStringList::split('\n',
+                  "__alignof__\n"
                   "__asm__\n"
                   "__attribute__\n"
                   "__complex__\n"
@@ -312,13 +313,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                   "unsigned\n"
                   "void\n"
                   "volatile\n"
-                  "while\n";
+                  "while\n");
   C_Keywords.color=QColor(0,0,255);
   C_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   C_Keywords.caseSensitive=true;
   Syn_WordList Data_Movement;
   Data_Movement.name="Data Movement";
-  Data_Movement.list= "EXG\n"
+  Data_Movement.list= QStringList::split('\n',
+                      "EXG\n"
                       "LEA\n"
                       "LINK\n"
                       "MOV\n"
@@ -331,13 +333,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                       "MOVP\n"
                       "MOVQ\n"
                       "PEA\n"
-                      "UNLK\n";
+                      "UNLK\n");
   Data_Movement.color=QColor(0,0,255);
   Data_Movement.style=0;
   Data_Movement.caseSensitive=false;
   Syn_WordList Integer_Arithmetic;
   Integer_Arithmetic.name="Integer Arithmetic";
-  Integer_Arithmetic.list="ADD\n"
+  Integer_Arithmetic.list=QStringList::split('\n',
+                          "ADD\n"
                           "ADDA\n"
                           "ADDI\n"
                           "ADDQ\n"
@@ -358,25 +361,27 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                           "SUBA\n"
                           "SUBI\n"
                           "SUBQ\n"
-                          "SUBX\n";
+                          "SUBX\n");
   Integer_Arithmetic.color=QColor(0,0,255);
   Integer_Arithmetic.style=0;
   Integer_Arithmetic.caseSensitive=false;
   Syn_WordList Logical_Instructions;
   Logical_Instructions.name="Logical Instructions";
-  Logical_Instructions.list="AND\n"
+  Logical_Instructions.list=QStringList::split('\n',
+                            "AND\n"
                             "ANDI\n"
                             "EOR\n"
                             "EORI\n"
                             "NOT\n"
                             "OR\n"
-                            "ORI\n";
+                            "ORI\n");
   Logical_Instructions.color=QColor(0,0,255);
   Logical_Instructions.style=0;
   Logical_Instructions.caseSensitive=false;
   Syn_WordList ShiftRotation_Instructions;
   ShiftRotation_Instructions.name="Shift/Rotation Instructions";
-  ShiftRotation_Instructions.list="ASL\n"
+  ShiftRotation_Instructions.list=QStringList::split('\n',
+                                  "ASL\n"
                                   "ASR\n"
                                   "LSL\n"
                                   "LSR\n"
@@ -384,22 +389,24 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                                   "ROR\n"
                                   "ROXL\n"
                                   "ROXR\n"
-                                  "SWAP\n";
+                                  "SWAP\n");
   ShiftRotation_Instructions.color=QColor(0,0,255);
   ShiftRotation_Instructions.style=0;
   ShiftRotation_Instructions.caseSensitive=false;
   Syn_WordList Bit_Manipulation;
   Bit_Manipulation.name="Bit Manipulation";
-  Bit_Manipulation.list="BCHG\n"
+  Bit_Manipulation.list=QStringList::split('\n',
+                        "BCHG\n"
                         "BCLR\n"
                         "BSET\n"
-                        "BTST\n";
+                        "BTST\n");
   Bit_Manipulation.color=QColor(0,0,255);
   Bit_Manipulation.style=0;
   Bit_Manipulation.caseSensitive=false;
   Syn_WordList Program_Control;
   Program_Control.name="Program Control";
-  Program_Control.list= "BCC\n"
+  Program_Control.list= QStringList::split('\n',
+                        "BCC\n"
                         "BCS\n"
                         "BEQ\n"
                         "BGE\n"
@@ -516,30 +523,33 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                         "FJUGT\n"
                         "FJULE\n"
                         "FJULT\n"
-                        "FJUN\n";
+                        "FJUN\n");
   Program_Control.color=QColor(0,0,255);
   Program_Control.style=0;
   Program_Control.caseSensitive=false;
   Syn_WordList System_Control;
   System_Control.name="System Control";
-  System_Control.list="ILLEGAL\n"
+  System_Control.list=QStringList::split('\n',
+                      "ILLEGAL\n"
                       "RTE\n"
-                      "TRAP\n";
+                      "TRAP\n");
   System_Control.color=QColor(0,0,255);
   System_Control.style=0;
   System_Control.caseSensitive=false;
   Syn_WordList SWL_Extensions;
   SWL_Extensions.name="Extensions";
-  SWL_Extensions.list="B\n"
+  SWL_Extensions.list=QStringList::split('\n',
+                      "B\n"
                       "L\n"
                       "S\n"
-                      "W\n";
+                      "W\n");
   SWL_Extensions.color=QColor(0,128,64);
   SWL_Extensions.style=0;
   SWL_Extensions.caseSensitive=false;
   Syn_WordList Assembler_Directives;
   Assembler_Directives.name="Assembler Directives";
-  Assembler_Directives.list="abort\n"
+  Assembler_Directives.list=QStringList::split('\n',
+                            "abort\n"
                             "align\n"
                             "ascii\n"
                             "asciz\n"
@@ -622,13 +632,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                             "uleb128\n"
                             "val\n"
                             "vtable_entry\n"
-                            "word\n";
+                            "word\n");
   Assembler_Directives.color=QColor(0,0,255);
   Assembler_Directives.style=SYNS_CUSTOM|SYNS_BOLD;
   Assembler_Directives.caseSensitive=true;
   Syn_WordList SWL_Registers;
   SWL_Registers.name="Registers";
-  SWL_Registers.list= "a0\n"
+  SWL_Registers.list= QStringList::split('\n',
+                      "a0\n"
                       "a1\n"
                       "a2\n"
                       "a3\n"
@@ -647,44 +658,47 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                       "fp\n"
                       "pc\n"
                       "sp\n"
-                      "sr\n";
+                      "sr\n");
   SWL_Registers.color=QColor(255,0,0);
   SWL_Registers.style=SYNS_CUSTOM|SYNS_UNDERLINE;
   SWL_Registers.caseSensitive=false;
   Syn_WordList Data_Movement_a68k;
   Data_Movement_a68k.name="Data Movement";
-  Data_Movement_a68k.list= "EXG\n"
-                      "LEA\n"
-                      "LINK\n"
-                      "MOVE\n"
-                      "MOVEA\n"
-                      "MOVEM\n"
-                      "MOVEP\n"
-                      "MOVEQ\n"
-                      "PEA\n"
-                      "UNLK\n";
+  Data_Movement_a68k.list= QStringList::split('\n',
+                           "EXG\n"
+                           "LEA\n"
+                           "LINK\n"
+                           "MOVE\n"
+                           "MOVEA\n"
+                           "MOVEM\n"
+                           "MOVEP\n"
+                           "MOVEQ\n"
+                           "PEA\n"
+                           "UNLK\n");
   Data_Movement_a68k.color=QColor(0,0,255);
   Data_Movement_a68k.style=0;
   Data_Movement_a68k.caseSensitive=false;
   Syn_WordList ShiftRotation_Instructions_a68k;
   ShiftRotation_Instructions_a68k.name="Shift/Rotation Instructions";
-  ShiftRotation_Instructions_a68k.list="ASL\n"
-                                  "ASR\n"
-                                  "LSL\n"
-                                  "LSR\n"
-                                  "ROL\n"
-                                  "ROLX\n"
-                                  "ROR\n"
-                                  "RORX\n"
-                                  "ROXL\n"
-                                  "ROXR\n"
-                                  "SWAP\n";
+  ShiftRotation_Instructions_a68k.list=QStringList::split('\n',
+                                       "ASL\n"
+                                       "ASR\n"
+                                       "LSL\n"
+                                       "LSR\n"
+                                       "ROL\n"
+                                       "ROLX\n"
+                                       "ROR\n"
+                                       "RORX\n"
+                                       "ROXL\n"
+                                       "ROXR\n"
+                                       "SWAP\n");
   ShiftRotation_Instructions_a68k.color=QColor(0,0,255);
   ShiftRotation_Instructions_a68k.style=0;
   ShiftRotation_Instructions_a68k.caseSensitive=false;
   Syn_WordList Program_Control_a68k;
   Program_Control_a68k.name="Program Control";
-  Program_Control_a68k.list="BCC\n"
+  Program_Control_a68k.list=QStringList::split('\n',
+                            "BCC\n"
                             "BCS\n"
                             "BEQ\n"
                             "BGE\n"
@@ -744,13 +758,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                             "ST\n"
                             "SVC\n"
                             "SVS\n"
-                            "TST\n";
+                            "TST\n");
   Program_Control_a68k.color=QColor(0,0,255);
   Program_Control_a68k.style=0;
   Program_Control_a68k.caseSensitive=false;
   Syn_WordList Assembler_Directives_a68k;
   Assembler_Directives_a68k.name="Assembler Directives";
-  Assembler_Directives_a68k.list= "BSS\n"
+  Assembler_Directives_a68k.list= QStringList::split('\n',
+                                  "BSS\n"
                                   "CNOP\n"
                                   "CSEG\n"
                                   "DSEG\n"
@@ -793,13 +808,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                                   "TITLE\n"
                                   "TTL\n"
                                   "XDEF\n"
-                                  "XREF\n";
+                                  "XREF\n");
   Assembler_Directives_a68k.color=QColor(0,0,255);
   Assembler_Directives_a68k.style=SYNS_CUSTOM|SYNS_BOLD;
   Assembler_Directives_a68k.caseSensitive=false;
   Syn_WordList SWL_Sections;
   SWL_Sections.name="Sections";
-  SWL_Sections.list="$$ACTIONS\n"
+  SWL_Sections.list=QStringList::split('\n',
+                    "$$ACTIONS\n"
                     "$$CONNECTIONS\n"
                     "$$END\n"
                     "$$END_TEST\n"
@@ -813,13 +829,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                     "$$PICTURES_TEST\n"
                     "$$SYSTEM_MESSAGES\n"
                     "$$TITLE\n"
-                    "$$VOCABULARY\n";
+                    "$$VOCABULARY\n");
   SWL_Sections.color=QColor(255,0,0);
   SWL_Sections.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Sections.caseSensitive=true;
   Syn_WordList Section_Specific_Keywords;
   Section_Specific_Keywords.name="Section-specific Keywords";
-  Section_Specific_Keywords.list= "ACTION\n"
+  Section_Specific_Keywords.list= QStringList::split('\n',
+                                  "ACTION\n"
                                   "BITMAP\n"
                                   "CBLOCK\n"
                                   "CONN\n"
@@ -835,20 +852,22 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                                   "MSG\n"
                                   "OBJ\n"
                                   "PACKED_BITMAP\n"
-                                  "WORD\n";
+                                  "WORD\n");
   Section_Specific_Keywords.color=QColor(64,128,128);
   Section_Specific_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   Section_Specific_Keywords.caseSensitive=true;
   Syn_WordList AdditionalKeywords;
   AdditionalKeywords.name="Additional Keywords";
-  AdditionalKeywords.list="CONTINUE\n"
-                          "ELSE\n";
+  AdditionalKeywords.list=QStringList::split('\n',
+                          "CONTINUE\n"
+                          "ELSE\n");
   AdditionalKeywords.color=QColor(64,128,128);
   AdditionalKeywords.style=SYNS_CUSTOM|SYNS_BOLD;
   AdditionalKeywords.caseSensitive=true;
   Syn_WordList PredefinedAliases;
   PredefinedAliases.name="Predefined Aliases";
-  PredefinedAliases.list= "$ALSOSEE\n"
+  PredefinedAliases.list= QStringList::split('\n',
+                          "$ALSOSEE\n"
                           "$ARG\n"
                           "$CARRIED\n"
                           "$CENTER\n"
@@ -886,13 +905,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                           "$TURNHI\n"
                           "$TURNLO\n"
                           "$VERB\n"
-                          "$WORN\n";
+                          "$WORN\n");
   PredefinedAliases.color=QColor(128,0,128);
   PredefinedAliases.style=SYNS_CUSTOM|SYNS_BOLD;
   PredefinedAliases.caseSensitive=true;
   Syn_WordList SWL_Conditions;
   SWL_Conditions.name="Conditions";
-  SWL_Conditions.list="ABSENT\n"
+  SWL_Conditions.list=QStringList::split('\n',
+                      "ABSENT\n"
                       "AT\n"
                       "ATGT\n"
                       "ATLT\n"
@@ -923,13 +943,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                       "SAME\n"
                       "TRYMOVE\n"
                       "WORN\n"
-                      "ZERO\n";
+                      "ZERO\n");
   SWL_Conditions.color=QColor(0,0,255);
   SWL_Conditions.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Conditions.caseSensitive=true;
   Syn_WordList SWL_Actions;
   SWL_Actions.name="Actions";
-  SWL_Actions.list= "ADD\n"
+  SWL_Actions.list= QStringList::split('\n',
+                    "ADD\n"
                     "ALSOSEE\n"
                     "ANYKEY\n"
                     "AUTOD\n"
@@ -1003,13 +1024,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                     "WEAR\n"
                     "WHATO\n"
                     "WHEREO\n"
-                    "ZAPSCR\n";
+                    "ZAPSCR\n");
   SWL_Actions.color=QColor(0,0,160);
   SWL_Actions.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Actions.caseSensitive=true;
   Syn_WordList Drawing_Primitives;
   Drawing_Primitives.name="Drawing primitives";
-  Drawing_Primitives.list="AMOVE\n"
+  Drawing_Primitives.list=QStringList::split('\n',
+                          "AMOVE\n"
                           "CALL,ELLIPSE\n"
                           "FILL,INV_ELLIPSE\n"
                           "INV_LINE\n"
@@ -1020,13 +1042,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                           "SHADE,XOR_ELLIPSE\n"
                           "XOR_LINE\n"
                           "XOR_PLOT\n"
-                          "XOR_RPLOT\n";
+                          "XOR_RPLOT\n");
   Drawing_Primitives.color=QColor(0,64,128);
   Drawing_Primitives.style=SYNS_CUSTOM|SYNS_BOLD;
   Drawing_Primitives.caseSensitive=true;
   Syn_WordList Drawing_Directions;
   Drawing_Directions.name="Drawing directions";
-  Drawing_Directions.list="DOWN\n"
+  Drawing_Directions.list=QStringList::split('\n',
+                          "DOWN\n"
                           "DOWN_LEFT\n"
                           "DOWN_RIGHT\n"
                           "LEFT\n"
@@ -1037,13 +1060,14 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                           "RIGHT_UP\n"
                           "UP\n"
                           "UP_LEFT\n"
-                          "UP_RIGHT\n";
+                          "UP_RIGHT\n");
   Drawing_Directions.color=QColor(0,128,0);
   Drawing_Directions.style=SYNS_CUSTOM|SYNS_BOLD;
   Drawing_Directions.caseSensitive=true;
   Syn_WordList Shading_Patterns;
   Shading_Patterns.name="Shading patterns";
-  Shading_Patterns.list="$BKSLASHFILL\n"
+  Shading_Patterns.list=QStringList::split('\n',
+                        "$BKSLASHFILL\n"
                         "$BRICKFILL\n"
                         "$CHAINFILL\n"
                         "$CIRCLEFILL\n"
@@ -1075,25 +1099,27 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                         "$WAVEFILL\n"
                         "$WIDEDOTFILL\n"
                         "$XMARKFILL\n"
-                        "$ZIGZAGFILL\n";
+                        "$ZIGZAGFILL\n");
   Shading_Patterns.color=QColor(128,0,128);
   Shading_Patterns.style=SYNS_CUSTOM|SYNS_BOLD;
   Shading_Patterns.caseSensitive=true;
   Syn_WordList NonFunctional_Keywords;
   NonFunctional_Keywords.name="Non-functional keywords";
-  NonFunctional_Keywords.list="BEEP\n"
+  NonFunctional_Keywords.list=QStringList::split('\n',
+                              "BEEP\n"
                               "BLOCK\n"
                               "BORDER\n"
                               "BRIGHT\n"
                               "FLASH\n"
                               "INK\n"
-                              "PAPER\n";
+                              "PAPER\n");
   NonFunctional_Keywords.color=QColor(192,192,192);
   NonFunctional_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   NonFunctional_Keywords.caseSensitive=true;
   Syn_WordList External_Symbols;
   External_Symbols.name="External symbols";
-  External_Symbols.list="$ACTIONS$\n"
+  External_Symbols.list=QStringList::split('\n',
+                        "$ACTIONS$\n"
                         "$ARG$\n"
                         "$BMPUT$\n"
                         "$BPCKPUT$\n"
@@ -1124,19 +1150,67 @@ void defaultSynHighlight(TIGCCPrefs *prefs)
                         "$SCALEY$\n"
                         "$SSCR$\n"
                         "$SYSTEM_MESSAGES$\n"
-                        "$WORDS$\n";
+                        "$WORDS$\n");
   External_Symbols.color=QColor(0,128,64);
   External_Symbols.style=SYNS_CUSTOM|SYNS_BOLD;
   External_Symbols.caseSensitive=true;
   
-  prefs->synC.wordLists.clear();
-  prefs->synS.wordLists.clear();
-  prefs->synASM.wordLists.clear();
-  prefs->synQLL.wordLists.clear();
-  prefs->synC.wordLists << C_Keywords;
-  prefs->synS.wordLists << Data_Movement << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions << Bit_Manipulation << Program_Control << System_Control << SWL_Extensions << Assembler_Directives << SWL_Registers;
-  prefs->synASM.wordLists << Data_Movement_a68k << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions_a68k << Bit_Manipulation << Program_Control_a68k << System_Control << SWL_Extensions << Assembler_Directives_a68k << SWL_Registers;
-  prefs->synQLL.wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
+  preferences.synC.wordLists.clear();
+  preferences.synS.wordLists.clear();
+  preferences.synASM.wordLists.clear();
+  preferences.synQLL.wordLists.clear();
+  preferences.synC.wordLists << C_Keywords;
+  preferences.synS.wordLists << Data_Movement << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions << Bit_Manipulation << Program_Control << System_Control << SWL_Extensions << Assembler_Directives << SWL_Registers;
+  preferences.synASM.wordLists << Data_Movement_a68k << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions_a68k << Bit_Manipulation << Program_Control_a68k << System_Control << SWL_Extensions << Assembler_Directives_a68k << SWL_Registers;
+  preferences.synQLL.wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
+}
+
+static bool loadSyntaxPreferences(Syn_SettingsForDoc &synprefs, const QString &group)
+{
+  pconfig->setGroup(group+" Syntax Highlighting");
+  synprefs.enabled=pconfig->readBoolEntry("Enabled",true);
+  synprefs.numberColor=pconfig->readColorEntry("Number Color");
+  if (!synprefs.numberColor.isValid()) return FALSE;
+  synprefs.symbolColor=pconfig->readColorEntry("Symbol Color");
+  if (!synprefs.symbolColor.isValid()) return FALSE;
+  unsigned numParenthesisColors=pconfig->readUnsignedNumEntry("Num Parenthesis Colors");
+  if (!numParenthesisColors) return FALSE;
+  for (unsigned i=0; i<numParenthesisColors; i++) {
+    QColor parenthesisColor=pconfig->readColorEntry(QString("Parenthesis Color %1").arg(i));
+    if (!parenthesisColor.isValid()) return FALSE;
+    synprefs.parenthesisColors.append(parenthesisColor);
+  }
+  synprefs.numberStyle=pconfig->readUnsignedNumEntry("Number Style");
+  synprefs.symbolStyle=pconfig->readUnsignedNumEntry("Symbol Style");
+  synprefs.parenthesisStyle=pconfig->readUnsignedNumEntry("Parenthesis Style");
+  unsigned numCustomStyles=pconfig->readUnsignedNumEntry("Num Custom Styles");
+  for (unsigned i=0; i<numCustomStyles; i++) {
+    Syn_CustomStyle customStyle;
+    customStyle.name=pconfig->readEntry(QString("Custom Style %1 Name").arg(i),QString("Style %1").arg(i));
+    customStyle.beginning=pconfig->readEntry(QString("Custom Style %1 Beginning").arg(i));
+    customStyle.ending=pconfig->readEntry(QString("Custom Style %1 Ending").arg(i));
+    customStyle.ignoreEndingAfter=pconfig->readEntry(QString("Custom Style %1 Ignore Ending After").arg(i))[0];
+    customStyle.switchable=pconfig->readBoolEntry(QString("Custom Style %1 Switchable").arg(i));
+    customStyle.color=pconfig->readColorEntry(QString("Custom Style %1 Color").arg(i));
+    customStyle.style=pconfig->readUnsignedNumEntry(QString("Custom Style %1 Style").arg(i));
+    synprefs.customStyles.append(customStyle);
+  }
+  unsigned numWordLists=pconfig->readUnsignedNumEntry("Num Word Lists");
+  for (unsigned i=0; i<numWordLists; i++) {
+    Syn_WordList wordList;
+    wordList.name=pconfig->readEntry(QString("Word List %1 Name").arg(i),QString("Word List %1").arg(i));
+    wordList.list=pconfig->readListEntry(QString("Word List %1 List").arg(i),'\n');
+    wordList.color=pconfig->readColorEntry(QString("Word List %1 Color").arg(i));
+    wordList.style=pconfig->readUnsignedNumEntry(QString("Word List %1 Style").arg(i));
+    wordList.caseSensitive=pconfig->readBoolEntry(QString("Word List %1 Case Sensitive").arg(i));
+    synprefs.wordLists.append(wordList);
+  }
+  return TRUE;
+}
+
+static void saveSyntaxPreferences(const Syn_SettingsForDoc &synprefs, const QString &group)
+{
+  pconfig->setGroup(group+" Syntax Highlighting");
 }
 
 // Update the Kate schema from our internal ones.
@@ -1272,6 +1346,13 @@ void loadPreferences(void)
   preferences.removeTrailingSpaces=pconfig->readBoolEntry("Remove Trailing Spaces",false);
 
   updateEditorPreferences();
+  
+  // Syntax
+  if (!loadSyntaxPreferences(preferences.synC,"C")
+      || !loadSyntaxPreferences(preferences.synS,"GNU As")
+      || !loadSyntaxPreferences(preferences.synASM,"A68k")
+      || !loadSyntaxPreferences(preferences.synQLL,"Quill"))
+    defaultSynHighlight();
 }
 
 void savePreferences(void)
