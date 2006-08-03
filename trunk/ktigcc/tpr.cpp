@@ -952,7 +952,36 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
           break;
       }
       if (!noInsert) {
-        INSERT_CHAR(c);
+        // Special cases:
+        switch(c.unicode()) {
+          // Surrogate pairs.
+          case 0xd800 ... 0xdbff:
+            if (curPos<l && text[curPos+1].unicode()>=0xdc00
+                         && text[curPos+1].unicode()<=0xdfff) {
+              INSERT_STRING(QString(c)+text[curPos+1]);
+              // Allow the UI to respond, splitting is a lengthy operation.
+              if ((curPos++)&127)
+                QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
+              curPos++;
+              curCol++;
+              break;
+            } else goto de_fault;
+          // x-bar and y-bar are special if we use the calculator charset.
+          case 0x305:
+            if (preferences.useCalcCharset && curPos<l
+                && (text[curPos+1]=='x' || text[curPos+1]=='y')) {
+              INSERT_STRING(QString(c)+text[curPos+1]);
+              // Allow the UI to respond, splitting is a lengthy operation.
+              if ((curPos++)&127)
+                QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
+              curCol++;
+              break;
+            }
+          default:
+          de_fault:
+            INSERT_CHAR(c);
+            break;
+        }
         if (c!='\n') atLineStart=FALSE;
       }
       if (c=='\n') {
