@@ -43,6 +43,7 @@ typedef struct
 	QString ending;
 	QChar ignoreEndingAfter;
 	bool switchable;
+    bool lineStartOnly;
 	QColor color;
 	Syn_Style style;
 } Syn_CustomStyle;

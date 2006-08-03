@@ -179,6 +179,7 @@ static void defaultSynHighlight(void)
   Comment_Area.ending="*/";
   Comment_Area.ignoreEndingAfter=0;
   Comment_Area.switchable=false;
+  Comment_Area.lineStartOnly=false;
   Comment_Area.color=QColor(0,128,0);
   Comment_Area.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle Comment_Line;
@@ -187,6 +188,7 @@ static void defaultSynHighlight(void)
   Comment_Line.ending="\n";
   Comment_Line.ignoreEndingAfter=0;
   Comment_Line.switchable=false;
+  Comment_Line.lineStartOnly=false;
   Comment_Line.color=QColor(0,128,0);
   Comment_Line.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle SCS_String;
@@ -195,6 +197,7 @@ static void defaultSynHighlight(void)
   SCS_String.ending="\"";
   SCS_String.ignoreEndingAfter='\\';
   SCS_String.switchable=false;
+  SCS_String.lineStartOnly=false;
   SCS_String.color=QColor(128,0,0);
   SCS_String.style=0;
   Syn_CustomStyle Character;
@@ -203,6 +206,7 @@ static void defaultSynHighlight(void)
   Character.ending="\'";
   Character.ignoreEndingAfter='\\';
   Character.switchable=false;
+  Character.lineStartOnly=false;
   Character.color=QColor(128,0,0);
   Character.style=0;
   Syn_CustomStyle Preprocessor_Directive;
@@ -211,6 +215,7 @@ static void defaultSynHighlight(void)
   Preprocessor_Directive.ending=" ";
   Preprocessor_Directive.ignoreEndingAfter=0;
   Preprocessor_Directive.switchable=false;
+  Preprocessor_Directive.lineStartOnly=false;
   Preprocessor_Directive.color=QColor(0,128,128);
   Preprocessor_Directive.style=SYNS_CUSTOM|SYNS_BOLD;
   Syn_CustomStyle Comment_Line_Pipe;
@@ -219,6 +224,7 @@ static void defaultSynHighlight(void)
   Comment_Line_Pipe.ending="\n";
   Comment_Line_Pipe.ignoreEndingAfter=0;
   Comment_Line_Pipe.switchable=false;
+  Comment_Line_Pipe.lineStartOnly=false;
   Comment_Line_Pipe.color=QColor(0,128,0);
   Comment_Line_Pipe.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle Comment_Line_Pound;
@@ -227,6 +233,7 @@ static void defaultSynHighlight(void)
   Comment_Line_Pound.ending="\n";
   Comment_Line_Pound.ignoreEndingAfter=0;
   Comment_Line_Pound.switchable=false;
+  Comment_Line_Pound.lineStartOnly=true;
   Comment_Line_Pound.color=QColor(0,128,0);
   Comment_Line_Pound.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle Comment_Line_Semicolon;
@@ -235,6 +242,7 @@ static void defaultSynHighlight(void)
   Comment_Line_Semicolon.ending="\n";
   Comment_Line_Semicolon.ignoreEndingAfter=0;
   Comment_Line_Semicolon.switchable=false;
+  Comment_Line_Semicolon.lineStartOnly=false;
   Comment_Line_Semicolon.color=QColor(0,128,0);
   Comment_Line_Semicolon.style=SYNS_CUSTOM|SYNS_ITALIC;
   Syn_CustomStyle String_DoubleQuoted;
@@ -243,6 +251,7 @@ static void defaultSynHighlight(void)
   String_DoubleQuoted.ending="\"";
   String_DoubleQuoted.ignoreEndingAfter=0;
   String_DoubleQuoted.switchable=false;
+  String_DoubleQuoted.lineStartOnly=false;
   String_DoubleQuoted.color=QColor(128,0,0);
   String_DoubleQuoted.style=0;
   Syn_CustomStyle String_SingleQuoted;
@@ -251,6 +260,7 @@ static void defaultSynHighlight(void)
   String_SingleQuoted.ending="\'";
   String_SingleQuoted.ignoreEndingAfter=0;
   String_SingleQuoted.switchable=false;
+  String_SingleQuoted.lineStartOnly=false;
   String_SingleQuoted.color=QColor(128,0,0);
   String_SingleQuoted.style=0;
   Syn_CustomStyle Compiler_Directive;
@@ -259,6 +269,7 @@ static void defaultSynHighlight(void)
   Compiler_Directive.ending="\n";
   Compiler_Directive.ignoreEndingAfter='\\';
   Compiler_Directive.switchable=true;
+  Compiler_Directive.lineStartOnly=false;
   Compiler_Directive.color=QColor(0,128,128);
   Compiler_Directive.style=SYNS_CUSTOM|SYNS_BOLD;
   preferences.synC.customStyles.clear();
@@ -1200,6 +1211,7 @@ static bool loadSyntaxPreferences(Syn_SettingsForDoc &synprefs, const QString &g
     customStyle.ending=pconfig->readEntry(QString("Custom Style %1 Ending").arg(i));
     customStyle.ignoreEndingAfter=pconfig->readEntry(QString("Custom Style %1 Ignore Ending After").arg(i))[0];
     customStyle.switchable=pconfig->readBoolEntry(QString("Custom Style %1 Switchable").arg(i));
+    customStyle.lineStartOnly=pconfig->readBoolEntry(QString("Custom Style %1 Line Start Only").arg(i));
     customStyle.color=pconfig->readColorEntry(QString("Custom Style %1 Color").arg(i));
     customStyle.style=pconfig->readUnsignedNumEntry(QString("Custom Style %1 Style").arg(i));
     synprefs.customStyles.append(customStyle);
@@ -1240,6 +1252,7 @@ static void saveSyntaxPreferences(const Syn_SettingsForDoc &synprefs, const QStr
     pconfig->writeEntry(QString("Custom Style %1 Ending").arg(i),customStyle.ending);
     pconfig->writeEntry(QString("Custom Style %1 Ignore Ending After").arg(i),QString(customStyle.ignoreEndingAfter));
     pconfig->writeEntry(QString("Custom Style %1 Switchable").arg(i),customStyle.switchable);
+    pconfig->writeEntry(QString("Custom Style %1 Line Start Only").arg(i),customStyle.lineStartOnly);
     pconfig->writeEntry(QString("Custom Style %1 Color").arg(i),customStyle.color);
     pconfig->writeEntry(QString("Custom Style %1 Style").arg(i),(unsigned)customStyle.style);
   }
