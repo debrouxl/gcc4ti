@@ -113,6 +113,7 @@ typedef struct
   Syn_SettingsForDoc synQLL;
 } TIGCCPrefs;
 
+void defaultSynHighlight(void);
 void loadPreferences(void);
 void savePreferences(void);
 int showPreferencesDialog(QWidget *parent=0);

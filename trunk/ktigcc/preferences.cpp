@@ -134,7 +134,116 @@ int SynToXML(Syn_SettingsForDoc &syn __attribute__((unused)),const QString &dest
     return 0;
 }
 
-static void defaultSynHighlight(void)
+static void updateSyntaxXML(void)
+{
+  
+}
+
+static bool loadSyntaxPreference(Syn_SettingsForDoc &synprefs, const QString &group)
+{
+  pconfig->setGroup(group+" Syntax Highlighting");
+  synprefs.enabled=pconfig->readBoolEntry("Enabled",true);
+  synprefs.numberColor=pconfig->readColorEntry("Number Color");
+  if (!synprefs.numberColor.isValid()) return FALSE;
+  synprefs.symbolColor=pconfig->readColorEntry("Symbol Color");
+  if (!synprefs.symbolColor.isValid()) return FALSE;
+  unsigned numParenthesisColors=pconfig->readUnsignedNumEntry("Num Parenthesis Colors");
+  if (!numParenthesisColors) return FALSE;
+  for (unsigned i=0; i<numParenthesisColors; i++) {
+    QColor parenthesisColor=pconfig->readColorEntry(QString("Parenthesis Color %1").arg(i));
+    if (!parenthesisColor.isValid()) return FALSE;
+    synprefs.parenthesisColors.append(parenthesisColor);
+  }
+  synprefs.numberStyle=pconfig->readUnsignedNumEntry("Number Style");
+  synprefs.symbolStyle=pconfig->readUnsignedNumEntry("Symbol Style");
+  synprefs.parenthesisStyle=pconfig->readUnsignedNumEntry("Parenthesis Style");
+  unsigned numCustomStyles=pconfig->readUnsignedNumEntry("Num Custom Styles");
+  for (unsigned i=0; i<numCustomStyles; i++) {
+    Syn_CustomStyle customStyle;
+    customStyle.name=pconfig->readEntry(QString("Custom Style %1 Name").arg(i),QString("Style %1").arg(i));
+    customStyle.beginning=pconfig->readEntry(QString("Custom Style %1 Beginning").arg(i));
+    customStyle.ending=pconfig->readEntry(QString("Custom Style %1 Ending").arg(i));
+    customStyle.ignoreEndingAfter=pconfig->readEntry(QString("Custom Style %1 Ignore Ending After").arg(i))[0];
+    customStyle.switchable=pconfig->readBoolEntry(QString("Custom Style %1 Switchable").arg(i));
+    customStyle.lineStartOnly=pconfig->readBoolEntry(QString("Custom Style %1 Line Start Only").arg(i));
+    customStyle.color=pconfig->readColorEntry(QString("Custom Style %1 Color").arg(i));
+    customStyle.style=pconfig->readUnsignedNumEntry(QString("Custom Style %1 Style").arg(i));
+    synprefs.customStyles.append(customStyle);
+  }
+  unsigned numWordLists=pconfig->readUnsignedNumEntry("Num Word Lists");
+  for (unsigned i=0; i<numWordLists; i++) {
+    Syn_WordList wordList;
+    wordList.name=pconfig->readEntry(QString("Word List %1 Name").arg(i),QString("Word List %1").arg(i));
+    wordList.list=pconfig->readListEntry(QString("Word List %1 List").arg(i));
+    wordList.color=pconfig->readColorEntry(QString("Word List %1 Color").arg(i));
+    wordList.style=pconfig->readUnsignedNumEntry(QString("Word List %1 Style").arg(i));
+    wordList.caseSensitive=pconfig->readBoolEntry(QString("Word List %1 Case Sensitive").arg(i));
+    synprefs.wordLists.append(wordList);
+  }
+  return TRUE;
+}
+
+static bool loadSyntaxPreferences(void)
+{
+  return loadSyntaxPreference(preferences.synC,"C")
+         && loadSyntaxPreference(preferences.synS,"GNU As")
+         && loadSyntaxPreference(preferences.synASM,"A68k")
+         && loadSyntaxPreference(preferences.synQLL,"Quill");
+}
+
+static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QString &group)
+{
+  unsigned i;
+  pconfig->setGroup(group+" Syntax Highlighting");
+  pconfig->writeEntry("Enabled",synprefs.enabled);
+  pconfig->writeEntry("Number Color",synprefs.numberColor);
+  pconfig->writeEntry("Symbol Color",synprefs.symbolColor);
+  for (QValueList<QColor>::ConstIterator it=(i=0,synprefs.parenthesisColors.begin());
+       it!=synprefs.parenthesisColors.end(); ++it, i++) {
+    pconfig->writeEntry(QString("Parenthesis Color %1").arg(i),*it);
+  }
+  pconfig->writeEntry("Num Parenthesis Colors",i);
+  pconfig->writeEntry("Number Style",(unsigned)synprefs.numberStyle);
+  pconfig->writeEntry("Symbol Style",(unsigned)synprefs.symbolStyle);
+  pconfig->writeEntry("Parenthesis Style",(unsigned)synprefs.parenthesisStyle);
+  for (QValueList<Syn_CustomStyle>::ConstIterator it=(i=0,synprefs.customStyles.begin());
+       it!=synprefs.customStyles.end(); ++it, i++) {
+    const Syn_CustomStyle &customStyle=*it;
+    pconfig->writeEntry(QString("Custom Style %1 Name").arg(i),customStyle.name);
+    pconfig->writeEntry(QString("Custom Style %1 Beginning").arg(i),customStyle.beginning);
+    pconfig->writeEntry(QString("Custom Style %1 Ending").arg(i),customStyle.ending);
+    pconfig->writeEntry(QString("Custom Style %1 Ignore Ending After").arg(i),QString(customStyle.ignoreEndingAfter));
+    pconfig->writeEntry(QString("Custom Style %1 Switchable").arg(i),customStyle.switchable);
+    pconfig->writeEntry(QString("Custom Style %1 Line Start Only").arg(i),customStyle.lineStartOnly);
+    pconfig->writeEntry(QString("Custom Style %1 Color").arg(i),customStyle.color);
+    pconfig->writeEntry(QString("Custom Style %1 Style").arg(i),(unsigned)customStyle.style);
+  }
+  pconfig->writeEntry("Num Custom Styles",i);
+  for (QValueList<Syn_WordList>::ConstIterator it=(i=0,synprefs.wordLists.begin());
+       it!=synprefs.wordLists.end(); ++it, i++) {
+    const Syn_WordList &wordList=*it;
+    pconfig->writeEntry(QString("Word List %1 Name").arg(i),wordList.name);
+    pconfig->writeEntry(QString("Word List %1 List").arg(i),wordList.list);
+    pconfig->writeEntry(QString("Word List %1 Color").arg(i),wordList.color);
+    pconfig->writeEntry(QString("Word List %1 Style").arg(i),(unsigned)wordList.style);
+    pconfig->writeEntry(QString("Word List %1 Case Sensitive").arg(i),wordList.caseSensitive);
+  }
+  pconfig->writeEntry("Num Word Lists",i);
+}
+
+static void saveSyntaxPreferences(void)
+{
+  saveSyntaxPreference(preferences.synC,"C");
+  saveSyntaxPreference(preferences.synS,"GNU As");
+  saveSyntaxPreference(preferences.synASM,"A68k");
+  saveSyntaxPreference(preferences.synQLL,"Quill");
+  updateSyntaxXML();
+
+  // Save to disk
+  pconfig->sync();
+}
+
+void defaultSynHighlight(void)
 {
   preferences.synC.enabled=true;
   preferences.synS.enabled=true;
@@ -1183,90 +1292,8 @@ static void defaultSynHighlight(void)
   preferences.synS.wordLists << Data_Movement << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions << Bit_Manipulation << Program_Control << System_Control << SWL_Extensions << Assembler_Directives << SWL_Registers;
   preferences.synASM.wordLists << Data_Movement_a68k << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions_a68k << Bit_Manipulation << Program_Control_a68k << System_Control << SWL_Extensions << Assembler_Directives_a68k << SWL_Registers;
   preferences.synQLL.wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
-}
 
-static bool loadSyntaxPreferences(Syn_SettingsForDoc &synprefs, const QString &group)
-{
-  pconfig->setGroup(group+" Syntax Highlighting");
-  synprefs.enabled=pconfig->readBoolEntry("Enabled",true);
-  synprefs.numberColor=pconfig->readColorEntry("Number Color");
-  if (!synprefs.numberColor.isValid()) return FALSE;
-  synprefs.symbolColor=pconfig->readColorEntry("Symbol Color");
-  if (!synprefs.symbolColor.isValid()) return FALSE;
-  unsigned numParenthesisColors=pconfig->readUnsignedNumEntry("Num Parenthesis Colors");
-  if (!numParenthesisColors) return FALSE;
-  for (unsigned i=0; i<numParenthesisColors; i++) {
-    QColor parenthesisColor=pconfig->readColorEntry(QString("Parenthesis Color %1").arg(i));
-    if (!parenthesisColor.isValid()) return FALSE;
-    synprefs.parenthesisColors.append(parenthesisColor);
-  }
-  synprefs.numberStyle=pconfig->readUnsignedNumEntry("Number Style");
-  synprefs.symbolStyle=pconfig->readUnsignedNumEntry("Symbol Style");
-  synprefs.parenthesisStyle=pconfig->readUnsignedNumEntry("Parenthesis Style");
-  unsigned numCustomStyles=pconfig->readUnsignedNumEntry("Num Custom Styles");
-  for (unsigned i=0; i<numCustomStyles; i++) {
-    Syn_CustomStyle customStyle;
-    customStyle.name=pconfig->readEntry(QString("Custom Style %1 Name").arg(i),QString("Style %1").arg(i));
-    customStyle.beginning=pconfig->readEntry(QString("Custom Style %1 Beginning").arg(i));
-    customStyle.ending=pconfig->readEntry(QString("Custom Style %1 Ending").arg(i));
-    customStyle.ignoreEndingAfter=pconfig->readEntry(QString("Custom Style %1 Ignore Ending After").arg(i))[0];
-    customStyle.switchable=pconfig->readBoolEntry(QString("Custom Style %1 Switchable").arg(i));
-    customStyle.lineStartOnly=pconfig->readBoolEntry(QString("Custom Style %1 Line Start Only").arg(i));
-    customStyle.color=pconfig->readColorEntry(QString("Custom Style %1 Color").arg(i));
-    customStyle.style=pconfig->readUnsignedNumEntry(QString("Custom Style %1 Style").arg(i));
-    synprefs.customStyles.append(customStyle);
-  }
-  unsigned numWordLists=pconfig->readUnsignedNumEntry("Num Word Lists");
-  for (unsigned i=0; i<numWordLists; i++) {
-    Syn_WordList wordList;
-    wordList.name=pconfig->readEntry(QString("Word List %1 Name").arg(i),QString("Word List %1").arg(i));
-    wordList.list=pconfig->readListEntry(QString("Word List %1 List").arg(i));
-    wordList.color=pconfig->readColorEntry(QString("Word List %1 Color").arg(i));
-    wordList.style=pconfig->readUnsignedNumEntry(QString("Word List %1 Style").arg(i));
-    wordList.caseSensitive=pconfig->readBoolEntry(QString("Word List %1 Case Sensitive").arg(i));
-    synprefs.wordLists.append(wordList);
-  }
-  return TRUE;
-}
-
-static void saveSyntaxPreferences(const Syn_SettingsForDoc &synprefs, const QString &group)
-{
-  unsigned i;
-  pconfig->setGroup(group+" Syntax Highlighting");
-  pconfig->writeEntry("Enabled",synprefs.enabled);
-  pconfig->writeEntry("Number Color",synprefs.numberColor);
-  pconfig->writeEntry("Symbol Color",synprefs.symbolColor);
-  for (QValueList<QColor>::ConstIterator it=(i=0,synprefs.parenthesisColors.begin());
-       it!=synprefs.parenthesisColors.end(); ++it, i++) {
-    pconfig->writeEntry(QString("Parenthesis Color %1").arg(i),*it);
-  }
-  pconfig->writeEntry("Num Parenthesis Colors",i);
-  pconfig->writeEntry("Number Style",(unsigned)synprefs.numberStyle);
-  pconfig->writeEntry("Symbol Style",(unsigned)synprefs.symbolStyle);
-  pconfig->writeEntry("Parenthesis Style",(unsigned)synprefs.parenthesisStyle);
-  for (QValueList<Syn_CustomStyle>::ConstIterator it=(i=0,synprefs.customStyles.begin());
-       it!=synprefs.customStyles.end(); ++it, i++) {
-    const Syn_CustomStyle &customStyle=*it;
-    pconfig->writeEntry(QString("Custom Style %1 Name").arg(i),customStyle.name);
-    pconfig->writeEntry(QString("Custom Style %1 Beginning").arg(i),customStyle.beginning);
-    pconfig->writeEntry(QString("Custom Style %1 Ending").arg(i),customStyle.ending);
-    pconfig->writeEntry(QString("Custom Style %1 Ignore Ending After").arg(i),QString(customStyle.ignoreEndingAfter));
-    pconfig->writeEntry(QString("Custom Style %1 Switchable").arg(i),customStyle.switchable);
-    pconfig->writeEntry(QString("Custom Style %1 Line Start Only").arg(i),customStyle.lineStartOnly);
-    pconfig->writeEntry(QString("Custom Style %1 Color").arg(i),customStyle.color);
-    pconfig->writeEntry(QString("Custom Style %1 Style").arg(i),(unsigned)customStyle.style);
-  }
-  pconfig->writeEntry("Num Custom Styles",i);
-  for (QValueList<Syn_WordList>::ConstIterator it=(i=0,synprefs.wordLists.begin());
-       it!=synprefs.wordLists.end(); ++it, i++) {
-    const Syn_WordList &wordList=*it;
-    pconfig->writeEntry(QString("Word List %1 Name").arg(i),wordList.name);
-    pconfig->writeEntry(QString("Word List %1 List").arg(i),wordList.list);
-    pconfig->writeEntry(QString("Word List %1 Color").arg(i),wordList.color);
-    pconfig->writeEntry(QString("Word List %1 Style").arg(i),(unsigned)wordList.style);
-    pconfig->writeEntry(QString("Word List %1 Case Sensitive").arg(i),wordList.caseSensitive);
-  }
-  pconfig->writeEntry("Num Word Lists",i);
+  saveSyntaxPreferences();
 }
 
 // Update the Kate schema from our internal ones.
@@ -1404,10 +1431,7 @@ void loadPreferences(void)
   updateEditorPreferences();
   
   // Syntax
-  if (!loadSyntaxPreferences(preferences.synC,"C")
-      || !loadSyntaxPreferences(preferences.synS,"GNU As")
-      || !loadSyntaxPreferences(preferences.synASM,"A68k")
-      || !loadSyntaxPreferences(preferences.synQLL,"Quill"))
+  if (!loadSyntaxPreferences())
     defaultSynHighlight();
 }
 
@@ -1446,14 +1470,8 @@ void savePreferences(void)
 
   updateEditorPreferences();
 
-  // Syntax
-  saveSyntaxPreferences(preferences.synC,"C");
-  saveSyntaxPreferences(preferences.synS,"GNU As");
-  saveSyntaxPreferences(preferences.synASM,"A68k");
-  saveSyntaxPreferences(preferences.synQLL,"Quill");
-
-  // Save to disk
-  pconfig->sync();
+  // Syntax, save to disk
+  saveSyntaxPreferences();
 }
 
 int showPreferencesDialog(QWidget *parent)
