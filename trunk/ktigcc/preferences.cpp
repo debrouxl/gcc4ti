@@ -195,28 +195,14 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   ADD_ATTR(numFloatSuffix,"String","fF");
   ADD_ATTR(numFloatSuffix,"attribute","Number");
   ADD_ATTR(numFloatSuffix,"context","#stay");
-  CHILD_NODE(numOct,defaultContext,"HlCOct");
-  ADD_ATTR(numOct,"attribute","Number");
-  ADD_ATTR(numOct,"context","#stay");
-  CHILD_NODE(numHex,defaultContext,"HlCHex");
+  CHILD_NODE(numInt,defaultContext,"RegExpr");
+  ADD_ATTR(numInt,"String","\\b\\d\\w*");
+  ADD_ATTR(numInt,"attribute","Number");
+  ADD_ATTR(numInt,"context","#stay");
+  CHILD_NODE(numHex,defaultContext,"RegExpr");
+  ADD_ATTR(numHex,"String","\\$\\w+");
   ADD_ATTR(numHex,"attribute","Number");
   ADD_ATTR(numHex,"context","#stay");
-  CHILD_NODE(numBin,defaultContext,"RegExpr");
-  ADD_ATTR(numBin,"String","0b[01]+(ULL|LUL|LLU|UL|LU|LL|U|L)?");
-  ADD_ATTR(numBin,"insensitive","TRUE");
-  ADD_ATTR(numBin,"attribute","Number");
-  ADD_ATTR(numBin,"context","#stay");
-  CHILD_NODE(numDec,defaultContext,"Int");
-  ADD_ATTR(numDec,"attribute","Number");
-  ADD_ATTR(numDec,"context","#stay");
-  QString suffixes[8]={"ULL","LUL","LLU","UL","LU","LL","U","L"};
-  for (int i=0; i<8; i++) {
-    CHILD_NODE(numDecSuffix,numDec,"StringDetect");
-    ADD_ATTR(numDecSuffix,"attribute","Number");
-    ADD_ATTR(numDecSuffix,"context","#stay");
-    ADD_ATTR(numDecSuffix,"String",suffixes[i]);
-    ADD_ATTR(numDecSuffix,"insensitive","TRUE");
-  }
   CHILD_NODE(symbols,defaultContext,"AnyChar");
   ADD_ATTR(symbols,"String","<{[)]}>;:,.=+-*/\\|\"\'!?&%#@^~");
   ADD_ATTR(symbols,"attribute","Symbol");
