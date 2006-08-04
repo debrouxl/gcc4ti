@@ -218,10 +218,40 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     ADD_ATTR(numDecSuffix,"insensitive","TRUE");
   }
   CHILD_NODE(symbols,defaultContext,"AnyChar");
-  ADD_ATTR(symbols,"String","<{[()]}>;:,.=+-*/\\|\"\'!?&%#@^~");
+  ADD_ATTR(symbols,"String","<{[)]}>;:,.=+-*/\\|\"\'!?&%#@^~");
   ADD_ATTR(symbols,"attribute","Symbol");
   ADD_ATTR(symbols,"context","#stay");
-  
+
+  unsigned numParenthesisColors=synprefs.parenthesisColors.count();
+  CHILD_NODE(parenOpen,defaultContext,"DetectChar");
+  ADD_ATTR(parenOpen,"char","(");
+  if (numParenthesisColors) {
+    ADD_ATTR(parenOpen,"attribute","Paren0");
+    ADD_ATTR(parenOpen,"context","Paren0");
+  } else {
+    ADD_ATTR(parenOpen,"attribute","Symbol");
+    ADD_ATTR(parenOpen,"context","#stay");
+  }
+  for (unsigned i=0; i<numParenthesisColors; i++) {
+    CHILD_NODE(pareniContext,contexts,"context");
+    QString parenp1="Paren%1";
+    QString pareni=parenp1.arg(i);
+    QString pareni1=parenp1.arg((i+1==numParenthesisColors)?0:(i+1));
+    ADD_ATTR(pareniContext,"name",pareni);
+    ADD_ATTR(pareniContext,"attribute","Normal");
+    ADD_ATTR(pareniContext,"lineEndContext","#stay");
+    CHILD_NODE(push,pareniContext,"DetectChar");
+    ADD_ATTR(push,"char","(");
+    ADD_ATTR(push,"attribute",pareni1);
+    ADD_ATTR(push,"context",pareni1);
+    CHILD_NODE(pop,pareniContext,"DetectChar");
+    ADD_ATTR(pop,"char",")");
+    ADD_ATTR(pop,"attribute",pareni);
+    ADD_ATTR(pop,"context","#pop");
+    CHILD_NODE(includeRules,pareniContext,"IncludeRules");
+    ADD_ATTR(includeRules,"context","Default");
+  }
+
 
   CHILD_NODE(keywords,general,"keywords");
   ADD_ATTR(keywords,"casesensitive",allWordListsCaseInsensitive?"0":"1");
