@@ -372,6 +372,41 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     }
   }
 
+  CHILD_NODE(itemDatas,highlighting,"itemDatas");
+  #define DEF_ITEM_DATA(idname,color,style) do { \
+    CHILD_NODE(itemData,itemDatas,"itemData");\
+    ADD_ATTR(itemData,"name",(idname));\
+    ADD_ATTR(itemData,"defStyleNum","dsNormal");\
+    QColor idcolor=(color);\
+    if (idcolor.isValid())\
+      ADD_ATTR(itemData,"color",idcolor.name());\
+    Syn_Style idstyle=(style);\
+    if (idstyle&SYNS_CUSTOM) {\
+      ADD_ATTR(itemData,"bold",(idstyle&SYNS_BOLD)?"1":"0");\
+      ADD_ATTR(itemData,"underline",(idstyle&SYNS_UNDERLINE)?"1":"0");\
+      ADD_ATTR(itemData,"italic",(idstyle&SYNS_ITALIC)?"1":"0");\
+      ADD_ATTR(itemData,"strikeout",(idstyle&SYNS_STRIKEOUT)?"1":"0");\
+    }\
+  } while(0)
+  DEF_ITEM_DATA("Normal",QColor(),0);
+  DEF_ITEM_DATA("Number",synprefs.numberColor,synprefs.numberStyle);
+  DEF_ITEM_DATA("Symbol",synprefs.symbolColor,synprefs.symbolStyle);
+  unsigned i=0;
+  for (QValueList<QColor>::ConstIterator it=synprefs.parenthesisColors.begin();
+       it!=synprefs.parenthesisColors.end(); ++it, i++) {
+    DEF_ITEM_DATA(QString("Paren%1").arg(i),*it,synprefs.parenthesisStyle);
+  }
+  for (QValueList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
+       it!=synprefs.customStyles.end(); ++it) {
+    const Syn_CustomStyle &customStyle=*it;
+    DEF_ITEM_DATA(customStyle.name,customStyle.color,customStyle.style);
+  }
+  for (QValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
+       it!=synprefs.wordLists.end(); ++it) {
+    const Syn_WordList &wordList=*it;
+    DEF_ITEM_DATA(wordList.name,wordList.color,wordList.style);
+  }
+  #undef DEF_ITEM_DATA
 
   CHILD_NODE(keywords,general,"keywords");
   ADD_ATTR(keywords,"casesensitive",allWordListsCaseInsensitive?"0":"1");
