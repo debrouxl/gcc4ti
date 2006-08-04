@@ -63,13 +63,14 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-, root, root)
 %{tigccdir}/bin/ktigcc
-%{_datadir}/apps/katepart/syntax/gnuasm68k.xml
-%{_datadir}/apps/katepart/syntax/masm68k.xml
 %{_datadir}/icons/ktigcc.png
 %{_datadir}/applications/tigcc-ktigcc.desktop
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Fri Aug 4 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Remove no longer needed Kate ASM syntax descriptions.
+
 * Sun Jul 30 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump TIGCC requirement.
 

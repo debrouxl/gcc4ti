@@ -141,10 +141,6 @@ HAVE_TICALCS = $$system(pkg-config --atleast-version=$$TICALCS_MINVERSION ticalc
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticalcs2)
 LIBS += $$system(pkg-config --libs ticalcs2)
 
-syntaxfiles.path = /usr/share/apps/katepart/syntax/
-syntaxfiles.files = gnuasm68k.xml masm68k.xml
-INSTALLS += syntaxfiles
-
 TIGCC = $$(TIGCC)
 isEmpty(TIGCC) {
   TIGCC = /usr/local/tigcc
@@ -167,7 +163,7 @@ QMAKE_CXXFLAGS_RELEASE = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 
 QMAKE_LFLAGS_RELEASE = -s
 
-DISTFILES += $${syntaxfiles.files} $${documentation.files} INSTALL configure KTIGCC.prj fedora/ktigcc.spec images/copyright.txt
+DISTFILES += $${documentation.files} INSTALL configure KTIGCC.prj fedora/ktigcc.spec images/copyright.txt
 
 distbz2.target = dist-bzip2
 distbz2.commands = zcat ktigcc.tar.gz | bzip2 --best -c > ktigcc.tar.bz2
