@@ -256,11 +256,14 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
        it!=synprefs.customStyles.end(); ++it) {
     const Syn_CustomStyle &customStyle=*it;
     bool endsWithNewline=(customStyle.ending=="\n");
-    bool needIgnoreContext=!endsWithNewline && !customStyle.ignoreEndingAfter.isNull();
+    bool endsWithSpace=(customStyle.ending==" ");
+    bool noIgnoreEndingAfter=customStyle.ignoreEndingAfter.isNull();
+    bool needIgnoreContext=!endsWithNewline && !noIgnoreEndingAfter;
     CHILD_NODE(customStyleContext,contexts,"context");
     ADD_ATTR(customStyleContext,"name",customStyle.name);
     ADD_ATTR(customStyleContext,"attribute",customStyle.name);
-    ADD_ATTR(customStyleContext,"lineEndContext",endsWithNewline?"#pop":"#stay");
+    ADD_ATTR(customStyleContext,"lineEndContext",(endsWithNewline||
+      (endsWithSpace&&noIgnoreEndingAfter))?"#pop":"#stay");
     if (endsWithNewline && customStyle.ignoreEndingAfter=="\\") {
       CHILD_NODE(lineContinue,customStyleContext,"LineContinue");
       ADD_ATTR(lineContinue,"attribute",customStyle.name);
@@ -277,7 +280,11 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
         ADD_ATTR(detectCustomStyleTrigraph,"String","?""?""/");
       }
     }
-    if (!endsWithNewline) {
+    if (endsWithSpace) {
+      CHILD_NODE(detectCustomStyle,customStyleContext,"DetectSpaces");
+      ADD_ATTR(detectCustomStyle,"attribute",customStyle.name);
+      ADD_ATTR(detectCustomStyle,"context","#pop");
+    } else if (!endsWithNewline) {
       switch (customStyle.ending.length()) {
         case 0: // No ending...
           break;
