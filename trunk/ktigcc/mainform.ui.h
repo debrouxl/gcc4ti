@@ -1056,7 +1056,9 @@ void MainForm::init()
   QStringList args(QString("-profile"));
   args.append(QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
   assistant->setArguments(args);
-  lastDirectory=QString("%1/projects").arg(tigcc_base);
+  lastDirectory=QString("%1/tigcc-projects").arg(QDir::homeDirPath());
+  if (!QDir(lastDirectory).exists() && !QDir().mkdir(lastDirectory))
+    lastDirectory=QString("%1/projects").arg(tigcc_base);
   projectFileName="";
   projectIsDirty=FALSE;
   projectNeedsRelink=FALSE;
