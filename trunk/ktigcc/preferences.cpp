@@ -396,7 +396,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
 
   CHILD_NODE(keywords,general,"keywords");
   ADD_ATTR(keywords,"casesensitive",allWordListsCaseInsensitive?"0":"1");
-  ADD_ATTR(keywords,"additionalDeliminator","\'\"@");
+  ADD_ATTR(keywords,"additionalDeliminator","\'\"#@");
 
   #undef ADD_ATTR
   #undef ADD_TEXT
