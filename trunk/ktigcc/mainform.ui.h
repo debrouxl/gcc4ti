@@ -549,12 +549,14 @@ class DnDListView : public KListView {
               QString fileText=static_cast<ListViewFile *>(currItem)->textBuffer;
               for (i=0; i<cnt; i++) {
                 if (!static_cast<ListViewFile *>(currItem)->kateView->getDoc()->hlModeName(i).compare(
-                    ((destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-                       "GNU Assembler 68k":
+                    (destCategory==qllFilesListItem?
+                       "TIGCC Quill":
+                     (destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+                       "TIGCC GNU As":
                      (destCategory==asmFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-                       "Motorola Assembler 68k":
-                     (destCategory==cFilesListItem||destCategory==qllFilesListItem||destCategory==hFilesListItem)?
-                       "C":
+                       "TIGCC A68k":
+                     (destCategory==cFilesListItem||destCategory==hFilesListItem)?
+                       "TIGCC C":
                      "None"))) break;
               }
               if (i==cnt) i=0;
@@ -1605,12 +1607,14 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   uint cnt=newView->getDoc()->hlModeCount(), i;
   for (i=0; i<cnt; i++) {
     if (!newView->getDoc()->hlModeName(i).compare(
-        ((category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-           "GNU Assembler 68k":
+        (category==qllFilesListItem?
+           "TIGCC Quill":
+         (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+           "TIGCC GNU As":
          (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-           "Motorola Assembler 68k":
-         (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
-           "C":
+           "TIGCC A68k":
+         (category==cFilesListItem||category==hFilesListItem)?
+           "TIGCC C":
          "None"))) break;
   }
   if (i==cnt) i=0;
@@ -1709,12 +1713,14 @@ void MainForm::adoptSourceFile(void *srcFile)
   uint cnt=newView->getDoc()->hlModeCount(), i;
   for (i=0; i<cnt; i++) {
     if (!newView->getDoc()->hlModeName(i).compare(
-        ((category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-           "GNU Assembler 68k":
+        (category==qllFilesListItem?
+           "TIGCC Quill":
+         (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+           "TIGCC GNU As":
          (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-           "Motorola Assembler 68k":
-         (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
-           "C":
+           "TIGCC A68k":
+         (category==cFilesListItem||category==hFilesListItem)?
+           "TIGCC C":
          "None"))) break;
   }
   if (i==cnt) i=0;
@@ -1892,9 +1898,9 @@ bool MainForm::openProject(const QString &fileName)
       category=cFilesListItem;
     else if (!suffix.compare("s"))
       category=sFilesListItem;
-    else if (!suffix.compare("asm"))
+    else if (!suffix.compare("asm") && asmFilesListItem)
       category=asmFilesListItem;
-    else if (!suffix.compare("qll"))
+    else if (!suffix.compare("qll") && qllFilesListItem)
       category=qllFilesListItem;
     else if (!suffix.compare("txt"))
       category=txtFilesListItem;
@@ -1916,9 +1922,10 @@ bool MainForm::openProject(const QString &fileName)
               0);
     
     new SourceFile(this,fileName,fileText,
-                   (type==2)?"GNU Assembler 68k":
-                   (type==3)?"Motorola Assembler 68k":
-                   (type==1)?"C":
+                   (category==qllFilesListItem)?"TIGCC Quill":
+                   (type==2)?"TIGCC GNU As":
+                   (type==3)?"TIGCC A68k":
+                   (type==1)?"TIGCC C":
                     "None",category,(type==1),(type>1),category==txtFilesListItem);
     return FALSE;
   }
