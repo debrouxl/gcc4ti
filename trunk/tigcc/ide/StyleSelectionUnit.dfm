@@ -67,7 +67,7 @@ object StyleSelectionForm: TStyleSelectionForm
     Top = 60
     Width = 65
     Height = 17
-    Caption = 'Strike &Out'
+    Caption = 'S&trike Out'
     Enabled = False
     TabOrder = 4
   end

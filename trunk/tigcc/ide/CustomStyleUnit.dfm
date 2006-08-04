@@ -63,7 +63,7 @@ object CustomStyleForm: TCustomStyleForm
     Top = 128
     Width = 81
     Height = 25
-    Caption = 'C&olor...'
+    Caption = 'Co&lor...'
     TabOrder = 5
     OnClick = Button1Click
   end
@@ -128,7 +128,7 @@ object CustomStyleForm: TCustomStyleForm
     Top = 88
     Width = 73
     Height = 17
-    Caption = '&Switchable'
+    Caption = 'S&witchable'
     TabOrder = 3
     OnClick = SwitchableCheckBoxClick
   end

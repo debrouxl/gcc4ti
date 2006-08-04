@@ -40,7 +40,7 @@ object WordListForm: TWordListForm
     Top = 144
     Width = 81
     Height = 25
-    Caption = 'C&olor...'
+    Caption = 'Co&lor...'
     TabOrder = 2
     OnClick = Button1Click
   end
