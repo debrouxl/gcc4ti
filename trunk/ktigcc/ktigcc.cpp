@@ -200,9 +200,7 @@ void clear_temp_dir(void)
 
 void force_qt_assistant_page(int n)
 {
-  char *home=getenv("HOME");
-  char fname[strlen(home)+20];
-  sprintf(fname,"%s/.qt/qt_assistantrc",home);
+  QString fname=QDir::homeDirPath()+"/.qt/qt_assistantrc";
   FILE *f=fopen(fname,"r+b");
   if (!f) f=fopen(fname,"w+b");
   if (!f) exit(1);
