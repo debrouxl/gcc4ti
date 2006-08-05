@@ -109,13 +109,22 @@ typedef struct
   // Syntax Highlighting
   Syn_SettingsForDoc synC;
   Syn_SettingsForDoc synS;
-  Syn_SettingsForDoc synASM;
-  Syn_SettingsForDoc synQLL;
+  Syn_SettingsForDoc synAsm;
+  Syn_SettingsForDoc synQll;
+
+  // Used internally by the Preferences dialog
+  bool haveA68k;
+  bool haveQuill;
+  Syn_SettingsForDoc tempSynC;
+  Syn_SettingsForDoc tempSynS;
+  Syn_SettingsForDoc tempSynAsm;
+  Syn_SettingsForDoc tempSynQll;
+  Syn_SettingsForDoc *syn;
 } TIGCCPrefs;
 
 void defaultSynHighlight(void);
 void loadPreferences(void);
 void savePreferences(void);
-int showPreferencesDialog(QWidget *parent=0);
+int showPreferencesDialog(QWidget *parent, bool haveA68k, bool haveQuill);
 
 extern TIGCCPrefs preferences;

@@ -2338,7 +2338,8 @@ void MainForm::filePrintQuickly()
 
 void MainForm::filePreferences()
 {
-  if (showPreferencesDialog(this)==QDialog::Accepted) {
+  if (showPreferencesDialog(this,!!asmFilesListItem,!!qllFilesListItem)
+      ==QDialog::Accepted) {
     // Apply the KatePart preferences and treeview icons.
     QListViewItemIterator it(fileTree);
     QListViewItem *item;
@@ -2358,6 +2359,7 @@ void MainForm::filePreferences()
       }
     }
     delete doc;
+    Kate::View *currView=CURRENT_VIEW;
     for (item=it.current();item;item=(++it).current()) {
       if (item == rootListItem) {
         item->setPixmap(0,SYSICON("exec","tpr.png"));
@@ -2366,6 +2368,7 @@ void MainForm::filePreferences()
         item->setPixmap(0,(item==currentListItem)?SYSICON(KIconTheme::current().compare("Bluecurve")?"folder_open":"folder-accept","folder2.png")
                                                  :SYSICON("folder","folder1.png"));
       } else if (IS_FILE(item)) {
+        CATEGORY_OF(category,item);
         Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
         if (kateView) {
           QString fileText=kateView->getDoc()->text();
@@ -2379,8 +2382,28 @@ void MainForm::filePreferences()
             (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
             8
           );
+          // Kate seems really insisting on making it a pain to update syntax highlighting settings.
+          unsigned cnt=kateView->getDoc()->hlModeCount(), i;
+          for (i=0; i<cnt; i++) {
+            if (!kateView->getDoc()->hlModeName(i).compare(
+                (category==qllFilesListItem?
+                   "TIGCC Quill":
+                 (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+                   "TIGCC GNU As":
+                 (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+                   "TIGCC A68k":
+                 (category==cFilesListItem||category==hFilesListItem)?
+                   "TIGCC C":
+                 "None"))) break;
+          }
+          if (i==cnt) i=0;
+          kateView->getDoc()->setHlMode(0);
+          kateView->hide();
+          kateView->show();
+          kateView->getDoc()->setHlMode(i);
+          kateView->hide();
+          if (kateView==currView) kateView->show();
         }
-        CATEGORY_OF(category,item);
         item->setPixmap(0,
           category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
           category==hFilesListItem?SYSICON("source_h","fileh.png"):
@@ -2390,11 +2413,11 @@ void MainForm::filePreferences()
           SYSICON("unknown","filex.png"));
       } else qWarning("Internal error: What's this item?");
     }
-    if (CURRENT_VIEW) {
+    if (currView) {
       // Force redrawing to get the tab width right, repaint() is ignored for some reason.
-      Kate::View *currView=CURRENT_VIEW;
       currView->hide();
       currView->show();
+      widgetStack->raiseWidget(currView);
     }
     // Apply the icon preferences.
     setUsesBigPixmaps(preferences.useSystemIcons);

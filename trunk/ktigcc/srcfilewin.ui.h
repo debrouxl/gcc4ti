@@ -527,19 +527,26 @@ void SourceFileWindow::applyPreferences()
   delete doc;
   Kate::View *kateView=CURRENT_VIEW;
   if (kateView) {
-  }
-  if (CURRENT_VIEW) {
-    Kate::View *currView=CURRENT_VIEW;
-    QString fileText=currView->getDoc()->text();
+    QString fileText=kateView->getDoc()->text();
     if (preferences.removeTrailingSpaces)
-      currView->getDoc()->setConfigFlags(currView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
+      kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
     else
-      currView->getDoc()->setConfigFlags(currView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-    currView->setTabWidth(THIS->isASMFile?preferences.tabWidthAsm:
+      kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
+    kateView->setTabWidth(THIS->isASMFile?preferences.tabWidthAsm:
                           THIS->isCFile?preferences.tabWidthC:8);
+    // Kate seems really insisting on making it a pain to update syntax highlighting settings.
+    unsigned cnt=kateView->getDoc()->hlModeCount(), i;
+    for (i=0; i<cnt; i++) {
+      if (kateView->getDoc()->hlModeName(i)==THIS->hlMode) break;
+    }
+    if (i==cnt) i=0;
+    kateView->getDoc()->setHlMode(0);
+    kateView->hide();
+    kateView->show();
+    kateView->getDoc()->setHlMode(i);
     // Force redrawing to get the tab width right, repaint() is ignored for some reason.
-    currView->hide();
-    currView->show();
+    kateView->hide();
+    kateView->show();
   }
   // Apply the icon preferences.
   setUsesBigPixmaps(preferences.useSystemIcons);

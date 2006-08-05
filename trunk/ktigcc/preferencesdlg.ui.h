@@ -34,10 +34,35 @@
 
 #include <qcheckbox.h>
 #include <qradiobutton.h>
+#include <qaccel.h>
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>
+#include <kcombobox.h>
+#include <klistview.h>
 #include "ktigcc.h"
+
+class RenamableKListViewItem : public KListViewItem {
+  public:
+  RenamableKListViewItem(QListViewItem *parent, QString text)
+    : KListViewItem(parent, text)
+  {
+    setRenameEnabled(0,TRUE);
+  }
+  RenamableKListViewItem(QListViewItem *parent, QListViewItem *after,
+                         QString text)
+    : KListViewItem(parent, after, text)
+  {
+    setRenameEnabled(0,TRUE);
+  }
+  virtual int rtti(void) const {return 0x716CC8;}
+  // Work around gratuitous API difference. Why do I have to do this? That's
+  // what startRename is a virtual method for. KListViewItem should do this.
+  virtual void startRename(int col)
+  {
+    static_cast<KListView *>(listView())->rename(this,col);
+  }
+};
 
 void Preferences::init()
 {
@@ -120,6 +145,29 @@ void Preferences::init()
   lazyLoading->setChecked(preferences.lazyLoading);
   autoBlocks->setChecked(preferences.autoBlocks);
   removeTrailingSpaces->setChecked(preferences.removeTrailingSpaces);
+
+  // Syntax
+  if (preferences.haveA68k)
+    syntaxLanguage->insertItem("A68k Assembly Files");
+  if (preferences.haveQuill)
+    syntaxLanguage->insertItem("Quill Files");
+  preferences.tempSynC=preferences.synC;
+  preferences.tempSynS=preferences.synS;
+  preferences.tempSynAsm=preferences.synAsm;
+  preferences.tempSynQll=preferences.synQll;
+  syntaxLanguage_activated(syntaxLanguage->currentItem());
+  syntaxListView->setSorting(-1);
+  syntaxListView->setColumnWidthMode(0,QListView::Maximum);
+  syntaxListView->header()->hide();
+  QListViewItem *rootListItem=syntaxListView->firstChild();
+  QListViewItem *customStylesItem=rootListItem->firstChild();
+  customStylesItem->setOpen(TRUE);
+  QListViewItem *wordListsItem=customStylesItem->nextSibling();
+  wordListsItem->setOpen(TRUE);
+  QAccel *syntaxListViewAccel=new QAccel(syntaxListView);
+  syntaxListViewAccel->insertItem(Key_Delete,0);
+  connect(syntaxListViewAccel,SIGNAL(activated(int)),
+          this,SLOT(syntaxListViewAccel_activated(int)));
 }
 
 void Preferences::destroy()
@@ -162,6 +210,12 @@ void Preferences::destroy()
     preferences.lazyLoading=lazyLoading->isChecked();
     preferences.autoBlocks=autoBlocks->isChecked();
     preferences.removeTrailingSpaces=removeTrailingSpaces->isChecked();
+
+    // Syntax
+    preferences.synC=preferences.tempSynC;
+    preferences.synS=preferences.tempSynS;
+    preferences.synAsm=preferences.tempSynAsm;
+    preferences.synQll=preferences.tempSynQll;
   }
 }
 
@@ -191,4 +245,165 @@ void Preferences::editorFontChange_pressed()
     editorFont->setFont(font);
     editorFont->setText(font.family());
   }
+}
+
+void Preferences::syntaxLanguage_activated(int index)
+{
+  if (!index) preferences.syn=&preferences.tempSynC;
+  else if (!--index) preferences.syn=&preferences.tempSynS;
+  else if (preferences.haveA68k && !--index)
+    preferences.syn=&preferences.tempSynAsm;
+  else if (preferences.haveQuill && !--index)
+    preferences.syn=&preferences.tempSynQll;
+  else {
+    qWarning("Preferences::syntaxLanguage_activated: Invalid index.");
+    preferences.syn=&preferences.tempSynC;
+  }
+
+  QListViewItem *rootListItem=syntaxListView->firstChild();
+  QListViewItem *item, *nextItem;
+  QListViewItem *customStylesItem=rootListItem->firstChild();
+  for (item=customStylesItem->firstChild(); item; item=nextItem) {
+    nextItem=item->nextSibling();
+    delete item;
+  }
+  item=static_cast<QListViewItem *>(NULL);
+  for (QValueList<Syn_CustomStyle>::ConstIterator it=
+         preferences.syn->customStyles.begin();
+       it!=preferences.syn->customStyles.end(); ++it) {
+    item=new RenamableKListViewItem(customStylesItem,item,(*it).name);
+  }
+  QListViewItem *wordListsItem=customStylesItem->nextSibling();
+  for (item=wordListsItem->firstChild(); item; item=nextItem) {
+    nextItem=item->nextSibling();
+    delete item;
+  }  
+  item=static_cast<QListViewItem *>(NULL);
+  for (QValueList<Syn_WordList>::ConstIterator it=
+         preferences.syn->wordLists.begin();
+       it!=preferences.syn->wordLists.end(); ++it) {
+    item=new RenamableKListViewItem(wordListsItem,item,(*it).name);
+  }
+}
+
+void Preferences::resetButton_clicked()
+{
+
+}
+
+void Preferences::numberColorButton_clicked()
+{
+
+}
+
+void Preferences::numberStyleButton_clicked()
+{
+
+}
+
+void Preferences::symbolColorButton_clicked()
+{
+
+}
+
+void Preferences::symbolStyleButton_clicked()
+{
+
+}
+
+void Preferences::parenthesisColorsButton_clicked()
+{
+
+}
+
+void Preferences::parenthesisStyleButton_clicked()
+{
+
+}
+
+void Preferences::syntaxListView_selectionChanged()
+{
+  QListViewItem *selectedItem=syntaxListView->selectedItem();
+  editButton->setEnabled(selectedItem&&selectedItem->rtti()==0x716CC8);
+}
+
+#define unused_col col __attribute__((unused))
+void Preferences::syntaxListView_itemRenamed(QListViewItem *item, const QString &str, int unused_col)
+{
+  QListViewItem *rootListItem=syntaxListView->firstChild();
+  QListViewItem *customStylesItem=rootListItem->firstChild();
+  QListViewItem *wordListsItem=customStylesItem->nextSibling();
+  if (item->parent()==customStylesItem) {
+    QListViewItem *i;
+    QValueList<Syn_CustomStyle>::Iterator it;
+    for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
+         i!=item && it!=preferences.syn->customStyles.end() && i;
+         ++it, i=i->nextSibling());
+    if (it==preferences.syn->customStyles.end() || !i)
+      qWarning("Preferences::syntaxListView_itemRenamed: Invalid item.");
+    else
+      (*it).name=str;
+  } else if (item->parent()==wordListsItem) {
+    QListViewItem *i;
+    QValueList<Syn_WordList>::Iterator it;
+    for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
+         i!=item && it!=preferences.syn->wordLists.end() && i;
+         ++it, i=i->nextSibling());
+    if (it==preferences.syn->wordLists.end() || !i)
+      qWarning("Preferences::syntaxListView_itemRenamed: Invalid item.");
+    else
+      (*it).name=str;
+  } else qWarning("Preferences::syntaxListView_itemRenamed: Invalid parent.");
+}
+
+void Preferences::syntaxListViewAccel_activated(int id)
+{
+  if (!id) {
+    QListViewItem *currentItem=syntaxListView->currentItem();
+    if (currentItem && currentItem->rtti()==0x716CC8) {
+      QListViewItem *rootListItem=syntaxListView->firstChild();
+      QListViewItem *customStylesItem=rootListItem->firstChild();
+      QListViewItem *wordListsItem=customStylesItem->nextSibling();
+      if (currentItem->parent()==customStylesItem) {
+        QListViewItem *i;
+        QValueList<Syn_CustomStyle>::Iterator it;
+        for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
+             i!=currentItem && it!=preferences.syn->customStyles.end() && i;
+             ++it, i=i->nextSibling());
+        if (it==preferences.syn->customStyles.end() || !i)
+          qWarning("Preferences::syntaxListViewAccel_activated: Invalid item.");
+        else {
+          delete currentItem;
+          preferences.syn->customStyles.remove(it);
+        }
+      } else if (currentItem->parent()==wordListsItem) {
+        QListViewItem *i;
+        QValueList<Syn_WordList>::Iterator it;
+        for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
+             i!=currentItem && it!=preferences.syn->wordLists.end() && i;
+             ++it, i=i->nextSibling());
+        if (it==preferences.syn->wordLists.end() || !i)
+          qWarning("Preferences::syntaxListViewAccel_activated: Invalid item.");
+        else {
+          delete currentItem;
+          preferences.syn->wordLists.remove(it);
+        }
+      } else qWarning("Preferences::syntaxListViewAccel_activated: Invalid parent.");
+    }
+  }
+}
+
+void Preferences::newStyleButton_clicked()
+{
+
+}
+
+void Preferences::newListButton_clicked()
+{
+
+}
+
+void Preferences::editButton_clicked()
+{
+
 }
