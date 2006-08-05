@@ -31,7 +31,11 @@ FORMS	= srcfilewin.ui \
 	functions.ui \
 	newsdlg.ui \
 	toolsdlg.ui \
-	toolprops.ui
+	toolprops.ui \
+	selectstyle.ui \
+	selectcolors.ui \
+	customstyle.ui \
+	wordlist.ui
 
 IMAGES	= images/00 \
 	images/01 \
