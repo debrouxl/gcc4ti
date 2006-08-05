@@ -40,9 +40,11 @@ class FunctionDialog;
 
 struct SourceFile : public SourceFileWindow {
   SourceFile(MainForm *mainfrm, const QString &fn, const QString &ft,
-             const QString &hlm, void *cat, bool isc, bool isasm, bool istxt) :
+             const QString &hlm, const bool *hle, void *cat,
+             bool isc, bool isasm, bool istxt) :
     SourceFileWindow(), mainForm(mainfrm), fileName(fn), fileText(ft),
-    hlMode(hlm), category(cat), isCFile(isc), isASMFile(isasm), isTextFile(istxt)
+    hlMode(hlm), hlEnabled(hle), category(cat),
+    isCFile(isc), isASMFile(isasm), isTextFile(istxt)
   {
     initBase(); // We can do this only after initializing the variables here.
     show();
@@ -52,6 +54,7 @@ struct SourceFile : public SourceFileWindow {
   QString fileName;
   QString fileText;
   QString hlMode;
+  const bool *hlEnabled;
   void *category;
   bool isCFile;
   bool isASMFile;

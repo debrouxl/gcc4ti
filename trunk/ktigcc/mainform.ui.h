@@ -550,13 +550,13 @@ class DnDListView : public KListView {
               for (i=0; i<cnt; i++) {
                 if (!static_cast<ListViewFile *>(currItem)->kateView->getDoc()->hlModeName(i).compare(
                     (destCategory==qllFilesListItem?
-                       "TIGCC Quill":
+                       QLL_HL_MODE:
                      (destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-                       "TIGCC GNU As":
+                       S_HL_MODE:
                      (destCategory==asmFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-                       "TIGCC A68k":
+                       ASM_HL_MODE:
                      (destCategory==cFilesListItem||destCategory==hFilesListItem)?
-                       "TIGCC C":
+                       C_HL_MODE:
                      "None"))) break;
               }
               if (i==cnt) i=0;
@@ -1610,13 +1610,13 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, QLi
   for (i=0; i<cnt; i++) {
     if (!newView->getDoc()->hlModeName(i).compare(
         (category==qllFilesListItem?
-           "TIGCC Quill":
+           QLL_HL_MODE:
          (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-           "TIGCC GNU As":
+           S_HL_MODE:
          (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-           "TIGCC A68k":
+           ASM_HL_MODE:
          (category==cFilesListItem||category==hFilesListItem)?
-           "TIGCC C":
+           C_HL_MODE:
          "None"))) break;
   }
   if (i==cnt) i=0;
@@ -1716,13 +1716,13 @@ void MainForm::adoptSourceFile(void *srcFile)
   for (i=0; i<cnt; i++) {
     if (!newView->getDoc()->hlModeName(i).compare(
         (category==qllFilesListItem?
-           "TIGCC Quill":
+           QLL_HL_MODE:
          (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-           "TIGCC GNU As":
+           S_HL_MODE:
          (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-           "TIGCC A68k":
+           ASM_HL_MODE:
          (category==cFilesListItem||category==hFilesListItem)?
-           "TIGCC C":
+           C_HL_MODE:
          "None"))) break;
   }
   if (i==cnt) i=0;
@@ -1924,11 +1924,16 @@ bool MainForm::openProject(const QString &fileName)
               0);
     
     new SourceFile(this,fileName,fileText,
-                   (category==qllFilesListItem)?"TIGCC Quill":
-                   (type==2)?"TIGCC GNU As":
-                   (type==3)?"TIGCC A68k":
-                   (type==1)?"TIGCC C":
-                    "None",category,(type==1),(type>1),category==txtFilesListItem);
+                   (category==qllFilesListItem)?QLL_ENABLED_HL_MODE:
+                   (type==2)?S_ENABLED_HL_MODE:
+                   (type==3)?ASM_ENABLED_HL_MODE:
+                   (type==1)?C_ENABLED_HL_MODE:
+                   "None",
+                   (category==qllFilesListItem)?&(preferences.synQll.enabled):
+                   (type==2)?&(preferences.synS.enabled):
+                   (type==3)?&(preferences.synAsm.enabled):
+                   (type==1)?&(preferences.synC.enabled):
+                   NULL,category,(type==1),(type>1),category==txtFilesListItem);
     return FALSE;
   }
 }
@@ -2387,13 +2392,13 @@ void MainForm::filePreferences()
           for (i=0; i<cnt; i++) {
             if (!kateView->getDoc()->hlModeName(i).compare(
                 (category==qllFilesListItem?
-                   "TIGCC Quill":
+                   QLL_HL_MODE:
                  (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-                   "TIGCC GNU As":
+                   S_HL_MODE:
                  (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-                   "TIGCC A68k":
+                   ASM_HL_MODE:
                  (category==cFilesListItem||category==hFilesListItem)?
-                   "TIGCC C":
+                   C_HL_MODE:
                  "None"))) break;
           }
           if (i==cnt) i=0;

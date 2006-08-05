@@ -91,6 +91,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 
 #define THIS (static_cast<SourceFile *>(this))
 #define CURRENT_VIEW (THIS->kateView)
+#define HL_MODE ((THIS->hlEnabled && *(THIS->hlEnabled))?THIS->hlMode:"None")
 
 #define LOAD_ICON(name) (QIconSet(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
 #define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small):QPixmap::fromMimeSource((name)))
@@ -171,8 +172,8 @@ void SourceFileWindow::initBase()
   THIS->kfinddialog = static_cast<KFindDialog *>(NULL);
   THIS->kreplace = static_cast<KReplaceWithSelectionS *>(NULL);
   THIS->kateView=static_cast<Kate::View *>(NULL);
-  THIS->kateView=reinterpret_cast<Kate::View *>(createView(THIS->fileName,THIS->fileText,THIS->hlMode,
-  THIS->isASMFile?preferences.tabWidthAsm:THIS->isCFile?preferences.tabWidthC:8));
+  THIS->kateView=reinterpret_cast<Kate::View *>(createView(THIS->fileName,THIS->fileText,HL_MODE,
+    THIS->isASMFile?preferences.tabWidthAsm:THIS->isCFile?preferences.tabWidthC:8));
   THIS->fileText=QString::null;
   int rightStatusSize=size().width();
   unsigned int line, col;
@@ -537,7 +538,7 @@ void SourceFileWindow::applyPreferences()
     // Kate seems really insisting on making it a pain to update syntax highlighting settings.
     unsigned cnt=kateView->getDoc()->hlModeCount(), i;
     for (i=0; i<cnt; i++) {
-      if (kateView->getDoc()->hlModeName(i)==THIS->hlMode) break;
+      if (kateView->getDoc()->hlModeName(i)==HL_MODE) break;
     }
     if (i==cnt) i=0;
     kateView->getDoc()->setHlMode(0);

@@ -260,6 +260,7 @@ void Preferences::syntaxLanguage_activated(int index)
     preferences.syn=&preferences.tempSynC;
   }
 
+  syntaxEnabled->setChecked(preferences.syn->enabled);
   QListViewItem *rootListItem=syntaxListView->firstChild();
   QListViewItem *item, *nextItem;
   QListViewItem *customStylesItem=rootListItem->firstChild();
@@ -284,6 +285,23 @@ void Preferences::syntaxLanguage_activated(int index)
        it!=preferences.syn->wordLists.end(); ++it) {
     item=new RenamableKListViewItem(wordListsItem,item,(*it).name);
   }
+}
+
+void Preferences::syntaxEnabled_toggled(bool on)
+{
+  preferences.syn->enabled=on;
+  resetButton->setEnabled(on);
+  numberColorButton->setEnabled(on);
+  numberStyleButton->setEnabled(on);
+  symbolColorButton->setEnabled(on);
+  symbolStyleButton->setEnabled(on);
+  parenthesisColorsButton->setEnabled(on);
+  parenthesisStyleButton->setEnabled(on);
+  syntaxListView->setEnabled(on);
+  newStyleButton->setEnabled(on);
+  newListButton->setEnabled(on);
+  QListViewItem *selectedItem=syntaxListView->selectedItem();
+  editButton->setEnabled(on&&selectedItem&&selectedItem->rtti()==0x716CC8);
 }
 
 void Preferences::resetButton_clicked()
@@ -324,7 +342,8 @@ void Preferences::parenthesisStyleButton_clicked()
 void Preferences::syntaxListView_selectionChanged()
 {
   QListViewItem *selectedItem=syntaxListView->selectedItem();
-  editButton->setEnabled(selectedItem&&selectedItem->rtti()==0x716CC8);
+  editButton->setEnabled(syntaxEnabled->isChecked()
+                         && selectedItem && selectedItem->rtti()==0x716CC8);
 }
 
 #define unused_col col __attribute__((unused))

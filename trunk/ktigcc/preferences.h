@@ -128,3 +128,12 @@ void savePreferences(void);
 int showPreferencesDialog(QWidget *parent, bool haveA68k, bool haveQuill);
 
 extern TIGCCPrefs preferences;
+
+#define C_ENABLED_HL_MODE ("TIGCC C")
+#define S_ENABLED_HL_MODE ("TIGCC GNU As")
+#define ASM_ENABLED_HL_MODE ("TIGCC A68k")
+#define QLL_ENABLED_HL_MODE ("TIGCC Quill")
+#define C_HL_MODE (preferences.synC.enabled?C_ENABLED_HL_MODE:"None")
+#define S_HL_MODE (preferences.synS.enabled?S_ENABLED_HL_MODE:"None")
+#define ASM_HL_MODE (preferences.synAsm.enabled?ASM_ENABLED_HL_MODE:"None")
+#define QLL_HL_MODE (preferences.synQll.enabled?QLL_ENABLED_HL_MODE:"None")
