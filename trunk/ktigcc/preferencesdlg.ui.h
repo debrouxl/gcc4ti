@@ -37,6 +37,8 @@
 #include <qaccel.h>
 #include <qcolor.h>
 #include <qvaluelist.h>
+#include <qapplication.h>
+#include <qeventloop.h>
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>
@@ -488,12 +490,41 @@ void Preferences::syntaxListViewAccel_activated(int id)
 
 void Preferences::newStyleButton_clicked()
 {
-
+  Syn_CustomStyle newStyle;
+  newStyle.name="New Style";
+  preferences.syn->customStyles.append(newStyle);
+  QListViewItem *rootListItem=syntaxListView->firstChild();
+  QListViewItem *customStylesItem=rootListItem->firstChild();
+  QListViewItem *item=customStylesItem->firstChild();
+  while (item && item->nextSibling()) item=item->nextSibling();
+  item=new RenamableKListViewItem(customStylesItem,item,newStyle.name);
+  syntaxListView->setCurrentItem(item);
+  syntaxListView->setSelected(item,TRUE);
+  // startRename won't work properly if I don't do this. :-/
+  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+  syntaxListView->ensureItemVisible(item);
+  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+  item->startRename(0);
 }
 
 void Preferences::newListButton_clicked()
 {
-
+  Syn_WordList newList;
+  newList.name="New List";
+  preferences.syn->wordLists.append(newList);
+  QListViewItem *rootListItem=syntaxListView->firstChild();
+  QListViewItem *customStylesItem=rootListItem->firstChild();
+  QListViewItem *wordListsItem=customStylesItem->nextSibling();
+  QListViewItem *item=wordListsItem->firstChild();
+  while (item && item->nextSibling()) item=item->nextSibling();
+  item=new RenamableKListViewItem(wordListsItem,item,newList.name);
+  syntaxListView->setCurrentItem(item);
+  syntaxListView->setSelected(item,TRUE);
+  // startRename won't work properly if I don't do this. :-/
+  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+  syntaxListView->ensureItemVisible(item);
+  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+  item->startRename(0);
 }
 
 void Preferences::editButton_clicked()
