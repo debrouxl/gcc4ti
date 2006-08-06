@@ -170,6 +170,7 @@ void Preferences::init()
   syntaxListView->setSorting(-1);
   syntaxListView->setColumnWidthMode(0,QListView::Maximum);
   syntaxListView->header()->hide();
+  syntaxListView->setAlternateBackground(QColor());
   QListViewItem *rootListItem=syntaxListView->firstChild();
   QListViewItem *customStylesItem=rootListItem->firstChild();
   customStylesItem->setOpen(TRUE);

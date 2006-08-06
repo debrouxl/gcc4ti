@@ -1008,6 +1008,7 @@ void MainForm::init()
   fileTree->setSorting(-1);
   fileTree->setColumnWidthMode(0,QListView::Maximum);
   fileTree->header()->hide();
+  fileTree->setAlternateBackground(QColor());
   rootListItem=new ListViewRoot(fileTree);
   rootListItem->setText(0,"Project1");
   rootListItem->setPixmap(0,SYSICON("exec","tpr.png"));
@@ -1161,6 +1162,7 @@ void MainForm::init()
   connect(errorListDock,SIGNAL(visibilityChanged(bool)),
           this,SLOT(projectErrorsAndWarnings(bool)));
   errorList->errorListView->setSorting(-1);
+  errorList->errorListView->setAlternateBackground(QColor());
   connect(errorList->errorListView,SIGNAL(clicked(QListViewItem *)),
           this,SLOT(errorListView_clicked(QListViewItem *)));
   errorListAccel=new QAccel(errorList->errorListView);
