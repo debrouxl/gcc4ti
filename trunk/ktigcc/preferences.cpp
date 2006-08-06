@@ -306,43 +306,45 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
            it2!=synprefs.customStyles.end(); ++it2) {
         if (it2==it) continue;
         const Syn_CustomStyle &otherCustomStyle=*it2;
-        switch (otherCustomStyle.beginning.length()) {
-          case 0: // Ignore these ones altogether.
-            break;
-          case 1:
-            {
-              CHILD_NODE(detectCustomStyle,customStyleContext,"DetectChar");
-              ADD_ATTR(detectCustomStyle,"attribute",otherCustomStyle.name);
-              ADD_ATTR(detectCustomStyle,"context","#pop");
-              if (otherCustomStyle.lineStartOnly)
-                ADD_ATTR(detectCustomStyle,"firstNonSpace","true");
-              ADD_ATTR(detectCustomStyle,"char",otherCustomStyle.beginning.left(1));
-              ADD_ATTR(detectCustomStyle,"lookAhead","true");
-            }
-            break;
-          case 2:
-            {
-              CHILD_NODE(detectCustomStyle,customStyleContext,"Detect2Chars");
-              ADD_ATTR(detectCustomStyle,"attribute",otherCustomStyle.name);
-              ADD_ATTR(detectCustomStyle,"context","#pop");
-              if (otherCustomStyle.lineStartOnly)
-                ADD_ATTR(detectCustomStyle,"firstNonSpace","true");
-              ADD_ATTR(detectCustomStyle,"char",otherCustomStyle.beginning.left(1));
-              ADD_ATTR(detectCustomStyle,"char1",otherCustomStyle.beginning.mid(1,1));
-              ADD_ATTR(detectCustomStyle,"lookAhead","true");
-            }
-            break;
-          default:
-            {
-              CHILD_NODE(detectCustomStyle,customStyleContext,"StringDetect");
-              ADD_ATTR(detectCustomStyle,"attribute",otherCustomStyle.name);
-              ADD_ATTR(detectCustomStyle,"context","#pop");
-              if (otherCustomStyle.lineStartOnly)
-                ADD_ATTR(detectCustomStyle,"firstNonSpace","true");
-              ADD_ATTR(detectCustomStyle,"String",otherCustomStyle.beginning);
-              ADD_ATTR(detectCustomStyle,"lookAhead","true");
-            }
-            break;
+        if (otherCustomStyle.ending==customStyle.ending) {
+          switch (otherCustomStyle.beginning.length()) {
+            case 0: // Ignore these ones altogether.
+              break;
+            case 1:
+              {
+                CHILD_NODE(detectCustomStyle,customStyleContext,"DetectChar");
+                ADD_ATTR(detectCustomStyle,"attribute",otherCustomStyle.name);
+                ADD_ATTR(detectCustomStyle,"context","#pop");
+                if (otherCustomStyle.lineStartOnly)
+                  ADD_ATTR(detectCustomStyle,"firstNonSpace","true");
+                ADD_ATTR(detectCustomStyle,"char",otherCustomStyle.beginning.left(1));
+                ADD_ATTR(detectCustomStyle,"lookAhead","true");
+              }
+              break;
+            case 2:
+              {
+                CHILD_NODE(detectCustomStyle,customStyleContext,"Detect2Chars");
+                ADD_ATTR(detectCustomStyle,"attribute",otherCustomStyle.name);
+                ADD_ATTR(detectCustomStyle,"context","#pop");
+                if (otherCustomStyle.lineStartOnly)
+                  ADD_ATTR(detectCustomStyle,"firstNonSpace","true");
+                ADD_ATTR(detectCustomStyle,"char",otherCustomStyle.beginning.left(1));
+                ADD_ATTR(detectCustomStyle,"char1",otherCustomStyle.beginning.mid(1,1));
+                ADD_ATTR(detectCustomStyle,"lookAhead","true");
+              }
+              break;
+            default:
+              {
+                CHILD_NODE(detectCustomStyle,customStyleContext,"StringDetect");
+                ADD_ATTR(detectCustomStyle,"attribute",otherCustomStyle.name);
+                ADD_ATTR(detectCustomStyle,"context","#pop");
+                if (otherCustomStyle.lineStartOnly)
+                  ADD_ATTR(detectCustomStyle,"firstNonSpace","true");
+                ADD_ATTR(detectCustomStyle,"String",otherCustomStyle.beginning);
+                ADD_ATTR(detectCustomStyle,"lookAhead","true");
+              }
+              break;
+          }
         }
       }
     }
