@@ -44,10 +44,14 @@
 #include <kcolordialog.h>
 #include <kcombobox.h>
 #include <klistview.h>
+#include <klineedit.h>
+#include <keditlistbox.h>
 #include "ktigcc.h"
 #include "selectstyle.h"
 #include "selectcolors.h"
 #include "colorlistitem.h"
+#include "customstyle.h"
+#include "wordlist.h"
 
 class RenamableKListViewItem : public KListViewItem {
   public:
@@ -527,7 +531,111 @@ void Preferences::newListButton_clicked()
   item->startRename(0);
 }
 
+static QDialog *editDialog;
+static Syn_Style tempStyle;
+static QColor tempColor;
+
 void Preferences::editButton_clicked()
 {
+  QListViewItem *currentItem=syntaxListView->currentItem();
+  if (currentItem && currentItem->rtti()==0x716CC8) {
+    QListViewItem *rootListItem=syntaxListView->firstChild();
+    QListViewItem *customStylesItem=rootListItem->firstChild();
+    QListViewItem *wordListsItem=customStylesItem->nextSibling();
+    if (currentItem->parent()==customStylesItem) {
+      QListViewItem *i;
+      QValueList<Syn_CustomStyle>::Iterator it;
+      for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
+           i!=currentItem && it!=preferences.syn->customStyles.end() && i;
+           ++it, i=i->nextSibling());
+      if (it==preferences.syn->customStyles.end() || !i)
+        qWarning("Preferences::editButton_clicked: Invalid item.");
+      else {
+        Syn_CustomStyle &customStyle=*it;
+        CustomStyle customStyleDlg(this);
+        editDialog=&customStyleDlg;
+        customStyleDlg.beginning->setText(customStyle.beginning);
+        customStyleDlg.ending->setText(customStyle.ending=="\n"?"\\n"
+                                       :customStyle.ending);
+        customStyleDlg.ignoreEndingAfter->setText(QString(customStyle.ignoreEndingAfter));
+        customStyleDlg.switchable->setChecked(customStyle.switchable);
+        customStyleDlg.lineStartOnly->setChecked(customStyle.lineStartOnly);
+        tempStyle=customStyle.style;
+        tempColor=customStyle.color;
+        connect(customStyleDlg.styleButton,SIGNAL(clicked()),
+                this,SLOT(editDialog_styleButton_clicked()));
+        connect(customStyleDlg.colorButton,SIGNAL(clicked()),
+                this,SLOT(editDialog_colorButton_clicked()));
+        customStyleDlg.exec();
+        if (customStyleDlg.result()==QDialog::Accepted) {
+          customStyle.beginning=customStyleDlg.beginning->text();
+          customStyle.ending=customStyleDlg.ending->text()=="\\n"?"\n"
+                             :customStyleDlg.ending->text();
+          customStyle.ignoreEndingAfter=customStyleDlg.ignoreEndingAfter->text()[0];
+          customStyle.switchable=customStyleDlg.switchable->isChecked();
+          customStyle.lineStartOnly=customStyleDlg.lineStartOnly->isChecked();
+          customStyle.style=tempStyle;
+          customStyle.color=tempColor;
+        }
+      }
+    } else if (currentItem->parent()==wordListsItem) {
+      QListViewItem *i;
+      QValueList<Syn_WordList>::Iterator it;
+      for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
+           i!=currentItem && it!=preferences.syn->wordLists.end() && i;
+           ++it, i=i->nextSibling());
+      if (it==preferences.syn->wordLists.end() || !i)
+        qWarning("Preferences::editButton_clicked: Invalid item.");
+      else {
+        Syn_WordList &wordList=*it;
+        WordList wordListDlg(this);
+        editDialog=&wordListDlg;
+        wordListDlg.wordList->setItems(wordList.list);
+        wordListDlg.caseSensitive->setChecked(wordList.caseSensitive);
+        tempStyle=wordList.style;
+        tempColor=wordList.color;
+        connect(wordListDlg.styleButton,SIGNAL(clicked()),
+                this,SLOT(editDialog_styleButton_clicked()));
+        connect(wordListDlg.colorButton,SIGNAL(clicked()),
+                this,SLOT(editDialog_colorButton_clicked()));
+        wordListDlg.exec();
+        if (wordListDlg.result()==QDialog::Accepted) {
+          wordList.list=wordListDlg.wordList->items();
+          wordList.caseSensitive=wordListDlg.caseSensitive->isChecked();
+          wordList.style=tempStyle;
+          wordList.color=tempColor;
+        }
+      }
+    } else qWarning("Preferences::editButton_clicked: Invalid parent.");
+  }
+}
 
+void Preferences::editDialog_colorButton_clicked()
+{
+  QColor color=tempColor;
+  if (KColorDialog::getColor(color,QColor(),editDialog)==KColorDialog::Accepted)
+    tempColor=color;
+}
+
+void Preferences::editDialog_styleButton_clicked()
+{
+  SelectStyle selectStyle(this);
+  selectStyle.customStyle->setChecked(!!(tempStyle&SYNS_CUSTOM));
+  if (tempStyle&SYNS_CUSTOM) {
+    selectStyle.boldChk->setChecked(!!(tempStyle&SYNS_BOLD));
+    selectStyle.underlineChk->setChecked(!!(tempStyle&SYNS_UNDERLINE));
+    selectStyle.italicChk->setChecked(!!(tempStyle&SYNS_ITALIC));
+    selectStyle.strikeoutChk->setChecked(!!(tempStyle&SYNS_STRIKEOUT));
+  }
+  selectStyle.exec();
+  if (selectStyle.result()==QDialog::Accepted) {
+    tempStyle=0;
+    if (selectStyle.customStyle->isChecked()) {
+      tempStyle|=SYNS_CUSTOM;
+      if (selectStyle.boldChk->isChecked()) tempStyle|=SYNS_BOLD;
+      if (selectStyle.underlineChk->isChecked()) tempStyle|=SYNS_UNDERLINE;
+      if (selectStyle.italicChk->isChecked()) tempStyle|=SYNS_ITALIC;
+      if (selectStyle.strikeoutChk->isChecked()) tempStyle|=SYNS_STRIKEOUT;
+    }
+  }
 }
