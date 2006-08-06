@@ -30,9 +30,9 @@
 #include <qtextcodec.h>
 #include <qcolor.h>
 #include <qfont.h>
-#include <qdom.h> 
-#include <qcstring.h> 
-#include <qdir.h> 
+#include <qdom.h>
+#include <qcstring.h>
+#include <qdir.h>
 #include <kconfig.h>
 #include "ktigcc.h"
 #include "preferences.h"
