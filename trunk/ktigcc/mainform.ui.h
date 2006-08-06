@@ -2352,9 +2352,8 @@ void MainForm::filePreferences()
     for (item=it.current();item;item=(++it).current()) {
       if (IS_FILE(item)) {
         Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
-        if (kateView) {
+        if (kateView)
           kateView->getDoc()->setHlMode(0);
-        }
       }
     }
     QPtrListIterator<SourceFile> sfit(sourceFiles);
