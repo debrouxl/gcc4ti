@@ -30,22 +30,35 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
+#include <kcolordialog.h>
+#include <qcolor.h>
+#include "colorlistitem.h"
+
 void SelectColors::colorList_selectionChanged()
 {
-
-}
-
-void SelectColors::removeButton_clicked()
-{
-
+  bool haveSelectedItem=!!colorList->selectedItem();
+  removeButton->setEnabled(haveSelectedItem);
+  editButton->setEnabled(haveSelectedItem);
 }
 
 void SelectColors::addButton_clicked()
 {
+  QColor color;
+  if (KColorDialog::getColor(color,this)==KColorDialog::Accepted)
+    new ColorListItem(colorList,color);
+}
 
+void SelectColors::removeButton_clicked()
+{
+  delete colorList->selectedItem();
 }
 
 void SelectColors::editButton_clicked()
 {
-
+  ColorListItem *item=static_cast<ColorListItem *>(colorList->selectedItem());
+  if (item) {
+    QColor color=item->color();
+    if (KColorDialog::getColor(color,this)==KColorDialog::Accepted)
+      item->setColor(color);
+  }
 }

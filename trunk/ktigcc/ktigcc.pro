@@ -12,7 +12,8 @@ HEADERS	+= tpr.h \
 	tiemu.h \
 	tiemu_stub.h \
 	callbacks.h \
-	parsing.h
+	parsing.h \
+	colorlistitem.h
 
 SOURCES	+= ktigcc.cpp \
 	preferences.cpp \

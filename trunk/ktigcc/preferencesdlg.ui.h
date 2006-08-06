@@ -35,6 +35,8 @@
 #include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qaccel.h>
+#include <qcolor.h>
+#include <qvaluelist.h>
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>
@@ -43,6 +45,7 @@
 #include "ktigcc.h"
 #include "selectstyle.h"
 #include "selectcolors.h"
+#include "colorlistitem.h"
 
 class RenamableKListViewItem : public KListViewItem {
   public:
@@ -372,7 +375,19 @@ void Preferences::symbolStyleButton_clicked()
 
 void Preferences::parenthesisColorsButton_clicked()
 {
-
+  SelectColors selectColors(this);
+  selectColors.colorList->clear();
+  for (QValueList<QColor>::ConstIterator it=preferences.syn->parenthesisColors.begin();
+       it!=preferences.syn->parenthesisColors.end(); ++it)
+    new ColorListItem(selectColors.colorList,*it);
+  selectColors.exec();
+  if (selectColors.result()==QDialog::Accepted) {
+    preferences.syn->parenthesisColors.clear();
+    for (QListBoxItem *item=selectColors.colorList->firstItem(); item;
+         item=item->next())
+      preferences.syn->parenthesisColors.append(
+        static_cast<ColorListItem *>(item)->color());
+  }
 }
 
 void Preferences::parenthesisStyleButton_clicked()
