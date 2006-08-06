@@ -619,7 +619,7 @@ void Preferences::editDialog_colorButton_clicked()
 
 void Preferences::editDialog_styleButton_clicked()
 {
-  SelectStyle selectStyle(this);
+  SelectStyle selectStyle(editDialog);
   selectStyle.customStyle->setChecked(!!(tempStyle&SYNS_CUSTOM));
   if (tempStyle&SYNS_CUSTOM) {
     selectStyle.boldChk->setChecked(!!(tempStyle&SYNS_BOLD));
