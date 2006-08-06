@@ -306,7 +306,8 @@ void Preferences::syntaxEnabled_toggled(bool on)
 
 void Preferences::resetButton_clicked()
 {
-
+  resetSyntaxPreference(preferences.syn);
+  syntaxLanguage_activated(syntaxLanguage->currentItem());
 }
 
 void Preferences::numberColorButton_clicked()

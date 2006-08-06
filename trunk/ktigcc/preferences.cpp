@@ -528,44 +528,25 @@ static void saveSyntaxPreferences(void)
   pconfig->sync();
 }
 
-void defaultSynHighlight(void)
+void resetSyntaxPreference(Syn_SettingsForDoc *syn)
 {
-  preferences.synC.enabled=true;
-  preferences.synS.enabled=true;
-  preferences.synAsm.enabled=true;
-  preferences.synQll.enabled=true;
-  
-  preferences.synC.numberColor=QColor(128,0,0);
-  preferences.synS.numberColor=QColor(128,0,0);
-  preferences.synAsm.numberColor=QColor(128,0,0);
-  preferences.synQll.numberColor=QColor(128,64,64);
-  
-  preferences.synC.symbolColor=QColor(128,128,0);
-  preferences.synS.symbolColor=QColor(128,128,0);
-  preferences.synAsm.symbolColor=QColor(128,128,0);
-  preferences.synQll.symbolColor=QColor(128,128,0);
-  
-  preferences.synC.parenthesisColors.clear();
-  preferences.synC.parenthesisColors << QColor(128,0,128) << QColor(0,128,192) << QColor(255,128,128) << QColor(0,128,0);
-  preferences.synS.parenthesisColors=preferences.synC.parenthesisColors;
-  preferences.synAsm.parenthesisColors=preferences.synC.parenthesisColors;
-  preferences.synQll.parenthesisColors.clear();
-  preferences.synQll.parenthesisColors  << QColor(0,0,0) << QColor(255,0,128);
-  
-  preferences.synC.numberStyle=0;
-  preferences.synS.numberStyle=0;
-  preferences.synAsm.numberStyle=0;
-  preferences.synQll.numberStyle=0;
-  
-  preferences.synC.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
-  preferences.synS.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
-  preferences.synAsm.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
-  preferences.synQll.symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
-  
-  preferences.synC.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
-  preferences.synS.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
-  preferences.synAsm.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
-  preferences.synQll.parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
+  bool synIsC=(syn==&(preferences.synC) || syn==&(preferences.tempSynC));
+  bool synIsS=(syn==&(preferences.synS) || syn==&(preferences.tempSynS));
+  bool synIsAsm=(syn==&(preferences.synAsm) || syn==&(preferences.tempSynAsm));
+  bool synIsQll=(syn==&(preferences.synQll) || syn==&(preferences.tempSynQll));
+
+  syn->enabled=true;
+  syn->numberColor=(synIsQll?QColor(128,64,64):QColor(128,0,0));
+  syn->symbolColor=QColor(128,128,0);
+  syn->parenthesisColors.clear();
+  if (synIsQll)
+    syn->parenthesisColors << QColor(0,0,0) << QColor(255,0,128);
+  else
+    syn->parenthesisColors << QColor(128,0,128) << QColor(0,128,192)
+                           << QColor(255,128,128) << QColor(0,128,0);
+  syn->numberStyle=0;
+  syn->symbolStyle=SYNS_CUSTOM|SYNS_BOLD;
+  syn->parenthesisStyle=SYNS_CUSTOM|SYNS_BOLD;
   
   Syn_CustomStyle Comment_Area;
   Comment_Area.name="Comment Area";
@@ -666,14 +647,17 @@ void defaultSynHighlight(void)
   Compiler_Directive.lineStartOnly=false;
   Compiler_Directive.color=QColor(0,128,128);
   Compiler_Directive.style=SYNS_CUSTOM|SYNS_BOLD;
-  preferences.synC.customStyles.clear();
-  preferences.synS.customStyles.clear();
-  preferences.synAsm.customStyles.clear();
-  preferences.synQll.customStyles.clear();
-  preferences.synC.customStyles << Comment_Area << Comment_Line << SCS_String << Character << Preprocessor_Directive;
-  preferences.synS.customStyles << Comment_Area << Comment_Line_Pipe << Comment_Line_Pound << SCS_String << Character;
-  preferences.synAsm.customStyles << Comment_Line_Semicolon << String_DoubleQuoted << String_SingleQuoted;
-  preferences.synQll.customStyles << Comment_Area << Comment_Line << SCS_String << Character << Compiler_Directive;
+
+  syn->customStyles.clear();
+  if (synIsC)
+    syn->customStyles << Comment_Area << Comment_Line << SCS_String << Character << Preprocessor_Directive;
+  else if (synIsS)
+    syn->customStyles << Comment_Area << Comment_Line_Pipe << Comment_Line_Pound << SCS_String << Character;
+  else if (synIsAsm)
+    syn->customStyles << Comment_Line_Semicolon << String_DoubleQuoted << String_SingleQuoted;
+  else if (synIsQll)
+    syn->customStyles << Comment_Area << Comment_Line << SCS_String << Character << Compiler_Directive;
+
   Syn_WordList C_Keywords;
   C_Keywords.name="C Keywords";
   C_Keywords.list=QStringList::split('\n',
@@ -1569,15 +1553,23 @@ void defaultSynHighlight(void)
   External_Symbols.style=SYNS_CUSTOM|SYNS_BOLD;
   External_Symbols.caseSensitive=true;
   
-  preferences.synC.wordLists.clear();
-  preferences.synS.wordLists.clear();
-  preferences.synAsm.wordLists.clear();
-  preferences.synQll.wordLists.clear();
-  preferences.synC.wordLists << C_Keywords;
-  preferences.synS.wordLists << Data_Movement << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions << Bit_Manipulation << Program_Control << System_Control << SWL_Extensions << Assembler_Directives << SWL_Registers;
-  preferences.synAsm.wordLists << Data_Movement_a68k << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions_a68k << Bit_Manipulation << Program_Control_a68k << System_Control << SWL_Extensions << Assembler_Directives_a68k << SWL_Registers;
-  preferences.synQll.wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
+  syn->wordLists.clear();
+  if (synIsC)
+    syn->wordLists << C_Keywords;
+  else if (synIsS)
+    syn->wordLists << Data_Movement << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions << Bit_Manipulation << Program_Control << System_Control << SWL_Extensions << Assembler_Directives << SWL_Registers;
+  else if (synIsAsm)
+    syn->wordLists << Data_Movement_a68k << Integer_Arithmetic << Logical_Instructions << ShiftRotation_Instructions_a68k << Bit_Manipulation << Program_Control_a68k << System_Control << SWL_Extensions << Assembler_Directives_a68k << SWL_Registers;
+  else if (synIsQll)
+    syn->wordLists << C_Keywords << SWL_Sections << Section_Specific_Keywords << AdditionalKeywords << PredefinedAliases << SWL_Conditions << SWL_Actions << Drawing_Primitives << Drawing_Directions << Shading_Patterns << NonFunctional_Keywords << External_Symbols;
+}
 
+static void defaultSynHighlight(void)
+{
+  resetSyntaxPreference(&(preferences.synC));
+  resetSyntaxPreference(&(preferences.synS));
+  resetSyntaxPreference(&(preferences.synAsm));
+  resetSyntaxPreference(&(preferences.synQll));
   saveSyntaxPreferences();
 }
 

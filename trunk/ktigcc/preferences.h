@@ -122,7 +122,7 @@ typedef struct
   Syn_SettingsForDoc *syn;
 } TIGCCPrefs;
 
-void defaultSynHighlight(void);
+void resetSyntaxPreference(Syn_SettingsForDoc *syn);
 void loadPreferences(void);
 void savePreferences(void);
 int showPreferencesDialog(QWidget *parent, bool haveA68k, bool haveQuill);
