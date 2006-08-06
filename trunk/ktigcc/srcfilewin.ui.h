@@ -541,9 +541,6 @@ void SourceFileWindow::applyPreferences()
       if (kateView->getDoc()->hlModeName(i)==HL_MODE) break;
     }
     if (i==cnt) i=0;
-    kateView->getDoc()->setHlMode(0);
-    kateView->hide();
-    kateView->show();
     kateView->getDoc()->setHlMode(i);
     // Force redrawing to get the tab width right, repaint() is ignored for some reason.
     kateView->hide();

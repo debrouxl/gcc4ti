@@ -2348,6 +2348,19 @@ void MainForm::filePreferences()
     // Apply the KatePart preferences and treeview icons.
     QListViewItemIterator it(fileTree);
     QListViewItem *item;
+    // Kate seems really insisting on making it a pain to update syntax highlighting settings.
+    for (item=it.current();item;item=(++it).current()) {
+      if (IS_FILE(item)) {
+        Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
+        if (kateView)
+          kateView->getDoc()->setHlMode(0);
+      }
+    }
+    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    SourceFile *sourceFile;
+    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+      sourceFile->kateView->getDoc()->setHlMode(0);
+    }
     KParts::Factory *factory = (KParts::Factory *)
       KLibLoader::self()->factory ("libkatepart");
     if (!factory) qFatal("Failed to load KatePart");
@@ -2364,7 +2377,7 @@ void MainForm::filePreferences()
       }
     }
     delete doc;
-    Kate::View *currView=CURRENT_VIEW;
+    it=QListViewItemIterator(fileTree);
     for (item=it.current();item;item=(++it).current()) {
       if (item == rootListItem) {
         item->setPixmap(0,SYSICON("exec","tpr.png"));
@@ -2402,12 +2415,7 @@ void MainForm::filePreferences()
                  "None"))) break;
           }
           if (i==cnt) i=0;
-          kateView->getDoc()->setHlMode(0);
-          kateView->hide();
-          kateView->show();
           kateView->getDoc()->setHlMode(i);
-          kateView->hide();
-          if (kateView==currView) kateView->show();
         }
         item->setPixmap(0,
           category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
@@ -2418,11 +2426,11 @@ void MainForm::filePreferences()
           SYSICON("unknown","filex.png"));
       } else qWarning("Internal error: What's this item?");
     }
+    Kate::View *currView=CURRENT_VIEW;
     if (currView) {
       // Force redrawing to get the tab width right, repaint() is ignored for some reason.
       currView->hide();
       currView->show();
-      widgetStack->raiseWidget(currView);
     }
     // Apply the icon preferences.
     setUsesBigPixmaps(preferences.useSystemIcons);
@@ -2518,8 +2526,7 @@ void MainForm::filePreferences()
       }
     }
     // Apply the preferences to the source file windows.
-    QPtrListIterator<SourceFile> sfit(sourceFiles);
-    SourceFile *sourceFile;
+    sfit=QPtrListIterator<SourceFile>(sourceFiles);
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
       sourceFile->applyPreferences();
     }
