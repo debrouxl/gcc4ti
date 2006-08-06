@@ -41,6 +41,8 @@
 #include <kcombobox.h>
 #include <klistview.h>
 #include "ktigcc.h"
+#include "selectstyle.h"
+#include "selectcolors.h"
 
 class RenamableKListViewItem : public KListViewItem {
   public:
@@ -231,7 +233,7 @@ void Preferences::bgColorChange_pressed()
 {
   bgColorChange->setDown(FALSE);
   QColor color=bgColor->backgroundColor();
-  if (KColorDialog::getColor(color,this) == KColorDialog::Accepted) {
+  if (KColorDialog::getColor(color,this)==KColorDialog::Accepted) {
     useBgColor->setChecked(TRUE);
     bgColor->setBackgroundColor(color);
   }
@@ -241,7 +243,7 @@ void Preferences::editorFontChange_pressed()
 {
   editorFontChange->setDown(FALSE);
   QFont font=editorFont->font();
-  if (KFontDialog::getFont(font,TRUE,this) == KFontDialog::Accepted) {
+  if (KFontDialog::getFont(font,TRUE,this)==KFontDialog::Accepted) {
     editorFont->setFont(font);
     editorFont->setText(font.family());
   }
@@ -312,22 +314,62 @@ void Preferences::resetButton_clicked()
 
 void Preferences::numberColorButton_clicked()
 {
-
+  QColor color=preferences.syn->numberColor;
+  if (KColorDialog::getColor(color,this)==KColorDialog::Accepted)
+    preferences.syn->numberColor=color;
 }
 
 void Preferences::numberStyleButton_clicked()
 {
-
+  SelectStyle selectStyle(this);
+  selectStyle.customStyle->setChecked(!!(preferences.syn->numberStyle&SYNS_CUSTOM));
+  if (preferences.syn->numberStyle&SYNS_CUSTOM) {
+    selectStyle.boldChk->setChecked(!!(preferences.syn->numberStyle&SYNS_BOLD));
+    selectStyle.underlineChk->setChecked(!!(preferences.syn->numberStyle&SYNS_UNDERLINE));
+    selectStyle.italicChk->setChecked(!!(preferences.syn->numberStyle&SYNS_ITALIC));
+    selectStyle.strikeoutChk->setChecked(!!(preferences.syn->numberStyle&SYNS_STRIKEOUT));
+  }
+  selectStyle.exec();
+  if (selectStyle.result()==QDialog::Accepted) {
+    preferences.syn->numberStyle=0;
+    if (selectStyle.customStyle->isChecked()) {
+      preferences.syn->numberStyle|=SYNS_CUSTOM;
+      if (selectStyle.boldChk->isChecked()) preferences.syn->numberStyle|=SYNS_BOLD;
+      if (selectStyle.underlineChk->isChecked()) preferences.syn->numberStyle|=SYNS_UNDERLINE;
+      if (selectStyle.italicChk->isChecked()) preferences.syn->numberStyle|=SYNS_ITALIC;
+      if (selectStyle.strikeoutChk->isChecked()) preferences.syn->numberStyle|=SYNS_STRIKEOUT;
+    }
+  }
 }
 
 void Preferences::symbolColorButton_clicked()
 {
-
+  QColor color=preferences.syn->symbolColor;
+  if (KColorDialog::getColor(color,this)==KColorDialog::Accepted)
+    preferences.syn->symbolColor=color;
 }
 
 void Preferences::symbolStyleButton_clicked()
 {
-
+  SelectStyle selectStyle(this);
+  selectStyle.customStyle->setChecked(!!(preferences.syn->symbolStyle&SYNS_CUSTOM));
+  if (preferences.syn->symbolStyle&SYNS_CUSTOM) {
+    selectStyle.boldChk->setChecked(!!(preferences.syn->symbolStyle&SYNS_BOLD));
+    selectStyle.underlineChk->setChecked(!!(preferences.syn->symbolStyle&SYNS_UNDERLINE));
+    selectStyle.italicChk->setChecked(!!(preferences.syn->symbolStyle&SYNS_ITALIC));
+    selectStyle.strikeoutChk->setChecked(!!(preferences.syn->symbolStyle&SYNS_STRIKEOUT));
+  }
+  selectStyle.exec();
+  if (selectStyle.result()==QDialog::Accepted) {
+    preferences.syn->symbolStyle=0;
+    if (selectStyle.customStyle->isChecked()) {
+      preferences.syn->symbolStyle|=SYNS_CUSTOM;
+      if (selectStyle.boldChk->isChecked()) preferences.syn->symbolStyle|=SYNS_BOLD;
+      if (selectStyle.underlineChk->isChecked()) preferences.syn->symbolStyle|=SYNS_UNDERLINE;
+      if (selectStyle.italicChk->isChecked()) preferences.syn->symbolStyle|=SYNS_ITALIC;
+      if (selectStyle.strikeoutChk->isChecked()) preferences.syn->symbolStyle|=SYNS_STRIKEOUT;
+    }
+  }
 }
 
 void Preferences::parenthesisColorsButton_clicked()
@@ -337,7 +379,25 @@ void Preferences::parenthesisColorsButton_clicked()
 
 void Preferences::parenthesisStyleButton_clicked()
 {
-
+  SelectStyle selectStyle(this);
+  selectStyle.customStyle->setChecked(!!(preferences.syn->parenthesisStyle&SYNS_CUSTOM));
+  if (preferences.syn->parenthesisStyle&SYNS_CUSTOM) {
+    selectStyle.boldChk->setChecked(!!(preferences.syn->parenthesisStyle&SYNS_BOLD));
+    selectStyle.underlineChk->setChecked(!!(preferences.syn->parenthesisStyle&SYNS_UNDERLINE));
+    selectStyle.italicChk->setChecked(!!(preferences.syn->parenthesisStyle&SYNS_ITALIC));
+    selectStyle.strikeoutChk->setChecked(!!(preferences.syn->parenthesisStyle&SYNS_STRIKEOUT));
+  }
+  selectStyle.exec();
+  if (selectStyle.result()==QDialog::Accepted) {
+    preferences.syn->parenthesisStyle=0;
+    if (selectStyle.customStyle->isChecked()) {
+      preferences.syn->parenthesisStyle|=SYNS_CUSTOM;
+      if (selectStyle.boldChk->isChecked()) preferences.syn->parenthesisStyle|=SYNS_BOLD;
+      if (selectStyle.underlineChk->isChecked()) preferences.syn->parenthesisStyle|=SYNS_UNDERLINE;
+      if (selectStyle.italicChk->isChecked()) preferences.syn->parenthesisStyle|=SYNS_ITALIC;
+      if (selectStyle.strikeoutChk->isChecked()) preferences.syn->parenthesisStyle|=SYNS_STRIKEOUT;
+    }
+  }
 }
 
 void Preferences::syntaxListView_selectionChanged()

@@ -371,7 +371,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
       ADD_ATTR(itemData,"bold",(idstyle&SYNS_BOLD)?"1":"0");\
       ADD_ATTR(itemData,"underline",(idstyle&SYNS_UNDERLINE)?"1":"0");\
       ADD_ATTR(itemData,"italic",(idstyle&SYNS_ITALIC)?"1":"0");\
-      ADD_ATTR(itemData,"strikeout",(idstyle&SYNS_STRIKEOUT)?"1":"0");\
+      ADD_ATTR(itemData,"strikeOut",(idstyle&SYNS_STRIKEOUT)?"1":"0");\
     }\
   } while(0)
   DEF_ITEM_DATA("Normal",QColor(),0);
