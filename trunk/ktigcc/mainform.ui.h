@@ -2352,8 +2352,9 @@ void MainForm::filePreferences()
     for (item=it.current();item;item=(++it).current()) {
       if (IS_FILE(item)) {
         Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
-        if (kateView)
+        if (kateView) {
           kateView->getDoc()->setHlMode(0);
+        }
       }
     }
     QPtrListIterator<SourceFile> sfit(sourceFiles);
@@ -2366,6 +2367,8 @@ void MainForm::filePreferences()
     if (!factory) qFatal("Failed to load KatePart");
     Kate::Document *doc = (Kate::Document *)
       factory->createPart( 0, "", this, "", "Kate::Document" );
+    doc->setHlMode(1); // Don't ask...
+    doc->setHlMode(0);
     KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
     unsigned numConfigPages=confInterfaceExt->configPages();
     for (unsigned i=0; i<numConfigPages; i++) {
