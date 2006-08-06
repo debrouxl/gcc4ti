@@ -229,9 +229,8 @@ void Preferences::linkTarget_toggled(bool unused_on)
   linkCable->setEnabled(isRealCalc);
 }
 
-void Preferences::bgColorChange_pressed()
+void Preferences::bgColorChange_clicked()
 {
-  bgColorChange->setDown(FALSE);
   QColor color=bgColor->backgroundColor();
   if (KColorDialog::getColor(color,this)==KColorDialog::Accepted) {
     useBgColor->setChecked(TRUE);
@@ -239,9 +238,8 @@ void Preferences::bgColorChange_pressed()
   }
 }
 
-void Preferences::editorFontChange_pressed()
+void Preferences::editorFontChange_clicked()
 {
-  editorFontChange->setDown(FALSE);
   QFont font=editorFont->font();
   if (KFontDialog::getFont(font,TRUE,this)==KFontDialog::Accepted) {
     editorFont->setFont(font);
