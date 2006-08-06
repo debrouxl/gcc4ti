@@ -39,14 +39,14 @@ static void callback_ticalcs_start(void)
 {
   ticalcsUpdate.max1=ticalcsUpdate.cnt1=
   ticalcsUpdate.max2=ticalcsUpdate.cnt2=
-  ticalcsUpdate.max2=ticalcsUpdate.cnt3=0;
+  ticalcsUpdate.max3=ticalcsUpdate.cnt3=0;
 }
 
 static void callback_ticalcs_stop(void)
 {
   ticalcsUpdate.max1=ticalcsUpdate.cnt1=
   ticalcsUpdate.max2=ticalcsUpdate.cnt2=
-  ticalcsUpdate.max2=ticalcsUpdate.cnt3=0;
+  ticalcsUpdate.max3=ticalcsUpdate.cnt3=0;
 }
 
 static void callback_ticalcs_pbar(void)
