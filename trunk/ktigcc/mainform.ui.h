@@ -953,7 +953,7 @@ void MainForm::init()
   fileNewFolderAction->setEnabled(FALSE);
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
-  te_popup->insertItem("&Find symbol declaration",1);
+  //te_popup->insertItem("&Find symbol declaration",1);
   te_popup->insertSeparator();
   te_popup->insertItem("&Undo",2);
   te_popup->insertItem("&Redo",3);
