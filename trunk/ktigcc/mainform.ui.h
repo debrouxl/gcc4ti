@@ -404,7 +404,7 @@ tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
 QClipboard *clipboard;
-static QAccel *accel, *fileTreeAccel, *errorListAccel;
+static QAccel *accel, *fileTreeAccel;
 static KFindDialog *kfinddialog;
 static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
@@ -906,22 +906,9 @@ void MainForm::deleteOverwrittenErrorsIn(void *srcFile)
 
 void MainForm::errorListView_clicked(QListViewItem *item)
 {
-  if (item) static_cast<ErrorListItem *>(item)->jumpToLocation();
-}
-
-void MainForm::errorListAccel_activated(int index)
-{
-  if (index==0 || index==1) {
-    // Copy selected errors to the clipboard.
-    QListViewItemIterator lvit(errorList->errorListView,
-                               QListViewItemIterator::Selected);
-    QListViewItem *errorItem;
-    QString clipboardText;
-    for (errorItem=lvit.current();errorItem;errorItem=(++lvit).current()) {
-      clipboardText.append(errorItem->text(0));
-      clipboardText.append('\n');
-    }
-    clipboard->setText(clipboardText,QClipboard::Clipboard);
+  if (item) {
+    static_cast<ErrorListItem *>(item)->jumpToLocation();
+    errorList->setFocus();
   }
 }
 
@@ -1165,11 +1152,6 @@ void MainForm::init()
   errorList->errorListView->setAlternateBackground(QColor());
   connect(errorList->errorListView,SIGNAL(clicked(QListViewItem *)),
           this,SLOT(errorListView_clicked(QListViewItem *)));
-  errorListAccel=new QAccel(errorList->errorListView);
-  errorListAccel->insertItem(CTRL+Key_C,0);
-  errorListAccel->insertItem(CTRL+Key_Insert,1);
-  connect(errorListAccel,SIGNAL(activated(int)),
-          this,SLOT(errorListAccel_activated(int)));
   if (preferences.linkTarget!=LT_TIEMU) {
     debugPauseAction->setEnabled(FALSE);
     debugResetAction->setEnabled(FALSE);
@@ -1213,7 +1195,6 @@ void MainForm::init()
 
 void MainForm::destroy()
 {
-  delete errorListAccel;
   while (!sourceFiles.isEmpty()) {
     delete sourceFiles.getFirst();
   }
