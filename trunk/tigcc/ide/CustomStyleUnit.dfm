@@ -5,7 +5,7 @@ object CustomStyleForm: TCustomStyleForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Edit Custom Style'
-  ClientHeight = 210
+  ClientHeight = 234
   ClientWidth = 225
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object CustomStyleForm: TCustomStyleForm
   TextHeight = 13
   object Bevel1: TBevel
     Left = 16
-    Top = 116
+    Top = 140
     Width = 193
     Height = 2
     Shape = bsTopLine
@@ -53,27 +53,27 @@ object CustomStyleForm: TCustomStyleForm
   end
   object Bevel2: TBevel
     Left = 8
-    Top = 162
+    Top = 186
     Width = 209
     Height = 2
     Shape = bsTopLine
   end
   object Button1: TButton
     Left = 24
-    Top = 128
+    Top = 152
     Width = 81
     Height = 25
     Caption = 'Co&lor...'
-    TabOrder = 5
+    TabOrder = 6
     OnClick = Button1Click
   end
   object Button2: TButton
     Left = 120
-    Top = 128
+    Top = 152
     Width = 81
     Height = 25
     Caption = '&Style...'
-    TabOrder = 4
+    TabOrder = 5
     OnClick = Button2Click
   end
   object BeginEdit: TEdit
@@ -105,23 +105,23 @@ object CustomStyleForm: TCustomStyleForm
   end
   object Button3: TButton
     Left = 24
-    Top = 176
+    Top = 200
     Width = 81
     Height = 25
     Caption = '&OK'
     Default = True
     ModalResult = 1
-    TabOrder = 6
+    TabOrder = 7
   end
   object Button4: TButton
     Left = 120
-    Top = 176
+    Top = 200
     Width = 81
     Height = 25
     Cancel = True
     Caption = '&Cancel'
     ModalResult = 2
-    TabOrder = 7
+    TabOrder = 8
   end
   object SwitchableCheckBox: TCheckBox
     Left = 24
@@ -131,6 +131,15 @@ object CustomStyleForm: TCustomStyleForm
     Caption = 'S&witchable'
     TabOrder = 3
     OnClick = SwitchableCheckBoxClick
+  end
+  object LineStartOnlyCheckBox: TCheckBox
+    Left = 24
+    Top = 112
+    Width = 177
+    Height = 17
+    Caption = 'Only &at beginning of line'
+    TabOrder = 4
+    OnClick = LineStartOnlyCheckBoxClick
   end
   object ColorDlg: TColorDialog
     Options = [cdAnyColor]

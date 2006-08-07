@@ -43,12 +43,14 @@ type
 		Button4: TButton;
     ColorDlg: TColorDialog;
     SwitchableCheckBox: TCheckBox;
+    LineStartOnlyCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BeginEditChange(Sender: TObject);
     procedure EndEditChange(Sender: TObject);
 		procedure IgnoreEditChange(Sender: TObject);
 		procedure SwitchableCheckBoxClick(Sender: TObject);
+		procedure LineStartOnlyCheckBoxClick(Sender: TObject);
 		procedure Button1Click(Sender: TObject);
 		procedure Button2Click(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -94,6 +96,11 @@ begin
 	Style.Switchable := SwitchableCheckBox.Checked;
 end;
 
+procedure TCustomStyleForm.LineStartOnlyCheckBoxClick(Sender: TObject);
+begin
+	Style.LineStartOnly := LineStartOnlyCheckBox.Checked;
+end;
+
 procedure TCustomStyleForm.Button1Click(Sender: TObject);
 begin
 	ColorDlg.Color := Style.Color;
@@ -129,6 +136,7 @@ begin
 		EndEdit.Text := Style.EndText;
 	IgnoreEdit.Text := Style.IgnoreChar;
 	SwitchableCheckBox.Checked := Style.Switchable;
+	LineStartOnlyCheckBox.Checked := Style.LineStartOnly;
 end;
 
 end.
