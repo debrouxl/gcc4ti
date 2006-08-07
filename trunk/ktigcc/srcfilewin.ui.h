@@ -398,7 +398,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   return newView;
 }
 
-//returns 1 if the current project data should not be cleared out, 0 if it can be cleared out.
+// Returns 1 if the source file should not be closed, 0 if it can be closed.
 int SourceFileWindow::savePrompt(void)
 {
   int result;
@@ -406,7 +406,7 @@ int SourceFileWindow::savePrompt(void)
   while (CURRENT_VIEW->getDoc()->isModified()) { // "while" in case saving fails!
     result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(THIS->fileName),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
     if (result==KMessageBox::Yes)
-        fileSave();
+      fileSave();
     else if (result==KMessageBox::No)
       return 0;
     else

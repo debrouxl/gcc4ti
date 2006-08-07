@@ -5947,6 +5947,14 @@ void MainForm::closeEvent(QCloseEvent *e)
   if (compiling || savePrompt())
     e->ignore();
   else {
+    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    SourceFile *sourceFile;
+    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+      if (sourceFile->savePrompt()) {
+        e->ignore();
+        return;
+      }
+    }
     clearProject();
     e->accept();
   }
