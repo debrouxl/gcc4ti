@@ -4,7 +4,7 @@
 %define tigccdir /usr/local/tigcc
 
 Name: %{name}
-Version: 0.0.%{date}
+Version: 0.80.%{date}
 Release: %{release}
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
@@ -68,6 +68,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Mon Aug 7 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Bump version from 0.0.date (alpha) to 0.80.date (beta).
+
 * Fri Aug 4 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Remove no longer needed Kate ASM syntax descriptions.
 
