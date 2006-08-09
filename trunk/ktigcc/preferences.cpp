@@ -1727,6 +1727,14 @@ static void updateEditorPreferences(void)
 
 void loadPreferences(void)
 {
+  // This doesn't really _load_ a preference...
+  if (!pconfig->hasGroup("Kate Document Defaults")) {
+    pconfig->setGroup("Kate Document Defaults");
+    pconfig->writeEntry("Tab Handling",(int)0);
+    pconfig->writeEntry("Basic Config Flags",(int)0x1000020);
+    pconfig->sync();
+  }
+
   pconfig->setGroup("Preferences");
 
   // General

@@ -31,6 +31,7 @@
 #include <qtextcodec.h>
 #include <qiconset.h>
 #include <qsize.h> 
+#include <kglobal.h>
 #include <kicontheme.h>
 #include <kiconloader.h>
 #include <kconfig.h>
@@ -88,8 +89,7 @@ int main( int argc, char *argv[] )
   qCleanupImages_ktigcc();
   qInitImages_ktigcc();
   about.setProgramLogo(QImage::fromMimeSource("icon.png"));
-  KConfig config("ktigccrc");
-  pconfig=&config;
+  pconfig=KGlobal::config();
   
   if ((tigcc_base = getenv("TIGCC")) == NULL) {
     fprintf(stderr, "Fatal error: TIGCC is not defined in the environment. "
