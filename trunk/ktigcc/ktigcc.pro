@@ -13,14 +13,16 @@ HEADERS	+= tpr.h \
 	tiemu_stub.h \
 	callbacks.h \
 	parsing.h \
-	colorlistitem.h
+	colorlistitem.h \
+	completion.h
 
 SOURCES	+= ktigcc.cpp \
 	preferences.cpp \
 	tpr.cpp \
 	tiemu_stub.cpp \
 	callbacks.cpp \
-	parsing.cpp
+	parsing.cpp \
+	completion.cpp
 
 FORMS	= srcfilewin.ui \
 	projectoptions.ui \

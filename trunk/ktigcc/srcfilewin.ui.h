@@ -72,6 +72,7 @@
 #include "projectoptions.h"
 #include "srcfile.h"
 #include "functions.h"
+#include "completion.h"
 
 using std::puts;
 using std::exit;
@@ -216,6 +217,7 @@ void SourceFileWindow::initBase()
   THIS->accel->insertItem(Key_F1,5);
   THIS->accel->insertItem(Key_Enter,6);
   THIS->accel->insertItem(Key_Return,7);
+  THIS->accel->insertItem(CTRL+Key_J,8);
   THIS->accel->setItemEnabled(0,!!(CURRENT_VIEW->getDoc()->undoCount()));
   THIS->accel->setItemEnabled(1,!!(CURRENT_VIEW->getDoc()->redoCount()));
   THIS->accel->setItemEnabled(2,CURRENT_VIEW->getDoc()->hasSelection());
@@ -224,6 +226,7 @@ void SourceFileWindow::initBase()
   THIS->accel->setItemEnabled(5,TRUE);
   THIS->accel->setItemEnabled(6,TRUE);
   THIS->accel->setItemEnabled(7,TRUE);
+  THIS->accel->setItemEnabled(8,TRUE);
   connect(THIS->accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
@@ -344,6 +347,9 @@ void SourceFileWindow::accel_activated(int index)
       case 7:
         CURRENT_VIEW->keyReturn();
         current_view_newLineHook();
+        break;
+      case 8:
+        new TemplatePopup(CURRENT_VIEW);
         break;
       default: break;
     }

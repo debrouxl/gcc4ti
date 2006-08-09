@@ -102,6 +102,7 @@
 #include "functions.h"
 #include "toolsdlg.h"
 #include "newsdlg.h"
+#include "completion.h"
 
 using std::puts;
 using std::exit;
@@ -1072,6 +1073,8 @@ void MainForm::init()
   accel->setItemEnabled(6,FALSE);
   accel->insertItem(Key_Return,7);
   accel->setItemEnabled(7,FALSE);
+  accel->insertItem(CTRL+Key_J,8);
+  accel->setItemEnabled(8,FALSE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   fileTreeAccel=new QAccel(this);
   fileTreeAccel->insertItem(Key_Delete,0);
@@ -1279,6 +1282,9 @@ void MainForm::accel_activated(int index)
       case 7:
         CURRENT_VIEW->keyReturn();
         current_view_newLineHook();
+        break;
+      case 8:
+        new TemplatePopup(CURRENT_VIEW);
         break;
       default: break;
     }
@@ -5070,6 +5076,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(5,FALSE);
     accel->setItemEnabled(6,FALSE);
     accel->setItemEnabled(7,FALSE);
+    accel->setItemEnabled(8,FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
@@ -5106,6 +5113,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(5,TRUE);
       accel->setItemEnabled(6,TRUE);
       accel->setItemEnabled(7,TRUE);
+      accel->setItemEnabled(8,TRUE);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -5129,6 +5137,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(5,FALSE);
       accel->setItemEnabled(6,FALSE);
       accel->setItemEnabled(7,FALSE);
+      accel->setItemEnabled(8,FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -5154,6 +5163,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(5,FALSE);
     accel->setItemEnabled(6,FALSE);
     accel->setItemEnabled(7,FALSE);
+    accel->setItemEnabled(8,FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();
