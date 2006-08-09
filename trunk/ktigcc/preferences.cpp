@@ -33,6 +33,7 @@
 #include <qdom.h>
 #include <qcstring.h>
 #include <qdir.h>
+#include <qpair.h>
 #include <kconfig.h>
 #include "ktigcc.h"
 #include "preferences.h"
@@ -1710,7 +1711,29 @@ void loadPreferences(void)
   preferences.removeTrailingSpaces=pconfig->readBoolEntry("Remove Trailing Spaces",false);
 
   updateEditorPreferences();
-  
+
+  // Coding
+  if (pconfig->hasKey("Num Coding Templates")) {
+    unsigned numTemplates=pconfig->readUnsignedNumEntry("Num Coding Templates");
+    preferences.templates.clear();
+    for (unsigned i=0; i<numTemplates; i++) {
+      preferences.templates.append(qMakePair(
+        pconfig->readEntry(QString("Coding Template %1 Name").arg(i)),
+        pconfig->readEntry(QString("Coding Template %1 Text").arg(i))));
+    }
+  } else {
+    preferences.templates.clear();
+    // These are 7-bit ASCII, so either fromLatin1 or fromUtf8 will work.
+    // fromLatin1 is probably faster.
+    preferences.templates
+      << qMakePair(QString::fromLatin1("do"),QString::fromLatin1("do {\n\t|\n} while ();"))
+      << qMakePair(QString::fromLatin1("for"),QString::fromLatin1("for (|; ; ) {"))
+      << qMakePair(QString::fromLatin1("if"),QString::fromLatin1("if (|) {"))
+      << qMakePair(QString::fromLatin1("if else"),QString::fromLatin1("if (|) {\n} else {\n}"))
+      << qMakePair(QString::fromLatin1("switch"),QString::fromLatin1("switch (|) {\n\tcase:\n\t\tbreak;\n\n\tdefault:\n\t\tbreak;\n}"))
+      << qMakePair(QString::fromLatin1("while"),QString::fromLatin1("while (|) {"));
+  }
+
   // Syntax
   if (!loadSyntaxPreferences())
     defaultSynHighlight();
@@ -1750,6 +1773,15 @@ void savePreferences(void)
   pconfig->writeEntry("Remove Trailing Spaces",(bool)preferences.removeTrailingSpaces);
 
   updateEditorPreferences();
+
+  // Coding
+  unsigned i=0;
+  for (QValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
+       it!=preferences.templates.end(); ++it, i++) {
+    pconfig->writeEntry(QString("Coding Template %1 Name").arg(i),(*it).first);
+    pconfig->writeEntry(QString("Coding Template %1 Text").arg(i),(*it).second);
+  }
+  pconfig->writeEntry("Num Coding Templates",i);
 
   // Syntax, save to disk
   saveSyntaxPreferences();

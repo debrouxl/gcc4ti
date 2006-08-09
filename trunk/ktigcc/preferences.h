@@ -22,6 +22,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qvaluelist.h>
+#include <qpair.h>
 #include <qcolor.h>
 #include <qfont.h>
 #include <ticables.h>
@@ -111,6 +112,9 @@ typedef struct
   Syn_SettingsForDoc synS;
   Syn_SettingsForDoc synAsm;
   Syn_SettingsForDoc synQll;
+
+  // Coding
+  QValueList<QPair<QString,QString> > templates;
 
   // Used internally by the Preferences dialog
   bool haveA68k;

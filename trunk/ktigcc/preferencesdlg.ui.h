@@ -46,6 +46,7 @@
 #include <klistview.h>
 #include <klineedit.h>
 #include <keditlistbox.h>
+#include <klistbox.h>
 #include "ktigcc.h"
 #include "selectstyle.h"
 #include "selectcolors.h"
@@ -73,6 +74,18 @@ class RenamableKListViewItem : public KListViewItem {
   {
     static_cast<KListView *>(listView())->rename(this,col);
   }
+};
+
+class ListBoxTextPair : public QListBoxText {
+  public:
+    ListBoxTextPair(QListBox *listbox, const QString &text,
+                    const QString &data)
+      : QListBoxText(listbox,text), m_data(data) {}
+    virtual ~ListBoxTextPair() {}
+    void setData(const QString &data) {m_data=data;}
+    QString data() {return m_data;}
+  private:
+    QString m_data;
 };
 
 void Preferences::init()
@@ -180,6 +193,13 @@ void Preferences::init()
   syntaxListViewAccel->insertItem(Key_Delete,0);
   connect(syntaxListViewAccel,SIGNAL(activated(int)),
           this,SLOT(syntaxListViewAccel_activated(int)));
+
+  // Coding
+  templateListBox->clear();
+  for (QValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
+       it!=preferences.templates.end(); ++it)
+    new ListBoxTextPair(templateListBox,(*it).first,(*it).second);
+  templateListBox->sort();
 }
 
 void Preferences::destroy()
@@ -228,6 +248,13 @@ void Preferences::destroy()
     preferences.synS=preferences.tempSynS;
     preferences.synAsm=preferences.tempSynAsm;
     preferences.synQll=preferences.tempSynQll;
+
+    // Coding
+    preferences.templates.clear();
+    for (QListBoxItem *item=templateListBox->firstItem(); item;
+         item=item->next())
+      preferences.templates.append(qMakePair(item->text(),
+        static_cast<ListBoxTextPair *>(item)->data()));
   }
 }
 
@@ -639,4 +666,51 @@ void Preferences::editDialog_styleButton_clicked()
       if (selectStyle.strikeoutChk->isChecked()) tempStyle|=SYNS_STRIKEOUT;
     }
   }
+}
+
+void Preferences::clearSelectionButton_clicked()
+{
+  QListBoxItem *next;
+  for (QListBoxItem *item=templateListBox->firstItem(); item;
+       item=next) {
+    next=item->next();
+    if (item->isSelected()) delete item;
+  }
+}
+
+void Preferences::applyButton_clicked()
+{
+  QString identifier=templateIdentifier->text();
+  QListBoxItem *item=templateListBox->findItem(identifier,Qt::ExactMatch);
+  if (item) {
+    static_cast<ListBoxTextPair *>(item)->setData(templateCode->text());
+  } else {
+    new ListBoxTextPair(templateListBox,identifier,templateCode->text());
+    templateListBox->sort();
+  }
+}
+
+void Preferences::templateListBox_selectionChanged()
+{
+  for (QListBoxItem *item=templateListBox->firstItem(); item;
+       item=item->next()) {
+    if (item->isSelected()) {
+      clearSelectionButton->setEnabled(TRUE);
+      return;
+    }
+  }
+  clearSelectionButton->setEnabled(FALSE);
+}
+
+void Preferences::templateListBox_currentChanged(QListBoxItem *item)
+{
+  if (item) {
+    templateIdentifier->setText(item->text());
+    templateCode->setText(static_cast<ListBoxTextPair *>(item)->data());
+  }
+}
+
+void Preferences::templateIdentifier_textChanged(const QString &text)
+{
+  applyButton->setEnabled(!text.isEmpty());
 }
