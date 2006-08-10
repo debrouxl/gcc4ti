@@ -5724,8 +5724,12 @@ void MainForm::current_view_textChanged()
   if (disableViewEvents) return;
   if (CURRENT_VIEW) {
     charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
-    if (IS_FILE(currentListItem))
+    if (IS_FILE(currentListItem)) {
       static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile=TRUE;
+      QString fileName=pathInProject(currentListItem);
+      if (projectCompletion.contains(fileName))
+        projectCompletion[fileName].dirty=TRUE;
+    }
     if (preferences.deleteOverwrittenErrors && IS_FILE(currentListItem)
         && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView) {
       ListViewFile *lvFile=static_cast<ListViewFile *>(currentListItem);
@@ -6025,6 +6029,18 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
     item=next;
   }
   return;
+}
+
+QString MainForm::pathInProject(QListViewItem *item)
+{
+  QString path=QFileInfo(static_cast<ListViewFile *>(item)->fileName).fileName();
+  item=item->parent();
+  while (!IS_CATEGORY(item)) {
+    path.prepend('/');
+    path.prepend(item->text(0));
+    item=item->parent();
+  }
+  return path;
 }
 
 QString MainForm::textForHeader(const QString &fileName)

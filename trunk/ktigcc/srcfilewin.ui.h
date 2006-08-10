@@ -1131,6 +1131,8 @@ void SourceFileWindow::current_view_textChanged()
   if (disableViewEvents) return;
   if (CURRENT_VIEW) {
     THIS->charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+    if (projectCompletion.contains(THIS->fileName))
+      projectCompletion[THIS->fileName].dirty=TRUE;
     if (preferences.deleteOverwrittenErrors) MainForm::deleteOverwrittenErrorsIn(THIS);
   }
   if (THIS->kreplace) THIS->kreplace->invalidateSelection();
