@@ -23,10 +23,14 @@
 
 #include "parsing.h"
 #include "ktigcc.h"
+#include "mainform.h"
+#include <qstring.h>
 #include <qstringlist.h>
+#include <qregexp.h>
 #include <qtextcodec.h>
 #include <qapplication.h>
 #include <qeventloop.h>
+#include <qdir.h>
 #include <kprocio.h>
 #include <kmessagebox.h>
 #include <unistd.h>
@@ -109,5 +113,115 @@ SourceFileFunctions getASMFunctions(const QString &text)
     }
     if (line[col-1]==':') result.append(SourceFileFunction(identifier,-1,lineno));
   }
+  return result;
+}
+
+CompletionInfo parseFileCompletion(const QString &fileText,
+                                   const QString &pathInProject)
+{
+  CompletionInfo result;
+
+  // Parse included files.
+  // Empty lines can be ignored here.
+  QStringList lines=QStringList::split('\n',fileText);
+  bool inComment=false;
+  for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
+    const QString &line=(*it);
+    if (!inComment) {
+      QString strippedLine=line.stripWhiteSpace();
+      if (strippedLine.startsWith("#include")) {
+        QString includedName=strippedLine.mid(8).stripWhiteSpace();
+        if (includedName[0]=='<') {
+          int pos=includedName.find('>',1);
+          if (pos>=0)
+            result.includedSystem.append(includedName.mid(1,pos-1));
+        } else if (includedName[0]=='\"') {
+          int pos=includedName.find('\"',1);
+          if (pos>=0)
+            result.included.append(QDir::cleanDirPath(pathInProject+"/"
+                                                      +includedName.mid(1,pos-1)));
+        } // else ignore
+      }
+    }
+    int pos=0;
+    if (inComment) {
+      in_comment:
+      pos=line.find("*/",pos);
+      if (pos<0) continue; // Comment line only, next line.
+      pos+=2;
+      inComment=false;
+    }
+    pos=line.find("/*",pos);
+    if (pos>=0) {
+      pos+=2;
+      inComment=true;
+      goto in_comment;
+    }
+  }
+
+  // Parse for prototypes etc. using ctags.
+  QString fileTextCleaned=fileText;
+  // ctags doesn't like asmspecs.
+  fileTextCleaned.remove(QRegExp("\b(asm|_asm|__asm)\\(\"%?[adAD][0-7]\"\\)"));
+  write_temp_file("parser_temp_source.c",fileTextCleaned,0);
+  {
+    // The QTextCodec has to be passed explicitly, or it will default to
+    // ISO-8859-1 regardless of the locale, which is just broken.
+    KProcIO procio(QTextCodec::codecForLocale());
+    // Use MergedStderr instead of Stderr so the messages get ordered
+    // properly.
+    procio.setComm(static_cast<KProcess::Communication>(
+      KProcess::Stdout|KProcess::MergedStderr));
+    procio.setWorkingDirectory(tempdir);
+    procio<<"ctags"<<"-f"<<"-"<<"-n"<<"-u"<<"-h"<<".h"<<"--language-force=C"
+          <<"--C-kinds=defgpstuvx"<<"--fields=kS"<<"-I"<<"CALLBACK,__ATTR_TIOS__,"
+            "__ATTR_TIOS_NORETURN__,__ATTR_TIOS_CALLBACK__,__ATTR_GCC__,"
+            "__ATTR_LIB_C__,__ATTR_LIB_ASM__,__ATTR_LIB_ASM_NORETURN__,"
+            "__ATTR_LIB_CALLBACK_C__,__ATTR_LIB_CALLBACK_ASM__"
+          <<"parser_temp_source.c";
+    if (!procio.start()) {
+      delete_temp_file("parser_temp_source.c");
+      KMessageBox::error(0,"Could not run ctags.\nThis feature requires "
+                           "Exuberant Ctags, which can be obtained from: "
+                           "http://ctags.sourceforge.net");
+      result.dirty=true;
+      return result;
+    }
+    QString line;
+    int ret;
+    while ((ret=procio.readln(line))>=0 || procio.isRunning()) {
+      if (ret>=0) {
+        QStringList columns=QStringList::split('\t',line,TRUE);
+        QString identifier=columns[0];
+        QString linenoString=columns[2];
+        int semicolonPos=linenoString.find(';');
+        if (semicolonPos>=0) linenoString.truncate(semicolonPos);
+        int lineno=linenoString.toInt()-1;
+        QString kind=columns[3];
+        QString type=(kind=="d")?"macro"
+                     :(kind=="e")?"enum"
+                     :(kind=="f" || kind=="p")?"func"
+                     :(kind=="v" || kind=="x")?"var"
+                     :"type";
+        QString signature=columns[4];
+        if (signature.startsWith("signature:")) signature.remove(0,10);
+        bool alreadyKnown=result.lineNumbers.contains(identifier);
+        if (lineno>=0)
+          result.lineNumbers.insert(identifier,lineno,(kind!="p" && kind!="x"));
+        if (!alreadyKnown) {
+          KTextEditor::CompletionEntry entry;
+          entry.text=identifier;
+          entry.prefix=type;
+          entry.postfix=signature;
+          result.entries.append(entry);
+        }
+      } else {
+        usleep(10000);
+        QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,10);
+      }
+    }
+  }
+  delete_temp_file("parser_temp_source.c");
+
   return result;
 }

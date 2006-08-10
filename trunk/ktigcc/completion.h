@@ -20,7 +20,24 @@
 
 #include <qobject.h>
 #include <qpopupmenu.h>
+#include <qmap.h>
+#include <qstring.h>
+#include <qstringlist.h>
+#include <qvaluelist.h>
 #include <kate/view.h>
+
+#pragma once
+
+struct CompletionInfo {
+  bool dirty;
+  QStringList includedSystem;
+  QStringList included;
+  QMap<QString,unsigned> lineNumbers;
+  QValueList<KTextEditor::CompletionEntry> entries;
+};
+
+// Maps file name to a CompletionInfo.
+extern QMap<QString,CompletionInfo> systemHeaderCompletion, projectCompletion;
 
 class TemplatePopup : public QPopupMenu {
   Q_OBJECT

@@ -6025,5 +6025,31 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
   return;
 }
 
+QString MainForm::textForHeader(const QString &fileName)
+{
+  QString name=fileName;
+  int pos;
+  QListViewItem *item=hFilesListItem;
+  while ((pos=name.find('/'))>=0) {
+    QString folder=name.left(pos);
+    name.remove(0,pos+1);
+    for (item=item->firstChild();item;item=item->nextSibling()) {
+      if (IS_FOLDER(item)) {
+        if (item->text(0)==folder) break;
+      }
+    }
+    if (!item) return QString::null;
+  }
+  for (item=item->firstChild();item;item=item->nextSibling()) {
+    if (IS_FILE(item)) {
+      ListViewFile *fileItem=static_cast<ListViewFile *>(item);
+      if (QFileInfo(fileItem->fileName).fileName()==name)
+        return fileItem->kateView?fileItem->kateView->getDoc()->text()
+                                 :fileItem->textBuffer;
+    }
+  }
+  return QString::null;
+}
+
 // Yes, this is an ugly hack... Any better suggestions?
 #define KListView DnDListView

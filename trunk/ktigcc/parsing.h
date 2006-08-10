@@ -22,6 +22,9 @@
 
 #include <qstring.h>
 #include <qvaluevector.h>
+#include <qstringlist.h>
+#include "completion.h"
+
 struct SourceFileFunction {
   SourceFileFunction() : name(), prototypeLine(-1), implementationLine(-1) {}
   SourceFileFunction(const QString &n) :
@@ -45,3 +48,6 @@ class SourceFileFunctions : public QValueVector<SourceFileFunction> {
 SourceFileFunctions getCFunctions(const QString &text);
 SourceFileFunctions getASMFunctions(const QString &text);
 #define getFunctions(text,isasm) (((isasm)?getASMFunctions:getCFunctions)((text)))
+
+CompletionInfo parseFileCompletion(const QString &fileText,
+                                   const QString &pathInProject);

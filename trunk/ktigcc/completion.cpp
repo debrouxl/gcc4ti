@@ -29,6 +29,9 @@
 #include "completion.h"
 #include "preferences.h"
 
+// Maps file name to a CompletionInfo.
+QMap<QString,CompletionInfo> systemHeaderCompletion, projectCompletion;
+
 TemplatePopup::TemplatePopup(Kate::View *parent)
   : QPopupMenu(parent), view(parent)
 {
