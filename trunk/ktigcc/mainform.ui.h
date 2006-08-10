@@ -3282,6 +3282,67 @@ void MainForm::findOpenFileAtCursor()
   }
 }
 
+void MainForm::openHeader(const QString &fileName, bool systemHeader,
+                          unsigned lineno)
+{
+  if (systemHeader) {
+    // Don't do this if the name ends with ".tpr" because that would cause
+    // openProject to close the current project and load the new one instead.
+    if (!fileName.endsWith(".tpr",FALSE)) {
+      bool inProject;
+      void *sourceFile;
+      QString fileNameFull=QDir(QString("%1/include/c/").arg(tigcc_base))
+                           .filePath(fileName);
+      if (findSourceFile(inProject,sourceFile,fileNameFull)) {
+        if (inProject) {
+          fileTreeClicked(reinterpret_cast<ListViewFile *>(sourceFile));
+          if (reinterpret_cast<ListViewFile *>(sourceFile)->kateView)
+            reinterpret_cast<ListViewFile *>(sourceFile)->kateView->setCursorPositionReal(lineno,0);
+        } else {
+          reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPositionReal(lineno,0);
+          KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+        }
+      } else {
+        if (getPathType(fileNameFull)==PATH_FILE) {
+          openProject(fileNameFull);
+          if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject) {
+            reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPositionReal(lineno,0);
+            KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+          }
+        } else {
+          KMessageBox::error(this,QString("File \'%1\' not found.").arg(fileName),
+                             "Search Failed");
+        }
+      }
+    }
+  } else {
+    QString name=fileName;
+    int pos;
+    QListViewItem *item=hFilesListItem;
+    while ((pos=name.find('/'))>=0) {
+      QString folder=name.left(pos);
+      name.remove(0,pos+1);
+      for (item=item->firstChild();item;item=item->nextSibling()) {
+        if (IS_FOLDER(item)) {
+          if (item->text(0)==folder) break;
+        }
+      }
+      if (!item) return;
+    }
+    for (item=item->firstChild();item;item=item->nextSibling()) {
+      if (IS_FILE(item)) {
+        ListViewFile *fileItem=static_cast<ListViewFile *>(item);
+        if (QFileInfo(fileItem->fileName).fileName()==name) {
+          fileTreeClicked(item);
+          if (fileItem->kateView)
+            fileItem->kateView->setCursorPositionReal(lineno,0);
+          return;
+        }
+      }
+    }
+  }
+}
+
 void MainForm::findFindSymbolDeclaration()
 {
 
