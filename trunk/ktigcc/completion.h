@@ -18,6 +18,8 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
+#pragma once
+
 #include <qobject.h>
 #include <qpopupmenu.h>
 #include <qmap.h>
@@ -25,8 +27,6 @@
 #include <qstringlist.h>
 #include <qvaluelist.h>
 #include <kate/view.h>
-
-#pragma once
 
 struct CompletionInfo {
   bool dirty;

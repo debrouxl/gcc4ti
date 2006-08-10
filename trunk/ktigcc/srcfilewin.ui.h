@@ -97,6 +97,12 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define LOAD_ICON(name) (QIconSet(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
 #define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small):QPixmap::fromMimeSource((name)))
 
+#define SET_TEXT_SAFE(doc,text) do { \
+    disableViewEvents=TRUE; \
+    (doc)->setText((text)); \
+    disableViewEvents=FALSE; \
+  } while(0)
+
 // For some reason, this flag is not in the public ConfigFlags enum.
 #define CF_REMOVE_TRAILING_DYN 0x4000000
 
@@ -396,7 +402,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   connect(newView->getDoc(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->installPopup(THIS->te_popup);
   // Set text.
-  newView->getDoc()->setText(fileText);
+  SET_TEXT_SAFE(newView->getDoc(),fileText);
   newView->getDoc()->setModified(FALSE);
   newView->getDoc()->clearUndo();
   newView->getDoc()->clearRedo();
@@ -476,7 +482,7 @@ void SourceFileWindow::fileSaveAs()
       CURRENT_VIEW->getDoc()->setModified(FALSE);
       if (CURRENT_VIEW->getDoc()->openStream("text/plain",saveFileName))
         CURRENT_VIEW->getDoc()->closeStream();
-      CURRENT_VIEW->getDoc()->setText(fileText);
+      SET_TEXT_SAFE(CURRENT_VIEW->getDoc(),fileText);
       CURRENT_VIEW->getDoc()->clearUndo();
       CURRENT_VIEW->getDoc()->clearRedo();
       CURRENT_VIEW->getDoc()->setHlMode(hlMode);
@@ -1112,7 +1118,7 @@ void SourceFileWindow::updateRightStatusLabel()
 
 void SourceFileWindow::current_view_cursorPositionChanged()
 {
-  if (CURRENT_VIEW) {
+  if (CURRENT_VIEW && !disableViewEvents) {
     unsigned int line, col;
     CURRENT_VIEW->cursorPositionReal(&line,&col);
     THIS->rowStatusLabel->setText(QString("%1").arg(line+1));
@@ -1122,6 +1128,7 @@ void SourceFileWindow::current_view_cursorPositionChanged()
 
 void SourceFileWindow::current_view_textChanged()
 {
+  if (disableViewEvents) return;
   if (CURRENT_VIEW) {
     THIS->charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
     if (preferences.deleteOverwrittenErrors) MainForm::deleteOverwrittenErrorsIn(THIS);
@@ -1131,7 +1138,7 @@ void SourceFileWindow::current_view_textChanged()
 
 void SourceFileWindow::current_view_undoChanged()
 {
-  if (CURRENT_VIEW) {
+  if (CURRENT_VIEW && !disableViewEvents) {
     editUndoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->undoCount()));
     editRedoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->redoCount()));
     THIS->accel->setItemEnabled(0,!!(CURRENT_VIEW->getDoc()->undoCount()));
@@ -1141,7 +1148,7 @@ void SourceFileWindow::current_view_undoChanged()
 
 void SourceFileWindow::current_view_selectionChanged()
 {
-  if (CURRENT_VIEW) {
+  if (CURRENT_VIEW && !disableViewEvents) {
     editClearAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
     editCutAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
     editCopyAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
@@ -1228,10 +1235,11 @@ void SourceFileWindow::KDirWatch_dirty(const QString &fileName)
         KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
         return;
       }
-      CURRENT_VIEW->getDoc()->setText(fileText);
+      SET_TEXT_SAFE(CURRENT_VIEW->getDoc(),fileText);
       CURRENT_VIEW->getDoc()->setModified(FALSE);
       CURRENT_VIEW->getDoc()->clearUndo();
       CURRENT_VIEW->getDoc()->clearRedo();
+      updateRightStatusLabel();
     }
   }
 }

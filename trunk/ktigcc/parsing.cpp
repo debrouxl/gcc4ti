@@ -23,7 +23,6 @@
 
 #include "parsing.h"
 #include "ktigcc.h"
-#include "mainform.h"
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qregexp.h>

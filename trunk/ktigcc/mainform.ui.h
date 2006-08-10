@@ -155,11 +155,9 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small,KIcon::SizeSmall):QPixmap::fromMimeSource((name)))
 
 #define SET_TEXT_SAFE(doc,text) do { \
-    bool oldModifiedSinceLastCompile=IS_FILE(currentListItem)? \
-      static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile:FALSE; \
+    disableViewEvents=TRUE; \
     (doc)->setText((text)); \
-    if (IS_FILE(currentListItem)) \
-      static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile=oldModifiedSinceLastCompile; \
+    disableViewEvents=FALSE; \
   } while(0)
 
 // For some reason, this flag is not in the public ConfigFlags enum.
@@ -414,6 +412,7 @@ static QPopupMenu *findFunctionsPopup;
 bool have_usb;
 Tools tools, tempTools;
 int toolIndex;
+bool disableViewEvents=FALSE;
 
 class DnDListView : public KListView {
   private:
@@ -1355,6 +1354,7 @@ void MainForm::clearProject()
     delete f;
   }
   fileCount=cFileCount=hFileCount=sFileCount=asmFileCount=qllFileCount=oFileCount=aFileCount=txtFileCount=othFileCount=0;
+  projectCompletion.clear();
   projectIsDirty=FALSE;
   projectNeedsRelink=FALSE;
   menuBar()->setItemVisible(5,preferences.linkTarget==LT_NONE); //debugMenu
@@ -5711,7 +5711,7 @@ void MainForm::updateRightStatusLabel()
 
 void MainForm::current_view_cursorPositionChanged()
 {
-  if (CURRENT_VIEW) {
+  if (CURRENT_VIEW && !disableViewEvents) {
     unsigned int line, col;
     CURRENT_VIEW->cursorPositionReal(&line,&col);
     rowStatusLabel->setText(QString("%1").arg(line+1));
@@ -5721,6 +5721,7 @@ void MainForm::current_view_cursorPositionChanged()
 
 void MainForm::current_view_textChanged()
 {
+  if (disableViewEvents) return;
   if (CURRENT_VIEW) {
     charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
     if (IS_FILE(currentListItem))
@@ -5747,7 +5748,7 @@ void MainForm::current_view_textChanged()
 
 void MainForm::current_view_undoChanged()
 {
-  if (CURRENT_VIEW) {
+  if (CURRENT_VIEW && !disableViewEvents) {
     editUndoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->undoCount()));
     editRedoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->redoCount()));
     accel->setItemEnabled(0,!!(CURRENT_VIEW->getDoc()->undoCount()));
@@ -5757,7 +5758,7 @@ void MainForm::current_view_undoChanged()
 
 void MainForm::current_view_selectionChanged()
 {
-  if (CURRENT_VIEW) {
+  if (CURRENT_VIEW && !disableViewEvents) {
     editClearAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
     editCutAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
     editCopyAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
@@ -6004,6 +6005,7 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
             static_cast<ListViewFile *>(item)->kateView->getDoc()->setModified(FALSE);
             static_cast<ListViewFile *>(item)->kateView->getDoc()->clearUndo();
             static_cast<ListViewFile *>(item)->kateView->getDoc()->clearRedo();
+            updateRightStatusLabel();
           } else {
             static_cast<ListViewFile *>(item)->textBuffer=fileText;
           }

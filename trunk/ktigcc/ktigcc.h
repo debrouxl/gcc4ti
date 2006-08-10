@@ -63,3 +63,4 @@ struct Tool {
 typedef QValueVector<Tool> Tools;
 extern Tools tools, tempTools;
 extern int toolIndex;
+extern bool disableViewEvents;
