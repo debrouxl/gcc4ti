@@ -39,6 +39,19 @@ struct CompletionInfo {
 // Maps file name to a CompletionInfo.
 extern QMap<QString,CompletionInfo> systemHeaderCompletion, projectCompletion;
 
+class MainForm;
+bool findSymbolInFile(const QString &symbol,
+                      const QString &fileText,
+                      const QString &fileName,
+                      MainForm *mainForm,
+                      QString &symbolFile,
+                      unsigned &symbolLine,
+                      bool &systemHeader);
+bool completionEntriesForFile(const QString &fileText,
+                              const QString &fileName,
+                              MainForm *mainForm,
+                              QValueList<KTextEditor::CompletionEntry> &result);
+
 class TemplatePopup : public QPopupMenu {
   Q_OBJECT
 

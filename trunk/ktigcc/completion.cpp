@@ -23,14 +23,104 @@
 #include <qpair.h>
 #include <qpoint.h>
 #include <qregexp.h>
+#include <qfileinfo.h>
 #include <kate/view.h>
 #include <kate/document.h>
 #include <ktexteditor/editinterfaceext.h>
 #include "completion.h"
+#include "parsing.h"
 #include "preferences.h"
+#include "mainform.h"
 
 // Maps file name to a CompletionInfo.
 QMap<QString,CompletionInfo> systemHeaderCompletion, projectCompletion;
+
+bool findSymbolInFile(const QString &symbol,
+                      const QString &fileText,
+                      const QString &fileName,
+                      MainForm *mainForm,
+                      QString &symbolFile,
+                      unsigned &symbolLine,
+                      bool &systemHeader)
+{
+  symbolFile=QString::null;
+  systemHeader=false;
+  if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
+    QFileInfo fileInfo(fileName);
+    QString pathInProject=fileInfo.isRelative()?fileInfo.dirPath():".";
+    CompletionInfo completionInfo=parseFileCompletion(fileText,pathInProject);
+    if (completionInfo.dirty) return false;
+    projectCompletion.insert(fileName,completionInfo);
+  }
+  const CompletionInfo &completionInfo=projectCompletion[fileName];
+  if (completionInfo.lineNumbers.contains(symbol)) {
+    symbolFile=fileName;
+    symbolLine=completionInfo.lineNumbers[symbol];
+    return true;
+  }
+  for (QStringList::ConstIterator it=completionInfo.included.begin();
+       it!=completionInfo.included.end(); ++it) {
+    const QString &headerName=*it;
+    QString headerText=mainForm->textForHeader(headerName);
+    if (!headerText.isNull()) {
+      if (!findSymbolInFile(symbol,headerText,headerName,mainForm,symbolFile,
+                            symbolLine,systemHeader))
+        return false;
+      if (!symbolFile.isNull()) return true;
+    }
+  }
+  for (QStringList::ConstIterator it=completionInfo.includedSystem.begin();
+       it!=completionInfo.includedSystem.end(); ++it) {
+    const QString &headerName=*it;
+    if (systemHeaderCompletion.contains(headerName)
+        && systemHeaderCompletion[headerName].lineNumbers.contains(symbol)) {
+      symbolFile=headerName;
+      symbolLine=systemHeaderCompletion[headerName].lineNumbers[symbol];
+      systemHeader=true;
+      return true;
+    }
+  }
+  return true;
+}
+
+static void mergeCompletionEntries(QValueList<KTextEditor::CompletionEntry> &dest,
+                                   const QValueList<KTextEditor::CompletionEntry> &src)
+{
+  for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=src.begin();
+       it!=src.end(); ++it)
+    dest.append(*it);
+}
+
+bool completionEntriesForFile(const QString &fileText,
+                              const QString &fileName,
+                              MainForm *mainForm,
+                              QValueList<KTextEditor::CompletionEntry> &result)
+{
+  if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
+    QFileInfo fileInfo(fileName);
+    QString pathInProject=fileInfo.isRelative()?fileInfo.dirPath():".";
+    CompletionInfo completionInfo=parseFileCompletion(fileText,pathInProject);
+    if (completionInfo.dirty) return false;
+    projectCompletion.insert(fileName,completionInfo);
+  }
+  const CompletionInfo &completionInfo=projectCompletion[fileName];
+  mergeCompletionEntries(result,completionInfo.entries);
+  for (QStringList::ConstIterator it=completionInfo.includedSystem.begin();
+       it!=completionInfo.includedSystem.end(); ++it) {
+    const QString &headerName=*it;
+    if (systemHeaderCompletion.contains(headerName))
+      mergeCompletionEntries(result,systemHeaderCompletion[headerName].entries);
+  }
+  for (QStringList::ConstIterator it=completionInfo.included.begin();
+       it!=completionInfo.included.end(); ++it) {
+    const QString &headerName=*it;
+    QString headerText=mainForm->textForHeader(headerName);
+    if (!headerText.isNull())
+      if (!completionEntriesForFile(headerText,headerName,mainForm,result))
+        return false;
+  }
+  return true;
+}
 
 TemplatePopup::TemplatePopup(Kate::View *parent)
   : QPopupMenu(parent), view(parent)
