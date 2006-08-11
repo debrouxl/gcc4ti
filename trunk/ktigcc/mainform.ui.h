@@ -684,7 +684,7 @@ class ErrorListItem : public KListViewItem {
                 const QString &errMsg, unsigned errLine, unsigned errColumn)
     : KListViewItem(errorList->errorListView,
                     errorList->errorListView->lastItem()),
-      lvFile(0), srcFile(0), cursor(0), errorLine(-1), errorColumn(0),
+      lvFile(0), srcFile(0), cursor(0), errorLine((unsigned)-1), errorColumn(0),
       mainForm(pMainForm), errorType(errType)
   {
     QString errMessage=errMsg.stripWhiteSpace();
@@ -3750,7 +3750,7 @@ void MainForm::procio_readReady()
                   errorFlag=TRUE;
                   new ErrorListItem(this,line.startsWith("please fill out ",FALSE)?
                                     etInfo:etError,QString::null,QString::null,line,
-                                    errorLine,errorColumn);
+                                    (unsigned)errorLine,(unsigned)errorColumn);
                 } else {
                   QString errorMessage;
                   if (errorFile.lower()=="error"||errorFile.lower()=="warning") {
@@ -3807,7 +3807,8 @@ void MainForm::procio_readReady()
                       errorMessage.append('.');
                     if (errorType==etError) errorFlag=TRUE;
                     new ErrorListItem(this,errorType,errorFile,errorFunction,
-                                      errorMessage,errorLine,errorColumn);
+                                      errorMessage,(unsigned)errorLine,
+                                      (unsigned)errorColumn);
                   } else {
                     if (errorMessage.startsWith(" in function \'",FALSE)
                         && errorMessage.contains('\'')>1) {
@@ -3828,7 +3829,8 @@ void MainForm::procio_readReady()
                         errorMessage.append('.');
                       if (errorType==etError) errorFlag=TRUE;
                       new ErrorListItem(this,errorType,errorFile,QString::null,
-                                        errorMessage,errorLine,errorColumn);
+                                        errorMessage,(unsigned)errorLine,
+                                        (unsigned)errorColumn);
                     }
                   }
                 }
@@ -3845,7 +3847,7 @@ void MainForm::procio_readReady()
                 errorMessage.append('.');
               errorFlag=TRUE;
               new ErrorListItem(this,etError,errorFile,QString::null,errorMessage,
-                                errorLine,errorColumn);
+                                (unsigned)errorLine,(unsigned)errorColumn);
             }
             a68kErrorLine=0;
             break;
@@ -3978,7 +3980,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                          &err);
       if (err) {
         new ErrorListItem(this,etError,QString::null,QString::null,
-                          "Invalid A68k assembler command line options.",-1,-1);
+                          "Invalid A68k assembler command line options.",
+                          (unsigned)-1,(unsigned)-1);
         stopCompilingFlag=TRUE;
       }
       if (!stopCompilingFlag) {
@@ -4021,7 +4024,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                            &err);
         if (err) {
           new ErrorListItem(this,etError,QString::null,QString::null,
-                            "Invalid C compiler command line options.",-1,-1);
+                            "Invalid C compiler command line options.",
+                            (unsigned)-1,(unsigned)-1);
           stopCompilingFlag=TRUE;
         }
         if (!stopCompilingFlag) {
@@ -4096,7 +4100,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
             if (copyFile(tempAsmFile.ascii(),asmFile.ascii())) {
               new ErrorListItem(this,etError,QString::null,QString::null,
                                 "Failed to copy assembly file from temporary directory.",
-                                -1,-1);
+                                (unsigned)-1,(unsigned)-1);
               stopCompilingFlag=TRUE;
             }
           }
@@ -4115,7 +4119,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                            &err);
         if (err) {
           new ErrorListItem(this,etError,QString::null,QString::null,
-                            "Invalid GNU assembler command line options.",-1,-1);
+                            "Invalid GNU assembler command line options.",
+                            (unsigned)-1,(unsigned)-1);
           stopCompilingFlag=TRUE;
         }
         if (!stopCompilingFlag) {
@@ -4157,7 +4162,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
       if (copyFile(tempObjectFile.ascii(),objectFile.ascii())) {
         new ErrorListItem(this,etError,QString::null,QString::null,
                           "Failed to copy object file from temporary directory.",
-                          -1,-1);
+                          (unsigned)-1,(unsigned)-1);
         stopCompilingFlag=TRUE;
       }
       qdir.remove(tempObjectFile);
@@ -4272,7 +4277,7 @@ void MainForm::linkProject()
                            projectBaseName+"-data"+dexts[target])) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to rename data file.",
-                              -1,-1);
+                              (unsigned)-1,(unsigned)-1);
             errorsCompilingFlag=TRUE;
           }
           if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4287,7 +4292,7 @@ void MainForm::linkProject()
                      projectBaseName+".dbg")) {
           new ErrorListItem(this,etError,QString::null,QString::null,
                             "Failed to copy debug info file from temporary directory.",
-                            -1,-1);
+                            (unsigned)-1,(unsigned)-1);
           errorsCompilingFlag=TRUE;
         }
       }
@@ -4369,7 +4374,7 @@ void MainForm::linkProject()
                          projectBaseName+cexts[target],packName)) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to copy PPG from temporary directory.",
-                              -1,-1);
+                              (unsigned)-1,(unsigned)-1);
             errorsCompilingFlag=TRUE;
           }
           if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4381,7 +4386,7 @@ void MainForm::linkProject()
                      pstarterBaseName+".o",packName)) {
         new ErrorListItem(this,etError,QString::null,QString::null,
                           "Failed to copy pstarter.o to temporary directory.",
-                          -1,-1);
+                          (unsigned)-1,(unsigned)-1);
         errorsCompilingFlag=TRUE;
       }
       if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4415,7 +4420,7 @@ void MainForm::linkProject()
                        projectBaseName+exts[target])) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to copy pstarter from temporary directory.",
-                              -1,-1);
+                              (unsigned)-1,(unsigned)-1);
             errorsCompilingFlag=TRUE;
           }
           if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4471,7 +4476,8 @@ void MainForm::linkProject()
                                        &err);
     if (err) {
       new ErrorListItem(this,etError,QString::null,QString::null,
-                        "Invalid post-build command line.",-1,-1);
+                        "Invalid post-build command line.",(unsigned)-1,
+                        (unsigned)-1);
       errorsCompilingFlag=TRUE;
     }
     if (errorsCompilingFlag || stopCompilingFlag) return;
