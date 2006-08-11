@@ -29,6 +29,7 @@
 #include <kate/view.h>
 
 struct CompletionInfo {
+  CompletionInfo() : dirty(false) {}
   bool dirty;
   QStringList includedSystem;
   QStringList included;

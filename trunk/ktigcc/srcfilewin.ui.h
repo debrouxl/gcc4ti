@@ -1075,7 +1075,25 @@ void SourceFileWindow::findOpenFileAtCursor()
 
 void SourceFileWindow::findFindSymbolDeclaration()
 {
-
+  QString fileText=CURRENT_VIEW->getDoc()->text();
+  // "Find symbol declaration" only operates on C files.
+  if (THIS->isCFile) {
+    QString fileName=THIS->fileName;
+    QString symbolFile;
+    unsigned symbolLine;
+    bool systemHeader;
+    if (findSymbolInFile(CURRENT_VIEW->currentWord(),fileText,fileName,
+                         THIS->mainForm,symbolFile,symbolLine,systemHeader)
+        && !symbolFile.isNull()) {
+      if (symbolFile==fileName)
+        CURRENT_VIEW->setCursorPositionReal(symbolLine,0);
+      else {
+        THIS->mainForm->openHeader(symbolFile,systemHeader,symbolLine);
+        if (!systemHeader)
+          KWin::activateWindow(THIS->mainForm->winId());
+      }
+    }
+  }
 }
 
 void SourceFileWindow::updateSizes()

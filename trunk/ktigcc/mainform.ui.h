@@ -953,7 +953,7 @@ void MainForm::init()
   fileNewFolderAction->setEnabled(FALSE);
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
-  //te_popup->insertItem("&Find symbol declaration",1);
+  te_popup->insertItem("&Find symbol declaration",1);
   te_popup->insertSeparator();
   te_popup->insertItem("&Undo",2);
   te_popup->insertItem("&Redo",3);
@@ -3345,7 +3345,26 @@ void MainForm::openHeader(const QString &fileName, bool systemHeader,
 
 void MainForm::findFindSymbolDeclaration()
 {
-
+  if (IS_FILE(currentListItem) && CURRENT_VIEW) {
+    QString fileText=CURRENT_VIEW->getDoc()->text();
+    CATEGORY_OF(category,currentListItem);
+    // "Find symbol declaration" only operates on C files.
+    if (category==cFilesListItem
+        || (category==hFilesListItem && fileText[0]!='|' && fileText[0]!=';')) {
+      QString fileName=pathInProject(currentListItem);
+      QString symbolFile;
+      unsigned symbolLine;
+      bool systemHeader;
+      if (findSymbolInFile(CURRENT_VIEW->currentWord(),fileText,fileName,this,
+                           symbolFile,symbolLine,systemHeader)
+          && !symbolFile.isNull()) {
+        if (symbolFile==fileName)
+          CURRENT_VIEW->setCursorPositionReal(symbolLine,0);
+        else
+          openHeader(symbolFile,systemHeader,symbolLine);
+      }
+    }
+  }
 }
 
 //returns 1 on success
