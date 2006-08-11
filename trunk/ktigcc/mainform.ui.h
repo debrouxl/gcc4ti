@@ -667,6 +667,13 @@ class DnDListView : public KListView {
   virtual void startDrag() {
     QListView::startDrag();
   }
+  // KListView::rename won't work properly if I don't do this. :-/
+  virtual void rename(QListViewItem *item, int c) {
+    QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+    ensureItemVisible(item);
+    QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+    KListView::rename(item,c);
+  }
 };
 
 enum ErrorTypes {etError, etWarning, etInfo};

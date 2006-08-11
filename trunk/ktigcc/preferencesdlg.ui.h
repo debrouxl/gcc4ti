@@ -72,6 +72,10 @@ class RenamableKListViewItem : public KListViewItem {
   // what startRename is a virtual method for. KListViewItem should do this.
   virtual void startRename(int col)
   {
+    // KListView::rename won't work properly if I don't do this. :-/
+    QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+    listView()->ensureItemVisible(this);
+    QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
     static_cast<KListView *>(listView())->rename(this,col);
   }
 };
@@ -532,10 +536,6 @@ void Preferences::newStyleButton_clicked()
   item=new RenamableKListViewItem(customStylesItem,item,newStyle.name);
   syntaxListView->setCurrentItem(item);
   syntaxListView->setSelected(item,TRUE);
-  // startRename won't work properly if I don't do this. :-/
-  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
-  syntaxListView->ensureItemVisible(item);
-  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
   item->startRename(0);
 }
 
@@ -552,10 +552,6 @@ void Preferences::newListButton_clicked()
   item=new RenamableKListViewItem(wordListsItem,item,newList.name);
   syntaxListView->setCurrentItem(item);
   syntaxListView->setSelected(item,TRUE);
-  // startRename won't work properly if I don't do this. :-/
-  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
-  syntaxListView->ensureItemVisible(item);
-  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
   item->startRename(0);
 }
 
