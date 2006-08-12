@@ -39,6 +39,7 @@
 #include <qvaluelist.h>
 #include <qapplication.h>
 #include <qeventloop.h>
+#include <qcursor.h>
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>
@@ -48,6 +49,7 @@
 #include <keditlistbox.h>
 #include <klistbox.h>
 #include <kfiledialog.h>
+#include <kcursor.h>
 #include "ktigcc.h"
 #include "selectstyle.h"
 #include "selectcolors.h"
@@ -719,11 +721,21 @@ void Preferences::regenCompletionInfoButton_clicked()
   QString dirName=KFileDialog::getExistingDirectory(":SystemInclude",this,
     "Pick Help Sources System/Include Folder");
   if (dirName.isEmpty()) return;
-  if (!parseHelpSources(this,dirName,sysHdrCompletion)) return;
+  setCursor(KCursor::waitCursor());
+  if (!parseHelpSources(this,dirName,sysHdrCompletion)) {
+    setCursor(QCursor());
+    return;
+  }
+  setCursor(QCursor());
   dirName=KFileDialog::getExistingDirectory(QString("%1/include/c/")
     .arg(tigcc_base),this,"Pick C Header (include/c) Folder");
   if (dirName.isEmpty()) return;
-  if (!parseSystemHeaders(this,dirName,sysHdrCompletion)) return;
+  setCursor(KCursor::waitCursor());
+  if (!parseSystemHeaders(this,dirName,sysHdrCompletion)) {
+    setCursor(QCursor());
+    return;
+  }
   systemHeaderCompletion=sysHdrCompletion;
   saveSystemHeaderCompletion();
+  setCursor(QCursor());
 }
