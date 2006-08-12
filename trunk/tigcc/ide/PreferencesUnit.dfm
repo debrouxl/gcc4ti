@@ -202,7 +202,7 @@ object PreferencesForm: TPreferencesForm
           Top = 82
           Width = 97
           Height = 17
-          Caption = '&Real Calculator'
+          Caption = 'R&eal Calculator'
           TabOrder = 4
           OnClick = TargetBoxClick
         end
@@ -308,7 +308,7 @@ object PreferencesForm: TPreferencesForm
       end
     end
     object EditorSheet: TTabSheet
-      Caption = '&Editor'
+      Caption = 'Edito&r'
       ImageIndex = 1
       DesignSize = (
         297
@@ -431,7 +431,7 @@ object PreferencesForm: TPreferencesForm
         Top = 218
         Width = 177
         Height = 17
-        Caption = '&Remove trailing spaces from lines'
+        Caption = 'R&emove trailing spaces from lines'
         TabOrder = 9
       end
     end
@@ -576,7 +576,7 @@ object PreferencesForm: TPreferencesForm
         Top = 32
         Width = 65
         Height = 21
-        Caption = '&Reset'
+        Caption = 'R&eset'
         TabOrder = 12
         OnClick = ResetButtonClick
       end

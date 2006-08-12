@@ -11,7 +11,7 @@ object CodingExt: TCodingExt
     Height = 200
     Align = alClient
     BiDiMode = bdRightToLeft
-    Caption = 'Code templates'
+    Caption = 'Code te&mplates'
     ParentBiDiMode = False
     TabOrder = 0
     object IdLbl: TLabel
@@ -19,14 +19,14 @@ object CodingExt: TCodingExt
       Top = 100
       Width = 40
       Height = 13
-      Caption = 'Identifier'
+      Caption = '&Identifier'
     end
     object CodeLbl: TLabel
       Left = 8
       Top = 120
       Width = 25
       Height = 13
-      Caption = 'Code'
+      Caption = 'Cod&e'
     end
     object TmpltList: TListBox
       Left = 8
@@ -66,7 +66,7 @@ object CodingExt: TCodingExt
       Top = 180
       Width = 89
       Height = 17
-      Caption = 'Clear selection'
+      Caption = 'C&lear selection'
       TabOrder = 3
       OnClick = ClearBtnClick
     end
@@ -75,7 +75,7 @@ object CodingExt: TCodingExt
       Top = 180
       Width = 73
       Height = 17
-      Caption = 'Apply'
+      Caption = '&Apply'
       TabOrder = 4
       OnClick = ApplyBtnClick
     end
@@ -95,7 +95,7 @@ object CodingExt: TCodingExt
       Top = 16
       Width = 281
       Height = 25
-      Caption = 'Open the completion editor'
+      Caption = 'Open t&he completion editor'
       TabOrder = 0
       OnClick = CompEditorClick
     end
