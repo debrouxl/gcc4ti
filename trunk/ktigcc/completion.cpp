@@ -139,10 +139,27 @@ static void mergeCompletionEntries(QValueList<KTextEditor::CompletionEntry> &des
     dest.append(*it);
 }
 
-bool completionEntriesForFile(const QString &fileText,
-                              const QString &fileName,
-                              MainForm *mainForm,
-                              QValueList<KTextEditor::CompletionEntry> &result)
+static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
+                                              QValueList<KTextEditor::CompletionEntry> &result)
+{
+  for (QStringList::ConstIterator it=systemHeaders.begin();
+       it!=systemHeaders.end(); ++it) {
+    const QString &headerName=*it;
+    // Avoid infinite recursion.
+    if (systemHeaderCompletion.contains(headerName)
+        && !systemHeaderCompletion[headerName].searched) {
+      CompletionInfo &completionInfo=systemHeaderCompletion[headerName];
+      completionInfo.searched=true;
+      mergeCompletionEntries(result,completionInfo.entries);
+      completionEntriesForSystemHeaders(completionInfo.includedSystem,result);
+    }
+  }
+}
+
+static bool completionEntriesForFileRecursive(const QString &fileText,
+                                              const QString &fileName,
+                                              MainForm *mainForm,
+                                              QValueList<KTextEditor::CompletionEntry> &result)
 {
   if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
     QFileInfo fileInfo(fileName);
@@ -151,14 +168,12 @@ bool completionEntriesForFile(const QString &fileText,
     if (completionInfo.dirty) return false;
     projectCompletion.insert(fileName,completionInfo);
   }
-  const CompletionInfo &completionInfo=projectCompletion[fileName];
+  CompletionInfo &completionInfo=projectCompletion[fileName];
+  // Avoid infinite recursion.
+  if (completionInfo.searched) return true;
+  completionInfo.searched=true;
   mergeCompletionEntries(result,completionInfo.entries);
-  for (QStringList::ConstIterator it=completionInfo.includedSystem.begin();
-       it!=completionInfo.includedSystem.end(); ++it) {
-    const QString &headerName=*it;
-    if (systemHeaderCompletion.contains(headerName))
-      mergeCompletionEntries(result,systemHeaderCompletion[headerName].entries);
-  }
+  completionEntriesForSystemHeaders(completionInfo.includedSystem,result);
   for (QStringList::ConstIterator it=completionInfo.included.begin();
        it!=completionInfo.included.end(); ++it) {
     const QString &headerName=*it;
@@ -168,6 +183,15 @@ bool completionEntriesForFile(const QString &fileText,
         return false;
   }
   return true;
+}
+
+bool completionEntriesForFile(const QString &fileText,
+                              const QString &fileName,
+                              MainForm *mainForm,
+                              QValueList<KTextEditor::CompletionEntry> &result)
+{
+  resetSearchedFlags();
+  return completionEntriesForFileRecursive(fileText,fileName,mainForm,result);
 }
 
 bool parseHelpSources(QWidget *parent, const QString &directory,
