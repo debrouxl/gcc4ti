@@ -124,6 +124,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
   // Empty lines can be ignored here.
   QStringList lines=QStringList::split('\n',fileText);
   bool inComment=false;
+  bool isSystemHeader=pathInProject.isNull();
   for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
     const QString &line=(*it);
     if (!inComment) {
@@ -137,7 +138,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         } else if (includedName[0]=='\"') {
           int pos=includedName.find('\"',1);
           if (pos>=0) {
-            if (pathInProject.isNull())
+            if (isSystemHeader)
               // A system header can only include another system header.
               result.includedSystem.append(includedName.mid(1,pos-1));
             else
@@ -210,6 +211,18 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         QString signature=columns[4];
         if (signature.startsWith("signature:")) signature.remove(0,10);
         bool alreadyKnown=result.lineNumbers.contains(identifier);
+        // This has to be done for system headers because there may already be
+        // better information extracted from the .hsf files. However, .hsf files
+        // obviously don't contain line number information.
+        if (isSystemHeader) {
+          for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it
+               =result.entries.begin(); it!=result.entries.end(); ++it) {
+            if ((*it).text==identifier) {
+              alreadyKnown=true;
+              break;
+            }
+          }
+        }
         if (lineno>=0)
           result.lineNumbers.insert(identifier,lineno,(kind!="p" && kind!="x"));
         if (!alreadyKnown) {

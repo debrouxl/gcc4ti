@@ -47,12 +47,14 @@
 #include <klineedit.h>
 #include <keditlistbox.h>
 #include <klistbox.h>
+#include <kfiledialog.h>
 #include "ktigcc.h"
 #include "selectstyle.h"
 #include "selectcolors.h"
 #include "colorlistitem.h"
 #include "customstyle.h"
 #include "wordlist.h"
+#include "completion.h"
 
 class RenamableKListViewItem : public KListViewItem {
   public:
@@ -709,4 +711,18 @@ void Preferences::templateListBox_currentChanged(QListBoxItem *item)
 void Preferences::templateIdentifier_textChanged(const QString &text)
 {
   applyButton->setEnabled(!text.isEmpty());
+}
+
+void Preferences::regenCompletionInfoButton_clicked()
+{
+  QMap<QString,CompletionInfo> sysHdrCompletion;
+  QString dirName=KFileDialog::getExistingDirectory(":SystemInclude",this,
+    "Pick Help Sources System/Include Folder");
+  if (dirName.isEmpty()) return;
+  if (!parseHelpSources(this,dirName,sysHdrCompletion)) return;
+  dirName=KFileDialog::getExistingDirectory(QString("%1/include/c/")
+    .arg(tigcc_base),this,"Pick C Header (include/c) Folder");
+  if (dirName.isEmpty()) return;
+  if (!parseSystemHeaders(this,dirName,sysHdrCompletion)) return;
+  systemHeaderCompletion=sysHdrCompletion;
 }

@@ -24,6 +24,8 @@
 #include <qpoint.h>
 #include <qregexp.h>
 #include <qfileinfo.h>
+#include <qdir.h>
+#include <kmessagebox.h>
 #include <kate/view.h>
 #include <kate/document.h>
 #include <ktexteditor/editinterfaceext.h>
@@ -31,17 +33,56 @@
 #include "parsing.h"
 #include "preferences.h"
 #include "mainform.h"
+#include "tpr.h"
 
 // Maps file name to a CompletionInfo.
 QMap<QString,CompletionInfo> systemHeaderCompletion, projectCompletion;
 
-bool findSymbolInFile(const QString &symbol,
-                      const QString &fileText,
-                      const QString &fileName,
-                      MainForm *mainForm,
-                      QString &symbolFile,
-                      unsigned &symbolLine,
-                      bool &systemHeader)
+static void resetSearchedFlags(void)
+{
+  for (QMap<QString,CompletionInfo>::Iterator it=projectCompletion.begin();
+       it!=projectCompletion.end(); ++it)
+    (*it).searched=false;
+  for (QMap<QString,CompletionInfo>::Iterator it=systemHeaderCompletion.begin();
+       it!=systemHeaderCompletion.end(); ++it)
+    (*it).searched=false;
+}
+
+static void findSymbolInSystemHeaders(const QString &symbol,
+                                      const QStringList &systemHeaders,
+                                      QString &symbolFile,
+                                      unsigned &symbolLine,
+                                      bool &systemHeader)
+{
+  for (QStringList::ConstIterator it=systemHeaders.begin();
+       it!=systemHeaders.end(); ++it) {
+    const QString &headerName=*it;
+    // Avoid infinite recursion.
+    if (systemHeaderCompletion.contains(headerName)
+        && !systemHeaderCompletion[headerName].searched) {
+      CompletionInfo &completionInfo=systemHeaderCompletion[headerName];
+      completionInfo.searched=true;
+      if (completionInfo.lineNumbers.contains(symbol)) {
+        symbolFile=headerName;
+        symbolLine=completionInfo.lineNumbers[symbol];
+        systemHeader=true;
+        return;
+      } else {
+        findSymbolInSystemHeaders(symbol,completionInfo.includedSystem,
+                                  symbolFile,symbolLine,systemHeader);
+        if (!symbolFile.isNull()) return;
+      }
+    }
+  }
+}
+
+static bool findSymbolInFileRecursive(const QString &symbol,
+                                      const QString &fileText,
+                                      const QString &fileName,
+                                      MainForm *mainForm,
+                                      QString &symbolFile,
+                                      unsigned &symbolLine,
+                                      bool &systemHeader)
 {
   symbolFile=QString::null;
   systemHeader=false;
@@ -52,7 +93,10 @@ bool findSymbolInFile(const QString &symbol,
     if (completionInfo.dirty) return false;
     projectCompletion.insert(fileName,completionInfo);
   }
-  const CompletionInfo &completionInfo=projectCompletion[fileName];
+  CompletionInfo &completionInfo=projectCompletion[fileName];
+  // Avoid infinite recursion.
+  if (completionInfo.searched) return true;
+  completionInfo.searched=true;
   if (completionInfo.lineNumbers.contains(symbol)) {
     symbolFile=fileName;
     symbolLine=completionInfo.lineNumbers[symbol];
@@ -69,18 +113,22 @@ bool findSymbolInFile(const QString &symbol,
       if (!symbolFile.isNull()) return true;
     }
   }
-  for (QStringList::ConstIterator it=completionInfo.includedSystem.begin();
-       it!=completionInfo.includedSystem.end(); ++it) {
-    const QString &headerName=*it;
-    if (systemHeaderCompletion.contains(headerName)
-        && systemHeaderCompletion[headerName].lineNumbers.contains(symbol)) {
-      symbolFile=headerName;
-      symbolLine=systemHeaderCompletion[headerName].lineNumbers[symbol];
-      systemHeader=true;
-      return true;
-    }
-  }
+  findSymbolInSystemHeaders(symbol,completionInfo.includedSystem,symbolFile,
+                            symbolLine,systemHeader);
   return true;
+}
+
+bool findSymbolInFile(const QString &symbol,
+                      const QString &fileText,
+                      const QString &fileName,
+                      MainForm *mainForm,
+                      QString &symbolFile,
+                      unsigned &symbolLine,
+                      bool &systemHeader)
+{
+  resetSearchedFlags();
+  return findSymbolInFileRecursive(symbol,fileText,fileName,mainForm,symbolFile,
+                                   symbolLine,systemHeader);
 }
 
 static void mergeCompletionEntries(QValueList<KTextEditor::CompletionEntry> &dest,
@@ -118,6 +166,30 @@ bool completionEntriesForFile(const QString &fileText,
     if (!headerText.isNull())
       if (!completionEntriesForFile(headerText,headerName,mainForm,result))
         return false;
+  }
+  return true;
+}
+
+bool parseHelpSources(QWidget *parent, const QString &directory,
+                      QMap<QString,CompletionInfo> &sysHdrCompletion)
+{
+  return true; // TODO
+}
+
+bool parseSystemHeaders(QWidget *parent, const QString &directory,
+                        QMap<QString,CompletionInfo> &sysHdrCompletion)
+{
+  QDir qdir(directory);
+  QStringList headers=qdir.entryList("*.h",QDir::Files);
+  for (QStringList::ConstIterator it=headers.begin(); it!=headers.end(); ++it) {
+    const QString &header=*it;
+    QString fileText=loadFileText(QFileInfo(qdir,header).filePath());
+    if (fileText.isNull()) {
+      KMessageBox::error(parent,QString("Can't open \'%1\'.").arg(header));
+      return false;
+    }
+    sysHdrCompletion[header]=parseFileCompletion(fileText,QString::null);
+    if (sysHdrCompletion[header].dirty) return false;
   }
   return true;
 }

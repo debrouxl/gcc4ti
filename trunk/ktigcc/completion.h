@@ -29,8 +29,9 @@
 #include <kate/view.h>
 
 struct CompletionInfo {
-  CompletionInfo() : dirty(false) {}
+  CompletionInfo() : dirty(false), searched(false) {}
   bool dirty;
+  bool searched;
   QStringList includedSystem;
   QStringList included;
   QMap<QString,unsigned> lineNumbers;
@@ -52,6 +53,12 @@ bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
                               QValueList<KTextEditor::CompletionEntry> &result);
+
+class QWidget;
+bool parseHelpSources(QWidget *parent, const QString &directory,
+                      QMap<QString,CompletionInfo> &sysHdrCompletion);
+bool parseSystemHeaders(QWidget *parent, const QString &directory,
+                        QMap<QString,CompletionInfo> &sysHdrCompletion);
 
 class TemplatePopup : public QPopupMenu {
   Q_OBJECT
