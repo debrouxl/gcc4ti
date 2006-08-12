@@ -725,4 +725,5 @@ void Preferences::regenCompletionInfoButton_clicked()
   if (dirName.isEmpty()) return;
   if (!parseSystemHeaders(this,dirName,sysHdrCompletion)) return;
   systemHeaderCompletion=sysHdrCompletion;
+  saveSystemHeaderCompletion();
 }

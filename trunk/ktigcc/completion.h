@@ -60,6 +60,9 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
 bool parseSystemHeaders(QWidget *parent, const QString &directory,
                         QMap<QString,CompletionInfo> &sysHdrCompletion);
 
+void loadSystemHeaderCompletion(void);
+void saveSystemHeaderCompletion(void);
+
 class TemplatePopup : public QPopupMenu {
   Q_OBJECT
 

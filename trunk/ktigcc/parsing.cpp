@@ -167,7 +167,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
   // Parse for prototypes etc. using ctags.
   QString fileTextCleaned=fileText;
   // ctags doesn't like asmspecs.
-  fileTextCleaned.remove(QRegExp("\b(asm|_asm|__asm)\\(\"%?[adAD][0-7]\"\\)"));
+  fileTextCleaned.remove(QRegExp("\\b(asm|_asm|__asm)\\(\"%?[adAD][0-7]\"\\)"));
   write_temp_file("parser_temp_source.c",fileTextCleaned,0);
   {
     // The QTextCodec has to be passed explicitly, or it will default to
@@ -210,6 +210,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
                      :"type";
         QString signature=columns[4];
         if (signature.startsWith("signature:")) signature.remove(0,10);
+        signature.replace(QRegExp("\\s*,"),",").replace(QRegExp("\\s*\\)"),")");
         bool alreadyKnown=result.lineNumbers.contains(identifier);
         // This has to be done for system headers because there may already be
         // better information extracted from the .hsf files. However, .hsf files

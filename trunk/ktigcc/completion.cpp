@@ -29,6 +29,7 @@
 #include <kate/view.h>
 #include <kate/document.h>
 #include <ktexteditor/editinterfaceext.h>
+#include <kconfig.h>
 #include "completion.h"
 #include "parsing.h"
 #include "preferences.h"
@@ -216,6 +217,66 @@ bool parseSystemHeaders(QWidget *parent, const QString &directory,
     if (sysHdrCompletion[header].dirty) return false;
   }
   return true;
+}
+
+void loadSystemHeaderCompletion(void)
+{
+  KConfig config("ktigcc/completion",true,false,"data");
+  QStringList groupList=config.groupList();
+  systemHeaderCompletion.clear();
+  for (QStringList::ConstIterator it=groupList.begin(); it!=groupList.end(); ++it) {
+    const QString &key=*it;
+    if (key.endsWith(" Lines")) continue;
+    CompletionInfo completionInfo;
+    config.setGroup(key);
+    completionInfo.includedSystem=config.readListEntry("Included");
+    unsigned numEntries=config.readUnsignedNumEntry("Num Entries");
+    for (unsigned i=0; i<numEntries; i++) {
+      KTextEditor::CompletionEntry entry;
+      entry.type=config.readEntry(QString("Entry %1 Type").arg(i));
+      entry.text=config.readEntry(QString("Entry %1 Text").arg(i));
+      entry.prefix=config.readEntry(QString("Entry %1 Prefix").arg(i));
+      entry.postfix=config.readEntry(QString("Entry %1 Postfix").arg(i));
+      entry.comment=config.readEntry(QString("Entry %1 Comment").arg(i));
+      entry.userdata=config.readEntry(QString("Entry %1 User Data").arg(i));
+      completionInfo.entries.append(entry);
+    }
+    QMap<QString,QString> entryMap=config.entryMap(key+" Lines");
+    for (QMap<QString,QString>::ConstIterator it=entryMap.begin();
+         it!=entryMap.end(); ++it)
+      completionInfo.lineNumbers.insert(it.key(),(*it).toUInt());
+    systemHeaderCompletion.insert(key,completionInfo);
+  }
+}
+
+void saveSystemHeaderCompletion(void)
+{
+  KConfig config("ktigcc/completion",false,false,"data");
+  for (QMap<QString,CompletionInfo>::ConstIterator it=systemHeaderCompletion.begin();
+       it!=systemHeaderCompletion.end(); ++it) {
+    const QString &key=it.key();
+    const CompletionInfo &completionInfo=*it;
+    config.setGroup(key);
+    config.writeEntry("Included",completionInfo.includedSystem);
+    unsigned i=0;
+    for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it
+         =completionInfo.entries.begin(); it!=completionInfo.entries.end();
+         ++it, i++) {
+      const KTextEditor::CompletionEntry &entry=*it;
+      config.writeEntry(QString("Entry %1 Type").arg(i),entry.type);
+      config.writeEntry(QString("Entry %1 Text").arg(i),entry.text);
+      config.writeEntry(QString("Entry %1 Prefix").arg(i),entry.prefix);
+      config.writeEntry(QString("Entry %1 Postfix").arg(i),entry.postfix);
+      config.writeEntry(QString("Entry %1 Comment").arg(i),entry.comment);
+      config.writeEntry(QString("Entry %1 User Data").arg(i),entry.userdata);
+    }
+    config.writeEntry("Num Entries",i);
+    config.setGroup(key+" Lines");
+    for (QMap<QString,unsigned>::ConstIterator it=completionInfo.lineNumbers.begin();
+         it!=completionInfo.lineNumbers.end(); ++it)
+      config.writeEntry(it.key(),*it);
+  }
+  config.sync();
 }
 
 TemplatePopup::TemplatePopup(Kate::View *parent)

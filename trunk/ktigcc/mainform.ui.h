@@ -957,6 +957,7 @@ void MainForm::init()
   compiling=FALSE;
   headersModified=FALSE;
   loadPreferences();
+  loadSystemHeaderCompletion();
   fileNewFolderAction->setEnabled(FALSE);
   te_popup = new QPopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
