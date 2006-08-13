@@ -225,7 +225,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
     CompletionInfo &completionInfo=sysHdrCompletion[header];
     QValueList<KTextEditor::CompletionEntry> &entries=completionInfo.entries;
     QDir hdrQdir(QFileInfo(qdir,header).filePath());
-    QStringList hsfs=hdrQdir.entryList("*.hsf",QDir::Files);
+    QStringList hsfs=hdrQdir.entryList("*.hsf *.ref",QDir::Files);
     for (QStringList::ConstIterator it=hsfs.begin(); it!=hsfs.end(); ++it) {
       const QString &hsf=*it;
       QString fileText=loadFileText(QFileInfo(hdrQdir,hsf).filePath());
@@ -233,6 +233,18 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
         KMessageBox::error(parent,QString("Can't open \'%1/%2\'.").arg(header)
                                                                   .arg(hsf));
         return false;
+      }
+      if (hsf.endsWith(".ref")) {
+        QString realHeader=fileText.stripWhiteSpace();
+        QDir realHdrQdir(QFileInfo(qdir,realHeader).filePath());
+        QString realHsf=hsf;
+        realHsf.replace(realHsf.length()-3,3,"hsf");
+        fileText=loadFileText(QFileInfo(realHdrQdir,realHsf).filePath());
+        if (fileText.isNull()) {
+          KMessageBox::error(parent,QString("Can't open \'%1/%2\'.").arg(realHeader)
+                                                                    .arg(realHsf));
+          return false;
+        }
       }
       KTextEditor::CompletionEntry entry;
       QStringList lines=QStringList::split('\n',fileText,TRUE);
