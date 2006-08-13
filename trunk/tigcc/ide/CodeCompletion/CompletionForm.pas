@@ -570,7 +570,7 @@ begin
 		end;
 		Key := NewKey;
 	end
-	else if (ssCtrl in Shift) and (Key = VK_SPACE) then
+	else if (ssCtrl in Shift) and ((Key = VK_SPACE) or (Key = Ord('M'))) then
 	begin
 		Key := 0;
 		StopKey := True;
