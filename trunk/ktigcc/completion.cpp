@@ -303,27 +303,47 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
       if (isType) {
         for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
           const QString &line=*it;
-          if (line.startsWith("SubType=") || (line[0]=='[' && line!="[Main]")) {
-            if (line=="SubType=Enumeration") {
+          if (line.startsWith("Subtype=") || (line[0]=='[' && line!="[Main]")) {
+            if (line=="Subtype=Enumeration") {
               int pos1=definition.find('{');
               if (pos1>=0) {
-                QString left=definition.left(pos1);
+                QString left=definition.left(pos1).stripWhiteSpace();
                 int pos2=definition.find('}',++pos1);
                 if (pos2>=0) {
-                  QStringList enumItems=QStringList::split(',',definition
-                                                               .mid(pos1,pos2-pos1));
-                  for (QStringList::ConstIterator it=enumItems.begin();
-                       it!=enumItems.end(); ++it) {
-                    const QString &enumItem=*it;
-                    KTextEditor::CompletionEntry enumEntry;
-                    int pos=enumItem.find('=');
-                    if (pos>=0) {
-                      enumEntry.text=enumItem.left(pos);
-                      enumEntry.postfix=enumItem.mid(pos+1);
-                    } else enumEntry.text=enumItem;
-                    enumEntry.prefix=left;
-                    enumEntry.comment=description;
-                    entries.append(enumEntry);
+                  QString itemList=definition.mid(pos1,pos2-pos1);
+                  if (itemList=="...") {
+                    for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
+                      const QString &line=*it;
+                      if (line.startsWith("Real Definition=")) {
+                        QString realDefinition=line.mid(16);
+                        pos1=realDefinition.find('{');
+                        if (pos1>=0) {
+                          left=realDefinition.left(pos1).stripWhiteSpace();
+                          pos2=realDefinition.find('}',++pos1);
+                          if (pos2>=0) {
+                            itemList=realDefinition.mid(pos1,pos2-pos1);
+                            goto foundDefinition;
+                          }
+                        }
+                        break;
+                      }
+                    }
+                  } else {
+                    foundDefinition:
+                    QStringList enumItems=QStringList::split(',',itemList);
+                    for (QStringList::ConstIterator it=enumItems.begin();
+                         it!=enumItems.end(); ++it) {
+                      const QString &enumItem=*it;
+                      KTextEditor::CompletionEntry enumEntry;
+                      int pos=enumItem.find('=');
+                      if (pos>=0) {
+                        enumEntry.text=enumItem.left(pos).stripWhiteSpace();
+                        enumEntry.postfix=enumItem.mid(pos+1).stripWhiteSpace();
+                      } else enumEntry.text=enumItem.stripWhiteSpace();
+                      enumEntry.prefix=left;
+                      enumEntry.comment=description;
+                      entries.append(enumEntry);
+                    }
                   }
                 }
               }
