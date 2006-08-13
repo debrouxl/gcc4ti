@@ -35,7 +35,6 @@
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qdragobject.h>
-#include <qassistantclient.h>
 #include <qdir.h>
 #include <qclipboard.h>
 #include <qaccel.h>
@@ -73,6 +72,7 @@
 #include "srcfile.h"
 #include "functions.h"
 #include "completion.h"
+#include "assistant.h"
 
 using std::puts;
 using std::exit;
@@ -347,10 +347,8 @@ void SourceFileWindow::accel_activated(int index)
         if (wordUnderCursor.isEmpty()) return;
         QString docFile=lookup_doc_keyword(wordUnderCursor);
         if (docFile.isEmpty()) return;
-        // wait for Qt Assistant to actually open
-        while (!assistant->isOpen())
-          QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
-        assistant->showPage(QString(tigcc_base)+QString("/doc/html/")+docFile);
+        assistant->openAssistant(
+          QString(tigcc_base)+QString("/doc/html/")+docFile);
         break;
       }
       case 6:

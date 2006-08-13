@@ -3,7 +3,7 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on debug
 
-LIBS	+= -lktexteditor -lqassistantclient -lkutils
+LIBS	+= -lktexteditor -lkutils
 
 HEADERS	+= tpr.h \
 	ktigcc.h \
@@ -14,7 +14,8 @@ HEADERS	+= tpr.h \
 	callbacks.h \
 	parsing.h \
 	colorlistitem.h \
-	completion.h
+	completion.h \
+	assistant.h
 
 SOURCES	+= ktigcc.cpp \
 	preferences.cpp \
@@ -22,7 +23,8 @@ SOURCES	+= ktigcc.cpp \
 	tiemu_stub.cpp \
 	callbacks.cpp \
 	parsing.cpp \
-	completion.cpp
+	completion.cpp \
+	assistant.cpp
 
 FORMS	= srcfilewin.ui \
 	projectoptions.ui \
@@ -95,10 +97,6 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-}
-
-!exists($$QMAKE_INCDIR_QT/qassistantclient.h) {
-  error("Qt Assistant 3 headers required, try installing qt3-apps-dev.")
 }
 
 KDEPREFIX = $$system(kde-config --prefix)

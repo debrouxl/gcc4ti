@@ -25,7 +25,7 @@
 #include <kaboutdata.h>
 #include <qstring.h>
 #include <qvaluevector.h>
-class QAssistantClient;
+class AssistantClient;
 class QClipboard;
 class SourceFile;
 typedef struct tprsettings tprSettings;
@@ -45,7 +45,7 @@ const char *lookup_doc_keyword(const char *keyword);
 extern KConfig *pconfig;
 extern KAboutData *pabout;
 extern const char *parg;
-extern QAssistantClient *assistant;
+extern AssistantClient *assistant;
 extern QClipboard *clipboard;
 extern QPtrList<SourceFile> sourceFiles;
 extern tprSettings settings;
