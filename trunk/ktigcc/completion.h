@@ -74,3 +74,15 @@ class TemplatePopup : public QPopupMenu {
   private:
     Kate::View *view;
 };
+
+class CompletionPopup : public QObject {
+  Q_OBJECT
+
+  public:
+    CompletionPopup(Kate::View *parent, const QString &fileName,
+                    MainForm *mainForm, QObject *receiver);
+    virtual ~CompletionPopup() {}
+
+  signals:
+    void closed();
+};

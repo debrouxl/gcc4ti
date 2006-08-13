@@ -224,6 +224,8 @@ void SourceFileWindow::initBase()
   THIS->accel->insertItem(Key_Enter,6);
   THIS->accel->insertItem(Key_Return,7);
   THIS->accel->insertItem(CTRL+Key_J,8);
+  THIS->accel->insertItem(CTRL+Key_Space,9);
+  THIS->accel->insertItem(CTRL+Key_M,10);
   THIS->accel->setItemEnabled(0,!!(CURRENT_VIEW->getDoc()->undoCount()));
   THIS->accel->setItemEnabled(1,!!(CURRENT_VIEW->getDoc()->redoCount()));
   THIS->accel->setItemEnabled(2,CURRENT_VIEW->getDoc()->hasSelection());
@@ -233,6 +235,8 @@ void SourceFileWindow::initBase()
   THIS->accel->setItemEnabled(6,TRUE);
   THIS->accel->setItemEnabled(7,TRUE);
   THIS->accel->setItemEnabled(8,TRUE);
+  THIS->accel->setItemEnabled(9,TRUE);
+  THIS->accel->setItemEnabled(10,TRUE);
   connect(THIS->accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
@@ -357,12 +361,26 @@ void SourceFileWindow::accel_activated(int index)
       case 8:
         new TemplatePopup(CURRENT_VIEW);
         break;
+      case 9:
+      case 10:
+        // Disable newLineHook.
+        THIS->accel->setItemEnabled(6,FALSE);
+        THIS->accel->setItemEnabled(7,FALSE);
+        new CompletionPopup(CURRENT_VIEW,THIS->fileName,THIS->mainForm,this);
+        break;
       default: break;
     }
   } else if (index == 6 || index == 7) {
     QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Key_Return,'\n',0,"\n");
     QApplication::postEvent(focusWidget(),keyEvent);
   }
+}
+
+void SourceFileWindow::completionPopup_closed()
+{
+  // Restore newLineHook.
+  THIS->accel->setItemEnabled(6,TRUE);
+  THIS->accel->setItemEnabled(7,TRUE);
 }
 
 void *SourceFileWindow::createView(const QString &fileName, const QString &fileText, const QString &hlModeName, unsigned tabWidth)

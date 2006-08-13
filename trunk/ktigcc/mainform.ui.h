@@ -1305,7 +1305,13 @@ void MainForm::accel_activated(int index)
         break;
       case 9:
       case 10:
-        // TODO: completion
+        if (IS_FILE(currentListItem)
+            && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView) {
+          // Disable newLineHook.
+          accel->setItemEnabled(6,FALSE);
+          accel->setItemEnabled(7,FALSE);
+          new CompletionPopup(CURRENT_VIEW,pathInProject(currentListItem),this,this);
+        }
         break;
       case 11: // next file
       case 12:
@@ -1347,6 +1353,18 @@ void MainForm::accel_activated(int index)
       case 12: goto case_11;
       case 13: goto case_13;
       default: break;
+    }
+  }
+}
+
+void MainForm::completionPopup_closed()
+{
+  if (IS_FILE(currentListItem)) {
+    CATEGORY_OF(category,currentListItem->parent());
+    if (IS_EDITABLE_CATEGORY(category)) {
+      // Restore newLineHook.
+      accel->setItemEnabled(6,TRUE);
+      accel->setItemEnabled(7,TRUE);
     }
   }
 }
@@ -5221,6 +5239,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(6,FALSE);
     accel->setItemEnabled(7,FALSE);
     accel->setItemEnabled(8,FALSE);
+    accel->setItemEnabled(9,FALSE);
+    accel->setItemEnabled(10,FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
@@ -5258,6 +5278,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(6,TRUE);
       accel->setItemEnabled(7,TRUE);
       accel->setItemEnabled(8,TRUE);
+      accel->setItemEnabled(9,TRUE);
+      accel->setItemEnabled(10,TRUE);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -5282,6 +5304,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(6,FALSE);
       accel->setItemEnabled(7,FALSE);
       accel->setItemEnabled(8,FALSE);
+      accel->setItemEnabled(9,FALSE);
+      accel->setItemEnabled(10,FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -5308,6 +5332,8 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(6,FALSE);
     accel->setItemEnabled(7,FALSE);
     accel->setItemEnabled(8,FALSE);
+    accel->setItemEnabled(9,FALSE);
+    accel->setItemEnabled(10,FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();

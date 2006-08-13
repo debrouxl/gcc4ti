@@ -195,6 +195,22 @@ bool completionEntriesForFile(const QString &fileText,
   return completionEntriesForFileRecursive(fileText,fileName,mainForm,result);
 }
 
+static QValueList<KTextEditor::CompletionEntry> sortCompletionEntries(
+  const QValueList<KTextEditor::CompletionEntry> &entries)
+{
+  QMap<QString,QValueList<KTextEditor::CompletionEntry> > map;
+  for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+       it!=entries.end(); ++it) {
+    const KTextEditor::CompletionEntry &entry=*it;
+    map[entry.text].append(entry);
+  }
+  QValueList<KTextEditor::CompletionEntry> result;
+  for (QMap<QString,QValueList<KTextEditor::CompletionEntry> >::ConstIterator
+       it=map.begin(); it!=map.end(); ++it)
+    mergeCompletionEntries(result,*it);
+  return result;
+}
+
 bool parseHelpSources(QWidget *parent, const QString &directory,
                       QMap<QString,CompletionInfo> &sysHdrCompletion)
 {
@@ -320,4 +336,34 @@ void TemplatePopup::QPopupMenu_activated(int id)
     editExt->editEnd();
     view->setCursorPositionReal(row,col);
   } else view->insertText(code);
+}
+
+CompletionPopup::CompletionPopup(Kate::View *parent, const QString &fileName,
+                                 MainForm *mainForm, QObject *receiver)
+  : QObject(parent)
+{
+  connect(this,SIGNAL(closed()),receiver,SLOT(completionPopup_closed()));
+  QValueList<KTextEditor::CompletionEntry> entries;
+  if (!completionEntriesForFile(parent->getDoc()->text(),fileName,mainForm,
+                                entries)) {
+    emit closed();
+    deleteLater();
+    return;
+  }
+  entries=sortCompletionEntries(entries);
+  unsigned column=parent->cursorColumnReal();
+  int offset=0;
+  if (column) {
+    QString textLine=parent->currentTextLine();
+    if (column<=textLine.length()) {
+      while (column && (textLine[--column].isLetterOrNumber()
+                        || textLine[column]=='_' || textLine[column]=='$'))
+        offset++;
+    }
+  }
+  connect(parent,SIGNAL(completionAborted()),this,SLOT(deleteLater()));
+  connect(parent,SIGNAL(completionAborted()),this,SIGNAL(closed()));
+  connect(parent,SIGNAL(completionDone()),this,SLOT(deleteLater()));
+  connect(parent,SIGNAL(completionDone()),this,SIGNAL(closed()));
+  parent->showCompletionBox(entries,offset);
 }
