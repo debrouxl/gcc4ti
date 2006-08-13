@@ -116,10 +116,9 @@ SourceFileFunctions getASMFunctions(const QString &text)
 }
 
 CompletionInfo parseFileCompletion(const QString &fileText,
-                                   const QString &pathInProject)
+                                   const QString &pathInProject,
+                                   CompletionInfo result)
 {
-  CompletionInfo result;
-
   // Parse included files.
   // Empty lines can be ignored here.
   QStringList lines=QStringList::split('\n',fileText);

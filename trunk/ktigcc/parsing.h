@@ -50,4 +50,5 @@ SourceFileFunctions getASMFunctions(const QString &text);
 #define getFunctions(text,isasm) (((isasm)?getASMFunctions:getCFunctions)((text)))
 
 CompletionInfo parseFileCompletion(const QString &fileText,
-                                   const QString &pathInProject);
+                                   const QString &pathInProject,
+                                   CompletionInfo existing=CompletionInfo());

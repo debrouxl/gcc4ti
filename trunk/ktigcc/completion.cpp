@@ -218,7 +218,118 @@ static QValueList<KTextEditor::CompletionEntry> sortCompletionEntries(
 bool parseHelpSources(QWidget *parent, const QString &directory,
                       QMap<QString,CompletionInfo> &sysHdrCompletion)
 {
-  return true; // TODO
+  QDir qdir(directory);
+  QStringList headers=qdir.entryList("*.h",QDir::Dirs);
+  for (QStringList::ConstIterator it=headers.begin(); it!=headers.end(); ++it) {
+    const QString &header=*it;
+    CompletionInfo &completionInfo=sysHdrCompletion[header];
+    QValueList<KTextEditor::CompletionEntry> &entries=completionInfo.entries;
+    QDir hdrQdir(QFileInfo(qdir,header).filePath());
+    QStringList hsfs=hdrQdir.entryList("*.hsf",QDir::Files);
+    for (QStringList::ConstIterator it=hsfs.begin(); it!=hsfs.end(); ++it) {
+      const QString &hsf=*it;
+      QString fileText=loadFileText(QFileInfo(hdrQdir,hsf).filePath());
+      if (fileText.isNull()) {
+        KMessageBox::error(parent,QString("Can't open \'%1/%2\'.").arg(header)
+                                                                  .arg(hsf));
+        return false;
+      }
+      KTextEditor::CompletionEntry entry;
+      QStringList lines=QStringList::split('\n',fileText);
+      for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
+        const QString &line=*it;
+        if (line.startsWith("Name=")) {
+          entry.text=line.mid(5);
+          break;
+        }
+      }
+      bool isType=false;
+      for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
+        const QString &line=*it;
+        if (line.startsWith("Type=")) {
+          QString hsfType=line.mid(5);
+          if (hsfType=="Type") isType=true;
+          entry.prefix=isType?"type"
+                       :(hsfType=="Function")?"func"
+                       :(hsfType=="Constant")?"const"
+                       :(hsfType=="Variable")?"var":hsfType;
+          break;
+        }
+      }
+      QRegExp comments("/\\*.*\\*/");
+      comments.setMinimal(true);
+      QString definition;
+      for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
+        const QString &line=*it;
+        if (line.startsWith("Definition=")) {
+          definition=line.mid(11);
+          int pos=definition.find(entry.text);
+          QString left=(pos>=0)?definition.left(pos).stripWhiteSpace()
+                               :QString::null;
+          QString right;
+          if (left.startsWith("typedef")) {
+            entry.postfix=left.mid(8);
+            left=QString::null;
+          } else if (left=="unknown_retval") left="?";
+          else if (left=="#define") left=QString::null;
+          left.remove(comments);
+          if (!left.isEmpty()) {
+            left.prepend(' ');
+            entry.prefix+=left;
+          }
+          entry.postfix+=definition.mid(pos+entry.text.length()).stripWhiteSpace();
+          break;
+        }
+      }
+      QStringList::ConstIterator desc=lines.find("[Description]");
+      QString description;
+      if (desc!=lines.end() && ++desc!=lines.end()) description=*desc;
+      description.remove(QRegExp("<A [^>]*>",FALSE)).remove("</A>",FALSE);
+      entry.comment=description;
+      if (isType) {
+        for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
+          const QString &line=*it;
+          if (line.startsWith("SubType=") || (line[0]=='[' && line!="[Main]")) {
+            if (line=="SubType=Enumeration") {
+              int pos1=definition.find('{');
+              if (pos1>=0) {
+                QString left=definition.left(pos1);
+                int pos2=definition.find('}',++pos1);
+                if (pos2>=0) {
+                  QStringList enumItems=QStringList::split(',',definition
+                                                               .mid(pos1,pos2-pos1));
+                  for (QStringList::ConstIterator it=enumItems.begin();
+                       it!=enumItems.end(); ++it) {
+                    const QString &enumItem=*it;
+                    KTextEditor::CompletionEntry enumEntry;
+                    int pos=enumItem.find('=');
+                    if (pos>=0) {
+                      enumEntry.text=enumItem.left(pos);
+                      enumEntry.postfix=enumItem.mid(pos+1);
+                    } else enumEntry.text=enumItem;
+                    enumEntry.prefix=left;
+                    enumEntry.comment=description;
+                    entries.append(enumEntry);
+                  }
+                }
+              }
+            }
+            break;
+          }
+        }
+      }
+      if (entry.text.stripWhiteSpace().isEmpty()) {
+        // No function name, so use HSF name. Can happen for _ROM_CALL_*.
+        if (!hsf.startsWith("_ROM_CALL_"))
+          KMessageBox::sorry(parent,QString("No name found in %1/%2").arg(header)
+                                                                     .arg(hsf),
+                             "Warning");
+        entry.text=hsf.left(hsf.length()-4);
+      }
+      entries.append(entry);
+    }
+  }
+  return true;
 }
 
 bool parseSystemHeaders(QWidget *parent, const QString &directory,
@@ -233,7 +344,8 @@ bool parseSystemHeaders(QWidget *parent, const QString &directory,
       KMessageBox::error(parent,QString("Can't open \'%1\'.").arg(header));
       return false;
     }
-    sysHdrCompletion[header]=parseFileCompletion(fileText,QString::null);
+    sysHdrCompletion[header]=parseFileCompletion(fileText,QString::null,
+                                                 sysHdrCompletion[header]);
     if (sysHdrCompletion[header].dirty) return false;
   }
   return true;
