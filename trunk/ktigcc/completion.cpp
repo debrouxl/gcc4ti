@@ -206,7 +206,8 @@ static QValueList<KTextEditor::CompletionEntry> sortCompletionEntries(
   for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
        it!=entries.end(); ++it) {
     const KTextEditor::CompletionEntry &entry=*it;
-    map[entry.text].append(entry);
+    QValueList<KTextEditor::CompletionEntry> &list=map[entry.text];
+    if (list.find(entry)==list.end()) list.append(entry);
   }
   QValueList<KTextEditor::CompletionEntry> result;
   for (QMap<QString,QValueList<KTextEditor::CompletionEntry> >::ConstIterator
