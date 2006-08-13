@@ -276,21 +276,21 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
         const QString &line=*it;
         if (line.startsWith("Definition=")) {
           definition=line.mid(11);
+          definition.remove(comments);
           int pos=definition.find(entry.text);
           QString left=(pos>=0)?definition.left(pos).stripWhiteSpace()
                                :QString::null;
           QString right;
           if (left.startsWith("typedef")) {
-            entry.postfix=left.mid(8);
+            entry.postfix=left.mid(8).simplifyWhiteSpace();
             left=QString::null;
           } else if (left=="unknown_retval") left="?";
           else if (left=="#define") left=QString::null;
-          left.remove(comments);
           if (!left.isEmpty()) {
             left.prepend(' ');
             entry.prefix+=left;
           }
-          entry.postfix+=definition.mid(pos+entry.text.length()).stripWhiteSpace();
+          entry.postfix+=definition.mid(pos+entry.text.length()).simplifyWhiteSpace();
           break;
         }
       }
@@ -316,6 +316,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
                       const QString &line=*it;
                       if (line.startsWith("Real Definition=")) {
                         QString realDefinition=line.mid(16);
+                        realDefinition.remove(comments);
                         pos1=realDefinition.find('{');
                         if (pos1>=0) {
                           left=realDefinition.left(pos1).stripWhiteSpace();
