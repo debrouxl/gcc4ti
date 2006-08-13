@@ -5043,7 +5043,7 @@ begin
 			TransferTarget := ttVTI;
 		SavePreferences;
 		UpdateDebugSettings;
-	end else if ((Key = vk_Tab) or (Key = Ord('E'))) and (Shift = [ssCtrl]) then begin
+	end else if ((Key = vk_Tab) or (Key = Ord('G'))) and (Shift = [ssCtrl]) then begin
 		NewSelection := ProjectTree.Selected;
 		if Assigned (NewSelection) then begin
 			repeat

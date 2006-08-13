@@ -1088,7 +1088,7 @@ void MainForm::init()
   accel->setItemEnabled(10,FALSE);
   accel->insertItem(CTRL+Key_Tab,11);
   accel->setItemEnabled(11,TRUE);
-  accel->insertItem(CTRL+Key_E,12);
+  accel->insertItem(CTRL+Key_G,12);
   accel->setItemEnabled(12,TRUE);
   accel->insertItem(SHIFT+CTRL+ALT+Key_F9,13);
   accel->setItemEnabled(13,TRUE);
