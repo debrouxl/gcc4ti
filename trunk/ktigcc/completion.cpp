@@ -390,6 +390,19 @@ void loadSystemHeaderCompletion(void)
 {
   KConfig config("ktigcc/completion",true,false,"data");
   QStringList groupList=config.groupList();
+  if (groupList.isEmpty()) {
+    KMessageBox::queuedMessageBox(0,KMessageBox::Sorry,
+      "<p>No completion data found for TIGCCLIB headers. KTIGCC will not be "
+      "able to show completion entries for system headers. You have 2 options "
+      "to fix this:</p>"
+      "<p>1. Download ktigcc-completion-data from "
+      "<a href=\"http://sourceforge.net/project/showfiles.php?group_id=31034"
+      "&amp;package_id=200501\">http://sourceforge.net/project/showfiles.php?"
+      "group_id=31034&amp;package_id=200501</a> (recommended).</p>"
+      "<p>2. Regenerate the data yourself through File/Preferences/Coding "
+      "(TIGCC source code required).</p>","No Completion Data",
+      KMessageBox::Notify|KMessageBox::AllowLink);
+  }
   systemHeaderCompletion.clear();
   for (QStringList::ConstIterator it=groupList.begin(); it!=groupList.end(); ++it) {
     const QString &key=*it;
