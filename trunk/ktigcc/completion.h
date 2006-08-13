@@ -75,6 +75,8 @@ class TemplatePopup : public QPopupMenu {
     Kate::View *view;
 };
 
+class QEvent;
+class QWidget;
 class CompletionPopup : public QObject {
   Q_OBJECT
 
@@ -82,7 +84,13 @@ class CompletionPopup : public QObject {
     CompletionPopup(Kate::View *parent, const QString &fileName,
                     MainForm *mainForm, QObject *receiver);
     virtual ~CompletionPopup() {}
-
+  private slots:
+    void slotDone();
   signals:
     void closed();
+  protected:
+    bool eventFilter(QObject *o, QEvent *e);
+  private:
+    bool done;
+    QWidget *completionPopup;
 };

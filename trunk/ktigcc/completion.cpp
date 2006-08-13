@@ -25,6 +25,10 @@
 #include <qregexp.h>
 #include <qfileinfo.h>
 #include <qdir.h>
+#include <qapplication.h>
+#include <qwidget.h>
+#include <qwidgetlist.h>
+#include <qevent.h>
 #include <kmessagebox.h>
 #include <kate/view.h>
 #include <kate/document.h>
@@ -340,7 +344,7 @@ void TemplatePopup::QPopupMenu_activated(int id)
 
 CompletionPopup::CompletionPopup(Kate::View *parent, const QString &fileName,
                                  MainForm *mainForm, QObject *receiver)
-  : QObject(parent)
+  : QObject(parent), done(false), completionPopup(0)
 {
   connect(this,SIGNAL(closed()),receiver,SLOT(completionPopup_closed()));
   QValueList<KTextEditor::CompletionEntry> entries;
@@ -361,9 +365,40 @@ CompletionPopup::CompletionPopup(Kate::View *parent, const QString &fileName,
         offset++;
     }
   }
-  connect(parent,SIGNAL(completionAborted()),this,SLOT(deleteLater()));
-  connect(parent,SIGNAL(completionAborted()),this,SIGNAL(closed()));
-  connect(parent,SIGNAL(completionDone()),this,SLOT(deleteLater()));
-  connect(parent,SIGNAL(completionDone()),this,SIGNAL(closed()));
+  connect(parent,SIGNAL(completionAborted()),this,SLOT(slotDone()));
+  connect(parent,SIGNAL(completionDone()),this,SLOT(slotDone()));
   parent->showCompletionBox(entries,offset);
+  // Unfortunately, Kate doesn't always send the completionAborted or
+  // completionDone event when it closes its popup. Work around that.
+  QWidgetList *list=QApplication::topLevelWidgets();
+  QWidgetListIt it(*list);
+  while (QWidget *w=it.current()) {
+    ++it;
+    if (w->isVisible() && w->testWFlags(Qt::WType_Popup)) {
+      completionPopup=w;
+      break;      
+    }
+  }
+  delete list;
+  if (completionPopup)
+    completionPopup->installEventFilter(this);
+}
+
+void CompletionPopup::slotDone()
+{
+  if (!done) {
+    done=true;
+    emit closed();
+    deleteLater();
+  }
+}
+
+bool CompletionPopup::eventFilter(QObject *o, QEvent *e)
+{
+  if (!done && o==completionPopup && e->type()==QEvent::Hide) {
+    done=true;
+    emit closed();
+    deleteLater();
+  }
+  return false;
 }
