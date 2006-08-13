@@ -504,13 +504,17 @@ QString loadFileText(const char *fileName)
   size_t flen=ftell(f);
   fseek(f,0,SEEK_SET);
   char *buffer = new(std::nothrow) char[flen+1]();
-  if (!buffer)
+  if (!buffer) {
+    fclose(f);
     return QString::null;
+  }
   QString ret;
   if (fread(buffer,1,flen,f)<flen) {
+    fclose(f);
     delete[] buffer;
     ret=QString::null;
   } else {
+    fclose(f);
     if (preferences.useCalcCharset) {
       unsigned short *utf16=ticonv_charset_ti_to_utf16(CALC_TI89,buffer);
       delete[] buffer;
