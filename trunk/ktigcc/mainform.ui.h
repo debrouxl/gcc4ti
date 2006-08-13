@@ -1310,7 +1310,7 @@ void MainForm::accel_activated(int index)
           QString fileText=CURRENT_VIEW->getDoc()->text();
           CATEGORY_OF(category,currentListItem);
           // Completion only operates on C files.
-          if (category==cFilesListItem
+          if (category==cFilesListItem || category==qllFilesListItem
               || (category==hFilesListItem && fileText[0]!='|' && fileText[0]!=';')) {
             // Disable newLineHook.
             accel->setItemEnabled(6,FALSE);
@@ -3431,7 +3431,7 @@ void MainForm::findFindSymbolDeclaration()
     QString fileText=CURRENT_VIEW->getDoc()->text();
     CATEGORY_OF(category,currentListItem);
     // "Find symbol declaration" only operates on C files.
-    if (category==cFilesListItem
+    if (category==cFilesListItem || category==qllFilesListItem
         || (category==hFilesListItem && fileText[0]!='|' && fileText[0]!=';')) {
       QString fileName=pathInProject(currentListItem);
       QString symbolFile;
