@@ -1082,6 +1082,16 @@ void MainForm::init()
   accel->setItemEnabled(7,FALSE);
   accel->insertItem(CTRL+Key_J,8);
   accel->setItemEnabled(8,FALSE);
+  accel->insertItem(CTRL+Key_Space,9);
+  accel->setItemEnabled(9,FALSE);
+  accel->insertItem(CTRL+Key_M,10);
+  accel->setItemEnabled(10,FALSE);
+  accel->insertItem(CTRL+Key_Tab,11);
+  accel->setItemEnabled(11,TRUE);
+  accel->insertItem(CTRL+Key_E,12);
+  accel->setItemEnabled(12,TRUE);
+  accel->insertItem(SHIFT+CTRL+ALT+Key_F9,13);
+  accel->setItemEnabled(13,TRUE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   fileTreeAccel=new QAccel(this);
   fileTreeAccel->insertItem(Key_Delete,0);
@@ -1293,11 +1303,51 @@ void MainForm::accel_activated(int index)
       case 8:
         new TemplatePopup(CURRENT_VIEW);
         break;
+      case 9:
+      case 10:
+        // TODO: completion
+        break;
+      case 11: // next file
+      case 12:
+      case_11:
+      {
+        QListViewItem *item=currentListItem;
+        if (item) item=item->itemBelow();
+        if (!item) item=rootListItem;
+        fileTreeClicked(item);
+        if (CURRENT_VIEW) CURRENT_VIEW->setFocus();
+        break;
+      }
+      case 13: // switch transfer target
+      case_13:
+      {
+        preferences.linkTarget=(preferences.linkTarget==LT_TIEMU)?LT_REALCALC:LT_TIEMU;
+        savePreferences();
+        // Apply the preferences to the debug menu.
+        debugPauseAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
+        debugResetAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
+        bool runnable=!settings.archive&&!settings.flash_os&&preferences.linkTarget!=LT_NONE;
+        menuBar()->setItemVisible(5,runnable); //debugMenu
+        debugRunAction->setVisible(runnable);
+        debugPauseAction->setVisible(runnable);
+        break;        
+      }
       default: break;
     }
-  } else if (index == 6 || index == 7) {
-    QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Key_Return,'\n',0,"\n");
-    QApplication::postEvent(focusWidget(),keyEvent);
+  } else {
+    switch (index) {
+      case 6:
+      case 7:
+      {
+        QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Key_Return,'\n',0,"\n");
+        QApplication::postEvent(focusWidget(),keyEvent);
+        break;
+      }
+      case 11: goto case_11;
+      case 12: goto case_11;
+      case 13: goto case_13;
+      default: break;
+    }
   }
 }
 
