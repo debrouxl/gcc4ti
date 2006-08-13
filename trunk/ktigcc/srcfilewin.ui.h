@@ -363,10 +363,13 @@ void SourceFileWindow::accel_activated(int index)
         break;
       case 9:
       case 10:
-        // Disable newLineHook.
-        THIS->accel->setItemEnabled(6,FALSE);
-        THIS->accel->setItemEnabled(7,FALSE);
-        new CompletionPopup(CURRENT_VIEW,THIS->fileName,THIS->mainForm,this);
+        // Completion only operates on C files.
+        if (THIS->isCFile) {
+          // Disable newLineHook.
+          THIS->accel->setItemEnabled(6,FALSE);
+          THIS->accel->setItemEnabled(7,FALSE);
+          new CompletionPopup(CURRENT_VIEW,THIS->fileName,THIS->mainForm,this);
+        }
         break;
       default: break;
     }

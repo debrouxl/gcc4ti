@@ -1307,10 +1307,16 @@ void MainForm::accel_activated(int index)
       case 10:
         if (IS_FILE(currentListItem)
             && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView) {
-          // Disable newLineHook.
-          accel->setItemEnabled(6,FALSE);
-          accel->setItemEnabled(7,FALSE);
-          new CompletionPopup(CURRENT_VIEW,pathInProject(currentListItem),this,this);
+          QString fileText=CURRENT_VIEW->getDoc()->text();
+          CATEGORY_OF(category,currentListItem);
+          // Completion only operates on C files.
+          if (category==cFilesListItem
+              || (category==hFilesListItem && fileText[0]!='|' && fileText[0]!=';')) {
+            // Disable newLineHook.
+            accel->setItemEnabled(6,FALSE);
+            accel->setItemEnabled(7,FALSE);
+            new CompletionPopup(CURRENT_VIEW,pathInProject(currentListItem),this,this);
+          }
         }
         break;
       case 11: // next file
