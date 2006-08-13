@@ -49,7 +49,11 @@ AssistantClient::~AssistantClient()
                                                      socket->systemError()),
                        "Socket Error");
   }
-  if (procIO) delete procIO;
+  if (procIO) {
+    procIO->kill();
+    usleep(100000);
+    delete procIO;
+  }
   if (socket) delete socket;
 }
 
@@ -60,6 +64,8 @@ void AssistantClient::openAssistant(const QString &page)
     KMessageBox::error(parentWidget,socket->strError(socketStatus,
                                                      socket->systemError()),
                        "Socket Error");
+    procIO->kill();
+    usleep(100000);
     delete procIO;
     procIO=static_cast<KProcIO *>(NULL);
     return;
@@ -67,6 +73,8 @@ void AssistantClient::openAssistant(const QString &page)
   if (socketStatus>=KExtendedSocket::closing) {
     // The old process is not closed yet, but the connection was already lost.
     // So kill the old process now and run a new one.
+    procIO->kill();
+    usleep(100000);
     delete procIO;
     procIO=static_cast<KProcIO *>(NULL);
     delete socket;
@@ -157,6 +165,8 @@ void AssistantClient::procIO_readReady()
                        this,SLOT(procIO_processExited()));
             disconnect(procIO,SIGNAL(readReady(KProcIO*)),
                        this,SLOT(procIO_readReady()));
+            procIO->kill();
+            usleep(100000);
             procIO->deleteLater();
             procIO=static_cast<KProcIO *>(NULL);
             delete socket;
