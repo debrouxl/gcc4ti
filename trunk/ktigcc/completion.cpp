@@ -235,7 +235,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
         return false;
       }
       KTextEditor::CompletionEntry entry;
-      QStringList lines=QStringList::split('\n',fileText);
+      QStringList lines=QStringList::split('\n',fileText,TRUE);
       for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
         const QString &line=*it;
         if (line.startsWith("Name=")) {
@@ -285,6 +285,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
       QString description;
       if (desc!=lines.end() && ++desc!=lines.end()) description=*desc;
       description.remove(QRegExp("<A [^>]*>",FALSE)).remove("</A>",FALSE);
+      if (description.isEmpty()) description=QString::null;
       entry.comment=description;
       if (isType) {
         for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
