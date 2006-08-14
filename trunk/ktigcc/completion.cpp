@@ -229,6 +229,83 @@ static QStringList prototypesForIdentifier(const QString &identifier,
       if (result.find(prototype)==result.end()) result.append(prototype);
     }
   }
+  if (result.isEmpty()) {
+    // Try approximate matching.
+    unsigned identifierLength=identifier.length();
+    if (identifierLength>=4) {
+      QStringList reservedIdentifiers=QStringList::split('\n',"__alignof__\n"
+                                                              "__asm__\n"
+                                                              "__attribute__\n"
+                                                              "__complex__\n"
+                                                              "__const__\n"
+                                                              "__extension__\n"
+                                                              "__imag__\n"
+                                                              "__inline__\n"
+                                                              "__label__\n"
+                                                              "__real__\n"
+                                                              "__typeof__\n"
+                                                              "asm\n"
+                                                              "auto\n"
+                                                              "break\n"
+                                                              "case\n"
+                                                              "char\n"
+                                                              "const\n"
+                                                              "continue\n"
+                                                              "default\n"
+                                                              "do\n"
+                                                              "double\n"
+                                                              "else\n"
+                                                              "enum\n"
+                                                              "extern\n"
+                                                              "float\n"
+                                                              "for\n"
+                                                              "goto\n"
+                                                              "if\n"
+                                                              "inline\n"
+                                                              "int\n"
+                                                              "long\n"
+                                                              "register\n"
+                                                              "return\n"
+                                                              "short\n"
+                                                              "signed\n"
+                                                              "sizeof\n"
+                                                              "static\n"
+                                                              "struct\n"
+                                                              "switch\n"
+                                                              "typedef\n"
+                                                              "typeof\n"
+                                                              "union\n"
+                                                              "unsigned\n"
+                                                              "void\n"
+                                                              "volatile\n"
+                                                              "while\n");
+      if (!reservedIdentifiers.contains(identifier)) {
+        QString identifierUpper=identifier.upper();
+        QValueList<unsigned> distances;
+        for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+             it!=entries.end(); ++it) {
+          const KTextEditor::CompletionEntry &entry=*it;
+          QString entryText=entry.text;
+          unsigned entryTextLength=entryText.length();
+          unsigned minLength=QMIN(identifierLength,entryTextLength);
+          unsigned i=0;
+          for (; i<minLength && identifierUpper[i]==entryText[i].upper(); i++);
+          unsigned distance=minLength-i;
+          if (distance<=(minLength>>1)) {
+            QString prototype=entryText+"? "+entry.prefix+' '+entry.postfix;
+            if (result.find(prototype)==result.end()) {
+              // Sort by similarity. Smaller distances first.
+              QStringList::Iterator it1=result.begin();
+              QValueList<unsigned>::Iterator it2=distances.begin();
+              for (; it2!=distances.end() && *it2<=distance; ++it1,++it2);
+              result.insert(it1,prototype);
+              distances.insert(it2,distance);
+            }
+          }
+        }
+      }
+    }
+  }
   return result;
 }
 
