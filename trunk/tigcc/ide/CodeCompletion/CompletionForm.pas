@@ -340,7 +340,7 @@ begin
 			end
 			else
 			begin
-				if Similarity(Symbol, List[i - 1]) > Similarity(Symbol, List[i]) then
+				if Similarity(Symbol, List[i - 1]) < Similarity(Symbol, List[i]) then
 					Dec(i);
 				if Similar(Symbol, List[i]) then
 					T := List[i] + ' ?'#13#10
