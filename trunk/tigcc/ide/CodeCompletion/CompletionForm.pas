@@ -286,7 +286,7 @@ begin
 end;
 
 function TCompForm.ShowSymbolInfo(Symbol: string = ''): Boolean;
-	function Similarity(const A, B: string): Integer;
+	function SimilarityDistance(const A, B: string): Integer;
 	var
 		i, l: Integer;
 	begin
@@ -301,7 +301,7 @@ function TCompForm.ShowSymbolInfo(Symbol: string = ''): Boolean;
 		l: Integer;
 	begin
 		l := Min(Length(A), Length(B));
-		Result := Similarity(A, B) < (l shr 1);
+		Result := SimilarityDistance(A, B) < (l shr 1);
 	end;
 var
 	M: TMemoComponent;
@@ -340,7 +340,7 @@ begin
 			end
 			else
 			begin
-				if Similarity(Symbol, List[i - 1]) < Similarity(Symbol, List[i]) then
+				if SimilarityDistance(Symbol, List[i - 1]) < SimilarityDistance(Symbol, List[i]) then
 					Dec(i);
 				if Similar(Symbol, List[i]) then
 					T := List[i] + ' ?'#13#10
