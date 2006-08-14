@@ -40,6 +40,7 @@
 #include <qapplication.h>
 #include <qeventloop.h>
 #include <qcursor.h>
+#include <qstringlist.h>
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>
@@ -57,6 +58,15 @@
 #include "customstyle.h"
 #include "wordlist.h"
 #include "completion.h"
+
+// No idea why krecentdirs.h is not installed (KRecentDirs is an exported
+// class), but KRecentDirs only has these 3 static methods anyway.
+class KRecentDirs {
+  public:
+    static QStringList list(const QString &fileClass);
+    static QString dir(const QString &fileClass);
+    static void add(const QString &fileClass, const QString &directory);
+};
 
 class RenamableKListViewItem : public KListViewItem {
   public:
@@ -727,8 +737,11 @@ void Preferences::regenCompletionInfoButton_clicked()
     return;
   }
   setCursor(QCursor());
-  dirName=KFileDialog::getExistingDirectory(QString("%1/include/c/")
-    .arg(tigcc_base),this,"Pick C Header (include/c) Folder");
+  // There is always at least one recent directory: the home directory.
+  if (KRecentDirs::list(":IncludeC").count()==1)
+    KRecentDirs::add(":IncludeC",QString("%1/include/c/").arg(tigcc_base));
+  dirName=KFileDialog::getExistingDirectory(":IncludeC",this,
+    "Pick C Header (include/c) Folder");
   if (dirName.isEmpty()) return;
   setCursor(KCursor::waitCursor());
   if (!parseSystemHeaders(this,dirName,sysHdrCompletion)) {
