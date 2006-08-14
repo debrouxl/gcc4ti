@@ -3632,8 +3632,6 @@ void MainForm::startCompiling()
   projectAddFilesAction->setEnabled(FALSE);
   projectCompileAction->setVisible(FALSE);
   projectMakeAction->setVisible(FALSE);
-  accel->setItemEnabled(15,FALSE);
-  accel->setItemEnabled(16,FALSE);
   projectBuildAction->setVisible(FALSE);
   projectCompileAction->setEnabled(FALSE);
   accel->setItemEnabled(15,FALSE);
