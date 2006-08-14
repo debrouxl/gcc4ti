@@ -94,3 +94,19 @@ class CompletionPopup : public QObject {
     bool done;
     QWidget *completionPopup;
 };
+
+class ArgHintPopup : public QObject {
+  Q_OBJECT
+
+  public:
+    ArgHintPopup(Kate::View *parent, const QString &fileName,
+                 MainForm *mainForm);
+    virtual ~ArgHintPopup() {}
+  private slots:
+    void slotDone();
+  protected:
+    bool eventFilter(QObject *o, QEvent *e);
+  private:
+    bool done;
+    QWidget *argHintPopup;
+};

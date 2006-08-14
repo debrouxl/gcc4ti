@@ -5945,26 +5945,39 @@ void MainForm::current_view_selectionChanged()
 
 void MainForm::current_view_charactersInteractivelyInserted(int line, int col, const QString &characters)
 {
-  if (CURRENT_VIEW && preferences.autoBlocks && !characters.compare("{")
-      && col==CURRENT_VIEW->getDoc()->lineLength(line)-1) {
-    Kate::Document *doc=CURRENT_VIEW->getDoc();
-    CATEGORY_OF(category,currentListItem);
-    QString fileText=doc->text();
-    // Only for C files.
-    if (category==cFilesListItem||category==qllFilesListItem
-        ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
-      QString indent=doc->textLine(line);
-      // Only if the line was all whitespace, otherwise wait for Enter to be
-      // pressed (prevents annoying the user while typing a string or something).
-      if (indent.contains(QRegExp("^\\s*\\{$"))) {
-        indent=indent.remove('{');
-        QString cursorLine=indent+"\t";
-        KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
-        editExt->editBegin();
-        doc->insertLine(line+1,cursorLine);
-        doc->insertLine(line+2,indent+"}");
-        editExt->editEnd();
-        CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
+  if (CURRENT_VIEW) {
+    if (preferences.autoBlocks && characters=="{"
+        && col==CURRENT_VIEW->getDoc()->lineLength(line)-1) {
+      Kate::Document *doc=CURRENT_VIEW->getDoc();
+      CATEGORY_OF(category,currentListItem);
+      QString fileText=doc->text();
+      // Only for C files.
+      if (category==cFilesListItem||category==qllFilesListItem
+          ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
+        QString indent=doc->textLine(line);
+        // Only if the line was all whitespace, otherwise wait for Enter to be
+        // pressed (prevents annoying the user while typing a string or something).
+        if (indent.contains(QRegExp("^\\s*\\{$"))) {
+          indent=indent.remove('{');
+          QString cursorLine=indent+"\t";
+          KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
+          editExt->editBegin();
+          doc->insertLine(line+1,cursorLine);
+          doc->insertLine(line+2,indent+"}");
+          editExt->editEnd();
+          CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
+        }
+      }
+    }
+    if (IS_FILE(currentListItem)
+        && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView
+        && characters=="(") {
+      QString fileText=CURRENT_VIEW->getDoc()->text();
+      CATEGORY_OF(category,currentListItem);
+      // Completion only operates on C files.
+      if (category==cFilesListItem || category==qllFilesListItem
+          || (category==hFilesListItem && fileText[0]!='|' && fileText[0]!=';')) {
+        new ArgHintPopup(CURRENT_VIEW,pathInProject(currentListItem),this);
       }
     }
   }

@@ -1198,26 +1198,31 @@ void SourceFileWindow::current_view_selectionChanged()
 
 void SourceFileWindow::current_view_charactersInteractivelyInserted(int line, int col, const QString &characters)
 {
-  if (CURRENT_VIEW && preferences.autoBlocks && !characters.compare("{")
-      && col==CURRENT_VIEW->getDoc()->lineLength(line)-1) {
-    Kate::Document *doc=CURRENT_VIEW->getDoc();
-    QString fileText=doc->text();
-    // Only for C files.
-    if (THIS->isCFile) {
-      QString indent=doc->textLine(line);
-      // Only if the line was all whitespace, otherwise wait for Enter to be
-      // pressed (prevents annoying the user while typing a string or something).
-      if (indent.contains(QRegExp("^\\s*\\{$"))) {
-        indent=indent.remove('{');
-        QString cursorLine=indent+"\t";
-        KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
-        editExt->editBegin();
-        doc->insertLine(line+1,cursorLine);
-        doc->insertLine(line+2,indent+"}");
-        editExt->editEnd();
-        CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
+  if (CURRENT_VIEW) {
+    if (preferences.autoBlocks && characters=="{"
+        && col==CURRENT_VIEW->getDoc()->lineLength(line)-1) {
+      Kate::Document *doc=CURRENT_VIEW->getDoc();
+      QString fileText=doc->text();
+      // Only for C files.
+      if (THIS->isCFile) {
+        QString indent=doc->textLine(line);
+        // Only if the line was all whitespace, otherwise wait for Enter to be
+        // pressed (prevents annoying the user while typing a string or something).
+        if (indent.contains(QRegExp("^\\s*\\{$"))) {
+          indent=indent.remove('{');
+          QString cursorLine=indent+"\t";
+          KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
+          editExt->editBegin();
+          doc->insertLine(line+1,cursorLine);
+          doc->insertLine(line+2,indent+"}");
+          editExt->editEnd();
+          CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
+        }
       }
     }
+    // Completion only operates on C files.
+    if (characters=="(" && THIS->isCFile)
+      new ArgHintPopup(CURRENT_VIEW,THIS->fileName,THIS->mainForm);
   }
 }
 

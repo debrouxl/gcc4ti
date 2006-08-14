@@ -216,6 +216,21 @@ static QValueList<KTextEditor::CompletionEntry> sortCompletionEntries(
   return result;
 }
 
+static QStringList prototypesForIdentifier(const QString &identifier,
+  const QValueList<KTextEditor::CompletionEntry> &entries)
+{
+  QStringList result;
+  for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+       it!=entries.end(); ++it) {
+    const KTextEditor::CompletionEntry &entry=*it;
+    if (entry.text==identifier) {
+      QString prototype=entry.prefix+' '+entry.text+entry.postfix;
+      if (result.find(prototype)==result.end()) result.append(prototype);
+    }
+  }
+  return result;
+}
+
 bool parseHelpSources(QWidget *parent, const QString &directory,
                       QMap<QString,CompletionInfo> &sysHdrCompletion)
 {
@@ -558,6 +573,63 @@ bool CompletionPopup::eventFilter(QObject *o, QEvent *e)
   if (!done && o==completionPopup && e->type()==QEvent::Hide) {
     done=true;
     emit closed();
+    deleteLater();
+  }
+  return false;
+}
+
+ArgHintPopup::ArgHintPopup(Kate::View *parent, const QString &fileName,
+                           MainForm *mainForm)
+  : QObject(parent), done(false), argHintPopup(0)
+{
+  QValueList<KTextEditor::CompletionEntry> entries;
+  if (!completionEntriesForFile(parent->getDoc()->text(),fileName,mainForm,
+                                entries)) {
+    nothingFound:
+    deleteLater();
+    return;
+  }
+  unsigned column=parent->cursorColumnReal();
+  if (!column || !--column) goto nothingFound;
+  QString textLine=parent->currentTextLine();
+  if (column>textLine.length() || textLine[column]!='(') goto nothingFound;
+  unsigned startColumn=column, endColumn=column;
+  while (column && (textLine[--column].isLetterOrNumber()
+                    || textLine[column]=='_' || textLine[column]=='$'))
+    startColumn--;
+  QString identifier=textLine.mid(startColumn,endColumn-startColumn);
+  QStringList prototypes=prototypesForIdentifier(identifier,entries);
+  if (prototypes.isEmpty()) goto nothingFound;  
+  connect(parent,SIGNAL(argHintHidden()),this,SLOT(slotDone()));
+  parent->showArgHint(prototypes,"()",",");
+  // Unfortunately, Kate doesn't always send the argHintHidden event when it
+  // closes its popup. Work around that.
+  QWidgetList *list=QApplication::topLevelWidgets();
+  QWidgetListIt it(*list);
+  while (QWidget *w=it.current()) {
+    ++it;
+    if (w->isVisible() && w->testWFlags(Qt::WType_Popup)) {
+      argHintPopup=w;
+      break;      
+    }
+  }
+  delete list;
+  if (argHintPopup)
+    argHintPopup->installEventFilter(this);
+}
+
+void ArgHintPopup::slotDone()
+{
+  if (!done) {
+    done=true;
+    deleteLater();
+  }
+}
+
+bool ArgHintPopup::eventFilter(QObject *o, QEvent *e)
+{
+  if (!done && o==argHintPopup && e->type()==QEvent::Hide) {
+    done=true;
     deleteLater();
   }
   return false;
