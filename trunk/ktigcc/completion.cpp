@@ -34,6 +34,7 @@
 #include <kate/document.h>
 #include <ktexteditor/editinterfaceext.h>
 #include <kconfig.h>
+#include <cstring>
 #include "completion.h"
 #include "parsing.h"
 #include "preferences.h"
@@ -549,7 +550,8 @@ CompletionPopup::CompletionPopup(Kate::View *parent, const QString &fileName,
   QWidgetListIt it(*list);
   while (QWidget *w=it.current()) {
     ++it;
-    if (w->isVisible() && w->testWFlags(Qt::WType_Popup)) {
+    if (w->isVisible() && w->testWFlags(Qt::WType_Popup)
+        && !std::strcmp(w->className(),"QVBox")) {
       completionPopup=w;
       break;      
     }
@@ -611,7 +613,8 @@ ArgHintPopup::ArgHintPopup(Kate::View *parent, const QString &fileName,
   QWidgetListIt it(*list);
   while (QWidget *w=it.current()) {
     ++it;
-    if (w->isVisible() && w->testWFlags(Qt::WType_Popup)) {
+    if (w->isVisible() && w->testWFlags(Qt::WType_Popup)
+        && !std::strcmp(w->className(),"KateArgHint")) {
       argHintPopup=w;
       break;      
     }
