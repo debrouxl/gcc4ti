@@ -294,14 +294,14 @@ function TCompForm.ShowSymbolInfo(Symbol: string = ''): Boolean;
 		i := 1;
 		while (i <= l) and (UpCase(A[i]) = UpCase(B[i])) do
 			Inc(i);
-		Result := Abs(i - l);
+		Result := l + 1 - i;
 	end;
 	function Similar(const A, B: string): Boolean;
 	var
 		l: Integer;
 	begin
 		l := Min(Length(A), Length(B));
-		Result := SimilarityDistance(A, B) < (l shr 1);
+		Result := SimilarityDistance(A, B) <= (l shr 1);
 	end;
 var
 	M: TMemoComponent;
