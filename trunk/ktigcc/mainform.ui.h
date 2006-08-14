@@ -1090,6 +1090,12 @@ void MainForm::init()
   accel->setItemEnabled(12,TRUE);
   accel->insertItem(SHIFT+CTRL+ALT+Key_F9,13);
   accel->setItemEnabled(13,TRUE);
+  accel->insertItem(SHIFT+ALT+Key_F8,14);
+  accel->setItemEnabled(14,TRUE);
+  accel->insertItem(CTRL+ALT+Key_F9,15);
+  accel->setItemEnabled(15,TRUE);
+  accel->insertItem(CTRL+Key_F9,16);
+  accel->setItemEnabled(16,TRUE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   fileTreeAccel=new QAccel(this);
   fileTreeAccel->insertItem(Key_Delete,0);
@@ -1327,6 +1333,7 @@ void MainForm::accel_activated(int index)
         break;
       }
       case 13: // switch transfer target
+      case 14:
       case_13:
       {
         preferences.linkTarget=(preferences.linkTarget==LT_TIEMU)?LT_REALCALC:LT_TIEMU;
@@ -1340,6 +1347,8 @@ void MainForm::accel_activated(int index)
         debugPauseAction->setVisible(runnable);
         break;        
       }
+      case 15: projectCompile(); break;
+      case 16: projectMake(); break;
       default: break;
     }
   } else {
@@ -1354,6 +1363,9 @@ void MainForm::accel_activated(int index)
       case 11: goto case_11;
       case 12: goto case_11;
       case 13: goto case_13;
+      case 14: goto case_13;
+      case 15: projectCompile(); break;
+      case 16: projectMake(); break;
       default: break;
     }
   }
@@ -3620,9 +3632,13 @@ void MainForm::startCompiling()
   projectAddFilesAction->setEnabled(FALSE);
   projectCompileAction->setVisible(FALSE);
   projectMakeAction->setVisible(FALSE);
+  accel->setItemEnabled(15,FALSE);
+  accel->setItemEnabled(16,FALSE);
   projectBuildAction->setVisible(FALSE);
   projectCompileAction->setEnabled(FALSE);
+  accel->setItemEnabled(15,FALSE);
   projectMakeAction->setEnabled(FALSE);
+  accel->setItemEnabled(16,FALSE);
   projectBuildAction->setEnabled(FALSE);
   projectStopCompilationAction->setEnabled(TRUE);
   projectForceQuitAction->setEnabled(TRUE);
@@ -3705,7 +3721,9 @@ void MainForm::stopCompiling()
   projectStopCompilationAction->setEnabled(FALSE);
   projectForceQuitAction->setEnabled(FALSE);
   projectCompileAction->setEnabled(TRUE);
+  accel->setItemEnabled(15,TRUE);
   projectMakeAction->setEnabled(TRUE);
+  accel->setItemEnabled(16,TRUE);
   projectBuildAction->setEnabled(TRUE);
   projectCompileAction->setVisible(TRUE);
   projectMakeAction->setVisible(TRUE);
