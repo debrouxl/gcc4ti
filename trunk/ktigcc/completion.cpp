@@ -593,10 +593,13 @@ ArgHintPopup::ArgHintPopup(Kate::View *parent, const QString &fileName,
   if (!column || !--column) goto nothingFound;
   QString textLine=parent->currentTextLine();
   if (column>textLine.length() || textLine[column]!='(') goto nothingFound;
+  while (column && textLine[column-1].isSpace()) column--;
+  if (!column) goto nothingFound;
   unsigned startColumn=column, endColumn=column;
   while (column && (textLine[--column].isLetterOrNumber()
                     || textLine[column]=='_' || textLine[column]=='$'))
     startColumn--;
+  if (startColumn==endColumn) goto nothingFound;
   QString identifier=textLine.mid(startColumn,endColumn-startColumn);
   QStringList prototypes=prototypesForIdentifier(identifier,entries);
   if (prototypes.isEmpty()) goto nothingFound;  
