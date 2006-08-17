@@ -38,6 +38,7 @@
 #include <qcstring.h>
 #include <qregexp.h>
 #include <qtextcodec.h>
+#include <qdir.h>
 #include <glib.h>
 #include <ticonv.h>
 #include "ktigcc.h"
@@ -1113,6 +1114,20 @@ int copyFile(const char *src, const char *dest)
   if (fclose(df)) {fclose(sf); return -3;}
   if (fclose(sf)) return 3;
   return 0;
+}
+
+// Returns TRUE on success, FALSE on failure.
+bool moveFile(const QString &src, const QString &dest)
+{
+  // Trap the obvious case before even bothering.
+  if (src==dest) return TRUE;
+  QDir qdir;
+  // First try a simple rename.
+  if (qdir.rename(src,dest)) return TRUE;
+  // That didn't work, probably because the files are not on the same file
+  // system. So do a copy&delete operation.
+  if (copyFile(src,dest)) return FALSE;
+  return qdir.remove(src);
 }
 
 // Replaces the first occurrence of "tempprog" in a pstarter or PPG with name.

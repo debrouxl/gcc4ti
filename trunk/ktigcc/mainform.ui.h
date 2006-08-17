@@ -4360,8 +4360,8 @@ void MainForm::linkProject()
       for (int target=0; target<numTargets; target++) {
         if (targeted[numTargets]) {
           qdir.remove(projectBaseName+"-data"+dexts[target]);
-          if (!qdir.rename(linkOutput+dexts[target],
-                           projectBaseName+"-data"+dexts[target])) {
+          if (!moveFile(linkOutput+dexts[target],
+                        projectBaseName+"-data"+dexts[target])) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to rename data file.",
                               (unsigned)-1,(unsigned)-1);
@@ -6121,7 +6121,7 @@ void MainForm::fileTreeItemRenamed( QListViewItem *item, const QString &newName,
     CATEGORY_OF(category,item);
     if (oldFileName[0]=='/')
       KDirWatch::self()->removeFile(oldFileName);
-    if (!theFile->isNew && !QDir().rename(oldFileName,newFileName)) {
+    if (!theFile->isNew && !moveFile(oldFileName,newFileName)) {
       KMessageBox::error(this,"Failed to rename the file.");
       theFile->setText(0,oldLabel);
       if (IS_EDITABLE_CATEGORY(category) && oldFileName[0]=='/')
