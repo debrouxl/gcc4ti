@@ -1,11 +1,8 @@
-%define name ktigcc
-%define date %(date +%%Y%%m%%d)
-%define release 1
 %define tigccdir /usr/local/tigcc
 
-Name: %{name}
-Version: 0.80.%{date}
-Release: %{release}
+Name: ktigcc
+Version: 1.00
+Release: 1
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}.tar.bz2
@@ -117,6 +114,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Sun Aug 20 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Drop date from version and bump to 1.00.
+Don't use macros to define nvr.
+
 * Fri Aug 18 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Install both 16x16 and 32x32 versions of the icon.
 Associate *.tpr with KTIGCC (in both KDE and GNOME).
