@@ -405,6 +405,7 @@ static QString lastDirectory;
 QClipboard *clipboard;
 static QAccel *accel, *fileTreeAccel;
 static KFindDialog *kfinddialog;
+QStringList findHistory, replacementHistory;
 static QListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
 QPtrList<SourceFile> sourceFiles;
@@ -2682,7 +2683,7 @@ void MainForm::findFind()
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
-    kfinddialog=new KFindDialog(false,this,0,KFindDialog::FromCursor);
+    kfinddialog=new KFindDialog(false,this,0,KFindDialog::FromCursor,findHistory);
     connect(kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
     connect(kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
     kfinddialog->show();
@@ -2864,7 +2865,10 @@ void MainForm::findFind_highlight(const QString &unused_text, int matchingindex,
 
 void MainForm::findFind_stop()
 {
-  if (kfinddialog) kfinddialog->deleteLater();
+  if (kfinddialog) {
+    findHistory=kfinddialog->findHistory();
+    kfinddialog->deleteLater();
+  }
   kfinddialog=static_cast<KFindDialog *>(NULL);
 }
 
@@ -2879,10 +2883,12 @@ void MainForm::findReplace()
   KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
                                         &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
                                         KFindDialog::SelectedText:0)|KFindDialog::FromCursor,
-                                       QStringList(),QStringList(),
+                                       findHistory,replacementHistory,
                                        CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
     return;
+  findHistory=kreplacedialog.findHistory();
+  replacementHistory=kreplacedialog.replacementHistory();
   kreplace=new KReplaceWithSelection(kreplacedialog.pattern(),kreplacedialog.replacement(),
                                      kreplacedialog.options(),this);
   // Connect signals to code which handles highlighting of found text, and

@@ -283,7 +283,10 @@ void SourceFileWindow::destroy()
 {
   MainForm::deleteErrorsForSrcFile(this);
   if (THIS->kreplace) delete THIS->kreplace;
-  if (THIS->kfinddialog) delete THIS->kfinddialog;
+  if (THIS->kfinddialog) {
+    findHistory=THIS->kfinddialog->findHistory();
+    delete THIS->kfinddialog;
+  }
   delete THIS->accel;
   delete THIS->te_popup;
   delete THIS->rowStatusLabel;
@@ -685,7 +688,7 @@ void SourceFileWindow::findFind()
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
-    THIS->kfinddialog=new KFindDialog(false,this,0,KFindDialog::FromCursor);
+    THIS->kfinddialog=new KFindDialog(false,this,0,KFindDialog::FromCursor,findHistory);
     connect(THIS->kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
     connect(THIS->kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
     THIS->kfinddialog->show();
@@ -771,7 +774,10 @@ void SourceFileWindow::findFind_highlight(const QString &unused_text, int matchi
 
 void SourceFileWindow::findFind_stop()
 {
-  if (THIS->kfinddialog) THIS->kfinddialog->deleteLater();
+  if (THIS->kfinddialog) {
+    findHistory=THIS->kfinddialog->findHistory();
+    THIS->kfinddialog->deleteLater();
+  }
   THIS->kfinddialog=static_cast<KFindDialog *>(NULL);
 }
 
@@ -786,10 +792,12 @@ void SourceFileWindow::findReplace()
   KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
                                         &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
                                         KFindDialog::SelectedText:0)|KFindDialog::FromCursor,
-                                       QStringList(),QStringList(),
+                                       findHistory,replacementHistory,
                                        CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
     return;
+  findHistory=kreplacedialog.findHistory();
+  replacementHistory=kreplacedialog.replacementHistory();
   THIS->kreplace=new KReplaceWithSelectionS(kreplacedialog.pattern(),kreplacedialog.replacement(),
                                             kreplacedialog.options(),this);
   // Connect signals to code which handles highlighting of found text, and

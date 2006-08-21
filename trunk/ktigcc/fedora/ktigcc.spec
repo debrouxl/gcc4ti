@@ -114,6 +114,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Mon Aug 21 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Bump version to 1.01.
+
 * Sun Aug 20 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Drop date from version and bump to 1.00.
 Don't use macros to define nvr.

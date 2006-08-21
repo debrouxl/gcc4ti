@@ -47,6 +47,7 @@ extern KAboutData *pabout;
 extern const char *parg;
 extern AssistantClient *assistant;
 extern QClipboard *clipboard;
+extern QStringList findHistory, replacementHistory;
 extern QPtrList<SourceFile> sourceFiles;
 extern tprSettings settings;
 extern tprLibOpts libopts;
