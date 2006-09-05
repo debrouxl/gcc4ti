@@ -1877,7 +1877,7 @@ begin
 				Line [P] := '''';
 		until P <= 0;
 		repeat
-			P := Pos ('', Line);
+			P := Pos ('´', Line);
 			if P > 0 then
 				Line [P] := '''';
 		until P <= 0;
@@ -2158,7 +2158,7 @@ begin
 				Line [P] := '''';
 		until P <= 0;
 		repeat
-			P := Pos ('', Line);
+			P := Pos ('´', Line);
 			if P > 0 then
 				Line [P] := '''';
 		until P <= 0;
