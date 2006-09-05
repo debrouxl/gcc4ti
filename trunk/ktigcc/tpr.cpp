@@ -949,8 +949,8 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
                     noInsert=TRUE;
                     INSERT_STRING(QString(c)+"\n");
                     ADD_LINE_NEXT();
-                  } else SET_MULTI_CHAR_MODE(cmMultiSymbol);
-                }
+                  }
+                } else SET_MULTI_CHAR_MODE(cmMultiSymbol);
                 break;
             }
           }
