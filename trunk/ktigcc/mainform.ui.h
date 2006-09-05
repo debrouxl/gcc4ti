@@ -1448,9 +1448,9 @@ void MainForm::clearProject()
   projectCompletion.clear();
   projectIsDirty=FALSE;
   projectNeedsRelink=FALSE;
-  menuBar()->setItemVisible(5,preferences.linkTarget==LT_NONE); //debugMenu
-  debugRunAction->setVisible(preferences.linkTarget==LT_NONE);
-  debugPauseAction->setVisible(preferences.linkTarget==LT_NONE);
+  menuBar()->setItemVisible(5,preferences.linkTarget!=LT_NONE); //debugMenu
+  debugRunAction->setVisible(preferences.linkTarget!=LT_NONE);
+  debugPauseAction->setVisible(preferences.linkTarget!=LT_NONE);
   updateLeftStatusLabel();
 }
 
