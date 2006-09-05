@@ -2,7 +2,7 @@
   TIGCC IDE
 
   Copyright (C) 2000-2004 Sebastian Reichelt
-  Copyright (C) 2005 Kevin Kofler
+  Copyright (C) 2005-2006 Kevin Kofler
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -1641,7 +1641,7 @@ begin
 										SetMultiCharMode (cmUnchangeableLine)
 									else if Copy (S, CurPos, 2) = '/*' then
 										SetMultiCharMode (cmComment)
-									else if Copy (S, CurPos, 2) = '??=' then
+									else if Copy (S, CurPos, 3) = '??=' then
 										SetMultiCharMode (cmExtUnchangeableLine)
 									else if (Copy (S, CurPos, 2) = '??') and (Length (S) >= CurPos + 2) and (S [CurPos + 2] in ['(', ')', '/', '''', '<', '>', '!', '-']) then
 										SetMultiCharMode (cmTrigraph)
@@ -1877,7 +1877,7 @@ begin
 				Line [P] := '''';
 		until P <= 0;
 		repeat
-			P := Pos ('´', Line);
+			P := Pos ('', Line);
 			if P > 0 then
 				Line [P] := '''';
 		until P <= 0;
@@ -2158,7 +2158,7 @@ begin
 				Line [P] := '''';
 		until P <= 0;
 		repeat
-			P := Pos ('´', Line);
+			P := Pos ('', Line);
 			if P > 0 then
 				Line [P] := '''';
 		until P <= 0;

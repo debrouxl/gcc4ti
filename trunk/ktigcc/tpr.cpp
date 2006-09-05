@@ -889,7 +889,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
             SET_MULTI_CHAR_MODE(cmUnchangeableLine);
           else if (!text.mid(curPos,2).compare("/*"))
             SET_MULTI_CHAR_MODE(cmComment);
-          else if (!text.mid(curPos,2).compare("?""?""="))
+          else if (!text.mid(curPos,3).compare("?""?""="))
             SET_MULTI_CHAR_MODE(cmExtUnchangeableLine);
           else if (!text.mid(curPos,2).compare("?""?")&&(curPos+2<l)
                    &&QString("()/\'<>!-").contains(text[curPos+2]))
