@@ -1387,7 +1387,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/i386/xm-mingw32.h gcc-4.1-20060728-s
  #undef PATH_SEPARATOR
 diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.c gcc-4.1-20060728-src/gcc/config/m68k/m68k.c
 --- gcc-4.1-20060728.orig/gcc/config/m68k/m68k.c	2005-12-29 16:10:35.000000000 +0100
-+++ gcc-4.1-20060728-src/gcc/config/m68k/m68k.c	2006-07-29 01:04:08.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/config/m68k/m68k.c	2006-09-16 05:31:04.000000000 +0200
 @@ -43,6 +43,11 @@
  #include "target-def.h"
  #include "debug.h"
@@ -2117,7 +2117,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.c gcc-4.1-20060728-src/gcc
    else
      {
        /* Use `print_operand_address' instead of `output_addr_const'
-@@ -3232,6 +3598,166 @@
+@@ -3232,6 +3598,169 @@
    return "eor%.l %2,%0";
  }
  
@@ -2186,11 +2186,14 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.c gcc-4.1-20060728-src/gcc
 +
 +#if ! defined (PCC_STATIC_STRUCT_RETURN) && defined (M68K_STRUCT_VALUE_REGNUM)
 +  /* If return value is a structure, and we pass the buffer address in a
-+     register, we can't use this register for our own purposes.
-+     FIXME: Something similar would be useful for static chain.  */
++     register, we can't use this register for our own purposes.  */
 +  if (fntype && aggregate_value_p (TREE_TYPE (fntype), fntype))
 +    cum->regs_already_used |= (1 << M68K_STRUCT_VALUE_REGNUM);
 +#endif
++
++  /* (TIGCC 20060916) Same for static chain. -- Kevin Kofler */
++  if (fndecl && decl_function_context(fndecl) && !DECL_NO_STATIC_CHAIN(fndecl))
++    cum->regs_already_used |= (1 << STATIC_CHAIN_REGNUM);
 +}
 +
 +/* Update the data in CUM to advance over an argument.  */
@@ -2284,7 +2287,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.c gcc-4.1-20060728-src/gcc
  #ifdef M68K_TARGET_COFF
  
  /* Output assembly to switch to section NAME with attribute FLAGS.  */
-@@ -3241,13 +3767,28 @@
+@@ -3241,13 +3770,28 @@
  			     tree decl ATTRIBUTE_UNUSED)
  {
    char flagchar;
@@ -2316,7 +2319,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.c gcc-4.1-20060728-src/gcc
  }
  
  #endif /* M68K_TARGET_COFF */
-@@ -3300,7 +3841,7 @@
+@@ -3300,7 +3844,7 @@
    if (flag_pic)
      {
        if (TARGET_PCREL)
@@ -2325,7 +2328,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.c gcc-4.1-20060728-src/gcc
        else if ((flag_pic == 1) || TARGET_68020)
  	{
  	  if (MOTOROLA)
-@@ -3375,7 +3916,10 @@
+@@ -3375,7 +3919,10 @@
      {
  	/* Address Registers, can't hold bytes, can hold aggregate if
  	   fits in.  */
@@ -2337,7 +2340,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/config/m68k/m68k.c gcc-4.1-20060728-src/gcc
  	  return false;
  	if (regno + GET_MODE_SIZE (mode) / 4 <= 16)
  	  return true;
-@@ -3391,3 +3935,127 @@
+@@ -3391,3 +3938,127 @@
      }
    return false;
  }
@@ -8688,13 +8691,13 @@ diff -Naur gcc-4.1-20060728.orig/gcc/varasm.c gcc-4.1-20060728-src/gcc/varasm.c
  enum section_category
 diff -Naur gcc-4.1-20060728.orig/gcc/version.c gcc-4.1-20060728-src/gcc/version.c
 --- gcc-4.1-20060728.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1-20060728-src/gcc/version.c	2006-08-01 01:48:37.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/version.c	2006-09-16 05:32:40.000000000 +0200
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.2-pre8)"
++#define VERSUFFIX " (TIGCC 4.1.2-pre9)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
