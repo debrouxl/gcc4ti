@@ -221,65 +221,65 @@ static QStringList prototypesForIdentifier(const QString &identifier,
   const QValueList<KTextEditor::CompletionEntry> &entries)
 {
   QStringList result;
-  for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
-       it!=entries.end(); ++it) {
-    const KTextEditor::CompletionEntry &entry=*it;
-    if (entry.text==identifier) {
-      QString prototype=entry.prefix+' '+entry.text+entry.postfix;
-      if (result.find(prototype)==result.end()) result.append(prototype);
+  QStringList reservedIdentifiers=QStringList::split('\n',"__alignof__\n"
+                                                          "__asm__\n"
+                                                          "__attribute__\n"
+                                                          "__complex__\n"
+                                                          "__const__\n"
+                                                          "__extension__\n"
+                                                          "__imag__\n"
+                                                          "__inline__\n"
+                                                          "__label__\n"
+                                                          "__real__\n"
+                                                          "__typeof__\n"
+                                                          "asm\n"
+                                                          "auto\n"
+                                                          "break\n"
+                                                          "case\n"
+                                                          "char\n"
+                                                          "const\n"
+                                                          "continue\n"
+                                                          "default\n"
+                                                          "do\n"
+                                                          "double\n"
+                                                          "else\n"
+                                                          "enum\n"
+                                                          "extern\n"
+                                                          "float\n"
+                                                          "for\n"
+                                                          "goto\n"
+                                                          "if\n"
+                                                          "inline\n"
+                                                          "int\n"
+                                                          "long\n"
+                                                          "register\n"
+                                                          "return\n"
+                                                          "short\n"
+                                                          "signed\n"
+                                                          "sizeof\n"
+                                                          "static\n"
+                                                          "struct\n"
+                                                          "switch\n"
+                                                          "typedef\n"
+                                                          "typeof\n"
+                                                          "union\n"
+                                                          "unsigned\n"
+                                                          "void\n"
+                                                          "volatile\n"
+                                                          "while\n");
+  if (!reservedIdentifiers.contains(identifier)) {
+    for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+         it!=entries.end(); ++it) {
+      const KTextEditor::CompletionEntry &entry=*it;
+      if (entry.text==identifier) {
+        QString prototype=entry.prefix+' '+entry.text+entry.postfix;
+        if (result.find(prototype)==result.end()) result.append(prototype);
+      }
     }
-  }
-  if (result.isEmpty()) {
-    // Try approximate matching.
-    unsigned identifierLength=identifier.length();
-    if (identifierLength>=4) {
-      QStringList reservedIdentifiers=QStringList::split('\n',"__alignof__\n"
-                                                              "__asm__\n"
-                                                              "__attribute__\n"
-                                                              "__complex__\n"
-                                                              "__const__\n"
-                                                              "__extension__\n"
-                                                              "__imag__\n"
-                                                              "__inline__\n"
-                                                              "__label__\n"
-                                                              "__real__\n"
-                                                              "__typeof__\n"
-                                                              "asm\n"
-                                                              "auto\n"
-                                                              "break\n"
-                                                              "case\n"
-                                                              "char\n"
-                                                              "const\n"
-                                                              "continue\n"
-                                                              "default\n"
-                                                              "do\n"
-                                                              "double\n"
-                                                              "else\n"
-                                                              "enum\n"
-                                                              "extern\n"
-                                                              "float\n"
-                                                              "for\n"
-                                                              "goto\n"
-                                                              "if\n"
-                                                              "inline\n"
-                                                              "int\n"
-                                                              "long\n"
-                                                              "register\n"
-                                                              "return\n"
-                                                              "short\n"
-                                                              "signed\n"
-                                                              "sizeof\n"
-                                                              "static\n"
-                                                              "struct\n"
-                                                              "switch\n"
-                                                              "typedef\n"
-                                                              "typeof\n"
-                                                              "union\n"
-                                                              "unsigned\n"
-                                                              "void\n"
-                                                              "volatile\n"
-                                                              "while\n");
-      if (!reservedIdentifiers.contains(identifier)) {
+    if (result.isEmpty()) {
+      // Try approximate matching.
+      unsigned identifierLength=identifier.length();
+      if (identifierLength>=4) {
         QString identifierUpper=identifier.upper();
         QValueList<unsigned> distances;
         for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();

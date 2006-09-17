@@ -1,7 +1,7 @@
 %define tigccdir /usr/local/tigcc
 
 Name: ktigcc
-Version: 1.02
+Version: 1.03
 Release: 1
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
@@ -114,6 +114,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Sun Sep 17 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Bump version to 1.03.
+
 * Mon Sep 4 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump version to 1.02.
 
