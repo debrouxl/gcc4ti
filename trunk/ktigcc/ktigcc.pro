@@ -174,6 +174,8 @@ distbz2.target = dist-bzip2
 distbz2.commands = zcat ktigcc.tar.gz | bzip2 --best -c > ktigcc.tar.bz2
 distbz2.depends = dist
 rpm.target = rpm
-rpm.commands = rpmbuild -ta ktigcc.tar.bz2
+# The TAR_OPTIONS=--wildcards is a workaround for rpmbuild 4.4.2 being
+# incompatible with tar 1.15.91 (Fedora bug #206841).
+rpm.commands = TAR_OPTIONS=--wildcards rpmbuild -ta ktigcc.tar.bz2
 rpm.depends = distbz2
 QMAKE_EXTRA_UNIX_TARGETS += distbz2 rpm
