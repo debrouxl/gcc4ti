@@ -3,7 +3,7 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on debug
 
-LIBS	+= -lktexteditor -lkutils
+LIBS	+= -lktexteditor -lkutils -lkdecore -lkio -lkparts -lDCOP
 
 HEADERS	+= tpr.h \
 	ktigcc.h \
@@ -93,11 +93,9 @@ IMAGES	= images/00 \
 # (Thanks to Debian for the fix for this qmake stupidity.)
 QMAKE_PROJECT_DEPTH=1
 
-unix {
-  UI_DIR = .ui
-  MOC_DIR = .moc
-  OBJECTS_DIR = .obj
-}
+UI_DIR = .ui
+MOC_DIR = .moc
+OBJECTS_DIR = .obj
 
 KDEPREFIX = $$system(kde-config --prefix)
 isEmpty(KDEPREFIX):error(KDE 3 kdelibs required.)
@@ -113,7 +111,10 @@ exists($$KDEPREFIX/include/kde3) {
 KDELIBDIR = $$KDEPREFIX/lib$$system(kde-config --libsuffix)
 
 !equals(KDELIBDIR,/usr/lib):!equals(KDELIBDIR,/usr/lib64) {
-  LIBS += -L"$$KDELIBDIR" -Wl,--rpath,"$$KDELIBDIR"
+  LIBS += -L"$$KDELIBDIR"
+  !darwin-*:!macx-* {
+    LIBS += -Wl,--rpath,"$$KDELIBDIR"
+  }
 }
 
 GLIB2_MINVERSION = 2.0.0
