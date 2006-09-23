@@ -504,11 +504,12 @@ QString loadFileText(const char *fileName)
   fseek(f,0,SEEK_END);
   size_t flen=ftell(f);
   fseek(f,0,SEEK_SET);
-  char *buffer = new(std::nothrow) char[flen+1]();
+  char *buffer = new(std::nothrow) char[flen+1];
   if (!buffer) {
     fclose(f);
     return QString::null;
   }
+  std::memset(buffer,0,flen+1);
   QString ret;
   if (fread(buffer,1,flen,f)<flen) {
     fclose(f);
