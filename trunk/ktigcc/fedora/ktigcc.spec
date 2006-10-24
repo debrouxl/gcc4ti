@@ -1,7 +1,7 @@
 %define tigccdir /usr/local/tigcc
 
 Name: ktigcc
-Version: 1.04
+Version: 1.05
 Release: 1
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
@@ -9,7 +9,7 @@ Source: %{name}.tar.bz2
 Group: Development/Tools
 License: GPL
 BuildRequires: qt-devel >= 1:3.3.0 kdelibs-devel >= 6:3.5.2 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
-Requires: kdelibs >= 6:3.5.2 kdebase >= 6:3.5.2 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 /usr/bin/assistant ctags
+Requires: kdelibs >= 6:3.5.2 kdebase >= 6:3.5.2 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt-devel >= 1:3.2.0 ctags
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: KTIGCC is an IDE for TIGCC using KDE
 %description
@@ -114,6 +114,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Tue Oct 24 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Bump version to 1.05.
+Require qt-devel instead of /usr/bin/assistant to fix installation on FC6.
+
 * Mon Sep 25 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump version to 1.04.
 
