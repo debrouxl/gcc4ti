@@ -4870,49 +4870,17 @@ end;
 procedure TMainForm.ExecuteCommandLine(const Line: string);
 var
 	TiEmuInterface: ITiEmuOLE;
-procedure SendKey(Key: Byte);
-begin
-	SendMessage (Win, WM_KEYDOWN, Key, 0);
-	SendMessage (Win, WM_KEYUP, Key, 0);
-	Sleep (20);
-end;
-var
 	I: Integer;
 	Connection: TLinkConnection;
 begin
 	if TransferTarget = ttVTI then begin
 		TiEmuInterface := GetTiEmuInterface;
-		SendKey (VK_SCROLL);
-		SendKey (VK_ESCAPE);
-		SendKey (VK_ESCAPE);
-		if CurVTIType = cvTI89 then
-			SendKey (VK_HOME);
-		SendKey (VK_DELETE);
-		SendKey (VK_DELETE);
-		for I := 1 to Length (Line) do
-			if Line [I] in ['A'..'Z', 'a'..'z', '0'..'9'] then
-				SendKey (Byte (UpCase (Line [I])))
-			else if Line [I] = '(' then
-				SendKey ($DB)
-			else if Line [I] = ')' then
-				SendKey ($DD)
-			else if Line [I] = ',' then
-				SendKey ($BC)
-			else if Line [I] = '.' then
-				SendKey (VK_DECIMAL)
-			else if Line [I] = '+' then
-				SendKey (VK_ADD)
-			else if Line [I] = '-' then
-				SendKey (VK_SUBTRACT)
-			else if Line [I] = '*' then
-				SendKey (VK_MULTIPLY)
-			else if Line [I] = '/' then
-				SendKey (VK_DIVIDE)
-			else if Line [I] = '\' then begin
-				SendKey (VK_MENU);
-				SendKey (Byte ('2'));
-			end;
-		SendKey (VK_RETURN);
+		try begin
+			if not TiEmuInterface.execute_command(Line) then Abort;
+		end except begin
+			ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+			Abort;
+		end;
 	end else if TransferTarget = ttCalc then begin
 		FillChar (Connection, SizeOf (Connection), 0);
 		Connection.Port := LinkPort;
