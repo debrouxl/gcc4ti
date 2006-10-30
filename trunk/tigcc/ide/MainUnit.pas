@@ -4763,7 +4763,7 @@ begin
 					ShowDefaultMessageBox ('Can''t send Fargo program to a TI-89/89Ti/92+/V200.', 'Error', mtProgramError);
 					Abort;
 				end;
-				if TiEmuCalcType = cvTI92 and ProjectTarget != ptFargo then begin
+				if TiEmuCalcType = cvTI92 and ProjectTarget <> ptFargo then begin
 					ShowDefaultMessageBox ('Can''t send AMS program to a TI-92.', 'Error', mtProgramError);
 					Abort;
 				end;
@@ -4778,10 +4778,6 @@ begin
 					end;
 					if not FileExists (FNList [I]) then begin
 						ShowDefaultMessageBox ('The file "' + FNList [I] + '" could not be found.', 'Error', mtProgramError);
-						Abort;
-					end;
-					if not CheckFileFormat (Connection, PChar (FNList [I]), nil, nil, @Size) then begin
-						ShowDefaultMessageBox ('Error sending file.', 'Error', mtProgramError);
 						Abort;
 					end;
 				end;
