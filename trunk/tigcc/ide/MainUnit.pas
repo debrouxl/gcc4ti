@@ -4683,7 +4683,6 @@ end;
 
 function TMainForm.GetTiEmuInterface: ITiEmuOLE;
 var
-	ExitCode: Cardinal;
 	Unknown: IUnknown;
 	OLEResult: HResult;
 begin
@@ -4872,7 +4871,6 @@ end;
 procedure TMainForm.ExecuteCommandLine(const Line: string);
 var
 	TiEmuInterface: ITiEmuOLE;
-	I: Integer;
 	Connection: TLinkConnection;
 begin
 	if TransferTarget = ttVTI then begin
