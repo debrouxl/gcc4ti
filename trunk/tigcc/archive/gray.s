@@ -509,9 +509,10 @@ __gray_init_hw1_handler:
 __gray_init_proceed:
 	move.l   %a0,%d2
 	lea      0x600001,%a0
-	bclr.b   #2,(%a0)
+	moveq.l  #2,%d0
+	bclr.b   %d0,(%a0)
 	move.l   %d2,0x64:w
-	bset.b   #2,(%a0)
+	bset.b   %d0,(%a0)
 __gray_clr_l_plane:
     |--------------------------------------------------------------------------
     | clear light plane (done for both HW types)
@@ -551,9 +552,10 @@ GrayOff:
     |--------------------------------------------------------------------------
     | cleanup for HW2 calcs
     |--------------------------------------------------------------------------
-	bclr.b   #2,(%a0)
+	moveq.l  #2,%d0
+	bclr.b   %d0,(%a0)
 	move.l   (__gray_old_int1_hw2,%pc),0x64:w   | restore old INT1 handler
-	bset.b   #2,(%a0)
+	bset.b   %d0,(%a0)
 	movea.l  (__D_plane,%pc),%a1
 	lea      0x4C00.w,%a0
 	move.w   #0x3BF,%d0                   | copy content of darkplane to 0x4c00
@@ -597,6 +599,10 @@ __gray_off_out:
 | #############################################################################
 |  Revision History
 | #############################################################################
+|
+| Revision 3.17 2006/10/30 07:24:15  Kevin Kofler
+| Bumped version to 3.55.
+| Size optimization by Martial Demolins (use moveq instead of bclr/bset #imm).
 |
 | Revision 3.16 2005/10/09 01:48:20  Kevin Kofler
 | Bumped version to 3.54.
