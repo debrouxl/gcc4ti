@@ -4722,7 +4722,7 @@ end;
 
 procedure TMainForm.SendFiles(FNList: array of string);
 var
-	Win: HWnd;
+	TiEmuInterface: ITiEmuOLE;
 procedure SendKey(Key: Byte);
 begin
 	PostMessage (Win, WM_KEYDOWN, Key, 0);
@@ -4745,7 +4745,7 @@ begin
 	OperationCancelled := False;
 	if Length (FNList) > 0 then begin
 		if TransferTarget = ttVTI then begin
-			Win := GetVTIWindow;
+			TiEmuInterface := GetTiEmuInterface;
 			GetWindowThreadProcessID (Win, @ProcID);
 			SendKey (VK_SCROLL);
 			SendKey (VK_ESCAPE);
@@ -4869,7 +4869,7 @@ end;
 
 procedure TMainForm.ExecuteCommandLine(const Line: string);
 var
-	Win: HWnd;
+	TiEmuInterface: ITiEmuOLE;
 procedure SendKey(Key: Byte);
 begin
 	SendMessage (Win, WM_KEYDOWN, Key, 0);
@@ -4881,7 +4881,7 @@ var
 	Connection: TLinkConnection;
 begin
 	if TransferTarget = ttVTI then begin
-		Win := GetVTIWindow;
+		TiEmuInterface := GetTiEmuInterface;
 		SendKey (VK_SCROLL);
 		SendKey (VK_ESCAPE);
 		SendKey (VK_ESCAPE);
@@ -4974,33 +4974,36 @@ end;
 
 procedure TMainForm.DebugPause(Sender: TObject);
 var
-	Win: HWnd;
+	TiEmuInterface: ITiEmuOLE;
 procedure SendKey(Key: Byte);
 begin
 	PostMessage (Win, WM_KEYDOWN, Key, 0);
 	PostMessage (Win, WM_KEYUP, Key, 0);
 end;
 begin
-	Win := GetVTIWindow;
-	SendKey (VK_F11);
-	ShowWindow (Win, SW_SHOWNORMAL);
-	SetForegroundWindow (Win);
+	TiEmuInterface := GetTiEmuInterface;
+	try begin
+		TiEmuInterface.enter_debugger;
+	end except begin
+		ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+	end;
 end;
 
 procedure TMainForm.DebugReset(Sender: TObject);
 var
-	Win: HWnd;
+	TiEmuInterface: ITiEmuOLE;
 procedure SendKey(Key: Byte);
 begin
 	PostMessage (Win, WM_KEYDOWN, Key, 0);
 	PostMessage (Win, WM_KEYUP, Key, 0);
 end;
 begin
-	Win := GetVTIWindow;
-	SendKey (VK_APPS);
-	SendKey (Byte ('T'));
-	ShowWindow (Win, SW_SHOWNORMAL);
-	SetForegroundWindow (Win);
+	TiEmuInterface := GetTiEmuInterface;
+	try begin
+		TiEmuInterface.reset_calc(false);
+	end except begin
+		ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+	end;
 end;
 
 function TMainForm.GetInvalidated: Boolean;
