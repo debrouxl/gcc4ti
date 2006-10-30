@@ -422,7 +422,6 @@ type
 		OptimizeInfo: TLinkLibOptimizeInfo;
 		Funcs: TSourceFileFunctions;
 		CurrentStrings: TMemoryStream;
-		CurVTIType: TCurVTIType;
 		RecentFiles: TStringList;
 		ToolsList: TToolsList;
 		property ProjectFile: string read FProjectFile write SetProjectFile;
@@ -4722,19 +4721,11 @@ end;
 
 procedure TMainForm.SendFiles(FNList: array of string);
 var
-	TiEmuInterface: ITiEmuOLE;
-procedure SendKey(Key: Byte);
-begin
-	PostMessage (Win, WM_KEYDOWN, Key, 0);
-	PostMessage (Win, WM_KEYUP, Key, 0);
-end;
-var
 	I: Integer;
-	EditWin,
-	ButtonWin: HWnd;
-	StartTime: Cardinal;
-	FileString: string;
-	Name: array [0..32] of Char;
+	FirstI: Integer;
+	TiEmuInterface: ITiEmuOLE;
+	TiEmuCalcType: TTiEmuCalcType;
+	Ready: Boolean;
 	Connection: TLinkConnection;
 	Size: Word;
 	Total: Cardinal;
@@ -4746,61 +4737,76 @@ begin
 	if Length (FNList) > 0 then begin
 		if TransferTarget = ttVTI then begin
 			TiEmuInterface := GetTiEmuInterface;
-			GetWindowThreadProcessID (Win, @ProcID);
-			SendKey (VK_SCROLL);
-			SendKey (VK_ESCAPE);
-			if CurVTIType = cvTI89 then
-				SendKey (VK_HOME);
-			SendKey (VK_F10);
-			StartTime := GetTickCount;
-			SendWin := 0;
-			repeat
-				EnumWindows (@EnumWindowsFunc, 0);
-			until (SendWin <> 0) or (GetTickCount - StartTime >= 10000);
-			if SendWin = 0 then begin
-				ShowDefaultMessageBox ('Error displaying send dialog.', 'Error', mtProgramError);
-				Abort;
-			end else begin
-				SetForegroundWindow (SendWin);
+			Enabled := False;
+			try
+				{ Wait for TiEmu to get ready. }
 				repeat
-					EditWin := GetWindow (SendWin, GW_CHILD);
-					GetClassName (EditWin, Name, 32);
-					while (EditWin <> 0) and (UpperCase (AnsiString (Name)) <> 'EDIT') do begin
-						EditWin := GetWindow (EditWin, GW_HWNDNEXT);
-						if EditWin <> 0 then
-							GetClassName (EditWin, Name, 32);
+					Sleep(100);
+					Application.ProcessMessages;
+					try
+						Ready := TiEmuInterface.ready_for_transfers;
+					except
+						ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+						Abort;
 					end;
-					if EditWin <> 0 then begin
-						StartTime := GetTickCount;
-						while (SendMessage (EditWin, WM_GETTEXTLENGTH, 0, 0) <= 0) and (GetTickCount - StartTime < 5000) do;
-						FileString := '';
-						for I := Low (FNList) to High (FNList) do begin
-							if CurVTIType = cvTI92Plus then
-								FNList [I] := StringReplace (FNList [I], '.89', '.9x', []);
-							if not FileExists (FNList [I]) then begin
-								ShowDefaultMessageBox ('The file "' + FNList [I] + '" could not be found.', 'Error', mtProgramError);
-								Abort;
-							end;
-							Insert ('"' + FNList [I] + '" ', FileString, Length (FileString) + 1);
-						end;
-						Delete (FileString, Length (FileString), 1);
-						SendMessage (EditWin, WM_SETTEXT, 0, Integer (PChar (FileString)));
-					end;
-					ButtonWin := GetWindow (SendWin, GW_CHILD);
-					GetClassName (ButtonWin, Name, 32);
-					while (ButtonWin <> 0) and ((UpperCase (AnsiString (Name)) <> 'BUTTON') or ((GetWindowLong (ButtonWin, GWL_STYLE) and BS_DEFPUSHBUTTON) = 0) or ((GetWindowLong (ButtonWin, GWL_STYLE) and BS_CHECKBOX) <> 0)) do begin
-						ButtonWin := GetWindow (ButtonWin, GW_HWNDNEXT);
-						if ButtonWin <> 0 then
-							GetClassName (ButtonWin, Name, 32);
-					end;
-				until SendMessage (EditWin, WM_GETTEXTLENGTH, 0, 0) >= Length (FNList [Low (FNList)]);
-				if ButtonWin <> 0 then begin
-					SendMessage (ButtonWin, WM_LBUTTONDOWN, 0, 0);
-					SendMessage (ButtonWin, WM_LBUTTONUP, 0, 0);
+				until Ready;
+				{ Now obtain the model from TiEmu. }
+				try
+					TiEmuCalcType := TiEmuInterface.emulated_calc_type;
+					if TiEmuCalcType = cvNone then Abort;
+				except
+					ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+					Abort;
 				end;
+				{ Select the correct files for the model. }
+				if TiEmuCalcType <> cvTI92 and ProjectTarget = ptFargo then begin
+					ShowDefaultMessageBox ('Can''t send Fargo program to a TI-89/89Ti/92+/V200.', 'Error', mtProgramError);
+					Abort;
+				end;
+				if TiEmuCalcType = cvTI92 and ProjectTarget != ptFargo then begin
+					ShowDefaultMessageBox ('Can''t send AMS program to a TI-92.', 'Error', mtProgramError);
+					Abort;
+				end;
+				for I := Low (FNList) to High (FNList) do begin
+					case TiEmuCalcType of
+						cvTI92Plus:
+							FNList [I] := StringReplace (FNList [I], '.89', '.9x', []);
+						cvV200:
+							FNList [I] := StringReplace (FNList [I], '.89', '.v2', []);
+						cvTI92:
+							FNList [I] := StringReplace (FNList [I], '.89', '.92', []);
+					end;
+					if not FileExists (FNList [I]) then begin
+						ShowDefaultMessageBox ('The file "' + FNList [I] + '" could not be found.', 'Error', mtProgramError);
+						Abort;
+					end;
+					if not CheckFileFormat (Connection, PChar (FNList [I]), nil, nil, @Size) then begin
+						ShowDefaultMessageBox ('Error sending file.', 'Error', mtProgramError);
+						Abort;
+					end;
+				end;
+				{ Now send the files. }
+				FirstI := Low (FNList);
+				if DebugInfo and not Pack and FileExists (ChangeFileExt (ProjectFile, '.dbg')) then begin
+					try
+						if not TiEmuInterface.debug_file(FNList [FirstI]) then Abort;
+					except
+						ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+						Abort;
+					end;
+					Inc (FirstI);
+				end;
+				for I := FirstI to High (FNList) do begin
+					try
+						if not TiEmuInterface.send_file(FNList [I]) then Abort;
+					except
+						ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+						Abort;
+					end;
+				end;
+			finally
+				Enabled := True;
 			end;
-			ShowWindow (Win, SW_SHOWNORMAL);
-			SetForegroundWindow (Win);
 		end else if TransferTarget = ttCalc then begin
 			FillChar (Connection, SizeOf (Connection), 0);
 			Connection.Port := LinkPort;
@@ -4875,9 +4881,9 @@ var
 begin
 	if TransferTarget = ttVTI then begin
 		TiEmuInterface := GetTiEmuInterface;
-		try begin
+		try
 			if not TiEmuInterface.execute_command(Line) then Abort;
-		end except begin
+		except
 			ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
 			Abort;
 		end;
@@ -4943,16 +4949,11 @@ end;
 procedure TMainForm.DebugPause(Sender: TObject);
 var
 	TiEmuInterface: ITiEmuOLE;
-procedure SendKey(Key: Byte);
-begin
-	PostMessage (Win, WM_KEYDOWN, Key, 0);
-	PostMessage (Win, WM_KEYUP, Key, 0);
-end;
 begin
 	TiEmuInterface := GetTiEmuInterface;
-	try begin
+	try
 		TiEmuInterface.enter_debugger;
-	end except begin
+	except
 		ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
 	end;
 end;
@@ -4960,16 +4961,11 @@ end;
 procedure TMainForm.DebugReset(Sender: TObject);
 var
 	TiEmuInterface: ITiEmuOLE;
-procedure SendKey(Key: Byte);
-begin
-	PostMessage (Win, WM_KEYDOWN, Key, 0);
-	PostMessage (Win, WM_KEYUP, Key, 0);
-end;
 begin
 	TiEmuInterface := GetTiEmuInterface;
-	try begin
-		TiEmuInterface.reset_calc(false);
-	end except begin
+	try
+		TiEmuInterface.reset_calc(False);
+	except
 		ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
 	end;
 end;
