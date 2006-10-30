@@ -4696,8 +4696,8 @@ begin
 			with TRegistry.Create do try
 				RootKey := HKey_Classes_Root;
 				if OpenKeyReadOnly ('\CLSID\{B2A17B13-9D6F-4DD4-A2A9-6FE06ADC1D33}\LocalServer32') then try
-					if ValueExists (nil) then
-						VTIPath := ReadString (nil);
+					if ValueExists ('') then
+						VTIPath := ReadString ('');
 				except end;
 			finally
 				Free;
@@ -4752,18 +4752,18 @@ begin
 				until Ready;
 				{ Now obtain the model from TiEmu. }
 				try
-					TiEmuCalcType := TiEmuInterface.emulated_calc_type;
+					TiEmuCalcType := TTiEmuCalcType(TiEmuInterface.emulated_calc_type);
 					if TiEmuCalcType = cvNone then Abort;
 				except
 					ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
 					Abort;
 				end;
 				{ Select the correct files for the model. }
-				if TiEmuCalcType <> cvTI92 and ProjectTarget = ptFargo then begin
+				if (TiEmuCalcType <> cvTI92) and (ProjectTarget = ptFargo) then begin
 					ShowDefaultMessageBox ('Can''t send Fargo program to a TI-89/89Ti/92+/V200.', 'Error', mtProgramError);
 					Abort;
 				end;
-				if TiEmuCalcType = cvTI92 and ProjectTarget <> ptFargo then begin
+				if (TiEmuCalcType = cvTI92) and (ProjectTarget <> ptFargo) then begin
 					ShowDefaultMessageBox ('Can''t send AMS program to a TI-92.', 'Error', mtProgramError);
 					Abort;
 				end;
