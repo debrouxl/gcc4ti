@@ -191,7 +191,7 @@ object PreferencesForm: TPreferencesForm
           Top = 38
           Width = 65
           Height = 17
-          Caption = '&Virtual TI'
+          Caption = 'TiE&mu'
           Checked = True
           TabOrder = 1
           TabStop = True
