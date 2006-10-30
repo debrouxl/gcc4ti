@@ -25,7 +25,7 @@ interface
 uses
 	MasterUnit,
 	Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-	StdCtrls, ExtCtrls;
+	StdCtrls, ExtCtrls, ComObj, ActiveX, TiEmuOLELib_TLB;
 
 type
 	TVTIStartForm = class(TForm)
@@ -38,8 +38,7 @@ type
 	private
 		ProcessHandle: THandle;
 	public
-		VTIWindow: HWnd;
-		VTIType: TCurVTIType;
+		TiEmuInterface: ITiEmuOLE;
 	end;
 
 implementation
@@ -60,7 +59,7 @@ begin
 		ProcessHandle := ProcessInfo.hProcess;
 		CloseHandle (ProcessInfo.hThread);
 	end else begin
-		ShowDefaultMessageBox ('An error occurred while trying to start Virtual TI.', 'Error', mtProgramError);
+		ShowDefaultMessageBox ('An error occurred while trying to start TiEmu.', 'Error', mtProgramError);
 		ModalResult := mrAbort;
 	end;
 end;
@@ -75,6 +74,8 @@ end;
 procedure TVTIStartForm.FindTimerTimer(Sender: TObject);
 var
 	ExitCode: Cardinal;
+	Unknown: IUnknown;
+	OLEResult: HResult;
 begin
 	if GetExitCodeProcess (ProcessHandle, ExitCode) then begin
 		if ExitCode <> STILL_ACTIVE then begin
@@ -82,15 +83,11 @@ begin
 			Exit;
 		end;
 	end;
-	VTIWindow := FindWindow ('TEmuWnd', 'Virtual TI-89');
-	if VTIWindow = 0 then begin
-		VTIWindow := FindWindow ('TEmuWnd', 'Virtual TI-92+');
-		if VTIWindow <> 0 then
-			VTIType := cvTI92Plus;
-	end else
-		VTIType := cvTI89;
-	if VTIWindow <> 0 then
+	OLEResult := GetActiveObject(CLASS_TiEmuOLE, nil, Unknown);
+	if OLEResult = S_OK then begin
+		OleCheck(Unknown.QueryInterface(ITiEmuOLE, TiEmuInterface));
 		ModalResult := mrOK;
+	end;
 end;
 
 end.

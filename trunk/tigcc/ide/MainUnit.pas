@@ -28,7 +28,8 @@ uses
 	MasterUnit, SourceFileUnit, FolderUnit, ToolsListUnit, LinkDLLUnit,
 	Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
 	Menus, StdCtrls, ExtCtrls, ImgList, ComCtrls, Buttons, ActnList, ToolWin,
-	Printers, SourceEditUnit, HTMLHelpUnit, MemoComponentUnit, ScktComp;
+	Printers, SourceEditUnit, HTMLHelpUnit, MemoComponentUnit, ScktComp,
+	ComObj, ActiveX, TiEmuOLELib_TLB;
 
 type
   TPanel = class(ExtCtrls.TPanel)
@@ -466,7 +467,7 @@ type
 		procedure SortFiles;
 		procedure DisplayFolderMessage;
 		procedure ClearDebugInfo;
-		function GetVTIWindow: HWnd;
+		function GetTiEmuInterface: ITiEmuOLE;
 		procedure SendFiles(FNList: array of string);
 		procedure ExecuteCommandLine(const Line: string);
 		procedure SelectNode(Node: TTreeNode);
@@ -3019,8 +3020,8 @@ begin
 			end;
 			if ValueExists ('Transfer Target') then
 				TransferTarget := TTransferTarget (ReadInteger ('Transfer Target') + 1);
-			if ValueExists ('VTI Path') then
-				VTIPath := ReadString ('VTI Path');
+			if ValueExists ('TiEmu Path') then
+				VTIPath := ReadString ('TiEmu Path');
 			if ValueExists ('Link Port') then
 				LinkPort.PortNumber := ReadInteger ('Link Port') and $FF;
 			if ValueExists ('Link Cable') then begin
@@ -3189,7 +3190,7 @@ begin
 			WriteBool ('Flat Buttons', MainToolbar.Flat);
 			WriteBool ('Menu Bitmaps', Assigned (MainMenu.Images));
 			WriteInteger ('Transfer Target', Integer (TransferTarget) - 1);
-			WriteString ('VTI Path', VTIPath);
+			WriteString ('TiEmu Path', VTIPath);
 			WriteInteger ('Link Port', LinkPort.PortNumber);
 			case LinkCable of
 				lcBlack: WriteInteger ('Link Cable', 1);
@@ -4681,33 +4682,39 @@ begin
 	end;
 end;
 
-function TMainForm.GetVTIWindow: HWnd;
+function TMainForm.GetTiEmuInterface: ITiEmuOLE;
+var
+	ExitCode: Cardinal;
+	Unknown: IUnknown;
+	OLEResult: HResult;
 begin
-	CurVTIType := cvNone;
-	Result := FindWindow ('TEmuWnd', 'Virtual TI-89');
-	if Result = 0 then begin
-		Result := FindWindow ('TEmuWnd', 'Virtual TI-92+');
-		if Result = 0 then begin
-			Result := FindWindow ('TEmuWnd', 'Virtual TI-92');
-			if Result <> 0 then
-				CurVTIType := cvTI92;
-		end else
-			CurVTIType := cvTI92Plus;
-	end else
-		CurVTIType := cvTI89;
-	if Result = 0 then begin
+	OLEResult := GetActiveObject(CLASS_TiEmuOLE, nil, Unknown);
+	if OLEResult = S_OK then begin
+		OleCheck(Unknown.QueryInterface(ITiEmuOLE, Result));
+	end else begin
+		{ If no TiEmu path is set, try looking it up from the registry. }
+		if Length (VTIPath) = 0 then begin
+			with TRegistry.Create do try
+				RootKey := HKey_Classes_Root;
+				if OpenKeyReadOnly ('\CLSID\{B2A17B13-9D6F-4DD4-A2A9-6FE06ADC1D33}\LocalServer32') then try
+					if ValueExists (nil) then
+						VTIPath := ReadString (nil);
+				except end;
+			finally
+				Free;
+			end;
+		end;
 		if Length (VTIPath) > 0 then begin
 			with TVTIStartForm.Create (Self) do try
 				if ShowModal = mrOK then begin
-					Result := VTIWindow;
-					CurVTIType := VTIType;
+					Result := TiEmuInterface;
 				end else
 					Abort;
 			finally
 				Free;
 			end;
 		end else begin
-			ShowDefaultMessageBox ('Virtual TI is not running.', 'Error', mtProgramError);
+			ShowDefaultMessageBox ('TiEmu is not running.', 'Error', mtProgramError);
 			Abort;
 		end;
 	end;

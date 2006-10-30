@@ -62,7 +62,7 @@ type
 	TSpecialSupport = set of TSpecialSupportOption;
 	TProjectTarget = (ptRegular, ptFlashOS, ptFargo, ptArchive);
 	TTransferTarget = (ttNone, ttVTI, ttCalc);
-	TCurVTIType = (cvNone, cvTI89, cvTI92Plus, cvTI92);
+	TCurVTIType = (cvNone = 0, cvTI92 = 1, cvTI89 = 2, cvTI92Plus = 4, cvV200 = 8, cvTI89Ti = 16);
 	TKernelFormat = (kfUnknown, kfNone, kfStandard, kfCompressedTables);
 	TRelocFormat = (rfUnknown, rfNone, rfDirect, rfAMS, rfKernel, rfCompressed, rfMlink, rfFLine);
 
