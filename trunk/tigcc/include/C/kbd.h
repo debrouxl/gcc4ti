@@ -44,7 +44,7 @@ enum CommonKeys{KEY_F1=268,KEY_F2=269,KEY_F3=270,KEY_F4=271,KEY_F5=272,KEY_F6=27
 #endif
 enum GKeyFlags{GKF_NORMAL=0,GKF_MODAL=1,GKF_REPUSH_KEY=2,GKF_ACCEPT=4,GKF_SYS=8,GKF_NO_EVS=16};
 enum StatKeys{STAT_2ND=1,STAT_DIAMOND=2,STAT_SHIFT=3,STAT_HAND=4};
-#define OSFastArrows (*((unsigned char*)(_rom_call_addr_hack_concat(0x15C,_ROM_CALL_15C,((unsigned char*)((unsigned long)(*(((unsigned short*)(_rom_call_addr(51)))+0x80)))),200,0x508))))
+#define OSFastArrows (*((unsigned char*)(_rom_call_addr_hack_concat(0x15C,_ROM_CALL_15C,((unsigned char*)((unsigned long)(*(((short*)(_rom_call_addr(51)))+0x80)))),200,0x508))))
 #define _keytest_optimized(rowcol...) (__keytest_optimized(rowcol))
 #define _keytest(rowcol...) (__keytest(rowcol))
 #define _rowread_internal(row) (~(_rowread(row)))
