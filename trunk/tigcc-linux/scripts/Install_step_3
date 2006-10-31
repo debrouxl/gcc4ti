@@ -7,10 +7,12 @@
 echo TIGCC script: Installing TIGCCLIB...
 rm -Rf $TIGCC/include
 cp -Rf ../tigcclib/include  $TIGCC
+pushd $TIGCC/include/asm >/dev/null
 # only symlink if the file system is case sensitive
-if [ ! -f $TIGCC/include/asm/OS.h ]
-then ln -sf $TIGCC/include/asm/os.h $TIGCC/include/asm/OS.h
+if [ ! -f OS.h ]
+then ln -sf os.h OS.h
 fi
+popd >/dev/null
 rm -Rf $TIGCC/lib
 cp -Rf ../tigcclib/lib $TIGCC
 rm -Rf $TIGCC/examples
