@@ -24,7 +24,7 @@
 #define _TIGCC_H
 
 #define VERSION "1.3.2"
-#define TIGCC_VERSION "0.96 Beta 7 r1"
+#define TIGCC_VERSION "0.96 Beta 8 r1"
 
 /* global enumerations */
 enum Boolean 	{FALSE,TRUE};
