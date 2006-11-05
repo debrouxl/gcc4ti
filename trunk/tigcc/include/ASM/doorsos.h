@@ -1443,7 +1443,6 @@ doorsos::font_large	equ	doorsos::font_medium+$E00
 LCD_MEM equ $4c00
 doorsos::main_lcd equ LCD_MEM
 doorsos::globals equ $4c00
-doorsos::OSOnBreak	equ	doorsos::globals+$F02
 
 
 doorsos::MaxHandles	equ	doorsos::Heap-$16
