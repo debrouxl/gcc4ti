@@ -54,7 +54,7 @@
 // DON'T EDIT THE NEXT REVISION BY HAND! THIS IS DONE AUTOMATICALLY BY THE
 // CVS SYSTEM !!!
 //-----------------------------------------------------------------------------
-#define CVS_FILE_REVISION "$Revision: 1.2 $"
+#define CVS_FILE_REVISION "$Revision: 1.3 $"
 
 //=============================================================================
 // outputs usage information of this tool
@@ -254,7 +254,7 @@ int SavePack(int flags,int type, unsigned char *data, int size, char *target,
 
             if (flags & F_TEXTOUTPUT) {
                 unsigned int loop;
-                unsigned int written;
+                unsigned int written=0;
                 for (i=0;i<sizeof(PackedHeader);i++,written++) {
                     fprintf(fp,"0x%02x,",*(((unsigned char*)&cth)+i));
                     if ((!(written % DEFAULT_ITEMS_PER_LINE)) && written) fputc('\n',fp);
@@ -1749,7 +1749,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
 
             for (i=0; i<lzlen[p]; i++)
                 length[p+i] = outPointer;
-            OutputLz(&escape, lzlen[p], lzpos[p], indata+p-lzpos[p], p);
+            OutputLz(&escape, lzlen[p], lzpos[p], (char *)(indata+p-lzpos[p]), p);
             p += lzlen[p];
             break;
 
@@ -1780,7 +1780,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
 
     // TOMTOM !!!
 
-    if (type & FIXF_MACHMASK == 0) {
+    if ((type & FIXF_MACHMASK) == 0) {
         headerSize = 16 + rleUsed;
     } else
     {
@@ -1894,7 +1894,7 @@ int ConvertText2Bin(unsigned char* ib,int origlen) {
     int           cnt = 0;
     int           searchforendofline = 0;
     int           len_after_convert  = 0;
-    unsigned char val;
+    unsigned char val = 0;
     unsigned char actual;
 
     len_after_convert = 0;
