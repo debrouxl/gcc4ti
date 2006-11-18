@@ -1,5 +1,34 @@
 Changelog of the TIGCC-local changes to Binutils (2.16 branch):
 
+2006-11-18  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+        * Backport from Binutils 2.17:
+          2006-04-06  Alan Modra  <amodra@bigpond.net.au>
+            * frags.c (frag_offset_fixed_p): Reinitialise offset before
+            second scan.
+          2006-04-04  Alan Modra  <amodra@bigpond.net.au>
+            PR 997
+            * frags.c (frag_offset_fixed_p): New function.
+            * frags.h (frag_offset_fixed_p): Declare.
+            * expr.c (expr): Use frag_offset_fixed_p when simplifying subtraction.
+          2005-10-10  Arnold Metselaar  <arnold.metselaar@planet.nl>
+            * expr.c (operator): Allow "!=" as a synonym for "<>".
+          2005-08-07  H.J. Lu  <hongjiu.lu@intel.com>
+            PR gas/1118
+            * as.c (parse_args): Handle -al=<FILE>.
+          2005-06-08  Tomas Hurka  <tom@hukatronic.cz>
+            PR 991
+            * config/tc-m68k.c (m68k_ip): Test for insn compatiblity using a
+            temporary copy of the operands array so that changes can be safely
+            backed out if the insn does not match.
+          2005-04-10  H.J. Lu  <hongjiu.lu@intel.com>
+            * config/tc-m68k.c (md_begin): Support 64bit host.
+            (get_num): Support 64bit BFD on 32bit host.
+        * gas/as.c (show_usage): Add --no-alternate switch.
+          (parse_args): Likewise. Set flag_macro_alternate by default.
+        * gas/obj-coff.c: #include "dwarf2dbg.h" to fix implicit declaration
+                          warnings.
+
 2005-07-31  Kevin Kofler  <Kevin@tigcc.ticalc.org>
 
         * gas/as.c (show_usage, parse_args): Add --a68k switch.
