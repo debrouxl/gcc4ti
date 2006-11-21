@@ -446,7 +446,7 @@ initialization
 		end;
 		with WordLists.Add do begin
 			Caption := 'Integer Arithmetic';
-			Words.CommaText := 'ADD,ADDA,ADDI,ADDQ,ADDX,CLR,CMP,CMPA,CMPI,CMPM,DIVS,DIVU,EXT,MULS,MULU,NEG,NEGX,SUB,SUBA,SUBI,SUBQ,SUBX';
+			Words.CommaText := 'ADD,ADDA,ADDI,ADDQ,ADDX,CLR,CMP,CMPA,CMPI,CMPM,DIVS,DIVU,EXT,MULS,MULU,NEG,NEGX,SUB,SUBA,SUBI,SUBQ,SUBX,TAS';
 			Color := clBlue;
 			CustomColor := True;
 			CaseSensitive := False;
@@ -498,13 +498,13 @@ initialization
 		end;
 		with WordLists.Add do begin
 			Caption := 'Assembler Directives';
-			Words.CommaText := 'abort,align,ascii,asciz,balign,balignw,balignl,byte,comm,data,'
+			Words.CommaText := 'abort,align,altmacro,ascii,asciz,balign,balignw,balignl,byte,comm,data,'
 				+ 'def,dim,double,eject,else,end,elseif,endef,endfunc,endif,endm,endr,equ,equiv,'
-				+ 'err,even,exitm,extern,fail,file,fill,float,func,global,hword,ident,if,include,'
-				+ 'incbin,int,irp,irpc,lcomm,lflags,line,ln,list,long,macro,mri,nolist,octa,org,'
+				+ 'err,even,exitm,extern,fail,file,fill,float,func,global,globl,hword,ident,if,include,'
+				+ 'incbin,int,irp,irpc,lcomm,lflags,line,ln,list,long,macro,mri,noaltmacro,nolist,octa,org,'
 				+ 'p2align,p2alignw,p2alignl,print,psize,purgem,quad,rept,sbttl,scl,section,set,'
 				+ 'short,single,size,sleb128,skip,space,stabd,stabn,stabs,string,struct,tag,text,'
-				+ 'title,type,uleb128,val,vtable_entry,word';
+				+ 'title,type,uleb128,val,vtable_entry,word,xdef';
 			Color := clBlue;
 			CustomColor := True;
 			Style := [fsBold];
@@ -572,7 +572,7 @@ initialization
 		end;
 		with WordLists.Add do begin
 			Caption := 'Integer Arithmetic';
-			Words.CommaText := 'ADD,ADDA,ADDI,ADDQ,ADDX,CLR,CMP,CMPA,CMPI,CMPM,DIVS,DIVU,EXT,MULS,MULU,NEG,NEGX,SUB,SUBA,SUBI,SUBQ,SUBX';
+			Words.CommaText := 'ADD,ADDA,ADDI,ADDQ,ADDX,CLR,CMP,CMPA,CMPI,CMPM,DIVS,DIVU,EXT,MULS,MULU,NEG,NEGX,SUB,SUBA,SUBI,SUBQ,SUBX,TAS';
 			Color := clBlue;
 			CustomColor := True;
 			CaseSensitive := False;

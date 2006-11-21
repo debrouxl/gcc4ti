@@ -817,7 +817,8 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                           "SUBA\n"
                           "SUBI\n"
                           "SUBQ\n"
-                          "SUBX\n");
+                          "SUBX\n"
+                          "TAS\n");
   Integer_Arithmetic.color=QColor(0,0,255);
   Integer_Arithmetic.style=0;
   Integer_Arithmetic.caseSensitive=false;
@@ -1007,6 +1008,7 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
   Assembler_Directives.list=QStringList::split('\n',
                             "abort\n"
                             "align\n"
+                            "altmacro\n"
                             "ascii\n"
                             "asciz\n"
                             "balign\n"
@@ -1039,6 +1041,7 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                             "float\n"
                             "func\n"
                             "global\n"
+                            "globl\n"
                             "hword\n"
                             "ident\n"
                             "if\n"
@@ -1055,6 +1058,7 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                             "long\n"
                             "macro\n"
                             "mri\n"
+                            "noaltmacro\n"
                             "nolist\n"
                             "octa\n"
                             "org\n"
@@ -1088,7 +1092,8 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                             "uleb128\n"
                             "val\n"
                             "vtable_entry\n"
-                            "word\n");
+                            "word\n"
+                            "xdef\n");
   Assembler_Directives.color=QColor(0,0,255);
   Assembler_Directives.style=SYNS_CUSTOM|SYNS_BOLD;
   Assembler_Directives.caseSensitive=true;
