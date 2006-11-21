@@ -1754,8 +1754,8 @@ void loadPreferences(void)
   preferences.linkTarget=(LinkTargets)pconfig->readNumEntry("Link Target",LT_NONE);
   preferences.linkPort=(CablePort)pconfig->readNumEntry("Link Port",PORT_1);
   preferences.linkCable=(CableModel)pconfig->readNumEntry("Link Cable",CABLE_GRY);
-  // Don't allow selecting a USB cable if libticables2 hasn't been compiled
-  // without USB support or if USB support can't be used.
+  // Don't allow selecting a USB cable if libticables2 has been compiled without
+  // USB support or if USB support can't be used.
   if (!have_usb) {
     if (preferences.linkCable==CABLE_SLV || preferences.linkCable==CABLE_USB) {
       preferences.linkCable=CABLE_GRY;
