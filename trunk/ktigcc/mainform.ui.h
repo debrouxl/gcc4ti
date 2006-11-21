@@ -1327,8 +1327,13 @@ void MainForm::accel_activated(int index)
       case_11:
       {
         QListViewItem *item=currentListItem;
-        if (item) item=item->itemBelow();
         if (!item) item=rootListItem;
+        QListViewItem *origItem=item;
+        do {
+          item=item->itemBelow();
+          if (!item) item=rootListItem;
+          if (item==origItem) return; // no suitable items to select
+        } while (item==rootListItem || IS_CATEGORY(item));
         fileTreeClicked(item);
         if (CURRENT_VIEW) CURRENT_VIEW->setFocus();
         break;
