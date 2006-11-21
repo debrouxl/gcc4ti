@@ -781,7 +781,7 @@ static int writeToFile(FILE *f, const QString &text)
     }
   } else {
     const char *s=smartAscii(text);
-    size_t l=text.length();
+    size_t l=std::strlen(s);
     if (fwrite(s,1,l,f)<l) return -2;
   }
   return 0;
@@ -1021,7 +1021,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
                             :".appfile \"%1\"; .appline 1\n").arg(escapedFileName);
       // Don't use calc charset for this, it's a host file name.
       const char *s=smartAscii(lineDirective);
-      size_t l=lineDirective.length();
+      size_t l=std::strlen(s);
       if (fwrite(s,1,l,f)<l) return -2;
     }
     if (writeToFile(f,text)) {fclose(f); return -2;}
