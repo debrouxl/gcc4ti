@@ -2374,6 +2374,8 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
   fileSave_loadList(aFilesListItem,&TPRData.a_files,base_dir,&new_dir,&open_file);
   fileSave_loadList(txtFilesListItem,&TPRData.txt_files,base_dir,&new_dir,&open_file);
   fileSave_loadList(othFilesListItem,&TPRData.oth_files,base_dir,&new_dir,&open_file);
+  if (projectFileName.isEmpty() && rootListItem->text(0)=="Project1")
+    fileTreeItemRenamed(rootListItem,QFileInfo(nextProj).baseName(),0);
   TPRData.prj_name=rootListItem->text(0);
   TPRData.open_file=open_file;
   TPRData.settings=settings;
