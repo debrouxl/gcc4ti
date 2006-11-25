@@ -35,6 +35,7 @@
 #include <kicontheme.h>
 #include <kiconloader.h>
 #include <kconfig.h>
+#include <glib.h>
 #include "mainform.h"
 using namespace std;
 void qCleanupImages_ktigcc();
@@ -55,7 +56,15 @@ KConfig *pconfig;
 KAboutData *pabout;
 const char *parg;
 
-int main( int argc, char *argv[] )
+static void log_eater(const gchar *log_domain __attribute__((unused)),
+                      GLogLevelFlags log_level __attribute__((unused)),
+                      const gchar *message __attribute__((unused)),
+                      gpointer user_data __attribute__((unused)))
+{
+  // Do nothing.
+}
+
+int main(int argc, char *argv[])
 {
   // Match the locale for the default C string <-> QString conversions.
   // Hopefully it is a .UTF-8 locale, if it isn't, don't complain about
@@ -141,6 +150,14 @@ int main( int argc, char *argv[] )
     parg=args->arg(0);
   else
     parg=NULL;
+
+  // Keep the tilibs from spamming the console with INFO messages.
+  g_log_set_handler("ticables",(GLogLevelFlags)(G_LOG_LEVEL_INFO|G_LOG_LEVEL_DEBUG),
+                    log_eater,NULL);
+  g_log_set_handler("tifiles",(GLogLevelFlags)(G_LOG_LEVEL_INFO|G_LOG_LEVEL_DEBUG),
+                    log_eater,NULL);
+  g_log_set_handler("ticalcs",(GLogLevelFlags)(G_LOG_LEVEL_INFO|G_LOG_LEVEL_DEBUG),
+                    log_eater,NULL);
 
   MainForm mainForm;
   app.setMainWidget( &mainForm );
