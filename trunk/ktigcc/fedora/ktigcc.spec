@@ -1,7 +1,7 @@
 %define tigccdir /usr/local/tigcc
 
 Name: ktigcc
-Version: 1.05
+Version: 1.06
 Release: 1
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
@@ -114,6 +114,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Sat Nov 25 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Bump version to 1.06.
+
 * Tue Oct 24 2006 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump version to 1.05.
 Require qt-devel instead of /usr/bin/assistant to fix installation on FC6.
