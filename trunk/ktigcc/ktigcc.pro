@@ -153,7 +153,7 @@ isEmpty(TIGCC) {
 }
 target.path = $$TIGCC/bin
 documentation.path = $$TIGCC/doc/ktigcc
-documentation.files = COPYING NEWS
+documentation.files = COPYING NEWS ChangeLog
 INSTALLS += target documentation
 
 CXXFLAGS = $$(CXXFLAGS)
