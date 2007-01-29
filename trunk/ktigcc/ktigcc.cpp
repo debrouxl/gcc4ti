@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2004-2006 Kevin Kofler
+   Copyright (C) 2004-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
 
    This program is free software; you can redistribute it and/or modify
@@ -71,10 +71,10 @@ int main(int argc, char *argv[])
   // characters lost converting!
   QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
 
-  KAboutData about("ktigcc","TIGCC IDE for KDE","1.06",
+  KAboutData about("ktigcc","TIGCC IDE for KDE","1.07",
   "TIGCC C and ASM SDK", KAboutData::License_GPL,
-  "Copyright (C) 2004-2006 Kevin Kofler and Joey Adams. All rights reserved.\n"
-  "TIGCC Copyright (C) 1999-2006 The TIGCC Team.",
+  "Copyright (C) 2004-2007 Kevin Kofler and Joey Adams. All rights reserved.\n"
+  "TIGCC Copyright (C) 1999-2007 The TIGCC Team.",
   "Original linker by Xavier and Niklas\n"
   "Compiler modifications by Jean, Sebastian and Kevin\n"
   "Linker by Sebastian and Kevin\n"
