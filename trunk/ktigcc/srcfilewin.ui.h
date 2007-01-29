@@ -9,7 +9,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2004-2006 Kevin Kofler
+   Copyright (C) 2004-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
 
    This program is free software; you can redistribute it and/or modify
@@ -1249,6 +1249,7 @@ void SourceFileWindow::current_view_newLineHook()
       QString cursorLine=indent+"\t";
       KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
       editExt->editBegin();
+      doc->removeText(line,0,line,col);
       doc->insertLine(line,cursorLine);
       doc->insertText(line+1,0,indent+"}");
       editExt->editEnd();
