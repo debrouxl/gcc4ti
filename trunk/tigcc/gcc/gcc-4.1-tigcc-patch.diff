@@ -685,7 +685,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/builtins.def gcc-4.1-20060728-src/gcc/built
  DEF_BUILTIN_STUB (BUILT_IN_PROFILE_FUNC_ENTER, "profile_func_enter")
 diff -Naur gcc-4.1-20060728.orig/gcc/c-common.c gcc-4.1-20060728-src/gcc/c-common.c
 --- gcc-4.1-20060728.orig/gcc/c-common.c	2006-07-18 08:52:59.000000000 +0200
-+++ gcc-4.1-20060728-src/gcc/c-common.c	2006-07-29 01:04:08.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/c-common.c	2007-02-09 22:53:31.000000000 +0100
 @@ -2934,16 +2934,20 @@
  #define DEF_ATTR_INT(ENUM, VALUE) ENUM,
  #define DEF_ATTR_IDENT(ENUM, STRING) ENUM,
@@ -5625,7 +5625,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/function.h gcc-4.1-20060728-src/gcc/functio
  #endif  /* GCC_FUNCTION_H */
 diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
 --- gcc-4.1-20060728.orig/gcc/gcc.c	2006-05-17 20:38:58.000000000 +0200
-+++ gcc-4.1-20060728-src/gcc/gcc.c	2006-07-29 01:04:08.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/gcc.c	2007-02-09 23:45:54.000000000 +0100
 @@ -1458,6 +1458,7 @@
  #define MD_STARTFILE_PREFIX_1 ""
  #endif
@@ -5658,7 +5658,29 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
  };
  
  #ifdef EXTRA_SPECS		/* additional specs needed */
-@@ -3149,7 +3153,9 @@
+@@ -2437,11 +2441,21 @@
+       if (stat (name, &st) < 0
+ 	  || S_ISDIR (st.st_mode))
+ 	return -1;
++
++#ifdef _WIN32
++/* (TIGCC 20070209) Vista's MSVCRT.DLL doesn't like X_OK, so translate to R_OK. */
++      return access (name, R_OK);
++#endif
+     }
+ 
+   return access (name, mode);
+ }
+ 
++#ifdef _WIN32
++#undef access
++#define access access_check
++#endif
++
+ /* Search for NAME using the prefix list PREFIXES.  MODE is passed to
+    access to check permissions.
+    Return 0 if not found, otherwise return its name, allocated with malloc.  */
+@@ -3149,7 +3163,9 @@
  process_command (int argc, const char **argv)
  {
    int i;
@@ -5668,7 +5690,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
    char *temp1;
    const char *spec_lang = 0;
    int last_language_n_infiles;
-@@ -3159,7 +3165,9 @@
+@@ -3159,7 +3175,9 @@
    int j;
  #endif
  
@@ -5678,7 +5700,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
  
    n_switches = 0;
    n_infiles = 0;
-@@ -3241,7 +3249,7 @@
+@@ -3241,7 +3259,7 @@
       see if we can create it from the pathname specified in argv[0].  */
  
    gcc_libexec_prefix = standard_libexec_prefix;
@@ -5687,7 +5709,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
    /* FIXME: make_relative_prefix doesn't yet work for VMS.  */
    if (!gcc_exec_prefix)
      {
-@@ -3260,6 +3268,7 @@
+@@ -3260,6 +3278,7 @@
  #else
  #endif
  
@@ -5695,7 +5717,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
    if (gcc_exec_prefix)
      {
        int len = strlen (gcc_exec_prefix);
-@@ -3383,6 +3392,7 @@
+@@ -3383,6 +3402,7 @@
  	    endp++;
  	}
      }
@@ -5703,7 +5725,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
  
    /* Convert new-style -- options to old-style.  */
    translate_options (&argc, (const char *const **) &argv);
-@@ -3807,6 +3817,7 @@
+@@ -3807,6 +3827,7 @@
  
    /* Set up the search paths before we go looking for config files.  */
  
@@ -5711,7 +5733,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
    /* These come before the md prefixes so that we will find gcc's subcommands
       (such as cpp) rather than those of the host system.  */
    /* Use 2 as fourth arg meaning try just the machine as a suffix,
-@@ -3868,6 +3879,7 @@
+@@ -3868,6 +3889,7 @@
    add_prefix (&startfile_prefixes,
  	      concat (tooldir_prefix, "lib", dir_separator_str, NULL),
  	      "BINUTILS", PREFIX_PRIORITY_LAST, 0, 1);
@@ -5719,7 +5741,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
  
  #if defined(TARGET_SYSTEM_ROOT_RELOCATABLE) && !defined(VMS)
    /* If the normal TARGET_SYSTEM_ROOT is inside of $exec_prefix,
-@@ -6146,6 +6158,7 @@
+@@ -6146,6 +6168,7 @@
    else
      init_spec ();
  
@@ -5727,7 +5749,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
    /* We need to check standard_exec_prefix/just_machine_suffix/specs
       for any override of as, ld and libraries.  */
    specs_file = alloca (strlen (standard_exec_prefix)
-@@ -6179,7 +6192,9 @@
+@@ -6179,7 +6202,9 @@
  		      PREFIX_PRIORITY_LAST, 0, 0);
  	}
      }
@@ -5737,7 +5759,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
    /* Process sysroot_suffix_spec.  */
    if (*sysroot_suffix_spec != 0
        && do_spec_2 (sysroot_suffix_spec) == 0)
-@@ -6269,6 +6284,7 @@
+@@ -6269,6 +6294,7 @@
  			      standard_startfile_prefix_2, "BINUTILS",
  			      PREFIX_PRIORITY_LAST, 0, 1);
      }
@@ -5745,7 +5767,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
  
    /* Process any user specified specs in the order given on the command
       line.  */
-@@ -6279,10 +6295,12 @@
+@@ -6279,10 +6305,12 @@
        read_specs (filename ? filename : uptr->filename, FALSE);
      }
  
@@ -5758,7 +5780,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/gcc.c gcc-4.1-20060728-src/gcc/gcc.c
  
    /* Now we have the specs.
       Set the `valid' bits for switches that match anything in any spec.  */
-@@ -6303,7 +6321,8 @@
+@@ -6303,7 +6331,8 @@
  
    if (print_search_dirs)
      {
@@ -6237,7 +6259,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/print-rtl.c gcc-4.1-20060728-src/gcc/print-
  #endif
 diff -Naur gcc-4.1-20060728.orig/gcc/print-tree.c gcc-4.1-20060728-src/gcc/print-tree.c
 --- gcc-4.1-20060728.orig/gcc/print-tree.c	2005-10-13 01:34:09.000000000 +0200
-+++ gcc-4.1-20060728-src/gcc/print-tree.c	2006-07-29 01:04:09.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/print-tree.c	2007-02-09 22:53:31.000000000 +0100
 @@ -134,7 +134,7 @@
        else
  	{
@@ -8147,7 +8169,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/toplev.c gcc-4.1-20060728-src/gcc/toplev.c
  /* Initialize the compiler back end.  */
 diff -Naur gcc-4.1-20060728.orig/gcc/tree.c gcc-4.1-20060728-src/gcc/tree.c
 --- gcc-4.1-20060728.orig/gcc/tree.c	2006-04-04 19:40:00.000000000 +0200
-+++ gcc-4.1-20060728-src/gcc/tree.c	2006-07-29 01:04:09.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/tree.c	2007-02-09 22:53:31.000000000 +0100
 @@ -1374,7 +1374,7 @@
  
    return ((TREE_CODE (expr) == REAL_CST
@@ -8182,7 +8204,7 @@ diff -Naur gcc-4.1-20060728.orig/gcc/tree.c gcc-4.1-20060728-src/gcc/tree.c
        for (elt = TREE_VECTOR_CST_ELTS (init); elt; elt = TREE_CHAIN (elt))
 diff -Naur gcc-4.1-20060728.orig/gcc/tree.h gcc-4.1-20060728-src/gcc/tree.h
 --- gcc-4.1-20060728.orig/gcc/tree.h	2006-02-14 15:36:15.000000000 +0100
-+++ gcc-4.1-20060728-src/gcc/tree.h	2006-07-29 01:04:09.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/tree.h	2007-02-09 22:53:31.000000000 +0100
 @@ -3477,6 +3477,7 @@
  /* Return an expr equal to X but certainly not valid as an lvalue.  */
  
@@ -8691,13 +8713,13 @@ diff -Naur gcc-4.1-20060728.orig/gcc/varasm.c gcc-4.1-20060728-src/gcc/varasm.c
  enum section_category
 diff -Naur gcc-4.1-20060728.orig/gcc/version.c gcc-4.1-20060728-src/gcc/version.c
 --- gcc-4.1-20060728.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1-20060728-src/gcc/version.c	2006-09-16 05:32:40.000000000 +0200
++++ gcc-4.1-20060728-src/gcc/version.c	2006-10-17 20:04:31.000000000 +0200
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.2-pre9)"
++#define VERSUFFIX " (TIGCC 4.1.2-pre10)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
