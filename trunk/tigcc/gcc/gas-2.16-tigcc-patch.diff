@@ -11,34 +11,27 @@ diff -Naur binutils-2.16.1.orig/bfd/config.bfd binutils-2.16.1-src/bfd/config.bf
      targ_defvec=hp300hpux_vec
 diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
 --- binutils-2.16.1.orig/gas/as.c	2005-03-03 02:29:52.000000000 +0100
-+++ binutils-2.16.1-src/gas/as.c	2006-11-18 19:29:11.000000000 +0100
-@@ -251,8 +251,19 @@
++++ binutils-2.16.1-src/gas/as.c	2007-02-18 22:05:31.000000000 +0100
+@@ -251,6 +251,14 @@
                        	  s      include symbols\n\
                        	  =FILE  list to FILE (must be last sub-option)\n"));
  
 +/* (TIGCC 20050732) */
-   fprintf (stream, _("\
--  --alternate             initially turn on alternate macro syntax\n"));
++  fprintf (stream, _("\
 +  --a68k                  assemble in A68k compatibility mode\n"));
 +
 +/* (TIGCC 20030716) */
 +  fprintf (stream, _("\
 +  --all-relocs            output all relocs, implies --keep-locals (-L)\n"));
 +
-+  fprintf (stream, _("\
-+  --alternate             initially turn on alternate macro syntax (default)\n"));
-+ /* (TIGCC 20061118) */
-+  fprintf (stream, _("\
-+  --no-alternate          initially turn off alternate macro syntax\n"));
    fprintf (stream, _("\
-   -D                      produce assembler debugging messages\n"));
+   --alternate             initially turn on alternate macro syntax\n"));
    fprintf (stream, _("\
-@@ -426,7 +437,11 @@
+@@ -426,7 +434,10 @@
        OPTION_EXECSTACK,
        OPTION_NOEXECSTACK,
        OPTION_ALTERNATE,
 -      OPTION_WARN_FATAL
-+      OPTION_NO_ALTERNATE,  /* (TIGCC 20061118) */
 +      OPTION_AL,
 +      OPTION_WARN_FATAL,
 +      OPTION_ALL_RELOCS, /* (TIGCC 20030716) */
@@ -46,14 +39,7 @@ diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
      /* When you add options here, check that they do
         not collide with OPTION_MD_BASE.  See as.h.  */
      };
-@@ -437,11 +452,19 @@
-        the end of the preceeding line so that it is simpler to
-        selectively add and remove lines from this list.  */
-     {"alternate", no_argument, NULL, OPTION_ALTERNATE}
-+ /* (TIGCC 20061118) */
-+    ,{"no-alternate", no_argument, NULL, OPTION_NO_ALTERNATE}
-     /* The entry for "a" is here to prevent getopt_long_only() from
-        considering that -a is an abbreviation for --alternate.  This is
+@@ -442,6 +453,12 @@
         necessary because -a=<FILE> is a valid switch but getopt would
         normally reject it since --alternate does not take an argument.  */
      ,{"a", optional_argument, NULL, 'a'}
@@ -66,17 +52,7 @@ diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
      ,{"defsym", required_argument, NULL, OPTION_DEFSYM}
      ,{"dump-config", no_argument, NULL, OPTION_DUMPCONFIG}
      ,{"emulation", required_argument, NULL, OPTION_EMULATION}
-@@ -507,6 +530,9 @@
-   new_argc = 1;
-   new_argv[new_argc] = NULL;
- 
-+  /* (TIGCC 20061118) Use "alternate" macro syntax by default.  */
-+  flag_macro_alternate = 1;
-+
-   while (1)
-     {
-       /* getopt_long_only is like getopt_long, but '-' as well as '--' can
-@@ -735,6 +761,9 @@
+@@ -735,6 +752,9 @@
  	  listing_lhs_cont_lines = atoi (optarg);
  	  break;
  
@@ -86,7 +62,7 @@ diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
  	case 'M':
  	  flag_mri = 1;
  #ifdef TC_M68K
-@@ -775,6 +804,12 @@
+@@ -775,6 +795,12 @@
  	  flag_always_generate_output = 1;
  	  break;
  
@@ -99,7 +75,7 @@ diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
   	case OPTION_ALTERNATE:
   	  optarg = old_argv [optind - 1];
   	  while (* optarg == '-')
-@@ -865,6 +900,17 @@
+@@ -865,6 +891,12 @@
  	case 'X':
  	  /* -X means treat warnings as errors.  */
  	  break;
@@ -108,11 +84,6 @@ diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
 +	case OPTION_ALL_RELOCS:
 +	  flag_all_relocs = 1;
 +	  flag_keep_locals = 1; /* implies -L */
-+	  break;
-+
-+	/* (TIGCC 20061118) */
-+	case OPTION_NO_ALTERNATE:
-+	  flag_macro_alternate = 0;
 +	  break;
  	}
      }
