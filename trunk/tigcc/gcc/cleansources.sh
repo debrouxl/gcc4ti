@@ -135,3 +135,4 @@ for name in `grep -v -e "m68k" -e "disass" -e "dis-" tmpfiles.lst`; do rm -f "$n
 ls -A opcodes/*.h >tmpfiles.lst
 for name in `grep -v -e "m68k" -e "disass" -e "dis-" -e "opintl" -e "sysdep" tmpfiles.lst`; do rm -f "$name"; done
 rm -f tmpfiles.lst
+rm -f NEWS gcc/gengtype-lex.c gcc/gengtype-yacc.c gcc/gengtype-yacc.h
