@@ -35,7 +35,7 @@
 #include <kaboutdata.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qregexp.h>
 #include <qtextcodec.h>
 #include <qdir.h>
@@ -1320,8 +1320,8 @@ QStringList process_libopts(void)
    Build linker command line arguments
 */
 QStringList process_settings(const QString &prjNameUnicode,
-                             QCString &projectName, QCString &dataVarName,
-                             QCString &packFolder, QCString &packName)
+                             Q3CString &projectName, Q3CString &dataVarName,
+                             Q3CString &packFolder, Q3CString &packName)
 {
   QStringList args;
 
@@ -1332,7 +1332,7 @@ QStringList process_settings(const QString &prjNameUnicode,
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       projectName=ti; // This is a hidden strdup (see QCString::operator=).
       g_free(ti);
-    } else projectName=QCString();
+    } else projectName=Q3CString();
   }
 
   // Split the PPG name into folder and file.
@@ -1352,7 +1352,7 @@ QStringList process_settings(const QString &prjNameUnicode,
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       packFolder=ti; // This is a hidden strdup (see QCString::operator=).
       g_free(ti);
-    } else packFolder=QCString();
+    } else packFolder=Q3CString();
   }
 
   // Convert the PPG file name to the calculator charset.
@@ -1362,7 +1362,7 @@ QStringList process_settings(const QString &prjNameUnicode,
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       packName=ti; // This is a hidden strdup (see QCString::operator=).
       g_free(ti);
-    } else packName=QCString();
+    } else packName=Q3CString();
   }
 
   if (settings.use_data_var && !settings.data_var.isEmpty()) {
@@ -1373,13 +1373,13 @@ QStringList process_settings(const QString &prjNameUnicode,
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       dataVarName=ti; // This is a hidden strdup (see QCString::operator=).
       g_free(ti);
-    } else dataVarName=QCString();
+    } else dataVarName=Q3CString();
     if (!settings.copy_data_var) {
       args.append("--data-var-copy=never");
     } else if (!settings.copy_data_var_arc) {
       args.append("--data-var-copy=always");
     }
-  } else dataVarName=QCString();
+  } else dataVarName=Q3CString();
 
   if (settings.optimize_nops) {
     args.append("--optimize-nops");

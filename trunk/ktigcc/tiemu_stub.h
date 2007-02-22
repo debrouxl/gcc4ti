@@ -11,6 +11,8 @@
 
 #include <dcopstub.h>
 #include <qstringlist.h>
+//Added by qt3to4:
+#include <Q3CString>
 #include <dcopobject.h>
 #include <qobject.h>
 
@@ -18,8 +20,8 @@
 class TiEmuDCOP_stub : virtual public DCOPStub
 {
 public:
-    TiEmuDCOP_stub( const QCString& app, const QCString& id );
-    TiEmuDCOP_stub( DCOPClient* client, const QCString& app, const QCString& id );
+    TiEmuDCOP_stub( const Q3CString& app, const Q3CString& id );
+    TiEmuDCOP_stub( DCOPClient* client, const Q3CString& app, const Q3CString& id );
     explicit TiEmuDCOP_stub( const DCOPRef& ref );
     virtual bool image_loaded();
     virtual int emulated_calc_type();

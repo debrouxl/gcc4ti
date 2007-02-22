@@ -21,7 +21,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qpair.h>
 #include <qcolor.h>
 #include <qfont.h>
@@ -63,12 +63,12 @@ typedef struct
   bool enabled;
   QColor numberColor;
   QColor symbolColor;
-  QValueList<QColor> parenthesisColors;
+  Q3ValueList<QColor> parenthesisColors;
   Syn_Style numberStyle;
   Syn_Style symbolStyle;
   Syn_Style parenthesisStyle;
-  QValueList<Syn_CustomStyle> customStyles;
-  QValueList<Syn_WordList> wordLists;
+  Q3ValueList<Syn_CustomStyle> customStyles;
+  Q3ValueList<Syn_WordList> wordLists;
 } Syn_SettingsForDoc;
 
 int SynToXML(Syn_SettingsForDoc &syn,const QString &destFileName);
@@ -114,7 +114,7 @@ typedef struct
   Syn_SettingsForDoc synQll;
 
   // Coding
-  QValueList<QPair<QString,QString> > templates;
+  Q3ValueList<QPair<QString,QString> > templates;
 
   // Used internally by the Preferences dialog
   bool haveA68k;

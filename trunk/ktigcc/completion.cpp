@@ -19,7 +19,7 @@
 */
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qpair.h>
 #include <qpoint.h>
 #include <qregexp.h>
@@ -27,8 +27,10 @@
 #include <qdir.h>
 #include <qapplication.h>
 #include <qwidget.h>
-#include <qwidgetlist.h>
+#include <qwidget.h>
 #include <qevent.h>
+//Added by qt3to4:
+#include <Q3PopupMenu>
 #include <kmessagebox.h>
 #include <kate/view.h>
 #include <kate/document.h>
@@ -137,16 +139,16 @@ bool findSymbolInFile(const QString &symbol,
                                    symbolLine,systemHeader);
 }
 
-static void mergeCompletionEntries(QValueList<KTextEditor::CompletionEntry> &dest,
-                                   const QValueList<KTextEditor::CompletionEntry> &src)
+static void mergeCompletionEntries(Q3ValueList<KTextEditor::CompletionEntry> &dest,
+                                   const Q3ValueList<KTextEditor::CompletionEntry> &src)
 {
-  for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=src.begin();
+  for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it=src.begin();
        it!=src.end(); ++it)
     dest.append(*it);
 }
 
 static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
-                                              QValueList<KTextEditor::CompletionEntry> &result)
+                                              Q3ValueList<KTextEditor::CompletionEntry> &result)
 {
   for (QStringList::ConstIterator it=systemHeaders.begin();
        it!=systemHeaders.end(); ++it) {
@@ -165,7 +167,7 @@ static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
 static bool completionEntriesForFileRecursive(const QString &fileText,
                                               const QString &fileName,
                                               MainForm *mainForm,
-                                              QValueList<KTextEditor::CompletionEntry> &result)
+                                              Q3ValueList<KTextEditor::CompletionEntry> &result)
 {
   if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
     QFileInfo fileInfo(fileName);
@@ -194,31 +196,31 @@ static bool completionEntriesForFileRecursive(const QString &fileText,
 bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
-                              QValueList<KTextEditor::CompletionEntry> &result)
+                              Q3ValueList<KTextEditor::CompletionEntry> &result)
 {
   resetSearchedFlags();
   return completionEntriesForFileRecursive(fileText,fileName,mainForm,result);
 }
 
-static QValueList<KTextEditor::CompletionEntry> sortCompletionEntries(
-  const QValueList<KTextEditor::CompletionEntry> &entries)
+static Q3ValueList<KTextEditor::CompletionEntry> sortCompletionEntries(
+  const Q3ValueList<KTextEditor::CompletionEntry> &entries)
 {
-  QMap<QString,QValueList<KTextEditor::CompletionEntry> > map;
-  for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+  QMap<QString,Q3ValueList<KTextEditor::CompletionEntry> > map;
+  for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
        it!=entries.end(); ++it) {
     const KTextEditor::CompletionEntry &entry=*it;
-    QValueList<KTextEditor::CompletionEntry> &list=map[entry.text];
+    Q3ValueList<KTextEditor::CompletionEntry> &list=map[entry.text];
     if (list.find(entry)==list.end()) list.append(entry);
   }
-  QValueList<KTextEditor::CompletionEntry> result;
-  for (QMap<QString,QValueList<KTextEditor::CompletionEntry> >::ConstIterator
+  Q3ValueList<KTextEditor::CompletionEntry> result;
+  for (QMap<QString,Q3ValueList<KTextEditor::CompletionEntry> >::ConstIterator
        it=map.begin(); it!=map.end(); ++it)
     mergeCompletionEntries(result,*it);
   return result;
 }
 
 static QStringList prototypesForIdentifier(const QString &identifier,
-  const QValueList<KTextEditor::CompletionEntry> &entries)
+  const Q3ValueList<KTextEditor::CompletionEntry> &entries)
 {
   QStringList result;
   QStringList reservedIdentifiers=QStringList::split('\n',"__alignof__\n"
@@ -268,7 +270,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
                                                           "volatile\n"
                                                           "while\n");
   if (!reservedIdentifiers.contains(identifier)) {
-    for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+    for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
          it!=entries.end(); ++it) {
       const KTextEditor::CompletionEntry &entry=*it;
       if (entry.text==identifier) {
@@ -281,8 +283,8 @@ static QStringList prototypesForIdentifier(const QString &identifier,
       unsigned identifierLength=identifier.length();
       if (identifierLength>=4) {
         QString identifierUpper=identifier.upper();
-        QValueList<unsigned> distances;
-        for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+        Q3ValueList<unsigned> distances;
+        for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
              it!=entries.end(); ++it) {
           const KTextEditor::CompletionEntry &entry=*it;
           QString entryText=entry.text;
@@ -296,7 +298,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
             if (result.find(prototype)==result.end()) {
               // Sort by similarity. Smaller distances first.
               QStringList::Iterator it1=result.begin();
-              QValueList<unsigned>::Iterator it2=distances.begin();
+              Q3ValueList<unsigned>::Iterator it2=distances.begin();
               for (; it2!=distances.end() && *it2<=distance; ++it1,++it2);
               result.insert(it1,prototype);
               distances.insert(it2,distance);
@@ -317,7 +319,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
   for (QStringList::ConstIterator it=headers.begin(); it!=headers.end(); ++it) {
     const QString &header=*it;
     CompletionInfo &completionInfo=sysHdrCompletion[header];
-    QValueList<KTextEditor::CompletionEntry> &entries=completionInfo.entries;
+    Q3ValueList<KTextEditor::CompletionEntry> &entries=completionInfo.entries;
     QDir hdrQdir(QFileInfo(qdir,header).filePath());
     QStringList hsfs=hdrQdir.entryList("*.hsf *.ref",QDir::Files);
     for (QStringList::ConstIterator it=hsfs.begin(); it!=hsfs.end(); ++it) {
@@ -532,7 +534,7 @@ void saveSystemHeaderCompletion(void)
     config.setGroup(key);
     config.writeEntry("Included",completionInfo.includedSystem);
     unsigned i=0;
-    for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it
+    for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it
          =completionInfo.entries.begin(); it!=completionInfo.entries.end();
          ++it, i++) {
       const KTextEditor::CompletionEntry &entry=*it;
@@ -553,11 +555,11 @@ void saveSystemHeaderCompletion(void)
 }
 
 TemplatePopup::TemplatePopup(Kate::View *parent)
-  : QPopupMenu(parent), view(parent)
+  : Q3PopupMenu(parent), view(parent)
 {
   connect(this,SIGNAL(activated(int)),this,SLOT(QPopupMenu_activated(int)));
   unsigned i=0;
-  for (QValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
+  for (Q3ValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
        it!=preferences.templates.end(); ++it, i++)
     insertItem((*it).first,i);
   QPoint pos=parent->cursorCoordinates();
@@ -600,7 +602,7 @@ CompletionPopup::CompletionPopup(Kate::View *parent, const QString &fileName,
   : QObject(parent), done(false), completionPopup(0)
 {
   connect(this,SIGNAL(closed()),receiver,SLOT(completionPopup_closed()));
-  QValueList<KTextEditor::CompletionEntry> entries;
+  Q3ValueList<KTextEditor::CompletionEntry> entries;
   if (!completionEntriesForFile(parent->getDoc()->text(),fileName,mainForm,
                                 entries)) {
     emit closed();
@@ -661,7 +663,7 @@ ArgHintPopup::ArgHintPopup(Kate::View *parent, const QString &fileName,
                            MainForm *mainForm)
   : QObject(parent), done(false), argHintPopup(0)
 {
-  QValueList<KTextEditor::CompletionEntry> entries;
+  Q3ValueList<KTextEditor::CompletionEntry> entries;
   if (!completionEntriesForFile(parent->getDoc()->text(),fileName,mainForm,
                                 entries)) {
     nothingFound:

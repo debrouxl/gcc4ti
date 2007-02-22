@@ -38,7 +38,7 @@
 #include <kmessagebox.h>
 #include <qdatetime.h> 
 #include <qstring.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qcolor.h>
 #include <qpainter.h>
 #include <qpen.h>
@@ -46,11 +46,11 @@
 #include <cstring>
 #include "ktigcc.h"
 
-class ColoredListBoxText : public QListBoxText {
+class ColoredListBoxText : public Q3ListBoxText {
   public:
-    ColoredListBoxText(QListBox *listbox, const QString &text,
+    ColoredListBoxText(Q3ListBox *listbox, const QString &text,
                        const QColor &textColor)
-      : QListBoxText(listbox,text), color(textColor) {}
+      : Q3ListBoxText(listbox,text), color(textColor) {}
     virtual ~ColoredListBoxText() {}
   protected:
     virtual void paint(QPainter *painter) {
@@ -58,7 +58,7 @@ class ColoredListBoxText : public QListBoxText {
       QPen pen=oldPen;
       pen.setColor(color);
       painter->setPen(pen);
-      QListBoxText::paint(painter);
+      Q3ListBoxText::paint(painter);
       painter->setPen(oldPen);
     }
   private:

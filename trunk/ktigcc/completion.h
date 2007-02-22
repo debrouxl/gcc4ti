@@ -21,11 +21,13 @@
 #pragma once
 
 #include <qobject.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
+//Added by qt3to4:
+#include <QEvent>
 #include <kate/view.h>
 
 struct CompletionInfo {
@@ -35,7 +37,7 @@ struct CompletionInfo {
   QStringList includedSystem;
   QStringList included;
   QMap<QString,unsigned> lineNumbers;
-  QValueList<KTextEditor::CompletionEntry> entries;
+  Q3ValueList<KTextEditor::CompletionEntry> entries;
 };
 
 // Maps file name to a CompletionInfo.
@@ -52,7 +54,7 @@ bool findSymbolInFile(const QString &symbol,
 bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
-                              QValueList<KTextEditor::CompletionEntry> &result);
+                              Q3ValueList<KTextEditor::CompletionEntry> &result);
 
 class QWidget;
 bool parseHelpSources(QWidget *parent, const QString &directory,
@@ -63,7 +65,7 @@ bool parseSystemHeaders(QWidget *parent, const QString &directory,
 void loadSystemHeaderCompletion(void);
 void saveSystemHeaderCompletion(void);
 
-class TemplatePopup : public QPopupMenu {
+class TemplatePopup : public Q3PopupMenu {
   Q_OBJECT
 
   public:

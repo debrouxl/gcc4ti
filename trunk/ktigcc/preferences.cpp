@@ -31,9 +31,11 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qdom.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qdir.h>
 #include <qpair.h>
+//Added by qt3to4:
+#include <Q3ValueList>
 #include <kconfig.h>
 #include "ktigcc.h"
 #include "preferences.h"
@@ -95,7 +97,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     (node).appendChild(child)
 
   bool allWordListsCaseInsensitive=TRUE;
-  for (QValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
+  for (Q3ValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
        it!=synprefs.wordLists.end(); ++it) {
     const Syn_WordList &wordList=*it;
     if (wordList.caseSensitive) allWordListsCaseInsensitive=FALSE;
@@ -112,7 +114,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   CHILD_NODE(highlighting,root,"highlighting");
   CHILD_NODE(general,root,"general");
 
-  for (QValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
+  for (Q3ValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
        it!=synprefs.wordLists.end(); ++it) {
     const Syn_WordList &wordList=*it;
     CHILD_NODE(list,highlighting,"list");
@@ -147,7 +149,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   ADD_ATTR(defaultContext,"name","Default");
   ADD_ATTR(defaultContext,"attribute","Normal");
   ADD_ATTR(defaultContext,"lineEndContext","#stay");
-  for (QValueList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
+  for (Q3ValueList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
        it!=synprefs.customStyles.end(); ++it) {
     const Syn_CustomStyle &customStyle=*it;
     switch (customStyle.beginning.length()) {
@@ -186,7 +188,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
         break;
     }
   }
-  for (QValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
+  for (Q3ValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
        it!=synprefs.wordLists.end(); ++it) {
     const Syn_WordList &wordList=*it;
     CHILD_NODE(detectWordList,defaultContext,"keyword");
@@ -244,7 +246,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     ADD_ATTR(includeRules,"context","Default");
   }
 
-  for (QValueList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
+  for (Q3ValueList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
        it!=synprefs.customStyles.end(); ++it) {
     const Syn_CustomStyle &customStyle=*it;
     bool endsWithNewline=(customStyle.ending=="\n");
@@ -308,7 +310,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
       }
     }
     if (customStyle.switchable) {
-      for (QValueList<Syn_CustomStyle>::ConstIterator it2=synprefs.customStyles.begin();
+      for (Q3ValueList<Syn_CustomStyle>::ConstIterator it2=synprefs.customStyles.begin();
            it2!=synprefs.customStyles.end(); ++it2) {
         if (it2==it) continue;
         const Syn_CustomStyle &otherCustomStyle=*it2;
@@ -386,16 +388,16 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   DEF_ITEM_DATA("Number",synprefs.numberColor,synprefs.numberStyle);
   DEF_ITEM_DATA("Symbol",synprefs.symbolColor,synprefs.symbolStyle);
   unsigned i=0;
-  for (QValueList<QColor>::ConstIterator it=synprefs.parenthesisColors.begin();
+  for (Q3ValueList<QColor>::ConstIterator it=synprefs.parenthesisColors.begin();
        it!=synprefs.parenthesisColors.end(); ++it, i++) {
     DEF_ITEM_DATA(QString("Paren%1").arg(i),*it,synprefs.parenthesisStyle);
   }
-  for (QValueList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
+  for (Q3ValueList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
        it!=synprefs.customStyles.end(); ++it) {
     const Syn_CustomStyle &customStyle=*it;
     DEF_ITEM_DATA(customStyle.name,customStyle.color,customStyle.style);
   }
-  for (QValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
+  for (Q3ValueList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
        it!=synprefs.wordLists.end(); ++it) {
     const Syn_WordList &wordList=*it;
     DEF_ITEM_DATA(wordList.name,wordList.color,wordList.style);
@@ -459,7 +461,7 @@ static bool checkSynHighlightVersion(const QString &internalName)
                       .arg(QDir::homeDirPath()).arg(internalName);
   QDomDocument doc("language");
   QFile file(xmlFileName);
-  if (!file.open(IO_ReadOnly))
+  if (!file.open(QIODevice::ReadOnly))
     return FALSE;
   if (!doc.setContent(&file)) {
     file.close();
@@ -546,7 +548,7 @@ static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QStri
   pconfig->writeEntry("Enabled",synprefs.enabled);
   pconfig->writeEntry("Number Color",synprefs.numberColor);
   pconfig->writeEntry("Symbol Color",synprefs.symbolColor);
-  for (QValueList<QColor>::ConstIterator it=(i=0,synprefs.parenthesisColors.begin());
+  for (Q3ValueList<QColor>::ConstIterator it=(i=0,synprefs.parenthesisColors.begin());
        it!=synprefs.parenthesisColors.end(); ++it, i++) {
     pconfig->writeEntry(QString("Parenthesis Color %1").arg(i),*it);
   }
@@ -554,7 +556,7 @@ static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QStri
   pconfig->writeEntry("Number Style",(unsigned)synprefs.numberStyle);
   pconfig->writeEntry("Symbol Style",(unsigned)synprefs.symbolStyle);
   pconfig->writeEntry("Parenthesis Style",(unsigned)synprefs.parenthesisStyle);
-  for (QValueList<Syn_CustomStyle>::ConstIterator it=(i=0,synprefs.customStyles.begin());
+  for (Q3ValueList<Syn_CustomStyle>::ConstIterator it=(i=0,synprefs.customStyles.begin());
        it!=synprefs.customStyles.end(); ++it, i++) {
     const Syn_CustomStyle &customStyle=*it;
     pconfig->writeEntry(QString("Custom Style %1 Name").arg(i),customStyle.name);
@@ -567,7 +569,7 @@ static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QStri
     pconfig->writeEntry(QString("Custom Style %1 Style").arg(i),(unsigned)customStyle.style);
   }
   pconfig->writeEntry("Num Custom Styles",i);
-  for (QValueList<Syn_WordList>::ConstIterator it=(i=0,synprefs.wordLists.begin());
+  for (Q3ValueList<Syn_WordList>::ConstIterator it=(i=0,synprefs.wordLists.begin());
        it!=synprefs.wordLists.end(); ++it, i++) {
     const Syn_WordList &wordList=*it;
     pconfig->writeEntry(QString("Word List %1 Name").arg(i),wordList.name);
@@ -1848,7 +1850,7 @@ void savePreferences(void)
 
   // Coding
   unsigned i=0;
-  for (QValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
+  for (Q3ValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
        it!=preferences.templates.end(); ++it, i++) {
     pconfig->writeEntry(QString("Coding Template %1 Name").arg(i),(*it).first);
     pconfig->writeEntry(QString("Coding Template %1 Text").arg(i),(*it).second);

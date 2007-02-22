@@ -31,7 +31,7 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
-#include <qaccel.h>
+#include <q3accel.h>
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kprocess.h>

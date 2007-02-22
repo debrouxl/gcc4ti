@@ -1,9 +1,9 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on debug
+CONFIG	+= qt warn_on debug uic3
 
-QT += qt3support
+QT += xml qt3support
 
 LIBS	+= -lktexteditor -lkutils -lkdeui -lkdecore -lkio -lkparts -lDCOP
 
@@ -28,7 +28,8 @@ SOURCES	+= ktigcc.cpp \
 	completion.cpp \
 	assistant.cpp
 
-FORMS	= srcfilewin.ui \
+#The following line was changed from FORMS to FORMS3 by qt3to4
+FORMS3	= srcfilewin.ui \
 	projectoptions.ui \
 	programoptions.ui \
 	preferencesdlg.ui \

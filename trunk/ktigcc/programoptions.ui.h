@@ -35,6 +35,8 @@
 #include <qevent.h>
 #include <qeventloop.h>
 #include <qtooltip.h>
+//Added by qt3to4:
+#include <QMouseEvent>
 #include "ktigcc.h"
 #include "tpr.h"
 #include "assistant.h"

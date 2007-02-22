@@ -25,15 +25,18 @@
 #include "parsing.h"
 
 #include <qstring.h>
+//Added by qt3to4:
+#include <Q3PopupMenu>
+#include <QLabel>
 class MainForm;
 namespace Kate {
   class View;
 }
 class KReplaceWithSelectionS;
 class QLabel;
-class QPopupMenu;
+class Q3PopupMenu;
 class QClipboard;
-class QAccel;
+class Q3Accel;
 class KFindDialog;
 class KDirWatch;
 class FunctionDialog;
@@ -67,12 +70,12 @@ struct SourceFile : public SourceFileWindow {
   QLabel *colStatusLabel;
   QLabel *charsStatusLabel;
   QLabel *rightStatusLabel;
-  QPopupMenu *te_popup;
-  QAccel *accel;
+  Q3PopupMenu *te_popup;
+  Q3Accel *accel;
   KFindDialog *kfinddialog;
   unsigned findCurrentLine;
   KDirWatch *dirWatch;
-  QPopupMenu *findFunctionsPopup;
+  Q3PopupMenu *findFunctionsPopup;
   SourceFileFunctions sourceFileFunctions;
   FunctionDialog *functionDialog;
 };

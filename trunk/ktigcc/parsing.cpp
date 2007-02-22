@@ -30,6 +30,8 @@
 #include <qapplication.h>
 #include <qeventloop.h>
 #include <qdir.h>
+//Added by qt3to4:
+#include <Q3ValueList>
 #include <kprocio.h>
 #include <kmessagebox.h>
 #include <unistd.h>
@@ -215,7 +217,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         // better information extracted from the .hsf files. However, .hsf files
         // obviously don't contain line number information.
         if (isSystemHeader) {
-          for (QValueList<KTextEditor::CompletionEntry>::ConstIterator it
+          for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it
                =result.entries.begin(); it!=result.entries.end(); ++it) {
             if ((*it).text==identifier) {
               alreadyKnown=true;

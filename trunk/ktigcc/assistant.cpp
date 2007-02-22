@@ -31,7 +31,7 @@
 #include <qwidget.h>
 #include <qapplication.h>
 #include <qeventloop.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
 #include <unistd.h>
 
 AssistantClient::AssistantClient(QObject *parent, const QString &profile)
@@ -111,7 +111,7 @@ void AssistantClient::openAssistant(const QString &page)
       QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,10);
     }
     if (!procIO) goto start_new;
-    QTextStream stream(static_cast<QIODevice *>(socket));
+    Q3TextStream stream(static_cast<QIODevice *>(socket));
     stream<<page<<'\n';
   }
 }

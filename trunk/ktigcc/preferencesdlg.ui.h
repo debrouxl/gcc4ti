@@ -34,9 +34,9 @@
 
 #include <qcheckbox.h>
 #include <qradiobutton.h>
-#include <qaccel.h>
+#include <q3accel.h>
 #include <qcolor.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qapplication.h>
 #include <qeventloop.h>
 #include <qcursor.h>
@@ -70,12 +70,12 @@ class KRecentDirs {
 
 class RenamableKListViewItem : public KListViewItem {
   public:
-  RenamableKListViewItem(QListViewItem *parent, QString text)
+  RenamableKListViewItem(Q3ListViewItem *parent, QString text)
     : KListViewItem(parent, text)
   {
     setRenameEnabled(0,TRUE);
   }
-  RenamableKListViewItem(QListViewItem *parent, QListViewItem *after,
+  RenamableKListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
                          QString text)
     : KListViewItem(parent, after, text)
   {
@@ -94,11 +94,11 @@ class RenamableKListViewItem : public KListViewItem {
   }
 };
 
-class ListBoxTextPair : public QListBoxText {
+class ListBoxTextPair : public Q3ListBoxText {
   public:
-    ListBoxTextPair(QListBox *listbox, const QString &text,
+    ListBoxTextPair(Q3ListBox *listbox, const QString &text,
                     const QString &data)
-      : QListBoxText(listbox,text), m_data(data) {}
+      : Q3ListBoxText(listbox,text), m_data(data) {}
     virtual ~ListBoxTextPair() {}
     void setData(const QString &data) {m_data=data;}
     QString data() {return m_data;}
@@ -199,22 +199,22 @@ void Preferences::init()
   preferences.tempSynQll=preferences.synQll;
   syntaxLanguage_activated(syntaxLanguage->currentItem());
   syntaxListView->setSorting(-1);
-  syntaxListView->setColumnWidthMode(0,QListView::Maximum);
+  syntaxListView->setColumnWidthMode(0,Q3ListView::Maximum);
   syntaxListView->header()->hide();
   syntaxListView->setAlternateBackground(QColor());
-  QListViewItem *rootListItem=syntaxListView->firstChild();
-  QListViewItem *customStylesItem=rootListItem->firstChild();
+  Q3ListViewItem *rootListItem=syntaxListView->firstChild();
+  Q3ListViewItem *customStylesItem=rootListItem->firstChild();
   customStylesItem->setOpen(TRUE);
-  QListViewItem *wordListsItem=customStylesItem->nextSibling();
+  Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
   wordListsItem->setOpen(TRUE);
-  QAccel *syntaxListViewAccel=new QAccel(syntaxListView);
-  syntaxListViewAccel->insertItem(Key_Delete,0);
+  Q3Accel *syntaxListViewAccel=new Q3Accel(syntaxListView);
+  syntaxListViewAccel->insertItem(Qt::Key_Delete,0);
   connect(syntaxListViewAccel,SIGNAL(activated(int)),
           this,SLOT(syntaxListViewAccel_activated(int)));
 
   // Coding
   templateListBox->clear();
-  for (QValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
+  for (Q3ValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
        it!=preferences.templates.end(); ++it)
     new ListBoxTextPair(templateListBox,(*it).first,(*it).second);
   templateListBox->sort();
@@ -269,7 +269,7 @@ void Preferences::destroy()
 
     // Coding
     preferences.templates.clear();
-    for (QListBoxItem *item=templateListBox->firstItem(); item;
+    for (Q3ListBoxItem *item=templateListBox->firstItem(); item;
          item=item->next())
       preferences.templates.append(qMakePair(item->text(),
         static_cast<ListBoxTextPair *>(item)->data()));
@@ -316,26 +316,26 @@ void Preferences::syntaxLanguage_activated(int index)
   }
 
   syntaxEnabled->setChecked(preferences.syn->enabled);
-  QListViewItem *rootListItem=syntaxListView->firstChild();
-  QListViewItem *item, *nextItem;
-  QListViewItem *customStylesItem=rootListItem->firstChild();
+  Q3ListViewItem *rootListItem=syntaxListView->firstChild();
+  Q3ListViewItem *item, *nextItem;
+  Q3ListViewItem *customStylesItem=rootListItem->firstChild();
   for (item=customStylesItem->firstChild(); item; item=nextItem) {
     nextItem=item->nextSibling();
     delete item;
   }
-  item=static_cast<QListViewItem *>(NULL);
-  for (QValueList<Syn_CustomStyle>::ConstIterator it=
+  item=static_cast<Q3ListViewItem *>(NULL);
+  for (Q3ValueList<Syn_CustomStyle>::ConstIterator it=
          preferences.syn->customStyles.begin();
        it!=preferences.syn->customStyles.end(); ++it) {
     item=new RenamableKListViewItem(customStylesItem,item,(*it).name);
   }
-  QListViewItem *wordListsItem=customStylesItem->nextSibling();
+  Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
   for (item=wordListsItem->firstChild(); item; item=nextItem) {
     nextItem=item->nextSibling();
     delete item;
   }  
-  item=static_cast<QListViewItem *>(NULL);
-  for (QValueList<Syn_WordList>::ConstIterator it=
+  item=static_cast<Q3ListViewItem *>(NULL);
+  for (Q3ValueList<Syn_WordList>::ConstIterator it=
          preferences.syn->wordLists.begin();
        it!=preferences.syn->wordLists.end(); ++it) {
     item=new RenamableKListViewItem(wordListsItem,item,(*it).name);
@@ -355,7 +355,7 @@ void Preferences::syntaxEnabled_toggled(bool on)
   syntaxListView->setEnabled(on);
   newStyleButton->setEnabled(on);
   newListButton->setEnabled(on);
-  QListViewItem *selectedItem=syntaxListView->selectedItem();
+  Q3ListViewItem *selectedItem=syntaxListView->selectedItem();
   editButton->setEnabled(on&&selectedItem&&selectedItem->rtti()==0x716CC8);
 }
 
@@ -429,13 +429,13 @@ void Preferences::parenthesisColorsButton_clicked()
 {
   SelectColors selectColors(this);
   selectColors.colorList->clear();
-  for (QValueList<QColor>::ConstIterator it=preferences.syn->parenthesisColors.begin();
+  for (Q3ValueList<QColor>::ConstIterator it=preferences.syn->parenthesisColors.begin();
        it!=preferences.syn->parenthesisColors.end(); ++it)
     new ColorListItem(selectColors.colorList,*it);
   selectColors.exec();
   if (selectColors.result()==QDialog::Accepted) {
     preferences.syn->parenthesisColors.clear();
-    for (QListBoxItem *item=selectColors.colorList->firstItem(); item;
+    for (Q3ListBoxItem *item=selectColors.colorList->firstItem(); item;
          item=item->next())
       preferences.syn->parenthesisColors.append(
         static_cast<ColorListItem *>(item)->color());
@@ -467,20 +467,20 @@ void Preferences::parenthesisStyleButton_clicked()
 
 void Preferences::syntaxListView_selectionChanged()
 {
-  QListViewItem *selectedItem=syntaxListView->selectedItem();
+  Q3ListViewItem *selectedItem=syntaxListView->selectedItem();
   editButton->setEnabled(syntaxEnabled->isChecked()
                          && selectedItem && selectedItem->rtti()==0x716CC8);
 }
 
 #define unused_col col __attribute__((unused))
-void Preferences::syntaxListView_itemRenamed(QListViewItem *item, const QString &str, int unused_col)
+void Preferences::syntaxListView_itemRenamed(Q3ListViewItem *item, const QString &str, int unused_col)
 {
-  QListViewItem *rootListItem=syntaxListView->firstChild();
-  QListViewItem *customStylesItem=rootListItem->firstChild();
-  QListViewItem *wordListsItem=customStylesItem->nextSibling();
+  Q3ListViewItem *rootListItem=syntaxListView->firstChild();
+  Q3ListViewItem *customStylesItem=rootListItem->firstChild();
+  Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
   if (item->parent()==customStylesItem) {
-    QListViewItem *i;
-    QValueList<Syn_CustomStyle>::Iterator it;
+    Q3ListViewItem *i;
+    Q3ValueList<Syn_CustomStyle>::Iterator it;
     for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
          i!=item && it!=preferences.syn->customStyles.end() && i;
          ++it, i=i->nextSibling());
@@ -489,8 +489,8 @@ void Preferences::syntaxListView_itemRenamed(QListViewItem *item, const QString 
     else
       (*it).name=str;
   } else if (item->parent()==wordListsItem) {
-    QListViewItem *i;
-    QValueList<Syn_WordList>::Iterator it;
+    Q3ListViewItem *i;
+    Q3ValueList<Syn_WordList>::Iterator it;
     for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
          i!=item && it!=preferences.syn->wordLists.end() && i;
          ++it, i=i->nextSibling());
@@ -504,14 +504,14 @@ void Preferences::syntaxListView_itemRenamed(QListViewItem *item, const QString 
 void Preferences::syntaxListViewAccel_activated(int id)
 {
   if (!id) {
-    QListViewItem *currentItem=syntaxListView->currentItem();
+    Q3ListViewItem *currentItem=syntaxListView->currentItem();
     if (currentItem && currentItem->rtti()==0x716CC8) {
-      QListViewItem *rootListItem=syntaxListView->firstChild();
-      QListViewItem *customStylesItem=rootListItem->firstChild();
-      QListViewItem *wordListsItem=customStylesItem->nextSibling();
+      Q3ListViewItem *rootListItem=syntaxListView->firstChild();
+      Q3ListViewItem *customStylesItem=rootListItem->firstChild();
+      Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
       if (currentItem->parent()==customStylesItem) {
-        QListViewItem *i;
-        QValueList<Syn_CustomStyle>::Iterator it;
+        Q3ListViewItem *i;
+        Q3ValueList<Syn_CustomStyle>::Iterator it;
         for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
              i!=currentItem && it!=preferences.syn->customStyles.end() && i;
              ++it, i=i->nextSibling());
@@ -522,8 +522,8 @@ void Preferences::syntaxListViewAccel_activated(int id)
           preferences.syn->customStyles.remove(it);
         }
       } else if (currentItem->parent()==wordListsItem) {
-        QListViewItem *i;
-        QValueList<Syn_WordList>::Iterator it;
+        Q3ListViewItem *i;
+        Q3ValueList<Syn_WordList>::Iterator it;
         for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
              i!=currentItem && it!=preferences.syn->wordLists.end() && i;
              ++it, i=i->nextSibling());
@@ -543,9 +543,9 @@ void Preferences::newStyleButton_clicked()
   Syn_CustomStyle newStyle;
   newStyle.name="New Style";
   preferences.syn->customStyles.append(newStyle);
-  QListViewItem *rootListItem=syntaxListView->firstChild();
-  QListViewItem *customStylesItem=rootListItem->firstChild();
-  QListViewItem *item=customStylesItem->firstChild();
+  Q3ListViewItem *rootListItem=syntaxListView->firstChild();
+  Q3ListViewItem *customStylesItem=rootListItem->firstChild();
+  Q3ListViewItem *item=customStylesItem->firstChild();
   while (item && item->nextSibling()) item=item->nextSibling();
   item=new RenamableKListViewItem(customStylesItem,item,newStyle.name);
   syntaxListView->setCurrentItem(item);
@@ -558,10 +558,10 @@ void Preferences::newListButton_clicked()
   Syn_WordList newList;
   newList.name="New List";
   preferences.syn->wordLists.append(newList);
-  QListViewItem *rootListItem=syntaxListView->firstChild();
-  QListViewItem *customStylesItem=rootListItem->firstChild();
-  QListViewItem *wordListsItem=customStylesItem->nextSibling();
-  QListViewItem *item=wordListsItem->firstChild();
+  Q3ListViewItem *rootListItem=syntaxListView->firstChild();
+  Q3ListViewItem *customStylesItem=rootListItem->firstChild();
+  Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
+  Q3ListViewItem *item=wordListsItem->firstChild();
   while (item && item->nextSibling()) item=item->nextSibling();
   item=new RenamableKListViewItem(wordListsItem,item,newList.name);
   syntaxListView->setCurrentItem(item);
@@ -575,14 +575,14 @@ static QColor tempColor;
 
 void Preferences::editButton_clicked()
 {
-  QListViewItem *currentItem=syntaxListView->currentItem();
+  Q3ListViewItem *currentItem=syntaxListView->currentItem();
   if (currentItem && currentItem->rtti()==0x716CC8) {
-    QListViewItem *rootListItem=syntaxListView->firstChild();
-    QListViewItem *customStylesItem=rootListItem->firstChild();
-    QListViewItem *wordListsItem=customStylesItem->nextSibling();
+    Q3ListViewItem *rootListItem=syntaxListView->firstChild();
+    Q3ListViewItem *customStylesItem=rootListItem->firstChild();
+    Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
     if (currentItem->parent()==customStylesItem) {
-      QListViewItem *i;
-      QValueList<Syn_CustomStyle>::Iterator it;
+      Q3ListViewItem *i;
+      Q3ValueList<Syn_CustomStyle>::Iterator it;
       for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
            i!=currentItem && it!=preferences.syn->customStyles.end() && i;
            ++it, i=i->nextSibling());
@@ -617,8 +617,8 @@ void Preferences::editButton_clicked()
         }
       }
     } else if (currentItem->parent()==wordListsItem) {
-      QListViewItem *i;
-      QValueList<Syn_WordList>::Iterator it;
+      Q3ListViewItem *i;
+      Q3ValueList<Syn_WordList>::Iterator it;
       for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
            i!=currentItem && it!=preferences.syn->wordLists.end() && i;
            ++it, i=i->nextSibling());
@@ -680,8 +680,8 @@ void Preferences::editDialog_styleButton_clicked()
 
 void Preferences::clearSelectionButton_clicked()
 {
-  QListBoxItem *next;
-  for (QListBoxItem *item=templateListBox->firstItem(); item;
+  Q3ListBoxItem *next;
+  for (Q3ListBoxItem *item=templateListBox->firstItem(); item;
        item=next) {
     next=item->next();
     if (item->isSelected()) delete item;
@@ -691,7 +691,7 @@ void Preferences::clearSelectionButton_clicked()
 void Preferences::applyButton_clicked()
 {
   QString identifier=templateIdentifier->text();
-  QListBoxItem *item=templateListBox->findItem(identifier,Qt::ExactMatch);
+  Q3ListBoxItem *item=templateListBox->findItem(identifier,Qt::ExactMatch);
   if (item) {
     static_cast<ListBoxTextPair *>(item)->setData(templateCode->text());
   } else {
@@ -702,7 +702,7 @@ void Preferences::applyButton_clicked()
 
 void Preferences::templateListBox_selectionChanged()
 {
-  for (QListBoxItem *item=templateListBox->firstItem(); item;
+  for (Q3ListBoxItem *item=templateListBox->firstItem(); item;
        item=item->next()) {
     if (item->isSelected()) {
       clearSelectionButton->setEnabled(TRUE);
@@ -712,7 +712,7 @@ void Preferences::templateListBox_selectionChanged()
   clearSelectionButton->setEnabled(FALSE);
 }
 
-void Preferences::templateListBox_currentChanged(QListBoxItem *item)
+void Preferences::templateListBox_currentChanged(Q3ListBoxItem *item)
 {
   if (item) {
     templateIdentifier->setText(item->text());

@@ -65,7 +65,7 @@ void ToolsDialog::editButton_clicked()
   toolProperties.exec();
   if (toolProperties.result()==QDialog::Accepted) {
     Tool &newTool=tempTools[toolIndex];
-    QListViewItem *toolItem=listView->selectedItem();
+    Q3ListViewItem *toolItem=listView->selectedItem();
     toolItem->setText(0,newTool.title);
     toolItem->setText(1,newTool.commandLine);
     toolItem->setText(2,newTool.workingDirectory);

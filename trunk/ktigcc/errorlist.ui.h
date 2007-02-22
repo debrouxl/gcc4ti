@@ -31,18 +31,21 @@
 */
 
 #include <qevent.h>
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qstring.h>
+//Added by qt3to4:
+#include <QFocusEvent>
+#include <QKeyEvent>
 
 void ErrorList::keyPressEvent(QKeyEvent *e)
 {
   if ((e->key()==Qt::Key_Insert || e->key()==Qt::Key_C)
-      && e->state()==Qt::ControlButton) {
+      && e->state()==Qt::ControlModifier) {
     // Copy selected errors to the clipboard.
-    QListViewItemIterator lvit(errorListView,QListViewItemIterator::Selected);
-    QListViewItem *errorItem;
+    Q3ListViewItemIterator lvit(errorListView,Q3ListViewItemIterator::Selected);
+    Q3ListViewItem *errorItem;
     QString clipboardText;
     for (errorItem=lvit.current();errorItem;errorItem=(++lvit).current()) {
       clipboardText.append(errorItem->text(0));

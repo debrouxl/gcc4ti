@@ -20,11 +20,11 @@
 */
 
 #include <cstddef>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kconfig.h>
 #include <kaboutdata.h>
 #include <qstring.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 class AssistantClient;
 class QClipboard;
 class SourceFile;
@@ -48,7 +48,7 @@ extern const char *parg;
 extern AssistantClient *assistant;
 extern QClipboard *clipboard;
 extern QStringList findHistory, replacementHistory;
-extern QPtrList<SourceFile> sourceFiles;
+extern Q3PtrList<SourceFile> sourceFiles;
 extern tprSettings settings;
 extern tprLibOpts libopts;
 
@@ -61,7 +61,7 @@ struct Tool {
   QString workingDirectory;
   bool runInTerminal;
 };
-typedef QValueVector<Tool> Tools;
+typedef Q3ValueVector<Tool> Tools;
 extern Tools tools, tempTools;
 extern int toolIndex;
 extern bool disableViewEvents;

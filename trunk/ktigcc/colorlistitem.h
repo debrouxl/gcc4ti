@@ -18,14 +18,14 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qpainter.h>
 #include <qstyle.h>
 
-class ColorListItem : public QListBoxItem {
+class ColorListItem : public Q3ListBoxItem {
   public:
-    ColorListItem(QListBox *listbox, const QColor &color)
-      : QListBoxItem(listbox), m_color(color) {}
+    ColorListItem(Q3ListBox *listbox, const QColor &color)
+      : Q3ListBoxItem(listbox), m_color(color) {}
     virtual ~ColorListItem() {}
     QColor color() {return m_color;}
     void setColor(const QColor &color) {m_color=color; listBox()->update();}
@@ -41,8 +41,8 @@ class ColorListItem : public QListBoxItem {
       if (inListBox && isCurrent())
         listBox()->style().drawPrimitive(QStyle::PE_FocusRect,painter,r,listBox()->colorGroup());
     }
-    virtual int height(const QListBox *) const {return 16;}
-    virtual int width(const QListBox *listBox) const {
+    virtual int height(const Q3ListBox *) const {return 16;}
+    virtual int width(const Q3ListBox *listBox) const {
       return listBox->contentsWidth();
     }
   private:

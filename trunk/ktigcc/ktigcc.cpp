@@ -29,7 +29,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <qtextcodec.h>
-#include <qiconset.h>
+#include <qicon.h>
 #include <qsize.h> 
 #include <kglobal.h>
 #include <kicontheme.h>
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   // Set the preferred large icon size so system toolbar icons don't get
   // annoying padding.
   int toolbarIconSize=KIconLoader().currentSize(KIcon::MainToolbar);
-  QIconSet::setIconSize(QIconSet::Large,QSize(toolbarIconSize,toolbarIconSize));
+  QIcon::setIconSize(QIcon::Large,QSize(toolbarIconSize,toolbarIconSize));
   // Readd the images KDE kindly removes...
   qCleanupImages_ktigcc();
   qInitImages_ktigcc();

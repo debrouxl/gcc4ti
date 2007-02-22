@@ -29,7 +29,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qpair.h>
 #include <qregexp.h>
 #include <qapplication.h>
@@ -37,19 +37,35 @@
 #include <qstatusbar.h>
 #include <qtimer.h>
 #include <qdatetime.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qdir.h>
 #include <qclipboard.h>
-#include <qaccel.h>
+#include <q3accel.h>
 #include <qeventloop.h>
-#include <qdockwindow.h>
+#include <q3dockwindow.h>
 #include <qfileinfo.h>
 #include <qdatetime.h>
 #include <qtextcodec.h>
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
+//Added by qt3to4:
+#include <QTimerEvent>
+#include <Q3PtrList>
+#include <q3mimefactory.h>
+#include <QDragMoveEvent>
+#include <QDragLeaveEvent>
+#include <QKeyEvent>
+#include <QResizeEvent>
+#include <QEvent>
+#include <QDropEvent>
+#include <Q3PopupMenu>
+#include <QDragEnterEvent>
+#include <Q3ValueList>
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QCloseEvent>
 #include <kapplication.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
@@ -137,7 +153,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                                || (item)==txtFilesListItem))
 #define IS_FOLDER(item) ((item) && (item)->rtti()==0x716CC0)
 #define IS_FILE(item) ((item) && (item)->rtti()==0x716CC1)
-#define CATEGORY_OF(category,item) QListViewItem *category=(item); \
+#define CATEGORY_OF(category,item) Q3ListViewItem *category=(item); \
                                    while (category->parent()->rtti()==0x716CC0) \
                                      category=category->parent()
 #define COUNTER_FOR_CATEGORY(category) ((category)==hFilesListItem?hFileCount: \
@@ -151,8 +167,8 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         othFileCount)
 #define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
 
-#define LOAD_ICON(name) (QIconSet(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
-#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small,KIcon::SizeSmall):QPixmap::fromMimeSource((name)))
+#define LOAD_ICON(name) (QIcon(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
+#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small,KIcon::SizeSmall):qPixmapFromMimeSource((name)))
 
 #define SET_TEXT_SAFE(doc,text) do { \
     disableViewEvents=TRUE; \
@@ -163,8 +179,8 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 // For some reason, this flag is not in the public ConfigFlags enum.
 #define CF_REMOVE_TRAILING_DYN 0x4000000
 
-static QListViewItem *currentListItem;
-static QListViewItem *replaceCurrentDocument;
+static Q3ListViewItem *currentListItem;
+static Q3ListViewItem *replaceCurrentDocument;
 static unsigned replaceCurrentLine;
 static bool compiling;
 class KReplaceWithSelection : public KReplace {
@@ -228,26 +244,26 @@ static KReplaceWithSelection *kreplace;
 // for slots of the main form.
 class ListViewFolder : public KListViewItem {
   public:
-  ListViewFolder(QListView *parent) : KListViewItem(parent)
+  ListViewFolder(Q3ListView *parent) : KListViewItem(parent)
   {
     setPixmap(0,SYSICON("folder","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
-  ListViewFolder(QListViewItem *parent) : KListViewItem(parent)
+  ListViewFolder(Q3ListViewItem *parent) : KListViewItem(parent)
   {
     setPixmap(0,SYSICON("folder","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
-  ListViewFolder(QListView *parent, QListViewItem *after)
+  ListViewFolder(Q3ListView *parent, Q3ListViewItem *after)
           : KListViewItem(parent, after)
   {
     setPixmap(0,SYSICON("folder","folder1.png"));
     setDropEnabled(TRUE);
     setDragEnabled(TRUE);
   }
-  ListViewFolder(QListViewItem *parent, QListViewItem *after)
+  ListViewFolder(Q3ListViewItem *parent, Q3ListViewItem *after)
           : KListViewItem(parent, after)
   {
     setPixmap(0,SYSICON("folder","folder1.png"));
@@ -266,7 +282,7 @@ class ListViewFolder : public KListViewItem {
 
 class ListViewFile : public KListViewItem {
   public:
-  ListViewFile(QListView *parent) : KListViewItem(parent),
+  ListViewFile(Q3ListView *parent) : KListViewItem(parent),
                                     kateView(NULL), isNew(TRUE),
                                     modifiedSinceLastCompile(TRUE)
   {
@@ -275,7 +291,7 @@ class ListViewFile : public KListViewItem {
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
   }
-  ListViewFile(QListViewItem *parent) : KListViewItem(parent),
+  ListViewFile(Q3ListViewItem *parent) : KListViewItem(parent),
                                         kateView(NULL), isNew(TRUE),
                                         modifiedSinceLastCompile(TRUE)
   {
@@ -284,7 +300,7 @@ class ListViewFile : public KListViewItem {
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
   }
-  ListViewFile(QListView *parent, QListViewItem *after)
+  ListViewFile(Q3ListView *parent, Q3ListViewItem *after)
           : KListViewItem(parent, after), kateView(NULL), isNew(TRUE),
             modifiedSinceLastCompile(TRUE)
   {
@@ -293,7 +309,7 @@ class ListViewFile : public KListViewItem {
     setDragEnabled(TRUE);
     setRenameEnabled(0,TRUE);
   }
-  ListViewFile(QListViewItem *parent, QListViewItem *after)
+  ListViewFile(Q3ListViewItem *parent, Q3ListViewItem *after)
           : KListViewItem(parent, after), kateView(NULL),
             isNew(TRUE), modifiedSinceLastCompile(TRUE)
   {
@@ -306,7 +322,7 @@ class ListViewFile : public KListViewItem {
   {
     MainForm::deleteErrorsForLVFile(this);
     if (kreplace && replaceCurrentDocument==this) {
-      replaceCurrentDocument=static_cast<QListViewItem *>(NULL);
+      replaceCurrentDocument=static_cast<Q3ListViewItem *>(NULL);
       kreplace->invalidateSelection();
     }
     if (fileName[0]=='/')
@@ -335,26 +351,26 @@ class ListViewFile : public KListViewItem {
 
 class ListViewRoot : public KListViewItem {
   public:
-  ListViewRoot(QListView *parent) : KListViewItem(parent)
+  ListViewRoot(Q3ListView *parent) : KListViewItem(parent)
   {
     setRenameEnabled(0,TRUE);
     // dragging not really allowed, but don't let the cursor run around when dragged
     setDragEnabled(TRUE);
   }
-  ListViewRoot(QListViewItem *parent) : KListViewItem(parent)
+  ListViewRoot(Q3ListViewItem *parent) : KListViewItem(parent)
   {
     setRenameEnabled(0,TRUE);
     // dragging not really allowed, but don't let the cursor run around when dragged
     setDragEnabled(TRUE);
   }
-  ListViewRoot(QListView *parent, QListViewItem *after)
+  ListViewRoot(Q3ListView *parent, Q3ListViewItem *after)
           : KListViewItem(parent, after)
   {
     setRenameEnabled(0,TRUE);
     // dragging not really allowed, but don't let the cursor run around when dragged
     setDragEnabled(TRUE);
   }
-  ListViewRoot(QListViewItem *parent, QListViewItem *after)
+  ListViewRoot(Q3ListViewItem *parent, Q3ListViewItem *after)
           : KListViewItem(parent, after)
   {
     setRenameEnabled(0,TRUE);
@@ -373,16 +389,16 @@ class ListViewRoot : public KListViewItem {
 // These should be instance variables in clean C++, but QT Designer won't let me
 // touch the class definition, so this is all I can do. And there is only one
 // instance of MainForm anyway.
-static QListViewItem *rootListItem;
-static QListViewItem *hFilesListItem;
-static QListViewItem *cFilesListItem;
-static QListViewItem *sFilesListItem;
-static QListViewItem *asmFilesListItem;
-static QListViewItem *qllFilesListItem;
-static QListViewItem *oFilesListItem;
-static QListViewItem *aFilesListItem;
-static QListViewItem *txtFilesListItem;
-static QListViewItem *othFilesListItem;
+static Q3ListViewItem *rootListItem;
+static Q3ListViewItem *hFilesListItem;
+static Q3ListViewItem *cFilesListItem;
+static Q3ListViewItem *sFilesListItem;
+static Q3ListViewItem *asmFilesListItem;
+static Q3ListViewItem *qllFilesListItem;
+static Q3ListViewItem *oFilesListItem;
+static Q3ListViewItem *aFilesListItem;
+static Q3ListViewItem *txtFilesListItem;
+static Q3ListViewItem *othFilesListItem;
 static bool projectIsDirty, projectNeedsRelink;
 static QLabel *leftStatusLabel;
 static QLabel *rowStatusLabel;
@@ -390,9 +406,9 @@ static QLabel *colStatusLabel;
 static QLabel *charsStatusLabel;
 static QLabel *rightStatusLabel;
 static KHelpMenu *khelpmenu;
-static QPopupMenu *te_popup;
+static Q3PopupMenu *te_popup;
 static bool headersModified;
-static QDockWindow *errorListDock;
+static Q3DockWindow *errorListDock;
 static ErrorList *errorList;
 static unsigned errorCountTotal=0,errorCountErrors=0,errorCountWarnings=0;
 static QString programOutput;
@@ -403,13 +419,13 @@ tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
 QClipboard *clipboard;
-static QAccel *accel, *fileTreeAccel;
+static Q3Accel *accel, *fileTreeAccel;
 static KFindDialog *kfinddialog;
 QStringList findHistory, replacementHistory;
-static QListViewItem *findCurrentDocument;
+static Q3ListViewItem *findCurrentDocument;
 static unsigned findCurrentLine;
-QPtrList<SourceFile> sourceFiles;
-static QPopupMenu *findFunctionsPopup;
+Q3PtrList<SourceFile> sourceFiles;
+static Q3PopupMenu *findFunctionsPopup;
 bool have_usb;
 Tools tools, tempTools;
 int toolIndex;
@@ -424,35 +440,35 @@ class DnDListView : public KListView {
   // Maybe the built-in drag&drop support in KListView could be made to work as
   // expected, but for now just bypass it to use the existing code I wrote for
   // QListView.
-  virtual void takeItem(QListViewItem *i) {QListView::takeItem(i);}
-  virtual void setAcceptDrops(bool on) {QListView::setAcceptDrops(on);}
+  virtual void takeItem(Q3ListViewItem *i) {Q3ListView::takeItem(i);}
+  virtual void setAcceptDrops(bool on) {Q3ListView::setAcceptDrops(on);}
   protected:
-  virtual QDragObject *dragObject() {
-    QListViewItem *currItem=selectedItem();
+  virtual Q3DragObject *dragObject() {
+    Q3ListViewItem *currItem=selectedItem();
     if (currItem==rootListItem || currItem->parent()==rootListItem)
       return NULL;
-    QStoredDrag *storedDrag=new QStoredDrag("x-ktigcc-dnd", this);
-    static QByteArray data(sizeof(QListViewItem*));
+    Q3StoredDrag *storedDrag=new Q3StoredDrag("x-ktigcc-dnd", this);
+    static QByteArray data(sizeof(Q3ListViewItem*));
     data.duplicate(reinterpret_cast<char *>(&currItem),
-                   sizeof(QListViewItem*));
+                   sizeof(Q3ListViewItem*));
     storedDrag->setEncodedData(data);
     return storedDrag;
   }
   virtual void dropEvent (QDropEvent *e) {
     if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
-      QListViewItem *currItem;
-      currItem = *reinterpret_cast<QListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
+      Q3ListViewItem *currItem;
+      currItem = *reinterpret_cast<Q3ListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
       if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
         // dropping folder
         // can only drop on folder or category
-        QListViewItem *item=itemAt(e->pos());
+        Q3ListViewItem *item=itemAt(e->pos());
         if (IS_FOLDER(item)) {
           // need same category
           CATEGORY_OF(srcCategory,currItem);
           CATEGORY_OF(destCategory,item);
           if (srcCategory == destCategory) {
             // can't move folder into itself
-            for (QListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
+            for (Q3ListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
               if (destFolder==currItem) goto ignore;
             }
             // move folder
@@ -461,7 +477,7 @@ class DnDListView : public KListView {
             item->insertItem(currItem);
             // put it at the right place
             if (currItem->nextSibling()) {
-              QListViewItem *lastItem=currItem->nextSibling();
+              Q3ListViewItem *lastItem=currItem->nextSibling();
               while(lastItem->nextSibling())
                 lastItem=lastItem->nextSibling();
               currItem->moveItem(lastItem);
@@ -472,7 +488,7 @@ class DnDListView : public KListView {
         } else e->ignore();
       } else if (IS_FILE(currItem)) {
         // dropping file
-        QListViewItem *item=itemAt(e->pos());
+        Q3ListViewItem *item=itemAt(e->pos());
         if (IS_FOLDER(item)) {
           // drop on folder
           // don't allow more than one Quill file per project
@@ -513,7 +529,7 @@ class DnDListView : public KListView {
             COUNTER_FOR_CATEGORY(destCategory)++;
             // put it at the right place
             if (IS_FILE(currItem->nextSibling())) {
-              QListViewItem *lastItem=currItem->nextSibling();
+              Q3ListViewItem *lastItem=currItem->nextSibling();
               while(IS_FILE(lastItem->nextSibling()))
                 lastItem=lastItem->nextSibling();
               currItem->moveItem(lastItem);
@@ -579,7 +595,7 @@ class DnDListView : public KListView {
               && currItem != item) {
             // reorder files
             // figure out which one is the first
-            for (QListViewItem *i=currItem->parent()->firstChild();i;
+            for (Q3ListViewItem *i=currItem->parent()->firstChild();i;
                  i=i->nextSibling()) {
               if (i==currItem) {
                 // currItem is first, move currItem after item
@@ -609,19 +625,19 @@ class DnDListView : public KListView {
   }
   virtual void dragMoveEvent (QDragMoveEvent *e) {
     if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
-      QListViewItem *currItem;
-      currItem = *reinterpret_cast<QListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
+      Q3ListViewItem *currItem;
+      currItem = *reinterpret_cast<Q3ListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
       if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
         // dropping folder
         // can only drop on folder or category
-        QListViewItem *item=itemAt(e->pos());
+        Q3ListViewItem *item=itemAt(e->pos());
         if (IS_FOLDER(item)) {
           // need same category
           CATEGORY_OF(srcCategory,currItem);
           CATEGORY_OF(destCategory,item);
           if (srcCategory == destCategory) {
             // can't move folder into itself
-            for (QListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
+            for (Q3ListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
               if (destFolder==currItem) goto ignore;
             }
             e->accept();
@@ -629,7 +645,7 @@ class DnDListView : public KListView {
         } else e->ignore();
       } else if (IS_FILE(currItem)) {
         // dropping file
-        QListViewItem *item=itemAt(e->pos());
+        Q3ListViewItem *item=itemAt(e->pos());
         if (IS_FOLDER(item)) {
           // drop on folder
           // don't allow more than one Quill file per project
@@ -651,25 +667,25 @@ class DnDListView : public KListView {
   }
   // Make my hand-coded drag&drop code work (protected part).
   virtual void contentsDragMoveEvent(QDragMoveEvent *e) {
-    QListView::contentsDragMoveEvent(e);
+    Q3ListView::contentsDragMoveEvent(e);
   }
   virtual void contentsMouseMoveEvent(QMouseEvent *e) {
-    QListView::contentsMouseMoveEvent(e);
+    Q3ListView::contentsMouseMoveEvent(e);
   }
   virtual void contentsDragLeaveEvent(QDragLeaveEvent *e) {
-    QListView::contentsDragLeaveEvent(e);
+    Q3ListView::contentsDragLeaveEvent(e);
   }
   virtual void contentsDropEvent(QDropEvent *e) {
-    QListView::contentsDropEvent(e);
+    Q3ListView::contentsDropEvent(e);
   }
   virtual void contentsDragEnterEvent(QDragEnterEvent *e) {
-    QListView::contentsDragEnterEvent(e);
+    Q3ListView::contentsDragEnterEvent(e);
   }
   virtual void startDrag() {
-    QListView::startDrag();
+    Q3ListView::startDrag();
   }
   // KListView::rename won't work properly if I don't do this. :-/
-  virtual void rename(QListViewItem *item, int c) {
+  virtual void rename(Q3ListViewItem *item, int c) {
     QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
     ensureItemVisible(item);
     QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
@@ -855,10 +871,10 @@ class ErrorListItem : public KListViewItem {
 // ListViewFile because of another Qt Designer limitation: It isn't possible to
 // use custom types in a .ui file method because it doesn't forward-declare them
 // properly.
-void MainForm::deleteErrorsForLVFile(QListViewItem *item)
+void MainForm::deleteErrorsForLVFile(Q3ListViewItem *item)
 {
-  QListViewItemIterator lvit(errorList->errorListView);
-  QListViewItem *errorItem;
+  Q3ListViewItemIterator lvit(errorList->errorListView);
+  Q3ListViewItem *errorItem;
   while ((errorItem=lvit.current())) {
     ++lvit;
     if (static_cast<ErrorListItem *>(errorItem)->lvFile
@@ -872,8 +888,8 @@ void MainForm::deleteErrorsForLVFile(QListViewItem *item)
 // class definition, one time with inline functions and one time without.)
 void MainForm::deleteErrorsForSrcFile(void *srcFile)
 {
-  QListViewItemIterator lvit(errorList->errorListView);
-  QListViewItem *errorItem;
+  Q3ListViewItemIterator lvit(errorList->errorListView);
+  Q3ListViewItem *errorItem;
   while ((errorItem=lvit.current())) {
     ++lvit;
     if (static_cast<ErrorListItem *>(errorItem)->srcFile
@@ -883,10 +899,10 @@ void MainForm::deleteErrorsForSrcFile(void *srcFile)
 }
 
 // And another.
-void MainForm::createErrorCursorsForSourceFile(QListViewItem *item)
+void MainForm::createErrorCursorsForSourceFile(Q3ListViewItem *item)
 {
-  QListViewItemIterator lvit(errorList->errorListView);
-  QListViewItem *errorItem;
+  Q3ListViewItemIterator lvit(errorList->errorListView);
+  Q3ListViewItem *errorItem;
   for (errorItem=lvit.current();errorItem;errorItem=(++lvit).current()) {
     if (static_cast<ErrorListItem *>(errorItem)->lvFile
         ==static_cast<ListViewFile *>(item))
@@ -898,7 +914,7 @@ void MainForm::createErrorCursorsForSourceFile(QListViewItem *item)
 void MainForm::deleteOverwrittenErrorsIn(void *srcFile)
 {
   SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
-  QListViewItemIterator lvit(errorList->errorListView);
+  Q3ListViewItemIterator lvit(errorList->errorListView);
   ErrorListItem *errorItem;
   while ((errorItem=static_cast<ErrorListItem *>(lvit.current()))) {
     ++lvit;
@@ -912,7 +928,7 @@ void MainForm::deleteOverwrittenErrorsIn(void *srcFile)
   }
 }
 
-void MainForm::errorListView_clicked(QListViewItem *item)
+void MainForm::errorListView_clicked(Q3ListViewItem *item)
 {
   if (item) {
     static_cast<ErrorListItem *>(item)->jumpToLocation();
@@ -923,8 +939,8 @@ void MainForm::errorListView_clicked(QListViewItem *item)
 bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fileName)
 {
   bool compareAbsPaths=fileName.contains('/');
-  QListViewItemIterator lvit(fileTree);
-  QListViewItem *item;
+  Q3ListViewItemIterator lvit(fileTree);
+  Q3ListViewItem *item;
   for (item=lvit.current();item;item=(++lvit).current()) {
     if (IS_FILE(item)
         && (compareAbsPaths?fileName==static_cast<ListViewFile *>(item)->fileName
@@ -934,7 +950,7 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
       return TRUE;
     }
   }
-  QPtrListIterator<SourceFile> sfit(sourceFiles);
+  Q3PtrListIterator<SourceFile> sfit(sourceFiles);
   SourceFile *sourceFile;
   for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
     if (compareAbsPaths?fileName==sourceFile->fileName
@@ -949,8 +965,8 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
 
 void MainForm::init()
 {
-  setIcon(QPixmap::fromMimeSource("icon.png"));
-  KWin::setIcons(winId(),*(icon()),QPixmap::fromMimeSource("ktigcc.png"));
+  setIcon(qPixmapFromMimeSource("icon.png"));
+  KWin::setIcons(winId(),*(icon()),qPixmapFromMimeSource("ktigcc.png"));
   ticables_library_init();
   tifiles_library_init();
   ticalcs_library_init();
@@ -960,7 +976,7 @@ void MainForm::init()
   loadPreferences();
   loadSystemHeaderCompletion();
   fileNewFolderAction->setEnabled(FALSE);
-  te_popup = new QPopupMenu(this);
+  te_popup = new Q3PopupMenu(this);
   te_popup->insertItem("&Open file at cursor",0);
   te_popup->insertItem("&Find symbol declaration",1);
   te_popup->insertSeparator();
@@ -978,7 +994,7 @@ void MainForm::init()
   te_popup->insertItem("&Decrease indent",10);
   connect(te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
   connect(te_popup,SIGNAL(activated(int)),this,SLOT(te_popup_activated(int)));
-  QValueList<int> list;
+  Q3ValueList<int> list;
   list.append(150);
   list.append(500);
   splitter->setSizes(list);
@@ -1002,14 +1018,14 @@ void MainForm::init()
   statusBar()->setSizeGripEnabled(FALSE);
   connect(statusBar(),SIGNAL(messageChanged(const QString &)),this,SLOT(statusBar_messageChanged(const QString &)));
   fileTree->setSorting(-1);
-  fileTree->setColumnWidthMode(0,QListView::Maximum);
+  fileTree->setColumnWidthMode(0,Q3ListView::Maximum);
   fileTree->header()->hide();
   fileTree->setAlternateBackground(QColor());
   rootListItem=new ListViewRoot(fileTree);
   rootListItem->setText(0,"Project1");
   rootListItem->setPixmap(0,SYSICON("exec","tpr.png"));
   rootListItem->setOpen(TRUE);
-  QListViewItem *folderListItem=new ListViewFolder(rootListItem);
+  Q3ListViewItem *folderListItem=new ListViewFolder(rootListItem);
   hFilesListItem=folderListItem;
   folderListItem->setText(0,"Header Files");
   folderListItem=new ListViewFolder(rootListItem,folderListItem);
@@ -1062,44 +1078,44 @@ void MainForm::init()
   KDirWatch::self()->startScan();
   clipboard=QApplication::clipboard();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
-  accel=new QAccel(this);
-  accel->insertItem(ALT+Key_Backspace,0);
+  accel=new Q3Accel(this);
+  accel->insertItem(Qt::ALT+Qt::Key_Backspace,0);
   accel->setItemEnabled(0,FALSE);
-  accel->insertItem(SHIFT+ALT+Key_Backspace,1);
+  accel->insertItem(Qt::SHIFT+Qt::ALT+Qt::Key_Backspace,1);
   accel->setItemEnabled(1,FALSE);
-  accel->insertItem(SHIFT+Key_Delete,2);
+  accel->insertItem(Qt::SHIFT+Qt::Key_Delete,2);
   accel->setItemEnabled(2,FALSE);
-  accel->insertItem(CTRL+Key_Insert,3);
+  accel->insertItem(Qt::CTRL+Qt::Key_Insert,3);
   accel->setItemEnabled(3,FALSE);
-  accel->insertItem(SHIFT+Key_Insert,4);
+  accel->insertItem(Qt::SHIFT+Qt::Key_Insert,4);
   accel->setItemEnabled(4,FALSE);
-  accel->insertItem(Key_F1,5);
+  accel->insertItem(Qt::Key_F1,5);
   accel->setItemEnabled(5,FALSE);
-  accel->insertItem(Key_Enter,6);
+  accel->insertItem(Qt::Key_Enter,6);
   accel->setItemEnabled(6,FALSE);
-  accel->insertItem(Key_Return,7);
+  accel->insertItem(Qt::Key_Return,7);
   accel->setItemEnabled(7,FALSE);
-  accel->insertItem(CTRL+Key_J,8);
+  accel->insertItem(Qt::CTRL+Qt::Key_J,8);
   accel->setItemEnabled(8,FALSE);
-  accel->insertItem(CTRL+Key_Space,9);
+  accel->insertItem(Qt::CTRL+Qt::Key_Space,9);
   accel->setItemEnabled(9,FALSE);
-  accel->insertItem(CTRL+Key_M,10);
+  accel->insertItem(Qt::CTRL+Qt::Key_M,10);
   accel->setItemEnabled(10,FALSE);
-  accel->insertItem(CTRL+Key_Tab,11);
+  accel->insertItem(Qt::CTRL+Qt::Key_Tab,11);
   accel->setItemEnabled(11,TRUE);
-  accel->insertItem(CTRL+Key_G,12);
+  accel->insertItem(Qt::CTRL+Qt::Key_G,12);
   accel->setItemEnabled(12,TRUE);
-  accel->insertItem(SHIFT+CTRL+ALT+Key_F9,13);
+  accel->insertItem(Qt::SHIFT+Qt::CTRL+Qt::ALT+Qt::Key_F9,13);
   accel->setItemEnabled(13,TRUE);
-  accel->insertItem(SHIFT+ALT+Key_F8,14);
+  accel->insertItem(Qt::SHIFT+Qt::ALT+Qt::Key_F8,14);
   accel->setItemEnabled(14,TRUE);
-  accel->insertItem(CTRL+ALT+Key_F9,15);
+  accel->insertItem(Qt::CTRL+Qt::ALT+Qt::Key_F9,15);
   accel->setItemEnabled(15,TRUE);
-  accel->insertItem(CTRL+Key_F9,16);
+  accel->insertItem(Qt::CTRL+Qt::Key_F9,16);
   accel->setItemEnabled(16,TRUE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
-  fileTreeAccel=new QAccel(this);
-  fileTreeAccel->insertItem(Key_Delete,0);
+  fileTreeAccel=new Q3Accel(this);
+  fileTreeAccel->insertItem(Qt::Key_Delete,0);
   connect(fileTreeAccel,SIGNAL(activated(int)),
           this,SLOT(fileTreeAccel_activated(int)));
   kfinddialog = static_cast<KFindDialog *>(NULL);
@@ -1126,11 +1142,11 @@ void MainForm::init()
     helpSearchAction->setIconSet(LOAD_ICON("filefind"));
     findFindAction->setIconSet(LOAD_ICON("filefind"));
     if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
-      QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
+      QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
       int smallSize=IconSize(KIcon::Small);
-      fileReplaceIconSet.setIconSize(QIconSet::Small,QSize(smallSize,smallSize));
+      fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
       int largeSize=IconSize(KIcon::MainToolbar);
-      fileReplaceIconSet.setIconSize(QIconSet::Large,QSize(largeSize,largeSize));
+      fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
       findReplaceAction->setIconSet(fileReplaceIconSet);
     } else
       findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
@@ -1150,7 +1166,7 @@ void MainForm::init()
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->child("findFunctionsAction_action_button","QToolButton",FALSE));
-  findFunctionsPopup=new QPopupMenu(findFunctionsButton);
+  findFunctionsPopup=new Q3PopupMenu(findFunctionsButton);
   connect(findFunctionsPopup,SIGNAL(aboutToShow()),
           this,SLOT(findFunctionsPopup_aboutToShow()));
   connect(findFunctionsPopup,SIGNAL(aboutToHide()),
@@ -1159,9 +1175,9 @@ void MainForm::init()
           this,SLOT(findFunctionsPopup_activated(int)));
   findFunctionsButton->setPopupDelay(0);
   findFunctionsButton->setPopup(findFunctionsPopup);
-  errorListDock=new QDockWindow(QDockWindow::InDock,this);
+  errorListDock=new Q3DockWindow(Q3DockWindow::InDock,this);
   errorListDock->setResizeEnabled(TRUE);
-  errorListDock->setCloseMode(QDockWindow::Always);
+  errorListDock->setCloseMode(Q3DockWindow::Always);
   addToolBar(errorListDock,Qt::DockBottom);
   errorList=new ErrorList(errorListDock);
   errorListDock->setWidget(errorList);
@@ -1175,8 +1191,8 @@ void MainForm::init()
           this,SLOT(projectErrorsAndWarnings(bool)));
   errorList->errorListView->setSorting(-1);
   errorList->errorListView->setAlternateBackground(QColor());
-  connect(errorList->errorListView,SIGNAL(clicked(QListViewItem *)),
-          this,SLOT(errorListView_clicked(QListViewItem *)));
+  connect(errorList->errorListView,SIGNAL(clicked(Q3ListViewItem *)),
+          this,SLOT(errorListView_clicked(Q3ListViewItem *)));
   if (preferences.linkTarget!=LT_TIEMU) {
     debugPauseAction->setEnabled(FALSE);
     debugResetAction->setEnabled(FALSE);
@@ -1326,9 +1342,9 @@ void MainForm::accel_activated(int index)
       case 12:
       case_11:
       {
-        QListViewItem *item=currentListItem;
+        Q3ListViewItem *item=currentListItem;
         if (!item) item=rootListItem;
-        QListViewItem *origItem=item;
+        Q3ListViewItem *origItem=item;
         do {
           item=item->itemBelow();
           if (!item) item=rootListItem;
@@ -1362,7 +1378,7 @@ void MainForm::accel_activated(int index)
       case 6:
       case 7:
       {
-        QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Key_Return,'\n',0,"\n");
+        QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Qt::Key_Return,'\n',0,"\n");
         QApplication::postEvent(focusWidget(),keyEvent);
         break;
       }
@@ -1391,7 +1407,7 @@ void MainForm::completionPopup_closed()
 
 void MainForm::fileTreeAccel_activated(int index)
 {
-  QListViewItem *item=fileTree->currentItem();
+  Q3ListViewItem *item=fileTree->currentItem();
   if (!index && item) removeItem(item);
 }
 
@@ -1408,7 +1424,7 @@ void MainForm::clearProject()
   errorList->errorListView->clear();
   programOutput=QString::null;
   projectProgramOutputAction->setEnabled(FALSE);
-  QListViewItem *f, *next;
+  Q3ListViewItem *f, *next;
   for (f=hFilesListItem->firstChild();f;f=next) {
     next=f->nextSibling();
     delete f;
@@ -1606,7 +1622,7 @@ void MainForm::addRecent(const QString &fileName)
   updateRecent();
 }
 
-QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * parent, const QString &fileCaption, const QString &fileName)
+Q3ListViewItem * MainForm::openFile(Q3ListViewItem * category, Q3ListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
   QString fileText;
   switch (getPathType(fileName)) {
@@ -1626,7 +1642,7 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
       return NULL;
     }
   }
-  QListViewItem *item=NULL, *next=parent->firstChild();
+  Q3ListViewItem *item=NULL, *next=parent->firstChild();
   for (; IS_FILE(next); next=item->nextSibling())
     item=next;
   ListViewFile *newFile=item?new ListViewFile(parent,item)
@@ -1654,11 +1670,11 @@ QListViewItem * MainForm::openFile(QListViewItem * category, QListViewItem * par
   return newFile;
 }
 
-QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
+Q3ListViewItem *MainForm::createFolder(Q3ListViewItem *parent,const QString &name)
 {
-  QListViewItem *item=parent->firstChild();
-  QListViewItem *startItem=item;
-  QListViewItem *newItem;
+  Q3ListViewItem *item=parent->firstChild();
+  Q3ListViewItem *startItem=item;
+  Q3ListViewItem *newItem;
   for (; item; item=item->nextSibling())
   {
     if (IS_FOLDER(item) && !item->text(0).compare(name))
@@ -1674,7 +1690,7 @@ QListViewItem *MainForm::createFolder(QListViewItem *parent,const QString &name)
   return newItem;
 }
 
-void *MainForm::createView(const QString &fileName, const QString &fileText, QListViewItem *category)
+void *MainForm::createView(const QString &fileName, const QString &fileText, Q3ListViewItem *category)
 {
   // Create Document object.
   KParts::Factory *factory = (KParts::Factory *)
@@ -1739,7 +1755,7 @@ void MainForm::adoptSourceFile(void *srcFile)
   QString fileName=sourceFile->fileName;
   Kate::View *newView=sourceFile->kateView;
   // Determine category and caption.
-  QListViewItem *category=othFilesListItem;
+  Q3ListViewItem *category=othFilesListItem;
   QString suffix,caption;
   int p;
   p=fileName.findRev('/');
@@ -1773,7 +1789,7 @@ void MainForm::adoptSourceFile(void *srcFile)
   if (!category)
     category=txtFilesListItem;
   // Create file tree entry.
-  QListViewItem *item=NULL, *next=category->firstChild();
+  Q3ListViewItem *item=NULL, *next=category->firstChild();
   for (; IS_FILE(next); next=item->nextSibling())
     item=next;
   ListViewFile *newFile=item?new ListViewFile(category,item)
@@ -1831,8 +1847,8 @@ void MainForm::adoptSourceFile(void *srcFile)
   fileTreeClicked(newFile);
   // Update errors to point to the in-project source file instead of the
   // external one.
-  QListViewItemIterator lvit(errorList->errorListView);
-  QListViewItem *errorItem;
+  Q3ListViewItemIterator lvit(errorList->errorListView);
+  Q3ListViewItem *errorItem;
   for (errorItem=lvit.current();errorItem;errorItem=(++lvit).current()) {
     if (static_cast<ErrorListItem *>(errorItem)->srcFile==sourceFile) {
       static_cast<ErrorListItem *>(errorItem)->srcFile=static_cast<SourceFile *>(NULL);
@@ -1844,7 +1860,7 @@ void MainForm::adoptSourceFile(void *srcFile)
   sourceFile->deleteLater();
 }
 
-void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *dir, const QString &open_file)
+void MainForm::fileOpen_addList(Q3ListViewItem *category,void *fileListV,void *dir, const QString &open_file)
 {
   int i,e;
   int p,pslash;
@@ -1852,7 +1868,7 @@ void MainForm::fileOpen_addList(QListViewItem *category,void *fileListV,void *di
   TPRFileList *fileList=(TPRFileList*)fileListV;
   QString caption;
   QString treePath;
-  QListViewItem *parent;
+  Q3ListViewItem *parent;
   e=fileList->path.count();
   if (e) category->setOpen(TRUE);
   for (i=0;i<e;i++)
@@ -1953,7 +1969,7 @@ bool MainForm::openProject(const QString &fileName)
     addRecent(fileName);
     return TRUE;
   } else {
-    QListViewItem *category=othFilesListItem;
+    Q3ListViewItem *category=othFilesListItem;
     QString suffix,caption;
     int p;
     
@@ -1970,7 +1986,7 @@ bool MainForm::openProject(const QString &fileName)
       KMessageBox::error(this,QString("The file \'%1\' is already included in the project.").arg(caption));
       return FALSE;
     }
-    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    Q3PtrListIterator<SourceFile> sfit(sourceFiles);
     SourceFile *sourceFile;
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
       if (!fileName.compare(sourceFile->fileName)) {
@@ -2063,7 +2079,7 @@ void MainForm::fileRecent4()
   openProject(fileRecent4Action->statusTip());
 }
 
-int MainForm::fileSavePrompt(QListViewItem *fileItem)
+int MainForm::fileSavePrompt(Q3ListViewItem *fileItem)
 {
   int result;
   ListViewFile *theFile=static_cast<ListViewFile *>(fileItem);
@@ -2095,7 +2111,7 @@ int MainForm::savePrompt(void)
       return 1;
   }
   
-  QListViewItem *item=rootListItem->firstChild(),*next;
+  Q3ListViewItem *item=rootListItem->firstChild(),*next;
   while (item)
   {
     if (IS_FOLDER(item))
@@ -2145,7 +2161,7 @@ void MainForm::removeTrailingSpacesFromView(void *view)
   editExt->editEnd();
 }
 
-void MainForm::fileSave_save(QListViewItem *theItem)
+void MainForm::fileSave_save(Q3ListViewItem *theItem)
 {
   if (!IS_FILE(theItem))
     return;
@@ -2175,7 +2191,7 @@ void MainForm::fileSave_save(QListViewItem *theItem)
   }
 }
 
-void MainForm::fileSave_saveAs(QListViewItem *theItem)
+void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
 {
   if (!IS_FILE(theItem))
     return;
@@ -2242,15 +2258,15 @@ void MainForm::fileSave_saveAs(QListViewItem *theItem)
 }
 
 //loadList also saves the file contents
-void MainForm::fileSave_loadList(QListViewItem *category,void *fileListV,const QString &base_dir,void *dir_new,QString *open_file)
+void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const QString &base_dir,void *dir_new,QString *open_file)
 {
   if (!category)
     return;
   TPRFileList *fileList=(TPRFileList*)fileListV;
   KURL *new_dir=(KURL*)dir_new;
   KURL tmpPath;
-  QListViewItem *item=category->firstChild();
-  QListViewItem *next;
+  Q3ListViewItem *item=category->firstChild();
+  Q3ListViewItem *next;
   QString folderSpec=QString::null;
   int o;
   while (item)
@@ -2391,7 +2407,7 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
     addRecent(nextProj);
   }
   updateRightStatusLabel();
-  QPtrListIterator<SourceFile> sfit(sourceFiles);
+  Q3PtrListIterator<SourceFile> sfit(sourceFiles);
   for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
     if (sourceFile->kateView->getDoc()->isModified())
       sourceFile->fileSave();
@@ -2433,8 +2449,8 @@ void MainForm::filePreferences()
   if (showPreferencesDialog(this,!!asmFilesListItem,!!qllFilesListItem)
       ==QDialog::Accepted) {
     // Apply the KatePart preferences and treeview icons.
-    QListViewItemIterator it(fileTree);
-    QListViewItem *item;
+    Q3ListViewItemIterator it(fileTree);
+    Q3ListViewItem *item;
     // Kate seems really insisting on making it a pain to update syntax highlighting settings.
     for (item=it.current();item;item=(++it).current()) {
       if (IS_FILE(item)) {
@@ -2443,7 +2459,7 @@ void MainForm::filePreferences()
           kateView->getDoc()->setHlMode(0);
       }
     }
-    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    Q3PtrListIterator<SourceFile> sfit(sourceFiles);
     SourceFile *sourceFile;
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
       sourceFile->kateView->getDoc()->setHlMode(0);
@@ -2466,7 +2482,7 @@ void MainForm::filePreferences()
       }
     }
     delete doc;
-    it=QListViewItemIterator(fileTree);
+    it=Q3ListViewItemIterator(fileTree);
     for (item=it.current();item;item=(++it).current()) {
       if (item == rootListItem) {
         item->setPixmap(0,SYSICON("exec","tpr.png"));
@@ -2544,11 +2560,11 @@ void MainForm::filePreferences()
       helpSearchAction->setIconSet(LOAD_ICON("filefind"));
       findFindAction->setIconSet(LOAD_ICON("filefind"));
       if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
-        QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
+        QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
         int smallSize=IconSize(KIcon::Small);
-        fileReplaceIconSet.setIconSize(QIconSet::Small,QSize(smallSize,smallSize));
+        fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
         int largeSize=IconSize(KIcon::MainToolbar);
-        fileReplaceIconSet.setIconSize(QIconSet::Large,QSize(largeSize,largeSize));
+        fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
         findReplaceAction->setIconSet(fileReplaceIconSet);
       } else
         findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
@@ -2566,41 +2582,41 @@ void MainForm::filePreferences()
       toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
       debugResetAction->setIconSet(LOAD_ICON("player_stop"));
     } else {
-      fileNewActionGroup->setIconSet(QIconSet(QPixmap::fromMimeSource("00")));
-      fileMenu->changeItem(fileMenu->idAt(0),QIconSet(QPixmap::fromMimeSource("00")),"&New");
-      fileOpenAction->setIconSet(QIconSet(QPixmap::fromMimeSource("01")));
-      fileOpenActionGroup->setIconSet(QIconSet(QPixmap::fromMimeSource("01")));
-      fileSaveAllAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
-      filePrintAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
-      filePrintQuicklyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
-      editClearAction->setIconSet(QIconSet(QPixmap::fromMimeSource("04")));
-      editCutAction->setIconSet(QIconSet(QPixmap::fromMimeSource("05")));
-      editCopyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("06")));
-      editPasteAction->setIconSet(QIconSet(QPixmap::fromMimeSource("07")));
-      projectAddFilesAction->setIconSet(QIconSet(QPixmap::fromMimeSource("08")));
-      projectCompileAction->setIconSet(QIconSet(QPixmap::fromMimeSource("09")));
-      projectMakeAction->setIconSet(QIconSet(QPixmap::fromMimeSource("10")));
-      projectBuildAction->setIconSet(QIconSet(QPixmap::fromMimeSource("11")));
-      helpContentsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("12")));
-      helpDocumentationAction->setIconSet(QIconSet(QPixmap::fromMimeSource("12")));
-      helpSearchAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
-      findFindAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
-      findReplaceAction->setIconSet(QIconSet(QPixmap::fromMimeSource("14")));
-      helpIndexAction->setIconSet(QIconSet(QPixmap::fromMimeSource("15")));
-      editUndoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("16")));
-      editRedoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("17")));
-      findFunctionsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("18")));
-      editIncreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("19")));
-      editDecreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("20")));
-      projectStopCompilationAction->setIconSet(QIconSet(QPixmap::fromMimeSource("21")));
-      projectForceQuitAction->setIconSet(QIconSet(QPixmap::fromMimeSource("22")));
-      helpNewsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("23")));
-      debugRunAction->setIconSet(QIconSet(QPixmap::fromMimeSource("24")));
-      debugPauseAction->setIconSet(QIconSet(QPixmap::fromMimeSource("25")));
-      toolsConfigureAction->setIconSet(QIconSet(QPixmap::fromMimeSource("26")));
-      debugResetAction->setIconSet(QIconSet(QPixmap::fromMimeSource("27")));
+      fileNewActionGroup->setIconSet(QIcon(qPixmapFromMimeSource("00")));
+      fileMenu->changeItem(fileMenu->idAt(0),QIcon(qPixmapFromMimeSource("00")),"&New");
+      fileOpenAction->setIconSet(QIcon(qPixmapFromMimeSource("01")));
+      fileOpenActionGroup->setIconSet(QIcon(qPixmapFromMimeSource("01")));
+      fileSaveAllAction->setIconSet(QIcon(qPixmapFromMimeSource("02")));
+      filePrintAction->setIconSet(QIcon(qPixmapFromMimeSource("03")));
+      filePrintQuicklyAction->setIconSet(QIcon(qPixmapFromMimeSource("03")));
+      editClearAction->setIconSet(QIcon(qPixmapFromMimeSource("04")));
+      editCutAction->setIconSet(QIcon(qPixmapFromMimeSource("05")));
+      editCopyAction->setIconSet(QIcon(qPixmapFromMimeSource("06")));
+      editPasteAction->setIconSet(QIcon(qPixmapFromMimeSource("07")));
+      projectAddFilesAction->setIconSet(QIcon(qPixmapFromMimeSource("08")));
+      projectCompileAction->setIconSet(QIcon(qPixmapFromMimeSource("09")));
+      projectMakeAction->setIconSet(QIcon(qPixmapFromMimeSource("10")));
+      projectBuildAction->setIconSet(QIcon(qPixmapFromMimeSource("11")));
+      helpContentsAction->setIconSet(QIcon(qPixmapFromMimeSource("12")));
+      helpDocumentationAction->setIconSet(QIcon(qPixmapFromMimeSource("12")));
+      helpSearchAction->setIconSet(QIcon(qPixmapFromMimeSource("13")));
+      findFindAction->setIconSet(QIcon(qPixmapFromMimeSource("13")));
+      findReplaceAction->setIconSet(QIcon(qPixmapFromMimeSource("14")));
+      helpIndexAction->setIconSet(QIcon(qPixmapFromMimeSource("15")));
+      editUndoAction->setIconSet(QIcon(qPixmapFromMimeSource("16")));
+      editRedoAction->setIconSet(QIcon(qPixmapFromMimeSource("17")));
+      findFunctionsAction->setIconSet(QIcon(qPixmapFromMimeSource("18")));
+      editIncreaseIndentAction->setIconSet(QIcon(qPixmapFromMimeSource("19")));
+      editDecreaseIndentAction->setIconSet(QIcon(qPixmapFromMimeSource("20")));
+      projectStopCompilationAction->setIconSet(QIcon(qPixmapFromMimeSource("21")));
+      projectForceQuitAction->setIconSet(QIcon(qPixmapFromMimeSource("22")));
+      helpNewsAction->setIconSet(QIcon(qPixmapFromMimeSource("23")));
+      debugRunAction->setIconSet(QIcon(qPixmapFromMimeSource("24")));
+      debugPauseAction->setIconSet(QIcon(qPixmapFromMimeSource("25")));
+      toolsConfigureAction->setIconSet(QIcon(qPixmapFromMimeSource("26")));
+      debugResetAction->setIconSet(QIcon(qPixmapFromMimeSource("27")));
     }
-    it=QListViewItemIterator(errorList->errorListView);
+    it=Q3ListViewItemIterator(errorList->errorListView);
     for (item=it.current();item;item=(++it).current()) {
       switch(item->rtti()) {
         case etError:
@@ -2615,7 +2631,7 @@ void MainForm::filePreferences()
       }
     }
     // Apply the preferences to the source file windows.
-    sfit=QPtrListIterator<SourceFile>(sourceFiles);
+    sfit=Q3PtrListIterator<SourceFile>(sourceFiles);
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
       sourceFile->applyPreferences();
     }
@@ -2754,14 +2770,14 @@ void MainForm::findFind_next()
           // Traverse the file tree in order backwards, restart from the end if
           // the first file was reached. Stop at currentListItem.
           if (findCurrentDocument) {
-            QListViewItemIterator lvit(fileTree);
-            QPtrList<QListViewItem> lst;
-            QListViewItem *item;
+            Q3ListViewItemIterator lvit(fileTree);
+            Q3PtrList<Q3ListViewItem> lst;
+            Q3ListViewItem *item;
             for (item=lvit.current();item&&item!=findCurrentDocument;
                  item=(++lvit).current()) {
               lst.prepend(item);
             }
-            QPtrListIterator<QListViewItem> it(lst);
+            Q3PtrListIterator<Q3ListViewItem> it(lst);
             for (findCurrentDocument=it.current();
                  findCurrentDocument&&findCurrentDocument!=currentListItem;
                  findCurrentDocument=++it) {
@@ -2772,13 +2788,13 @@ void MainForm::findFind_next()
             }
             if (findCurrentDocument) goto not_found;
           }
-          QListViewItemIterator lvit(currentListItem);
-          QPtrList<QListViewItem> lst;
-          QListViewItem *item;
+          Q3ListViewItemIterator lvit(currentListItem);
+          Q3PtrList<Q3ListViewItem> lst;
+          Q3ListViewItem *item;
           for (item=(++lvit).current();item;item=(++lvit).current()) {
             lst.prepend(item);
           }
-          QPtrListIterator<QListViewItem> it(lst);
+          Q3PtrListIterator<Q3ListViewItem> it(lst);
           for (findCurrentDocument=it.current();findCurrentDocument;
                findCurrentDocument=++it) {
             if (IS_FILE(findCurrentDocument)) {
@@ -2791,7 +2807,7 @@ void MainForm::findFind_next()
           // Traverse the file tree in order, restart from the beginning if
           // the last file was reached. Stop at currentListItem.
           if (findCurrentDocument) {
-            QListViewItemIterator it(findCurrentDocument);
+            Q3ListViewItemIterator it(findCurrentDocument);
             for (findCurrentDocument=(++it).current();
                  findCurrentDocument&&findCurrentDocument!=currentListItem;
                  findCurrentDocument=(++it).current()) {
@@ -2803,7 +2819,7 @@ void MainForm::findFind_next()
             if (findCurrentDocument) goto not_found;
           }
           {
-            QListViewItemIterator it(fileTree);
+            Q3ListViewItemIterator it(fileTree);
             for (findCurrentDocument=it.current();
                  findCurrentDocument&&findCurrentDocument!=currentListItem;
                  findCurrentDocument=(++it).current()) {
@@ -3020,14 +3036,14 @@ void MainForm::findReplace_next(bool firstTime)
             // Traverse the file tree in order backwards, restart from the end if
             // the first file was reached. Stop at currentListItem.
             if (replaceCurrentDocument) {
-              QListViewItemIterator lvit(fileTree);
-              QPtrList<QListViewItem> lst;
-              QListViewItem *item;
+              Q3ListViewItemIterator lvit(fileTree);
+              Q3PtrList<Q3ListViewItem> lst;
+              Q3ListViewItem *item;
               for (item=lvit.current();item&&item!=replaceCurrentDocument;
                    item=(++lvit).current()) {
                 lst.prepend(item);
               }
-              QPtrListIterator<QListViewItem> it(lst);
+              Q3PtrListIterator<Q3ListViewItem> it(lst);
               for (replaceCurrentDocument=it.current();
                    replaceCurrentDocument&&replaceCurrentDocument!=currentListItem;
                    replaceCurrentDocument=++it) {
@@ -3038,13 +3054,13 @@ void MainForm::findReplace_next(bool firstTime)
               }
               if (replaceCurrentDocument) goto not_found;
             }
-            QListViewItemIterator lvit(currentListItem);
-            QPtrList<QListViewItem> lst;
-            QListViewItem *item;
+            Q3ListViewItemIterator lvit(currentListItem);
+            Q3PtrList<Q3ListViewItem> lst;
+            Q3ListViewItem *item;
             for (item=(++lvit).current();item;item=(++lvit).current()) {
               lst.prepend(item);
             }
-            QPtrListIterator<QListViewItem> it(lst);
+            Q3PtrListIterator<Q3ListViewItem> it(lst);
             for (replaceCurrentDocument=it.current();replaceCurrentDocument;
                  replaceCurrentDocument=++it) {
               if (IS_FILE(replaceCurrentDocument)) {
@@ -3057,7 +3073,7 @@ void MainForm::findReplace_next(bool firstTime)
             // Traverse the file tree in order, restart from the beginning if
             // the last file was reached. Stop at currentListItem.
             if (replaceCurrentDocument) {
-              QListViewItemIterator it(replaceCurrentDocument);
+              Q3ListViewItemIterator it(replaceCurrentDocument);
               for (replaceCurrentDocument=(++it).current();
                    replaceCurrentDocument&&replaceCurrentDocument!=currentListItem;
                    replaceCurrentDocument=(++it).current()) {
@@ -3069,7 +3085,7 @@ void MainForm::findReplace_next(bool firstTime)
               if (replaceCurrentDocument) goto not_found;
             }
             {
-              QListViewItemIterator it(fileTree);
+              Q3ListViewItemIterator it(fileTree);
               for (replaceCurrentDocument=it.current();
                    replaceCurrentDocument&&replaceCurrentDocument!=currentListItem;
                    replaceCurrentDocument=(++it).current()) {
@@ -3339,7 +3355,7 @@ void MainForm::findAndOpenFile(const QString &fileName, void *category)
         if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject)
            KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
       } else {
-        QListViewItem *cat=reinterpret_cast<QListViewItem *>(category);
+        Q3ListViewItem *cat=reinterpret_cast<Q3ListViewItem *>(category);
         QString includeDir=(cat==asmFilesListItem)?"asm":
                            (cat==sFilesListItem)?"s":"c";
         fileNameFull=QDir(QString("%1/include/%2/").arg(tigcc_base)
@@ -3421,7 +3437,7 @@ void MainForm::openHeader(const QString &fileName, bool systemHeader,
   } else {
     QString name=fileName;
     int pos;
-    QListViewItem *item=hFilesListItem;
+    Q3ListViewItem *item=hFilesListItem;
     while ((pos=name.find('/'))>=0) {
       QString folder=name.left(pos);
       name.remove(0,pos+1);
@@ -3473,7 +3489,7 @@ void MainForm::findFindSymbolDeclaration()
 //returns 1 on success
 int MainForm::projectAddFiles_oneFile(const QString &fileName)
 {
-  QListViewItem *category=othFilesListItem;
+  Q3ListViewItem *category=othFilesListItem;
   QString suffix,caption;
   int p;
   
@@ -3550,7 +3566,7 @@ static KProcIO *procio;
 QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
 {
   const QString *origFileName;
-  QListViewItem *category;
+  Q3ListViewItem *category;
   QString fileName;
   QString fileText;
   LineStartList *pLineStartList=0;
@@ -3560,7 +3576,7 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
     CATEGORY_OF(cat,sourceFile);
     category=cat;
     QString folder;
-    QListViewItem *item=sourceFile->parent();
+    Q3ListViewItem *item=sourceFile->parent();
     while (!IS_CATEGORY(item)) {
       folder.prepend('/');
       folder.prepend(item->text(0));
@@ -3606,7 +3622,7 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
   } else {
     SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
     origFileName=&(sourceFile->fileName);
-    category=reinterpret_cast<QListViewItem *>(sourceFile->category);
+    category=reinterpret_cast<Q3ListViewItem *>(sourceFile->category);
     fileName=QString("%1%2").arg(tempdir)
                             .arg(origFileName->mid(origFileName->findRev('/')));
     fileText=sourceFile->kateView->getDoc()->text();
@@ -3629,7 +3645,7 @@ void MainForm::startCompiling()
       return;
     }
   } else {
-    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    Q3PtrListIterator<SourceFile> sfit(sourceFiles);
     for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
       sourceFile->fileSave();
     }
@@ -3658,7 +3674,7 @@ void MainForm::startCompiling()
   debugRunAction->setEnabled(FALSE);
   debugPauseAction->setEnabled(FALSE);
   debugResetAction->setEnabled(FALSE);
-  QPtrListIterator<SourceFile> sfit(sourceFiles);
+  Q3PtrListIterator<SourceFile> sfit(sourceFiles);
   for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
     sourceFile->fileAddToProjectAction->setEnabled(FALSE);
     sourceFile->fileCompileAction->setEnabled(FALSE);
@@ -3677,8 +3693,8 @@ void MainForm::startCompiling()
   projectProgramOutputAction->setEnabled(FALSE);
   procio=static_cast<KProcIO *>(NULL);
   // Write all the headers and incbin files to the temporary directory.
-  QListViewItemIterator lvit(hFilesListItem);
-  QListViewItem *item;
+  Q3ListViewItemIterator lvit(hFilesListItem);
+  Q3ListViewItem *item;
   for (item=(++lvit).current();item&&!IS_CATEGORY(item);
        item=(++lvit).current()) {
     if (IS_FILE(item)) {
@@ -3695,7 +3711,7 @@ void MainForm::startCompiling()
       if (stopCompilingFlag) return;
     }
   }
-  lvit=QListViewItemIterator(othFilesListItem);
+  lvit=Q3ListViewItemIterator(othFilesListItem);
   for (item=(++lvit).current();item&&!IS_CATEGORY(item);
        item=(++lvit).current()) {
     if (IS_FILE(item)) {
@@ -3718,7 +3734,7 @@ void MainForm::stopCompiling()
   stopCompilingFlag=FALSE;
   errorsCompilingFlag=FALSE;
   compiling=FALSE;
-  QPtrListIterator<SourceFile> sfit(sourceFiles);
+  Q3PtrListIterator<SourceFile> sfit(sourceFiles);
   for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
     sourceFile->fileAddToProjectAction->setEnabled(TRUE);
     sourceFile->fileCompileAction->setEnabled(TRUE);
@@ -3990,7 +4006,7 @@ void MainForm::procio_readReady_recordOnly()
 
 void MainForm::compileFile(void *srcFile, bool inProject, bool force)
 {
-  QListViewItem *category;
+  Q3ListViewItem *category;
   const QString *origFileName;
   bool modified=FALSE;
   QString shortFileName;
@@ -4006,7 +4022,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     shortFileName=sourceFile->text(0);
   } else {
     SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
-    category=reinterpret_cast<QListViewItem *>(sourceFile->category);
+    category=reinterpret_cast<Q3ListViewItem *>(sourceFile->category);
     origFileName=&(sourceFile->fileName);
     if (sourceFile->kateView->getDoc()->isModified())
       modified=TRUE;
@@ -4022,7 +4038,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     if (objectFile[0]!='/') {
       if (inProject) {
         ListViewFile *sourceFile=reinterpret_cast<ListViewFile *>(srcFile);
-        QListViewItem *item=sourceFile->parent();
+        Q3ListViewItem *item=sourceFile->parent();
         while (!IS_CATEGORY(item)) {
           objectFile.prepend('/');
           objectFile.prepend(item->text(0));
@@ -4280,8 +4296,8 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
 
 void MainForm::compileProject(bool forceAll)
 {
-  QListViewItemIterator lvit(fileTree);
-  QListViewItem *item;
+  Q3ListViewItemIterator lvit(fileTree);
+  Q3ListViewItem *item;
   for (item=lvit.current(); item&&!stopCompilingFlag; item=(++lvit).current()) {
     if (IS_FILE(item))
       compileFile(static_cast<ListViewFile *>(item),TRUE,forceAll);
@@ -4330,7 +4346,7 @@ void MainForm::linkProject()
     // Link executable using ld-tigcc.
     QString linkOutput=settings.pack?QString("%1/tempprog").arg(tempdir)
                                     :projectBaseName;
-    QCString projectName, dataVarName, packFolder, packName;
+    Q3CString projectName, dataVarName, packFolder, packName;
     QStringList linkerOptions=process_settings(rootListItem->text(0),
                                                projectName,dataVarName,
                                                packFolder,packName);
@@ -4627,7 +4643,7 @@ void MainForm::showStats()
   // QStyleSheet::convertFromPlainText. Sadly, that replaces the spaces with
   // strange non-BMP characters (from a Private Use Area) which don't display
   // properly in KMessageBox, so fix up those surrogate pairs.
-  if (KMessageBox::questionYesNo(this,QStyleSheet::convertFromPlainText(
+  if (KMessageBox::questionYesNo(this,Q3StyleSheet::convertFromPlainText(
         QString("The project has been compiled successfully.\n\n%1\n"
         "Do you want to open the project folder?").arg(compileStats))
         .replace(QString(QChar(56319))+QString(QChar(56992))," "),
@@ -4742,16 +4758,16 @@ void MainForm::projectOptions()
   debugPauseAction->setVisible(runnable);
 }
 
-bool MainForm::tiemuInstance(QCString &instanceName)
+bool MainForm::tiemuInstance(Q3CString &instanceName)
 {
-  instanceName=QCString();
+  instanceName=Q3CString();
   DCOPClient *dcopClient=kapp->dcopClient();
   if (!dcopClient->isAttached() && !dcopClient->attach()) {
     KMessageBox::error(this,"Can\'t attach to DCOP.");
     return FALSE;
   }
   QCStringList applist=dcopClient->registeredApplications();
-  QCString appname;
+  Q3CString appname;
   QCStringList::iterator it;
   for (it = applist.begin(); it != applist.end(); ++it) {
     if ((*it).contains(QRegExp("^tiemu-"))) {
@@ -4813,7 +4829,7 @@ void MainForm::debugRun()
   
     // Detect model of linked calculator.
     CalculatorModels model=CALCULATOR_INVALID;
-    QCString instanceName;
+    Q3CString instanceName;
     TiEmuDCOP_stub *tiemuDCOP=0;
     CableHandle *cable=0;
     CalcHandle *calc=0;
@@ -5049,7 +5065,7 @@ void MainForm::debugRun()
 void MainForm::debugPause()
 {
   // This is enabled only for LT_TIEMU. Run the TiEmu debugger.
-  QCString instanceName;
+  Q3CString instanceName;
   if (!tiemuInstance(instanceName) || instanceName.isNull()) return;
   TiEmuDCOP_stub tiemuDCOP(instanceName,"TiEmuDCOP");
   tiemuDCOP.enter_debugger();
@@ -5060,7 +5076,7 @@ void MainForm::debugPause()
 void MainForm::debugReset()
 {
   // This is enabled only for LT_TIEMU. Reset TiEmu.
-  QCString instanceName;
+  Q3CString instanceName;
   if (!tiemuInstance(instanceName) || instanceName.isNull()) return;
   TiEmuDCOP_stub tiemuDCOP(instanceName,"TiEmuDCOP");
   tiemuDCOP.reset_calc(FALSE);
@@ -5211,7 +5227,7 @@ void MainForm::updateSizes()
 
 void MainForm::resizeEvent(QResizeEvent *event)
 {
-  QMainWindow::resizeEvent(event);
+  Q3MainWindow::resizeEvent(event);
   if (event->size()==event->oldSize()) return;
   updateSizes();
 }
@@ -5219,14 +5235,14 @@ void MainForm::resizeEvent(QResizeEvent *event)
 void MainForm::timerEvent(QTimerEvent *event)
 {
   static int lastSplitterPos=-1;
-  QMainWindow::timerEvent(event);
+  Q3MainWindow::timerEvent(event);
   if (lastSplitterPos==splitter->sizes().first()) return;
   lastSplitterPos=splitter->sizes().first();
   updateSizes();
 }
 
 
-void MainForm::fileTreeClicked(QListViewItem *item)
+void MainForm::fileTreeClicked(Q3ListViewItem *item)
 {
   if (!item) return;
   if (fileTree->selectedItem()!=item) {
@@ -5376,12 +5392,12 @@ void MainForm::fileNewFolder()
   if (compiling) return;
   if (IS_FILE(currentListItem))
     currentListItem=currentListItem->parent();
-  QListViewItem *item=NULL, *next=currentListItem->firstChild();
+  Q3ListViewItem *item=NULL, *next=currentListItem->firstChild();
   for (; next; next=item->nextSibling())
   {
     item=next;
   }
-  QListViewItem *newFolder=item?new ListViewFolder(currentListItem,item)
+  Q3ListViewItem *newFolder=item?new ListViewFolder(currentListItem,item)
                            :new ListViewFolder(currentListItem);
   newFolder->setText(0,"NewFolder");
   newFolder->setRenameEnabled(0,TRUE);
@@ -5392,12 +5408,12 @@ void MainForm::fileNewFolder()
   projectNeedsRelink=TRUE;
 }
 
-bool MainForm::removeItem(QListViewItem *item)
+bool MainForm::removeItem(Q3ListViewItem *item)
 {
   if (IS_FOLDER(item) && !IS_CATEGORY(item)) {
-    QListViewItem *child=item->firstChild();
+    Q3ListViewItem *child=item->firstChild();
     while (child) {
-      QListViewItem *nextChild=child->nextSibling();
+      Q3ListViewItem *nextChild=child->nextSibling();
       if (!removeItem(child)) return FALSE;
       child=nextChild;
     }
@@ -5420,13 +5436,13 @@ bool MainForm::removeItem(QListViewItem *item)
 }
 
 #define unused_col __attribute__((unused)) col /* stupid QT designer... */
-void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
+void MainForm::fileTreeContextMenuRequested(Q3ListViewItem *item,
                                             const QPoint &pos,
                                             int unused_col)
 {
   fileTreeClicked(item);
   if (IS_FOLDER(item)) {
-    QPopupMenu menu;
+    Q3PopupMenu menu;
     menu.insertItem("New &Folder",0);
     menu.insertItem("New F&ile",1);
     if (compiling) {
@@ -5456,7 +5472,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
         item->startRename(0);
     }
   } else if (IS_FILE(item)) {
-    QPopupMenu menu;
+    Q3PopupMenu menu;
     ListViewFile *theFile=static_cast<ListViewFile *>(item);
     menu.insertItem("&Save",0);
     CATEGORY_OF(category,item);
@@ -5524,7 +5540,7 @@ void MainForm::fileTreeContextMenuRequested(QListViewItem *item,
 
 QStringList MainForm::extractAllFileNames(void)
 {
-  QListViewItem *item=rootListItem->firstChild(),*next;
+  Q3ListViewItem *item=rootListItem->firstChild(),*next;
   QStringList allFiles;
   while (item)
   {
@@ -5558,9 +5574,9 @@ QStringList MainForm::extractAllFileNames(void)
 }
 
 //you put in parent, and it gives you the rest, but you must have a place to put it all.
-void MainForm::extractFileTreeInfo(QListViewItem *parent,QListViewItem **p_category,QString *p_folderPath)
+void MainForm::extractFileTreeInfo(Q3ListViewItem *parent,Q3ListViewItem **p_category,QString *p_folderPath)
 {
-  QListViewItem *item,*next;
+  Q3ListViewItem *item,*next;
   QString tmp=QString::null;
   int o;
   CATEGORY_OF(category,parent);
@@ -5610,12 +5626,12 @@ mfnf_seeknext:
   }
 }
 
-void MainForm::newFile(QListViewItem *parent, QString text, const QPixmap &pixmap)
+void MainForm::newFile(Q3ListViewItem *parent, QString text, const QPixmap &pixmap)
 {
-  QListViewItem *item=NULL, *next=parent->firstChild();
+  Q3ListViewItem *item=NULL, *next=parent->firstChild();
   QString tmp,oldtmp,suffix,caption;
   QStringList allFiles=extractAllFileNames();
-  QListViewItem *category;
+  Q3ListViewItem *category;
   KURL tmpK;
   int tryNum;
   for (; IS_FILE(next); next=item->nextSibling())
@@ -5693,7 +5709,7 @@ void MainForm::newFile(QListViewItem *parent, QString text, const QPixmap &pixma
   updateLeftStatusLabel();
 }
 
-void MainForm::newFile( QListViewItem *parent )
+void MainForm::newFile( Q3ListViewItem *parent )
 {
   CATEGORY_OF(category,parent);
   newFile(parent,category==txtFilesListItem?"":
@@ -5776,14 +5792,14 @@ void MainForm::newFile( QListViewItem *parent )
                  category==txtFilesListItem?SYSICON("txt","filet.png"):SYSICON("unknown","filex.png"));
 }
 
-QListViewItem *MainForm::resolveParent(QListViewItem *category)
+Q3ListViewItem *MainForm::resolveParent(Q3ListViewItem *category)
 {
-  QListViewItem *ret=currentListItem;
+  Q3ListViewItem *ret=currentListItem;
   if (!IS_FILE(ret)&&!IS_FOLDER(ret))
     return category;
   if (IS_FILE(ret))
     ret=ret->parent();
-  QListViewItem *actualCategory=ret;
+  Q3ListViewItem *actualCategory=ret;
   while (IS_FOLDER(actualCategory->parent())) actualCategory=actualCategory->parent();
   if (actualCategory!=category)
     return category;
@@ -5934,7 +5950,7 @@ void MainForm::current_view_textChanged()
     if (preferences.deleteOverwrittenErrors && IS_FILE(currentListItem)
         && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView) {
       ListViewFile *lvFile=static_cast<ListViewFile *>(currentListItem);
-      QListViewItemIterator lvit(errorList->errorListView);
+      Q3ListViewItemIterator lvit(errorList->errorListView);
       ErrorListItem *errorItem;
       while ((errorItem=static_cast<ErrorListItem *>(lvit.current()))) {
         ++lvit;
@@ -6046,13 +6062,13 @@ void MainForm::clipboard_dataChanged()
   }
 }
 
-void MainForm::fileTreeItemRenamed( QListViewItem *item, const QString &newName, int col)
+void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName, int col)
 {
   if (col)
     return;
   if (item==rootListItem) {
     // validate name, fix if invalid
-    QValueList<QChar> validInVarname;
+    Q3ValueList<QChar> validInVarname;
     #define V(i) validInVarname.append(QChar(i))
     #define VR(m,n) for(unsigned i=m;i<=n;i++)V(i)
     VR(48,57); // 0..9
@@ -6177,7 +6193,7 @@ void MainForm::closeEvent(QCloseEvent *e)
   if (compiling || savePrompt())
     e->ignore();
   else {
-    QPtrListIterator<SourceFile> sfit(sourceFiles);
+    Q3PtrListIterator<SourceFile> sfit(sourceFiles);
     SourceFile *sourceFile;
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
       if (sourceFile->savePrompt()) {
@@ -6192,7 +6208,7 @@ void MainForm::closeEvent(QCloseEvent *e)
 
 void MainForm::KDirWatch_dirty(const QString &fileName)
 {
-  QListViewItem *item=rootListItem->firstChild(),*next;
+  Q3ListViewItem *item=rootListItem->firstChild(),*next;
   QStringList allFiles;
   while (item) {
     if (IS_FOLDER(item)) {
@@ -6246,7 +6262,7 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
   return;
 }
 
-QString MainForm::pathInProject(QListViewItem *item)
+QString MainForm::pathInProject(Q3ListViewItem *item)
 {
   QString path=QFileInfo(static_cast<ListViewFile *>(item)->fileName).fileName();
   item=item->parent();
@@ -6262,7 +6278,7 @@ QString MainForm::textForHeader(const QString &fileName)
 {
   QString name=fileName;
   int pos;
-  QListViewItem *item=hFilesListItem;
+  Q3ListViewItem *item=hFilesListItem;
   while ((pos=name.find('/'))>=0) {
     QString folder=name.left(pos);
     name.remove(0,pos+1);

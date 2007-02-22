@@ -26,8 +26,8 @@
 class KURL;
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qcstring.h>
-#include <qvaluevector.h>
+#include <q3cstring.h>
+#include <q3valuevector.h>
 #include <qpair.h>
 
 /*Structure definitions from tprbuilder source; slightly modified
@@ -159,7 +159,7 @@ typedef struct
 
 enum {PATH_ERROR,PATH_NOTFOUND,PATH_FILE,PATH_FOLDER}; //return types for getPathType
 
-typedef QValueVector<QPair<unsigned,unsigned> > LineStartList;
+typedef Q3ValueVector<QPair<unsigned,unsigned> > LineStartList;
 
 const char *smartAscii(const QString &s);
 
@@ -187,5 +187,5 @@ int getPathType(const QString &thePath);
 
 QStringList process_libopts(void);
 QStringList process_settings(const QString &prjNameUnicode,
-                             QCString &projectName, QCString &dataVarName,
-                             QCString &packFolder, QCString &packName);
+                             Q3CString &projectName, Q3CString &dataVarName,
+                             Q3CString &packFolder, Q3CString &packName);

@@ -10,14 +10,16 @@
 #include <dcopclient.h>
 
 #include <kdatastream.h>
+//Added by qt3to4:
+#include <Q3CString>
 
 
-TiEmuDCOP_stub::TiEmuDCOP_stub( const QCString& app, const QCString& obj )
+TiEmuDCOP_stub::TiEmuDCOP_stub( const Q3CString& app, const Q3CString& obj )
   : DCOPStub( app, obj )
 {
 }
 
-TiEmuDCOP_stub::TiEmuDCOP_stub( DCOPClient* client, const QCString& app, const QCString& obj )
+TiEmuDCOP_stub::TiEmuDCOP_stub( DCOPClient* client, const Q3CString& app, const Q3CString& obj )
   : DCOPStub( client, app, obj )
 {
 }
@@ -35,10 +37,10 @@ bool TiEmuDCOP_stub::image_loaded()
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
+    Q3CString replyType;
     if ( dcopClient()->call( app(), obj(), "image_loaded()", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -58,10 +60,10 @@ int TiEmuDCOP_stub::emulated_calc_type()
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
+    Q3CString replyType;
     if ( dcopClient()->call( app(), obj(), "emulated_calc_type()", data, replyType, replyData ) ) {
 	if ( replyType == "int" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -81,10 +83,10 @@ int TiEmuDCOP_stub::emulated_hw_version()
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
+    Q3CString replyType;
     if ( dcopClient()->call( app(), obj(), "emulated_hw_version()", data, replyType, replyData ) ) {
 	if ( replyType == "int" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -104,10 +106,10 @@ QString TiEmuDCOP_stub::emulated_os_version()
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
+    Q3CString replyType;
     if ( dcopClient()->call( app(), obj(), "emulated_os_version()", data, replyType, replyData ) ) {
 	if ( replyType == "QString" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -127,10 +129,10 @@ bool TiEmuDCOP_stub::ready_for_transfers()
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
+    Q3CString replyType;
     if ( dcopClient()->call( app(), obj(), "ready_for_transfers()", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -150,12 +152,12 @@ bool TiEmuDCOP_stub::send_file( QString arg0 )
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg( data, IO_WriteOnly );
+    Q3CString replyType;
+    QDataStream arg( data, QIODevice::WriteOnly );
     arg << arg0;
     if ( dcopClient()->call( app(), obj(), "send_file(QString)", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -175,12 +177,12 @@ bool TiEmuDCOP_stub::send_files( QStringList arg0 )
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg( data, IO_WriteOnly );
+    Q3CString replyType;
+    QDataStream arg( data, QIODevice::WriteOnly );
     arg << arg0;
     if ( dcopClient()->call( app(), obj(), "send_files(QStringList)", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -200,12 +202,12 @@ bool TiEmuDCOP_stub::debug_file( QString arg0 )
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg( data, IO_WriteOnly );
+    Q3CString replyType;
+    QDataStream arg( data, QIODevice::WriteOnly );
     arg << arg0;
     if ( dcopClient()->call( app(), obj(), "debug_file(QString)", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -225,12 +227,12 @@ bool TiEmuDCOP_stub::reset_calc( bool arg0 )
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg( data, IO_WriteOnly );
+    Q3CString replyType;
+    QDataStream arg( data, QIODevice::WriteOnly );
     arg << arg0;
     if ( dcopClient()->call( app(), obj(), "reset_calc(bool)", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -250,12 +252,12 @@ bool TiEmuDCOP_stub::execute_command( QString arg0 )
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg( data, IO_WriteOnly );
+    Q3CString replyType;
+    QDataStream arg( data, QIODevice::WriteOnly );
     arg << arg0;
     if ( dcopClient()->call( app(), obj(), "execute_command(QString)", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -275,10 +277,10 @@ bool TiEmuDCOP_stub::turn_calc_on()
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
+    Q3CString replyType;
     if ( dcopClient()->call( app(), obj(), "turn_calc_on()", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {
@@ -298,10 +300,10 @@ bool TiEmuDCOP_stub::enter_debugger()
 	return result;
     }
     QByteArray data, replyData;
-    QCString replyType;
+    Q3CString replyType;
     if ( dcopClient()->call( app(), obj(), "enter_debugger()", data, replyType, replyData ) ) {
 	if ( replyType == "bool" ) {
-	    QDataStream _reply_stream( replyData, IO_ReadOnly );
+	    QDataStream _reply_stream( replyData, QIODevice::ReadOnly );
 	    _reply_stream >> result;
 	    setStatus( CallSucceeded );
 	} else {

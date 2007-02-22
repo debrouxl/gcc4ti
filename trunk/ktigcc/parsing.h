@@ -21,7 +21,7 @@
 #pragma once
 
 #include <qstring.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 #include <qstringlist.h>
 #include "completion.h"
 
@@ -39,7 +39,7 @@ struct SourceFileFunction {
   int prototypeLine;
   int implementationLine;
 };
-class SourceFileFunctions : public QValueVector<SourceFileFunction> {
+class SourceFileFunctions : public Q3ValueVector<SourceFileFunction> {
   public:
     iterator find(const SourceFileFunction &item) {
       return qFind(begin(),end(),item);

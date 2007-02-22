@@ -34,14 +34,21 @@
 #include <qstatusbar.h>
 #include <qtimer.h>
 #include <qdatetime.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qdir.h>
 #include <qclipboard.h>
-#include <qaccel.h>
+#include <q3accel.h>
 #include <qeventloop.h>
 #include <qlayout.h>
 #include <qtoolbutton.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
+//Added by qt3to4:
+#include <QKeyEvent>
+#include <q3mimefactory.h>
+#include <QResizeEvent>
+#include <Q3PopupMenu>
+#include <QEvent>
+#include <QCloseEvent>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -94,8 +101,8 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define CURRENT_VIEW (THIS->kateView)
 #define HL_MODE ((THIS->hlEnabled && *(THIS->hlEnabled))?THIS->hlMode:"None")
 
-#define LOAD_ICON(name) (QIconSet(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
-#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small):QPixmap::fromMimeSource((name)))
+#define LOAD_ICON(name) (QIcon(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
+#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small):qPixmapFromMimeSource((name)))
 
 #define SET_TEXT_SAFE(doc,text) do { \
     disableViewEvents=TRUE; \
@@ -153,12 +160,12 @@ class KReplaceWithSelectionS : public KReplace {
 
 void SourceFileWindow::initBase()
 {
-  setIcon(QPixmap::fromMimeSource("icon.png"));
-  KWin::setIcons(winId(),*(icon()),QPixmap::fromMimeSource("ktigcc.png"));
+  setIcon(qPixmapFromMimeSource("icon.png"));
+  KWin::setIcons(winId(),*(icon()),qPixmapFromMimeSource("ktigcc.png"));
   sourceFiles.append(THIS);
   THIS->dirWatch=new KDirWatch(this);
   setCaption(caption()+" - "+THIS->fileName);
-  THIS->te_popup = new QPopupMenu(this);
+  THIS->te_popup = new Q3PopupMenu(this);
   THIS->te_popup->insertItem("&Open file at cursor",0);
   THIS->te_popup->insertItem("&Find symbol declaration",1);
   THIS->te_popup->insertSeparator();
@@ -214,18 +221,18 @@ void SourceFileWindow::initBase()
   editCutAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
   editCopyAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
   editPasteAction->setEnabled(!clipboard->text().isNull());
-  THIS->accel=new QAccel(this);
-  THIS->accel->insertItem(ALT+Key_Backspace,0);
-  THIS->accel->insertItem(SHIFT+ALT+Key_Backspace,1);
-  THIS->accel->insertItem(SHIFT+Key_Delete,2);
-  THIS->accel->insertItem(CTRL+Key_Insert,3);
-  THIS->accel->insertItem(SHIFT+Key_Insert,4);
-  THIS->accel->insertItem(Key_F1,5);
-  THIS->accel->insertItem(Key_Enter,6);
-  THIS->accel->insertItem(Key_Return,7);
-  THIS->accel->insertItem(CTRL+Key_J,8);
-  THIS->accel->insertItem(CTRL+Key_Space,9);
-  THIS->accel->insertItem(CTRL+Key_M,10);
+  THIS->accel=new Q3Accel(this);
+  THIS->accel->insertItem(Qt::ALT+Qt::Key_Backspace,0);
+  THIS->accel->insertItem(Qt::SHIFT+Qt::ALT+Qt::Key_Backspace,1);
+  THIS->accel->insertItem(Qt::SHIFT+Qt::Key_Delete,2);
+  THIS->accel->insertItem(Qt::CTRL+Qt::Key_Insert,3);
+  THIS->accel->insertItem(Qt::SHIFT+Qt::Key_Insert,4);
+  THIS->accel->insertItem(Qt::Key_F1,5);
+  THIS->accel->insertItem(Qt::Key_Enter,6);
+  THIS->accel->insertItem(Qt::Key_Return,7);
+  THIS->accel->insertItem(Qt::CTRL+Qt::Key_J,8);
+  THIS->accel->insertItem(Qt::CTRL+Qt::Key_Space,9);
+  THIS->accel->insertItem(Qt::CTRL+Qt::Key_M,10);
   THIS->accel->setItemEnabled(0,!!(CURRENT_VIEW->getDoc()->undoCount()));
   THIS->accel->setItemEnabled(1,!!(CURRENT_VIEW->getDoc()->redoCount()));
   THIS->accel->setItemEnabled(2,CURRENT_VIEW->getDoc()->hasSelection());
@@ -251,11 +258,11 @@ void SourceFileWindow::initBase()
     editPasteAction->setIconSet(LOAD_ICON("editpaste"));
     findFindAction->setIconSet(LOAD_ICON("filefind"));
     if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
-      QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
+      QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
       int smallSize=IconSize(KIcon::Small);
-      fileReplaceIconSet.setIconSize(QIconSet::Small,QSize(smallSize,smallSize));
+      fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
       int largeSize=IconSize(KIcon::MainToolbar);
-      fileReplaceIconSet.setIconSize(QIconSet::Large,QSize(largeSize,largeSize));
+      fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
       findReplaceAction->setIconSet(fileReplaceIconSet);
     } else
       findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
@@ -267,7 +274,7 @@ void SourceFileWindow::initBase()
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->child("findFunctionsAction_action_button","QToolButton",FALSE));
-  THIS->findFunctionsPopup=new QPopupMenu(findFunctionsButton);
+  THIS->findFunctionsPopup=new Q3PopupMenu(findFunctionsButton);
   connect(THIS->findFunctionsPopup,SIGNAL(aboutToShow()),
           this,SLOT(findFunctionsPopup_aboutToShow()));
   connect(THIS->findFunctionsPopup,SIGNAL(aboutToHide()),
@@ -375,7 +382,7 @@ void SourceFileWindow::accel_activated(int index)
       default: break;
     }
   } else if (index == 6 || index == 7) {
-    QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Key_Return,'\n',0,"\n");
+    QKeyEvent *keyEvent=new QKeyEvent(QEvent::KeyPress,Qt::Key_Return,'\n',0,"\n");
     QApplication::postEvent(focusWidget(),keyEvent);
   }
 }
@@ -594,11 +601,11 @@ void SourceFileWindow::applyPreferences()
     editPasteAction->setIconSet(LOAD_ICON("editpaste"));
     findFindAction->setIconSet(LOAD_ICON("filefind"));
     if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
-      QIconSet fileReplaceIconSet(QPixmap::fromMimeSource("filereplace.png"));
+      QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
       int smallSize=IconSize(KIcon::Small);
-      fileReplaceIconSet.setIconSize(QIconSet::Small,QSize(smallSize,smallSize));
+      fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
       int largeSize=IconSize(KIcon::MainToolbar);
-      fileReplaceIconSet.setIconSize(QIconSet::Large,QSize(largeSize,largeSize));
+      fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
       findReplaceAction->setIconSet(fileReplaceIconSet);
     } else
       findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
@@ -608,22 +615,22 @@ void SourceFileWindow::applyPreferences()
     editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
     editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
   } else {
-    fileSaveAction->setIconSet(QIconSet(QPixmap::fromMimeSource("02")));
-    fileAddToProjectAction->setIconSet(QIconSet(QPixmap::fromMimeSource("08")));
-    fileCompileAction->setIconSet(QIconSet(QPixmap::fromMimeSource("09")));
-    filePrintAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
-    filePrintQuicklyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("03")));
-    editClearAction->setIconSet(QIconSet(QPixmap::fromMimeSource("04")));
-    editCutAction->setIconSet(QIconSet(QPixmap::fromMimeSource("05")));
-    editCopyAction->setIconSet(QIconSet(QPixmap::fromMimeSource("06")));
-    editPasteAction->setIconSet(QIconSet(QPixmap::fromMimeSource("07")));
-    findFindAction->setIconSet(QIconSet(QPixmap::fromMimeSource("13")));
-    findReplaceAction->setIconSet(QIconSet(QPixmap::fromMimeSource("14")));
-    editUndoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("16")));
-    editRedoAction->setIconSet(QIconSet(QPixmap::fromMimeSource("17")));
-    findFunctionsAction->setIconSet(QIconSet(QPixmap::fromMimeSource("18")));
-    editIncreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("19")));
-    editDecreaseIndentAction->setIconSet(QIconSet(QPixmap::fromMimeSource("20")));
+    fileSaveAction->setIconSet(QIcon(qPixmapFromMimeSource("02")));
+    fileAddToProjectAction->setIconSet(QIcon(qPixmapFromMimeSource("08")));
+    fileCompileAction->setIconSet(QIcon(qPixmapFromMimeSource("09")));
+    filePrintAction->setIconSet(QIcon(qPixmapFromMimeSource("03")));
+    filePrintQuicklyAction->setIconSet(QIcon(qPixmapFromMimeSource("03")));
+    editClearAction->setIconSet(QIcon(qPixmapFromMimeSource("04")));
+    editCutAction->setIconSet(QIcon(qPixmapFromMimeSource("05")));
+    editCopyAction->setIconSet(QIcon(qPixmapFromMimeSource("06")));
+    editPasteAction->setIconSet(QIcon(qPixmapFromMimeSource("07")));
+    findFindAction->setIconSet(QIcon(qPixmapFromMimeSource("13")));
+    findReplaceAction->setIconSet(QIcon(qPixmapFromMimeSource("14")));
+    editUndoAction->setIconSet(QIcon(qPixmapFromMimeSource("16")));
+    editRedoAction->setIconSet(QIcon(qPixmapFromMimeSource("17")));
+    findFunctionsAction->setIconSet(QIcon(qPixmapFromMimeSource("18")));
+    editIncreaseIndentAction->setIconSet(QIcon(qPixmapFromMimeSource("19")));
+    editDecreaseIndentAction->setIconSet(QIcon(qPixmapFromMimeSource("20")));
   }
 }
 
@@ -1134,7 +1141,7 @@ void SourceFileWindow::updateSizes()
 
 void SourceFileWindow::resizeEvent(QResizeEvent *event)
 {
-  QMainWindow::resizeEvent(event);
+  Q3MainWindow::resizeEvent(event);
   if (event->size()==event->oldSize()) return;
   updateSizes();
 }
