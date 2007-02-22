@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ void AssistantClient::openAssistant(const QString &page)
     // Wait for Qt Assistant to actually open.
     while (procIO && !socket) {
       usleep(10000);
-      QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,10);
+      QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,10);
     }
     if (!procIO) goto start_new;
     Q3TextStream stream(static_cast<QIODevice *>(socket));

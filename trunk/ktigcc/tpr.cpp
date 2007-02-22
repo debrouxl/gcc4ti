@@ -3,7 +3,7 @@
    
    tpr handling routines adapted from tprbuilder
    Copyright (C) 2002 Romain Liévin
-   Copyright (C) 2002-2006 Kevin Kofler
+   Copyright (C) 2002-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
 
    This program is free software; you can redistribute it and/or modify
@@ -967,7 +967,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
               INSERT_STRING(QString(c)+text[curPos+1]);
               // Allow the UI to respond, splitting is a lengthy operation.
               if ((curPos++)&127)
-                QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
+                QCoreApplication::processEvents(QEventLoop::AllEvents,1000);
               curPos++;
               curCol++;
               break;
@@ -979,7 +979,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
               INSERT_STRING(QString(c)+text[curPos+1]);
               // Allow the UI to respond, splitting is a lengthy operation.
               if ((curPos++)&127)
-                QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
+                QCoreApplication::processEvents(QEventLoop::AllEvents,1000);
               curCol++;
               break;
             }
@@ -996,7 +996,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
       } else curCol++;
       // Allow the UI to respond, splitting is a lengthy operation.
       if (curPos&127)
-        QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,1000);
+        QCoreApplication::processEvents(QEventLoop::AllEvents,1000);
     }
     NEW_LINE();
     

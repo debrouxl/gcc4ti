@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ SourceFileFunctions getCFunctions(const QString &text)
         } else qWarning("Invalid result from ctags.");
       } else {
         usleep(10000);
-        QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,10);
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,10);
       }
     }
   }
@@ -236,7 +236,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         }
       } else {
         usleep(10000);
-        QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,10);
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,10);
       }
     }
   }

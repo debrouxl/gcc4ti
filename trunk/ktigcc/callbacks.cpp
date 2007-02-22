@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ static KProgressDialog *sendingProgress=0;
 static void callback_ticalcs_refresh(void)
 {
   if (sendingProgress) {
-    QApplication::eventLoop()->processEvents(QEventLoop::AllEvents,100);
+    QCoreApplication::processEvents(QEventLoop::AllEvents,100);
     if (sendingProgress->wasCancelled()) ticalcsUpdate.cancel=TRUE;
   }
 }

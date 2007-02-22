@@ -686,9 +686,9 @@ class DnDListView : public K3ListView {
   }
   // K3ListView::rename won't work properly if I don't do this. :-/
   virtual void rename(Q3ListViewItem *item, int c) {
-    QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
     ensureItemVisible(item);
-    QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
     K3ListView::rename(item,c);
   }
 };
@@ -4845,7 +4845,7 @@ void MainForm::debugRun()
             }
             do {
               usleep(100000);
-              QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
+              QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,100);
               if (!tiemuInstance(&instanceName)) return;
             } while (instanceName.isNull());
           }
@@ -4854,7 +4854,7 @@ void MainForm::debugRun()
           bool ready;
           do {
             usleep(100000);
-            QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
+            QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,100);
             ready=tiemuDCOP->ready_for_transfers();
             if (!tiemuDCOP->ok()) {
               KMessageBox::error(this,"DCOP function call failed.");

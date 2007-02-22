@@ -13,7 +13,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -87,9 +87,9 @@ class RenamableKListViewItem : public K3ListViewItem {
   virtual void startRename(int col)
   {
     // K3ListView::rename won't work properly if I don't do this. :-/
-    QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
     listView()->ensureItemVisible(this);
-    QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
     static_cast<K3ListView *>(listView())->rename(this,col);
   }
 };
