@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on debug uic3
+CONFIG	+= qt warn_on debug
 
 QT += xml qt3support
 
@@ -17,7 +17,34 @@ HEADERS	+= tpr.h \
 	parsing.h \
 	colorlistitem.h \
 	completion.h \
-	assistant.h
+	assistant.h \
+	srcfilewin.h \
+	projectoptions.h \
+	programoptions.h \
+	preferencesdlg.h \
+	mainform.h \
+	errorlist.h \
+	programoutput.h \
+	functions.h \
+	newsdlg.h \
+	toolsdlg.h \
+	toolprops.h \
+	selectstyle.h \
+	selectcolors.h \
+	customstyle.h \
+	wordlist.h \
+	srcfilewin.ui.h \
+	projectoptions.ui.h \
+	programoptions.ui.h \
+	preferencesdlg.ui.h \
+	mainform.ui.h \
+	errorlist.ui.h \
+	functions.ui.h \
+	newsdlg.ui.h \
+	toolsdlg.ui.h \
+	toolprops.ui.h \
+	selectstyle.ui.h \
+	selectcolors.ui.h
 
 SOURCES	+= ktigcc.cpp \
 	preferences.cpp \
@@ -26,10 +53,24 @@ SOURCES	+= ktigcc.cpp \
 	callbacks.cpp \
 	parsing.cpp \
 	completion.cpp \
-	assistant.cpp
+	assistant.cpp \
+	srcfilewin.cpp \
+	projectoptions.cpp \
+	programoptions.cpp \
+	preferencesdlg.cpp \
+	mainform.cpp \
+	errorlist.cpp \
+	programoutput.cpp \
+	functions.cpp \
+	newsdlg.cpp \
+	toolsdlg.cpp \
+	toolprops.cpp \
+	selectstyle.cpp \
+	selectcolors.cpp \
+	customstyle.cpp \
+	wordlist.cpp
 
-#The following line was changed from FORMS to FORMS3 by qt3to4
-FORMS3	= srcfilewin.ui \
+FORMS	= srcfilewin.ui \
 	projectoptions.ui \
 	programoptions.ui \
 	preferencesdlg.ui \
