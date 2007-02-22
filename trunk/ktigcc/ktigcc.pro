@@ -32,19 +32,7 @@ HEADERS	+= tpr.h \
 	selectstyle.h \
 	selectcolors.h \
 	customstyle.h \
-	wordlist.h \
-	srcfilewin.ui.h \
-	projectoptions.ui.h \
-	programoptions.ui.h \
-	preferencesdlg.ui.h \
-	mainform.ui.h \
-	errorlist.ui.h \
-	functions.ui.h \
-	newsdlg.ui.h \
-	toolsdlg.ui.h \
-	toolprops.ui.h \
-	selectstyle.ui.h \
-	selectcolors.ui.h
+	wordlist.h
 
 SOURCES	+= ktigcc.cpp \
 	preferences.cpp \

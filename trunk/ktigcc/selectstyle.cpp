@@ -1,10 +1,43 @@
+/*
+   ktigcc - TIGCC IDE for KDE
+
+   Copyright (C) 2006-2007 Kevin Kofler
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software Foundation,
+   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
+*/
+
 #include "selectstyle.h"
 
 #include <qvariant.h>
 #include <qimage.h>
 #include <qpixmap.h>
 
-#include "selectstyle.ui.h"
+void SelectStyle::customStyle_toggled(bool on)
+{
+  if (!on) {
+    boldChk->setChecked(FALSE);
+    italicChk->setChecked(FALSE);
+    underlineChk->setChecked(FALSE);
+    strikeoutChk->setChecked(FALSE);
+  }
+  boldChk->setEnabled(on);
+  italicChk->setEnabled(on);
+  underlineChk->setEnabled(on);
+  strikeoutChk->setEnabled(on);
+}
+
 /*
  *  Constructs a SelectStyle as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.
