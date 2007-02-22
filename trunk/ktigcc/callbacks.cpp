@@ -20,7 +20,7 @@
 
 #include "callbacks.h"
 #include <cstdlib>
-#include <kprogress.h>
+#include <kprogressdialog.h>
 #include <ticalcs.h>
 #include <qapplication.h>
 #include <qeventloop.h>
@@ -51,8 +51,8 @@ static void callback_ticalcs_stop(void)
 
 static void callback_ticalcs_pbar(void)
 {
-  sendingProgress->progressBar()->setTotalSteps(ticalcsUpdate.max1);
-  sendingProgress->progressBar()->setProgress(ticalcsUpdate.cnt1);
+  sendingProgress->progressBar()->setRange(0,ticalcsUpdate.max1);
+  sendingProgress->progressBar()->setValue(ticalcsUpdate.cnt1);
   callback_ticalcs_refresh();
 }
 
@@ -79,7 +79,7 @@ CalcUpdate ticalcsUpdate=CalcUpdateInitialized();
 
 void callbacksInit(QWidget *parent)
 {
-  sendingProgress=new KProgressDialog(parent,0,"Sending Variable",
+  sendingProgress=new KProgressDialog(parent,"Sending Variable",
                                       QString::null,TRUE);
   sendingProgress->show();
   callback_ticalcs_refresh();
@@ -92,5 +92,5 @@ void callbacksCleanup(void)
     delete sendingProgress;
     sendingProgress=static_cast<KProgressDialog *>(NULL);
   }
-  QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
+  QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,100);
 }
