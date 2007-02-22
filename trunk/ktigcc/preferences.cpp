@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2004-2006 Kevin Kofler
+   Copyright (C) 2004-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
 
    This program is free software; you can redistribute it and/or modify
@@ -258,7 +258,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     ADD_ATTR(customStyleContext,"attribute",customStyle.name);
     ADD_ATTR(customStyleContext,"lineEndContext",(endsWithNewline||
       (endsWithSpace&&noIgnoreEndingAfter))?"#pop":"#stay");
-    if (endsWithNewline && customStyle.ignoreEndingAfter=="\\") {
+    if (endsWithNewline && customStyle.ignoreEndingAfter=='\\') {
       CHILD_NODE(lineContinue,customStyleContext,"LineContinue");
       ADD_ATTR(lineContinue,"attribute",customStyle.name);
       ADD_ATTR(lineContinue,"context","#stay");
@@ -426,7 +426,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
       fclose(f);
       return;
     }
-    (void) fputs(doc.toCString(2),f);
+    (void) fputs(doc.toByteArray(2),f);
     fclose(f);
   }
 }
