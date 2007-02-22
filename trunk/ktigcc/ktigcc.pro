@@ -1,11 +1,11 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on debug
+CONFIG	+= qt warn_on debug dbus
 
 QT += xml qt3support
 
-LIBS	+= -lktexteditor -lkutils -lkdeui -lkdecore -lkio -lkparts -lDCOP
+LIBS	+= -lktexteditor -lkutils -lkdeui -lkdecore -lkio -lkparts
 
 HEADERS	+= tpr.h \
 	ktigcc.h \

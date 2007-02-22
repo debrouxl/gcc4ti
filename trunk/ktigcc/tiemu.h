@@ -3,6 +3,8 @@
 
 #include "tiemu_stub.h"
 
+using namespace org::ticalc::lpg::tiemu;
+
 typedef enum {
     TIEMU_CALC_TI92 = 1,
     TIEMU_CALC_TI89 = 2,
