@@ -101,8 +101,8 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define CURRENT_VIEW (THIS->kateView)
 #define HL_MODE ((THIS->hlEnabled && *(THIS->hlEnabled))?THIS->hlMode:"None")
 
-#define LOAD_ICON(name) (QIcon(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
-#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small):qPixmapFromMimeSource((name)))
+#define LOAD_ICON(name) (QIcon(KIconLoader::global()->loadIcon((name),K3Icon::Small),KGlobal::iconLoader()->loadIcon((name),K3Icon::MainToolbar)))
+#define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),K3Icon::Small):qPixmapFromMimeSource((name)))
 
 #define SET_TEXT_SAFE(doc,text) do { \
     disableViewEvents=TRUE; \
@@ -257,11 +257,11 @@ void SourceFileWindow::initBase()
     editCopyAction->setIconSet(LOAD_ICON("editcopy"));
     editPasteAction->setIconSet(LOAD_ICON("editpaste"));
     findFindAction->setIconSet(LOAD_ICON("filefind"));
-    if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
+    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty()) {
       QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
-      int smallSize=IconSize(KIcon::Small);
+      int smallSize=IconSize(K3Icon::Small);
       fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
-      int largeSize=IconSize(KIcon::MainToolbar);
+      int largeSize=IconSize(K3Icon::MainToolbar);
       fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
       findReplaceAction->setIconSet(fileReplaceIconSet);
     } else
@@ -445,7 +445,7 @@ int SourceFileWindow::savePrompt(void)
   int result;
   if (!CURRENT_VIEW) return 0;
   while (CURRENT_VIEW->getDoc()->isModified()) { // "while" in case saving fails!
-    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(THIS->fileName),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
+    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(THIS->fileName),QString::null,KStandardGuiItem::save(),KStandardGuiItem::discard());
     if (result==KMessageBox::Yes)
       fileSave();
     else if (result==KMessageBox::No)
@@ -600,11 +600,11 @@ void SourceFileWindow::applyPreferences()
     editCopyAction->setIconSet(LOAD_ICON("editcopy"));
     editPasteAction->setIconSet(LOAD_ICON("editpaste"));
     findFindAction->setIconSet(LOAD_ICON("filefind"));
-    if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
+    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty()) {
       QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
-      int smallSize=IconSize(KIcon::Small);
+      int smallSize=IconSize(K3Icon::Small);
       fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
-      int largeSize=IconSize(KIcon::MainToolbar);
+      int largeSize=IconSize(K3Icon::MainToolbar);
       fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
       findReplaceAction->setIconSet(fileReplaceIconSet);
     } else
@@ -695,7 +695,7 @@ void SourceFileWindow::findFind()
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
-    THIS->kfinddialog=new KFindDialog(false,this,0,KFindDialog::FromCursor,findHistory);
+    THIS->kfinddialog=new KFindDialog(false,this,0,KFind::FromCursor,findHistory);
     connect(THIS->kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
     connect(THIS->kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
     THIS->kfinddialog->show();
@@ -709,13 +709,13 @@ void SourceFileWindow::findFind_next()
   KFind *kfind=new KFind(THIS->kfinddialog->pattern(),THIS->kfinddialog->options(),this,THIS->kfinddialog);
 
   // Initialize.
-  bool findBackwards=!!(THIS->kfinddialog->options()&KFindDialog::FindBackwards);
+  bool findBackwards=!!(THIS->kfinddialog->options()&KFind::FindBackwards);
   int findCurrentCol;
   kfind=new KFind(THIS->kfinddialog->pattern(),THIS->kfinddialog->options(),this,THIS->kfinddialog);
   kfind->closeFindNextDialog(); // don't use this, a non-modal KFindDialog is used instead
   connect(kfind,SIGNAL(highlight(const QString &,int,int)),
           this,SLOT(findFind_highlight(const QString &,int,int)));
-  if (THIS->kfinddialog->options()&KFindDialog::FromCursor) {
+  if (THIS->kfinddialog->options()&KFind::FromCursor) {
     if (CURRENT_VIEW->getDoc()->hasSelection()) {
       if (findBackwards) {
         THIS->findCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
@@ -798,7 +798,7 @@ void SourceFileWindow::findReplace()
   }
   KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
                                         &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
-                                        KFindDialog::SelectedText:0)|KFindDialog::FromCursor,
+                                        KFind::SelectedText:0)|KFind::FromCursor,
                                        findHistory,replacementHistory,
                                        CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
@@ -819,10 +819,10 @@ void SourceFileWindow::findReplace()
   // Connect dialogClosed signal - called when closing the Replace Next dialog.
   connect(THIS->kreplace,SIGNAL(dialogClosed()),this,SLOT(findReplace_stop()));
   // Initialize.
-  bool findBackwards=!!(THIS->kreplace->options()&KFindDialog::FindBackwards);
+  bool findBackwards=!!(THIS->kreplace->options()&KFind::FindBackwards);
   int replaceCurrentCol;
   if (CURRENT_VIEW) {
-    if (THIS->kreplace->options()&KFindDialog::SelectedText) {
+    if (THIS->kreplace->options()&KFind::SelectedText) {
       THIS->kreplace->setSelection(CURRENT_VIEW->getDoc()->selStartLine(),
                                    CURRENT_VIEW->getDoc()->selStartCol(),
                                    CURRENT_VIEW->getDoc()->selEndLine(),
@@ -834,8 +834,8 @@ void SourceFileWindow::findReplace()
         THIS->kreplace->replaceCurrentLine=THIS->kreplace->selStartLine();
         replaceCurrentCol=THIS->kreplace->selStartCol();
       }
-      THIS->kreplace->setOptions(THIS->kreplace->options()&~KFindDialog::FromCursor);
-    } else if (THIS->kreplace->options()&KFindDialog::FromCursor) {
+      THIS->kreplace->setOptions(THIS->kreplace->options()&~KFind::FromCursor);
+    } else if (THIS->kreplace->options()&KFind::FromCursor) {
       if (CURRENT_VIEW->getDoc()->hasSelection()) {
         if (findBackwards) {
           THIS->kreplace->replaceCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
@@ -855,7 +855,7 @@ void SourceFileWindow::findReplace()
         if (findBackwards?(THIS->kreplace->replaceCurrentLine==(CURRENT_VIEW->getDoc()->numLines()-1)
                            && replaceCurrentCol==(CURRENT_VIEW->getDoc()->lineLength(THIS->kreplace->replaceCurrentLine)))
                          :(!THIS->kreplace->replaceCurrentLine&&!replaceCurrentCol))
-          THIS->kreplace->setOptions(THIS->kreplace->options()&~KFindDialog::FromCursor);
+          THIS->kreplace->setOptions(THIS->kreplace->options()&~KFind::FromCursor);
       }
     } else {
       THIS->kreplace->replaceCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
@@ -876,7 +876,7 @@ void SourceFileWindow::findReplace_next()
 
 void SourceFileWindow::findReplace_next(bool firstTime)
 {
-  bool findBackwards=!!(THIS->kreplace->options()&KFindDialog::FindBackwards);
+  bool findBackwards=!!(THIS->kreplace->options()&KFind::FindBackwards);
 
   // Reinitialize.
   if (!firstTime) {
@@ -915,8 +915,8 @@ void SourceFileWindow::findReplace_next(bool firstTime)
           :(findBackwards?!THIS->kreplace->replaceCurrentLine:(THIS->kreplace->replaceCurrentLine>=currNumLines))) {
         if (THIS->kreplace->shouldRestart()) {
           // Drop "From cursor" and "Selected text" options.
-          THIS->kreplace->setOptions(THIS->kreplace->options()&~(KFindDialog::FromCursor
-                                                                 |KFindDialog::SelectedText));
+          THIS->kreplace->setOptions(THIS->kreplace->options()&~(KFind::FromCursor
+                                                                 |KFind::SelectedText));
           THIS->kreplace->invalidateSelection();
           // Reinitialize.
           THIS->kreplace->replaceCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;

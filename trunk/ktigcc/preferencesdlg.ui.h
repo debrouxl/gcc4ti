@@ -45,7 +45,7 @@
 #include <kfontdialog.h>
 #include <kcolordialog.h>
 #include <kcombobox.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <klineedit.h>
 #include <keditlistbox.h>
 #include <klistbox.h>
@@ -68,29 +68,29 @@ class KRecentDirs {
     static void add(const QString &fileClass, const QString &directory);
 };
 
-class RenamableKListViewItem : public KListViewItem {
+class RenamableKListViewItem : public K3ListViewItem {
   public:
   RenamableKListViewItem(Q3ListViewItem *parent, QString text)
-    : KListViewItem(parent, text)
+    : K3ListViewItem(parent, text)
   {
     setRenameEnabled(0,TRUE);
   }
   RenamableKListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
                          QString text)
-    : KListViewItem(parent, after, text)
+    : K3ListViewItem(parent, after, text)
   {
     setRenameEnabled(0,TRUE);
   }
   virtual int rtti(void) const {return 0x716CC8;}
   // Work around gratuitous API difference. Why do I have to do this? That's
-  // what startRename is a virtual method for. KListViewItem should do this.
+  // what startRename is a virtual method for. K3ListViewItem should do this.
   virtual void startRename(int col)
   {
-    // KListView::rename won't work properly if I don't do this. :-/
+    // K3ListView::rename won't work properly if I don't do this. :-/
     QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
     listView()->ensureItemVisible(this);
     QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
-    static_cast<KListView *>(listView())->rename(this,col);
+    static_cast<K3ListView *>(listView())->rename(this,col);
   }
 };
 

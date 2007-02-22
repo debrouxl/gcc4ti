@@ -289,7 +289,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
           const KTextEditor::CompletionEntry &entry=*it;
           QString entryText=entry.text;
           unsigned entryTextLength=entryText.length();
-          unsigned minLength=QMIN(identifierLength,entryTextLength);
+          unsigned minLength=qMin(identifierLength,entryTextLength);
           unsigned i=0;
           for (; i<minLength && identifierUpper[i]==entryText[i].upper(); i++);
           unsigned distance=minLength-i;
@@ -331,7 +331,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
         return false;
       }
       if (hsf.endsWith(".ref")) {
-        QString realHeader=fileText.stripWhiteSpace();
+        QString realHeader=fileText.trimmed();
         QDir realHdrQdir(QFileInfo(qdir,realHeader).filePath());
         QString realHsf=hsf;
         realHsf.replace(realHsf.length()-3,3,"hsf");
@@ -373,11 +373,11 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
           definition=line.mid(11);
           definition.remove(comments);
           int pos=definition.find(entry.text);
-          QString left=(pos>=0)?definition.left(pos).stripWhiteSpace()
+          QString left=(pos>=0)?definition.left(pos).trimmed()
                                :QString::null;
           QString right;
           if (left.startsWith("typedef")) {
-            entry.postfix=left.mid(8).simplifyWhiteSpace();
+            entry.postfix=left.mid(8).simplified();
             left=QString::null;
           } else if (left=="unknown_retval") left="?";
           else if (left=="#define") left=QString::null;
@@ -385,7 +385,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
             left.prepend(' ');
             entry.prefix+=left;
           }
-          entry.postfix+=definition.mid(pos+entry.text.length()).simplifyWhiteSpace();
+          entry.postfix+=definition.mid(pos+entry.text.length()).simplified();
           break;
         }
       }
@@ -402,7 +402,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
             if (line=="Subtype=Enumeration") {
               int pos1=definition.find('{');
               if (pos1>=0) {
-                QString left=definition.left(pos1).stripWhiteSpace();
+                QString left=definition.left(pos1).trimmed();
                 int pos2=definition.find('}',++pos1);
                 if (pos2>=0) {
                   QString itemList=definition.mid(pos1,pos2-pos1);
@@ -414,7 +414,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
                         realDefinition.remove(comments);
                         pos1=realDefinition.find('{');
                         if (pos1>=0) {
-                          left=realDefinition.left(pos1).stripWhiteSpace();
+                          left=realDefinition.left(pos1).trimmed();
                           pos2=realDefinition.find('}',++pos1);
                           if (pos2>=0) {
                             itemList=realDefinition.mid(pos1,pos2-pos1);
@@ -433,9 +433,9 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
                       KTextEditor::CompletionEntry enumEntry;
                       int pos=enumItem.find('=');
                       if (pos>=0) {
-                        enumEntry.text=enumItem.left(pos).stripWhiteSpace();
-                        enumEntry.postfix=enumItem.mid(pos+1).stripWhiteSpace();
-                      } else enumEntry.text=enumItem.stripWhiteSpace();
+                        enumEntry.text=enumItem.left(pos).trimmed();
+                        enumEntry.postfix=enumItem.mid(pos+1).trimmed();
+                      } else enumEntry.text=enumItem.trimmed();
                       enumEntry.prefix=left;
                       enumEntry.comment=description;
                       entries.append(enumEntry);
@@ -448,7 +448,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
           }
         }
       }
-      if (entry.text.stripWhiteSpace().isEmpty()) {
+      if (entry.text.trimmed().isEmpty()) {
         // No function name, so use HSF name. Can happen for _ROM_CALL_*.
         if (!hsf.startsWith("_ROM_CALL_"))
           KMessageBox::sorry(parent,QString("No name found in %1/%2").arg(header)

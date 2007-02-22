@@ -416,7 +416,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
 
   // Write it to disk.
   QString xmlFileName=QString("%1/.kde/share/apps/katepart/syntax/ktigcc%2.xml")
-                      .arg(QDir::homeDirPath()).arg(internalName);
+                      .arg(QDir::homePath()).arg(internalName);
   mkdir_multi(xmlFileName);
   std::FILE *f=std::fopen(xmlFileName,"w");
   if (f) {
@@ -458,7 +458,7 @@ static bool isNewerVersion(const QString &version1, const QString &version2)
 static bool checkSynHighlightVersion(const QString &internalName)
 {
   QString xmlFileName=QString("%1/.kde/share/apps/katepart/syntax/ktigcc%2.xml")
-                      .arg(QDir::homeDirPath()).arg(internalName);
+                      .arg(QDir::homePath()).arg(internalName);
   QDomDocument doc("language");
   QFile file(xmlFileName);
   if (!file.open(QIODevice::ReadOnly))

@@ -88,11 +88,11 @@ int main(int argc, char *argv[])
   pabout=&about;
   KCmdLineArgs::init(argc,argv,&about);
   KCmdLineArgs::addCmdLineOptions(options);
-  KApplication::addCmdLineOptions();
+  KCmdLineArgs::addStdCmdLineOptions();
   KApplication app;
   // Set the preferred large icon size so system toolbar icons don't get
   // annoying padding.
-  int toolbarIconSize=KIconLoader().currentSize(KIcon::MainToolbar);
+  int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
   QIcon::setIconSize(QIcon::Large,QSize(toolbarIconSize,toolbarIconSize));
   // Readd the images KDE kindly removes...
   qCleanupImages_ktigcc();
@@ -217,7 +217,7 @@ void clear_temp_dir(void)
 
 void force_qt_assistant_page(int n)
 {
-  QString fname=QDir::homeDirPath()+"/.qt/qt_assistantrc";
+  QString fname=QDir::homePath()+"/.qt/qt_assistantrc";
   FILE *f=fopen(fname,"r+b");
   if (!f) f=fopen(fname,"w+b");
   if (!f) exit(1);

@@ -23,7 +23,7 @@
 
 #pragma once
 
-class KURL;
+class KUrl;
 #include <qstring.h>
 #include <qstringlist.h>
 #include <q3cstring.h>
@@ -176,7 +176,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
                          LineStartList *pLineStartList);
 int saveFileText(const char *fileName,const QString &fileText);
 
-void kurlNewFileName(KURL &dir,const QString &newFileName);
+void kurlNewFileName(KUrl &dir,const QString &newFileName);
 int checkFileName(const QString &fileName,const QStringList &fileNameList);
 
 int copyFile(const char *src, const char *dest);

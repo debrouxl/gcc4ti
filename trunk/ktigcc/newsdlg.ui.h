@@ -83,7 +83,7 @@ bool NewsDialog::loadNews()
   QDate latestHeadline=pconfig->readDateTimeEntry("Latest Headline",
                                                   &defaultDateTime).date();
   if(KIO::NetAccess::download(
-      KURL("http://tigcc.ticalc.org/linux/newsheadlines.txt"),tmpFile,this)) {
+      KUrl("http://tigcc.ticalc.org/linux/newsheadlines.txt"),tmpFile,this)) {
     #define ERROR(s) do {KMessageBox::error(this,(s)); goto done;} while(0)
     #define ZAP_LF() do {char *p=line+(std::strlen(line)-1); if (*p=='\n') *p=0;} while(0)
     #define ZAP_CR() do {char *p=line+(std::strlen(line)-1); if (*p=='\r') *p=0;} while(0)
@@ -154,5 +154,5 @@ void NewsDialog::refreshButton_clicked()
 
 void NewsDialog::visitButton_clicked()
 {
-  KRun::runURL(KURL("http://tigcc.ticalc.org/linux/"),"text/html");
+  KRun::runURL(KUrl("http://tigcc.ticalc.org/linux/"),"text/html");
 }

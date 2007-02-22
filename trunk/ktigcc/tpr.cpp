@@ -194,7 +194,7 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
             { \
                 if (*p) { \
                   unsigned short *utf16=ticonv_charset_ti_to_utf16(CALC_TI89,p); \
-                  dest->var = QString::fromUcs2(utf16); \
+                  dest->var = QString::fromUtf16(utf16); \
                   g_free(utf16); \
                 } \
                 continue; \
@@ -522,7 +522,7 @@ QString loadFileText(const char *fileName)
       delete[] buffer;
       if (!utf16)
         return QString::null;
-      ret=QString::fromUcs2(utf16);
+      ret=QString::fromUtf16(utf16);
       g_free(utf16);
     } else {
       ret=buffer;
@@ -571,7 +571,7 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
     
 #define boolean_param(token,setting) if (fprintf(f,token "%d\r\n",!!dest->settings.setting)<0) return -2;
 #define tistring_vparam(token,var) { \
-        const unsigned short *utf16=dest->var.ucs2(); \
+        const unsigned short *utf16=dest->var.utf16(); \
         char *ti=utf16?ticonv_charset_utf16_to_ti(CALC_TI89,utf16):reinterpret_cast<char*>(g_malloc0(1)); \
         if (fprintf(f,token "%s\r\n",ti)<0) {g_free(ti); return -2;} \
         g_free(ti); \
@@ -769,7 +769,7 @@ void mkdir_multi(const char *fileName)
 static int writeToFile(FILE *f, const QString &text)
 {
   if (preferences.useCalcCharset) {
-    const unsigned short *utf16=text.ucs2();
+    const unsigned short *utf16=text.utf16();
     if (utf16) {
       char *s=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       size_t l=std::strlen(s);
@@ -1038,7 +1038,7 @@ int saveFileText(const char *fileName,const QString &fileText)
                               static_cast<LineStartList *>(NULL));
 }
 
-void kurlNewFileName(KURL &dir,const QString &newFileName)
+void kurlNewFileName(KUrl &dir,const QString &newFileName)
 {
   if (newFileName[0]=='/')
     dir.setPath(newFileName);
@@ -1327,7 +1327,7 @@ QStringList process_settings(const QString &prjNameUnicode,
 
   // Convert the project name to the calculator charset.
   {
-    const unsigned short *utf16=prjNameUnicode.ucs2();
+    const unsigned short *utf16=prjNameUnicode.utf16();
     if (utf16) {
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       projectName=ti; // This is a hidden strdup (see QCString::operator=).
@@ -1347,7 +1347,7 @@ QStringList process_settings(const QString &prjNameUnicode,
 
   // Convert the PPG folder name to the calculator charset.
   {
-    const unsigned short *utf16=packFolderUnicode.ucs2();
+    const unsigned short *utf16=packFolderUnicode.utf16();
     if (utf16) {
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       packFolder=ti; // This is a hidden strdup (see QCString::operator=).
@@ -1357,7 +1357,7 @@ QStringList process_settings(const QString &prjNameUnicode,
 
   // Convert the PPG file name to the calculator charset.
   {
-    const unsigned short *utf16=packNameUnicode.ucs2();
+    const unsigned short *utf16=packNameUnicode.utf16();
     if (utf16) {
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       packName=ti; // This is a hidden strdup (see QCString::operator=).
@@ -1368,7 +1368,7 @@ QStringList process_settings(const QString &prjNameUnicode,
   if (settings.use_data_var && !settings.data_var.isEmpty()) {
     // We can't just append this to the argument list because this needs to be
     // in the calculator charset.
-    const unsigned short *utf16=settings.data_var.ucs2();
+    const unsigned short *utf16=settings.data_var.utf16();
     if (utf16) {
       char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
       dataVarName=ti; // This is a hidden strdup (see QCString::operator=).

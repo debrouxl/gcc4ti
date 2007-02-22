@@ -129,9 +129,9 @@ CompletionInfo parseFileCompletion(const QString &fileText,
   for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
     const QString &line=(*it);
     if (!inComment) {
-      QString strippedLine=line.stripWhiteSpace();
+      QString strippedLine=line.trimmed();
       if (strippedLine.startsWith("#include")) {
-        QString includedName=strippedLine.mid(8).stripWhiteSpace();
+        QString includedName=strippedLine.mid(8).trimmed();
         if (includedName[0]=='<') {
           int pos=includedName.find('>',1);
           if (pos>=0)
@@ -143,7 +143,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
               // A system header can only include another system header.
               result.includedSystem.append(includedName.mid(1,pos-1));
             else
-              result.included.append(QDir::cleanDirPath(pathInProject+"/"
+              result.included.append(QDir::cleanPath(pathInProject+"/"
                                                         +includedName.mid(1,pos-1)));
           }
         } // else ignore

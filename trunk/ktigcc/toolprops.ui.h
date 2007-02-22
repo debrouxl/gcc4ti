@@ -44,7 +44,7 @@ void ToolProperties::init()
     toolTitle->setText(tool.title);
     commandLine->setText(tool.commandLine);
     if (!tool.workingDirectory.isEmpty())
-      workingDirectory->setKURL(KURL::fromPathOrURL(tool.workingDirectory));
+      workingDirectory->setKURL(KUrl::fromPathOrUrl(tool.workingDirectory));
     runInTerminal->setChecked(tool.runInTerminal);
   }
 }
@@ -53,7 +53,7 @@ void ToolProperties::accept()
 {
   Tool tool(toolTitle->text(),commandLine->text(),
             workingDirectory->url().isEmpty()?QString():
-            KURL(workingDirectory->url()).path(),runInTerminal->isChecked());
+            KUrl(workingDirectory->url()).path(),runInTerminal->isChecked());
   if (toolIndex>=0)
     tempTools[toolIndex]=tool;
   else
@@ -66,8 +66,8 @@ void ToolProperties::validate()
   okButton->setEnabled(!toolTitle->text().isEmpty()
                        && !commandLine->text().isEmpty()
                        && (workingDirectory->url().isEmpty()
-                           || (KURL(workingDirectory->url()).isValid()
-                               && KURL(workingDirectory->url()).isLocalFile())));
+                           || (KUrl(workingDirectory->url()).isValid()
+                               && KUrl(workingDirectory->url()).isLocalFile())));
 }
 
 void ToolProperties::browseButton_clicked()

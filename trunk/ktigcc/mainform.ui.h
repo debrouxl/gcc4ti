@@ -167,8 +167,8 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         othFileCount)
 #define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
 
-#define LOAD_ICON(name) (QIcon(KGlobal::iconLoader()->loadIcon((name),KIcon::Small),KGlobal::iconLoader()->loadIcon((name),KIcon::MainToolbar)))
-#define SYSICON(sysname,name) (preferences.useSystemIcons?KGlobal::iconLoader()->loadIcon((sysname),KIcon::Small,KIcon::SizeSmall):qPixmapFromMimeSource((name)))
+#define LOAD_ICON(name) (QIcon(KIconLoader::global()->loadIcon((name),K3Icon::Small),KGlobal::iconLoader()->loadIcon((name),K3Icon::MainToolbar)))
+#define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),K3Icon::Small,K3Icon::SizeSmall):qPixmapFromMimeSource((name)))
 
 #define SET_TEXT_SAFE(doc,text) do { \
     disableViewEvents=TRUE; \
@@ -242,29 +242,29 @@ static KReplaceWithSelection *kreplace;
 
 // All the methods are inline because otherwise QT Designer will mistake them
 // for slots of the main form.
-class ListViewFolder : public KListViewItem {
+class ListViewFolder : public K3ListViewItem {
   public:
-  ListViewFolder(Q3ListView *parent) : KListViewItem(parent)
+  ListViewFolder(Q3ListView *parent) : K3ListViewItem(parent)
   {
     setPixmap(0,SYSICON("folder","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
-  ListViewFolder(Q3ListViewItem *parent) : KListViewItem(parent)
+  ListViewFolder(Q3ListViewItem *parent) : K3ListViewItem(parent)
   {
     setPixmap(0,SYSICON("folder","folder1.png"));
     setDragEnabled(TRUE);
     setDropEnabled(TRUE);
   }
   ListViewFolder(Q3ListView *parent, Q3ListViewItem *after)
-          : KListViewItem(parent, after)
+          : K3ListViewItem(parent, after)
   {
     setPixmap(0,SYSICON("folder","folder1.png"));
     setDropEnabled(TRUE);
     setDragEnabled(TRUE);
   }
   ListViewFolder(Q3ListViewItem *parent, Q3ListViewItem *after)
-          : KListViewItem(parent, after)
+          : K3ListViewItem(parent, after)
   {
     setPixmap(0,SYSICON("folder","folder1.png"));
     setDragEnabled(TRUE);
@@ -272,17 +272,17 @@ class ListViewFolder : public KListViewItem {
   }
   virtual int rtti(void) const {return 0x716CC0;}
   // Work around gratuitous API difference. Why do I have to do this? That's
-  // what startRename is a virtual method for. KListViewItem should do this.
+  // what startRename is a virtual method for. K3ListViewItem should do this.
   virtual void startRename(int col)
   {
-    static_cast<KListView *>(listView())->rename(this,col);
+    static_cast<K3ListView *>(listView())->rename(this,col);
   }
   protected:
 };
 
-class ListViewFile : public KListViewItem {
+class ListViewFile : public K3ListViewItem {
   public:
-  ListViewFile(Q3ListView *parent) : KListViewItem(parent),
+  ListViewFile(Q3ListView *parent) : K3ListViewItem(parent),
                                     kateView(NULL), isNew(TRUE),
                                     modifiedSinceLastCompile(TRUE)
   {
@@ -291,7 +291,7 @@ class ListViewFile : public KListViewItem {
     setDropEnabled(TRUE);
     setRenameEnabled(0,TRUE);
   }
-  ListViewFile(Q3ListViewItem *parent) : KListViewItem(parent),
+  ListViewFile(Q3ListViewItem *parent) : K3ListViewItem(parent),
                                         kateView(NULL), isNew(TRUE),
                                         modifiedSinceLastCompile(TRUE)
   {
@@ -301,7 +301,7 @@ class ListViewFile : public KListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(Q3ListView *parent, Q3ListViewItem *after)
-          : KListViewItem(parent, after), kateView(NULL), isNew(TRUE),
+          : K3ListViewItem(parent, after), kateView(NULL), isNew(TRUE),
             modifiedSinceLastCompile(TRUE)
   {
     setPixmap(0,SYSICON("unknown","filex.png"));
@@ -310,7 +310,7 @@ class ListViewFile : public KListViewItem {
     setRenameEnabled(0,TRUE);
   }
   ListViewFile(Q3ListViewItem *parent, Q3ListViewItem *after)
-          : KListViewItem(parent, after), kateView(NULL),
+          : K3ListViewItem(parent, after), kateView(NULL),
             isNew(TRUE), modifiedSinceLastCompile(TRUE)
   {
     setPixmap(0,SYSICON("unknown","filex.png"));
@@ -341,47 +341,47 @@ class ListViewFile : public KListViewItem {
   bool modifiedSinceLastCompile;
   LineStartList lineStartList;
   // Work around gratuitous API difference. Why do I have to do this? That's
-  // what startRename is a virtual method for. KListViewItem should do this.
+  // what startRename is a virtual method for. K3ListViewItem should do this.
   virtual void startRename(int col)
   {
-    static_cast<KListView *>(listView())->rename(this,col);
+    static_cast<K3ListView *>(listView())->rename(this,col);
   }
   protected:
 };
 
-class ListViewRoot : public KListViewItem {
+class ListViewRoot : public K3ListViewItem {
   public:
-  ListViewRoot(Q3ListView *parent) : KListViewItem(parent)
+  ListViewRoot(Q3ListView *parent) : K3ListViewItem(parent)
   {
     setRenameEnabled(0,TRUE);
     // dragging not really allowed, but don't let the cursor run around when dragged
     setDragEnabled(TRUE);
   }
-  ListViewRoot(Q3ListViewItem *parent) : KListViewItem(parent)
+  ListViewRoot(Q3ListViewItem *parent) : K3ListViewItem(parent)
   {
     setRenameEnabled(0,TRUE);
     // dragging not really allowed, but don't let the cursor run around when dragged
     setDragEnabled(TRUE);
   }
   ListViewRoot(Q3ListView *parent, Q3ListViewItem *after)
-          : KListViewItem(parent, after)
+          : K3ListViewItem(parent, after)
   {
     setRenameEnabled(0,TRUE);
     // dragging not really allowed, but don't let the cursor run around when dragged
     setDragEnabled(TRUE);
   }
   ListViewRoot(Q3ListViewItem *parent, Q3ListViewItem *after)
-          : KListViewItem(parent, after)
+          : K3ListViewItem(parent, after)
   {
     setRenameEnabled(0,TRUE);
     // dragging not really allowed, but don't let the cursor run around when dragged
     setDragEnabled(TRUE);
   }
   // Work around gratuitous API difference. Why do I have to do this? That's
-  // what startRename is a virtual method for. KListViewItem should do this.
+  // what startRename is a virtual method for. K3ListViewItem should do this.
   virtual void startRename(int col)
   {
-    static_cast<KListView *>(listView())->rename(this,col);
+    static_cast<K3ListView *>(listView())->rename(this,col);
   }
   protected:
 };
@@ -431,13 +431,13 @@ Tools tools, tempTools;
 int toolIndex;
 bool disableViewEvents=FALSE;
 
-class DnDListView : public KListView {
+class DnDListView : public K3ListView {
   private:
   public:
   DnDListView ( QWidget * parent = 0, const char * name = 0)
-          : KListView(parent,name) {}
+          : K3ListView(parent,name) {}
   // Make my hand-coded drag&drop code work (public part).
-  // Maybe the built-in drag&drop support in KListView could be made to work as
+  // Maybe the built-in drag&drop support in K3ListView could be made to work as
   // expected, but for now just bypass it to use the existing code I wrote for
   // QListView.
   virtual void takeItem(Q3ListViewItem *i) {Q3ListView::takeItem(i);}
@@ -684,27 +684,27 @@ class DnDListView : public KListView {
   virtual void startDrag() {
     Q3ListView::startDrag();
   }
-  // KListView::rename won't work properly if I don't do this. :-/
+  // K3ListView::rename won't work properly if I don't do this. :-/
   virtual void rename(Q3ListViewItem *item, int c) {
     QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
     ensureItemVisible(item);
     QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,1000);
-    KListView::rename(item,c);
+    K3ListView::rename(item,c);
   }
 };
 
 enum ErrorTypes {etError, etWarning, etInfo};
-class ErrorListItem : public KListViewItem {
+class ErrorListItem : public K3ListViewItem {
   public:
   ErrorListItem(MainForm *pMainForm, ErrorTypes errType,
                 const QString &errFile, const QString &errFunc,
                 const QString &errMsg, unsigned errLine, unsigned errColumn)
-    : KListViewItem(errorList->errorListView,
+    : K3ListViewItem(errorList->errorListView,
                     errorList->errorListView->lastItem()),
       lvFile(0), srcFile(0), cursor(0), errorLine((unsigned)-1), errorColumn(0),
       mainForm(pMainForm), errorType(errType)
   {
-    QString errMessage=errMsg.stripWhiteSpace();
+    QString errMessage=errMsg.trimmed();
     if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].upper();
     switch(errType) {
       case etError:
@@ -1067,7 +1067,7 @@ void MainForm::init()
   khelpmenu=new KHelpMenu(this,pabout);
   assistant=new AssistantClient(this,
     QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
-  lastDirectory=QString("%1/tigcc-projects").arg(QDir::homeDirPath());
+  lastDirectory=QString("%1/tigcc-projects").arg(QDir::homePath());
   if (!QDir(lastDirectory).exists() && !QDir().mkdir(lastDirectory))
     lastDirectory=QString("%1/projects").arg(tigcc_base);
   projectFileName="";
@@ -1141,11 +1141,11 @@ void MainForm::init()
     helpDocumentationAction->setIconSet(LOAD_ICON("help"));
     helpSearchAction->setIconSet(LOAD_ICON("filefind"));
     findFindAction->setIconSet(LOAD_ICON("filefind"));
-    if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
+    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty()) {
       QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
-      int smallSize=IconSize(KIcon::Small);
+      int smallSize=IconSize(K3Icon::Small);
       fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
-      int largeSize=IconSize(KIcon::MainToolbar);
+      int largeSize=IconSize(K3Icon::MainToolbar);
       fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
       findReplaceAction->setIconSet(fileReplaceIconSet);
     } else
@@ -1204,7 +1204,7 @@ void MainForm::init()
   }
   pconfig->setGroup("Recent files");
   if (parg) {
-    QString fileName=QDir().absFilePath(parg);
+    QString fileName=QDir().absoluteFilePath(parg);
     if (!openProject(fileName)) goto openRecent;
   } else {
     openRecent:;
@@ -1532,7 +1532,7 @@ QString MainForm::SGetFileName(int mode,const QString &fileFilter,const QString 
     ret=KFileDialog::getSaveFileName(lastDirectory,fileFilter,parent,caption);
   if (!ret.isNull())
   {
-    KURL dir;
+    KUrl dir;
     dir.setPath(ret);
     dir.setFileName("");
     lastDirectory=dir.path();
@@ -1547,7 +1547,7 @@ QStringList MainForm::SGetFileName_Multiple(const QString &fileFilter,const QStr
   ret=KFileDialog::getOpenFileNames(lastDirectory,fileFilter,parent,caption);
   if (!ret.empty())
   {
-    KURL dir;
+    KUrl dir;
     dir.setPath(ret[0]);
     dir.setFileName("");
     lastDirectory=dir.path();
@@ -1864,7 +1864,7 @@ void MainForm::fileOpen_addList(Q3ListViewItem *category,void *fileListV,void *d
 {
   int i,e;
   int p,pslash;
-  KURL tmp;
+  KUrl tmp;
   TPRFileList *fileList=(TPRFileList*)fileListV;
   QString caption;
   QString treePath;
@@ -1873,7 +1873,7 @@ void MainForm::fileOpen_addList(Q3ListViewItem *category,void *fileListV,void *d
   if (e) category->setOpen(TRUE);
   for (i=0;i<e;i++)
   {
-    tmp=*reinterpret_cast<const KURL *>(dir);
+    tmp=*reinterpret_cast<const KUrl *>(dir);
     kurlNewFileName(tmp,fileList->path[i]);
     caption=fileList->path[i];
     //fixed suffix truncation for file paths such as "/root/.dot/nodot" so it wouldn't truncate to "/root/"
@@ -1881,7 +1881,7 @@ void MainForm::fileOpen_addList(Q3ListViewItem *category,void *fileListV,void *d
     pslash=caption.findRev('/');
     if (p>=0&&p>pslash) caption.truncate(p);
     if (pslash>=0) caption.remove(0,pslash+1);
-    treePath=fileList->folder[i].stripWhiteSpace();
+    treePath=fileList->folder[i].trimmed();
     //check for a backslash at the end and remove it if it's there.
     if (treePath[treePath.length()-1]=='\\')
       treePath.truncate(treePath.length()-1);
@@ -1907,7 +1907,7 @@ void MainForm::fileOpen_addList(Q3ListViewItem *category,void *fileListV,void *d
 bool MainForm::openProject(const QString &fileName)
 {
   TPRDataStruct TPRData;
-  KURL dir;
+  KUrl dir;
   bool isProject=fileName.endsWith(".tpr",FALSE);
   dir.setPath(fileName);
   switch (getPathType(fileName)) {
@@ -2044,7 +2044,7 @@ void MainForm::fileOpen()
   if (compiling || savePrompt())
     return;
   QString fileName=SGetFileName(KFileDialog::Opening,findFilter(TIGCCOpenProjectFileFilter),"Open Project/File",this);
-  KURL dir;
+  KUrl dir;
   dir.setPath(fileName);
   if (fileName.isEmpty())
     return;
@@ -2085,7 +2085,7 @@ int MainForm::fileSavePrompt(Q3ListViewItem *fileItem)
   ListViewFile *theFile=static_cast<ListViewFile *>(fileItem);
   if (!theFile->kateView) return 0;
   while (theFile->kateView->getDoc()->isModified()) { // "while" in case saving fails!
-    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(theFile->text(0)),QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
+    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(theFile->text(0)),QString::null,KStandardGuiItem::save(),KStandardGuiItem::discard());
     if (result==KMessageBox::Yes)
       fileSave_save(fileItem);
     else if (result==KMessageBox::No)
@@ -2102,7 +2102,7 @@ int MainForm::savePrompt(void)
   int result;
   
   while (projectIsDirty) {
-    result=KMessageBox::questionYesNoCancel(this,"The current project has been modified.  Do you want to save the changes?",QString::null,KStdGuiItem::save(),KStdGuiItem::discard());
+    result=KMessageBox::questionYesNoCancel(this,"The current project has been modified.  Do you want to save the changes?",QString::null,KStandardGuiItem::save(),KStandardGuiItem::discard());
     if (result==KMessageBox::Yes)
       fileSave();
     else if (result==KMessageBox::No)
@@ -2263,8 +2263,8 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
   if (!category)
     return;
   TPRFileList *fileList=(TPRFileList*)fileListV;
-  KURL *new_dir=(KURL*)dir_new;
-  KURL tmpPath;
+  KUrl *new_dir=(KUrl*)dir_new;
+  KUrl tmpPath;
   Q3ListViewItem *item=category->firstChild();
   Q3ListViewItem *next;
   QString folderSpec=QString::null;
@@ -2275,7 +2275,7 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
     {
       ListViewFile *theFile=static_cast<ListViewFile *>(item);
       QString absPath=theFile->fileName;
-      QString relPath=KURL::relativePath(base_dir,absPath);
+      QString relPath=KUrl::relativePath(base_dir,absPath);
       if (relPath.startsWith("./"))
       {
         relPath=relPath.mid(2);
@@ -2376,10 +2376,10 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
 {
   TPRDataStruct TPRData;
   QString open_file;
-  KURL base_dir_k(lastProj);
+  KUrl base_dir_k(lastProj);
   base_dir_k.setFileName("");
   QString base_dir=base_dir_k.path();
-  KURL new_dir(nextProj);
+  KUrl new_dir(nextProj);
   
   fileSave_loadList(hFilesListItem,&TPRData.h_files,base_dir,&new_dir,&open_file);
   fileSave_loadList(cFilesListItem,&TPRData.c_files,base_dir,&new_dir,&open_file);
@@ -2559,11 +2559,11 @@ void MainForm::filePreferences()
       helpDocumentationAction->setIconSet(LOAD_ICON("help"));
       helpSearchAction->setIconSet(LOAD_ICON("filefind"));
       findFindAction->setIconSet(LOAD_ICON("filefind"));
-      if (KGlobal::iconLoader()->iconPath("stock-find-and-replace",KIcon::Small,TRUE).isEmpty()) {
+      if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty()) {
         QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
-        int smallSize=IconSize(KIcon::Small);
+        int smallSize=IconSize(K3Icon::Small);
         fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
-        int largeSize=IconSize(KIcon::MainToolbar);
+        int largeSize=IconSize(K3Icon::MainToolbar);
         fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
         findReplaceAction->setIconSet(fileReplaceIconSet);
       } else
@@ -2706,7 +2706,7 @@ void MainForm::findFind()
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
-    kfinddialog=new KFindDialog(false,this,0,KFindDialog::FromCursor,findHistory);
+    kfinddialog=new KFindDialog(false,this,0,KFind::FromCursor,findHistory);
     connect(kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
     connect(kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
     kfinddialog->show();
@@ -2720,7 +2720,7 @@ void MainForm::findFind_next()
   KFind *kfind=new KFind(kfinddialog->pattern(),kfinddialog->options(),this,kfinddialog);
 
   // Initialize.
-  bool findBackwards=!!(kfinddialog->options()&KFindDialog::FindBackwards);
+  bool findBackwards=!!(kfinddialog->options()&KFind::FindBackwards);
   int findCurrentCol;
   kfind=new KFind(kfinddialog->pattern(),kfinddialog->options(),this,kfinddialog);
   kfind->closeFindNextDialog(); // don't use this, a non-modal KFindDialog is used instead
@@ -2730,7 +2730,7 @@ void MainForm::findFind_next()
   if (!currentListItem) fileTreeClicked(rootListItem);
   findCurrentDocument=currentListItem;
   if (CURRENT_VIEW) {
-    if (kfinddialog->options()&KFindDialog::FromCursor) {
+    if (kfinddialog->options()&KFind::FromCursor) {
       if (CURRENT_VIEW->getDoc()->hasSelection()) {
         if (findBackwards) {
           findCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
@@ -2905,7 +2905,7 @@ void MainForm::findReplace()
   }
   KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
                                         &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
-                                        KFindDialog::SelectedText:0)|KFindDialog::FromCursor,
+                                        KFind::SelectedText:0)|KFind::FromCursor,
                                        findHistory,replacementHistory,
                                        CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
@@ -2926,13 +2926,13 @@ void MainForm::findReplace()
   // Connect dialogClosed signal - called when closing the Replace Next dialog.
   connect(kreplace,SIGNAL(dialogClosed()),this,SLOT(findReplace_stop()));
   // Initialize.
-  bool findBackwards=!!(kreplace->options()&KFindDialog::FindBackwards);
+  bool findBackwards=!!(kreplace->options()&KFind::FindBackwards);
   int replaceCurrentCol;
   // Make sure we have a valid currentListItem.
   if (!currentListItem) fileTreeClicked(rootListItem);
   replaceCurrentDocument=currentListItem;
   if (CURRENT_VIEW) {
-    if (kreplace->options()&KFindDialog::SelectedText) {
+    if (kreplace->options()&KFind::SelectedText) {
       kreplace->setSelection(CURRENT_VIEW->getDoc()->selStartLine(),
                              CURRENT_VIEW->getDoc()->selStartCol(),
                              CURRENT_VIEW->getDoc()->selEndLine(),
@@ -2944,8 +2944,8 @@ void MainForm::findReplace()
         replaceCurrentLine=kreplace->selStartLine();
         replaceCurrentCol=kreplace->selStartCol();
       }
-      kreplace->setOptions(kreplace->options()&~KFindDialog::FromCursor);
-    } else if (kreplace->options()&KFindDialog::FromCursor) {
+      kreplace->setOptions(kreplace->options()&~KFind::FromCursor);
+    } else if (kreplace->options()&KFind::FromCursor) {
       if (CURRENT_VIEW->getDoc()->hasSelection()) {
         if (findBackwards) {
           replaceCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
@@ -2965,7 +2965,7 @@ void MainForm::findReplace()
         if (findBackwards?(replaceCurrentLine==(CURRENT_VIEW->getDoc()->numLines()-1)
                            && replaceCurrentCol==(CURRENT_VIEW->getDoc()->lineLength(replaceCurrentLine)))
                          :(!replaceCurrentLine&&!replaceCurrentCol))
-          kreplace->setOptions(kreplace->options()&~KFindDialog::FromCursor);
+          kreplace->setOptions(kreplace->options()&~KFind::FromCursor);
       }
     } else {
       replaceCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
@@ -2989,7 +2989,7 @@ void MainForm::findReplace_next(bool firstTime)
   // Replace All only works on the current file. Also, if we have a selection,
   // we only want to work on the file containing the selection.
   bool global=(kreplace->options()&KReplaceDialog::PromptOnReplace)&&!kreplace->haveSelection();
-  bool findBackwards=!!(kreplace->options()&KFindDialog::FindBackwards);
+  bool findBackwards=!!(kreplace->options()&KFind::FindBackwards);
 
   // Reinitialize.
   if (!firstTime) {
@@ -3146,8 +3146,8 @@ void MainForm::findReplace_next(bool firstTime)
           if (CURRENT_VIEW) {
             if (kreplace->shouldRestart()) {
               // Drop "From cursor" and "Selected text" options.
-              kreplace->setOptions(kreplace->options()&~(KFindDialog::FromCursor
-                                                         |KFindDialog::SelectedText));
+              kreplace->setOptions(kreplace->options()&~(KFind::FromCursor
+                                                         |KFind::SelectedText));
               kreplace->invalidateSelection();
               // Reinitialize.
               replaceCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
@@ -3796,7 +3796,7 @@ void MainForm::procio_readReady()
     // calculator charset, so the variable name won't display properly if it
     // contains non-ASCII characters. Fix that up.
     if (ldTigccStatPhase==1
-        && line.stripWhiteSpace().startsWith("Program Variable Name:",FALSE)) {
+        && line.trimmed().startsWith("Program Variable Name:",FALSE)) {
       int pos=line.find(':');
       while (line[++pos]==' ');
       line.truncate(pos);
@@ -3837,7 +3837,7 @@ void MainForm::procio_readReady()
               if (line.contains("Fatal errors - assembly aborted",FALSE)) break;
               // Not an A68k error, so parse it as a standard *nix-style error.
               // Normalize characters and strip whitespace
-              line=line.stripWhiteSpace();
+              line=line.trimmed();
               line.replace('`','\''); // backtick
               line.replace(QChar(0xb4),'\''); // forward apostrophe
               line.replace('\"','\''); // quote
@@ -3894,15 +3894,15 @@ void MainForm::procio_readReady()
                         }
                       }
                     }
-                    errorMessage=errorMessage.stripWhiteSpace();
+                    errorMessage=errorMessage.trimmed();
                     ErrorTypes errorType=etError;
                     if (errorMessage.startsWith("warning:",FALSE)) {
                       errorMessage.remove(0,8);
-                      errorMessage=errorMessage.stripWhiteSpace();
+                      errorMessage=errorMessage.trimmed();
                       errorType=etWarning;
                     } else if (errorMessage.startsWith("error:",FALSE)) {
                       errorMessage.remove(0,6);
-                      errorMessage=errorMessage.stripWhiteSpace();
+                      errorMessage=errorMessage.trimmed();
                     }
                     if (errorMessage.startsWith("#warning ",FALSE)) {
                       errorMessage.remove(0,9);
@@ -3935,11 +3935,11 @@ void MainForm::procio_readReady()
                       ErrorTypes errorType=etError;
                       if (errorMessage.startsWith("warning:",FALSE)) {
                         errorMessage.remove(0,8);
-                        errorMessage=errorMessage.stripWhiteSpace();
+                        errorMessage=errorMessage.trimmed();
                         errorType=etWarning;
                       } else if (errorMessage.startsWith("error:",FALSE)) {
                         errorMessage.remove(0,6);
-                        errorMessage=errorMessage.stripWhiteSpace();
+                        errorMessage=errorMessage.trimmed();
                       }
                       if (!errorMessage.endsWith("."))
                         errorMessage.append('.');
@@ -3970,7 +3970,7 @@ void MainForm::procio_readReady()
         }
         break;
       case 1:
-        line=line.stripWhiteSpace();
+        line=line.trimmed();
         // Collect targets (the data file renaming needs to know them).
         if (line=="TI-89") ti89_targeted=TRUE;
         else if (line=="TI-92 Plus") ti92p_targeted=TRUE;
@@ -3981,9 +3981,9 @@ void MainForm::procio_readReady()
           ldTigccStatPhase=2;
         break;
       case 2:
-        compileStats.append(line.simplifyWhiteSpace());
+        compileStats.append(line.simplified());
         compileStats.append('\n');
-        if (line.stripWhiteSpace().startsWith("Data Variable Size:",FALSE))
+        if (line.trimmed().startsWith("Data Variable Size:",FALSE))
           dataFileGenerated=TRUE;
         break;
     }
@@ -4643,12 +4643,12 @@ void MainForm::showStats()
   // QStyleSheet::convertFromPlainText. Sadly, that replaces the spaces with
   // strange non-BMP characters (from a Private Use Area) which don't display
   // properly in KMessageBox, so fix up those surrogate pairs.
-  if (KMessageBox::questionYesNo(this,Q3StyleSheet::convertFromPlainText(
+  if (KMessageBox::questionYesNo(this,Qt::convertFromPlainText(
         QString("The project has been compiled successfully.\n\n%1\n"
         "Do you want to open the project folder?").arg(compileStats))
         .replace(QString(QChar(56319))+QString(QChar(56992))," "),
         "Compilation Successful")==KMessageBox::Yes) {
-    KURL projectDir=KURL::fromPathOrURL(projectFileName);
+    KUrl projectDir=KUrl::fromPathOrUrl(projectFileName);
     projectDir.setFileName("");
     KRun::runURL(projectDir.url(),"inode/directory");
   }
@@ -5030,7 +5030,7 @@ void MainForm::debugRun()
         {
           int err;
           // Convert the command to the calculator charset.
-          char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,command.ucs2());
+          char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,command.utf16());
           // Send it character by character.
           #define SEND_CHAR(c) \
             if ((err=ticalcs_calc_send_key(calc,(c)))) { \
@@ -5632,7 +5632,7 @@ void MainForm::newFile(Q3ListViewItem *parent, QString text, const QPixmap &pixm
   QString tmp,oldtmp,suffix,caption;
   QStringList allFiles=extractAllFileNames();
   Q3ListViewItem *category;
-  KURL tmpK;
+  KUrl tmpK;
   int tryNum;
   for (; IS_FILE(next); next=item->nextSibling())
     item=next;
@@ -5782,6 +5782,7 @@ void MainForm::newFile( Q3ListViewItem *parent )
                  "\t 0b0000000000000000, \\\n"
                  "\t 0b0000000000000000, \\\n"
                  "\t 0b0000000000000000}\n\n#include <tigcclib.h>\n\n"
+#include <QTextDocument>
                  "// Main Function\nvoid _main(void)\n{\n"
                  "\t// Place your code here.\n}\n"):"")),
                  category==cFilesListItem||category==qllFilesListItem
@@ -6301,4 +6302,4 @@ QString MainForm::textForHeader(const QString &fileName)
 }
 
 // Yes, this is an ugly hack... Any better suggestions?
-#define KListView DnDListView
+#define K3ListView DnDListView

@@ -30,7 +30,7 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
-#include <klistview.h>
+#include <k3listview.h>
 #include "ktigcc.h"
 #include "toolprops.h"
 
@@ -41,7 +41,7 @@ void ToolsDialog::init()
   listView->setSorting(-1);
   Tools::iterator it;
   for(it=tempTools.begin(); it!=tempTools.end(); ++it)
-    new KListViewItem(listView,listView->lastItem(),(*it).title,
+    new K3ListViewItem(listView,listView->lastItem(),(*it).title,
                       (*it).commandLine,(*it).workingDirectory,
                       (*it).runInTerminal?"Yes":"No");
 }
@@ -53,7 +53,7 @@ void ToolsDialog::addButton_clicked()
   toolProperties.exec();
   if (toolProperties.result()==QDialog::Accepted) {
     Tool &newTool=tempTools.last();
-    new KListViewItem(listView,listView->lastItem(),newTool.title,
+    new K3ListViewItem(listView,listView->lastItem(),newTool.title,
                       newTool.commandLine,newTool.workingDirectory,
                       newTool.runInTerminal?"Yes":"No");
   } else listView_selectionChanged(); // set the real toolIndex again

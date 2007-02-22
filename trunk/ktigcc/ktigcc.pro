@@ -105,8 +105,8 @@ isEmpty(KDEPREFIX):error(KDE 4 kdelibs required.)
 
 exists($$KDEPREFIX/include/kde4) {
   INCLUDEPATH += $$KDEPREFIX/include/kde4
-} else:exists($$KDEPREFIX/include/kde) {
-  INCLUDEPATH += $$KDEPREFIX/include/kde
+# } else:exists($$KDEPREFIX/include/kde) {
+#  INCLUDEPATH += $$KDEPREFIX/include/kde
 } else {
   INCLUDEPATH += $$KDEPREFIX/include
 }
