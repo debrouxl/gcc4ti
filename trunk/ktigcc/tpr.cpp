@@ -33,6 +33,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#include <kurl.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <q3cstring.h>
