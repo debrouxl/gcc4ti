@@ -3,6 +3,8 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on debug
 
+QT += qt3support
+
 LIBS	+= -lktexteditor -lkutils -lkdeui -lkdecore -lkio -lkparts -lDCOP
 
 HEADERS	+= tpr.h \
@@ -97,18 +99,18 @@ UI_DIR = .ui
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
 
-KDEPREFIX = $$system(kde-config --prefix)
-isEmpty(KDEPREFIX):error(KDE 3 kdelibs required.)
+KDEPREFIX = $$system(kde4-config --prefix)
+isEmpty(KDEPREFIX):error(KDE 4 kdelibs required.)
 
-exists($$KDEPREFIX/include/kde3) {
-  INCLUDEPATH += $$KDEPREFIX/include/kde3
+exists($$KDEPREFIX/include/kde4) {
+  INCLUDEPATH += $$KDEPREFIX/include/kde4
 } else:exists($$KDEPREFIX/include/kde) {
   INCLUDEPATH += $$KDEPREFIX/include/kde
 } else {
   INCLUDEPATH += $$KDEPREFIX/include
 }
 
-KDELIBDIR = $$KDEPREFIX/lib$$system(kde-config --libsuffix)
+KDELIBDIR = $$KDEPREFIX/lib$$system(kde4-config --libsuffix)
 
 !equals(KDELIBDIR,/usr/lib):!equals(KDELIBDIR,/usr/lib64) {
   LIBS += -L"$$KDELIBDIR"
