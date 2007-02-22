@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,14 +27,11 @@
 #include <qdir.h>
 #include <qapplication.h>
 #include <qwidget.h>
-#include <qwidget.h>
 #include <qevent.h>
-//Added by qt3to4:
 #include <Q3PopupMenu>
 #include <kmessagebox.h>
-#include <kate/view.h>
-#include <kate/document.h>
-#include <ktexteditor/editinterfaceext.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/document.h>
 #include <kconfig.h>
 #include <cstring>
 #include "completion.h"
@@ -139,16 +136,16 @@ bool findSymbolInFile(const QString &symbol,
                                    symbolLine,systemHeader);
 }
 
-static void mergeCompletionEntries(Q3ValueList<KTextEditor::CompletionEntry> &dest,
-                                   const Q3ValueList<KTextEditor::CompletionEntry> &src)
+static void mergeCompletionEntries(Q3ValueList<CompletionEntry> &dest,
+                                   const Q3ValueList<CompletionEntry> &src)
 {
-  for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it=src.begin();
+  for (Q3ValueList<CompletionEntry>::ConstIterator it=src.begin();
        it!=src.end(); ++it)
     dest.append(*it);
 }
 
 static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
-                                              Q3ValueList<KTextEditor::CompletionEntry> &result)
+                                              Q3ValueList<CompletionEntry> &result)
 {
   for (QStringList::ConstIterator it=systemHeaders.begin();
        it!=systemHeaders.end(); ++it) {
@@ -167,7 +164,7 @@ static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
 static bool completionEntriesForFileRecursive(const QString &fileText,
                                               const QString &fileName,
                                               MainForm *mainForm,
-                                              Q3ValueList<KTextEditor::CompletionEntry> &result)
+                                              Q3ValueList<CompletionEntry> &result)
 {
   if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
     QFileInfo fileInfo(fileName);
@@ -196,31 +193,31 @@ static bool completionEntriesForFileRecursive(const QString &fileText,
 bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
-                              Q3ValueList<KTextEditor::CompletionEntry> &result)
+                              Q3ValueList<CompletionEntry> &result)
 {
   resetSearchedFlags();
   return completionEntriesForFileRecursive(fileText,fileName,mainForm,result);
 }
 
-static Q3ValueList<KTextEditor::CompletionEntry> sortCompletionEntries(
-  const Q3ValueList<KTextEditor::CompletionEntry> &entries)
+static Q3ValueList<CompletionEntry> sortCompletionEntries(
+  const Q3ValueList<CompletionEntry> &entries)
 {
-  QMap<QString,Q3ValueList<KTextEditor::CompletionEntry> > map;
-  for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+  QMap<QString,Q3ValueList<CompletionEntry> > map;
+  for (Q3ValueList<CompletionEntry>::ConstIterator it=entries.begin();
        it!=entries.end(); ++it) {
-    const KTextEditor::CompletionEntry &entry=*it;
-    Q3ValueList<KTextEditor::CompletionEntry> &list=map[entry.text];
+    const CompletionEntry &entry=*it;
+    Q3ValueList<CompletionEntry> &list=map[entry.text];
     if (list.find(entry)==list.end()) list.append(entry);
   }
-  Q3ValueList<KTextEditor::CompletionEntry> result;
-  for (QMap<QString,Q3ValueList<KTextEditor::CompletionEntry> >::ConstIterator
+  Q3ValueList<CompletionEntry> result;
+  for (QMap<QString,Q3ValueList<CompletionEntry> >::ConstIterator
        it=map.begin(); it!=map.end(); ++it)
     mergeCompletionEntries(result,*it);
   return result;
 }
 
 static QStringList prototypesForIdentifier(const QString &identifier,
-  const Q3ValueList<KTextEditor::CompletionEntry> &entries)
+  const Q3ValueList<CompletionEntry> &entries)
 {
   QStringList result;
   QStringList reservedIdentifiers=QStringList::split('\n',"__alignof__\n"
@@ -270,9 +267,9 @@ static QStringList prototypesForIdentifier(const QString &identifier,
                                                           "volatile\n"
                                                           "while\n");
   if (!reservedIdentifiers.contains(identifier)) {
-    for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+    for (Q3ValueList<CompletionEntry>::ConstIterator it=entries.begin();
          it!=entries.end(); ++it) {
-      const KTextEditor::CompletionEntry &entry=*it;
+      const CompletionEntry &entry=*it;
       if (entry.text==identifier) {
         QString prototype=entry.prefix+' '+entry.text+entry.postfix;
         if (result.find(prototype)==result.end()) result.append(prototype);
@@ -284,9 +281,9 @@ static QStringList prototypesForIdentifier(const QString &identifier,
       if (identifierLength>=4) {
         QString identifierUpper=identifier.upper();
         Q3ValueList<unsigned> distances;
-        for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it=entries.begin();
+        for (Q3ValueList<CompletionEntry>::ConstIterator it=entries.begin();
              it!=entries.end(); ++it) {
-          const KTextEditor::CompletionEntry &entry=*it;
+          const CompletionEntry &entry=*it;
           QString entryText=entry.text;
           unsigned entryTextLength=entryText.length();
           unsigned minLength=qMin(identifierLength,entryTextLength);
@@ -319,7 +316,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
   for (QStringList::ConstIterator it=headers.begin(); it!=headers.end(); ++it) {
     const QString &header=*it;
     CompletionInfo &completionInfo=sysHdrCompletion[header];
-    Q3ValueList<KTextEditor::CompletionEntry> &entries=completionInfo.entries;
+    Q3ValueList<CompletionEntry> &entries=completionInfo.entries;
     QDir hdrQdir(QFileInfo(qdir,header).filePath());
     QStringList hsfs=hdrQdir.entryList("*.hsf *.ref",QDir::Files);
     for (QStringList::ConstIterator it=hsfs.begin(); it!=hsfs.end(); ++it) {
@@ -342,7 +339,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
           return false;
         }
       }
-      KTextEditor::CompletionEntry entry;
+      CompletionEntry entry;
       QStringList lines=QStringList::split('\n',fileText,TRUE);
       for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
         const QString &line=*it;
@@ -430,7 +427,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
                     for (QStringList::ConstIterator it=enumItems.begin();
                          it!=enumItems.end(); ++it) {
                       const QString &enumItem=*it;
-                      KTextEditor::CompletionEntry enumEntry;
+                      CompletionEntry enumEntry;
                       int pos=enumItem.find('=');
                       if (pos>=0) {
                         enumEntry.text=enumItem.left(pos).trimmed();
@@ -507,7 +504,7 @@ void loadSystemHeaderCompletion(void)
     completionInfo.includedSystem=config.readListEntry("Included");
     unsigned numEntries=config.readUnsignedNumEntry("Num Entries");
     for (unsigned i=0; i<numEntries; i++) {
-      KTextEditor::CompletionEntry entry;
+      CompletionEntry entry;
       entry.type=config.readEntry(QString("Entry %1 Type").arg(i));
       entry.text=config.readEntry(QString("Entry %1 Text").arg(i));
       entry.prefix=config.readEntry(QString("Entry %1 Prefix").arg(i));
@@ -534,10 +531,10 @@ void saveSystemHeaderCompletion(void)
     config.setGroup(key);
     config.writeEntry("Included",completionInfo.includedSystem);
     unsigned i=0;
-    for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it
+    for (Q3ValueList<CompletionEntry>::ConstIterator it
          =completionInfo.entries.begin(); it!=completionInfo.entries.end();
          ++it, i++) {
-      const KTextEditor::CompletionEntry &entry=*it;
+      const CompletionEntry &entry=*it;
       config.writeEntry(QString("Entry %1 Type").arg(i),entry.type);
       config.writeEntry(QString("Entry %1 Text").arg(i),entry.text);
       config.writeEntry(QString("Entry %1 Prefix").arg(i),entry.prefix);
@@ -554,7 +551,7 @@ void saveSystemHeaderCompletion(void)
   config.sync();
 }
 
-TemplatePopup::TemplatePopup(Kate::View *parent)
+TemplatePopup::TemplatePopup(KTextEditor::View *parent)
   : Q3PopupMenu(parent), view(parent)
 {
   connect(this,SIGNAL(activated(int)),this,SLOT(QPopupMenu_activated(int)));
@@ -562,7 +559,7 @@ TemplatePopup::TemplatePopup(Kate::View *parent)
   for (Q3ValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
        it!=preferences.templates.end(); ++it, i++)
     insertItem((*it).first,i);
-  QPoint pos=parent->cursorCoordinates();
+  QPoint pos=parent->cursorPositionCoordinates();
   if (pos.x()<0 || pos.y()<0) {
     // Cursor outside of the view, so center on view instead.
     QSize parentSize=parent->size();
@@ -576,8 +573,9 @@ TemplatePopup::TemplatePopup(Kate::View *parent)
 
 void TemplatePopup::QPopupMenu_activated(int id)
 {
+  KTextEditor::Document *doc=view->document();
   QString code=preferences.templates[id].second;
-  QString indent=view->currentTextLine();
+  QString indent=doc->line(view->cursorPosition().line());
   // Remove everything starting from the first non-whitespace character.
   indent=indent.remove(QRegExp("(?!\\s).*$"));
   indent.prepend('\n');
@@ -586,34 +584,34 @@ void TemplatePopup::QPopupMenu_activated(int id)
   if (cursorPos>=0) {
     QString left=code.left(cursorPos);
     QString right=code.mid(cursorPos+1);
-    unsigned row, col;
-    KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(view->getDoc());
-    editExt->editBegin();
+    int row, col;
+    doc->startEditing();
     view->insertText(left);
-    view->cursorPositionReal(&row,&col);
+    view->cursorPosition().position(row,col);
     view->insertText(right);
-    editExt->editEnd();
-    view->setCursorPositionReal(row,col);
+    doc->endEditing();
+    view->setCursorPosition(KTextEditor::Cursor(row,col));
   } else view->insertText(code);
 }
 
-CompletionPopup::CompletionPopup(Kate::View *parent, const QString &fileName,
+CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileName,
                                  MainForm *mainForm, QObject *receiver)
   : QObject(parent), done(false), completionPopup(0)
 {
   connect(this,SIGNAL(closed()),receiver,SLOT(completionPopup_closed()));
-  Q3ValueList<KTextEditor::CompletionEntry> entries;
-  if (!completionEntriesForFile(parent->getDoc()->text(),fileName,mainForm,
+  Q3ValueList<CompletionEntry> entries;
+  if (!completionEntriesForFile(parent->document()->text(),fileName,mainForm,
                                 entries)) {
     emit closed();
     deleteLater();
     return;
   }
   entries=sortCompletionEntries(entries);
-  unsigned column=parent->cursorColumnReal();
+  KTextEditor::Cursor cursor=parent->cursorPosition();
+  int column=cursor.column();
   int offset=0;
   if (column) {
-    QString textLine=parent->currentTextLine();
+    QString textLine=parent->document()->line(cursor.line());
     if (column<=textLine.length()) {
       while (column && (textLine[--column].isLetterOrNumber()
                         || textLine[column]=='_' || textLine[column]=='$'))
@@ -659,20 +657,21 @@ bool CompletionPopup::eventFilter(QObject *o, QEvent *e)
   return false;
 }
 
-ArgHintPopup::ArgHintPopup(Kate::View *parent, const QString &fileName,
+ArgHintPopup::ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
                            MainForm *mainForm)
   : QObject(parent), done(false), argHintPopup(0)
 {
-  Q3ValueList<KTextEditor::CompletionEntry> entries;
-  if (!completionEntriesForFile(parent->getDoc()->text(),fileName,mainForm,
+  Q3ValueList<CompletionEntry> entries;
+  if (!completionEntriesForFile(parent->document()->text(),fileName,mainForm,
                                 entries)) {
     nothingFound:
     deleteLater();
     return;
   }
-  unsigned column=parent->cursorColumnReal();
+  KTextEditor::Cursor cursor=parent->cursorPosition();
+  int column=cursor.column();
   if (!column || !--column) goto nothingFound;
-  QString textLine=parent->currentTextLine();
+  QString textLine=parent->document()->line(cursor.line());
   if (column>textLine.length() || textLine[column]!='(') goto nothingFound;
   while (column && textLine[column-1].isSpace()) column--;
   if (!column) goto nothingFound;
