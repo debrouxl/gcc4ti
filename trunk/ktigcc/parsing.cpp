@@ -217,7 +217,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         // better information extracted from the .hsf files. However, .hsf files
         // obviously don't contain line number information.
         if (isSystemHeader) {
-          for (Q3ValueList<KTextEditor::CompletionEntry>::ConstIterator it
+          for (Q3ValueList<CompletionEntry>::ConstIterator it
                =result.entries.begin(); it!=result.entries.end(); ++it) {
             if ((*it).text==identifier) {
               alreadyKnown=true;
@@ -228,7 +228,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         if (lineno>=0)
           result.lineNumbers.insert(identifier,lineno,(kind!="p" && kind!="x"));
         if (!alreadyKnown) {
-          KTextEditor::CompletionEntry entry;
+          CompletionEntry entry;
           entry.text=identifier;
           entry.prefix=type;
           entry.postfix=signature;

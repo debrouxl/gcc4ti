@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,9 +26,28 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <q3valuelist.h>
-//Added by qt3to4:
 #include <QEvent>
-#include <kate/view.h>
+#include <ktexteditor/view.h>
+
+struct CompletionEntry
+{
+  QString type;
+  QString text;
+  QString prefix;
+  QString postfix;
+  QString comment;
+
+  QString userdata;
+
+  bool operator==( const CompletionEntry &c ) const {
+    return c.type == type
+           && c.text == text
+           && c.postfix == postfix
+           && c.prefix == prefix
+           && c.comment == comment
+           && c.userdata == userdata;
+  }
+};
 
 struct CompletionInfo {
   CompletionInfo() : dirty(false), searched(false) {}
@@ -37,7 +56,7 @@ struct CompletionInfo {
   QStringList includedSystem;
   QStringList included;
   QMap<QString,unsigned> lineNumbers;
-  Q3ValueList<KTextEditor::CompletionEntry> entries;
+  Q3ValueList<CompletionEntry> entries;
 };
 
 // Maps file name to a CompletionInfo.
@@ -54,7 +73,7 @@ bool findSymbolInFile(const QString &symbol,
 bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
-                              Q3ValueList<KTextEditor::CompletionEntry> &result);
+                              Q3ValueList<CompletionEntry> &result);
 
 class QWidget;
 bool parseHelpSources(QWidget *parent, const QString &directory,
@@ -69,12 +88,12 @@ class TemplatePopup : public Q3PopupMenu {
   Q_OBJECT
 
   public:
-    TemplatePopup(Kate::View *parent);
+    TemplatePopup(KTextEditor::View *parent);
     virtual ~TemplatePopup() {}
   private slots:
     void QPopupMenu_activated(int id);
   private:
-    Kate::View *view;
+    KTextEditor::View *view;
 };
 
 class QEvent;
@@ -83,7 +102,7 @@ class CompletionPopup : public QObject {
   Q_OBJECT
 
   public:
-    CompletionPopup(Kate::View *parent, const QString &fileName,
+    CompletionPopup(KTextEditor::View *parent, const QString &fileName,
                     MainForm *mainForm, QObject *receiver);
     virtual ~CompletionPopup() {}
   private slots:
@@ -101,7 +120,7 @@ class ArgHintPopup : public QObject {
   Q_OBJECT
 
   public:
-    ArgHintPopup(Kate::View *parent, const QString &fileName,
+    ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
                  MainForm *mainForm);
     virtual ~ArgHintPopup() {}
   private slots:
