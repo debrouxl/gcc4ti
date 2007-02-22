@@ -4758,9 +4758,9 @@ void MainForm::projectOptions()
   debugPauseAction->setVisible(runnable);
 }
 
-bool MainForm::tiemuInstance(Q3CString &instanceName)
+bool MainForm::tiemuInstance(void * instanceName)
 {
-  instanceName=Q3CString();
+  *(Q3CString*)instanceName=Q3CString();
   DCOPClient *dcopClient=kapp->dcopClient();
   if (!dcopClient->isAttached() && !dcopClient->attach()) {
     KMessageBox::error(this,"Can\'t attach to DCOP.");
@@ -4771,7 +4771,7 @@ bool MainForm::tiemuInstance(Q3CString &instanceName)
   QCStringList::iterator it;
   for (it = applist.begin(); it != applist.end(); ++it) {
     if ((*it).contains(QRegExp("^tiemu-"))) {
-      instanceName = (*it);
+      *(Q3CString*)instanceName = (*it);
       break;
     }
   }
@@ -4837,7 +4837,7 @@ void MainForm::debugRun()
       case LT_TIEMU:
         {
           // Fire up TiEmu if it isn't running yet.
-          if (!tiemuInstance(instanceName)) return;
+          if (!tiemuInstance(&instanceName)) return;
           if (instanceName.isNull()) {
             if (!KRun::runCommand("tiemu")) {
               KMessageBox::error(this,"Can't run TiEmu.");
@@ -4846,7 +4846,7 @@ void MainForm::debugRun()
             do {
               usleep(100000);
               QApplication::eventLoop()->processEvents(QEventLoop::ExcludeUserInput,100);
-              if (!tiemuInstance(instanceName)) return;
+              if (!tiemuInstance(&instanceName)) return;
             } while (instanceName.isNull());
           }
           tiemuDCOP=new TiEmuDCOP_stub(instanceName,"TiEmuDCOP");

@@ -42,7 +42,7 @@ void delete_temp_file(const char *filename);
 void clear_temp_dir(void);
 void force_qt_assistant_page(int n);
 const char *lookup_doc_keyword(const char *keyword);
-extern KConfig *pconfig;
+extern KSharedConfigPtr pconfig;
 extern KAboutData *pabout;
 extern const char *parg;
 extern AssistantClient *assistant;

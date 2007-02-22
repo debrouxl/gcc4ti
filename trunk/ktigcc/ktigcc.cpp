@@ -52,7 +52,7 @@ char tempdir[]="/tmp/ktigccXXXXXX";
 char *quill_drv;
 bool have_fargo;
 bool have_flashos;
-KConfig *pconfig;
+KSharedConfigPtr pconfig;
 KAboutData *pabout;
 const char *parg;
 
@@ -90,14 +90,10 @@ int main(int argc, char *argv[])
   KCmdLineArgs::addCmdLineOptions(options);
   KCmdLineArgs::addStdCmdLineOptions();
   KApplication app;
-  // Set the preferred large icon size so system toolbar icons don't get
-  // annoying padding.
-  int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
-  QIcon::setIconSize(QIcon::Large,QSize(toolbarIconSize,toolbarIconSize));
   // Readd the images KDE kindly removes...
   qCleanupImages_ktigcc();
   qInitImages_ktigcc();
-  about.setProgramLogo(QImage::fromMimeSource("icon.png"));
+  about.setProgramLogo(qPixmapFromMimeSource("icon.png"));
   pconfig=KGlobal::config();
   
   if ((tigcc_base = getenv("TIGCC")) == NULL) {
@@ -160,6 +156,12 @@ int main(int argc, char *argv[])
                     log_eater,NULL);
 
   MainForm mainForm;
+  // Set the preferred icon size so system toolbar icons don't get annoying
+  // padding. FIXME: Needed? Correct?
+#if 0 // Needs port from Q3MainWindow to QMainWindow or KMainWindow.
+  int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+  mainForm.setIconSize(QSize(toolbarIconSize,toolbarIconSize));
+#endif
   app.setMainWidget( &mainForm );
   mainForm.show();
   
