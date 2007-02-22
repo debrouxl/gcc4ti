@@ -1,3 +1,142 @@
+2007-02-22 18:46  kevinkofler
+
+	* completion.cpp: Port most of completion.cpp to the new KatePart
+	  API.
+
+2007-02-22 17:50  kevinkofler
+
+	* errorlist.cpp, errorlist.ui.h[DEAD], functions.cpp,
+	  functions.ui.h[DEAD], ktigcc.pro, mainform.cpp,
+	  mainform.ui.h[DEAD], newsdlg.cpp, newsdlg.ui.h[DEAD],
+	  preferencesdlg.cpp, preferencesdlg.ui.h[DEAD],
+	  programoptions.cpp, programoptions.ui.h[DEAD],
+	  projectoptions.cpp, projectoptions.ui.h[DEAD], selectcolors.cpp,
+	  selectcolors.ui.h[DEAD], selectstyle.cpp, selectstyle.ui.h[DEAD],
+	  srcfilewin.cpp, srcfilewin.ui.h[DEAD], toolprops.cpp,
+	  toolprops.ui.h[DEAD], toolsdlg.cpp, toolsdlg.ui.h[DEAD]: Move
+	  contents of *.ui.h to *.cpp.
+
+2007-02-22 17:26  kevinkofler
+
+	* completion.h, parsing.cpp: Fix build of parsing.cpp (new KatePart
+	  interfaces).
+
+2007-02-22 16:58  kevinkofler
+
+	* callbacks.cpp: Fix build of callbacks.cpp: missed
+	  QApplication::eventLoop()->processEvents =>
+	  QCoreApplication::processEvents replacement, KProgressDialog API
+	  changes.
+
+2007-02-22 16:48  kevinkofler
+
+	* ktigcc.pro, tiemu.h, tiemu_dbus.xml, tiemu_stub.cpp,
+	  tiemu_stub.h: Replace TiEmu DCOP stub with D-Bus proxy.
+
+2007-02-22 16:21  kevinkofler
+
+	* tpr.cpp: Add missing #include <kurl.h>.
+
+2007-02-22 16:14  kevinkofler
+
+	* assistant.cpp, callbacks.cpp, mainform.ui.h, parsing.cpp,
+	  preferencesdlg.ui.h, tpr.cpp: Replace
+	  QApplication::eventLoop()->processEvents with
+	  QCoreApplication::processEvents().
+
+2007-02-22 16:02  kevinkofler
+
+	* preferences.cpp, preferencesdlg.ui: Fix compilation of
+	  preferences.cpp.
+
+2007-02-22 15:39  kevinkofler
+
+	* assistant.h, colorlistitem.h, customstyle.h, errorlist.h,
+	  functions.h, ktigcc.h, mainform.h, newsdlg.h, preferences.h,
+	  preferencesdlg.h, programoptions.h, programoutput.h,
+	  projectoptions.h, selectcolors.h, selectstyle.h, srcfilewin.h,
+	  toolprops.h, toolsdlg.h, wordlist.h: Consistently use #pragma
+	  once as the include guard.
+
+2007-02-22 14:32  kevinkofler
+
+	* customstyle.cpp, customstyle.h, customstyle.ui, errorlist.cpp,
+	  errorlist.h, errorlist.ui, functions.cpp, functions.h,
+	  functions.ui, ktigcc.pro, mainform.cpp, mainform.h, mainform.ui,
+	  newsdlg.cpp, newsdlg.h, newsdlg.ui, preferencesdlg.cpp,
+	  preferencesdlg.h, preferencesdlg.ui, programoptions.cpp,
+	  programoptions.h, programoptions.ui, programoutput.cpp,
+	  programoutput.h, programoutput.ui, projectoptions.cpp,
+	  projectoptions.h, projectoptions.ui, selectcolors.cpp,
+	  selectcolors.h, selectcolors.ui, selectstyle.cpp, selectstyle.h,
+	  selectstyle.ui, srcfilewin.cpp, srcfilewin.h, srcfilewin.ui,
+	  toolprops.cpp, toolprops.h, toolprops.ui, toolsdlg.cpp,
+	  toolsdlg.h, toolsdlg.ui, wordlist.cpp, wordlist.h, wordlist.ui:
+	  Convert .ui files to Qt 4 format:
+	  1. run this script: #!/bin/sh uic3 $1.ui >$1.h uic3 -impl $1.h $1.ui
+	  >$1.cpp uic3 -convert $1.ui >$1_4.ui mv -f $1_4.ui $1.ui
+	  2. replace generated UI in $1.h with #include "ui_$1.h"
+	  3. update project file:
+	  * change FORMS3 back to FORMS
+	  * remove uic3 from CONFIG
+	  * add $1.cpp to SOURCES
+	  * add $1.h and (temporarily) $1.ui.h to HEADERS
+
+2007-02-22 07:07  kevinkofler
+
+	* newsdlg.ui, preferencesdlg.ui, selectcolors.ui, toolsdlg.ui:
+	  KListView->K3ListView, KListBox->K3ListBox
+
+2007-02-22 06:58  kevinkofler
+
+	* ktigcc.cpp, ktigcc.h, mainform.ui, mainform.ui.h: First round of
+	  compile fixes.
+
+2007-02-22 06:36  kevinkofler
+
+	* .project: Update Eclipse project name.
+
+2007-02-22 06:24  kevinkofler
+
+	* errorlist.ui, mainform.ui: Use K3ListView instead of the removed
+	  KListView for now.
+
+2007-02-22 06:15  kevinkofler
+
+	* completion.cpp, ktigcc.cpp, ktigcc.pro, mainform.ui.h,
+	  newsdlg.ui.h, parsing.cpp, preferences.cpp, preferencesdlg.ui.h,
+	  srcfilewin.ui.h, toolprops.ui.h, toolsdlg.ui.h, tpr.cpp, tpr.h:
+	  Run adapt-to-kde4-api.pl.
+
+2007-02-22 06:03  kevinkofler
+
+	* assistant.cpp, colorlistitem.h, completion.cpp, completion.h,
+	  errorlist.ui.h, ktigcc.cpp, ktigcc.h, ktigcc.pro, mainform.ui.h,
+	  newsdlg.ui.h, parsing.cpp, parsing.h, preferences.cpp,
+	  preferences.h, preferencesdlg.ui.h, programoptions.ui.h,
+	  projectoptions.ui.h, srcfile.h, srcfilewin.ui.h, tiemu_stub.cpp,
+	  tiemu_stub.h, toolsdlg.ui.h, tpr.cpp, tpr.h: Run qt3to4.
+
+2007-02-22 05:57  kevinkofler
+
+	* configure, ktigcc.pro: First step towards moving to KDE 4.
+
+2007-01-29 10:26  kevinkofler
+
+	* NEWS, mainform.ui.h, srcfilewin.ui.h: Fix stray indentation at
+	  the end of the line when autoclosing a curly brace as ENTER is
+	  pressed.
+
+2007-01-29 10:02  kevinkofler
+
+	* fedora/ktigcc.spec, ktigcc.cpp: Bump version to 1.07. Bump
+	  copyright years.
+
+2006-12-03 08:38  kevinkofler
+
+	* ChangeLog, NEWS, ktigcc.pro: Add a full changelog (generated from
+	  CVS logs).
+
 2006-12-01 00:14  kevinkofler
 
 	* .cdtproject, .cvsignore, .project,
@@ -35,8 +174,8 @@
 2006-11-23 02:29  kevinkofler
 
 	* NEWS, mainform.ui.h: When saving a project for the first time, if
-	  it is still named "Project1", set a name based on the .tpr file
-	  name (as in TIGCC IDE).
+	  it is still named "Project1", set a name based on the .tpr file name
+	  (as in TIGCC IDE).
 
 2006-11-21 22:55  kevinkofler
 
@@ -46,8 +185,8 @@
 2006-11-21 21:35  kevinkofler
 
 	* NEWS, preferences.cpp: Add tas to default Integer Arithmetic
-	  instructions.  Add xdef, globl, altmacro and noaltmacro to
-	  default GNU as directives.
+	  instructions.  Add xdef, globl, altmacro and noaltmacro to default
+	  GNU as directives.
 
 2006-11-21 18:54  kevinkofler
 
@@ -108,9 +247,9 @@
 2006-09-17 06:05  kevinkofler
 
 	* NEWS, completion.cpp, ktigcc.cpp, fedora/ktigcc.spec: Bump
-	  version to 1.03.  Don't show symbol info for reserved keywords
-	  even in the case of an exact match (fixes unhelpful prototype
-	  help for "asm").
+	  version to 1.03.  Don't show symbol info for reserved keywords even
+	  in the case of an exact match (fixes unhelpful prototype help for
+	  "asm").
 
 2006-09-05 08:08  kevinkofler
 
@@ -128,8 +267,8 @@
 2006-09-05 06:11  kevinkofler
 
 	* NEWS, projectoptions.ui: Fix the Project Options dialog not
-	  reacting correctly to changing the target from a regular program
-	  to another target or the other way round.
+	  reacting correctly to changing the target from a regular program to
+	  another target or the other way round.
 
 2006-09-05 06:03  kevinkofler
 
@@ -263,9 +402,9 @@
 	  ktigcc.pro, mainform.ui.h, programoptions.ui.h, srcfilewin.ui.h:
 	  Implement my own AssistantClient using KDE classes (KProcIO,
 	  KExtendedSocket) because QAssistantClient uses QProcess which
-	  conflicts with KProcess (fixes lockups while waiting for a
-	  process to complete).  This also means Debian users no longer
-	  need qt3-apps-dev to build KTIGCC.
+	  conflicts with KProcess (fixes lockups while waiting for a process
+	  to complete).  This also means Debian users no longer need
+	  qt3-apps-dev to build KTIGCC.
 
 2006-08-13 09:15  kevinkofler
 
@@ -279,8 +418,8 @@
 2006-08-13 06:35  kevinkofler
 
 	* mainform.ui.h: Enable "Find symbol declaration" and completion
-	  for Quill files, to be consistent with external source files.
-	  (They are useful mainly in the C section these files can have.)
+	  for Quill files, to be consistent with external source files. (They
+	  are useful mainly in the C section these files can have.)
 
 2006-08-13 06:29  kevinkofler
 
@@ -311,10 +450,10 @@
 2006-08-13 01:05  kevinkofler
 
 	* mainform.ui.h: Implement Ctrl+Tab/Ctrl+E (switches to the next
-	  file, there are 2 combos because Ctrl+Tab is taken by default
-	  under KDE) and Shift+Ctrl+Alt+F9 (undocumented, switches link
-	  target, or would if it worked - on Linux/X11, way too many key
-	  combos are reserved by the system).
+	  file, there are 2 combos because Ctrl+Tab is taken by default under
+	  KDE) and Shift+Ctrl+Alt+F9 (undocumented, switches link target, or
+	  would if it worked - on Linux/X11, way too many key combos are
+	  reserved by the system).
 
 2006-08-12 23:55  kevinkofler
 
@@ -330,14 +469,14 @@
 
 	* completion.cpp, completion.h, mainform.ui.h, parsing.cpp,
 	  preferencesdlg.ui.h: Implement loading/saving system header
-	  completion info.  Fix asmspec removal regex.	Remove spaces
-	  before , and ) in signatures produced by ctags.
+	  completion info.  Fix asmspec removal regex.  Remove spaces before ,
+	  and ) in signatures produced by ctags.
 
 2006-08-12 01:18  kevinkofler
 
 	* completion.cpp: Apply the same recursion fixes (recurse over
-	  system headers, avoid infinite recursion) as in findSymbolInFile
-	  in completionEntriesForFile.
+	  system headers, avoid infinite recursion) as in findSymbolInFile in
+	  completionEntriesForFile.
 
 2006-08-12 01:05  kevinkofler
 
@@ -348,15 +487,14 @@
 2006-08-11 17:43  kevinkofler
 
 	* mainform.ui.h: Fix warnings from recent g++ about -1 being passed
-	  where an unsigned number is expected (reported by Romain
-	  Liévin).
+	  where an unsigned number is expected (reported by Romain Liévin).
 
 2006-08-11 00:31  kevinkofler
 
 	* mainform.ui.h, preferencesdlg.ui.h: Fix "New folder" not always
-	  selecting the folder for renaming (another instance of the
-	  KListView bug already worked around in the Preferences dialog,
-	  clean that workaround up a bit while I am at it).
+	  selecting the folder for renaming (another instance of the KListView
+	  bug already worked around in the Preferences dialog, clean that
+	  workaround up a bit while I am at it).
 
 2006-08-11 00:19  kevinkofler
 
@@ -395,7 +533,7 @@
 
 	* completion.cpp, completion.h, mainform.ui, mainform.ui.h,
 	  parsing.cpp, parsing.h: Implement function to parse a source file
-	  for completion info.	Implement function to get a file's contents
+	  for completion info.  Implement function to get a file's contents
 	  given its in-project path.
 
 2006-08-09 09:48  kevinkofler
@@ -504,8 +642,8 @@
 2006-08-06 03:31  kevinkofler
 
 	* preferencesdlg.ui, preferencesdlg.ui.h: Use clicked() instead of
-	  pressed() (which does not do what you may think it does),
-	  obviating the need for the setDown(FALSE) hack.
+	  pressed() (which does not do what you may think it does), obviating
+	  the need for the setDown(FALSE) hack.
 
 2006-08-06 03:23  kevinkofler
 
@@ -513,8 +651,7 @@
 	  selectcolors.ui, selectcolors.ui.h, selectstyle.ui,
 	  selectstyle.ui.h: Fix spelling of "strikeOut" in generated XML
 	  files (Kate wants the O capitalized).  Implement style and color
-	  setting for numbers and symbols and style setting for
-	  parentheses.
+	  setting for numbers and symbols and style setting for parentheses.
 
 2006-08-06 02:22  kevinkofler
 
@@ -523,8 +660,7 @@
 2006-08-06 02:20  kevinkofler
 
 	* mainform.ui.h: Add another crude hack to fix reloading the
-	  highlighting in the case where there is exactly one Kate view
-	  open.
+	  highlighting in the case where there is exactly one Kate view open.
 
 2006-08-06 01:00  kevinkofler
 
@@ -546,9 +682,10 @@
 
 	* mainform.ui.h, preferences.cpp, preferences.h, preferencesdlg.ui,
 	  preferencesdlg.ui.h, srcfilewin.ui.h: Start implementing syntax
-	  highlighting preferences: * language drop down * tree view,
-	  renaming, Delete key * re-highlight all Kate views after changing
-	  the preferences
+	  highlighting preferences:
+	  * language drop down
+	  * tree view, renaming, Delete key
+	  * re-highlight all Kate views after changing the preferences
 
 2006-08-05 02:14  kevinkofler
 
@@ -559,8 +696,8 @@
 2006-08-04 22:49  kevinkofler
 
 	* mainform.ui.h: Set the default project directory to
-	  ~/tigcc-projects instead of $TIGCC/projects (which doesn't make
-	  much sense for the usual case of a system-wide TIGCC install).
+	  ~/tigcc-projects instead of $TIGCC/projects (which doesn't make much
+	  sense for the usual case of a system-wide TIGCC install).
 
 2006-08-04 07:26  kevinkofler
 
@@ -576,8 +713,8 @@
 
 	* mainform.ui.h: Use the autogenerated syntax highlighting
 	  descriptions instead of the C one from Kate resp. the ASM ones by
-	  Spectras.  Don't allow opening out-of-project A68k or Quill
-	  source files if support for A68k resp. Quill is not installed.
+	  Spectras.  Don't allow opening out-of-project A68k or Quill source
+	  files if support for A68k resp. Quill is not installed.
 
 2006-08-04 03:01  kevinkofler
 
@@ -605,8 +742,8 @@
 
 	* ktigcc.cpp, preferences.cpp: Remove Joey's old skeleton for an
 	  XML syntax file generator, it was really broken beyond repair.
-	  Start XML syntax file generator. The resulting files are not
-	  usable yet.
+	  Start XML syntax file generator. The resulting files are not usable
+	  yet.
 
 2006-08-03 21:04  kevinkofler
 
@@ -651,17 +788,17 @@
 2006-08-01 07:47  kevinkofler
 
 	* mainform.ui.h, srcfilewin.ui.h: Don't clear modified flags on
-	  "Discard" in save prompts. If the Open command is actually used
-	  to open an external file, not a project, "Discard" is often used
-	  just to get rid of the save prompts, and ending up with the file
-	  not getting saved later can be irritating.
+	  "Discard" in save prompts. If the Open command is actually used to
+	  open an external file, not a project, "Discard" is often used just
+	  to get rid of the save prompts, and ending up with the file not
+	  getting saved later can be irritating.
 
 2006-07-31 21:53  kevinkofler
 
 	* tpr.cpp: Unconditionally add the newline to the temp source file
 	  when compiling, don't do it just for C files. (Headers and GNU
-	  assembly files need the newline just as well, and TIGCC IDE
-	  filters the warning afterwards for header files.)
+	  assembly files need the newline just as well, and TIGCC IDE filters
+	  the warning afterwards for header files.)
 
 2006-07-31 08:13  kevinkofler
 
@@ -720,8 +857,8 @@
 2006-07-26 07:33  kevinkofler
 
 	* newsdlg.ui.h: Fix proxy server page title getting translated
-	  while everything else doesn't.  Detect missing proxy
-	  configuration module (no kdebase) and show error.
+	  while everything else doesn't.  Detect missing proxy configuration
+	  module (no kdebase) and show error.
 
 2006-07-26 06:17  kevinkofler
 
@@ -731,14 +868,14 @@
 
 	* KTIGCC.prj, ktigcc.pro, mainform.ui.h, srcfilewin.ui.h,
 	  fedora/ktigcc.spec, images/ktigcc.png: Add small version of TIGCC
-	  IDE icon. Use it for the .desktop file in the RPM and for the
-	  task bar.
+	  IDE icon. Use it for the .desktop file in the RPM and for the task
+	  bar.
 
 2006-07-26 04:04  kevinkofler
 
 	* mainform.ui.h, newsdlg.ui.h, preferences.cpp: Save modified
-	  preferences to file right away.  Always treat newsheadlines.txt
-	  as UTF-8.
+	  preferences to file right away.  Always treat newsheadlines.txt as
+	  UTF-8.
 
 2006-07-26 03:42  kevinkofler
 
@@ -764,14 +901,13 @@
 2006-07-25 08:24  kevinkofler
 
 	* mainform.ui.h: Enable Find/Open file at cursor and Find/Find
-	  symbol declaration for editable files (not implemented yet
-	  though).
+	  symbol declaration for editable files (not implemented yet though).
 
 2006-07-25 08:12  kevinkofler
 
 	* ktigcc.h, mainform.ui.h, preferences.cpp, preferencesdlg.ui.h:
-	  Cache result of ticables_is_usb_enabled so the check isn't run
-	  over and over again.
+	  Cache result of ticables_is_usb_enabled so the check isn't run over
+	  and over again.
 
 2006-07-23 21:14  kevinkofler
 
@@ -781,8 +917,8 @@
 2006-07-23 20:55  kevinkofler
 
 	* callbacks.cpp, mainform.ui.h: Update callback code for new
-	  libticalcs2 progress report interface.  Increase timeout for
-	  links with real calculators.
+	  libticalcs2 progress report interface.  Increase timeout for links
+	  with real calculators.
 
 2006-07-23 20:39  kevinkofler
 
@@ -838,9 +974,9 @@
 
 	* preferencesdlg.ui, programoptions.ui, programoutput.ui,
 	  projectoptions.ui: Use the KPushButton::stdItem property so
-	  pushbuttons honor the system-wide preference to show icons next
-	  to standard pushbutton. Also remove minimum sizes for pushbuttons
-	  for consistency.
+	  pushbuttons honor the system-wide preference to show icons next to
+	  standard pushbutton. Also remove minimum sizes for pushbuttons for
+	  consistency.
 
 2006-07-18 22:58  kevinkofler
 
@@ -855,9 +991,9 @@
 2006-07-18 21:51  kevinkofler
 
 	* KTIGCC.prj, ktigcc.pro, parsing.cpp, parsing.h: Implement parsing
-	  functions for the function list. C files are parsed using
-	  Exuberant Ctags (http://ctags.sourceforge.net). Assembly files
-	  are parsed for labels by hand.
+	  functions for the function list. C files are parsed using Exuberant
+	  Ctags (http://ctags.sourceforge.net). Assembly files are parsed for
+	  labels by hand.
 
 2006-07-18 15:12  kevinkofler
 
@@ -898,11 +1034,11 @@
 2006-07-17 09:21  kevinkofler
 
 	* mainform.ui.h, preferences.cpp, preferencesdlg.ui.h:
-	  Initialize/uninitialize tilibs.  Fix enum name conflict with
-	  tilibs.  Don't allow selecting a USB cable if libticables2 hasn't
-	  been compiled without USB support or if USB support can't be used
-	  (only works with libticables >=0.1.3, with older versions, the
-	  USB cable radiobuttons are always enabled).
+	  Initialize/uninitialize tilibs.  Fix enum name conflict with tilibs.
+	  Don't allow selecting a USB cable if libticables2 hasn't been
+	  compiled without USB support or if USB support can't be used (only
+	  works with libticables >=0.1.3, with older versions, the USB cable
+	  radiobuttons are always enabled).
 
 2006-07-17 08:50  kevinkofler
 
@@ -925,8 +1061,8 @@
 
 	* mainform.ui.h: Use usleep to reduce CPU consumption of my busy
 	  waiting hack.  Accordingly, reduce timeout from 21 to 12 seconds.
-	  Also, reduce wait between transfer and command line entry from 3
-	  to 1 second.
+	  Also, reduce wait between transfer and command line entry from 3 to
+	  1 second.
 
 2006-07-16 09:44  kevinkofler
 
@@ -948,8 +1084,8 @@
 2006-07-16 05:39  kevinkofler
 
 	* KTIGCC.prj, ktigcc.pro, tiemu.h, tiemu_stub.cpp, tiemu_stub.h:
-	  Import the TiEmu DCOP SDK (technically part of TiEmu, but not
-	  worth making a library of).
+	  Import the TiEmu DCOP SDK (technically part of TiEmu, but not worth
+	  making a library of).
 
 2006-07-16 05:31  kevinkofler
 
@@ -960,9 +1096,9 @@
 
 	* mainform.ui, mainform.ui.h: Disable Debug/Pause and Debug/Reset
 	  if the target is not TiEmu (can't remotely launch a debugger or
-	  reset on a real calculator).	Hide the Debug menu for function
-	  archives (static libraries) and Flash OSes.  Disable the Debug
-	  menu while compiling.
+	  reset on a real calculator).  Hide the Debug menu for function
+	  archives (static libraries) and Flash OSes.  Disable the Debug menu
+	  while compiling.
 
 2006-07-16 02:18  kevinkofler
 
@@ -971,18 +1107,17 @@
 
 2006-07-16 01:19  kevinkofler
 
-	* mainform.ui.h: Fix external data file support: * Rename the data
-	  file so it doesn't conflict with PPGs.  * If the program is
-	  compressed, we actually need to relink it without the outputbin
-	  flag. There should be a way to set outputbin only for the main
-	  program in ld-tigcc.
+	* mainform.ui.h: Fix external data file support:
+	  * Rename the data file so it doesn't conflict with PPGs.
+	  * If the program is compressed, we actually need to relink it
+	  without the outputbin flag. There should be a way to set outputbin
+	  only for the main program in ld-tigcc.
 
 2006-07-16 00:07  kevinkofler
 
 	* mainform.ui, mainform.ui.h: "Remove" on a directory in the file
 	  tree now prompts for saving files under that virtual directory.
-	  Pressing the Del key in the file tree is now equivalent to
-	  "Remove".
+	  Pressing the Del key in the file tree is now equivalent to "Remove".
 
 2006-07-15 23:03  kevinkofler
 
@@ -1002,22 +1137,20 @@
 
 	* mainform.ui.h: Fix up variable name in the ld-tigcc output so it
 	  displays properly even if it contains non-ASCII characters. (That
-	  should really be done within ld-tigcc, but TIGCC doesn't
-	  currently use libticonv.)
+	  should really be done within ld-tigcc, but TIGCC doesn't currently
+	  use libticonv.)
 
 2006-07-14 22:09  kevinkofler
 
 	* mainform.ui.h: Copy .dbg files for compressed programs from the
-	  temporary directory, in case TiEmu some day supports debugging
-	  PPGs.
+	  temporary directory, in case TiEmu some day supports debugging PPGs.
 
 2006-07-14 21:52  kevinkofler
 
 	* mainform.ui, mainform.ui.h: Collect linker statistics. Implement
 	  "display message after successful compilation", showing the
-	  collected statistics and offering to open the project folder
-	  (using the default app for "inode/directory", normally
-	  Konqueror).
+	  collected statistics and offering to open the project folder (using
+	  the default app for "inode/directory", normally Konqueror).
 
 2006-07-14 20:19  kevinkofler
 
@@ -1037,10 +1170,10 @@
 2006-07-14 19:57  kevinkofler
 
 	* mainform.ui.h, projectoptions.ui, projectoptions.ui.h: Implement
-	  Browse button for the post-build command line in the Project
-	  Options dialog. (I somehow forgot that when I finished the
-	  dialog.) Remove double quotes around post-build substitutions for
-	  TIGCC IDE compatibility.
+	  Browse button for the post-build command line in the Project Options
+	  dialog. (I somehow forgot that when I finished the dialog.) Remove
+	  double quotes around post-build substitutions for TIGCC IDE
+	  compatibility.
 
 2006-07-14 18:15  kevinkofler
 
@@ -1064,19 +1197,18 @@
 	* mainform.ui.h: Implement linking static libraries and
 	  uncompressed programs.  Fix parsing of ld-tigcc error messages
 	  (Error: and Warning: prefixes were not recognized in messages
-	  without line number).  Force complete project rebuild if the
-	  project options were changed.
+	  without line number).  Force complete project rebuild if the project
+	  options were changed.
 
 2006-07-14 11:51  kevinkofler
 
 	* mainform.ui.h, tpr.cpp, tpr.h: Convert settings.data_var and
-	  settings.pack_name from/to calculator charset.  Also convert
-	  project name to calculator charset in process_settings.  Add
-	  --outputbin to the linker options when packing.  Prompt for
-	  saving when trying to link (Make or Build) an unsaved project.
-	  Compute correct file names for assembly/object files when
-	  compiling a file before it has been saved and create the
-	  destination directory if it doesn't exist yet.
+	  settings.pack_name from/to calculator charset.  Also convert project
+	  name to calculator charset in process_settings.  Add --outputbin to
+	  the linker options when packing.  Prompt for saving when trying to
+	  link (Make or Build) an unsaved project.  Compute correct file names
+	  for assembly/object files when compiling a file before it has been
+	  saved and create the destination directory if it doesn't exist yet.
 
 2006-07-14 10:18  kevinkofler
 
@@ -1109,8 +1241,9 @@
 
 2006-07-13 11:16  kevinkofler
 
-	* programoutput.ui: Program Output dialog: * Adjust KTextBrowser
-	  properties.  * Invert tab order so Close gets focus by default.
+	* programoutput.ui: Program Output dialog:
+	  * Adjust KTextBrowser properties.
+	  * Invert tab order so Close gets focus by default.
 
 2006-07-13 11:03  kevinkofler
 
@@ -1131,10 +1264,10 @@
 2006-07-13 09:36  kevinkofler
 
 	* mainform.ui.h, tpr.cpp: Parse *nix-style (GCC, GNU as, ...) error
-	  messages.  Disable sorting for the error list view.  Handle
-	  column -1 as 0 (beginning of line) in ErrorListItem.	Fix
-	  errorLineList off-by-one (source splitting was counting from 1,
-	  ErrorListItem from 0).
+	  messages.  Disable sorting for the error list view.  Handle column
+	  -1 as 0 (beginning of line) in ErrorListItem.  Fix errorLineList
+	  off-by-one (source splitting was counting from 1, ErrorListItem from
+	  0).
 
 2006-07-13 05:51  kevinkofler
 
@@ -1160,8 +1293,8 @@
 2006-07-12 10:34  kevinkofler
 
 	* mainform.ui, mainform.ui.h, srcfilewin.ui.h: Update/delete errors
-	  for a source file when adopting/deleting it.	Delete all errors
-	  when clearing the project.
+	  for a source file when adopting/deleting it.  Delete all errors when
+	  clearing the project.
 
 2006-07-12 09:00  kevinkofler
 
@@ -1177,8 +1310,7 @@
 2006-07-12 06:39  kevinkofler
 
 	* errorlist.ui, mainform.ui.h: Create ErrorListItem class to be
-	  used to keep track of errors/warnings/messages during
-	  compilation.
+	  used to keep track of errors/warnings/messages during compilation.
 
 2006-07-12 03:15  kevinkofler
 
@@ -1191,10 +1323,10 @@
 2006-07-11 07:36  kevinkofler
 
 	* mainform.ui, mainform.ui.h, tpr.cpp, tpr.h: Finish implementing
-	  compileFile.	Adapt process_settings from tprbuilder and split
-	  into process_libopts (used for compileFile) and process_settings
-	  (will be used for linking).  Fix crash in save_tpr (can't call
-	  libticonv on NULL string).
+	  compileFile.  Adapt process_settings from tprbuilder and split into
+	  process_libopts (used for compileFile) and process_settings (will be
+	  used for linking).  Fix crash in save_tpr (can't call libticonv on
+	  NULL string).
 
 2006-07-09 03:39  kevinkofler
 
@@ -1215,8 +1347,8 @@
 2006-07-09 02:26  kevinkofler
 
 	* mainform.ui.h, tpr.cpp: Show status line message and write out
-	  file when compiling.	Allow "compiling" (the actual compilation
-	  is not done yet) out-of-project source files.
+	  file when compiling.  Allow "compiling" (the actual compilation is
+	  not done yet) out-of-project source files.
 
 2006-07-09 01:33  kevinkofler
 
@@ -1226,8 +1358,8 @@
 2006-07-09 01:26  kevinkofler
 
 	* mainform.ui, mainform.ui.h: Create compileFile function and
-	  implement logic to figure out when to rebuild files. (Don't
-	  actually compile the files yet.)
+	  implement logic to figure out when to rebuild files. (Don't actually
+	  compile the files yet.)
 
 2006-07-09 00:44  kevinkofler
 
@@ -1269,15 +1401,15 @@
 2006-07-07 03:27  kevinkofler
 
 	* mainform.ui.h, srcfile.h: New SourceFile::isCSourceFile member
-	  because line splitting (to get more precise error locations) is
-	  only done on source files, not header files.
+	  because line splitting (to get more precise error locations) is only
+	  done on source files, not header files.
 
 2006-07-04 04:12  kevinkofler
 
 	* mainform.ui.h, srcfilewin.ui.h: Match the Windows IDE's behavior
-	  for saving: * saving the project also saves out-of-project source
-	  files, * out-of-project source files are always saved before
-	  compiling.
+	  for saving:
+	  * saving the project also saves out-of-project source files,
+	  * out-of-project source files are always saved before compiling.
 
 2006-07-04 03:50  kevinkofler
 
@@ -1287,8 +1419,8 @@
 2006-07-04 02:52  kevinkofler
 
 	* mainform.ui, mainform.ui.h, srcfilewin.ui, srcfilewin.ui.h:
-	  Implement "Auto-save project before compiling" preference.
-	  Remove redundant SourceFileWindow::fileSave_save and
+	  Implement "Auto-save project before compiling" preference.  Remove
+	  redundant SourceFileWindow::fileSave_save and
 	  SourceFileWindow::fileSave_saveAs functions, move code to
 	  SourceFileWindow::fileSave and SourceFileWindow::fileSave_saveAs
 	  respectively.
@@ -1429,22 +1561,22 @@
 2006-06-25 04:36  kevinkofler
 
 	* mainform.ui, srcfilewin.ui, srcfilewin.ui.h: Don't duplicate
-	  SGetFileName and SGetFileNameMultiple because there should be
-	  only one lastDirectory.
+	  SGetFileName and SGetFileNameMultiple because there should be only
+	  one lastDirectory.
 
 2006-06-25 04:21  kevinkofler
 
 	* mainform.ui, mainform.ui.h, srcfilewin.ui, srcfilewin.ui.h:
 	  Update SourceFileWindow menu (remove main-window-only entries,
-	  rename others), update init slot and applyPreferences slot,
-	  remove leftStatusLabel.  Fix name of projectErrorsAndWarnings
-	  slot in mainform.ui to conform to the naming convention.
+	  rename others), update init slot and applyPreferences slot, remove
+	  leftStatusLabel.  Fix name of projectErrorsAndWarnings slot in
+	  mainform.ui to conform to the naming convention.
 
 2006-06-25 03:31  kevinkofler
 
 	* KTIGCC.prj, ktigcc.pro, srcfilewin.ui, srcfilewin.ui.h: Create
-	  SourceFileWindow as a copy of MainForm (unfinished, but compiles
-	  and links).
+	  SourceFileWindow as a copy of MainForm (unfinished, but compiles and
+	  links).
 
 2006-06-22 17:25  kevinkofler
 
@@ -1459,9 +1591,9 @@
 
 	* KTIGCC.prj, ktigcc.pro, mainform.ui.h, images/filereplace.png:
 	  Use "folder" instead of "folder_flat" to make the folder icon
-	  display for Crystal.	Fix "new" submenu not getting system icon.
-	  Add Crystal filereplace.png (borrowed from KFileReplace) and use
-	  it if we don't have stock-find-and-replace.
+	  display for Crystal.  Fix "new" submenu not getting system icon.
+	  Add Crystal filereplace.png (borrowed from KFileReplace) and use it
+	  if we don't have stock-find-and-replace.
 
 2006-06-18 09:12  kevinkofler
 
@@ -1484,8 +1616,8 @@
 	* mainform.ui, mainform.ui.h, preferences.cpp, preferences.h,
 	  preferencesdlg.ui: Implement "Use system icons" preference.
 	  (Currently off by default, this may change in the future.) Fix
-	  openFile not using fileo.png.  Fix relying on factory staying
-	  loaded forever (crash if it gets unloaded by KDE).
+	  openFile not using fileo.png.  Fix relying on factory staying loaded
+	  forever (crash if it gets unloaded by KDE).
 
 2006-06-16 21:01  kevinkofler
 
@@ -1500,11 +1632,11 @@
 
 	* KTIGCC.prj, ktigcc.pro, tpr.cpp, fedora/ktigcc.spec: Add RPM spec
 	  file.  Makefile (ktigcc.pro) fixes for the RPM: Install COPYING.
-	  Honor $CXXFLAGS. Fix INSTALL_ROOT when built from a subdirectory
-	  of /usr (trick taken from the ipe Debian package). Fix make
-	  install to work if qmake has not been rerun after make.  Fix
-	  warn_unused_result warnings in tpr.cpp evidenced by the RPM
-	  build.  Mark all functions in tpr.cpp and not in tpr.h "static".
+	  Honor $CXXFLAGS. Fix INSTALL_ROOT when built from a subdirectory of
+	  /usr (trick taken from the ipe Debian package). Fix make install to
+	  work if qmake has not been rerun after make.  Fix warn_unused_result
+	  warnings in tpr.cpp evidenced by the RPM build.  Mark all functions
+	  in tpr.cpp and not in tpr.h "static".
 
 2006-06-16 16:23  kevinkofler
 
@@ -1518,11 +1650,12 @@
 
 2006-06-15 21:34  kevinkofler
 
-	* mainform.ui, mainform.ui.h: Improve Auto Blocks: * Hook
-	  Enter/Return key.  * Only create a block immediately if { is on
-	  its own in a line, otherwise wait for Enter/Return to be pressed.
-	  This prevents annoying the user while typing things like strings.
-	  (The Windows IDE also works like that.)
+	* mainform.ui, mainform.ui.h: Improve Auto Blocks:
+	  * Hook Enter/Return key.
+	  * Only create a block immediately if { is on its own in a line,
+	  otherwise wait for Enter/Return to be pressed. This prevents
+	  annoying the user while typing things like strings.  (The Windows
+	  IDE also works like that.)
 
 2006-06-15 19:47  kevinkofler
 
@@ -1543,8 +1676,8 @@
 2006-06-15 13:36  kevinkofler
 
 	* mainform.ui.h: Properly mark the 2 Auto Blocks changes as a
-	  single undo unit (doesn't seem to matter anyway, but let's do it
-	  the right way).
+	  single undo unit (doesn't seem to matter anyway, but let's do it the
+	  right way).
 
 2006-06-15 13:24  kevinkofler
 
@@ -1558,9 +1691,9 @@
 2006-06-15 11:50  kevinkofler
 
 	* mainform.ui, mainform.ui.h, preferences.cpp, tpr.cpp: Implement
-	  "Remove trailing spaces" (the same way as Kate implements it:
-	  remove them on load, save and on the edits Kate removes them on
-	  (pressing Enter, basically)).
+	  "Remove trailing spaces" (the same way as Kate implements it: remove
+	  them on load, save and on the edits Kate removes them on (pressing
+	  Enter, basically)).
 
 2006-06-15 09:12  kevinkofler
 
@@ -1594,12 +1727,13 @@
 2006-06-15 02:30  kevinkofler
 
 	* KTIGCC.prj, mainform.ui.h, preferences.cxx, preferences.h,
-	  preferencesdlg.ui: More work on the Preferences dialog: * Disable
-	  real calculator port/cable if "real calculator" is not selected.
+	  preferencesdlg.ui: More work on the Preferences dialog:
+	  * Disable real calculator port/cable if "real calculator" is not
+	  selected.
 	  * Implement showPreferencesDialog in preferences.cxx and make
-	  filePreferences call it.  * Don't require prefs and cfg
-	  parameters in loadPreferences/savePreferences, they are always
-	  the same.
+	  filePreferences call it.
+	  * Don't require prefs and cfg parameters in
+	  loadPreferences/savePreferences, they are always the same.
 
 2006-06-15 00:12  kevinkofler
 
@@ -1609,8 +1743,8 @@
 2006-06-08 10:46  kevinkofler
 
 	* mainform.ui.h: Don't open a new replace dialog if currently
-	  replacing something.	Delete kreplace and kfinddialog when the
-	  main window is destroyed.
+	  replacing something.  Delete kreplace and kfinddialog when the main
+	  window is destroyed.
 
 2006-06-07 09:50  kevinkofler
 
@@ -1623,8 +1757,8 @@
 2006-06-05 17:14  kevinkofler
 
 	* mainform.ui.h: Use setCursorPositionReal and cursorColumnReal
-	  instead of setCursorPosition and cursorColumn in find and
-	  replace.  Scroll to the location of the find automatically.
+	  instead of setCursorPosition and cursorColumn in find and replace.
+	  Scroll to the location of the find automatically.
 
 2006-06-05 15:09  kevinkofler
 
@@ -1634,8 +1768,8 @@
 2006-06-05 02:09  kevinkofler
 
 	* ktigcc.pro, mainform.ui, mainform.ui.h: Incomplete implementation
-	  of Find (only brings up the dialog, doesn't actually find
-	  anything yet).
+	  of Find (only brings up the dialog, doesn't actually find anything
+	  yet).
 
 2006-06-04 23:27  kevinkofler
 
@@ -1649,9 +1783,8 @@
 2006-06-04 06:06  kevinkofler
 
 	* mainform.ui, mainform.ui.h: Start implementing find/replace. (I
-	  can't just use the canned Kate::View::find and
-	  Kate::View::replace because these don't support searching across
-	  documents.)
+	  can't just use the canned Kate::View::find and Kate::View::replace
+	  because these don't support searching across documents.)
 
 2006-06-02 21:15  kevinkofler
 
@@ -1661,23 +1794,21 @@
 
 	* mainform.ui, mainform.ui.h, tpr.cxx: Fix renaming for yet another
 	  gratuitous QListView/KListView API difference.  Validate project
-	  name during rename.  Assume the project name in .tpr files to be
-	  in the calculator charset.
+	  name during rename.  Assume the project name in .tpr files to be in
+	  the calculator charset.
 
 2006-06-02 17:49  kevinkofler
 
 	* mainform.ui, mainform.ui.h: Fix drag&drop (has been broken since
-	  the switch to KListView). Also fix drag&drop not updating the
-	  syntax highlighting mode when a file was moved to a different
-	  category.
+	  the switch to KListView). Also fix drag&drop not updating the syntax
+	  highlighting mode when a file was moved to a different category.
 
 2006-06-02 10:51  kevinkofler
 
 	* mainform.ui.h: Make rootListItem a subclass of KListViewItem
-	  rather than a QListViewItem.	Make it renamable. Mark project
-	  dirty when renamed.  Work around stupid KListView/QListView
-	  renaming API difference (fixes old-style clipboard shortcuts when
-	  renaming).
+	  rather than a QListViewItem.  Make it renamable. Mark project dirty
+	  when renamed.  Work around stupid KListView/QListView renaming API
+	  difference (fixes old-style clipboard shortcuts when renaming).
 
 2006-06-02 09:23  kevinkofler
 
@@ -1707,8 +1838,7 @@
 
 	* ktigcc.pro, programoptions.ui, images/whatsthis.png[DEAD]: Remove
 	  unused "What's this" button. Replace it with a more visible hint
-	  about the right-click feature, easily overlooked in the Win32
-	  IDE.
+	  about the right-click feature, easily overlooked in the Win32 IDE.
 
 2006-05-31 04:47  kevinkofler
 
@@ -1719,16 +1849,16 @@
 2006-05-31 03:06  kevinkofler
 
 	* ktigcc.cpp, ktigcc.h, mainform.ui.h, projectoptions.ui.h: Check
-	  for fargo.a and flashos.a availability. Refuse to load Fargo
-	  resp. Flash OS projects and hide Fargo resp. FlashOS options from
-	  the project options if they are missing.
+	  for fargo.a and flashos.a availability. Refuse to load Fargo resp.
+	  Flash OS projects and hide Fargo resp. FlashOS options from the
+	  project options if they are missing.
 
 2006-05-31 02:47  kevinkofler
 
 	* preferences.h, programoptions.ui.h, projectoptions.ui.h, tpr.h:
-	  Fix tpr.h and preferences.h not to rely on any other header
-	  having been included first (use forward declaration where
-	  possible, include the header otherwise).
+	  Fix tpr.h and preferences.h not to rely on any other header having
+	  been included first (use forward declaration where possible, include
+	  the header otherwise).
 
 2006-05-31 02:19  kevinkofler
 
@@ -1753,22 +1883,21 @@
 
 	* programoptions.ui, programoptions.ui.h, projectoptions.ui,
 	  projectoptions.ui.h: Fix 2 instances of setChecked(TRUE) in
-	  previous commit which should have been setChecked(FALSE).  Clean
-	  up import/export code (remove redundant ifs for boolean variables
-	  and stop using the now useless ExportCheckbox macro).  Implement
-	  export in ProgramOptions.  Make Im/ExportSettings automatically
-	  call the Import/Export method in ProgramOptions and move
-	  ProgramOptions allocation/deletion accordingly.  Use isChecked
-	  rather than isOn.  Set proper maximum length for variable names
-	  and input mask for MIN_AMS.  Use the argument of the toggled
-	  slot.  Handle enabling/disabling the MIN_AMS textbox according to
-	  the checkbox.
+	  previous commit which should have been setChecked(FALSE).  Clean up
+	  import/export code (remove redundant ifs for boolean variables and
+	  stop using the now useless ExportCheckbox macro).  Implement export
+	  in ProgramOptions.  Make Im/ExportSettings automatically call the
+	  Import/Export method in ProgramOptions and move ProgramOptions
+	  allocation/deletion accordingly.  Use isChecked rather than isOn.
+	  Set proper maximum length for variable names and input mask for
+	  MIN_AMS.  Use the argument of the toggled slot.  Handle
+	  enabling/disabling the MIN_AMS textbox according to the checkbox.
 
 2006-05-25 15:49  kevinkofler
 
 	* programoptions.ui.h, projectoptions.ui.h: Use setChecked(TRUE)
-	  instead of toggle() for defaulting the options to on (more
-	  logical, more robust for checkboxes).  Format MIN_AMS properly.
+	  instead of toggle() for defaulting the options to on (more logical,
+	  more robust for checkboxes).  Format MIN_AMS properly.
 
 2006-05-25 15:14  joeyadams
 
@@ -1793,8 +1922,8 @@
 	* mainform.ui, mainform.ui.h: Use KListView instead of QListView
 	  (should honor the KDE cut/copy/paste accelerator settings, but
 	  doesn't right now).  Disable the secondary cut/copy/paste
-	  accelerators triggering the menu items (applying to the editor
-	  view) when the focus is not on the editor view.
+	  accelerators triggering the menu items (applying to the editor view)
+	  when the focus is not on the editor view.
 
 2006-05-25 12:27  kevinkofler
 
@@ -1812,22 +1941,21 @@
 
 	* mainform.ui.h, programoptions.ui, programoptions.ui.h,
 	  projectoptions.ui, projectoptions.ui.h: Gave all pages of both
-	  the Project Options and the Program Options the ability to read
-	  in settings, but not the ability to write them back.
+	  the Project Options and the Program Options the ability to read in
+	  settings, but not the ability to write them back.
 
-	  NOTE: I've had KTIGCC crash after I close the Project Options
-	  dialog with this code, but I don't know what caused it, since it
-	  happens randomly.  (it says double free or memory corruption is
-	  the cause)
+	  NOTE: I've had KTIGCC crash after I close the Project Options dialog
+	  with this code, but I don't know what caused it, since it happens
+	  randomly.  (it says double free or memory corruption is the cause)
 
 2006-05-20 17:10  joeyadams
 
 	* programoptions.ui: Fixed a boo-boo in the way a few of the radio
-	  buttons were placed.	All radio buttons are now in button groups
-	  so that they will be mutually exclusive.  Also set buttonClose to
-	  send accept(), even though it doesn't really matter what
-	  ProgramOptions sends when it closes. (unless for some reason we
-	  decided to make a menu item in the MainForm for this dialog).
+	  buttons were placed.  All radio buttons are now in button groups so
+	  that they will be mutually exclusive.  Also set buttonClose to send
+	  accept(), even though it doesn't really matter what ProgramOptions
+	  sends when it closes. (unless for some reason we decided to make a
+	  menu item in the MainForm for this dialog).
 
 2006-05-20 17:07  joeyadams
 
@@ -1840,28 +1968,27 @@
 
 	* images/whatsthis.png, KTIGCC.prj, ktigcc.pro, programoptions.ui,
 	  programoptions.ui.h, projectoptions.ui, projectoptions.ui.h: Laid
-	  out Program Options, added it to the project, and made it
-	  viewable when you press the Program Options button in Project
-	  Options.
+	  out Program Options, added it to the project, and made it viewable
+	  when you press the Program Options button in Project Options.
 
-	  I also added whatisthis.png to the image collection for the "What
-	  is this?" button in Program Options.
+	  I also added whatisthis.png to the image collection for the "What is
+	  this?" button in Program Options.
 
 2006-05-20 01:43  joeyadams
 
-	* mainform.ui.h, projectoptions.ui, projectoptions.ui.h: 0.
-	  Finished laying out other tabs.  1. Changed the ProjectOptions
-	  caller in mainform.ui.h from using stack memory to using free
-	  store for the projectoptions variable.  The old way was
-	  apparently causing a stack overflow once I had all the controls
-	  laid out.
+	* mainform.ui.h, projectoptions.ui, projectoptions.ui.h:
+	  0. Finished laying out other tabs.
+	  1. Changed the ProjectOptions caller in mainform.ui.h from using
+	  stack memory to using free store for the projectoptions variable.
+	  The old way was apparently causing a stack overflow once I had all
+	  the controls laid out.
 
 2006-05-19 23:06  joeyadams
 
 	* projectoptions.ui, projectoptions.ui.h: Changed Alt key shortcuts
-	  for Project Options controls to be more consistent with the
-	  original TIGCC while still keeping the OK and Cancel buttons with
-	  their Qt-set defaults of &OK and &Cancel.
+	  for Project Options controls to be more consistent with the original
+	  TIGCC while still keeping the OK and Cancel buttons with their
+	  Qt-set defaults of &OK and &Cancel.
 
 2006-05-19 14:33  joeyadams
 
@@ -1876,8 +2003,8 @@
 2006-05-19 13:21  joeyadams
 
 	* KTIGCC.prj, mainform.ui.h, projectoptions.ui: Finished first tab
-	  of Project Options (General) completely.  Hopefully, I didn't
-	  forget anything.
+	  of Project Options (General) completely.  Hopefully, I didn't forget
+	  anything.
 
 2006-04-11 23:36  joeyadams
 
@@ -1892,16 +2019,15 @@
 2006-02-21 01:33  joeyadams
 
 	* preferences.cxx, preferences.h: Added syntax highlighting options
-	  to the TIGCCPrefs structure.	Changed Syn_Style from a bitfield
-	  to an unsigned short with macro items as bits.  Corrected
-	  Syn_Color parenthesisColor into QValueList<Syn_Color>
-	  parenthesisColors; Changed the word list format from a
-	  QStringList to a return-delimited QString.  Created a function
-	  that puts default syntax highlighting information into a
-	  TIGCCPrefs structure. (Eventually, we should use a data file to
-	  hold this information instead because this function is enormous.
-	  However, it can serve as a seed for generating the default
-	  options for highlighting.)
+	  to the TIGCCPrefs structure.  Changed Syn_Style from a bitfield to
+	  an unsigned short with macro items as bits.  Corrected Syn_Color
+	  parenthesisColor into QValueList<Syn_Color> parenthesisColors;
+	  Changed the word list format from a QStringList to a
+	  return-delimited QString.  Created a function that puts default
+	  syntax highlighting information into a TIGCCPrefs structure.
+	  (Eventually, we should use a data file to hold this information
+	  instead because this function is enormous.  However, it can serve as
+	  a seed for generating the default options for highlighting.)
 
 	  Not done: reading and writing syntax information to the KConfig.
 
@@ -1918,13 +2044,13 @@
 2006-02-20 00:52  joeyadams
 
 	* mainform.ui.h, preferences.cxx, preferences.h: Set up
-	  loadPreferences/savePreferences/defaultPreferences interface, but
-	  it does not actually load or save yet.      >Added the functions
-	  themselves.	   >set loadPreferences to just do
-	  defaultPreferences.	   >Put loadPreferences where it goes in
-	  MainForm::init      >Implemented tab width setting in createView
-	  (sets C/qll/.h (c) files to tabWidthC, sets s/asm/h (s/asm) files
-	  to tabWidthAsm, and sets other files to a tab width of 8.
+	      loadPreferences/savePreferences/defaultPreferences interface, but it
+	      does not actually load or save yet.  >Added the functions
+	      themselves.  >set loadPreferences to just do defaultPreferences.
+	      >Put loadPreferences where it goes in MainForm::init
+	      >Implemented tab width setting in createView (sets C/qll/.h (c)
+	      files to tabWidthC, sets s/asm/h (s/asm) files to tabWidthAsm,
+	      and sets other files to a tab width of 8.
 
 2006-02-19 23:26  joeyadams
 
@@ -1936,9 +2062,9 @@
 	* mainform.ui.h: Implemented Increase Indent, Decrease Indent, and
 	  set tab width to 2.
 
-	  (Warning:  During testing, I got an unexplained crash when I
-	  clicked on a file of a project just opened.  I don't know why it
-	  happened because I've been unable to reproduce the problem.)
+	  (Warning:  During testing, I got an unexplained crash when I clicked
+	  on a file of a project just opened.  I don't know why it happened
+	  because I've been unable to reproduce the problem.)
 
 2006-02-19 02:18  kevinkofler
 
@@ -2000,15 +2126,15 @@
 2006-02-12 23:57  kevinkofler
 
 	* mainform.ui, mainform.ui.h, tpr.cxx, tpr.h: Stop abusing Kate's
-	  document/view interface and create one document/view pair for
-	  each file.
+	  document/view interface and create one document/view pair for each
+	  file.
 
 2006-02-11 01:36  joeyadams
 
 	* preferences.cxx, tpr.h: Worked on the syntax highlighting
-	  preferences to XML function by creating a few functions that will
-	  be used later on for adding lists as well as hardcoding the
-	  symbol table within the SynToXML function.
+	  preferences to XML function by creating a few functions that will be
+	  used later on for adding lists as well as hardcoding the symbol
+	  table within the SynToXML function.
 
 2006-02-06 14:10  kevinkofler
 
@@ -2019,8 +2145,8 @@
 
 	* mainform.ui, mainform.ui.h: Fix drag&drop between editable and
 	  non-editable categories.  Watch only editable files for
-	  modifications.  Reset dirty and new flags when reloading a file
-	  from disk.
+	  modifications.  Reset dirty and new flags when reloading a file from
+	  disk.
 
 2006-01-31 16:28  kevinkofler
 
@@ -2049,9 +2175,8 @@
 2006-01-31 02:00  joeyadams
 
 	* mainform.ui.h: Added three instances of the line
-	  projectIsDirty=TRUE; to fileTreeContextMenuRequested so the
-	  project would be considered dirty when a file is deleted from the
-	  project.
+	  projectIsDirty=TRUE; to fileTreeContextMenuRequested so the project
+	  would be considered dirty when a file is deleted from the project.
 
 2006-01-31 01:53  joeyadams
 
@@ -2061,8 +2186,8 @@
 2006-01-31 01:52  joeyadams
 
 	* preferences.cxx, preferences.h: Contains the structure for syntax
-	  highlighting preferences, and might eventually contain anything
-	  else pertaining to preference conversion to XML or otherwise.
+	  highlighting preferences, and might eventually contain anything else
+	  pertaining to preference conversion to XML or otherwise.
 
 2006-01-31 00:12  kevinkofler
 
@@ -2095,8 +2220,8 @@
 2006-01-30 21:03  kevinkofler
 
 	* mainform.ui.h, tpr.cxx, tpr.h: Bring getPathType back (without
-	  the redundant fopen check) and error on attempts to open/add
-	  folders or special files.
+	  the redundant fopen check) and error on attempts to open/add folders
+	  or special files.
 
 2006-01-30 19:14  kevinkofler
 
@@ -2107,8 +2232,8 @@
 2006-01-30 18:47  kevinkofler
 
 	* mainform.ui.h, tpr.cxx, tpr.h: Remove redundant file existence
-	  checks (move file reading code up where needed) and delete
-	  unneeded getPathType function.
+	  checks (move file reading code up where needed) and delete unneeded
+	  getPathType function.
 
 2006-01-30 18:32  kevinkofler
 
@@ -2118,9 +2243,9 @@
 
 	* mainform.ui, mainform.ui.h, tpr.cxx, tpr.h: Added 'Add Files...'
 	  support.  in fileOpen_addList :  Fixed suffix truncation for file
-	  paths such as "/root/.dot/nodot" so it wouldn't truncate to
-	  "/root/" Changed openFile so it will return NULL on error and not
-	  add the file to the project if the file cannot be accessed.
+	  paths such as "/root/.dot/nodot" so it wouldn't truncate to "/root/"
+	  Changed openFile so it will return NULL on error and not add the
+	  file to the project if the file cannot be accessed.
 
 2006-01-29 13:35  joeyadams
 
@@ -2130,8 +2255,8 @@
 2006-01-29 03:22  joeyadams
 
 	* mainform.ui, mainform.ui.h: Added fileSave_save.  Fixed
-	  fileSave_save and fileSave_saveas so that they would copy from
-	  the document to the textBuffer if necessary.
+	  fileSave_save and fileSave_saveas so that they would copy from the
+	  document to the textBuffer if necessary.
 
 2006-01-29 02:33  joeyadams
 
@@ -2146,8 +2271,8 @@
 2006-01-29 01:46  joeyadams
 
 	* mainform.ui, mainform.ui.h: Added functions
-	  MainForm::fileSavePrompt and MainForm::savePrompt.  Didn't use
-	  them for anything yet.
+	  MainForm::fileSavePrompt and MainForm::savePrompt.  Didn't use them
+	  for anything yet.
 
 2006-01-28 06:49  kevinkofler
 
@@ -2189,7 +2314,8 @@
 	* mainform.ui.h: Added a condition in MainForm::newFile where it
 	  says tmp+='/'; Changed to:
 
-	  if (!tmp.isEmpty())	  tmp+='/';
+	  if (!tmp.isEmpty())
+	  	tmp+='/';
 
 	  This keeps tmp from being an absolute path when it shouldn't be.
 
@@ -2230,8 +2356,8 @@
 
 	* mainform.ui.h: Reset projectIsDirty in fileSave_to if saving
 	  succeeded.  Only reset the dirty and new flags in fileSave_saveAs
-	  and fileSave_loadList if saving succeeded, display an error
-	  message otherwise.
+	  and fileSave_loadList if saving succeeded, display an error message
+	  otherwise.
 
 2006-01-28 02:11  joeyadams
 
@@ -2249,8 +2375,8 @@
 2006-01-28 01:08  kevinkofler
 
 	* mainform.ui, mainform.ui.h: Split openProject out of fileOpen.
-	  Split clearProject out of fileNewProject and use it in
-	  openProject. Reset projectIsDirty flag in clearProject.
+	  Split clearProject out of fileNewProject and use it in openProject.
+	  Reset projectIsDirty flag in clearProject.
 
 2006-01-28 00:53  kevinkofler
 
@@ -2317,9 +2443,9 @@
 2006-01-27 00:12  kevinkofler
 
 	* mainform.ui.h: New CATEGORY_OF macro to get the category of a
-	  list item (also declares a QListViewItem * to hold the result).
-	  Use IS_FOLDER instead of calling rtti() directly in 2 places.
-	  Use IS_EDITABLE_CATEGORY in updateRightStatusLabel.
+	  list item (also declares a QListViewItem * to hold the result).  Use
+	  IS_FOLDER instead of calling rtti() directly in 2 places.  Use
+	  IS_EDITABLE_CATEGORY in updateRightStatusLabel.
 
 2006-01-26 23:54  kevinkofler
 
@@ -2385,39 +2511,36 @@
 	* mainform.ui.h, tpr.cxx, tpr.h, mainform.ui: Broke up
 	  extractFileTreeInfo by creating a separate routine that lists all
 	  the file paths in every category of the project.  The routine is
-	  extractAllFileNames.	Created a new function for checking if a
-	  file name is available based on a given list (follows the .o
-	  rules correctly) called checkFileName.  It depends on a list
-	  generated by extractAllFileNames.  Corrected new file
-	  uniquification (I still need to know if you want new file names
-	  to be based on all file names of all types like the Windows IDE
-	  does)
+	  extractAllFileNames.  Created a new function for checking if a file
+	  name is available based on a given list (follows the .o rules
+	  correctly) called checkFileName.  It depends on a list generated by
+	  extractAllFileNames.  Corrected new file uniquification (I still
+	  need to know if you want new file names to be based on all file
+	  names of all types like the Windows IDE does)
 
 2006-01-22 03:11  joeyadams
 
 	* mainform.ui, mainform.ui.h: Made thee status bar update correctly
 	  immediately when you rename a file.  However, we still need to do
-	  things such as check for file name conflicts, empty file names,
-	  etc.
+	  things such as check for file name conflicts, empty file names, etc.
 
 2006-01-22 02:18  joeyadams
 
 	* mainform.ui.h, tpr.cxx, tpr.h: Fixed issues with absolute paths
-	  and relative paths: made it so in the TPR, relative paths are
-	  used only if the file is within the project directory.
+	  and relative paths: made it so in the TPR, relative paths are used
+	  only if the file is within the project directory.
 
 2006-01-22 00:30  joeyadams
 
 	* mainform.ui, mainform.ui.h: Creating a new file in the menu will
-	  now put the file in the right directory.  Bug fixed involving
-	  paths created for new files (their path didn't include the last
-	  folder).
+	  now put the file in the right directory.  Bug fixed involving paths
+	  created for new files (their path didn't include the last folder).
 
 2006-01-17 03:54  joeyadams
 
 	* mainform.ui, mainform.ui.h, tpr.cxx: Files get path names
-	  automatically now, and when you save the project, all the path
-	  names are updated to the new project location.
+	  automatically now, and when you save the project, all the path names
+	  are updated to the new project location.
 
 	  Note: You'll only notice this if you click out to something, then
 	  click back onto a project file.
@@ -2427,10 +2550,10 @@
 	* mainform.ui, mainform.ui.h, tpr.cxx, tpr.h: Save As now supports
 	  creating new directories when you save again.
 
-	  An issue I found is that if you save a project, then try to
-	  reopen that project at any time during the program process, the
-	  contents will be hidden.  A possible reason is that I forgot
-	  fclose() after fopen()
+	  An issue I found is that if you save a project, then try to reopen
+	  that project at any time during the program process, the contents
+	  will be hidden.  A possible reason is that I forgot fclose() after
+	  fopen()
 
 2006-01-16 20:57  joeyadams
 
@@ -2442,15 +2565,14 @@
 	* mainform.ui.h, tpr.cxx: Fixed file saving.  Looks like it works
 	  now.
 
-	  Note: When the project is opened, although the correct Open File
-	  is automatically opened, it's not shown as selected on the tree
-	  list.
+	  Note: When the project is opened, although the correct Open File is
+	  automatically opened, it's not shown as selected on the tree list.
 
 2006-01-16 18:20  joeyadams
 
 	* mainform.ui, mainform.ui.h: Completed MainForm::fileSave_loadList
-	  and it compiles fine.  Does not save files in the project, just
-	  the TPR as of now.
+	  and it compiles fine.  Does not save files in the project, just the
+	  TPR as of now.
 
 	  WARNING:  Not debugged yet.  Saving will will crash!
 
@@ -2459,8 +2581,8 @@
 	* mainform.ui, mainform.ui.h, tpr.h: Added fileSave_loadList and
 	  wrote code into MainForm::fileSave .
 
-	  Note: Compiles with unused variable and parameter warnings
-	  because fileSave_loadList does nothing as of now.
+	  Note: Compiles with unused variable and parameter warnings because
+	  fileSave_loadList does nothing as of now.
 
 2006-01-16 16:26  joeyadams
 
@@ -2469,8 +2591,8 @@
 2006-01-16 04:56  kevinkofler
 
 	* mainform.ui, mainform.ui.h, tpr.cxx, tpr.h: Add support for "Open
-	  File=" (sadly, this uses an absolute path so it will only work
-	  for KTIGCC-created projects).
+	  File=" (sadly, this uses an absolute path so it will only work for
+	  KTIGCC-created projects).
 
 2006-01-16 04:35  joeyadams
 
@@ -2496,8 +2618,7 @@
 2006-01-16 03:57  kevinkofler
 
 	* mainform.ui.h: Fix folder name comparison in create_folder (don't
-	  use ==, make sure it actually is a folder) and ordering in
-	  openFile.
+	  use ==, make sure it actually is a folder) and ordering in openFile.
 
 2006-01-16 03:51  joeyadams
 
@@ -2520,8 +2641,8 @@
 2006-01-16 01:45  kevinkofler
 
 	* tpr.cxx, tpr.h: Set proper default options. Fix handling of line
-	  number (count starts at 0 because read_line immediately
-	  increments it, consistently return l, not 1).
+	  number (count starts at 0 because read_line immediately increments
+	  it, consistently return l, not 1).
 
 2006-01-16 01:19  kevinkofler
 
@@ -2574,8 +2695,8 @@
 2006-01-15 06:01  joeyadams
 
 	* KTIGCC.pws, mainform.ui, mainform.ui.h, tpr.cxx, tpr.h: Expanded
-	  on TPR file listing to adapt it to folders.  Corrected the
-	  function that converts the '\\' to '/'.
+	  on TPR file listing to adapt it to folders.  Corrected the function
+	  that converts the '\\' to '/'.
 
 2006-01-15 01:26  kevinkofler
 
@@ -2585,8 +2706,8 @@
 2006-01-15 01:12  kevinkofler
 
 	* mainform.ui, mainform.ui.h: Fix compilation: declare all
-	  functions in mainform.ui.h in the class header, use int and void
-	  * instead of KDE enums/classes in prototypes.
+	  functions in mainform.ui.h in the class header, use int and void *
+	  instead of KDE enums/classes in prototypes.
 
 2006-01-15 01:10  kevinkofler
 
@@ -2616,11 +2737,13 @@
 	  method.  It works correctly now.  I had to because of an issue
 	  involving filters.
 
-	  0. added include "kurl.h" 1. put the filters into an array in
-	  case it might be useful in the future.  2. Changed the open
-	  dialog initializer that's in MainForm::init 3. Rewrote
-	  SGetFileName and SGetFileName_Multiple 4. Got rid of the
-	  unnecessary mode parameter of SGetFileName_Multiple.
+	  0. added include "kurl.h"
+	  1. put the filters into an array in case it might be useful in the
+	  future.
+	  2. Changed the open dialog initializer that's in MainForm::init
+	  3. Rewrote SGetFileName and SGetFileName_Multiple
+	  4. Got rid of the unnecessary mode parameter of
+	  SGetFileName_Multiple.
 
 	  I think that's it.
 
@@ -2641,32 +2764,33 @@
 	  MainForm::init:
 
 	  pfiledialog=new
-	  KFileDialog(TIGCCProjectDirectory,TIGCCOpenProjectFileFilter,this,"File
-	  Dialog",TRUE);
 
-	  2. This line of code has been added to the end of
-	  MainForm::destroy:
+	  KFileDialog(TIGCCProjectDirectory,TIGCCOpenProjectFileFilter,this,"File Dialog",TRUE);
+
+	  2. This line of code has been added to the end of MainForm::destroy:
 
 	  delete pfiledialog;
 
 	  3. These two functions have been added before MainForm::fileOpen:
 
-	  QString SGetFileName(KFileDialog::OperationMode mode,const
-	  QString &fileFilter,const QString &caption); QStringList
-	  SGetFileName_Multiple(KFileDialog::OperationMode mode,const
-	  QString &fileFilter,const QString &caption);
+	  QString SGetFileName(KFileDialog::OperationMode mode,const QString
+	  &fileFilter,const QString &caption); QStringList
+	  SGetFileName_Multiple(KFileDialog::OperationMode mode,const QString
+	  &fileFilter,const QString &caption);
 
 	  4. The formerly empty MainForm::fileOpen has been started with:
 
 	  QString
-	  fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open
-	  Project/File");
+
+	  fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File");
+
 
 	  5. The formerly empty MainForm::fileSaveAs has been started with:
 
 	  QString
-	  fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save
-	  Project");
+
+	  fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save Project");
+
 
 	  6. The following header include has been added:
 
@@ -2674,13 +2798,13 @@
 
 	  The program has successfully compiled.
 
-	  The changes I made to the Open Save As menus worked correctly
-	  EXCEPT for a strange oddity:
+	  The changes I made to the Open Save As menus worked correctly EXCEPT
+	  for a strange oddity:
 
-	  If you go to open, change the type filter with the menu, close
-	  the open dialog, then reopen it, the filter at the bottom will
-	  show the default filter type again, but the files displayed above
-	  will not be synced with it.  The original TIGCC
+	  If you go to open, change the type filter with the menu, close the
+	  open dialog, then reopen it, the filter at the bottom will show the
+	  default filter type again, but the files displayed above will not be
+	  synced with it.  The original TIGCC
 
 2006-01-09 21:47  joeyadams
 
@@ -2699,32 +2823,33 @@
 	  MainForm::init:
 
 	  pfiledialog=new
-	  KFileDialog(TIGCCProjectDirectory,TIGCCOpenProjectFileFilter,this,"File
-	  Dialog",TRUE);
 
-	  2. This line of code has been added to the end of
-	  MainForm::destroy:
+	  KFileDialog(TIGCCProjectDirectory,TIGCCOpenProjectFileFilter,this,"File Dialog",TRUE);
+
+	  2. This line of code has been added to the end of MainForm::destroy:
 
 	  delete pfiledialog;
 
 	  3. These two functions have been added before MainForm::fileOpen:
 
-	  QString SGetFileName(KFileDialog::OperationMode mode,const
-	  QString &fileFilter,const QString &caption); QStringList
-	  SGetFileName_Multiple(KFileDialog::OperationMode mode,const
-	  QString &fileFilter,const QString &caption);
+	  QString SGetFileName(KFileDialog::OperationMode mode,const QString
+	  &fileFilter,const QString &caption); QStringList
+	  SGetFileName_Multiple(KFileDialog::OperationMode mode,const QString
+	  &fileFilter,const QString &caption);
 
 	  4. The formerly empty MainForm::fileOpen has been started with:
 
 	  QString
-	  fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open
-	  Project/File");
+
+	  fileName=SGetFileName(KFileDialog::Opening,TIGCCOpenProjectFileFilter,"Open Project/File");
+
 
 	  5. The formerly empty MainForm::fileSaveAs has been started with:
 
 	  QString
-	  fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save
-	  Project");
+
+	  fileName=SGetFileName(KFileDialog::Saving,TIGCCSaveProjectFilter,"Save Project");
+
 
 	  6. The following header include has been added:
 
@@ -2732,20 +2857,19 @@
 
 	  The program has successfully compiled.
 
-	  The changes I made to the Open Save As menus worked correctly
-	  EXCEPT for a strange oddity:
+	  The changes I made to the Open Save As menus worked correctly EXCEPT
+	  for a strange oddity:
 
-	  If you go to open, change the type filter with the menu, close
-	  the open dialog, then reopen it, the filter at the bottom will
-	  show the default filter type again, but the files displayed above
-	  will not be synced with it.  The original TIGCC IDE would retain
-	  it's chosen filter.
+	  If you go to open, change the type filter with the menu, close the
+	  open dialog, then reopen it, the filter at the bottom will show the
+	  default filter type again, but the files displayed above will not be
+	  synced with it.  The original TIGCC IDE would retain it's chosen
+	  filter.
 
 2005-12-09 18:57  kevinkofler
 
 	* KTIGCC.pws, ktigcc.cpp, mainform.ui.h: Add fileName field to
-	  ListViewFile. Set codec for QString<->C string conversion to
-	  UTF-8.
+	  ListViewFile. Set codec for QString<->C string conversion to UTF-8.
 
 2005-11-22 06:56  kevinkofler
 
@@ -2803,14 +2927,14 @@
 2005-11-21 13:37  kevinkofler
 
 	* Makefile, ktigcc.cpp, mainform.ui, mainform.ui.h: Implement about
-	  dialog (also gets rid of the warning about the deprecated version
-	  of KCmdLineArgs::init).
+	  dialog (also gets rid of the warning about the deprecated version of
+	  KCmdLineArgs::init).
 
 2005-11-21 12:37  kevinkofler
 
 	* Makefile, ktigcc.pro: Set compiler flags: get rid of pointless
-	  warnings, optimize for size, -s instead of -g on release, set
-	  debug mode for now.
+	  warnings, optimize for size, -s instead of -g on release, set debug
+	  mode for now.
 
 2005-11-21 12:14  kevinkofler
 
@@ -2842,8 +2966,8 @@
 2005-11-21 04:10  kevinkofler
 
 	* KTIGCC.prj, KTIGCC.pws, ktigcc.cpp, mainform.ui.h: Gray out the
-	  KatePart when it is disabled. (That was a lot harder than it
-	  should be.)
+	  KatePart when it is disabled. (That was a lot harder than it should
+	  be.)
 
 2005-11-20 12:44  kevinkofler
 

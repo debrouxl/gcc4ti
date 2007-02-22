@@ -34,7 +34,6 @@
 #include <q3cstring.h>
 #include <qdir.h>
 #include <qpair.h>
-//Added by qt3to4:
 #include <Q3ValueList>
 #include <kconfig.h>
 #include "ktigcc.h"
