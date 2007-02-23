@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include <Q3PopupMenu>
 #include <QLabel>
 class MainForm;
-namespace Kate {
+namespace KTextEditor {
   class View;
 }
 class KReplaceWithSelectionS;
@@ -64,7 +64,7 @@ struct SourceFile : public SourceFileWindow {
   LineStartList lineStartList;
 
   KReplaceWithSelectionS *kreplace;
-  Kate::View *kateView;
+  KTextEditor::View *kateView;
   QLabel *rowStatusLabel;
   QLabel *colStatusLabel;
   QLabel *charsStatusLabel;

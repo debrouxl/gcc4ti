@@ -68,11 +68,10 @@
 #include <kapplication.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
-#include <kate/document.h>
-#include <kate/view.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/view.h>
 #include <kconfig.h>
-#include <ktexteditor/editinterfaceext.h>
-#include <ktexteditor/configinterfaceextension.h>
+#include <ktexteditor/configpage.h>
 #include <kaboutdata.h>
 #include <khelpmenu.h>
 #include <kfiledialog.h>
@@ -163,7 +162,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         (category)==aFilesListItem?aFileCount: \
                                         (category)==txtFilesListItem?txtFileCount: \
                                         othFileCount)
-#define CURRENT_VIEW (static_cast<Kate::View *>(widgetStack->visibleWidget()))
+#define CURRENT_VIEW (static_cast<KTextEditor::View *>(widgetStack->visibleWidget()))
 
 #define LOAD_ICON(name) (QIcon(KIconLoader::global()->loadIcon((name),K3Icon::Small),KGlobal::iconLoader()->loadIcon((name),K3Icon::MainToolbar)))
 #define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),K3Icon::Small,K3Icon::SizeSmall):qPixmapFromMimeSource((name)))
@@ -326,13 +325,13 @@ class ListViewFile : public K3ListViewItem {
     if (fileName[0]=='/')
       KDirWatch::self()->removeFile(fileName);
     if (kateView) {
-      Kate::Document *doc=kateView->getDoc();
+      KTextEditor::Document *doc=kateView->document();
       delete kateView;
       delete doc;
     }
   }
   virtual int rtti(void) const {return 0x716CC1;}
-  Kate::View *kateView;
+  KTextEditor::View *kateView;
   QString textBuffer; // for lazy loading
   QString fileName; // full name of the file
   bool isNew;
@@ -513,7 +512,7 @@ class DnDListView : public K3ListView {
                 KMessageBox::error(this,QString("Can't open \'%1\'").arg(static_cast<ListViewFile *>(currItem)->fileName));
                 goto ignore2;
               }
-              static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<Kate::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,textBuffer,destCategory));
+              static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<KTextEditor::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,textBuffer,destCategory));
               MainForm::createErrorCursorsForSourceFile(currItem);
               // force reloading the text buffer
               if (currentListItem==currItem)
@@ -548,7 +547,7 @@ class DnDListView : public K3ListView {
             if (IS_EDITABLE_CATEGORY(srcCategory)
                 && !IS_EDITABLE_CATEGORY(destCategory)) {
               if (static_cast<ListViewFile *>(currItem)->kateView) {
-                Kate::Document *doc=static_cast<ListViewFile *>(currItem)->kateView->getDoc();
+                KTextEditor::Document *doc=static_cast<ListViewFile *>(currItem)->kateView->document();
                 delete static_cast<ListViewFile *>(currItem)->kateView;
                 delete doc;
                 static_cast<ListViewFile *>(currItem)->kateView=NULL;
@@ -560,10 +559,10 @@ class DnDListView : public K3ListView {
                 && srcCategory!=destCategory
                 && static_cast<ListViewFile *>(currItem)->kateView) {
               // update highlighting mode
-              uint cnt=static_cast<ListViewFile *>(currItem)->kateView->getDoc()->hlModeCount(), i;
+              uint cnt=static_cast<ListViewFile *>(currItem)->kateView->document()->hlModeCount(), i;
               QString fileText=static_cast<ListViewFile *>(currItem)->textBuffer;
               for (i=0; i<cnt; i++) {
-                if (!static_cast<ListViewFile *>(currItem)->kateView->getDoc()->hlModeName(i).compare(
+                if (!static_cast<ListViewFile *>(currItem)->kateView->document()->hlModeName(i).compare(
                     (destCategory==qllFilesListItem?
                        QLL_HL_MODE:
                      (destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
@@ -575,7 +574,7 @@ class DnDListView : public K3ListView {
                      "None"))) break;
               }
               if (i==cnt) i=0;
-              static_cast<ListViewFile *>(currItem)->kateView->getDoc()->setHlMode(i);
+              static_cast<ListViewFile *>(currItem)->kateView->document()->setHlMode(i);
             }
             // update icon
             currItem->setPixmap(0,
@@ -793,9 +792,9 @@ class ErrorListItem : public K3ListViewItem {
   void createCursor(void)
   {
     if (errorLine!=(unsigned)-1) {
-      Kate::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
-                             :static_cast<Kate::View *>(NULL));
-      if (kateView && errorLine<kateView->getDoc()->numLines()) {
+      KTextEditor::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
+                             :static_cast<KTextEditor::View *>(NULL));
+      if (kateView && errorLine<kateView->document()->numLines()) {
         // Extract the main token for the error message.
         QString errMessage=text(0);
         int quotePos=errMessage.find('\'');
@@ -808,8 +807,8 @@ class ErrorListItem : public K3ListViewItem {
               // Skip whitespace up to this token. TIGCC IDE does that too. Must
               // have something to do with how source splitting works.
               unsigned i=errorColumn;
-              QString textLine=kateView->getDoc()->textLine(errorLine);
-              unsigned lineLength=kateView->getDoc()->lineLength(errorLine);
+              QString textLine=kateView->document()->textLine(errorLine);
+              unsigned lineLength=kateView->document()->lineLength(errorLine);
               unsigned tokenLength=token.length();
               while ((i<lineLength) && textLine[i].isSpace()
                      && textLine.mid(i,tokenLength)!=token) i++;
@@ -817,7 +816,7 @@ class ErrorListItem : public K3ListViewItem {
             }
           }
         }
-        cursor=kateView->getDoc()->createCursor();
+        cursor=kateView->document()->createCursor();
         cursor->setPosition(errorLine,errorColumn);
       }
     }
@@ -830,8 +829,8 @@ class ErrorListItem : public K3ListViewItem {
     // If it corresponds to an external source file, activate the window.
     if (srcFile) KWin::activateWindow(srcFile->winId());
     // Now jump to the cursor's location if we have one.
-    Kate::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
-                           :static_cast<Kate::View *>(NULL));
+    KTextEditor::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
+                           :static_cast<KTextEditor::View *>(NULL));
     if (cursor && kateView) {
       unsigned line,col;
       cursor->position(&line,&col);
@@ -1328,7 +1327,7 @@ void MainForm::accel_activated(int index)
       case 10:
         if (IS_FILE(currentListItem)
             && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView) {
-          QString fileText=CURRENT_VIEW->getDoc()->text();
+          QString fileText=CURRENT_VIEW->document()->text();
           CATEGORY_OF(category,currentListItem);
           // Completion only operates on C files.
           if (category==cFilesListItem || category==qllFilesListItem
@@ -1664,7 +1663,7 @@ Q3ListViewItem * MainForm::openFile(Q3ListViewItem * category, Q3ListViewItem * 
     if (preferences.lazyLoading)
       newFile->textBuffer=fileText;
     else
-      newFile->kateView=reinterpret_cast<Kate::View *>(createView(fileName,fileText,category));
+      newFile->kateView=reinterpret_cast<KTextEditor::View *>(createView(fileName,fileText,category));
     KDirWatch::self()->addFile(fileName);
   }
   fileCount++;
@@ -1698,20 +1697,20 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   KParts::Factory *factory = (KParts::Factory *)
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
-  Kate::Document *doc = (Kate::Document *)
-      factory->createPart( 0, "", this, "", "Kate::Document" );
+  KTextEditor::Document *doc = (KTextEditor::Document *)
+      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
   // Set the file name for printing.
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
     doc->closeStream();
   // Create View object.
-  Kate::View *newView = (Kate::View *) doc->createView( widgetStack, 0L );
+  KTextEditor::View *newView = (KTextEditor::View *) doc->createView( widgetStack, 0L );
   newView->hide();
   newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
   // Set highlighting mode.
-  uint cnt=newView->getDoc()->hlModeCount(), i;
+  uint cnt=newView->document()->hlModeCount(), i;
   for (i=0; i<cnt; i++) {
-    if (!newView->getDoc()->hlModeName(i).compare(
+    if (!newView->document()->hlModeName(i).compare(
         (category==qllFilesListItem?
            QLL_HL_MODE:
          (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
@@ -1723,29 +1722,29 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
          "None"))) break;
   }
   if (i==cnt) i=0;
-  newView->getDoc()->setHlMode(i);
+  newView->document()->setHlMode(i);
   // Set options.
   newView->setDynWordWrap(FALSE);
   if (preferences.removeTrailingSpaces)
-    newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
+    newView->document()->setConfigFlags(newView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   else
-    newView->getDoc()->setConfigFlags(newView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
+    newView->document()->setConfigFlags(newView->document()->configFlags()&~(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   newView->setTabWidth(
     (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
     8
   );
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
-  connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
-  connect(newView->getDoc(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
-  connect(newView->getDoc(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
-  connect(newView->getDoc(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
+  connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
+  connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
+  connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
+  connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->installPopup(te_popup);
   // Set text.
-  SET_TEXT_SAFE(newView->getDoc(),fileText);
-  newView->getDoc()->setModified(FALSE);
-  newView->getDoc()->clearUndo();
-  newView->getDoc()->clearRedo();
+  SET_TEXT_SAFE(newView->document(),fileText);
+  newView->document()->setModified(FALSE);
+  newView->document()->clearUndo();
+  newView->document()->clearRedo();
   newView->setCursorPositionReal(0,0);
   return newView;
 }
@@ -1755,7 +1754,7 @@ void MainForm::adoptSourceFile(void *srcFile)
   if (compiling) return;
   SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
   QString fileName=sourceFile->fileName;
-  Kate::View *newView=sourceFile->kateView;
+  KTextEditor::View *newView=sourceFile->kateView;
   // Determine category and caption.
   Q3ListViewItem *category=othFilesListItem;
   QString suffix,caption;
@@ -1804,7 +1803,7 @@ void MainForm::adoptSourceFile(void *srcFile)
     category==sFilesListItem||category==asmFilesListItem?SYSICON("source_s","files.png"):
     SYSICON("txt","filet.png"));
   newFile->fileName=fileName;
-  newFile->modifiedSinceLastCompile=newView->getDoc()->isModified();
+  newFile->modifiedSinceLastCompile=newView->document()->isModified();
   // Adopt View object.
   newFile->kateView=newView;
   newView->hide();
@@ -1814,10 +1813,10 @@ void MainForm::adoptSourceFile(void *srcFile)
   fileCount++;
   COUNTER_FOR_CATEGORY(category)++;
   // Set highlighting mode.
-  QString fileText=newView->getDoc()->text();
-  uint cnt=newView->getDoc()->hlModeCount(), i;
+  QString fileText=newView->document()->text();
+  uint cnt=newView->document()->hlModeCount(), i;
   for (i=0; i<cnt; i++) {
-    if (!newView->getDoc()->hlModeName(i).compare(
+    if (!newView->document()->hlModeName(i).compare(
         (category==qllFilesListItem?
            QLL_HL_MODE:
          (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
@@ -1829,7 +1828,7 @@ void MainForm::adoptSourceFile(void *srcFile)
          "None"))) break;
   }
   if (i==cnt) i=0;
-  newView->getDoc()->setHlMode(i);
+  newView->document()->setHlMode(i);
   // Set options.
   newView->setTabWidth(
     (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
@@ -1837,10 +1836,10 @@ void MainForm::adoptSourceFile(void *srcFile)
     8
   );
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
-  connect(newView->getDoc(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
-  connect(newView->getDoc(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
-  connect(newView->getDoc(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
-  connect(newView->getDoc(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
+  connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
+  connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
+  connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
+  connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->installPopup(te_popup);
   // Mark project dirty.
   projectIsDirty=TRUE;
@@ -1858,7 +1857,7 @@ void MainForm::adoptSourceFile(void *srcFile)
     }
   }
   // Close separate source view.
-  sourceFile->kateView=static_cast<Kate::View *>(NULL);
+  sourceFile->kateView=static_cast<KTextEditor::View *>(NULL);
   sourceFile->deleteLater();
 }
 
@@ -2086,7 +2085,7 @@ int MainForm::fileSavePrompt(Q3ListViewItem *fileItem)
   int result;
   ListViewFile *theFile=static_cast<ListViewFile *>(fileItem);
   if (!theFile->kateView) return 0;
-  while (theFile->kateView->getDoc()->isModified()) { // "while" in case saving fails!
+  while (theFile->kateView->document()->isModified()) { // "while" in case saving fails!
     result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(theFile->text(0)),QString::null,KStandardGuiItem::save(),KStandardGuiItem::discard());
     if (result==KMessageBox::Yes)
       fileSave_save(fileItem);
@@ -2150,8 +2149,8 @@ int MainForm::savePrompt(void)
 void MainForm::removeTrailingSpacesFromView(void *view)
 {
   if (!preferences.removeTrailingSpaces) return;
-  Kate::View *kateView=reinterpret_cast<Kate::View *>(view);
-  Kate::Document *doc=kateView->getDoc();
+  KTextEditor::View *kateView=reinterpret_cast<KTextEditor::View *>(view);
+  KTextEditor::Document *doc=kateView->document();
   KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
   editExt->editBegin();
   unsigned numLines=doc->numLines();
@@ -2176,7 +2175,7 @@ void MainForm::fileSave_save(Q3ListViewItem *theItem)
   }
   else {
     KDirWatch::self()->removeFile(theFile->fileName);
-    if (saveFileText(theFile->fileName,theFile->kateView?theFile->kateView->getDoc()->text():theFile->textBuffer)) {
+    if (saveFileText(theFile->fileName,theFile->kateView?theFile->kateView->document()->text():theFile->textBuffer)) {
       KMessageBox::error(this,QString("Can't save to \'%1\'").arg(theFile->text(0)));
       KDirWatch::self()->addFile(theFile->fileName);
     }
@@ -2185,7 +2184,7 @@ void MainForm::fileSave_save(Q3ListViewItem *theItem)
       theFile->isNew=FALSE;
       if (theFile->kateView) {
         removeTrailingSpacesFromView(theFile->kateView);
-        theFile->kateView->getDoc()->setModified(FALSE);
+        theFile->kateView->document()->setModified(FALSE);
       }
       projectIsDirty=TRUE;
       projectNeedsRelink=TRUE;
@@ -2222,7 +2221,7 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
   if (theFile->fileName[0]=='/')
     KDirWatch::self()->removeFile(theFile->fileName);
   if (IS_EDITABLE_CATEGORY(category)
-      ?saveFileText(saveFileName,theFile->kateView?theFile->kateView->getDoc()->text():theFile->textBuffer)
+      ?saveFileText(saveFileName,theFile->kateView?theFile->kateView->document()->text():theFile->textBuffer)
       :copyFile(theFile->fileName,saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
     if (IS_EDITABLE_CATEGORY(category) && theFile->fileName[0]=='/')
@@ -2231,17 +2230,17 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
     if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)
         && theFile->kateView) {
       // Update the file name for printing.
-      unsigned int line,col,hlMode;
-      QString fileText=theFile->kateView->getDoc()->text();
-      hlMode=theFile->kateView->getDoc()->hlMode();
-      theFile->kateView->cursorPositionReal(&line,&col);
-      theFile->kateView->getDoc()->setModified(FALSE);
-      if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
-        theFile->kateView->getDoc()->closeStream();
-      SET_TEXT_SAFE(theFile->kateView->getDoc(),fileText);
-      theFile->kateView->getDoc()->clearUndo();
-      theFile->kateView->getDoc()->clearRedo();
-      theFile->kateView->getDoc()->setHlMode(hlMode);
+      int line,col,hlMode;
+      QString fileText=theFile->kateView->document()->text();
+      hlMode=theFile->kateView->document()->hlMode();
+      theFile->kateView->cursorPosition().position(line,col);
+      theFile->kateView->document()->setModified(FALSE);
+      if (theFile->kateView->document()->openStream("text/plain",saveFileName))
+        theFile->kateView->document()->closeStream();
+      SET_TEXT_SAFE(theFile->kateView->document(),fileText);
+      theFile->kateView->document()->clearUndo();
+      theFile->kateView->document()->clearRedo();
+      theFile->kateView->document()->setHlMode(hlMode);
       theFile->kateView->setCursorPositionReal(line,col);
     }
     theFile->fileName=saveFileName;
@@ -2249,7 +2248,7 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
       KDirWatch::self()->addFile(saveFileName);
       if (theFile->kateView) {
         removeTrailingSpacesFromView(theFile->kateView);
-        theFile->kateView->getDoc()->setModified(FALSE);
+        theFile->kateView->document()->setModified(FALSE);
       }
     }
     theFile->isNew=FALSE;
@@ -2293,9 +2292,9 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
         KDirWatch::self()->removeFile(theFile->fileName);
       if (tmpPath.path().compare(theFile->fileName)
           || (IS_EDITABLE_CATEGORY(category)
-              && ((theFile->kateView && theFile->kateView->getDoc()->isModified()) || theFile->isNew))) {
+              && ((theFile->kateView && theFile->kateView->document()->isModified()) || theFile->isNew))) {
         if (IS_EDITABLE_CATEGORY(category)
-            ?saveFileText(tmpPath.path(),theFile->kateView?theFile->kateView->getDoc()->text():theFile->textBuffer)
+            ?saveFileText(tmpPath.path(),theFile->kateView?theFile->kateView->document()->text():theFile->textBuffer)
             :copyFile(theFile->fileName,tmpPath.path())) {
           KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
           if (IS_EDITABLE_CATEGORY(category) && theFile->fileName[0]=='/')
@@ -2305,17 +2304,17 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
           if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)
               && theFile->kateView) {
             // Update the file name for printing.
-            unsigned int line,col,hlMode;
-            QString fileText=theFile->kateView->getDoc()->text();
-            hlMode=theFile->kateView->getDoc()->hlMode();
-            theFile->kateView->cursorPositionReal(&line,&col);
-            theFile->kateView->getDoc()->setModified(FALSE);
-            if (theFile->kateView->getDoc()->openStream("text/plain",saveFileName))
-              theFile->kateView->getDoc()->closeStream();
-            SET_TEXT_SAFE(theFile->kateView->getDoc(),fileText);
-            theFile->kateView->getDoc()->clearUndo();
-            theFile->kateView->getDoc()->clearRedo();
-            theFile->kateView->getDoc()->setHlMode(hlMode);
+            int line,col,hlMode;
+            QString fileText=theFile->kateView->document()->text();
+            hlMode=theFile->kateView->document()->hlMode();
+            theFile->kateView->cursorPosition().position(line,col);
+            theFile->kateView->document()->setModified(FALSE);
+            if (theFile->kateView->document()->openStream("text/plain",saveFileName))
+              theFile->kateView->document()->closeStream();
+            SET_TEXT_SAFE(theFile->kateView->document(),fileText);
+            theFile->kateView->document()->clearUndo();
+            theFile->kateView->document()->clearRedo();
+            theFile->kateView->document()->setHlMode(hlMode);
             theFile->kateView->setCursorPositionReal(line,col);
           }
           theFile->fileName=saveFileName;
@@ -2323,7 +2322,7 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
             KDirWatch::self()->addFile(theFile->fileName);
             if (theFile->kateView) {
               removeTrailingSpacesFromView(theFile->kateView);
-              theFile->kateView->getDoc()->setModified(FALSE);
+              theFile->kateView->document()->setModified(FALSE);
             }
           }
           theFile->isNew=FALSE;
@@ -2411,7 +2410,7 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
   updateRightStatusLabel();
   Q3PtrListIterator<SourceFile> sfit(sourceFiles);
   for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
-    if (sourceFile->kateView->getDoc()->isModified())
+    if (sourceFile->kateView->document()->isModified())
       sourceFile->fileSave();
   }
 }
@@ -2437,13 +2436,13 @@ bool MainForm::fileSaveAs()
 
 void MainForm::filePrint()
 {
-  if (CURRENT_VIEW) CURRENT_VIEW->getDoc()->printDialog();
+  if (CURRENT_VIEW) CURRENT_VIEW->document()->printDialog();
 }
 
 
 void MainForm::filePrintQuickly()
 {
-  if (CURRENT_VIEW) CURRENT_VIEW->getDoc()->print();
+  if (CURRENT_VIEW) CURRENT_VIEW->document()->print();
 }
 
 void MainForm::filePreferences()
@@ -2456,21 +2455,21 @@ void MainForm::filePreferences()
     // Kate seems really insisting on making it a pain to update syntax highlighting settings.
     for (item=it.current();item;item=(++it).current()) {
       if (IS_FILE(item)) {
-        Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
+        KTextEditor::View *kateView=static_cast<ListViewFile *>(item)->kateView;
         if (kateView)
-          kateView->getDoc()->setHlMode(0);
+          kateView->document()->setHlMode(0);
       }
     }
     Q3PtrListIterator<SourceFile> sfit(sourceFiles);
     SourceFile *sourceFile;
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
-      sourceFile->kateView->getDoc()->setHlMode(0);
+      sourceFile->kateView->document()->setHlMode(0);
     }
     KParts::Factory *factory = (KParts::Factory *)
       KLibLoader::self()->factory ("libkatepart");
     if (!factory) qFatal("Failed to load KatePart");
-    Kate::Document *doc = (Kate::Document *)
-      factory->createPart( 0, "", this, "", "Kate::Document" );
+    KTextEditor::Document *doc = (KTextEditor::Document *)
+      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
     doc->setHlMode(1); // Don't ask...
     doc->setHlMode(0);
     KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
@@ -2494,23 +2493,23 @@ void MainForm::filePreferences()
                                                  :SYSICON("folder","folder1.png"));
       } else if (IS_FILE(item)) {
         CATEGORY_OF(category,item);
-        Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
+        KTextEditor::View *kateView=static_cast<ListViewFile *>(item)->kateView;
         if (kateView) {
-          QString fileText=kateView->getDoc()->text();
+          QString fileText=kateView->document()->text();
           CATEGORY_OF(category,item);
           if (preferences.removeTrailingSpaces)
-            kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()|(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
+            kateView->document()->setConfigFlags(kateView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
           else
-            kateView->getDoc()->setConfigFlags(kateView->getDoc()->configFlags()&~(Kate::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
+            kateView->document()->setConfigFlags(kateView->document()->configFlags()&~(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
           kateView->setTabWidth(
             (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
             (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
             8
           );
           // Kate seems really insisting on making it a pain to update syntax highlighting settings.
-          unsigned cnt=kateView->getDoc()->hlModeCount(), i;
+          unsigned cnt=kateView->document()->hlModeCount(), i;
           for (i=0; i<cnt; i++) {
-            if (!kateView->getDoc()->hlModeName(i).compare(
+            if (!kateView->document()->hlModeName(i).compare(
                 (category==qllFilesListItem?
                    QLL_HL_MODE:
                  (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
@@ -2522,7 +2521,7 @@ void MainForm::filePreferences()
                  "None"))) break;
           }
           if (i==cnt) i=0;
-          kateView->getDoc()->setHlMode(i);
+          kateView->document()->setHlMode(i);
         }
         item->setPixmap(0,
           category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
@@ -2533,7 +2532,7 @@ void MainForm::filePreferences()
           SYSICON("unknown","filex.png"));
       } else qWarning("Internal error: What's this item?");
     }
-    Kate::View *currView=CURRENT_VIEW;
+    KTextEditor::View *currView=CURRENT_VIEW;
     if (currView) {
       // Force redrawing to get the tab width right, repaint() is ignored for some reason.
       currView->hide();
@@ -2650,19 +2649,19 @@ void MainForm::filePreferences()
 void MainForm::editUndo()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->getDoc()->undo();
+    CURRENT_VIEW->document()->undo();
 }
 
 void MainForm::editRedo()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->getDoc()->redo();
+    CURRENT_VIEW->document()->redo();
 }
 
 void MainForm::editClear()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->getDoc()->removeSelectedText();
+    CURRENT_VIEW->document()->removeSelectedText();
 }
 
 void MainForm::editCut()
@@ -2686,7 +2685,7 @@ void MainForm::editPaste()
 void MainForm::editSelectAll()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->getDoc()->selectAll();
+    CURRENT_VIEW->document()->selectAll();
 }
 
 void MainForm::editIncreaseIndent()
@@ -2733,38 +2732,38 @@ void MainForm::findFind_next()
   findCurrentDocument=currentListItem;
   if (CURRENT_VIEW) {
     if (kfinddialog->options()&KFind::FromCursor) {
-      if (CURRENT_VIEW->getDoc()->hasSelection()) {
+      if (CURRENT_VIEW->document()->hasSelection()) {
         if (findBackwards) {
-          findCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
-          findCurrentCol=CURRENT_VIEW->getDoc()->selStartCol()-1;
+          findCurrentLine=CURRENT_VIEW->document()->selStartLine();
+          findCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
           if (findCurrentCol==-1) {
             if (!findCurrentLine) goto skip_data;
             findCurrentLine--;
           }
         } else {
-          findCurrentLine=CURRENT_VIEW->getDoc()->selEndLine();
-          findCurrentCol=CURRENT_VIEW->getDoc()->selEndCol();
+          findCurrentLine=CURRENT_VIEW->document()->selEndLine();
+          findCurrentCol=CURRENT_VIEW->document()->selEndCol();
         }
       } else {
         findCurrentLine=CURRENT_VIEW->cursorLine();
         findCurrentCol=CURRENT_VIEW->cursorColumnReal();
       }
     } else {
-      findCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
+      findCurrentLine=findBackwards?(CURRENT_VIEW->document()->numLines()-1):0;
       findCurrentCol=-1;
     }
-    kfind->setData(CURRENT_VIEW->getDoc()->textLine(findCurrentLine),findCurrentCol);
+    kfind->setData(CURRENT_VIEW->document()->textLine(findCurrentLine),findCurrentCol);
   } else findCurrentLine=0;
   skip_data:;
 
   // Now find the next occurrence.
   KFind::Result result;
-  Kate::View *currView=CURRENT_VIEW;
+  KTextEditor::View *currView=CURRENT_VIEW;
   // We never have a currBuffer here, the current list item is always either
   // non-editable or instantiated.
   QStringList currBuffer;
   unsigned currNumLines=0;
-  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->getDoc()->numLines();
+  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->numLines();
   do {
     if (kfind->needData()) {
       if (findBackwards?!findCurrentLine:(findCurrentLine>=currNumLines)) {
@@ -2838,14 +2837,14 @@ void MainForm::findFind_next()
               // currentListItem is always either instantiated or not editable
               currView=static_cast<ListViewFile *>(currentListItem)->kateView;
               if (currView) {
-                currNumLines=currView->getDoc()->numLines();
+                currNumLines=currView->document()->numLines();
                 findCurrentLine=findBackwards?currNumLines-1:0;
                 do {
                   if (kfind->needData()) {
                     if (findBackwards?!findCurrentLine:(findCurrentLine>=currNumLines))
                       goto not_found_current;
                     if (findBackwards) findCurrentLine--; else findCurrentLine++;
-                    kfind->setData(currView->getDoc()->textLine(findCurrentLine));
+                    kfind->setData(currView->document()->textLine(findCurrentLine));
                   }
                   result=kfind->find();
                 } while (result==KFind::NoMatch);
@@ -2859,7 +2858,7 @@ void MainForm::findFind_next()
           file_found:
             currView=static_cast<ListViewFile *>(findCurrentDocument)->kateView;
             if (currView) {
-              currNumLines=currView->getDoc()->numLines();
+              currNumLines=currView->document()->numLines();
             } else {
               currBuffer=QStringList::split('\n',
                 static_cast<ListViewFile *>(findCurrentDocument)->textBuffer,TRUE);
@@ -2869,7 +2868,7 @@ void MainForm::findFind_next()
         }
       } else if (findBackwards) findCurrentLine--; else findCurrentLine++;
       if (currView)
-        kfind->setData(currView->getDoc()->textLine(findCurrentLine));
+        kfind->setData(currView->document()->textLine(findCurrentLine));
       else
         kfind->setData(currBuffer[findCurrentLine]);
     }
@@ -2884,7 +2883,7 @@ void MainForm::findFind_highlight(const QString &unused_text, int matchingindex,
   if (currentListItem!=findCurrentDocument) fileTreeClicked(findCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
   CURRENT_VIEW->setCursorPositionReal(findCurrentLine,matchingindex+matchedlength);
-  CURRENT_VIEW->getDoc()->setSelection(findCurrentLine,matchingindex,
+  CURRENT_VIEW->document()->setSelection(findCurrentLine,matchingindex,
                                        findCurrentLine,matchingindex+matchedlength);
 }
 
@@ -2905,11 +2904,11 @@ void MainForm::findReplace()
       KWin::activateWindow(replaceNextDialog->winId());
     return;
   }
-  KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection()
-                                        &&CURRENT_VIEW->getDoc()->selStartLine()!=CURRENT_VIEW->getDoc()->selEndLine())?
+  KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->document()->hasSelection()
+                                        &&CURRENT_VIEW->document()->selStartLine()!=CURRENT_VIEW->document()->selEndLine())?
                                         KFind::SelectedText:0)|KFind::FromCursor,
                                        findHistory,replacementHistory,
-                                       CURRENT_VIEW&&CURRENT_VIEW->getDoc()->hasSelection());
+                                       CURRENT_VIEW&&CURRENT_VIEW->document()->hasSelection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
     return;
   findHistory=kreplacedialog.findHistory();
@@ -2935,10 +2934,10 @@ void MainForm::findReplace()
   replaceCurrentDocument=currentListItem;
   if (CURRENT_VIEW) {
     if (kreplace->options()&KFind::SelectedText) {
-      kreplace->setSelection(CURRENT_VIEW->getDoc()->selStartLine(),
-                             CURRENT_VIEW->getDoc()->selStartCol(),
-                             CURRENT_VIEW->getDoc()->selEndLine(),
-                             CURRENT_VIEW->getDoc()->selEndCol());
+      kreplace->setSelection(CURRENT_VIEW->document()->selStartLine(),
+                             CURRENT_VIEW->document()->selStartCol(),
+                             CURRENT_VIEW->document()->selEndLine(),
+                             CURRENT_VIEW->document()->selEndCol());
       if (findBackwards) {
         replaceCurrentLine=kreplace->selEndLine();
         replaceCurrentCol=kreplace->selEndCol();
@@ -2948,32 +2947,32 @@ void MainForm::findReplace()
       }
       kreplace->setOptions(kreplace->options()&~KFind::FromCursor);
     } else if (kreplace->options()&KFind::FromCursor) {
-      if (CURRENT_VIEW->getDoc()->hasSelection()) {
+      if (CURRENT_VIEW->document()->hasSelection()) {
         if (findBackwards) {
-          replaceCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
-          replaceCurrentCol=CURRENT_VIEW->getDoc()->selStartCol()-1;
+          replaceCurrentLine=CURRENT_VIEW->document()->selStartLine();
+          replaceCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
           if (replaceCurrentCol==-1) {
             if (!replaceCurrentLine) goto skip_data;
             replaceCurrentLine--;
           }
         } else {
-          replaceCurrentLine=CURRENT_VIEW->getDoc()->selEndLine();
-          replaceCurrentCol=CURRENT_VIEW->getDoc()->selEndCol();
+          replaceCurrentLine=CURRENT_VIEW->document()->selEndLine();
+          replaceCurrentCol=CURRENT_VIEW->document()->selEndCol();
         }
       } else {
         replaceCurrentLine=CURRENT_VIEW->cursorLine();
         replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
         // Don't prompt for restarting if we actually searched the entire document.
-        if (findBackwards?(replaceCurrentLine==(CURRENT_VIEW->getDoc()->numLines()-1)
-                           && replaceCurrentCol==(CURRENT_VIEW->getDoc()->lineLength(replaceCurrentLine)))
+        if (findBackwards?(replaceCurrentLine==(CURRENT_VIEW->document()->numLines()-1)
+                           && replaceCurrentCol==(CURRENT_VIEW->document()->lineLength(replaceCurrentLine)))
                          :(!replaceCurrentLine&&!replaceCurrentCol))
           kreplace->setOptions(kreplace->options()&~KFind::FromCursor);
       }
     } else {
-      replaceCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
+      replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->numLines()-1):0;
       replaceCurrentCol=-1;
     }
-    kreplace->setData(CURRENT_VIEW->getDoc()->textLine(replaceCurrentLine),replaceCurrentCol);
+    kreplace->setData(CURRENT_VIEW->document()->textLine(replaceCurrentLine),replaceCurrentCol);
   }
   skip_data:
     // Now find the next occurrence.
@@ -3001,35 +3000,35 @@ void MainForm::findReplace_next(bool firstTime)
     replaceCurrentDocument=currentListItem;
     if (CURRENT_VIEW) {
       // Non-first-time always continues from cursor.
-      if (CURRENT_VIEW->getDoc()->hasSelection()) {
+      if (CURRENT_VIEW->document()->hasSelection()) {
         if (findBackwards) {
-          replaceCurrentLine=CURRENT_VIEW->getDoc()->selStartLine();
-          replaceCurrentCol=CURRENT_VIEW->getDoc()->selStartCol()-1;
+          replaceCurrentLine=CURRENT_VIEW->document()->selStartLine();
+          replaceCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
           if (replaceCurrentCol==-1) {
             if (!replaceCurrentLine) goto skip_data;
             replaceCurrentLine--;
           }
         } else {
-          replaceCurrentLine=CURRENT_VIEW->getDoc()->selEndLine();
-          replaceCurrentCol=CURRENT_VIEW->getDoc()->selEndCol();
+          replaceCurrentLine=CURRENT_VIEW->document()->selEndLine();
+          replaceCurrentCol=CURRENT_VIEW->document()->selEndCol();
         }
       } else {
         replaceCurrentLine=CURRENT_VIEW->cursorLine();
         replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
       }
-      kreplace->setData(CURRENT_VIEW->getDoc()->textLine(replaceCurrentLine),replaceCurrentCol);
+      kreplace->setData(CURRENT_VIEW->document()->textLine(replaceCurrentLine),replaceCurrentCol);
     } else replaceCurrentLine=0;
   }
   skip_data:;
 
   // Now find the next occurrence.
   KFind::Result result;
-  Kate::View *currView=CURRENT_VIEW;
+  KTextEditor::View *currView=CURRENT_VIEW;
   // We never have a currBuffer here, the current list item is always either
   // non-editable or instantiated.
   QStringList currBuffer;
   unsigned currNumLines=0;
-  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->getDoc()->numLines();
+  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->numLines();
   do {
     if (kreplace->needData()) {
       if (global) {
@@ -3104,14 +3103,14 @@ void MainForm::findReplace_next(bool firstTime)
                 // currentListItem is always either instantiated or not editable
                 currView=static_cast<ListViewFile *>(currentListItem)->kateView;
                 if (currView) {
-                  currNumLines=currView->getDoc()->numLines();
+                  currNumLines=currView->document()->numLines();
                   replaceCurrentLine=findBackwards?currNumLines-1:0;
                   do {
                     if (kreplace->needData()) {
                       if (findBackwards?!replaceCurrentLine:(replaceCurrentLine>=currNumLines))
                         goto not_found_current;
                       if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
-                      kreplace->setData(currView->getDoc()->textLine(replaceCurrentLine));
+                      kreplace->setData(currView->document()->textLine(replaceCurrentLine));
                     }
                     result=kreplace->replace();
                   } while (result==KFind::NoMatch);
@@ -3125,7 +3124,7 @@ void MainForm::findReplace_next(bool firstTime)
             file_found:
               currView=static_cast<ListViewFile *>(replaceCurrentDocument)->kateView;
               if (currView) {
-                currNumLines=currView->getDoc()->numLines();
+                currNumLines=currView->document()->numLines();
               } else {
                 currBuffer=QStringList::split('\n',
                   static_cast<ListViewFile *>(replaceCurrentDocument)->textBuffer,TRUE);
@@ -3135,7 +3134,7 @@ void MainForm::findReplace_next(bool firstTime)
           }
         } else if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
         if (currView)
-          kreplace->setData(currView->getDoc()->textLine(replaceCurrentLine));
+          kreplace->setData(currView->document()->textLine(replaceCurrentLine));
         else
           kreplace->setData(currBuffer[replaceCurrentLine]);
       } else { // if not global
@@ -3152,8 +3151,8 @@ void MainForm::findReplace_next(bool firstTime)
                                                          |KFind::SelectedText));
               kreplace->invalidateSelection();
               // Reinitialize.
-              replaceCurrentLine=findBackwards?(CURRENT_VIEW->getDoc()->numLines()-1):0;
-              kreplace->setData(CURRENT_VIEW->getDoc()->textLine(replaceCurrentLine));
+              replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->numLines()-1):0;
+              kreplace->setData(CURRENT_VIEW->document()->textLine(replaceCurrentLine));
               // Start again as if it was the first time.
               findReplace_next(TRUE);
               return;
@@ -3164,7 +3163,7 @@ void MainForm::findReplace_next(bool firstTime)
           } else goto not_found_current;
         } else if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
         if (currView)
-          kreplace->setData(currView->getDoc()->textLine(replaceCurrentLine));
+          kreplace->setData(currView->document()->textLine(replaceCurrentLine));
         else
           kreplace->setData(currBuffer[replaceCurrentLine]);
       }
@@ -3178,7 +3177,7 @@ void MainForm::findReplace_highlight(const QString &unused_text, int matchingind
   if (currentListItem!=replaceCurrentDocument) fileTreeClicked(replaceCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
   CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,matchingindex+matchedlength);
-  CURRENT_VIEW->getDoc()->setSelection(replaceCurrentLine,matchingindex,
+  CURRENT_VIEW->document()->setSelection(replaceCurrentLine,matchingindex,
                                        replaceCurrentLine,matchingindex+matchedlength);
 }
 
@@ -3197,21 +3196,21 @@ void MainForm::findReplace_replace(const QString &text, int replacementIndex, in
     selEndLine=kreplace->selEndLine();
     selEndCol=kreplace->selEndCol();
   }
-  KTextEditor::EditInterfaceExt *editinterfaceext=KTextEditor::editInterfaceExt(CURRENT_VIEW->getDoc());
+  KTextEditor::EditInterfaceExt *editinterfaceext=KTextEditor::editInterfaceExt(CURRENT_VIEW->document());
   editinterfaceext->editBegin();
-  CURRENT_VIEW->getDoc()->insertText(replaceCurrentLine,replacementIndex,
+  CURRENT_VIEW->document()->insertText(replaceCurrentLine,replacementIndex,
                                      text.mid(replacementIndex,replacedLength));
   // We can't put the cursor back now because this breaks editBegin/editEnd.
   bool updateCursor=(CURRENT_VIEW->cursorLine()==replaceCurrentLine
                      && CURRENT_VIEW->cursorColumnReal()==(unsigned)replacementIndex+(unsigned)replacedLength);
-  CURRENT_VIEW->getDoc()->removeText(replaceCurrentLine,replacementIndex+replacedLength,
+  CURRENT_VIEW->document()->removeText(replaceCurrentLine,replacementIndex+replacedLength,
                                      replaceCurrentLine,replacementIndex+replacedLength+matchedLength);
   editinterfaceext->editEnd();
   if (updateCursor)
     CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,replacementIndex);
   if (update) {
     CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,replacementIndex+replacedLength);
-    CURRENT_VIEW->getDoc()->setSelection(replaceCurrentLine,replacementIndex,
+    CURRENT_VIEW->document()->setSelection(replaceCurrentLine,replacementIndex,
                                          replaceCurrentLine,replacementIndex+replacedLength);
     CURRENT_VIEW->repaint();
   }
@@ -3247,7 +3246,7 @@ void MainForm::findFunctions()
             this,SLOT(findFunctions_implementationButton_clicked()));
     functionDialog->functionListBox->clear();
     CATEGORY_OF(category,currentListItem);
-    sourceFileFunctions=getFunctions(CURRENT_VIEW->getDoc()->text(),
+    sourceFileFunctions=getFunctions(CURRENT_VIEW->document()->text(),
       category==asmFilesListItem||category==sFilesListItem);
     for (SourceFileFunctions::Iterator it=sourceFileFunctions.begin();
          it!=sourceFileFunctions.end(); ++it)
@@ -3306,7 +3305,7 @@ void MainForm::findFunctionsPopup_aboutToShow()
   findFunctionsPopup->clear();
   if (CURRENT_VIEW) {
     CATEGORY_OF(category,currentListItem);
-    sourceFileFunctions=getFunctions(CURRENT_VIEW->getDoc()->text(),
+    sourceFileFunctions=getFunctions(CURRENT_VIEW->document()->text(),
       category==asmFilesListItem||category==sFilesListItem);
     int idx=0;
     for (SourceFileFunctions::Iterator it=sourceFileFunctions.begin();
@@ -3378,13 +3377,13 @@ void MainForm::findAndOpenFile(const QString &fileName, void *category)
 void MainForm::findOpenFileAtCursor()
 {
   if (CURRENT_VIEW && IS_FILE(currentListItem)) {
-    unsigned line,col,i;
-    CURRENT_VIEW->cursorPositionReal(&line,&col);
-    QString textLine=CURRENT_VIEW->getDoc()->textLine(line);
+    int line,col,i;
+    CURRENT_VIEW->cursorPosition().position(line,col);
+    QString textLine=CURRENT_VIEW->document()->textLine(line);
     unsigned l=textLine.length();
     bool quotesInLine=textLine.contains("\"");
     QString fileName;
-    for (i=col;i<l;i--) {
+    for (i=col;i>=0;i--) {
       QChar c=textLine[i];
       if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
             || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
@@ -3467,7 +3466,7 @@ void MainForm::openHeader(const QString &fileName, bool systemHeader,
 void MainForm::findFindSymbolDeclaration()
 {
   if (IS_FILE(currentListItem) && CURRENT_VIEW) {
-    QString fileText=CURRENT_VIEW->getDoc()->text();
+    QString fileText=CURRENT_VIEW->document()->text();
     CATEGORY_OF(category,currentListItem);
     // "Find symbol declaration" only operates on C files.
     if (category==cFilesListItem || category==qllFilesListItem
@@ -3609,7 +3608,7 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
                                  .arg(sourceFile->text(0)).arg(ext);
     if (IS_EDITABLE_CATEGORY(category)) {
       if (sourceFile->kateView) {
-        fileText=sourceFile->kateView->getDoc()->text();
+        fileText=sourceFile->kateView->document()->text();
       } else {
         fileText=sourceFile->textBuffer;
       }
@@ -3627,7 +3626,7 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
     category=reinterpret_cast<Q3ListViewItem *>(sourceFile->category);
     fileName=QString("%1%2").arg(tempdir)
                             .arg(origFileName->mid(origFileName->findRev('/')));
-    fileText=sourceFile->kateView->getDoc()->text();
+    fileText=sourceFile->kateView->document()->text();
     pLineStartList=&(sourceFile->lineStartList);
   }
   if (saveAndSplitFileText(fileName.ascii(),fileText,(category==cFilesListItem),
@@ -4026,7 +4025,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
     category=reinterpret_cast<Q3ListViewItem *>(sourceFile->category);
     origFileName=&(sourceFile->fileName);
-    if (sourceFile->kateView->getDoc()->isModified())
+    if (sourceFile->kateView->document()->isModified())
       modified=TRUE;
     shortFileName=sourceFile->fileName;
   }
@@ -5294,9 +5293,9 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
     if (IS_EDITABLE_CATEGORY(category)) {
-      Kate::View *kateView=static_cast<ListViewFile *>(item)->kateView;
+      KTextEditor::View *kateView=static_cast<ListViewFile *>(item)->kateView;
       if (!kateView) { // lazy loading
-        kateView=reinterpret_cast<Kate::View *>(createView(static_cast<ListViewFile *>(item)->fileName,static_cast<ListViewFile *>(item)->textBuffer,category));
+        kateView=reinterpret_cast<KTextEditor::View *>(createView(static_cast<ListViewFile *>(item)->fileName,static_cast<ListViewFile *>(item)->textBuffer,category));
         static_cast<ListViewFile *>(item)->textBuffer=QString::null;
         static_cast<ListViewFile *>(item)->kateView=kateView;
         MainForm::createErrorCursorsForSourceFile(item);
@@ -5306,11 +5305,11 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
       widgetStack->addWidget(kateView);
       kateView->show();
       widgetStack->raiseWidget(kateView);
-      editUndoAction->setEnabled(!!(kateView->getDoc()->undoCount()));
-      editRedoAction->setEnabled(!!(kateView->getDoc()->redoCount()));
-      editClearAction->setEnabled(kateView->getDoc()->hasSelection());
-      editCutAction->setEnabled(kateView->getDoc()->hasSelection());
-      editCopyAction->setEnabled(kateView->getDoc()->hasSelection());
+      editUndoAction->setEnabled(!!(kateView->document()->undoCount()));
+      editRedoAction->setEnabled(!!(kateView->document()->redoCount()));
+      editClearAction->setEnabled(kateView->document()->hasSelection());
+      editCutAction->setEnabled(kateView->document()->hasSelection());
+      editCopyAction->setEnabled(kateView->document()->hasSelection());
       editPasteAction->setEnabled(!clipboard->text().isNull());
       editSelectAllAction->setEnabled(TRUE);
       editIncreaseIndentAction->setEnabled(TRUE);
@@ -5318,10 +5317,10 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
       findFunctionsAction->setEnabled(category!=txtFilesListItem);
       findOpenFileAtCursorAction->setEnabled(TRUE);
       findFindSymbolDeclarationAction->setEnabled(TRUE);
-      accel->setItemEnabled(0,!!(kateView->getDoc()->undoCount()));
-      accel->setItemEnabled(1,!!(kateView->getDoc()->redoCount()));
-      accel->setItemEnabled(2,kateView->getDoc()->hasSelection());
-      accel->setItemEnabled(3,kateView->getDoc()->hasSelection());
+      accel->setItemEnabled(0,!!(kateView->document()->undoCount()));
+      accel->setItemEnabled(1,!!(kateView->document()->redoCount()));
+      accel->setItemEnabled(2,kateView->document()->hasSelection());
+      accel->setItemEnabled(3,kateView->document()->hasSelection());
       accel->setItemEnabled(4,!clipboard->text().isNull());
       accel->setItemEnabled(5,TRUE);
       accel->setItemEnabled(6,TRUE);
@@ -5699,7 +5698,7 @@ void MainForm::newFile(Q3ListViewItem *parent, QString text, const QPixmap &pixm
   newFile->setText(0,caption);
   newFile->setPixmap(0,pixmap);
   parent->setOpen(TRUE);
-  newFile->kateView=reinterpret_cast<Kate::View *>(createView(tmp,text,category));
+  newFile->kateView=reinterpret_cast<KTextEditor::View *>(createView(tmp,text,category));
   fileTreeClicked(newFile);
   projectIsDirty=TRUE;
   projectNeedsRelink=TRUE;
@@ -5907,8 +5906,8 @@ void MainForm::updateRightStatusLabel()
   } else if (IS_FILE(currentListItem)) {
     CATEGORY_OF(category,currentListItem);
     if (IS_EDITABLE_CATEGORY(category) && CURRENT_VIEW) {
-      unsigned int line, col;
-      CURRENT_VIEW->cursorPositionReal(&line,&col);
+      int line, col;
+      CURRENT_VIEW->cursorPosition().position(line,col);
       rowStatusLabel->show();
       rowStatusLabel->setMaximumWidth(30);
       rowStatusLabel->setText(QString("%1").arg(line+1));
@@ -5917,7 +5916,7 @@ void MainForm::updateRightStatusLabel()
       colStatusLabel->setText(QString("%1").arg(col+1));
       charsStatusLabel->show();
       charsStatusLabel->setMaximumWidth(100);
-      charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+      charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()));
       rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
     } else {
       rowStatusLabel->hide();
@@ -5932,8 +5931,8 @@ void MainForm::updateRightStatusLabel()
 void MainForm::current_view_cursorPositionChanged()
 {
   if (CURRENT_VIEW && !disableViewEvents) {
-    unsigned int line, col;
-    CURRENT_VIEW->cursorPositionReal(&line,&col);
+    int line, col;
+    CURRENT_VIEW->cursorPosition().position(line,col);
     rowStatusLabel->setText(QString("%1").arg(line+1));
     colStatusLabel->setText(QString("%1").arg(col+1));
   }
@@ -5943,7 +5942,7 @@ void MainForm::current_view_textChanged()
 {
   if (disableViewEvents) return;
   if (CURRENT_VIEW) {
-    charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->getDoc()->text().length()));
+    charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()));
     if (IS_FILE(currentListItem)) {
       static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile=TRUE;
       QString fileName=pathInProject(currentListItem);
@@ -5973,21 +5972,21 @@ void MainForm::current_view_textChanged()
 void MainForm::current_view_undoChanged()
 {
   if (CURRENT_VIEW && !disableViewEvents) {
-    editUndoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->undoCount()));
-    editRedoAction->setEnabled(!!(CURRENT_VIEW->getDoc()->redoCount()));
-    accel->setItemEnabled(0,!!(CURRENT_VIEW->getDoc()->undoCount()));
-    accel->setItemEnabled(1,!!(CURRENT_VIEW->getDoc()->redoCount()));
+    editUndoAction->setEnabled(!!(CURRENT_VIEW->document()->undoCount()));
+    editRedoAction->setEnabled(!!(CURRENT_VIEW->document()->redoCount()));
+    accel->setItemEnabled(0,!!(CURRENT_VIEW->document()->undoCount()));
+    accel->setItemEnabled(1,!!(CURRENT_VIEW->document()->redoCount()));
   }
 }
 
 void MainForm::current_view_selectionChanged()
 {
   if (CURRENT_VIEW && !disableViewEvents) {
-    editClearAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
-    editCutAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
-    editCopyAction->setEnabled(CURRENT_VIEW->getDoc()->hasSelection());
-    accel->setItemEnabled(2,CURRENT_VIEW->getDoc()->hasSelection());
-    accel->setItemEnabled(3,CURRENT_VIEW->getDoc()->hasSelection());
+    editClearAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
+    editCutAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
+    editCopyAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
+    accel->setItemEnabled(2,CURRENT_VIEW->document()->hasSelection());
+    accel->setItemEnabled(3,CURRENT_VIEW->document()->hasSelection());
   }
 }
 
@@ -5995,8 +5994,8 @@ void MainForm::current_view_charactersInteractivelyInserted(int line, int col, c
 {
   if (CURRENT_VIEW) {
     if (preferences.autoBlocks && characters=="{"
-        && col==CURRENT_VIEW->getDoc()->lineLength(line)-1) {
-      Kate::Document *doc=CURRENT_VIEW->getDoc();
+        && col==CURRENT_VIEW->document()->lineLength(line)-1) {
+      KTextEditor::Document *doc=CURRENT_VIEW->document();
       CATEGORY_OF(category,currentListItem);
       QString fileText=doc->text();
       // Only for C files.
@@ -6020,7 +6019,7 @@ void MainForm::current_view_charactersInteractivelyInserted(int line, int col, c
     if (IS_FILE(currentListItem)
         && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView
         && characters=="(") {
-      QString fileText=CURRENT_VIEW->getDoc()->text();
+      QString fileText=CURRENT_VIEW->document()->text();
       CATEGORY_OF(category,currentListItem);
       // Completion only operates on C files.
       if (category==cFilesListItem || category==qllFilesListItem
@@ -6033,9 +6032,9 @@ void MainForm::current_view_charactersInteractivelyInserted(int line, int col, c
 
 void MainForm::current_view_newLineHook()
 {
-  unsigned line,col;
-  CURRENT_VIEW->cursorPositionReal(&line,&col);
-  Kate::Document *doc=CURRENT_VIEW->getDoc();
+  int line,col;
+  CURRENT_VIEW->cursorPosition().position(line,col);
+  KTextEditor::Document *doc=CURRENT_VIEW->document();
   if (preferences.autoBlocks && line && doc->textLine(line-1).endsWith("{")) {
     CATEGORY_OF(category,currentListItem);
     QString fileText=doc->text();
@@ -6163,20 +6162,20 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
       fileNameRef=newFileName;
       if (theFile->kateView) {
         // Update the file name for printing.
-        unsigned int line,col,hlMode,modified;
-        modified=theFile->kateView->getDoc()->isModified();
-        QString fileText=theFile->kateView->getDoc()->text();
-        hlMode=theFile->kateView->getDoc()->hlMode();
-        theFile->kateView->cursorPositionReal(&line,&col);
-        theFile->kateView->getDoc()->setModified(FALSE);
-        if (theFile->kateView->getDoc()->openStream("text/plain",newFileName))
-          theFile->kateView->getDoc()->closeStream();
-        SET_TEXT_SAFE(theFile->kateView->getDoc(),fileText);
-        theFile->kateView->getDoc()->clearUndo();
-        theFile->kateView->getDoc()->clearRedo();
-        theFile->kateView->getDoc()->setHlMode(hlMode);
+        int line,col,hlMode,modified;
+        modified=theFile->kateView->document()->isModified();
+        QString fileText=theFile->kateView->document()->text();
+        hlMode=theFile->kateView->document()->hlMode();
+        theFile->kateView->cursorPosition().position(line,col);
+        theFile->kateView->document()->setModified(FALSE);
+        if (theFile->kateView->document()->openStream("text/plain",newFileName))
+          theFile->kateView->document()->closeStream();
+        SET_TEXT_SAFE(theFile->kateView->document(),fileText);
+        theFile->kateView->document()->clearUndo();
+        theFile->kateView->document()->clearRedo();
+        theFile->kateView->document()->setHlMode(hlMode);
         theFile->kateView->setCursorPositionReal(line,col);
-        theFile->kateView->getDoc()->setModified(modified);
+        theFile->kateView->document()->setModified(modified);
       }
       if (IS_EDITABLE_CATEGORY(category) && newFileName[0]=='/')
         KDirWatch::self()->addFile(newFileName);
@@ -6239,10 +6238,10 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
           }
           static_cast<ListViewFile *>(item)->isNew=FALSE;
           if (static_cast<ListViewFile *>(item)->kateView) {
-            SET_TEXT_SAFE(static_cast<ListViewFile *>(item)->kateView->getDoc(),fileText);
-            static_cast<ListViewFile *>(item)->kateView->getDoc()->setModified(FALSE);
-            static_cast<ListViewFile *>(item)->kateView->getDoc()->clearUndo();
-            static_cast<ListViewFile *>(item)->kateView->getDoc()->clearRedo();
+            SET_TEXT_SAFE(static_cast<ListViewFile *>(item)->kateView->document(),fileText);
+            static_cast<ListViewFile *>(item)->kateView->document()->setModified(FALSE);
+            static_cast<ListViewFile *>(item)->kateView->document()->clearUndo();
+            static_cast<ListViewFile *>(item)->kateView->document()->clearRedo();
             updateRightStatusLabel();
           } else {
             static_cast<ListViewFile *>(item)->textBuffer=fileText;
@@ -6296,7 +6295,7 @@ QString MainForm::textForHeader(const QString &fileName)
     if (IS_FILE(item)) {
       ListViewFile *fileItem=static_cast<ListViewFile *>(item);
       if (QFileInfo(fileItem->fileName).fileName()==name)
-        return fileItem->kateView?fileItem->kateView->getDoc()->text()
+        return fileItem->kateView?fileItem->kateView->document()->text()
                                  :fileItem->textBuffer;
     }
   }
