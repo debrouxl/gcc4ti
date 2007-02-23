@@ -61,8 +61,8 @@
 #include <kreplacedialog.h>
 #include <kreplace.h>
 #include <kwin.h>
-#include <kglobal.h>
 #include <kicontheme.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kpushbutton.h>
 #include <kstandardaction.h>
@@ -96,9 +96,6 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define THIS (static_cast<SourceFile *>(this))
 #define CURRENT_VIEW (THIS->kateView)
 #define HL_MODE ((THIS->hlEnabled && *(THIS->hlEnabled))?THIS->hlMode:"None")
-
-#define LOAD_ICON(name) (QIcon(KIconLoader::global()->loadIcon((name),K3Icon::Small),KGlobal::iconLoader()->loadIcon((name),K3Icon::MainToolbar)))
-#define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),K3Icon::Small):qPixmapFromMimeSource((name)))
 
 #define SET_TEXT_SAFE(doc,text) do { \
     disableViewEvents=TRUE; \
@@ -243,30 +240,25 @@ void SourceFileWindow::initBase()
   connect(THIS->accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
-    fileSaveAction->setIconSet(LOAD_ICON("filesave"));
-    fileAddToProjectAction->setIconSet(LOAD_ICON("edit_add"));
-    fileCompileAction->setIconSet(LOAD_ICON("compfile"));
-    filePrintAction->setIconSet(LOAD_ICON("fileprint"));
-    filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
-    editClearAction->setIconSet(LOAD_ICON("editdelete"));
-    editCutAction->setIconSet(LOAD_ICON("editcut"));
-    editCopyAction->setIconSet(LOAD_ICON("editcopy"));
-    editPasteAction->setIconSet(LOAD_ICON("editpaste"));
-    findFindAction->setIconSet(LOAD_ICON("filefind"));
-    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty()) {
-      QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
-      int smallSize=IconSize(K3Icon::Small);
-      fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
-      int largeSize=IconSize(K3Icon::MainToolbar);
-      fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
-      findReplaceAction->setIconSet(fileReplaceIconSet);
-    } else
-      findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
-    editUndoAction->setIconSet(LOAD_ICON("undo"));
-    editRedoAction->setIconSet(LOAD_ICON("redo"));
-    findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
-    editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
-    editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
+    fileSaveAction->setIconSet(KIcon("filesave"));
+    fileAddToProjectAction->setIconSet(KIcon("edit_add"));
+    fileCompileAction->setIconSet(KIcon("compfile"));
+    filePrintAction->setIconSet(KIcon("fileprint"));
+    filePrintQuicklyAction->setIconSet(KIcon("fileprint"));
+    editClearAction->setIconSet(KIcon("editdelete"));
+    editCutAction->setIconSet(KIcon("editcut"));
+    editCopyAction->setIconSet(KIcon("editcopy"));
+    editPasteAction->setIconSet(KIcon("editpaste"));
+    findFindAction->setIconSet(KIcon("filefind"));
+    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
+      findReplaceAction->setIconSet(QIcon(qPixmapFromMimeSource("filereplace.png")));
+    else
+      findReplaceAction->setIconSet(KIcon("stock-find-and-replace"));
+    editUndoAction->setIconSet(KIcon("undo"));
+    editRedoAction->setIconSet(KIcon("redo"));
+    findFunctionsAction->setIconSet(KIcon("view_tree"));
+    editIncreaseIndentAction->setIconSet(KIcon("indent"));
+    editDecreaseIndentAction->setIconSet(KIcon("unindent"));
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->child("findFunctionsAction_action_button","QToolButton",FALSE));
@@ -588,30 +580,25 @@ void SourceFileWindow::applyPreferences()
   // Apply the icon preferences.
   setUsesBigPixmaps(preferences.useSystemIcons);
   if (preferences.useSystemIcons) {
-    fileSaveAction->setIconSet(LOAD_ICON("filesave"));
-    fileAddToProjectAction->setIconSet(LOAD_ICON("edit_add"));
-    fileCompileAction->setIconSet(LOAD_ICON("compfile"));
-    filePrintAction->setIconSet(LOAD_ICON("fileprint"));
-    filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
-    editClearAction->setIconSet(LOAD_ICON("editdelete"));
-    editCutAction->setIconSet(LOAD_ICON("editcut"));
-    editCopyAction->setIconSet(LOAD_ICON("editcopy"));
-    editPasteAction->setIconSet(LOAD_ICON("editpaste"));
-    findFindAction->setIconSet(LOAD_ICON("filefind"));
-    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty()) {
-      QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
-      int smallSize=IconSize(K3Icon::Small);
-      fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
-      int largeSize=IconSize(K3Icon::MainToolbar);
-      fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
-      findReplaceAction->setIconSet(fileReplaceIconSet);
-    } else
-      findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
-    editUndoAction->setIconSet(LOAD_ICON("undo"));
-    editRedoAction->setIconSet(LOAD_ICON("redo"));
-    findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
-    editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
-    editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
+    fileSaveAction->setIconSet(KIcon("filesave"));
+    fileAddToProjectAction->setIconSet(KIcon("edit_add"));
+    fileCompileAction->setIconSet(KIcon("compfile"));
+    filePrintAction->setIconSet(KIcon("fileprint"));
+    filePrintQuicklyAction->setIconSet(KIcon("fileprint"));
+    editClearAction->setIconSet(KIcon("editdelete"));
+    editCutAction->setIconSet(KIcon("editcut"));
+    editCopyAction->setIconSet(KIcon("editcopy"));
+    editPasteAction->setIconSet(KIcon("editpaste"));
+    findFindAction->setIconSet(KIcon("filefind"));
+    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
+      findReplaceAction->setIconSet(QIcon(qPixmapFromMimeSource("filereplace.png")));
+    else
+      findReplaceAction->setIconSet(KIcon("stock-find-and-replace"));
+    editUndoAction->setIconSet(KIcon("undo"));
+    editRedoAction->setIconSet(KIcon("redo"));
+    findFunctionsAction->setIconSet(KIcon("view_tree"));
+    editIncreaseIndentAction->setIconSet(KIcon("indent"));
+    editDecreaseIndentAction->setIconSet(KIcon("unindent"));
   } else {
     fileSaveAction->setIconSet(QIcon(qPixmapFromMimeSource("02")));
     fileAddToProjectAction->setIconSet(QIcon(qPixmapFromMimeSource("08")));

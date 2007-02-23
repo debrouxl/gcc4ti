@@ -85,6 +85,7 @@
 #include <kwin.h>
 #include <kglobal.h>
 #include <kicontheme.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kprocio.h>
 #include <kshell.h>
@@ -165,7 +166,6 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         othFileCount)
 #define CURRENT_VIEW (static_cast<KTextEditor::View *>(widgetStack->visibleWidget()))
 
-#define LOAD_ICON(name) (QIcon(KIconLoader::global()->loadIcon((name),K3Icon::Small),KGlobal::iconLoader()->loadIcon((name),K3Icon::MainToolbar)))
 #define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),K3Icon::Small,K3Icon::SizeSmall):qPixmapFromMimeSource((name)))
 
 #define SET_TEXT_SAFE(doc,text) do { \
@@ -1122,47 +1122,42 @@ void MainForm::init()
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
-    fileNewActionGroup->setIconSet(LOAD_ICON("filenew"));
-    fileMenu->changeItem(fileMenu->idAt(0),LOAD_ICON("filenew"),"&New");
-    fileOpenAction->setIconSet(LOAD_ICON("fileopen"));
-    fileOpenActionGroup->setIconSet(LOAD_ICON("fileopen"));
-    fileSaveAllAction->setIconSet(LOAD_ICON("filesave"));
-    filePrintAction->setIconSet(LOAD_ICON("fileprint"));
-    filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
-    editClearAction->setIconSet(LOAD_ICON("editdelete"));
-    editCutAction->setIconSet(LOAD_ICON("editcut"));
-    editCopyAction->setIconSet(LOAD_ICON("editcopy"));
-    editPasteAction->setIconSet(LOAD_ICON("editpaste"));
-    projectAddFilesAction->setIconSet(LOAD_ICON("edit_add"));
-    projectCompileAction->setIconSet(LOAD_ICON("compfile"));
-    projectMakeAction->setIconSet(LOAD_ICON("make_kdevelop"));
-    projectBuildAction->setIconSet(LOAD_ICON("rebuild"));
-    helpContentsAction->setIconSet(LOAD_ICON("help"));
-    helpDocumentationAction->setIconSet(LOAD_ICON("help"));
-    helpSearchAction->setIconSet(LOAD_ICON("filefind"));
-    findFindAction->setIconSet(LOAD_ICON("filefind"));
-    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty()) {
-      QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
-      int smallSize=IconSize(K3Icon::Small);
-      fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
-      int largeSize=IconSize(K3Icon::MainToolbar);
-      fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
-      findReplaceAction->setIconSet(fileReplaceIconSet);
-    } else
-      findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
-    helpIndexAction->setIconSet(LOAD_ICON("contents"));
-    editUndoAction->setIconSet(LOAD_ICON("undo"));
-    editRedoAction->setIconSet(LOAD_ICON("redo"));
-    findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
-    editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
-    editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
-    projectStopCompilationAction->setIconSet(LOAD_ICON("stop"));
-    projectForceQuitAction->setIconSet(LOAD_ICON("button_cancel"));
-    helpNewsAction->setIconSet(LOAD_ICON("kontact_news"));
-    debugRunAction->setIconSet(LOAD_ICON("player_play"));
-    debugPauseAction->setIconSet(LOAD_ICON("player_pause"));
-    toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
-    debugResetAction->setIconSet(LOAD_ICON("player_stop"));
+    fileNewActionGroup->setIconSet(KIcon("filenew"));
+    fileMenu->changeItem(fileMenu->idAt(0),KIcon("filenew"),"&New");
+    fileOpenAction->setIconSet(KIcon("fileopen"));
+    fileOpenActionGroup->setIconSet(KIcon("fileopen"));
+    fileSaveAllAction->setIconSet(KIcon("filesave"));
+    filePrintAction->setIconSet(KIcon("fileprint"));
+    filePrintQuicklyAction->setIconSet(KIcon("fileprint"));
+    editClearAction->setIconSet(KIcon("editdelete"));
+    editCutAction->setIconSet(KIcon("editcut"));
+    editCopyAction->setIconSet(KIcon("editcopy"));
+    editPasteAction->setIconSet(KIcon("editpaste"));
+    projectAddFilesAction->setIconSet(KIcon("edit_add"));
+    projectCompileAction->setIconSet(KIcon("compfile"));
+    projectMakeAction->setIconSet(KIcon("make_kdevelop"));
+    projectBuildAction->setIconSet(KIcon("rebuild"));
+    helpContentsAction->setIconSet(KIcon("help"));
+    helpDocumentationAction->setIconSet(KIcon("help"));
+    helpSearchAction->setIconSet(KIcon("filefind"));
+    findFindAction->setIconSet(KIcon("filefind"));
+    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
+      findReplaceAction->setIconSet(QIcon(qPixmapFromMimeSource("filereplace.png")));
+    else
+      findReplaceAction->setIconSet(KIcon("stock-find-and-replace"));
+    helpIndexAction->setIconSet(KIcon("contents"));
+    editUndoAction->setIconSet(KIcon("undo"));
+    editRedoAction->setIconSet(KIcon("redo"));
+    findFunctionsAction->setIconSet(KIcon("view_tree"));
+    editIncreaseIndentAction->setIconSet(KIcon("indent"));
+    editDecreaseIndentAction->setIconSet(KIcon("unindent"));
+    projectStopCompilationAction->setIconSet(KIcon("stop"));
+    projectForceQuitAction->setIconSet(KIcon("button_cancel"));
+    helpNewsAction->setIconSet(KIcon("kontact_news"));
+    debugRunAction->setIconSet(KIcon("player_play"));
+    debugPauseAction->setIconSet(KIcon("player_pause"));
+    toolsConfigureAction->setIconSet(KIcon("configure"));
+    debugResetAction->setIconSet(KIcon("player_stop"));
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->child("findFunctionsAction_action_button","QToolButton",FALSE));
@@ -2542,47 +2537,42 @@ void MainForm::filePreferences()
     // Apply the icon preferences.
     setUsesBigPixmaps(preferences.useSystemIcons);
     if (preferences.useSystemIcons) {
-      fileNewActionGroup->setIconSet(LOAD_ICON("filenew"));
-      fileMenu->changeItem(fileMenu->idAt(0),LOAD_ICON("filenew"),"&New");
-      fileOpenAction->setIconSet(LOAD_ICON("fileopen"));
-      fileOpenActionGroup->setIconSet(LOAD_ICON("fileopen"));
-      fileSaveAllAction->setIconSet(LOAD_ICON("filesave"));
-      filePrintAction->setIconSet(LOAD_ICON("fileprint"));
-      filePrintQuicklyAction->setIconSet(LOAD_ICON("fileprint"));
-      editClearAction->setIconSet(LOAD_ICON("editdelete"));
-      editCutAction->setIconSet(LOAD_ICON("editcut"));
-      editCopyAction->setIconSet(LOAD_ICON("editcopy"));
-      editPasteAction->setIconSet(LOAD_ICON("editpaste"));
-      projectAddFilesAction->setIconSet(LOAD_ICON("edit_add"));
-      projectCompileAction->setIconSet(LOAD_ICON("compfile"));
-      projectMakeAction->setIconSet(LOAD_ICON("make_kdevelop"));
-      projectBuildAction->setIconSet(LOAD_ICON("rebuild"));
-      helpContentsAction->setIconSet(LOAD_ICON("help"));
-      helpDocumentationAction->setIconSet(LOAD_ICON("help"));
-      helpSearchAction->setIconSet(LOAD_ICON("filefind"));
-      findFindAction->setIconSet(LOAD_ICON("filefind"));
-      if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty()) {
-        QIcon fileReplaceIconSet(qPixmapFromMimeSource("filereplace.png"));
-        int smallSize=IconSize(K3Icon::Small);
-        fileReplaceIconSet.setIconSize(QIcon::Small,QSize(smallSize,smallSize));
-        int largeSize=IconSize(K3Icon::MainToolbar);
-        fileReplaceIconSet.setIconSize(QIcon::Large,QSize(largeSize,largeSize));
-        findReplaceAction->setIconSet(fileReplaceIconSet);
-      } else
-        findReplaceAction->setIconSet(LOAD_ICON("stock-find-and-replace"));
-      helpIndexAction->setIconSet(LOAD_ICON("contents"));
-      editUndoAction->setIconSet(LOAD_ICON("undo"));
-      editRedoAction->setIconSet(LOAD_ICON("redo"));
-      findFunctionsAction->setIconSet(LOAD_ICON("view_tree"));
-      editIncreaseIndentAction->setIconSet(LOAD_ICON("indent"));
-      editDecreaseIndentAction->setIconSet(LOAD_ICON("unindent"));
-      projectStopCompilationAction->setIconSet(LOAD_ICON("stop"));
-      projectForceQuitAction->setIconSet(LOAD_ICON("button_cancel"));
-      helpNewsAction->setIconSet(LOAD_ICON("kontact_news"));
-      debugRunAction->setIconSet(LOAD_ICON("player_play"));
-      debugPauseAction->setIconSet(LOAD_ICON("player_pause"));
-      toolsConfigureAction->setIconSet(LOAD_ICON("configure"));
-      debugResetAction->setIconSet(LOAD_ICON("player_stop"));
+      fileNewActionGroup->setIconSet(KIcon("filenew"));
+      fileMenu->changeItem(fileMenu->idAt(0),KIcon("filenew"),"&New");
+      fileOpenAction->setIconSet(KIcon("fileopen"));
+      fileOpenActionGroup->setIconSet(KIcon("fileopen"));
+      fileSaveAllAction->setIconSet(KIcon("filesave"));
+      filePrintAction->setIconSet(KIcon("fileprint"));
+      filePrintQuicklyAction->setIconSet(KIcon("fileprint"));
+      editClearAction->setIconSet(KIcon("editdelete"));
+      editCutAction->setIconSet(KIcon("editcut"));
+      editCopyAction->setIconSet(KIcon("editcopy"));
+      editPasteAction->setIconSet(KIcon("editpaste"));
+      projectAddFilesAction->setIconSet(KIcon("edit_add"));
+      projectCompileAction->setIconSet(KIcon("compfile"));
+      projectMakeAction->setIconSet(KIcon("make_kdevelop"));
+      projectBuildAction->setIconSet(KIcon("rebuild"));
+      helpContentsAction->setIconSet(KIcon("help"));
+      helpDocumentationAction->setIconSet(KIcon("help"));
+      helpSearchAction->setIconSet(KIcon("filefind"));
+      findFindAction->setIconSet(KIcon("filefind"));
+      if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
+        findReplaceAction->setIconSet(QIcon(qPixmapFromMimeSource("filereplace.png")));
+      else
+        findReplaceAction->setIconSet(KIcon("stock-find-and-replace"));
+      helpIndexAction->setIconSet(KIcon("contents"));
+      editUndoAction->setIconSet(KIcon("undo"));
+      editRedoAction->setIconSet(KIcon("redo"));
+      findFunctionsAction->setIconSet(KIcon("view_tree"));
+      editIncreaseIndentAction->setIconSet(KIcon("indent"));
+      editDecreaseIndentAction->setIconSet(KIcon("unindent"));
+      projectStopCompilationAction->setIconSet(KIcon("stop"));
+      projectForceQuitAction->setIconSet(KIcon("button_cancel"));
+      helpNewsAction->setIconSet(KIcon("kontact_news"));
+      debugRunAction->setIconSet(KIcon("player_play"));
+      debugPauseAction->setIconSet(KIcon("player_pause"));
+      toolsConfigureAction->setIconSet(KIcon("configure"));
+      debugResetAction->setIconSet(KIcon("player_stop"));
     } else {
       fileNewActionGroup->setIconSet(QIcon(qPixmapFromMimeSource("00")));
       fileMenu->changeItem(fileMenu->idAt(0),QIcon(qPixmapFromMimeSource("00")),"&New");
