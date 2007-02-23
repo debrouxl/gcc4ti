@@ -130,10 +130,10 @@ OBJECTS_DIR = .obj
 KDEPREFIX = $$system(kde4-config --prefix)
 isEmpty(KDEPREFIX):error(KDE 4 kdelibs required.)
 
-exists($$KDEPREFIX/include/kde4) {
+exists($$KDEPREFIX/include/kde4/KDE) {
   INCLUDEPATH += $$KDEPREFIX/include/kde4
-# } else:exists($$KDEPREFIX/include/kde) {
-#  INCLUDEPATH += $$KDEPREFIX/include/kde
+} else:exists($$KDEPREFIX/include/kde/KDE) {
+  INCLUDEPATH += $$KDEPREFIX/include/kde
 } else {
   INCLUDEPATH += $$KDEPREFIX/include
 }
