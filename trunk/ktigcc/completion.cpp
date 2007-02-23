@@ -618,6 +618,7 @@ CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileN
         offset++;
     }
   }
+#if 0 // FIXME: Port completion.
   connect(parent,SIGNAL(completionAborted()),this,SLOT(slotDone()));
   connect(parent,SIGNAL(completionDone()),this,SLOT(slotDone()));
   parent->showCompletionBox(entries,offset);
@@ -630,12 +631,15 @@ CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileN
     if (w->isVisible() && w->testWFlags(Qt::WType_Popup)
         && !std::strcmp(w->className(),"QVBox")) {
       completionPopup=w;
-      break;      
+      break;
     }
   }
   delete list;
   if (completionPopup)
     completionPopup->installEventFilter(this);
+#else
+  slotDone();
+#endif
 }
 
 void CompletionPopup::slotDone()
@@ -683,6 +687,7 @@ ArgHintPopup::ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
   QString identifier=textLine.mid(startColumn,endColumn-startColumn);
   QStringList prototypes=prototypesForIdentifier(identifier,entries);
   if (prototypes.isEmpty()) goto nothingFound;  
+#if 0 // FIXME: Port completion.
   connect(parent,SIGNAL(argHintHidden()),this,SLOT(slotDone()));
   parent->showArgHint(prototypes,"()",",");
   // Unfortunately, Kate doesn't always send the argHintHidden event when it
@@ -694,12 +699,15 @@ ArgHintPopup::ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
     if (w->isVisible() && w->testWFlags(Qt::WType_Popup)
         && !std::strcmp(w->className(),"KateArgHint")) {
       argHintPopup=w;
-      break;      
+      break;
     }
   }
   delete list;
   if (argHintPopup)
     argHintPopup->installEventFilter(this);
+#else
+  slotDone();
+#endif
 }
 
 void ArgHintPopup::slotDone()
