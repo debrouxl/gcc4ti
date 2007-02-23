@@ -92,6 +92,7 @@
 #include <krun.h>
 #include <kpushbutton.h>
 #include <kmacroexpander.h>
+#include <kstandardaction.h>
 #include <dcopclient.h>
 #include <cstdio>
 #include <cstdlib>
@@ -2732,7 +2733,7 @@ void MainForm::findFind_next()
   findCurrentDocument=currentListItem;
   if (CURRENT_VIEW) {
     if (kfinddialog->options()&KFind::FromCursor) {
-      if (CURRENT_VIEW->document()->hasSelection()) {
+      if (CURRENT_VIEW->selection()) {
         if (findBackwards) {
           findCurrentLine=CURRENT_VIEW->document()->selStartLine();
           findCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
@@ -2904,11 +2905,11 @@ void MainForm::findReplace()
       KWin::activateWindow(replaceNextDialog->winId());
     return;
   }
-  KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->document()->hasSelection()
+  KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->selection()
                                         &&CURRENT_VIEW->document()->selStartLine()!=CURRENT_VIEW->document()->selEndLine())?
                                         KFind::SelectedText:0)|KFind::FromCursor,
                                        findHistory,replacementHistory,
-                                       CURRENT_VIEW&&CURRENT_VIEW->document()->hasSelection());
+                                       CURRENT_VIEW&&CURRENT_VIEW->selection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
     return;
   findHistory=kreplacedialog.findHistory();
@@ -2947,7 +2948,7 @@ void MainForm::findReplace()
       }
       kreplace->setOptions(kreplace->options()&~KFind::FromCursor);
     } else if (kreplace->options()&KFind::FromCursor) {
-      if (CURRENT_VIEW->document()->hasSelection()) {
+      if (CURRENT_VIEW->selection()) {
         if (findBackwards) {
           replaceCurrentLine=CURRENT_VIEW->document()->selStartLine();
           replaceCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
@@ -3000,7 +3001,7 @@ void MainForm::findReplace_next(bool firstTime)
     replaceCurrentDocument=currentListItem;
     if (CURRENT_VIEW) {
       // Non-first-time always continues from cursor.
-      if (CURRENT_VIEW->document()->hasSelection()) {
+      if (CURRENT_VIEW->selection()) {
         if (findBackwards) {
           replaceCurrentLine=CURRENT_VIEW->document()->selStartLine();
           replaceCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
@@ -5305,11 +5306,11 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
       widgetStack->addWidget(kateView);
       kateView->show();
       widgetStack->raiseWidget(kateView);
-      editUndoAction->setEnabled(!!(kateView->document()->undoCount()));
-      editRedoAction->setEnabled(!!(kateView->document()->redoCount()));
-      editClearAction->setEnabled(kateView->document()->hasSelection());
-      editCutAction->setEnabled(kateView->document()->hasSelection());
-      editCopyAction->setEnabled(kateView->document()->hasSelection());
+      editUndoAction->setEnabled(kateView->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+      editRedoAction->setEnabled(kateView->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+      editClearAction->setEnabled(kateView->selection());
+      editCutAction->setEnabled(kateView->selection());
+      editCopyAction->setEnabled(kateView->selection());
       editPasteAction->setEnabled(!clipboard->text().isNull());
       editSelectAllAction->setEnabled(TRUE);
       editIncreaseIndentAction->setEnabled(TRUE);
@@ -5317,10 +5318,10 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
       findFunctionsAction->setEnabled(category!=txtFilesListItem);
       findOpenFileAtCursorAction->setEnabled(TRUE);
       findFindSymbolDeclarationAction->setEnabled(TRUE);
-      accel->setItemEnabled(0,!!(kateView->document()->undoCount()));
-      accel->setItemEnabled(1,!!(kateView->document()->redoCount()));
-      accel->setItemEnabled(2,kateView->document()->hasSelection());
-      accel->setItemEnabled(3,kateView->document()->hasSelection());
+      accel->setItemEnabled(0,kateView->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+      accel->setItemEnabled(1,kateView->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+      accel->setItemEnabled(2,kateView->selection());
+      accel->setItemEnabled(3,kateView->selection());
       accel->setItemEnabled(4,!clipboard->text().isNull());
       accel->setItemEnabled(5,TRUE);
       accel->setItemEnabled(6,TRUE);
@@ -5972,21 +5973,21 @@ void MainForm::current_view_textChanged()
 void MainForm::current_view_undoChanged()
 {
   if (CURRENT_VIEW && !disableViewEvents) {
-    editUndoAction->setEnabled(!!(CURRENT_VIEW->document()->undoCount()));
-    editRedoAction->setEnabled(!!(CURRENT_VIEW->document()->redoCount()));
-    accel->setItemEnabled(0,!!(CURRENT_VIEW->document()->undoCount()));
-    accel->setItemEnabled(1,!!(CURRENT_VIEW->document()->redoCount()));
+    editUndoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+    editRedoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+    accel->setItemEnabled(0,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+    accel->setItemEnabled(1,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
   }
 }
 
 void MainForm::current_view_selectionChanged()
 {
   if (CURRENT_VIEW && !disableViewEvents) {
-    editClearAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
-    editCutAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
-    editCopyAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
-    accel->setItemEnabled(2,CURRENT_VIEW->document()->hasSelection());
-    accel->setItemEnabled(3,CURRENT_VIEW->document()->hasSelection());
+    editClearAction->setEnabled(CURRENT_VIEW->selection());
+    editCutAction->setEnabled(CURRENT_VIEW->selection());
+    editCopyAction->setEnabled(CURRENT_VIEW->selection());
+    accel->setItemEnabled(2,CURRENT_VIEW->selection());
+    accel->setItemEnabled(3,CURRENT_VIEW->selection());
   }
 }
 

@@ -65,6 +65,7 @@
 #include <kicontheme.h>
 #include <kiconloader.h>
 #include <kpushbutton.h>
+#include <kstandardaction.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -210,11 +211,11 @@ void SourceFileWindow::initBase()
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
   centralWidget()->layout()->add(CURRENT_VIEW);
   CURRENT_VIEW->show();
-  editUndoAction->setEnabled(!!(CURRENT_VIEW->document()->undoCount()));
-  editRedoAction->setEnabled(!!(CURRENT_VIEW->document()->redoCount()));
-  editClearAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
-  editCutAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
-  editCopyAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
+  editUndoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+  editRedoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+  editClearAction->setEnabled(CURRENT_VIEW->selection());
+  editCutAction->setEnabled(CURRENT_VIEW->selection());
+  editCopyAction->setEnabled(CURRENT_VIEW->selection());
   editPasteAction->setEnabled(!clipboard->text().isNull());
   THIS->accel=new Q3Accel(this);
   THIS->accel->insertItem(Qt::ALT+Qt::Key_Backspace,0);
@@ -228,10 +229,10 @@ void SourceFileWindow::initBase()
   THIS->accel->insertItem(Qt::CTRL+Qt::Key_J,8);
   THIS->accel->insertItem(Qt::CTRL+Qt::Key_Space,9);
   THIS->accel->insertItem(Qt::CTRL+Qt::Key_M,10);
-  THIS->accel->setItemEnabled(0,!!(CURRENT_VIEW->document()->undoCount()));
-  THIS->accel->setItemEnabled(1,!!(CURRENT_VIEW->document()->redoCount()));
-  THIS->accel->setItemEnabled(2,CURRENT_VIEW->document()->hasSelection());
-  THIS->accel->setItemEnabled(3,CURRENT_VIEW->document()->hasSelection());
+  THIS->accel->setItemEnabled(0,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+  THIS->accel->setItemEnabled(1,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+  THIS->accel->setItemEnabled(2,CURRENT_VIEW->selection());
+  THIS->accel->setItemEnabled(3,CURRENT_VIEW->selection());
   THIS->accel->setItemEnabled(4,!clipboard->text().isNull());
   THIS->accel->setItemEnabled(5,TRUE);
   THIS->accel->setItemEnabled(6,TRUE);
@@ -713,7 +714,7 @@ void SourceFileWindow::findFind_next()
   connect(kfind,SIGNAL(highlight(const QString &,int,int)),
           this,SLOT(findFind_highlight(const QString &,int,int)));
   if (THIS->kfinddialog->options()&KFind::FromCursor) {
-    if (CURRENT_VIEW->document()->hasSelection()) {
+    if (CURRENT_VIEW->selection()) {
       if (findBackwards) {
         THIS->findCurrentLine=CURRENT_VIEW->document()->selStartLine();
         findCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
@@ -793,11 +794,11 @@ void SourceFileWindow::findReplace()
       KWin::activateWindow(replaceNextDialog->winId());
     return;
   }
-  KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->document()->hasSelection()
+  KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->selection()
                                         &&CURRENT_VIEW->document()->selStartLine()!=CURRENT_VIEW->document()->selEndLine())?
                                         KFind::SelectedText:0)|KFind::FromCursor,
                                        findHistory,replacementHistory,
-                                       CURRENT_VIEW&&CURRENT_VIEW->document()->hasSelection());
+                                       CURRENT_VIEW&&CURRENT_VIEW->selection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
     return;
   findHistory=kreplacedialog.findHistory();
@@ -833,7 +834,7 @@ void SourceFileWindow::findReplace()
       }
       THIS->kreplace->setOptions(THIS->kreplace->options()&~KFind::FromCursor);
     } else if (THIS->kreplace->options()&KFind::FromCursor) {
-      if (CURRENT_VIEW->document()->hasSelection()) {
+      if (CURRENT_VIEW->selection()) {
         if (findBackwards) {
           THIS->kreplace->replaceCurrentLine=CURRENT_VIEW->document()->selStartLine();
           replaceCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
@@ -879,7 +880,7 @@ void SourceFileWindow::findReplace_next(bool firstTime)
   if (!firstTime) {
     int replaceCurrentCol;
     // Non-first-time always continues from cursor.
-    if (CURRENT_VIEW->document()->hasSelection()) {
+    if (CURRENT_VIEW->selection()) {
       if (findBackwards) {
         THIS->kreplace->replaceCurrentLine=CURRENT_VIEW->document()->selStartLine();
         replaceCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
@@ -1190,21 +1191,21 @@ void SourceFileWindow::current_view_textChanged()
 void SourceFileWindow::current_view_undoChanged()
 {
   if (CURRENT_VIEW && !disableViewEvents) {
-    editUndoAction->setEnabled(!!(CURRENT_VIEW->document()->undoCount()));
-    editRedoAction->setEnabled(!!(CURRENT_VIEW->document()->redoCount()));
-    THIS->accel->setItemEnabled(0,!!(CURRENT_VIEW->document()->undoCount()));
-    THIS->accel->setItemEnabled(1,!!(CURRENT_VIEW->document()->redoCount()));
+    editUndoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+    editRedoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+    THIS->accel->setItemEnabled(0,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+    THIS->accel->setItemEnabled(1,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
   }
 }
 
 void SourceFileWindow::current_view_selectionChanged()
 {
   if (CURRENT_VIEW && !disableViewEvents) {
-    editClearAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
-    editCutAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
-    editCopyAction->setEnabled(CURRENT_VIEW->document()->hasSelection());
-    THIS->accel->setItemEnabled(2,CURRENT_VIEW->document()->hasSelection());
-    THIS->accel->setItemEnabled(3,CURRENT_VIEW->document()->hasSelection());
+    editClearAction->setEnabled(CURRENT_VIEW->selection());
+    editCutAction->setEnabled(CURRENT_VIEW->selection());
+    editCopyAction->setEnabled(CURRENT_VIEW->selection());
+    THIS->accel->setItemEnabled(2,CURRENT_VIEW->selection());
+    THIS->accel->setItemEnabled(3,CURRENT_VIEW->selection());
   }
 }
 
