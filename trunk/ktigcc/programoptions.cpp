@@ -29,9 +29,9 @@
 #include <qeventloop.h>
 #include <qtooltip.h>
 #include <QMouseEvent>
+#include <QAssistantClient>
 #include "ktigcc.h"
 #include "tpr.h"
-#include "assistant.h"
 
 void ProgramOptions::ImportSettings()
 {
@@ -304,8 +304,10 @@ void ProgramOptions::mousePressEvent( QMouseEvent * e )
     QString docFile=lookup_doc_keyword(toolTip);
     if (docFile.isEmpty()) return;
     force_qt_assistant_page(1);
-    assistant->openAssistant(
-      QString(tigcc_base)+QString("/doc/html/")+docFile);
+    // wait for Qt Assistant to actually open
+    while (!assistant->isOpen())
+      QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
+    assistant->showPage(QString(tigcc_base)+QString("/doc/html/")+docFile);
   }
 }
 

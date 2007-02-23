@@ -45,6 +45,7 @@
 #include <Q3PopupMenu>
 #include <QEvent>
 #include <QCloseEvent>
+#include <QAssistantClient>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <kate/document.h>
@@ -75,7 +76,6 @@
 #include "srcfile.h"
 #include "functions.h"
 #include "completion.h"
-#include "assistant.h"
 
 using std::puts;
 using std::exit;
@@ -353,8 +353,10 @@ void SourceFileWindow::accel_activated(int index)
         if (wordUnderCursor.isEmpty()) return;
         QString docFile=lookup_doc_keyword(wordUnderCursor);
         if (docFile.isEmpty()) return;
-        assistant->openAssistant(
-          QString(tigcc_base)+QString("/doc/html/")+docFile);
+        // wait for Qt Assistant to actually open
+        while (!assistant->isOpen())
+          QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
+        assistant->showPage(QString(tigcc_base)+QString("/doc/html/")+docFile);
         break;
       }
       case 6:

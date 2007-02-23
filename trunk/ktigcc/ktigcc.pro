@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on debug dbus
+CONFIG	+= qt warn_on debug dbus assistant
 
 QT += xml qt3support
 
@@ -17,7 +17,6 @@ HEADERS	+= tpr.h \
 	parsing.h \
 	colorlistitem.h \
 	completion.h \
-	assistant.h \
 	srcfilewin.h \
 	projectoptions.h \
 	programoptions.h \
@@ -41,7 +40,6 @@ SOURCES	+= ktigcc.cpp \
 	callbacks.cpp \
 	parsing.cpp \
 	completion.cpp \
-	assistant.cpp \
 	srcfilewin.cpp \
 	projectoptions.cpp \
 	programoptions.cpp \

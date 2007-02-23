@@ -64,6 +64,7 @@
 #include <QPixmap>
 #include <QMouseEvent>
 #include <QCloseEvent>
+#include <QAssistantClient>
 #include <kapplication.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
@@ -116,7 +117,6 @@
 #include "toolsdlg.h"
 #include "newsdlg.h"
 #include "completion.h"
-#include "assistant.h"
 
 using std::puts;
 using std::exit;
@@ -410,7 +410,7 @@ static Q3DockWindow *errorListDock;
 static ErrorList *errorList;
 static unsigned errorCountTotal=0,errorCountErrors=0,errorCountWarnings=0;
 static QString programOutput;
-AssistantClient *assistant;
+QAssistantClient *assistant;
 static unsigned fileCount=0, hFileCount=0, cFileCount=0, sFileCount=0, asmFileCount=0, qllFileCount=0, oFileCount=0, aFileCount=0, txtFileCount=0, othFileCount=0;
 tprSettings settings;
 tprLibOpts libopts;
@@ -1063,8 +1063,10 @@ void MainForm::init()
   othFilesListItem=folderListItem;
   folderListItem->setText(0,"Other Files");
   khelpmenu=new KHelpMenu(this,pabout);
-  assistant=new AssistantClient(this,
-    QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
+  assistant=new QAssistantClient("",this);
+  QStringList args(QString("-profile"));
+  args.append(QString("%1/doc/html/qt-assistant.adp").arg(tigcc_base));
+  assistant->setArguments(args);
   lastDirectory=QString("%1/tigcc-projects").arg(QDir::homePath());
   if (!QDir(lastDirectory).exists() && !QDir().mkdir(lastDirectory))
     lastDirectory=QString("%1/projects").arg(tigcc_base);
@@ -1308,8 +1310,10 @@ void MainForm::accel_activated(int index)
         if (wordUnderCursor.isEmpty()) return;
         QString docFile=lookup_doc_keyword(wordUnderCursor);
         if (docFile.isEmpty()) return;
-        assistant->openAssistant(
-          QString(tigcc_base)+QString("/doc/html/")+docFile);
+        // wait for Qt Assistant to actually open
+        while (!assistant->isOpen())
+          QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
+        assistant->showPage(QString(tigcc_base)+QString("/doc/html/")+docFile);
         break;
       }
       case 6:
