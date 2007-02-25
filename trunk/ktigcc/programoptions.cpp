@@ -27,7 +27,6 @@
 #include <qapplication.h>
 #include <qevent.h>
 #include <qeventloop.h>
-#include <qtooltip.h>
 #include <QMouseEvent>
 #include <QAssistantClient>
 #include "ktigcc.h"
@@ -299,7 +298,7 @@ void ProgramOptions::mousePressEvent( QMouseEvent * e )
   if (e->button()==Qt::RightButton) {
     QWidget *widgetUnderCursor=childAt(e->pos());
     if (!widgetUnderCursor) return;
-    QString toolTip=QToolTip::textFor(widgetUnderCursor, widgetUnderCursor->mapFromParent(e->pos()));
+    QString toolTip=widgetUnderCursor->toolTip();
     if (toolTip.isEmpty()) return;
     QString docFile=lookup_doc_keyword(toolTip);
     if (docFile.isEmpty()) return;
