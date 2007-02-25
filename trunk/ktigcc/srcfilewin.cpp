@@ -125,13 +125,13 @@ class KReplaceWithSelectionS : public KReplace {
       m_selEndLine=selEndLine;
       m_selEndCol=selEndCol;
     }
-    unsigned replaceCurrentLine;
+    int replaceCurrentLine;
     void invalidateSelection() {m_haveSelection=FALSE;}
     bool haveSelection() {return m_haveSelection;}
-    unsigned selStartLine() {return m_selStartLine;}
-    unsigned selStartCol() {return m_selStartCol;}
-    unsigned selEndLine() {return m_selEndLine;}
-    unsigned selEndCol() {return m_selEndCol;}
+    int selStartLine() {return m_selStartLine;}
+    int selStartCol() {return m_selStartCol;}
+    int selEndLine() {return m_selEndLine;}
+    int selEndCol() {return m_selEndCol;}
     // Override to ask for restarting when replacing in a selection.
     bool shouldRestart(bool forceAsking=FALSE, bool showNumMatches=TRUE)
     {
@@ -143,17 +143,17 @@ class KReplaceWithSelectionS : public KReplace {
       if (!KReplace::validateMatch(text,index,matchedlength)) return FALSE;
       if (!m_haveSelection) return TRUE;
       if (replaceCurrentLine==m_selStartLine && replaceCurrentLine==m_selEndLine)
-        return ((unsigned)index>=m_selStartCol)&&((unsigned)index+(unsigned)matchedlength<=m_selEndCol);
+        return (index>=m_selStartCol)&&(index+matchedlength<=m_selEndCol);
       else if (replaceCurrentLine==m_selStartLine)
-        return ((unsigned)index>=m_selStartCol);
+        return (index>=m_selStartCol);
       else if (replaceCurrentLine==m_selEndLine)
-        return ((unsigned)index+(unsigned)matchedlength<=m_selEndCol);
+        return (index+matchedlength<=m_selEndCol);
       else
         return (replaceCurrentLine>=m_selStartLine&&replaceCurrentLine<=m_selEndLine);
     }
   private:
     bool m_haveSelection;
-    unsigned m_selStartLine, m_selStartCol, m_selEndLine, m_selEndCol;
+    int m_selStartLine, m_selStartCol, m_selEndLine, m_selEndCol;
 };
 
 void SourceFileWindow::initBase()
@@ -743,8 +743,7 @@ void SourceFileWindow::findFind_next()
         findCurrentCol=CURRENT_VIEW->document()->selEndCol();
       }
     } else {
-      THIS->findCurrentLine=CURRENT_VIEW->cursorLine();
-      findCurrentCol=CURRENT_VIEW->cursorColumnReal();
+      CURRENT_VIEW->cursorPosition().position(THIS->findCurrentLine,findCurrentCol);
     }
   } else {
     THIS->findCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
@@ -756,7 +755,7 @@ void SourceFileWindow::findFind_next()
   // Now find the next occurrence.
   KFind::Result result;
   KTextEditor::View *currView=CURRENT_VIEW;
-  unsigned currNumLines=CURRENT_VIEW->document()->lines();
+  int currNumLines=CURRENT_VIEW->document()->lines();
   do {
     if (kfind->needData()) {
       if (findBackwards?!THIS->findCurrentLine:(THIS->findCurrentLine>=currNumLines)) {
@@ -863,8 +862,7 @@ void SourceFileWindow::findReplace()
           replaceCurrentCol=CURRENT_VIEW->document()->selEndCol();
         }
       } else {
-        THIS->kreplace->replaceCurrentLine=CURRENT_VIEW->cursorLine();
-        replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
+        CURRENT_VIEW->cursorPosition().position(THIS->kreplace->replaceCurrentLine,replaceCurrentCol);
         // Don't prompt for restarting if we actually searched the entire document.
         if (findBackwards?(THIS->kreplace->replaceCurrentLine==(CURRENT_VIEW->document()->lines()-1)
                            && replaceCurrentCol==(CURRENT_VIEW->document()->lineLength(THIS->kreplace->replaceCurrentLine)))
@@ -909,8 +907,8 @@ void SourceFileWindow::findReplace_next(bool firstTime)
         replaceCurrentCol=CURRENT_VIEW->document()->selEndCol();
       }
     } else {
-      THIS->kreplace->replaceCurrentLine=CURRENT_VIEW->cursorLine();
-      replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
+      CURRENT_VIEW->cursorPosition().position(THIS->kreplace->replaceCurrentLine,
+                                              replaceCurrentCol);
     }
     THIS->kreplace->setData(CURRENT_VIEW->document()->line(THIS->kreplace->replaceCurrentLine),replaceCurrentCol);
   }
@@ -919,7 +917,7 @@ void SourceFileWindow::findReplace_next(bool firstTime)
   // Now find the next occurrence.
   KFind::Result result;
   KTextEditor::View *currView=CURRENT_VIEW;
-  unsigned currNumLines=0;
+  int currNumLines=0;
   if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->lines();
   do {
     if (THIS->kreplace->needData()) {
@@ -962,7 +960,7 @@ void SourceFileWindow::findReplace_replace(const QString &text, int replacementI
   bool haveSelection=THIS->kreplace->haveSelection();
   // The initializations are redundant, but g++ doesn't understand this, and the
   // self-initialization trick doesn't work either (-Wno-init-self is ignored).
-  unsigned selStartLine=0, selStartCol=0, selEndLine=0, selEndCol=0;
+  int selStartLine=0, selStartCol=0, selEndLine=0, selEndCol=0;
   if (haveSelection) {
     selStartLine=THIS->kreplace->selStartLine();
     selStartCol=THIS->kreplace->selStartCol();
@@ -973,8 +971,10 @@ void SourceFileWindow::findReplace_replace(const QString &text, int replacementI
   CURRENT_VIEW->document()->insertText(KTextEditor::Cursor(THIS->kreplace->replaceCurrentLine,replacementIndex),
                                        text.mid(replacementIndex,replacedLength));
   // We can't put the cursor back now because this breaks editBegin/editEnd.
-  bool updateCursor=(CURRENT_VIEW->cursorLine()==THIS->kreplace->replaceCurrentLine
-                     && CURRENT_VIEW->cursorColumnReal()==(unsigned)replacementIndex+(unsigned)replacedLength);
+  int line,col;
+  CURRENT_VIEW->cursorPosition().position(line,col);
+  bool updateCursor=(line==THIS->kreplace->replaceCurrentLine
+                     && col==replacementIndex+replacedLength);
   CURRENT_VIEW->document()->removeText(KTextEditor::Range(THIS->kreplace->replaceCurrentLine,replacementIndex+replacedLength,
                                        THIS->kreplace->replaceCurrentLine,replacementIndex+replacedLength+matchedLength));
   CURRENT_VIEW->document()->endEditing();
@@ -1050,8 +1050,8 @@ void SourceFileWindow::findFunctions_prototypeButton_clicked()
 {
   int index=THIS->functionDialog->functionListBox->currentItem();
   if (index>=0 && THIS->sourceFileFunctions[index].prototypeLine>=0) {
-    CURRENT_VIEW->setCursorPositionReal(
-      THIS->sourceFileFunctions[index].prototypeLine,0);
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(
+      THIS->sourceFileFunctions[index].prototypeLine,0));
     THIS->functionDialog->accept();
   }
 }
@@ -1060,8 +1060,8 @@ void SourceFileWindow::findFunctions_implementationButton_clicked()
 {
   int index=THIS->functionDialog->functionListBox->currentItem();
   if (index>=0 && THIS->sourceFileFunctions[index].implementationLine>=0) {
-    CURRENT_VIEW->setCursorPositionReal(
-      THIS->sourceFileFunctions[index].implementationLine,0);
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(
+      THIS->sourceFileFunctions[index].implementationLine,0));
     THIS->functionDialog->accept();
   }
 }
@@ -1100,19 +1100,19 @@ void SourceFileWindow::findOpenFileAtCursor()
   int line,col,i;
   CURRENT_VIEW->cursorPosition().position(line,col);
   QString textLine=CURRENT_VIEW->document()->line(line);
-  unsigned l=textLine.length();
+  int l=textLine.length();
   bool quotesInLine=textLine.contains("\"");
   QString fileName;
   for (i=col;i>=0;i--) {
     QChar c=textLine[i];
-    if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
+    if (!((quotesInLine && c==' ') || (c>='A' && c<='Z') || (c>='a' && c<='z')
           || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
       break;
     fileName.prepend(c);
   }
   for (i=col+1;i<l;i++) {
     QChar c=textLine[i];
-    if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
+    if (!((quotesInLine && c==' ') || (c>='A' && c<='Z') || (c>='a' && c<='z')
           || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
       break;
     fileName.append(c);

@@ -72,7 +72,7 @@ struct SourceFile : public SourceFileWindow {
   Q3PopupMenu *te_popup;
   Q3Accel *accel;
   KFindDialog *kfinddialog;
-  unsigned findCurrentLine;
+  int findCurrentLine;
   KDirWatch *dirWatch;
   Q3PopupMenu *findFunctionsPopup;
   SourceFileFunctions sourceFileFunctions;

@@ -184,7 +184,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 
 static Q3ListViewItem *currentListItem;
 static Q3ListViewItem *replaceCurrentDocument;
-static unsigned replaceCurrentLine;
+static int replaceCurrentLine;
 static bool compiling;
 class KReplaceWithSelection : public KReplace {
   public:
@@ -209,10 +209,10 @@ class KReplaceWithSelection : public KReplace {
         m_haveSelection=FALSE;
       return m_haveSelection;
     }
-    unsigned selStartLine() {return m_selStartLine;}
-    unsigned selStartCol() {return m_selStartCol;}
-    unsigned selEndLine() {return m_selEndLine;}
-    unsigned selEndCol() {return m_selEndCol;}
+    int selStartLine() {return m_selStartLine;}
+    int selStartCol() {return m_selStartCol;}
+    int selEndLine() {return m_selEndLine;}
+    int selEndCol() {return m_selEndCol;}
     // Override to ask for restarting when replacing in a selection.
     bool shouldRestart(bool forceAsking=FALSE, bool showNumMatches=TRUE)
     {
@@ -229,17 +229,17 @@ class KReplaceWithSelection : public KReplace {
         m_haveSelection=FALSE;
       if (!m_haveSelection) return TRUE;
       if (replaceCurrentLine==m_selStartLine && replaceCurrentLine==m_selEndLine)
-        return ((unsigned)index>=m_selStartCol)&&((unsigned)index+(unsigned)matchedlength<=m_selEndCol);
+        return (index>=m_selStartCol)&&(index+matchedlength<=m_selEndCol);
       else if (replaceCurrentLine==m_selStartLine)
-        return ((unsigned)index>=m_selStartCol);
+        return (index>=m_selStartCol);
       else if (replaceCurrentLine==m_selEndLine)
-        return ((unsigned)index+(unsigned)matchedlength<=m_selEndCol);
+        return (index+matchedlength<=m_selEndCol);
       else
         return (replaceCurrentLine>=m_selStartLine&&replaceCurrentLine<=m_selEndLine);
     }
   private:
     bool m_haveSelection;
-    unsigned m_selStartLine, m_selStartCol, m_selEndLine, m_selEndCol;
+    int m_selStartLine, m_selStartCol, m_selEndLine, m_selEndCol;
 };
 static KReplaceWithSelection *kreplace;
 
@@ -426,7 +426,7 @@ static Q3Accel *accel, *fileTreeAccel;
 static KFindDialog *kfinddialog;
 QStringList findHistory, replacementHistory;
 static Q3ListViewItem *findCurrentDocument;
-static unsigned findCurrentLine;
+static int findCurrentLine;
 Q3PtrList<SourceFile> sourceFiles;
 static Q3PopupMenu *findFunctionsPopup;
 bool have_usb;
@@ -919,10 +919,11 @@ void MainForm::deleteOverwrittenErrorsIn(void *srcFile)
   while ((errorItem=static_cast<ErrorListItem *>(lvit.current()))) {
     ++lvit;
     if (errorItem->srcFile==sourceFile && errorItem->cursor) {
-      unsigned line,col;
+      int line,col;
       errorItem->cursor->position(&line,&col);
-      if (sourceFile->kateView->cursorLine()==line
-          && sourceFile->kateView->cursorColumnReal()==col)
+      int curline,curcol;
+      sourceFile->kateView->cursorPosition().position(curline,curcol);
+      if (curline==line && curcol==col)
         delete errorItem;
     }
   }
@@ -2773,8 +2774,7 @@ void MainForm::findFind_next()
           findCurrentCol=CURRENT_VIEW->document()->selEndCol();
         }
       } else {
-        findCurrentLine=CURRENT_VIEW->cursorLine();
-        findCurrentCol=CURRENT_VIEW->cursorColumnReal();
+        CURRENT_VIEW->cursorPosition().position(findCurrentLine,findCurrentCol);
       }
     } else {
       findCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
@@ -2790,7 +2790,7 @@ void MainForm::findFind_next()
   // We never have a currBuffer here, the current list item is always either
   // non-editable or instantiated.
   QStringList currBuffer;
-  unsigned currNumLines=0;
+  int currNumLines=0;
   if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->lines();
   do {
     if (kfind->needData()) {
@@ -2988,8 +2988,7 @@ void MainForm::findReplace()
           replaceCurrentCol=CURRENT_VIEW->document()->selEndCol();
         }
       } else {
-        replaceCurrentLine=CURRENT_VIEW->cursorLine();
-        replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
+        CURRENT_VIEW->cursorPosition().position(replaceCurrentLine,replaceCurrentCol);
         // Don't prompt for restarting if we actually searched the entire document.
         if (findBackwards?(replaceCurrentLine==(CURRENT_VIEW->document()->lines()-1)
                            && replaceCurrentCol==(CURRENT_VIEW->document()->lineLength(replaceCurrentLine)))
@@ -3041,8 +3040,7 @@ void MainForm::findReplace_next(bool firstTime)
           replaceCurrentCol=CURRENT_VIEW->document()->selEndCol();
         }
       } else {
-        replaceCurrentLine=CURRENT_VIEW->cursorLine();
-        replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
+        CURRENT_VIEW->cursorPosition().position(replaceCurrentLine,replaceCurrentCol);
       }
       kreplace->setData(CURRENT_VIEW->document()->line(replaceCurrentLine),replaceCurrentCol);
     } else replaceCurrentLine=0;
@@ -3055,7 +3053,7 @@ void MainForm::findReplace_next(bool firstTime)
   // We never have a currBuffer here, the current list item is always either
   // non-editable or instantiated.
   QStringList currBuffer;
-  unsigned currNumLines=0;
+  int currNumLines=0;
   if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->lines();
   do {
     if (kreplace->needData()) {
@@ -3217,7 +3215,7 @@ void MainForm::findReplace_replace(const QString &text, int replacementIndex, in
   bool haveSelection=kreplace->haveSelection();
   // The initializations are redundant, but g++ doesn't understand this, and the
   // self-initialization trick doesn't work either (-Wno-init-self is ignored).
-  unsigned selStartLine=0, selStartCol=0, selEndLine=0, selEndCol=0;
+  int selStartLine=0, selStartCol=0, selEndLine=0, selEndCol=0;
   if (haveSelection) {
     selStartLine=kreplace->selStartLine();
     selStartCol=kreplace->selStartCol();
@@ -3228,8 +3226,9 @@ void MainForm::findReplace_replace(const QString &text, int replacementIndex, in
   CURRENT_VIEW->document()->insertText(KTextEditor::Cursor(replaceCurrentLine,replacementIndex),
                                        text.mid(replacementIndex,replacedLength));
   // We can't put the cursor back now because this breaks editBegin/editEnd.
-  bool updateCursor=(CURRENT_VIEW->cursorLine()==replaceCurrentLine
-                     && CURRENT_VIEW->cursorColumnReal()==(unsigned)replacementIndex+(unsigned)replacedLength);
+  int line,col;
+  CURRENT_VIEW->cursorPosition().position(line,col);
+  bool updateCursor=(line==replaceCurrentLine && col==replacementIndex+replacedLength);
   CURRENT_VIEW->document()->removeText(KTextEditor::Range(replaceCurrentLine,replacementIndex+replacedLength,
                                        replaceCurrentLine,replacementIndex+replacedLength+matchedLength));
   CURRENT_VIEW->document()->endEditing();
@@ -3311,8 +3310,8 @@ void MainForm::findFunctions_prototypeButton_clicked()
 {
   int index=functionDialog->functionListBox->currentItem();
   if (index>=0 && sourceFileFunctions[index].prototypeLine>=0) {
-    CURRENT_VIEW->setCursorPositionReal(
-      sourceFileFunctions[index].prototypeLine,0);
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(
+      sourceFileFunctions[index].prototypeLine,0));
     functionDialog->accept();
   }
 }
@@ -3321,8 +3320,8 @@ void MainForm::findFunctions_implementationButton_clicked()
 {
   int index=functionDialog->functionListBox->currentItem();
   if (index>=0 && sourceFileFunctions[index].implementationLine>=0) {
-    CURRENT_VIEW->setCursorPositionReal(
-      sourceFileFunctions[index].implementationLine,0);
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(
+      sourceFileFunctions[index].implementationLine,0));
     functionDialog->accept();
   }
 }
@@ -3407,19 +3406,19 @@ void MainForm::findOpenFileAtCursor()
     int line,col,i;
     CURRENT_VIEW->cursorPosition().position(line,col);
     QString textLine=CURRENT_VIEW->document()->line(line);
-    unsigned l=textLine.length();
+    int l=textLine.length();
     bool quotesInLine=textLine.contains("\"");
     QString fileName;
     for (i=col;i>=0;i--) {
       QChar c=textLine[i];
-      if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
+      if (!((quotesInLine && c==' ') || (c>='A' && c<='Z') || (c>='a' && c<='z')
             || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
         break;
       fileName.prepend(c);
     }
     for (i=col+1;i<l;i++) {
       QChar c=textLine[i];
-      if (!((quotesInLine && c==' ') || (c>='A' && c<="Z") || (c>='a' && c<='z')
+      if (!((quotesInLine && c==' ') || (c>='A' && c<='Z') || (c>='a' && c<='z')
             || (c>='0' && c<='9') || QString("_-./\\:").contains(c)))
         break;
       fileName.append(c);
@@ -6001,10 +6000,11 @@ void MainForm::current_view_textChanged()
       while ((errorItem=static_cast<ErrorListItem *>(lvit.current()))) {
         ++lvit;
         if (errorItem->lvFile==lvFile && errorItem->cursor) {
-          unsigned line,col;
+          int line,col;
           errorItem->cursor->position(&line,&col);
-          if (lvFile->kateView->cursorLine()==line
-              && lvFile->kateView->cursorColumnReal()==col)
+          int curline,curcol;
+          lvFile->kateView->cursorPosition().position(curline,curcol);
+          if (curline==line && curcol==col)
             delete errorItem;
         }
       }
