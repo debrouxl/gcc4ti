@@ -2463,13 +2463,13 @@ bool MainForm::fileSaveAs()
 
 void MainForm::filePrint()
 {
-  if (CURRENT_VIEW) CURRENT_VIEW->document()->printDialog();
+  if (CURRENT_VIEW) CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Print))->trigger();
 }
 
 
 void MainForm::filePrintQuickly()
 {
-  if (CURRENT_VIEW) CURRENT_VIEW->document()->print();
+  if (CURRENT_VIEW) CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Print))->trigger();
 }
 
 void MainForm::filePreferences()
@@ -2678,55 +2678,55 @@ void MainForm::filePreferences()
 void MainForm::editUndo()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->document()->undo();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->trigger();
 }
 
 void MainForm::editRedo()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->document()->redo();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->trigger();
 }
 
 void MainForm::editClear()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->document()->removeSelectedText();
+    CURRENT_VIEW->removeSelectionText();
 }
 
 void MainForm::editCut()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->cut();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Cut))->trigger();
 }
 
 void MainForm::editCopy()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->copy();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Copy))->trigger();
 }
 
 void MainForm::editPaste()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->paste();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::PasteText))->trigger();
 }
 
 void MainForm::editSelectAll()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->document()->selectAll();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::SelectAll))->trigger();
 }
 
 void MainForm::editIncreaseIndent()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->indent();
+    CURRENT_VIEW->action("tools_indent")->trigger();
 }
 
 void MainForm::editDecreaseIndent()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->unIndent();
+    CURRENT_VIEW->action("tools_unindent")->trigger();
 }
 
 void MainForm::findFind()

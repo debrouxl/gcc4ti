@@ -559,13 +559,15 @@ void SourceFileWindow::fileCompile()
 
 void SourceFileWindow::filePrint()
 {
-  if (CURRENT_VIEW) CURRENT_VIEW->document()->printDialog();
+  if (CURRENT_VIEW) CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Print))->trigger();
 }
 
 
 void SourceFileWindow::filePrintQuickly()
 {
-  if (CURRENT_VIEW) CURRENT_VIEW->document()->print();
+  // This still shows the print dialog, but then KDE 3.5 Kate did that too
+  // despite having 2 nominally different APIs (print and printDialog).
+  if (CURRENT_VIEW) CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Print))->trigger();
 }
 
 void SourceFileWindow::applyPreferences()
@@ -651,55 +653,55 @@ void SourceFileWindow::applyPreferences()
 void SourceFileWindow::editUndo()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->document()->undo();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->trigger();
 }
 
 void SourceFileWindow::editRedo()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->document()->redo();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->trigger();
 }
 
 void SourceFileWindow::editClear()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->document()->removeSelectedText();
+    CURRENT_VIEW->removeSelectionText();
 }
 
 void SourceFileWindow::editCut()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->cut();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Cut))->trigger();
 }
 
 void SourceFileWindow::editCopy()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->copy();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Copy))->trigger();
 }
 
 void SourceFileWindow::editPaste()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->paste();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::PasteText))->trigger();
 }
 
 void SourceFileWindow::editSelectAll()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->document()->selectAll();
+    CURRENT_VIEW->action(KStandardAction::name(KStandardAction::SelectAll))->trigger();
 }
 
 void SourceFileWindow::editIncreaseIndent()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->indent();
+    CURRENT_VIEW->action("tools_indent")->trigger();
 }
 
 void SourceFileWindow::editDecreaseIndent()
 {
   if (CURRENT_VIEW)
-    CURRENT_VIEW->unIndent();
+    CURRENT_VIEW->action("tools_unindent")->trigger();
 }
 
 void SourceFileWindow::findFind()
