@@ -794,7 +794,7 @@ class ErrorListItem : public K3ListViewItem {
     if (errorLine!=(unsigned)-1) {
       KTextEditor::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
                              :static_cast<KTextEditor::View *>(NULL));
-      if (kateView && errorLine<kateView->document()->numLines()) {
+      if (kateView && errorLine<kateView->document()->lines()) {
         // Extract the main token for the error message.
         QString errMessage=text(0);
         int quotePos=errMessage.find('\'');
@@ -807,7 +807,7 @@ class ErrorListItem : public K3ListViewItem {
               // Skip whitespace up to this token. TIGCC IDE does that too. Must
               // have something to do with how source splitting works.
               unsigned i=errorColumn;
-              QString textLine=kateView->document()->textLine(errorLine);
+              QString textLine=kateView->document()->line(errorLine);
               unsigned lineLength=kateView->document()->lineLength(errorLine);
               unsigned tokenLength=token.length();
               while ((i<lineLength) && textLine[i].isSpace()
@@ -834,7 +834,7 @@ class ErrorListItem : public K3ListViewItem {
     if (cursor && kateView) {
       unsigned line,col;
       cursor->position(&line,&col);
-      kateView->setCursorPositionReal(line,col);
+      kateView->setCursorPosition(KTextEditor::Cursor(line,col));
     }
   }
   ListViewFile *lvFile;
@@ -1756,14 +1756,14 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
-  newView->installPopup(te_popup);
+  newView->setContextMenu(te_popup);
   // Set text.
   SET_TEXT_SAFE(newView->document(),fileText);
   newView->document()->setModified(FALSE);
 // FIXME
 //  newView->document()->clearUndo();
 //  newView->document()->clearRedo();
-  newView->setCursorPositionReal(0,0);
+  newView->setCursorPosition(KTextEditor::Cursor(0,0));
   return newView;
 }
 
@@ -1857,7 +1857,7 @@ void MainForm::adoptSourceFile(void *srcFile)
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
-  newView->installPopup(te_popup);
+  newView->setContextMenu(te_popup);
   // Mark project dirty.
   projectIsDirty=TRUE;
   projectNeedsRelink=TRUE;
@@ -2170,9 +2170,9 @@ void MainForm::removeTrailingSpacesFromView(void *view)
   KTextEditor::Document *doc=kateView->document();
   KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
   editExt->editBegin();
-  unsigned numLines=doc->numLines();
+  unsigned numLines=doc->lines();
   for (unsigned i=0; i<numLines; i++) {
-    QString line=doc->textLine(i);
+    QString line=doc->line(i);
     int whitespace=line.find(QRegExp("\\s+$"));
     if (whitespace>=0) doc->removeText(i,whitespace,i,line.length());
   }
@@ -2261,7 +2261,7 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
 //      theFile->kateView->document()->clearUndo();
 //      theFile->kateView->document()->clearRedo();
       hliface->setHighlighting(hlMode);
-      theFile->kateView->setCursorPositionReal(line,col);
+      theFile->kateView->setCursorPosition(KTextEditor::Cursor(line,col));
     }
     theFile->fileName=saveFileName;
     if (IS_EDITABLE_CATEGORY(category)) {
@@ -2339,7 +2339,7 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
 //            theFile->kateView->document()->clearUndo();
 //            theFile->kateView->document()->clearRedo();
             hliface->setHighlighting(hlMode);
-            theFile->kateView->setCursorPositionReal(line,col);
+            theFile->kateView->setCursorPosition(KTextEditor::Cursor(line,col));
           }
           theFile->fileName=saveFileName;
           if (IS_EDITABLE_CATEGORY(category)) {
@@ -2775,10 +2775,10 @@ void MainForm::findFind_next()
         findCurrentCol=CURRENT_VIEW->cursorColumnReal();
       }
     } else {
-      findCurrentLine=findBackwards?(CURRENT_VIEW->document()->numLines()-1):0;
+      findCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
       findCurrentCol=-1;
     }
-    kfind->setData(CURRENT_VIEW->document()->textLine(findCurrentLine),findCurrentCol);
+    kfind->setData(CURRENT_VIEW->document()->line(findCurrentLine),findCurrentCol);
   } else findCurrentLine=0;
   skip_data:;
 
@@ -2789,7 +2789,7 @@ void MainForm::findFind_next()
   // non-editable or instantiated.
   QStringList currBuffer;
   unsigned currNumLines=0;
-  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->numLines();
+  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->lines();
   do {
     if (kfind->needData()) {
       if (findBackwards?!findCurrentLine:(findCurrentLine>=currNumLines)) {
@@ -2863,14 +2863,14 @@ void MainForm::findFind_next()
               // currentListItem is always either instantiated or not editable
               currView=static_cast<ListViewFile *>(currentListItem)->kateView;
               if (currView) {
-                currNumLines=currView->document()->numLines();
+                currNumLines=currView->document()->lines();
                 findCurrentLine=findBackwards?currNumLines-1:0;
                 do {
                   if (kfind->needData()) {
                     if (findBackwards?!findCurrentLine:(findCurrentLine>=currNumLines))
                       goto not_found_current;
                     if (findBackwards) findCurrentLine--; else findCurrentLine++;
-                    kfind->setData(currView->document()->textLine(findCurrentLine));
+                    kfind->setData(currView->document()->line(findCurrentLine));
                   }
                   result=kfind->find();
                 } while (result==KFind::NoMatch);
@@ -2884,7 +2884,7 @@ void MainForm::findFind_next()
           file_found:
             currView=static_cast<ListViewFile *>(findCurrentDocument)->kateView;
             if (currView) {
-              currNumLines=currView->document()->numLines();
+              currNumLines=currView->document()->lines();
             } else {
               currBuffer=QStringList::split('\n',
                 static_cast<ListViewFile *>(findCurrentDocument)->textBuffer,TRUE);
@@ -2894,7 +2894,7 @@ void MainForm::findFind_next()
         }
       } else if (findBackwards) findCurrentLine--; else findCurrentLine++;
       if (currView)
-        kfind->setData(currView->document()->textLine(findCurrentLine));
+        kfind->setData(currView->document()->line(findCurrentLine));
       else
         kfind->setData(currBuffer[findCurrentLine]);
     }
@@ -2908,7 +2908,7 @@ void MainForm::findFind_highlight(const QString &unused_text, int matchingindex,
 {
   if (currentListItem!=findCurrentDocument) fileTreeClicked(findCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
-  CURRENT_VIEW->setCursorPositionReal(findCurrentLine,matchingindex+matchedlength);
+  CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(findCurrentLine,matchingindex+matchedlength));
   CURRENT_VIEW->document()->setSelection(findCurrentLine,matchingindex,
                                        findCurrentLine,matchingindex+matchedlength);
 }
@@ -2989,16 +2989,16 @@ void MainForm::findReplace()
         replaceCurrentLine=CURRENT_VIEW->cursorLine();
         replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
         // Don't prompt for restarting if we actually searched the entire document.
-        if (findBackwards?(replaceCurrentLine==(CURRENT_VIEW->document()->numLines()-1)
+        if (findBackwards?(replaceCurrentLine==(CURRENT_VIEW->document()->lines()-1)
                            && replaceCurrentCol==(CURRENT_VIEW->document()->lineLength(replaceCurrentLine)))
                          :(!replaceCurrentLine&&!replaceCurrentCol))
           kreplace->setOptions(kreplace->options()&~KFind::FromCursor);
       }
     } else {
-      replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->numLines()-1):0;
+      replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
       replaceCurrentCol=-1;
     }
-    kreplace->setData(CURRENT_VIEW->document()->textLine(replaceCurrentLine),replaceCurrentCol);
+    kreplace->setData(CURRENT_VIEW->document()->line(replaceCurrentLine),replaceCurrentCol);
   }
   skip_data:
     // Now find the next occurrence.
@@ -3042,7 +3042,7 @@ void MainForm::findReplace_next(bool firstTime)
         replaceCurrentLine=CURRENT_VIEW->cursorLine();
         replaceCurrentCol=CURRENT_VIEW->cursorColumnReal();
       }
-      kreplace->setData(CURRENT_VIEW->document()->textLine(replaceCurrentLine),replaceCurrentCol);
+      kreplace->setData(CURRENT_VIEW->document()->line(replaceCurrentLine),replaceCurrentCol);
     } else replaceCurrentLine=0;
   }
   skip_data:;
@@ -3054,7 +3054,7 @@ void MainForm::findReplace_next(bool firstTime)
   // non-editable or instantiated.
   QStringList currBuffer;
   unsigned currNumLines=0;
-  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->numLines();
+  if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->lines();
   do {
     if (kreplace->needData()) {
       if (global) {
@@ -3129,14 +3129,14 @@ void MainForm::findReplace_next(bool firstTime)
                 // currentListItem is always either instantiated or not editable
                 currView=static_cast<ListViewFile *>(currentListItem)->kateView;
                 if (currView) {
-                  currNumLines=currView->document()->numLines();
+                  currNumLines=currView->document()->lines();
                   replaceCurrentLine=findBackwards?currNumLines-1:0;
                   do {
                     if (kreplace->needData()) {
                       if (findBackwards?!replaceCurrentLine:(replaceCurrentLine>=currNumLines))
                         goto not_found_current;
                       if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
-                      kreplace->setData(currView->document()->textLine(replaceCurrentLine));
+                      kreplace->setData(currView->document()->line(replaceCurrentLine));
                     }
                     result=kreplace->replace();
                   } while (result==KFind::NoMatch);
@@ -3150,7 +3150,7 @@ void MainForm::findReplace_next(bool firstTime)
             file_found:
               currView=static_cast<ListViewFile *>(replaceCurrentDocument)->kateView;
               if (currView) {
-                currNumLines=currView->document()->numLines();
+                currNumLines=currView->document()->lines();
               } else {
                 currBuffer=QStringList::split('\n',
                   static_cast<ListViewFile *>(replaceCurrentDocument)->textBuffer,TRUE);
@@ -3160,7 +3160,7 @@ void MainForm::findReplace_next(bool firstTime)
           }
         } else if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
         if (currView)
-          kreplace->setData(currView->document()->textLine(replaceCurrentLine));
+          kreplace->setData(currView->document()->line(replaceCurrentLine));
         else
           kreplace->setData(currBuffer[replaceCurrentLine]);
       } else { // if not global
@@ -3177,8 +3177,8 @@ void MainForm::findReplace_next(bool firstTime)
                                                          |KFind::SelectedText));
               kreplace->invalidateSelection();
               // Reinitialize.
-              replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->numLines()-1):0;
-              kreplace->setData(CURRENT_VIEW->document()->textLine(replaceCurrentLine));
+              replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
+              kreplace->setData(CURRENT_VIEW->document()->line(replaceCurrentLine));
               // Start again as if it was the first time.
               findReplace_next(TRUE);
               return;
@@ -3189,7 +3189,7 @@ void MainForm::findReplace_next(bool firstTime)
           } else goto not_found_current;
         } else if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
         if (currView)
-          kreplace->setData(currView->document()->textLine(replaceCurrentLine));
+          kreplace->setData(currView->document()->line(replaceCurrentLine));
         else
           kreplace->setData(currBuffer[replaceCurrentLine]);
       }
@@ -3202,7 +3202,7 @@ void MainForm::findReplace_highlight(const QString &unused_text, int matchingind
 {
   if (currentListItem!=replaceCurrentDocument) fileTreeClicked(replaceCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
-  CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,matchingindex+matchedlength);
+  CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(replaceCurrentLine,matchingindex+matchedlength));
   CURRENT_VIEW->document()->setSelection(replaceCurrentLine,matchingindex,
                                        replaceCurrentLine,matchingindex+matchedlength);
 }
@@ -3233,9 +3233,9 @@ void MainForm::findReplace_replace(const QString &text, int replacementIndex, in
                                      replaceCurrentLine,replacementIndex+replacedLength+matchedLength);
   editinterfaceext->editEnd();
   if (updateCursor)
-    CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,replacementIndex);
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(replaceCurrentLine,replacementIndex));
   if (update) {
-    CURRENT_VIEW->setCursorPositionReal(replaceCurrentLine,replacementIndex+replacedLength);
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(replaceCurrentLine,replacementIndex+replacedLength));
     CURRENT_VIEW->document()->setSelection(replaceCurrentLine,replacementIndex,
                                          replaceCurrentLine,replacementIndex+replacedLength);
     CURRENT_VIEW->repaint();
@@ -3301,7 +3301,7 @@ void MainForm::findFunctions_functionListBox_selected(int index)
     int line=sourceFileFunctions[index].implementationLine>=0
              ?sourceFileFunctions[index].implementationLine
              :sourceFileFunctions[index].prototypeLine;
-    CURRENT_VIEW->setCursorPositionReal(line,0);
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line,0));
     functionDialog->accept();
   }
 }
@@ -3356,7 +3356,7 @@ void MainForm::findFunctionsPopup_activated(int id)
     int line=sourceFileFunctions[id].implementationLine>=0
              ?sourceFileFunctions[id].implementationLine
              :sourceFileFunctions[id].prototypeLine;
-    CURRENT_VIEW->setCursorPositionReal(line,0);
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line,0));
   }
 }
 
@@ -3405,7 +3405,7 @@ void MainForm::findOpenFileAtCursor()
   if (CURRENT_VIEW && IS_FILE(currentListItem)) {
     int line,col,i;
     CURRENT_VIEW->cursorPosition().position(line,col);
-    QString textLine=CURRENT_VIEW->document()->textLine(line);
+    QString textLine=CURRENT_VIEW->document()->line(line);
     unsigned l=textLine.length();
     bool quotesInLine=textLine.contains("\"");
     QString fileName;
@@ -3443,16 +3443,16 @@ void MainForm::openHeader(const QString &fileName, bool systemHeader,
         if (inProject) {
           fileTreeClicked(reinterpret_cast<ListViewFile *>(sourceFile));
           if (reinterpret_cast<ListViewFile *>(sourceFile)->kateView)
-            reinterpret_cast<ListViewFile *>(sourceFile)->kateView->setCursorPositionReal(lineno,0);
+            reinterpret_cast<ListViewFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
         } else {
-          reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPositionReal(lineno,0);
+          reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
           KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
         }
       } else {
         if (getPathType(fileNameFull)==PATH_FILE) {
           openProject(fileNameFull);
           if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject) {
-            reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPositionReal(lineno,0);
+            reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
             KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
           }
         } else {
@@ -3481,7 +3481,7 @@ void MainForm::openHeader(const QString &fileName, bool systemHeader,
         if (QFileInfo(fileItem->fileName).fileName()==name) {
           fileTreeClicked(item);
           if (fileItem->kateView)
-            fileItem->kateView->setCursorPositionReal(lineno,0);
+            fileItem->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
           return;
         }
       }
@@ -3522,7 +3522,7 @@ void MainForm::findFindSymbolDeclaration()
                            symbolLine,systemHeader)
           && !symbolFile.isNull()) {
         if (symbolFile==fileName)
-          CURRENT_VIEW->setCursorPositionReal(symbolLine,0);
+          CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(symbolLine,0));
         else
           openHeader(symbolFile,systemHeader,symbolLine);
       }
@@ -6044,7 +6044,7 @@ void MainForm::current_view_charactersInteractivelyInserted(int line, int col, c
       // Only for C files.
       if (category==cFilesListItem||category==qllFilesListItem
           ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
-        QString indent=doc->textLine(line);
+        QString indent=doc->line(line);
         // Only if the line was all whitespace, otherwise wait for Enter to be
         // pressed (prevents annoying the user while typing a string or something).
         if (indent.contains(QRegExp("^\\s*\\{$"))) {
@@ -6055,7 +6055,7 @@ void MainForm::current_view_charactersInteractivelyInserted(int line, int col, c
           doc->insertLine(line+1,cursorLine);
           doc->insertLine(line+2,indent+"}");
           editExt->editEnd();
-          CURRENT_VIEW->setCursorPositionReal(line+1,cursorLine.length());
+          CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line+1,cursorLine.length()));
         }
       }
     }
@@ -6078,13 +6078,13 @@ void MainForm::current_view_newLineHook()
   int line,col;
   CURRENT_VIEW->cursorPosition().position(line,col);
   KTextEditor::Document *doc=CURRENT_VIEW->document();
-  if (preferences.autoBlocks && line && doc->textLine(line-1).endsWith("{")) {
+  if (preferences.autoBlocks && line && doc->line(line-1).endsWith("{")) {
     CATEGORY_OF(category,currentListItem);
     QString fileText=doc->text();
     // Only for C files.
     if (category==cFilesListItem||category==qllFilesListItem
         ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
-      QString indent=doc->textLine(line-1);
+      QString indent=doc->line(line-1);
       // Remove everything starting from the first non-whitespace character.
       indent=indent.remove(QRegExp("(?!\\s).*$"));
       QString cursorLine=indent+"\t";
@@ -6094,7 +6094,7 @@ void MainForm::current_view_newLineHook()
       doc->insertLine(line,cursorLine);
       doc->insertText(line+1,0,indent+"}");
       editExt->editEnd();
-      CURRENT_VIEW->setCursorPositionReal(line,cursorLine.length());
+      CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line,cursorLine.length()));
     }
   }
 }
@@ -6221,7 +6221,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
 //        theFile->kateView->document()->clearUndo();
 //        theFile->kateView->document()->clearRedo();
         hliface->setHighlighting(hlMode);
-        theFile->kateView->setCursorPositionReal(line,col);
+        theFile->kateView->setCursorPosition(KTextEditor::Cursor(line,col));
         theFile->kateView->document()->setModified(modified);
       }
       if (IS_EDITABLE_CATEGORY(category) && newFileName[0]=='/')
