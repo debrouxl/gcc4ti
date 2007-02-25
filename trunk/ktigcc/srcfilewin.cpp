@@ -51,6 +51,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/highlightinginterface.h>
+#include <ktexteditor/configinterface.h>
 #include <kconfig.h>
 #include <ktexteditor/configpage.h>
 #include <kfiledialog.h>
@@ -413,7 +414,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, THIS->mainForm, "KTextEditor::Document" );
+      factory->createPart(0,THIS->mainForm,"KTextEditor::Document");
   // Set the file name for printing.
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
@@ -427,7 +428,9 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
     =qobject_cast<KTextEditor::HighlightingInterface*>(newView->document());
   hliface->setHighlighting(hlModeName);
   // Set options.
-  newView->setDynWordWrap(FALSE);
+  KTextEditor::ConfigInterface *configiface
+    =qobject_cast<KTextEditor::ConfigInterface*>(newView);
+  configiface->setConfigValue("dynamic-word-wrap",false);
   if (preferences.removeTrailingSpaces)
     newView->document()->setConfigFlags(newView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   else

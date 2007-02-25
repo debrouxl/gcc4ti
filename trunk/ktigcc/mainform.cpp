@@ -70,6 +70,7 @@
 #include <klibloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
+#include <ktexteditor/configinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <kconfig.h>
 #include <ktexteditor/configpage.h>
@@ -1713,7 +1714,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, this, "KTextEditor::Document" );
+      factory->createPart(0,this,"KTextEditor::Document");
   // Set the file name for printing.
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
@@ -1736,7 +1737,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
       C_HL_MODE:
     "None"));
   // Set options.
-  newView->setDynWordWrap(FALSE);
+  KTextEditor::ConfigInterface *configiface
+    =qobject_cast<KTextEditor::ConfigInterface*>(newView);
+  configiface->setConfigValue("dynamic-word-wrap",false);
   if (preferences.removeTrailingSpaces)
     newView->document()->setConfigFlags(newView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   else
