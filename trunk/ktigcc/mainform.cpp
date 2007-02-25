@@ -200,6 +200,12 @@ class KReplaceWithSelection : public KReplace {
       m_selEndLine=selEndLine;
       m_selEndCol=selEndCol;
     }
+    void setSelection(const KTextEditor::Range &selRange)
+    {
+      m_haveSelection=TRUE;
+      selRange.start().position(m_selStartLine,m_selStartCol);
+      selRange.end().position(m_selEndLine,m_selEndCol);
+    }
     void invalidateSelection() {m_haveSelection=FALSE;}
     bool haveSelection() {
       // If another document was put under the cursor, invalidate selection.
@@ -2765,15 +2771,13 @@ void MainForm::findFind_next()
     if (kfinddialog->options()&KFind::FromCursor) {
       if (CURRENT_VIEW->selection()) {
         if (findBackwards) {
-          findCurrentLine=CURRENT_VIEW->document()->selStartLine();
-          findCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
-          if (findCurrentCol==-1) {
+          CURRENT_VIEW->selectionRange().start().position(findCurrentLine,findCurrentCol);
+          if ((--findCurrentCol)==-1) {
             if (!findCurrentLine) goto skip_data;
             findCurrentLine--;
           }
         } else {
-          findCurrentLine=CURRENT_VIEW->document()->selEndLine();
-          findCurrentCol=CURRENT_VIEW->document()->selEndCol();
+          CURRENT_VIEW->selectionRange().end().position(findCurrentLine,findCurrentCol);
         }
       } else {
         CURRENT_VIEW->cursorPosition().position(findCurrentLine,findCurrentCol);
@@ -2913,8 +2917,8 @@ void MainForm::findFind_highlight(const QString &unused_text, int matchingindex,
   if (currentListItem!=findCurrentDocument) fileTreeClicked(findCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
   CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(findCurrentLine,matchingindex+matchedlength));
-  CURRENT_VIEW->document()->setSelection(findCurrentLine,matchingindex,
-                                       findCurrentLine,matchingindex+matchedlength);
+  CURRENT_VIEW->setSelection(KTextEditor::Range(findCurrentLine,matchingindex,
+                                                findCurrentLine,matchingindex+matchedlength));
 }
 
 void MainForm::findFind_stop()
@@ -2929,16 +2933,16 @@ void MainForm::findFind_stop()
 void MainForm::findReplace()
 {
   if (kreplace) {
-    KDialogBase *replaceNextDialog=kreplace->replaceNextDialog();
+    KDialog *replaceNextDialog=kreplace->replaceNextDialog();
     if (replaceNextDialog)
       KWin::activateWindow(replaceNextDialog->winId());
     return;
   }
   KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->selection()
-                                        &&CURRENT_VIEW->document()->selStartLine()!=CURRENT_VIEW->document()->selEndLine())?
-                                        KFind::SelectedText:0)|KFind::FromCursor,
-                                       findHistory,replacementHistory,
-                                       CURRENT_VIEW&&CURRENT_VIEW->selection());
+                                         &&!CURRENT_VIEW->selectionRange().onSingleLine())?
+                                         KFind::SelectedText:0)|KFind::FromCursor,
+                                        findHistory,replacementHistory,
+                                        CURRENT_VIEW&&CURRENT_VIEW->selection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
     return;
   findHistory=kreplacedialog.findHistory();
@@ -2964,10 +2968,7 @@ void MainForm::findReplace()
   replaceCurrentDocument=currentListItem;
   if (CURRENT_VIEW) {
     if (kreplace->options()&KFind::SelectedText) {
-      kreplace->setSelection(CURRENT_VIEW->document()->selStartLine(),
-                             CURRENT_VIEW->document()->selStartCol(),
-                             CURRENT_VIEW->document()->selEndLine(),
-                             CURRENT_VIEW->document()->selEndCol());
+      kreplace->setSelection(CURRENT_VIEW->selectionRange());
       if (findBackwards) {
         replaceCurrentLine=kreplace->selEndLine();
         replaceCurrentCol=kreplace->selEndCol();
@@ -2979,15 +2980,15 @@ void MainForm::findReplace()
     } else if (kreplace->options()&KFind::FromCursor) {
       if (CURRENT_VIEW->selection()) {
         if (findBackwards) {
-          replaceCurrentLine=CURRENT_VIEW->document()->selStartLine();
-          replaceCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
-          if (replaceCurrentCol==-1) {
+          CURRENT_VIEW->selectionRange().start().position(replaceCurrentLine,
+                                                          replaceCurrentCol);
+          if ((--replaceCurrentCol)==-1) {
             if (!replaceCurrentLine) goto skip_data;
             replaceCurrentLine--;
           }
         } else {
-          replaceCurrentLine=CURRENT_VIEW->document()->selEndLine();
-          replaceCurrentCol=CURRENT_VIEW->document()->selEndCol();
+          CURRENT_VIEW->selectionRange().end().position(replaceCurrentLine,
+                                                        replaceCurrentCol);
         }
       } else {
         CURRENT_VIEW->cursorPosition().position(replaceCurrentLine,replaceCurrentCol);
@@ -3031,15 +3032,15 @@ void MainForm::findReplace_next(bool firstTime)
       // Non-first-time always continues from cursor.
       if (CURRENT_VIEW->selection()) {
         if (findBackwards) {
-          replaceCurrentLine=CURRENT_VIEW->document()->selStartLine();
-          replaceCurrentCol=CURRENT_VIEW->document()->selStartCol()-1;
-          if (replaceCurrentCol==-1) {
+          CURRENT_VIEW->selectionRange().start().position(replaceCurrentLine,
+                                                          replaceCurrentCol);
+          if ((--replaceCurrentCol)==-1) {
             if (!replaceCurrentLine) goto skip_data;
             replaceCurrentLine--;
           }
         } else {
-          replaceCurrentLine=CURRENT_VIEW->document()->selEndLine();
-          replaceCurrentCol=CURRENT_VIEW->document()->selEndCol();
+          CURRENT_VIEW->selectionRange().end().position(replaceCurrentLine,
+                                                        replaceCurrentCol);
         }
       } else {
         CURRENT_VIEW->cursorPosition().position(replaceCurrentLine,replaceCurrentCol);
@@ -3205,8 +3206,8 @@ void MainForm::findReplace_highlight(const QString &unused_text, int matchingind
   if (currentListItem!=replaceCurrentDocument) fileTreeClicked(replaceCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
   CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(replaceCurrentLine,matchingindex+matchedlength));
-  CURRENT_VIEW->document()->setSelection(replaceCurrentLine,matchingindex,
-                                       replaceCurrentLine,matchingindex+matchedlength);
+  CURRENT_VIEW->setSelection(KTextEditor::Range(replaceCurrentLine,matchingindex,
+                                                replaceCurrentLine,matchingindex+matchedlength));
 }
 
 void MainForm::findReplace_replace(const QString &text, int replacementIndex, int replacedLength, int matchedLength)
@@ -3238,8 +3239,8 @@ void MainForm::findReplace_replace(const QString &text, int replacementIndex, in
     CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(replaceCurrentLine,replacementIndex));
   if (update) {
     CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(replaceCurrentLine,replacementIndex+replacedLength));
-    CURRENT_VIEW->document()->setSelection(replaceCurrentLine,replacementIndex,
-                                           replaceCurrentLine,replacementIndex+replacedLength);
+    CURRENT_VIEW->setSelection(KTextEditor::Range(replaceCurrentLine,replacementIndex,
+                                                  replaceCurrentLine,replacementIndex+replacedLength));
     CURRENT_VIEW->repaint();
   }
   if (haveSelection) {
