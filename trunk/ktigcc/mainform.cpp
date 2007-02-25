@@ -2469,6 +2469,8 @@ void MainForm::filePrint()
 
 void MainForm::filePrintQuickly()
 {
+  // This still shows the print dialog, but then KDE 3.5 Kate did that too
+  // despite having 2 nominally different APIs (print and printDialog).
   if (CURRENT_VIEW) CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Print))->trigger();
 }
 
