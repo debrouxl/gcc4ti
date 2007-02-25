@@ -70,6 +70,8 @@
 #include <klibloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
+#include <ktexteditor/cursor.h>
+#include <ktexteditor/range.h>
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <kconfig.h>
@@ -2173,7 +2175,7 @@ void MainForm::removeTrailingSpacesFromView(void *view)
   for (unsigned i=0; i<numLines; i++) {
     QString line=doc->line(i);
     int whitespace=line.find(QRegExp("\\s+$"));
-    if (whitespace>=0) doc->removeText(i,whitespace,i,line.length());
+    if (whitespace>=0) doc->removeText(KTextEditor::Range(i,whitespace,i,line.length()));
   }
   doc->endEditing();
 }
@@ -3222,20 +3224,20 @@ void MainForm::findReplace_replace(const QString &text, int replacementIndex, in
     selEndCol=kreplace->selEndCol();
   }
   CURRENT_VIEW->document()->startEditing();
-  CURRENT_VIEW->document()->insertText(replaceCurrentLine,replacementIndex,
-                                     text.mid(replacementIndex,replacedLength));
+  CURRENT_VIEW->document()->insertText(KTextEditor::Cursor(replaceCurrentLine,replacementIndex),
+                                       text.mid(replacementIndex,replacedLength));
   // We can't put the cursor back now because this breaks editBegin/editEnd.
   bool updateCursor=(CURRENT_VIEW->cursorLine()==replaceCurrentLine
                      && CURRENT_VIEW->cursorColumnReal()==(unsigned)replacementIndex+(unsigned)replacedLength);
-  CURRENT_VIEW->document()->removeText(replaceCurrentLine,replacementIndex+replacedLength,
-                                     replaceCurrentLine,replacementIndex+replacedLength+matchedLength);
+  CURRENT_VIEW->document()->removeText(KTextEditor::Range(replaceCurrentLine,replacementIndex+replacedLength,
+                                       replaceCurrentLine,replacementIndex+replacedLength+matchedLength));
   CURRENT_VIEW->document()->endEditing();
   if (updateCursor)
     CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(replaceCurrentLine,replacementIndex));
   if (update) {
     CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(replaceCurrentLine,replacementIndex+replacedLength));
     CURRENT_VIEW->document()->setSelection(replaceCurrentLine,replacementIndex,
-                                         replaceCurrentLine,replacementIndex+replacedLength);
+                                           replaceCurrentLine,replacementIndex+replacedLength);
     CURRENT_VIEW->repaint();
   }
   if (haveSelection) {
@@ -6086,9 +6088,9 @@ void MainForm::current_view_newLineHook()
       indent=indent.remove(QRegExp("(?!\\s).*$"));
       QString cursorLine=indent+"\t";
       doc->startEditing();
-      doc->removeText(line,0,line,col);
+      doc->removeText(KTextEditor::Range(line,0,line,col));
       doc->insertLine(line,cursorLine);
-      doc->insertText(line+1,0,indent+"}");
+      doc->insertText(KTextEditor::Cursor(line+1,0),indent+"}");
       doc->endEditing();
       CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line,cursorLine.length()));
     }
