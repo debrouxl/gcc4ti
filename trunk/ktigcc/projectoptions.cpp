@@ -28,6 +28,7 @@
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kprocess.h>
+#include <kurl.h>
 #include "ktigcc.h"
 #include "tpr.h"
 #include "programoptions.h"
@@ -251,7 +252,7 @@ void ProjectOptions::ProgramOptionsFunc()
 
 void ProjectOptions::browseButton_clicked()
 {
-  QString ret=KFileDialog::getOpenFileName("/usr/bin",
+  QString ret=KFileDialog::getOpenFileName(KUrl("/usr/bin"),
     "application/x-executable application/x-executable-script",this,
     "Choose executable");
   if (!ret.isEmpty())
