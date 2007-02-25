@@ -48,6 +48,7 @@
 #include <QAssistantClient>
 #include <kparts/factory.h>
 #include <klibloader.h>
+#include <ktexteditor/editor.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/cursor.h>
@@ -570,16 +571,16 @@ void SourceFileWindow::filePrintQuickly()
 void SourceFileWindow::applyPreferences()
 {
   // Apply the KatePart preferences and treeview icons.
-  KParts::Factory *factory = (KParts::Factory *)
-    KLibLoader::self()->factory ("libkatepart");
+  KParts::Factory *factory=(KParts::Factory *)
+    KLibLoader::self()->factory("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
-  KTextEditor::Document *doc = (KTextEditor::Document *)
+  KTextEditor::Document *doc=(KTextEditor::Document *)
     factory->createPart(0,this,"KTextEditor::Document");
-  KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
-  unsigned numConfigPages=confInterfaceExt->configPages();
-  for (unsigned i=0; i<numConfigPages; i++) {
-    if (!confInterfaceExt->configPageName(i).compare("Fonts & Colors")) {
-      KTextEditor::ConfigPage *configPage=confInterfaceExt->configPage(i);
+  KTextEditor::Editor *editor=doc->editor();
+  int numConfigPages=editor->configPages();
+  for (int i=0; i<numConfigPages; i++) {
+    if (editor->configPageName(i)=="Fonts & Colors") {
+      KTextEditor::ConfigPage *configPage=editor->configPage(i,this);
       configPage->apply();
       delete configPage;
       break;
