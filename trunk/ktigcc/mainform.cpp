@@ -70,6 +70,7 @@
 #include <klibloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
+#include <ktexteditor/highlightinginterface.h>
 #include <kconfig.h>
 #include <ktexteditor/configpage.h>
 #include <kaboutdata.h>
@@ -560,22 +561,19 @@ class DnDListView : public K3ListView {
                 && srcCategory!=destCategory
                 && static_cast<ListViewFile *>(currItem)->kateView) {
               // update highlighting mode
-              uint cnt=static_cast<ListViewFile *>(currItem)->kateView->document()->hlModeCount(), i;
-              QString fileText=static_cast<ListViewFile *>(currItem)->textBuffer;
-              for (i=0; i<cnt; i++) {
-                if (!static_cast<ListViewFile *>(currItem)->kateView->document()->hlModeName(i).compare(
-                    (destCategory==qllFilesListItem?
-                       QLL_HL_MODE:
-                     (destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-                       S_HL_MODE:
-                     (destCategory==asmFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-                       ASM_HL_MODE:
-                     (destCategory==cFilesListItem||destCategory==hFilesListItem)?
-                       C_HL_MODE:
-                     "None"))) break;
-              }
-              if (i==cnt) i=0;
-              static_cast<ListViewFile *>(currItem)->kateView->document()->setHlMode(i);
+              KTextEditor::HighlightingInterface *hliface
+                =qobject_cast<KTextEditor::HighlightingInterface*>(
+                  static_cast<ListViewFile *>(currItem)->kateView->document());
+              hliface->setHighlighting(
+                (destCategory==qllFilesListItem?
+                  QLL_HL_MODE:
+                (destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+                  S_HL_MODE:
+                (destCategory==asmFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+                  ASM_HL_MODE:
+                (destCategory==cFilesListItem||destCategory==hFilesListItem)?
+                  C_HL_MODE:
+                "None")));
             }
             // update icon
             currItem->setPixmap(0,
@@ -1329,7 +1327,12 @@ void MainForm::accel_activated(int index)
       }
       case 6:
       case 7:
-        CURRENT_VIEW->keyReturn();
+        // FIXME: Send ENTER key in some way, or replace newLineHook with a
+        //        better solution altogether.
+        CURRENT_VIEW->document()->startEditing();
+        CURRENT_VIEW->removeSelectionText();
+        CURRENT_VIEW->insertText("\n");
+        CURRENT_VIEW->document()->endEditing();
         current_view_newLineHook();
         break;
       case 8:
@@ -1710,31 +1713,28 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
+      factory->createPart( 0, this, "KTextEditor::Document" );
   // Set the file name for printing.
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
     doc->closeStream();
   // Create View object.
-  KTextEditor::View *newView = (KTextEditor::View *) doc->createView( widgetStack, 0L );
+  KTextEditor::View *newView = (KTextEditor::View *) doc->createView(widgetStack);
   newView->hide();
   newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
   // Set highlighting mode.
-  uint cnt=newView->document()->hlModeCount(), i;
-  for (i=0; i<cnt; i++) {
-    if (!newView->document()->hlModeName(i).compare(
-        (category==qllFilesListItem?
-           QLL_HL_MODE:
-         (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-           S_HL_MODE:
-         (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-           ASM_HL_MODE:
-         (category==cFilesListItem||category==hFilesListItem)?
-           C_HL_MODE:
-         "None"))) break;
-  }
-  if (i==cnt) i=0;
-  newView->document()->setHlMode(i);
+  KTextEditor::HighlightingInterface *hliface
+    =qobject_cast<KTextEditor::HighlightingInterface*>(newView->document());
+  hliface->setHighlighting(
+    (category==qllFilesListItem?
+      QLL_HL_MODE:
+    (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+      S_HL_MODE:
+    (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+      ASM_HL_MODE:
+    (category==cFilesListItem||category==hFilesListItem)?
+      C_HL_MODE:
+    "None"));
   // Set options.
   newView->setDynWordWrap(FALSE);
   if (preferences.removeTrailingSpaces)
@@ -1826,21 +1826,18 @@ void MainForm::adoptSourceFile(void *srcFile)
   COUNTER_FOR_CATEGORY(category)++;
   // Set highlighting mode.
   QString fileText=newView->document()->text();
-  uint cnt=newView->document()->hlModeCount(), i;
-  for (i=0; i<cnt; i++) {
-    if (!newView->document()->hlModeName(i).compare(
-        (category==qllFilesListItem?
-           QLL_HL_MODE:
-         (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-           S_HL_MODE:
-         (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-           ASM_HL_MODE:
-         (category==cFilesListItem||category==hFilesListItem)?
-           C_HL_MODE:
-         "None"))) break;
-  }
-  if (i==cnt) i=0;
-  newView->document()->setHlMode(i);
+  KTextEditor::HighlightingInterface *hliface
+    =qobject_cast<KTextEditor::HighlightingInterface*>(newView->document());
+  hliface->setHighlighting(
+    (category==qllFilesListItem?
+      QLL_HL_MODE:
+    (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+      S_HL_MODE:
+    (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+      ASM_HL_MODE:
+    (category==cFilesListItem||category==hFilesListItem)?
+      C_HL_MODE:
+    "None")));
   // Set options.
   newView->setTabWidth(
     (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
@@ -2242,9 +2239,11 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
     if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)
         && theFile->kateView) {
       // Update the file name for printing.
-      int line,col,hlMode;
+      int line,col;
       QString fileText=theFile->kateView->document()->text();
-      hlMode=theFile->kateView->document()->hlMode();
+      KTextEditor::HighlightingInterface *hliface
+        =qobject_cast<KTextEditor::HighlightingInterface*>(theFile->kateView->document());
+      QString hlMode=hliface->highlighting();
       theFile->kateView->cursorPosition().position(line,col);
       theFile->kateView->document()->setModified(FALSE);
       if (theFile->kateView->document()->openStream("text/plain",saveFileName))
@@ -2252,7 +2251,7 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
       SET_TEXT_SAFE(theFile->kateView->document(),fileText);
       theFile->kateView->document()->clearUndo();
       theFile->kateView->document()->clearRedo();
-      theFile->kateView->document()->setHlMode(hlMode);
+      hliface->setHighlighting(hlMode);
       theFile->kateView->setCursorPositionReal(line,col);
     }
     theFile->fileName=saveFileName;
@@ -2316,9 +2315,12 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
           if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)
               && theFile->kateView) {
             // Update the file name for printing.
-            int line,col,hlMode;
+            int line,col;
             QString fileText=theFile->kateView->document()->text();
-            hlMode=theFile->kateView->document()->hlMode();
+            KTextEditor::HighlightingInterface *hliface
+              =qobject_cast<KTextEditor::HighlightingInterface*>(
+                theFile->kateView->document());
+            hliface->setHighlighting(hlModeName);
             theFile->kateView->cursorPosition().position(line,col);
             theFile->kateView->document()->setModified(FALSE);
             if (theFile->kateView->document()->openStream("text/plain",saveFileName))
@@ -2326,7 +2328,7 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
             SET_TEXT_SAFE(theFile->kateView->document(),fileText);
             theFile->kateView->document()->clearUndo();
             theFile->kateView->document()->clearRedo();
-            theFile->kateView->document()->setHlMode(hlMode);
+            hliface->setHighlighting(hlMode);
             theFile->kateView->setCursorPositionReal(line,col);
           }
           theFile->fileName=saveFileName;
@@ -2468,22 +2470,30 @@ void MainForm::filePreferences()
     for (item=it.current();item;item=(++it).current()) {
       if (IS_FILE(item)) {
         KTextEditor::View *kateView=static_cast<ListViewFile *>(item)->kateView;
-        if (kateView)
-          kateView->document()->setHlMode(0);
+        if (kateView) {
+          KTextEditor::HighlightingInterface *hliface
+            =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
+          hliface->setHighlighting("None");
+        }
       }
     }
     Q3PtrListIterator<SourceFile> sfit(sourceFiles);
     SourceFile *sourceFile;
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
-      sourceFile->kateView->document()->setHlMode(0);
+      KTextEditor::HighlightingInterface *hliface
+        =qobject_cast<KTextEditor::HighlightingInterface*>(
+          sourceFile->kateView->document());
+      hliface->setHighlighting("None");
     }
     KParts::Factory *factory = (KParts::Factory *)
       KLibLoader::self()->factory ("libkatepart");
     if (!factory) qFatal("Failed to load KatePart");
     KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, "", this, "", "KTextEditor::Document" );
-    doc->setHlMode(1); // Don't ask...
-    doc->setHlMode(0);
+      factory->createPart( 0, this, "KTextEditor::Document" );
+    KTextEditor::HighlightingInterface *hliface
+      =qobject_cast<KTextEditor::HighlightingInterface*>(doc);
+    hliface->setHighlighting("Asm6502"); // Don't ask...
+    hliface->setHighlighting("None");
     KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
     unsigned numConfigPages=confInterfaceExt->configPages();
     for (unsigned i=0; i<numConfigPages; i++) {
@@ -2519,21 +2529,18 @@ void MainForm::filePreferences()
             8
           );
           // Kate seems really insisting on making it a pain to update syntax highlighting settings.
-          unsigned cnt=kateView->document()->hlModeCount(), i;
-          for (i=0; i<cnt; i++) {
-            if (!kateView->document()->hlModeName(i).compare(
-                (category==qllFilesListItem?
-                   QLL_HL_MODE:
-                 (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-                   S_HL_MODE:
-                 (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-                   ASM_HL_MODE:
-                 (category==cFilesListItem||category==hFilesListItem)?
-                   C_HL_MODE:
-                 "None"))) break;
-          }
-          if (i==cnt) i=0;
-          kateView->document()->setHlMode(i);
+          KTextEditor::HighlightingInterface *hliface
+            =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
+          hliface->setHighlighting(
+            (category==qllFilesListItem?
+              QLL_HL_MODE:
+            (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+              S_HL_MODE:
+            (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+              ASM_HL_MODE:
+            (category==cFilesListItem||category==hFilesListItem)?
+              C_HL_MODE:
+            "None")));
         }
         item->setPixmap(0,
           category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
@@ -6186,10 +6193,13 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
       fileNameRef=newFileName;
       if (theFile->kateView) {
         // Update the file name for printing.
-        int line,col,hlMode,modified;
+        int line,col,modified;
         modified=theFile->kateView->document()->isModified();
         QString fileText=theFile->kateView->document()->text();
-        hlMode=theFile->kateView->document()->hlMode();
+        KTextEditor::HighlightingInterface *hliface
+          =qobject_cast<KTextEditor::HighlightingInterface*>(
+            theFile->kateView->document());
+        hliface->setHighlighting(hlModeName);
         theFile->kateView->cursorPosition().position(line,col);
         theFile->kateView->document()->setModified(FALSE);
         if (theFile->kateView->document()->openStream("text/plain",newFileName))
@@ -6197,7 +6207,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
         SET_TEXT_SAFE(theFile->kateView->document(),fileText);
         theFile->kateView->document()->clearUndo();
         theFile->kateView->document()->clearRedo();
-        theFile->kateView->document()->setHlMode(hlMode);
+        hliface->setHighlighting(hlMode);
         theFile->kateView->setCursorPositionReal(line,col);
         theFile->kateView->document()->setModified(modified);
       }

@@ -50,6 +50,7 @@
 #include <klibloader.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
+#include <ktexteditor/highlightinginterface.h>
 #include <kconfig.h>
 #include <ktexteditor/configpage.h>
 #include <kfiledialog.h>
@@ -369,7 +370,12 @@ void SourceFileWindow::accel_activated(int index)
       }
       case 6:
       case 7:
-        CURRENT_VIEW->keyReturn();
+        // FIXME: Send ENTER key in some way, or replace newLineHook with a
+        //        better solution altogether.
+        CURRENT_VIEW->document()->startEditing();
+        CURRENT_VIEW->removeSelectionText();
+        CURRENT_VIEW->insertText("\n");
+        CURRENT_VIEW->document()->endEditing();
         current_view_newLineHook();
         break;
       case 8:
@@ -407,22 +413,19 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, "", THIS->mainForm, "", "KTextEditor::Document" );
+      factory->createPart( 0, THIS->mainForm, "KTextEditor::Document" );
   // Set the file name for printing.
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
     doc->closeStream();
   // Create View object.
-  KTextEditor::View *newView = (KTextEditor::View *) doc->createView( centralWidget(), 0L );
+  KTextEditor::View *newView = (KTextEditor::View *) doc->createView(centralWidget());
   newView->hide();
   newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
   // Set highlighting mode.
-  uint cnt=newView->document()->hlModeCount(), i;
-  for (i=0; i<cnt; i++) {
-    if (!newView->document()->hlModeName(i).compare(hlModeName)) break;
-  }
-  if (i==cnt) i=0;
-  newView->document()->setHlMode(i);
+  KTextEditor::HighlightingInterface *hliface
+    =qobject_cast<KTextEditor::HighlightingInterface*>(newView->document());
+  hliface->setHighlighting(hlModeName);
   // Set options.
   newView->setDynWordWrap(FALSE);
   if (preferences.removeTrailingSpaces)
@@ -510,9 +513,11 @@ void SourceFileWindow::fileSaveAs()
   } else {
     if (saveFileName.compare(THIS->fileName)) {
       // Update the file name for printing.
-      int line,col,hlMode;
+      int line,col;
       QString fileText=CURRENT_VIEW->document()->text();
-      hlMode=CURRENT_VIEW->document()->hlMode();
+      KTextEditor::HighlightingInterface *hliface
+        =qobject_cast<KTextEditor::HighlightingInterface*>(CURRENT_VIEW->document());
+      QString hlMode=hliface->highlighting();
       CURRENT_VIEW->cursorPosition().position(line,col);
       CURRENT_VIEW->document()->setModified(FALSE);
       if (CURRENT_VIEW->document()->openStream("text/plain",saveFileName))
@@ -520,7 +525,7 @@ void SourceFileWindow::fileSaveAs()
       SET_TEXT_SAFE(CURRENT_VIEW->document(),fileText);
       CURRENT_VIEW->document()->clearUndo();
       CURRENT_VIEW->document()->clearRedo();
-      CURRENT_VIEW->document()->setHlMode(hlMode);
+      hliface->setHighlighting(hlMode);
       CURRENT_VIEW->setCursorPositionReal(line,col);
       // Update the caption
       setCaption(caption().left(caption().find('-')+2)+saveFileName);
@@ -561,7 +566,7 @@ void SourceFileWindow::applyPreferences()
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
-    factory->createPart( 0, "", this, "", "KTextEditor::Document" );
+    factory->createPart( 0, this, "KTextEditor::Document" );
   KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
   unsigned numConfigPages=confInterfaceExt->configPages();
   for (unsigned i=0; i<numConfigPages; i++) {
@@ -583,12 +588,9 @@ void SourceFileWindow::applyPreferences()
     kateView->setTabWidth(THIS->isASMFile?preferences.tabWidthAsm:
                           THIS->isCFile?preferences.tabWidthC:8);
     // Kate seems really insisting on making it a pain to update syntax highlighting settings.
-    unsigned cnt=kateView->document()->hlModeCount(), i;
-    for (i=0; i<cnt; i++) {
-      if (kateView->document()->hlModeName(i)==HL_MODE) break;
-    }
-    if (i==cnt) i=0;
-    kateView->document()->setHlMode(i);
+    KTextEditor::HighlightingInterface *hliface
+      =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
+    hliface->setHighlighting(HL_MODE);
     // Force redrawing to get the tab width right, repaint() is ignored for some reason.
     kateView->hide();
     kateView->show();
