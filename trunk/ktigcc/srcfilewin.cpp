@@ -476,15 +476,14 @@ void SourceFileWindow::removeTrailingSpacesFromView(void *view)
   if (!preferences.removeTrailingSpaces) return;
   KTextEditor::View *kateView=reinterpret_cast<KTextEditor::View *>(view);
   KTextEditor::Document *doc=kateView->document();
-  KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
-  editExt->editBegin();
+  doc->startEditing();
   unsigned numLines=doc->lines();
   for (unsigned i=0; i<numLines; i++) {
     QString line=doc->line(i);
     int whitespace=line.find(QRegExp("\\s+$"));
     if (whitespace>=0) doc->removeText(i,whitespace,i,line.length());
   }
-  editExt->editEnd();
+  doc->endEditing();
 }
 
 void SourceFileWindow::fileSave()
@@ -967,8 +966,7 @@ void SourceFileWindow::findReplace_replace(const QString &text, int replacementI
     selEndLine=THIS->kreplace->selEndLine();
     selEndCol=THIS->kreplace->selEndCol();
   }
-  KTextEditor::EditInterfaceExt *editinterfaceext=KTextEditor::editInterfaceExt(CURRENT_VIEW->document());
-  editinterfaceext->editBegin();
+  CURRENT_VIEW->document()->startEditing();
   CURRENT_VIEW->document()->insertText(THIS->kreplace->replaceCurrentLine,replacementIndex,
                                      text.mid(replacementIndex,replacedLength));
   // We can't put the cursor back now because this breaks editBegin/editEnd.
@@ -976,7 +974,7 @@ void SourceFileWindow::findReplace_replace(const QString &text, int replacementI
                      && CURRENT_VIEW->cursorColumnReal()==(unsigned)replacementIndex+(unsigned)replacedLength);
   CURRENT_VIEW->document()->removeText(THIS->kreplace->replaceCurrentLine,replacementIndex+replacedLength,
                                      THIS->kreplace->replaceCurrentLine,replacementIndex+replacedLength+matchedLength);
-  editinterfaceext->editEnd();
+  CURRENT_VIEW->document()->endEditing();
   if (updateCursor)
     CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(THIS->kreplace->replaceCurrentLine,replacementIndex));
   if (update) {
@@ -1255,11 +1253,10 @@ void SourceFileWindow::current_view_charactersInteractivelyInserted(int line, in
         if (indent.contains(QRegExp("^\\s*\\{$"))) {
           indent=indent.remove('{');
           QString cursorLine=indent+"\t";
-          KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
-          editExt->editBegin();
+          doc->startEditing();
           doc->insertLine(line+1,cursorLine);
           doc->insertLine(line+2,indent+"}");
-          editExt->editEnd();
+          doc->endEditing();
           CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line+1,cursorLine.length()));
         }
       }
@@ -1283,12 +1280,11 @@ void SourceFileWindow::current_view_newLineHook()
       // Remove everything starting from the first non-whitespace character.
       indent=indent.remove(QRegExp("(?!\\s).*$"));
       QString cursorLine=indent+"\t";
-      KTextEditor::EditInterfaceExt *editExt=KTextEditor::editInterfaceExt(doc);
-      editExt->editBegin();
+      doc->startEditing();
       doc->removeText(line,0,line,col);
       doc->insertLine(line,cursorLine);
       doc->insertText(line+1,0,indent+"}");
-      editExt->editEnd();
+      doc->endEditing();
       CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line,cursorLine.length()));
     }
   }
