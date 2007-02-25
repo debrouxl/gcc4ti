@@ -1298,7 +1298,23 @@ void MainForm::accel_activated(int index)
       case 4: editPaste(); break;
       case 5: // F1 context help
       {
-        QString wordUnderCursor=CURRENT_VIEW->currentWord();
+        int line,col,i;
+        CURRENT_VIEW->cursorPosition().position(line,col);
+        QString textLine=CURRENT_VIEW->document()->line(line);
+        QString wordUnderCursor;
+        for (i=col-1;i>=0;i--) {
+          QChar c=textLine[i];
+          if ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9')
+              || c=='_' || c=='$' || c=='#')
+            wordUnderCursor.prepend(c);
+        }
+        int len=textLine.length();
+        for (i=col;i<len;i++) {
+          QChar c=textLine[i];
+          if ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9')
+              || c=='_' || c=='$' || c=='#')
+            wordUnderCursor.append(c);
+        }
         // always open at least the index
         force_qt_assistant_page(1);
         assistant->openAssistant();
@@ -3466,8 +3482,25 @@ void MainForm::findFindSymbolDeclaration()
       QString symbolFile;
       unsigned symbolLine;
       bool systemHeader;
-      if (findSymbolInFile(CURRENT_VIEW->currentWord(),fileText,fileName,this,
-                           symbolFile,symbolLine,systemHeader)
+      int line,col,i;
+      CURRENT_VIEW->cursorPosition().position(line,col);
+      QString textLine=CURRENT_VIEW->document()->line(line);
+      QString wordUnderCursor;
+      for (i=col-1;i>=0;i--) {
+        QChar c=textLine[i];
+        if ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9')
+            || c=='_' || c=='$' || c=='#')
+          wordUnderCursor.prepend(c);
+      }
+      int len=textLine.length();
+      for (i=col;i<len;i++) {
+        QChar c=textLine[i];
+        if ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9')
+            || c=='_' || c=='$' || c=='#')
+          wordUnderCursor.append(c);
+      }
+      if (findSymbolInFile(wordUnderCursor,fileText,fileName,this,symbolFile,
+                           symbolLine,systemHeader)
           && !symbolFile.isNull()) {
         if (symbolFile==fileName)
           CURRENT_VIEW->setCursorPositionReal(symbolLine,0);
