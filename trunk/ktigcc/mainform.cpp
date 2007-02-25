@@ -1740,6 +1740,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   KTextEditor::ConfigInterface *configiface
     =qobject_cast<KTextEditor::ConfigInterface*>(newView);
   configiface->setConfigValue("dynamic-word-wrap",false);
+#if 0 // FIXME: remove spaces, tab width
   if (preferences.removeTrailingSpaces)
     newView->document()->setConfigFlags(newView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   else
@@ -1749,6 +1750,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
     8
   );
+#endif
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
@@ -1758,8 +1760,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   // Set text.
   SET_TEXT_SAFE(newView->document(),fileText);
   newView->document()->setModified(FALSE);
-  newView->document()->clearUndo();
-  newView->document()->clearRedo();
+// FIXME
+//  newView->document()->clearUndo();
+//  newView->document()->clearRedo();
   newView->setCursorPositionReal(0,0);
   return newView;
 }
@@ -1842,11 +1845,13 @@ void MainForm::adoptSourceFile(void *srcFile)
       C_HL_MODE:
     "None")));
   // Set options.
+#if 0 // FIXME: tab width
   newView->setTabWidth(
     (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
     8
   );
+#endif
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
@@ -2252,8 +2257,9 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
       if (theFile->kateView->document()->openStream("text/plain",saveFileName))
         theFile->kateView->document()->closeStream();
       SET_TEXT_SAFE(theFile->kateView->document(),fileText);
-      theFile->kateView->document()->clearUndo();
-      theFile->kateView->document()->clearRedo();
+// FIXME
+//      theFile->kateView->document()->clearUndo();
+//      theFile->kateView->document()->clearRedo();
       hliface->setHighlighting(hlMode);
       theFile->kateView->setCursorPositionReal(line,col);
     }
@@ -2329,8 +2335,9 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
             if (theFile->kateView->document()->openStream("text/plain",saveFileName))
               theFile->kateView->document()->closeStream();
             SET_TEXT_SAFE(theFile->kateView->document(),fileText);
-            theFile->kateView->document()->clearUndo();
-            theFile->kateView->document()->clearRedo();
+// FIXME
+//            theFile->kateView->document()->clearUndo();
+//            theFile->kateView->document()->clearRedo();
             hliface->setHighlighting(hlMode);
             theFile->kateView->setCursorPositionReal(line,col);
           }
@@ -2492,7 +2499,7 @@ void MainForm::filePreferences()
       KLibLoader::self()->factory ("libkatepart");
     if (!factory) qFatal("Failed to load KatePart");
     KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart( 0, this, "KTextEditor::Document" );
+      factory->createPart(0,this,"KTextEditor::Document");
     KTextEditor::HighlightingInterface *hliface
       =qobject_cast<KTextEditor::HighlightingInterface*>(doc);
     hliface->setHighlighting("Asm6502"); // Don't ask...
@@ -2522,6 +2529,7 @@ void MainForm::filePreferences()
         if (kateView) {
           QString fileText=kateView->document()->text();
           CATEGORY_OF(category,item);
+#if 0 // FIXME: remove spaces, tab width
           if (preferences.removeTrailingSpaces)
             kateView->document()->setConfigFlags(kateView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
           else
@@ -2531,6 +2539,7 @@ void MainForm::filePreferences()
             (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
             8
           );
+#endif
           // Kate seems really insisting on making it a pain to update syntax highlighting settings.
           KTextEditor::HighlightingInterface *hliface
             =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
@@ -6208,8 +6217,9 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
         if (theFile->kateView->document()->openStream("text/plain",newFileName))
           theFile->kateView->document()->closeStream();
         SET_TEXT_SAFE(theFile->kateView->document(),fileText);
-        theFile->kateView->document()->clearUndo();
-        theFile->kateView->document()->clearRedo();
+// FIXME
+//        theFile->kateView->document()->clearUndo();
+//        theFile->kateView->document()->clearRedo();
         hliface->setHighlighting(hlMode);
         theFile->kateView->setCursorPositionReal(line,col);
         theFile->kateView->document()->setModified(modified);
@@ -6277,8 +6287,9 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
           if (static_cast<ListViewFile *>(item)->kateView) {
             SET_TEXT_SAFE(static_cast<ListViewFile *>(item)->kateView->document(),fileText);
             static_cast<ListViewFile *>(item)->kateView->document()->setModified(FALSE);
-            static_cast<ListViewFile *>(item)->kateView->document()->clearUndo();
-            static_cast<ListViewFile *>(item)->kateView->document()->clearRedo();
+// FIXME
+//            static_cast<ListViewFile *>(item)->kateView->document()->clearUndo();
+//            static_cast<ListViewFile *>(item)->kateView->document()->clearRedo();
             updateRightStatusLabel();
           } else {
             static_cast<ListViewFile *>(item)->textBuffer=fileText;

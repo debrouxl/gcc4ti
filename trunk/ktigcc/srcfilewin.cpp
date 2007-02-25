@@ -431,11 +431,13 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   KTextEditor::ConfigInterface *configiface
     =qobject_cast<KTextEditor::ConfigInterface*>(newView);
   configiface->setConfigValue("dynamic-word-wrap",false);
+#if 0 // FIXME: remove spaces, tab width
   if (preferences.removeTrailingSpaces)
     newView->document()->setConfigFlags(newView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   else
     newView->document()->setConfigFlags(newView->document()->configFlags()&~(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
   newView->setTabWidth(tabWidth);
+#endif
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
@@ -445,8 +447,9 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   // Set text.
   SET_TEXT_SAFE(newView->document(),fileText);
   newView->document()->setModified(FALSE);
-  newView->document()->clearUndo();
-  newView->document()->clearRedo();
+// FIXME
+//  newView->document()->clearUndo();
+//  newView->document()->clearRedo();
   newView->setCursorPositionReal(0,0);
   return newView;
 }
@@ -526,8 +529,9 @@ void SourceFileWindow::fileSaveAs()
       if (CURRENT_VIEW->document()->openStream("text/plain",saveFileName))
         CURRENT_VIEW->document()->closeStream();
       SET_TEXT_SAFE(CURRENT_VIEW->document(),fileText);
-      CURRENT_VIEW->document()->clearUndo();
-      CURRENT_VIEW->document()->clearRedo();
+// FIXME
+//      CURRENT_VIEW->document()->clearUndo();
+//      CURRENT_VIEW->document()->clearRedo();
       hliface->setHighlighting(hlMode);
       CURRENT_VIEW->setCursorPositionReal(line,col);
       // Update the caption
@@ -569,7 +573,7 @@ void SourceFileWindow::applyPreferences()
     KLibLoader::self()->factory ("libkatepart");
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
-    factory->createPart( 0, this, "KTextEditor::Document" );
+    factory->createPart(0,this,"KTextEditor::Document");
   KTextEditor::ConfigInterfaceExtension *confInterfaceExt = KTextEditor::configInterfaceExtension(doc);
   unsigned numConfigPages=confInterfaceExt->configPages();
   for (unsigned i=0; i<numConfigPages; i++) {
@@ -584,12 +588,14 @@ void SourceFileWindow::applyPreferences()
   KTextEditor::View *kateView=CURRENT_VIEW;
   if (kateView) {
     QString fileText=kateView->document()->text();
+#if 0 // FIXME: remove spaces, tab width
     if (preferences.removeTrailingSpaces)
       kateView->document()->setConfigFlags(kateView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
     else
       kateView->document()->setConfigFlags(kateView->document()->configFlags()&~(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
     kateView->setTabWidth(THIS->isASMFile?preferences.tabWidthAsm:
                           THIS->isCFile?preferences.tabWidthC:8);
+#endif
     // Kate seems really insisting on making it a pain to update syntax highlighting settings.
     KTextEditor::HighlightingInterface *hliface
       =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
@@ -1320,8 +1326,9 @@ void SourceFileWindow::KDirWatch_dirty(const QString &fileName)
       }
       SET_TEXT_SAFE(CURRENT_VIEW->document(),fileText);
       CURRENT_VIEW->document()->setModified(FALSE);
-      CURRENT_VIEW->document()->clearUndo();
-      CURRENT_VIEW->document()->clearRedo();
+// FIXME
+//      CURRENT_VIEW->document()->clearUndo();
+//      CURRENT_VIEW->document()->clearRedo();
       updateRightStatusLabel();
     }
   }
