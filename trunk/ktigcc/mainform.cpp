@@ -652,12 +652,12 @@ void DnDListView::dropEvent(QDropEvent *e) {
   } else e->ignore();
 }
 
-virtual void DnDListView::dragEnterEvent(QDragEnterEvent *e) {
+void DnDListView::dragEnterEvent(QDragEnterEvent *e) {
   if (!compiling && e->source()==this&&(e->provides("x-ktigcc-dnd")))
         e->accept();
 }
 
-virtual void DnDListView::dragMoveEvent(QDragMoveEvent *e) {
+void DnDListView::dragMoveEvent(QDragMoveEvent *e) {
   if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
     Q3ListViewItem *currItem;
     currItem = *reinterpret_cast<Q3ListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
