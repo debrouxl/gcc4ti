@@ -37,7 +37,7 @@ void ToolProperties::init()
     toolTitle->setText(tool.title);
     commandLine->setText(tool.commandLine);
     if (!tool.workingDirectory.isEmpty())
-      workingDirectory->setUrl(KUrl::fromPathOrUrl(tool.workingDirectory));
+      workingDirectory->setUrl(KUrl(tool.workingDirectory));
     runInTerminal->setChecked(tool.runInTerminal);
   }
 }
