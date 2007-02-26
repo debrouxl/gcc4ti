@@ -547,7 +547,7 @@ class DnDListView : public KListView {
                 && static_cast<ListViewFile *>(currItem)->kateView) {
               // update highlighting mode
               uint cnt=static_cast<ListViewFile *>(currItem)->kateView->getDoc()->hlModeCount(), i;
-              QString fileText=static_cast<ListViewFile *>(currItem)->textBuffer;
+              QString fileText=static_cast<ListViewFile *>(currItem)->kateView->getDoc()->text();
               for (i=0; i<cnt; i++) {
                 if (!static_cast<ListViewFile *>(currItem)->kateView->getDoc()->hlModeName(i).compare(
                     (destCategory==qllFilesListItem?
