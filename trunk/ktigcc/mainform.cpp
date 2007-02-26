@@ -716,10 +716,10 @@ class ErrorListItem : public K3ListViewItem {
   public:
   ErrorListItem(MainForm *pMainForm, ErrorTypes errType,
                 const QString &errFile, const QString &errFunc,
-                const QString &errMsg, unsigned errLine, unsigned errColumn)
+                const QString &errMsg, int errLine, int errColumn)
     : K3ListViewItem(errorList->errorListView,
                     errorList->errorListView->lastItem()),
-      lvFile(0), srcFile(0), cursor(0), errorLine((unsigned)-1), errorColumn(0),
+      lvFile(0), srcFile(0), cursor(0), errorLine(-1), errorColumn(0),
       mainForm(pMainForm), errorType(errType)
   {
     QString errMessage=errMsg.trimmed();
@@ -771,8 +771,8 @@ class ErrorListItem : public K3ListViewItem {
         findSourceFile(errFile);
       }
     }
-    if (errLine!=(unsigned)-1 && (lvFile || srcFile)) {
-      if (errColumn==(unsigned)-1) errColumn=0;
+    if (errLine!=-1 && (lvFile || srcFile)) {
+      if (errColumn==-1) errColumn=0;
       const LineStartList &lineStartList=lvFile?lvFile->lineStartList
                                                :srcFile->lineStartList;
       if (lineStartList.isEmpty()) {
@@ -780,8 +780,8 @@ class ErrorListItem : public K3ListViewItem {
         errorColumn=errColumn;
       } else if (errLine<lineStartList.count()) {
         QPair<unsigned,unsigned> pos=lineStartList[errLine];
-        errorLine=pos.first;
-        errorColumn=pos.second+errColumn;
+        errorLine=(int)pos.first;
+        errorColumn=(int)pos.second+errColumn;
       }
       createCursor();
     }
@@ -812,7 +812,7 @@ class ErrorListItem : public K3ListViewItem {
   virtual int rtti(void) const {return static_cast<int>(errorType);}
   void createCursor(void)
   {
-    if (errorLine!=(unsigned)-1) {
+    if (errorLine!=-1) {
       KTextEditor::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
                              :static_cast<KTextEditor::View *>(NULL));
       if (kateView && errorLine<kateView->document()->lines()) {
@@ -827,10 +827,10 @@ class ErrorListItem : public K3ListViewItem {
             if (!token.isEmpty()) {
               // Skip whitespace up to this token. TIGCC IDE does that too. Must
               // have something to do with how source splitting works.
-              unsigned i=errorColumn;
+              int i=errorColumn;
               QString textLine=kateView->document()->line(errorLine);
-              unsigned lineLength=kateView->document()->lineLength(errorLine);
-              unsigned tokenLength=token.length();
+              int lineLength=kateView->document()->lineLength(errorLine);
+              int tokenLength=token.length();
               while ((i<lineLength) && textLine[i].isSpace()
                      && textLine.mid(i,tokenLength)!=token) i++;
               if (textLine.mid(i,tokenLength)==token) errorColumn=i;
@@ -862,8 +862,8 @@ class ErrorListItem : public K3ListViewItem {
   SourceFile *srcFile;
   KTextEditor::Cursor *cursor;
   private:
-  unsigned errorLine;
-  unsigned errorColumn;
+  int errorLine;
+  int errorColumn;
   MainForm *mainForm;
   ErrorTypes errorType;
   bool findSourceFile(const QString &fileName)
@@ -2191,8 +2191,8 @@ void MainForm::removeTrailingSpacesFromView(void *view)
   KTextEditor::View *kateView=reinterpret_cast<KTextEditor::View *>(view);
   KTextEditor::Document *doc=kateView->document();
   doc->startEditing();
-  unsigned numLines=doc->lines();
-  for (unsigned i=0; i<numLines; i++) {
+  int numLines=doc->lines();
+  for (int i=0; i<numLines; i++) {
     QString line=doc->line(i);
     int whitespace=line.find(QRegExp("\\s+$"));
     if (whitespace>=0) doc->removeText(KTextEditor::Range(i,whitespace,i,line.length()));
@@ -3444,7 +3444,7 @@ void MainForm::findOpenFileAtCursor()
 }
 
 void MainForm::openHeader(const QString &fileName, bool systemHeader,
-                          unsigned lineno)
+                          int lineno)
 {
   if (systemHeader) {
     // Don't do this if the name ends with ".tpr" because that would cause
@@ -3846,7 +3846,7 @@ void MainForm::procio_processExited()
 
 void MainForm::procio_readReady()
 {
-  static unsigned a68kErrorLine=0; // A68k errors are split onto several lines.
+  static int a68kErrorLine=0; // A68k errors are split onto several lines.
   static int errorLine, errorColumn;
   static QString errorFile;
   QString line;
@@ -3925,7 +3925,7 @@ void MainForm::procio_readReady()
                   errorFlag=TRUE;
                   new ErrorListItem(this,line.startsWith("please fill out ",FALSE)?
                                     etInfo:etError,QString::null,QString::null,line,
-                                    (unsigned)errorLine,(unsigned)errorColumn);
+                                    errorLine,errorColumn);
                 } else {
                   QString errorMessage;
                   if (errorFile.lower()=="error"||errorFile.lower()=="warning") {
@@ -3982,8 +3982,7 @@ void MainForm::procio_readReady()
                       errorMessage.append('.');
                     if (errorType==etError) errorFlag=TRUE;
                     new ErrorListItem(this,errorType,errorFile,errorFunction,
-                                      errorMessage,(unsigned)errorLine,
-                                      (unsigned)errorColumn);
+                                      errorMessage,errorLine,errorColumn);
                   } else {
                     if (errorMessage.startsWith(" in function \'",FALSE)
                         && errorMessage.contains('\'')>1) {
@@ -4004,8 +4003,7 @@ void MainForm::procio_readReady()
                         errorMessage.append('.');
                       if (errorType==etError) errorFlag=TRUE;
                       new ErrorListItem(this,errorType,errorFile,QString::null,
-                                        errorMessage,(unsigned)errorLine,
-                                        (unsigned)errorColumn);
+                                        errorMessage,errorLine,errorColumn);
                     }
                   }
                 }
@@ -4022,7 +4020,7 @@ void MainForm::procio_readReady()
                 errorMessage.append('.');
               errorFlag=TRUE;
               new ErrorListItem(this,etError,errorFile,QString::null,errorMessage,
-                                (unsigned)errorLine,(unsigned)errorColumn);
+                                errorLine,errorColumn);
             }
             a68kErrorLine=0;
             break;
@@ -4155,8 +4153,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                          &err);
       if (err) {
         new ErrorListItem(this,etError,QString::null,QString::null,
-                          "Invalid A68k assembler command line options.",
-                          (unsigned)-1,(unsigned)-1);
+                          "Invalid A68k assembler command line options.",-1,-1);
         stopCompilingFlag=TRUE;
       }
       if (!stopCompilingFlag) {
@@ -4199,8 +4196,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                            &err);
         if (err) {
           new ErrorListItem(this,etError,QString::null,QString::null,
-                            "Invalid C compiler command line options.",
-                            (unsigned)-1,(unsigned)-1);
+                            "Invalid C compiler command line options.",-1,-1);
           stopCompilingFlag=TRUE;
         }
         if (!stopCompilingFlag) {
@@ -4275,7 +4271,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
             if (copyFile(tempAsmFile.ascii(),asmFile.ascii())) {
               new ErrorListItem(this,etError,QString::null,QString::null,
                                 "Failed to copy assembly file from temporary directory.",
-                                (unsigned)-1,(unsigned)-1);
+                                -1,-1);
               stopCompilingFlag=TRUE;
             }
           }
@@ -4294,8 +4290,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
                                            &err);
         if (err) {
           new ErrorListItem(this,etError,QString::null,QString::null,
-                            "Invalid GNU assembler command line options.",
-                            (unsigned)-1,(unsigned)-1);
+                            "Invalid GNU assembler command line options.",-1,-1);
           stopCompilingFlag=TRUE;
         }
         if (!stopCompilingFlag) {
@@ -4337,7 +4332,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
       if (copyFile(tempObjectFile.ascii(),objectFile.ascii())) {
         new ErrorListItem(this,etError,QString::null,QString::null,
                           "Failed to copy object file from temporary directory.",
-                          (unsigned)-1,(unsigned)-1);
+                          -1,-1);
         stopCompilingFlag=TRUE;
       }
       qdir.remove(tempObjectFile);
@@ -4451,8 +4446,7 @@ void MainForm::linkProject()
           if (!moveFile(linkOutput+dexts[target],
                         projectBaseName+"-data"+dexts[target])) {
             new ErrorListItem(this,etError,QString::null,QString::null,
-                              "Failed to rename data file.",
-                              (unsigned)-1,(unsigned)-1);
+                              "Failed to rename data file.",-1,-1);
             errorsCompilingFlag=TRUE;
           }
           if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4467,7 +4461,7 @@ void MainForm::linkProject()
                      projectBaseName+".dbg")) {
           new ErrorListItem(this,etError,QString::null,QString::null,
                             "Failed to copy debug info file from temporary directory.",
-                            (unsigned)-1,(unsigned)-1);
+                            -1,-1);
           errorsCompilingFlag=TRUE;
         }
       }
@@ -4549,7 +4543,7 @@ void MainForm::linkProject()
                          projectBaseName+cexts[target],packName)) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to copy PPG from temporary directory.",
-                              (unsigned)-1,(unsigned)-1);
+                              -1,-1);
             errorsCompilingFlag=TRUE;
           }
           if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4561,7 +4555,7 @@ void MainForm::linkProject()
                      pstarterBaseName+".o",packName)) {
         new ErrorListItem(this,etError,QString::null,QString::null,
                           "Failed to copy pstarter.o to temporary directory.",
-                          (unsigned)-1,(unsigned)-1);
+                          -1,-1);
         errorsCompilingFlag=TRUE;
       }
       if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4595,7 +4589,7 @@ void MainForm::linkProject()
                        projectBaseName+exts[target])) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to copy pstarter from temporary directory.",
-                              (unsigned)-1,(unsigned)-1);
+                              -1,-1);
             errorsCompilingFlag=TRUE;
           }
           if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4651,8 +4645,7 @@ void MainForm::linkProject()
                                        &err);
     if (err) {
       new ErrorListItem(this,etError,QString::null,QString::null,
-                        "Invalid post-build command line.",(unsigned)-1,
-                        (unsigned)-1);
+                        "Invalid post-build command line.",-1,-1);
       errorsCompilingFlag=TRUE;
     }
     if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -6172,7 +6165,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
       if ((prjName[i+1]>='0'&&prjName[i+1]<='9')||prjName[i+1]=='_')
         prjName.insert(i+1,'X');
       prjName.truncate(i+9);
-      if (prjName.length()==(unsigned)i+1) prjName.append("Project1");
+      if (prjName.length()==i+1) prjName.append("Project1");
     } else prjName.truncate(8);
     item->setText(0,prjName);
     projectIsDirty=true;
