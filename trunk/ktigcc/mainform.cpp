@@ -80,6 +80,7 @@ class DnDListView : public K3ListView {
 #include <qclipboard.h>
 #include <q3accel.h>
 #include <qeventloop.h>
+#include <QCoreApplication>
 #include <q3dockwindow.h>
 #include <qfileinfo.h>
 #include <qdatetime.h>
@@ -3839,13 +3840,13 @@ void MainForm::procio_processExited()
 {
   // If we're in a modal dialog, let it complete or exiting the event loop will
   // crash.
-  if (QApplication::eventLoop()->loopLevel()>2) {
+  if (QCoreApplication::loopLevel()>2) {
     QTimer::singleShot(100,this,SLOT(procio_processExited()));
     return;
   }
   errorFunction=QString::null;
   ldTigccStatPhase=0;
-  QApplication::eventLoop()->exitLoop();
+  QCoreApplication::exit_loop();
 }
 
 
@@ -4183,7 +4184,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
         // We need to block here, but events still need to be handled. The most
         // effective way to do this is to enter the event loop recursively,
         // even though it is not recommended by Qt.
-        QApplication::eventLoop()->enterLoop();
+        QCoreApplication::enter_loop();
         // This will be reached only after exitLoop() is called.
         delete procio;
         procio=static_cast<KProcIO *>(NULL);
@@ -4241,7 +4242,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           // We need to block here, but events still need to be handled. The most
           // effective way to do this is to enter the event loop recursively,
           // even though it is not recommended by Qt.
-          QApplication::eventLoop()->enterLoop();
+          QCoreApplication::enter_loop();
           // This will be reached only after exitLoop() is called.
           delete procio;
           procio=static_cast<KProcIO *>(NULL);
@@ -4264,7 +4265,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           // We need to block here, but events still need to be handled. The most
           // effective way to do this is to enter the event loop recursively,
           // even though it is not recommended by Qt.
-          QApplication::eventLoop()->enterLoop();
+          QCoreApplication::enter_loop();
           // This will be reached only after exitLoop() is called.
           delete procio;
           procio=static_cast<KProcIO *>(NULL);
@@ -4323,7 +4324,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           // We need to block here, but events still need to be handled. The most
           // effective way to do this is to enter the event loop recursively,
           // even though it is not recommended by Qt.
-          QApplication::eventLoop()->enterLoop();
+          QCoreApplication::enter_loop();
           // This will be reached only after exitLoop() is called.
           delete procio;
           procio=static_cast<KProcIO *>(NULL);
@@ -4391,7 +4392,7 @@ void MainForm::linkProject()
     // We need to block here, but events still need to be handled. The most
     // effective way to do this is to enter the event loop recursively,
     // even though it is not recommended by Qt.
-    QApplication::eventLoop()->enterLoop();
+    QCoreApplication::enter_loop();
     // This will be reached only after exitLoop() is called.
     delete procio;
     procio=static_cast<KProcIO *>(NULL);
@@ -4432,7 +4433,7 @@ void MainForm::linkProject()
     // We need to block here, but events still need to be handled. The most
     // effective way to do this is to enter the event loop recursively,
     // even though it is not recommended by Qt.
-    QApplication::eventLoop()->enterLoop();
+    QCoreApplication::enter_loop();
     // This will be reached only after exitLoop() is called.
     delete procio;
     procio=static_cast<KProcIO *>(NULL);
@@ -4504,7 +4505,7 @@ void MainForm::linkProject()
           // We need to block here, but events still need to be handled. The most
           // effective way to do this is to enter the event loop recursively,
           // even though it is not recommended by Qt.
-          QApplication::eventLoop()->enterLoop();
+          QCoreApplication::enter_loop();
           // This will be reached only after exitLoop() is called.
           delete procio;
           procio=static_cast<KProcIO *>(NULL);
@@ -4537,7 +4538,7 @@ void MainForm::linkProject()
           // We need to block here, but events still need to be handled. The most
           // effective way to do this is to enter the event loop recursively,
           // even though it is not recommended by Qt.
-          QApplication::eventLoop()->enterLoop();
+          QCoreApplication::enter_loop();
           // This will be reached only after exitLoop() is called.
           delete procio;
           procio=static_cast<KProcIO *>(NULL);
@@ -4582,7 +4583,7 @@ void MainForm::linkProject()
       // We need to block here, but events still need to be handled. The most
       // effective way to do this is to enter the event loop recursively,
       // even though it is not recommended by Qt.
-      QApplication::eventLoop()->enterLoop();
+      QCoreApplication::enter_loop();
       // This will be reached only after exitLoop() is called.
       delete procio;
       procio=static_cast<KProcIO *>(NULL);
@@ -4669,7 +4670,7 @@ void MainForm::linkProject()
     // We need to block here, but events still need to be handled. The most
     // effective way to do this is to enter the event loop recursively,
     // even though it is not recommended by Qt.
-    QApplication::eventLoop()->enterLoop();
+    QCoreApplication::enter_loop();
     // This will be reached only after exitLoop() is called.
     delete procio;
     procio=static_cast<KProcIO *>(NULL);
@@ -4903,7 +4904,7 @@ void MainForm::debugRun()
             } while (!tiemuDBus);
           }
           // Wait for TiEmu to get ready.
-          bool ready;
+          bool ready=false;
           do {
             usleep(100000);
             QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,100);
