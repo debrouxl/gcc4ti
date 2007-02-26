@@ -1145,10 +1145,11 @@ void MainForm::init()
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
-    fileNewActionGroup->setIcon(KIcon("filenew"));
+// FIXME: action group icon
+//    fileNewActionGroup->setIcon(KIcon("filenew"));
     fileMenu->changeItem(fileMenu->idAt(0),KIcon("filenew"),"&New");
     fileOpenAction->setIcon(KIcon("fileopen"));
-    fileOpenActionGroup->setIcon(KIcon("fileopen"));
+//    fileOpenActionGroup->setIcon(KIcon("fileopen"));
     fileSaveAllAction->setIcon(KIcon("filesave"));
     filePrintAction->setIcon(KIcon("fileprint"));
     filePrintQuicklyAction->setIcon(KIcon("fileprint"));
@@ -2597,10 +2598,11 @@ void MainForm::filePreferences()
     // Apply the icon preferences.
     setUsesBigPixmaps(preferences.useSystemIcons);
     if (preferences.useSystemIcons) {
-      fileNewActionGroup->setIcon(KIcon("filenew"));
+// FIXME: action group icon
+//      fileNewActionGroup->setIcon(KIcon("filenew"));
       fileMenu->changeItem(fileMenu->idAt(0),KIcon("filenew"),"&New");
       fileOpenAction->setIcon(KIcon("fileopen"));
-      fileOpenActionGroup->setIcon(KIcon("fileopen"));
+//      fileOpenActionGroup->setIcon(KIcon("fileopen"));
       fileSaveAllAction->setIcon(KIcon("filesave"));
       filePrintAction->setIcon(KIcon("fileprint"));
       filePrintQuicklyAction->setIcon(KIcon("fileprint"));
@@ -2634,10 +2636,11 @@ void MainForm::filePreferences()
       toolsConfigureAction->setIcon(KIcon("configure"));
       debugResetAction->setIcon(KIcon("player_stop"));
     } else {
-      fileNewActionGroup->setIcon(QIcon(qPixmapFromMimeSource("00")));
+// FIXME: action group icon
+//      fileNewActionGroup->setIcon(QIcon(qPixmapFromMimeSource("00")));
       fileMenu->changeItem(fileMenu->idAt(0),QIcon(qPixmapFromMimeSource("00")),"&New");
       fileOpenAction->setIcon(QIcon(qPixmapFromMimeSource("01")));
-      fileOpenActionGroup->setIcon(QIcon(qPixmapFromMimeSource("01")));
+//      fileOpenActionGroup->setIcon(QIcon(qPixmapFromMimeSource("01")));
       fileSaveAllAction->setIcon(QIcon(qPixmapFromMimeSource("02")));
       filePrintAction->setIcon(QIcon(qPixmapFromMimeSource("03")));
       filePrintQuicklyAction->setIcon(QIcon(qPixmapFromMimeSource("03")));
