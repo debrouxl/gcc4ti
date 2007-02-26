@@ -24,7 +24,7 @@
 
 #include "tiemu.h"
 
-class MainForm : public Q3MainWindow, public Ui::MainForm
+class MainForm : public QMainWindow, public Ui::MainForm
 {
     Q_OBJECT
 

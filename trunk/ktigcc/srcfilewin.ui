@@ -1,618 +1,786 @@
-<ui version="4.0" stdsetdef="1" >
-  <author></author>
-  <comment></comment>
-  <exportmacro></exportmacro>
-  <class>SourceFileWindow</class>
-  <widget class="Q3MainWindow" name="SourceFileWindow" >
-    <property name="geometry" >
-      <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>794</width>
-        <height>513</height>
-      </rect>
+<ui version="4.0" >
+ <class>SourceFileWindow</class>
+ <widget class="QMainWindow" name="SourceFileWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>794</width>
+    <height>513</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>TIGCC IDE for KDE</string>
+  </property>
+  <widget class="QWidget" name="widget" >
+   <layout class="QVBoxLayout" >
+    <property name="margin" >
+     <number>0</number>
     </property>
-    <property name="windowTitle" >
-      <string>TIGCC IDE for KDE</string>
+    <property name="spacing" >
+     <number>0</number>
     </property>
-    <widget class="QWidget" >
-      <layout class="QVBoxLayout" />
-    </widget>
-    <widget class="Q3ToolBar" name="toolBar" >
-      <property name="movingEnabled" >
-        <bool>false</bool>
-      </property>
-      <property name="label" >
-        <string>Tools</string>
-      </property>
-      <addaction name="fileSaveAction" />
-      <addaction name="separator" />
-      <addaction name="filePrintQuicklyAction" />
-      <addaction name="separator" />
-      <addaction name="editClearAction" />
-      <addaction name="editCutAction" />
-      <addaction name="editCopyAction" />
-      <addaction name="editPasteAction" />
-      <addaction name="separator" />
-      <addaction name="editUndoAction" />
-      <addaction name="editRedoAction" />
-      <addaction name="separator" />
-      <addaction name="findFindAction" />
-      <addaction name="findReplaceAction" />
-      <addaction name="findFunctionsAction" />
-      <addaction name="separator" />
-      <addaction name="fileAddToProjectAction" />
-    </widget>
-    <widget class="QMenuBar" name="menubar" >
-      <widget class="QMenu" name="fileMenu" >
-        <property name="title" >
-          <string>&amp;File</string>
-        </property>
-        <addaction name="fileSaveAction" />
-        <addaction name="fileSaveAsAction" />
-        <addaction name="separator" />
-        <addaction name="fileAddToProjectAction" />
-        <addaction name="separator" />
-        <addaction name="fileCompileAction" />
-        <addaction name="separator" />
-        <addaction name="filePrintAction" />
-        <addaction name="separator" />
-        <addaction name="fileCloseAction" />
-      </widget>
-      <widget class="QMenu" name="editMenu" >
-        <property name="title" >
-          <string>&amp;Edit</string>
-        </property>
-        <addaction name="editUndoAction" />
-        <addaction name="editRedoAction" />
-        <addaction name="separator" />
-        <addaction name="editClearAction" />
-        <addaction name="editCutAction" />
-        <addaction name="editCopyAction" />
-        <addaction name="editPasteAction" />
-        <addaction name="separator" />
-        <addaction name="editSelectAllAction" />
-        <addaction name="separator" />
-        <addaction name="editIncreaseIndentAction" />
-        <addaction name="editDecreaseIndentAction" />
-      </widget>
-      <widget class="QMenu" name="PopupMenu" >
-        <property name="title" >
-          <string>F&amp;ind</string>
-        </property>
-        <addaction name="findFindAction" />
-        <addaction name="findReplaceAction" />
-        <addaction name="separator" />
-        <addaction name="findFunctionsAction" />
-        <addaction name="separator" />
-        <addaction name="findOpenFileAtCursorAction" />
-        <addaction name="findFindSymbolDeclarationAction" />
-      </widget>
-      <addaction name="fileMenu" />
-      <addaction name="editMenu" />
-      <addaction name="PopupMenu" />
-    </widget>
-    <action name="fileSaveAction" >
-      <property name="name" >
-        <cstring>fileSaveAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/02</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Save</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Save</string>
-      </property>
-      <property name="statusTip" >
-        <string>Save the file</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+S</string>
-      </property>
-    </action>
-    <action name="fileSaveAsAction" >
-      <property name="name" >
-        <cstring>fileSaveAsAction</cstring>
-      </property>
-      <property name="iconText" >
-        <string>Save As...</string>
-      </property>
-      <property name="text" >
-        <string>Save &amp;As...</string>
-      </property>
-      <property name="statusTip" >
-        <string>Save the file with another name, or in another folder</string>
-      </property>
-      <property name="shortcut" >
-        <string/>
-      </property>
-    </action>
-    <action name="filePrintAction" >
-      <property name="name" >
-        <cstring>filePrintAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/03</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Print File</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Print...</string>
-      </property>
-      <property name="statusTip" >
-        <string>Print this file</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+P</string>
-      </property>
-    </action>
-    <action name="fileCloseAction" >
-      <property name="name" >
-        <cstring>fileCloseAction</cstring>
-      </property>
-      <property name="iconText" >
-        <string>Close</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Close</string>
-      </property>
-      <property name="statusTip" >
-        <string>Close this window</string>
-      </property>
-      <property name="shortcut" >
-        <string/>
-      </property>
-    </action>
-    <action name="editUndoAction" >
-      <property name="name" >
-        <cstring>editUndoAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/16</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Undo</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Undo</string>
-      </property>
-      <property name="statusTip" >
-        <string>Undo the last operation in the editor</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+Z</string>
-      </property>
-    </action>
-    <action name="editRedoAction" >
-      <property name="name" >
-        <cstring>editRedoAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/17</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Redo</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Redo</string>
-      </property>
-      <property name="statusTip" >
-        <string>Redo the last undone operation in the editor</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+Y</string>
-      </property>
-    </action>
-    <action name="editCutAction" >
-      <property name="name" >
-        <cstring>editCutAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/05</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Cut</string>
-      </property>
-      <property name="text" >
-        <string>Cu&amp;t</string>
-      </property>
-      <property name="statusTip" >
-        <string>Copy the selected text into the clipboard and delete it</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+X</string>
-      </property>
-    </action>
-    <action name="editCopyAction" >
-      <property name="name" >
-        <cstring>editCopyAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/06</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Copy</string>
-      </property>
-      <property name="text" >
-        <string>C&amp;opy</string>
-      </property>
-      <property name="statusTip" >
-        <string>Copy the selected text into the clipboard without deleting it</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+C</string>
-      </property>
-    </action>
-    <action name="editPasteAction" >
-      <property name="name" >
-        <cstring>editPasteAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/07</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Paste</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Paste</string>
-      </property>
-      <property name="statusTip" >
-        <string>Paste text from the clipboard</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+V</string>
-      </property>
-    </action>
-    <action name="findFindAction" >
-      <property name="name" >
-        <cstring>findFindAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/13</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Find</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Find...</string>
-      </property>
-      <property name="toolTip" >
-        <string>Find Text</string>
-      </property>
-      <property name="statusTip" >
-        <string>Find the specified text in the current source file</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+F</string>
-      </property>
-    </action>
-    <action name="editClearAction" >
-      <property name="name" >
-        <cstring>editClearAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/04</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Clear</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Clear</string>
-      </property>
-      <property name="statusTip" >
-        <string>Delete the selected text in the editor</string>
-      </property>
-    </action>
-    <action name="editSelectAllAction" >
-      <property name="name" >
-        <cstring>editSelectAllAction</cstring>
-      </property>
-      <property name="iconText" >
-        <string>Select All</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Select All</string>
-      </property>
-      <property name="statusTip" >
-        <string>Select the whole text in the editor</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+A</string>
-      </property>
-    </action>
-    <action name="editIncreaseIndentAction" >
-      <property name="name" >
-        <cstring>editIncreaseIndentAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/19</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Increase Indent</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Increase Indent</string>
-      </property>
-      <property name="statusTip" >
-        <string>Insert tabs so that the text is moved to the right</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+I</string>
-      </property>
-    </action>
-    <action name="editDecreaseIndentAction" >
-      <property name="name" >
-        <cstring>editDecreaseIndentAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/20</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Decrease Indent</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Decrease Indent</string>
-      </property>
-      <property name="statusTip" >
-        <string>Remove tabs and spaces so that the text is moved to the left</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+D</string>
-      </property>
-    </action>
-    <action name="findReplaceAction" >
-      <property name="name" >
-        <cstring>findReplaceAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/14</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Replace</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Replace...</string>
-      </property>
-      <property name="toolTip" >
-        <string>Replace Text</string>
-      </property>
-      <property name="statusTip" >
-        <string>Find the specified text in the current source file and replace it with something else</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+R</string>
-      </property>
-    </action>
-    <action name="findFunctionsAction" >
-      <property name="name" >
-        <cstring>findFunctionsAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/18</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Functions...</string>
-      </property>
-      <property name="text" >
-        <string>F&amp;unctions...</string>
-      </property>
-      <property name="statusTip" >
-        <string>Display a list of all functions in the current file</string>
-      </property>
-    </action>
-    <action name="findOpenFileAtCursorAction" >
-      <property name="name" >
-        <cstring>findOpenFileAtCursorAction</cstring>
-      </property>
-      <property name="iconText" >
-        <string>Open File at Cursor</string>
-      </property>
-      <property name="text" >
-        <string>&amp;Open File at Cursor</string>
-      </property>
-      <property name="statusTip" >
-        <string>Open the file the cursor is on</string>
-      </property>
-      <property name="shortcut" >
-        <string>Ctrl+Enter</string>
-      </property>
-    </action>
-    <action name="fileAddToProjectAction" >
-      <property name="name" >
-        <cstring>fileAddToProjectAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/08</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Add to Project</string>
-      </property>
-      <property name="text" >
-        <string>A&amp;dd to Project...</string>
-      </property>
-      <property name="statusTip" >
-        <string>Add this file to the current project</string>
-      </property>
-    </action>
-    <action name="fileCompileAction" >
-      <property name="name" >
-        <cstring>fileCompileAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/09</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Compile</string>
-      </property>
-      <property name="text" >
-        <string>C&amp;ompile</string>
-      </property>
-      <property name="statusTip" >
-        <string>Compile the file</string>
-      </property>
-    </action>
-    <action name="findFindSymbolDeclarationAction" >
-      <property name="name" >
-        <cstring>findFindSymbolDeclarationAction</cstring>
-      </property>
-      <property name="iconText" >
-        <string>F&amp;ind symbol declaration</string>
-      </property>
-      <property name="text" >
-        <string>F&amp;ind symbol declaration</string>
-      </property>
-      <property name="statusTip" >
-        <string>Find symbol declaration</string>
-      </property>
-    </action>
-    <action name="filePrintQuicklyAction" >
-      <property name="name" >
-        <cstring>filePrintQuicklyAction</cstring>
-      </property>
-      <property name="icon" >
-        <iconset resource="icons.qrc" >:/images/03</iconset>
-      </property>
-      <property name="iconText" >
-        <string>Print File</string>
-      </property>
-      <property name="statusTip" >
-        <string>Print this file</string>
-      </property>
-    </action>
+   </layout>
   </widget>
-  <layoutdefault spacing="0" margin="0" />
-  <resources>
-    <include location="icons.qrc" />
-  </resources>
-  <connections>
-    <connection>
-      <sender>editClearAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editClear()</slot>
-    </connection>
-    <connection>
-      <sender>editCopyAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editCopy()</slot>
-    </connection>
-    <connection>
-      <sender>editCutAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editCut()</slot>
-    </connection>
-    <connection>
-      <sender>editDecreaseIndentAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editDecreaseIndent()</slot>
-    </connection>
-    <connection>
-      <sender>editIncreaseIndentAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editIncreaseIndent()</slot>
-    </connection>
-    <connection>
-      <sender>editPasteAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editPaste()</slot>
-    </connection>
-    <connection>
-      <sender>editRedoAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editRedo()</slot>
-    </connection>
-    <connection>
-      <sender>editSelectAllAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editSelectAll()</slot>
-    </connection>
-    <connection>
-      <sender>editUndoAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>editUndo()</slot>
-    </connection>
-    <connection>
-      <sender>fileCloseAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>close()</slot>
-    </connection>
-    <connection>
-      <sender>filePrintAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>filePrint()</slot>
-    </connection>
-    <connection>
-      <sender>fileSaveAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>fileSave()</slot>
-    </connection>
-    <connection>
-      <sender>fileSaveAsAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>fileSaveAs()</slot>
-    </connection>
-    <connection>
-      <sender>findFindAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>findFind()</slot>
-    </connection>
-    <connection>
-      <sender>findFindSymbolDeclarationAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>findFindSymbolDeclaration()</slot>
-    </connection>
-    <connection>
-      <sender>findFunctionsAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>findFunctions()</slot>
-    </connection>
-    <connection>
-      <sender>findOpenFileAtCursorAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>findOpenFileAtCursor()</slot>
-    </connection>
-    <connection>
-      <sender>findReplaceAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>findReplace()</slot>
-    </connection>
-    <connection>
-      <sender>fileAddToProjectAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>fileAddToProject()</slot>
-    </connection>
-    <connection>
-      <sender>fileCompileAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>fileCompile()</slot>
-    </connection>
-    <connection>
-      <sender>filePrintQuicklyAction</sender>
-      <signal>activated()</signal>
-      <receiver>SourceFileWindow</receiver>
-      <slot>filePrintQuickly()</slot>
-    </connection>
-  </connections>
+  <widget class="QToolBar" name="toolBar" >
+   <property name="movable" >
+    <bool>false</bool>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="iconSize" >
+    <size>
+     <width>20</width>
+     <height>20</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea" >
+    <number>4</number>
+   </attribute>
+   <addaction name="fileSaveAction" />
+   <addaction name="separator" />
+   <addaction name="filePrintQuicklyAction" />
+   <addaction name="separator" />
+   <addaction name="editClearAction" />
+   <addaction name="editCutAction" />
+   <addaction name="editCopyAction" />
+   <addaction name="editPasteAction" />
+   <addaction name="separator" />
+   <addaction name="editUndoAction" />
+   <addaction name="editRedoAction" />
+   <addaction name="separator" />
+   <addaction name="findFindAction" />
+   <addaction name="findReplaceAction" />
+   <addaction name="findFunctionsAction" />
+   <addaction name="separator" />
+   <addaction name="fileAddToProjectAction" />
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>794</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="fileMenu" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <addaction name="fileSaveAction" />
+    <addaction name="fileSaveAsAction" />
+    <addaction name="separator" />
+    <addaction name="fileAddToProjectAction" />
+    <addaction name="separator" />
+    <addaction name="fileCompileAction" />
+    <addaction name="separator" />
+    <addaction name="filePrintAction" />
+    <addaction name="separator" />
+    <addaction name="fileCloseAction" />
+   </widget>
+   <widget class="QMenu" name="editMenu" >
+    <property name="title" >
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="editUndoAction" />
+    <addaction name="editRedoAction" />
+    <addaction name="separator" />
+    <addaction name="editClearAction" />
+    <addaction name="editCutAction" />
+    <addaction name="editCopyAction" />
+    <addaction name="editPasteAction" />
+    <addaction name="separator" />
+    <addaction name="editSelectAllAction" />
+    <addaction name="separator" />
+    <addaction name="editIncreaseIndentAction" />
+    <addaction name="editDecreaseIndentAction" />
+   </widget>
+   <widget class="QMenu" name="PopupMenu" >
+    <property name="title" >
+     <string>F&amp;ind</string>
+    </property>
+    <addaction name="findFindAction" />
+    <addaction name="findReplaceAction" />
+    <addaction name="separator" />
+    <addaction name="findFunctionsAction" />
+    <addaction name="separator" />
+    <addaction name="findOpenFileAtCursorAction" />
+    <addaction name="findFindSymbolDeclarationAction" />
+   </widget>
+   <addaction name="fileMenu" />
+   <addaction name="editMenu" />
+   <addaction name="PopupMenu" />
+  </widget>
+  <action name="fileSaveAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/02</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Save</string>
+   </property>
+   <property name="iconText" >
+    <string>Save</string>
+   </property>
+   <property name="statusTip" >
+    <string>Save the file</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="fileSaveAsAction" >
+   <property name="text" >
+    <string>Save &amp;As...</string>
+   </property>
+   <property name="iconText" >
+    <string>Save As...</string>
+   </property>
+   <property name="statusTip" >
+    <string>Save the file with another name, or in another folder</string>
+   </property>
+   <property name="shortcut" >
+    <string/>
+   </property>
+  </action>
+  <action name="filePrintAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/03</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Print...</string>
+   </property>
+   <property name="iconText" >
+    <string>Print File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Print this file</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="fileCloseAction" >
+   <property name="text" >
+    <string>&amp;Close</string>
+   </property>
+   <property name="iconText" >
+    <string>Close</string>
+   </property>
+   <property name="statusTip" >
+    <string>Close this window</string>
+   </property>
+   <property name="shortcut" >
+    <string/>
+   </property>
+  </action>
+  <action name="editUndoAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/16</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Undo</string>
+   </property>
+   <property name="iconText" >
+    <string>Undo</string>
+   </property>
+   <property name="statusTip" >
+    <string>Undo the last operation in the editor</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="editRedoAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/17</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Redo</string>
+   </property>
+   <property name="iconText" >
+    <string>Redo</string>
+   </property>
+   <property name="statusTip" >
+    <string>Redo the last undone operation in the editor</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="editCutAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/05</iconset>
+   </property>
+   <property name="text" >
+    <string>Cu&amp;t</string>
+   </property>
+   <property name="iconText" >
+    <string>Cut</string>
+   </property>
+   <property name="statusTip" >
+    <string>Copy the selected text into the clipboard and delete it</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="editCopyAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/06</iconset>
+   </property>
+   <property name="text" >
+    <string>C&amp;opy</string>
+   </property>
+   <property name="iconText" >
+    <string>Copy</string>
+   </property>
+   <property name="statusTip" >
+    <string>Copy the selected text into the clipboard without deleting it</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="editPasteAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/07</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Paste</string>
+   </property>
+   <property name="iconText" >
+    <string>Paste</string>
+   </property>
+   <property name="statusTip" >
+    <string>Paste text from the clipboard</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="findFindAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/13</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Find...</string>
+   </property>
+   <property name="iconText" >
+    <string>Find</string>
+   </property>
+   <property name="toolTip" >
+    <string>Find Text</string>
+   </property>
+   <property name="statusTip" >
+    <string>Find the specified text in the current source file</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="editClearAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/04</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Clear</string>
+   </property>
+   <property name="iconText" >
+    <string>Clear</string>
+   </property>
+   <property name="statusTip" >
+    <string>Delete the selected text in the editor</string>
+   </property>
+  </action>
+  <action name="editSelectAllAction" >
+   <property name="text" >
+    <string>&amp;Select All</string>
+   </property>
+   <property name="iconText" >
+    <string>Select All</string>
+   </property>
+   <property name="statusTip" >
+    <string>Select the whole text in the editor</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="editIncreaseIndentAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/19</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Increase Indent</string>
+   </property>
+   <property name="iconText" >
+    <string>Increase Indent</string>
+   </property>
+   <property name="statusTip" >
+    <string>Insert tabs so that the text is moved to the right</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="editDecreaseIndentAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/20</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Decrease Indent</string>
+   </property>
+   <property name="iconText" >
+    <string>Decrease Indent</string>
+   </property>
+   <property name="statusTip" >
+    <string>Remove tabs and spaces so that the text is moved to the left</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="findReplaceAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/14</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Replace...</string>
+   </property>
+   <property name="iconText" >
+    <string>Replace</string>
+   </property>
+   <property name="toolTip" >
+    <string>Replace Text</string>
+   </property>
+   <property name="statusTip" >
+    <string>Find the specified text in the current source file and replace it with something else</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="findFunctionsAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/18</iconset>
+   </property>
+   <property name="text" >
+    <string>F&amp;unctions...</string>
+   </property>
+   <property name="iconText" >
+    <string>Functions...</string>
+   </property>
+   <property name="statusTip" >
+    <string>Display a list of all functions in the current file</string>
+   </property>
+  </action>
+  <action name="findOpenFileAtCursorAction" >
+   <property name="text" >
+    <string>&amp;Open File at Cursor</string>
+   </property>
+   <property name="iconText" >
+    <string>Open File at Cursor</string>
+   </property>
+   <property name="statusTip" >
+    <string>Open the file the cursor is on</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Enter</string>
+   </property>
+  </action>
+  <action name="fileAddToProjectAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/08</iconset>
+   </property>
+   <property name="text" >
+    <string>A&amp;dd to Project...</string>
+   </property>
+   <property name="iconText" >
+    <string>Add to Project</string>
+   </property>
+   <property name="statusTip" >
+    <string>Add this file to the current project</string>
+   </property>
+  </action>
+  <action name="fileCompileAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/09</iconset>
+   </property>
+   <property name="text" >
+    <string>C&amp;ompile</string>
+   </property>
+   <property name="iconText" >
+    <string>Compile</string>
+   </property>
+   <property name="statusTip" >
+    <string>Compile the file</string>
+   </property>
+  </action>
+  <action name="findFindSymbolDeclarationAction" >
+   <property name="text" >
+    <string>F&amp;ind symbol declaration</string>
+   </property>
+   <property name="iconText" >
+    <string>F&amp;ind symbol declaration</string>
+   </property>
+   <property name="statusTip" >
+    <string>Find symbol declaration</string>
+   </property>
+  </action>
+  <action name="filePrintQuicklyAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/03</iconset>
+   </property>
+   <property name="iconText" >
+    <string>Print File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Print this file</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="0" margin="0" />
+ <resources>
+  <include location="icons.qrc" />
+ </resources>
+ <connections>
+  <connection>
+   <sender>editClearAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editClear()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editCopyAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editCopy()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editCutAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editCut()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editDecreaseIndentAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editDecreaseIndent()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editIncreaseIndentAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editIncreaseIndent()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editPasteAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editPaste()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editRedoAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editRedo()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editSelectAllAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editSelectAll()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editUndoAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>editUndo()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileCloseAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filePrintAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>filePrint()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileSaveAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>fileSave()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileSaveAsAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>fileSaveAs()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>findFindAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>findFind()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>findFindSymbolDeclarationAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>findFindSymbolDeclaration()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>findFunctionsAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>findFunctions()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>findOpenFileAtCursorAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>findOpenFileAtCursor()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>findReplaceAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>findReplace()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileAddToProjectAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>fileAddToProject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileCompileAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>fileCompile()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filePrintQuicklyAction</sender>
+   <signal>activated()</signal>
+   <receiver>SourceFileWindow</receiver>
+   <slot>filePrintQuickly()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

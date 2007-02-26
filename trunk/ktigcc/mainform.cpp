@@ -81,7 +81,7 @@ class DnDListView : public K3ListView {
 #include <Q3Accel>
 #include <QEventLoop>
 #include <QCoreApplication>
-#include <Q3DockWindow>
+#include <QDockWidget>
 #include <QFileInfo>
 #include <QDateTime>
 #include <QTextCodec>
@@ -460,7 +460,7 @@ static QLabel *rightStatusLabel;
 static KHelpMenu *khelpmenu;
 static Q3PopupMenu *te_popup;
 static bool headersModified;
-static Q3DockWindow *errorListDock;
+static QDockWidget *errorListDock;
 static ErrorList *errorList;
 static unsigned errorCountTotal=0,errorCountErrors=0,errorCountWarnings=0;
 static QString programOutput;
@@ -1144,7 +1144,10 @@ void MainForm::init()
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   if (preferences.useSystemIcons) {
-    setUsesBigPixmaps(TRUE);
+    // Set the preferred icon size so system toolbar icons don't get annoying
+    // padding.
+    int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+    setIconSize(QSize(toolbarIconSize,toolbarIconSize));
 // FIXME: action group icon
 //    fileNewActionGroup->setIcon(KIcon("filenew"));
     fileMenu->changeItem(fileMenu->idAt(0),KIcon("filenew"),"&New");
@@ -1183,15 +1186,8 @@ void MainForm::init()
     toolsConfigureAction->setIcon(KIcon("configure"));
     debugResetAction->setIcon(KIcon("player_stop"));
   }
-// FIXME: Use this once I move from Q3ToolBar to QToolBar
-//  QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
-//    ->widgetForAction(findFunctionsAction));
-  QToolButton *findFunctionsButton=NULL;
-  QList<QToolButton *> allToolButtons=toolBar->findChildren<QToolButton *>();
-  Q_FOREACH(QToolButton *toolButton, allToolButtons) {
-    if (toolButton->defaultAction()==findFunctionsAction)
-      findFunctionsButton=toolButton;
-  }
+  QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
+    ->widgetForAction(findFunctionsAction));
   findFunctionsPopup=new Q3PopupMenu(findFunctionsButton);
   connect(findFunctionsPopup,SIGNAL(aboutToShow()),
           this,SLOT(findFunctionsPopup_aboutToShow()));
@@ -1201,19 +1197,16 @@ void MainForm::init()
           this,SLOT(findFunctionsPopup_activated(int)));
   findFunctionsButton->setPopupDelay(0);
   findFunctionsButton->setPopup(findFunctionsPopup);
-  errorListDock=new Q3DockWindow(Q3DockWindow::InDock,this);
-  errorListDock->setResizeEnabled(TRUE);
-  errorListDock->setCloseMode(Q3DockWindow::Always);
-  addToolBar(errorListDock,Qt::DockBottom);
+  errorListDock=new QDockWidget("Errors and Warnings",this);
+  errorListDock->setFloating(false);
+  errorListDock->setFeatures(QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable);
+  errorListDock->setAllowedAreas(Qt::BottomDockWidgetArea);
   errorList=new ErrorList(errorListDock);
   errorListDock->setWidget(errorList);
+  addDockWidget(Qt::BottomDockWidgetArea,errorListDock);
   errorList->show();
-  errorListDock->setCaption("Errors and Warnings");
   errorListDock->hide();
-  setDockEnabled(errorListDock,Qt::DockTop,FALSE);
-  setDockEnabled(errorListDock,Qt::DockLeft,FALSE);
-  setDockEnabled(errorListDock,Qt::DockRight,FALSE);
-  connect(errorListDock,SIGNAL(visibilityChanged(bool)),
+  connect(errorListDock->toggleViewAction(),SIGNAL(toggled(bool)),
           this,SLOT(projectErrorsAndWarnings(bool)));
   errorList->errorListView->setSorting(-1);
   errorList->errorListView->setAlternateBackground(QColor());
@@ -2603,8 +2596,11 @@ void MainForm::filePreferences()
       currView->show();
     }
     // Apply the icon preferences.
-    setUsesBigPixmaps(preferences.useSystemIcons);
     if (preferences.useSystemIcons) {
+      // Set the preferred icon size so system toolbar icons don't get annoying
+      // padding.
+      int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+      setIconSize(QSize(toolbarIconSize,toolbarIconSize));
 // FIXME: action group icon
 //      fileNewActionGroup->setIcon(KIcon("filenew"));
       fileMenu->changeItem(fileMenu->idAt(0),KIcon("filenew"),"&New");
@@ -2643,6 +2639,7 @@ void MainForm::filePreferences()
       toolsConfigureAction->setIcon(KIcon("configure"));
       debugResetAction->setIcon(KIcon("player_stop"));
     } else {
+      setIconSize(QSize(20,20));
 // FIXME: action group icon
 //      fileNewActionGroup->setIcon(QIcon(QPixmap(":/images/00")));
       fileMenu->changeItem(fileMenu->idAt(0),QIcon(QPixmap(":/images/00")),"&New");
@@ -5295,7 +5292,7 @@ void MainForm::updateSizes()
 
 void MainForm::resizeEvent(QResizeEvent *event)
 {
-  Q3MainWindow::resizeEvent(event);
+  QMainWindow::resizeEvent(event);
   if (event->size()==event->oldSize()) return;
   updateSizes();
 }
@@ -5303,7 +5300,7 @@ void MainForm::resizeEvent(QResizeEvent *event)
 void MainForm::timerEvent(QTimerEvent *event)
 {
   static int lastSplitterPos=-1;
-  Q3MainWindow::timerEvent(event);
+  QMainWindow::timerEvent(event);
   if (lastSplitterPos==splitter->sizes().first()) return;
   lastSplitterPos=splitter->sizes().first();
   updateSizes();
@@ -6379,7 +6376,7 @@ QString MainForm::textForHeader(const QString &fileName)
  *
  */
 MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
-    : Q3MainWindow(parent, name, fl)
+    : QMainWindow(parent, name, fl)
 {
     setupUi(this);
 

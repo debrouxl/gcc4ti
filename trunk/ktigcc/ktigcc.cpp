@@ -153,12 +153,6 @@ int main(int argc, char *argv[])
                     log_eater,NULL);
 
   MainForm mainForm;
-  // Set the preferred icon size so system toolbar icons don't get annoying
-  // padding. FIXME: Needed? Correct?
-#if 0 // Needs port from Q3MainWindow to QMainWindow or KMainWindow.
-  int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
-  mainForm.setIconSize(QSize(toolbarIconSize,toolbarIconSize));
-#endif
   app.setMainWidget( &mainForm );
   mainForm.show();
   

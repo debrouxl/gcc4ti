@@ -22,7 +22,7 @@
 
 #include "ui_srcfilewin.h"
 
-class SourceFileWindow : public Q3MainWindow, public Ui::SourceFileWindow
+class SourceFileWindow : public QMainWindow, public Ui::SourceFileWindow
 {
     Q_OBJECT
 

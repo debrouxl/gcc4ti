@@ -249,7 +249,10 @@ void SourceFileWindow::initBase()
   THIS->accel->setItemEnabled(10,TRUE);
   connect(THIS->accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   if (preferences.useSystemIcons) {
-    setUsesBigPixmaps(TRUE);
+    // Set the preferred icon size so system toolbar icons don't get annoying
+    // padding.
+    int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+    setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileSaveAction->setIcon(KIcon("filesave"));
     fileAddToProjectAction->setIcon(KIcon("edit_add"));
     fileCompileAction->setIcon(KIcon("compfile"));
@@ -614,8 +617,11 @@ void SourceFileWindow::applyPreferences()
     kateView->show();
   }
   // Apply the icon preferences.
-  setUsesBigPixmaps(preferences.useSystemIcons);
   if (preferences.useSystemIcons) {
+    // Set the preferred icon size so system toolbar icons don't get annoying
+    // padding.
+    int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+    setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileSaveAction->setIcon(KIcon("filesave"));
     fileAddToProjectAction->setIcon(KIcon("edit_add"));
     fileCompileAction->setIcon(KIcon("compfile"));
@@ -636,6 +642,7 @@ void SourceFileWindow::applyPreferences()
     editIncreaseIndentAction->setIcon(KIcon("indent"));
     editDecreaseIndentAction->setIcon(KIcon("unindent"));
   } else {
+    setIconSize(QSize(20,20));
     fileSaveAction->setIcon(QIcon(QPixmap(":/images/02")));
     fileAddToProjectAction->setIcon(QIcon(QPixmap(":/images/08")));
     fileCompileAction->setIcon(QIcon(QPixmap(":/images/09")));
@@ -1173,7 +1180,7 @@ void SourceFileWindow::updateSizes()
 
 void SourceFileWindow::resizeEvent(QResizeEvent *event)
 {
-  Q3MainWindow::resizeEvent(event);
+  QMainWindow::resizeEvent(event);
   if (event->size()==event->oldSize()) return;
   updateSizes();
 }
@@ -1341,7 +1348,7 @@ void SourceFileWindow::KDirWatch_dirty(const QString &fileName)
  *
  */
 SourceFileWindow::SourceFileWindow(QWidget* parent, const char* name, Qt::WindowFlags fl)
-    : Q3MainWindow(parent, name, fl)
+    : QMainWindow(parent, name, fl)
 {
     setupUi(this);
 
