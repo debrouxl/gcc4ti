@@ -229,8 +229,8 @@ class KReplaceWithSelection : public KReplace {
     KReplaceWithSelection(const QString &pattern, const QString &replacement,
                           long options, QWidget *parent=0) :
       KReplace(pattern,replacement,options,parent), m_haveSelection(FALSE) {}
-    void setSelection(unsigned selStartLine, unsigned selStartCol,
-                      unsigned selEndLine, unsigned selEndCol)
+    void setSelection(int selStartLine, int selStartCol,
+                      int selEndLine, int selEndCol)
     {
       m_haveSelection=TRUE;
       m_selStartLine=selStartLine;
