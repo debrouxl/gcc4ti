@@ -19,6 +19,44 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
+#include <k3listview.h>
+class DnDListView : public K3ListView {
+  private:
+  public:
+  DnDListView (QWidget * parent = 0) : K3ListView(parent) {}
+  // Make my hand-coded drag&drop code work (public part).
+  // Maybe the built-in drag&drop support in K3ListView could be made to work as
+  // expected, but for now just bypass it to use the existing code I wrote for
+  // QListView.
+  virtual void takeItem(Q3ListViewItem *i) {Q3ListView::takeItem(i);}
+  virtual void setAcceptDrops(bool on) {Q3ListView::setAcceptDrops(on);}
+  protected:
+  virtual Q3DragObject *dragObject();
+  virtual void dropEvent (QDropEvent *e);
+  virtual void dragEnterEvent (QDragEnterEvent *e);
+  virtual void dragMoveEvent (QDragMoveEvent *e);
+  // Make my hand-coded drag&drop code work (protected part).
+  virtual void contentsDragMoveEvent(QDragMoveEvent *e) {
+    Q3ListView::contentsDragMoveEvent(e);
+  }
+  virtual void contentsMouseMoveEvent(QMouseEvent *e) {
+    Q3ListView::contentsMouseMoveEvent(e);
+  }
+  virtual void contentsDragLeaveEvent(QDragLeaveEvent *e) {
+    Q3ListView::contentsDragLeaveEvent(e);
+  }
+  virtual void contentsDropEvent(QDropEvent *e) {
+    Q3ListView::contentsDropEvent(e);
+  }
+  virtual void contentsDragEnterEvent(QDragEnterEvent *e) {
+    Q3ListView::contentsDragEnterEvent(e);
+  }
+  virtual void startDrag() {
+    Q3ListView::startDrag();
+  }
+  virtual void rename(Q3ListViewItem *item, int c);
+};
+
 // Yes, this is an ugly hack... Any better suggestions?
 #define K3ListView DnDListView
 #include "mainform.h"
@@ -440,264 +478,235 @@ Tools tools, tempTools;
 int toolIndex;
 bool disableViewEvents=FALSE;
 
-class DnDListView : public K3ListView {
-  private:
-  public:
-  DnDListView ( QWidget * parent = 0, const char * name = 0)
-          : K3ListView(parent,name) {}
-  // Make my hand-coded drag&drop code work (public part).
-  // Maybe the built-in drag&drop support in K3ListView could be made to work as
-  // expected, but for now just bypass it to use the existing code I wrote for
-  // QListView.
-  virtual void takeItem(Q3ListViewItem *i) {Q3ListView::takeItem(i);}
-  virtual void setAcceptDrops(bool on) {Q3ListView::setAcceptDrops(on);}
-  protected:
-  virtual Q3DragObject *dragObject() {
-    Q3ListViewItem *currItem=selectedItem();
-    if (currItem==rootListItem || currItem->parent()==rootListItem)
-      return NULL;
-    Q3StoredDrag *storedDrag=new Q3StoredDrag("x-ktigcc-dnd", this);
-    static QByteArray data(sizeof(Q3ListViewItem*));
-    data.duplicate(reinterpret_cast<char *>(&currItem),
-                   sizeof(Q3ListViewItem*));
-    storedDrag->setEncodedData(data);
-    return storedDrag;
-  }
-  virtual void dropEvent (QDropEvent *e) {
-    if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
-      Q3ListViewItem *currItem;
-      currItem = *reinterpret_cast<Q3ListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
-      if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
-        // dropping folder
-        // can only drop on folder or category
-        Q3ListViewItem *item=itemAt(e->pos());
-        if (IS_FOLDER(item)) {
-          // need same category
-          CATEGORY_OF(srcCategory,currItem);
-          CATEGORY_OF(destCategory,item);
-          if (srcCategory == destCategory) {
-            // can't move folder into itself
-            for (Q3ListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
-              if (destFolder==currItem) goto ignore;
-            }
-            // move folder
-            e->accept();
-            currItem->parent()->takeItem(currItem);
-            item->insertItem(currItem);
-            // put it at the right place
-            if (currItem->nextSibling()) {
-              Q3ListViewItem *lastItem=currItem->nextSibling();
-              while(lastItem->nextSibling())
-                lastItem=lastItem->nextSibling();
-              currItem->moveItem(lastItem);
-            }
-            projectIsDirty=TRUE;
-            projectNeedsRelink=TRUE;
-          } else {ignore: e->ignore();}
-        } else e->ignore();
-      } else if (IS_FILE(currItem)) {
-        // dropping file
-        Q3ListViewItem *item=itemAt(e->pos());
-        if (IS_FOLDER(item)) {
-          // drop on folder
-          // don't allow more than one Quill file per project
-          CATEGORY_OF(srcCategory,currItem);
-          CATEGORY_OF(destCategory,item);
-          if (qllFilesListItem && srcCategory != qllFilesListItem
-              && destCategory == qllFilesListItem && qllFileCount) {
-            ignore2: e->ignore();
-          } else {
-            // moving from editable to non-editable category -
-            // prompt for saving
-            if (IS_EDITABLE_CATEGORY(srcCategory)
-                && !IS_EDITABLE_CATEGORY(destCategory)) {
-              if (static_cast<MainForm *>(parent()->parent()->parent())->fileSavePrompt(currItem))
-                goto ignore2;
-              if (static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
-                KDirWatch::self()->removeFile(static_cast<ListViewFile *>(currItem)->fileName);
-            }
-            // moving from non-editable to editable category
-            if (!IS_EDITABLE_CATEGORY(srcCategory)
-                && IS_EDITABLE_CATEGORY(destCategory)) {
-              QString textBuffer=loadFileText(static_cast<ListViewFile *>(currItem)->fileName);
-              if (textBuffer.isNull()) {
-                KMessageBox::error(this,QString("Can't open \'%1\'").arg(static_cast<ListViewFile *>(currItem)->fileName));
-                goto ignore2;
-              }
-              static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<KTextEditor::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,textBuffer,destCategory));
-              MainForm::createErrorCursorsForSourceFile(currItem);
-              // force reloading the text buffer
-              if (currentListItem==currItem)
-                currentListItem=NULL;
-            }
-            // move file
-            e->accept();
-            currItem->parent()->takeItem(currItem);
-            COUNTER_FOR_CATEGORY(srcCategory)--;
-            item->insertItem(currItem);
-            COUNTER_FOR_CATEGORY(destCategory)++;
-            // put it at the right place
-            if (IS_FILE(currItem->nextSibling())) {
-              Q3ListViewItem *lastItem=currItem->nextSibling();
-              while(IS_FILE(lastItem->nextSibling()))
-                lastItem=lastItem->nextSibling();
-              currItem->moveItem(lastItem);
-            }
-            projectIsDirty=TRUE;
-            projectNeedsRelink=TRUE;
-            setSelected(currItem,TRUE);
-            ensureItemVisible(currItem);
-            // update editor and counters
-            static_cast<MainForm *>(parent()->parent()->parent())->fileTreeClicked(currItem);
-            // moving from non-editable to editable category
-            if (!IS_EDITABLE_CATEGORY(srcCategory)
-                && IS_EDITABLE_CATEGORY(destCategory)) {
-              if (static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
-                KDirWatch::self()->addFile(static_cast<ListViewFile *>(currItem)->fileName);
-            }
-            // moving from editable to non-editable category
-            if (IS_EDITABLE_CATEGORY(srcCategory)
-                && !IS_EDITABLE_CATEGORY(destCategory)) {
-              if (static_cast<ListViewFile *>(currItem)->kateView) {
-                KTextEditor::Document *doc=static_cast<ListViewFile *>(currItem)->kateView->document();
-                delete static_cast<ListViewFile *>(currItem)->kateView;
-                delete doc;
-                static_cast<ListViewFile *>(currItem)->kateView=NULL;
-              } else static_cast<ListViewFile *>(currItem)->textBuffer=QString::null;
-            }
-            // moving from editable to editable category
-            if (IS_EDITABLE_CATEGORY(srcCategory)
-                && IS_EDITABLE_CATEGORY(destCategory)
-                && srcCategory!=destCategory
-                && static_cast<ListViewFile *>(currItem)->kateView) {
-              // update highlighting mode
-              KTextEditor::HighlightingInterface *hliface
-                =qobject_cast<KTextEditor::HighlightingInterface*>(
-                  static_cast<ListViewFile *>(currItem)->kateView->document());
-              hliface->setHighlighting(
-                (destCategory==qllFilesListItem?
-                  QLL_HL_MODE:
-                (destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
-                  S_HL_MODE:
-                (destCategory==asmFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
-                  ASM_HL_MODE:
-                (destCategory==cFilesListItem||destCategory==hFilesListItem)?
-                  C_HL_MODE:
-                "None")));
-            }
-            // update icon
-            currItem->setPixmap(0,
-              destCategory==cFilesListItem||destCategory==qllFilesListItem?SYSICON("source_c","filec.png"):
-              destCategory==hFilesListItem?SYSICON("source_h","fileh.png"):
-              destCategory==sFilesListItem||destCategory==asmFilesListItem?SYSICON("source_s","files.png"):
-              destCategory==txtFilesListItem?SYSICON("txt","filet.png"):
-              destCategory==oFilesListItem||destCategory==aFilesListItem?SYSICON("binary","fileo.png"):
-              SYSICON("unknown","filex.png"));
+Q3DragObject *DnDListView::dragObject() {
+  Q3ListViewItem *currItem=selectedItem();
+  if (currItem==rootListItem || currItem->parent()==rootListItem)
+    return NULL;
+  Q3StoredDrag *storedDrag=new Q3StoredDrag("x-ktigcc-dnd", this);
+  static QByteArray data(sizeof(Q3ListViewItem*));
+  data.duplicate(reinterpret_cast<char *>(&currItem),
+                 sizeof(Q3ListViewItem*));
+  storedDrag->setEncodedData(data);
+  return storedDrag;
+}
+void DnDListView::dropEvent(QDropEvent *e) {
+  if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
+    Q3ListViewItem *currItem;
+    currItem = *reinterpret_cast<Q3ListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
+    if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
+      // dropping folder
+      // can only drop on folder or category
+      Q3ListViewItem *item=itemAt(e->pos());
+      if (IS_FOLDER(item)) {
+        // need same category
+        CATEGORY_OF(srcCategory,currItem);
+        CATEGORY_OF(destCategory,item);
+        if (srcCategory == destCategory) {
+          // can't move folder into itself
+          for (Q3ListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
+            if (destFolder==currItem) goto ignore;
           }
-        } else if (IS_FILE(item)) {
-          // drop on file
-          // need same parent, but different items
-          if (currItem->parent() == item->parent()
-              && currItem != item) {
-            // reorder files
-            // figure out which one is the first
-            for (Q3ListViewItem *i=currItem->parent()->firstChild();i;
-                 i=i->nextSibling()) {
-              if (i==currItem) {
-                // currItem is first, move currItem after item
-                e->accept();
-                currItem->moveItem(item);
-                projectIsDirty=TRUE;
-                projectNeedsRelink=TRUE;
-                break;
-              } else if (i==item) {
-                // item is first, move currItem before item
-                e->accept();
-                currItem->moveItem(item);
-                item->moveItem(currItem);
-                projectIsDirty=TRUE;
-                projectNeedsRelink=TRUE;
-                break;
-              }
+          // move folder
+          e->accept();
+          currItem->parent()->takeItem(currItem);
+          item->insertItem(currItem);
+          // put it at the right place
+          if (currItem->nextSibling()) {
+            Q3ListViewItem *lastItem=currItem->nextSibling();
+            while(lastItem->nextSibling())
+              lastItem=lastItem->nextSibling();
+            currItem->moveItem(lastItem);
+          }
+          projectIsDirty=TRUE;
+          projectNeedsRelink=TRUE;
+        } else {ignore: e->ignore();}
+      } else e->ignore();
+    } else if (IS_FILE(currItem)) {
+      // dropping file
+      Q3ListViewItem *item=itemAt(e->pos());
+      if (IS_FOLDER(item)) {
+        // drop on folder
+        // don't allow more than one Quill file per project
+        CATEGORY_OF(srcCategory,currItem);
+        CATEGORY_OF(destCategory,item);
+        if (qllFilesListItem && srcCategory != qllFilesListItem
+            && destCategory == qllFilesListItem && qllFileCount) {
+          ignore2: e->ignore();
+        } else {
+          // moving from editable to non-editable category -
+          // prompt for saving
+          if (IS_EDITABLE_CATEGORY(srcCategory)
+              && !IS_EDITABLE_CATEGORY(destCategory)) {
+            if (static_cast<MainForm *>(parent()->parent()->parent())->fileSavePrompt(currItem))
+              goto ignore2;
+            if (static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
+              KDirWatch::self()->removeFile(static_cast<ListViewFile *>(currItem)->fileName);
+          }
+          // moving from non-editable to editable category
+          if (!IS_EDITABLE_CATEGORY(srcCategory)
+              && IS_EDITABLE_CATEGORY(destCategory)) {
+            QString textBuffer=loadFileText(static_cast<ListViewFile *>(currItem)->fileName);
+            if (textBuffer.isNull()) {
+              KMessageBox::error(this,QString("Can't open \'%1\'").arg(static_cast<ListViewFile *>(currItem)->fileName));
+              goto ignore2;
             }
-          } else e->ignore();
+            static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<KTextEditor::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,textBuffer,destCategory));
+            MainForm::createErrorCursorsForSourceFile(currItem);
+            // force reloading the text buffer
+            if (currentListItem==currItem)
+              currentListItem=NULL;
+          }
+          // move file
+          e->accept();
+          currItem->parent()->takeItem(currItem);
+          COUNTER_FOR_CATEGORY(srcCategory)--;
+          item->insertItem(currItem);
+          COUNTER_FOR_CATEGORY(destCategory)++;
+          // put it at the right place
+          if (IS_FILE(currItem->nextSibling())) {
+            Q3ListViewItem *lastItem=currItem->nextSibling();
+            while(IS_FILE(lastItem->nextSibling()))
+              lastItem=lastItem->nextSibling();
+            currItem->moveItem(lastItem);
+          }
+          projectIsDirty=TRUE;
+          projectNeedsRelink=TRUE;
+          setSelected(currItem,TRUE);
+          ensureItemVisible(currItem);
+          // update editor and counters
+          static_cast<MainForm *>(parent()->parent()->parent())->fileTreeClicked(currItem);
+          // moving from non-editable to editable category
+          if (!IS_EDITABLE_CATEGORY(srcCategory)
+              && IS_EDITABLE_CATEGORY(destCategory)) {
+            if (static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
+              KDirWatch::self()->addFile(static_cast<ListViewFile *>(currItem)->fileName);
+          }
+          // moving from editable to non-editable category
+          if (IS_EDITABLE_CATEGORY(srcCategory)
+              && !IS_EDITABLE_CATEGORY(destCategory)) {
+            if (static_cast<ListViewFile *>(currItem)->kateView) {
+              KTextEditor::Document *doc=static_cast<ListViewFile *>(currItem)->kateView->document();
+              delete static_cast<ListViewFile *>(currItem)->kateView;
+              delete doc;
+              static_cast<ListViewFile *>(currItem)->kateView=NULL;
+            } else static_cast<ListViewFile *>(currItem)->textBuffer=QString::null;
+          }
+          // moving from editable to editable category
+          if (IS_EDITABLE_CATEGORY(srcCategory)
+              && IS_EDITABLE_CATEGORY(destCategory)
+              && srcCategory!=destCategory
+              && static_cast<ListViewFile *>(currItem)->kateView) {
+            // update highlighting mode
+            KTextEditor::HighlightingInterface *hliface
+              =qobject_cast<KTextEditor::HighlightingInterface*>(
+                static_cast<ListViewFile *>(currItem)->kateView->document());
+            hliface->setHighlighting(
+              (destCategory==qllFilesListItem?
+                QLL_HL_MODE:
+              (destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+                S_HL_MODE:
+              (destCategory==asmFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+                ASM_HL_MODE:
+              (destCategory==cFilesListItem||destCategory==hFilesListItem)?
+                C_HL_MODE:
+              "None")));
+          }
+          // update icon
+          currItem->setPixmap(0,
+            destCategory==cFilesListItem||destCategory==qllFilesListItem?SYSICON("source_c","filec.png"):
+            destCategory==hFilesListItem?SYSICON("source_h","fileh.png"):
+            destCategory==sFilesListItem||destCategory==asmFilesListItem?SYSICON("source_s","files.png"):
+            destCategory==txtFilesListItem?SYSICON("txt","filet.png"):
+            destCategory==oFilesListItem||destCategory==aFilesListItem?SYSICON("binary","fileo.png"):
+            SYSICON("unknown","filex.png"));
+        }
+      } else if (IS_FILE(item)) {
+        // drop on file
+        // need same parent, but different items
+        if (currItem->parent() == item->parent()
+            && currItem != item) {
+          // reorder files
+          // figure out which one is the first
+          for (Q3ListViewItem *i=currItem->parent()->firstChild();i;
+               i=i->nextSibling()) {
+            if (i==currItem) {
+              // currItem is first, move currItem after item
+              e->accept();
+              currItem->moveItem(item);
+              projectIsDirty=TRUE;
+              projectNeedsRelink=TRUE;
+              break;
+            } else if (i==item) {
+              // item is first, move currItem before item
+              e->accept();
+              currItem->moveItem(item);
+              item->moveItem(currItem);
+              projectIsDirty=TRUE;
+              projectNeedsRelink=TRUE;
+              break;
+            }
+          }
         } else e->ignore();
       } else e->ignore();
     } else e->ignore();
-  }
-  virtual void dragEnterEvent (QDragEnterEvent *e) {
-    if (!compiling && e->source()==this&&(e->provides("x-ktigcc-dnd")))
-	  e->accept();
-  }
-  virtual void dragMoveEvent (QDragMoveEvent *e) {
-    if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
-      Q3ListViewItem *currItem;
-      currItem = *reinterpret_cast<Q3ListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
-      if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
-        // dropping folder
-        // can only drop on folder or category
-        Q3ListViewItem *item=itemAt(e->pos());
-        if (IS_FOLDER(item)) {
-          // need same category
-          CATEGORY_OF(srcCategory,currItem);
-          CATEGORY_OF(destCategory,item);
-          if (srcCategory == destCategory) {
-            // can't move folder into itself
-            for (Q3ListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
-              if (destFolder==currItem) goto ignore;
-            }
-            e->accept();
-          } else {ignore: e->ignore();}
-        } else e->ignore();
-      } else if (IS_FILE(currItem)) {
-        // dropping file
-        Q3ListViewItem *item=itemAt(e->pos());
-        if (IS_FOLDER(item)) {
-          // drop on folder
-          // don't allow more than one Quill file per project
-          CATEGORY_OF(srcCategory,currItem);
-          CATEGORY_OF(destCategory,item);
-          if (qllFilesListItem && srcCategory != qllFilesListItem
-              && destCategory == qllFilesListItem && qllFileCount)
-            e->ignore();
-          else
-            e->accept();
-        } else if (IS_FILE(item)) {
-          // drop on file
-          // need same parent, but different items
-          if (currItem->parent() == item->parent()
-              && currItem != item) e->accept(); else e->ignore();
-        } else e->ignore();
+  } else e->ignore();
+}
+
+virtual void DnDListView::dragEnterEvent(QDragEnterEvent *e) {
+  if (!compiling && e->source()==this&&(e->provides("x-ktigcc-dnd")))
+        e->accept();
+}
+
+virtual void DnDListView::dragMoveEvent(QDragMoveEvent *e) {
+  if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
+    Q3ListViewItem *currItem;
+    currItem = *reinterpret_cast<Q3ListViewItem * const *>((const char *)e->encodedData("x-ktigcc-dnd"));
+    if (IS_FOLDER(currItem) && !IS_CATEGORY(currItem)) {
+      // dropping folder
+      // can only drop on folder or category
+      Q3ListViewItem *item=itemAt(e->pos());
+      if (IS_FOLDER(item)) {
+        // need same category
+        CATEGORY_OF(srcCategory,currItem);
+        CATEGORY_OF(destCategory,item);
+        if (srcCategory == destCategory) {
+          // can't move folder into itself
+          for (Q3ListViewItem *destFolder=item; IS_FOLDER(destFolder); destFolder=destFolder->parent()) {
+            if (destFolder==currItem) goto ignore;
+          }
+          e->accept();
+        } else {ignore: e->ignore();}
+      } else e->ignore();
+    } else if (IS_FILE(currItem)) {
+      // dropping file
+      Q3ListViewItem *item=itemAt(e->pos());
+      if (IS_FOLDER(item)) {
+        // drop on folder
+        // don't allow more than one Quill file per project
+        CATEGORY_OF(srcCategory,currItem);
+        CATEGORY_OF(destCategory,item);
+        if (qllFilesListItem && srcCategory != qllFilesListItem
+            && destCategory == qllFilesListItem && qllFileCount)
+          e->ignore();
+        else
+          e->accept();
+      } else if (IS_FILE(item)) {
+        // drop on file
+        // need same parent, but different items
+        if (currItem->parent() == item->parent()
+            && currItem != item) e->accept(); else e->ignore();
       } else e->ignore();
     } else e->ignore();
-  }
-  // Make my hand-coded drag&drop code work (protected part).
-  virtual void contentsDragMoveEvent(QDragMoveEvent *e) {
-    Q3ListView::contentsDragMoveEvent(e);
-  }
-  virtual void contentsMouseMoveEvent(QMouseEvent *e) {
-    Q3ListView::contentsMouseMoveEvent(e);
-  }
-  virtual void contentsDragLeaveEvent(QDragLeaveEvent *e) {
-    Q3ListView::contentsDragLeaveEvent(e);
-  }
-  virtual void contentsDropEvent(QDropEvent *e) {
-    Q3ListView::contentsDropEvent(e);
-  }
-  virtual void contentsDragEnterEvent(QDragEnterEvent *e) {
-    Q3ListView::contentsDragEnterEvent(e);
-  }
-  virtual void startDrag() {
-    Q3ListView::startDrag();
-  }
-  // K3ListView::rename won't work properly if I don't do this. :-/
-  virtual void rename(Q3ListViewItem *item, int c) {
-    QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
-    ensureItemVisible(item);
-    QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
-    K3ListView::rename(item,c);
-  }
-};
+  } else e->ignore();
+}
+
+// K3ListView::rename won't work properly if I don't do this. :-/
+void DnDListView::rename(Q3ListViewItem *item, int c) {
+  QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
+  ensureItemVisible(item);
+  QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
+  K3ListView::rename(item,c);
+}
 
 enum ErrorTypes {etError, etWarning, etInfo};
 class ErrorListItem : public K3ListViewItem {
