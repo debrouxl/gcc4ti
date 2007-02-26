@@ -4440,9 +4440,9 @@ void MainForm::linkProject()
       QDir qdir;
       const int numTargets=3;
       bool targeted[numTargets]={ti89_targeted,ti92p_targeted,v200_targeted};
-      char dextsbin[numTargets][5]={".y89",".y9x",".yv2"};
-      char dextswrapped[numTargets][5]={".89y",".9xy",".v2y"};
-      char (*dexts)[5]=(settings.outputbin&&!settings.pack)?dextsbin:dextswrapped;
+      static const char dextsbin[numTargets][5]={".y89",".y9x",".yv2"};
+      static const char dextswrapped[numTargets][5]={".89y",".9xy",".v2y"};
+      static const char (*dexts)[5]=(settings.outputbin&&!settings.pack)?dextsbin:dextswrapped;
       for (int target=0; target<numTargets; target++) {
         if (targeted[numTargets]) {
           qdir.remove(projectBaseName+"-data"+dexts[target]);
@@ -4472,13 +4472,13 @@ void MainForm::linkProject()
       if (errorsCompilingFlag || stopCompilingFlag) return;
       statusBar()->message("Compressing...");
       const int numTargets=3;
-      char binexts[numTargets][5]={".z89",".z9x",".zv2"};
-      char exts[numTargets][5]={".89z",".9xz",".v2z"};
-      char cbinexts[numTargets][5]={".y89",".y9x",".yv2"};
-      char cexts[numTargets][5]={".89y",".9xy",".v2y"};
+      static const char binexts[numTargets][5]={".z89",".z9x",".zv2"};
+      static const char exts[numTargets][5]={".89z",".9xz",".v2z"};
+      static const char cbinexts[numTargets][5]={".y89",".y9x",".yv2"};
+      static const char cexts[numTargets][5]={".89y",".9xy",".v2y"};
       // ttbin2oth STILL has no V200 support. Work around that.
-      char ttbin2othflag[numTargets][4]={"-89","-92","-92"};
-      char ttbin2othexts[numTargets][5]={".89y",".9xy",".9xy"};
+      static const char ttbin2othflag[numTargets][4]={"-89","-92","-92"};
+      static const char ttbin2othexts[numTargets][5]={".89y",".9xy",".9xy"};
       bool targeted[numTargets];
       for (int target=0; target<numTargets; target++) {
         targeted[target]=QFileInfo(linkOutput+binexts[target]).exists();
