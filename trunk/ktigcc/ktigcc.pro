@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on debug dbus assistant
+CONFIG	+= qt warn_on debug qdbus assistant
 
 QT += xml qt3support
 

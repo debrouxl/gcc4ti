@@ -103,6 +103,8 @@ class DnDListView : public K3ListView {
 #include <QMouseEvent>
 #include <QCloseEvent>
 #include <QAssistantClient>
+#include <QDBusConnection>
+#include <QDBusReply>
 #include <kapplication.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
@@ -137,7 +139,6 @@ class DnDListView : public K3ListView {
 #include <kpushbutton.h>
 #include <kmacroexpander.h>
 #include <kstandardaction.h>
-#include <dcopclient.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -4814,22 +4815,19 @@ void MainForm::projectOptions()
   debugPauseAction->setVisible(runnable);
 }
 
-bool MainForm::tiemuInstance(void * instanceName)
+bool MainForm::tiemuInstance(TiEmuDBus *&instance)
 {
-  *(Q3CString*)instanceName=Q3CString();
-  DCOPClient *dcopClient=kapp->dcopClient();
-  if (!dcopClient->isAttached() && !dcopClient->attach()) {
-    KMessageBox::error(this,"Can\'t attach to DCOP.");
+  QDBusConnection connection=QDBusConnection::sessionBus();
+  if (!connection.isConnected()) {
+    KMessageBox::error(this,"Can\'t attach to D-Bus.");
+    instance=NULL;
     return FALSE;
   }
-  QCStringList applist=dcopClient->registeredApplications();
-  Q3CString appname;
-  QCStringList::iterator it;
-  for (it = applist.begin(); it != applist.end(); ++it) {
-    if ((*it).contains(QRegExp("^tiemu-"))) {
-      *(Q3CString*)instanceName = (*it);
-      break;
-    }
+  instance=new TiEmuDBus("org.ticalc.lpg.tiemu.TiEmuDBus",
+                         "/org/ticalc/lpg/tiemu/TiEmuDBus",connection,this);
+  if (!instance->isValid()) {
+    delete instance;
+    instance=NULL;
   }
   return TRUE;
 }
@@ -4885,16 +4883,15 @@ void MainForm::debugRun()
   
     // Detect model of linked calculator.
     CalculatorModels model=CALCULATOR_INVALID;
-    Q3CString instanceName;
-    TiEmuDCOP_stub *tiemuDCOP=0;
+    TiEmuDBus *tiemuDBus=0;
     CableHandle *cable=0;
     CalcHandle *calc=0;
     switch (preferences.linkTarget) {
       case LT_TIEMU:
         {
           // Fire up TiEmu if it isn't running yet.
-          if (!tiemuInstance(&instanceName)) return;
-          if (instanceName.isNull()) {
+          if (!tiemuInstance(tiemuDBus)) return;
+          if (!tiemuDBus) {
             if (!KRun::runCommand("tiemu")) {
               KMessageBox::error(this,"Can't run TiEmu.");
               return;
@@ -4902,27 +4899,28 @@ void MainForm::debugRun()
             do {
               usleep(100000);
               QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,100);
-              if (!tiemuInstance(&instanceName)) return;
-            } while (instanceName.isNull());
+              if (!tiemuInstance(tiemuDBus)) return;
+            } while (!tiemuDBus);
           }
-          tiemuDCOP=new TiEmuDCOP_stub(instanceName,"TiEmuDCOP");
           // Wait for TiEmu to get ready.
           bool ready;
           do {
             usleep(100000);
             QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,100);
-            ready=tiemuDCOP->ready_for_transfers();
-            if (!tiemuDCOP->ok()) {
-              KMessageBox::error(this,"DCOP function call failed.");
-              delete tiemuDCOP;
+            QDBusReply<bool> reply=tiemuDBus->ready_for_transfers();
+            if (!reply.isValid()) {
+              KMessageBox::error(this,"D-Bus function call failed.");
+              delete tiemuDBus;
               return;
             }
+            ready=reply.value();
           } while (!ready);
           // Now obtain the model from TiEmu.
-          int tiemuCalcType=tiemuDCOP->emulated_calc_type();
-          if (!tiemuCalcType || !tiemuDCOP->ok()) {
-            KMessageBox::error(this,"DCOP function call failed.");
-            delete tiemuDCOP;
+          QDBusReply<int> reply=tiemuDBus->emulated_calc_type();
+          int tiemuCalcType;
+          if (!reply.isValid() || !(tiemuCalcType=reply.value())) {
+            KMessageBox::error(this,"D-Bus function call failed.");
+            delete tiemuDBus;
             return;
           }
           switch (tiemuCalcType) {
@@ -5027,16 +5025,20 @@ void MainForm::debugRun()
             && QFileInfo(projectBaseName+".dbg").exists()) {
           QString mainFile=files.first();
           files.pop_front();
-          if (!tiemuDCOP->debug_file(mainFile) || !tiemuDCOP->ok()) {
-            KMessageBox::error(this,"DCOP function call failed.");
-            delete tiemuDCOP;
+          QDBusReply<bool> reply=tiemuDBus->debug_file(mainFile);
+          if (!reply.isValid() || !reply.value()) {
+            KMessageBox::error(this,"D-Bus function call failed.");
+            delete tiemuDBus;
             return;
           }
         }
-        if (!tiemuDCOP->send_files(files) || !tiemuDCOP->ok()) {
-          KMessageBox::error(this,"DCOP function call failed.");
-          delete tiemuDCOP;
-          return;
+        {
+          QDBusReply<bool> reply=tiemuDBus->send_files(files);
+          if (!reply.isValid() || !reply.value()) {
+            KMessageBox::error(this,"D-Bus function call failed.");
+            delete tiemuDBus;
+            return;
+          }
         }
         break;
       case LT_REALCALC:
@@ -5077,10 +5079,13 @@ void MainForm::debugRun()
       .arg(rootListItem->text(0)).arg(settings.cmd_line));
     switch (preferences.linkTarget) {
       case LT_TIEMU:
-        // Execute the command.
-        if (!tiemuDCOP->execute_command(command) || !tiemuDCOP->ok())
-          KMessageBox::error(this,"DCOP function call failed.");
-        delete tiemuDCOP;
+        {
+          // Execute the command.
+          QDBusReply<bool> reply=tiemuDBus->execute_command(command);
+          if (!reply.isValid() || !reply.value())
+            KMessageBox::error(this,"D-Bus function call failed.");
+          delete tiemuDBus;
+        }
         break;
       case LT_REALCALC:
         {
@@ -5122,22 +5127,22 @@ void MainForm::debugPause()
 {
   // This is enabled only for LT_TIEMU. Run the TiEmu debugger.
   Q3CString instanceName;
-  if (!tiemuInstance(instanceName) || instanceName.isNull()) return;
-  TiEmuDCOP_stub tiemuDCOP(instanceName,"TiEmuDCOP");
-  tiemuDCOP.enter_debugger();
-  if (!tiemuDCOP.ok())
-    KMessageBox::error(this,"DCOP function call failed.");
+  TiEmuDBus *tiemuDBus;
+  if (!tiemuInstance(tiemuDBus) || !tiemuDBus) return;
+  if (!tiemuDBus->enter_debugger().isValid())
+    KMessageBox::error(this,"D-Bus function call failed.");
+  delete tiemuDBus;
 }
 
 void MainForm::debugReset()
 {
   // This is enabled only for LT_TIEMU. Reset TiEmu.
   Q3CString instanceName;
-  if (!tiemuInstance(instanceName) || instanceName.isNull()) return;
-  TiEmuDCOP_stub tiemuDCOP(instanceName,"TiEmuDCOP");
-  tiemuDCOP.reset_calc(FALSE);
-  if (!tiemuDCOP.ok())
-    KMessageBox::error(this,"DCOP function call failed.");
+  TiEmuDBus *tiemuDBus;
+  if (!tiemuInstance(tiemuDBus) || !tiemuDBus) return;
+  if (!tiemuDBus->reset_calc(FALSE).isValid())
+    KMessageBox::error(this,"D-Bus function call failed.");
+  delete tiemuDBus;
 }
 
 void MainForm::toolsConfigure()

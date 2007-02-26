@@ -22,6 +22,8 @@
 
 #include "ui_mainform.h"
 
+#include "tiemu.h"
+
 class MainForm : public Q3MainWindow, public Ui::MainForm
 {
     Q_OBJECT
@@ -173,7 +175,7 @@ private:
     void compileProject( bool forceAll );
     void linkProject();
     void showStats();
-    bool tiemuInstance( void * instanceName );
+    bool tiemuInstance(TiEmuDBus *&instance);
     void updateToolsMenu();
     void updateSizes();
     bool removeItem( Q3ListViewItem * item );
