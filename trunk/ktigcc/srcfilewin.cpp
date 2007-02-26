@@ -274,7 +274,7 @@ void SourceFileWindow::initBase()
     editDecreaseIndentAction->setIcon(KIcon("unindent"));
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
-    ->child("findFunctionsAction_action_button","QToolButton",FALSE));
+    ->widgetForAction(findFunctionsAction));
   THIS->findFunctionsPopup=new Q3PopupMenu(findFunctionsButton);
   connect(THIS->findFunctionsPopup,SIGNAL(aboutToShow()),
           this,SLOT(findFunctionsPopup_aboutToShow()));
@@ -282,8 +282,8 @@ void SourceFileWindow::initBase()
           this,SLOT(findFunctionsPopup_aboutToHide()));
   connect(THIS->findFunctionsPopup,SIGNAL(activated(int)),
           this,SLOT(findFunctionsPopup_activated(int)));
-  findFunctionsButton->setPopupDelay(0);
-  findFunctionsButton->setPopup(THIS->findFunctionsPopup);
+  findFunctionsButton->setPopupMode(QToolButton::MenuButtonPopup);
+  findFunctionsButton->setMenu(THIS->findFunctionsPopup);
   if (THIS->isTextFile) findFunctionsAction->setEnabled(FALSE);
 }
 

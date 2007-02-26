@@ -12,6 +12,12 @@
   <property name="windowTitle" >
    <string>TIGCC IDE for KDE</string>
   </property>
+  <property name="iconSize" >
+   <size>
+    <width>20</width>
+    <height>20</height>
+   </size>
+  </property>
   <widget class="QWidget" name="widget" >
    <layout class="QHBoxLayout" >
     <property name="margin" >
@@ -65,30 +71,11 @@
    <property name="orientation" >
     <enum>Qt::Horizontal</enum>
    </property>
-   <property name="iconSize" >
-    <size>
-     <width>20</width>
-     <height>20</height>
-    </size>
-   </property>
    <attribute name="toolBarArea" >
     <number>4</number>
    </attribute>
-   <addaction name="fileNewProjectAction" />
-   <addaction name="fileNewFolderAction" />
-   <addaction name="fileNewCHeaderAction" />
-   <addaction name="fileNewGNUAssemblyHeaderAction" />
-   <addaction name="fileNewA68kAssemblyHeaderAction" />
-   <addaction name="fileNewCSourceFileAction" />
-   <addaction name="fileNewGNUAssemblySourceFileAction" />
-   <addaction name="fileNewA68kAssemblySourceFileAction" />
-   <addaction name="fileNewQuillSourceFileAction" />
-   <addaction name="fileNewTextFileAction" />
-   <addaction name="fileOpenActionHidden" />
-   <addaction name="fileRecent1Action" />
-   <addaction name="fileRecent2Action" />
-   <addaction name="fileRecent3Action" />
-   <addaction name="fileRecent4Action" />
+   <addaction name="fileNewAction" />
+   <addaction name="fileOpenAction" />
    <addaction name="fileSaveAllAction" />
    <addaction name="separator" />
    <addaction name="filePrintQuicklyAction" />
@@ -126,41 +113,6 @@
      <height>31</height>
     </rect>
    </property>
-   <widget class="QMenu" name="fileMenu" >
-    <property name="title" >
-     <string>&amp;File</string>
-    </property>
-    <widget class="QMenu" name="popupMenu" >
-     <property name="title" >
-      <string>&amp;New</string>
-     </property>
-     <addaction name="fileNewProjectAction" />
-     <addaction name="fileNewFolderAction" />
-     <addaction name="fileNewCHeaderAction" />
-     <addaction name="fileNewGNUAssemblyHeaderAction" />
-     <addaction name="fileNewA68kAssemblyHeaderAction" />
-     <addaction name="fileNewCSourceFileAction" />
-     <addaction name="fileNewGNUAssemblySourceFileAction" />
-     <addaction name="fileNewA68kAssemblySourceFileAction" />
-     <addaction name="fileNewQuillSourceFileAction" />
-     <addaction name="fileNewTextFileAction" />
-    </widget>
-    <addaction name="popupMenu" />
-    <addaction name="fileOpenAction" />
-    <addaction name="fileSaveAllAction" />
-    <addaction name="fileSaveProjectAsAction" />
-    <addaction name="separator" />
-    <addaction name="filePrintAction" />
-    <addaction name="separator" />
-    <addaction name="filePreferencesAction" />
-    <addaction name="separator" />
-    <addaction name="fileExitAction" />
-    <addaction name="separator" />
-    <addaction name="fileRecent1Action" />
-    <addaction name="fileRecent2Action" />
-    <addaction name="fileRecent3Action" />
-    <addaction name="fileRecent4Action" />
-   </widget>
    <widget class="QMenu" name="editMenu" >
     <property name="title" >
      <string>&amp;Edit</string>
@@ -233,6 +185,41 @@
     <addaction name="helpNewsAction" />
     <addaction name="separator" />
     <addaction name="helpAboutAction" />
+   </widget>
+   <widget class="QMenu" name="fileMenu" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="fileNewMenu" >
+     <property name="title" >
+      <string>&amp;New</string>
+     </property>
+     <addaction name="fileNewProjectAction" />
+     <addaction name="fileNewFolderAction" />
+     <addaction name="fileNewCHeaderAction" />
+     <addaction name="fileNewGNUAssemblyHeaderAction" />
+     <addaction name="fileNewA68kAssemblyHeaderAction" />
+     <addaction name="fileNewCSourceFileAction" />
+     <addaction name="fileNewGNUAssemblySourceFileAction" />
+     <addaction name="fileNewA68kAssemblySourceFileAction" />
+     <addaction name="fileNewQuillSourceFileAction" />
+     <addaction name="fileNewTextFileAction" />
+    </widget>
+    <addaction name="fileNewMenu" />
+    <addaction name="fileOpenAction" />
+    <addaction name="fileSaveAllAction" />
+    <addaction name="fileSaveProjectAsAction" />
+    <addaction name="separator" />
+    <addaction name="filePrintAction" />
+    <addaction name="separator" />
+    <addaction name="filePreferencesAction" />
+    <addaction name="separator" />
+    <addaction name="fileExitAction" />
+    <addaction name="separator" />
+    <addaction name="fileRecent1Action" />
+    <addaction name="fileRecent2Action" />
+    <addaction name="fileRecent3Action" />
+    <addaction name="fileRecent4Action" />
    </widget>
    <addaction name="fileMenu" />
    <addaction name="editMenu" />
@@ -913,173 +900,171 @@
     <bool>false</bool>
    </property>
   </action>
-  <actiongroup name="fileNewActionGroup" >
-   <action name="fileNewProjectAction" >
-    <property name="text" >
-     <string>&amp;Project</string>
-    </property>
-    <property name="iconText" >
-     <string>&amp;Project</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new project</string>
-    </property>
-    <property name="shortcut" >
-     <string>Ctrl+N</string>
-    </property>
-   </action>
-   <action name="fileNewFolderAction" >
-    <property name="enabled" >
-     <bool>true</bool>
-    </property>
-    <property name="text" >
-     <string>&amp;Folder</string>
-    </property>
-    <property name="iconText" >
-     <string>&amp;Folder</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new virtual folder</string>
-    </property>
-   </action>
-   <action name="fileNewCHeaderAction" >
-    <property name="text" >
-     <string>C &amp;Header File</string>
-    </property>
-    <property name="iconText" >
-     <string>C &amp;Header File</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new C header file in the current project</string>
-    </property>
-   </action>
-   <action name="fileNewGNUAssemblyHeaderAction" >
-    <property name="text" >
-     <string>G&amp;NU Assembly Header File</string>
-    </property>
-    <property name="iconText" >
-     <string>G&amp;NU Assembly Header File</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new GNU assembly header file in the current project</string>
-    </property>
-   </action>
-   <action name="fileNewA68kAssemblyHeaderAction" >
-    <property name="text" >
-     <string>A68&amp;k Assembly &amp;Header File</string>
-    </property>
-    <property name="iconText" >
-     <string>A68&amp;k Assembly &amp;Header File</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new A68k assembly header file in the current project</string>
-    </property>
-   </action>
-   <action name="fileNewCSourceFileAction" >
-    <property name="text" >
-     <string>&amp;C Source File</string>
-    </property>
-    <property name="iconText" >
-     <string>&amp;C Source File</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new C source file in the current project</string>
-    </property>
-   </action>
-   <action name="fileNewGNUAssemblySourceFileAction" >
-    <property name="text" >
-     <string>&amp;GNU Assembly Source File</string>
-    </property>
-    <property name="iconText" >
-     <string>&amp;GNU Assembly Source File</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new GNU assembly source file in the current project</string>
-    </property>
-   </action>
-   <action name="fileNewA68kAssemblySourceFileAction" >
-    <property name="text" >
-     <string>&amp;A68k Assembly Source File</string>
-    </property>
-    <property name="iconText" >
-     <string>&amp;A68k Assembly Source File</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new A68k assembly source file in the current project</string>
-    </property>
-   </action>
-   <action name="fileNewQuillSourceFileAction" >
-    <property name="text" >
-     <string>&amp;Quill Source File</string>
-    </property>
-    <property name="iconText" >
-     <string>&amp;Quill Source File</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new Quill source file in the current project</string>
-    </property>
-   </action>
-   <action name="fileNewTextFileAction" >
-    <property name="text" >
-     <string>&amp;Text File</string>
-    </property>
-    <property name="iconText" >
-     <string>&amp;Text File</string>
-    </property>
-    <property name="statusTip" >
-     <string>Create a new text file in the current project, for general use</string>
-    </property>
-   </action>
-   <property name="exclusive" >
+  <action name="fileNewProjectAction" >
+   <property name="text" >
+    <string>&amp;Project</string>
+   </property>
+   <property name="iconText" >
+    <string>&amp;Project</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new project</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="fileNewFolderAction" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>&amp;Folder</string>
+   </property>
+   <property name="iconText" >
+    <string>&amp;Folder</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new virtual folder</string>
+   </property>
+  </action>
+  <action name="fileNewCHeaderAction" >
+   <property name="text" >
+    <string>C &amp;Header File</string>
+   </property>
+   <property name="iconText" >
+    <string>C &amp;Header File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new C header file in the current project</string>
+   </property>
+  </action>
+  <action name="fileNewGNUAssemblyHeaderAction" >
+   <property name="text" >
+    <string>G&amp;NU Assembly Header File</string>
+   </property>
+   <property name="iconText" >
+    <string>G&amp;NU Assembly Header File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new GNU assembly header file in the current project</string>
+   </property>
+  </action>
+  <action name="fileNewA68kAssemblyHeaderAction" >
+   <property name="text" >
+    <string>A68&amp;k Assembly &amp;Header File</string>
+   </property>
+   <property name="iconText" >
+    <string>A68&amp;k Assembly &amp;Header File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new A68k assembly header file in the current project</string>
+   </property>
+  </action>
+  <action name="fileNewCSourceFileAction" >
+   <property name="text" >
+    <string>&amp;C Source File</string>
+   </property>
+   <property name="iconText" >
+    <string>&amp;C Source File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new C source file in the current project</string>
+   </property>
+  </action>
+  <action name="fileNewGNUAssemblySourceFileAction" >
+   <property name="text" >
+    <string>&amp;GNU Assembly Source File</string>
+   </property>
+   <property name="iconText" >
+    <string>&amp;GNU Assembly Source File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new GNU assembly source file in the current project</string>
+   </property>
+  </action>
+  <action name="fileNewA68kAssemblySourceFileAction" >
+   <property name="text" >
+    <string>&amp;A68k Assembly Source File</string>
+   </property>
+   <property name="iconText" >
+    <string>&amp;A68k Assembly Source File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new A68k assembly source file in the current project</string>
+   </property>
+  </action>
+  <action name="fileNewQuillSourceFileAction" >
+   <property name="text" >
+    <string>&amp;Quill Source File</string>
+   </property>
+   <property name="iconText" >
+    <string>&amp;Quill Source File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new Quill source file in the current project</string>
+   </property>
+  </action>
+  <action name="fileNewTextFileAction" >
+   <property name="text" >
+    <string>&amp;Text File</string>
+   </property>
+   <property name="iconText" >
+    <string>&amp;Text File</string>
+   </property>
+   <property name="statusTip" >
+    <string>Create a new text file in the current project, for general use</string>
+   </property>
+  </action>
+  <action name="fileOpenActionHidden" >
+   <property name="iconText" >
+    <string>Open File</string>
+   </property>
+   <property name="visible" >
     <bool>false</bool>
    </property>
-  </actiongroup>
-  <actiongroup name="fileOpenActionGroup" >
-   <action name="fileOpenActionHidden" >
-    <property name="iconText" >
-     <string>Open File</string>
-    </property>
-    <property name="visible" >
-     <bool>false</bool>
-    </property>
-   </action>
-   <action name="fileRecent1Action" >
-    <property name="iconText" >
-     <string>Recent File 1</string>
-    </property>
-   </action>
-   <action name="fileRecent2Action" >
-    <property name="iconText" >
-     <string>Recent File 2</string>
-    </property>
-   </action>
-   <action name="fileRecent3Action" >
-    <property name="iconText" >
-     <string>Recent File 3</string>
-    </property>
-   </action>
-   <action name="fileRecent4Action" >
-    <property name="iconText" >
-     <string>Recent File 4</string>
-    </property>
-   </action>
-   <property name="exclusive" >
-    <bool>false</bool>
+  </action>
+  <action name="fileRecent1Action" >
+   <property name="iconText" >
+    <string>Recent File 1</string>
    </property>
-  </actiongroup>
+  </action>
+  <action name="fileRecent2Action" >
+   <property name="iconText" >
+    <string>Recent File 2</string>
+   </property>
+  </action>
+  <action name="fileRecent3Action" >
+   <property name="iconText" >
+    <string>Recent File 3</string>
+   </property>
+  </action>
+  <action name="fileRecent4Action" >
+   <property name="iconText" >
+    <string>Recent File 4</string>
+   </property>
+  </action>
+  <action name="fileNewAction" >
+   <property name="icon" >
+    <iconset resource="icons.qrc" >:/images/00</iconset>
+   </property>
+   <property name="text" >
+    <string>New File</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="0" margin="0" />
  <customwidgets>
-  <customwidget>
-   <class>K3ListView</class>
-   <extends>Q3ListView</extends>
-   <header>k3listview.h</header>
-  </customwidget>
   <customwidget>
    <class>Q3WidgetStack</class>
    <extends>Q3WidgetStack</extends>
    <header>q3widgetstack.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>K3ListView</class>
+   <extends>Q3ListView</extends>
+   <header>k3listview.h</header>
   </customwidget>
  </customwidgets>
  <includes>

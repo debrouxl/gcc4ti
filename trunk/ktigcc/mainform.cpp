@@ -1143,16 +1143,15 @@ void MainForm::init()
           this,SLOT(fileTreeAccel_activated(int)));
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
+  connect(fileNewAction,SIGNAL(triggered()),this,SLOT(fileNewProject()));
   if (preferences.useSystemIcons) {
     // Set the preferred icon size so system toolbar icons don't get annoying
     // padding.
     int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
-// FIXME: action group icon
-//    fileNewActionGroup->setIcon(KIcon("filenew"));
-    fileMenu->changeItem(fileMenu->idAt(0),KIcon("filenew"),"&New");
+    fileNewAction->setIcon(KIcon("filenew"));
+    fileNewMenu->menuAction()->setIcon(KIcon("filenew"));
     fileOpenAction->setIcon(KIcon("fileopen"));
-//    fileOpenActionGroup->setIcon(KIcon("fileopen"));
     fileSaveAllAction->setIcon(KIcon("filesave"));
     filePrintAction->setIcon(KIcon("fileprint"));
     filePrintQuicklyAction->setIcon(KIcon("fileprint"));
@@ -1185,7 +1184,21 @@ void MainForm::init()
     debugPauseAction->setIcon(KIcon("player_pause"));
     toolsConfigureAction->setIcon(KIcon("configure"));
     debugResetAction->setIcon(KIcon("player_stop"));
-  }
+  } else fileNewMenu->menuAction()->setIcon(QIcon(QPixmap(":/images/00")));
+  QToolButton *fileNewButton=static_cast<QToolButton *>(toolBar
+    ->widgetForAction(fileNewAction));
+  fileNewButton->setPopupMode(QToolButton::MenuButtonPopup);
+  fileNewButton->setMenu(fileNewMenu);
+  QToolButton *fileOpenButton=static_cast<QToolButton *>(toolBar
+    ->widgetForAction(fileOpenAction));
+  QMenu *fileOpenMenu=new QMenu(this);
+  fileOpenMenu->setObjectName(QString::fromUtf8("fileOpenMenu"));
+  fileOpenMenu->addAction(fileRecent1Action);
+  fileOpenMenu->addAction(fileRecent2Action);
+  fileOpenMenu->addAction(fileRecent3Action);
+  fileOpenMenu->addAction(fileRecent4Action);
+  fileOpenButton->setPopupMode(QToolButton::MenuButtonPopup);
+  fileOpenButton->setMenu(fileOpenMenu);
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->widgetForAction(findFunctionsAction));
   findFunctionsPopup=new Q3PopupMenu(findFunctionsButton);
@@ -1195,8 +1208,8 @@ void MainForm::init()
           this,SLOT(findFunctionsPopup_aboutToHide()));
   connect(findFunctionsPopup,SIGNAL(activated(int)),
           this,SLOT(findFunctionsPopup_activated(int)));
-  findFunctionsButton->setPopupDelay(0);
-  findFunctionsButton->setPopup(findFunctionsPopup);
+  findFunctionsButton->setPopupMode(QToolButton::MenuButtonPopup);
+  findFunctionsButton->setMenu(findFunctionsPopup);
   errorListDock=new QDockWidget("Errors and Warnings",this);
   errorListDock->setFloating(false);
   errorListDock->setFeatures(QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable);
@@ -2601,11 +2614,9 @@ void MainForm::filePreferences()
       // padding.
       int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
       setIconSize(QSize(toolbarIconSize,toolbarIconSize));
-// FIXME: action group icon
-//      fileNewActionGroup->setIcon(KIcon("filenew"));
-      fileMenu->changeItem(fileMenu->idAt(0),KIcon("filenew"),"&New");
+      fileNewAction->setIcon(KIcon("filenew"));
+      fileNewMenu->menuAction()->setIcon(KIcon("filenew"));
       fileOpenAction->setIcon(KIcon("fileopen"));
-//      fileOpenActionGroup->setIcon(KIcon("fileopen"));
       fileSaveAllAction->setIcon(KIcon("filesave"));
       filePrintAction->setIcon(KIcon("fileprint"));
       filePrintQuicklyAction->setIcon(KIcon("fileprint"));
@@ -2640,11 +2651,9 @@ void MainForm::filePreferences()
       debugResetAction->setIcon(KIcon("player_stop"));
     } else {
       setIconSize(QSize(20,20));
-// FIXME: action group icon
-//      fileNewActionGroup->setIcon(QIcon(QPixmap(":/images/00")));
-      fileMenu->changeItem(fileMenu->idAt(0),QIcon(QPixmap(":/images/00")),"&New");
+      fileNewAction->setIcon(QIcon(QPixmap(":/images/00")));
+      fileNewMenu->menuAction()->setIcon(QIcon(QPixmap(":/images/00")));
       fileOpenAction->setIcon(QIcon(QPixmap(":/images/01")));
-//      fileOpenActionGroup->setIcon(QIcon(QPixmap(":/images/01")));
       fileSaveAllAction->setIcon(QIcon(QPixmap(":/images/02")));
       filePrintAction->setIcon(QIcon(QPixmap(":/images/03")));
       filePrintQuicklyAction->setIcon(QIcon(QPixmap(":/images/03")));
@@ -3718,13 +3727,13 @@ void MainForm::startCompiling()
       sourceFile->fileSave();
     }
   }
-  fileNewActionGroup->setEnabled(FALSE);
+  fileNewMenu->menuAction()->setEnabled(FALSE);
+  fileNewAction->setEnabled(FALSE);
   fileOpenAction->setEnabled(FALSE);
   fileRecent1Action->setEnabled(FALSE);
   fileRecent2Action->setEnabled(FALSE);
   fileRecent3Action->setEnabled(FALSE);
   fileRecent4Action->setEnabled(FALSE);
-  fileOpenActionGroup->setEnabled(FALSE);
   fileExitAction->setEnabled(FALSE);
   projectAddFilesAction->setEnabled(FALSE);
   projectCompileAction->setVisible(FALSE);
@@ -3825,13 +3834,13 @@ void MainForm::stopCompiling()
   projectBuildAction->setVisible(TRUE);
   projectAddFilesAction->setEnabled(TRUE);
   fileExitAction->setEnabled(TRUE);
-  fileOpenActionGroup->setEnabled(TRUE);
   fileRecent1Action->setEnabled(TRUE);
   fileRecent2Action->setEnabled(TRUE);
   fileRecent3Action->setEnabled(TRUE);
   fileRecent4Action->setEnabled(TRUE);
   fileOpenAction->setEnabled(TRUE);
-  fileNewActionGroup->setEnabled(TRUE);
+  fileNewAction->setEnabled(TRUE);
+  fileNewMenu->menuAction()->setEnabled(TRUE);
   statusBar()->clear();
 }
 
