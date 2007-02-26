@@ -1184,8 +1184,15 @@ void MainForm::init()
     toolsConfigureAction->setIcon(KIcon("configure"));
     debugResetAction->setIcon(KIcon("player_stop"));
   }
-  QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
-    ->child("findFunctionsAction_action_button","QToolButton",FALSE));
+// FIXME: Use this once I move from Q3ToolBar to QToolBar
+//  QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
+//    ->widgetForAction(findFunctionsAction));
+  QToolButton *findFunctionsButton=NULL;
+  QList<QToolButton *> allToolButtons=toolBar->findChildren<QToolButton *>();
+  Q_FOREACH(QToolButton *toolButton, allToolButtons) {
+    if (toolButton->defaultAction()==findFunctionsAction)
+      findFunctionsButton=toolButton;
+  }
   findFunctionsPopup=new Q3PopupMenu(findFunctionsButton);
   connect(findFunctionsPopup,SIGNAL(aboutToShow()),
           this,SLOT(findFunctionsPopup_aboutToShow()));
