@@ -215,7 +215,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         othFileCount)
 #define CURRENT_VIEW (static_cast<KTextEditor::View *>(widgetStack->visibleWidget()))
 
-#define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),K3Icon::Small,K3Icon::SizeSmall):qPixmapFromMimeSource((name)))
+#define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),K3Icon::Small,K3Icon::SizeSmall):QPixmap(":/images/" name))
 
 #define SET_TEXT_SAFE(doc,text) do { \
     disableViewEvents=TRUE; \
@@ -987,8 +987,8 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
 
 void MainForm::init()
 {
-  setIcon(qPixmapFromMimeSource("icon.png"));
-  KWin::setIcons(winId(),*(icon()),qPixmapFromMimeSource("ktigcc.png"));
+  setIcon(QPixmap(":/images/icon.png"));
+  KWin::setIcons(winId(),*(icon()),QPixmap(":/images/ktigcc.png"));
   ticables_library_init();
   tifiles_library_init();
   ticalcs_library_init();
@@ -1167,7 +1167,7 @@ void MainForm::init()
     helpSearchAction->setIcon(KIcon("filefind"));
     findFindAction->setIcon(KIcon("filefind"));
     if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
-      findReplaceAction->setIcon(QIcon(qPixmapFromMimeSource("filereplace.png")));
+      findReplaceAction->setIcon(QIcon(QPixmap(":/images/filereplace.png")));
     else
       findReplaceAction->setIcon(KIcon("stock-find-and-replace"));
     helpIndexAction->setIcon(KIcon("contents"));
@@ -2627,7 +2627,7 @@ void MainForm::filePreferences()
       helpSearchAction->setIcon(KIcon("filefind"));
       findFindAction->setIcon(KIcon("filefind"));
       if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
-        findReplaceAction->setIcon(QIcon(qPixmapFromMimeSource("filereplace.png")));
+        findReplaceAction->setIcon(QIcon(QPixmap(":/images/filereplace.png")));
       else
         findReplaceAction->setIcon(KIcon("stock-find-and-replace"));
       helpIndexAction->setIcon(KIcon("contents"));
@@ -2645,39 +2645,39 @@ void MainForm::filePreferences()
       debugResetAction->setIcon(KIcon("player_stop"));
     } else {
 // FIXME: action group icon
-//      fileNewActionGroup->setIcon(QIcon(qPixmapFromMimeSource("00")));
-      fileMenu->changeItem(fileMenu->idAt(0),QIcon(qPixmapFromMimeSource("00")),"&New");
-      fileOpenAction->setIcon(QIcon(qPixmapFromMimeSource("01")));
-//      fileOpenActionGroup->setIcon(QIcon(qPixmapFromMimeSource("01")));
-      fileSaveAllAction->setIcon(QIcon(qPixmapFromMimeSource("02")));
-      filePrintAction->setIcon(QIcon(qPixmapFromMimeSource("03")));
-      filePrintQuicklyAction->setIcon(QIcon(qPixmapFromMimeSource("03")));
-      editClearAction->setIcon(QIcon(qPixmapFromMimeSource("04")));
-      editCutAction->setIcon(QIcon(qPixmapFromMimeSource("05")));
-      editCopyAction->setIcon(QIcon(qPixmapFromMimeSource("06")));
-      editPasteAction->setIcon(QIcon(qPixmapFromMimeSource("07")));
-      projectAddFilesAction->setIcon(QIcon(qPixmapFromMimeSource("08")));
-      projectCompileAction->setIcon(QIcon(qPixmapFromMimeSource("09")));
-      projectMakeAction->setIcon(QIcon(qPixmapFromMimeSource("10")));
-      projectBuildAction->setIcon(QIcon(qPixmapFromMimeSource("11")));
-      helpContentsAction->setIcon(QIcon(qPixmapFromMimeSource("12")));
-      helpDocumentationAction->setIcon(QIcon(qPixmapFromMimeSource("12")));
-      helpSearchAction->setIcon(QIcon(qPixmapFromMimeSource("13")));
-      findFindAction->setIcon(QIcon(qPixmapFromMimeSource("13")));
-      findReplaceAction->setIcon(QIcon(qPixmapFromMimeSource("14")));
-      helpIndexAction->setIcon(QIcon(qPixmapFromMimeSource("15")));
-      editUndoAction->setIcon(QIcon(qPixmapFromMimeSource("16")));
-      editRedoAction->setIcon(QIcon(qPixmapFromMimeSource("17")));
-      findFunctionsAction->setIcon(QIcon(qPixmapFromMimeSource("18")));
-      editIncreaseIndentAction->setIcon(QIcon(qPixmapFromMimeSource("19")));
-      editDecreaseIndentAction->setIcon(QIcon(qPixmapFromMimeSource("20")));
-      projectStopCompilationAction->setIcon(QIcon(qPixmapFromMimeSource("21")));
-      projectForceQuitAction->setIcon(QIcon(qPixmapFromMimeSource("22")));
-      helpNewsAction->setIcon(QIcon(qPixmapFromMimeSource("23")));
-      debugRunAction->setIcon(QIcon(qPixmapFromMimeSource("24")));
-      debugPauseAction->setIcon(QIcon(qPixmapFromMimeSource("25")));
-      toolsConfigureAction->setIcon(QIcon(qPixmapFromMimeSource("26")));
-      debugResetAction->setIcon(QIcon(qPixmapFromMimeSource("27")));
+//      fileNewActionGroup->setIcon(QIcon(QPixmap(":/images/00")));
+      fileMenu->changeItem(fileMenu->idAt(0),QIcon(QPixmap(":/images/00")),"&New");
+      fileOpenAction->setIcon(QIcon(QPixmap(":/images/01")));
+//      fileOpenActionGroup->setIcon(QIcon(QPixmap(":/images/01")));
+      fileSaveAllAction->setIcon(QIcon(QPixmap(":/images/02")));
+      filePrintAction->setIcon(QIcon(QPixmap(":/images/03")));
+      filePrintQuicklyAction->setIcon(QIcon(QPixmap(":/images/03")));
+      editClearAction->setIcon(QIcon(QPixmap(":/images/04")));
+      editCutAction->setIcon(QIcon(QPixmap(":/images/05")));
+      editCopyAction->setIcon(QIcon(QPixmap(":/images/06")));
+      editPasteAction->setIcon(QIcon(QPixmap(":/images/07")));
+      projectAddFilesAction->setIcon(QIcon(QPixmap(":/images/08")));
+      projectCompileAction->setIcon(QIcon(QPixmap(":/images/09")));
+      projectMakeAction->setIcon(QIcon(QPixmap(":/images/10")));
+      projectBuildAction->setIcon(QIcon(QPixmap(":/images/11")));
+      helpContentsAction->setIcon(QIcon(QPixmap(":/images/12")));
+      helpDocumentationAction->setIcon(QIcon(QPixmap(":/images/12")));
+      helpSearchAction->setIcon(QIcon(QPixmap(":/images/13")));
+      findFindAction->setIcon(QIcon(QPixmap(":/images/13")));
+      findReplaceAction->setIcon(QIcon(QPixmap(":/images/14")));
+      helpIndexAction->setIcon(QIcon(QPixmap(":/images/15")));
+      editUndoAction->setIcon(QIcon(QPixmap(":/images/16")));
+      editRedoAction->setIcon(QIcon(QPixmap(":/images/17")));
+      findFunctionsAction->setIcon(QIcon(QPixmap(":/images/18")));
+      editIncreaseIndentAction->setIcon(QIcon(QPixmap(":/images/19")));
+      editDecreaseIndentAction->setIcon(QIcon(QPixmap(":/images/20")));
+      projectStopCompilationAction->setIcon(QIcon(QPixmap(":/images/21")));
+      projectForceQuitAction->setIcon(QIcon(QPixmap(":/images/22")));
+      helpNewsAction->setIcon(QIcon(QPixmap(":/images/23")));
+      debugRunAction->setIcon(QIcon(QPixmap(":/images/24")));
+      debugPauseAction->setIcon(QIcon(QPixmap(":/images/25")));
+      toolsConfigureAction->setIcon(QIcon(QPixmap(":/images/26")));
+      debugResetAction->setIcon(QIcon(QPixmap(":/images/27")));
     }
     it=Q3ListViewItemIterator(errorList->errorListView);
     for (item=it.current();item;item=(++it).current()) {

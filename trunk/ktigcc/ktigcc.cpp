@@ -32,6 +32,7 @@
 #include <qtextcodec.h>
 #include <qicon.h>
 #include <qsize.h> 
+#include <QPixmap>
 #include <kglobal.h>
 #include <kicontheme.h>
 #include <kiconloader.h>
@@ -39,8 +40,6 @@
 #include <glib.h>
 #include "mainform.h"
 using namespace std;
-void qCleanupImages_ktigcc();
-void qInitImages_ktigcc();
 
 static KCmdLineOptions options[] =
 {
@@ -91,10 +90,7 @@ int main(int argc, char *argv[])
   KCmdLineArgs::addCmdLineOptions(options);
   KCmdLineArgs::addStdCmdLineOptions();
   KApplication app;
-  // Readd the images KDE kindly removes...
-  qCleanupImages_ktigcc();
-  qInitImages_ktigcc();
-  about.setProgramLogo(qPixmapFromMimeSource("icon.png"));
+  about.setProgramLogo(QPixmap(":/images/icon.png"));
   pconfig=KGlobal::config();
   
   if ((tigcc_base = getenv("TIGCC")) == NULL) {

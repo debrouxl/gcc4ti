@@ -164,8 +164,8 @@ class KReplaceWithSelectionS : public KReplace {
 
 void SourceFileWindow::initBase()
 {
-  setIcon(qPixmapFromMimeSource("icon.png"));
-  KWin::setIcons(winId(),*(icon()),qPixmapFromMimeSource("ktigcc.png"));
+  setIcon(QPixmap(":/images/icon.png"));
+  KWin::setIcons(winId(),*(icon()),QPixmap(":/images/ktigcc.png"));
   sourceFiles.append(THIS);
   THIS->dirWatch=new KDirWatch(this);
   setCaption(caption()+" - "+THIS->fileName);
@@ -262,7 +262,7 @@ void SourceFileWindow::initBase()
     editPasteAction->setIcon(KIcon("editpaste"));
     findFindAction->setIcon(KIcon("filefind"));
     if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
-      findReplaceAction->setIcon(QIcon(qPixmapFromMimeSource("filereplace.png")));
+      findReplaceAction->setIcon(QIcon(QPixmap(":/images/filereplace.png")));
     else
       findReplaceAction->setIcon(KIcon("stock-find-and-replace"));
     editUndoAction->setIcon(KIcon("undo"));
@@ -628,7 +628,7 @@ void SourceFileWindow::applyPreferences()
     editPasteAction->setIcon(KIcon("editpaste"));
     findFindAction->setIcon(KIcon("filefind"));
     if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
-      findReplaceAction->setIcon(QIcon(qPixmapFromMimeSource("filereplace.png")));
+      findReplaceAction->setIcon(QIcon(QPixmap(":/images/filereplace.png")));
     else
       findReplaceAction->setIcon(KIcon("stock-find-and-replace"));
     editUndoAction->setIcon(KIcon("undo"));
@@ -637,22 +637,22 @@ void SourceFileWindow::applyPreferences()
     editIncreaseIndentAction->setIcon(KIcon("indent"));
     editDecreaseIndentAction->setIcon(KIcon("unindent"));
   } else {
-    fileSaveAction->setIcon(QIcon(qPixmapFromMimeSource("02")));
-    fileAddToProjectAction->setIcon(QIcon(qPixmapFromMimeSource("08")));
-    fileCompileAction->setIcon(QIcon(qPixmapFromMimeSource("09")));
-    filePrintAction->setIcon(QIcon(qPixmapFromMimeSource("03")));
-    filePrintQuicklyAction->setIcon(QIcon(qPixmapFromMimeSource("03")));
-    editClearAction->setIcon(QIcon(qPixmapFromMimeSource("04")));
-    editCutAction->setIcon(QIcon(qPixmapFromMimeSource("05")));
-    editCopyAction->setIcon(QIcon(qPixmapFromMimeSource("06")));
-    editPasteAction->setIcon(QIcon(qPixmapFromMimeSource("07")));
-    findFindAction->setIcon(QIcon(qPixmapFromMimeSource("13")));
-    findReplaceAction->setIcon(QIcon(qPixmapFromMimeSource("14")));
-    editUndoAction->setIcon(QIcon(qPixmapFromMimeSource("16")));
-    editRedoAction->setIcon(QIcon(qPixmapFromMimeSource("17")));
-    findFunctionsAction->setIcon(QIcon(qPixmapFromMimeSource("18")));
-    editIncreaseIndentAction->setIcon(QIcon(qPixmapFromMimeSource("19")));
-    editDecreaseIndentAction->setIcon(QIcon(qPixmapFromMimeSource("20")));
+    fileSaveAction->setIcon(QIcon(QPixmap(":/images/02")));
+    fileAddToProjectAction->setIcon(QIcon(QPixmap(":/images/08")));
+    fileCompileAction->setIcon(QIcon(QPixmap(":/images/09")));
+    filePrintAction->setIcon(QIcon(QPixmap(":/images/03")));
+    filePrintQuicklyAction->setIcon(QIcon(QPixmap(":/images/03")));
+    editClearAction->setIcon(QIcon(QPixmap(":/images/04")));
+    editCutAction->setIcon(QIcon(QPixmap(":/images/05")));
+    editCopyAction->setIcon(QIcon(QPixmap(":/images/06")));
+    editPasteAction->setIcon(QIcon(QPixmap(":/images/07")));
+    findFindAction->setIcon(QIcon(QPixmap(":/images/13")));
+    findReplaceAction->setIcon(QIcon(QPixmap(":/images/14")));
+    editUndoAction->setIcon(QIcon(QPixmap(":/images/16")));
+    editRedoAction->setIcon(QIcon(QPixmap(":/images/17")));
+    findFunctionsAction->setIcon(QIcon(QPixmap(":/images/18")));
+    editIncreaseIndentAction->setIcon(QIcon(QPixmap(":/images/19")));
+    editDecreaseIndentAction->setIcon(QIcon(QPixmap(":/images/20")));
   }
 }
 
