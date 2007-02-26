@@ -113,6 +113,8 @@ class DnDListView : public K3ListView {
 #include <ktexteditor/view.h>
 #include <ktexteditor/cursor.h>
 #include <ktexteditor/range.h>
+#include <ktexteditor/smartcursor.h>
+#include <ktexteditor/smartinterface.h>
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <kconfig.h>
@@ -837,8 +839,9 @@ class ErrorListItem : public K3ListViewItem {
             }
           }
         }
-        cursor=kateView->document()->createCursor();
-        cursor->setPosition(errorLine,errorColumn);
+        KTextEditor::SmartInterface* smart =
+          qobject_cast<KTextEditor::SmartInterface*>(kateView->document());
+        cursor=smart->newSmartCursor(errorLine,errorColumn);
       }
     }
   }
@@ -852,15 +855,12 @@ class ErrorListItem : public K3ListViewItem {
     // Now jump to the cursor's location if we have one.
     KTextEditor::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
                            :static_cast<KTextEditor::View *>(NULL));
-    if (cursor && kateView) {
-      unsigned line,col;
-      cursor->position(&line,&col);
-      kateView->setCursorPosition(KTextEditor::Cursor(line,col));
-    }
+    if (cursor && kateView)
+      kateView->setCursorPosition(*cursor);
   }
   ListViewFile *lvFile;
   SourceFile *srcFile;
-  KTextEditor::Cursor *cursor;
+  KTextEditor::SmartCursor *cursor;
   private:
   int errorLine;
   int errorColumn;
@@ -938,7 +938,7 @@ void MainForm::deleteOverwrittenErrorsIn(void *srcFile)
     ++lvit;
     if (errorItem->srcFile==sourceFile && errorItem->cursor) {
       int line,col;
-      errorItem->cursor->position(&line,&col);
+      errorItem->cursor->position(line,col);
       int curline,curcol;
       sourceFile->kateView->cursorPosition().position(curline,curcol);
       if (curline==line && curcol==col)
@@ -6013,7 +6013,7 @@ void MainForm::current_view_textChanged()
         ++lvit;
         if (errorItem->lvFile==lvFile && errorItem->cursor) {
           int line,col;
-          errorItem->cursor->position(&line,&col);
+          errorItem->cursor->position(line,col);
           int curline,curcol;
           lvFile->kateView->cursorPosition().position(curline,curcol);
           if (curline==line && curcol==col)
