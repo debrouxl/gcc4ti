@@ -25,7 +25,7 @@
 #include <q3ptrlist.h>
 #include <kconfig.h>
 #include <kaboutdata.h>
-#include <qstring.h>
+#include <QString>
 #include <q3valuevector.h>
 class QAssistantClient;
 class QClipboard;

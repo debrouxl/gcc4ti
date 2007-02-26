@@ -21,9 +21,9 @@
 
 #include "projectoptions.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
 #include <q3accel.h>
 #include <kmessagebox.h>
 #include <kfiledialog.h>

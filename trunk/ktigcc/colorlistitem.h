@@ -21,8 +21,8 @@
 #pragma once
 
 #include <q3listbox.h>
-#include <qpainter.h>
-#include <qstyle.h>
+#include <QPainter>
+#include <QStyle>
 #include <QStyleOptionFocusRect>
 
 class ColorListItem : public Q3ListBoxItem {

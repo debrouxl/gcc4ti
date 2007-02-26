@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include <qstring.h>
+#include <QString>
 #include <q3valuevector.h>
-#include <qstringlist.h>
+#include <QStringList>
 #include "completion.h"
 
 struct SourceFileFunction {

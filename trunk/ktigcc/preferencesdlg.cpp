@@ -22,18 +22,18 @@
 
 #include "preferences.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
-#include <qcheckbox.h>
-#include <qradiobutton.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
+#include <QCheckBox>
+#include <QRadioButton>
 #include <q3accel.h>
 #include <qcolor.h>
 #include <q3valuelist.h>
-#include <qapplication.h>
-#include <qeventloop.h>
-#include <qcursor.h>
-#include <qstringlist.h>
+#include <QApplication>
+#include <QEventLoop>
+#include <QCursor>
+#include <QStringList>
 #include <knuminput.h>
 #include <kfontdialog.h>
 #include <kcolordialog.h>

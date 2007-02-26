@@ -1,8 +1,8 @@
 #include "customstyle.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
 
 /*
  *  Constructs a CustomStyle as a child of 'parent', with the

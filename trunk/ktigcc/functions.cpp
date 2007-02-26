@@ -20,9 +20,9 @@
 
 #include "functions.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
 
 // Make this slot public.
 void FunctionDialog::accept()

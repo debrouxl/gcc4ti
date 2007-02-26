@@ -21,9 +21,9 @@
 #include "selectcolors.h"
 
 #include <kcolordialog.h>
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
 #include <qcolor.h>
 #include "colorlistitem.h"
 

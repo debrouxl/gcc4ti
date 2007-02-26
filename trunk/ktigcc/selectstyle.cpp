@@ -20,9 +20,9 @@
 
 #include "selectstyle.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
 
 void SelectStyle::customStyle_toggled(bool on)
 {

@@ -27,13 +27,13 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
-#include <qtextcodec.h>
+#include <QTextCodec>
 #include <qcolor.h>
 #include <qfont.h>
 #include <qdom.h>
 #include <q3cstring.h>
-#include <qdir.h>
-#include <qpair.h>
+#include <QDir>
+#include <QPair>
 #include <Q3ValueList>
 #include <kconfig.h>
 #include "ktigcc.h"

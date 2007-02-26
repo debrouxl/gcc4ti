@@ -20,14 +20,14 @@
 
 #include "errorlist.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
-#include <qevent.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
+#include <QEvent>
 #include <q3listview.h>
-#include <qapplication.h>
-#include <qclipboard.h>
-#include <qstring.h>
+#include <QApplication>
+#include <QClipboard>
+#include <QString>
 #include <QFocusEvent>
 #include <QKeyEvent>
 

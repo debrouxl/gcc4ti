@@ -1,6 +1,6 @@
 #include "programoutput.h"
 
-#include <qvariant.h>
+#include <QVariant>
 /*
  *  Constructs a ProgramOutput as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.

@@ -21,12 +21,12 @@
 
 #include "programoptions.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
-#include <qapplication.h>
-#include <qevent.h>
-#include <qeventloop.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
+#include <QApplication>
+#include <QEvent>
+#include <QEventLoop>
 #include <QMouseEvent>
 #include <QAssistantClient>
 #include "ktigcc.h"

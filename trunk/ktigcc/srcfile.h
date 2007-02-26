@@ -24,7 +24,7 @@
 #include "srcfilewin.h"
 #include "parsing.h"
 
-#include <qstring.h>
+#include <QString>
 #include <Q3PopupMenu>
 #include <QLabel>
 class MainForm;

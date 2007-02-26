@@ -24,11 +24,11 @@
 #pragma once
 
 class KUrl;
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QString>
+#include <QStringList>
 #include <q3cstring.h>
 #include <q3valuevector.h>
-#include <qpair.h>
+#include <QPair>
 
 /*Structure definitions from tprbuilder source; slightly modified
     to work under C++

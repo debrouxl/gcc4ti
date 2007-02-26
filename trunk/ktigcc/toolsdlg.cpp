@@ -20,9 +20,9 @@
 
 #include "toolsdlg.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
 #include <k3listview.h>
 #include "ktigcc.h"
 #include "toolprops.h"

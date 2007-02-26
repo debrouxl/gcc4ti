@@ -21,23 +21,23 @@
 
 #include "srcfilewin.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
-#include <qstring.h>
-#include <qregexp.h>
-#include <qapplication.h>
-#include <qlabel.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
+#include <QString>
+#include <QRegExp>
+#include <QApplication>
+#include <QLabel>
 #include <qstatusbar.h>
-#include <qtimer.h>
-#include <qdatetime.h>
+#include <QTimer>
+#include <QDateTime>
 #include <q3dragobject.h>
-#include <qdir.h>
-#include <qclipboard.h>
+#include <QDir>
+#include <QClipboard>
 #include <q3accel.h>
-#include <qeventloop.h>
-#include <qlayout.h>
-#include <qtoolbutton.h>
+#include <QEventLoop>
+#include <QLayout>
+#include <QToolButton>
 #include <q3listbox.h>
 #include <QKeyEvent>
 #include <q3mimefactory.h>

@@ -23,13 +23,13 @@
 
 #include "parsing.h"
 #include "ktigcc.h"
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qregexp.h>
-#include <qtextcodec.h>
-#include <qapplication.h>
-#include <qeventloop.h>
-#include <qdir.h>
+#include <QString>
+#include <QStringList>
+#include <QRegExp>
+#include <QTextCodec>
+#include <QApplication>
+#include <QEventLoop>
+#include <QDir>
 #include <Q3ValueList>
 #include <kprocio.h>
 #include <kmessagebox.h>

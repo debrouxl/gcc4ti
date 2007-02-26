@@ -20,9 +20,9 @@
 
 #include "toolprops.h"
 
-#include <qvariant.h>
-#include <qimage.h>
-#include <qpixmap.h>
+#include <QVariant>
+#include <QImage>
+#include <QPixmap>
 #include <ktextedit.h>
 #include <kurl.h>
 #include <kurlrequester.h>

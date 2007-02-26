@@ -22,8 +22,8 @@
 #include <cstdlib>
 #include <kprogressdialog.h>
 #include <ticalcs.h>
-#include <qapplication.h>
-#include <qeventloop.h>
+#include <QApplication>
+#include <QEventLoop>
 
 static KProgressDialog *sendingProgress=0;
 
