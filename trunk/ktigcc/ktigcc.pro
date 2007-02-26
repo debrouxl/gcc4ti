@@ -5,7 +5,7 @@ CONFIG	+= qt warn_on debug qdbus assistant
 
 QT += xml qt3support
 
-LIBS	+= -lktexteditor -lkutils -lkdeui -lkdecore -lkio -lkparts
+LIBS	+= -lktexteditor -lkutils -lkdeui -lkdecore -lkio -lkparts -lkde3support
 
 HEADERS	+= tpr.h \
 	ktigcc.h \
