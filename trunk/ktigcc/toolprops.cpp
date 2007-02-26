@@ -37,7 +37,7 @@ void ToolProperties::init()
     toolTitle->setText(tool.title);
     commandLine->setText(tool.commandLine);
     if (!tool.workingDirectory.isEmpty())
-      workingDirectory->setKURL(KUrl::fromPathOrUrl(tool.workingDirectory));
+      workingDirectory->setUrl(KUrl::fromPathOrUrl(tool.workingDirectory));
     runInTerminal->setChecked(tool.runInTerminal);
   }
 }
@@ -65,7 +65,7 @@ void ToolProperties::validate()
 
 void ToolProperties::browseButton_clicked()
 {
-  QString ret=KFileDialog::getOpenFileName("/usr/bin",
+  QString ret=KFileDialog::getOpenFileName(KUrl("/usr/bin"),
     "application/x-executable application/x-executable-script",this,
     "Choose executable");
   if (!ret.isEmpty())
