@@ -44,7 +44,7 @@ public:
     int fileSavePrompt( Q3ListViewItem * fileItem );
     virtual void fileSave_fromto( const QString & lastProj, const QString & nextProj );
     virtual void findAndOpenFile( const QString & fileName, void * category );
-    virtual void openHeader( const QString & fileName, bool systemHeader, unsigned lineno );
+    virtual void openHeader( const QString & fileName, bool systemHeader, int lineno );
     virtual QString writeTempSourceFile( void * srcFile, bool inProject );
     virtual void compileSourceFile( void * srcFile );
     static QString tilibsErrorMessage( int err );
