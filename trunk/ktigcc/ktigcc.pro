@@ -141,7 +141,7 @@ exists($$KDEPREFIX/include/kde4/KDE) {
 KDELIBDIR = $$KDEPREFIX/lib$$system(kde4-config --libsuffix)
 
 !equals(KDELIBDIR,/usr/lib):!equals(KDELIBDIR,/usr/lib64) {
-  LIBS += -L"$$KDELIBDIR"
+  QMAKE_LIBDIR = $$KDELIBDIR $$QMAKE_LIBDIR
   !darwin-*:!macx-* {
     LIBS += -Wl,--rpath,"$$KDELIBDIR"
   }
