@@ -41,9 +41,10 @@
 #include <k3listview.h>
 #include <klineedit.h>
 #include <keditlistbox.h>
-#include <klistbox.h>
+#include <k3listbox.h>
 #include <kfiledialog.h>
 #include <kcursor.h>
+#include <kurl.h>
 #include "ktigcc.h"
 #include "selectstyle.h"
 #include "selectcolors.h"
@@ -684,7 +685,7 @@ void Preferences::clearSelectionButton_clicked()
 void Preferences::applyButton_clicked()
 {
   QString identifier=templateIdentifier->text();
-  Q3ListBoxItem *item=templateListBox->findItem(identifier,Qt::ExactMatch);
+  Q3ListBoxItem *item=templateListBox->findItem(identifier,Q3ListBox::ExactMatch);
   if (item) {
     static_cast<ListBoxTextPair *>(item)->setData(templateCode->text());
   } else {
@@ -721,7 +722,8 @@ void Preferences::templateIdentifier_textChanged(const QString &text)
 void Preferences::regenCompletionInfoButton_clicked()
 {
   QMap<QString,CompletionInfo> sysHdrCompletion;
-  QString dirName=KFileDialog::getExistingDirectory(":SystemInclude",this,
+  QString dirName=KFileDialog::getExistingDirectory(
+    KUrl("kfiledialog:SystemInclude"),this,
     "Pick Help Sources System/Include Folder");
   if (dirName.isEmpty()) return;
   setCursor(KCursor::waitCursor());
@@ -733,7 +735,7 @@ void Preferences::regenCompletionInfoButton_clicked()
   // There is always at least one recent directory: the home directory.
   if (KRecentDirs::list(":IncludeC").count()==1)
     KRecentDirs::add(":IncludeC",QString("%1/include/c/").arg(tigcc_base));
-  dirName=KFileDialog::getExistingDirectory(":IncludeC",this,
+  dirName=KFileDialog::getExistingDirectory(KUrl("kfiledialog:IncludeC"),this,
     "Pick C Header (include/c) Folder");
   if (dirName.isEmpty()) return;
   setCursor(KCursor::waitCursor());

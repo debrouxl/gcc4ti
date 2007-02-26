@@ -23,6 +23,7 @@
 #include <q3listbox.h>
 #include <qpainter.h>
 #include <qstyle.h>
+#include <QStyleOptionFocusRect>
 
 class ColorListItem : public Q3ListBoxItem {
   public:
@@ -35,13 +36,22 @@ class ColorListItem : public Q3ListBoxItem {
     virtual void paint(QPainter *painter) {
       // Find out whether we are painted onto our listbox.
       bool inListBox=listBox() && listBox()->viewport()==painter->device();
-  
+
       QRect r(0,0,width(listBox()),height(listBox()));
       if (inListBox && isSelected())
         painter->eraseRect(r);
       painter->fillRect(2,2,width(listBox())-4,height(listBox())-4,m_color);
-      if (inListBox && isCurrent())
-        listBox()->style().drawPrimitive(QStyle::PE_FocusRect,painter,r,listBox()->colorGroup());
+      if (inListBox && isCurrent()) {
+        QStyleOptionFocusRect opt;
+        opt.rect.setRect(0,0,width(listBox()),height(listBox()));
+        opt.palette=listBox()->palette();
+        opt.state=QStyle::State_FocusAtBorder;
+        if (isSelected())
+            opt.backgroundColor=opt.palette.highlight().color();
+        else
+            opt.backgroundColor=opt.palette.base().color();
+        listBox()->style()->drawPrimitive(QStyle::PE_FrameFocusRect,&opt,painter,listBox());
+      }
     }
     virtual int height(const Q3ListBox *) const {return 16;}
     virtual int width(const Q3ListBox *listBox) const {
