@@ -490,6 +490,7 @@ Q3DragObject *DnDListView::dragObject() {
   storedDrag->setEncodedData(data);
   return storedDrag;
 }
+
 void DnDListView::dropEvent(QDropEvent *e) {
   if (!compiling && e->source()==this && e->provides("x-ktigcc-dnd")) {
     Q3ListViewItem *currItem;
@@ -601,6 +602,7 @@ void DnDListView::dropEvent(QDropEvent *e) {
             KTextEditor::HighlightingInterface *hliface
               =qobject_cast<KTextEditor::HighlightingInterface*>(
                 static_cast<ListViewFile *>(currItem)->kateView->document());
+            QString fileText=static_cast<ListViewFile *>(currItem)->kateView->document()->text();
             hliface->setHighlighting(
               (destCategory==qllFilesListItem?
                 QLL_HL_MODE:
@@ -610,7 +612,7 @@ void DnDListView::dropEvent(QDropEvent *e) {
                 ASM_HL_MODE:
               (destCategory==cFilesListItem||destCategory==hFilesListItem)?
                 C_HL_MODE:
-              "None")));
+              "None"));
           }
           // update icon
           currItem->setPixmap(0,
