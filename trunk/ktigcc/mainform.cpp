@@ -1744,7 +1744,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
 {
   // Create Document object.
   KParts::Factory *factory = (KParts::Factory *)
-    KLibLoader::self()->factory ("libkatepart");
+    KLibLoader::self()->factory ("katepart");
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
       factory->createPart(0,this,"KTextEditor::Document");
@@ -2530,7 +2530,7 @@ void MainForm::filePreferences()
       hliface->setHighlighting("None");
     }
     KParts::Factory *factory=(KParts::Factory *)
-      KLibLoader::self()->factory("libkatepart");
+      KLibLoader::self()->factory("katepart");
     if (!factory) qFatal("Failed to load KatePart");
     KTextEditor::Document *doc=(KTextEditor::Document *)
       factory->createPart(0,this,"KTextEditor::Document");
