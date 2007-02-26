@@ -1865,7 +1865,7 @@ void MainForm::adoptSourceFile(void *srcFile)
       ASM_HL_MODE:
     (category==cFilesListItem||category==hFilesListItem)?
       C_HL_MODE:
-    "None")));
+    "None"));
   // Set options.
 #if 0 // FIXME: tab width
   newView->setTabWidth(
@@ -2350,7 +2350,7 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
             KTextEditor::HighlightingInterface *hliface
               =qobject_cast<KTextEditor::HighlightingInterface*>(
                 theFile->kateView->document());
-            hliface->setHighlighting(hlModeName);
+            QString hlMode=hliface->highlighting();
             theFile->kateView->cursorPosition().position(line,col);
             theFile->kateView->document()->setModified(FALSE);
             if (theFile->kateView->document()->openStream("text/plain",saveFileName))
@@ -2575,7 +2575,7 @@ void MainForm::filePreferences()
               ASM_HL_MODE:
             (category==cFilesListItem||category==hFilesListItem)?
               C_HL_MODE:
-            "None")));
+            "None"));
         }
         item->setPixmap(0,
           category==cFilesListItem||category==qllFilesListItem?SYSICON("source_c","filec.png"):
@@ -6222,7 +6222,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
         KTextEditor::HighlightingInterface *hliface
           =qobject_cast<KTextEditor::HighlightingInterface*>(
             theFile->kateView->document());
-        hliface->setHighlighting(hlModeName);
+        QString hlMode=hliface->highlighting();
         theFile->kateView->cursorPosition().position(line,col);
         theFile->kateView->document()->setModified(FALSE);
         if (theFile->kateView->document()->openStream("text/plain",newFileName))
