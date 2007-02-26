@@ -23,10 +23,10 @@
 
 #include <QString>
 #include <QStringList>
-#include <q3valuelist.h>
+#include <Q3ValueList>
 #include <QPair>
-#include <qcolor.h>
-#include <qfont.h>
+#include <QColor>
+#include <QFont>
 #include <ticables.h>
 class QWidget;
 class KConfig;

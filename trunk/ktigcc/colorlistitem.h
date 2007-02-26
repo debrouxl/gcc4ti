@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <q3listbox.h>
+#include <Q3ListBox>
 #include <QPainter>
 #include <QStyle>
 #include <QStyleOptionFocusRect>

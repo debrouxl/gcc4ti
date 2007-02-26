@@ -24,7 +24,7 @@
 #include <QVariant>
 #include <QImage>
 #include <QPixmap>
-#include <qcolor.h>
+#include <QColor>
 #include "colorlistitem.h"
 
 void SelectColors::colorList_selectionChanged()

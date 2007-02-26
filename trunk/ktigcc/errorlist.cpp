@@ -24,7 +24,7 @@
 #include <QImage>
 #include <QPixmap>
 #include <QEvent>
-#include <q3listview.h>
+#include <Q3ListView>
 #include <QApplication>
 #include <QClipboard>
 #include <QString>

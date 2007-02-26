@@ -22,11 +22,11 @@
 #pragma once
 
 #include <cstddef>
-#include <q3ptrlist.h>
+#include <Q3PtrList>
 #include <kconfig.h>
 #include <kaboutdata.h>
 #include <QString>
-#include <q3valuevector.h>
+#include <Q3ValueVector>
 class QAssistantClient;
 class QClipboard;
 class SourceFile;

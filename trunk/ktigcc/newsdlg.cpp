@@ -31,8 +31,8 @@
 #include <QPixmap>
 #include <QDateTime>
 #include <QString>
-#include <q3listbox.h>
-#include <qcolor.h>
+#include <Q3ListBox>
+#include <QColor>
 #include <QPainter>
 #include <QPen>
 #include <cstdio>

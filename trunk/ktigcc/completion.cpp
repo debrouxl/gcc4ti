@@ -19,14 +19,14 @@
 */
 
 #include <QString>
-#include <q3valuelist.h>
+#include <Q3ValueList>
 #include <QPair>
-#include <qpoint.h>
+#include <QPoint>
 #include <QRegExp>
 #include <QFileInfo>
 #include <QDir>
 #include <QApplication>
-#include <qwidget.h>
+#include <QWidget>
 #include <QEvent>
 #include <Q3PopupMenu>
 #include <kmessagebox.h>

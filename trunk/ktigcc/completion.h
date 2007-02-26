@@ -21,11 +21,11 @@
 #pragma once
 
 #include <QObject>
-#include <q3popupmenu.h>
-#include <qmap.h>
+#include <Q3PopupMenu>
+#include <QMap>
 #include <QString>
 #include <QStringList>
-#include <q3valuelist.h>
+#include <Q3ValueList>
 #include <QEvent>
 #include <ktexteditor/view.h>
 

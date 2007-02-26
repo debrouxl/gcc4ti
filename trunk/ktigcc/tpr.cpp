@@ -36,7 +36,7 @@
 #include <kurl.h>
 #include <QString>
 #include <QStringList>
-#include <q3cstring.h>
+#include <Q3CString>
 #include <QRegExp>
 #include <QTextCodec>
 #include <QDir>

@@ -27,9 +27,9 @@
 #include <QPixmap>
 #include <QCheckBox>
 #include <QRadioButton>
-#include <q3accel.h>
-#include <qcolor.h>
-#include <q3valuelist.h>
+#include <Q3Accel>
+#include <QColor>
+#include <Q3ValueList>
 #include <QApplication>
 #include <QEventLoop>
 #include <QCursor>

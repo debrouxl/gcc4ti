@@ -26,8 +26,8 @@
 class KUrl;
 #include <QString>
 #include <QStringList>
-#include <q3cstring.h>
-#include <q3valuevector.h>
+#include <Q3CString>
+#include <Q3ValueVector>
 #include <QPair>
 
 /*Structure definitions from tprbuilder source; slightly modified

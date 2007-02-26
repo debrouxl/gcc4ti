@@ -21,7 +21,7 @@
 #pragma once
 
 #include <QString>
-#include <q3valuevector.h>
+#include <Q3ValueVector>
 #include <QStringList>
 #include "completion.h"
 
