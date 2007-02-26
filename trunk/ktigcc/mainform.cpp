@@ -63,6 +63,7 @@ class DnDListView : public K3ListView {
 #undef K3ListView
 
 #include <qvariant.h>
+#include <QHash>
 #include <qimage.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -118,6 +119,7 @@ class DnDListView : public K3ListView {
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <ktexteditor/configpage.h>
 #include <kaboutdata.h>
 #include <khelpmenu.h>
@@ -3985,7 +3987,7 @@ void MainForm::procio_readReady()
                                       errorMessage,errorLine,errorColumn);
                   } else {
                     if (errorMessage.startsWith(" in function \'",FALSE)
-                        && errorMessage.contains('\'')>1) {
+                        && errorMessage.count('\'')>1) {
                       errorFunction=errorMessage.mid(14,errorMessage.find('\'',14)-14);
                     } else if (errorMessage.startsWith(" at top level",FALSE)) {
                       errorFunction=QString::null;
@@ -4700,9 +4702,9 @@ void MainForm::showStats()
         "Do you want to open the project folder?").arg(compileStats))
         .replace(QString(QChar(56319))+QString(QChar(56992))," "),
         "Compilation Successful")==KMessageBox::Yes) {
-    KUrl projectDir=KUrl::fromPathOrUrl(projectFileName);
+    KUrl projectDir(projectFileName);
     projectDir.setFileName("");
-    KRun::runURL(projectDir.url(),"inode/directory");
+    KRun::runUrl(projectDir,"inode/directory",this);
   }
 }
 
@@ -5203,7 +5205,7 @@ void MainForm::toolsMenu_activated(int id)
                                                          "konsole");
       if (terminal=="konsole")
         terminal+=" -caption=%c";
-      QMap<QChar,QString> map;
+      QHash<QChar,QString> map;
       map.insert('c',tool.title);
       map.insert('i',"");
       map.insert('m',"");
