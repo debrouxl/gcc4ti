@@ -58,15 +58,6 @@ class ColoredListBoxText : public Q3ListBoxText {
     QColor color;
 };
 
-// This hack overrides the comment so it doesn't get translated while
-// everything else doesn't.
-class ProxyModuleInfo : public KCModuleInfo {
-  public:
-    ProxyModuleInfo() : KCModuleInfo("proxy") {
-      setComment("Configure the proxy servers used");
-    }
-};
-
 bool NewsDialog::loadNews()
 {
   QString tmpFile;
@@ -130,7 +121,7 @@ bool NewsDialog::loadNews()
 
 void NewsDialog::proxySettingsButton_clicked()
 {
-  ProxyModuleInfo proxyModuleInfo;
+  KCModuleInfo proxyModuleInfo("proxy");
   if (proxyModuleInfo.moduleName().isNull())
     KMessageBox::error(this,"This feature requires kdebase.");
   else {
@@ -147,7 +138,8 @@ void NewsDialog::refreshButton_clicked()
 
 void NewsDialog::visitButton_clicked()
 {
-  KRun::runURL(KUrl("http://tigcc.ticalc.org/linux/"),"text/html");
+  KRun::runUrl(KUrl("http://tigcc.ticalc.org/linux/"),"text/html",
+               static_cast<QWidget *>(parent()));
 }
 
 /*
