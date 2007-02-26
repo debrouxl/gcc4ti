@@ -1,3 +1,274 @@
+2007-02-26 09:13  kevinkofler
+
+	* ktigcc.cpp: Use QSettings instead of hack to set Qt Assistant
+	  page.
+
+2007-02-26 08:20  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Crash fix: libkatepart has been
+	  renamed to katepart.
+
+2007-02-26 08:16  kevinkofler
+
+	* mainform.cpp: Fix crash due to findFunctionsButton not being
+	  found. Add FIXME for less hackish solution which requires the new
+	  QToolBar.
+
+2007-02-26 07:42  kevinkofler
+
+	* ktigcc.pro: Add missing -lkde3support.
+
+2007-02-26 07:40  kevinkofler
+
+	* ktigcc.pro: Make sure the KDE 4 lib directory is found first.
+
+2007-02-26 07:11  kevinkofler
+
+	* toolprops.cpp: Don't use deprecated KUrl::fromPathOrUrl.
+
+2007-02-26 07:07  kevinkofler
+
+	* toolprops.cpp, toolprops.ui: Tool Properties build fixes:
+	  KURLRequester -> KUrlRequester Change hardcoded 26 in mode property
+	  for KUrlRequester to a flag set.  setKURL -> setUrl
+	  KFileDialog::getOpenFileName now takes a KUrl as its first
+	  parameter.
+
+2007-02-26 06:57  kevinkofler
+
+	* newsdlg.cpp: Fix newsdlg.cpp build: Remove ProxyModuleInfo
+	  translation disabling hack which doesn't work anymore.  KRun::runURL
+	  -> KRun::runUrl, add third parameter.
+
+2007-02-26 06:47  kevinkofler
+
+	* mainform.cpp: Fix build of mainform.cpp by replacing:
+	  QApplication::eventLoop()->loopLevel() ->
+	  QCoreApplication::loopLevel() QApplication::eventLoop()->enterLoop()
+	  -> QCoreApplication::enter_loop()
+	  QApplication::eventLoop()->exitLoop() ->
+	  QCoreApplication::exit_loop() Fix (false) uninitialized variable
+	  warning.
+
+2007-02-26 06:38  kevinkofler
+
+	* mainform.cpp: Comment out uses of non-existent
+	  QActionGroup::setIcon and add FIXME comments.
+
+2007-02-26 06:34  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Replace deprecated setIconSet with
+	  setIcon.
+
+2007-02-26 06:24  kevinkofler
+
+	* mainform.cpp: More compile fixes for new APIs: Add missing
+	  #include <kconfiggroup.h>.  QString::count()>1 ->
+	  QString::contains()>1 KRun::runURL -> KRun::runUrl, also change 1st
+	  parameter from QString to KUrl and add this (QWidget *) as 3rd
+	  parameter KMacroExpander now takes a QHash and not a QMap
+
+	  Also remove a use of the deprecated KUrl::fromPathOrUrl.
+
+2007-02-26 06:11  kevinkofler
+
+	* mainform.h: Update prototype of openHeader.
+
+2007-02-26 06:09  kevinkofler
+
+	* mainform.cpp: Fix more errors made during highlighting code
+	  changes.
+
+2007-02-26 06:04  kevinkofler
+
+	* mainform.cpp: Update smart cursor handling for new KatePart
+	  interface: KTextEditor::Cursor -> KTextEditor::SmartCursor
+	  KTextEditor::CursorInterface::createCursor ->
+	  KTextEditor::SmartInterface::newSmartCursor
+	  KTextEditor::Cursor::position(unsigned*,unsigned*) ->
+	  position(int&,int&) Don't convert SmartCursor->(int,int)->Cursor,
+	  pass the SmartCursor directly.
+
+2007-02-26 05:49  kevinkofler
+
+	* mainform.cpp: Change several variables from unsigned to (signed)
+	  int to match Qt/KDE 4 APIs.
+
+2007-02-26 05:31  kevinkofler
+
+	* mainform.cpp: Fix errors made during highlighting code changes.
+
+2007-02-26 05:24  kevinkofler
+
+	* programoutput.ui: Fix KTextBrowser properties for KDE 3.80.3.
+
+2007-02-26 04:14  kevinkofler
+
+	* mainform.cpp: Make file extension tables static const: const
+	  because Qt 4 requires it (can't add a non-const char * to a QString
+	  without a cast anymore) and static for efficiency.
+
+2007-02-26 03:57  kevinkofler
+
+	* ktigcc.pro, mainform.cpp, mainform.h: Port TiEmu interfacing code
+	  from DCOP to D-Bus.
+
+2007-02-26 01:00  kevinkofler
+
+	* mainform.cpp: Fix stray virtual keywords.
+
+2007-02-26 00:58  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Change parameters of
+	  KReplaceWithSelection(S)::setSelection from unsigned to int.
+
+2007-02-26 00:53  kevinkofler
+
+	* mainform.cpp: Fix DNDListView hack.
+
+2007-02-26 00:45  kevinkofler
+
+	* colorlistitem.h, preferencesdlg.cpp, wordlist.ui: Fix build of
+	  preferencesdlg.cpp:
+	  * klistbox.h -> k3listbox.h
+	  * adjust colorlistitem.h for new QStyle API
+	  * wordlist.ui: Remove|Add -> KEditListBox::Remove|KEditListBox::Add
+	  * Qt::ExactMatch -> Q3ListBox::ExactMatch
+	  * KFileDialog::getExistingDirectory now takes a KUrl as its first
+	  parameter.
+
+2007-02-25 23:57  kevinkofler
+
+	* programoptions.cpp: Fix programoptions.cpp build:
+	  QToolTip::textFor(widget) is now widget->toolTip().
+
+2007-02-25 23:53  kevinkofler
+
+	* projectoptions.cpp: Fix projectoptions.cpp build: getOpenFileName
+	  now takes a KUrl as its first parameter.
+
+2007-02-25 23:49  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: KReplace::replaceNextDialog() now
+	  returns a KDialog *, not a KDialogBase * (which no longer exists),
+	  adjust findReplace.  Port to new KatePart selection API:
+	  document()->setSelection(r1,c1,r2,c2) ->
+	  setSelection(KTextEditor::Range(r1,c1,r2,c2))
+	  document()->selStartLine(), document()->selStartCol() ->
+	  selectionRange().start().position(line,col)
+	  document()->selEndLine(), document()->selEndCol() ->
+	  selectionRange().end().position(line,col)
+
+	  CURRENT_VIEW->document()->selStartLine()!=CURRENT_VIEW->document()->selEndLine() -> !CURRENT_VIEW->selectionRange().onSingleLine()
+
+2007-02-25 09:51  kevinkofler
+
+	* mainform.cpp: Copy missing comment from srcfilewin.cpp.
+
+2007-02-25 09:49  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Use KXMLGUIClient::action and
+	  QAction::trigger to trigger actions, as the direct methods have been
+	  removed.  Replace CURRENT_VIEW->document()->removeSelectedText()
+	  with CURRENT_VIEW->removeSelectionText() to match new API.
+
+2007-02-25 09:18  kevinkofler
+
+	* mainform.cpp, srcfile.h, srcfilewin.cpp: Fix 4 missed instances
+	  of setCursorPositionReal( to setCursorPosition(KTextEditor::Cursor(.
+	  Change variables used during search&replace from unsigned to signed
+	  to match new KatePart API. Likewise in findOpenFileAtCursor to match
+	  Qt 4 API.  Replace uses of cursorLine and cursorColumnReal with
+	  cursorPosition().position(line,col).  Fix comparison of QChar with
+	  string literal instead of character literal in findOpenFileAtCursor.
+
+2007-02-25 08:50  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Use KTextEditor::Editor (new)
+	  instead of KTextEditor::ConfigInterfaceExt (old, no longer
+	  available) for config pages.
+
+2007-02-25 08:36  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Update arguments to KatePart
+	  functions:
+	  * removeText now operates on a Range
+	  * insertText now operates on a Cursor
+
+2007-02-25 08:29  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Replace:
+	  KTextEditor::EditInterfaceExt::editBegin ->
+	  KTextEditor::Document::startEditing
+	  KTextEditor::EditInterfaceExt::editEnd ->
+	  KTextEditor::Document::endEditing
+
+2007-02-25 08:22  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Port to new KatePart interface:
+	  installPopup -> setContextMenu setCursorPositionReal(r,c) ->
+	  setCursorPosition(KTextEditor::Cursor(r,c)) numLines -> lines
+	  textLine -> line
+
+2007-02-25 08:10  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Comment out calls to some functions
+	  not in the KatePart API anymore.
+
+2007-02-25 07:21  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Use setConfigValue instead of
+	  setDynWordWrap.
+
+2007-02-25 07:06  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Don't use keyEnter (KatePart),
+	  which has been removed.  Port syntax highlighting setting to the new
+	  interfaces.
+
+2007-02-25 06:19  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Replace no longer existing
+	  currentWord KatePart function with custom code.
+
+2007-02-23 22:09  kevinkofler
+
+	* ktigcc.pro: Fix test for $KDEPREFIX/include/kde (qmake exists
+	  tests are case-insensitive).
+
+2007-02-23 21:39  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Update icon loading code for Qt 4
+	  changes.
+
+2007-02-23 21:22  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Port KateDocument::undoCount(),
+	  redoCount(), hasSelection() to new KatePart interfaces.
+
+2007-02-23 19:41  kevinkofler
+
+	* mainform.cpp, srcfile.h, srcfilewin.cpp: Start porting to new
+	  KatePart API.
+
+2007-02-23 18:55  kevinkofler
+
+	* assistant.cpp[DEAD], assistant.h[DEAD], ktigcc.h, ktigcc.pro,
+	  mainform.cpp, programoptions.cpp, srcfilewin.cpp: Drop custom
+	  AssistantClient, as it uses deprecated (KProcIO) and removed
+	  (KExtendedSocket) KDE classes, and the workaround shouldn't be
+	  needed anymore in Qt/KDE 4.
+
+2007-02-23 13:02  kevinkofler
+
+	* completion.cpp: Disable completion for now to get completion.cpp
+	  to compile.
+
+2007-02-22 21:13  kevinkofler
+
+	* ChangeLog, parsing.cpp, preferences.cpp, srcfile.h: Remove junk
+	  "Added by qt3to4" comments.
+
 2007-02-22 18:46  kevinkofler
 
 	* completion.cpp: Port most of completion.cpp to the new KatePart
@@ -2992,20 +3263,6 @@
 	* KTIGCC.prj, KTIGCC.pws, Makefile: Add Anjuta project. (Yes, I'm
 	  still targeting KDE. The UI editor is set to Qt Designer, not
 	  Glade.)
-
-2004-04-25 06:16  kevinkofler
-
-	* ktigcc.cpp, .qmake.internal.cache, Makefile, mainform.ui,
-	  COPYING, ktigcc.pro, mainform.ui.h, images/00, images/01,
-	  images/02, images/03, images/04, images/05, images/06, images/07,
-	  images/08, images/09, images/10, images/11, images/12, images/13,
-	  images/14, images/15, images/16, images/17, images/18, images/19,
-	  images/20, images/21, images/22, images/23, images/24, images/25,
-	  images/26, images/27, images/filec.png, images/fileh.png,
-	  images/fileo.png, images/files.png, images/filet.png,
-	  images/filex.png, images/folder1.png, images/folder2.png,
-	  images/tpr.png: First import (pre-alpha) of KTIGCC, the TIGCC IDE
-	  for KDE.
 
 2004-04-25 06:16  kevinkofler
 
