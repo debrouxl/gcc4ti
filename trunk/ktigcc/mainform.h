@@ -190,3 +190,9 @@ private:
     QString pathInProject( Q3ListViewItem * item );
 
 };
+
+namespace KTextEditor {
+  class View;
+};
+void sendCommand(KTextEditor::View *view, const QString &cmd);
+void setTabWidth(KTextEditor::View *view, unsigned tabWidth);

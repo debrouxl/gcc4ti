@@ -116,6 +116,7 @@ class DnDListView : public K3ListView {
 #include <ktexteditor/range.h>
 #include <ktexteditor/smartcursor.h>
 #include <ktexteditor/smartinterface.h>
+#include <ktexteditor/commandinterface.h>
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <kconfig.h>
@@ -984,6 +985,20 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
   return FALSE;
 }
 
+void sendCommand(KTextEditor::View *view, const QString &cmd)
+{
+  KTextEditor::CommandInterface *cmdIface=
+    qobject_cast<KTextEditor::CommandInterface*>(view->document()->editor());
+  KTextEditor::Command *command=cmdIface->queryCommand(cmd);
+  QString msg; // thrown away
+  command->exec(view,cmd,msg);
+}
+
+void setTabWidth(KTextEditor::View *view, unsigned tabWidth)
+{
+  sendCommand(view,QString("set-tab-width %1").arg(tabWidth));
+}
+
 void MainForm::init()
 {
   setIcon(QPixmap(":/images/icon.png"));
@@ -1778,17 +1793,18 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   KTextEditor::ConfigInterface *configiface
     =qobject_cast<KTextEditor::ConfigInterface*>(newView);
   configiface->setConfigValue("dynamic-word-wrap",false);
-#if 0 // FIXME: remove spaces, tab width
-  if (preferences.removeTrailingSpaces)
-    newView->document()->setConfigFlags(newView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-  else
-    newView->document()->setConfigFlags(newView->document()->configFlags()&~(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-  newView->setTabWidth(
+  if (preferences.removeTrailingSpaces) {
+    sendCommand(newView,"set-remove-trailing-space 1");
+    sendCommand(newView,"set-remove-trailing-space-save 1");
+  } else {
+    sendCommand(newView,"set-remove-trailing-space 0");
+    sendCommand(newView,"set-remove-trailing-space-save 0");
+  }
+  setTabWidth(newView,
     (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
     8
   );
-#endif
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
@@ -1883,13 +1899,11 @@ void MainForm::adoptSourceFile(void *srcFile)
       C_HL_MODE:
     "None"));
   // Set options.
-#if 0 // FIXME: tab width
-  newView->setTabWidth(
+  setTabWidth(newView,
     (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
     8
   );
-#endif
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
@@ -2568,17 +2582,18 @@ void MainForm::filePreferences()
         if (kateView) {
           QString fileText=kateView->document()->text();
           CATEGORY_OF(category,item);
-#if 0 // FIXME: remove spaces, tab width
-          if (preferences.removeTrailingSpaces)
-            kateView->document()->setConfigFlags(kateView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-          else
-            kateView->document()->setConfigFlags(kateView->document()->configFlags()&~(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-          kateView->setTabWidth(
+          if (preferences.removeTrailingSpaces) {
+            sendCommand(kateView,"set-remove-trailing-space 1");
+            sendCommand(kateView,"set-remove-trailing-space-save 1");
+          } else {
+            sendCommand(kateView,"set-remove-trailing-space 0");
+            sendCommand(kateView,"set-remove-trailing-space-save 0");
+          }
+          setTabWidth(kateView,
             (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
             (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
             8
           );
-#endif
           // Kate seems really insisting on making it a pain to update syntax highlighting settings.
           KTextEditor::HighlightingInterface *hliface
             =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());

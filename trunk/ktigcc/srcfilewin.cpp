@@ -442,13 +442,14 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   KTextEditor::ConfigInterface *configiface
     =qobject_cast<KTextEditor::ConfigInterface*>(newView);
   configiface->setConfigValue("dynamic-word-wrap",false);
-#if 0 // FIXME: remove spaces, tab width
-  if (preferences.removeTrailingSpaces)
-    newView->document()->setConfigFlags(newView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-  else
-    newView->document()->setConfigFlags(newView->document()->configFlags()&~(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-  newView->setTabWidth(tabWidth);
-#endif
+  if (preferences.removeTrailingSpaces) {
+    sendCommand(newView,"set-remove-trailing-space 1");
+    sendCommand(newView,"set-remove-trailing-space-save 1");
+  } else {
+    sendCommand(newView,"set-remove-trailing-space 0");
+    sendCommand(newView,"set-remove-trailing-space-save 0");
+  }
+  setTabWidth(newView,tabWidth);
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
@@ -600,14 +601,15 @@ void SourceFileWindow::applyPreferences()
   KTextEditor::View *kateView=CURRENT_VIEW;
   if (kateView) {
     QString fileText=kateView->document()->text();
-#if 0 // FIXME: remove spaces, tab width
-    if (preferences.removeTrailingSpaces)
-      kateView->document()->setConfigFlags(kateView->document()->configFlags()|(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-    else
-      kateView->document()->setConfigFlags(kateView->document()->configFlags()&~(KTextEditor::Document::cfRemoveSpaces|CF_REMOVE_TRAILING_DYN));
-    kateView->setTabWidth(THIS->isASMFile?preferences.tabWidthAsm:
-                          THIS->isCFile?preferences.tabWidthC:8);
-#endif
+    if (preferences.removeTrailingSpaces) {
+      sendCommand(kateView,"set-remove-trailing-space 1");
+      sendCommand(kateView,"set-remove-trailing-space-save 1");
+    } else {
+      sendCommand(kateView,"set-remove-trailing-space 0");
+      sendCommand(kateView,"set-remove-trailing-space-save 0");
+    }
+    setTabWidth(kateView,THIS->isASMFile?preferences.tabWidthAsm:
+                         THIS->isCFile?preferences.tabWidthC:8);
     // Kate seems really insisting on making it a pain to update syntax highlighting settings.
     KTextEditor::HighlightingInterface *hliface
       =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
