@@ -445,8 +445,8 @@ static void updateSyntaxXML(void)
 // True if version1 is newer than version2.
 static bool isNewerVersion(const QString &version1, const QString &version2)
 {
-  QStringList vl1=QStringList::split('.',version1);
-  QStringList vl2=QStringList::split('.',version2);
+  QStringList vl1=version1.split('.',QString::SkipEmptyParts);
+  QStringList vl2=version2.split('.',QString::SkipEmptyParts);
   QStringList::Iterator it1=vl1.begin(), it2=vl2.begin();
   for (; it1!=vl1.end() && it2!=vl2.end(); ++it1, ++it2) {
     bool ok1, ok2;
@@ -729,7 +729,7 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
 
   Syn_WordList C_Keywords;
   C_Keywords.name="C Keywords";
-  C_Keywords.list=QStringList::split('\n',
+  C_Keywords.list=QString(
                   "__alignof__\n"
                   "__asm__\n"
                   "__attribute__\n"
@@ -775,13 +775,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                   "unsigned\n"
                   "void\n"
                   "volatile\n"
-                  "while\n");
+                  "while\n").split('\n',QString::SkipEmptyParts);
   C_Keywords.color=QColor(0,0,255);
   C_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   C_Keywords.caseSensitive=true;
   Syn_WordList Data_Movement;
   Data_Movement.name="Data Movement";
-  Data_Movement.list= QStringList::split('\n',
+  Data_Movement.list= QString(
                       "EXG\n"
                       "LEA\n"
                       "LINK\n"
@@ -795,13 +795,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                       "MOVP\n"
                       "MOVQ\n"
                       "PEA\n"
-                      "UNLK\n");
+                      "UNLK\n").split('\n',QString::SkipEmptyParts);
   Data_Movement.color=QColor(0,0,255);
   Data_Movement.style=0;
   Data_Movement.caseSensitive=false;
   Syn_WordList Integer_Arithmetic;
   Integer_Arithmetic.name="Integer Arithmetic";
-  Integer_Arithmetic.list=QStringList::split('\n',
+  Integer_Arithmetic.list=QString(
                           "ADD\n"
                           "ADDA\n"
                           "ADDI\n"
@@ -824,26 +824,26 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                           "SUBI\n"
                           "SUBQ\n"
                           "SUBX\n"
-                          "TAS\n");
+                          "TAS\n").split('\n',QString::SkipEmptyParts);
   Integer_Arithmetic.color=QColor(0,0,255);
   Integer_Arithmetic.style=0;
   Integer_Arithmetic.caseSensitive=false;
   Syn_WordList Logical_Instructions;
   Logical_Instructions.name="Logical Instructions";
-  Logical_Instructions.list=QStringList::split('\n',
+  Logical_Instructions.list=QString(
                             "AND\n"
                             "ANDI\n"
                             "EOR\n"
                             "EORI\n"
                             "NOT\n"
                             "OR\n"
-                            "ORI\n");
+                            "ORI\n").split('\n',QString::SkipEmptyParts);
   Logical_Instructions.color=QColor(0,0,255);
   Logical_Instructions.style=0;
   Logical_Instructions.caseSensitive=false;
   Syn_WordList ShiftRotation_Instructions;
   ShiftRotation_Instructions.name="Shift/Rotation Instructions";
-  ShiftRotation_Instructions.list=QStringList::split('\n',
+  ShiftRotation_Instructions.list=QString(
                                   "ASL\n"
                                   "ASR\n"
                                   "LSL\n"
@@ -852,23 +852,23 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                                   "ROR\n"
                                   "ROXL\n"
                                   "ROXR\n"
-                                  "SWAP\n");
+                                  "SWAP\n").split('\n',QString::SkipEmptyParts);
   ShiftRotation_Instructions.color=QColor(0,0,255);
   ShiftRotation_Instructions.style=0;
   ShiftRotation_Instructions.caseSensitive=false;
   Syn_WordList Bit_Manipulation;
   Bit_Manipulation.name="Bit Manipulation";
-  Bit_Manipulation.list=QStringList::split('\n',
+  Bit_Manipulation.list=QString(
                         "BCHG\n"
                         "BCLR\n"
                         "BSET\n"
-                        "BTST\n");
+                        "BTST\n").split('\n',QString::SkipEmptyParts);
   Bit_Manipulation.color=QColor(0,0,255);
   Bit_Manipulation.style=0;
   Bit_Manipulation.caseSensitive=false;
   Syn_WordList Program_Control;
   Program_Control.name="Program Control";
-  Program_Control.list= QStringList::split('\n',
+  Program_Control.list= QString(
                         "BCC\n"
                         "BCS\n"
                         "BEQ\n"
@@ -986,32 +986,32 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                         "FJUGT\n"
                         "FJULE\n"
                         "FJULT\n"
-                        "FJUN\n");
+                        "FJUN\n").split('\n',QString::SkipEmptyParts);
   Program_Control.color=QColor(0,0,255);
   Program_Control.style=0;
   Program_Control.caseSensitive=false;
   Syn_WordList System_Control;
   System_Control.name="System Control";
-  System_Control.list=QStringList::split('\n',
+  System_Control.list=QString(
                       "ILLEGAL\n"
                       "RTE\n"
-                      "TRAP\n");
+                      "TRAP\n").split('\n',QString::SkipEmptyParts);
   System_Control.color=QColor(0,0,255);
   System_Control.style=0;
   System_Control.caseSensitive=false;
   Syn_WordList SWL_Extensions;
   SWL_Extensions.name="Extensions";
-  SWL_Extensions.list=QStringList::split('\n',
+  SWL_Extensions.list=QString(
                       "B\n"
                       "L\n"
                       "S\n"
-                      "W\n");
+                      "W\n").split('\n',QString::SkipEmptyParts);
   SWL_Extensions.color=QColor(0,128,64);
   SWL_Extensions.style=0;
   SWL_Extensions.caseSensitive=false;
   Syn_WordList Assembler_Directives;
   Assembler_Directives.name="Assembler Directives";
-  Assembler_Directives.list=QStringList::split('\n',
+  Assembler_Directives.list=QString(
                             "abort\n"
                             "align\n"
                             "altmacro\n"
@@ -1099,13 +1099,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                             "val\n"
                             "vtable_entry\n"
                             "word\n"
-                            "xdef\n");
+                            "xdef\n").split('\n',QString::SkipEmptyParts);
   Assembler_Directives.color=QColor(0,0,255);
   Assembler_Directives.style=SYNS_CUSTOM|SYNS_BOLD;
   Assembler_Directives.caseSensitive=true;
   Syn_WordList SWL_Registers;
   SWL_Registers.name="Registers";
-  SWL_Registers.list= QStringList::split('\n',
+  SWL_Registers.list= QString(
                       "a0\n"
                       "a1\n"
                       "a2\n"
@@ -1125,13 +1125,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                       "fp\n"
                       "pc\n"
                       "sp\n"
-                      "sr\n");
+                      "sr\n").split('\n',QString::SkipEmptyParts);
   SWL_Registers.color=QColor(255,0,0);
   SWL_Registers.style=SYNS_CUSTOM|SYNS_UNDERLINE;
   SWL_Registers.caseSensitive=false;
   Syn_WordList Data_Movement_a68k;
   Data_Movement_a68k.name="Data Movement";
-  Data_Movement_a68k.list= QStringList::split('\n',
+  Data_Movement_a68k.list= QString(
                            "EXG\n"
                            "LEA\n"
                            "LINK\n"
@@ -1141,13 +1141,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                            "MOVEP\n"
                            "MOVEQ\n"
                            "PEA\n"
-                           "UNLK\n");
+                           "UNLK\n").split('\n',QString::SkipEmptyParts);
   Data_Movement_a68k.color=QColor(0,0,255);
   Data_Movement_a68k.style=0;
   Data_Movement_a68k.caseSensitive=false;
   Syn_WordList ShiftRotation_Instructions_a68k;
   ShiftRotation_Instructions_a68k.name="Shift/Rotation Instructions";
-  ShiftRotation_Instructions_a68k.list=QStringList::split('\n',
+  ShiftRotation_Instructions_a68k.list=QString(
                                        "ASL\n"
                                        "ASR\n"
                                        "LSL\n"
@@ -1158,13 +1158,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                                        "RORX\n"
                                        "ROXL\n"
                                        "ROXR\n"
-                                       "SWAP\n");
+                                       "SWAP\n").split('\n',QString::SkipEmptyParts);
   ShiftRotation_Instructions_a68k.color=QColor(0,0,255);
   ShiftRotation_Instructions_a68k.style=0;
   ShiftRotation_Instructions_a68k.caseSensitive=false;
   Syn_WordList Program_Control_a68k;
   Program_Control_a68k.name="Program Control";
-  Program_Control_a68k.list=QStringList::split('\n',
+  Program_Control_a68k.list=QString(
                             "BCC\n"
                             "BCS\n"
                             "BEQ\n"
@@ -1225,13 +1225,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                             "ST\n"
                             "SVC\n"
                             "SVS\n"
-                            "TST\n");
+                            "TST\n").split('\n',QString::SkipEmptyParts);
   Program_Control_a68k.color=QColor(0,0,255);
   Program_Control_a68k.style=0;
   Program_Control_a68k.caseSensitive=false;
   Syn_WordList Assembler_Directives_a68k;
   Assembler_Directives_a68k.name="Assembler Directives";
-  Assembler_Directives_a68k.list= QStringList::split('\n',
+  Assembler_Directives_a68k.list= QString(
                                   "BSS\n"
                                   "CNOP\n"
                                   "CSEG\n"
@@ -1275,13 +1275,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                                   "TITLE\n"
                                   "TTL\n"
                                   "XDEF\n"
-                                  "XREF\n");
+                                  "XREF\n").split('\n',QString::SkipEmptyParts);
   Assembler_Directives_a68k.color=QColor(0,0,255);
   Assembler_Directives_a68k.style=SYNS_CUSTOM|SYNS_BOLD;
   Assembler_Directives_a68k.caseSensitive=false;
   Syn_WordList SWL_Sections;
   SWL_Sections.name="Sections";
-  SWL_Sections.list=QStringList::split('\n',
+  SWL_Sections.list=QString(
                     "$$ACTIONS\n"
                     "$$CONNECTIONS\n"
                     "$$END\n"
@@ -1296,13 +1296,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                     "$$PICTURES_TEST\n"
                     "$$SYSTEM_MESSAGES\n"
                     "$$TITLE\n"
-                    "$$VOCABULARY\n");
+                    "$$VOCABULARY\n").split('\n',QString::SkipEmptyParts);
   SWL_Sections.color=QColor(255,0,0);
   SWL_Sections.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Sections.caseSensitive=true;
   Syn_WordList Section_Specific_Keywords;
   Section_Specific_Keywords.name="Section-specific Keywords";
-  Section_Specific_Keywords.list= QStringList::split('\n',
+  Section_Specific_Keywords.list= QString(
                                   "ACTION\n"
                                   "BITMAP\n"
                                   "CBLOCK\n"
@@ -1319,21 +1319,21 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                                   "MSG\n"
                                   "OBJ\n"
                                   "PACKED_BITMAP\n"
-                                  "WORD\n");
+                                  "WORD\n").split('\n',QString::SkipEmptyParts);
   Section_Specific_Keywords.color=QColor(64,128,128);
   Section_Specific_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   Section_Specific_Keywords.caseSensitive=true;
   Syn_WordList AdditionalKeywords;
   AdditionalKeywords.name="Additional Keywords";
-  AdditionalKeywords.list=QStringList::split('\n',
+  AdditionalKeywords.list=QString(
                           "CONTINUE\n"
-                          "ELSE\n");
+                          "ELSE\n").split('\n',QString::SkipEmptyParts);
   AdditionalKeywords.color=QColor(64,128,128);
   AdditionalKeywords.style=SYNS_CUSTOM|SYNS_BOLD;
   AdditionalKeywords.caseSensitive=true;
   Syn_WordList PredefinedAliases;
   PredefinedAliases.name="Predefined Aliases";
-  PredefinedAliases.list= QStringList::split('\n',
+  PredefinedAliases.list= QString(
                           "$ALSOSEE\n"
                           "$ARG\n"
                           "$CARRIED\n"
@@ -1372,13 +1372,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                           "$TURNHI\n"
                           "$TURNLO\n"
                           "$VERB\n"
-                          "$WORN\n");
+                          "$WORN\n").split('\n',QString::SkipEmptyParts);
   PredefinedAliases.color=QColor(128,0,128);
   PredefinedAliases.style=SYNS_CUSTOM|SYNS_BOLD;
   PredefinedAliases.caseSensitive=true;
   Syn_WordList SWL_Conditions;
   SWL_Conditions.name="Conditions";
-  SWL_Conditions.list=QStringList::split('\n',
+  SWL_Conditions.list=QString(
                       "ABSENT\n"
                       "AT\n"
                       "ATGT\n"
@@ -1410,13 +1410,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                       "SAME\n"
                       "TRYMOVE\n"
                       "WORN\n"
-                      "ZERO\n");
+                      "ZERO\n").split('\n',QString::SkipEmptyParts);
   SWL_Conditions.color=QColor(0,0,255);
   SWL_Conditions.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Conditions.caseSensitive=true;
   Syn_WordList SWL_Actions;
   SWL_Actions.name="Actions";
-  SWL_Actions.list= QStringList::split('\n',
+  SWL_Actions.list= QString(
                     "ADD\n"
                     "ALSOSEE\n"
                     "ANYKEY\n"
@@ -1491,13 +1491,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                     "WEAR\n"
                     "WHATO\n"
                     "WHEREO\n"
-                    "ZAPSCR\n");
+                    "ZAPSCR\n").split('\n',QString::SkipEmptyParts);
   SWL_Actions.color=QColor(0,0,160);
   SWL_Actions.style=SYNS_CUSTOM|SYNS_BOLD;
   SWL_Actions.caseSensitive=true;
   Syn_WordList Drawing_Primitives;
   Drawing_Primitives.name="Drawing primitives";
-  Drawing_Primitives.list=QStringList::split('\n',
+  Drawing_Primitives.list=QString(
                           "AMOVE\n"
                           "CALL\n"
                           "ELLIPSE\n"
@@ -1514,13 +1514,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                           "XOR_ELLIPSE\n"
                           "XOR_LINE\n"
                           "XOR_PLOT\n"
-                          "XOR_RPLOT\n");
+                          "XOR_RPLOT\n").split('\n',QString::SkipEmptyParts);
   Drawing_Primitives.color=QColor(0,64,128);
   Drawing_Primitives.style=SYNS_CUSTOM|SYNS_BOLD;
   Drawing_Primitives.caseSensitive=true;
   Syn_WordList Drawing_Directions;
   Drawing_Directions.name="Drawing directions";
-  Drawing_Directions.list=QStringList::split('\n',
+  Drawing_Directions.list=QString(
                           "DOWN\n"
                           "DOWN_LEFT\n"
                           "DOWN_RIGHT\n"
@@ -1532,13 +1532,13 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                           "RIGHT_UP\n"
                           "UP\n"
                           "UP_LEFT\n"
-                          "UP_RIGHT\n");
+                          "UP_RIGHT\n").split('\n',QString::SkipEmptyParts);
   Drawing_Directions.color=QColor(0,128,0);
   Drawing_Directions.style=SYNS_CUSTOM|SYNS_BOLD;
   Drawing_Directions.caseSensitive=true;
   Syn_WordList Shading_Patterns;
   Shading_Patterns.name="Shading patterns";
-  Shading_Patterns.list=QStringList::split('\n',
+  Shading_Patterns.list=QString(
                         "$BKSLASHFILL\n"
                         "$BRICKFILL\n"
                         "$CHAINFILL\n"
@@ -1571,26 +1571,26 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                         "$WAVEFILL\n"
                         "$WIDEDOTFILL\n"
                         "$XMARKFILL\n"
-                        "$ZIGZAGFILL\n");
+                        "$ZIGZAGFILL\n").split('\n',QString::SkipEmptyParts);
   Shading_Patterns.color=QColor(128,0,128);
   Shading_Patterns.style=SYNS_CUSTOM|SYNS_BOLD;
   Shading_Patterns.caseSensitive=true;
   Syn_WordList NonFunctional_Keywords;
   NonFunctional_Keywords.name="Non-functional keywords";
-  NonFunctional_Keywords.list=QStringList::split('\n',
+  NonFunctional_Keywords.list=QString(
                               "BEEP\n"
                               "BLOCK\n"
                               "BORDER\n"
                               "BRIGHT\n"
                               "FLASH\n"
                               "INK\n"
-                              "PAPER\n");
+                              "PAPER\n").split('\n',QString::SkipEmptyParts);
   NonFunctional_Keywords.color=QColor(192,192,192);
   NonFunctional_Keywords.style=SYNS_CUSTOM|SYNS_BOLD;
   NonFunctional_Keywords.caseSensitive=true;
   Syn_WordList External_Symbols;
   External_Symbols.name="External symbols";
-  External_Symbols.list=QStringList::split('\n',
+  External_Symbols.list=QString(
                         "$ACTIONS$\n"
                         "$ARG$\n"
                         "$BMPUT$\n"
@@ -1622,7 +1622,7 @@ void resetSyntaxPreference(Syn_SettingsForDoc *syn)
                         "$SCALEY$\n"
                         "$SSCR$\n"
                         "$SYSTEM_MESSAGES$\n"
-                        "$WORDS$\n");
+                        "$WORDS$\n").split('\n',QString::SkipEmptyParts);
   External_Symbols.color=QColor(0,128,64);
   External_Symbols.style=SYNS_CUSTOM|SYNS_BOLD;
   External_Symbols.caseSensitive=true;

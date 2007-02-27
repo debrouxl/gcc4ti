@@ -2942,8 +2942,7 @@ void MainForm::findFind_next()
             if (currView) {
               currNumLines=currView->document()->lines();
             } else {
-              currBuffer=QStringList::split('\n',
-                static_cast<ListViewFile *>(findCurrentDocument)->textBuffer,TRUE);
+              currBuffer=static_cast<ListViewFile *>(findCurrentDocument)->textBuffer.split('\n');
               currNumLines=currBuffer.count();
             }
             findCurrentLine=findBackwards?currNumLines-1:0;
@@ -3203,8 +3202,7 @@ void MainForm::findReplace_next(bool firstTime)
               if (currView) {
                 currNumLines=currView->document()->lines();
               } else {
-                currBuffer=QStringList::split('\n',
-                  static_cast<ListViewFile *>(replaceCurrentDocument)->textBuffer,TRUE);
+                currBuffer=static_cast<ListViewFile *>(findCurrentDocument)->textBuffer.split('\n');
                 currNumLines=currBuffer.count();
               }
               replaceCurrentLine=findBackwards?currNumLines-1:0;

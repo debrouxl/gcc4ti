@@ -66,13 +66,17 @@ SourceFileFunctions getCFunctions(const QString &text)
     int ret;
     while ((ret=procio.readln(line))>=0 || procio.isRunning()) {
       if (ret>=0) {
-        QStringList columns=QStringList::split('\t',line,TRUE);
-        QString identifier=columns[0];
-        QString linenoString=columns[2];
+        QStringList columns=line.split('\t');
+        int numColumns=columns.count();
+        QString identifier;
+        if (numColumns) identifier=columns[0];
+        QString linenoString;
+        if (numColumns>2) linenoString=columns[2];
         int semicolonPos=linenoString.find(';');
         if (semicolonPos>=0) linenoString.truncate(semicolonPos);
         int lineno=linenoString.toInt()-1;
-        QString kind=columns[3];
+        QString kind;
+        if (numColumns>3) kind=columns[3];
         SourceFileFunctions::Iterator it=result.find(identifier);
         if (kind=="p") {
           if (it==result.end())
@@ -96,7 +100,7 @@ SourceFileFunctions getCFunctions(const QString &text)
 SourceFileFunctions getASMFunctions(const QString &text)
 {
   // Parse ASM by hand.
-  QStringList lines=QStringList::split('\n',text,TRUE);
+  QStringList lines=text.split('\n');
   unsigned lineno=0;
   SourceFileFunctions result;
   for (QStringList::Iterator it=lines.begin(); it!=lines.end(); ++it,++lineno) {
@@ -122,7 +126,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
 {
   // Parse included files.
   // Empty lines can be ignored here.
-  QStringList lines=QStringList::split('\n',fileText);
+  QStringList lines=fileText.split('\n',QString::SkipEmptyParts);
   bool inComment=false;
   bool isSystemHeader=pathInProject.isNull();
   for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
@@ -198,19 +202,24 @@ CompletionInfo parseFileCompletion(const QString &fileText,
     int ret;
     while ((ret=procio.readln(line))>=0 || procio.isRunning()) {
       if (ret>=0) {
-        QStringList columns=QStringList::split('\t',line,TRUE);
-        QString identifier=columns[0];
-        QString linenoString=columns[2];
+        QStringList columns=line.split('\t');
+        int numColumns=columns.count();
+        QString identifier;
+        if (numColumns) identifier=columns[0];
+        QString linenoString;
+        if (numColumns>2) linenoString=columns[2];
         int semicolonPos=linenoString.find(';');
         if (semicolonPos>=0) linenoString.truncate(semicolonPos);
         int lineno=linenoString.toInt()-1;
-        QString kind=columns[3];
+        QString kind;
+        if (numColumns>3) kind=columns[3];
         QString type=(kind=="d")?"macro"
                      :(kind=="e")?"enum"
                      :(kind=="f" || kind=="p")?"func"
                      :(kind=="v" || kind=="x")?"var"
                      :"type";
-        QString signature=columns[4];
+        QString signature;
+        if (numColumns>4) signature=columns[4];
         if (signature.startsWith("signature:")) signature.remove(0,10);
         signature.replace(QRegExp("\\s*,"),",").replace(QRegExp("\\s*\\)"),")");
         bool alreadyKnown=result.lineNumbers.contains(identifier);
