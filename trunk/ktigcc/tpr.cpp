@@ -37,7 +37,6 @@
 #include <QString>
 #include <QStringList>
 #include <QByteArray>
-#include <Q3CString>
 #include <QRegExp>
 #include <QTextCodec>
 #include <QDir>
@@ -1337,20 +1336,13 @@ QStringList process_libopts(void)
    Build linker command line arguments
 */
 QStringList process_settings(const QString &prjNameUnicode,
-                             Q3CString &projectName, Q3CString &dataVarName,
-                             Q3CString &packFolder, Q3CString &packName)
+                             QByteArray &projectName, QByteArray &dataVarName,
+                             QByteArray &packFolder, QByteArray &packName)
 {
   QStringList args;
 
   // Convert the project name to the calculator charset.
-  {
-    const unsigned short *utf16=prjNameUnicode.utf16();
-    if (utf16) {
-      char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
-      projectName=ti; // This is a hidden strdup (see QCString::operator=).
-      g_free(ti);
-    } else projectName=Q3CString();
-  }
+  projectName=TiconvTextCodec::instance->fromUnicode(prjNameUnicode);
 
   // Split the PPG name into folder and file.
   QString packFolderUnicode, packNameUnicode;
@@ -1363,40 +1355,21 @@ QStringList process_settings(const QString &prjNameUnicode,
   }
 
   // Convert the PPG folder name to the calculator charset.
-  {
-    const unsigned short *utf16=packFolderUnicode.utf16();
-    if (utf16) {
-      char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
-      packFolder=ti; // This is a hidden strdup (see QCString::operator=).
-      g_free(ti);
-    } else packFolder=Q3CString();
-  }
+  packFolder=TiconvTextCodec::instance->fromUnicode(packFolderUnicode);
 
   // Convert the PPG file name to the calculator charset.
-  {
-    const unsigned short *utf16=packNameUnicode.utf16();
-    if (utf16) {
-      char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
-      packName=ti; // This is a hidden strdup (see QCString::operator=).
-      g_free(ti);
-    } else packName=Q3CString();
-  }
+  packName=TiconvTextCodec::instance->fromUnicode(packNameUnicode);
 
   if (settings.use_data_var && !settings.data_var.isEmpty()) {
     // We can't just append this to the argument list because this needs to be
     // in the calculator charset.
-    const unsigned short *utf16=settings.data_var.utf16();
-    if (utf16) {
-      char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
-      dataVarName=ti; // This is a hidden strdup (see QCString::operator=).
-      g_free(ti);
-    } else dataVarName=Q3CString();
+    dataVarName=TiconvTextCodec::instance->fromUnicode(settings.data_var);
     if (!settings.copy_data_var) {
       args.append("--data-var-copy=never");
     } else if (!settings.copy_data_var_arc) {
       args.append("--data-var-copy=always");
     }
-  } else dataVarName=Q3CString();
+  } else dataVarName=QByteArray();
 
   if (settings.optimize_nops) {
     args.append("--optimize-nops");

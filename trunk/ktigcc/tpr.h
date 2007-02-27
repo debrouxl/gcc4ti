@@ -26,7 +26,7 @@
 class KUrl;
 #include <QString>
 #include <QStringList>
-#include <Q3CString>
+#include <QByteArray>
 #include <Q3ValueVector>
 #include <QPair>
 #include <QTextCodec>
@@ -188,8 +188,8 @@ int getPathType(const QString &thePath);
 
 QStringList process_libopts(void);
 QStringList process_settings(const QString &prjNameUnicode,
-                             Q3CString &projectName, Q3CString &dataVarName,
-                             Q3CString &packFolder, Q3CString &packName);
+                             QByteArray &projectName, QByteArray &dataVarName,
+                             QByteArray &packFolder, QByteArray &packName);
 
 class TiconvTextCodec : public QTextCodec {
   public:

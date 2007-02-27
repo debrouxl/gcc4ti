@@ -35,7 +35,6 @@
 #include <QDomNode>
 #include <QDomAttr>
 #include <QDomText>
-#include <Q3CString>
 #include <QDir>
 #include <QPair>
 #include <Q3ValueList>

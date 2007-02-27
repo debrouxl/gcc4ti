@@ -67,7 +67,7 @@ class DnDListView : public K3ListView {
 #include <QImage>
 #include <QString>
 #include <QStringList>
-#include <Q3CString>
+#include <QByteArray>
 #include <QPair>
 #include <QRegExp>
 #include <QApplication>
@@ -4435,7 +4435,7 @@ void MainForm::linkProject()
     // Link executable using ld-tigcc.
     QString linkOutput=settings.pack?QString("%1/tempprog").arg(tempdir)
                                     :projectBaseName;
-    Q3CString projectName, dataVarName, packFolder, packName;
+    QByteArray projectName, dataVarName, packFolder, packName;
     QStringList linkerOptions=process_settings(rootListItem->text(0),
                                                projectName,dataVarName,
                                                packFolder,packName);
@@ -5156,7 +5156,6 @@ void MainForm::debugRun()
 void MainForm::debugPause()
 {
   // This is enabled only for LT_TIEMU. Run the TiEmu debugger.
-  Q3CString instanceName;
   TiEmuDBus *tiemuDBus;
   if (!tiemuInstance(tiemuDBus) || !tiemuDBus) return;
   if (!tiemuDBus->enter_debugger().isValid())
@@ -5167,7 +5166,6 @@ void MainForm::debugPause()
 void MainForm::debugReset()
 {
   // This is enabled only for LT_TIEMU. Reset TiEmu.
-  Q3CString instanceName;
   TiEmuDBus *tiemuDBus;
   if (!tiemuInstance(tiemuDBus) || !tiemuDBus) return;
   if (!tiemuDBus->reset_calc(FALSE).isValid())
