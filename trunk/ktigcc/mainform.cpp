@@ -5871,7 +5871,6 @@ void MainForm::newFile( Q3ListViewItem *parent )
                  "\t 0b0000000000000000, \\\n"
                  "\t 0b0000000000000000, \\\n"
                  "\t 0b0000000000000000}\n\n#include <tigcclib.h>\n\n"
-#include <QTextDocument>
                  "// Main Function\nvoid _main(void)\n{\n"
                  "\t// Place your code here.\n}\n"):"")),
                  category==cFilesListItem||category==qllFilesListItem
