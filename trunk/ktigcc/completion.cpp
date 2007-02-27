@@ -93,7 +93,7 @@ static bool findSymbolInFileRecursive(const QString &symbol,
   systemHeader=false;
   if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
     QFileInfo fileInfo(fileName);
-    QString pathInProject=fileInfo.isRelative()?fileInfo.dirPath():".";
+    QString pathInProject=fileInfo.isRelative()?fileInfo.path():".";
     CompletionInfo completionInfo=parseFileCompletion(fileText,pathInProject);
     if (completionInfo.dirty) return false;
     projectCompletion.insert(fileName,completionInfo);
@@ -168,7 +168,7 @@ static bool completionEntriesForFileRecursive(const QString &fileText,
 {
   if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
     QFileInfo fileInfo(fileName);
-    QString pathInProject=fileInfo.isRelative()?fileInfo.dirPath():".";
+    QString pathInProject=fileInfo.isRelative()?fileInfo.path():".";
     CompletionInfo completionInfo=parseFileCompletion(fileText,pathInProject);
     if (completionInfo.dirty) return false;
     projectCompletion.insert(fileName,completionInfo);
@@ -279,7 +279,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
       // Try approximate matching.
       unsigned identifierLength=identifier.length();
       if (identifierLength>=4) {
-        QString identifierUpper=identifier.upper();
+        QString identifierUpper=identifier.toUpper();
         Q3ValueList<unsigned> distances;
         for (Q3ValueList<CompletionEntry>::ConstIterator it=entries.begin();
              it!=entries.end(); ++it) {
@@ -288,7 +288,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
           unsigned entryTextLength=entryText.length();
           unsigned minLength=qMin(identifierLength,entryTextLength);
           unsigned i=0;
-          for (; i<minLength && identifierUpper[i]==entryText[i].upper(); i++);
+          for (; i<minLength && identifierUpper[i]==entryText[i].toUpper(); i++);
           unsigned distance=minLength-i;
           if (distance<=(minLength>>1)) {
             QString prototype=entryText+"? "+entry.prefix+' '+entry.postfix;

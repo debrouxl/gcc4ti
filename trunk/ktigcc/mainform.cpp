@@ -730,7 +730,7 @@ class ErrorListItem : public K3ListViewItem {
       mainForm(pMainForm), errorType(errType)
   {
     QString errMessage=errMsg.trimmed();
-    if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].upper();
+    if (!errMessage.isEmpty()) errMessage[0]=errMessage[0].toUpper();
     switch(errType) {
       case etError:
         setPixmap(0,SYSICON("messagebox_critical","error.png"));
@@ -3942,7 +3942,7 @@ void MainForm::procio_readReady()
                           || line.contains("previously implicitly declared",FALSE))))
                 break;
               // ld-tigcc statistics start here, don't display them as errors.
-              if (line.lower()=="target calculators:") {
+              if (line.toLower()=="target calculators:") {
                 ldTigccStatPhase=1;
                 break;
               }
@@ -3963,7 +3963,7 @@ void MainForm::procio_readReady()
                                     errorLine,errorColumn);
                 } else {
                   QString errorMessage;
-                  if (errorFile.lower()=="error"||errorFile.lower()=="warning") {
+                  if (errorFile.toLower()=="error"||errorFile.toLower()=="warning") {
                     errorFile=QString::null;
                     errorMessage=line;
                   } else {
@@ -4139,7 +4139,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
       }
       if (!projectFileName.isEmpty()) {
         objectFile.prepend('/');
-        objectFile.prepend(QFileInfo(projectFileName).dirPath(TRUE));
+        objectFile.prepend(QFileInfo(projectFileName).absolutePath());
       }
     }
     QString asmFile=objectFile;
@@ -4178,7 +4178,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     QString tempAsmFile=tempObjectFile;
     tempObjectFile.append(".o");
     tempAsmFile.append(".s");
-    QString fileDir=QFileInfo(fileName).dirPath(TRUE);
+    QString fileDir=QFileInfo(fileName).absolutePath();
     QDir qdir;
     if (category==asmFilesListItem) {
       // Assemble A68k file
@@ -4400,7 +4400,7 @@ void MainForm::linkProject()
   QString projectBaseName=projectFileName;
   if (projectBaseName.endsWith(".tpr",FALSE))
     projectBaseName.truncate(projectBaseName.length()-4);
-  QString projectDir=QFileInfo(projectFileName).dirPath(TRUE);
+  QString projectDir=QFileInfo(projectFileName).absolutePath();
   statusBar()->message(QString("Linking Project \'%1\'...")
                        .arg(QFileInfo(projectFileName).baseName()));
   if (settings.archive) {

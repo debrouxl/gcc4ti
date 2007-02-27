@@ -62,8 +62,8 @@ static void genAllCaseVariants(QString keyword, unsigned pos,
   if (c.isNull())
     stringList.append(keyword);
   else {
-    QChar upper=c.upper();
-    QChar lower=c.lower();
+    QChar upper=c.toUpper();
+    QChar lower=c.toLower();
     if (lower==upper)
       genAllCaseVariants(keyword,pos+1,stringList);
     else {
