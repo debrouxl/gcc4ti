@@ -220,52 +220,52 @@ static QStringList prototypesForIdentifier(const QString &identifier,
   const Q3ValueList<CompletionEntry> &entries)
 {
   QStringList result;
-  QStringList reservedIdentifiers=QStringList::split('\n',"__alignof__\n"
-                                                          "__asm__\n"
-                                                          "__attribute__\n"
-                                                          "__complex__\n"
-                                                          "__const__\n"
-                                                          "__extension__\n"
-                                                          "__imag__\n"
-                                                          "__inline__\n"
-                                                          "__label__\n"
-                                                          "__real__\n"
-                                                          "__typeof__\n"
-                                                          "asm\n"
-                                                          "auto\n"
-                                                          "break\n"
-                                                          "case\n"
-                                                          "char\n"
-                                                          "const\n"
-                                                          "continue\n"
-                                                          "default\n"
-                                                          "do\n"
-                                                          "double\n"
-                                                          "else\n"
-                                                          "enum\n"
-                                                          "extern\n"
-                                                          "float\n"
-                                                          "for\n"
-                                                          "goto\n"
-                                                          "if\n"
-                                                          "inline\n"
-                                                          "int\n"
-                                                          "long\n"
-                                                          "register\n"
-                                                          "return\n"
-                                                          "short\n"
-                                                          "signed\n"
-                                                          "sizeof\n"
-                                                          "static\n"
-                                                          "struct\n"
-                                                          "switch\n"
-                                                          "typedef\n"
-                                                          "typeof\n"
-                                                          "union\n"
-                                                          "unsigned\n"
-                                                          "void\n"
-                                                          "volatile\n"
-                                                          "while\n");
+  QStringList reservedIdentifiers=QString("__alignof__\n"
+                                          "__asm__\n"
+                                          "__attribute__\n"
+                                          "__complex__\n"
+                                          "__const__\n"
+                                          "__extension__\n"
+                                          "__imag__\n"
+                                          "__inline__\n"
+                                          "__label__\n"
+                                          "__real__\n"
+                                          "__typeof__\n"
+                                          "asm\n"
+                                          "auto\n"
+                                          "break\n"
+                                          "case\n"
+                                          "char\n"
+                                          "const\n"
+                                          "continue\n"
+                                          "default\n"
+                                          "do\n"
+                                          "double\n"
+                                          "else\n"
+                                          "enum\n"
+                                          "extern\n"
+                                          "float\n"
+                                          "for\n"
+                                          "goto\n"
+                                          "if\n"
+                                          "inline\n"
+                                          "int\n"
+                                          "long\n"
+                                          "register\n"
+                                          "return\n"
+                                          "short\n"
+                                          "signed\n"
+                                          "sizeof\n"
+                                          "static\n"
+                                          "struct\n"
+                                          "switch\n"
+                                          "typedef\n"
+                                          "typeof\n"
+                                          "union\n"
+                                          "unsigned\n"
+                                          "void\n"
+                                          "volatile\n"
+                                          "while\n").split('\n',QString::SkipEmptyParts);
   if (!reservedIdentifiers.contains(identifier)) {
     for (Q3ValueList<CompletionEntry>::ConstIterator it=entries.begin();
          it!=entries.end(); ++it) {
@@ -340,7 +340,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
         }
       }
       CompletionEntry entry;
-      QStringList lines=QStringList::split('\n',fileText,TRUE);
+      QStringList lines=fileText.split('\n');
       for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
         const QString &line=*it;
         if (line.startsWith("Name=")) {
@@ -424,7 +424,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
                     }
                   } else {
                     foundDefinition:
-                    QStringList enumItems=QStringList::split(',',itemList);
+                    QStringList enumItems=itemList.split(',',QString::SkipEmptyParts);
                     for (QStringList::ConstIterator it=enumItems.begin();
                          it!=enumItems.end(); ++it) {
                       const QString &enumItem=*it;
