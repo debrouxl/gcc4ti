@@ -516,7 +516,8 @@ static bool loadSyntaxPreference(Syn_SettingsForDoc &synprefs, const QString &gr
     customStyle.name=pconfig->readEntry(QString("Custom Style %1 Name").arg(i),QString("Style %1").arg(i));
     customStyle.beginning=pconfig->readEntry(QString("Custom Style %1 Beginning").arg(i));
     customStyle.ending=pconfig->readEntry(QString("Custom Style %1 Ending").arg(i));
-    customStyle.ignoreEndingAfter=pconfig->readEntry(QString("Custom Style %1 Ignore Ending After").arg(i))[0];
+    QString ignoreEndingAfter=pconfig->readEntry(QString("Custom Style %1 Ignore Ending After").arg(i));
+    customStyle.ignoreEndingAfter=ignoreEndingAfter.isEmpty()?QChar():ignoreEndingAfter[0];
     customStyle.switchable=pconfig->readBoolEntry(QString("Custom Style %1 Switchable").arg(i));
     customStyle.lineStartOnly=pconfig->readBoolEntry(QString("Custom Style %1 Line Start Only").arg(i));
     customStyle.color=pconfig->readColorEntry(QString("Custom Style %1 Color").arg(i));

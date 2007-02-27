@@ -378,7 +378,7 @@ class ListViewFile : public K3ListViewItem {
       replaceCurrentDocument=static_cast<Q3ListViewItem *>(NULL);
       kreplace->invalidateSelection();
     }
-    if (fileName[0]=='/')
+    if (!fileName.isEmpty() && fileName[0]=='/')
       KDirWatch::self()->removeFile(fileName);
     if (kateView) {
       KTextEditor::Document *doc=kateView->document();
@@ -546,7 +546,8 @@ void DnDListView::dropEvent(QDropEvent *e) {
               && !IS_EDITABLE_CATEGORY(destCategory)) {
             if (static_cast<MainForm *>(parent()->parent()->parent())->fileSavePrompt(currItem))
               goto ignore2;
-            if (static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
+            if (!static_cast<ListViewFile *>(currItem)->fileName.isEmpty()
+                && static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
               KDirWatch::self()->removeFile(static_cast<ListViewFile *>(currItem)->fileName);
           }
           // moving from non-editable to editable category
@@ -585,7 +586,8 @@ void DnDListView::dropEvent(QDropEvent *e) {
           // moving from non-editable to editable category
           if (!IS_EDITABLE_CATEGORY(srcCategory)
               && IS_EDITABLE_CATEGORY(destCategory)) {
-            if (static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
+            if (!static_cast<ListViewFile *>(currItem)->fileName.isEmpty()
+                && static_cast<ListViewFile *>(currItem)->fileName[0]=='/')
               KDirWatch::self()->addFile(static_cast<ListViewFile *>(currItem)->fileName);
           }
           // moving from editable to non-editable category
@@ -1400,7 +1402,8 @@ void MainForm::accel_activated(int index)
           CATEGORY_OF(category,currentListItem);
           // Completion only operates on C files.
           if (category==cFilesListItem || category==qllFilesListItem
-              || (category==hFilesListItem && fileText[0]!='|' && fileText[0]!=';')) {
+              || (category==hFilesListItem && !fileText.isEmpty()
+                  && fileText[0]!='|' && fileText[0]!=';')) {
             // Disable newLineHook.
             accel->setItemEnabled(6,FALSE);
             accel->setItemEnabled(7,FALSE);
@@ -2238,7 +2241,7 @@ void MainForm::fileSave_save(Q3ListViewItem *theItem)
   if (!IS_EDITABLE_CATEGORY(category))
     return;
   ListViewFile *theFile=static_cast<ListViewFile *>(theItem);
-  if (theFile->fileName[0]!='/') {
+  if (!theFile->fileName.isEmpty() && theFile->fileName[0]!='/') {
     fileSave_saveAs(theFile);
   }
   else {
@@ -2286,13 +2289,13 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
     KMessageBox::error(this,"The name you chose conflicts with that of another file.");
     return;
   }
-  if (theFile->fileName[0]=='/')
+  if (!theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
     KDirWatch::self()->removeFile(theFile->fileName);
   if (IS_EDITABLE_CATEGORY(category)
       ?saveFileText(saveFileName,theFile->kateView?theFile->kateView->document()->text():theFile->textBuffer)
       :copyFile(theFile->fileName,saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
-    if (IS_EDITABLE_CATEGORY(category) && theFile->fileName[0]=='/')
+    if (IS_EDITABLE_CATEGORY(category) && !theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
       KDirWatch::self()->addFile(theFile->fileName);
   } else {
     if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)
@@ -2359,7 +2362,7 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
       
       tmpPath=*new_dir;
       kurlNewFileName(tmpPath,relPath);
-      if (theFile->fileName[0]=='/')
+      if (!theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
         KDirWatch::self()->removeFile(theFile->fileName);
       if (tmpPath.path().compare(theFile->fileName)
           || (IS_EDITABLE_CATEGORY(category)
@@ -2368,7 +2371,7 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
             ?saveFileText(tmpPath.path(),theFile->kateView?theFile->kateView->document()->text():theFile->textBuffer)
             :copyFile(theFile->fileName,tmpPath.path())) {
           KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
-          if (IS_EDITABLE_CATEGORY(category) && theFile->fileName[0]=='/')
+          if (IS_EDITABLE_CATEGORY(category) && !theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
             KDirWatch::self()->addFile(theFile->fileName);
         } else {
           QString saveFileName=tmpPath.path();
@@ -3544,7 +3547,8 @@ void MainForm::findFindSymbolDeclaration()
     CATEGORY_OF(category,currentListItem);
     // "Find symbol declaration" only operates on C files.
     if (category==cFilesListItem || category==qllFilesListItem
-        || (category==hFilesListItem && fileText[0]!='|' && fileText[0]!=';')) {
+        || (category==hFilesListItem && !fileText.isEmpty()
+            && fileText[0]!='|' && fileText[0]!=';')) {
       QString fileName=pathInProject(currentListItem);
       QString symbolFile;
       unsigned symbolLine;
@@ -4125,7 +4129,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     int slashPos=origFileName->findRev('/');
     if (dotPos>slashPos) objectFile.truncate(dotPos);
     // Compute correct file names for unsaved files.
-    if (objectFile[0]!='/') {
+    if (!objectFile.isEmpty() && objectFile[0]!='/') {
       if (inProject) {
         ListViewFile *sourceFile=reinterpret_cast<ListViewFile *>(srcFile);
         Q3ListViewItem *item=sourceFile->parent();
@@ -5616,7 +5620,7 @@ void MainForm::fileTreeContextMenuRequested(Q3ListViewItem *item,
           } else {
             KMessageBox::error(this,
               QString("Error deleting file \'%1\'").arg(fileName));
-            if (IS_EDITABLE_CATEGORY(category) && fileName[0]=='/')
+            if (IS_EDITABLE_CATEGORY(category) && !fileName.isEmpty() && fileName[0]=='/')
               KDirWatch::self()->addFile(fileName);
           }
         }
@@ -5756,7 +5760,7 @@ void MainForm::newFile(Q3ListViewItem *parent, QString text, const QPixmap &pixm
   tmpK.setPath(projectFileName);
   kurlNewFileName(tmpK,tmp);
   tmp=tmpK.path();
-  if (projectFileName.isEmpty())
+  if (projectFileName.isEmpty() && !tmp.isEmpty())
   {
     short o=0;
     if (tmp[0]=='.')
@@ -5780,7 +5784,7 @@ void MainForm::newFile(Q3ListViewItem *parent, QString text, const QPixmap &pixm
                         :new ListViewFile(parent);
   
   newFile->fileName=tmp;
-  if (IS_EDITABLE_CATEGORY(category) && tmp[0]=='/')
+  if (IS_EDITABLE_CATEGORY(category) && !tmp.isEmpty() && tmp[0]=='/')
     KDirWatch::self()->addFile(tmp);
   
   newFile->setText(0,caption);
@@ -6111,7 +6115,8 @@ void MainForm::current_view_charactersInteractivelyInserted(int line, int col, c
       CATEGORY_OF(category,currentListItem);
       // Completion only operates on C files.
       if (category==cFilesListItem || category==qllFilesListItem
-          || (category==hFilesListItem && fileText[0]!='|' && fileText[0]!=';')) {
+          || (category==hFilesListItem && !fileText.isEmpty()
+              && fileText[0]!='|' && fileText[0]!=';')) {
         new ArgHintPopup(CURRENT_VIEW,pathInProject(currentListItem),this);
       }
     }
@@ -6185,8 +6190,8 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
       } else if (!validInVarname.contains(prjName[i]))
         prjName.remove(i,1);
     }
-    if (prjName[0]=='\\') prjName.remove(0,1);
-    if (!prjName.length()) prjName="Project1";
+    if (!prjName.isEmpty() && prjName[0]=='\\') prjName.remove(0,1);
+    if (prjName.isEmpty()) prjName="Project1";
     if ((prjName[0]>='0'&&prjName[0]<='9')||prjName[0]=='_')
       prjName.prepend('X');
     i=prjName.find('\\');
@@ -6238,12 +6243,12 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
   
   if (checkFileName(newFileName,extractAllFileNames())) {
     CATEGORY_OF(category,item);
-    if (oldFileName[0]=='/')
+    if (!oldFileName.isEmpty() && oldFileName[0]=='/')
       KDirWatch::self()->removeFile(oldFileName);
     if (!theFile->isNew && !moveFile(oldFileName,newFileName)) {
       KMessageBox::error(this,"Failed to rename the file.");
       theFile->setText(0,oldLabel);
-      if (IS_EDITABLE_CATEGORY(category) && oldFileName[0]=='/')
+      if (IS_EDITABLE_CATEGORY(category) && !oldFileName.isEmpty() && oldFileName[0]=='/')
         KDirWatch::self()->addFile(oldFileName);
     } else {
       fileNameRef=newFileName;
@@ -6268,7 +6273,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
         theFile->kateView->setCursorPosition(KTextEditor::Cursor(line,col));
         theFile->kateView->document()->setModified(modified);
       }
-      if (IS_EDITABLE_CATEGORY(category) && newFileName[0]=='/')
+      if (IS_EDITABLE_CATEGORY(category) && !newFileName.isEmpty() && newFileName[0]=='/')
         KDirWatch::self()->addFile(newFileName);
       projectIsDirty=TRUE;
       projectNeedsRelink=TRUE;

@@ -603,7 +603,8 @@ void Preferences::editButton_clicked()
           customStyle.beginning=customStyleDlg.beginning->text();
           customStyle.ending=customStyleDlg.ending->text()=="\\n"?"\n"
                              :customStyleDlg.ending->text();
-          customStyle.ignoreEndingAfter=customStyleDlg.ignoreEndingAfter->text()[0];
+          QString ignoreEndingAfter=customStyleDlg.ignoreEndingAfter->text();
+          customStyle.ignoreEndingAfter=ignoreEndingAfter.isEmpty()?QChar():ignoreEndingAfter[0];
           customStyle.switchable=customStyleDlg.switchable->isChecked();
           customStyle.lineStartOnly=customStyleDlg.lineStartOnly->isChecked();
           customStyle.style=tempStyle;

@@ -395,7 +395,8 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
       if (isType) {
         for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
           const QString &line=*it;
-          if (line.startsWith("Subtype=") || (line[0]=='[' && line!="[Main]")) {
+          if (line.startsWith("Subtype=")
+              || (!line.isEmpty() && line[0]=='[' && line!="[Main]")) {
             if (line=="Subtype=Enumeration") {
               int pos1=definition.find('{');
               if (pos1>=0) {

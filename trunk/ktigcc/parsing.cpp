@@ -131,21 +131,23 @@ CompletionInfo parseFileCompletion(const QString &fileText,
       QString strippedLine=line.trimmed();
       if (strippedLine.startsWith("#include")) {
         QString includedName=strippedLine.mid(8).trimmed();
-        if (includedName[0]=='<') {
-          int pos=includedName.find('>',1);
-          if (pos>=0)
-            result.includedSystem.append(includedName.mid(1,pos-1));
-        } else if (includedName[0]=='\"') {
-          int pos=includedName.find('\"',1);
-          if (pos>=0) {
-            if (isSystemHeader)
-              // A system header can only include another system header.
+        if (!includedName.isEmpty()) {
+          if (includedName[0]=='<') {
+            int pos=includedName.find('>',1);
+            if (pos>=0)
               result.includedSystem.append(includedName.mid(1,pos-1));
-            else
-              result.included.append(QDir::cleanPath(pathInProject+"/"
-                                                        +includedName.mid(1,pos-1)));
-          }
-        } // else ignore
+          } else if (includedName[0]=='\"') {
+            int pos=includedName.find('\"',1);
+            if (pos>=0) {
+              if (isSystemHeader)
+                // A system header can only include another system header.
+                result.includedSystem.append(includedName.mid(1,pos-1));
+              else
+                result.included.append(QDir::cleanPath(pathInProject+"/"
+                                                          +includedName.mid(1,pos-1)));
+            }
+          } // else ignore
+        }
       }
     }
     int pos=0;

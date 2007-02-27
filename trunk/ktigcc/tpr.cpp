@@ -1041,7 +1041,7 @@ int saveFileText(const char *fileName,const QString &fileText)
 
 void kurlNewFileName(KUrl &dir,const QString &newFileName)
 {
-  if (newFileName[0]=='/')
+  if (!newFileName.isEmpty() && newFileName[0]=='/')
     dir.setPath(newFileName);
   else
     dir.setFileName(newFileName);
