@@ -29,6 +29,7 @@ class KUrl;
 #include <Q3CString>
 #include <Q3ValueVector>
 #include <QPair>
+#include <QTextCodec>
 
 /*Structure definitions from tprbuilder source; slightly modified
     to work under C++
@@ -189,3 +190,14 @@ QStringList process_libopts(void);
 QStringList process_settings(const QString &prjNameUnicode,
                              Q3CString &projectName, Q3CString &dataVarName,
                              Q3CString &packFolder, Q3CString &packName);
+
+class TiconvTextCodec : public QTextCodec {
+  public:
+    static TiconvTextCodec *instance;
+    TiconvTextCodec() : QTextCodec() {instance=this;}
+    virtual QByteArray name() const {return "TI-89";}
+    virtual int mibEnum() const {return 0x71C0;}
+  protected:
+    virtual QByteArray convertFromUnicode(const QChar *input, int number, ConverterState *state) const;
+    virtual QString convertToUnicode(const char *chars, int len, ConverterState *state) const;
+};

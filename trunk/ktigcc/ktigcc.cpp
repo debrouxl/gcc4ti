@@ -39,6 +39,7 @@
 #include <kconfig.h>
 #include <glib.h>
 #include "mainform.h"
+#include "tpr.h"
 using namespace std;
 
 static KCmdLineOptions options[] =
@@ -66,6 +67,8 @@ static void log_eater(const gchar *log_domain __attribute__((unused)),
 
 int main(int argc, char *argv[])
 {
+  // Create the libticonv text codec.
+  new TiconvTextCodec();
   // Match the locale for the default C string <-> QString conversions.
   // Hopefully it is a .UTF-8 locale, if it isn't, don't complain about
   // characters lost converting!

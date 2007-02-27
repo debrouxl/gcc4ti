@@ -36,6 +36,7 @@
 #include <kurl.h>
 #include <QString>
 #include <QStringList>
+#include <QByteArray>
 #include <Q3CString>
 #include <QRegExp>
 #include <QTextCodec>
@@ -45,6 +46,32 @@
 #include "ktigcc.h"
 #include "tpr.h"
 #include "preferences.h"
+
+TiconvTextCodec *TiconvTextCodec::instance=NULL;
+
+QByteArray TiconvTextCodec::convertFromUnicode(const QChar *input, int number,
+                                               ConverterState *state __attribute__((unused))) const
+{
+  QString inputNullTerminated(input,number);
+  const unsigned short *utf16=inputNullTerminated.utf16();
+  if (!utf16) return QByteArray();
+  char *ti=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
+  QByteArray result(ti);
+  g_free(ti);
+  return result;
+}
+
+QString TiconvTextCodec::convertToUnicode(const char *chars, int len,
+                                          ConverterState *state __attribute__((unused))) const
+{
+  QByteArray inputNullTerminated(chars,len);
+  const char *ti=inputNullTerminated.constData();
+  if (!ti) return QString();
+  unsigned short *utf16=ticonv_charset_ti_to_utf16(CALC_TI89,ti);
+  QString result=QString::fromUtf16(utf16);
+  g_free(utf16);
+  return result;
+}
 
 #define find_param(s_,t_) find_param_ex((s_),(t_),sizeof(t_)-1)
 
@@ -194,9 +221,7 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
             if ( (p=find_param(buffer, token)) ) \
             { \
                 if (*p) { \
-                  unsigned short *utf16=ticonv_charset_ti_to_utf16(CALC_TI89,p); \
-                  dest->var = QString::fromUtf16(utf16); \
-                  g_free(utf16); \
+                  dest->var = TiconvTextCodec::instance->toUnicode(p); \
                 } \
                 continue; \
             } else
@@ -519,16 +544,11 @@ QString loadFileText(const char *fileName)
   } else {
     fclose(f);
     if (preferences.useCalcCharset) {
-      unsigned short *utf16=ticonv_charset_ti_to_utf16(CALC_TI89,buffer);
-      delete[] buffer;
-      if (!utf16)
-        return QString::null;
-      ret=QString::fromUtf16(utf16);
-      g_free(utf16);
+      ret=TiconvTextCodec::instance->toUnicode(buffer);
     } else {
       ret=buffer;
-      delete[] buffer;
     }
+    delete[] buffer;
   }
   if (!ret.isNull()) {
     // convert Windows line endings
@@ -572,10 +592,9 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
     
 #define boolean_param(token,setting) if (fprintf(f,token "%d\r\n",!!dest->settings.setting)<0) return -2;
 #define tistring_vparam(token,var) { \
-        const unsigned short *utf16=dest->var.utf16(); \
-        char *ti=utf16?ticonv_charset_utf16_to_ti(CALC_TI89,utf16):reinterpret_cast<char*>(g_malloc0(1)); \
-        if (fprintf(f,token "%s\r\n",ti)<0) {g_free(ti); return -2;} \
-        g_free(ti); \
+        const char *ti=TiconvTextCodec::instance->fromUnicode(dest->var).constData(); \
+        if (!ti) ti=""; \
+        if (fprintf(f,token "%s\r\n",ti)<0) return -2; \
     }
 #define tistring_param(token,setting) tistring_vparam(token,settings.setting)
 #define string_param(token,setting) if (fprintf(f,token "%s\r\n",smartAscii(dest->settings.setting))<0) return -2;
@@ -770,15 +789,12 @@ void mkdir_multi(const char *fileName)
 static int writeToFile(FILE *f, const QString &text)
 {
   if (preferences.useCalcCharset) {
-    const unsigned short *utf16=text.utf16();
-    if (utf16) {
-      char *s=ticonv_charset_utf16_to_ti(CALC_TI89,utf16);
-      size_t l=std::strlen(s);
-      if (fwrite(s,1,l,f)<l) {
-        g_free(s);
+    if (!text.isEmpty()) {
+      QByteArray s=TiconvTextCodec::instance->fromUnicode(text);
+      size_t l=s.length();
+      if (fwrite(s.constData(),1,l,f)<l) {
         return -2;
       }
-      g_free(s);
     }
   } else {
     const char *s=smartAscii(text);
