@@ -44,6 +44,7 @@
 #include <Q3PopupMenu>
 #include <QEvent>
 #include <QCloseEvent>
+#include <QTextCodec>
 #include <QAssistantClient>
 #include <kparts/factory.h>
 #include <klibloader.h>
@@ -189,9 +190,8 @@ void SourceFileWindow::initBase()
   THIS->kfinddialog = static_cast<KFindDialog *>(NULL);
   THIS->kreplace = static_cast<KReplaceWithSelectionS *>(NULL);
   THIS->kateView=static_cast<KTextEditor::View *>(NULL);
-  THIS->kateView=reinterpret_cast<KTextEditor::View *>(createView(THIS->fileName,THIS->fileText,HL_MODE,
+  THIS->kateView=reinterpret_cast<KTextEditor::View *>(createView(THIS->fileName,HL_MODE,
     THIS->isASMFile?preferences.tabWidthAsm:THIS->isCFile?preferences.tabWidthC:8));
-  THIS->fileText=QString::null;
   int rightStatusSize=size().width();
   int line, col;
   CURRENT_VIEW->cursorPosition().position(line,col);
@@ -418,7 +418,7 @@ void SourceFileWindow::completionPopup_closed()
   THIS->accel->setItemEnabled(7,TRUE);
 }
 
-void *SourceFileWindow::createView(const QString &fileName, const QString &fileText, const QString &hlModeName, unsigned tabWidth)
+void *SourceFileWindow::createView(const QString &fileName, const QString &hlModeName, unsigned tabWidth)
 {
   // Create Document object.
   KParts::Factory *factory = (KParts::Factory *)
@@ -426,13 +426,9 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
       factory->createPart(0,THIS->mainForm,"KTextEditor::Document");
-  // Set the file name for printing.
-  doc->setModified(FALSE);
-  if (doc->openStream("text/plain",fileName))
-    doc->closeStream();
-  // Set text.
-  SET_TEXT_SAFE(doc,fileText);
-  doc->setModified(FALSE);
+  // Open the file.
+  doc->setEncoding(preferences.useCalcCharset?"TI-89":QTextCodec::codecForLocale()->name());
+  doc->openUrl(KUrl(fileName));
   // Create View object.
   KTextEditor::View *newView = (KTextEditor::View *) doc->createView(centralWidget());
   newView->hide();
@@ -1329,16 +1325,10 @@ void SourceFileWindow::KDirWatch_dirty(const QString &fileName)
           QString("The file \'%1\' has been changed by another program. "
                   "Do you want to reload it?").arg(fileName),"File Changed")
           ==KMessageBox::Yes) {
-      QString fileText=loadFileText(fileName);
-      if (fileText.isNull()) {
-        KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
-        return;
-      }
-      SET_TEXT_SAFE(CURRENT_VIEW->document(),fileText);
       CURRENT_VIEW->document()->setModified(FALSE);
-// FIXME
-//      CURRENT_VIEW->document()->clearUndo();
-//      CURRENT_VIEW->document()->clearRedo();
+      disableViewEvents=TRUE;
+      CURRENT_VIEW->document()->documentReload();
+      disableViewEvents=FALSE;
       updateRightStatusLabel();
     }
   }

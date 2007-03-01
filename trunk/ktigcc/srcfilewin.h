@@ -31,8 +31,8 @@ public:
     ~SourceFileWindow();
 
     virtual void initBase();
-    void * createView( const QString & fileName, const QString & fileText, const QString & hlModeName, unsigned tabWidth );
-    virtual int savePrompt( void );
+    void * createView(const QString &fileName, const QString &hlModeName, unsigned tabWidth);
+    virtual int savePrompt(void);
     virtual void applyPreferences();
 
 public slots:

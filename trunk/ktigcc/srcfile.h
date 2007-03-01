@@ -41,10 +41,10 @@ class KDirWatch;
 class FunctionDialog;
 
 struct SourceFile : public SourceFileWindow {
-  SourceFile(MainForm *mainfrm, const QString &fn, const QString &ft,
+  SourceFile(MainForm *mainfrm, const QString &fn,
              const QString &hlm, const bool *hle, void *cat,
              bool isc, bool isasm, bool istxt) :
-    SourceFileWindow(), mainForm(mainfrm), fileName(fn), fileText(ft),
+    SourceFileWindow(), mainForm(mainfrm), fileName(fn),
     hlMode(hlm), hlEnabled(hle), category(cat),
     isCFile(isc), isASMFile(isasm), isTextFile(istxt)
   {
@@ -54,7 +54,6 @@ struct SourceFile : public SourceFileWindow {
 
   MainForm *mainForm;
   QString fileName;
-  QString fileText;
   QString hlMode;
   const bool *hlEnabled;
   void *category;

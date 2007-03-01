@@ -557,7 +557,7 @@ void DnDListView::dropEvent(QDropEvent *e) {
               KMessageBox::error(this,QString("Can't open \'%1\'").arg(static_cast<ListViewFile *>(currItem)->fileName));
               goto ignore2;
             }
-            static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<KTextEditor::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,fileText,destCategory));
+            static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<KTextEditor::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,QString::null,destCategory));
             MainForm::createErrorCursorsForSourceFile(currItem);
             // force reloading the text buffer
             if (currentListItem==currItem)
@@ -1693,7 +1693,6 @@ void MainForm::addRecent(const QString &fileName)
 
 Q3ListViewItem * MainForm::openFile(Q3ListViewItem * category, Q3ListViewItem * parent, const QString &fileCaption, const QString &fileName)
 {
-  QString fileText;
   switch (getPathType(fileName)) {
     case PATH_FILE: // OK
       break;
@@ -1705,7 +1704,7 @@ Q3ListViewItem * MainForm::openFile(Q3ListViewItem * category, Q3ListViewItem * 
     return NULL;
   }
   if (IS_EDITABLE_CATEGORY(category)) {
-    fileText=loadFileText(fileName);
+    QString fileText=loadFileText(fileName);
     if (fileText.isNull()) {
       KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
       return NULL;
@@ -1728,7 +1727,7 @@ Q3ListViewItem * MainForm::openFile(Q3ListViewItem * category, Q3ListViewItem * 
     SYSICON("unknown","filex.png"));
   newFile->fileName=fileName;
   if (IS_EDITABLE_CATEGORY(category)) {
-    newFile->kateView=reinterpret_cast<KTextEditor::View *>(createView(fileName,fileText,category));
+    newFile->kateView=reinterpret_cast<KTextEditor::View *>(createView(fileName,QString::null,category));
     KDirWatch::self()->addFile(fileName);
   }
   fileCount++;
@@ -1764,13 +1763,14 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
       factory->createPart(0,this,"KTextEditor::Document");
-  // Set the file name for printing.
-  doc->setModified(FALSE);
-  if (doc->openStream("text/plain",fileName))
-    doc->closeStream();
+  // Open the file.
+  doc->setEncoding(preferences.useCalcCharset?"TI-89":QTextCodec::codecForLocale()->name());
+  doc->openUrl(KUrl(fileName));
   // Set text.
-  SET_TEXT_SAFE(doc,fileText);
-  doc->setModified(FALSE);
+  if (!fileText.isNull()) {
+    SET_TEXT_SAFE(doc,fileText);
+    doc->setModified(FALSE);
+  }
   // Create View object.
   KTextEditor::View *newView = (KTextEditor::View *) doc->createView(widgetStack);
   newView->hide();
@@ -1778,12 +1778,14 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   // Set highlighting mode.
   KTextEditor::HighlightingInterface *hliface
     =qobject_cast<KTextEditor::HighlightingInterface*>(newView->document());
+  QString firstLine;
+  if (doc->lines()) firstLine=doc->line(0);
   hliface->setHighlighting(
     (category==qllFilesListItem?
       QLL_HL_MODE:
-    (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+    (category==sFilesListItem||(category==hFilesListItem&&!firstLine.isEmpty()&&firstLine[0]=='|'))?
       S_HL_MODE:
-    (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+    (category==asmFilesListItem||(category==hFilesListItem&&!firstLine.isEmpty()&&firstLine[0]==';'))?
       ASM_HL_MODE:
     (category==cFilesListItem||category==hFilesListItem)?
       C_HL_MODE:
@@ -1800,7 +1802,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
     sendCommand(newView,"set-remove-trailing-space-save 0");
   }
   setTabWidth(newView,
-    (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&(fileText[0]=='|'||fileText[0]==';'))))?preferences.tabWidthAsm:
+    (category==sFilesListItem||category==asmFilesListItem||((category==hFilesListItem&&!firstLine.isEmpty()&&(firstLine[0]=='|'||firstLine[0]==';'))))?preferences.tabWidthAsm:
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
     8
   );
@@ -2090,7 +2092,7 @@ bool MainForm::openProject(const QString &fileName)
                 1:
               0);
     
-    new SourceFile(this,fileName,fileText,
+    new SourceFile(this,fileName,
                    (category==qllFilesListItem)?QLL_ENABLED_HL_MODE:
                    (type==2)?S_ENABLED_HL_MODE:
                    (type==3)?ASM_ENABLED_HL_MODE:
@@ -6289,17 +6291,11 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
               QString("The file \'%1\' has been changed by another program. "
                       "Do you want to reload it?").arg(fileName),"File Changed")
               ==KMessageBox::Yes) {
-          QString fileText=loadFileText(fileName);
-          if (fileText.isNull()) {
-            KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
-            return;
-          }
           static_cast<ListViewFile *>(item)->isNew=FALSE;
-          SET_TEXT_SAFE(static_cast<ListViewFile *>(item)->kateView->document(),fileText);
           static_cast<ListViewFile *>(item)->kateView->document()->setModified(FALSE);
-// FIXME
-//          static_cast<ListViewFile *>(item)->kateView->document()->clearUndo();
-//          static_cast<ListViewFile *>(item)->kateView->document()->clearRedo();
+          disableViewEvents=TRUE;
+          static_cast<ListViewFile *>(item)->kateView->document()->documentReload();
+          disableViewEvents=FALSE;
           updateRightStatusLabel();
         }
         return;
