@@ -191,16 +191,17 @@ void Preferences::init()
   preferences.tempSynS=preferences.synS;
   preferences.tempSynAsm=preferences.synAsm;
   preferences.tempSynQll=preferences.synQll;
+  Q3ListViewItem *rootListItem=new Q3ListViewItem(syntaxListView,"Highlighting");
+  Q3ListViewItem *customStylesItem=new Q3ListViewItem(rootListItem,"Custom Styles");
+  Q3ListViewItem *wordListsItem=new Q3ListViewItem(rootListItem,"Word Lists");
   syntaxLanguage_activated(syntaxLanguage->currentItem());
   syntaxListView->setSorting(-1);
   syntaxListView->setColumnWidthMode(0,Q3ListView::Maximum);
   syntaxListView->header()->hide();
   syntaxListView->setAlternateBackground(QColor());
-  Q3ListViewItem *rootListItem=syntaxListView->firstChild();
-  Q3ListViewItem *customStylesItem=rootListItem->firstChild();
   customStylesItem->setOpen(TRUE);
-  Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
   wordListsItem->setOpen(TRUE);
+  rootListItem->setOpen(TRUE);
   Q3Accel *syntaxListViewAccel=new Q3Accel(syntaxListView);
   syntaxListViewAccel->insertItem(Qt::Key_Delete,0);
   connect(syntaxListViewAccel,SIGNAL(activated(int)),
