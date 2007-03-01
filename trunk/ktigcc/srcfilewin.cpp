@@ -430,6 +430,9 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
     doc->closeStream();
+  // Set text.
+  SET_TEXT_SAFE(doc,fileText);
+  doc->setModified(FALSE);
   // Create View object.
   KTextEditor::View *newView = (KTextEditor::View *) doc->createView(centralWidget());
   newView->hide();
@@ -456,9 +459,6 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &fileT
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->setContextMenu(THIS->te_popup);
-  // Set text.
-  SET_TEXT_SAFE(newView->document(),fileText);
-  newView->document()->setModified(FALSE);
 // FIXME
 //  newView->document()->clearUndo();
 //  newView->document()->clearRedo();

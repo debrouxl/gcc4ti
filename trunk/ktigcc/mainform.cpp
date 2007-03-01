@@ -1768,6 +1768,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   doc->setModified(FALSE);
   if (doc->openStream("text/plain",fileName))
     doc->closeStream();
+  // Set text.
+  SET_TEXT_SAFE(doc,fileText);
+  doc->setModified(FALSE);
   // Create View object.
   KTextEditor::View *newView = (KTextEditor::View *) doc->createView(widgetStack);
   newView->hide();
@@ -1807,9 +1810,6 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->setContextMenu(te_popup);
-  // Set text.
-  SET_TEXT_SAFE(newView->document(),fileText);
-  newView->document()->setModified(FALSE);
 // FIXME
 //  newView->document()->clearUndo();
 //  newView->document()->clearRedo();
@@ -1949,7 +1949,7 @@ void MainForm::fileOpen_addList(Q3ListViewItem *category,void *fileListV,void *d
     if (pslash>=0) caption.remove(0,pslash+1);
     treePath=fileList->folder[i].trimmed();
     //check for a backslash at the end and remove it if it's there.
-    if (treePath[treePath.length()-1]=='\\')
+    if (!treePath.isEmpty() && treePath[treePath.length()-1]=='\\')
       treePath.truncate(treePath.length()-1);
     parent=category;
     if (!treePath.isEmpty())
