@@ -1732,10 +1732,7 @@ Q3ListViewItem * MainForm::openFile(Q3ListViewItem * category, Q3ListViewItem * 
     SYSICON("unknown","filex.png"));
   newFile->fileName=fileName;
   if (IS_EDITABLE_CATEGORY(category)) {
-    if (preferences.lazyLoading)
-      newFile->textBuffer=fileText;
-    else
-      newFile->kateView=reinterpret_cast<KTextEditor::View *>(createView(fileName,fileText,category));
+    newFile->kateView=reinterpret_cast<KTextEditor::View *>(createView(fileName,fileText,category));
     KDirWatch::self()->addFile(fileName);
   }
   fileCount++;

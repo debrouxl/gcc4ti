@@ -1782,7 +1782,6 @@ void loadPreferences(void)
   QFont defaultFont("Monospace",10);
   preferences.editorFont=pconfig->readFontEntry("Editor Font",&defaultFont);
   preferences.useCalcCharset=pconfig->readBoolEntry("Use Calc Charset",true);
-  preferences.lazyLoading=pconfig->readBoolEntry("Lazy Loading",true);
   preferences.autoBlocks=pconfig->readBoolEntry("Auto Blocks",true);
   preferences.removeTrailingSpaces=pconfig->readBoolEntry("Remove Trailing Spaces",false);
 
@@ -1845,7 +1844,6 @@ void savePreferences(void)
   pconfig->writeEntry("Background Color",preferences.bgColor);
   pconfig->writeEntry("Editor Font",preferences.editorFont);
   pconfig->writeEntry("Use Calc Charset",(bool)preferences.useCalcCharset);
-  pconfig->writeEntry("Lazy Loading",(bool)preferences.lazyLoading);
   pconfig->writeEntry("Auto Blocks",(bool)preferences.autoBlocks);
   pconfig->writeEntry("Remove Trailing Spaces",(bool)preferences.removeTrailingSpaces);
 

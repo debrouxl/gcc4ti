@@ -178,7 +178,6 @@ void Preferences::init()
   editorFont->setFont(preferences.editorFont);
   editorFont->setText(preferences.editorFont.family());
   useCalcCharset->setChecked(preferences.useCalcCharset);
-  lazyLoading->setChecked(preferences.lazyLoading);
   autoBlocks->setChecked(preferences.autoBlocks);
   removeTrailingSpaces->setChecked(preferences.removeTrailingSpaces);
 
@@ -252,7 +251,6 @@ void Preferences::destroy()
     preferences.bgColor=bgColor->backgroundColor();
     preferences.editorFont=editorFont->font();
     preferences.useCalcCharset=useCalcCharset->isChecked();
-    preferences.lazyLoading=lazyLoading->isChecked();
     preferences.autoBlocks=autoBlocks->isChecked();
     preferences.removeTrailingSpaces=removeTrailingSpaces->isChecked();
 
