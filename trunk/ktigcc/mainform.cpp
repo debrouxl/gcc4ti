@@ -388,7 +388,6 @@ class ListViewFile : public K3ListViewItem {
   }
   virtual int rtti(void) const {return 0x716CC1;}
   KTextEditor::View *kateView;
-  QString textBuffer; // for lazy loading
   QString fileName; // full name of the file
   bool isNew;
   bool modifiedSinceLastCompile;
@@ -553,12 +552,12 @@ void DnDListView::dropEvent(QDropEvent *e) {
           // moving from non-editable to editable category
           if (!IS_EDITABLE_CATEGORY(srcCategory)
               && IS_EDITABLE_CATEGORY(destCategory)) {
-            QString textBuffer=loadFileText(static_cast<ListViewFile *>(currItem)->fileName);
-            if (textBuffer.isNull()) {
+            QString fileText=loadFileText(static_cast<ListViewFile *>(currItem)->fileName);
+            if (fileText.isNull()) {
               KMessageBox::error(this,QString("Can't open \'%1\'").arg(static_cast<ListViewFile *>(currItem)->fileName));
               goto ignore2;
             }
-            static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<KTextEditor::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,textBuffer,destCategory));
+            static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<KTextEditor::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,fileText,destCategory));
             MainForm::createErrorCursorsForSourceFile(currItem);
             // force reloading the text buffer
             if (currentListItem==currItem)
@@ -593,18 +592,15 @@ void DnDListView::dropEvent(QDropEvent *e) {
           // moving from editable to non-editable category
           if (IS_EDITABLE_CATEGORY(srcCategory)
               && !IS_EDITABLE_CATEGORY(destCategory)) {
-            if (static_cast<ListViewFile *>(currItem)->kateView) {
-              KTextEditor::Document *doc=static_cast<ListViewFile *>(currItem)->kateView->document();
-              delete static_cast<ListViewFile *>(currItem)->kateView;
-              delete doc;
-              static_cast<ListViewFile *>(currItem)->kateView=NULL;
-            } else static_cast<ListViewFile *>(currItem)->textBuffer=QString::null;
+            KTextEditor::Document *doc=static_cast<ListViewFile *>(currItem)->kateView->document();
+            delete static_cast<ListViewFile *>(currItem)->kateView;
+            delete doc;
+            static_cast<ListViewFile *>(currItem)->kateView=NULL;
           }
           // moving from editable to editable category
           if (IS_EDITABLE_CATEGORY(srcCategory)
               && IS_EDITABLE_CATEGORY(destCategory)
-              && srcCategory!=destCategory
-              && static_cast<ListViewFile *>(currItem)->kateView) {
+              && srcCategory!=destCategory) {
             // update highlighting mode
             KTextEditor::HighlightingInterface *hliface
               =qobject_cast<KTextEditor::HighlightingInterface*>(
@@ -2243,7 +2239,7 @@ void MainForm::fileSave_save(Q3ListViewItem *theItem)
   }
   else {
     KDirWatch::self()->removeFile(theFile->fileName);
-    if (saveFileText(theFile->fileName,theFile->kateView?theFile->kateView->document()->text():theFile->textBuffer)) {
+    if (saveFileText(theFile->fileName,theFile->kateView->document()->text())) {
       KMessageBox::error(this,QString("Can't save to \'%1\'").arg(theFile->text(0)));
       KDirWatch::self()->addFile(theFile->fileName);
     }
@@ -2289,14 +2285,13 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
   if (!theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
     KDirWatch::self()->removeFile(theFile->fileName);
   if (IS_EDITABLE_CATEGORY(category)
-      ?saveFileText(saveFileName,theFile->kateView?theFile->kateView->document()->text():theFile->textBuffer)
+      ?saveFileText(saveFileName,theFile->kateView->document()->text())
       :copyFile(theFile->fileName,saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
     if (IS_EDITABLE_CATEGORY(category) && !theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
       KDirWatch::self()->addFile(theFile->fileName);
   } else {
-    if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)
-        && theFile->kateView) {
+    if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)) {
       // Update the file name for printing.
       int line,col;
       QString fileText=theFile->kateView->document()->text();
@@ -2317,10 +2312,8 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
     theFile->fileName=saveFileName;
     if (IS_EDITABLE_CATEGORY(category)) {
       KDirWatch::self()->addFile(saveFileName);
-      if (theFile->kateView) {
-        removeTrailingSpacesFromView(theFile->kateView);
-        theFile->kateView->document()->setModified(FALSE);
-      }
+      removeTrailingSpacesFromView(theFile->kateView);
+      theFile->kateView->document()->setModified(FALSE);
     }
     theFile->isNew=FALSE;
     updateRightStatusLabel();
@@ -2363,17 +2356,16 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
         KDirWatch::self()->removeFile(theFile->fileName);
       if (tmpPath.path().compare(theFile->fileName)
           || (IS_EDITABLE_CATEGORY(category)
-              && ((theFile->kateView && theFile->kateView->document()->isModified()) || theFile->isNew))) {
+              && (theFile->kateView->document()->isModified() || theFile->isNew))) {
         if (IS_EDITABLE_CATEGORY(category)
-            ?saveFileText(tmpPath.path(),theFile->kateView?theFile->kateView->document()->text():theFile->textBuffer)
+            ?saveFileText(tmpPath.path(),theFile->kateView->document()->text())
             :copyFile(theFile->fileName,tmpPath.path())) {
           KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
           if (IS_EDITABLE_CATEGORY(category) && !theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
             KDirWatch::self()->addFile(theFile->fileName);
         } else {
           QString saveFileName=tmpPath.path();
-          if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)
-              && theFile->kateView) {
+          if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)) {
             // Update the file name for printing.
             int line,col;
             QString fileText=theFile->kateView->document()->text();
@@ -2395,10 +2387,8 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
           theFile->fileName=saveFileName;
           if (IS_EDITABLE_CATEGORY(category)) {
             KDirWatch::self()->addFile(theFile->fileName);
-            if (theFile->kateView) {
-              removeTrailingSpacesFromView(theFile->kateView);
-              theFile->kateView->document()->setModified(FALSE);
-            }
+            removeTrailingSpacesFromView(theFile->kateView);
+            theFile->kateView->document()->setModified(FALSE);
           }
           theFile->isNew=FALSE;
           projectIsDirty=TRUE; // in case saving the project fails
@@ -2936,12 +2926,7 @@ void MainForm::findFind_next()
               return;
           file_found:
             currView=static_cast<ListViewFile *>(findCurrentDocument)->kateView;
-            if (currView) {
-              currNumLines=currView->document()->lines();
-            } else {
-              currBuffer=static_cast<ListViewFile *>(findCurrentDocument)->textBuffer.split('\n');
-              currNumLines=currBuffer.count();
-            }
+            currNumLines=currView->document()->lines();
             findCurrentLine=findBackwards?currNumLines-1:0;
         }
       } else if (findBackwards) findCurrentLine--; else findCurrentLine++;
@@ -3196,12 +3181,7 @@ void MainForm::findReplace_next(bool firstTime)
                 return;
             file_found:
               currView=static_cast<ListViewFile *>(replaceCurrentDocument)->kateView;
-              if (currView) {
-                currNumLines=currView->document()->lines();
-              } else {
-                currBuffer=static_cast<ListViewFile *>(findCurrentDocument)->textBuffer.split('\n');
-                currNumLines=currBuffer.count();
-              }
+              currNumLines=currView->document()->lines();
               replaceCurrentLine=findBackwards?currNumLines-1:0;
           }
         } else if (findBackwards) replaceCurrentLine--; else replaceCurrentLine++;
@@ -3697,11 +3677,7 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
     fileName=QString("%1/%2%3%4").arg(tempdir).arg(folder)
                                  .arg(sourceFile->text(0)).arg(ext);
     if (IS_EDITABLE_CATEGORY(category)) {
-      if (sourceFile->kateView) {
-        fileText=sourceFile->kateView->document()->text();
-      } else {
-        fileText=sourceFile->textBuffer;
-      }
+      fileText=sourceFile->kateView->document()->text();
       pLineStartList=&(sourceFile->lineStartList);
     } else {
       if (copyFile(origFileName->ascii(),fileName.ascii())) {
@@ -5339,7 +5315,7 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
     currentListItem->setPixmap(0,SYSICON("folder","folder1.png"));
   if (IS_FILE(currentListItem)) {
     CATEGORY_OF(category,currentListItem);
-    if (IS_EDITABLE_CATEGORY(category) && static_cast<ListViewFile *>(currentListItem)->kateView) {
+    if (IS_EDITABLE_CATEGORY(category)) {
       static_cast<ListViewFile *>(currentListItem)->kateView->hide();
       widgetStack->removeWidget(static_cast<ListViewFile *>(currentListItem)->kateView);
       widgetStack->raiseWidget(-1);
@@ -5379,12 +5355,6 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
     CATEGORY_OF(category,item->parent());
     if (IS_EDITABLE_CATEGORY(category)) {
       KTextEditor::View *kateView=static_cast<ListViewFile *>(item)->kateView;
-      if (!kateView) { // lazy loading
-        kateView=reinterpret_cast<KTextEditor::View *>(createView(static_cast<ListViewFile *>(item)->fileName,static_cast<ListViewFile *>(item)->textBuffer,category));
-        static_cast<ListViewFile *>(item)->textBuffer=QString::null;
-        static_cast<ListViewFile *>(item)->kateView=kateView;
-        MainForm::createErrorCursorsForSourceFile(item);
-      }
       filePrintAction->setEnabled(TRUE);
       filePrintQuicklyAction->setEnabled(TRUE);
       widgetStack->addWidget(kateView);
@@ -6325,16 +6295,12 @@ void MainForm::KDirWatch_dirty(const QString &fileName)
             return;
           }
           static_cast<ListViewFile *>(item)->isNew=FALSE;
-          if (static_cast<ListViewFile *>(item)->kateView) {
-            SET_TEXT_SAFE(static_cast<ListViewFile *>(item)->kateView->document(),fileText);
-            static_cast<ListViewFile *>(item)->kateView->document()->setModified(FALSE);
+          SET_TEXT_SAFE(static_cast<ListViewFile *>(item)->kateView->document(),fileText);
+          static_cast<ListViewFile *>(item)->kateView->document()->setModified(FALSE);
 // FIXME
-//            static_cast<ListViewFile *>(item)->kateView->document()->clearUndo();
-//            static_cast<ListViewFile *>(item)->kateView->document()->clearRedo();
-            updateRightStatusLabel();
-          } else {
-            static_cast<ListViewFile *>(item)->textBuffer=fileText;
-          }
+//          static_cast<ListViewFile *>(item)->kateView->document()->clearUndo();
+//          static_cast<ListViewFile *>(item)->kateView->document()->clearRedo();
+          updateRightStatusLabel();
         }
         return;
       }
@@ -6384,8 +6350,7 @@ QString MainForm::textForHeader(const QString &fileName)
     if (IS_FILE(item)) {
       ListViewFile *fileItem=static_cast<ListViewFile *>(item);
       if (QFileInfo(fileItem->fileName).fileName()==name)
-        return fileItem->kateView?fileItem->kateView->document()->text()
-                                 :fileItem->textBuffer;
+        return fileItem->kateView->document()->text();
     }
   }
   return QString::null;
