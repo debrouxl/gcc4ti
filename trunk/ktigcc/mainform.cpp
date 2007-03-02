@@ -6172,7 +6172,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
         if (!oldFileName.isEmpty() && oldFileName[0]=='/')
           KDirWatch::self()->addFile(oldFileName);
       } else {
-        if (!oldFileName.isEmpty() && oldFileName[0]=='/')
+        if (!theFile->isNew && !oldFileName.isEmpty() && oldFileName[0]=='/')
           QDir().remove(oldFileName);
         fileNameRef=newFileName;
         KDirWatch::self()->addFile(newFileName);
