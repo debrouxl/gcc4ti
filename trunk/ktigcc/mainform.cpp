@@ -1753,7 +1753,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
       factory->createPart(0,this,"KTextEditor::Document");
   // Open the file.
   doc->setEncoding(preferences.useCalcCharset?"TI-89":QTextCodec::codecForLocale()->name());
-  doc->openUrl(KUrl(fileName));
+  if (!fileName.isNull()) doc->openUrl(KUrl(fileName));
   // Set text.
   if (!fileText.isNull()) {
     SET_TEXT_SAFE(doc,fileText);
@@ -5708,7 +5708,7 @@ void MainForm::newFile(Q3ListViewItem *parent, QString text, const QPixmap &pixm
   newFile->setText(0,caption);
   newFile->setPixmap(0,pixmap);
   parent->setOpen(TRUE);
-  newFile->kateView=reinterpret_cast<KTextEditor::View *>(createView(tmp,text,category));
+  newFile->kateView=reinterpret_cast<KTextEditor::View *>(createView(QString::null,text,category));
   fileTreeClicked(newFile);
   projectIsDirty=TRUE;
   projectNeedsRelink=TRUE;
