@@ -48,8 +48,9 @@
 
 // versions of the syntax highlighting description file:
 // 1.00 = KTIGCC 20060807 Beta
-// 1.01 = current
-#define CURRENT_SYNFILE_VERSION "1.01"
+// 1.01 = KTIGCC 1
+// 1.80 = current
+#define CURRENT_SYNFILE_VERSION "1.80"
 
 TIGCCPrefs preferences;
 
@@ -411,8 +412,6 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   CHILD_NODE(keywords,general,"keywords");
   ADD_ATTR(keywords,"casesensitive",allWordListsCaseInsensitive?"0":"1");
   ADD_ATTR(keywords,"additionalDeliminator","\'\"#@");
-  CHILD_NODE(indentation,general,"indentation");
-  ADD_ATTR(indentation,"mode","normal");
 
   #undef ADD_ATTR
   #undef ADD_TEXT
