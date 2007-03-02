@@ -168,6 +168,7 @@ void newSettings(tprSettings *settings,tprLibOpts *libopts);
 
 int loadTPR(const QString &fileName,TPRDataStruct *dest);
 QString loadFileText(const char *fileName);
+int peekFirstChar(const char *fileName);
 
 int saveTPR(const QString &fileName,TPRDataStruct *src);
 void mkdir_multi(const char *fileName);

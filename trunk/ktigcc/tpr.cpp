@@ -563,6 +563,18 @@ QString loadFileText(const char *fileName)
   return ret;
 }
 
+// Returns -1 if the file is empty, -2 on error.
+int peekFirstChar(const char *fileName)
+{
+  FILE *f;
+  f=fopen(fileName,"rb");
+  if (!f)
+    return -2;
+  int result=getc(f);
+  if (result==EOF) result=feof(f)?-1:-2;
+  fclose(f);
+  return result;
+}
 
 static QString convert_path_separators_save(QString s)
 {

@@ -552,11 +552,6 @@ void DnDListView::dropEvent(QDropEvent *e) {
           // moving from non-editable to editable category
           if (!IS_EDITABLE_CATEGORY(srcCategory)
               && IS_EDITABLE_CATEGORY(destCategory)) {
-            QString fileText=loadFileText(static_cast<ListViewFile *>(currItem)->fileName);
-            if (fileText.isNull()) {
-              KMessageBox::error(this,QString("Can't open \'%1\'").arg(static_cast<ListViewFile *>(currItem)->fileName));
-              goto ignore2;
-            }
             static_cast<ListViewFile *>(currItem)->kateView=reinterpret_cast<KTextEditor::View *>(static_cast<MainForm *>(parent()->parent()->parent())->createView(static_cast<ListViewFile *>(currItem)->fileName,QString::null,destCategory));
             MainForm::createErrorCursorsForSourceFile(currItem);
             // force reloading the text buffer
@@ -1703,13 +1698,6 @@ Q3ListViewItem * MainForm::openFile(Q3ListViewItem * category, Q3ListViewItem * 
     KMessageBox::error(this,QString("\'%1\' is not a regular file").arg(fileName));
     return NULL;
   }
-  if (IS_EDITABLE_CATEGORY(category)) {
-    QString fileText=loadFileText(fileName);
-    if (fileText.isNull()) {
-      KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
-      return NULL;
-    }
-  }
   Q3ListViewItem *item=NULL, *next=parent->firstChild();
   for (; IS_FILE(next); next=item->nextSibling())
     item=next;
@@ -2079,14 +2067,14 @@ bool MainForm::openProject(const QString &fileName)
       KMessageBox::error(this,QString("\'%1\' is not a valid file for opening.").arg(fileName));
       return FALSE;
     }
-    QString fileText=loadFileText(fileName);
-    if (fileText.isNull()) {
+    int firstChar=peekFirstChar(fileName);
+    if (firstChar==-2) {
       KMessageBox::error(this,QString("Can't open \'%1\'").arg(fileName));
       return FALSE;
     }
-    int type=((category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
+    int type=((category==sFilesListItem||(category==hFilesListItem&&firstChar=='|'))?
                 2:
-              (category==asmFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]==';'))?
+              (category==asmFilesListItem||(category==hFilesListItem&&firstChar==';'))?
                 3:
               (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?
                 1:
