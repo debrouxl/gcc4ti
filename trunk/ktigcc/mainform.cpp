@@ -6158,40 +6158,36 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
   
   if (checkFileName(newFileName,extractAllFileNames())) {
     CATEGORY_OF(category,item);
-    if (!oldFileName.isEmpty() && oldFileName[0]=='/')
-      KDirWatch::self()->removeFile(oldFileName);
-    if (!theFile->isNew && !moveFile(oldFileName,newFileName)) {
-      KMessageBox::error(this,"Failed to rename the file.");
-      theFile->setText(0,oldLabel);
-      if (IS_EDITABLE_CATEGORY(category) && !oldFileName.isEmpty() && oldFileName[0]=='/')
-        KDirWatch::self()->addFile(oldFileName);
-    } else {
-      fileNameRef=newFileName;
-      if (theFile->kateView) {
-        // Update the file name for printing.
-        int line,col,modified;
-        modified=theFile->kateView->document()->isModified();
-        QString fileText=theFile->kateView->document()->text();
-        KTextEditor::HighlightingInterface *hliface
-          =qobject_cast<KTextEditor::HighlightingInterface*>(
-            theFile->kateView->document());
-        QString hlMode=hliface->highlighting();
-        theFile->kateView->cursorPosition().position(line,col);
-        theFile->kateView->document()->setModified(FALSE);
-        if (theFile->kateView->document()->openStream("text/plain",newFileName))
-          theFile->kateView->document()->closeStream();
-        SET_TEXT_SAFE(theFile->kateView->document(),fileText);
-// FIXME
-//        theFile->kateView->document()->clearUndo();
-//        theFile->kateView->document()->clearRedo();
-        hliface->setHighlighting(hlMode);
-        theFile->kateView->setCursorPosition(KTextEditor::Cursor(line,col));
-        theFile->kateView->document()->setModified(modified);
-      }
-      if (IS_EDITABLE_CATEGORY(category) && !newFileName.isEmpty() && newFileName[0]=='/')
+    if (IS_EDITABLE_CATEGORY(category)) {
+      if (!oldFileName.isEmpty() && oldFileName[0]=='/')
+        KDirWatch::self()->removeFile(oldFileName);
+        if (newFileName.isEmpty() || newFileName[0]!='/')
+          newFileName.prepend(QFileInfo(projectFileName).absolutePath()+"/");
+      if (!theFile->kateView->document()->saveAs(newFileName)) {
+        KMessageBox::error(this,"Failed to rename the file.");
+        theFile->setText(0,oldLabel);
+        if (!oldFileName.isEmpty() && oldFileName[0]=='/')
+          KDirWatch::self()->addFile(oldFileName);
+      } else {
+        if (!oldFileName.isEmpty() && oldFileName[0]=='/')
+          QDir().remove(oldFileName);
+        fileNameRef=newFileName;
         KDirWatch::self()->addFile(newFileName);
-      projectIsDirty=TRUE;
-      projectNeedsRelink=TRUE;
+        removeTrailingSpacesFromView(theFile->kateView);
+        theFile->kateView->document()->setModified(FALSE);
+        theFile->isNew=FALSE;
+        projectIsDirty=TRUE;
+        projectNeedsRelink=TRUE;
+      }
+    } else {
+      if (!moveFile(oldFileName,newFileName)) {
+        KMessageBox::error(this,"Failed to rename the file.");
+        theFile->setText(0,oldLabel);
+      } else {
+        fileNameRef=newFileName;
+        projectIsDirty=TRUE;
+        projectNeedsRelink=TRUE;
+      }
     }
   } else {
     KMessageBox::error(this,"The name you chose conflicts with that of another file.");
