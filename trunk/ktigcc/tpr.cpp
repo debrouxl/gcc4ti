@@ -1060,12 +1060,6 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
   return 0;
 }
 
-int saveFileText(const char *fileName,const QString &fileText)
-{
-  return saveAndSplitFileText(fileName,fileText,FALSE,FALSE,FALSE,QString::null,
-                              static_cast<LineStartList *>(NULL));
-}
-
 void kurlNewFileName(KUrl &dir,const QString &newFileName)
 {
   if (!newFileName.isEmpty() && newFileName[0]=='/')

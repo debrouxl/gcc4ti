@@ -1758,6 +1758,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   if (!fileText.isNull()) {
     SET_TEXT_SAFE(doc,fileText);
     doc->setModified(FALSE);
+// FIXME
+//  newView->document()->clearUndo();
+//  newView->document()->clearRedo();
   }
   // Create View object.
   KTextEditor::View *newView = (KTextEditor::View *) doc->createView(widgetStack);
@@ -1800,9 +1803,6 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->setContextMenu(te_popup);
-// FIXME
-//  newView->document()->clearUndo();
-//  newView->document()->clearRedo();
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
   return newView;
 }
@@ -2229,7 +2229,7 @@ void MainForm::fileSave_save(Q3ListViewItem *theItem)
   }
   else {
     KDirWatch::self()->removeFile(theFile->fileName);
-    if (saveFileText(theFile->fileName,theFile->kateView->document()->text())) {
+    if (!theFile->kateView->document()->save()) {
       KMessageBox::error(this,QString("Can't save to \'%1\'").arg(theFile->text(0)));
       KDirWatch::self()->addFile(theFile->fileName);
     }
@@ -2275,30 +2275,12 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
   if (!theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
     KDirWatch::self()->removeFile(theFile->fileName);
   if (IS_EDITABLE_CATEGORY(category)
-      ?saveFileText(saveFileName,theFile->kateView->document()->text())
+      ?!theFile->kateView->document()->saveAs(saveFileName)
       :copyFile(theFile->fileName,saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
     if (IS_EDITABLE_CATEGORY(category) && !theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
       KDirWatch::self()->addFile(theFile->fileName);
   } else {
-    if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)) {
-      // Update the file name for printing.
-      int line,col;
-      QString fileText=theFile->kateView->document()->text();
-      KTextEditor::HighlightingInterface *hliface
-        =qobject_cast<KTextEditor::HighlightingInterface*>(theFile->kateView->document());
-      QString hlMode=hliface->highlighting();
-      theFile->kateView->cursorPosition().position(line,col);
-      theFile->kateView->document()->setModified(FALSE);
-      if (theFile->kateView->document()->openStream("text/plain",saveFileName))
-        theFile->kateView->document()->closeStream();
-      SET_TEXT_SAFE(theFile->kateView->document(),fileText);
-// FIXME
-//      theFile->kateView->document()->clearUndo();
-//      theFile->kateView->document()->clearRedo();
-      hliface->setHighlighting(hlMode);
-      theFile->kateView->setCursorPosition(KTextEditor::Cursor(line,col));
-    }
     theFile->fileName=saveFileName;
     if (IS_EDITABLE_CATEGORY(category)) {
       KDirWatch::self()->addFile(saveFileName);
@@ -2348,32 +2330,13 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
           || (IS_EDITABLE_CATEGORY(category)
               && (theFile->kateView->document()->isModified() || theFile->isNew))) {
         if (IS_EDITABLE_CATEGORY(category)
-            ?saveFileText(tmpPath.path(),theFile->kateView->document()->text())
+            ?!theFile->kateView->document()->saveAs(tmpPath.path())
             :copyFile(theFile->fileName,tmpPath.path())) {
           KMessageBox::error(this,QString("Can't save to \'%1\'").arg(tmpPath.path()));
           if (IS_EDITABLE_CATEGORY(category) && !theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
             KDirWatch::self()->addFile(theFile->fileName);
         } else {
           QString saveFileName=tmpPath.path();
-          if (IS_EDITABLE_CATEGORY(category) && saveFileName.compare(theFile->fileName)) {
-            // Update the file name for printing.
-            int line,col;
-            QString fileText=theFile->kateView->document()->text();
-            KTextEditor::HighlightingInterface *hliface
-              =qobject_cast<KTextEditor::HighlightingInterface*>(
-                theFile->kateView->document());
-            QString hlMode=hliface->highlighting();
-            theFile->kateView->cursorPosition().position(line,col);
-            theFile->kateView->document()->setModified(FALSE);
-            if (theFile->kateView->document()->openStream("text/plain",saveFileName))
-              theFile->kateView->document()->closeStream();
-            SET_TEXT_SAFE(theFile->kateView->document(),fileText);
-// FIXME
-//            theFile->kateView->document()->clearUndo();
-//            theFile->kateView->document()->clearRedo();
-            hliface->setHighlighting(hlMode);
-            theFile->kateView->setCursorPosition(KTextEditor::Cursor(line,col));
-          }
           theFile->fileName=saveFileName;
           if (IS_EDITABLE_CATEGORY(category)) {
             KDirWatch::self()->addFile(theFile->fileName);

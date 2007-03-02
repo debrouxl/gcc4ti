@@ -176,7 +176,6 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
                          bool split, bool addCLineDirective,
                          bool addASMLineDirective, const QString &origFileName,
                          LineStartList *pLineStartList);
-int saveFileText(const char *fileName,const QString &fileText);
 
 void kurlNewFileName(KUrl &dir,const QString &newFileName);
 int checkFileName(const QString &fileName,const QStringList &fileNameList);

@@ -102,12 +102,6 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define CURRENT_VIEW (THIS->kateView)
 #define HL_MODE ((THIS->hlEnabled && *(THIS->hlEnabled))?THIS->hlMode:"None")
 
-#define SET_TEXT_SAFE(doc,text) do { \
-    disableViewEvents=TRUE; \
-    (doc)->setText((text)); \
-    disableViewEvents=FALSE; \
-  } while(0)
-
 // For some reason, this flag is not in the public ConfigFlags enum.
 #define CF_REMOVE_TRAILING_DYN 0x4000000
 
@@ -455,9 +449,6 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &hlMod
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->setContextMenu(THIS->te_popup);
-// FIXME
-//  newView->document()->clearUndo();
-//  newView->document()->clearRedo();
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
   return newView;
 }
@@ -497,7 +488,7 @@ void SourceFileWindow::removeTrailingSpacesFromView(void *view)
 void SourceFileWindow::fileSave()
 {
   THIS->dirWatch->removeFile(THIS->fileName);
-  if (saveFileText(THIS->fileName,CURRENT_VIEW->document()->text())) {
+  if (!CURRENT_VIEW->document()->save()) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(THIS->fileName));
     THIS->dirWatch->addFile(THIS->fileName);
   } else {
@@ -520,30 +511,10 @@ void SourceFileWindow::fileSaveAs()
   if (saveFileName.isEmpty())
     return;
   THIS->dirWatch->removeFile(THIS->fileName);
-  if (saveFileText(saveFileName,CURRENT_VIEW->document()->text())) {
+  if (!CURRENT_VIEW->document()->saveAs(saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
     THIS->dirWatch->addFile(THIS->fileName);
   } else {
-    if (saveFileName.compare(THIS->fileName)) {
-      // Update the file name for printing.
-      int line,col;
-      QString fileText=CURRENT_VIEW->document()->text();
-      KTextEditor::HighlightingInterface *hliface
-        =qobject_cast<KTextEditor::HighlightingInterface*>(CURRENT_VIEW->document());
-      QString hlMode=hliface->highlighting();
-      CURRENT_VIEW->cursorPosition().position(line,col);
-      CURRENT_VIEW->document()->setModified(FALSE);
-      if (CURRENT_VIEW->document()->openStream("text/plain",saveFileName))
-        CURRENT_VIEW->document()->closeStream();
-      SET_TEXT_SAFE(CURRENT_VIEW->document(),fileText);
-// FIXME
-//      CURRENT_VIEW->document()->clearUndo();
-//      CURRENT_VIEW->document()->clearRedo();
-      hliface->setHighlighting(hlMode);
-      CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line,col));
-      // Update the caption
-      setCaption(caption().left(caption().find('-')+2)+saveFileName);
-    }
     THIS->fileName=saveFileName;
     THIS->dirWatch->addFile(saveFileName);
     removeTrailingSpacesFromView(CURRENT_VIEW);
