@@ -511,6 +511,7 @@ void SourceFileWindow::fileSaveAs()
   if (saveFileName.isEmpty())
     return;
   THIS->dirWatch->removeFile(THIS->fileName);
+  mkdir_multi(saveFileName);
   if (!CURRENT_VIEW->document()->saveAs(saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
     THIS->dirWatch->addFile(THIS->fileName);

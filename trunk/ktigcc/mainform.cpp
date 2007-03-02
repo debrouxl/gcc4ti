@@ -2274,6 +2274,7 @@ void MainForm::fileSave_saveAs(Q3ListViewItem *theItem)
   }
   if (!theFile->fileName.isEmpty() && theFile->fileName[0]=='/')
     KDirWatch::self()->removeFile(theFile->fileName);
+  mkdir_multi(saveFileName);
   if (IS_EDITABLE_CATEGORY(category)
       ?!theFile->kateView->document()->saveAs(saveFileName)
       :copyFile(theFile->fileName,saveFileName)) {
@@ -2329,6 +2330,7 @@ void MainForm::fileSave_loadList(Q3ListViewItem *category,void *fileListV,const 
       if (tmpPath.path().compare(theFile->fileName)
           || (IS_EDITABLE_CATEGORY(category)
               && (theFile->kateView->document()->isModified() || theFile->isNew))) {
+        mkdir_multi(tmpPath.path());
         if (IS_EDITABLE_CATEGORY(category)
             ?!theFile->kateView->document()->saveAs(tmpPath.path())
             :copyFile(theFile->fileName,tmpPath.path())) {
@@ -6161,8 +6163,9 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
     if (IS_EDITABLE_CATEGORY(category)) {
       if (!oldFileName.isEmpty() && oldFileName[0]=='/')
         KDirWatch::self()->removeFile(oldFileName);
-        if (newFileName.isEmpty() || newFileName[0]!='/')
-          newFileName.prepend(QFileInfo(projectFileName).absolutePath()+"/");
+      if (newFileName.isEmpty() || newFileName[0]!='/')
+        newFileName.prepend(QFileInfo(projectFileName).absolutePath()+"/");
+      mkdir_multi(newFileName);
       if (!theFile->kateView->document()->saveAs(newFileName)) {
         KMessageBox::error(this,"Failed to rename the file.");
         theFile->setText(0,oldLabel);
@@ -6180,6 +6183,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
         projectNeedsRelink=TRUE;
       }
     } else {
+      mkdir_multi(newFileName);
       if (!moveFile(oldFileName,newFileName)) {
         KMessageBox::error(this,"Failed to rename the file.");
         theFile->setText(0,oldLabel);
