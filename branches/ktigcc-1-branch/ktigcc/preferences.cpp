@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2004-2006 Kevin Kofler
+   Copyright (C) 2004-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
 
    This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,8 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#include <kglobal.h>
+#include <kstandarddirs.h>
 #include <qtextcodec.h>
 #include <qcolor.h>
 #include <qfont.h>
@@ -413,8 +415,8 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   #undef CHILD_NODE
 
   // Write it to disk.
-  QString xmlFileName=QString("%1/.kde/share/apps/katepart/syntax/ktigcc%2.xml")
-                      .arg(QDir::homeDirPath()).arg(internalName);
+  QString xmlFileName=QString("%1/share/apps/katepart/syntax/ktigcc%2.xml")
+                      .arg(KGlobal::dirs()->localkdedir()).arg(internalName);
   mkdir_multi(xmlFileName);
   std::FILE *f=std::fopen(xmlFileName,"w");
   if (f) {
@@ -455,8 +457,8 @@ static bool isNewerVersion(const QString &version1, const QString &version2)
 
 static bool checkSynHighlightVersion(const QString &internalName)
 {
-  QString xmlFileName=QString("%1/.kde/share/apps/katepart/syntax/ktigcc%2.xml")
-                      .arg(QDir::homeDirPath()).arg(internalName);
+  QString xmlFileName=QString("%1/share/apps/katepart/syntax/ktigcc%2.xml")
+                      .arg(KGlobal::dirs()->localkdedir()).arg(internalName);
   QDomDocument doc("language");
   QFile file(xmlFileName);
   if (!file.open(IO_ReadOnly))
