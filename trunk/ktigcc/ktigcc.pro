@@ -90,20 +90,22 @@ OBJECTS_DIR = .obj
 win32-cross-g++ {
   KDEPREFIX = $$(KDEPREFIX)
   isEmpty(KDEPREFIX):error(Please source mingw32-ktigcc.sh to set up the cross-build environment.)
-  # $$KDEPREFIX/include/mingw contains the kdewin32 headers, defining stuff like mkdtemp.
-  INCLUDEPATH += $$KDEPREFIX/include/mingw $$KDEPREFIX/include
+  KDEINCDIR = $$KDEPREFIX/include
+  # $$KDEINCDIR/mingw contains the kdewin32 headers, defining stuff like mkdtemp.
+  INCLUDEPATH += $$KDEINCDIR/mingw $$KDEINCDIR
   QMAKE_LIBDIR = $$KDEPREFIX/lib $$QMAKE_LIBDIR
 } else {
   KDEPREFIX = $$system(kde4-config --prefix)
   isEmpty(KDEPREFIX):error(KDE 4 kdelibs required.)
 
   exists($$KDEPREFIX/include/kde4/KDE) {
-    INCLUDEPATH += $$KDEPREFIX/include/kde4
+    KDEINCDIR = $$KDEPREFIX/include/kde4
   } else:exists($$KDEPREFIX/include/kde/KDE) {
-    INCLUDEPATH += $$KDEPREFIX/include/kde
+    KDEINCDIR = $$KDEPREFIX/include/kde
   } else {
-    INCLUDEPATH += $$KDEPREFIX/include
+    KDEINCDIR = $$KDEPREFIX/include
   }
+  INCLUDEPATH += $$KDEINCDIR
 
   KDELIBDIR = $$KDEPREFIX/lib$$system(kde4-config --libsuffix)
 
@@ -170,6 +172,8 @@ isEmpty(CXXFLAGS) {
   }
 }
 *-g++*:CXXFLAGS += -DHAVE_STDINT_H
+# Test for a subtle API change between the official 3.80.3 release and the snapshot used by the kde-windows developers.
+exists($$KDEINCDIR/ksharedconfig.h):CXXFLAGS += -DHAVE_KSHAREDCONFIG_H
 QMAKE_CXXFLAGS_DEBUG = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 QMAKE_CXXFLAGS_RELEASE = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 
