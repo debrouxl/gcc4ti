@@ -93,6 +93,7 @@ win32-cross-g++ {
   KDEINCDIR = $$KDEPREFIX/include
   # $$KDEINCDIR/mingw contains the kdewin32 headers, defining stuff like mkdtemp.
   INCLUDEPATH += $$KDEINCDIR/mingw $$KDEINCDIR
+  LIBS += -lkdewin32
   QMAKE_LIBDIR = $$KDEPREFIX/lib $$QMAKE_LIBDIR
 } else {
   KDEPREFIX = $$system(kde4-config --prefix)
