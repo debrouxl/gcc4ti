@@ -132,7 +132,6 @@ class DnDListView : public K3ListView {
 #include <kfind.h>
 #include <kreplacedialog.h>
 #include <kreplace.h>
-#include <kwin.h>
 #include <kglobal.h>
 #include <kicontheme.h>
 #include <kicon.h>
@@ -167,6 +166,16 @@ class DnDListView : public K3ListView {
 #include "toolsdlg.h"
 #include "newsdlg.h"
 #include "completion.h"
+
+#if defined(Q_WS_X11)
+#include <kwin.h>
+#define ACTIVATE_WINDOW(winid) KWin::activateWindow(winid)
+#elif defined(Q_WS_WIN)
+#include <windows.h>
+#define ACTIVATE_WINDOW(winid) SetForegroundWindow(winid)
+#else
+#define ACTIVATE_WINDOW(winid) ((void)0)
+#endif
 
 using std::puts;
 using std::exit;
@@ -847,7 +856,7 @@ class ErrorListItem : public K3ListViewItem {
     // instantiate the Kate view and call createCursor for us.
     if (lvFile) mainForm->fileTreeClicked(lvFile);
     // If it corresponds to an external source file, activate the window.
-    if (srcFile) KWin::activateWindow(srcFile->winId());
+    if (srcFile) ACTIVATE_WINDOW(srcFile->winId());
     // Now jump to the cursor's location if we have one.
     KTextEditor::View *kateView=lvFile?lvFile->kateView:(srcFile?srcFile->kateView
                            :static_cast<KTextEditor::View *>(NULL));
@@ -2052,7 +2061,7 @@ bool MainForm::openProject(const QString &fileName)
     SourceFile *sourceFile;
     for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
       if (!fileName.compare(sourceFile->fileName)) {
-        KWin::activateWindow(sourceFile->winId());
+        ACTIVATE_WINDOW(sourceFile->winId());
         return FALSE;
       }
     }
@@ -2736,7 +2745,7 @@ void MainForm::editDecreaseIndent()
 void MainForm::findFind()
 {
   if (kfinddialog)
-    KWin::activateWindow(kfinddialog->winId());
+    ACTIVATE_WINDOW(kfinddialog->winId());
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
@@ -2925,7 +2934,7 @@ void MainForm::findReplace()
   if (kreplace) {
     KDialog *replaceNextDialog=kreplace->replaceNextDialog();
     if (replaceNextDialog)
-      KWin::activateWindow(replaceNextDialog->winId());
+      ACTIVATE_WINDOW(replaceNextDialog->winId());
     return;
   }
   KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->selection()
@@ -3357,7 +3366,7 @@ void MainForm::findAndOpenFile(const QString &fileName, void *category)
     if (inProject)
       fileTreeClicked(reinterpret_cast<ListViewFile *>(sourceFile));
     else
-      KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+      ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
   } else {
     // Not found. Try to open it instead.
     // Don't do this if the name ends with ".tpr" because that would cause
@@ -3367,7 +3376,7 @@ void MainForm::findAndOpenFile(const QString &fileName, void *category)
       if (getPathType(fileNameFull)==PATH_FILE) {
         openProject(fileNameFull);
         if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject)
-           KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+           ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
       } else {
         Q3ListViewItem *cat=reinterpret_cast<Q3ListViewItem *>(category);
         QString includeDir=(cat==asmFilesListItem)?"asm":
@@ -3377,7 +3386,7 @@ void MainForm::findAndOpenFile(const QString &fileName, void *category)
         if (getPathType(fileNameFull)==PATH_FILE) {
           openProject(fileNameFull);
           if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject)
-             KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+             ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
         } else {
           KMessageBox::error(this,QString("File \'%1\' not found.").arg(fileName),
                              "Search Failed");
@@ -3433,14 +3442,14 @@ void MainForm::openHeader(const QString &fileName, bool systemHeader,
             reinterpret_cast<ListViewFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
         } else {
           reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
-          KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+          ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
         }
       } else {
         if (getPathType(fileNameFull)==PATH_FILE) {
           openProject(fileNameFull);
           if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject) {
             reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
-            KWin::activateWindow(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+            ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
           }
         } else {
           KMessageBox::error(this,QString("File \'%1\' not found.").arg(fileName),

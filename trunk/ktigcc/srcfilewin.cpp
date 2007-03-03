@@ -65,7 +65,6 @@
 #include <kfind.h>
 #include <kreplacedialog.h>
 #include <kreplace.h>
-#include <kwin.h>
 #include <kicontheme.h>
 #include <kicon.h>
 #include <kiconloader.h>
@@ -81,6 +80,16 @@
 #include "srcfile.h"
 #include "functions.h"
 #include "completion.h"
+
+#if defined(Q_WS_X11)
+#include <kwin.h>
+#define ACTIVATE_WINDOW(winid) KWin::activateWindow(winid)
+#elif defined(Q_WS_WIN)
+#include <windows.h>
+#define ACTIVATE_WINDOW(winid) SetForegroundWindow(winid)
+#else
+#define ACTIVATE_WINDOW(winid) ((void)0)
+#endif
 
 using std::puts;
 using std::exit;
@@ -695,7 +704,7 @@ void SourceFileWindow::editDecreaseIndent()
 void SourceFileWindow::findFind()
 {
   if (THIS->kfinddialog)
-    KWin::activateWindow(THIS->kfinddialog->winId());
+    ACTIVATE_WINDOW(THIS->kfinddialog->winId());
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
@@ -794,7 +803,7 @@ void SourceFileWindow::findReplace()
   if (THIS->kreplace) {
     KDialog *replaceNextDialog=THIS->kreplace->replaceNextDialog();
     if (replaceNextDialog)
-      KWin::activateWindow(replaceNextDialog->winId());
+      ACTIVATE_WINDOW(replaceNextDialog->winId());
     return;
   }
   KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->selection()
@@ -1139,7 +1148,7 @@ void SourceFileWindow::findFindSymbolDeclaration()
       else {
         THIS->mainForm->openHeader(symbolFile,systemHeader,symbolLine);
         if (!systemHeader)
-          KWin::activateWindow(THIS->mainForm->winId());
+          ACTIVATE_WINDOW(THIS->mainForm->winId());
       }
     }
   }
