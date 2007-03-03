@@ -1,7 +1,9 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on debug qdbus assistant
+CONFIG	-= debug_and_release debug_and_release_target
+CONFIG	+= qt warn_on qdbus assistant
+!win32-cross-g++:CONFIG += debug
 
 QT += xml qt3support
 
@@ -85,23 +87,30 @@ UI_DIR = .ui
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
 
-KDEPREFIX = $$system(kde4-config --prefix)
-isEmpty(KDEPREFIX):error(KDE 4 kdelibs required.)
-
-exists($$KDEPREFIX/include/kde4/KDE) {
-  INCLUDEPATH += $$KDEPREFIX/include/kde4
-} else:exists($$KDEPREFIX/include/kde/KDE) {
-  INCLUDEPATH += $$KDEPREFIX/include/kde
-} else {
+win32-cross-g++ {
+  KDEPREFIX = $$(KDEPREFIX)
+  isEmpty(KDEPREFIX):error(Please source mingw32-ktigcc.sh to set up the cross-build environment.)
   INCLUDEPATH += $$KDEPREFIX/include
-}
+  QMAKE_LIBDIR = $$KDEPREFIX/lib $$QMAKE_LIBDIR
+} else {
+  KDEPREFIX = $$system(kde4-config --prefix)
+  isEmpty(KDEPREFIX):error(KDE 4 kdelibs required.)
 
-KDELIBDIR = $$KDEPREFIX/lib$$system(kde4-config --libsuffix)
+  exists($$KDEPREFIX/include/kde4/KDE) {
+    INCLUDEPATH += $$KDEPREFIX/include/kde4
+  } else:exists($$KDEPREFIX/include/kde/KDE) {
+    INCLUDEPATH += $$KDEPREFIX/include/kde
+  } else {
+    INCLUDEPATH += $$KDEPREFIX/include
+  }
 
-!equals(KDELIBDIR,/usr/lib):!equals(KDELIBDIR,/usr/lib64) {
-  QMAKE_LIBDIR = $$KDELIBDIR $$QMAKE_LIBDIR
-  !darwin-*:!macx-* {
-    LIBS += -Wl,--rpath,"$$KDELIBDIR"
+  KDELIBDIR = $$KDEPREFIX/lib$$system(kde4-config --libsuffix)
+
+  !equals(KDELIBDIR,/usr/lib):!equals(KDELIBDIR,/usr/lib64) {
+    QMAKE_LIBDIR = $$KDELIBDIR $$QMAKE_LIBDIR
+    !darwin-*:!macx-* {
+      LIBS += -Wl,--rpath,"$$KDELIBDIR"
+    }
   }
 }
 
