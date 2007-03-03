@@ -22,8 +22,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <sys/dir.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
