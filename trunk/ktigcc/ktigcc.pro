@@ -90,7 +90,8 @@ OBJECTS_DIR = .obj
 win32-cross-g++ {
   KDEPREFIX = $$(KDEPREFIX)
   isEmpty(KDEPREFIX):error(Please source mingw32-ktigcc.sh to set up the cross-build environment.)
-  INCLUDEPATH += $$KDEPREFIX/include
+  # $$KDEPREFIX/include/mingw contains the kdewin32 headers, defining stuff like mkdtemp.
+  INCLUDEPATH += $$KDEPREFIX/include/mingw $$KDEPREFIX/include
   QMAKE_LIBDIR = $$KDEPREFIX/lib $$QMAKE_LIBDIR
 } else {
   KDEPREFIX = $$system(kde4-config --prefix)
