@@ -169,6 +169,7 @@ isEmpty(CXXFLAGS) {
     CXXFLAGS = -Os -s -fomit-frame-pointer
   }
 }
+*-g++*:CFLAGS += -DHAVE_STDINT_H
 QMAKE_CXXFLAGS_DEBUG = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 QMAKE_CXXFLAGS_RELEASE = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 
