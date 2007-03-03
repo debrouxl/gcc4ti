@@ -158,8 +158,14 @@ class KReplaceWithSelectionS : public KReplace {
 
 void SourceFileWindow::initBase()
 {
-  setIcon(QPixmap(":/images/icon.png"));
-  KWin::setIcons(winId(),*(icon()),QPixmap(":/images/ktigcc.png"));
+  QPixmap smallIcon(":/images/ktigcc.png");
+  QPixmap largeIcon(":/images/icon.png");
+  QIcon windowIcon(smallIcon);
+  windowIcon.addPixmap(largeIcon);
+  setWindowIcon(windowIcon);
+#ifdef Q_WS_X11
+  KWin::setIcons(winId(),largeIcon,smallIcon);
+#endif
   sourceFiles.append(THIS);
   THIS->dirWatch=new KDirWatch(this);
   setCaption(caption()+" - "+THIS->fileName);

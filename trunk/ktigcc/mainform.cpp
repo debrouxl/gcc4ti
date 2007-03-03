@@ -994,8 +994,14 @@ void setTabWidth(KTextEditor::View *view, unsigned tabWidth)
 
 void MainForm::init()
 {
-  setIcon(QPixmap(":/images/icon.png"));
-  KWin::setIcons(winId(),*(icon()),QPixmap(":/images/ktigcc.png"));
+  QPixmap smallIcon(":/images/ktigcc.png");
+  QPixmap largeIcon(":/images/icon.png");
+  QIcon windowIcon(smallIcon);
+  windowIcon.addPixmap(largeIcon);
+  setWindowIcon(windowIcon);
+#ifdef Q_WS_X11
+  KWin::setIcons(winId(),largeIcon,smallIcon);
+#endif
   ticables_library_init();
   tifiles_library_init();
   ticalcs_library_init();
