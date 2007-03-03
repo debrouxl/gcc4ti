@@ -27,7 +27,9 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/stat.h>
+#ifndef _WIN32
 #include <sys/dir.h>
+#endif
 #include <QApplication>
 #include <QEventLoop>
 #include <kapplication.h>
@@ -105,7 +107,7 @@ static QString convert_path_separators(const char *file)
     QString s=file;
     int o;
   
-#ifndef __WIN32__
+#ifndef _WIN32
      while ((o=s.find('\\',0,TRUE))>=0)
          s[o]='/';
 #endif
@@ -580,7 +582,7 @@ static QString convert_path_separators_save(QString s)
 {
     int o;
     
-#ifndef __WIN32__
+#ifndef _WIN32
     while ((o=s.find('/',0,TRUE))>=0)
         s[o]='\\';
 #endif
@@ -777,7 +779,7 @@ void mkdir_multi(const char *fileName)
   char buffer[l+2];
   char *ptr;
 
-#ifdef __WIN32__
+#ifdef _WIN32
   ptr=strchr(fileName,'\\');
 #else
   ptr=strchr(fileName,'/');
@@ -787,11 +789,13 @@ void mkdir_multi(const char *fileName)
   {
     memcpy(buffer,fileName,ptr-fileName);
     buffer[ptr-fileName]=0;
-    mkdir(buffer,S_IRWXU | S_IRWXG | S_IRWXO);
+#ifdef _WIN32
+    mkdir(buffer);
     
-#ifdef __WIN32__
     ptr=strchr(ptr+1,'\\');
 #else
+    mkdir(buffer,S_IRWXU | S_IRWXG | S_IRWXO);
+    
     ptr=strchr(ptr+1,'/');
 #endif
   }
