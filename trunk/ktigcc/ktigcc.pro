@@ -3,7 +3,7 @@ LANGUAGE	= C++
 
 CONFIG	-= debug_and_release debug_and_release_target
 CONFIG	+= qt warn_on qdbus assistant
-!win32-cross-g++:CONFIG += debug
+!win32:CONFIG += debug
 
 QT += xml qt3support
 
@@ -87,9 +87,18 @@ UI_DIR = .ui
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
 
-win32-cross-g++ {
+win32 {
   KDEPREFIX = $$(KDEPREFIX)
-  isEmpty(KDEPREFIX):error(Please source mingw32-ktigcc.sh to set up the cross-build environment.)
+  isEmpty(KDEPREFIX) {
+    win32-cross-g++ {
+      error(Please source cross-mingw32-ktigcc.sh to set up the cross-build environment.)
+    } else {
+      # Try running kde4-config, however chances are it's not in the path or it was compiled with a bad prefix.
+      KDEPREFIX = $$system(kde4-config --prefix)
+      isEmpty(KDEPREFIX):error(KDE 4 kdelibs not found, set KDEPREFIX.)
+      !exists($$KDEPREFIX):error(KDE 4 kdelibs not found, set KDEPREFIX.)
+    }
+  }
   KDEINCDIR = $$KDEPREFIX/include
   # $$KDEINCDIR/mingw contains the kdewin32 headers, defining stuff like mkdtemp.
   INCLUDEPATH += $$KDEINCDIR/mingw $$KDEINCDIR
@@ -148,7 +157,7 @@ HAVE_TICALCS = $$system(pkg-config --atleast-version=$$TICALCS_MINVERSION ticalc
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticalcs2)
 LIBS += $$system(pkg-config --libs ticalcs2)
 
-win32-cross-g++ {
+win32 {
   # Hack out hardcoded prefix from the glib2 binary package's pkg-config file.
   HARDCODED_GLIB_PREFIX = $$system(pkg-config --variable=prefix glib-2.0)
   PKGCONFIG_CFLAGS ~= s!$$HARDCODED_GLIB_PREFIX!$$KDEPREFIX!g
