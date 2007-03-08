@@ -118,6 +118,7 @@ rm -rf $RPM_BUILD_ROOT
 Bump version to 1.80.
 Update BuildRequires and Requires.
 Use versioned tarball and source directory names.
+Run qmake-qt4 instead of qmake.
 
 * Mon Jan 29 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump version to 1.07.
