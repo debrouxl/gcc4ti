@@ -193,8 +193,7 @@ QMAKE_LFLAGS_RELEASE = -s
 DISTFILES += $${documentation.files} INSTALL configure KTIGCC.anjuta fedora/ktigcc.spec images/*.png images/copyright.txt mingw/cross-mingw32-ktigcc.sh mingw/mkspecs/win32-cross-g++/qmake.conf mingw/mkspecs/win32-cross-g++/qplatformdefs.h
 
 distbz2.target = dist-bzip2
-distbz2.commands = zcat ktigcc.tar.gz | bzip2 --best -c > ktigcc.tar.bz2
-distbz2.depends = dist
+distbz2.commands = $(MKDIR) .obj/ktigcc-$$VERSION && $(COPY_FILE) -p --parents $$SOURCES $$HEADERS $$FORMS $$RESOURCES $$DISTFILES $$OBJECTS_DIR/ktigcc-$$VERSION/ && (cd $$OBJECTS_DIR && $(TAR) ktigcc-$${VERSION}.tar.bz2 -j ktigcc-$$VERSION) && $(MOVE) $$OBJECTS_DIR/ktigcc-$${VERSION}.tar.bz2 . && $(DEL_FILE) -r $$OBJECTS_DIR/ktigcc-$$VERSION
 rpm.target = rpm
 # The TAR_OPTIONS=--wildcards is a workaround for rpmbuild 4.4.2 being
 # incompatible with tar 1.15.91 (Fedora bug #206841).
