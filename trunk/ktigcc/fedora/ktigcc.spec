@@ -1,25 +1,25 @@
 %define tigccdir /usr/local/tigcc
 
 Name: ktigcc
-Version: 1.07
+Version: 1.80
 Release: 1
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
-Source: %{name}.tar.bz2
+Source: %{name}-%{version}.tar.bz2
 Group: Development/Tools
 License: GPL
-BuildRequires: qt-devel >= 1:3.3.0 kdelibs-devel >= 6:3.5.2 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
-Requires: kdelibs >= 6:3.5.2 kdebase >= 6:3.5.2 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt-devel >= 1:3.2.0 ctags
+BuildRequires: qt4-devel >= 4.2.0 kdelibs4-devel = 3.80.3 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
+Requires: kdelibs4 = 3.80.3 kdebase4 = 3.80.3 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt4-doc ctags
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: KTIGCC is an IDE for TIGCC using KDE
 %description
-KTIGCC is an IDE for the TIGCC cross-toolchain on *nix/X11 platforms, using the KDE 3 libraries.
+KTIGCC is an IDE for the TIGCC cross-toolchain on *nix/X11 platforms, using the KDE 4 libraries.
 
 %prep
-%setup -n %{name}
+%setup
 
 %build
-CXXFLAGS="$RPM_OPT_FLAGS" qmake
+CXXFLAGS="$RPM_OPT_FLAGS" qmake-qt4
 make
 
 %install
@@ -114,6 +114,11 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Thu Mar 8 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Bump version to 1.80.
+Update BuildRequires and Requires.
+Use versioned tarball and source directory names.
+
 * Mon Jan 29 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump version to 1.07.
 

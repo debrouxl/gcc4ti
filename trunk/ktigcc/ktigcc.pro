@@ -193,7 +193,7 @@ QMAKE_LFLAGS_RELEASE = -s
 DISTFILES += $${documentation.files} INSTALL configure KTIGCC.anjuta fedora/ktigcc.spec images/*.png images/copyright.txt mingw/cross-mingw32-ktigcc.sh mingw/mkspecs/win32-cross-g++/qmake.conf mingw/mkspecs/win32-cross-g++/qplatformdefs.h
 
 distbz2.target = dist-bzip2
-distbz2.commands = $(MKDIR) .obj/ktigcc-$$VERSION && $(COPY_FILE) -p --parents $$SOURCES $$HEADERS $$FORMS $$RESOURCES $$DISTFILES $$OBJECTS_DIR/ktigcc-$$VERSION/ && (cd $$OBJECTS_DIR && $(TAR) ktigcc-$${VERSION}.tar.bz2 -j ktigcc-$$VERSION) && $(MOVE) $$OBJECTS_DIR/ktigcc-$${VERSION}.tar.bz2 . && $(DEL_FILE) -r $$OBJECTS_DIR/ktigcc-$$VERSION
+distbz2.commands = $(MKDIR) .obj/ktigcc-$$VERSION && $(COPY_FILE) -p --parents ktigcc.pro $$SOURCES $$HEADERS $$FORMS $$RESOURCES $$DISTFILES $$OBJECTS_DIR/ktigcc-$$VERSION/ && (cd $$OBJECTS_DIR && $(TAR) ktigcc-$${VERSION}.tar.bz2 -j ktigcc-$$VERSION) && $(MOVE) $$OBJECTS_DIR/ktigcc-$${VERSION}.tar.bz2 . && $(DEL_FILE) -r $$OBJECTS_DIR/ktigcc-$$VERSION
 rpm.target = rpm
 rpm.commands = rpmbuild -ta ktigcc-$${VERSION}.tar.bz2
 rpm.depends = distbz2
