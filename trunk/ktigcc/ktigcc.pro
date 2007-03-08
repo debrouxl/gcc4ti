@@ -1,5 +1,6 @@
 TEMPLATE	= app
 LANGUAGE	= C++
+VERSION = 1.80
 
 CONFIG	-= debug_and_release debug_and_release_target
 CONFIG	+= qt warn_on qdbus assistant
@@ -189,7 +190,7 @@ QMAKE_CXXFLAGS_RELEASE = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 
 QMAKE_LFLAGS_RELEASE = -s
 
-DISTFILES += $${documentation.files} INSTALL configure KTIGCC.anjuta fedora/ktigcc.spec images/copyright.txt
+DISTFILES += $${documentation.files} INSTALL configure KTIGCC.anjuta fedora/ktigcc.spec images/*.png images/copyright.txt mingw/cross-mingw32-ktigcc.sh mingw/mkspecs/win32-cross-g++/qmake.conf mingw/mkspecs/win32-cross-g++/qplatformdefs.h
 
 distbz2.target = dist-bzip2
 distbz2.commands = zcat ktigcc.tar.gz | bzip2 --best -c > ktigcc.tar.bz2
