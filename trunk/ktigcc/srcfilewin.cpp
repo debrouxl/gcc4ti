@@ -628,22 +628,22 @@ void SourceFileWindow::applyPreferences()
     editDecreaseIndentAction->setIcon(KIcon("unindent"));
   } else {
     setIconSize(QSize(20,20));
-    fileSaveAction->setIcon(QIcon(QPixmap(":/images/02")));
-    fileAddToProjectAction->setIcon(QIcon(QPixmap(":/images/08")));
-    fileCompileAction->setIcon(QIcon(QPixmap(":/images/09")));
-    filePrintAction->setIcon(QIcon(QPixmap(":/images/03")));
-    filePrintQuicklyAction->setIcon(QIcon(QPixmap(":/images/03")));
-    editClearAction->setIcon(QIcon(QPixmap(":/images/04")));
-    editCutAction->setIcon(QIcon(QPixmap(":/images/05")));
-    editCopyAction->setIcon(QIcon(QPixmap(":/images/06")));
-    editPasteAction->setIcon(QIcon(QPixmap(":/images/07")));
-    findFindAction->setIcon(QIcon(QPixmap(":/images/13")));
-    findReplaceAction->setIcon(QIcon(QPixmap(":/images/14")));
-    editUndoAction->setIcon(QIcon(QPixmap(":/images/16")));
-    editRedoAction->setIcon(QIcon(QPixmap(":/images/17")));
-    findFunctionsAction->setIcon(QIcon(QPixmap(":/images/18")));
-    editIncreaseIndentAction->setIcon(QIcon(QPixmap(":/images/19")));
-    editDecreaseIndentAction->setIcon(QIcon(QPixmap(":/images/20")));
+    fileSaveAction->setIcon(QIcon(QPixmap(":/images/02.png")));
+    fileAddToProjectAction->setIcon(QIcon(QPixmap(":/images/08.png")));
+    fileCompileAction->setIcon(QIcon(QPixmap(":/images/09.png")));
+    filePrintAction->setIcon(QIcon(QPixmap(":/images/03.png")));
+    filePrintQuicklyAction->setIcon(QIcon(QPixmap(":/images/03.png")));
+    editClearAction->setIcon(QIcon(QPixmap(":/images/04.png")));
+    editCutAction->setIcon(QIcon(QPixmap(":/images/05.png")));
+    editCopyAction->setIcon(QIcon(QPixmap(":/images/06.png")));
+    editPasteAction->setIcon(QIcon(QPixmap(":/images/07.png")));
+    findFindAction->setIcon(QIcon(QPixmap(":/images/13.png")));
+    findReplaceAction->setIcon(QIcon(QPixmap(":/images/14.png")));
+    editUndoAction->setIcon(QIcon(QPixmap(":/images/16.png")));
+    editRedoAction->setIcon(QIcon(QPixmap(":/images/17.png")));
+    findFunctionsAction->setIcon(QIcon(QPixmap(":/images/18.png")));
+    editIncreaseIndentAction->setIcon(QIcon(QPixmap(":/images/19.png")));
+    editDecreaseIndentAction->setIcon(QIcon(QPixmap(":/images/20.png")));
   }
 }
 
