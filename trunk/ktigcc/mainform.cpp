@@ -1812,12 +1812,12 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
     8
   );
-  connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
+  connect(newView,SIGNAL(cursorPositionChanged(KTextEditor::View*,const KTextEditor::Cursor&)),this,SLOT(current_view_cursorPositionChanged(KTextEditor::View*,const KTextEditor::Cursor&)));
   connect(newView,SIGNAL(textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)),
           this,SLOT(current_view_textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)));
-  connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
+  connect(newView,SIGNAL(selectionChanged(KTextEditor::View*)),this,SLOT(current_view_selectionChanged(KTextEditor::View*)));
+  connect(newView->document(),SIGNAL(textChanged(KTextEditor::Document*)),this,SLOT(current_view_textChanged(KTextEditor::Document*)));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
-  connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   newView->setContextMenu(te_popup);
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
   return newView;
@@ -1906,12 +1906,12 @@ void MainForm::adoptSourceFile(void *srcFile)
     (category==cFilesListItem||category==qllFilesListItem||category==hFilesListItem)?preferences.tabWidthC:
     8
   );
-  connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
+  connect(newView,SIGNAL(cursorPositionChanged(KTextEditor::View*,const KTextEditor::Cursor&)),this,SLOT(current_view_cursorPositionChanged(KTextEditor::View*,const KTextEditor::Cursor&)));
   connect(newView,SIGNAL(textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)),
           this,SLOT(current_view_textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)));
-  connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
+  connect(newView,SIGNAL(selectionChanged(KTextEditor::View*)),this,SLOT(current_view_selectionChanged(KTextEditor::View*)));
+  connect(newView->document(),SIGNAL(textChanged(KTextEditor::Document*)),this,SLOT(current_view_textChanged(KTextEditor::Document*)));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
-  connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
   newView->setContextMenu(te_popup);
   // Mark project dirty.
   projectIsDirty=TRUE;
@@ -5954,20 +5954,20 @@ void MainForm::updateRightStatusLabel()
   }
 }
 
-void MainForm::current_view_cursorPositionChanged()
+void MainForm::current_view_cursorPositionChanged(KTextEditor::View *view, const KTextEditor::Cursor &newPosition)
 {
-  if (CURRENT_VIEW && !disableViewEvents) {
+  if (CURRENT_VIEW==view && !disableViewEvents) {
     int line, col;
-    CURRENT_VIEW->cursorPosition().position(line,col);
+    newPosition.position(line,col);
     rowStatusLabel->setText(QString("%1").arg(line+1));
     colStatusLabel->setText(QString("%1").arg(col+1));
   }
 }
 
-void MainForm::current_view_textChanged()
+void MainForm::current_view_textChanged(KTextEditor::Document *document)
 {
   if (disableViewEvents) return;
-  if (CURRENT_VIEW) {
+  if (CURRENT_VIEW && CURRENT_VIEW->document()==document) {
     charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()));
     if (IS_FILE(currentListItem)) {
       static_cast<ListViewFile *>(currentListItem)->modifiedSinceLastCompile=TRUE;
@@ -6006,14 +6006,14 @@ void MainForm::current_view_undoChanged()
   }
 }
 
-void MainForm::current_view_selectionChanged()
+void MainForm::current_view_selectionChanged(KTextEditor::View *view)
 {
-  if (CURRENT_VIEW && !disableViewEvents) {
-    editClearAction->setEnabled(CURRENT_VIEW->selection());
-    editCutAction->setEnabled(CURRENT_VIEW->selection());
-    editCopyAction->setEnabled(CURRENT_VIEW->selection());
-    accel->setItemEnabled(2,CURRENT_VIEW->selection());
-    accel->setItemEnabled(3,CURRENT_VIEW->selection());
+  if (CURRENT_VIEW==view && !disableViewEvents) {
+    editClearAction->setEnabled(view->selection());
+    editCutAction->setEnabled(view->selection());
+    editCopyAction->setEnabled(view->selection());
+    accel->setItemEnabled(2,view->selection());
+    accel->setItemEnabled(3,view->selection());
   }
 }
 

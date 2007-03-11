@@ -23,6 +23,7 @@
 #include "ui_srcfilewin.h"
 
 namespace KTextEditor {
+  class Document;
   class View;
   class Cursor;
 }
@@ -81,11 +82,11 @@ public slots:
     virtual void findOpenFileAtCursor();
     virtual void findFindSymbolDeclaration();
     virtual void resizeEvent( QResizeEvent * event );
-    virtual void statusBar_messageChanged( const QString & message );
-    virtual void current_view_cursorPositionChanged();
-    virtual void current_view_textChanged();
+    virtual void statusBar_messageChanged(const QString &message);
+    virtual void current_view_cursorPositionChanged(KTextEditor::View *view, const KTextEditor::Cursor &newPosition);
+    virtual void current_view_textChanged(KTextEditor::Document *document);
     virtual void current_view_undoChanged();
-    virtual void current_view_selectionChanged();
+    virtual void current_view_selectionChanged(KTextEditor::View *view);
     virtual void current_view_textInserted(KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text);
     virtual void clipboard_dataChanged();
     virtual void KDirWatch_dirty( const QString & fileName );
