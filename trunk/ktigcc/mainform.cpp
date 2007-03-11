@@ -1389,12 +1389,9 @@ void MainForm::accel_activated(int index)
       }
       case 6:
       case 7:
-        // FIXME: Send ENTER key in some way, or replace newLineHook with a
-        //        better solution altogether.
-        CURRENT_VIEW->document()->startEditing();
-        CURRENT_VIEW->removeSelectionText();
-        CURRENT_VIEW->insertText("\n");
-        CURRENT_VIEW->document()->endEditing();
+        // keyReturn is not in any interface, but it's a public slot...
+        CURRENT_VIEW->qt_metacall(QMetaObject::InvokeMetaMethod,
+          CURRENT_VIEW->metaObject()->indexOfMethod("keyReturn()"),NULL);
         current_view_newLineHook();
         break;
       case 8:
@@ -1773,9 +1770,11 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   if (!fileText.isNull()) {
     SET_TEXT_SAFE(doc,fileText);
     doc->setModified(FALSE);
-// FIXME
-//  newView->document()->clearUndo();
-//  newView->document()->clearRedo();
+    // clearUndo and clearRedo are not in any interface, but they are public slots...
+    doc->qt_metacall(QMetaObject::InvokeMetaMethod,
+      doc->metaObject()->indexOfMethod("clearUndo()"),NULL);
+    doc->qt_metacall(QMetaObject::InvokeMetaMethod,
+      doc->metaObject()->indexOfMethod("clearRedo()"),NULL);
   }
   // Create View object.
   KTextEditor::View *newView = (KTextEditor::View *) doc->createView(widgetStack);

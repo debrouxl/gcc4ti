@@ -391,12 +391,9 @@ void SourceFileWindow::accel_activated(int index)
       }
       case 6:
       case 7:
-        // FIXME: Send ENTER key in some way, or replace newLineHook with a
-        //        better solution altogether.
-        CURRENT_VIEW->document()->startEditing();
-        CURRENT_VIEW->removeSelectionText();
-        CURRENT_VIEW->insertText("\n");
-        CURRENT_VIEW->document()->endEditing();
+        // keyReturn is not in any interface, but it's a public slot...
+        CURRENT_VIEW->qt_metacall(QMetaObject::InvokeMetaMethod,
+          CURRENT_VIEW->metaObject()->indexOfMethod("keyReturn()"),NULL);
         current_view_newLineHook();
         break;
       case 8:
