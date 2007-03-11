@@ -459,10 +459,11 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &hlMod
   }
   setTabWidth(newView,tabWidth);
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
+  connect(newView,SIGNAL(textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)),
+          this,SLOT(current_view_textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
-  connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->setContextMenu(THIS->te_popup);
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
   return newView;
@@ -1235,33 +1236,32 @@ void SourceFileWindow::current_view_selectionChanged()
   }
 }
 
-void SourceFileWindow::current_view_charactersInteractivelyInserted(int line, int col, const QString &characters)
+void SourceFileWindow::current_view_textInserted(KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text)
 {
-  if (CURRENT_VIEW) {
-    if (preferences.autoBlocks && characters=="{"
-        && col==CURRENT_VIEW->document()->lineLength(line)-1) {
-      KTextEditor::Document *doc=CURRENT_VIEW->document();
-      QString fileText=doc->text();
-      // Only for C files.
-      if (THIS->isCFile) {
-        QString indent=doc->line(line);
-        // Only if the line was all whitespace, otherwise wait for Enter to be
-        // pressed (prevents annoying the user while typing a string or something).
-        if (indent.contains(QRegExp("^\\s*\\{$"))) {
-          indent=indent.remove('{');
-          QString cursorLine=indent+"\t";
-          doc->startEditing();
-          doc->insertLine(line+1,cursorLine);
-          doc->insertLine(line+2,indent+"}");
-          doc->endEditing();
-          CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line+1,cursorLine.length()));
-        }
+  int line,col;
+  position.position(line,col);
+  if (preferences.autoBlocks && text=="{"
+      && col==view->document()->lineLength(line)-1) {
+    KTextEditor::Document *doc=view->document();
+    // Only for C files.
+    if (THIS->isCFile) {
+      QString indent=doc->line(line);
+      // Only if the line was all whitespace, otherwise wait for Enter to be
+      // pressed (prevents annoying the user while typing a string or something).
+      if (indent.contains(QRegExp("^\\s*\\{$"))) {
+        indent=indent.remove('{');
+        QString cursorLine=indent+"\t";
+        doc->startEditing();
+        doc->insertLine(line+1,cursorLine);
+        doc->insertLine(line+2,indent+"}");
+        doc->endEditing();
+        view->setCursorPosition(KTextEditor::Cursor(line+1,cursorLine.length()));
       }
     }
-    // Completion only operates on C files.
-    if (characters=="(" && THIS->isCFile)
-      new ArgHintPopup(CURRENT_VIEW,THIS->fileName,THIS->mainForm);
   }
+  // Completion only operates on C files.
+  if (text=="(" && THIS->isCFile)
+    new ArgHintPopup(view,THIS->fileName,THIS->mainForm);
 }
 
 void SourceFileWindow::current_view_newLineHook()
@@ -1270,7 +1270,6 @@ void SourceFileWindow::current_view_newLineHook()
   CURRENT_VIEW->cursorPosition().position(line,col);
   KTextEditor::Document *doc=CURRENT_VIEW->document();
   if (preferences.autoBlocks && line && doc->line(line-1).endsWith("{")) {
-    QString fileText=doc->text();
     // Only for C files.
     if (THIS->isCFile) {
       QString indent=doc->line(line-1);

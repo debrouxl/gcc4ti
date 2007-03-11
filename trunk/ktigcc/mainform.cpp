@@ -1813,10 +1813,11 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
     8
   );
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
+  connect(newView,SIGNAL(textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)),
+          this,SLOT(current_view_textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
-  connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->setContextMenu(te_popup);
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
   return newView;
@@ -1906,10 +1907,11 @@ void MainForm::adoptSourceFile(void *srcFile)
     8
   );
   connect(newView,SIGNAL(cursorPositionChanged()),this,SLOT(current_view_cursorPositionChanged()));
+  connect(newView,SIGNAL(textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)),
+          this,SLOT(current_view_textInserted(KTextEditor::View*,const KTextEditor::Cursor&,const QString&)));
   connect(newView->document(),SIGNAL(textChanged()),this,SLOT(current_view_textChanged()));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   connect(newView->document(),SIGNAL(selectionChanged()),this,SLOT(current_view_selectionChanged()));
-  connect(newView->document(),SIGNAL(charactersInteractivelyInserted(int,int,const QString&)),this,SLOT(current_view_charactersInteractivelyInserted(int,int,const QString&)));
   newView->setContextMenu(te_popup);
   // Mark project dirty.
   projectIsDirty=TRUE;
@@ -6015,42 +6017,43 @@ void MainForm::current_view_selectionChanged()
   }
 }
 
-void MainForm::current_view_charactersInteractivelyInserted(int line, int col, const QString &characters)
+void MainForm::current_view_textInserted(KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text)
 {
-  if (CURRENT_VIEW) {
-    if (preferences.autoBlocks && characters=="{"
-        && col==CURRENT_VIEW->document()->lineLength(line)-1) {
-      KTextEditor::Document *doc=CURRENT_VIEW->document();
-      CATEGORY_OF(category,currentListItem);
-      QString fileText=doc->text();
-      // Only for C files.
-      if (category==cFilesListItem||category==qllFilesListItem
-          ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
-        QString indent=doc->line(line);
-        // Only if the line was all whitespace, otherwise wait for Enter to be
-        // pressed (prevents annoying the user while typing a string or something).
-        if (indent.contains(QRegExp("^\\s*\\{$"))) {
-          indent=indent.remove('{');
-          QString cursorLine=indent+"\t";
-          doc->startEditing();
-          doc->insertLine(line+1,cursorLine);
-          doc->insertLine(line+2,indent+"}");
-          doc->endEditing();
-          CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line+1,cursorLine.length()));
-        }
+  int line,col;
+  position.position(line,col);
+  if (preferences.autoBlocks && text=="{"
+      && col==view->document()->lineLength(line)-1) {
+    KTextEditor::Document *doc=view->document();
+    CATEGORY_OF(category,currentListItem);
+    QString firstLine=doc->line(0);
+    // Only for C files.
+    if (category==cFilesListItem||category==qllFilesListItem
+        || (category==hFilesListItem && !firstLine.isEmpty()
+            && firstLine[0]!='|' && firstLine[0]!=';')) {
+      QString indent=doc->line(line);
+      // Only if the line was all whitespace, otherwise wait for Enter to be
+      // pressed (prevents annoying the user while typing a string or something).
+      if (indent.contains(QRegExp("^\\s*\\{$"))) {
+        indent=indent.remove('{');
+        QString cursorLine=indent+"\t";
+        doc->startEditing();
+        doc->insertLine(line+1,cursorLine);
+        doc->insertLine(line+2,indent+"}");
+        doc->endEditing();
+        view->setCursorPosition(KTextEditor::Cursor(line+1,cursorLine.length()));
       }
     }
-    if (IS_FILE(currentListItem)
-        && CURRENT_VIEW==static_cast<ListViewFile *>(currentListItem)->kateView
-        && characters=="(") {
-      QString fileText=CURRENT_VIEW->document()->text();
-      CATEGORY_OF(category,currentListItem);
-      // Completion only operates on C files.
-      if (category==cFilesListItem || category==qllFilesListItem
-          || (category==hFilesListItem && !fileText.isEmpty()
-              && fileText[0]!='|' && fileText[0]!=';')) {
-        new ArgHintPopup(CURRENT_VIEW,pathInProject(currentListItem),this);
-      }
+  }
+  if (IS_FILE(currentListItem)
+      && view==static_cast<ListViewFile *>(currentListItem)->kateView
+      && text=="(") {
+    QString firstLine=view->document()->line(0);
+    CATEGORY_OF(category,currentListItem);
+    // Completion only operates on C files.
+    if (category==cFilesListItem || category==qllFilesListItem
+        || (category==hFilesListItem && !firstLine.isEmpty()
+            && firstLine[0]!='|' && firstLine[0]!=';')) {
+      new ArgHintPopup(view,pathInProject(currentListItem),this);
     }
   }
 }
@@ -6062,10 +6065,11 @@ void MainForm::current_view_newLineHook()
   KTextEditor::Document *doc=CURRENT_VIEW->document();
   if (preferences.autoBlocks && line && doc->line(line-1).endsWith("{")) {
     CATEGORY_OF(category,currentListItem);
-    QString fileText=doc->text();
+    QString firstLine=doc->line(0);
     // Only for C files.
-    if (category==cFilesListItem||category==qllFilesListItem
-        ||(category==hFilesListItem&&(fileText.isNull()||fileText.isEmpty()||(fileText[0]!='|'&&fileText[0]!=';')))) {
+    if (category==cFilesListItem || category==qllFilesListItem
+        || (category==hFilesListItem && !firstLine.isEmpty()
+            && firstLine[0]!='|' && firstLine[0]!=';')) {
       QString indent=doc->line(line-1);
       // Remove everything starting from the first non-whitespace character.
       indent=indent.remove(QRegExp("(?!\\s).*$"));

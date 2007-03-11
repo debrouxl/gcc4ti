@@ -22,6 +22,11 @@
 
 #include "ui_srcfilewin.h"
 
+namespace KTextEditor {
+  class View;
+  class Cursor;
+}
+
 class SourceFileWindow : public QMainWindow, public Ui::SourceFileWindow
 {
     Q_OBJECT
@@ -81,7 +86,7 @@ public slots:
     virtual void current_view_textChanged();
     virtual void current_view_undoChanged();
     virtual void current_view_selectionChanged();
-    virtual void current_view_charactersInteractivelyInserted( int line, int col, const QString & characters );
+    virtual void current_view_textInserted(KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text);
     virtual void clipboard_dataChanged();
     virtual void KDirWatch_dirty( const QString & fileName );
     virtual void completionPopup_closed();

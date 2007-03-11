@@ -24,6 +24,11 @@
 
 #include "tiemu.h"
 
+namespace KTextEditor {
+  class View;
+  class Cursor;
+}
+
 class MainForm : public QMainWindow, public Ui::MainForm
 {
     Q_OBJECT
@@ -143,7 +148,7 @@ public slots:
     virtual void current_view_textChanged();
     virtual void current_view_undoChanged();
     virtual void current_view_selectionChanged();
-    virtual void current_view_charactersInteractivelyInserted( int line, int col, const QString & characters );
+    virtual void current_view_textInserted(KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text);
     virtual void clipboard_dataChanged();
     virtual void fileTreeItemRenamed( Q3ListViewItem * item, const QString & newName, int col );
     virtual void KDirWatch_dirty( const QString & fileName );
