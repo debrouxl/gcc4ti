@@ -226,8 +226,8 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         // better information extracted from the .hsf files. However, .hsf files
         // obviously don't contain line number information.
         if (isSystemHeader) {
-          foreach (CompletionEntry zod, result.entries) {
-            if (zod.text == identifier) {
+          foreach (CompletionEntry entry, result.entries) {
+            if (entry.text == identifier) {
               alreadyKnown=true;
               break;
             }

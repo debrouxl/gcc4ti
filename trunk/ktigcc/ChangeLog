@@ -1,3 +1,361 @@
+2007-03-22 08:06  konrad_m
+
+	* completion.cpp, parsing.cpp, preferences.cpp, preferencesdlg.cpp:
+	  Changed a bunch of for loops into the new Qt4 foreach construct.
+
+2007-03-22 04:06  kevinkofler
+
+	* mainform.cpp: Remove commented out code.
+
+2007-03-22 03:36  konrad_m
+
+	* completion.cpp, completion.h, ktigcc.h, mainform.cpp,
+	  parsing.cpp, preferences.cpp, preferencesdlg.cpp: Updated to use
+	  QList / QLinkedList instead of the old Q3ValueList and Q3PtrList.
+
+2007-03-11 03:21  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Use qt_metacall to invoke the
+	  keyReturn, clearUndo and clearRedo slots which are not in the new
+	  interfaces.
+
+2007-03-11 02:57  kevinkofler
+
+	* mainform.cpp, mainform.h, srcfilewin.cpp, srcfilewin.h: Adapt to
+	  KatePart signal API changes:
+	  * View::cursorPositionChanged now takes a KTextEditor::View* and a
+	  KTextEditor::Cursor&.
+	  * Document::selectionChanged() ->
+	  View::selectionChanged(KTextEditor::View*)
+	  * Document::textChanged now takes a KTextEditor::Document*.
+
+2007-03-11 02:23  kevinkofler
+
+	* mainform.cpp, mainform.h, srcfilewin.cpp, srcfilewin.h: Adapt to
+	  new KatePart signal API: Document::charactersInteractivelyInserted
+	  -> View::textInserted Remove unused fileText in
+	  SourceFileWindow::current_view_textInserted and
+	  SourceFileWindow::current_view_newLineHook.  Use first line instead
+	  of entire fileText to get first character in
+	  MainWindow::current_view_textInserted and
+	  MainWindow::current_view_newLineHook.
+
+2007-03-08 10:27  kevinkofler
+
+	* fedora/ktigcc.spec: Add missing RPM specfile changelog entry.
+
+2007-03-08 10:24  kevinkofler
+
+	* INSTALL, ktigcc.pro, fedora/ktigcc.spec: Fix dist-bz2 target to
+	  include .pro file.  Update RPM specfile and INSTALL instructions.
+
+2007-03-08 09:49  kevinkofler
+
+	* ktigcc.pro: Update rpm target to use versioned tarball. Remove
+	  obsolete TAR_OPTIONS=--wildcards workaround.
+
+2007-03-08 09:47  kevinkofler
+
+	* ktigcc.pro: Rewrite dist-bzip2 so it:
+	  * doesn't compress with gzip first, then decompress and repack with
+	  bzip2,
+	  * compresses directly during the tar step (faster),
+	  * uses cp -p (preserves file timestamps),
+	  * doesn't distribute .pri and .prf files which are part of Qt and
+	  may be platform-dependent,
+	  * doesn't distribute generated .moc/*.cpp and qrc_icons.cpp,
+	  * adds a dash before the version number.
+
+2007-03-08 09:18  kevinkofler
+
+	* ktigcc.pro: Add missing DISTFILES (images/*.png and contents of
+	  mingw/), set VERSION.
+
+2007-03-08 09:09  kevinkofler
+
+	* icons.qrc, mainform.cpp, mainform.ui, srcfilewin.cpp,
+	  srcfilewin.ui, images/00[DEAD], images/00.png, images/01[DEAD],
+	  images/01.png, images/02[DEAD], images/02.png, images/03[DEAD],
+	  images/03.png, images/04[DEAD], images/04.png, images/05[DEAD],
+	  images/05.png, images/06[DEAD], images/06.png, images/07[DEAD],
+	  images/07.png, images/08[DEAD], images/08.png, images/09[DEAD],
+	  images/09.png, images/10[DEAD], images/10.png, images/11[DEAD],
+	  images/11.png, images/12[DEAD], images/12.png, images/13[DEAD],
+	  images/13.png, images/14[DEAD], images/14.png, images/15[DEAD],
+	  images/15.png, images/16[DEAD], images/16.png, images/17[DEAD],
+	  images/17.png, images/18[DEAD], images/18.png, images/19[DEAD],
+	  images/19.png, images/20[DEAD], images/20.png, images/21[DEAD],
+	  images/21.png, images/22[DEAD], images/22.png, images/23[DEAD],
+	  images/23.png, images/24[DEAD], images/24.png, images/25[DEAD],
+	  images/25.png, images/26[DEAD], images/26.png, images/27[DEAD],
+	  images/27.png: Add .png extension to extensionless images.
+
+2007-03-03 21:47  kevinkofler
+
+	* NEWS, programoptions.ui:
+	  * Fixed missing word wrap on the data variable reloc label in
+	  Program Options.
+	  * Fix missing word wrap for another few labels where it got lost
+	  during uic3 conversion.
+
+2007-03-03 21:28  kevinkofler
+
+	* preferencesdlg.ui, projectoptions.ui: Fix "name TabPage is
+	  already used" warnings.
+
+2007-03-03 20:42  kevinkofler
+
+	* preferencesdlg.ui: Revert accidental QTabWidget::currentIndex
+	  change.
+
+2007-03-03 20:42  kevinkofler
+
+	* preferencesdlg.ui: Convert paletteBackgroundColor properties lost
+	  during uic3 conversion to QPalette::Window with
+	  autoFillBackground=true.
+
+2007-03-03 07:09  kevinkofler
+
+	* ktigcc.pro: Attempt to support native MinGW builds: check for
+	  win32 instead of win32-cross-g++ in most places. Handle only
+	  KDEPREFIX differently (try running kde4-config, do not mention
+	  cross-mingw32-ktigcc.sh).
+
+2007-03-03 06:04  kevinkofler
+
+	* ktigcc.pro: Link -lkdewin32 on cross-MinGW builds.
+
+2007-03-03 06:00  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Use SetForegroundWindow instead of
+	  KWin::activateWindow on Win32.
+
+2007-03-03 05:39  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Use setWindowIcon instead of
+	  deprecated setIcon.  Call KWin::setIcons only on X11.
+
+2007-03-03 05:10  kevinkofler
+
+	* completion.cpp, ktigcc.pro, newsdlg.cpp: Test for a subtle
+	  KConfig API change between the official 3.80.3 release and the
+	  snapshot used by the kde-windows developers and fix build with the
+	  changed API.
+
+2007-03-03 04:12  kevinkofler
+
+	* mingw/mkspecs/win32-cross-g++/qmake.conf: Set QMAKE_RCC in
+	  cross-MinGW mkspec so QMake doesn't try to execute rcc.exe.
+
+2007-03-03 03:44  kevinkofler
+
+	* tpr.cpp: Fix MinGW build (no sys/dir.h, mkdir only takes 1
+	  argument).  Use _WIN32 instead of __WIN32__.
+
+2007-03-03 03:35  kevinkofler
+
+	* ktigcc.pro: Fix typo in previous commit (CFLAGS instead of
+	  CXXFLAGS).
+
+2007-03-03 03:34  kevinkofler
+
+	* ktigcc.pro: Define HAVE_STDINT_H on all g++ targets (for the
+	  tilibs).
+
+2007-03-03 03:31  kevinkofler
+
+	* preferences.cpp: Remove unused #include <sys/stat.h> and #include
+	  <sys/dir.h>.
+
+2007-03-03 03:25  kevinkofler
+
+	* ktigcc.pro: Add kdewin32 headers to the include path for
+	  cross-MinGW builds.
+
+2007-03-03 03:12  kevinkofler
+
+	* ktigcc.pro: Hack out hardcoded prefix from the glib2 binary
+	  package's pkg-config file in cross-MinGW builds.
+
+2007-03-03 02:55  kevinkofler
+
+	* ktigcc.pro, mingw/cross-mingw32-ktigcc.sh,
+	  mingw/mkspecs/win32-cross-g++/qmake.conf,
+	  mingw/mkspecs/win32-cross-g++/qplatformdefs.h: Add MinGW
+	  cross-build scripts.  Update ktigcc.pro for cross-MinGW builds.
+
+2007-03-02 02:34  kevinkofler
+
+	* preferences.cpp: Remove <indentation> entry from the syntax
+	  highlighting descriptions because the KDE 3.80.3 KatePart chokes on
+	  it.
+
+2007-03-02 01:31  kevinkofler
+
+	* NEWS: Mention the KDE(4)HOME fix in NEWS.
+
+2007-03-02 01:28  kevinkofler
+
+	* preferences.cpp: Don't hardcode ~/.kde for localkdedir.
+
+2007-03-02 01:12  kevinkofler
+
+	* mainform.cpp: Don't try removing a new file on its first rename.
+
+2007-03-02 01:10  kevinkofler
+
+	* mainform.cpp: Don't try to open the URL for a new file.
+
+2007-03-02 01:05  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Recursively create the directory to
+	  save a file into before saving it.
+
+2007-03-02 01:01  kevinkofler
+
+	* mainform.cpp: Renaming a file now saves it.
+
+2007-03-02 00:29  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp, tpr.cpp, tpr.h: Let the KatePart
+	  save the files. Remove no longer used saveFileText.
+
+2007-03-02 00:10  kevinkofler
+
+	* mainform.cpp, tpr.cpp, tpr.h: Don't load the file text twice,
+	  once by hand and once in the KatePart. Use a faster peekFirstChar in
+	  the external source file case, and just remove the call in the
+	  others.
+
+2007-03-01 23:49  kevinkofler
+
+	* mainform.cpp, srcfile.h, srcfilewin.cpp, srcfilewin.h: Start
+	  moving file handling to the KatePart.
+
+2007-03-01 23:24  kevinkofler
+
+	* mainform.cpp, srcfilewin.cpp: Fix lockup while creating new file
+	  or opening file. Other SET_TEXT_SAFE calls still crash though,
+	  calling setText with a view open doesn't work anymore.
+
+	  Fix crash while opening project (another instance of
+	  emptyQString[0]).
+
+2007-03-01 22:41  kevinkofler
+
+	* mainform.cpp: Remove textBuffer and redundant tests for non-NULL
+	  kateView for editable files.
+
+2007-03-01 22:33  kevinkofler
+
+	* mainform.cpp, preferences.cpp, preferencesdlg.cpp,
+	  preferencesdlg.ui: Remove lazy loading hack.
+
+2007-03-01 22:26  kevinkofler
+
+	* preferencesdlg.cpp, preferencesdlg.ui: Don't prefill the
+	  K3ListView in the .ui file anymore, Qt Designer 4 doesn't support
+	  this.
+
+2007-02-27 20:27  kevinkofler
+
+	* completion.cpp, mainform.cpp, preferences.cpp: Run
+	  remove-qt3-support.pl.
+
+2007-02-27 20:17  kevinkofler
+
+	* mainform.cpp: Remove unused #include <QTextDocument> inserted by
+	  the conversion scripts at a wacky location.
+
+2007-02-27 19:37  kevinkofler
+
+	* completion.cpp: Use QString::split method instead of deprecated
+	  static QStringList::split.
+
+2007-02-27 19:26  kevinkofler
+
+	* mainform.cpp, preferences.cpp, tpr.cpp, tpr.h: Removed unused
+	  Q3CString instanceName; in debugPause and debugReset.  Remove unused
+	  #include <Q3CString> in preferences.cpp.  Use QByteArray instead of
+	  Q3CString in process_settings.  Convert remaining direct libticonv
+	  calls to use TiconvTextCodec.
+
+2007-02-27 19:16  kevinkofler
+
+	* ktigcc.cpp, tpr.cpp, tpr.h: Add QTextCodec subclass wrapping
+	  libticonv, start using it.
+
+2007-02-27 17:45  kevinkofler
+
+	* mainform.cpp, parsing.cpp, preferences.cpp: Use QString::split
+	  method instead of deprecated static QStringList::split.  Don't try
+	  to access QStringList elements which don't exist, as this triggers
+	  an assert in Qt 4.
+
+2007-02-27 16:05  kevinkofler
+
+	* completion.cpp, mainform.cpp, parsing.cpp, preferences.cpp,
+	  preferencesdlg.cpp, tpr.cpp: Make sure a QString is non-empty
+	  before doing [0] on it, Qt 3 used to return QChar::null for
+	  emptyQString[0], Qt 4 now hits an assert.
+
+2007-02-27 15:39  kevinkofler
+
+	* mainform.cpp, mainform.h, srcfilewin.cpp: Port KatePart
+	  setConfigFlags and setTabWidth calls to the CommandInterface.
+
+2007-02-26 14:26  kevinkofler
+
+	* mainform.cpp, mainform.ui, srcfilewin.cpp, srcfilewin.ui: Remove
+	  uses of action groups, also change deprecated fileMenu->changeItem
+	  to fileNewMenu->actionMenu()->setIcon.  Fix preferred size setting.
+	  Use QToolButton::setMenu and QToolButton::setPopupMode instead of
+	  QToolButton::setPopup and QToolButton::setPopupDelay.
+
+2007-02-26 13:15  kevinkofler
+
+	* ktigcc.cpp, mainform.cpp, mainform.h, mainform.ui,
+	  srcfilewin.cpp, srcfilewin.h, srcfilewin.ui: Port Q3MainWindow ->
+	  QMainWindow, Q3ToolBar -> QToolBar, Q3DockWindow -> QDockWidget.
+
+2007-02-26 12:15  kevinkofler
+
+	* colorlistitem.h, completion.cpp, completion.h, errorlist.cpp,
+	  ktigcc.h, mainform.cpp, newsdlg.cpp, parsing.h, preferences.cpp,
+	  preferences.h, preferencesdlg.cpp, projectoptions.cpp,
+	  selectcolors.cpp, srcfilewin.cpp, tpr.cpp, tpr.h: Convert
+	  remaining old-style Qt header #includes and remove no longer used
+	  #include <q3mimefactory.h>.
+
+2007-02-26 11:56  kevinkofler
+
+	* callbacks.cpp, colorlistitem.h, completion.cpp, completion.h,
+	  customstyle.cpp, errorlist.cpp, functions.cpp, ktigcc.cpp,
+	  ktigcc.h, mainform.cpp, newsdlg.cpp, parsing.cpp, parsing.h,
+	  preferences.cpp, preferences.h, preferencesdlg.cpp,
+	  programoptions.cpp, programoutput.cpp, projectoptions.cpp,
+	  selectcolors.cpp, selectstyle.cpp, srcfile.h, srcfilewin.cpp,
+	  toolprops.cpp, toolsdlg.cpp, tpr.cpp, tpr.h, wordlist.cpp: Run
+	  convert-newq4headers.pl.
+
+2007-02-26 10:27  kevinkofler
+
+	* .cvsignore: Add qrc_icons.cpp to .cvsignore.
+
+2007-02-26 10:16  kevinkofler
+
+	* customstyle.ui, errorlist.ui, functions.ui, icons.qrc,
+	  ktigcc.cpp, ktigcc.pro, mainform.cpp, mainform.ui, newsdlg.ui,
+	  preferencesdlg.ui, programoptions.ui, programoutput.ui,
+	  projectoptions.ui, selectcolors.ui, selectstyle.ui,
+	  srcfilewin.cpp, srcfilewin.ui, toolprops.ui, toolsdlg.ui,
+	  wordlist.ui: Switch from image collection to the new Qt 4
+	  resource system.
+
+2007-02-26 09:21  kevinkofler
+
+	* ChangeLog, NEWS, ktigcc.cpp: Bump version to 1.80.
+
 2007-02-26 09:13  kevinkofler
 
 	* ktigcc.cpp: Use QSettings instead of hack to set Qt Assistant

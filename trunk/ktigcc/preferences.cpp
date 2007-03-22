@@ -383,8 +383,8 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   DEF_ITEM_DATA("Number",synprefs.numberColor,synprefs.numberStyle);
   DEF_ITEM_DATA("Symbol",synprefs.symbolColor,synprefs.symbolStyle);
   unsigned i=0;
-  foreach (QColor zod, synprefs.parenthesisColors)
-    DEF_ITEM_DATA(QString("Paren%1").arg(i++),zod,synprefs.parenthesisStyle);
+  foreach (QColor color, synprefs.parenthesisColors)
+    DEF_ITEM_DATA(QString("Paren%1").arg(i++),color,synprefs.parenthesisStyle);
   foreach (Syn_CustomStyle customStyle, synprefs.customStyles)
     DEF_ITEM_DATA(customStyle.name,customStyle.color,customStyle.style);
   foreach (Syn_WordList wordList, synprefs.wordLists)
@@ -535,8 +535,8 @@ static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QStri
   pconfig->writeEntry("Number Color",synprefs.numberColor);
   pconfig->writeEntry("Symbol Color",synprefs.symbolColor);
   i=0;
-  foreach (QColor zod, synprefs.parenthesisColors)
-    pconfig->writeEntry(QString("Parenthesis Color %1").arg(i++),zod);
+  foreach (QColor color, synprefs.parenthesisColors)
+    pconfig->writeEntry(QString("Parenthesis Color %1").arg(i++),color);
   pconfig->writeEntry("Num Parenthesis Colors",i);
   pconfig->writeEntry("Number Style",(unsigned)synprefs.numberStyle);
   pconfig->writeEntry("Symbol Style",(unsigned)synprefs.symbolStyle);

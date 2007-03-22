@@ -136,7 +136,7 @@ bool findSymbolInFile(const QString &symbol,
 static void mergeCompletionEntries(QLinkedList<CompletionEntry> &dest,
                                    const QLinkedList<CompletionEntry> &src)
 {
-  foreach (CompletionEntry zod, src) dest.append(zod);
+  foreach (CompletionEntry entry, src) dest.append(entry);
 }
 
 static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
@@ -543,8 +543,9 @@ TemplatePopup::TemplatePopup(KTextEditor::View *parent)
   for (QLinkedList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
        it!=preferences.templates.end(); ++it, i++)
     insertItem((*it).first,i);
-//  foreach ((QPair<QString,QString>)zod, preferences.templates) //FIXME: Kevin, I want to do
-//    insertItem(zod.first, i++);                                // this instead, but I get errors
+  typedef const QPair<QString,QString> &StringPairConstRef;
+  foreach (StringPairConstRef pair, preferences.templates)
+    insertItem(pair.first, i++);
   QPoint pos=parent->cursorPositionCoordinates();
   if (pos.x()<0 || pos.y()<0) {
     // Cursor outside of the view, so center on view instead.
