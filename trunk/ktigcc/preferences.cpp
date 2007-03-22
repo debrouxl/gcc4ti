@@ -101,11 +101,8 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     (node).appendChild(child)
 
   bool allWordListsCaseInsensitive=TRUE;
-  for (QLinkedList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
-       it!=synprefs.wordLists.end(); ++it) {
-    const Syn_WordList &wordList=*it;
+  foreach (Syn_WordList wordList, synprefs.wordLists)
     if (wordList.caseSensitive) allWordListsCaseInsensitive=FALSE;
-  }
 
   ADD_ATTR(root,"name","TIGCC "+name);
   ADD_ATTR(root,"section","KTIGCC");
@@ -140,9 +137,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
           stringList.append(keyword);
       }
     }
-    for (QStringList::ConstIterator it=stringList.begin(); it!=stringList.end();
-         ++it) {
-      const QString &keyword=*it;
+	foreach (QString keyword, stringList) {
       CHILD_NODE(item,list,"item");
       ADD_TEXT(item,keyword);
     }
@@ -153,9 +148,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   ADD_ATTR(defaultContext,"name","Default");
   ADD_ATTR(defaultContext,"attribute","Normal");
   ADD_ATTR(defaultContext,"lineEndContext","#stay");
-  for (QLinkedList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
-       it!=synprefs.customStyles.end(); ++it) {
-    const Syn_CustomStyle &customStyle=*it;
+  foreach (Syn_CustomStyle customStyle, synprefs.customStyles) {
     switch (customStyle.beginning.length()) {
       case 0: // Ignore these ones altogether.
         break;
@@ -192,9 +185,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
         break;
     }
   }
-  for (QLinkedList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
-       it!=synprefs.wordLists.end(); ++it) {
-    const Syn_WordList &wordList=*it;
+  foreach (Syn_WordList wordList, synprefs.wordLists) {
     CHILD_NODE(detectWordList,defaultContext,"keyword");
     ADD_ATTR(detectWordList,"attribute",wordList.name);
     ADD_ATTR(detectWordList,"context","#stay");
@@ -392,20 +383,12 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   DEF_ITEM_DATA("Number",synprefs.numberColor,synprefs.numberStyle);
   DEF_ITEM_DATA("Symbol",synprefs.symbolColor,synprefs.symbolStyle);
   unsigned i=0;
-  for (QLinkedList<QColor>::ConstIterator it=synprefs.parenthesisColors.begin();
-       it!=synprefs.parenthesisColors.end(); ++it, i++) {
-    DEF_ITEM_DATA(QString("Paren%1").arg(i),*it,synprefs.parenthesisStyle);
-  }
-  for (QLinkedList<Syn_CustomStyle>::ConstIterator it=synprefs.customStyles.begin();
-       it!=synprefs.customStyles.end(); ++it) {
-    const Syn_CustomStyle &customStyle=*it;
+  foreach (QColor zod, synprefs.parenthesisColors)
+    DEF_ITEM_DATA(QString("Paren%1").arg(i++),zod,synprefs.parenthesisStyle);
+  foreach (Syn_CustomStyle customStyle, synprefs.customStyles)
     DEF_ITEM_DATA(customStyle.name,customStyle.color,customStyle.style);
-  }
-  for (QLinkedList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
-       it!=synprefs.wordLists.end(); ++it) {
-    const Syn_WordList &wordList=*it;
+  foreach (Syn_WordList wordList, synprefs.wordLists)
     DEF_ITEM_DATA(wordList.name,wordList.color,wordList.style);
-  }
   #undef DEF_ITEM_DATA
 
   CHILD_NODE(keywords,general,"keywords");
@@ -551,17 +534,15 @@ static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QStri
   pconfig->writeEntry("Enabled",synprefs.enabled);
   pconfig->writeEntry("Number Color",synprefs.numberColor);
   pconfig->writeEntry("Symbol Color",synprefs.symbolColor);
-  for (QLinkedList<QColor>::ConstIterator it=(i=0,synprefs.parenthesisColors.begin());
-       it!=synprefs.parenthesisColors.end(); ++it, i++) {
-    pconfig->writeEntry(QString("Parenthesis Color %1").arg(i),*it);
-  }
+  i=0;
+  foreach (QColor zod, synprefs.parenthesisColors)
+    pconfig->writeEntry(QString("Parenthesis Color %1").arg(i++),zod);
   pconfig->writeEntry("Num Parenthesis Colors",i);
   pconfig->writeEntry("Number Style",(unsigned)synprefs.numberStyle);
   pconfig->writeEntry("Symbol Style",(unsigned)synprefs.symbolStyle);
   pconfig->writeEntry("Parenthesis Style",(unsigned)synprefs.parenthesisStyle);
-  for (QLinkedList<Syn_CustomStyle>::ConstIterator it=(i=0,synprefs.customStyles.begin());
-       it!=synprefs.customStyles.end(); ++it, i++) {
-    const Syn_CustomStyle &customStyle=*it;
+  i=0;
+  foreach (Syn_CustomStyle customStyle, synprefs.customStyles) {
     pconfig->writeEntry(QString("Custom Style %1 Name").arg(i),customStyle.name);
     pconfig->writeEntry(QString("Custom Style %1 Beginning").arg(i),customStyle.beginning);
     pconfig->writeEntry(QString("Custom Style %1 Ending").arg(i),customStyle.ending);
@@ -569,17 +550,16 @@ static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QStri
     pconfig->writeEntry(QString("Custom Style %1 Switchable").arg(i),customStyle.switchable);
     pconfig->writeEntry(QString("Custom Style %1 Line Start Only").arg(i),customStyle.lineStartOnly);
     pconfig->writeEntry(QString("Custom Style %1 Color").arg(i),customStyle.color);
-    pconfig->writeEntry(QString("Custom Style %1 Style").arg(i),(unsigned)customStyle.style);
+    pconfig->writeEntry(QString("Custom Style %1 Style").arg(i++),(unsigned)customStyle.style);
   }
   pconfig->writeEntry("Num Custom Styles",i);
-  for (QLinkedList<Syn_WordList>::ConstIterator it=(i=0,synprefs.wordLists.begin());
-       it!=synprefs.wordLists.end(); ++it, i++) {
-    const Syn_WordList &wordList=*it;
+  i=0;
+  foreach (Syn_WordList wordList, synprefs.wordLists) {
     pconfig->writeEntry(QString("Word List %1 Name").arg(i),wordList.name);
     pconfig->writeEntry(QString("Word List %1 List").arg(i),wordList.list);
     pconfig->writeEntry(QString("Word List %1 Color").arg(i),wordList.color);
     pconfig->writeEntry(QString("Word List %1 Style").arg(i),(unsigned)wordList.style);
-    pconfig->writeEntry(QString("Word List %1 Case Sensitive").arg(i),wordList.caseSensitive);
+    pconfig->writeEntry(QString("Word List %1 Case Sensitive").arg(i++),wordList.caseSensitive);
   }
   pconfig->writeEntry("Num Word Lists",i);
 }

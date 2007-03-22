@@ -60,9 +60,7 @@ static void findSymbolInSystemHeaders(const QString &symbol,
                                       unsigned &symbolLine,
                                       bool &systemHeader)
 {
-  for (QStringList::ConstIterator it=systemHeaders.begin();
-       it!=systemHeaders.end(); ++it) {
-    const QString &headerName=*it;
+  foreach (QString headerName, systemHeaders) {
     // Avoid infinite recursion.
     if (systemHeaderCompletion.contains(headerName)
         && !systemHeaderCompletion[headerName].searched) {
@@ -108,9 +106,7 @@ static bool findSymbolInFileRecursive(const QString &symbol,
     symbolLine=completionInfo.lineNumbers[symbol];
     return true;
   }
-  for (QStringList::ConstIterator it=completionInfo.included.begin();
-       it!=completionInfo.included.end(); ++it) {
-    const QString &headerName=*it;
+  foreach (QString headerName, completionInfo.included) {
     QString headerText=mainForm->textForHeader(headerName);
     if (!headerText.isNull()) {
       if (!findSymbolInFile(symbol,headerText,headerName,mainForm,symbolFile,
@@ -140,17 +136,13 @@ bool findSymbolInFile(const QString &symbol,
 static void mergeCompletionEntries(QLinkedList<CompletionEntry> &dest,
                                    const QLinkedList<CompletionEntry> &src)
 {
-  for (QLinkedList<CompletionEntry>::ConstIterator it=src.begin();
-       it!=src.end(); ++it)
-    dest.append(*it);
+  foreach (CompletionEntry zod, src) dest.append(zod);
 }
 
 static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
                                               QLinkedList<CompletionEntry> &result)
 {
-  for (QStringList::ConstIterator it=systemHeaders.begin();
-       it!=systemHeaders.end(); ++it) {
-    const QString &headerName=*it;
+  foreach (QString headerName, systemHeaders) {
     // Avoid infinite recursion.
     if (systemHeaderCompletion.contains(headerName)
         && !systemHeaderCompletion[headerName].searched) {
@@ -180,9 +172,7 @@ static bool completionEntriesForFileRecursive(const QString &fileText,
   completionInfo.searched=true;
   mergeCompletionEntries(result,completionInfo.entries);
   completionEntriesForSystemHeaders(completionInfo.includedSystem,result);
-  for (QStringList::ConstIterator it=completionInfo.included.begin();
-       it!=completionInfo.included.end(); ++it) {
-    const QString &headerName=*it;
+  foreach (QString headerName, completionInfo.included) {
     QString headerText=mainForm->textForHeader(headerName);
     if (!headerText.isNull())
       if (!completionEntriesForFile(headerText,headerName,mainForm,result))
@@ -204,12 +194,10 @@ static QLinkedList<CompletionEntry> sortCompletionEntries(
   const QLinkedList<CompletionEntry> &entries)
 {
   QMap<QString,QLinkedList<CompletionEntry> > map;
-  for (QLinkedList<CompletionEntry>::ConstIterator it=entries.begin();
-       it!=entries.end(); ++it) {
-    const CompletionEntry &entry=*it;
+  foreach (CompletionEntry entry, entries) {
     QLinkedList<CompletionEntry> &list=map[entry.text];
-    if (list.find(entry)==list.end()) list.append(entry);  // TODO QLinkedList::find()
-  }                                                        // doesn't exist AFAICS
+    if (!list.contains(entry)) list.append(entry);
+  }
   QLinkedList<CompletionEntry> result;
   for (QMap<QString,QLinkedList<CompletionEntry> >::ConstIterator
        it=map.begin(); it!=map.end(); ++it)
@@ -268,9 +256,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
                                           "volatile\n"
                                           "while\n").split('\n',QString::SkipEmptyParts);
   if (!reservedIdentifiers.contains(identifier)) {
-    for (QLinkedList<CompletionEntry>::ConstIterator it=entries.begin();
-         it!=entries.end(); ++it) {
-      const CompletionEntry &entry=*it;
+    foreach (CompletionEntry entry, entries) {
       if (entry.text==identifier) {
         QString prototype=entry.prefix+' '+entry.text+entry.postfix;
         if (result.find(prototype)==result.end()) result.append(prototype);
@@ -282,9 +268,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
       if (identifierLength>=4) {
         QString identifierUpper=identifier.toUpper();
         QLinkedList<unsigned> distances;
-        for (QLinkedList<CompletionEntry>::ConstIterator it=entries.begin();
-             it!=entries.end(); ++it) {
-          const CompletionEntry &entry=*it;
+        foreach (CompletionEntry entry, entries) {
           QString entryText=entry.text;
           unsigned entryTextLength=entryText.length();
           unsigned minLength=qMin(identifierLength,entryTextLength);
@@ -314,14 +298,12 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
 {
   QDir qdir(directory);
   QStringList headers=qdir.entryList("*.h",QDir::Dirs);
-  for (QStringList::ConstIterator it=headers.begin(); it!=headers.end(); ++it) {
-    const QString &header=*it;
+  foreach (QString header, headers) {
     CompletionInfo &completionInfo=sysHdrCompletion[header];
     QLinkedList<CompletionEntry> &entries=completionInfo.entries;
     QDir hdrQdir(QFileInfo(qdir,header).filePath());
     QStringList hsfs=hdrQdir.entryList("*.hsf *.ref",QDir::Files);
-    for (QStringList::ConstIterator it=hsfs.begin(); it!=hsfs.end(); ++it) {
-      const QString &hsf=*it;
+	foreach (QString hsf, hsfs) {
       QString fileText=loadFileText(QFileInfo(hdrQdir,hsf).filePath());
       if (fileText.isNull()) {
         KMessageBox::error(parent,QString("Can't open \'%1/%2\'.").arg(header)
@@ -342,16 +324,14 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
       }
       CompletionEntry entry;
       QStringList lines=fileText.split('\n');
-      for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
-        const QString &line=*it;
+      foreach (QString line, lines) {
         if (line.startsWith("Name=")) {
           entry.text=line.mid(5);
           break;
         }
       }
       bool isType=false;
-      for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
-        const QString &line=*it;
+      foreach (QString line, lines) {
         if (line.startsWith("Type=")) {
           QString hsfType=line.mid(5);
           if (hsfType=="Type") isType=true;
@@ -365,8 +345,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
       QRegExp comments("/\\*.*\\*/");
       comments.setMinimal(true);
       QString definition;
-      for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
-        const QString &line=*it;
+      foreach (QString line, lines) {
         if (line.startsWith("Definition=")) {
           definition=line.mid(11);
           definition.remove(comments);
@@ -466,8 +445,7 @@ bool parseSystemHeaders(QWidget *parent, const QString &directory,
 {
   QDir qdir(directory);
   QStringList headers=qdir.entryList("*.h",QDir::Files);
-  for (QStringList::ConstIterator it=headers.begin(); it!=headers.end(); ++it) {
-    const QString &header=*it;
+  foreach (QString header, headers) {
     QString fileText=loadFileText(QFileInfo(qdir,header).filePath());
     if (fileText.isNull()) {
       KMessageBox::error(parent,QString("Can't open \'%1\'.").arg(header));
@@ -502,8 +480,7 @@ void loadSystemHeaderCompletion(void)
       KMessageBox::Notify|KMessageBox::AllowLink);
   }
   systemHeaderCompletion.clear();
-  for (QStringList::ConstIterator it=groupList.begin(); it!=groupList.end(); ++it) {
-    const QString &key=*it;
+  foreach (QString key, groupList) {
     if (key.endsWith(" Lines")) continue;
     CompletionInfo completionInfo;
     config.setGroup(key);
@@ -541,10 +518,7 @@ void saveSystemHeaderCompletion(void)
     config.setGroup(key);
     config.writeEntry("Included",completionInfo.includedSystem);
     unsigned i=0;
-    for (QLinkedList<CompletionEntry>::ConstIterator it
-         =completionInfo.entries.begin(); it!=completionInfo.entries.end();
-         ++it, i++) {
-      const CompletionEntry &entry=*it;
+	foreach (CompletionEntry entry, completionInfo.entries) {
       config.writeEntry(QString("Entry %1 Type").arg(i),entry.type);
       config.writeEntry(QString("Entry %1 Text").arg(i),entry.text);
       config.writeEntry(QString("Entry %1 Prefix").arg(i),entry.prefix);
@@ -569,6 +543,8 @@ TemplatePopup::TemplatePopup(KTextEditor::View *parent)
   for (QLinkedList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
        it!=preferences.templates.end(); ++it, i++)
     insertItem((*it).first,i);
+//  foreach ((QPair<QString,QString>)zod, preferences.templates) //FIXME: Kevin, I want to do
+//    insertItem(zod.first, i++);                                // this instead, but I get errors
   QPoint pos=parent->cursorPositionCoordinates();
   if (pos.x()<0 || pos.y()<0) {
     // Cursor outside of the view, so center on view instead.

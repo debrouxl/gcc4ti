@@ -104,8 +104,7 @@ SourceFileFunctions getASMFunctions(const QString &text)
   QStringList lines=text.split('\n');
   unsigned lineno=0;
   SourceFileFunctions result;
-  for (QStringList::Iterator it=lines.begin(); it!=lines.end(); ++it,++lineno) {
-    QString line=*it;
+  foreach (QString line, lines) {
     if (line.isEmpty()) continue;
     QString identifier;
     unsigned col=0, l=line.length();
@@ -130,8 +129,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
   QStringList lines=fileText.split('\n',QString::SkipEmptyParts);
   bool inComment=false;
   bool isSystemHeader=pathInProject.isNull();
-  for (QStringList::ConstIterator it=lines.begin(); it!=lines.end(); ++it) {
-    const QString &line=(*it);
+  foreach (QString line, lines) {
     if (!inComment) {
       QString strippedLine=line.trimmed();
       if (strippedLine.startsWith("#include")) {
@@ -228,9 +226,8 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         // better information extracted from the .hsf files. However, .hsf files
         // obviously don't contain line number information.
         if (isSystemHeader) {
-          for (QLinkedList<CompletionEntry>::ConstIterator it
-               =result.entries.begin(); it!=result.entries.end(); ++it) {
-            if ((*it).text==identifier) {
+          foreach (CompletionEntry zod, result.entries) {
+            if (zod.text == identifier) {
               alreadyKnown=true;
               break;
             }
