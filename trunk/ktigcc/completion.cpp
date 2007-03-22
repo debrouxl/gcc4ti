@@ -540,9 +540,6 @@ TemplatePopup::TemplatePopup(KTextEditor::View *parent)
 {
   connect(this,SIGNAL(activated(int)),this,SLOT(QPopupMenu_activated(int)));
   unsigned i=0;
-  for (QLinkedList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
-       it!=preferences.templates.end(); ++it, i++)
-    insertItem((*it).first,i);
   typedef const QPair<QString,QString> &StringPairConstRef;
   foreach (StringPairConstRef pair, preferences.templates)
     insertItem(pair.first, i++);
