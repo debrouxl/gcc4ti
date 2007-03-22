@@ -2,6 +2,7 @@
    ktigcc - TIGCC IDE for KDE
 
    Copyright (C) 2006-2007 Kevin Kofler
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,7 +31,7 @@
 #include <QApplication>
 #include <QEventLoop>
 #include <QDir>
-#include <Q3ValueList>
+#include <QLinkedList>
 #include <kprocio.h>
 #include <kmessagebox.h>
 #include <unistd.h>
@@ -227,7 +228,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
         // better information extracted from the .hsf files. However, .hsf files
         // obviously don't contain line number information.
         if (isSystemHeader) {
-          for (Q3ValueList<CompletionEntry>::ConstIterator it
+          for (QLinkedList<CompletionEntry>::ConstIterator it
                =result.entries.begin(); it!=result.entries.end(); ++it) {
             if ((*it).text==identifier) {
               alreadyKnown=true;

@@ -3,6 +3,7 @@
 
    Copyright (C) 2004-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,7 +23,7 @@
 #pragma once
 
 #include <cstddef>
-#include <Q3PtrList>
+#include <QList>
 #include <kconfig.h>
 #include <kaboutdata.h>
 #include <QString>
@@ -50,7 +51,7 @@ extern const char *parg;
 extern QAssistantClient *assistant;
 extern QClipboard *clipboard;
 extern QStringList findHistory, replacementHistory;
-extern Q3PtrList<SourceFile> sourceFiles;
+extern QList<SourceFile *> sourceFiles;
 extern tprSettings settings;
 extern tprLibOpts libopts;
 

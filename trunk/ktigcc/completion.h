@@ -2,6 +2,7 @@
    ktigcc - TIGCC IDE for KDE
 
    Copyright (C) 2006-2007 Kevin Kofler
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,6 +27,7 @@
 #include <QString>
 #include <QStringList>
 #include <Q3ValueList>
+#include <QLinkedList>
 #include <QEvent>
 #include <ktexteditor/view.h>
 
@@ -56,7 +58,7 @@ struct CompletionInfo {
   QStringList includedSystem;
   QStringList included;
   QMap<QString,unsigned> lineNumbers;
-  Q3ValueList<CompletionEntry> entries;
+  QLinkedList<CompletionEntry> entries;
 };
 
 // Maps file name to a CompletionInfo.
@@ -73,7 +75,7 @@ bool findSymbolInFile(const QString &symbol,
 bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
-                              Q3ValueList<CompletionEntry> &result);
+                              QLinkedList<CompletionEntry> &result);
 
 class QWidget;
 bool parseHelpSources(QWidget *parent, const QString &directory,

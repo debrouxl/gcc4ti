@@ -2,6 +2,7 @@
    ktigcc - TIGCC IDE for KDE
 
    Copyright (C) 2006-2007 Kevin Kofler
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,7 +30,7 @@
 #include <QRadioButton>
 #include <Q3Accel>
 #include <QColor>
-#include <Q3ValueList>
+#include <QLinkedList>
 #include <QApplication>
 #include <QEventLoop>
 #include <QCursor>
@@ -208,7 +209,7 @@ void Preferences::init()
 
   // Coding
   templateListBox->clear();
-  for (Q3ValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
+  for (QLinkedList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
        it!=preferences.templates.end(); ++it)
     new ListBoxTextPair(templateListBox,(*it).first,(*it).second);
   templateListBox->sort();
@@ -317,7 +318,7 @@ void Preferences::syntaxLanguage_activated(int index)
     delete item;
   }
   item=static_cast<Q3ListViewItem *>(NULL);
-  for (Q3ValueList<Syn_CustomStyle>::ConstIterator it=
+  for (QLinkedList<Syn_CustomStyle>::ConstIterator it=
          preferences.syn->customStyles.begin();
        it!=preferences.syn->customStyles.end(); ++it) {
     item=new RenamableKListViewItem(customStylesItem,item,(*it).name);
@@ -328,7 +329,7 @@ void Preferences::syntaxLanguage_activated(int index)
     delete item;
   }  
   item=static_cast<Q3ListViewItem *>(NULL);
-  for (Q3ValueList<Syn_WordList>::ConstIterator it=
+  for (QLinkedList<Syn_WordList>::ConstIterator it=
          preferences.syn->wordLists.begin();
        it!=preferences.syn->wordLists.end(); ++it) {
     item=new RenamableKListViewItem(wordListsItem,item,(*it).name);
@@ -422,7 +423,7 @@ void Preferences::parenthesisColorsButton_clicked()
 {
   SelectColors selectColors(this);
   selectColors.colorList->clear();
-  for (Q3ValueList<QColor>::ConstIterator it=preferences.syn->parenthesisColors.begin();
+  for (QLinkedList<QColor>::ConstIterator it=preferences.syn->parenthesisColors.begin();
        it!=preferences.syn->parenthesisColors.end(); ++it)
     new ColorListItem(selectColors.colorList,*it);
   selectColors.exec();
@@ -473,7 +474,7 @@ void Preferences::syntaxListView_itemRenamed(Q3ListViewItem *item, const QString
   Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
   if (item->parent()==customStylesItem) {
     Q3ListViewItem *i;
-    Q3ValueList<Syn_CustomStyle>::Iterator it;
+    QLinkedList<Syn_CustomStyle>::Iterator it;
     for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
          i!=item && it!=preferences.syn->customStyles.end() && i;
          ++it, i=i->nextSibling());
@@ -483,7 +484,7 @@ void Preferences::syntaxListView_itemRenamed(Q3ListViewItem *item, const QString
       (*it).name=str;
   } else if (item->parent()==wordListsItem) {
     Q3ListViewItem *i;
-    Q3ValueList<Syn_WordList>::Iterator it;
+    QLinkedList<Syn_WordList>::Iterator it;
     for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
          i!=item && it!=preferences.syn->wordLists.end() && i;
          ++it, i=i->nextSibling());
@@ -504,7 +505,7 @@ void Preferences::syntaxListViewAccel_activated(int id)
       Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
       if (currentItem->parent()==customStylesItem) {
         Q3ListViewItem *i;
-        Q3ValueList<Syn_CustomStyle>::Iterator it;
+        QLinkedList<Syn_CustomStyle>::Iterator it;
         for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
              i!=currentItem && it!=preferences.syn->customStyles.end() && i;
              ++it, i=i->nextSibling());
@@ -516,7 +517,7 @@ void Preferences::syntaxListViewAccel_activated(int id)
         }
       } else if (currentItem->parent()==wordListsItem) {
         Q3ListViewItem *i;
-        Q3ValueList<Syn_WordList>::Iterator it;
+        QLinkedList<Syn_WordList>::Iterator it;
         for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
              i!=currentItem && it!=preferences.syn->wordLists.end() && i;
              ++it, i=i->nextSibling());
@@ -575,7 +576,7 @@ void Preferences::editButton_clicked()
     Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
     if (currentItem->parent()==customStylesItem) {
       Q3ListViewItem *i;
-      Q3ValueList<Syn_CustomStyle>::Iterator it;
+      QLinkedList<Syn_CustomStyle>::Iterator it;
       for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
            i!=currentItem && it!=preferences.syn->customStyles.end() && i;
            ++it, i=i->nextSibling());
@@ -612,7 +613,7 @@ void Preferences::editButton_clicked()
       }
     } else if (currentItem->parent()==wordListsItem) {
       Q3ListViewItem *i;
-      Q3ValueList<Syn_WordList>::Iterator it;
+      QLinkedList<Syn_WordList>::Iterator it;
       for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
            i!=currentItem && it!=preferences.syn->wordLists.end() && i;
            ++it, i=i->nextSibling());

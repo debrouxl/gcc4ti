@@ -2,6 +2,7 @@
    ktigcc - TIGCC IDE for KDE
 
    Copyright (C) 2006-2007 Kevin Kofler
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,7 +20,7 @@
 */
 
 #include <QString>
-#include <Q3ValueList>
+#include <QLinkedList>
 #include <QPair>
 #include <QPoint>
 #include <QRegExp>
@@ -136,16 +137,16 @@ bool findSymbolInFile(const QString &symbol,
                                    symbolLine,systemHeader);
 }
 
-static void mergeCompletionEntries(Q3ValueList<CompletionEntry> &dest,
-                                   const Q3ValueList<CompletionEntry> &src)
+static void mergeCompletionEntries(QLinkedList<CompletionEntry> &dest,
+                                   const QLinkedList<CompletionEntry> &src)
 {
-  for (Q3ValueList<CompletionEntry>::ConstIterator it=src.begin();
+  for (QLinkedList<CompletionEntry>::ConstIterator it=src.begin();
        it!=src.end(); ++it)
     dest.append(*it);
 }
 
 static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
-                                              Q3ValueList<CompletionEntry> &result)
+                                              QLinkedList<CompletionEntry> &result)
 {
   for (QStringList::ConstIterator it=systemHeaders.begin();
        it!=systemHeaders.end(); ++it) {
@@ -164,7 +165,7 @@ static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
 static bool completionEntriesForFileRecursive(const QString &fileText,
                                               const QString &fileName,
                                               MainForm *mainForm,
-                                              Q3ValueList<CompletionEntry> &result)
+                                              QLinkedList<CompletionEntry> &result)
 {
   if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
     QFileInfo fileInfo(fileName);
@@ -193,31 +194,31 @@ static bool completionEntriesForFileRecursive(const QString &fileText,
 bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
-                              Q3ValueList<CompletionEntry> &result)
+                              QLinkedList<CompletionEntry> &result)
 {
   resetSearchedFlags();
   return completionEntriesForFileRecursive(fileText,fileName,mainForm,result);
 }
 
-static Q3ValueList<CompletionEntry> sortCompletionEntries(
-  const Q3ValueList<CompletionEntry> &entries)
+static QLinkedList<CompletionEntry> sortCompletionEntries(
+  const QLinkedList<CompletionEntry> &entries)
 {
-  QMap<QString,Q3ValueList<CompletionEntry> > map;
-  for (Q3ValueList<CompletionEntry>::ConstIterator it=entries.begin();
+  QMap<QString,QLinkedList<CompletionEntry> > map;
+  for (QLinkedList<CompletionEntry>::ConstIterator it=entries.begin();
        it!=entries.end(); ++it) {
     const CompletionEntry &entry=*it;
-    Q3ValueList<CompletionEntry> &list=map[entry.text];
-    if (list.find(entry)==list.end()) list.append(entry);
-  }
-  Q3ValueList<CompletionEntry> result;
-  for (QMap<QString,Q3ValueList<CompletionEntry> >::ConstIterator
+    QLinkedList<CompletionEntry> &list=map[entry.text];
+    if (list.find(entry)==list.end()) list.append(entry);  // TODO QLinkedList::find()
+  }                                                        // doesn't exist AFAICS
+  QLinkedList<CompletionEntry> result;
+  for (QMap<QString,QLinkedList<CompletionEntry> >::ConstIterator
        it=map.begin(); it!=map.end(); ++it)
     mergeCompletionEntries(result,*it);
   return result;
 }
 
 static QStringList prototypesForIdentifier(const QString &identifier,
-  const Q3ValueList<CompletionEntry> &entries)
+  const QLinkedList<CompletionEntry> &entries)
 {
   QStringList result;
   QStringList reservedIdentifiers=QString("__alignof__\n"
@@ -267,7 +268,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
                                           "volatile\n"
                                           "while\n").split('\n',QString::SkipEmptyParts);
   if (!reservedIdentifiers.contains(identifier)) {
-    for (Q3ValueList<CompletionEntry>::ConstIterator it=entries.begin();
+    for (QLinkedList<CompletionEntry>::ConstIterator it=entries.begin();
          it!=entries.end(); ++it) {
       const CompletionEntry &entry=*it;
       if (entry.text==identifier) {
@@ -280,8 +281,8 @@ static QStringList prototypesForIdentifier(const QString &identifier,
       unsigned identifierLength=identifier.length();
       if (identifierLength>=4) {
         QString identifierUpper=identifier.toUpper();
-        Q3ValueList<unsigned> distances;
-        for (Q3ValueList<CompletionEntry>::ConstIterator it=entries.begin();
+        QLinkedList<unsigned> distances;
+        for (QLinkedList<CompletionEntry>::ConstIterator it=entries.begin();
              it!=entries.end(); ++it) {
           const CompletionEntry &entry=*it;
           QString entryText=entry.text;
@@ -295,7 +296,7 @@ static QStringList prototypesForIdentifier(const QString &identifier,
             if (result.find(prototype)==result.end()) {
               // Sort by similarity. Smaller distances first.
               QStringList::Iterator it1=result.begin();
-              Q3ValueList<unsigned>::Iterator it2=distances.begin();
+              QLinkedList<unsigned>::Iterator it2=distances.begin();
               for (; it2!=distances.end() && *it2<=distance; ++it1,++it2);
               result.insert(it1,prototype);
               distances.insert(it2,distance);
@@ -316,7 +317,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
   for (QStringList::ConstIterator it=headers.begin(); it!=headers.end(); ++it) {
     const QString &header=*it;
     CompletionInfo &completionInfo=sysHdrCompletion[header];
-    Q3ValueList<CompletionEntry> &entries=completionInfo.entries;
+    QLinkedList<CompletionEntry> &entries=completionInfo.entries;
     QDir hdrQdir(QFileInfo(qdir,header).filePath());
     QStringList hsfs=hdrQdir.entryList("*.hsf *.ref",QDir::Files);
     for (QStringList::ConstIterator it=hsfs.begin(); it!=hsfs.end(); ++it) {
@@ -540,7 +541,7 @@ void saveSystemHeaderCompletion(void)
     config.setGroup(key);
     config.writeEntry("Included",completionInfo.includedSystem);
     unsigned i=0;
-    for (Q3ValueList<CompletionEntry>::ConstIterator it
+    for (QLinkedList<CompletionEntry>::ConstIterator it
          =completionInfo.entries.begin(); it!=completionInfo.entries.end();
          ++it, i++) {
       const CompletionEntry &entry=*it;
@@ -565,7 +566,7 @@ TemplatePopup::TemplatePopup(KTextEditor::View *parent)
 {
   connect(this,SIGNAL(activated(int)),this,SLOT(QPopupMenu_activated(int)));
   unsigned i=0;
-  for (Q3ValueList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
+  for (QLinkedList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
        it!=preferences.templates.end(); ++it, i++)
     insertItem((*it).first,i);
   QPoint pos=parent->cursorPositionCoordinates();
@@ -608,7 +609,7 @@ CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileN
   : QObject(parent), done(false), completionPopup(0)
 {
   connect(this,SIGNAL(closed()),receiver,SLOT(completionPopup_closed()));
-  Q3ValueList<CompletionEntry> entries;
+  QLinkedList<CompletionEntry> entries;
   if (!completionEntriesForFile(parent->document()->text(),fileName,mainForm,
                                 entries)) {
     emit closed();
@@ -674,7 +675,7 @@ ArgHintPopup::ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
                            MainForm *mainForm)
   : QObject(parent), done(false), argHintPopup(0)
 {
-  Q3ValueList<CompletionEntry> entries;
+  QLinkedList<CompletionEntry> entries;
   if (!completionEntriesForFile(parent->document()->text(),fileName,mainForm,
                                 entries)) {
     nothingFound:

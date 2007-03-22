@@ -1,8 +1,8 @@
-/*
-   ktigcc - TIGCC IDE for KDE
+/*ktigcc - TIGCC IDE for KDE
 
    Copyright (C) 2004-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -91,6 +91,7 @@ class DnDListView : public K3ListView {
 #include <Q3ListBox>
 #include <QTimerEvent>
 #include <Q3PtrList>
+#include <QList>
 #include <QDragMoveEvent>
 #include <QDragLeaveEvent>
 #include <QKeyEvent>
@@ -99,7 +100,7 @@ class DnDListView : public K3ListView {
 #include <QDropEvent>
 #include <Q3PopupMenu>
 #include <QDragEnterEvent>
-#include <Q3ValueList>
+#include <QLinkedList>
 #include <QPixmap>
 #include <QMouseEvent>
 #include <QCloseEvent>
@@ -485,7 +486,7 @@ static KFindDialog *kfinddialog;
 QStringList findHistory, replacementHistory;
 static Q3ListViewItem *findCurrentDocument;
 static int findCurrentLine;
-Q3PtrList<SourceFile> sourceFiles;
+QList<SourceFile *> sourceFiles;
 static Q3PopupMenu *findFunctionsPopup;
 bool have_usb;
 Tools tools, tempTools;
@@ -974,9 +975,10 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
       return TRUE;
     }
   }
-  Q3PtrListIterator<SourceFile> sfit(sourceFiles);
-  SourceFile *sourceFile;
-  for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+//  QListIterator<SourceFile *> sfit(sourceFiles);
+//  SourceFile *sourceFile;
+//  for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+  foreach (SourceFile *sourceFile, sourceFiles) {
     if (compareAbsPaths?fileName==sourceFile->fileName
                        :fileName==QFileInfo(sourceFile->fileName).fileName()) {
       inProject=FALSE;
@@ -1038,7 +1040,7 @@ void MainForm::init()
   te_popup->insertItem("&Decrease indent",10);
   connect(te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
   connect(te_popup,SIGNAL(activated(int)),this,SLOT(te_popup_activated(int)));
-  Q3ValueList<int> list;
+  QList<int> list;
   list.append(150);
   list.append(500);
   splitter->setSizes(list);
@@ -1292,7 +1294,7 @@ void MainForm::init()
 void MainForm::destroy()
 {
   while (!sourceFiles.isEmpty()) {
-    delete sourceFiles.getFirst();
+    delete sourceFiles.first();
   }
   if (kreplace) delete kreplace;
   if (kfinddialog) delete kfinddialog;
@@ -2058,9 +2060,7 @@ bool MainForm::openProject(const QString &fileName)
       KMessageBox::error(this,QString("The file \'%1\' is already included in the project.").arg(caption));
       return FALSE;
     }
-    Q3PtrListIterator<SourceFile> sfit(sourceFiles);
-    SourceFile *sourceFile;
-    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+    foreach (SourceFile *sourceFile, sourceFiles) {
       if (!fileName.compare(sourceFile->fileName)) {
         ACTIVATE_WINDOW(sourceFile->winId());
         return FALSE;
@@ -2444,8 +2444,7 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
     addRecent(nextProj);
   }
   updateRightStatusLabel();
-  Q3PtrListIterator<SourceFile> sfit(sourceFiles);
-  for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+  foreach (SourceFile *sourceFile, sourceFiles) {
     if (sourceFile->kateView->document()->isModified())
       sourceFile->fileSave();
   }
@@ -2501,9 +2500,7 @@ void MainForm::filePreferences()
         }
       }
     }
-    Q3PtrListIterator<SourceFile> sfit(sourceFiles);
-    SourceFile *sourceFile;
-    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+	foreach (SourceFile *sourceFile, sourceFiles) {
       KTextEditor::HighlightingInterface *hliface
         =qobject_cast<KTextEditor::HighlightingInterface*>(
           sourceFile->kateView->document());
@@ -2675,10 +2672,7 @@ void MainForm::filePreferences()
       }
     }
     // Apply the preferences to the source file windows.
-    sfit=Q3PtrListIterator<SourceFile>(sourceFiles);
-    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
-      sourceFile->applyPreferences();
-    }
+    foreach (SourceFile *sourceFile, sourceFiles) sourceFile->applyPreferences();
     // Apply the preferences to the debug menu.
     debugPauseAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
     debugResetAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
@@ -3683,10 +3677,7 @@ void MainForm::startCompiling()
       return;
     }
   } else {
-    Q3PtrListIterator<SourceFile> sfit(sourceFiles);
-    for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
-      sourceFile->fileSave();
-    }
+    foreach (SourceFile *sourceFile, sourceFiles) sourceFile->fileSave();
   }
   fileNewMenu->menuAction()->setEnabled(FALSE);
   fileNewAction->setEnabled(FALSE);
@@ -3712,8 +3703,7 @@ void MainForm::startCompiling()
   debugRunAction->setEnabled(FALSE);
   debugPauseAction->setEnabled(FALSE);
   debugResetAction->setEnabled(FALSE);
-  Q3PtrListIterator<SourceFile> sfit(sourceFiles);
-  for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+  foreach (SourceFile *sourceFile, sourceFiles) {
     sourceFile->fileAddToProjectAction->setEnabled(FALSE);
     sourceFile->fileCompileAction->setEnabled(FALSE);
   }
@@ -3772,8 +3762,9 @@ void MainForm::stopCompiling()
   stopCompilingFlag=FALSE;
   errorsCompilingFlag=FALSE;
   compiling=FALSE;
-  Q3PtrListIterator<SourceFile> sfit(sourceFiles);
-  for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+//  QListIterator<SourceFile *> sfit(sourceFiles);
+//  for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+  foreach (SourceFile *sourceFile, sourceFiles) {
     sourceFile->fileAddToProjectAction->setEnabled(TRUE);
     sourceFile->fileCompileAction->setEnabled(TRUE);
     sourceFile->fileCloseAction->setEnabled(TRUE);
@@ -6097,7 +6088,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
     return;
   if (item==rootListItem) {
     // validate name, fix if invalid
-    Q3ValueList<QChar> validInVarname;
+    QLinkedList<QChar> validInVarname;
     #define V(i) validInVarname.append(QChar(i))
     #define VR(m,n) for(unsigned i=m;i<=n;i++)V(i)
     VR(48,57); // 0..9
@@ -6224,9 +6215,10 @@ void MainForm::closeEvent(QCloseEvent *e)
   if (compiling || savePrompt())
     e->ignore();
   else {
-    Q3PtrListIterator<SourceFile> sfit(sourceFiles);
-    SourceFile *sourceFile;
-    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+//    QListIterator<SourceFile *> sfit(sourceFiles);
+//    SourceFile *sourceFile;
+//    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
+	foreach (SourceFile *sourceFile, sourceFiles) {
       if (sourceFile->savePrompt()) {
         e->ignore();
         return;
