@@ -1,4 +1,5 @@
-/*ktigcc - TIGCC IDE for KDE
+/*
+   ktigcc - TIGCC IDE for KDE
 
    Copyright (C) 2004-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
@@ -975,9 +976,6 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
       return TRUE;
     }
   }
-//  QListIterator<SourceFile *> sfit(sourceFiles);
-//  SourceFile *sourceFile;
-//  for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
   foreach (SourceFile *sourceFile, sourceFiles) {
     if (compareAbsPaths?fileName==sourceFile->fileName
                        :fileName==QFileInfo(sourceFile->fileName).fileName()) {
@@ -3762,8 +3760,6 @@ void MainForm::stopCompiling()
   stopCompilingFlag=FALSE;
   errorsCompilingFlag=FALSE;
   compiling=FALSE;
-//  QListIterator<SourceFile *> sfit(sourceFiles);
-//  for (SourceFile *sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
   foreach (SourceFile *sourceFile, sourceFiles) {
     sourceFile->fileAddToProjectAction->setEnabled(TRUE);
     sourceFile->fileCompileAction->setEnabled(TRUE);
@@ -6215,9 +6211,6 @@ void MainForm::closeEvent(QCloseEvent *e)
   if (compiling || savePrompt())
     e->ignore();
   else {
-//    QListIterator<SourceFile *> sfit(sourceFiles);
-//    SourceFile *sourceFile;
-//    for (sourceFile=sfit.current();sourceFile;sourceFile=++sfit) {
 	foreach (SourceFile *sourceFile, sourceFiles) {
       if (sourceFile->savePrompt()) {
         e->ignore();
