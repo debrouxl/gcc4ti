@@ -101,7 +101,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     (node).appendChild(child)
 
   bool allWordListsCaseInsensitive=TRUE;
-  foreach (Syn_WordList wordList, synprefs.wordLists)
+  foreach (const Syn_WordList &wordList, synprefs.wordLists)
     if (wordList.caseSensitive) allWordListsCaseInsensitive=FALSE;
 
   ADD_ATTR(root,"name","TIGCC "+name);
@@ -115,9 +115,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   CHILD_NODE(highlighting,root,"highlighting");
   CHILD_NODE(general,root,"general");
 
-  for (QLinkedList<Syn_WordList>::ConstIterator it=synprefs.wordLists.begin();
-       it!=synprefs.wordLists.end(); ++it) {
-    const Syn_WordList &wordList=*it;
+  foreach (const Syn_WordList &wordList, synprefs.wordLists) {
     CHILD_NODE(list,highlighting,"list");
     ADD_ATTR(list,"name",wordList.name);
     QStringList stringList;
@@ -126,9 +124,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     else {
       // This is really ugly. Why can't Kate allow me to specify
       // case-sensitivity per word list?
-      for (QStringList::ConstIterator it=wordList.list.begin();
-           it!=wordList.list.end(); ++it) {
-        const QString &keyword=*it;
+      foreach (const QString &keyword, wordList.list) {
         // This is bad, but I need to cap time, memory and disk space
         // requirements somewhere.
         if (keyword.length()<=10)
@@ -148,7 +144,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   ADD_ATTR(defaultContext,"name","Default");
   ADD_ATTR(defaultContext,"attribute","Normal");
   ADD_ATTR(defaultContext,"lineEndContext","#stay");
-  foreach (Syn_CustomStyle customStyle, synprefs.customStyles) {
+  foreach (const Syn_CustomStyle &customStyle, synprefs.customStyles) {
     switch (customStyle.beginning.length()) {
       case 0: // Ignore these ones altogether.
         break;
@@ -185,7 +181,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
         break;
     }
   }
-  foreach (Syn_WordList wordList, synprefs.wordLists) {
+  foreach (const Syn_WordList &wordList, synprefs.wordLists) {
     CHILD_NODE(detectWordList,defaultContext,"keyword");
     ADD_ATTR(detectWordList,"attribute",wordList.name);
     ADD_ATTR(detectWordList,"context","#stay");
@@ -383,11 +379,11 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   DEF_ITEM_DATA("Number",synprefs.numberColor,synprefs.numberStyle);
   DEF_ITEM_DATA("Symbol",synprefs.symbolColor,synprefs.symbolStyle);
   unsigned i=0;
-  foreach (QColor color, synprefs.parenthesisColors)
+  foreach (const QColor &color, synprefs.parenthesisColors)
     DEF_ITEM_DATA(QString("Paren%1").arg(i++),color,synprefs.parenthesisStyle);
-  foreach (Syn_CustomStyle customStyle, synprefs.customStyles)
+  foreach (const Syn_CustomStyle &customStyle, synprefs.customStyles)
     DEF_ITEM_DATA(customStyle.name,customStyle.color,customStyle.style);
-  foreach (Syn_WordList wordList, synprefs.wordLists)
+  foreach (const Syn_WordList &wordList, synprefs.wordLists)
     DEF_ITEM_DATA(wordList.name,wordList.color,wordList.style);
   #undef DEF_ITEM_DATA
 
@@ -535,14 +531,14 @@ static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QStri
   pconfig->writeEntry("Number Color",synprefs.numberColor);
   pconfig->writeEntry("Symbol Color",synprefs.symbolColor);
   i=0;
-  foreach (QColor color, synprefs.parenthesisColors)
+  foreach (const QColor &color, synprefs.parenthesisColors)
     pconfig->writeEntry(QString("Parenthesis Color %1").arg(i++),color);
   pconfig->writeEntry("Num Parenthesis Colors",i);
   pconfig->writeEntry("Number Style",(unsigned)synprefs.numberStyle);
   pconfig->writeEntry("Symbol Style",(unsigned)synprefs.symbolStyle);
   pconfig->writeEntry("Parenthesis Style",(unsigned)synprefs.parenthesisStyle);
   i=0;
-  foreach (Syn_CustomStyle customStyle, synprefs.customStyles) {
+  foreach (const Syn_CustomStyle &customStyle, synprefs.customStyles) {
     pconfig->writeEntry(QString("Custom Style %1 Name").arg(i),customStyle.name);
     pconfig->writeEntry(QString("Custom Style %1 Beginning").arg(i),customStyle.beginning);
     pconfig->writeEntry(QString("Custom Style %1 Ending").arg(i),customStyle.ending);
@@ -554,7 +550,7 @@ static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QStri
   }
   pconfig->writeEntry("Num Custom Styles",i);
   i=0;
-  foreach (Syn_WordList wordList, synprefs.wordLists) {
+  foreach (const Syn_WordList &wordList, synprefs.wordLists) {
     pconfig->writeEntry(QString("Word List %1 Name").arg(i),wordList.name);
     pconfig->writeEntry(QString("Word List %1 List").arg(i),wordList.list);
     pconfig->writeEntry(QString("Word List %1 Color").arg(i),wordList.color);

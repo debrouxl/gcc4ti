@@ -329,7 +329,7 @@ void Preferences::syntaxLanguage_activated(int index)
     delete item;
   }  
   item=static_cast<Q3ListViewItem *>(NULL);
-  foreach (Syn_WordList wlist, preferences.syn->wordLists)
+  foreach (const Syn_WordList &wlist, preferences.syn->wordLists)
     item=new RenamableKListViewItem(wordListsItem,item,wlist.name);
 }
 
@@ -420,7 +420,7 @@ void Preferences::parenthesisColorsButton_clicked()
 {
   SelectColors selectColors(this);
   selectColors.colorList->clear();
-  foreach (QColor color, preferences.syn->parenthesisColors)
+  foreach (const QColor &color, preferences.syn->parenthesisColors)
     new ColorListItem(selectColors.colorList,color);
   selectColors.exec();
   if (selectColors.result()==QDialog::Accepted) {
