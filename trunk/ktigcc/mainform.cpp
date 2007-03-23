@@ -93,6 +93,7 @@ class DnDListView : public K3ListView {
 #include <QTimerEvent>
 #include <Q3PtrList>
 #include <QList>
+#include <QVector>
 #include <QDragMoveEvent>
 #include <QDragLeaveEvent>
 #include <QKeyEvent>
@@ -101,7 +102,6 @@ class DnDListView : public K3ListView {
 #include <QDropEvent>
 #include <Q3PopupMenu>
 #include <QDragEnterEvent>
-#include <QLinkedList>
 #include <QPixmap>
 #include <QMouseEvent>
 #include <QCloseEvent>
@@ -6084,7 +6084,7 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
     return;
   if (item==rootListItem) {
     // validate name, fix if invalid
-    QLinkedList<QChar> validInVarname;
+    QVector<QChar> validInVarname;
     #define V(i) validInVarname.append(QChar(i))
     #define VR(m,n) for(unsigned i=m;i<=n;i++)V(i)
     VR(48,57); // 0..9
@@ -6092,9 +6092,9 @@ void MainForm::fileTreeItemRenamed( Q3ListViewItem *item, const QString &newName
     V(95); // _
     VR(97,122); // a..z
     V(181); // mu
-    VR(192,214); // Ã€..Ã–
-    VR(216,246); // Ã˜..Ã¶
-    VR(248,255); // Ã¸..Ã¿
+    VR(192,214); // À..Ö
+    VR(216,246); // Ø..ö
+    VR(248,255); // ø..ÿ
     VR(0x3b1,0x3b6);V(0x3b8);V(0x3bb);V(0x3be);V(0x3c1);V(0x3c3);V(0x3c4);
     V(0x3c6);V(0x3c8);V(0x3c9); // small Greek letters
     V(0x393);V(0x394);V(0x3a0);V(0x3a3);V(0x3a9); // capital Greek letters
