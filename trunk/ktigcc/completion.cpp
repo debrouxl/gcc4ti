@@ -199,9 +199,8 @@ static QLinkedList<CompletionEntry> sortCompletionEntries(
     if (!list.contains(entry)) list.append(entry);
   }
   QLinkedList<CompletionEntry> result;
-  for (QMap<QString,QLinkedList<CompletionEntry> >::ConstIterator
-       it=map.begin(); it!=map.end(); ++it)
-    mergeCompletionEntries(result,*it);
+  foreach (const QLinkedList<CompletionEntry> &entries, map)
+    mergeCompletionEntries(result,entries);
   return result;
 }
 
@@ -303,7 +302,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
     QLinkedList<CompletionEntry> &entries=completionInfo.entries;
     QDir hdrQdir(QFileInfo(qdir,header).filePath());
     QStringList hsfs=hdrQdir.entryList("*.hsf *.ref",QDir::Files);
-	foreach (const QString &hsf, hsfs) {
+    foreach (const QString &hsf, hsfs) {
       QString fileText=loadFileText(QFileInfo(hdrQdir,hsf).filePath());
       if (fileText.isNull()) {
         KMessageBox::error(parent,QString("Can't open \'%1/%2\'.").arg(header)
@@ -373,7 +372,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
       if (description.isEmpty()) description=QString::null;
       entry.comment=description;
       if (isType) {
-		foreach (const QString &line, lines) {
+        foreach (const QString &line, lines) {
           if (line.startsWith("Subtype=")
               || (!line.isEmpty() && line[0]=='[' && line!="[Main]")) {
             if (line=="Subtype=Enumeration") {
@@ -403,7 +402,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
                   } else {
                     foundDefinition:
                     QStringList enumItems=itemList.split(',',QString::SkipEmptyParts);
-					foreach (const QString &enumItem, enumItems) {
+                    foreach (const QString &enumItem, enumItems) {
                       CompletionEntry enumEntry;
                       int pos=enumItem.find('=');
                       if (pos>=0) {
@@ -514,13 +513,13 @@ void saveSystemHeaderCompletion(void)
     config.setGroup(key);
     config.writeEntry("Included",completionInfo.includedSystem);
     unsigned i=0;
-	foreach (const CompletionEntry &entry, completionInfo.entries) {
+    foreach (const CompletionEntry &entry, completionInfo.entries) {
       config.writeEntry(QString("Entry %1 Type").arg(i),entry.type);
       config.writeEntry(QString("Entry %1 Text").arg(i),entry.text);
       config.writeEntry(QString("Entry %1 Prefix").arg(i),entry.prefix);
       config.writeEntry(QString("Entry %1 Postfix").arg(i),entry.postfix);
       config.writeEntry(QString("Entry %1 Comment").arg(i),entry.comment);
-      config.writeEntry(QString("Entry %1 User Data").arg(i),entry.userdata);
+      config.writeEntry(QString("Entry %1 User Data").arg(i++),entry.userdata);
     }
     config.writeEntry("Num Entries",i);
     config.setGroup(key+" Lines");

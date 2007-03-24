@@ -2498,7 +2498,7 @@ void MainForm::filePreferences()
         }
       }
     }
-	foreach (SourceFile *sourceFile, sourceFiles) {
+    foreach (SourceFile *sourceFile, sourceFiles) {
       KTextEditor::HighlightingInterface *hliface
         =qobject_cast<KTextEditor::HighlightingInterface*>(
           sourceFile->kateView->document());
@@ -5654,7 +5654,7 @@ void MainForm::newFile(Q3ListViewItem *parent, QString text, const QPixmap &pixm
   
   suffix="";
   if (category==hFilesListItem)
-	suffix="h";
+    suffix="h";
   else if (category==cFilesListItem)
     suffix="c";
   else if (category==sFilesListItem)
@@ -6211,7 +6211,7 @@ void MainForm::closeEvent(QCloseEvent *e)
   if (compiling || savePrompt())
     e->ignore();
   else {
-	foreach (SourceFile *sourceFile, sourceFiles) {
+    foreach (SourceFile *sourceFile, sourceFiles) {
       if (sourceFile->savePrompt()) {
         e->ignore();
         return;

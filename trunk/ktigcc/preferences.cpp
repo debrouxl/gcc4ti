@@ -133,7 +133,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
           stringList.append(keyword);
       }
     }
-	foreach (QString keyword, stringList) {
+    foreach (QString keyword, stringList) {
       CHILD_NODE(item,list,"item");
       ADD_TEXT(item,keyword);
     }

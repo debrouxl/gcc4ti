@@ -115,7 +115,7 @@ SourceFileFunctions getASMFunctions(const QString &text)
       else
         break;
     }
-    if (line[col-1]==':') result.append(SourceFileFunction(identifier,-1,lineno));
+    if (line[col-1]==':') result.append(SourceFileFunction(identifier,-1,lineno++));
   }
   return result;
 }
