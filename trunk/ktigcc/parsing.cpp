@@ -105,7 +105,7 @@ SourceFileFunctions getASMFunctions(const QString &text)
   unsigned lineno=0;
   SourceFileFunctions result;
   foreach (const QString &line, lines) {
-    if (line.isEmpty()) continue;
+    if (line.isEmpty()) {lineno++; continue;}
     QString identifier;
     unsigned col=0, l=line.length();
     while (col<l) {
@@ -115,7 +115,8 @@ SourceFileFunctions getASMFunctions(const QString &text)
       else
         break;
     }
-    if (line[col-1]==':') result.append(SourceFileFunction(identifier,-1,lineno++));
+    if (line[col-1]==':') result.append(SourceFileFunction(identifier,-1,lineno));
+    lineno++;
   }
   return result;
 }
