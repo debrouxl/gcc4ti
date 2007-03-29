@@ -209,9 +209,9 @@ void Preferences::init()
 
   // Coding
   templateListBox->clear();
-  for (QLinkedList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
-       it!=preferences.templates.end(); ++it)
-    new ListBoxTextPair(templateListBox,(*it).first,(*it).second);
+  typedef const QPair<QString,QString> &StringPairConstRef;
+  foreach (StringPairConstRef pair, preferences.templates)
+    new ListBoxTextPair(templateListBox,pair.first,pair.second);
   templateListBox->sort();
 }
 

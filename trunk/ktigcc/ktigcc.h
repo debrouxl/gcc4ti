@@ -64,7 +64,7 @@ struct Tool {
   QString workingDirectory;
   bool runInTerminal;
 };
-typedef Q3ValueVector<Tool> Tools;
+typedef QVector<Tool> Tools;
 extern Tools tools, tempTools;
 extern int toolIndex;
 extern bool disableViewEvents;

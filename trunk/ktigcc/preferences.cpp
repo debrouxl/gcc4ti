@@ -1827,10 +1827,10 @@ void savePreferences(void)
 
   // Coding
   unsigned i=0;
-  for (QLinkedList<QPair<QString,QString> >::ConstIterator it=preferences.templates.begin();
-       it!=preferences.templates.end(); ++it, i++) {
-    pconfig->writeEntry(QString("Coding Template %1 Name").arg(i),(*it).first);
-    pconfig->writeEntry(QString("Coding Template %1 Text").arg(i),(*it).second);
+  typedef const QPair<QString,QString> &StringPairConstRef;
+  foreach (StringPairConstRef pair, preferences.templates) {
+    pconfig->writeEntry(QString("Coding Template %1 Name").arg(i),pair.first);
+    pconfig->writeEntry(QString("Coding Template %1 Text").arg(i++),pair.second);
   }
   pconfig->writeEntry("Num Coding Templates",i);
 

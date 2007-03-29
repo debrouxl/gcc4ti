@@ -1,7 +1,8 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,7 +40,7 @@ struct SourceFileFunction {
   int prototypeLine;
   int implementationLine;
 };
-class SourceFileFunctions : public Q3ValueVector<SourceFileFunction> {
+class SourceFileFunctions : public QVector<SourceFileFunction> {
   public:
     iterator find(const SourceFileFunction &item) {
       return qFind(begin(),end(),item);

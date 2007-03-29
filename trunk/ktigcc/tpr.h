@@ -5,6 +5,7 @@
    Copyright (C) 2002 Romain Liévin
    Copyright (C) 2002-2006 Kevin Kofler
    Copyright (C) 2006 Joey Adams
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -160,7 +161,7 @@ typedef struct
 
 enum {PATH_ERROR,PATH_NOTFOUND,PATH_FILE,PATH_FOLDER}; //return types for getPathType
 
-typedef Q3ValueVector<QPair<unsigned,unsigned> > LineStartList;
+typedef QVector<QPair<unsigned,unsigned> > LineStartList;
 
 const char *smartAscii(const QString &s);
 

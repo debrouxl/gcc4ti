@@ -3,6 +3,7 @@
 
    Copyright (C) 2004-2007 Kevin Kofler
    Copyright (C) 2006 Joey Adams
+   Copyright (C) 2007 Konrad Meyer
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -116,7 +117,7 @@ typedef struct
   Syn_SettingsForDoc synQll;
 
   // Coding
-  Q3ValueList<QPair<QString,QString> > templates;
+  QList<QPair<QString,QString> > templates;
 
   // Used internally by the Preferences dialog
   bool haveA68k;
