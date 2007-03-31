@@ -428,14 +428,14 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 						switch (DestCalc)
 						{
 							case CALC_TI92:
-								strcpy (Header.Signature, "**TI92**");
+								strncpy (Header.Signature, "**TI92**", 8);
 								break;
 							case CALC_TI89:
-								strcpy (Header.Signature, "**TI89**");
+								strncpy (Header.Signature, "**TI89**", 8);
 								break;
 							case CALC_TI92PLUS:
 							case CALC_V200:
-								strcpy (Header.Signature, "**TI92P*");
+								strncpy (Header.Signature, "**TI92P*", 8);
 								break;
 							default:
 								Error (NULL, "Unknown calculator.");
