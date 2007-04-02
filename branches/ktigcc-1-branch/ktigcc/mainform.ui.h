@@ -1025,8 +1025,9 @@ void MainForm::init()
     asmFilesListItem=folderListItem;
     folderListItem->setText(0,"A68k Assembly Files");
   } else {
-    qllFilesListItem=NULL;
-    fileNewQuillSourceFileAction->setVisible(FALSE);
+    asmFilesListItem=NULL;
+    fileNewA68kAssemblyHeaderAction->setVisible(FALSE);
+    fileNewA68kAssemblySourceFileAction->setVisible(FALSE);
   }
   if (quill_drv) {
     folderListItem=new ListViewFolder(rootListItem,folderListItem);
