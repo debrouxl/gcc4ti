@@ -1588,6 +1588,9 @@ void MainForm::updateRecent()
 void MainForm::addRecent(const QString &fileName)
 {
   unsigned i,j;
+  // Pick up any changes to the list of recent files from other instances
+  pconfig->sync();
+  pconfig->reparseConfiguration();
   pconfig->setGroup("Recent files");
   // Find recent file to overwrite. If it isn't one of the first 3, by
   // elimination, it is the last, thus the test only goes up to <4, not <=4.
