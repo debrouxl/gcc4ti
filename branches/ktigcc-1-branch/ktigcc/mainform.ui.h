@@ -2041,30 +2041,34 @@ void MainForm::fileOpen()
 
 void MainForm::fileRecent1()
 {
+  QString recentFile=fileRecent1Action->statusTip();
   if (compiling || savePrompt())
     return;
-  openProject(fileRecent1Action->statusTip());
+  openProject(recentFile);
 }
 
 void MainForm::fileRecent2()
 {
+  QString recentFile=fileRecent2Action->statusTip();
   if (compiling || savePrompt())
     return;
-  openProject(fileRecent2Action->statusTip());
+  openProject(recentFile);
 }
 
 void MainForm::fileRecent3()
 {
+  QString recentFile=fileRecent3Action->statusTip();
   if (compiling || savePrompt())
     return;
-  openProject(fileRecent3Action->statusTip());
+  openProject(recentFile);
 }
 
 void MainForm::fileRecent4()
 {
+  QString recentFile=fileRecent4Action->statusTip();
   if (compiling || savePrompt())
     return;
-  openProject(fileRecent4Action->statusTip());
+  openProject(recentFile);
 }
 
 int MainForm::fileSavePrompt(QListViewItem *fileItem)
