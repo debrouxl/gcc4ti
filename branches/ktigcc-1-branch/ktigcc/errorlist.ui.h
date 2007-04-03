@@ -13,7 +13,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,6 +36,17 @@
 #include <qclipboard.h>
 #include <qstring.h>
 
+bool ErrorList::event(QEvent *e)
+{
+  if (e->type()==QEvent::AccelOverride) {
+    QKeyEvent *ke=static_cast<QKeyEvent*>(e);
+    if ((ke->key()==Qt::Key_Insert || ke->key()==Qt::Key_C)
+        && ke->state()==Qt::ControlButton)
+      ke->accept();
+  }
+  return QWidget::event(e);
+}
+
 void ErrorList::keyPressEvent(QKeyEvent *e)
 {
   if ((e->key()==Qt::Key_Insert || e->key()==Qt::Key_C)
@@ -51,16 +62,4 @@ void ErrorList::keyPressEvent(QKeyEvent *e)
     QApplication::clipboard()->setText(clipboardText,QClipboard::Clipboard);
     e->accept();
   } else QWidget::keyPressEvent(e);
-}
-
-void ErrorList::focusInEvent(QFocusEvent *e)
-{
-  QWidget::focusInEvent(e);
-  grabKeyboard();
-}
-
-void ErrorList::focusOutEvent(QFocusEvent *e)
-{
-  releaseKeyboard();
-  QWidget::focusOutEvent(e);
 }
