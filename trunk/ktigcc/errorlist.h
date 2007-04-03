@@ -31,9 +31,8 @@ public:
     ~ErrorList();
 
 protected:
-    virtual void keyPressEvent( QKeyEvent * e );
-    virtual void focusInEvent(QFocusEvent *);
-    virtual void focusOutEvent(QFocusEvent *);
+    virtual bool event(QEvent *e);
+    virtual void keyPressEvent(QKeyEvent *e);
 
 protected slots:
     virtual void languageChange();
