@@ -3,7 +3,7 @@
 
   Copyright (C) 2000-2004 Sebastian Reichelt
   Copyright (C) 2005 Fréderic Bour
-  Copyright (C) 2005-2006 Kevin Kofler
+  Copyright (C) 2005-2007 Kevin Kofler
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -1877,8 +1877,10 @@ end;
 
 procedure TMainForm.ProjectMake(Sender: TObject);
 begin
-	MakeFileWrapped;
-	DisplayFolderMessage;
+	if not Compiling then begin
+		MakeFileWrapped;
+		DisplayFolderMessage;
+	end;
 end;
 
 procedure TMainForm.MakeFileWrapped;
@@ -5004,7 +5006,11 @@ procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
 var
 	NewSelection: TTreeNode;
 begin
-	if (Key = vk_F9) and (Shift = [ssShift, ssCtrl, ssAlt]) then begin
+	if (Key = vk_F8) and (Shift = []) then begin
+		ProjectMake (Sender);
+	end else if (Key = vk_F8) and (Shift = [ssAlt]) then begin
+		ProjectCompile (Sender);
+	end else if (Key = vk_F9) and (Shift = [ssShift, ssCtrl, ssAlt]) then begin
 		if TransferTarget = ttVTI then
 			TransferTarget := ttCalc
 		else
