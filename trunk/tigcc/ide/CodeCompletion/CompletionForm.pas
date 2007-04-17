@@ -329,7 +329,7 @@ begin
 		// Find Symbol
 		if List.Find(Symbol, i) then
 			T := ''
-		else if (i >= 0) and (i <= List.Count) then
+		else if (List.Count > 0) and (i >= 0) and (i <= List.Count) then
 		begin
 			if i = 0 then
 			begin
