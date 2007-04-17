@@ -3,7 +3,7 @@
 
   Copyright (C) 2004 Fréderic Bour
   Copyright (C) 2004 Sebastian Reichelt
-  Copyright (C) 2006 Kevin Kofler
+  Copyright (C) 2006-2007 Kevin Kofler
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -329,12 +329,19 @@ begin
 		// Find Symbol
 		if List.Find(Symbol, i) then
 			T := ''
-		else if (i >= 0) and (i < List.Count) then
+		else if (i >= 0) and (i <= List.Count) then
 		begin
 			if i = 0 then
 			begin
 				if Similar(Symbol, List[i]) then
 					T := List[i] + ' ?'#13#10
+				else
+					Exit;
+			end
+			else if i = List.Count then
+			begin
+				if Similar(Symbol, List[i - 1]) then
+					T := List[i - 1] + ' ?'#13#10
 				else
 					Exit;
 			end
