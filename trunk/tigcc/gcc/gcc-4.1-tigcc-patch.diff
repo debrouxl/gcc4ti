@@ -5860,7 +5860,7 @@ diff -Naur gcc-4.1.2.orig/gcc/genmodes.c gcc-4.1.2-src/gcc/genmodes.c
  }
 diff -Naur gcc-4.1.2.orig/gcc/gimplify.c gcc-4.1.2-src/gcc/gimplify.c
 --- gcc-4.1.2.orig/gcc/gimplify.c	2006-11-19 17:15:47.000000000 +0100
-+++ gcc-4.1.2-src/gcc/gimplify.c	2007-02-19 02:32:34.000000000 +0100
++++ gcc-4.1.2-src/gcc/gimplify.c	2007-04-17 16:41:54.000000000 +0200
 @@ -1904,6 +1904,7 @@
    /* There is a sequence point before the call, so any side effects in
       the calling expression must occur before the actual call.  Force
@@ -5882,6 +5882,24 @@ diff -Naur gcc-4.1.2.orig/gcc/gimplify.c gcc-4.1.2-src/gcc/gimplify.c
    /* Try this again in case gimplification exposed something.  */
    if (ret != GS_ERROR)
      {
+@@ -4234,11 +4241,15 @@
+ 	      break;
+ 	    }
+ 
+-	  if (VOID_TYPE_P (TREE_TYPE (*expr_p))
+-	      || fallback == fb_none)
++	  if ((VOID_TYPE_P (TREE_TYPE (*expr_p))
++	       || fallback == fb_none)
++	      && ! TREE_CODE (TREE_OPERAND (*expr_p, 0)) == CALL_EXPR)
+ 	    {
+ 	      /* Just strip a conversion to void (or in void context) and
+ 		 try again.  */
++	      /* (TIGCC 20070417) But not for function calls, so
++	         warn_unused_result doesn't warn if they're cast to void.
++	         (Patch by Richard Guenther from PR 25509.) */
+ 	      *expr_p = TREE_OPERAND (*expr_p, 0);
+ 	      break;
+ 	    }
 diff -Naur gcc-4.1.2.orig/gcc/ifcvt.c gcc-4.1.2-src/gcc/ifcvt.c
 --- gcc-4.1.2.orig/gcc/ifcvt.c	2006-11-15 09:11:59.000000000 +0100
 +++ gcc-4.1.2-src/gcc/ifcvt.c	2007-02-19 02:32:34.000000000 +0100
@@ -8729,13 +8747,13 @@ diff -Naur gcc-4.1.2.orig/gcc/varasm.c gcc-4.1.2-src/gcc/varasm.c
  enum section_category
 diff -Naur gcc-4.1.2.orig/gcc/version.c gcc-4.1.2-src/gcc/version.c
 --- gcc-4.1.2.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1.2-src/gcc/version.c	2007-02-19 02:56:39.000000000 +0100
++++ gcc-4.1.2-src/gcc/version.c	2007-04-17 16:44:02.000000000 +0200
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.2-tigcc-1)"
++#define VERSUFFIX " (TIGCC 4.1.2-tigcc-2)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
