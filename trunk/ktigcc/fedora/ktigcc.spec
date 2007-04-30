@@ -34,11 +34,13 @@ mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/icons/hicolor/32x32/apps
 cp -pf images/icon.png ${RPM_BUILD_ROOT}%{_datadir}/icons/hicolor/32x32/apps/ktigcc.png
 mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/icons/hicolor/16x16/mimetypes
 pushd ${RPM_BUILD_ROOT}%{_datadir}/icons/hicolor/16x16/mimetypes
-ln -s ../apps/ktigcc.png gnome-mime-application-x-tigcc-project.png
+ln -s ../apps/ktigcc.png application-x-tigcc-project.png
+ln -s application-x-tigcc-project.png gnome-mime-application-x-tigcc-project.png
 popd
 mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/icons/hicolor/32x32/mimetypes
 pushd ${RPM_BUILD_ROOT}%{_datadir}/icons/hicolor/32x32/mimetypes
-ln -s ../apps/ktigcc.png gnome-mime-application-x-tigcc-project.png
+ln -s ../apps/ktigcc.png application-x-tigcc-project.png
+ln -s application-x-tigcc-project.png gnome-mime-application-x-tigcc-project.png
 popd
 # Menu entry
 mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/applications
@@ -78,7 +80,7 @@ cat >${RPM_BUILD_ROOT}%{_datadir}/mimelnk/application/x-tigcc-project.desktop <<
 Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-tigcc-project
-Icon=gnome-mime-application-x-tigcc-project
+Icon=application-x-tigcc-project
 Patterns=*.tpr;*.TPR;
 Comment=TIGCC Project
 [Property::X-KDE-text]
@@ -105,8 +107,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 %{tigccdir}/bin/ktigcc
 %{_datadir}/icons/hicolor/16x16/apps/ktigcc.png
+%{_datadir}/icons/hicolor/16x16/mimetypes/application-x-tigcc-project.png
 %{_datadir}/icons/hicolor/16x16/mimetypes/gnome-mime-application-x-tigcc-project.png
 %{_datadir}/icons/hicolor/32x32/apps/ktigcc.png
+%{_datadir}/icons/hicolor/32x32/mimetypes/application-x-tigcc-project.png
 %{_datadir}/icons/hicolor/32x32/mimetypes/gnome-mime-application-x-tigcc-project.png
 %{_datadir}/applications/tigcc-ktigcc.desktop
 %{_datadir}/mime/packages/ktigcc.xml
@@ -114,6 +118,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Mon Apr 30 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Use standard icon name for the mimetype icon symlink.
+Add compatibility symlink with the legacy name with the gnome-mime- prefix.
+
 * Thu Mar 8 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump version to 1.80.
 Update BuildRequires and Requires.
