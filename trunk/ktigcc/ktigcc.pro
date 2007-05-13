@@ -183,8 +183,6 @@ isEmpty(CXXFLAGS) {
   }
 }
 *-g++*:CXXFLAGS += -DHAVE_STDINT_H
-# Test for a subtle API change between the official 3.80.3 release and the snapshot used by the kde-windows developers.
-exists($$KDEINCDIR/ksharedconfig.h):CXXFLAGS += -DHAVE_KSHAREDCONFIG_H
 QMAKE_CXXFLAGS_DEBUG = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 QMAKE_CXXFLAGS_RELEASE = $$CXXFLAGS -Wno-non-virtual-dtor $$PKGCONFIG_CFLAGS
 

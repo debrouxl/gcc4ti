@@ -455,11 +455,7 @@ bool parseSystemHeaders(QWidget *parent, const QString &directory,
 
 void loadSystemHeaderCompletion(void)
 {
-#ifdef HAVE_KSHAREDCONFIG_H
   KConfig config("data","ktigcc/completion",KConfig::NoGlobals);
-#else
-  KConfig config("ktigcc/completion",true,false,"data");
-#endif
   QStringList groupList=config.groupList();
   if (groupList.isEmpty()) {
     KMessageBox::queuedMessageBox(0,KMessageBox::Sorry,
@@ -501,11 +497,7 @@ void loadSystemHeaderCompletion(void)
 
 void saveSystemHeaderCompletion(void)
 {
-#ifdef HAVE_KSHAREDCONFIG_H
   KConfig config("data","ktigcc/completion",KConfig::NoGlobals);
-#else
-  KConfig config("ktigcc/completion",false,false,"data");
-#endif
   for (QMap<QString,CompletionInfo>::ConstIterator it=systemHeaderCompletion.begin();
        it!=systemHeaderCompletion.end(); ++it) {
     const QString &key=it.key();

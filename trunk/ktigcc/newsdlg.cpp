@@ -26,9 +26,7 @@
 #include <kurl.h>
 #include <kio/netaccess.h>
 #include <kmessagebox.h>
-#ifdef HAVE_KSHAREDCONFIG_H
 #include <ksharedconfig.h>
-#endif
 #include <QVariant>
 #include <QImage>
 #include <QPixmap>
