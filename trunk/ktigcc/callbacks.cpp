@@ -58,7 +58,7 @@ static void callback_ticalcs_pbar(void)
 
 static void callback_ticalcs_label(void)
 {
-  sendingProgress->setLabel(QString("Sending \'%1\'").arg(ticalcsUpdate.text));
+  sendingProgress->setLabelText(QString("Sending \'%1\'").arg(ticalcsUpdate.text));
   callback_ticalcs_refresh();
 }
 
@@ -80,7 +80,8 @@ CalcUpdate ticalcsUpdate=CalcUpdateInitialized();
 void callbacksInit(QWidget *parent)
 {
   sendingProgress=new KProgressDialog(parent,"Sending Variable",
-                                      QString::null,TRUE);
+                                      QString::null);
+  sendingProgress->setModal(true);
   sendingProgress->show();
   callback_ticalcs_refresh();
 }

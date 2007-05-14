@@ -82,8 +82,8 @@
 #include "completion.h"
 
 #if defined(Q_WS_X11)
-#include <kwin.h>
-#define ACTIVATE_WINDOW(winid) KWin::activateWindow(winid)
+#include <kwindowsystem.h>
+#define ACTIVATE_WINDOW(winid) KWindowSystem::activateWindow(winid)
 #elif defined(Q_WS_WIN)
 #include <windows.h>
 #define ACTIVATE_WINDOW(winid) SetForegroundWindow(winid)
@@ -173,7 +173,7 @@ void SourceFileWindow::initBase()
   windowIcon.addPixmap(largeIcon);
   setWindowIcon(windowIcon);
 #ifdef Q_WS_X11
-  KWin::setIcons(winId(),largeIcon,smallIcon);
+  KWindowSystem::setIcons(winId(),largeIcon,smallIcon);
 #endif
   sourceFiles.append(THIS);
   THIS->dirWatch=new KDirWatch(this);
@@ -706,7 +706,8 @@ void SourceFileWindow::findFind()
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
-    THIS->kfinddialog=new KFindDialog(false,this,0,KFind::FromCursor,findHistory);
+    THIS->kfinddialog=new KFindDialog(this,KFind::FromCursor,findHistory);
+    THIS->kfinddialog->setModal(false);
     connect(THIS->kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
     connect(THIS->kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
     THIS->kfinddialog->show();
@@ -804,11 +805,11 @@ void SourceFileWindow::findReplace()
       ACTIVATE_WINDOW(replaceNextDialog->winId());
     return;
   }
-  KReplaceDialog kreplacedialog(this,0,((CURRENT_VIEW&&CURRENT_VIEW->selection()
-                                         &&!CURRENT_VIEW->selectionRange().onSingleLine())?
-                                         KFind::SelectedText:0)|KFind::FromCursor,
-                                        findHistory,replacementHistory,
-                                        CURRENT_VIEW&&CURRENT_VIEW->selection());
+  KReplaceDialog kreplacedialog(this,((CURRENT_VIEW&&CURRENT_VIEW->selection()
+                                       &&!CURRENT_VIEW->selectionRange().onSingleLine())?
+                                       KFind::SelectedText:0)|KFind::FromCursor,
+                                      findHistory,replacementHistory,
+                                      CURRENT_VIEW&&CURRENT_VIEW->selection());
   if (kreplacedialog.exec()!=QDialog::Accepted)
     return;
   findHistory=kreplacedialog.findHistory();

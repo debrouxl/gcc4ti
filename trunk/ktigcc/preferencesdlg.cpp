@@ -290,7 +290,8 @@ void Preferences::bgColorChange_clicked()
 void Preferences::editorFontChange_clicked()
 {
   QFont font=editorFont->font();
-  if (KFontDialog::getFont(font,TRUE,this)==KFontDialog::Accepted) {
+  if (KFontDialog::getFont(font,KFontChooser::FixedFontsOnly,this)
+      ==KFontDialog::Accepted) {
     editorFont->setFont(font);
     editorFont->setText(font.family());
   }
@@ -723,7 +724,7 @@ void Preferences::regenCompletionInfoButton_clicked()
     KUrl("kfiledialog:SystemInclude"),this,
     "Pick Help Sources System/Include Folder");
   if (dirName.isEmpty()) return;
-  setCursor(KCursor::waitCursor());
+  setCursor(Qt::WaitCursor);
   if (!parseHelpSources(this,dirName,sysHdrCompletion)) {
     setCursor(QCursor());
     return;
@@ -735,7 +736,7 @@ void Preferences::regenCompletionInfoButton_clicked()
   dirName=KFileDialog::getExistingDirectory(KUrl("kfiledialog:IncludeC"),this,
     "Pick C Header (include/c) Folder");
   if (dirName.isEmpty()) return;
-  setCursor(KCursor::waitCursor());
+  setCursor(Qt::WaitCursor);
   if (!parseSystemHeaders(this,dirName,sysHdrCompletion)) {
     setCursor(QCursor());
     return;

@@ -32,7 +32,7 @@
 #include <QEventLoop>
 #include <QDir>
 #include <QLinkedList>
-#include <kprocio.h>
+#include <k3procio.h>
 #include <kmessagebox.h>
 #include <unistd.h>
 
@@ -44,11 +44,11 @@ SourceFileFunctions getCFunctions(const QString &text)
   {
     // The QTextCodec has to be passed explicitly, or it will default to
     // ISO-8859-1 regardless of the locale, which is just broken.
-    KProcIO procio(QTextCodec::codecForLocale());
+    K3ProcIO procio(QTextCodec::codecForLocale());
     // Use MergedStderr instead of Stderr so the messages get ordered
     // properly.
-    procio.setComm(static_cast<KProcess::Communication>(
-      KProcess::Stdout|KProcess::MergedStderr));
+    procio.setComm(static_cast<K3Process::Communication>(
+      K3Process::Stdout|K3Process::MergedStderr));
     procio.setWorkingDirectory(tempdir);
     procio<<"ctags"<<"-f"<<"-"<<"-n"<<"-u"<<"-h"<<".h"<<"--language-force=C"
           <<"--C-kinds=pf"<<"--fields=k"<<"-I"<<"CALLBACK,__ATTR_TIOS__,"
@@ -178,11 +178,11 @@ CompletionInfo parseFileCompletion(const QString &fileText,
   {
     // The QTextCodec has to be passed explicitly, or it will default to
     // ISO-8859-1 regardless of the locale, which is just broken.
-    KProcIO procio(QTextCodec::codecForLocale());
+    K3ProcIO procio(QTextCodec::codecForLocale());
     // Use MergedStderr instead of Stderr so the messages get ordered
     // properly.
-    procio.setComm(static_cast<KProcess::Communication>(
-      KProcess::Stdout|KProcess::MergedStderr));
+    procio.setComm(static_cast<K3Process::Communication>(
+      K3Process::Stdout|K3Process::MergedStderr));
     procio.setWorkingDirectory(tempdir);
     procio<<"ctags"<<"-f"<<"-"<<"-n"<<"-u"<<"-h"<<".h"<<"--language-force=C"
           <<"--C-kinds=defgpstuvx"<<"--fields=kS"<<"-I"<<"CALLBACK,__ATTR_TIOS__,"

@@ -27,7 +27,7 @@
 #include <kurl.h>
 #include <kurlrequester.h>
 #include <kfiledialog.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include "ktigcc.h"
 
 void ToolProperties::init()
@@ -69,7 +69,7 @@ void ToolProperties::browseButton_clicked()
     "application/x-executable application/x-executable-script",this,
     "Choose executable");
   if (!ret.isEmpty())
-    commandLine->setText(KProcess::quote(ret));
+    commandLine->setText(K3Process::quote(ret));
 }
 
 /*
