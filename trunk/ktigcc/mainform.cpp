@@ -1250,7 +1250,7 @@ void MainForm::init()
   addDockWidget(Qt::BottomDockWidgetArea,errorListDock);
   errorList->show();
   errorListDock->hide();
-  connect(errorListDock->toggleViewAction(),SIGNAL(toggled(bool)),
+  connect(errorListDock,SIGNAL(visibilityChanged(bool)),
           this,SLOT(projectErrorsAndWarnings(bool)));
   errorList->errorListView->setSorting(-1);
   errorList->errorListView->setAlternateBackground(QColor());
