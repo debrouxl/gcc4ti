@@ -27,7 +27,7 @@
 #include <Q3Accel>
 #include <kmessagebox.h>
 #include <kfiledialog.h>
-#include <k3process.h>
+#include <kshell.h>
 #include <kurl.h>
 #include "ktigcc.h"
 #include "tpr.h"
@@ -256,7 +256,7 @@ void ProjectOptions::browseButton_clicked()
     "application/x-executable application/x-executable-script",this,
     "Choose executable");
   if (!ret.isEmpty())
-    CallAfterBuilding->setText(K3Process::quote(ret)+" \"($TI89File)\" \"($TI92PlusFile)\" \"($V200File)\"");
+    CallAfterBuilding->setText(KShell::quoteArg(ret)+" \"($TI89File)\" \"($TI92PlusFile)\" \"($V200File)\"");
 }
 
 /*
