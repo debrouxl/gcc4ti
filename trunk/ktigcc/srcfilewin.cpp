@@ -262,25 +262,25 @@ void SourceFileWindow::initBase()
     // padding.
     int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
-    fileSaveAction->setIcon(KIcon("filesave"));
-    fileAddToProjectAction->setIcon(KIcon("edit_add"));
+    fileSaveAction->setIcon(KIcon("document-save"));
+    fileAddToProjectAction->setIcon(KIcon("edit-add"));
     fileCompileAction->setIcon(KIcon("compfile"));
-    filePrintAction->setIcon(KIcon("fileprint"));
-    filePrintQuicklyAction->setIcon(KIcon("fileprint"));
-    editClearAction->setIcon(KIcon("editdelete"));
-    editCutAction->setIcon(KIcon("editcut"));
-    editCopyAction->setIcon(KIcon("editcopy"));
-    editPasteAction->setIcon(KIcon("editpaste"));
-    findFindAction->setIcon(KIcon("filefind"));
-    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
-      findReplaceAction->setIcon(QIcon(QPixmap(":/images/filereplace.png")));
+    filePrintAction->setIcon(KIcon("document-print"));
+    filePrintQuicklyAction->setIcon(KIcon("document-print"));
+    editClearAction->setIcon(KIcon("edit-delete"));
+    editCutAction->setIcon(KIcon("edit-cut"));
+    editCopyAction->setIcon(KIcon("edit-copy"));
+    editPasteAction->setIcon(KIcon("edit-paste"));
+    findFindAction->setIcon(KIcon("edit-find"));
+    if (KIconLoader::global()->iconPath("edit-find-replace",K3Icon::Small,TRUE).isEmpty())
+      findReplaceAction->setIcon(KIcon("file-find"));
     else
-      findReplaceAction->setIcon(KIcon("stock-find-and-replace"));
-    editUndoAction->setIcon(KIcon("undo"));
-    editRedoAction->setIcon(KIcon("redo"));
-    findFunctionsAction->setIcon(KIcon("view_tree"));
-    editIncreaseIndentAction->setIcon(KIcon("indent"));
-    editDecreaseIndentAction->setIcon(KIcon("unindent"));
+      findReplaceAction->setIcon(KIcon("edit-find-replace"));
+    editUndoAction->setIcon(KIcon("edit-undo"));
+    editRedoAction->setIcon(KIcon("edit-redo"));
+    findFunctionsAction->setIcon(KIcon("view-tree"));
+    editIncreaseIndentAction->setIcon(KIcon("format-indent-more"));
+    editDecreaseIndentAction->setIcon(KIcon("format-indent-less"));
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->widgetForAction(findFunctionsAction));
@@ -605,25 +605,25 @@ void SourceFileWindow::applyPreferences()
     // padding.
     int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
-    fileSaveAction->setIcon(KIcon("filesave"));
-    fileAddToProjectAction->setIcon(KIcon("edit_add"));
+    fileSaveAction->setIcon(KIcon("document-save"));
+    fileAddToProjectAction->setIcon(KIcon("edit-add"));
     fileCompileAction->setIcon(KIcon("compfile"));
-    filePrintAction->setIcon(KIcon("fileprint"));
-    filePrintQuicklyAction->setIcon(KIcon("fileprint"));
-    editClearAction->setIcon(KIcon("editdelete"));
-    editCutAction->setIcon(KIcon("editcut"));
-    editCopyAction->setIcon(KIcon("editcopy"));
-    editPasteAction->setIcon(KIcon("editpaste"));
-    findFindAction->setIcon(KIcon("filefind"));
-    if (KIconLoader::global()->iconPath("stock-find-and-replace",K3Icon::Small,TRUE).isEmpty())
-      findReplaceAction->setIcon(QIcon(QPixmap(":/images/filereplace.png")));
+    filePrintAction->setIcon(KIcon("document-print"));
+    filePrintQuicklyAction->setIcon(KIcon("document-print"));
+    editClearAction->setIcon(KIcon("edit-delete"));
+    editCutAction->setIcon(KIcon("edit-cut"));
+    editCopyAction->setIcon(KIcon("edit-copy"));
+    editPasteAction->setIcon(KIcon("edit-paste"));
+    findFindAction->setIcon(KIcon("edit-find"));
+    if (KIconLoader::global()->iconPath("edit-find-replace",K3Icon::Small,TRUE).isEmpty())
+      findReplaceAction->setIcon(KIcon("file-find"));
     else
-      findReplaceAction->setIcon(KIcon("stock-find-and-replace"));
-    editUndoAction->setIcon(KIcon("undo"));
-    editRedoAction->setIcon(KIcon("redo"));
-    findFunctionsAction->setIcon(KIcon("view_tree"));
-    editIncreaseIndentAction->setIcon(KIcon("indent"));
-    editDecreaseIndentAction->setIcon(KIcon("unindent"));
+      findReplaceAction->setIcon(KIcon("edit-find-replace"));
+    editUndoAction->setIcon(KIcon("edit-undo"));
+    editRedoAction->setIcon(KIcon("edit-redo"));
+    findFunctionsAction->setIcon(KIcon("view-tree"));
+    editIncreaseIndentAction->setIcon(KIcon("format-indent-more"));
+    editDecreaseIndentAction->setIcon(KIcon("format-indent-less"));
   } else {
     setIconSize(QSize(20,20));
     fileSaveAction->setIcon(QIcon(QPixmap(":/images/02.png")));
