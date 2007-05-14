@@ -56,6 +56,7 @@ class DnDListView : public K3ListView {
     Q3ListView::startDrag();
   }
   virtual void rename(Q3ListViewItem *item, int c);
+  virtual void keyPressEvent(QKeyEvent *e);
 };
 
 // Yes, this is an ugly hack... Any better suggestions?
@@ -482,7 +483,7 @@ tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
 QClipboard *clipboard;
-static Q3Accel *accel, *fileTreeAccel;
+static Q3Accel *accel;
 static KFindDialog *kfinddialog;
 QStringList findHistory, replacementHistory;
 static Q3ListViewItem *findCurrentDocument;
@@ -718,6 +719,16 @@ void DnDListView::rename(Q3ListViewItem *item, int c) {
   ensureItemVisible(item);
   QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,1000);
   K3ListView::rename(item,c);
+}
+
+void DnDListView::keyPressEvent(QKeyEvent *e)
+{
+  if (e->key()==Qt::Key_Delete && e->state()==0) {
+    Q3ListViewItem *item=currentItem();
+    if (item)
+      static_cast<MainForm *>(parent()->parent()->parent())->removeItem(item);
+    e->accept();
+  } else QWidget::keyPressEvent(e);
 }
 
 enum ErrorTypes {etError, etWarning, etInfo};
@@ -1161,10 +1172,6 @@ void MainForm::init()
   accel->insertItem(Qt::CTRL+Qt::Key_F9,16);
   accel->setItemEnabled(16,TRUE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
-  fileTreeAccel=new Q3Accel(this);
-  fileTreeAccel->insertItem(Qt::Key_Delete,0);
-  connect(fileTreeAccel,SIGNAL(activated(int)),
-          this,SLOT(fileTreeAccel_activated(int)));
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   connect(fileNewAction,SIGNAL(triggered()),this,SLOT(fileNewProject()));
@@ -1297,7 +1304,6 @@ void MainForm::destroy()
   }
   if (kreplace) delete kreplace;
   if (kfinddialog) delete kfinddialog;
-  delete fileTreeAccel;
   delete accel;
   delete te_popup;
   delete leftStatusLabel;
@@ -1480,12 +1486,6 @@ void MainForm::completionPopup_closed()
       accel->setItemEnabled(7,TRUE);
     }
   }
-}
-
-void MainForm::fileTreeAccel_activated(int index)
-{
-  Q3ListViewItem *item=fileTree->currentItem();
-  if (!index && item) removeItem(item);
 }
 
 void MainForm::clearProject()

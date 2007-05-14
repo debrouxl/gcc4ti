@@ -55,6 +55,7 @@ public:
     virtual void compileSourceFile( void * srcFile );
     static QString tilibsErrorMessage( int err );
     virtual QString textForHeader( const QString & fileName );
+    bool removeItem( Q3ListViewItem * item );
 
 public slots:
     virtual void errorListView_clicked( Q3ListViewItem * item );
@@ -65,7 +66,6 @@ public slots:
     virtual void te_popup_activated( int index );
     virtual void accel_activated( int index );
     virtual void completionPopup_closed();
-    virtual void fileTreeAccel_activated( int index );
     virtual void fileNewProject();
     virtual void fileOpen();
     virtual void fileRecent1();
@@ -184,7 +184,6 @@ private:
     bool tiemuInstance(TiEmuDBus *&instance);
     void updateToolsMenu();
     void updateSizes();
-    bool removeItem( Q3ListViewItem * item );
     QStringList extractAllFileNames( void );
     void extractFileTreeInfo( Q3ListViewItem * parent, Q3ListViewItem * * p_category, QString * p_folderPath );
     void newFile( Q3ListViewItem * parent, QString text, const QPixmap & pixmap );
