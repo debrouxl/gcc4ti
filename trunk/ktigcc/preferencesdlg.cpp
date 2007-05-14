@@ -28,6 +28,7 @@
 #include <QPixmap>
 #include <QCheckBox>
 #include <QRadioButton>
+#include <QButtonGroup>
 #include <Q3Accel>
 #include <QColor>
 #include <QLinkedList>
@@ -117,6 +118,10 @@ void Preferences::init()
   useSystemIcons->setChecked(preferences.useSystemIcons);
 
   // Transfer
+  QButtonGroup *group=new QButtonGroup(this);
+  group->addButton(targetNone);
+  group->addButton(targetTiEmu);
+  group->addButton(targetRealCalc);
   switch (preferences.linkTarget) {
     default: // LT_NONE
       targetNone->setChecked(TRUE);
