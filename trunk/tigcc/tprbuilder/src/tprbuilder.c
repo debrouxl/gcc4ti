@@ -2,7 +2,7 @@
    tprbuilder - tprbuilder is a MAKE program for TIGCC projects (.tpr files)
 
    Copyright (C) 2002 Romain Liévin
-   Copyright (C) 2002-2006 Kevin Kofler
+   Copyright (C) 2002-2007 Kevin Kofler
    Copyright (C) 2005 Lionel Debroux
 
    This program is free software; you can redistribute it and/or modify
@@ -292,7 +292,7 @@ static int decode_switches (int argc, char **argv)
 
   for (c=1;c<argc;c++) {
     if (!strcmp(argv[c],"-V")||!strcmp(argv[c],"--version")) {
-       printf ("tprbuilder 1.0.17\n");
+       printf ("tprbuilder 1.0.18\n");
        exit(0);
     } else if (!strcmp(argv[c],"-h")||!strcmp(argv[c],"--help")) {
        usage(0);
@@ -942,7 +942,7 @@ int process_settings(char *outfile, char **pargs)
     }
 
     if (libopts.use_minams) {
-        char buffer[14];
+        char buffer[23];
         sprintf(buffer, " -DMIN_AMS=%d", libopts.minams);
         args = dynstrcat(args, buffer);
     }
