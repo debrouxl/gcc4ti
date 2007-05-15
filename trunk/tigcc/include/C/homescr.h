@@ -6,6 +6,10 @@
 typedef void(*__HS_pushEmptyFIFONode__type__)(short)__ATTR_TIOS__;
 extern __HS_pushEmptyFIFONode__type__ __get_HS_pushEmptyFIFONode(void)__ATTR_LIB_C__;
 
+#ifdef UNOFFICIAL_OS_SUPPORT
+#pragma GCC poison __get_HS_pushEmptyFIFONode
+#endif
+
 /* Begin Auto-Generated Part */
 #define H_NULL 0
 #ifndef __HAVE_Bool
