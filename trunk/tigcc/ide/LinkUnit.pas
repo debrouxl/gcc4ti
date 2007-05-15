@@ -2,6 +2,7 @@
   TIGCC IDE
 
   Copyright (C) 2000-2004 Sebastian Reichelt
+  Copyright (C) 2007 Kevin Kofler
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -103,7 +104,7 @@ function GetCalcType(var Connection: TLinkConnection): Boolean;
 implementation
 
 uses
-	SysUtils, Registry, ComServ;
+	SysUtils, Registry;
 
 const
 	SendRetry = 1;
