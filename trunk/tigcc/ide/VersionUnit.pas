@@ -2,7 +2,7 @@
   TIGCC IDE
 
   Copyright (C) 2000-2004 Sebastian Reichelt
-  Copyright (C) 2005-2006 Kevin Kofler
+  Copyright (C) 2005-2007 Kevin Kofler
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ unit VersionUnit;
 interface
 
 const
-	TIGCCShortVersion = '0.96b8';
-	TIGCCLongVersion = '0.96 Beta 8';
+	TIGCCShortVersion = '0.96b9';
+	TIGCCLongVersion = '0.96 Beta 9';
 
 implementation
 
