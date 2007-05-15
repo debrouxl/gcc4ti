@@ -57,13 +57,13 @@ typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;
 #define __HAVE_EQU_DS
 typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS;
 #endif
-#ifndef __HAVE_ESI_Callback_t
-#define __HAVE_ESI_Callback_t
-typedef CALLBACK void(*ESI_Callback_t)(ESI);
-#endif
 #ifndef __HAVE_ESI
 #define __HAVE_ESI
 typedef ESQ*ESI;
+#endif
+#ifndef __HAVE_ESI_Callback_t
+#define __HAVE_ESI_Callback_t
+typedef CALLBACK void(*ESI_Callback_t)(ESI);
 #endif
 #ifndef __HAVE_FUNCID
 #define __HAVE_FUNCID
