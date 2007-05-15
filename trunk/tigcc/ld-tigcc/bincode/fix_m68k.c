@@ -1,7 +1,7 @@
 /* fix_m68k.c: Routines for M68000 code fixup
 
    Copyright (C) 2003 Sebastian Reichelt
-   Copyright (C) 2003-2004 Kevin Kofler
+   Copyright (C) 2003-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -93,7 +93,8 @@ void M68kFixCodePreMerge (SECTION *Dest, SECTION *Src, SIZE DestSize)
 // to be at even addresses. It is also assumed that IsBinaryDataRange
 // has been called on the range (without an exception, or with an
 // exception that has since been removed).
-static void M68kCutOrFillRange (SECTION *Section, OFFSET Start, OFFSET End, OPTIMIZE_INFO *OptimizeInfo)
+// Returns the number of bytes removed.
+static COUNT M68kCutOrFillRange (SECTION *Section, OFFSET Start, OFFSET End, OPTIMIZE_INFO *OptimizeInfo)
 {
 	if (End > Start)
 	{
@@ -134,7 +135,7 @@ static void M68kCutOrFillRange (SECTION *Section, OFFSET Start, OFFSET End, OPTI
 				// No such branch was found, so we can (hopefully) safely cut
 				// the section.
 				CutSection (Section, Start);
-				return;
+				return End - Start;
 			}
 		}
 		// If the range is in the middle of the section, try to cut it out.
@@ -149,7 +150,7 @@ static void M68kCutOrFillRange (SECTION *Section, OFFSET Start, OFFSET End, OPTI
 				{
 					CutRange (Section, Start, End);
 					OptimizeInfo->NearAssemblyResult -= Length;
-					return;
+					return Length;
 				}
 			}
 		}
@@ -166,8 +167,11 @@ static void M68kCutOrFillRange (SECTION *Section, OFFSET Start, OFFSET End, OPTI
 					Data [CurPos + 1] = M68K_NOP_1;
 				}
 			}
+			return 0;
 		}
 	}
+	else
+		return 0;
 }
 
 // Fix and possibly optimize a given relocation entry.
@@ -267,7 +271,7 @@ void M68kFixReloc (RELOC *Reloc, OFFSET TargetDistance, OPTIMIZE_INFO *OptimizeI
 			
 			// Remove the RTS.
 			if (Optimized)
-				M68kCutOrFillRange (Section, RelocEnd, RTSEnd, OptimizeInfo);
+				TargetDistance -= M68kCutOrFillRange (Section, RelocEnd, RTSEnd, OptimizeInfo);
 		}
 	}
 	
@@ -591,6 +595,7 @@ void M68kFixReloc (RELOC *Reloc, OFFSET TargetDistance, OPTIMIZE_INFO *OptimizeI
 										// Change the reloc to 2-byte relative.
 										Reloc->Relative = TRUE;
 										Reloc->Size = 2;
+										Optimized = TRUE;
 										
 										// Cut or fill the gained space.
 										M68kCutOrFillRange (Section, OpcodeLocation + 6, OpcodeLocation + 8, OptimizeInfo);
@@ -602,7 +607,7 @@ void M68kFixReloc (RELOC *Reloc, OFFSET TargetDistance, OPTIMIZE_INFO *OptimizeI
 								OpcodeLocation = RelocLocation - 4;
 								Opcode = Data + OpcodeLocation;
 								
-								if (IsBinaryDataRange (Section, OpcodeLocation, OpcodeLocation + 8, Reloc))
+								if (!Optimized && IsBinaryDataRange (Section, OpcodeLocation, OpcodeLocation + 8, Reloc))
 								{
 									// Optimize MOVEM.x var.L,regs into
 									// MOVEM var.W(%PC),regs.
