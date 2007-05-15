@@ -4,7 +4,7 @@ Type=Function
 Subtype=Macro
 Header Files=stdio.h
 Definition=void printf_xy (short x, short y, const char *format, ...);
-Real Definition=#define printf_xy(x,y,f...) ({char __s[200];_rom_call(short,(char*,const char*,...),53)(__s ,##f);_rom_call(void,(short,short,const char*,short),1A9)(x,y,__s,4);})
+Real Definition=#define printf_xy(x,y,f...) ({char __s[200];_rom_call_attr(short,(char*,const char*,...),__attribute__((__format__(__printf__,2,3))),53)(__s ,##f);_rom_call(void,(short,short,const char*,short),1A9)(x,y,__s,4);})
 
 [Description]
 Sends formatted output to the fixed place on the screen.
