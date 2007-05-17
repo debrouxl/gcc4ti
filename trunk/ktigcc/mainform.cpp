@@ -87,7 +87,7 @@ class DnDListView : public K3ListView {
 #include <QFileInfo>
 #include <QDateTime>
 #include <QTextCodec>
-#include <Q3StyleSheet>
+#include <QTextDocument>
 #include <QTimer>
 #include <QToolButton>
 #include <Q3ListBox>
@@ -4767,9 +4767,9 @@ void MainForm::showStats()
   // KMessageBox also takes plain text, but it interprets \n as paragraph breaks
   // and always renders them as \n\n, no matter whether there is actually just
   // one, two or more than two \n characters. Thus the
-  // QStyleSheet::convertFromPlainText. Sadly, that replaces the spaces with
-  // strange non-BMP characters (from a Private Use Area) which don't display
-  // properly in KMessageBox, so fix up those surrogate pairs.
+  // Qt::convertFromPlainText. Sadly, that replaces the spaces with strange
+  // non-BMP characters (from a Private Use Area) which don't display properly
+  // in KMessageBox, so fix up those surrogate pairs.
   if (KMessageBox::questionYesNo(this,Qt::convertFromPlainText(
         QString("The project has been compiled successfully.\n\n%1\n"
         "Do you want to open the project folder?").arg(compileStats))
