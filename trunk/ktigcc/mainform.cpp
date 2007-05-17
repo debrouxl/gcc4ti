@@ -4767,13 +4767,12 @@ void MainForm::showStats()
   // KMessageBox also takes plain text, but it interprets \n as paragraph breaks
   // and always renders them as \n\n, no matter whether there is actually just
   // one, two or more than two \n characters. Thus the
-  // Qt::convertFromPlainText. Sadly, that replaces the spaces with strange
-  // non-BMP characters (from a Private Use Area) which don't display properly
-  // in KMessageBox, so fix up those surrogate pairs.
+  // Qt::convertFromPlainText. Sadly, that replaces the spaces with character
+  // #160 (&nbsp:) which doesn't display properly in KMessageBox, so fix it up.
   if (KMessageBox::questionYesNo(this,Qt::convertFromPlainText(
         QString("The project has been compiled successfully.\n\n%1\n"
         "Do you want to open the project folder?").arg(compileStats))
-        .replace(QString(QChar(56319))+QString(QChar(56992))," "),
+        .replace(QChar(160)," "),
         "Compilation Successful")==KMessageBox::Yes) {
     KUrl projectDir(projectFileName);
     projectDir.setFileName("");
