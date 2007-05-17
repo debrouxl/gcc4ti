@@ -35,7 +35,7 @@ class KReplaceWithSelectionS;
 class QLabel;
 class Q3PopupMenu;
 class QClipboard;
-class Q3Accel;
+class QShortcut;
 class KFindDialog;
 class KDirWatch;
 class FunctionDialog;
@@ -69,7 +69,7 @@ struct SourceFile : public SourceFileWindow {
   QLabel *charsStatusLabel;
   QLabel *rightStatusLabel;
   Q3PopupMenu *te_popup;
-  Q3Accel *accel;
+  QShortcut *shortcuts[11];
   KFindDialog *kfinddialog;
   int findCurrentLine;
   KDirWatch *dirWatch;

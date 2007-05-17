@@ -45,7 +45,17 @@ public slots:
     virtual void destroy();
     virtual void te_popup_aboutToShow();
     virtual void te_popup_activated( int index );
-    virtual void accel_activated( int index );
+    virtual void shortcut_0_activated();
+    virtual void shortcut_1_activated();
+    virtual void shortcut_2_activated();
+    virtual void shortcut_3_activated();
+    virtual void shortcut_4_activated();
+    virtual void shortcut_5_activated();
+    virtual void shortcut_6_activated();
+    virtual void shortcut_7_activated();
+    virtual void shortcut_8_activated();
+    virtual void shortcut_9_activated();
+    virtual void shortcut_10_activated();
     virtual void fileSave();
     virtual void fileSaveAs();
     virtual void fileAddToProject();
@@ -93,16 +103,17 @@ public slots:
     virtual void completionPopup_closed();
 
 protected:
-    virtual void closeEvent( QCloseEvent * e );
+    virtual void closeEvent(QCloseEvent *e);
 
 protected slots:
     virtual void languageChange();
 
 private:
-    void removeTrailingSpacesFromView( void * view );
-    void findReplace_next( bool firstTime );
+    void removeTrailingSpacesFromView(void *view);
+    void findReplace_next(bool firstTime);
     void updateSizes();
     void updateRightStatusLabel();
     void current_view_newLineHook();
+    void shortcutActivated(int index);
 
 };

@@ -34,7 +34,7 @@
 #include <Q3DragObject>
 #include <QDir>
 #include <QClipboard>
-#include <Q3Accel>
+#include <QShortcut>
 #include <QEventLoop>
 #include <QLayout>
 #include <QToolButton>
@@ -233,30 +233,39 @@ void SourceFileWindow::initBase()
   editCutAction->setEnabled(CURRENT_VIEW->selection());
   editCopyAction->setEnabled(CURRENT_VIEW->selection());
   editPasteAction->setEnabled(!clipboard->text().isNull());
-  THIS->accel=new Q3Accel(this);
-  THIS->accel->insertItem(Qt::ALT+Qt::Key_Backspace,0);
-  THIS->accel->insertItem(Qt::SHIFT+Qt::ALT+Qt::Key_Backspace,1);
-  THIS->accel->insertItem(Qt::SHIFT+Qt::Key_Delete,2);
-  THIS->accel->insertItem(Qt::CTRL+Qt::Key_Insert,3);
-  THIS->accel->insertItem(Qt::SHIFT+Qt::Key_Insert,4);
-  THIS->accel->insertItem(Qt::Key_F1,5);
-  THIS->accel->insertItem(Qt::Key_Enter,6);
-  THIS->accel->insertItem(Qt::Key_Return,7);
-  THIS->accel->insertItem(Qt::CTRL+Qt::Key_J,8);
-  THIS->accel->insertItem(Qt::CTRL+Qt::Key_Space,9);
-  THIS->accel->insertItem(Qt::CTRL+Qt::Key_M,10);
-  THIS->accel->setItemEnabled(0,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
-  THIS->accel->setItemEnabled(1,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
-  THIS->accel->setItemEnabled(2,CURRENT_VIEW->selection());
-  THIS->accel->setItemEnabled(3,CURRENT_VIEW->selection());
-  THIS->accel->setItemEnabled(4,!clipboard->text().isNull());
-  THIS->accel->setItemEnabled(5,TRUE);
-  THIS->accel->setItemEnabled(6,TRUE);
-  THIS->accel->setItemEnabled(7,TRUE);
-  THIS->accel->setItemEnabled(8,TRUE);
-  THIS->accel->setItemEnabled(9,TRUE);
-  THIS->accel->setItemEnabled(10,TRUE);
-  connect(THIS->accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
+  THIS->shortcuts[0]=new QShortcut(Qt::ALT+Qt::Key_Backspace,this);
+  THIS->shortcuts[1]=new QShortcut(Qt::SHIFT+Qt::ALT+Qt::Key_Backspace,this);
+  THIS->shortcuts[2]=new QShortcut(Qt::SHIFT+Qt::Key_Delete,this);
+  THIS->shortcuts[3]=new QShortcut(Qt::CTRL+Qt::Key_Insert,this);
+  THIS->shortcuts[4]=new QShortcut(Qt::SHIFT+Qt::Key_Insert,this);
+  THIS->shortcuts[5]=new QShortcut(Qt::Key_F1,this);
+  THIS->shortcuts[6]=new QShortcut(Qt::Key_Enter,this);
+  THIS->shortcuts[7]=new QShortcut(Qt::Key_Return,this);
+  THIS->shortcuts[8]=new QShortcut(Qt::CTRL+Qt::Key_J,this);
+  THIS->shortcuts[9]=new QShortcut(Qt::CTRL+Qt::Key_Space,this);
+  THIS->shortcuts[10]=new QShortcut(Qt::CTRL+Qt::Key_M,this);
+  THIS->shortcuts[0]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+  THIS->shortcuts[1]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+  THIS->shortcuts[2]->setEnabled(CURRENT_VIEW->selection());
+  THIS->shortcuts[3]->setEnabled(CURRENT_VIEW->selection());
+  THIS->shortcuts[4]->setEnabled(!clipboard->text().isNull());
+  THIS->shortcuts[5]->setEnabled(TRUE);
+  THIS->shortcuts[6]->setEnabled(TRUE);
+  THIS->shortcuts[7]->setEnabled(TRUE);
+  THIS->shortcuts[8]->setEnabled(TRUE);
+  THIS->shortcuts[9]->setEnabled(TRUE);
+  THIS->shortcuts[10]->setEnabled(TRUE);
+  connect(THIS->shortcuts[0],SIGNAL(activated()),this,SLOT(shortcut_0_activated()));
+  connect(THIS->shortcuts[1],SIGNAL(activated()),this,SLOT(shortcut_1_activated()));
+  connect(THIS->shortcuts[2],SIGNAL(activated()),this,SLOT(shortcut_2_activated()));
+  connect(THIS->shortcuts[3],SIGNAL(activated()),this,SLOT(shortcut_3_activated()));
+  connect(THIS->shortcuts[4],SIGNAL(activated()),this,SLOT(shortcut_4_activated()));
+  connect(THIS->shortcuts[5],SIGNAL(activated()),this,SLOT(shortcut_5_activated()));
+  connect(THIS->shortcuts[6],SIGNAL(activated()),this,SLOT(shortcut_6_activated()));
+  connect(THIS->shortcuts[7],SIGNAL(activated()),this,SLOT(shortcut_7_activated()));
+  connect(THIS->shortcuts[8],SIGNAL(activated()),this,SLOT(shortcut_8_activated()));
+  connect(THIS->shortcuts[9],SIGNAL(activated()),this,SLOT(shortcut_9_activated()));
+  connect(THIS->shortcuts[10],SIGNAL(activated()),this,SLOT(shortcut_10_activated()));
   if (preferences.useSystemIcons) {
     // Set the preferred icon size so system toolbar icons don't get annoying
     // padding.
@@ -304,7 +313,7 @@ void SourceFileWindow::destroy()
     findHistory=THIS->kfinddialog->findHistory();
     delete THIS->kfinddialog;
   }
-  delete THIS->accel;
+  for (int i=0; i<11; i++) delete THIS->shortcuts[i];
   delete THIS->te_popup;
   delete THIS->rowStatusLabel;
   delete THIS->colStatusLabel;
@@ -349,7 +358,7 @@ void SourceFileWindow::te_popup_activated(int index)
   }
 }
 
-void SourceFileWindow::accel_activated(int index)
+void SourceFileWindow::shortcutActivated(int index)
 {
   if (CURRENT_VIEW && CURRENT_VIEW->hasFocus()) {
     switch (index) {
@@ -404,8 +413,8 @@ void SourceFileWindow::accel_activated(int index)
         // Completion only operates on C files.
         if (THIS->isCFile) {
           // Disable newLineHook.
-          THIS->accel->setItemEnabled(6,FALSE);
-          THIS->accel->setItemEnabled(7,FALSE);
+          THIS->shortcuts[6]->setEnabled(FALSE);
+          THIS->shortcuts[7]->setEnabled(FALSE);
           new CompletionPopup(CURRENT_VIEW,THIS->fileName,THIS->mainForm,this);
         }
         break;
@@ -417,11 +426,66 @@ void SourceFileWindow::accel_activated(int index)
   }
 }
 
+void SourceFileWindow::shortcut_0_activated()
+{
+  shortcutActivated(0);
+}
+
+void SourceFileWindow::shortcut_1_activated()
+{
+  shortcutActivated(1);
+}
+
+void SourceFileWindow::shortcut_2_activated()
+{
+  shortcutActivated(2);
+}
+
+void SourceFileWindow::shortcut_3_activated()
+{
+  shortcutActivated(3);
+}
+
+void SourceFileWindow::shortcut_4_activated()
+{
+  shortcutActivated(4);
+}
+
+void SourceFileWindow::shortcut_5_activated()
+{
+  shortcutActivated(5);
+}
+
+void SourceFileWindow::shortcut_6_activated()
+{
+  shortcutActivated(6);
+}
+
+void SourceFileWindow::shortcut_7_activated()
+{
+  shortcutActivated(7);
+}
+
+void SourceFileWindow::shortcut_8_activated()
+{
+  shortcutActivated(8);
+}
+
+void SourceFileWindow::shortcut_9_activated()
+{
+  shortcutActivated(9);
+}
+
+void SourceFileWindow::shortcut_10_activated()
+{
+  shortcutActivated(10);
+}
+
 void SourceFileWindow::completionPopup_closed()
 {
   // Restore newLineHook.
-  THIS->accel->setItemEnabled(6,TRUE);
-  THIS->accel->setItemEnabled(7,TRUE);
+  THIS->shortcuts[6]->setEnabled(TRUE);
+  THIS->shortcuts[7]->setEnabled(TRUE);
 }
 
 void *SourceFileWindow::createView(const QString &fileName, const QString &hlModeName, unsigned tabWidth)
@@ -1218,8 +1282,8 @@ void SourceFileWindow::current_view_undoChanged()
   if (CURRENT_VIEW && !disableViewEvents) {
     editUndoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
     editRedoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
-    THIS->accel->setItemEnabled(0,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
-    THIS->accel->setItemEnabled(1,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+    THIS->shortcuts[0]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+    THIS->shortcuts[1]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
   }
 }
 
@@ -1229,8 +1293,8 @@ void SourceFileWindow::current_view_selectionChanged(KTextEditor::View *view)
     editClearAction->setEnabled(view->selection());
     editCutAction->setEnabled(view->selection());
     editCopyAction->setEnabled(view->selection());
-    THIS->accel->setItemEnabled(2,view->selection());
-    THIS->accel->setItemEnabled(3,view->selection());
+    THIS->shortcuts[2]->setEnabled(view->selection());
+    THIS->shortcuts[3]->setEnabled(view->selection());
   }
 }
 
@@ -1288,7 +1352,7 @@ void SourceFileWindow::clipboard_dataChanged()
 {
   if (CURRENT_VIEW) {
     editPasteAction->setEnabled(!clipboard->text().isNull());
-    THIS->accel->setItemEnabled(4,!clipboard->text().isNull());
+    THIS->shortcuts[4]->setEnabled(!clipboard->text().isNull());
   }
 }
 

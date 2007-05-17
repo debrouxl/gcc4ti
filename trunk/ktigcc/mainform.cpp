@@ -80,7 +80,7 @@ class DnDListView : public K3ListView {
 #include <Q3DragObject>
 #include <QDir>
 #include <QClipboard>
-#include <Q3Accel>
+#include <QShortcut>
 #include <QEventLoop>
 #include <QCoreApplication>
 #include <QDockWidget>
@@ -483,7 +483,7 @@ tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
 QClipboard *clipboard;
-static Q3Accel *accel;
+static QShortcut *shortcuts[17];
 static KFindDialog *kfinddialog;
 QStringList findHistory, replacementHistory;
 static Q3ListViewItem *findCurrentDocument;
@@ -1136,42 +1136,57 @@ void MainForm::init()
   KDirWatch::self()->startScan();
   clipboard=QApplication::clipboard();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
-  accel=new Q3Accel(this);
-  accel->insertItem(Qt::ALT+Qt::Key_Backspace,0);
-  accel->setItemEnabled(0,FALSE);
-  accel->insertItem(Qt::SHIFT+Qt::ALT+Qt::Key_Backspace,1);
-  accel->setItemEnabled(1,FALSE);
-  accel->insertItem(Qt::SHIFT+Qt::Key_Delete,2);
-  accel->setItemEnabled(2,FALSE);
-  accel->insertItem(Qt::CTRL+Qt::Key_Insert,3);
-  accel->setItemEnabled(3,FALSE);
-  accel->insertItem(Qt::SHIFT+Qt::Key_Insert,4);
-  accel->setItemEnabled(4,FALSE);
-  accel->insertItem(Qt::Key_F1,5);
-  accel->setItemEnabled(5,FALSE);
-  accel->insertItem(Qt::Key_Enter,6);
-  accel->setItemEnabled(6,FALSE);
-  accel->insertItem(Qt::Key_Return,7);
-  accel->setItemEnabled(7,FALSE);
-  accel->insertItem(Qt::CTRL+Qt::Key_J,8);
-  accel->setItemEnabled(8,FALSE);
-  accel->insertItem(Qt::CTRL+Qt::Key_Space,9);
-  accel->setItemEnabled(9,FALSE);
-  accel->insertItem(Qt::CTRL+Qt::Key_M,10);
-  accel->setItemEnabled(10,FALSE);
-  accel->insertItem(Qt::CTRL+Qt::Key_Tab,11);
-  accel->setItemEnabled(11,TRUE);
-  accel->insertItem(Qt::CTRL+Qt::Key_G,12);
-  accel->setItemEnabled(12,TRUE);
-  accel->insertItem(Qt::SHIFT+Qt::CTRL+Qt::ALT+Qt::Key_F9,13);
-  accel->setItemEnabled(13,TRUE);
-  accel->insertItem(Qt::SHIFT+Qt::ALT+Qt::Key_F8,14);
-  accel->setItemEnabled(14,TRUE);
-  accel->insertItem(Qt::CTRL+Qt::ALT+Qt::Key_F9,15);
-  accel->setItemEnabled(15,TRUE);
-  accel->insertItem(Qt::CTRL+Qt::Key_F9,16);
-  accel->setItemEnabled(16,TRUE);
-  connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
+  shortcuts[0]=new QShortcut(Qt::ALT+Qt::Key_Backspace,this);
+  shortcuts[0]->setEnabled(FALSE);
+  shortcuts[1]=new QShortcut(Qt::SHIFT+Qt::ALT+Qt::Key_Backspace,this);
+  shortcuts[1]->setEnabled(FALSE);
+  shortcuts[2]=new QShortcut(Qt::SHIFT+Qt::Key_Delete,this);
+  shortcuts[2]->setEnabled(FALSE);
+  shortcuts[3]=new QShortcut(Qt::CTRL+Qt::Key_Insert,this);
+  shortcuts[3]->setEnabled(FALSE);
+  shortcuts[4]=new QShortcut(Qt::SHIFT+Qt::Key_Insert,this);
+  shortcuts[4]->setEnabled(FALSE);
+  shortcuts[5]=new QShortcut(Qt::Key_F1,this);
+  shortcuts[5]->setEnabled(FALSE);
+  shortcuts[6]=new QShortcut(Qt::Key_Enter,this);
+  shortcuts[6]->setEnabled(FALSE);
+  shortcuts[7]=new QShortcut(Qt::Key_Return,this);
+  shortcuts[7]->setEnabled(FALSE);
+  shortcuts[8]=new QShortcut(Qt::CTRL+Qt::Key_J,this);
+  shortcuts[8]->setEnabled(FALSE);
+  shortcuts[9]=new QShortcut(Qt::CTRL+Qt::Key_Space,this);
+  shortcuts[9]->setEnabled(FALSE);
+  shortcuts[10]=new QShortcut(Qt::CTRL+Qt::Key_M,this);
+  shortcuts[10]->setEnabled(FALSE);
+  shortcuts[11]=new QShortcut(Qt::CTRL+Qt::Key_Tab,this);
+  shortcuts[11]->setEnabled(TRUE);
+  shortcuts[12]=new QShortcut(Qt::CTRL+Qt::Key_G,this);
+  shortcuts[12]->setEnabled(TRUE);
+  shortcuts[13]=new QShortcut(Qt::SHIFT+Qt::CTRL+Qt::ALT+Qt::Key_F9,this);
+  shortcuts[13]->setEnabled(TRUE);
+  shortcuts[14]=new QShortcut(Qt::SHIFT+Qt::ALT+Qt::Key_F8,this);
+  shortcuts[14]->setEnabled(TRUE);
+  shortcuts[15]=new QShortcut(Qt::CTRL+Qt::ALT+Qt::Key_F9,this);
+  shortcuts[15]->setEnabled(TRUE);
+  shortcuts[16]=new QShortcut(Qt::CTRL+Qt::Key_F9,this);
+  shortcuts[16]->setEnabled(TRUE);
+  connect(shortcuts[0],SIGNAL(activated()),this,SLOT(shortcut_0_activated()));
+  connect(shortcuts[1],SIGNAL(activated()),this,SLOT(shortcut_1_activated()));
+  connect(shortcuts[2],SIGNAL(activated()),this,SLOT(shortcut_2_activated()));
+  connect(shortcuts[3],SIGNAL(activated()),this,SLOT(shortcut_3_activated()));
+  connect(shortcuts[4],SIGNAL(activated()),this,SLOT(shortcut_4_activated()));
+  connect(shortcuts[5],SIGNAL(activated()),this,SLOT(shortcut_5_activated()));
+  connect(shortcuts[6],SIGNAL(activated()),this,SLOT(shortcut_6_activated()));
+  connect(shortcuts[7],SIGNAL(activated()),this,SLOT(shortcut_7_activated()));
+  connect(shortcuts[8],SIGNAL(activated()),this,SLOT(shortcut_8_activated()));
+  connect(shortcuts[9],SIGNAL(activated()),this,SLOT(shortcut_9_activated()));
+  connect(shortcuts[10],SIGNAL(activated()),this,SLOT(shortcut_10_activated()));
+  connect(shortcuts[11],SIGNAL(activated()),this,SLOT(shortcut_11_activated()));
+  connect(shortcuts[12],SIGNAL(activated()),this,SLOT(shortcut_12_activated()));
+  connect(shortcuts[13],SIGNAL(activated()),this,SLOT(shortcut_13_activated()));
+  connect(shortcuts[14],SIGNAL(activated()),this,SLOT(shortcut_14_activated()));
+  connect(shortcuts[15],SIGNAL(activated()),this,SLOT(shortcut_15_activated()));
+  connect(shortcuts[16],SIGNAL(activated()),this,SLOT(shortcut_16_activated()));
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   connect(fileNewAction,SIGNAL(triggered()),this,SLOT(fileNewProject()));
@@ -1304,7 +1319,7 @@ void MainForm::destroy()
   }
   if (kreplace) delete kreplace;
   if (kfinddialog) delete kfinddialog;
-  delete accel;
+  for (int i=0; i<17; i++) delete shortcuts[i];
   delete te_popup;
   delete leftStatusLabel;
   delete rowStatusLabel;
@@ -1354,7 +1369,7 @@ void MainForm::te_popup_activated(int index)
   }
 }
 
-void MainForm::accel_activated(int index)
+void MainForm::shortcutActivated(int index)
 {
   if (CURRENT_VIEW && CURRENT_VIEW->hasFocus()) {
     switch (index) {
@@ -1415,8 +1430,8 @@ void MainForm::accel_activated(int index)
               || (category==hFilesListItem && !fileText.isEmpty()
                   && fileText[0]!='|' && fileText[0]!=';')) {
             // Disable newLineHook.
-            accel->setItemEnabled(6,FALSE);
-            accel->setItemEnabled(7,FALSE);
+            shortcuts[6]->setEnabled(FALSE);
+            shortcuts[7]->setEnabled(FALSE);
             new CompletionPopup(CURRENT_VIEW,pathInProject(currentListItem),this,this);
           }
         }
@@ -1482,10 +1497,95 @@ void MainForm::completionPopup_closed()
     CATEGORY_OF(category,currentListItem->parent());
     if (IS_EDITABLE_CATEGORY(category)) {
       // Restore newLineHook.
-      accel->setItemEnabled(6,TRUE);
-      accel->setItemEnabled(7,TRUE);
+      shortcuts[6]->setEnabled(TRUE);
+      shortcuts[7]->setEnabled(TRUE);
     }
   }
+}
+
+void MainForm::shortcut_0_activated()
+{
+  shortcutActivated(0);
+}
+
+void MainForm::shortcut_1_activated()
+{
+  shortcutActivated(1);
+}
+
+void MainForm::shortcut_2_activated()
+{
+  shortcutActivated(2);
+}
+
+void MainForm::shortcut_3_activated()
+{
+  shortcutActivated(3);
+}
+
+void MainForm::shortcut_4_activated()
+{
+  shortcutActivated(4);
+}
+
+void MainForm::shortcut_5_activated()
+{
+  shortcutActivated(5);
+}
+
+void MainForm::shortcut_6_activated()
+{
+  shortcutActivated(6);
+}
+
+void MainForm::shortcut_7_activated()
+{
+  shortcutActivated(7);
+}
+
+void MainForm::shortcut_8_activated()
+{
+  shortcutActivated(8);
+}
+
+void MainForm::shortcut_9_activated()
+{
+  shortcutActivated(9);
+}
+
+void MainForm::shortcut_10_activated()
+{
+  shortcutActivated(10);
+}
+
+void MainForm::shortcut_11_activated()
+{
+  shortcutActivated(11);
+}
+
+void MainForm::shortcut_12_activated()
+{
+  shortcutActivated(12);
+}
+
+void MainForm::shortcut_13_activated()
+{
+  shortcutActivated(13);
+}
+
+void MainForm::shortcut_14_activated()
+{
+  shortcutActivated(14);
+}
+
+void MainForm::shortcut_15_activated()
+{
+  shortcutActivated(15);
+}
+
+void MainForm::shortcut_16_activated()
+{
+  shortcutActivated(16);
 }
 
 void MainForm::clearProject()
@@ -3699,9 +3799,9 @@ void MainForm::startCompiling()
   projectMakeAction->setVisible(FALSE);
   projectBuildAction->setVisible(FALSE);
   projectCompileAction->setEnabled(FALSE);
-  accel->setItemEnabled(15,FALSE);
+  shortcuts[15]->setEnabled(FALSE);
   projectMakeAction->setEnabled(FALSE);
-  accel->setItemEnabled(16,FALSE);
+  shortcuts[16]->setEnabled(FALSE);
   projectBuildAction->setEnabled(FALSE);
   projectStopCompilationAction->setEnabled(TRUE);
   projectForceQuitAction->setEnabled(TRUE);
@@ -3782,9 +3882,9 @@ void MainForm::stopCompiling()
   projectStopCompilationAction->setEnabled(FALSE);
   projectForceQuitAction->setEnabled(FALSE);
   projectCompileAction->setEnabled(TRUE);
-  accel->setItemEnabled(15,TRUE);
+  shortcuts[15]->setEnabled(TRUE);
   projectMakeAction->setEnabled(TRUE);
-  accel->setItemEnabled(16,TRUE);
+  shortcuts[16]->setEnabled(TRUE);
   projectBuildAction->setEnabled(TRUE);
   projectCompileAction->setVisible(TRUE);
   projectMakeAction->setVisible(TRUE);
@@ -5306,17 +5406,17 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
     findFunctionsAction->setEnabled(FALSE);
     findOpenFileAtCursorAction->setEnabled(FALSE);
     findFindSymbolDeclarationAction->setEnabled(FALSE);
-    accel->setItemEnabled(0,FALSE);
-    accel->setItemEnabled(1,FALSE);
-    accel->setItemEnabled(2,FALSE);
-    accel->setItemEnabled(3,FALSE);
-    accel->setItemEnabled(4,FALSE);
-    accel->setItemEnabled(5,FALSE);
-    accel->setItemEnabled(6,FALSE);
-    accel->setItemEnabled(7,FALSE);
-    accel->setItemEnabled(8,FALSE);
-    accel->setItemEnabled(9,FALSE);
-    accel->setItemEnabled(10,FALSE);
+    shortcuts[0]->setEnabled(FALSE);
+    shortcuts[1]->setEnabled(FALSE);
+    shortcuts[2]->setEnabled(FALSE);
+    shortcuts[3]->setEnabled(FALSE);
+    shortcuts[4]->setEnabled(FALSE);
+    shortcuts[5]->setEnabled(FALSE);
+    shortcuts[6]->setEnabled(FALSE);
+    shortcuts[7]->setEnabled(FALSE);
+    shortcuts[8]->setEnabled(FALSE);
+    shortcuts[9]->setEnabled(FALSE);
+    shortcuts[10]->setEnabled(FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
@@ -5339,17 +5439,17 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
       findFunctionsAction->setEnabled(category!=txtFilesListItem);
       findOpenFileAtCursorAction->setEnabled(TRUE);
       findFindSymbolDeclarationAction->setEnabled(TRUE);
-      accel->setItemEnabled(0,kateView->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
-      accel->setItemEnabled(1,kateView->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
-      accel->setItemEnabled(2,kateView->selection());
-      accel->setItemEnabled(3,kateView->selection());
-      accel->setItemEnabled(4,!clipboard->text().isNull());
-      accel->setItemEnabled(5,TRUE);
-      accel->setItemEnabled(6,TRUE);
-      accel->setItemEnabled(7,TRUE);
-      accel->setItemEnabled(8,TRUE);
-      accel->setItemEnabled(9,TRUE);
-      accel->setItemEnabled(10,TRUE);
+      shortcuts[0]->setEnabled(kateView->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+      shortcuts[1]->setEnabled(kateView->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+      shortcuts[2]->setEnabled(kateView->selection());
+      shortcuts[3]->setEnabled(kateView->selection());
+      shortcuts[4]->setEnabled(!clipboard->text().isNull());
+      shortcuts[5]->setEnabled(TRUE);
+      shortcuts[6]->setEnabled(TRUE);
+      shortcuts[7]->setEnabled(TRUE);
+      shortcuts[8]->setEnabled(TRUE);
+      shortcuts[9]->setEnabled(TRUE);
+      shortcuts[10]->setEnabled(TRUE);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -5365,17 +5465,17 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
       findFunctionsAction->setEnabled(FALSE);
       findOpenFileAtCursorAction->setEnabled(FALSE);
       findFindSymbolDeclarationAction->setEnabled(FALSE);
-      accel->setItemEnabled(0,FALSE);
-      accel->setItemEnabled(1,FALSE);
-      accel->setItemEnabled(2,FALSE);
-      accel->setItemEnabled(3,FALSE);
-      accel->setItemEnabled(4,FALSE);
-      accel->setItemEnabled(5,FALSE);
-      accel->setItemEnabled(6,FALSE);
-      accel->setItemEnabled(7,FALSE);
-      accel->setItemEnabled(8,FALSE);
-      accel->setItemEnabled(9,FALSE);
-      accel->setItemEnabled(10,FALSE);
+      shortcuts[0]->setEnabled(FALSE);
+      shortcuts[1]->setEnabled(FALSE);
+      shortcuts[2]->setEnabled(FALSE);
+      shortcuts[3]->setEnabled(FALSE);
+      shortcuts[4]->setEnabled(FALSE);
+      shortcuts[5]->setEnabled(FALSE);
+      shortcuts[6]->setEnabled(FALSE);
+      shortcuts[7]->setEnabled(FALSE);
+      shortcuts[8]->setEnabled(FALSE);
+      shortcuts[9]->setEnabled(FALSE);
+      shortcuts[10]->setEnabled(FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -5393,17 +5493,17 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
     findFunctionsAction->setEnabled(FALSE);
     findOpenFileAtCursorAction->setEnabled(FALSE);
     findFindSymbolDeclarationAction->setEnabled(FALSE);
-    accel->setItemEnabled(0,FALSE);
-    accel->setItemEnabled(1,FALSE);
-    accel->setItemEnabled(2,FALSE);
-    accel->setItemEnabled(3,FALSE);
-    accel->setItemEnabled(4,FALSE);
-    accel->setItemEnabled(5,FALSE);
-    accel->setItemEnabled(6,FALSE);
-    accel->setItemEnabled(7,FALSE);
-    accel->setItemEnabled(8,FALSE);
-    accel->setItemEnabled(9,FALSE);
-    accel->setItemEnabled(10,FALSE);
+    shortcuts[0]->setEnabled(FALSE);
+    shortcuts[1]->setEnabled(FALSE);
+    shortcuts[2]->setEnabled(FALSE);
+    shortcuts[3]->setEnabled(FALSE);
+    shortcuts[4]->setEnabled(FALSE);
+    shortcuts[5]->setEnabled(FALSE);
+    shortcuts[6]->setEnabled(FALSE);
+    shortcuts[7]->setEnabled(FALSE);
+    shortcuts[8]->setEnabled(FALSE);
+    shortcuts[9]->setEnabled(FALSE);
+    shortcuts[10]->setEnabled(FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();
@@ -5996,8 +6096,8 @@ void MainForm::current_view_undoChanged()
   if (CURRENT_VIEW && !disableViewEvents) {
     editUndoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
     editRedoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
-    accel->setItemEnabled(0,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
-    accel->setItemEnabled(1,CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+    shortcuts[0]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+    shortcuts[1]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
   }
 }
 
@@ -6007,8 +6107,8 @@ void MainForm::current_view_selectionChanged(KTextEditor::View *view)
     editClearAction->setEnabled(view->selection());
     editCutAction->setEnabled(view->selection());
     editCopyAction->setEnabled(view->selection());
-    accel->setItemEnabled(2,view->selection());
-    accel->setItemEnabled(3,view->selection());
+    shortcuts[2]->setEnabled(view->selection());
+    shortcuts[3]->setEnabled(view->selection());
   }
 }
 
@@ -6083,7 +6183,7 @@ void MainForm::clipboard_dataChanged()
 {
   if (CURRENT_VIEW) {
     editPasteAction->setEnabled(!clipboard->text().isNull());
-    accel->setItemEnabled(4,!clipboard->text().isNull());
+    shortcuts[4]->setEnabled(!clipboard->text().isNull());
   }
 }
 

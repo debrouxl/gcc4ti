@@ -64,7 +64,23 @@ public slots:
     virtual void destroy();
     virtual void te_popup_aboutToShow();
     virtual void te_popup_activated( int index );
-    virtual void accel_activated( int index );
+    virtual void shortcut_0_activated();
+    virtual void shortcut_1_activated();
+    virtual void shortcut_2_activated();
+    virtual void shortcut_3_activated();
+    virtual void shortcut_4_activated();
+    virtual void shortcut_5_activated();
+    virtual void shortcut_6_activated();
+    virtual void shortcut_7_activated();
+    virtual void shortcut_8_activated();
+    virtual void shortcut_9_activated();
+    virtual void shortcut_10_activated();
+    virtual void shortcut_11_activated();
+    virtual void shortcut_12_activated();
+    virtual void shortcut_13_activated();
+    virtual void shortcut_14_activated();
+    virtual void shortcut_15_activated();
+    virtual void shortcut_16_activated();
     virtual void completionPopup_closed();
     virtual void fileNewProject();
     virtual void fileOpen();
@@ -193,6 +209,7 @@ private:
     void updateRightStatusLabel();
     void current_view_newLineHook();
     QString pathInProject( Q3ListViewItem * item );
+    void shortcutActivated(int index);
 
 };
 
