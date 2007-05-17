@@ -29,6 +29,7 @@
 #include <QEventLoop>
 #include <QMouseEvent>
 #include <QAssistantClient>
+#include <QButtonGroup>
 #include "ktigcc.h"
 #include "tpr.h"
 
@@ -320,8 +321,31 @@ void ProgramOptions::mousePressEvent( QMouseEvent * e )
 ProgramOptions::ProgramOptions(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
     : QDialog(parent, name, modal, fl)
 {
-    setupUi(this);
-
+  setupUi(this);
+  // Create button groups
+  QButtonGroup *group;
+  //Tab: Reloc Format
+  group=new QButtonGroup(this);
+  group->addButton(RelocAMS);
+  group->addButton(RelocKernel);
+  group->addButton(RelocCompressed);
+  group->addButton(RelocMlink);
+  group=new QButtonGroup(this);
+  group->addButton(ROMCallDirect);
+  group->addButton(ROMCallKernel);
+  group->addButton(ROMCallCompressed);
+  group->addButton(ROMCallMlink);
+  group->addButton(ROMCallFLine);
+  //Tab: BSS/Data Format
+  group=new QButtonGroup(this);
+  group->addButton(BSSMerge);
+  group->addButton(BSSKernel);
+  group->addButton(BSSCompressed);
+  group->addButton(BSSMlink);
+  group=new QButtonGroup(this);
+  group->addButton(DataVarKernel);
+  group->addButton(DataVarCompressed);
+  group->addButton(DataVarMlink);
 }
 
 /*
