@@ -25,7 +25,6 @@
 #include <QImage>
 #include <QPixmap>
 #include <QButtonGroup>
-#include <Q3Accel>
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kshell.h>
