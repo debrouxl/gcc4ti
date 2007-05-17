@@ -24,6 +24,7 @@
 #include <QVariant>
 #include <QImage>
 #include <QPixmap>
+#include <QButtonGroup>
 #include <Q3Accel>
 #include <kmessagebox.h>
 #include <kfiledialog.h>
@@ -61,6 +62,10 @@ void ProjectOptions::ImportSettings(void)
 {
   Boolean isregular;
   //Tab: General
+  QButtonGroup *group=new QButtonGroup(this);
+  group->addButton(CreateCopyNever);
+  group->addButton(CreateCopyIfArchived);
+  group->addButton(CreateCopyAlways);
   OncalcVariableName_1->setText(settings.data_var);
   if (settings.copy_data_var)
   {
@@ -79,6 +84,7 @@ void ProjectOptions::ImportSettings(void)
     FunctionArchive->setChecked(TRUE),isregular=FALSE;
   if (isregular)
   {
+    RegularProgram->setChecked(TRUE);
     if (settings.use_data_var)
     {
       ExternalDataVariable->setChecked(TRUE);
