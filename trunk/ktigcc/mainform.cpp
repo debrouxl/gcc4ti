@@ -4768,7 +4768,7 @@ void MainForm::showStats()
   // and always renders them as \n\n, no matter whether there is actually just
   // one, two or more than two \n characters. Thus the
   // Qt::convertFromPlainText. Sadly, that replaces the spaces with character
-  // #160 (&nbsp:) which doesn't display properly in KMessageBox, so fix it up.
+  // #160 (&nbsp;) which doesn't display properly in KMessageBox, so fix it up.
   if (KMessageBox::questionYesNo(this,Qt::convertFromPlainText(
         QString("The project has been compiled successfully.\n\n%1\n"
         "Do you want to open the project folder?").arg(compileStats))
