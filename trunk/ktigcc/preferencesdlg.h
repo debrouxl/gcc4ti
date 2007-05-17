@@ -33,11 +33,11 @@ public:
 public slots:
     virtual void init();
     virtual void destroy();
-    virtual void linkTarget_toggled( bool unused_on );
+    virtual void linkTarget_toggled(bool on);
     virtual void bgColorChange_clicked();
     virtual void editorFontChange_clicked();
-    virtual void syntaxLanguage_activated( int index );
-    virtual void syntaxEnabled_toggled( bool on );
+    virtual void syntaxLanguage_activated(int index);
+    virtual void syntaxEnabled_toggled(bool on);
     virtual void resetButton_clicked();
     virtual void numberColorButton_clicked();
     virtual void numberStyleButton_clicked();
@@ -46,8 +46,8 @@ public slots:
     virtual void parenthesisColorsButton_clicked();
     virtual void parenthesisStyleButton_clicked();
     virtual void syntaxListView_selectionChanged();
-    virtual void syntaxListView_itemRenamed( Q3ListViewItem * item, const QString & str, int unused_col );
-    virtual void syntaxListViewAccel_activated( int id );
+    virtual void syntaxListView_itemRenamed(Q3ListViewItem *item, const QString &str, int col);
+    virtual void syntaxListViewShortcut_activated();
     virtual void newStyleButton_clicked();
     virtual void newListButton_clicked();
     virtual void editButton_clicked();
@@ -56,8 +56,8 @@ public slots:
     virtual void clearSelectionButton_clicked();
     virtual void applyButton_clicked();
     virtual void templateListBox_selectionChanged();
-    virtual void templateListBox_currentChanged( Q3ListBoxItem * item );
-    virtual void templateIdentifier_textChanged( const QString & text );
+    virtual void templateListBox_currentChanged(Q3ListBoxItem *item);
+    virtual void templateIdentifier_textChanged(const QString &text);
     virtual void regenCompletionInfoButton_clicked();
 
 protected slots:

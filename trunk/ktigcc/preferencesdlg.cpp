@@ -29,7 +29,7 @@
 #include <QCheckBox>
 #include <QRadioButton>
 #include <QButtonGroup>
-#include <Q3Accel>
+#include <QShortcut>
 #include <QColor>
 #include <QLinkedList>
 #include <QApplication>
@@ -207,10 +207,9 @@ void Preferences::init()
   customStylesItem->setOpen(TRUE);
   wordListsItem->setOpen(TRUE);
   rootListItem->setOpen(TRUE);
-  Q3Accel *syntaxListViewAccel=new Q3Accel(syntaxListView);
-  syntaxListViewAccel->insertItem(Qt::Key_Delete,0);
-  connect(syntaxListViewAccel,SIGNAL(activated(int)),
-          this,SLOT(syntaxListViewAccel_activated(int)));
+  QShortcut *syntaxListViewShortcut=new QShortcut(Qt::Key_Delete,syntaxListView);
+  connect(syntaxListViewShortcut,SIGNAL(activated()),
+          this,SLOT(syntaxListViewShortcut_activated()));
 
   // Coding
   templateListBox->clear();
@@ -275,8 +274,7 @@ void Preferences::destroy()
   }
 }
 
-#define unused_on on __attribute__((unused))
-void Preferences::linkTarget_toggled(bool unused_on)
+void Preferences::linkTarget_toggled(bool on __attribute__((unused)))
 {
   bool isRealCalc=targetRealCalc->isChecked();
   linkPort->setEnabled(isRealCalc);
@@ -468,8 +466,7 @@ void Preferences::syntaxListView_selectionChanged()
                          && selectedItem && selectedItem->rtti()==0x716CC8);
 }
 
-#define unused_col col __attribute__((unused))
-void Preferences::syntaxListView_itemRenamed(Q3ListViewItem *item, const QString &str, int unused_col)
+void Preferences::syntaxListView_itemRenamed(Q3ListViewItem *item, const QString &str, int col __attribute__((unused)))
 {
   Q3ListViewItem *rootListItem=syntaxListView->firstChild();
   Q3ListViewItem *customStylesItem=rootListItem->firstChild();
@@ -497,40 +494,38 @@ void Preferences::syntaxListView_itemRenamed(Q3ListViewItem *item, const QString
   } else qWarning("Preferences::syntaxListView_itemRenamed: Invalid parent.");
 }
 
-void Preferences::syntaxListViewAccel_activated(int id)
+void Preferences::syntaxListViewShortcut_activated()
 {
-  if (!id) {
-    Q3ListViewItem *currentItem=syntaxListView->currentItem();
-    if (currentItem && currentItem->rtti()==0x716CC8) {
-      Q3ListViewItem *rootListItem=syntaxListView->firstChild();
-      Q3ListViewItem *customStylesItem=rootListItem->firstChild();
-      Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
-      if (currentItem->parent()==customStylesItem) {
-        Q3ListViewItem *i;
-        QLinkedList<Syn_CustomStyle>::Iterator it;
-        for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
-             i!=currentItem && it!=preferences.syn->customStyles.end() && i;
-             ++it, i=i->nextSibling());
-        if (it==preferences.syn->customStyles.end() || !i)
-          qWarning("Preferences::syntaxListViewAccel_activated: Invalid item.");
-        else {
-          delete currentItem;
-          preferences.syn->customStyles.remove(it);
-        }
-      } else if (currentItem->parent()==wordListsItem) {
-        Q3ListViewItem *i;
-        QLinkedList<Syn_WordList>::Iterator it;
-        for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
-             i!=currentItem && it!=preferences.syn->wordLists.end() && i;
-             ++it, i=i->nextSibling());
-        if (it==preferences.syn->wordLists.end() || !i)
-          qWarning("Preferences::syntaxListViewAccel_activated: Invalid item.");
-        else {
-          delete currentItem;
-          preferences.syn->wordLists.remove(it);
-        }
-      } else qWarning("Preferences::syntaxListViewAccel_activated: Invalid parent.");
-    }
+  Q3ListViewItem *currentItem=syntaxListView->currentItem();
+  if (currentItem && currentItem->rtti()==0x716CC8) {
+    Q3ListViewItem *rootListItem=syntaxListView->firstChild();
+    Q3ListViewItem *customStylesItem=rootListItem->firstChild();
+    Q3ListViewItem *wordListsItem=customStylesItem->nextSibling();
+    if (currentItem->parent()==customStylesItem) {
+      Q3ListViewItem *i;
+      QLinkedList<Syn_CustomStyle>::Iterator it;
+      for (it=preferences.syn->customStyles.begin(), i=customStylesItem->firstChild();
+            i!=currentItem && it!=preferences.syn->customStyles.end() && i;
+            ++it, i=i->nextSibling());
+      if (it==preferences.syn->customStyles.end() || !i)
+        qWarning("Preferences::syntaxListViewShortcut_activated: Invalid item.");
+      else {
+        delete currentItem;
+        preferences.syn->customStyles.remove(it);
+      }
+    } else if (currentItem->parent()==wordListsItem) {
+      Q3ListViewItem *i;
+      QLinkedList<Syn_WordList>::Iterator it;
+      for (it=preferences.syn->wordLists.begin(), i=wordListsItem->firstChild();
+            i!=currentItem && it!=preferences.syn->wordLists.end() && i;
+            ++it, i=i->nextSibling());
+      if (it==preferences.syn->wordLists.end() || !i)
+        qWarning("Preferences::syntaxListViewShortcut_activated: Invalid item.");
+      else {
+        delete currentItem;
+        preferences.syn->wordLists.remove(it);
+      }
+    } else qWarning("Preferences::syntaxListViewShortcut_activated: Invalid parent.");
   }
 }
 
