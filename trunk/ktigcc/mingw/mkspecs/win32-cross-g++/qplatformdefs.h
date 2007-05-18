@@ -1,3 +1,26 @@
+/****************************************************************************
+**
+** Copyright (C) 1992-2007 Trolltech ASA. All rights reserved.
+**
+** This file is part of the qmake spec of the Qt Toolkit.
+**
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
+**
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+**
+****************************************************************************/
+
 #ifndef QPLATFORMDEFS_H
 #define QPLATFORMDEFS_H
 
@@ -80,6 +103,7 @@ typedef enum {
 #define QT_CHDIR		::_chdir
 #define QT_MKDIR		::_mkdir
 #define QT_RMDIR		::_rmdir
+#define QT_OPEN_LARGEFILE       0
 #define QT_OPEN_RDONLY		_O_RDONLY
 #define QT_OPEN_WRONLY		_O_WRONLY
 #define QT_OPEN_RDWR		_O_RDWR
@@ -92,12 +116,21 @@ typedef enum {
 #endif
 
 #define QT_FOPEN                ::fopen
+#ifdef QT_LARGEFILE_SUPPORT
+#define QT_FSEEK                ::fseeko64
+#define QT_FTELL                ::ftello64
+#else
 #define QT_FSEEK                ::fseek
 #define QT_FTELL                ::ftell
+#endif
 #define QT_FGETPOS              ::fgetpos
 #define QT_FSETPOS              ::fsetpos
 #define QT_FPOS_T               fpos_t
+#ifdef QT_LARGEFILE_SUPPORT
+#define QT_OFF_T                off64_t
+#else
 #define QT_OFF_T                long
+#endif
 
 #define QT_SIGNAL_ARGS		int
 
