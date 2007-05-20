@@ -20,6 +20,7 @@
 */
 
 #include <QString>
+#include <QList>
 #include <QLinkedList>
 #include <QPair>
 #include <QPoint>
@@ -33,6 +34,8 @@
 #include <kmessagebox.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/document.h>
+#include <ktexteditor/codecompletionmodel.h>
+#include <ktexteditor/codecompletioninterface.h>
 #include <kconfig.h>
 #include <cstring>
 #include "completion.h"
@@ -133,14 +136,14 @@ bool findSymbolInFile(const QString &symbol,
                                    symbolLine,systemHeader);
 }
 
-static void mergeCompletionEntries(QLinkedList<CompletionEntry> &dest,
-                                   const QLinkedList<CompletionEntry> &src)
+static void mergeCompletionEntries(QList<CompletionEntry> &dest,
+                                   const QList<CompletionEntry> &src)
 {
   foreach (const CompletionEntry &entry, src) dest.append(entry);
 }
 
 static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
-                                              QLinkedList<CompletionEntry> &result)
+                                              QList<CompletionEntry> &result)
 {
   foreach (const QString &headerName, systemHeaders) {
     // Avoid infinite recursion.
@@ -157,7 +160,7 @@ static void completionEntriesForSystemHeaders(const QStringList &systemHeaders,
 static bool completionEntriesForFileRecursive(const QString &fileText,
                                               const QString &fileName,
                                               MainForm *mainForm,
-                                              QLinkedList<CompletionEntry> &result)
+                                              QList<CompletionEntry> &result)
 {
   if (!projectCompletion.contains(fileName) || projectCompletion[fileName].dirty) {
     QFileInfo fileInfo(fileName);
@@ -184,28 +187,28 @@ static bool completionEntriesForFileRecursive(const QString &fileText,
 bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
-                              QLinkedList<CompletionEntry> &result)
+                              QList<CompletionEntry> &result)
 {
   resetSearchedFlags();
   return completionEntriesForFileRecursive(fileText,fileName,mainForm,result);
 }
 
-static QLinkedList<CompletionEntry> sortCompletionEntries(
-  const QLinkedList<CompletionEntry> &entries)
+static QList<CompletionEntry> sortCompletionEntries(
+  const QList<CompletionEntry> &entries)
 {
-  QMap<QString,QLinkedList<CompletionEntry> > map;
+  QMap<QString,QList<CompletionEntry> > map;
   foreach (const CompletionEntry &entry, entries) {
-    QLinkedList<CompletionEntry> &list=map[entry.text];
+    QList<CompletionEntry> &list=map[entry.text];
     if (!list.contains(entry)) list.append(entry);
   }
-  QLinkedList<CompletionEntry> result;
-  foreach (const QLinkedList<CompletionEntry> &entries, map)
+  QList<CompletionEntry> result;
+  foreach (const QList<CompletionEntry> &entries, map)
     mergeCompletionEntries(result,entries);
   return result;
 }
 
 static QStringList prototypesForIdentifier(const QString &identifier,
-  const QLinkedList<CompletionEntry> &entries)
+  const QList<CompletionEntry> &entries)
 {
   QStringList result;
   QStringList reservedIdentifiers=QString("__alignof__\n"
@@ -299,7 +302,7 @@ bool parseHelpSources(QWidget *parent, const QString &directory,
   QStringList headers=qdir.entryList("*.h",QDir::Dirs);
   foreach (const QString &header, headers) {
     CompletionInfo &completionInfo=sysHdrCompletion[header];
-    QLinkedList<CompletionEntry> &entries=completionInfo.entries;
+    QList<CompletionEntry> &entries=completionInfo.entries;
     QDir hdrQdir(QFileInfo(qdir,header).filePath());
     QStringList hsfs=hdrQdir.entryList("*.hsf *.ref",QDir::Files);
     foreach (const QString &hsf, hsfs) {
@@ -565,12 +568,72 @@ void TemplatePopup::QPopupMenu_activated(int id)
   } else view->insertText(code);
 }
 
+CompletionModel::CompletionModel(QObject *parent,
+                                 const QList<CompletionEntry> &entries)
+  : KTextEditor::CodeCompletionModel(parent), m_entries(entries)
+{
+}
+
+CompletionModel::~CompletionModel()
+{
+}
+
+int CompletionModel::rowCount(const QModelIndex &parent __attribute__((unused)))
+  const
+{
+  return m_entries.count();
+}
+
+QModelIndex CompletionModel::index(int row, int column,
+                                   const QModelIndex &parent) const
+{
+  if (row<0 || row>=m_entries.count() || column<0 || column>5 || parent.isValid())
+    return QModelIndex();
+  return createIndex(row,column);
+}
+
+QVariant CompletionModel::data(const QModelIndex &index, int role) const
+{
+  switch (role)
+  {
+    case Qt::DisplayRole:
+      switch (index.column()) {
+        case 0:
+          return m_entries[index.row()].prefix;
+        case 1:
+          return QVariant::Invalid; // icon
+        case 2:
+          return QVariant::Invalid; // scope
+        case 3:
+          return m_entries[index.row()].text;
+        case 4:
+          return QVariant::Invalid; // arguments (currently in postfix)
+        case 5:
+          return m_entries[index.row()].postfix;
+      }
+    case Qt::StatusTipRole:
+      return m_entries[index.row()].comment;
+    case CompletionRole:
+      return (int)Public|GlobalScope;
+    case ScopeIndex:
+      return -1;
+    case MatchType:
+      return true;
+    case HighlightingMethod:
+      return QVariant::Invalid;
+    case InheritanceDepth:
+      return 0;
+  }
+
+  return QVariant();
+}
+
 CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileName,
                                  MainForm *mainForm, QObject *receiver)
   : QObject(parent), done(false), completionPopup(0)
 {
   connect(this,SIGNAL(closed()),receiver,SLOT(completionPopup_closed()));
-  QLinkedList<CompletionEntry> entries;
+  QList<CompletionEntry> entries;
   if (!completionEntriesForFile(parent->document()->text(),fileName,mainForm,
                                 entries)) {
     emit closed();
@@ -579,20 +642,26 @@ CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileN
   }
   entries=sortCompletionEntries(entries);
   KTextEditor::Cursor cursor=parent->cursorPosition();
+  int line=cursor.line();
   int column=cursor.column();
-  int offset=0;
   if (column) {
-    QString textLine=parent->document()->line(cursor.line());
+    QString textLine=parent->document()->line(line);
     if (column<=textLine.length()) {
-      while (column && (textLine[--column].isLetterOrNumber()
-                        || textLine[column]=='_' || textLine[column]=='$'))
-        offset++;
+      while (column && (textLine[column-1].isLetterOrNumber()
+                        || textLine[column-1]=='_' || textLine[column-1]=='$'))
+        column--;
     }
   }
-#if 0 // FIXME: Port completion.
+#if 0 // FIXME: Finish porting completion.
   connect(parent,SIGNAL(completionAborted()),this,SLOT(slotDone()));
   connect(parent,SIGNAL(completionDone()),this,SLOT(slotDone()));
-  parent->showCompletionBox(entries,offset);
+  KTextEditor::CodeCompletionInterface *complIFace
+    =qobject_cast<KTextEditor::CodeCompletionInterface *>(parent);
+  qDebug("%s",parent->document()->text(KTextEditor::Range(
+                                KTextEditor::Cursor(line,column),cursor)).utf8().data());
+  complIFace->startCompletion(KTextEditor::Range(
+                                KTextEditor::Cursor(line,column),cursor),
+                              new CompletionModel(this,entries));
   // Unfortunately, Kate doesn't always send the completionAborted or
   // completionDone event when it closes its popup. Work around that.
   QWidgetList *list=QApplication::topLevelWidgets();
@@ -636,7 +705,7 @@ ArgHintPopup::ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
                            MainForm *mainForm)
   : QObject(parent), done(false), argHintPopup(0)
 {
-  QLinkedList<CompletionEntry> entries;
+  QList<CompletionEntry> entries;
   if (!completionEntriesForFile(parent->document()->text(),fileName,mainForm,
                                 entries)) {
     nothingFound:
@@ -658,7 +727,7 @@ ArgHintPopup::ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
   QString identifier=textLine.mid(startColumn,endColumn-startColumn);
   QStringList prototypes=prototypesForIdentifier(identifier,entries);
   if (prototypes.isEmpty()) goto nothingFound;  
-#if 0 // FIXME: Port completion.
+#if 0 // FIXME: Port argument hint.
   connect(parent,SIGNAL(argHintHidden()),this,SLOT(slotDone()));
   parent->showArgHint(prototypes,"()",",");
   // Unfortunately, Kate doesn't always send the argHintHidden event when it

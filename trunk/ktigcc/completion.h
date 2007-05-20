@@ -27,9 +27,10 @@
 #include <QString>
 #include <QStringList>
 #include <Q3ValueList>
-#include <QLinkedList>
+#include <QList>
 #include <QEvent>
 #include <ktexteditor/view.h>
+#include <ktexteditor/codecompletionmodel.h>
 
 struct CompletionEntry
 {
@@ -58,7 +59,7 @@ struct CompletionInfo {
   QStringList includedSystem;
   QStringList included;
   QMap<QString,unsigned> lineNumbers;
-  QLinkedList<CompletionEntry> entries;
+  QList<CompletionEntry> entries;
 };
 
 // Maps file name to a CompletionInfo.
@@ -75,7 +76,7 @@ bool findSymbolInFile(const QString &symbol,
 bool completionEntriesForFile(const QString &fileText,
                               const QString &fileName,
                               MainForm *mainForm,
-                              QLinkedList<CompletionEntry> &result);
+                              QList<CompletionEntry> &result);
 
 class QWidget;
 bool parseHelpSources(QWidget *parent, const QString &directory,
@@ -96,6 +97,22 @@ class TemplatePopup : public Q3PopupMenu {
     void QPopupMenu_activated(int id);
   private:
     KTextEditor::View *view;
+};
+
+class CompletionModel : public KTextEditor::CodeCompletionModel
+{
+  Q_OBJECT
+  public:
+    CompletionModel(QObject *parent, const QList<CompletionEntry> &entries);
+    ~CompletionModel();
+
+    virtual int rowCount(const QModelIndex &parent) const;
+    virtual QModelIndex index(int row, int column,
+                              const QModelIndex &parent=QModelIndex()) const;
+    virtual QVariant data(const QModelIndex &index, int role) const;
+
+  private:
+    const QList<CompletionEntry> m_entries;
 };
 
 class QEvent;
