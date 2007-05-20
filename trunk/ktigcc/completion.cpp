@@ -601,15 +601,17 @@ QVariant CompletionModel::data(const QModelIndex &index, int role) const
         case 0:
           return m_entries[index.row()].prefix;
         case 1:
-          return QVariant::Invalid; // icon
+          return QVariant(); // icon
         case 2:
-          return QVariant::Invalid; // scope
+          return QVariant(); // scope
         case 3:
           return m_entries[index.row()].text;
         case 4:
-          return QVariant::Invalid; // arguments (currently in postfix)
+          return QVariant(); // arguments (currently in postfix)
         case 5:
           return m_entries[index.row()].postfix;
+        default:
+          return QVariant();
       }
     case Qt::StatusTipRole:
       return m_entries[index.row()].comment;
@@ -620,7 +622,7 @@ QVariant CompletionModel::data(const QModelIndex &index, int role) const
     case MatchType:
       return true;
     case HighlightingMethod:
-      return QVariant::Invalid;
+      return QVariant();
     case InheritanceDepth:
       return 0;
   }
