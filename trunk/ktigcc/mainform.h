@@ -104,11 +104,11 @@ public slots:
     virtual void editDecreaseIndent();
     virtual void findFind();
     virtual void findFind_next();
-    virtual void findFind_highlight( const QString & unused_text, int matchingindex, int matchedlength );
+    virtual void findFind_highlight( const QString & text, int matchingindex, int matchedlength );
     virtual void findFind_stop();
     virtual void findReplace();
     virtual void findReplace_next();
-    virtual void findReplace_highlight( const QString & unused_text, int matchingindex, int matchedlength );
+    virtual void findReplace_highlight( const QString & text, int matchingindex, int matchedlength );
     virtual void findReplace_replace( const QString & text, int replacementIndex, int replacedLength, int matchedLength );
     virtual void findReplace_stop();
     virtual void findFunctions();
@@ -151,7 +151,7 @@ public slots:
     virtual void timerEvent( QTimerEvent * event );
     virtual void fileTreeClicked( Q3ListViewItem * item );
     virtual void fileNewFolder();
-    virtual void fileTreeContextMenuRequested( Q3ListViewItem * item, const QPoint & pos, int unused_col );
+    virtual void fileTreeContextMenuRequested( Q3ListViewItem * item, const QPoint & pos, int col );
     virtual void fileNewCHeader();
     virtual void fileNewGNUAssemblyHeader();
     virtual void fileNewA68kAssemblyHeader();

@@ -3012,8 +3012,7 @@ void MainForm::findFind_next()
   delete kfind;
 }
 
-#define unused_text text __attribute__((unused))
-void MainForm::findFind_highlight(const QString &unused_text, int matchingindex, int matchedlength)
+void MainForm::findFind_highlight(const QString &text __attribute__((unused)), int matchingindex, int matchedlength)
 {
   if (currentListItem!=findCurrentDocument) fileTreeClicked(findCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
@@ -3296,7 +3295,7 @@ void MainForm::findReplace_next(bool firstTime)
   } while (result==KFind::NoMatch);
 }
 
-void MainForm::findReplace_highlight(const QString &unused_text, int matchingindex, int matchedlength)
+void MainForm::findReplace_highlight(const QString &text __attribute__((unused)), int matchingindex, int matchedlength)
 {
   if (currentListItem!=replaceCurrentDocument) fileTreeClicked(replaceCurrentDocument);
   if (!CURRENT_VIEW) qFatal("CURRENT_VIEW should be set here!");
@@ -5557,10 +5556,9 @@ bool MainForm::removeItem(Q3ListViewItem *item)
   } else return FALSE;
 }
 
-#define unused_col __attribute__((unused)) col /* stupid QT designer... */
 void MainForm::fileTreeContextMenuRequested(Q3ListViewItem *item,
                                             const QPoint &pos,
-                                            int unused_col)
+                                            int col __attribute__((unused)))
 {
   fileTreeClicked(item);
   if (IS_FOLDER(item)) {

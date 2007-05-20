@@ -161,9 +161,7 @@ void ProgramOptions::CMinimumAMSVersion_toggled(bool on)
   MinimumAMSVersion->setEnabled(on);
 }
 
-#define on_unused on __attribute__((unused))
-
-void ProgramOptions::CalcCheckbox_toggled(bool on_unused)
+void ProgramOptions::CalcCheckbox_toggled(bool on __attribute__((unused)))
 {
   static bool inEvent=FALSE;
   if (!inEvent) {
@@ -181,7 +179,7 @@ void ProgramOptions::CalcCheckbox_toggled(bool on_unused)
 }
 
 
-void ProgramOptions::KernelRadiobutton_toggled(bool on_unused)
+void ProgramOptions::KernelRadiobutton_toggled(bool on __attribute__((unused)))
 {
   static bool inEvent=FALSE;
   if (!inEvent) {
@@ -258,7 +256,7 @@ void ProgramOptions::KernelRadiobutton_toggled(bool on_unused)
 }
 
 
-void ProgramOptions::RelocSettings_toggled(bool on_unused)
+void ProgramOptions::RelocSettings_toggled(bool on __attribute__((unused)))
 {
   static bool inEvent=FALSE;
   if (!inEvent) {

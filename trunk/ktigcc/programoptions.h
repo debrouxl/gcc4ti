@@ -35,9 +35,9 @@ public:
 
 public slots:
     virtual void CMinimumAMSVersion_toggled( bool on );
-    virtual void CalcCheckbox_toggled( bool on_unused );
-    virtual void KernelRadiobutton_toggled( bool on_unused );
-    virtual void RelocSettings_toggled( bool on_unused );
+    virtual void CalcCheckbox_toggled( bool on );
+    virtual void KernelRadiobutton_toggled( bool on );
+    virtual void RelocSettings_toggled( bool on );
 
 protected:
     virtual void mousePressEvent( QMouseEvent * e );

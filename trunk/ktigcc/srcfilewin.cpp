@@ -844,8 +844,7 @@ void SourceFileWindow::findFind_next()
   delete kfind;
 }
 
-#define unused_text text __attribute__((unused))
-void SourceFileWindow::findFind_highlight(const QString &unused_text, int matchingindex, int matchedlength)
+void SourceFileWindow::findFind_highlight(const QString &text __attribute__((unused)), int matchingindex, int matchedlength)
 {
   CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(THIS->findCurrentLine,matchingindex+matchedlength));
   CURRENT_VIEW->setSelection(KTextEditor::Range(THIS->findCurrentLine,matchingindex,
@@ -1004,7 +1003,7 @@ void SourceFileWindow::findReplace_next(bool firstTime)
   } while (result==KFind::NoMatch);
 }
 
-void SourceFileWindow::findReplace_highlight(const QString &unused_text, int matchingindex, int matchedlength)
+void SourceFileWindow::findReplace_highlight(const QString &text __attribute__((unused)), int matchingindex, int matchedlength)
 {
   CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(THIS->kreplace->replaceCurrentLine,matchingindex+matchedlength));
   CURRENT_VIEW->setSelection(KTextEditor::Range(THIS->kreplace->replaceCurrentLine,matchingindex,
