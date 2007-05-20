@@ -77,7 +77,6 @@
 #include "tpr.h"
 #include "preferences.h"
 #include "projectoptions.h"
-#include "srcfile.h"
 #include "functions.h"
 #include "completion.h"
 
@@ -107,9 +106,8 @@ using std::exit;
 
 enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 
-#define THIS (static_cast<SourceFile *>(this))
-#define CURRENT_VIEW (THIS->kateView)
-#define HL_MODE ((THIS->hlEnabled && *(THIS->hlEnabled))?THIS->hlMode:"None")
+#define CURRENT_VIEW (this->kateView)
+#define HL_MODE ((hlEnabled && *hlEnabled)?hlMode:"None")
 
 // For some reason, this flag is not in the public ConfigFlags enum.
 #define CF_REMOVE_TRAILING_DYN 0x4000000
@@ -165,8 +163,14 @@ class KReplaceWithSelectionS : public KReplace {
     int m_selStartLine, m_selStartCol, m_selEndLine, m_selEndCol;
 };
 
-void SourceFileWindow::initBase()
+SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
+                                   const QString &hlm, const bool *hle,
+                                   void *cat, bool isc, bool isasm, bool istxt)
+  : QMainWindow(), mainForm(mainfrm), fileName(fn), hlMode(hlm), hlEnabled(hle),
+    category(cat), isCFile(isc), isASMFile(isasm), isTextFile(istxt)
 {
+  setupUi(this);
+  (void)statusBar();
   QPixmap smallIcon(":/images/ktigcc.png");
   QPixmap largeIcon(":/images/icon.png");
   QIcon windowIcon(smallIcon);
@@ -175,55 +179,55 @@ void SourceFileWindow::initBase()
 #ifdef Q_WS_X11
   KWindowSystem::setIcons(winId(),largeIcon,smallIcon);
 #endif
-  sourceFiles.append(THIS);
-  THIS->dirWatch=new KDirWatch(this);
-  setCaption(caption()+" - "+THIS->fileName);
-  THIS->te_popup = new Q3PopupMenu(this);
-  THIS->te_popup->insertItem("&Open file at cursor",0);
-  THIS->te_popup->insertItem("&Find symbol declaration",1);
-  THIS->te_popup->insertSeparator();
-  THIS->te_popup->insertItem("&Undo",2);
-  THIS->te_popup->insertItem("&Redo",3);
-  THIS->te_popup->insertSeparator();
-  THIS->te_popup->insertItem("&Clear",4);
-  THIS->te_popup->insertItem("Cu&t",5);
-  THIS->te_popup->insertItem("Cop&y",6);
-  THIS->te_popup->insertItem("&Paste",7);
-  THIS->te_popup->insertSeparator();
-  THIS->te_popup->insertItem("&Select all",8);
-  THIS->te_popup->insertSeparator();
-  THIS->te_popup->insertItem("&Increase indent",9);
-  THIS->te_popup->insertItem("&Decrease indent",10);
-  connect(THIS->te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
-  connect(THIS->te_popup,SIGNAL(activated(int)),this,SLOT(te_popup_activated(int)));
-  THIS->kfinddialog = static_cast<KFindDialog *>(NULL);
-  THIS->kreplace = static_cast<KReplaceWithSelectionS *>(NULL);
-  THIS->kateView=static_cast<KTextEditor::View *>(NULL);
-  THIS->kateView=reinterpret_cast<KTextEditor::View *>(createView(THIS->fileName,HL_MODE,
-    THIS->isASMFile?preferences.tabWidthAsm:THIS->isCFile?preferences.tabWidthC:8));
+  sourceFiles.append(this);
+  dirWatch=new KDirWatch(this);
+  setCaption(caption()+" - "+fileName);
+  te_popup = new Q3PopupMenu(this);
+  te_popup->insertItem("&Open file at cursor",0);
+  te_popup->insertItem("&Find symbol declaration",1);
+  te_popup->insertSeparator();
+  te_popup->insertItem("&Undo",2);
+  te_popup->insertItem("&Redo",3);
+  te_popup->insertSeparator();
+  te_popup->insertItem("&Clear",4);
+  te_popup->insertItem("Cu&t",5);
+  te_popup->insertItem("Cop&y",6);
+  te_popup->insertItem("&Paste",7);
+  te_popup->insertSeparator();
+  te_popup->insertItem("&Select all",8);
+  te_popup->insertSeparator();
+  te_popup->insertItem("&Increase indent",9);
+  te_popup->insertItem("&Decrease indent",10);
+  connect(te_popup,SIGNAL(aboutToShow()),this,SLOT(te_popup_aboutToShow()));
+  connect(te_popup,SIGNAL(activated(int)),this,SLOT(te_popup_activated(int)));
+  kfinddialog = static_cast<KFindDialog *>(NULL);
+  kreplace = static_cast<KReplaceWithSelectionS *>(NULL);
+  kateView=static_cast<KTextEditor::View *>(NULL);
+  kateView=reinterpret_cast<KTextEditor::View *>(createView(fileName,HL_MODE,
+    isASMFile?preferences.tabWidthAsm:isCFile?preferences.tabWidthC:8));
   int rightStatusSize=size().width();
   int line, col;
   CURRENT_VIEW->cursorPosition().position(line,col);
-  THIS->rowStatusLabel=new QLabel(QString("%1").arg(line+1),this);
-  THIS->rowStatusLabel->setAlignment(Qt::AlignRight);
-  THIS->rowStatusLabel->setMaximumWidth(30);
-  statusBar()->addWidget(THIS->rowStatusLabel,1);
-  THIS->colStatusLabel=new QLabel(QString("%1").arg(col+1),this);
-  THIS->colStatusLabel->setAlignment(Qt::AlignRight);
-  THIS->colStatusLabel->setMaximumWidth(30);
-  statusBar()->addWidget(THIS->colStatusLabel,1);
-  THIS->charsStatusLabel=new QLabel(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()),this);
-  THIS->charsStatusLabel->setMaximumWidth(100);
-  statusBar()->addWidget(THIS->charsStatusLabel,1);
-  THIS->rightStatusLabel=new QLabel(THIS->fileName,this);
-  THIS->rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
-  statusBar()->addWidget(THIS->rightStatusLabel,1);
+  rowStatusLabel=new QLabel(QString("%1").arg(line+1),this);
+  rowStatusLabel->setAlignment(Qt::AlignRight);
+  rowStatusLabel->setMaximumWidth(30);
+  statusBar()->addWidget(rowStatusLabel,1);
+  colStatusLabel=new QLabel(QString("%1").arg(col+1),this);
+  colStatusLabel->setAlignment(Qt::AlignRight);
+  colStatusLabel->setMaximumWidth(30);
+  statusBar()->addWidget(colStatusLabel,1);
+  charsStatusLabel=new QLabel(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()),this);
+  charsStatusLabel->setMaximumWidth(100);
+  statusBar()->addWidget(charsStatusLabel,1);
+  rightStatusLabel=new QLabel(fileName,this);
+  rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
+  statusBar()->addWidget(rightStatusLabel,1);
   statusBar()->setSizeGripEnabled(FALSE);
   connect(statusBar(),SIGNAL(messageChanged(const QString &)),this,SLOT(statusBar_messageChanged(const QString &)));
-  connect(THIS->dirWatch,SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
-  connect(THIS->dirWatch,SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
-  THIS->dirWatch->addFile(THIS->fileName);
-  THIS->dirWatch->startScan();
+  connect(dirWatch,SIGNAL(created(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
+  connect(dirWatch,SIGNAL(dirty(const QString &)),this,SLOT(KDirWatch_dirty(const QString &)));
+  dirWatch->addFile(fileName);
+  dirWatch->startScan();
   connect(clipboard,SIGNAL(dataChanged()),this,SLOT(clipboard_dataChanged()));
   centralWidget()->layout()->add(CURRENT_VIEW);
   CURRENT_VIEW->show();
@@ -233,39 +237,39 @@ void SourceFileWindow::initBase()
   editCutAction->setEnabled(CURRENT_VIEW->selection());
   editCopyAction->setEnabled(CURRENT_VIEW->selection());
   editPasteAction->setEnabled(!clipboard->text().isNull());
-  THIS->shortcuts[0]=new QShortcut(Qt::ALT+Qt::Key_Backspace,this);
-  THIS->shortcuts[1]=new QShortcut(Qt::SHIFT+Qt::ALT+Qt::Key_Backspace,this);
-  THIS->shortcuts[2]=new QShortcut(Qt::SHIFT+Qt::Key_Delete,this);
-  THIS->shortcuts[3]=new QShortcut(Qt::CTRL+Qt::Key_Insert,this);
-  THIS->shortcuts[4]=new QShortcut(Qt::SHIFT+Qt::Key_Insert,this);
-  THIS->shortcuts[5]=new QShortcut(Qt::Key_F1,this);
-  THIS->shortcuts[6]=new QShortcut(Qt::Key_Enter,this);
-  THIS->shortcuts[7]=new QShortcut(Qt::Key_Return,this);
-  THIS->shortcuts[8]=new QShortcut(Qt::CTRL+Qt::Key_J,this);
-  THIS->shortcuts[9]=new QShortcut(Qt::CTRL+Qt::Key_Space,this);
-  THIS->shortcuts[10]=new QShortcut(Qt::CTRL+Qt::Key_M,this);
-  THIS->shortcuts[0]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
-  THIS->shortcuts[1]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
-  THIS->shortcuts[2]->setEnabled(CURRENT_VIEW->selection());
-  THIS->shortcuts[3]->setEnabled(CURRENT_VIEW->selection());
-  THIS->shortcuts[4]->setEnabled(!clipboard->text().isNull());
-  THIS->shortcuts[5]->setEnabled(TRUE);
-  THIS->shortcuts[6]->setEnabled(TRUE);
-  THIS->shortcuts[7]->setEnabled(TRUE);
-  THIS->shortcuts[8]->setEnabled(TRUE);
-  THIS->shortcuts[9]->setEnabled(TRUE);
-  THIS->shortcuts[10]->setEnabled(TRUE);
-  connect(THIS->shortcuts[0],SIGNAL(activated()),this,SLOT(shortcut_0_activated()));
-  connect(THIS->shortcuts[1],SIGNAL(activated()),this,SLOT(shortcut_1_activated()));
-  connect(THIS->shortcuts[2],SIGNAL(activated()),this,SLOT(shortcut_2_activated()));
-  connect(THIS->shortcuts[3],SIGNAL(activated()),this,SLOT(shortcut_3_activated()));
-  connect(THIS->shortcuts[4],SIGNAL(activated()),this,SLOT(shortcut_4_activated()));
-  connect(THIS->shortcuts[5],SIGNAL(activated()),this,SLOT(shortcut_5_activated()));
-  connect(THIS->shortcuts[6],SIGNAL(activated()),this,SLOT(shortcut_6_activated()));
-  connect(THIS->shortcuts[7],SIGNAL(activated()),this,SLOT(shortcut_7_activated()));
-  connect(THIS->shortcuts[8],SIGNAL(activated()),this,SLOT(shortcut_8_activated()));
-  connect(THIS->shortcuts[9],SIGNAL(activated()),this,SLOT(shortcut_9_activated()));
-  connect(THIS->shortcuts[10],SIGNAL(activated()),this,SLOT(shortcut_10_activated()));
+  shortcuts[0]=new QShortcut(Qt::ALT+Qt::Key_Backspace,this);
+  shortcuts[1]=new QShortcut(Qt::SHIFT+Qt::ALT+Qt::Key_Backspace,this);
+  shortcuts[2]=new QShortcut(Qt::SHIFT+Qt::Key_Delete,this);
+  shortcuts[3]=new QShortcut(Qt::CTRL+Qt::Key_Insert,this);
+  shortcuts[4]=new QShortcut(Qt::SHIFT+Qt::Key_Insert,this);
+  shortcuts[5]=new QShortcut(Qt::Key_F1,this);
+  shortcuts[6]=new QShortcut(Qt::Key_Enter,this);
+  shortcuts[7]=new QShortcut(Qt::Key_Return,this);
+  shortcuts[8]=new QShortcut(Qt::CTRL+Qt::Key_J,this);
+  shortcuts[9]=new QShortcut(Qt::CTRL+Qt::Key_Space,this);
+  shortcuts[10]=new QShortcut(Qt::CTRL+Qt::Key_M,this);
+  shortcuts[0]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+  shortcuts[1]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+  shortcuts[2]->setEnabled(CURRENT_VIEW->selection());
+  shortcuts[3]->setEnabled(CURRENT_VIEW->selection());
+  shortcuts[4]->setEnabled(!clipboard->text().isNull());
+  shortcuts[5]->setEnabled(TRUE);
+  shortcuts[6]->setEnabled(TRUE);
+  shortcuts[7]->setEnabled(TRUE);
+  shortcuts[8]->setEnabled(TRUE);
+  shortcuts[9]->setEnabled(TRUE);
+  shortcuts[10]->setEnabled(TRUE);
+  connect(shortcuts[0],SIGNAL(activated()),this,SLOT(shortcut_0_activated()));
+  connect(shortcuts[1],SIGNAL(activated()),this,SLOT(shortcut_1_activated()));
+  connect(shortcuts[2],SIGNAL(activated()),this,SLOT(shortcut_2_activated()));
+  connect(shortcuts[3],SIGNAL(activated()),this,SLOT(shortcut_3_activated()));
+  connect(shortcuts[4],SIGNAL(activated()),this,SLOT(shortcut_4_activated()));
+  connect(shortcuts[5],SIGNAL(activated()),this,SLOT(shortcut_5_activated()));
+  connect(shortcuts[6],SIGNAL(activated()),this,SLOT(shortcut_6_activated()));
+  connect(shortcuts[7],SIGNAL(activated()),this,SLOT(shortcut_7_activated()));
+  connect(shortcuts[8],SIGNAL(activated()),this,SLOT(shortcut_8_activated()));
+  connect(shortcuts[9],SIGNAL(activated()),this,SLOT(shortcut_9_activated()));
+  connect(shortcuts[10],SIGNAL(activated()),this,SLOT(shortcut_10_activated()));
   if (preferences.useSystemIcons) {
     // Set the preferred icon size so system toolbar icons don't get annoying
     // padding.
@@ -293,51 +297,52 @@ void SourceFileWindow::initBase()
   }
   QToolButton *findFunctionsButton=static_cast<QToolButton *>(toolBar
     ->widgetForAction(findFunctionsAction));
-  THIS->findFunctionsPopup=new Q3PopupMenu(findFunctionsButton);
-  connect(THIS->findFunctionsPopup,SIGNAL(aboutToShow()),
+  findFunctionsPopup=new Q3PopupMenu(findFunctionsButton);
+  connect(findFunctionsPopup,SIGNAL(aboutToShow()),
           this,SLOT(findFunctionsPopup_aboutToShow()));
-  connect(THIS->findFunctionsPopup,SIGNAL(aboutToHide()),
+  connect(findFunctionsPopup,SIGNAL(aboutToHide()),
           this,SLOT(findFunctionsPopup_aboutToHide()));
-  connect(THIS->findFunctionsPopup,SIGNAL(activated(int)),
+  connect(findFunctionsPopup,SIGNAL(activated(int)),
           this,SLOT(findFunctionsPopup_activated(int)));
   findFunctionsButton->setPopupMode(QToolButton::MenuButtonPopup);
-  findFunctionsButton->setMenu(THIS->findFunctionsPopup);
-  if (THIS->isTextFile) findFunctionsAction->setEnabled(FALSE);
+  findFunctionsButton->setMenu(findFunctionsPopup);
+  if (isTextFile) findFunctionsAction->setEnabled(FALSE);
+  show();
 }
 
-void SourceFileWindow::destroy()
+SourceFileWindow::~SourceFileWindow()
 {
   MainForm::deleteErrorsForSrcFile(this);
-  if (THIS->kreplace) delete THIS->kreplace;
-  if (THIS->kfinddialog) {
-    findHistory=THIS->kfinddialog->findHistory();
-    delete THIS->kfinddialog;
+  if (kreplace) delete kreplace;
+  if (kfinddialog) {
+    findHistory=kfinddialog->findHistory();
+    delete kfinddialog;
   }
-  for (int i=0; i<11; i++) delete THIS->shortcuts[i];
-  delete THIS->te_popup;
-  delete THIS->rowStatusLabel;
-  delete THIS->colStatusLabel;
-  delete THIS->charsStatusLabel;
-  delete THIS->rightStatusLabel;
-  THIS->dirWatch->removeFile(THIS->fileName);
-  delete THIS->dirWatch;
-  if (THIS->kateView) delete THIS->kateView->document();
-  sourceFiles.remove(THIS);
+  for (int i=0; i<11; i++) delete shortcuts[i];
+  delete te_popup;
+  delete rowStatusLabel;
+  delete colStatusLabel;
+  delete charsStatusLabel;
+  delete rightStatusLabel;
+  dirWatch->removeFile(fileName);
+  delete dirWatch;
+  if (kateView) delete kateView->document();
+  sourceFiles.remove(this);
 }
 
 void SourceFileWindow::te_popup_aboutToShow()
 {
-  THIS->te_popup->setItemEnabled(0,findOpenFileAtCursorAction->isEnabled());
-  THIS->te_popup->setItemEnabled(1,findFindSymbolDeclarationAction->isEnabled());
-  THIS->te_popup->setItemEnabled(2,editUndoAction->isEnabled());
-  THIS->te_popup->setItemEnabled(3,editRedoAction->isEnabled());
-  THIS->te_popup->setItemEnabled(4,editClearAction->isEnabled());
-  THIS->te_popup->setItemEnabled(5,editCutAction->isEnabled());
-  THIS->te_popup->setItemEnabled(6,editCopyAction->isEnabled());
-  THIS->te_popup->setItemEnabled(7,editPasteAction->isEnabled());
-  THIS->te_popup->setItemEnabled(8,editSelectAllAction->isEnabled());
-  THIS->te_popup->setItemEnabled(9,editIncreaseIndentAction->isEnabled());
-  THIS->te_popup->setItemEnabled(10,editDecreaseIndentAction->isEnabled());
+  te_popup->setItemEnabled(0,findOpenFileAtCursorAction->isEnabled());
+  te_popup->setItemEnabled(1,findFindSymbolDeclarationAction->isEnabled());
+  te_popup->setItemEnabled(2,editUndoAction->isEnabled());
+  te_popup->setItemEnabled(3,editRedoAction->isEnabled());
+  te_popup->setItemEnabled(4,editClearAction->isEnabled());
+  te_popup->setItemEnabled(5,editCutAction->isEnabled());
+  te_popup->setItemEnabled(6,editCopyAction->isEnabled());
+  te_popup->setItemEnabled(7,editPasteAction->isEnabled());
+  te_popup->setItemEnabled(8,editSelectAllAction->isEnabled());
+  te_popup->setItemEnabled(9,editIncreaseIndentAction->isEnabled());
+  te_popup->setItemEnabled(10,editDecreaseIndentAction->isEnabled());
 }
 
 void SourceFileWindow::te_popup_activated(int index)
@@ -411,11 +416,11 @@ void SourceFileWindow::shortcutActivated(int index)
       case 9:
       case 10:
         // Completion only operates on C files.
-        if (THIS->isCFile) {
+        if (isCFile) {
           // Disable newLineHook.
-          THIS->shortcuts[6]->setEnabled(FALSE);
-          THIS->shortcuts[7]->setEnabled(FALSE);
-          new CompletionPopup(CURRENT_VIEW,THIS->fileName,THIS->mainForm,this);
+          shortcuts[6]->setEnabled(FALSE);
+          shortcuts[7]->setEnabled(FALSE);
+          new CompletionPopup(CURRENT_VIEW,fileName,mainForm,this);
         }
         break;
       default: break;
@@ -484,8 +489,8 @@ void SourceFileWindow::shortcut_10_activated()
 void SourceFileWindow::completionPopup_closed()
 {
   // Restore newLineHook.
-  THIS->shortcuts[6]->setEnabled(TRUE);
-  THIS->shortcuts[7]->setEnabled(TRUE);
+  shortcuts[6]->setEnabled(TRUE);
+  shortcuts[7]->setEnabled(TRUE);
 }
 
 void *SourceFileWindow::createView(const QString &fileName, const QString &hlModeName, unsigned tabWidth)
@@ -495,7 +500,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &hlMod
     KLibLoader::self()->factory ("katepart");
   if (!factory) qFatal("Failed to load KatePart");
   KTextEditor::Document *doc = (KTextEditor::Document *)
-      factory->createPart(0,THIS->mainForm,"KTextEditor::Document");
+      factory->createPart(0,mainForm,"KTextEditor::Document");
   // Open the file.
   doc->setEncoding(preferences.useCalcCharset?"TI-89":QTextCodec::codecForLocale()->name());
   doc->openUrl(KUrl(fileName));
@@ -525,7 +530,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &hlMod
   connect(newView,SIGNAL(selectionChanged(KTextEditor::View*)),this,SLOT(current_view_selectionChanged(KTextEditor::View*)));
   connect(newView->document(),SIGNAL(textChanged(KTextEditor::Document*)),this,SLOT(current_view_textChanged(KTextEditor::Document*)));
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
-  newView->setContextMenu(THIS->te_popup);
+  newView->setContextMenu(te_popup);
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
   return newView;
 }
@@ -536,7 +541,7 @@ int SourceFileWindow::savePrompt(void)
   int result;
   if (!CURRENT_VIEW) return 0;
   while (CURRENT_VIEW->document()->isModified()) { // "while" in case saving fails!
-    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(THIS->fileName),QString::null,KStandardGuiItem::save(),KStandardGuiItem::discard());
+    result=KMessageBox::questionYesNoCancel(this,QString("The file \'%1\' has been modified.  Do you want to save the changes?").arg(fileName),QString::null,KStandardGuiItem::save(),KStandardGuiItem::discard());
     if (result==KMessageBox::Yes)
       fileSave();
     else if (result==KMessageBox::No)
@@ -564,12 +569,12 @@ void SourceFileWindow::removeTrailingSpacesFromView(void *view)
 
 void SourceFileWindow::fileSave()
 {
-  THIS->dirWatch->removeFile(THIS->fileName);
+  dirWatch->removeFile(fileName);
   if (!CURRENT_VIEW->document()->save()) {
-    KMessageBox::error(this,QString("Can't save to \'%1\'").arg(THIS->fileName));
-    THIS->dirWatch->addFile(THIS->fileName);
+    KMessageBox::error(this,QString("Can't save to \'%1\'").arg(fileName));
+    dirWatch->addFile(fileName);
   } else {
-    THIS->dirWatch->addFile(THIS->fileName);
+    dirWatch->addFile(fileName);
     removeTrailingSpacesFromView(CURRENT_VIEW);
     CURRENT_VIEW->document()->setModified(FALSE);
   }
@@ -578,23 +583,23 @@ void SourceFileWindow::fileSave()
 void SourceFileWindow::fileSaveAs()
 {
   QString saveFileName=MainForm::SGetFileName(KFileDialog::Saving,
-  (THIS->fileName.endsWith(".h")?TIGCC_H_Filter TIGCCAllFilter:
-  THIS->fileName.endsWith(".c")?TIGCC_C_Filter TIGCCAllFilter:
-  THIS->fileName.endsWith(".s")?TIGCC_S_Filter TIGCCAllFilter:
-  THIS->fileName.endsWith(".asm")?TIGCC_ASM_Filter TIGCCAllFilter:
-  THIS->fileName.endsWith(".qll")?TIGCC_QLL_Filter TIGCCAllFilter:
-  THIS->fileName.endsWith(".txt")?TIGCC_TXT_Filter TIGCCAllFilter:
+  (fileName.endsWith(".h")?TIGCC_H_Filter TIGCCAllFilter:
+  fileName.endsWith(".c")?TIGCC_C_Filter TIGCCAllFilter:
+  fileName.endsWith(".s")?TIGCC_S_Filter TIGCCAllFilter:
+  fileName.endsWith(".asm")?TIGCC_ASM_Filter TIGCCAllFilter:
+  fileName.endsWith(".qll")?TIGCC_QLL_Filter TIGCCAllFilter:
+  fileName.endsWith(".txt")?TIGCC_TXT_Filter TIGCCAllFilter:
   TIGCCAllFilter),"Save Source File",this);
   if (saveFileName.isEmpty())
     return;
-  THIS->dirWatch->removeFile(THIS->fileName);
+  dirWatch->removeFile(fileName);
   mkdir_multi(saveFileName);
   if (!CURRENT_VIEW->document()->saveAs(saveFileName)) {
     KMessageBox::error(this,QString("Can't save to \'%1\'").arg(saveFileName));
-    THIS->dirWatch->addFile(THIS->fileName);
+    dirWatch->addFile(fileName);
   } else {
-    THIS->fileName=saveFileName;
-    THIS->dirWatch->addFile(saveFileName);
+    fileName=saveFileName;
+    dirWatch->addFile(saveFileName);
     removeTrailingSpacesFromView(CURRENT_VIEW);
     CURRENT_VIEW->document()->setModified(FALSE);
     updateRightStatusLabel();
@@ -603,12 +608,12 @@ void SourceFileWindow::fileSaveAs()
 
 void SourceFileWindow::fileAddToProject()
 {
-  THIS->mainForm->adoptSourceFile(THIS);
+  mainForm->adoptSourceFile(this);
 }
 
 void SourceFileWindow::fileCompile()
 {
-  THIS->mainForm->compileSourceFile(THIS);
+  mainForm->compileSourceFile(this);
 }
 
 void SourceFileWindow::filePrint()
@@ -653,8 +658,8 @@ void SourceFileWindow::applyPreferences()
       sendCommand(kateView,"set-remove-trailing-space 0");
       sendCommand(kateView,"set-remove-trailing-space-save 0");
     }
-    setTabWidth(kateView,THIS->isASMFile?preferences.tabWidthAsm:
-                         THIS->isCFile?preferences.tabWidthC:8);
+    setTabWidth(kateView,isASMFile?preferences.tabWidthAsm:
+                         isCFile?preferences.tabWidthC:8);
     // Kate seems really insisting on making it a pain to update syntax highlighting settings.
     KTextEditor::HighlightingInterface *hliface
       =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
@@ -765,16 +770,16 @@ void SourceFileWindow::editDecreaseIndent()
 
 void SourceFileWindow::findFind()
 {
-  if (THIS->kfinddialog)
-    ACTIVATE_WINDOW(THIS->kfinddialog->winId());
+  if (kfinddialog)
+    ACTIVATE_WINDOW(kfinddialog->winId());
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
-    THIS->kfinddialog=new KFindDialog(this,KFind::FromCursor,findHistory);
-    THIS->kfinddialog->setModal(false);
-    connect(THIS->kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
-    connect(THIS->kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
-    THIS->kfinddialog->show();
+    kfinddialog=new KFindDialog(this,KFind::FromCursor,findHistory);
+    kfinddialog->setModal(false);
+    connect(kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
+    connect(kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
+    kfinddialog->show();
   }
 }
 
@@ -782,34 +787,34 @@ void SourceFileWindow::findFind_next()
 {
   // Use a local KFind object. The search will need to be restarted next time
   // this function is called because of the non-modality of the find dialog.
-  KFind *kfind=new KFind(THIS->kfinddialog->pattern(),THIS->kfinddialog->options(),this,THIS->kfinddialog);
+  KFind *kfind=new KFind(kfinddialog->pattern(),kfinddialog->options(),this,kfinddialog);
 
   // Initialize.
-  bool findBackwards=!!(THIS->kfinddialog->options()&KFind::FindBackwards);
+  bool findBackwards=!!(kfinddialog->options()&KFind::FindBackwards);
   int findCurrentCol;
-  kfind=new KFind(THIS->kfinddialog->pattern(),THIS->kfinddialog->options(),this,THIS->kfinddialog);
+  kfind=new KFind(kfinddialog->pattern(),kfinddialog->options(),this,kfinddialog);
   kfind->closeFindNextDialog(); // don't use this, a non-modal KFindDialog is used instead
   connect(kfind,SIGNAL(highlight(const QString &,int,int)),
           this,SLOT(findFind_highlight(const QString &,int,int)));
-  if (THIS->kfinddialog->options()&KFind::FromCursor) {
+  if (kfinddialog->options()&KFind::FromCursor) {
     if (CURRENT_VIEW->selection()) {
       if (findBackwards) {
-        CURRENT_VIEW->selectionRange().start().position(THIS->findCurrentLine,findCurrentCol);
+        CURRENT_VIEW->selectionRange().start().position(findCurrentLine,findCurrentCol);
         if ((--findCurrentCol)==-1) {
-          if (!THIS->findCurrentLine) goto skip_data;
-          THIS->findCurrentLine--;
+          if (!findCurrentLine) goto skip_data;
+          findCurrentLine--;
         }
       } else {
-        CURRENT_VIEW->selectionRange().end().position(THIS->findCurrentLine,findCurrentCol);
+        CURRENT_VIEW->selectionRange().end().position(findCurrentLine,findCurrentCol);
       }
     } else {
-      CURRENT_VIEW->cursorPosition().position(THIS->findCurrentLine,findCurrentCol);
+      CURRENT_VIEW->cursorPosition().position(findCurrentLine,findCurrentCol);
     }
   } else {
-    THIS->findCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
+    findCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
     findCurrentCol=-1;
   }
-  kfind->setData(CURRENT_VIEW->document()->line(THIS->findCurrentLine),findCurrentCol);
+  kfind->setData(CURRENT_VIEW->document()->line(findCurrentLine),findCurrentCol);
   skip_data:;
 
   // Now find the next occurrence.
@@ -818,26 +823,26 @@ void SourceFileWindow::findFind_next()
   int currNumLines=CURRENT_VIEW->document()->lines();
   do {
     if (kfind->needData()) {
-      if (findBackwards?!THIS->findCurrentLine:(THIS->findCurrentLine>=currNumLines)) {
+      if (findBackwards?!findCurrentLine:(findCurrentLine>=currNumLines)) {
         // Try restarting the search.
         currNumLines=currView->document()->lines();
-        THIS->findCurrentLine=findBackwards?currNumLines-1:0;
+        findCurrentLine=findBackwards?currNumLines-1:0;
         do {
           if (kfind->needData()) {
-            if (findBackwards?!THIS->findCurrentLine:(THIS->findCurrentLine>=currNumLines))
+            if (findBackwards?!findCurrentLine:(findCurrentLine>=currNumLines))
               goto not_found_current;
-            if (findBackwards) THIS->findCurrentLine--; else THIS->findCurrentLine++;
-            kfind->setData(currView->document()->line(THIS->findCurrentLine));
+            if (findBackwards) findCurrentLine--; else findCurrentLine++;
+            kfind->setData(currView->document()->line(findCurrentLine));
           }
           result=kfind->find();
         } while (result==KFind::NoMatch);
         break;
         not_found_current:
-          KMessageBox::error(this,QString("Text \'%1\' not found").arg(THIS->kfinddialog->pattern()));
+          KMessageBox::error(this,QString("Text \'%1\' not found").arg(kfinddialog->pattern()));
           delete kfind;
           return;
-      } else if (findBackwards) THIS->findCurrentLine--; else THIS->findCurrentLine++;
-      kfind->setData(currView->document()->line(THIS->findCurrentLine));
+      } else if (findBackwards) findCurrentLine--; else findCurrentLine++;
+      kfind->setData(currView->document()->line(findCurrentLine));
     }
     result=kfind->find();
   } while (result==KFind::NoMatch);
@@ -846,24 +851,24 @@ void SourceFileWindow::findFind_next()
 
 void SourceFileWindow::findFind_highlight(const QString &text __attribute__((unused)), int matchingindex, int matchedlength)
 {
-  CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(THIS->findCurrentLine,matchingindex+matchedlength));
-  CURRENT_VIEW->setSelection(KTextEditor::Range(THIS->findCurrentLine,matchingindex,
-                                                THIS->findCurrentLine,matchingindex+matchedlength));
+  CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(findCurrentLine,matchingindex+matchedlength));
+  CURRENT_VIEW->setSelection(KTextEditor::Range(findCurrentLine,matchingindex,
+                                                findCurrentLine,matchingindex+matchedlength));
 }
 
 void SourceFileWindow::findFind_stop()
 {
-  if (THIS->kfinddialog) {
-    findHistory=THIS->kfinddialog->findHistory();
-    THIS->kfinddialog->deleteLater();
+  if (kfinddialog) {
+    findHistory=kfinddialog->findHistory();
+    kfinddialog->deleteLater();
   }
-  THIS->kfinddialog=static_cast<KFindDialog *>(NULL);
+  kfinddialog=static_cast<KFindDialog *>(NULL);
 }
 
 void SourceFileWindow::findReplace()
 {
-  if (THIS->kreplace) {
-    KDialog *replaceNextDialog=THIS->kreplace->replaceNextDialog();
+  if (kreplace) {
+    KDialog *replaceNextDialog=kreplace->replaceNextDialog();
     if (replaceNextDialog)
       ACTIVATE_WINDOW(replaceNextDialog->winId());
     return;
@@ -877,59 +882,59 @@ void SourceFileWindow::findReplace()
     return;
   findHistory=kreplacedialog.findHistory();
   replacementHistory=kreplacedialog.replacementHistory();
-  THIS->kreplace=new KReplaceWithSelectionS(kreplacedialog.pattern(),kreplacedialog.replacement(),
+  kreplace=new KReplaceWithSelectionS(kreplacedialog.pattern(),kreplacedialog.replacement(),
                                             kreplacedialog.options(),this);
   // Connect signals to code which handles highlighting of found text, and
   // on-the-fly replacement.
-  connect(THIS->kreplace,SIGNAL(highlight(const QString &,int,int)),
+  connect(kreplace,SIGNAL(highlight(const QString &,int,int)),
           this,SLOT(findReplace_highlight(const QString &,int,int)));
   // Connect findNext signal - called when pressing the button in the dialog.
-  connect(THIS->kreplace,SIGNAL(findNext()),this,SLOT(findReplace_next()));
+  connect(kreplace,SIGNAL(findNext()),this,SLOT(findReplace_next()));
   // Connect replace signal - called when doing a replacement.
-  connect(THIS->kreplace,SIGNAL(replace(const QString &,int,int,int)),
+  connect(kreplace,SIGNAL(replace(const QString &,int,int,int)),
           this,SLOT(findReplace_replace(const QString &,int,int,int)));
   // Connect dialogClosed signal - called when closing the Replace Next dialog.
-  connect(THIS->kreplace,SIGNAL(dialogClosed()),this,SLOT(findReplace_stop()));
+  connect(kreplace,SIGNAL(dialogClosed()),this,SLOT(findReplace_stop()));
   // Initialize.
-  bool findBackwards=!!(THIS->kreplace->options()&KFind::FindBackwards);
+  bool findBackwards=!!(kreplace->options()&KFind::FindBackwards);
   int replaceCurrentCol;
   if (CURRENT_VIEW) {
-    if (THIS->kreplace->options()&KFind::SelectedText) {
-      THIS->kreplace->setSelection(CURRENT_VIEW->selectionRange());
+    if (kreplace->options()&KFind::SelectedText) {
+      kreplace->setSelection(CURRENT_VIEW->selectionRange());
       if (findBackwards) {
-        THIS->kreplace->replaceCurrentLine=THIS->kreplace->selEndLine();
-        replaceCurrentCol=THIS->kreplace->selEndCol();
+        kreplace->replaceCurrentLine=kreplace->selEndLine();
+        replaceCurrentCol=kreplace->selEndCol();
       } else {
-        THIS->kreplace->replaceCurrentLine=THIS->kreplace->selStartLine();
-        replaceCurrentCol=THIS->kreplace->selStartCol();
+        kreplace->replaceCurrentLine=kreplace->selStartLine();
+        replaceCurrentCol=kreplace->selStartCol();
       }
-      THIS->kreplace->setOptions(THIS->kreplace->options()&~KFind::FromCursor);
-    } else if (THIS->kreplace->options()&KFind::FromCursor) {
+      kreplace->setOptions(kreplace->options()&~KFind::FromCursor);
+    } else if (kreplace->options()&KFind::FromCursor) {
       if (CURRENT_VIEW->selection()) {
         if (findBackwards) {
-          CURRENT_VIEW->selectionRange().start().position(THIS->kreplace->replaceCurrentLine,
+          CURRENT_VIEW->selectionRange().start().position(kreplace->replaceCurrentLine,
                                                           replaceCurrentCol);
           if ((--replaceCurrentCol)==-1) {
-            if (!THIS->kreplace->replaceCurrentLine) goto skip_data;
-            THIS->kreplace->replaceCurrentLine--;
+            if (!kreplace->replaceCurrentLine) goto skip_data;
+            kreplace->replaceCurrentLine--;
           }
         } else {
-          CURRENT_VIEW->selectionRange().end().position(THIS->kreplace->replaceCurrentLine,
+          CURRENT_VIEW->selectionRange().end().position(kreplace->replaceCurrentLine,
                                                         replaceCurrentCol);
         }
       } else {
-        CURRENT_VIEW->cursorPosition().position(THIS->kreplace->replaceCurrentLine,replaceCurrentCol);
+        CURRENT_VIEW->cursorPosition().position(kreplace->replaceCurrentLine,replaceCurrentCol);
         // Don't prompt for restarting if we actually searched the entire document.
-        if (findBackwards?(THIS->kreplace->replaceCurrentLine==(CURRENT_VIEW->document()->lines()-1)
-                           && replaceCurrentCol==(CURRENT_VIEW->document()->lineLength(THIS->kreplace->replaceCurrentLine)))
-                         :(!THIS->kreplace->replaceCurrentLine&&!replaceCurrentCol))
-          THIS->kreplace->setOptions(THIS->kreplace->options()&~KFind::FromCursor);
+        if (findBackwards?(kreplace->replaceCurrentLine==(CURRENT_VIEW->document()->lines()-1)
+                           && replaceCurrentCol==(CURRENT_VIEW->document()->lineLength(kreplace->replaceCurrentLine)))
+                         :(!kreplace->replaceCurrentLine&&!replaceCurrentCol))
+          kreplace->setOptions(kreplace->options()&~KFind::FromCursor);
       }
     } else {
-      THIS->kreplace->replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
+      kreplace->replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
       replaceCurrentCol=-1;
     }
-    THIS->kreplace->setData(CURRENT_VIEW->document()->line(THIS->kreplace->replaceCurrentLine),replaceCurrentCol);
+    kreplace->setData(CURRENT_VIEW->document()->line(kreplace->replaceCurrentLine),replaceCurrentCol);
   }
   skip_data:
     // Now find the next occurrence.
@@ -944,7 +949,7 @@ void SourceFileWindow::findReplace_next()
 
 void SourceFileWindow::findReplace_next(bool firstTime)
 {
-  bool findBackwards=!!(THIS->kreplace->options()&KFind::FindBackwards);
+  bool findBackwards=!!(kreplace->options()&KFind::FindBackwards);
 
   // Reinitialize.
   if (!firstTime) {
@@ -952,21 +957,21 @@ void SourceFileWindow::findReplace_next(bool firstTime)
     // Non-first-time always continues from cursor.
     if (CURRENT_VIEW->selection()) {
       if (findBackwards) {
-        CURRENT_VIEW->selectionRange().start().position(THIS->kreplace->replaceCurrentLine,
+        CURRENT_VIEW->selectionRange().start().position(kreplace->replaceCurrentLine,
                                                         replaceCurrentCol);
         if ((--replaceCurrentCol)==-1) {
-          if (!THIS->kreplace->replaceCurrentLine) goto skip_data;
-          THIS->kreplace->replaceCurrentLine--;
+          if (!kreplace->replaceCurrentLine) goto skip_data;
+          kreplace->replaceCurrentLine--;
         }
       } else {
-        CURRENT_VIEW->selectionRange().end().position(THIS->kreplace->replaceCurrentLine,
+        CURRENT_VIEW->selectionRange().end().position(kreplace->replaceCurrentLine,
                                                       replaceCurrentCol);
       }
     } else {
-      CURRENT_VIEW->cursorPosition().position(THIS->kreplace->replaceCurrentLine,
+      CURRENT_VIEW->cursorPosition().position(kreplace->replaceCurrentLine,
                                               replaceCurrentCol);
     }
-    THIS->kreplace->setData(CURRENT_VIEW->document()->line(THIS->kreplace->replaceCurrentLine),replaceCurrentCol);
+    kreplace->setData(CURRENT_VIEW->document()->line(kreplace->replaceCurrentLine),replaceCurrentCol);
   }
   skip_data:;
 
@@ -976,19 +981,19 @@ void SourceFileWindow::findReplace_next(bool firstTime)
   int currNumLines=0;
   if (CURRENT_VIEW) currNumLines=CURRENT_VIEW->document()->lines();
   do {
-    if (THIS->kreplace->needData()) {
-      if (THIS->kreplace->haveSelection()
-          ?(findBackwards?(THIS->kreplace->replaceCurrentLine<=THIS->kreplace->selStartLine())
-                         :(THIS->kreplace->replaceCurrentLine>=THIS->kreplace->selEndLine()))
-          :(findBackwards?!THIS->kreplace->replaceCurrentLine:(THIS->kreplace->replaceCurrentLine>=currNumLines))) {
-        if (THIS->kreplace->shouldRestart()) {
+    if (kreplace->needData()) {
+      if (kreplace->haveSelection()
+          ?(findBackwards?(kreplace->replaceCurrentLine<=kreplace->selStartLine())
+                         :(kreplace->replaceCurrentLine>=kreplace->selEndLine()))
+          :(findBackwards?!kreplace->replaceCurrentLine:(kreplace->replaceCurrentLine>=currNumLines))) {
+        if (kreplace->shouldRestart()) {
           // Drop "From cursor" and "Selected text" options.
-          THIS->kreplace->setOptions(THIS->kreplace->options()&~(KFind::FromCursor
+          kreplace->setOptions(kreplace->options()&~(KFind::FromCursor
                                                                  |KFind::SelectedText));
-          THIS->kreplace->invalidateSelection();
+          kreplace->invalidateSelection();
           // Reinitialize.
-          THIS->kreplace->replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
-          THIS->kreplace->setData(CURRENT_VIEW->document()->line(THIS->kreplace->replaceCurrentLine));
+          kreplace->replaceCurrentLine=findBackwards?(CURRENT_VIEW->document()->lines()-1):0;
+          kreplace->setData(CURRENT_VIEW->document()->line(kreplace->replaceCurrentLine));
           // Start again as if it was the first time.
           findReplace_next(TRUE);
           return;
@@ -996,56 +1001,56 @@ void SourceFileWindow::findReplace_next(bool firstTime)
           findReplace_stop();
           return;
         }
-      } else if (findBackwards) THIS->kreplace->replaceCurrentLine--; else THIS->kreplace->replaceCurrentLine++;
-      THIS->kreplace->setData(currView->document()->line(THIS->kreplace->replaceCurrentLine));
+      } else if (findBackwards) kreplace->replaceCurrentLine--; else kreplace->replaceCurrentLine++;
+      kreplace->setData(currView->document()->line(kreplace->replaceCurrentLine));
     }
-    result=THIS->kreplace->replace();
+    result=kreplace->replace();
   } while (result==KFind::NoMatch);
 }
 
 void SourceFileWindow::findReplace_highlight(const QString &text __attribute__((unused)), int matchingindex, int matchedlength)
 {
-  CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(THIS->kreplace->replaceCurrentLine,matchingindex+matchedlength));
-  CURRENT_VIEW->setSelection(KTextEditor::Range(THIS->kreplace->replaceCurrentLine,matchingindex,
-                                                THIS->kreplace->replaceCurrentLine,matchingindex+matchedlength));
+  CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(kreplace->replaceCurrentLine,matchingindex+matchedlength));
+  CURRENT_VIEW->setSelection(KTextEditor::Range(kreplace->replaceCurrentLine,matchingindex,
+                                                kreplace->replaceCurrentLine,matchingindex+matchedlength));
 }
 
 void SourceFileWindow::findReplace_replace(const QString &text, int replacementIndex, int replacedLength, int matchedLength)
 {
-  bool update=!!(THIS->kreplace->options()&KReplaceDialog::PromptOnReplace);
-  bool haveSelection=THIS->kreplace->haveSelection();
+  bool update=!!(kreplace->options()&KReplaceDialog::PromptOnReplace);
+  bool haveSelection=kreplace->haveSelection();
   // The initializations are redundant, but g++ doesn't understand this, and the
   // self-initialization trick doesn't work either (-Wno-init-self is ignored).
   int selStartLine=0, selStartCol=0, selEndLine=0, selEndCol=0;
   if (haveSelection) {
-    selStartLine=THIS->kreplace->selStartLine();
-    selStartCol=THIS->kreplace->selStartCol();
-    selEndLine=THIS->kreplace->selEndLine();
-    selEndCol=THIS->kreplace->selEndCol();
+    selStartLine=kreplace->selStartLine();
+    selStartCol=kreplace->selStartCol();
+    selEndLine=kreplace->selEndLine();
+    selEndCol=kreplace->selEndCol();
   }
   CURRENT_VIEW->document()->startEditing();
-  CURRENT_VIEW->document()->insertText(KTextEditor::Cursor(THIS->kreplace->replaceCurrentLine,replacementIndex),
+  CURRENT_VIEW->document()->insertText(KTextEditor::Cursor(kreplace->replaceCurrentLine,replacementIndex),
                                        text.mid(replacementIndex,replacedLength));
   // We can't put the cursor back now because this breaks editBegin/editEnd.
   int line,col;
   CURRENT_VIEW->cursorPosition().position(line,col);
-  bool updateCursor=(line==THIS->kreplace->replaceCurrentLine
+  bool updateCursor=(line==kreplace->replaceCurrentLine
                      && col==replacementIndex+replacedLength);
-  CURRENT_VIEW->document()->removeText(KTextEditor::Range(THIS->kreplace->replaceCurrentLine,replacementIndex+replacedLength,
-                                       THIS->kreplace->replaceCurrentLine,replacementIndex+replacedLength+matchedLength));
+  CURRENT_VIEW->document()->removeText(KTextEditor::Range(kreplace->replaceCurrentLine,replacementIndex+replacedLength,
+                                       kreplace->replaceCurrentLine,replacementIndex+replacedLength+matchedLength));
   CURRENT_VIEW->document()->endEditing();
   if (updateCursor)
-    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(THIS->kreplace->replaceCurrentLine,replacementIndex));
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(kreplace->replaceCurrentLine,replacementIndex));
   if (update) {
-    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(THIS->kreplace->replaceCurrentLine,replacementIndex+replacedLength));
-    CURRENT_VIEW->setSelection(KTextEditor::Range(THIS->kreplace->replaceCurrentLine,replacementIndex,
-                                                  THIS->kreplace->replaceCurrentLine,replacementIndex+replacedLength));
+    CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(kreplace->replaceCurrentLine,replacementIndex+replacedLength));
+    CURRENT_VIEW->setSelection(KTextEditor::Range(kreplace->replaceCurrentLine,replacementIndex,
+                                                  kreplace->replaceCurrentLine,replacementIndex+replacedLength));
     CURRENT_VIEW->repaint();
   }
   if (haveSelection) {
     // Restore selection, updating coordinates if necessary.
-    THIS->kreplace->setSelection(selStartLine,selStartCol,selEndLine,
-                                 (THIS->kreplace->replaceCurrentLine==selEndLine)
+    kreplace->setSelection(selStartLine,selStartCol,selEndLine,
+                                 (kreplace->replaceCurrentLine==selEndLine)
                                  ?(selEndCol+replacedLength-matchedLength)
                                  :selEndCol);
   }
@@ -1053,84 +1058,84 @@ void SourceFileWindow::findReplace_replace(const QString &text, int replacementI
 
 void SourceFileWindow::findReplace_stop()
 {
-  if (THIS->kreplace) THIS->kreplace->deleteLater();
-  THIS->kreplace=static_cast<KReplaceWithSelectionS *>(NULL);
+  if (kreplace) kreplace->deleteLater();
+  kreplace=static_cast<KReplaceWithSelectionS *>(NULL);
 }
 
 void SourceFileWindow::findFunctions()
 {
-  THIS->functionDialog=new FunctionDialog(this);
-  connect(THIS->functionDialog->functionListBox,SIGNAL(highlighted(int)),
+  functionDialog=new FunctionDialog(this);
+  connect(functionDialog->functionListBox,SIGNAL(highlighted(int)),
           this,SLOT(findFunctions_functionListBox_highlighted(int)));
-  connect(THIS->functionDialog->functionListBox,SIGNAL(selected(int)),
+  connect(functionDialog->functionListBox,SIGNAL(selected(int)),
           this,SLOT(findFunctions_functionListBox_selected(int)));
-  connect(THIS->functionDialog->prototypeButton,SIGNAL(clicked()),
+  connect(functionDialog->prototypeButton,SIGNAL(clicked()),
           this,SLOT(findFunctions_prototypeButton_clicked()));
-  connect(THIS->functionDialog->implementationButton,SIGNAL(clicked()),
+  connect(functionDialog->implementationButton,SIGNAL(clicked()),
           this,SLOT(findFunctions_implementationButton_clicked()));
-  THIS->functionDialog->functionListBox->clear();
-  THIS->sourceFileFunctions=getFunctions(CURRENT_VIEW->document()->text(),
-                                         THIS->isASMFile);
-  for (SourceFileFunctions::Iterator it=THIS->sourceFileFunctions.begin();
-       it!=THIS->sourceFileFunctions.end(); ++it)
-    THIS->functionDialog->functionListBox->insertItem((*it).name);
-  THIS->functionDialog->exec();
-  delete THIS->functionDialog;
+  functionDialog->functionListBox->clear();
+  sourceFileFunctions=getFunctions(CURRENT_VIEW->document()->text(),
+                                         isASMFile);
+  for (SourceFileFunctions::Iterator it=sourceFileFunctions.begin();
+       it!=sourceFileFunctions.end(); ++it)
+    functionDialog->functionListBox->insertItem((*it).name);
+  functionDialog->exec();
+  delete functionDialog;
 }
 
 void SourceFileWindow::findFunctions_functionListBox_highlighted(int index)
 {
   if (index>=0) {
-    THIS->functionDialog->prototypeButton->setEnabled(
-      THIS->sourceFileFunctions[index].prototypeLine>=0);
-    THIS->functionDialog->implementationButton->setEnabled(
-      THIS->sourceFileFunctions[index].implementationLine>=0);
+    functionDialog->prototypeButton->setEnabled(
+      sourceFileFunctions[index].prototypeLine>=0);
+    functionDialog->implementationButton->setEnabled(
+      sourceFileFunctions[index].implementationLine>=0);
   } else {
-    THIS->functionDialog->prototypeButton->setEnabled(FALSE);
-    THIS->functionDialog->implementationButton->setEnabled(FALSE);
+    functionDialog->prototypeButton->setEnabled(FALSE);
+    functionDialog->implementationButton->setEnabled(FALSE);
   }
 }
 
 void SourceFileWindow::findFunctions_functionListBox_selected(int index)
 {
   if (index>=0) {
-    int line=THIS->sourceFileFunctions[index].implementationLine>=0
-             ?THIS->sourceFileFunctions[index].implementationLine
-             :THIS->sourceFileFunctions[index].prototypeLine;
+    int line=sourceFileFunctions[index].implementationLine>=0
+             ?sourceFileFunctions[index].implementationLine
+             :sourceFileFunctions[index].prototypeLine;
     CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line,0));
-    THIS->functionDialog->accept();
+    functionDialog->accept();
   }
 }
 
 void SourceFileWindow::findFunctions_prototypeButton_clicked()
 {
-  int index=THIS->functionDialog->functionListBox->currentItem();
-  if (index>=0 && THIS->sourceFileFunctions[index].prototypeLine>=0) {
+  int index=functionDialog->functionListBox->currentItem();
+  if (index>=0 && sourceFileFunctions[index].prototypeLine>=0) {
     CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(
-      THIS->sourceFileFunctions[index].prototypeLine,0));
-    THIS->functionDialog->accept();
+      sourceFileFunctions[index].prototypeLine,0));
+    functionDialog->accept();
   }
 }
 
 void SourceFileWindow::findFunctions_implementationButton_clicked()
 {
-  int index=THIS->functionDialog->functionListBox->currentItem();
-  if (index>=0 && THIS->sourceFileFunctions[index].implementationLine>=0) {
+  int index=functionDialog->functionListBox->currentItem();
+  if (index>=0 && sourceFileFunctions[index].implementationLine>=0) {
     CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(
-      THIS->sourceFileFunctions[index].implementationLine,0));
-    THIS->functionDialog->accept();
+      sourceFileFunctions[index].implementationLine,0));
+    functionDialog->accept();
   }
 }
 
 void SourceFileWindow::findFunctionsPopup_aboutToShow()
 {
-  THIS->findFunctionsPopup->clear();
-  THIS->sourceFileFunctions=getFunctions(CURRENT_VIEW->document()->text(),
-                                         THIS->isASMFile);
+  findFunctionsPopup->clear();
+  sourceFileFunctions=getFunctions(CURRENT_VIEW->document()->text(),
+                                         isASMFile);
   int idx=0;
-  for (SourceFileFunctions::Iterator it=THIS->sourceFileFunctions.begin();
-       it!=THIS->sourceFileFunctions.end(); ++it,++idx)
-    THIS->findFunctionsPopup->insertItem((*it).name,idx);
+  for (SourceFileFunctions::Iterator it=sourceFileFunctions.begin();
+       it!=sourceFileFunctions.end(); ++it,++idx)
+    findFunctionsPopup->insertItem((*it).name,idx);
 }
 
 void SourceFileWindow::findFunctionsPopup_aboutToHide()
@@ -1140,14 +1145,14 @@ void SourceFileWindow::findFunctionsPopup_aboutToHide()
 
 void SourceFileWindow::findFunctionsPopup_aboutToHide_async()
 {
-  THIS->findFunctionsPopup->clear();
+  findFunctionsPopup->clear();
 }
 
 void SourceFileWindow::findFunctionsPopup_activated(int id)
 {
-  int line=THIS->sourceFileFunctions[id].implementationLine>=0
-           ?THIS->sourceFileFunctions[id].implementationLine
-           :THIS->sourceFileFunctions[id].prototypeLine;
+  int line=sourceFileFunctions[id].implementationLine>=0
+           ?sourceFileFunctions[id].implementationLine
+           :sourceFileFunctions[id].prototypeLine;
   CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(line,0));
 }
 
@@ -1173,15 +1178,15 @@ void SourceFileWindow::findOpenFileAtCursor()
       break;
     fileName.append(c);
   }
-  THIS->mainForm->findAndOpenFile(fileName,THIS->category);
+  mainForm->findAndOpenFile(fileName,category);
 }
 
 void SourceFileWindow::findFindSymbolDeclaration()
 {
   QString fileText=CURRENT_VIEW->document()->text();
   // "Find symbol declaration" only operates on C files.
-  if (THIS->isCFile) {
-    QString fileName=THIS->fileName;
+  if (isCFile) {
+    QString fileName=fileName;
     QString symbolFile;
     unsigned symbolLine;
     bool systemHeader;
@@ -1202,15 +1207,15 @@ void SourceFileWindow::findFindSymbolDeclaration()
           || c=='_' || c=='$' || c=='#')
         wordUnderCursor.append(c);
     }
-    if (findSymbolInFile(wordUnderCursor,fileText,fileName,THIS->mainForm,
+    if (findSymbolInFile(wordUnderCursor,fileText,fileName,mainForm,
                          symbolFile,symbolLine,systemHeader)
         && !symbolFile.isNull()) {
       if (symbolFile==fileName)
         CURRENT_VIEW->setCursorPosition(KTextEditor::Cursor(symbolLine,0));
       else {
-        THIS->mainForm->openHeader(symbolFile,systemHeader,symbolLine);
+        mainForm->openHeader(symbolFile,systemHeader,symbolLine);
         if (!systemHeader)
-          ACTIVATE_WINDOW(THIS->mainForm->winId());
+          ACTIVATE_WINDOW(mainForm->winId());
       }
     }
   }
@@ -1219,10 +1224,10 @@ void SourceFileWindow::findFindSymbolDeclaration()
 void SourceFileWindow::updateSizes()
 {
   int rightStatusSize=size().width();
-  THIS->rowStatusLabel->setMaximumWidth(30);
-  THIS->colStatusLabel->setMaximumWidth(30);
-  THIS->charsStatusLabel->setMaximumWidth(100);
-  THIS->rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
+  rowStatusLabel->setMaximumWidth(30);
+  colStatusLabel->setMaximumWidth(30);
+  charsStatusLabel->setMaximumWidth(100);
+  rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
 }
 
 void SourceFileWindow::resizeEvent(QResizeEvent *event)
@@ -1244,14 +1249,14 @@ void SourceFileWindow::updateRightStatusLabel()
   int rightStatusSize=size().width();
   int line, col;
   CURRENT_VIEW->cursorPosition().position(line,col);
-  THIS->rowStatusLabel->setMaximumWidth(30);
-  THIS->rowStatusLabel->setText(QString("%1").arg(line+1));
-  THIS->colStatusLabel->setMaximumWidth(30);
-  THIS->colStatusLabel->setText(QString("%1").arg(col+1));
-  THIS->charsStatusLabel->setMaximumWidth(100);
-  THIS->charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()));
-  THIS->rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
-  THIS->rightStatusLabel->setText(THIS->fileName);
+  rowStatusLabel->setMaximumWidth(30);
+  rowStatusLabel->setText(QString("%1").arg(line+1));
+  colStatusLabel->setMaximumWidth(30);
+  colStatusLabel->setText(QString("%1").arg(col+1));
+  charsStatusLabel->setMaximumWidth(100);
+  charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()));
+  rightStatusLabel->setMaximumWidth(rightStatusSize-160>0?rightStatusSize-160:0);
+  rightStatusLabel->setText(fileName);
 }
 
 void SourceFileWindow::current_view_cursorPositionChanged(KTextEditor::View *view, const KTextEditor::Cursor &newPosition)
@@ -1259,8 +1264,8 @@ void SourceFileWindow::current_view_cursorPositionChanged(KTextEditor::View *vie
   if (CURRENT_VIEW==view && !disableViewEvents) {
     int line, col;
     newPosition.position(line,col);
-    THIS->rowStatusLabel->setText(QString("%1").arg(line+1));
-    THIS->colStatusLabel->setText(QString("%1").arg(col+1));
+    rowStatusLabel->setText(QString("%1").arg(line+1));
+    colStatusLabel->setText(QString("%1").arg(col+1));
   }
 }
 
@@ -1268,12 +1273,12 @@ void SourceFileWindow::current_view_textChanged(KTextEditor::Document *document)
 {
   if (disableViewEvents) return;
   if (CURRENT_VIEW && CURRENT_VIEW->document()==document) {
-    THIS->charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()));
-    if (projectCompletion.contains(THIS->fileName))
-      projectCompletion[THIS->fileName].dirty=TRUE;
-    if (preferences.deleteOverwrittenErrors) MainForm::deleteOverwrittenErrorsIn(THIS);
+    charsStatusLabel->setText(QString("%1 Characters").arg(CURRENT_VIEW->document()->text().length()));
+    if (projectCompletion.contains(fileName))
+      projectCompletion[fileName].dirty=TRUE;
+    if (preferences.deleteOverwrittenErrors) MainForm::deleteOverwrittenErrorsIn(this);
   }
-  if (THIS->kreplace) THIS->kreplace->invalidateSelection();
+  if (kreplace) kreplace->invalidateSelection();
 }
 
 void SourceFileWindow::current_view_undoChanged()
@@ -1281,8 +1286,8 @@ void SourceFileWindow::current_view_undoChanged()
   if (CURRENT_VIEW && !disableViewEvents) {
     editUndoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
     editRedoAction->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
-    THIS->shortcuts[0]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
-    THIS->shortcuts[1]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
+    shortcuts[0]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
+    shortcuts[1]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
   }
 }
 
@@ -1292,8 +1297,8 @@ void SourceFileWindow::current_view_selectionChanged(KTextEditor::View *view)
     editClearAction->setEnabled(view->selection());
     editCutAction->setEnabled(view->selection());
     editCopyAction->setEnabled(view->selection());
-    THIS->shortcuts[2]->setEnabled(view->selection());
-    THIS->shortcuts[3]->setEnabled(view->selection());
+    shortcuts[2]->setEnabled(view->selection());
+    shortcuts[3]->setEnabled(view->selection());
   }
 }
 
@@ -1305,7 +1310,7 @@ void SourceFileWindow::current_view_textInserted(KTextEditor::View *view, const 
       && col==view->document()->lineLength(line)-1) {
     KTextEditor::Document *doc=view->document();
     // Only for C files.
-    if (THIS->isCFile) {
+    if (isCFile) {
       QString indent=doc->line(line);
       // Only if the line was all whitespace, otherwise wait for Enter to be
       // pressed (prevents annoying the user while typing a string or something).
@@ -1321,8 +1326,8 @@ void SourceFileWindow::current_view_textInserted(KTextEditor::View *view, const 
     }
   }
   // Completion only operates on C files.
-  if (text=="(" && THIS->isCFile)
-    new ArgHintPopup(view,THIS->fileName,THIS->mainForm);
+  if (text=="(" && isCFile)
+    new ArgHintPopup(view,fileName,mainForm);
 }
 
 void SourceFileWindow::current_view_newLineHook()
@@ -1332,7 +1337,7 @@ void SourceFileWindow::current_view_newLineHook()
   KTextEditor::Document *doc=CURRENT_VIEW->document();
   if (preferences.autoBlocks && line && doc->line(line-1).endsWith("{")) {
     // Only for C files.
-    if (THIS->isCFile) {
+    if (isCFile) {
       QString indent=doc->line(line-1);
       // Remove everything starting from the first non-whitespace character.
       indent=indent.remove(QRegExp("(?!\\s).*$"));
@@ -1351,7 +1356,7 @@ void SourceFileWindow::clipboard_dataChanged()
 {
   if (CURRENT_VIEW) {
     editPasteAction->setEnabled(!clipboard->text().isNull());
-    THIS->shortcuts[4]->setEnabled(!clipboard->text().isNull());
+    shortcuts[4]->setEnabled(!clipboard->text().isNull());
   }
 }
 
@@ -1367,7 +1372,7 @@ void SourceFileWindow::closeEvent(QCloseEvent *e)
 
 void SourceFileWindow::KDirWatch_dirty(const QString &fileName)
 {
-  if (!fileName.compare(THIS->fileName)) {
+  if (!fileName.compare(fileName)) {
     if (KMessageBox::questionYesNo(this,
           QString("The file \'%1\' has been changed by another program. "
                   "Do you want to reload it?").arg(fileName),"File Changed")
@@ -1381,34 +1386,8 @@ void SourceFileWindow::KDirWatch_dirty(const QString &fileName)
   }
 }
 
-/*
- *  Constructs a SourceFileWindow as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
-SourceFileWindow::SourceFileWindow(QWidget* parent, const char* name, Qt::WindowFlags fl)
-    : QMainWindow(parent, name, fl)
-{
-    setupUi(this);
-
-    (void)statusBar();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-SourceFileWindow::~SourceFileWindow()
-{
-    destroy();
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void SourceFileWindow::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 

@@ -156,7 +156,7 @@ class DnDListView : public K3ListView {
 #include <tifiles.h>
 #include <ticalcs.h>
 #include "ktigcc.h"
-#include "srcfile.h"
+#include "srcfilewin.h"
 #include "tpr.h"
 #include "preferences.h"
 #include "projectoptions.h"
@@ -488,7 +488,7 @@ static KFindDialog *kfinddialog;
 QStringList findHistory, replacementHistory;
 static Q3ListViewItem *findCurrentDocument;
 static int findCurrentLine;
-QList<SourceFile *> sourceFiles;
+QList<SourceFileWindow *> sourceFiles;
 static Q3PopupMenu *findFunctionsPopup;
 bool have_usb;
 Tools tools, tempTools;
@@ -877,7 +877,7 @@ class ErrorListItem : public K3ListViewItem {
       kateView->setCursorPosition(*cursor);
   }
   ListViewFile *lvFile;
-  SourceFile *srcFile;
+  SourceFileWindow *srcFile;
   KTextEditor::SmartCursor *cursor;
   private:
   int errorLine;
@@ -893,7 +893,7 @@ class ErrorListItem : public K3ListViewItem {
       if (inProject)
         lvFile=reinterpret_cast<ListViewFile *>(sourceFile);
       else
-        srcFile=reinterpret_cast<SourceFile *>(sourceFile);
+        srcFile=reinterpret_cast<SourceFileWindow *>(sourceFile);
     }
     return found;
   }
@@ -929,7 +929,7 @@ void MainForm::deleteErrorsForSrcFile(void *srcFile)
   while ((errorItem=lvit.current())) {
     ++lvit;
     if (static_cast<ErrorListItem *>(errorItem)->srcFile
-        ==reinterpret_cast<SourceFile *>(srcFile))
+        ==reinterpret_cast<SourceFileWindow *>(srcFile))
       delete errorItem;
   }
 }
@@ -949,7 +949,7 @@ void MainForm::createErrorCursorsForSourceFile(Q3ListViewItem *item)
 // And the last.
 void MainForm::deleteOverwrittenErrorsIn(void *srcFile)
 {
-  SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+  SourceFileWindow *sourceFile=reinterpret_cast<SourceFileWindow *>(srcFile);
   Q3ListViewItemIterator lvit(errorList->errorListView);
   ErrorListItem *errorItem;
   while ((errorItem=static_cast<ErrorListItem *>(lvit.current()))) {
@@ -987,7 +987,7 @@ bool MainForm::findSourceFile(bool &inProject, void *&srcFile, const QString &fi
       return TRUE;
     }
   }
-  foreach (SourceFile *sourceFile, sourceFiles) {
+  foreach (SourceFileWindow *sourceFile, sourceFiles) {
     if (compareAbsPaths?fileName==sourceFile->fileName
                        :fileName==QFileInfo(sourceFile->fileName).fileName()) {
       inProject=FALSE;
@@ -1929,7 +1929,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
 void MainForm::adoptSourceFile(void *srcFile)
 {
   if (compiling) return;
-  SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+  SourceFileWindow *sourceFile=reinterpret_cast<SourceFileWindow *>(srcFile);
   QString fileName=sourceFile->fileName;
   KTextEditor::View *newView=sourceFile->kateView;
   // Determine category and caption.
@@ -2027,7 +2027,7 @@ void MainForm::adoptSourceFile(void *srcFile)
   Q3ListViewItem *errorItem;
   for (errorItem=lvit.current();errorItem;errorItem=(++lvit).current()) {
     if (static_cast<ErrorListItem *>(errorItem)->srcFile==sourceFile) {
-      static_cast<ErrorListItem *>(errorItem)->srcFile=static_cast<SourceFile *>(NULL);
+      static_cast<ErrorListItem *>(errorItem)->srcFile=static_cast<SourceFileWindow *>(NULL);
       static_cast<ErrorListItem *>(errorItem)->lvFile=newFile;
     }
   }
@@ -2162,7 +2162,7 @@ bool MainForm::openProject(const QString &fileName)
       KMessageBox::error(this,QString("The file \'%1\' is already included in the project.").arg(caption));
       return FALSE;
     }
-    foreach (SourceFile *sourceFile, sourceFiles) {
+    foreach (SourceFileWindow *sourceFile, sourceFiles) {
       if (!fileName.compare(sourceFile->fileName)) {
         ACTIVATE_WINDOW(sourceFile->winId());
         return FALSE;
@@ -2198,17 +2198,17 @@ bool MainForm::openProject(const QString &fileName)
                 1:
               0);
     
-    new SourceFile(this,fileName,
-                   (category==qllFilesListItem)?QLL_ENABLED_HL_MODE:
-                   (type==2)?S_ENABLED_HL_MODE:
-                   (type==3)?ASM_ENABLED_HL_MODE:
-                   (type==1)?C_ENABLED_HL_MODE:
-                   "None",
-                   (category==qllFilesListItem)?&(preferences.synQll.enabled):
-                   (type==2)?&(preferences.synS.enabled):
-                   (type==3)?&(preferences.synAsm.enabled):
-                   (type==1)?&(preferences.synC.enabled):
-                   NULL,category,(type==1),(type>1),category==txtFilesListItem);
+    new SourceFileWindow(this,fileName,
+                         (category==qllFilesListItem)?QLL_ENABLED_HL_MODE:
+                         (type==2)?S_ENABLED_HL_MODE:
+                         (type==3)?ASM_ENABLED_HL_MODE:
+                         (type==1)?C_ENABLED_HL_MODE:
+                         "None",
+                         (category==qllFilesListItem)?&(preferences.synQll.enabled):
+                         (type==2)?&(preferences.synS.enabled):
+                         (type==3)?&(preferences.synAsm.enabled):
+                         (type==1)?&(preferences.synC.enabled):
+                         NULL,category,(type==1),(type>1),category==txtFilesListItem);
     return FALSE;
   }
 }
@@ -2550,7 +2550,7 @@ void MainForm::fileSave_fromto(const QString &lastProj,const QString &nextProj)
     addRecent(nextProj);
   }
   updateRightStatusLabel();
-  foreach (SourceFile *sourceFile, sourceFiles) {
+  foreach (SourceFileWindow *sourceFile, sourceFiles) {
     if (sourceFile->kateView->document()->isModified())
       sourceFile->fileSave();
   }
@@ -2606,7 +2606,7 @@ void MainForm::filePreferences()
         }
       }
     }
-    foreach (SourceFile *sourceFile, sourceFiles) {
+    foreach (SourceFileWindow *sourceFile, sourceFiles) {
       KTextEditor::HighlightingInterface *hliface
         =qobject_cast<KTextEditor::HighlightingInterface*>(
           sourceFile->kateView->document());
@@ -2778,7 +2778,7 @@ void MainForm::filePreferences()
       }
     }
     // Apply the preferences to the source file windows.
-    foreach (SourceFile *sourceFile, sourceFiles) sourceFile->applyPreferences();
+    foreach (SourceFileWindow *sourceFile, sourceFiles) sourceFile->applyPreferences();
     // Apply the preferences to the debug menu.
     debugPauseAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
     debugResetAction->setEnabled(!compiling&&preferences.linkTarget==LT_TIEMU);
@@ -3467,7 +3467,7 @@ void MainForm::findAndOpenFile(const QString &fileName, void *category)
     if (inProject)
       fileTreeClicked(reinterpret_cast<ListViewFile *>(sourceFile));
     else
-      ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+      ACTIVATE_WINDOW(reinterpret_cast<SourceFileWindow *>(sourceFile)->winId());
   } else {
     // Not found. Try to open it instead.
     // Don't do this if the name ends with ".tpr" because that would cause
@@ -3477,7 +3477,7 @@ void MainForm::findAndOpenFile(const QString &fileName, void *category)
       if (getPathType(fileNameFull)==PATH_FILE) {
         openProject(fileNameFull);
         if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject)
-           ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+           ACTIVATE_WINDOW(reinterpret_cast<SourceFileWindow *>(sourceFile)->winId());
       } else {
         Q3ListViewItem *cat=reinterpret_cast<Q3ListViewItem *>(category);
         QString includeDir=(cat==asmFilesListItem)?"asm":
@@ -3487,7 +3487,7 @@ void MainForm::findAndOpenFile(const QString &fileName, void *category)
         if (getPathType(fileNameFull)==PATH_FILE) {
           openProject(fileNameFull);
           if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject)
-             ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+             ACTIVATE_WINDOW(reinterpret_cast<SourceFileWindow *>(sourceFile)->winId());
         } else {
           KMessageBox::error(this,QString("File \'%1\' not found.").arg(fileName),
                              "Search Failed");
@@ -3542,15 +3542,15 @@ void MainForm::openHeader(const QString &fileName, bool systemHeader,
           if (reinterpret_cast<ListViewFile *>(sourceFile)->kateView)
             reinterpret_cast<ListViewFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
         } else {
-          reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
-          ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+          reinterpret_cast<SourceFileWindow *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
+          ACTIVATE_WINDOW(reinterpret_cast<SourceFileWindow *>(sourceFile)->winId());
         }
       } else {
         if (getPathType(fileNameFull)==PATH_FILE) {
           openProject(fileNameFull);
           if (findSourceFile(inProject,sourceFile,fileNameFull) && !inProject) {
-            reinterpret_cast<SourceFile *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
-            ACTIVATE_WINDOW(reinterpret_cast<SourceFile *>(sourceFile)->winId());
+            reinterpret_cast<SourceFileWindow *>(sourceFile)->kateView->setCursorPosition(KTextEditor::Cursor(lineno,0));
+            ACTIVATE_WINDOW(reinterpret_cast<SourceFileWindow *>(sourceFile)->winId());
           }
         } else {
           KMessageBox::error(this,QString("File \'%1\' not found.").arg(fileName),
@@ -3758,7 +3758,7 @@ QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
       return fileName;
     }
   } else {
-    SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+    SourceFileWindow *sourceFile=reinterpret_cast<SourceFileWindow *>(srcFile);
     origFileName=&(sourceFile->fileName);
     category=reinterpret_cast<Q3ListViewItem *>(sourceFile->category);
     fileName=QString("%1%2").arg(tempdir)
@@ -3783,7 +3783,7 @@ void MainForm::startCompiling()
       return;
     }
   } else {
-    foreach (SourceFile *sourceFile, sourceFiles) sourceFile->fileSave();
+    foreach (SourceFileWindow *sourceFile, sourceFiles) sourceFile->fileSave();
   }
   fileNewMenu->menuAction()->setEnabled(FALSE);
   fileNewAction->setEnabled(FALSE);
@@ -3809,7 +3809,7 @@ void MainForm::startCompiling()
   debugRunAction->setEnabled(FALSE);
   debugPauseAction->setEnabled(FALSE);
   debugResetAction->setEnabled(FALSE);
-  foreach (SourceFile *sourceFile, sourceFiles) {
+  foreach (SourceFileWindow *sourceFile, sourceFiles) {
     sourceFile->fileAddToProjectAction->setEnabled(FALSE);
     sourceFile->fileCompileAction->setEnabled(FALSE);
   }
@@ -3868,7 +3868,7 @@ void MainForm::stopCompiling()
   stopCompilingFlag=FALSE;
   errorsCompilingFlag=FALSE;
   compiling=FALSE;
-  foreach (SourceFile *sourceFile, sourceFiles) {
+  foreach (SourceFileWindow *sourceFile, sourceFiles) {
     sourceFile->fileAddToProjectAction->setEnabled(TRUE);
     sourceFile->fileCompileAction->setEnabled(TRUE);
     sourceFile->fileCloseAction->setEnabled(TRUE);
@@ -4152,7 +4152,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
       modified=TRUE;
     shortFileName=sourceFile->text(0);
   } else {
-    SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+    SourceFileWindow *sourceFile=reinterpret_cast<SourceFileWindow *>(srcFile);
     category=reinterpret_cast<Q3ListViewItem *>(sourceFile->category);
     origFileName=&(sourceFile->fileName);
     if (sourceFile->kateView->document()->isModified())
@@ -4822,7 +4822,7 @@ void MainForm::projectBuild()
 void MainForm::compileSourceFile(void *srcFile)
 {
   if (compiling) return;
-  SourceFile *sourceFile=reinterpret_cast<SourceFile *>(srcFile);
+  SourceFileWindow *sourceFile=reinterpret_cast<SourceFileWindow *>(srcFile);
   sourceFile->fileCloseAction->setEnabled(FALSE);
   startCompiling();
   compileFile(sourceFile,FALSE,TRUE);
@@ -6317,7 +6317,7 @@ void MainForm::closeEvent(QCloseEvent *e)
   if (compiling || savePrompt())
     e->ignore();
   else {
-    foreach (SourceFile *sourceFile, sourceFiles) {
+    foreach (SourceFileWindow *sourceFile, sourceFiles) {
       if (sourceFile->savePrompt()) {
         e->ignore();
         return;

@@ -13,7 +13,6 @@ LIBS	+= -lktexteditor -lkutils -lkdeui -lkdecore -lkio -lkparts -lkde3support
 HEADERS	+= tpr.h \
 	ktigcc.h \
 	preferences.h \
-	srcfile.h \
 	tiemu.h \
 	tiemu_stub.h \
 	callbacks.h \

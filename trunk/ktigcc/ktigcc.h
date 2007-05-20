@@ -30,7 +30,7 @@
 #include <Q3ValueVector>
 class QAssistantClient;
 class QClipboard;
-class SourceFile;
+class SourceFileWindow;
 typedef struct tprsettings tprSettings;
 typedef struct tprlibopts tprLibOpts;
 
@@ -51,7 +51,7 @@ extern const char *parg;
 extern QAssistantClient *assistant;
 extern QClipboard *clipboard;
 extern QStringList findHistory, replacementHistory;
-extern QList<SourceFile *> sourceFiles;
+extern QList<SourceFileWindow *> sourceFiles;
 extern tprSettings settings;
 extern tprLibOpts libopts;
 
