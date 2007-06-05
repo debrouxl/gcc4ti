@@ -31,7 +31,6 @@ public:
     ~ToolsDialog();
 
 public slots:
-    virtual void init();
     virtual void addButton_clicked();
     virtual void editButton_clicked();
     virtual void removeButton_clicked();

@@ -27,16 +27,24 @@
 #include "ktigcc.h"
 #include "toolprops.h"
 
-void ToolsDialog::init()
+ToolsDialog::ToolsDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
+    : QDialog(parent, name, modal, fl)
 {
+  setupUi(this);
   tempTools=tools;
   listView->clear();
   listView->setSorting(-1);
+  listView->header()->setClickEnabled(false);
+  listView->header()->setResizeEnabled(false);
   Tools::iterator it;
   for(it=tempTools.begin(); it!=tempTools.end(); ++it)
     new K3ListViewItem(listView,listView->lastItem(),(*it).title,
                       (*it).commandLine,(*it).workingDirectory,
                       (*it).runInTerminal?"Yes":"No");
+}
+
+ToolsDialog::~ToolsDialog()
+{
 }
 
 void ToolsDialog::addButton_clicked()
@@ -85,35 +93,8 @@ void ToolsDialog::accept()
   QDialog::accept();
 }
 
-/*
- *  Constructs a ToolsDialog as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
-ToolsDialog::ToolsDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
-    : QDialog(parent, name, modal, fl)
-{
-    setupUi(this);
-
-    init();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-ToolsDialog::~ToolsDialog()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void ToolsDialog::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 
