@@ -31,7 +31,6 @@ public:
     ~ToolProperties();
 
 public slots:
-    virtual void init();
     virtual void accept();
     virtual void validate();
     virtual void browseButton_clicked();
