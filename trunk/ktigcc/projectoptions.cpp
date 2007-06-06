@@ -29,6 +29,7 @@
 #include <kfiledialog.h>
 #include <kshell.h>
 #include <kurl.h>
+#include <kpushbutton.h> 
 #include "ktigcc.h"
 #include "tpr.h"
 #include "programoptions.h"
@@ -40,6 +41,8 @@ ProjectOptions::ProjectOptions(QWidget* parent, const char* name, bool modal, Qt
   : QDialog(parent, name, modal, fl)
 {
   setupUi(this);
+  buttonOk->setGuiItem(KStandardGuiItem::Ok);
+  buttonCancel->setGuiItem(KStandardGuiItem::Cancel);
   if (!have_fargo) FargoProgram->hide();
   if (!have_flashos) FlashOperatingSystem->hide();
   //Create the Program Options dialog

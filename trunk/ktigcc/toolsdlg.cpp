@@ -24,13 +24,16 @@
 #include <QImage>
 #include <QPixmap>
 #include <k3listview.h>
+#include <kpushbutton.h> 
 #include "ktigcc.h"
 #include "toolprops.h"
 
 ToolsDialog::ToolsDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
-    : QDialog(parent, name, modal, fl)
+  : QDialog(parent, name, modal, fl)
 {
   setupUi(this);
+  okButton->setGuiItem(KStandardGuiItem::Ok);
+  cancelButton->setGuiItem(KStandardGuiItem::Cancel);
   tempTools=tools;
   listView->clear();
   listView->setSorting(-1);

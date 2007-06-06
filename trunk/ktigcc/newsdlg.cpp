@@ -27,6 +27,7 @@
 #include <kio/netaccess.h>
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
+#include <kpushbutton.h> 
 #include <QVariant>
 #include <QImage>
 #include <QPixmap>
@@ -58,6 +59,17 @@ class ColoredListBoxText : public Q3ListBoxText {
   private:
     QColor color;
 };
+
+NewsDialog::NewsDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
+  : QDialog(parent, name, modal, fl)
+{
+  setupUi(this);
+  closeButton->setGuiItem(KStandardGuiItem::Close);
+}
+
+NewsDialog::~NewsDialog()
+{
+}
 
 bool NewsDialog::loadNews()
 {
@@ -143,34 +155,8 @@ void NewsDialog::visitButton_clicked()
                static_cast<QWidget *>(parent()));
 }
 
-/*
- *  Constructs a NewsDialog as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
-NewsDialog::NewsDialog(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
-    : QDialog(parent, name, modal, fl)
-{
-    setupUi(this);
-
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-NewsDialog::~NewsDialog()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void NewsDialog::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 

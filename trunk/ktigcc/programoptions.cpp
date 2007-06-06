@@ -30,8 +30,44 @@
 #include <QMouseEvent>
 #include <QAssistantClient>
 #include <QButtonGroup>
+#include <kpushbutton.h> 
 #include "ktigcc.h"
 #include "tpr.h"
+
+ProgramOptions::ProgramOptions(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
+  : QDialog(parent, name, modal, fl)
+{
+  setupUi(this);
+  buttonClose->setGuiItem(KStandardGuiItem::Close);
+  // Create button groups
+  QButtonGroup *group;
+  //Tab: Reloc Format
+  group=new QButtonGroup(this);
+  group->addButton(RelocAMS);
+  group->addButton(RelocKernel);
+  group->addButton(RelocCompressed);
+  group->addButton(RelocMlink);
+  group=new QButtonGroup(this);
+  group->addButton(ROMCallDirect);
+  group->addButton(ROMCallKernel);
+  group->addButton(ROMCallCompressed);
+  group->addButton(ROMCallMlink);
+  group->addButton(ROMCallFLine);
+  //Tab: BSS/Data Format
+  group=new QButtonGroup(this);
+  group->addButton(BSSMerge);
+  group->addButton(BSSKernel);
+  group->addButton(BSSCompressed);
+  group->addButton(BSSMlink);
+  group=new QButtonGroup(this);
+  group->addButton(DataVarKernel);
+  group->addButton(DataVarCompressed);
+  group->addButton(DataVarMlink);
+}
+
+ProgramOptions::~ProgramOptions()
+{
+}
 
 void ProgramOptions::ImportSettings()
 {
@@ -178,7 +214,6 @@ void ProgramOptions::CalcCheckbox_toggled(bool on __attribute__((unused)))
   }
 }
 
-
 void ProgramOptions::KernelRadiobutton_toggled(bool on __attribute__((unused)))
 {
   static bool inEvent=FALSE;
@@ -255,7 +290,6 @@ void ProgramOptions::KernelRadiobutton_toggled(bool on __attribute__((unused)))
   }
 }
 
-
 void ProgramOptions::RelocSettings_toggled(bool on __attribute__((unused)))
 {
   static bool inEvent=FALSE;
@@ -291,7 +325,6 @@ void ProgramOptions::RelocSettings_toggled(bool on __attribute__((unused)))
   }
 }
 
-
 void ProgramOptions::mousePressEvent( QMouseEvent * e )
 {
   if (e->button()==Qt::RightButton) {
@@ -309,57 +342,9 @@ void ProgramOptions::mousePressEvent( QMouseEvent * e )
   }
 }
 
-/*
- *  Constructs a ProgramOptions as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
-ProgramOptions::ProgramOptions(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
-    : QDialog(parent, name, modal, fl)
-{
-  setupUi(this);
-  // Create button groups
-  QButtonGroup *group;
-  //Tab: Reloc Format
-  group=new QButtonGroup(this);
-  group->addButton(RelocAMS);
-  group->addButton(RelocKernel);
-  group->addButton(RelocCompressed);
-  group->addButton(RelocMlink);
-  group=new QButtonGroup(this);
-  group->addButton(ROMCallDirect);
-  group->addButton(ROMCallKernel);
-  group->addButton(ROMCallCompressed);
-  group->addButton(ROMCallMlink);
-  group->addButton(ROMCallFLine);
-  //Tab: BSS/Data Format
-  group=new QButtonGroup(this);
-  group->addButton(BSSMerge);
-  group->addButton(BSSKernel);
-  group->addButton(BSSCompressed);
-  group->addButton(BSSMlink);
-  group=new QButtonGroup(this);
-  group->addButton(DataVarKernel);
-  group->addButton(DataVarCompressed);
-  group->addButton(DataVarMlink);
-}
 
-/*
- *  Destroys the object and frees any allocated resources
- */
-ProgramOptions::~ProgramOptions()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void ProgramOptions::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 

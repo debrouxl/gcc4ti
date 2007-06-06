@@ -28,12 +28,15 @@
 #include <kurlrequester.h>
 #include <kfiledialog.h>
 #include <kshell.h>
+#include <kpushbutton.h> 
 #include "ktigcc.h"
 
 ToolProperties::ToolProperties(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
-    : QDialog(parent, name, modal, fl)
+  : QDialog(parent, name, modal, fl)
 {
   setupUi(this);
+  okButton->setGuiItem(KStandardGuiItem::Ok);
+  cancelButton->setGuiItem(KStandardGuiItem::Cancel);
   workingDirectory->setMode(KFile::LocalOnly|KFile::ExistingOnly|KFile::Directory);
 
   if (toolIndex>=0) {

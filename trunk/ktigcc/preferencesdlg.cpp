@@ -47,6 +47,7 @@
 #include <kfiledialog.h>
 #include <kcursor.h>
 #include <kurl.h>
+#include <kpushbutton.h> 
 #include "ktigcc.h"
 #include "selectstyle.h"
 #include "selectcolors.h"
@@ -106,6 +107,8 @@ Preferences::Preferences(QWidget* parent, const char* name, bool modal, Qt::Wind
   : QDialog(parent, name, modal, fl)
 {
   setupUi(this);
+  okButton->setGuiItem(KStandardGuiItem::Ok);
+  cancelButton->setGuiItem(KStandardGuiItem::Cancel);
 
   // General
   stopAtFirstError->setChecked(preferences.stopAtFirstError);
