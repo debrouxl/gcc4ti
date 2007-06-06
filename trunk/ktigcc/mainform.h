@@ -60,8 +60,6 @@ public:
 public slots:
     virtual void errorListView_clicked( Q3ListViewItem * item );
     virtual bool findSourceFile( bool & inProject, void * & srcFile, const QString & fileName );
-    virtual void init();
-    virtual void destroy();
     virtual void te_popup_aboutToShow();
     virtual void te_popup_activated( int index );
     virtual void shortcut_0_activated();

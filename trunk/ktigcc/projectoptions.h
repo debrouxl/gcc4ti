@@ -43,8 +43,6 @@ protected slots:
     virtual void languageChange();
 
 private:
-    void init();
-    void destroy();
     void ImportSettings( void );
     void ExportSettings( void );
 

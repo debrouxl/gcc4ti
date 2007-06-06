@@ -31,8 +31,6 @@ public:
     ~Preferences();
 
 public slots:
-    virtual void init();
-    virtual void destroy();
     virtual void linkTarget_toggled(bool on);
     virtual void bgColorChange_clicked();
     virtual void editorFontChange_clicked();

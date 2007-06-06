@@ -1012,8 +1012,13 @@ void setTabWidth(KTextEditor::View *view, unsigned tabWidth)
   sendCommand(view,QString("set-tab-width %1").arg(tabWidth));
 }
 
-void MainForm::init()
+MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
+  : QMainWindow(parent, name, fl)
 {
+  setupUi(this);
+
+  (void)statusBar();
+
   QPixmap smallIcon(":/images/ktigcc.png");
   QPixmap largeIcon(":/images/icon.png");
   QIcon windowIcon(smallIcon);
@@ -1312,7 +1317,7 @@ void MainForm::init()
   }
 }
 
-void MainForm::destroy()
+MainForm::~MainForm()
 {
   while (!sourceFiles.isEmpty()) {
     delete sourceFiles.first();
@@ -6412,35 +6417,8 @@ QString MainForm::textForHeader(const QString &fileName)
   return QString::null;
 }
 
-/*
- *  Constructs a MainForm as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- */
-MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
-    : QMainWindow(parent, name, fl)
-{
-    setupUi(this);
-
-    (void)statusBar();
-    init();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-MainForm::~MainForm()
-{
-    destroy();
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void MainForm::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 

@@ -36,8 +36,10 @@
 ProgramOptions *programoptions;
 //the program options subdialog is created at initialization of a ProjectOptions and remains existant until the ProjectOptions is destroyed.
 
-void ProjectOptions::init()
+ProjectOptions::ProjectOptions(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
+  : QDialog(parent, name, modal, fl)
 {
+  setupUi(this);
   if (!have_fargo) FargoProgram->hide();
   if (!have_flashos) FlashOperatingSystem->hide();
   //Create the Program Options dialog
@@ -49,7 +51,7 @@ void ProjectOptions::init()
   UpdateVisibilities();
 }
 
-void ProjectOptions::destroy()
+ProjectOptions::~ProjectOptions()
 {
   //Save settings
   if (result()==QDialog::Accepted)
@@ -264,36 +266,8 @@ void ProjectOptions::browseButton_clicked()
     CallAfterBuilding->setText(KShell::quoteArg(ret)+" \"($TI89File)\" \"($TI92PlusFile)\" \"($V200File)\"");
 }
 
-/*
- *  Constructs a ProjectOptions as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  true to construct a modal dialog.
- */
-ProjectOptions::ProjectOptions(QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl)
-    : QDialog(parent, name, modal, fl)
-{
-    setupUi(this);
-
-    init();
-}
-
-/*
- *  Destroys the object and frees any allocated resources
- */
-ProjectOptions::~ProjectOptions()
-{
-    destroy();
-    // no need to delete child widgets, Qt does it all for us
-}
-
-/*
- *  Sets the strings of the subwidgets using the current
- *  language.
- */
 void ProjectOptions::languageChange()
 {
-    retranslateUi(this);
+  retranslateUi(this);
 }
 
