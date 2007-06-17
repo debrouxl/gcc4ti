@@ -27,14 +27,11 @@
 
 #include "../generic.h"
 #include "../formats/packhead.h"    // compressed header definition
+#include "pucrunch.h"
 
 #define FIXF_MACHMASK  0xff
 #define FIXF_WRAP	   256
 
-
-#define F_VERBOSE    (1<<0)
-#define F_STATS      (1<<1)
-#define F_ERROR      (1<<15)
 
 #ifndef min
 #define min(a,b) ((a<b)?(a):(b))
@@ -96,8 +93,6 @@ unsigned char outBuffer[OUT_SIZE];
 int outPointer = 0;
 int bitMask    = 0x80;
 
-int quiet      = 0;
-
 
 void TTPackInit(void) {
     int i;
@@ -153,52 +148,44 @@ void TTPackInit(void) {
 //=============================================================================
 // the packing code
 //=============================================================================
-int SavePack(int flags ATTRIBUTE_UNUSED,int type, unsigned char *data, int size, char *target,
+int SavePack(int flags ATTRIBUTE_UNUSED,int type, unsigned char *data, int size, FILE *fp,
              int start ATTRIBUTE_UNUSED, int escape, unsigned char *rleValues,
              int endAddr ATTRIBUTE_UNUSED, int extraLZPosBits,
              int memStart ATTRIBUTE_UNUSED, int memEnd ATTRIBUTE_UNUSED)
 {
-    FILE *fp = NULL;
-
     int  i;
 
     if (!data)   return 10;
-    if (!target) fp = stdout;
 
     if ((type & FIXF_MACHMASK) == 0) {
         /* Save without decompressor */
 
-        if (fp || (fp = fopen(target, "wb"))) {
-            PackedHeader   cth;
-            RLEEntries     re;
+        PackedHeader   cth;
+        RLEEntries     re;
 
-            cth.origsize_lo  = inlen & 0xff;
-            cth.origsize_hi  = (inlen >> 8);
-            cth.magic1       = MAGIC_CHAR1;
-            cth.magic2       = MAGIC_CHAR2;
-            cth.compsize_lo  = (size + rleUsed + sizeof(PackedHeader)) & 0xff;
-            cth.compsize_hi  = (size + rleUsed + sizeof(PackedHeader)) >> 8;
-            cth.esc1         = (escape >> (8-escBits));
-            cth.notused3     = 0; // just to make sure it has a defined value
-            cth.notused4     = 0; // just to make sure it has a defined value
-            cth.esc2         = escBits;
-            cth.gamma1       = maxGamma + 1;
-            cth.gamma2       = (1 << maxGamma);
-            cth.extralz      = extraLZPosBits;
-            cth.notused1     = 0; // just to make sure it has a defined value
-            cth.notused2     = 0; // just to make sure it has a defined value
-            cth.rleentries   = rleUsed;
+        cth.origsize_lo  = inlen & 0xff;
+        cth.origsize_hi  = (inlen >> 8);
+        cth.magic1       = MAGIC_CHAR1;
+        cth.magic2       = MAGIC_CHAR2;
+        cth.compsize_lo  = (size + rleUsed + sizeof(PackedHeader)) & 0xff;
+        cth.compsize_hi  = (size + rleUsed + sizeof(PackedHeader)) >> 8;
+        cth.esc1         = (escape >> (8-escBits));
+        cth.notused3     = 0; // just to make sure it has a defined value
+        cth.notused4     = 0; // just to make sure it has a defined value
+        cth.esc2         = escBits;
+        cth.gamma1       = maxGamma + 1;
+        cth.gamma2       = (1 << maxGamma);
+        cth.extralz      = extraLZPosBits;
+        cth.notused1     = 0; // just to make sure it has a defined value
+        cth.notused2     = 0; // just to make sure it has a defined value
+        cth.rleentries   = rleUsed;
 
-            for(i=0; i<rleUsed; i++) re.value[i] = rleValues[i+1];
+        for(i=0; i<rleUsed; i++) re.value[i] = rleValues[i+1];
 
-            fwrite(&cth, 1, sizeof(PackedHeader), fp); // write header
-            fwrite(&re,  1, cth.rleentries, fp);       // write rle values
-            fwrite(data, size, 1, fp);                 // write compressed data
-            if(fp != stdout) fclose(fp);
-            return 0;
-        }
-        fprintf(stderr, "ERROR: Could not open %s for writing\n", target);
-        return 10;
+        fwrite(&cth, 1, sizeof(PackedHeader), fp); // write header
+        fwrite(&re,  1, cth.rleentries, fp);       // write rle values
+        fwrite(data, size, 1, fp);                 // write compressed data
+        return 0;
     }
 
     fprintf(stderr, "FATAL: invalid type!!\n");
@@ -1239,6 +1226,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
         escMask = (0xff00>>escBits) & 0xff;
     }
 
+
     if (flags & F_VERBOSE) {
         fprintf(stderr, "Optimizing LZ77 and RLE lengths...");
         fflush(stderr);
@@ -1586,25 +1574,17 @@ errorexit:
 //=============================================================================
 // as usual: the main, but a long one ...
 //=============================================================================
-int TTPack(int argc,char *argv[]) {
+int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
     int   startAddr   = 0x258;
-    int   flags       = 0;
     int   lzlen       = -1;
-    int   buflen;
-    int   newlen;
     int   startEscape;
     int   n;
-    char *fileIn  = NULL;
-    char *fileOut = NULL;
-    FILE *infp;
 
     unsigned long timeused = clock();
 
     int   memStart    = 0x801;
     int   memEnd      = 0x10000;
     int   type        = 0;
-
-    quiet = 0;
 
 
     TTPackInit();
@@ -1616,88 +1596,10 @@ int TTPack(int argc,char *argv[]) {
 
     InitValueLen();
 
-    for (n=1; n<argc; n++) {
-        if (!strcmp(argv[n], "-quiet"))  flags &= ~F_VERBOSE, quiet = 1;
-
-        else if (argv[n][0]=='-' || argv[n][0]=='/') {
-            int i = 1;
-
-            while (argv[n][i]) {
-                switch (argv[n][i]) {
-
-                case 's':
-                    flags |= F_STATS;
-                    break;
-
-                case 'v':
-                    flags |= F_VERBOSE;
-                    quiet = 0;
-                    break;
-
-                case 'h':
-                case '?':
-                    flags |= F_ERROR;
-                    break;
-
-                default:
-                    fprintf(stderr, "ERROR: Unknown option \"%c\"\n",argv[n][i]);
-                    flags |= F_ERROR;
-                }
-                i++;
-            }
-        } else {
-            if (!fileIn) {
-                fileIn = argv[n];
-            }
-            else if (!fileOut) {
-                fileOut = argv[n];
-            }
-            else {
-                fprintf(stderr, "ERROR: Only two filenames wanted!\n");
-                flags |= F_ERROR;
-            }
-        }
-    }
-
-    // input and output file
-    if ((flags & F_ERROR) || !fileIn || !fileOut) {
-        return 1;
-    }
-
     if (lzlen == -1) lzlen = DEFAULT_LZLEN;
 
-    if (fileIn) {
-        if (!(infp = fopen(fileIn, "rb"))) {
-            fprintf(stderr, "ERROR: Could not open %s for reading!\n", fileIn);
-            return 1;
-        }
-    }
-    else {
-        fprintf(stderr, "assuming stdin as text input.\nCtrl-C to abort, Ctrl-Z for EOF.\n");
-        infp = stdin;
-    }
-
-    /* Read in the data */
-    inlen  = 0;
-    buflen = 0;
-    indata = NULL;
-    while (1) {
-        if (buflen < inlen + lrange) {
-            unsigned char *tmp = realloc(indata, buflen + lrange);
-            if (!tmp) {
-                free(indata);
-                fprintf(stderr, "ERROR: realloc failed!\n");
-                return 1;
-            }
-            indata = tmp;
-            buflen += lrange;
-        }
-        newlen = fread(indata + inlen, 1, lrange, infp);
-        if (newlen <= 0) break;
-        inlen += newlen;
-    }
-
-    if (infp != stdin) fclose(infp);
+    inlen  = in_len;
+    indata = in_data;
 
 
     if (startAddr + inlen -1 > 0xffff) {
@@ -1731,7 +1633,7 @@ int TTPack(int argc,char *argv[]) {
         // type      ... may vary
         // outBuffer ... static global array (65536 Bytes)
 
-        SavePack(flags,type, outBuffer, outPointer, fileOut,
+        SavePack(flags,type, outBuffer, outPointer, out_file,
                  startAddr, startEscape, rleValues,
                  endAddr, extraLZPosBits,
                  memStart, memEnd);
