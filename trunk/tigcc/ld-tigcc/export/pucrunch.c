@@ -44,10 +44,10 @@
 
 
 
-unsigned short *rle, *elr, *lzlen, *lzpos;
-int *length, inlen;
-unsigned char *indata, *mode, *newesc;
-unsigned short *backSkip;
+static unsigned short *rle, *elr, *lzlen, *lzpos;
+static int *length, inlen;
+static unsigned char *indata, *mode, *newesc;
+static unsigned short *backSkip;
 
 
 enum MODE {
@@ -57,43 +57,43 @@ enum MODE {
     MMARK   = 4
 };
 
-int lzopt          = 0;
-int maxGamma       = 7;
-int reservedBytes  = 2;
-int escBits        = 2;
-int escMask        = 0xc0;
-int extraLZPosBits = 0;
-int rleUsed        = 31;
+static int lzopt          = 0;
+static int maxGamma       = 7;
+static int reservedBytes  = 2;
+static int escBits        = 2;
+static int escMask        = 0xc0;
+static int extraLZPosBits = 0;
+static int rleUsed        = 31;
 
 
-unsigned char rleLen[256];
-int lenValue[256];
-int lrange, maxlzlen, maxrlelen;
+static unsigned char rleLen[256];
+static int lenValue[256];
+static int lrange, maxlzlen, maxrlelen;
 
-int gainedEscaped = 0;
-int gainedRle = 0, gainedSRle = 0, gainedLRle = 0;
-int gainedLz = 0, gainedRlecode = 0;
+static int gainedEscaped = 0;
+static int gainedRle = 0, gainedSRle = 0, gainedLRle = 0;
+static int gainedLz = 0, gainedRlecode = 0;
 
-int timesEscaped = 0, timesNormal = 0;
-int timesRle = 0, timesSRle = 0, timesLRle = 0;
-int timesLz = 0;
+static int timesEscaped = 0, timesNormal = 0;
+static int timesRle = 0, timesSRle = 0, timesLRle = 0;
+static int timesLz = 0;
 
-int lenStat[8][4];
+static int lenStat[8][4];
 
-unsigned char rleValues[32] = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int rleHist[256];
+static unsigned char rleValues[32] = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+static int rleHist[256];
 
 
 
 
 #define OUT_SIZE 65536
-unsigned char outBuffer[OUT_SIZE];
-int outPointer = 0;
-int bitMask    = 0x80;
+static unsigned char outBuffer[OUT_SIZE];
+static int outPointer = 0;
+static int bitMask    = 0x80;
 
 
-void TTPackInit(void) {
+static void TTPackInit(void) {
     int i;
 
     rleValues[0] = 1;
@@ -147,8 +147,8 @@ void TTPackInit(void) {
 //=============================================================================
 // the packing code
 //=============================================================================
-int SavePack(unsigned char *data, int size, FILE *fp, int escape,
-             unsigned char *rleValues, int extraLZPosBits)
+static int SavePack(unsigned char *data, int size, FILE *fp, int escape,
+                    unsigned char *rleValues, int extraLZPosBits)
 {
     int  i;
 
@@ -189,7 +189,7 @@ int SavePack(unsigned char *data, int size, FILE *fp, int escape,
 //=============================================================================
 //
 //=============================================================================
-void FlushBits(void) {
+static void FlushBits(void) {
     if (bitMask != 0x80) outPointer++;
 }
 
@@ -197,7 +197,7 @@ void FlushBits(void) {
 //=============================================================================
 //
 //=============================================================================
-void PutBit(int bit) {
+static void PutBit(int bit) {
     if (bit && outPointer < OUT_SIZE) outBuffer[outPointer] |= bitMask;
     bitMask >>= 1;
 
@@ -211,7 +211,7 @@ void PutBit(int bit) {
 //=============================================================================
 //
 //=============================================================================
-void PutValue(int value) {
+static void PutValue(int value) {
     int bits = 0, count = 0;
 
     while (value>1) {
@@ -237,7 +237,7 @@ void PutValue(int value) {
 //=============================================================================
 //
 //=============================================================================
-void InitValueLen() {
+static void InitValueLen(void) {
     int i;
 
     // could be heavily optimized, but isn't necessary
@@ -265,7 +265,7 @@ void InitValueLen() {
 //=============================================================================
 //
 //=============================================================================
-void PutNBits(int byte, int bits) {
+static void PutNBits(int byte, int bits) {
     while (bits--)
         PutBit((byte & (1<<bits)));
 }
@@ -276,7 +276,7 @@ void PutNBits(int byte, int bits) {
 //=============================================================================
 //
 //=============================================================================
-int OutputNormal(int *esc, unsigned char *data, int newesc) {
+static int OutputNormal(int *esc, unsigned char *data, int newesc) {
     timesNormal++;
     if ((data[0] & escMask) == *esc) {
         PutNBits((*esc>>(8-escBits)), escBits); /* escBits>=0 */
@@ -300,7 +300,7 @@ int OutputNormal(int *esc, unsigned char *data, int newesc) {
 //=============================================================================
 //
 //=============================================================================
-void OutputEof(int *esc) {
+static void OutputEof(int *esc) {
     /* EOF marker */
     PutNBits((*esc>>(8-escBits)), escBits);     /* escBits>=0 */
     PutValue(3);        /* >2 */
@@ -312,7 +312,7 @@ void OutputEof(int *esc) {
 //=============================================================================
 //
 //=============================================================================
-void PutRleByte(int data) {
+static void PutRleByte(int data) {
     int index;
 
     for (index = 1; index < 32; index++) {
@@ -344,7 +344,7 @@ void PutRleByte(int data) {
 //=============================================================================
 //
 //=============================================================================
-void InitRleLen() {
+static void InitRleLen(void) {
     int i;
 
     for (i=0; i<256; i++) rleLen[i] = LenValue(32 + 0) + 3;
@@ -357,7 +357,7 @@ void InitRleLen() {
 //=============================================================================
 //
 //=============================================================================
-int LenRle(int len, int data) {
+static int LenRle(int len, int data) {
     int out = 0;
 
     do {
@@ -383,7 +383,7 @@ int LenRle(int len, int data) {
 //=============================================================================
 //
 //=============================================================================
-int OutputRle(int *esc, unsigned char *data, int rlelen) {
+static int OutputRle(int *esc, unsigned char *data, int rlelen) {
     int len = rlelen, tmp;
 
     while (len) {
@@ -472,7 +472,7 @@ int OutputRle(int *esc, unsigned char *data, int rlelen) {
 //=============================================================================
 //
 //=============================================================================
-int LenLz(int lzlen, int lzpos) {
+static int LenLz(int lzlen, int lzpos) {
     if (lzlen==2) {
         if (lzpos <= 256) return escBits + 2 + 8;
         else              return 100000;
@@ -487,7 +487,7 @@ int LenLz(int lzlen, int lzpos) {
 //=============================================================================
 //
 //=============================================================================
-int OutputLz(int *esc, int lzlen, int lzpos, int curpos) {
+static int OutputLz(int *esc, int lzlen, int lzpos, int curpos) {
     if (lzlen==2)        lenStat[0][1]++;
     else if (lzlen<=4)   lenStat[1][1]++;
     else if (lzlen<=8)   lenStat[2][1]++;
@@ -540,7 +540,7 @@ int OutputLz(int *esc, int lzlen, int lzpos, int curpos) {
 //=============================================================================
 //
 //=============================================================================
-int OptimizeLength(int optimize) {
+static int OptimizeLength(int optimize) {
     int i;
 
     length[inlen] = 0;          /* one off the end, our 'target' */
@@ -720,7 +720,7 @@ int OptimizeLength(int optimize) {
 //=============================================================================
 //
 //=============================================================================
-int OptimizeEscape(int *startEscape, int *nonNormal) {
+static int OptimizeEscape(int *startEscape, int *nonNormal) {
     int  i, j, states = (1<<escBits);
     long minp = 0, minv = 0, other = 0;
     long a[256]; /* needs int/long */
@@ -810,7 +810,7 @@ int OptimizeEscape(int *startEscape, int *nonNormal) {
 //=============================================================================
 // Initialize the RLE byte code table according to all RLE's found so far O(n)
 //=============================================================================
-void InitRle(void) {
+static void InitRle(void) {
     int p, mr, mv, i;
 
     for (i=1; i<32; i++) {
@@ -836,7 +836,7 @@ void InitRle(void) {
 //=============================================================================
 // Initialize the RLE byte code table according to RLE's actually used O(n)
 //=============================================================================
-void OptimizeRle(int flags) {
+static void OptimizeRle(int flags) {
     int p, mr, mv, i;
 
     if (flags & F_STATS) fprintf(VERBOSE_OUT, "RLE Byte Code Re-Tune, RLE Ranks:\n");
@@ -893,7 +893,7 @@ void OptimizeRle(int flags) {
 //=============================================================================
 //
 //=============================================================================
-int PackLz77(int lzsz, int flags, int *startEscape)
+static int PackLz77(int lzsz, int flags, int *startEscape)
 {
     int i, j, outlen, p, headerSize;
     int escape;
@@ -1557,7 +1557,7 @@ errorexit:
 int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
     int   startAddr   = 0x258;
     int   lzlen       = -1;
-    int   startEscape;
+    int   startEscape = 0;
     int   n;
 
     unsigned long timeused = clock();
