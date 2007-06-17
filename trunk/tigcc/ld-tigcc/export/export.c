@@ -276,6 +276,11 @@ char ProgramFolder[MAX_NAME_LEN+1] = "main", ProgramName[MAX_NAME_LEN+1] = "prog
 char DataFolder[MAX_NAME_LEN+1] = "", DataName[MAX_NAME_LEN+1] = "data";
 #endif /* DATA_VAR_SUPPORT */
 
+#ifdef PUCRUNCH_SUPPORT
+// Specifies whether to pack the main file with pucrunch.
+BOOLEAN Pack = FALSE;
+#endif /* PUCRUNCH_SUPPORT */
+
 // Specifies whether to output only the binary image of the program.
 BOOLEAN OutputBin = FALSE;
 // Specifies whether to output only the binary image of the main file.

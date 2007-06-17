@@ -37,6 +37,9 @@ extern char ProgramFolder[MAX_NAME_LEN+1], ProgramName[MAX_NAME_LEN+1];
 #ifdef DATA_VAR_SUPPORT
 extern char DataFolder[MAX_NAME_LEN+1], DataName[MAX_NAME_LEN+1];
 #endif /* DATA_VAR_SUPPORT */
+#ifdef PUCRUNCH_SUPPORT
+extern BOOLEAN Pack;
+#endif /* PUCRUNCH_SUPPORT */
 extern BOOLEAN OutputBin;
 extern BOOLEAN OutputBinMainOnly;
 BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc, unsigned int FileRole, unsigned int FileFormat, unsigned int FileType, const char *Extension, BOOLEAN Executable, I4 *EffectiveSize);

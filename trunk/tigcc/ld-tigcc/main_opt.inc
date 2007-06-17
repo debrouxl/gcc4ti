@@ -97,6 +97,9 @@
 					        "     --data-var-copy={never|archived|always}\n"
 					        "                          Work on original data variable or copy\n"
 #endif /* DATA_VAR_SUPPORT */
+#ifdef PUCRUNCH_SUPPORT
+					        "  --pack                  Compress main file with pucrunch\n"
+#endif /* PUCRUNCH_SUPPORT */
 					        "<file> can be an archive or an object file.\n"
 					        "Options marked with `(!)' are likely to cause errors in binary code.\n");
 					goto Cleanup;
@@ -326,6 +329,10 @@
 						Error (NULL, "Unrecognized copying condition `%s'.", Arg);
 				}
 #endif /* DATA_VAR_SUPPORT */
+#ifdef PUCRUNCH_SUPPORT
+				else if (ArgMatches ("pack"))
+					Pack = TRUE;
+#endif /* PUCRUNCH_SUPPORT */
 				else
 					Error (NULL, "Unrecognized option `%s'.", Args [CurArg]);
 			}
