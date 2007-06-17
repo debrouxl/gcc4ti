@@ -1166,77 +1166,78 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     InitRle(flags);
 
     /* Check the normal bytes / all ratio */
-    int mb, mv;
+    {
+        int mb, mv;
 
-    if (flags & F_VERBOSE) {
-        fprintf(stderr, "Selecting the number of escape bits.. ");
-        fflush(stderr);
-    }
+        if (flags & F_VERBOSE) {
+            fprintf(stderr, "Selecting the number of escape bits.. ");
+            fflush(stderr);
+        }
 
-    /*
-        Absolute maximum number of escaped bytes with
-        the escape optimize is 2^-n, where n is the
-        number of escape bits used.
+        /*
+            Absolute maximum number of escaped bytes with
+            the escape optimize is 2^-n, where n is the
+            number of escape bits used.
 
-        This worst case happens only on equal-
-        distributed normal bytes (01230123..).
-        This is why the typical values are so much smaller.
-     */
+            This worst case happens only on equal-
+            distributed normal bytes (01230123..).
+            This is why the typical values are so much smaller.
+         */
 
-    mb = 0;
-    mv = 8*OUT_SIZE;
-    for (escBits=1; escBits<9; escBits++) {
-        int escaped, other = 0, c;
+        mb = 0;
+        mv = 8*OUT_SIZE;
+        for (escBits=1; escBits<9; escBits++) {
+            int escaped, other = 0, c;
 
+            escMask = (0xff00>>escBits) & 0xff;
+
+            /* Find the optimum path for selected escape bits (no optimize) */
+            OptimizeLength(0);
+
+            /* Optimize the escape selections for this path & escBits */
+            escaped = OptimizeEscape(&escape, &other);
+
+            /* Compare value: bits lost for escaping -- bits lost for prefix */
+            c = (escBits+3)*escaped + other*escBits;
+            if (flags & F_STATS) {
+                fprintf(stderr, " %d:%d", escBits, c);
+                fflush(stderr); /* for SAS/C */
+            }
+            if (c < mv) {
+                mb = escBits;
+                mv = c;
+            } else {
+                /* minimum found */
+                break;
+            }
+            if (escBits==4 && (flags & F_STATS)) fprintf(stderr, "\n");
+        }
+        if (mb==1) {    /* Minimum was 1, check 0 */
+            int escaped;
+
+            escBits = 0;
+            escMask = 0;
+
+            /* Find the optimum path for selected escape bits (no optimize) */
+            OptimizeLength(0);
+            /* Optimize the escape selections for this path & escBits */
+            escaped = OptimizeEscape(&escape, NULL);
+
+            if ((flags & F_STATS)) {
+                fprintf(stderr, " %d:%d", escBits, 3*escaped);
+                fflush(stderr); /* for SAS/C */
+            }
+            if (3*escaped < mv) {
+                mb = 0;
+                /* mv = 3*escaped; */
+            }
+        }
+        if ((flags & F_STATS)) fprintf(stderr, "\n");
+
+        if (flags & F_VERBOSE) fprintf(stderr, "Selected %d-bit escapes\n", mb);
+        escBits = mb;
         escMask = (0xff00>>escBits) & 0xff;
-
-        /* Find the optimum path for selected escape bits (no optimize) */
-        OptimizeLength(0);
-
-        /* Optimize the escape selections for this path & escBits */
-        escaped = OptimizeEscape(&escape, &other);
-
-        /* Compare value: bits lost for escaping -- bits lost for prefix */
-        c = (escBits+3)*escaped + other*escBits;
-        if (flags & F_STATS) {
-            fprintf(stderr, " %d:%d", escBits, c);
-            fflush(stderr); /* for SAS/C */
-        }
-        if (c < mv) {
-            mb = escBits;
-            mv = c;
-        } else {
-            /* minimum found */
-            break;
-        }
-        if (escBits==4 && (flags & F_STATS)) fprintf(stderr, "\n");
     }
-    if (mb==1) {    /* Minimum was 1, check 0 */
-        int escaped;
-
-        escBits = 0;
-        escMask = 0;
-
-        /* Find the optimum path for selected escape bits (no optimize) */
-        OptimizeLength(0);
-        /* Optimize the escape selections for this path & escBits */
-        escaped = OptimizeEscape(&escape, NULL);
-
-        if ((flags & F_STATS)) {
-            fprintf(stderr, " %d:%d", escBits, 3*escaped);
-            fflush(stderr); /* for SAS/C */
-        }
-        if (3*escaped < mv) {
-            mb = 0;
-            /* mv = 3*escaped; */
-        }
-    }
-    if ((flags & F_STATS)) fprintf(stderr, "\n");
-
-    if (flags & F_VERBOSE) fprintf(stderr, "Selected %d-bit escapes\n", mb);
-    escBits = mb;
-    escMask = (0xff00>>escBits) & 0xff;
-
 
     if (flags & F_VERBOSE) {
         fprintf(stderr, "Optimizing LZ77 and RLE lengths...");
