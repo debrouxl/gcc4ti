@@ -26,7 +26,8 @@
 #include <time.h>
 
 #include "../generic.h"
-#include "../formats/packhead.h"    // compressed header definition
+#include "../formats/packhead.h" // compressed header definition
+#include "../formats/tios.h"
 #include "pucrunch.h"
 
 #define VERBOSE_OUT stdout
@@ -36,12 +37,17 @@
 #define min(a,b) ((a<b)?(a):(b))
 #endif
 
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define OFFSETOF __builtin_offsetof
+#else
+#define OFFSETOF(type,member) ((size_t) &(((type*)0)->member))
+#endif
+
 
 #define LRANGE          (((2<<maxGamma)-3)*256) /* 0..125, 126 -> 1..127 */
 #define MAXLZLEN        (2<<maxGamma)
 #define MAXRLELEN       (((2<<maxGamma)-2)*256) /* 0..126 -> 1..127 */
 #define DEFAULT_LZLEN   LRANGE
-
 
 
 static unsigned short *rle, *elr, *lzlen, *lzpos;
@@ -178,9 +184,25 @@ static int SavePack(unsigned char *data, int size, EXP_FILE *fp, int escape,
 
     for(i=0; i<rleUsed; i++) re.value[i] = rleValues[i+1];
 
-    ExportWrite(fp, &cth, 1, sizeof(PackedHeader)); // write header
-    ExportWrite(fp, &re,  1, cth.rleentries);       // write rle values
-    ExportWrite(fp, data, size, 1);                 // write compressed data
+    {
+        int packedSize = sizeof(PackedHeader) + cth.rleentries + size + 6;
+        ExportWriteTI2(fp, packedSize);                 // write size bytes
+        ExportWrite(fp, &cth, 1, sizeof(PackedHeader)); // write header
+        ExportWrite(fp, &re,  1, cth.rleentries);       // write rle values
+        ExportWrite(fp, data, size, 1);                 // write compressed data
+
+        /* Now fix the on-computer size */
+        {
+            long position = ExportTell(fp);
+            HI4 packedSizeEnc;
+            packedSize += 2 + sizeof (TIOS_HOST_FILE_HEADER) + sizeof (TIOS_HOST_FILE_FOOTER);
+            WriteHI4(packedSizeEnc, packedSize);
+            ExportSeek(fp, OFFSETOF(TIOS_HOST_FILE_HEADER, FileSize));
+            fwrite(&packedSizeEnc, 4, 1, fp->File.File);
+            ExportSeek(fp, position);
+        }
+    }
+
     return 0;
 }
 

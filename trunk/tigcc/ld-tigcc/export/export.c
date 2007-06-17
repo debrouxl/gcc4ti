@@ -320,8 +320,11 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 				SIZE VarFileSize = 2 + FileSize + 1;
 				
 				// If the file has an extension, add the size needed for it.
-				if (Extension)
-					VarFileSize += 1 + strlen (Extension) + 1;
+#ifdef PUCRUNCH_SUPPORT
+				if (!Pack || FileRole != FR_MAIN)
+#endif /* !PUCRUNCH_SUPPORT */
+					if (Extension)
+						VarFileSize += 1 + strlen (Extension) + 1;
 				
 				// The variable size is what the user will see.
 				*EffectiveSize = VarFileSize;
@@ -486,6 +489,9 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 					}
 					
 					// Write the on-calc file header.
+#ifdef PUCRUNCH_SUPPORT
+					if (!Pack || FileRole != FR_MAIN)
+#endif /* !PUCRUNCH_SUPPORT */
 					{
 						TI2 EncVarFileSize;
 						

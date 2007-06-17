@@ -173,6 +173,8 @@ BOOLEAN ExportTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize, P
 }
 
 #ifdef PUCRUNCH_SUPPORT
+#include "pucrunch.h"
+
 // Export the internal data structures into a packed TIOS file.
 BOOLEAN ExportPackedTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize, ProgramCalcs DestCalc)
 {
@@ -280,7 +282,8 @@ BOOLEAN ExportPackedTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileS
 	if (Program->OptimizeInfo->NativeRelocCount < EmittedRelocCount)
 		Program->OptimizeInfo->NativeRelocCount = EmittedRelocCount;
 	
-	return TRUE;
+	// Now compress the buffer and write it out to the file.
+	return !TTPack(0, VarFileSize, Buffer, File);
 	
 #undef FailWithError
 }
