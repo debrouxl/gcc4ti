@@ -28,6 +28,7 @@
 #include "../generic.h"
 #include "../formats/packhead.h" // compressed header definition
 #include "../formats/tios.h"
+#include "export.h"
 #include "pucrunch.h"
 
 #define VERBOSE_OUT stdout
@@ -192,7 +193,7 @@ static int SavePack(unsigned char *data, int size, EXP_FILE *fp, int escape,
         ExportWrite(fp, data, size, 1);                 // write compressed data
 
         /* Now fix the on-computer size */
-        {
+        if (!OutputBin) {
             long position = ExportTell(fp);
             HI4 packedSizeEnc;
             packedSize += 2 + sizeof (TIOS_HOST_FILE_HEADER) + sizeof (TIOS_HOST_FILE_FOOTER);
