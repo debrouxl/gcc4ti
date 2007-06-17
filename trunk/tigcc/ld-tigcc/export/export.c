@@ -174,12 +174,8 @@ static BOOLEAN ExportProgramToFormat (const PROGRAM *Program, const EXPORT_STRUC
 }
 
 #ifdef PUCRUNCH_SUPPORT
-#ifndef TARGET_EMBEDDED
 // Specifies whether to pack the main file with pucrunch.
 BOOLEAN Pack = FALSE;
-#else
-#error Pucrunch compression is only supported for the standalone target.
-#endif
 #endif /* PUCRUNCH_SUPPORT */
 
 // Export the internal data structures to external files, creating as many
@@ -237,8 +233,9 @@ BOOLEAN ExportProgram (const PROGRAM *Program, OUTPUT_FILE_FUNCTION GetOutputFil
 #ifdef PUCRUNCH_SUPPORT
 			if (Pack)
 			{
-				ExportStruct.FileType    = TIOS_TAG_OTH;
-				ExportStruct.Extension   = "ppg";
+				ExportStruct.ExportFile = ExportPackedTIOSFile;
+				ExportStruct.FileType   = TIOS_TAG_OTH;
+				ExportStruct.Extension  = "ppg";
 			}
 #endif /* !PUCRUNCH_SUPPORT */
 #else /* !TIOS_SUPPORT */

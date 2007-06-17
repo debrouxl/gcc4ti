@@ -32,6 +32,11 @@ SIZE GetTIOSFileSize (const PROGRAM *Program);
 // Export the internal data structures into a TIOS file.
 BOOLEAN ExportTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize, ProgramCalcs DestCalc);
 
+#ifdef PUCRUNCH_SUPPORT
+// Export the internal data structures into a packed TIOS file.
+BOOLEAN ExportPackedTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize, ProgramCalcs DestCalc);
+#endif /* PUCRUNCH_SUPPORT */
+
 #endif /* TIOS_SUPPORT */
 
 #endif

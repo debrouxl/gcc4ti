@@ -20,8 +20,11 @@
 
 #ifdef TIOS_SUPPORT
 
+#include <string.h>
+
 #include "../manip.h"
 #include "../special.h"
+#include "../formats/tios.h"
 
 // Get the file size needed to export the program into a TIOS file.
 // Returns 0 on failure.
@@ -168,5 +171,120 @@ BOOLEAN ExportTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize, P
 	
 #undef FailWithError
 }
+
+#ifdef PUCRUNCH_SUPPORT
+// Export the internal data structures into a packed TIOS file.
+BOOLEAN ExportPackedTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize, ProgramCalcs DestCalc)
+{
+	// Some macros to make the code more readable.
+#define FailWithError(Err...) ({ Error (Err); return FALSE; })
+#define BufferWrite(P,L,C) (memcpy (Buffer + CurPos, P, (L) * (C)), CurPos += (L) * (C))
+#define BufferWriteTI2(D) ({ WriteTI2 (*((TI2 *) (Buffer + CurPos)), D); CurPos += 2; })
+	
+	const char *SectionFileName = NULL;
+	OFFSET DataStart = 0;
+	
+	COUNT EmittedRelocCount = 0;
+	
+	// Calculate the size needed for the two size bytes and the
+	// tag.
+	SIZE VarFileSize = 2 + FileSize + 1;
+	I1 Buffer[VarFileSize];
+	OFFSET CurPos = 0;
+	
+	// Write out the 2 size bytes.
+	BufferWriteTI2 (VarFileSize - 2);
+	
+	// Get a pointer to the main section.
+	SECTION *MainSection = Program->MainSection;
+	
+	if (!MainSection)
+		FailWithError (NULL, "No main section.");
+	
+	SectionFileName = MainSection->FileName;
+	
+	// In nostub mode, execution simply starts at the beginning of
+	// the first section. But ideally, startup code should always be
+	// marked as such. When merging sections, the destination startup
+	// number is kept, so in the end, the complete code is marked as
+	// a startup section (which makes sense; it is startable).
+	if (!(MainSection->StartupNumber || (Program->Type == PT_NOSTUB)))
+		FailWithError (SectionFileName, "No startup section(s) defined.");
+	
+	if (!(MainSection->Data))
+		FailWithError (SectionFileName, "No section contents.");
+	
+	// Write out the section contents first.
+	DataStart = CurPos;
+	BufferWrite (MainSection->Data, MainSection->Size, 1);
+	
+	// Write out two zero bytes as a separator.
+	BufferWriteTI2 (0);
+	
+	if (!(IsEmpty (MainSection->Relocs)))
+	{
+		RELOC *Reloc;
+		
+		// Write out the relocation table.
+		for (Reloc = GetLast (MainSection->Relocs); Reloc; Reloc = GetPrev (Reloc))
+		{
+			// Get the current file name for error messages.
+			const char *CurFileName = GetFileName (MainSection, Reloc->Location);
+			
+			// If this can be resolved to a calculator-dependent value, write the
+			// value into the section data.
+			if (EmitCalcBuiltinValue (Reloc, DestCalc, File, FileSize, DataStart))
+				continue;
+			
+			// We can only emit relocs with a target symbol in the same section.
+			if (!(Reloc->Target.Symbol))
+				FailWithError (CurFileName, "Unresolved reference to `%s'.", Reloc->Target.SymbolName);
+			if (Reloc->Target.Symbol->Parent != MainSection)
+				FailWithError (CurFileName, "Cannot emit reloc to `%s' in different section.", Reloc->Target.SymbolName);
+			
+			// We can only emit 4-byte absolute relocs.
+			if (Reloc->Relative || (Reloc->Size != 4))
+				FailWithError (CurFileName, "Cannot emit %ld byte %s reloc to `%s'.", (long) Reloc->Size, Reloc->Relative ? "relative" : "absolute", Reloc->Target.SymbolName);
+			
+			if (((I2) Reloc->Location) != Reloc->Location)
+				FailWithError (CurFileName, "Cannot emit reloc outside of limited program range to `%s'.", Reloc->Target.SymbolName);
+			
+			{
+				OFFSET TargetLocation = GetLocationOffset (MainSection, &(Reloc->Target)) + Reloc->FixedOffset;
+				
+				if (((I2) TargetLocation) != TargetLocation)
+					FailWithError (CurFileName, "Cannot emit reloc to `%s' (Offset %ld; Location 0x%lX) outside of limited program range.", Reloc->Target.SymbolName, (long) (Reloc->Target.Offset + Reloc->FixedOffset), (long) (TargetLocation));
+				
+				// Everything seems to be correct.
+				BufferWriteTI2 (TargetLocation);
+				BufferWriteTI2 (Reloc->Location);
+				
+				// Increase the statistics.
+				EmittedRelocCount++;
+			}
+		}
+	}
+	
+	if ((!(IsEmpty (MainSection->ROMCalls))) && (!(MainSection->ROMCalls.Handled)))
+		FailWithError (SectionFileName, "ROM calls are not supported in this mode.");
+	
+	if ((!(IsEmpty (MainSection->RAMCalls))) && (!(MainSection->RAMCalls.Handled)))
+		FailWithError (SectionFileName, "RAM calls are not supported in this mode.");
+	
+	if ((!(IsEmpty (MainSection->LibCalls))) && (!(MainSection->LibCalls.Handled)))
+		FailWithError (SectionFileName, "Library calls are not supported in this mode.");
+	
+	// Write out the final ASM tag.
+	Buffer[CurPos] = TIOS_TAG_ASM;
+	
+	if (Program->OptimizeInfo->NativeRelocCount < EmittedRelocCount)
+		Program->OptimizeInfo->NativeRelocCount = EmittedRelocCount;
+	
+	return TRUE;
+	
+#undef FailWithError
+}
+
+#endif /* PUCRUNCH_SUPPORT */
 
 #endif /* TIOS_SUPPORT */
