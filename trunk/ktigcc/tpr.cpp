@@ -1347,7 +1347,7 @@ QStringList process_libopts(void)
 */
 QStringList process_settings(const QString &prjNameUnicode,
                              QByteArray &projectName, QByteArray &dataVarName,
-                             QByteArray &packFolder, QByteArray &packName)
+                             QByteArray &packFullName, QByteArray &packName)
 {
   QStringList args;
 
@@ -1355,19 +1355,16 @@ QStringList process_settings(const QString &prjNameUnicode,
   projectName=TiconvTextCodec::instance->fromUnicode(prjNameUnicode);
 
   // Split the PPG name into folder and file.
-  QString packFolderUnicode, packNameUnicode;
+  QString packNameUnicode;
   int slashPos=settings.pack_name.find('\\');
   if (slashPos>=0) {
-    packFolderUnicode=settings.pack_name.left(slashPos);
     packNameUnicode=settings.pack_name.mid(slashPos+1);
   } else {
     packNameUnicode=settings.pack_name;
   }
 
-  // Convert the PPG folder name to the calculator charset.
-  packFolder=TiconvTextCodec::instance->fromUnicode(packFolderUnicode);
-
   // Convert the PPG file name to the calculator charset.
+  packFullName=TiconvTextCodec::instance->fromUnicode(settings.pack_name);
   packName=TiconvTextCodec::instance->fromUnicode(packNameUnicode);
 
   if (settings.use_data_var && !settings.data_var.isEmpty()) {
@@ -1417,8 +1414,10 @@ QStringList process_settings(const QString &prjNameUnicode,
   }
 
   if (settings.pack) {
-    args.append("--outputbin-main-only");
-  } else if (settings.outputbin) {
+    args.append("--pack");
+  }
+  
+  if (settings.outputbin) {
     args.append("--outputbin");
   }
 

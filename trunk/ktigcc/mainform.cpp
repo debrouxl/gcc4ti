@@ -4477,12 +4477,10 @@ void MainForm::linkProject()
       errorsCompilingFlag=TRUE;
   } else {
     // Link executable using ld-tigcc.
-    QString linkOutput=settings.pack?QString("%1/tempprog").arg(tempdir)
-                                    :projectBaseName;
-    QByteArray projectName, dataVarName, packFolder, packName;
+    QByteArray projectName, dataVarName, packFullName, packName;
     QStringList linkerOptions=process_settings(rootListItem->text(0),
                                                projectName,dataVarName,
-                                               packFolder,packName);
+                                               packFullName,packName);
     // The QTextCodec has to be passed explicitly, or it will default to
     // ISO-8859-1 regardless of the locale, which is just broken.
     procio=new K3ProcIO(QTextCodec::codecForLocale());
@@ -4492,7 +4490,8 @@ void MainForm::linkProject()
       K3Process::Stdout|K3Process::MergedStderr));
     procio->setWorkingDirectory(projectDir);
     *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
-           <<"-v"<<"-o"<<linkOutput<<"-n"<<projectName;
+           <<"-v"<<"-o"<<projectBaseName
+           <<"-n"<<(settings.pack?packFullName:projectName);
     if (!dataVarName.isNull()) *procio<<"-d"<<dataVarName;
     *procio<<linkerOptions<<objectFiles;
     if (settings.std_lib)
@@ -4511,18 +4510,20 @@ void MainForm::linkProject()
     delete procio;
     procio=static_cast<K3ProcIO *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
-    // Rename the data file so it doesn't conflict with PPGs.
-    if (dataFileGenerated)  {
+    // In the PPG case, the data files get a -data tag from the linker so the
+    // names don't conflict. In the uncompressed case, rename the data file here
+    // to match both that and the previous behavior.
+    if (!settings.pack && dataFileGenerated)  {
       QDir qdir;
       const int numTargets=3;
       bool targeted[numTargets]={ti89_targeted,ti92p_targeted,v200_targeted};
       static const char dextsbin[numTargets][5]={".y89",".y9x",".yv2"};
       static const char dextswrapped[numTargets][5]={".89y",".9xy",".v2y"};
-      static const char (*dexts)[5]=(settings.outputbin&&!settings.pack)?dextsbin:dextswrapped;
+      static const char (*dexts)[5]=settings.outputbin?dextsbin:dextswrapped;
       for (int target=0; target<numTargets; target++) {
         if (targeted[numTargets]) {
           qdir.remove(projectBaseName+"-data"+dexts[target]);
-          if (!moveFile(linkOutput+dexts[target],
+          if (!moveFile(projectBaseName+dexts[target],
                         projectBaseName+"-data"+dexts[target])) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to rename data file.",-1,-1);
@@ -4533,100 +4534,17 @@ void MainForm::linkProject()
       }
     }
     if (settings.pack) {
-      // Copy over the .dbg file from the temporary directory if it exists.
-      // Current TiEmu can't handle compressed programs, but maybe some day.
-      if (QFileInfo(linkOutput+".dbg").exists()) {
-        if (copyFile(linkOutput+".dbg",
-                     projectBaseName+".dbg")) {
-          new ErrorListItem(this,etError,QString::null,QString::null,
-                            "Failed to copy debug info file from temporary directory.",
-                            -1,-1);
-          errorsCompilingFlag=TRUE;
-        }
-      }
       if (errorsCompilingFlag || stopCompilingFlag) return;
-      statusBar()->message("Compressing...");
+      statusBar()->message("Creating launcher...");
       const int numTargets=3;
       static const char binexts[numTargets][5]={".z89",".z9x",".zv2"};
       static const char exts[numTargets][5]={".89z",".9xz",".v2z"};
       static const char cbinexts[numTargets][5]={".y89",".y9x",".yv2"};
       static const char cexts[numTargets][5]={".89y",".9xy",".v2y"};
-      // ttbin2oth STILL has no V200 support. Work around that.
-      static const char ttbin2othflag[numTargets][4]={"-89","-92","-92"};
-      static const char ttbin2othexts[numTargets][5]={".89y",".9xy",".9xy"};
       bool targeted[numTargets];
       for (int target=0; target<numTargets; target++) {
-        targeted[target]=QFileInfo(linkOutput+binexts[target]).exists();
-        if (targeted[target]) {
-          // Compress binary using ttpack.
-          // The QTextCodec has to be passed explicitly, or it will default to
-          // ISO-8859-1 regardless of the locale, which is just broken.
-          procio=new K3ProcIO(QTextCodec::codecForLocale());
-          // Use MergedStderr instead of Stderr so the messages get ordered
-          // properly.
-          procio->setComm(static_cast<K3Process::Communication>(
-            K3Process::Stdout|K3Process::MergedStderr));
-          procio->setWorkingDirectory(tempdir);
-          // It is not possible to pass an absolute POSIX path to ttpack because
-          // it mistakes it for a switch.
-          *procio<<(QString("%1/bin/ttpack").arg(tigcc_base))
-                 <<"-quiet"<<(QString("tempprog")+binexts[target])
-                 <<(QString("tempprog")+cbinexts[target]);
-          connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-          connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-          procio->start();
-          // We need to block here, but events still need to be handled. The most
-          // effective way to do this is to enter the event loop recursively,
-          // even though it is not recommended by Qt.
-          QCoreApplication::enter_loop();
-          // This will be reached only after exitLoop() is called.
-          delete procio;
-          procio=static_cast<K3ProcIO *>(NULL);
-          if (!QFileInfo(linkOutput+cbinexts[target]).exists())
-            errorsCompilingFlag=TRUE;
-          if (errorsCompilingFlag || stopCompilingFlag) return;
-          // Wrap binary using ttbin2oth.
-          // The QTextCodec has to be passed explicitly, or it will default to
-          // ISO-8859-1 regardless of the locale, which is just broken.
-          procio=new K3ProcIO(QTextCodec::codecForLocale());
-          // Use MergedStderr instead of Stderr so the messages get ordered
-          // properly.
-          procio->setComm(static_cast<K3Process::Communication>(
-            K3Process::Stdout|K3Process::MergedStderr));
-          procio->setWorkingDirectory(tempdir);
-          // ttbin2oth tries to use the calculator file name as the host file
-          // name. This is bad because the calculator charset is not necessarily
-          // the same as the host charset, and files which are not valid host
-          // charset names may be corrupted by the file system if it uses
-          // Unicode internally (e.g. FAT). So use "tempprog" and then change
-          // the name. Moreover, it is not possible to pass an absolute POSIX
-          // path to ttbin2oth because it mistakes it for a switch.
-          *procio<<(QString("%1/bin/ttbin2oth").arg(tigcc_base))
-                 <<"-quiet"<<ttbin2othflag[target]<<"ppg"
-                 <<(QString("tempprog")+cbinexts[target])<<"tempprog";
-          if (!packFolder.isNull()) *procio<<packFolder;
-          connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-          connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-          procio->start();
-          // We need to block here, but events still need to be handled. The most
-          // effective way to do this is to enter the event loop recursively,
-          // even though it is not recommended by Qt.
-          QCoreApplication::enter_loop();
-          // This will be reached only after exitLoop() is called.
-          delete procio;
-          procio=static_cast<K3ProcIO *>(NULL);
-          if (!QFileInfo(linkOutput+ttbin2othexts[target]).exists())
-            errorsCompilingFlag=TRUE;
-          if (errorsCompilingFlag || stopCompilingFlag) return;
-          if (insertName(linkOutput+ttbin2othexts[target],
-                         projectBaseName+cexts[target],packName)) {
-            new ErrorListItem(this,etError,QString::null,QString::null,
-                              "Failed to copy PPG from temporary directory.",
-                              -1,-1);
-            errorsCompilingFlag=TRUE;
-          }
-          if (errorsCompilingFlag || stopCompilingFlag) return;
-        }
+        targeted[target]=QFileInfo(projectBaseName
+          +(settings.outputbin?cbinexts[target]:cexts[target])).exists();
       }
       // Prepare the pstarter.
       QString pstarterBaseName=QString("%1/pstarter").arg(tempdir);
@@ -4650,6 +4568,7 @@ void MainForm::linkProject()
       *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
              <<"-o"<<pstarterBaseName<<"-n"<<projectName
              <<(pstarterBaseName+".o");
+      if (settings.outputbin) *procio<<"--outputbin";
       connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
       connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
       procio->start();
@@ -4664,8 +4583,8 @@ void MainForm::linkProject()
       // Now copy those pstarters actually requested.
       for (int target=0; target<numTargets; target++) {
         if (targeted[target]) {
-          if (copyFile(pstarterBaseName+exts[target],
-                       projectBaseName+exts[target])) {
+          if (copyFile(pstarterBaseName+(settings.outputbin?binexts[target]:exts[target]),
+                       projectBaseName+(settings.outputbin?binexts[target]:exts[target]))) {
             new ErrorListItem(this,etError,QString::null,QString::null,
                               "Failed to copy pstarter from temporary directory.",
                               -1,-1);
@@ -6421,4 +6340,3 @@ void MainForm::languageChange()
 {
   retranslateUi(this);
 }
-
