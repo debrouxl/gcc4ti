@@ -28,8 +28,6 @@
 #include "../generic.h"
 #include "../formats/packhead.h"    // compressed header definition
 
-#define DEFAULT_ITEMS_PER_LINE  10
-
 #define FIXF_MACHMASK  0xff
 #define FIXF_WRAP	   256
 #define FIXF_DLZ	   512
@@ -40,8 +38,6 @@
 #define F_AUTO       (1<<2)
 #define F_NOOPT      (1<<3)
 #define F_AUTOEX     (1<<4)
-#define F_TEXTINPUT  (1<<5)
-#define F_TEXTOUTPUT (1<<6)
 #define F_NORLE      (1<<9)
 #define F_ERROR      (1<<15)
 
@@ -162,7 +158,7 @@ void TTPackInit(void) {
 //=============================================================================
 // the packing code
 //=============================================================================
-int SavePack(int flags,int type, unsigned char *data, int size, char *target,
+int SavePack(int flags ATTRIBUTE_UNUSED,int type, unsigned char *data, int size, char *target,
              int start ATTRIBUTE_UNUSED, int escape, unsigned char *rleValues,
              int endAddr ATTRIBUTE_UNUSED, int extraLZPosBits,
              int memStart ATTRIBUTE_UNUSED, int memEnd ATTRIBUTE_UNUSED)
@@ -200,29 +196,10 @@ int SavePack(int flags,int type, unsigned char *data, int size, char *target,
 
             for(i=0; i<rleUsed; i++) re.value[i] = rleValues[i+1];
 
-            if (flags & F_TEXTOUTPUT) {
-                unsigned int loop;
-                unsigned int written=0;
-                for (loop=0;loop<sizeof(PackedHeader);loop++,written++) {
-                    fprintf(fp,"0x%02x,",*(((unsigned char*)&cth)+loop));
-                    if ((!(written % DEFAULT_ITEMS_PER_LINE)) && written) fputc('\n',fp);
-                }
-                for (loop=0;loop<cth.rleentries;loop++,written++) {
-                    fprintf(fp,"0x%02x,",re.value[loop]);
-                    if (!(written % DEFAULT_ITEMS_PER_LINE)) fputc('\n',fp);
-                }
-                for (i=0;i < size;i++,written++) {
-                    if (i < size - 1)  fprintf(fp,"0x%02x,",data[i]);
-                    else                  fprintf(fp,"0x%02x",data[i]);
-                    if (!(written % DEFAULT_ITEMS_PER_LINE)) fputc('\n',fp);
-                }
-            }
-            else {
-                fwrite(&cth, 1, sizeof(PackedHeader), fp); // write header
-                fwrite(&re,  1, cth.rleentries, fp);       // write rle values
-                fwrite(data, size, 1, fp);                 // write compressed data
-                if(fp != stdout) fclose(fp);
-            }
+            fwrite(&cth, 1, sizeof(PackedHeader), fp); // write header
+            fwrite(&re,  1, cth.rleentries, fp);       // write rle values
+            fwrite(data, size, 1, fp);                 // write compressed data
+            if(fp != stdout) fclose(fp);
             return 0;
         }
         fprintf(stderr, "ERROR: Could not open %s for writing\n", target);
@@ -1628,61 +1605,6 @@ errorexit:
     return err_occured;
 }
 
-#define NO_HEX_CHARACTER       255
-
-//=============================================================================
-// converts hexdigit to number
-//=============================================================================
-unsigned char hex2int(unsigned char c) {
-    c = tolower(c);
-
-    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-    if (c >= '0' && c <= '9') return c - '0';
-    return NO_HEX_CHARACTER;
-}
-
-
-//=============================================================================
-// converts hex text into binary
-//=============================================================================
-int ConvertText2Bin(unsigned char* ib,int origlen) {
-    int           pos;
-    int           cnt = 0;
-    int           searchforendofline = 0;
-    int           len_after_convert  = 0;
-    unsigned char val = 0;
-    unsigned char actual;
-
-    len_after_convert = 0;
-    for (pos = 0; pos < origlen;pos++) {
-        if (searchforendofline) {
-            if (ib[pos] == '\n') searchforendofline = 0;
-            continue;
-        }
-        if (ib[pos] == '/') {
-            cnt = 0;
-            if (pos < origlen-1 && ib[pos+1] == '/') searchforendofline = 1;
-            continue;
-        }
-
-        actual = hex2int(ib[pos]);
-        if (actual == NO_HEX_CHARACTER) {
-            cnt = 0;
-            continue;
-        }
-        if (cnt == 0) {
-            val = actual*16;
-            cnt++;
-        }
-        else {
-            val += actual;
-            cnt=0;
-            ib[len_after_convert++] = val;
-        }
-    }
-    return(len_after_convert);
-}
-
 
 //=============================================================================
 // as usual: the main, but a long one ...
@@ -1719,8 +1641,6 @@ int TTPack(int argc,char *argv[]) {
 
     for (n=1; n<argc; n++) {
         if (!strcmp(argv[n], "-fnorle"))      flags |= F_NORLE;
-        else if (!strcmp(argv[n], "-hti"))    flags |= F_TEXTINPUT;
-        else if (!strcmp(argv[n], "-hto"))    flags |= F_TEXTOUTPUT;
         else if (!strcmp(argv[n], "-quiet"))  flags &= ~F_VERBOSE, quiet = 1;
 
         else if (argv[n][0]=='-' || argv[n][0]=='/') {
@@ -1867,12 +1787,6 @@ int TTPack(int argc,char *argv[]) {
         if (newlen <= 0) break;
         inlen += newlen;
     }
-
-    //-----------------------------------------------------------
-    // convert the input buffer from hex text to binary
-    // if the user asks for it
-    //-----------------------------------------------------------
-    if (flags & F_TEXTINPUT) inlen = ConvertText2Bin(indata,inlen);
 
     if (infp != stdin) fclose(infp);
 
