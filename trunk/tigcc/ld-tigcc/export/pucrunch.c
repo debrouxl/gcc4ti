@@ -147,10 +147,8 @@ void TTPackInit(void) {
 //=============================================================================
 // the packing code
 //=============================================================================
-int SavePack(int flags ATTRIBUTE_UNUSED, unsigned char *data, int size, FILE *fp,
-             int start ATTRIBUTE_UNUSED, int escape, unsigned char *rleValues,
-             int endAddr ATTRIBUTE_UNUSED, int extraLZPosBits,
-             int memStart ATTRIBUTE_UNUSED, int memEnd ATTRIBUTE_UNUSED)
+int SavePack(unsigned char *data, int size, FILE *fp, int escape,
+             unsigned char *rleValues, int extraLZPosBits)
 {
     int  i;
 
@@ -489,7 +487,7 @@ int LenLz(int lzlen, int lzpos) {
 //=============================================================================
 //
 //=============================================================================
-int OutputLz(int *esc, int lzlen, int lzpos, char *data ATTRIBUTE_UNUSED, int curpos) {
+int OutputLz(int *esc, int lzlen, int lzpos, int curpos) {
     if (lzlen==2)        lenStat[0][1]++;
     else if (lzlen<=4)   lenStat[1][1]++;
     else if (lzlen<=8)   lenStat[2][1]++;
@@ -812,7 +810,7 @@ int OptimizeEscape(int *startEscape, int *nonNormal) {
 //=============================================================================
 // Initialize the RLE byte code table according to all RLE's found so far O(n)
 //=============================================================================
-void InitRle(int flags ATTRIBUTE_UNUSED) {
+void InitRle(void) {
     int p, mr, mv, i;
 
     for (i=1; i<32; i++) {
@@ -895,7 +893,7 @@ void OptimizeRle(int flags) {
 //=============================================================================
 //
 //=============================================================================
-int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd)
+int PackLz77(int lzsz, int flags, int *startEscape)
 {
     int i, j, outlen, p, headerSize;
     int escape;
@@ -1144,7 +1142,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd)
 
 
     /* Initialize the RLE selections */
-    InitRle(flags);
+    InitRle();
 
     /* Check the normal bytes / all ratio */
     {
@@ -1457,7 +1455,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd)
 
             for (i=0; i<lzlen[p]; i++)
                 length[p+i] = outPointer;
-            OutputLz(&escape, lzlen[p], lzpos[p], (char *)(indata+p-lzpos[p]), p);
+            OutputLz(&escape, lzlen[p], lzpos[p], p);
             p += lzlen[p];
             break;
 
@@ -1565,7 +1563,6 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
     unsigned long timeused = clock();
 
     int   memStart    = 0x801;
-    int   memEnd      = 0x10000;
 
 
     TTPackInit();
@@ -1591,11 +1588,11 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
 
     if (flags & F_VERBOSE) {
         fprintf(VERBOSE_OUT, "Load address 0x%04x=%d, Last byte 0x%04x=%d\n",
-                         startAddr, startAddr, startAddr+inlen-1, startAddr+inlen-1);
+                startAddr, startAddr, startAddr+inlen-1, startAddr+inlen-1);
         fprintf(VERBOSE_OUT, "New load address 0x%04x=%d\n", memStart, memStart);
     }
 
-    n = PackLz77(lzlen, flags, &startEscape, startAddr + inlen, memEnd);
+    n = PackLz77(lzlen, flags, &startEscape);
 
     if (!n) {
         int endAddr = startAddr + inlen; /* end for uncompressed data */
@@ -1603,7 +1600,7 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
         if (endAddr - ((outPointer + 255) & ~255) < memStart + 3) {
             /* would overwrite the decompressor, move a bit upwards */
             if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"$%x < $%x, decompressor overwrite possible, moving upwards\n",
-                                          endAddr - ((outPointer + 255) & ~255), memStart + 3);
+                                           endAddr - ((outPointer + 255) & ~255), memStart + 3);
             endAddr = memStart + 3 + ((outPointer + 255) & ~255);
         }
 
@@ -1613,10 +1610,7 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
 
         // outBuffer ... static global array (65536 Bytes)
 
-        SavePack(flags, outBuffer, outPointer, out_file,
-                 startAddr, startEscape, rleValues,
-                 endAddr, extraLZPosBits,
-                 memStart, memEnd);
+        SavePack(outBuffer, outPointer, out_file, startEscape, rleValues, extraLZPosBits);
 
         timeused = clock()-timeused;
         if (!timeused) timeused++;
