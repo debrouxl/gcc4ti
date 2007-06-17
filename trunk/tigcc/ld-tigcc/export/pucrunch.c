@@ -1326,7 +1326,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd)
 
     if (flags & F_VERBOSE) {
         int oldEscape = escape;
-        if (flags & F_VERBOSE) printf("normal RLE  LZLEN LZPOS(absolute)\n\n");
+        if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"normal RLE  LZLEN LZPOS(absolute)\n\n");
 
         for (p=0; p<inlen; ) {
             switch (mode[p]) {
@@ -1351,48 +1351,48 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd)
             case MMARK | LITERAL:
             case LITERAL:
                 if (flags & F_VERBOSE) {
-                    if (j==p) printf(">");
-                    else      printf(" ");
+                    if (j==p) fprintf(VERBOSE_OUT,">");
+                    else      fprintf(VERBOSE_OUT," ");
                 }
                 if (j==p) {
                     if (flags & F_VERBOSE) {
-                        printf("*001*  %03d   %03d  %04x(%04x)  %02x %s %02x",
-                               rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
-                               (mode[p] & MMARK)?"#":" ", newesc[p]);
+                        fprintf(VERBOSE_OUT,"*001*  %03d   %03d  %04x(%04x)  %02x %s %02x",
+                                rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
+                                (mode[p] & MMARK)?"#":" ", newesc[p]);
                     }
                     if ((indata[p] & escMask) == escape) {
                         escape = newesc[p];
-                        if (flags & F_VERBOSE) printf("«");
+                        if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"«");
                     }
-                    if (flags & F_VERBOSE) printf("\n");
+                    if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"\n");
                     j += 1;
                 } else {
-                    if (flags & F_VERBOSE) printf("*001*  %03d   %03d  %04x(%04x)  %02x %s %02x\n",
-                                                  rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
-                                                  (mode[p] & MMARK)?"#":" ", newesc[p]);
+                    if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"*001*  %03d   %03d  %04x(%04x)  %02x %s %02x\n",
+                                                   rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
+                                                   (mode[p] & MMARK)?"#":" ", newesc[p]);
                 }
                 break;
             case MMARK | LZ77:
             case LZ77:
                 if (j==p) {
-                    if (flags & F_VERBOSE) printf(">");
+                    if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,">");
                     j += lzlen[p];
                 } else
-                    if (flags & F_VERBOSE) printf(" ");
-                if (flags & F_VERBOSE) printf(" 001   %03d  *%03d* %04x(%04x)  %02x %s\n",
-                                              rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
-                                              (mode[p] & MMARK)?"#":" ");
+                    if (flags & F_VERBOSE) fprintf(VERBOSE_OUT," ");
+                if (flags & F_VERBOSE) fprintf(VERBOSE_OUT," 001   %03d  *%03d* %04x(%04x)  %02x %s\n",
+                                               rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
+                                               (mode[p] & MMARK)?"#":" ");
                 break;
             case MMARK | RLE:
             case RLE:
                 if (j==p) {
-                    if (flags & F_VERBOSE) printf(">");
+                    if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,">");
                     j += rle[p];
                 } else
-                    if (flags & F_VERBOSE) printf(" ");
-                if (flags & F_VERBOSE) printf(" 001  *%03d*  %03d  %04x(%04x)  %02x %s\n",
-                                              rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
-                                              (mode[p] & MMARK)?"#":" ");
+                    if (flags & F_VERBOSE) fprintf(VERBOSE_OUT," ");
+                if (flags & F_VERBOSE) fprintf(VERBOSE_OUT," 001  *%03d*  %03d  %04x(%04x)  %02x %s\n",
+                                               rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
+                                               (mode[p] & MMARK)?"#":" ");
                 break;
             default:
                 j++;
