@@ -1595,19 +1595,6 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
     n = PackLz77(lzlen, flags, &startEscape);
 
     if (!n) {
-        int endAddr = startAddr + inlen; /* end for uncompressed data */
-
-        if (endAddr - ((outPointer + 255) & ~255) < memStart + 3) {
-            /* would overwrite the decompressor, move a bit upwards */
-            if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"$%x < $%x, decompressor overwrite possible, moving upwards\n",
-                                           endAddr - ((outPointer + 255) & ~255), memStart + 3);
-            endAddr = memStart + 3 + ((outPointer + 255) & ~255);
-        }
-
-        /* 3 bytes reserved for EOF */
-        /* bytes reserved for temporary data expansion (escaped chars) */
-        endAddr += 3 + reservedBytes;
-
         // outBuffer ... static global array (65536 Bytes)
 
         SavePack(outBuffer, outPointer, out_file, startEscape, rleValues, extraLZPosBits);
