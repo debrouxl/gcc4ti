@@ -58,7 +58,6 @@
 
 
 unsigned short *rle, *elr, *lzlen, *lzpos;
-unsigned short *lzlen2, *lzpos2;
 int *length, inlen;
 unsigned char *indata, *mode, *newesc;
 unsigned short *backSkip;
@@ -68,7 +67,6 @@ enum MODE {
     LITERAL = 0,
     LZ77    = 1,
     RLE     = 2,
-    DLZ     = 3,
     MMARK   = 4
 };
 
@@ -88,7 +86,6 @@ int lrange, maxlzlen, maxrlelen;
 int gainedEscaped = 0;
 int gainedRle = 0, gainedSRle = 0, gainedLRle = 0;
 int gainedLz = 0, gainedRlecode = 0;
-int gainedDLz = 0, timesDLz = 0;
 
 int timesEscaped = 0, timesNormal = 0;
 int timesRle = 0, timesSRle = 0, timesLRle = 0;
@@ -131,7 +128,6 @@ void TTPackInit(void) {
     gainedEscaped = 0;
     gainedRle = 0, gainedSRle = 0, gainedLRle = 0;
     gainedLz = 0, gainedRlecode = 0;
-    gainedDLz = 0, timesDLz = 0;
 
     timesEscaped = 0, timesNormal = 0;
     timesRle = 0, timesSRle = 0, timesLRle = 0;
@@ -153,8 +149,6 @@ void TTPackInit(void) {
     elr            = NULL;
     lzlen          = NULL;
     lzpos          = NULL;
-    lzlen2         = NULL;
-    lzpos2         = NULL;
     length         = NULL;
     inlen          = 0;
     indata         = NULL;
@@ -602,7 +596,7 @@ int OptimizeLength(int optimize) {
     for (i=inlen-1; i>=0; i--) {
         int r1 = 8 + length[i+1], r2, r3;
 
-        if (!lzlen[i] && !rle[i] && (!lzlen2 || !lzlen2[i])) {
+        if (!lzlen[i] && !rle[i]) {
             length[i] = r1;
             mode[i] = LITERAL;
             continue;
@@ -748,14 +742,6 @@ int OptimizeLength(int optimize) {
                 mode[i]   = LITERAL;
             }
         }
-        if (lzlen2 && lzlen2[i] > 3) {
-            r3 = escBits + 2*maxGamma + 16 + LenValue(lzlen2[i]-1) + length[i + lzlen2[i]];
-            //r3 = LenDLz(lzlen2[i], lzpos2[i]) + length[i + lzlen2[i]];
-            if (r3 < length[i]) {
-                length[i] = r3;
-                mode[i]   = DLZ;
-            }
-        }
     }
     return length[0];
 }
@@ -800,11 +786,6 @@ int OptimizeEscape(int *startEscape, int *nonNormal) {
     /* Mark those bytes that are actually outputted */
     for (i=0; i<inlen; ) {
         switch (mode[i]) {
-            case DLZ:
-                other++;
-                i += lzlen2[i];
-                break;
-
             case LZ77:
                 other++;
                 i += lzlen[i];
@@ -917,9 +898,6 @@ void OptimizeRle(int flags) {
 
     for (p=0; p<inlen; ) {
         switch (mode[p]) {
-            case DLZ:
-                p += lzlen2[p];
-                break;
             case LZ77:
                 p += lzlen[p];
                 break;
@@ -1004,13 +982,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     elr    = (unsigned short *)calloc(sizeof(unsigned short), inlen);
     lzlen  = (unsigned short *)calloc(sizeof(unsigned short), inlen);
     lzpos  = (unsigned short *)calloc(sizeof(unsigned short), inlen);
-    if ((type & FIXF_DLZ)) {
-        lzlen2  = (unsigned short *)calloc(sizeof(unsigned short), inlen);
-        lzpos2  = (unsigned short *)calloc(sizeof(unsigned short), inlen);
-    }
-    else {
-        lzlen2 = lzpos2 = NULL;
-    }
     newesc    = (unsigned char  *)calloc(sizeof(unsigned char),  inlen);
     backSkip  = (unsigned short *)calloc(sizeof(unsigned short), inlen);
     hashValue = (unsigned char  *)malloc(inlen);
@@ -1020,7 +991,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     /* error checking */
     if (!length || !mode || !rle || !elr || !lzlen || !lzpos || !newesc ||
         !lastPair || !backSkip
-        || ((type & FIXF_DLZ) && (!lzlen2 || !lzpos2))
         || !hashValue)
     {
         fprintf(stderr, "ERROR: Memory allocation failed!\n");
@@ -1204,109 +1174,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
             }
         }
 
-        /* check LZ77 code again, ROT1..255 */
-        if ((type & FIXF_DLZ) && p+rle[p]+1<inlen) {
-        int rot;
-
-        for (rot = 1; rot < 255; rot++) {
-            int bot = p - /*lzsz*/256, maxval, maxpos, rlep = rle[p];
-            unsigned char valueCompare = (indata[p+2] + rot) & 0xff;
-
-            if (rlep <= 0) rlep = 1;
-            if (bot < 0)   bot = 0;
-            bot += (rlep-1);
-
-            i = (int)lastPair[ (((indata[p] + rot) & 0xff)<<8) |
-                                ((indata[p+1] + rot) & 0xff) ] -1;
-            if (i>=0 && i>=bot) {
-                maxval = 2;
-                maxpos = p-i;
-
-                /*
-                    A..AB       rlep # of A's, B is something else..
-
-                    Search for bytes that are in p + (rlep-1), i.e.
-                    the last rle byte ('A') and the non-matching one
-                    ('B'). When found, check if the rle in the compare
-                    position (i) is long enough (i.e. the same number
-                    of A's at p and i-rlep+1).
-
-                    There are dramatically less matches for AB than for
-                    AA, so we get a huge speedup with this approach.
-                    We are still guaranteed to find the most recent
-                    longest match there is.
-                 */
-
-                i = (int)lastPair[(((indata[p+(rlep-1)] + rot) & 0xff)<<8) |
-                                   ((indata[p+rlep] + rot) & 0xff)] -1;
-                while (i>=bot /* && i>=rlep-1 */) {   /* bot>=rlep-1, i>=bot  ==> i>=rlep-1 */
-
-                    /* Equal number of A's ? */
-                    if (!(rlep-1) || rle[i-(rlep-1)]==rlep) {   /* 'head' matches */
-                        /* rlep==1 ==> (rlep-1)==0 */
-                        /* ivanova.run: 443517 rlep==1,
-                           709846 rle[i+1-rlep]==rlep */
-
-                        /*
-                            Check the hash values corresponding to the last
-                            two bytes of the currently longest match and
-                            the first new matching(?) byte. If the hash
-                            values don't match, don't bother to check the
-                            data itself.
-                         */
-                        if (indata[i+maxval-rlep+1] == valueCompare) {
-                            unsigned char *a = indata + i+2;    /* match  */
-                            unsigned char *b = indata + p+rlep-1+2;/* curpos */
-                            int topindex = inlen-(p+rlep-1);
-
-                            /* the 2 first bytes ARE the same.. */
-                            j = 2;
-                            while (j < topindex && *a++==((*b++ + rot) & 0xff))
-                                j++;
-
-                            if (j + rlep-1 > maxval) {
-                                int tmplen = j+rlep-1, tmppos = p-i+rlep-1;
-
-                                if (tmplen > maxlzlen)
-                                    tmplen = maxlzlen;
-
-                                /* Accept only versions that really are shorter */
-                                if (tmplen*8 - LenLz(tmplen, tmppos) >
-                                    maxval*8 - LenLz(maxval, maxpos)) {
-                                    maxval = tmplen;
-                                    maxpos = tmppos;
-
-                                    valueCompare = (indata[p+maxval] + rot) & 0xff;
-                                }
-                                if (maxval == maxlzlen)
-                                    break;
-                            }
-                        }
-                    }
-                    if (!backSkip[i])
-                        break; /* No previous occurrances (near enough) */
-                    i -= (int)backSkip[i];
-                }
-
-                if (p+maxval > inlen) {
-                    fprintf(stderr,"Error @ %d, lzlen %d, pos %d - exceeds inlen\n",p, maxval, maxpos);
-                    maxval = inlen - p;
-                }
-                if (maxval > 3 && maxpos <= 256 &&
-                    (maxval > lzlen2[p] ||
-                     (maxval == lzlen2[p] && maxpos < lzpos2[p]))) {
-                    if (maxpos < 0)
-                        fprintf(stderr, "Error @ %d, lzlen %d, pos %d\n",p, maxval, maxpos);
-                    lzlen2[p] = (maxval<maxlzlen)?maxval:maxlzlen;
-                    lzpos2[p] = maxpos;
-                }
-            }
-        }
-        if (lzlen2[p] <= lzlen[p] || lzlen2[p] <= rle[p]) {
-            lzlen2[p] = lzpos2[p] = 0;
-        }
-        }
-
         /* Update the two-byte history ('hash table') &
            backSkip ('linked list') */
         if (p+1<inlen) {
@@ -1455,9 +1322,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
                 lzstat[4] += LenLz(lzlen[p], lzpos[p]);
                 p += lzlen[p];
                 break;
-            case DLZ:
-                p += lzlen2[p];
-                break;
             case RLE:
                 p += rle[p];
                 break;
@@ -1504,9 +1368,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
                 }
                 p += rle[p];
                 break;
-            case DLZ:
-                p += lzlen2[p];
-                break;
+
             default:
                 p++;
                 break;
@@ -1539,10 +1401,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
             case RLE:
                 p += rle[p];
                 break;
-            case DLZ:
-                mode[p - lzpos2[p]] |= MMARK; /* Was referred to by lz77 */
-                p += lzlen2[p];
-                break;
         /*  case LITERAL:
             case MMARK:*/
             default:
@@ -1554,30 +1412,11 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
         j = 0;
         for (p=0; p<inlen; p++) {
             switch (mode[p]) {
-            case MMARK | DLZ:
-            case DLZ:
-                if (j==p) {
-                    if (flags & F_VERBOSE) printf(">");
-                    j += lzlen2[p];
-                } else
-                    printf(" ");
-                if (lzpos2) {
-                    if (flags & F_VERBOSE) printf(" %04x*%03d*+%02x", lzpos2[p], lzlen2[p],(indata[p] - indata[p-lzpos2[p]]) & 0xff);
-                }
-                if (flags & F_VERBOSE) printf(" 001   %03d   %03d  %04x(%04x)  %02x %s\n",
-                                              rle[p],lzlen[p],lzpos[p],p-lzpos[p],indata[p],
-                                              (mode[p] & MMARK)?"#":" ");
-                break;
             case MMARK | LITERAL:
             case LITERAL:
                 if (flags & F_VERBOSE) {
                     if (j==p) printf(">");
                     else      printf(" ");
-
-                    if (lzpos2) {
-                        printf(" %04x %03d +%02x", lzpos2[p], lzlen2[p],
-                               (indata[p] - indata[p-lzpos2[p]]) & 0xff);
-                    }
                 }
                 if (j==p) {
                     if (flags & F_VERBOSE) {
@@ -1604,10 +1443,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
                     j += lzlen[p];
                 } else
                     if (flags & F_VERBOSE) printf(" ");
-                if (lzpos2) {
-                    if (flags & F_VERBOSE) printf(" %04x %03d +%02x", lzpos2[p], lzlen2[p],
-                                                  (indata[p] - indata[p-lzpos2[p]]) & 0xff);
-                }
                 if (flags & F_VERBOSE) printf(" 001   %03d  *%03d* %04x(%04x)  %02x %s\n",
                                               rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
                                               (mode[p] & MMARK)?"#":" ");
@@ -1619,10 +1454,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
                     j += rle[p];
                 } else
                     if (flags & F_VERBOSE) printf(" ");
-                if (lzpos2) {
-                    if (flags & F_VERBOSE) printf(" %04x %03d +%02x", lzpos2[p], lzlen2[p],
-                                                  (indata[p] - indata[p-lzpos2[p]]) & 0xff);
-                }
                 if (flags & F_VERBOSE) printf(" 001  *%03d*  %03d  %04x(%04x)  %02x %s\n",
                                               rle[p], lzlen[p], lzpos[p], p-lzpos[p], indata[p],
                                               (mode[p] & MMARK)?"#":" ");
@@ -1643,19 +1474,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
 
             OutputNormal(&escape, indata+p, newesc[p]);
             p++;
-            break;
-
-        case DLZ:
-            for (i=0; i<lzlen2[p]; i++) length[p+i] = outPointer;
-
-            PutNBits((escape>>(8-escBits)), escBits);
-            PutValue(lzlen2[p]-1);
-            PutValue((2<<maxGamma)-1);
-            PutNBits((indata[p] - indata[p-lzpos2[p]]) & 0xff, 8);
-            PutNBits(((lzpos2[p]-1) & 0xff) ^ 0xff, 8);
-            gainedDLz += 8*lzlen2[p] -(escBits + LenValue(lzlen2[p]-1) + 2*maxGamma + 16);
-            timesDLz++;
-            p += lzlen2[p];
             break;
 
         case LZ77: /* lz77 */
@@ -1754,33 +1572,17 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
                                    8.0*(double)(outlen-headerSize+rleUsed+4)/(double)inlen + 0.005,
                                    100.0 - (double)outlen*100.0/(double)inlen + 0.005);
 
-    if ((type & FIXF_DLZ)) {
-        if (flags & F_VERBOSE) {
-            fprintf(stderr, "Gained RLE: %d (S+L:%d+%d), DLZ: %d, LZ: %d, Esc: %d"
-                    ", Decompressor: %d\n",
-                    gainedRle/8, gainedSRle/8, gainedLRle/8, gainedDLz/8,
-                    gainedLz/8, -gainedEscaped/8, -headerSize);
+    if (flags & F_VERBOSE) {
+        fprintf(stderr, "Gained RLE: %d (S+L:%d+%d), LZ: %d, Esc: %d"
+                ", Decompressor: %d\n",
+                gainedRle/8, gainedSRle/8, gainedLRle/8,
+                gainedLz/8, -gainedEscaped/8, -headerSize);
 
-            fprintf(stderr, "Times  RLE: %d (%d+%d), DLZ: %d, LZ: %d, Esc: %d (normal: %d)"
-                    ", %d escape bit%s\n",
-                    timesRle, timesSRle, timesLRle, timesDLz,
-                    timesLz, timesEscaped, timesNormal,
-                    escBits, (escBits==1)?"":"s" );
-        }
-    }
-    else {
-        if (flags & F_VERBOSE) {
-            fprintf(stderr, "Gained RLE: %d (S+L:%d+%d), LZ: %d, Esc: %d"
-                    ", Decompressor: %d\n",
-                    gainedRle/8, gainedSRle/8, gainedLRle/8,
-                    gainedLz/8, -gainedEscaped/8, -headerSize);
-
-            fprintf(stderr, "Times  RLE: %d (%d+%d), LZ: %d, Esc: %d (normal: %d)"
-                    ", %d escape bit%s\n",
-                    timesRle, timesSRle, timesLRle,
-                    timesLz, timesEscaped, timesNormal,
-                    escBits, (escBits==1)?"":"s" );
-        }
+        fprintf(stderr, "Times  RLE: %d (%d+%d), LZ: %d, Esc: %d (normal: %d)"
+                ", %d escape bit%s\n",
+                timesRle, timesSRle, timesLRle,
+                timesLz, timesEscaped, timesNormal,
+                escBits, (escBits==1)?"":"s" );
     }
     if ((flags & F_STATS)) {
         const char *ll[] = {"2", "3-4", "5-8", "9-16", "17-32", "33-64",
@@ -1917,7 +1719,6 @@ int TTPack(int argc,char *argv[]) {
 
     for (n=1; n<argc; n++) {
         if (!strcmp(argv[n], "-fnorle"))      flags |= F_NORLE;
-        else if (!strcmp(argv[n], "-fdelta")) type  |= FIXF_DLZ;
         else if (!strcmp(argv[n], "-hti"))    flags |= F_TEXTINPUT;
         else if (!strcmp(argv[n], "-hto"))    flags |= F_TEXTOUTPUT;
         else if (!strcmp(argv[n], "-quiet"))  flags &= ~F_VERBOSE, quiet = 1;
@@ -2103,8 +1904,6 @@ int TTPack(int argc,char *argv[]) {
         /* 3 bytes reserved for EOF */
         /* bytes reserved for temporary data expansion (escaped chars) */
         endAddr += 3 + reservedBytes;
-
-        if (!timesDLz) type &= ~FIXF_DLZ;
 
         // type      ... may vary
         // outBuffer ... static global array (65536 Bytes)
