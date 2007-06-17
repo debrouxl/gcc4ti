@@ -1562,8 +1562,6 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
 
     unsigned long timeused = clock();
 
-    int   memStart    = 0x801;
-
 
     TTPackInit();
 
@@ -1584,12 +1582,6 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
         Error(NULL, "File is too large to handle (>64936 Bytes)");
         if (indata) free(indata);
         return 1;
-    }
-
-    if (flags & F_VERBOSE) {
-        fprintf(VERBOSE_OUT, "Load address 0x%04x=%d, Last byte 0x%04x=%d\n",
-                startAddr, startAddr, startAddr+inlen-1, startAddr+inlen-1);
-        fprintf(VERBOSE_OUT, "New load address 0x%04x=%d\n", memStart, memStart);
     }
 
     n = PackLz77(lzlen, flags, &startEscape);
