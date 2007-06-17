@@ -173,6 +173,15 @@ static BOOLEAN ExportProgramToFormat (const PROGRAM *Program, const EXPORT_STRUC
 	return TRUE;
 }
 
+#ifdef PUCRUNCH_SUPPORT
+#ifndef TARGET_EMBEDDED
+// Specifies whether to pack the main file with pucrunch.
+BOOLEAN Pack = FALSE;
+#else
+#error Pucrunch compression is only supported for the standalone target.
+#endif
+#endif /* PUCRUNCH_SUPPORT */
+
 // Export the internal data structures to external files, creating as many
 // files as needed.
 BOOLEAN ExportProgram (const PROGRAM *Program, OUTPUT_FILE_FUNCTION GetOutputFile, OUTPUT_FILE_FINALIZE_FUNCTION FinalizeOutputFile)
@@ -225,6 +234,13 @@ BOOLEAN ExportProgram (const PROGRAM *Program, OUTPUT_FILE_FUNCTION GetOutputFil
 #ifdef TIOS_SUPPORT
 			ExportStruct.GetFileSize = GetTIOSFileSize;
 			ExportStruct.ExportFile  = ExportTIOSFile;
+#ifdef PUCRUNCH_SUPPORT
+			if (Pack)
+			{
+				ExportStruct.FileType    = TIOS_TAG_OTH;
+				ExportStruct.Extension   = "ppg";
+			}
+#endif /* !PUCRUNCH_SUPPORT */
 #else /* !TIOS_SUPPORT */
 			Error (NULL, "No default export target for this program type.");
 			return FALSE;
@@ -275,11 +291,6 @@ char ProgramFolder[MAX_NAME_LEN+1] = "main", ProgramName[MAX_NAME_LEN+1] = "prog
 // Folder and variable name for data file.
 char DataFolder[MAX_NAME_LEN+1] = "", DataName[MAX_NAME_LEN+1] = "data";
 #endif /* DATA_VAR_SUPPORT */
-
-#ifdef PUCRUNCH_SUPPORT
-// Specifies whether to pack the main file with pucrunch.
-BOOLEAN Pack = FALSE;
-#endif /* PUCRUNCH_SUPPORT */
 
 // Specifies whether to output only the binary image of the program.
 BOOLEAN OutputBin = FALSE;
@@ -390,8 +401,15 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 					SIZE FileNameSize = DestFileSize;
 					
 					// Create a temporary file name string.
-					char CurOutputFileName[FileNameSize+1+MAX_FILE_EXT_LEN+1];
+					char CurOutputFileName[FileNameSize+5+1+MAX_FILE_EXT_LEN+1];
 					strncpy (CurOutputFileName, DestFile, FileNameSize);
+#if defined(DATA_VAR_SUPPORT) && defined(PUCRUNCH_SUPPORT)
+					if (Pack && FileRole == FR_DATA)
+					{
+						strncpy (CurOutputFileName + FileNameSize, "-data", 5);
+						FileNameSize += 5;
+					}
+#endif /* defined(DATA_VAR_SUPPORT) && defined(PUCRUNCH_SUPPORT) */
 					
 					// Insert the dot into the file name.
 					CurOutputFileName [FileNameSize++] = '.';
