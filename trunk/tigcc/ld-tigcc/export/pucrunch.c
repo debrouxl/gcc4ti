@@ -30,15 +30,10 @@
 
 #define FIXF_MACHMASK  0xff
 #define FIXF_WRAP	   256
-#define FIXF_DLZ	   512
 
 
 #define F_VERBOSE    (1<<0)
 #define F_STATS      (1<<1)
-#define F_AUTO       (1<<2)
-#define F_NOOPT      (1<<3)
-#define F_AUTOEX     (1<<4)
-#define F_NORLE      (1<<9)
 #define F_ERROR      (1<<15)
 
 #ifndef min
@@ -865,10 +860,6 @@ void InitRle(int flags ATTRIBUTE_UNUSED) {
 void OptimizeRle(int flags) {
     int p, mr, mv, i;
 
-    if ((flags & F_NORLE)) {
-        rleUsed = 0;
-        return;
-    }
     if (flags & F_STATS) fprintf(stderr, "RLE Byte Code Re-Tune, RLE Ranks:\n");
 
     for (p=0; p<256; p++) rleHist[p] = 0;
@@ -1164,17 +1155,6 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
             lastPair[index] = p+1;
         }
     }
-    if ((flags & F_NORLE)) {
-        for (p=1; p<inlen; p++) {
-            if (rle[p-1]-1 > lzlen[p]) {
-                lzlen[p] = (rle[p]<maxlzlen)?rle[p]:maxlzlen;
-                lzpos[p] = 1;
-            }
-        }
-        for (p=0; p<inlen; p++) {
-            rle[p] = 0;
-        }
-    }
 
     if (flags & F_VERBOSE) {
         fprintf(stderr, "\rChecked: %d \n", p);
@@ -1186,97 +1166,93 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     InitRle(flags);
 
     /* Check the normal bytes / all ratio */
-    if ((flags & F_AUTO)) {
-        int mb, mv;
+    int mb, mv;
 
-        if (flags & F_VERBOSE) {
-            fprintf(stderr, "Selecting the number of escape bits.. ");
-            fflush(stderr);
-        }
-
-        /*
-            Absolute maximum number of escaped bytes with
-            the escape optimize is 2^-n, where n is the
-            number of escape bits used.
-
-            This worst case happens only on equal-
-            distributed normal bytes (01230123..).
-            This is why the typical values are so much smaller.
-         */
-
-        mb = 0;
-        mv = 8*OUT_SIZE;
-        for (escBits=1; escBits<9; escBits++) {
-            int escaped, other = 0, c;
-
-            escMask = (0xff00>>escBits) & 0xff;
-
-            /* Find the optimum path for selected escape bits (no optimize) */
-            OptimizeLength(0);
-
-            /* Optimize the escape selections for this path & escBits */
-            escaped = OptimizeEscape(&escape, &other);
-
-            /* Compare value: bits lost for escaping -- bits lost for prefix */
-            c = (escBits+3)*escaped + other*escBits;
-            if (flags & F_STATS) {
-                fprintf(stderr, " %d:%d", escBits, c);
-                fflush(stderr); /* for SAS/C */
-            }
-            if (c < mv) {
-                mb = escBits;
-                mv = c;
-            } else {
-                /* minimum found */
-                break;
-            }
-            if (escBits==4 && (flags & F_STATS)) fprintf(stderr, "\n");
-        }
-        if (mb==1) {    /* Minimum was 1, check 0 */
-            int escaped;
-
-            escBits = 0;
-            escMask = 0;
-
-            /* Find the optimum path for selected escape bits (no optimize) */
-            OptimizeLength(0);
-            /* Optimize the escape selections for this path & escBits */
-            escaped = OptimizeEscape(&escape, NULL);
-
-            if ((flags & F_STATS)) {
-                fprintf(stderr, " %d:%d", escBits, 3*escaped);
-                fflush(stderr); /* for SAS/C */
-            }
-            if (3*escaped < mv) {
-                mb = 0;
-                /* mv = 3*escaped; */
-            }
-        }
-        if ((flags & F_STATS)) fprintf(stderr, "\n");
-
-        if (flags & F_VERBOSE) fprintf(stderr, "Selected %d-bit escapes\n", mb);
-        escBits = mb;
-        escMask = (0xff00>>escBits) & 0xff;
+    if (flags & F_VERBOSE) {
+        fprintf(stderr, "Selecting the number of escape bits.. ");
+        fflush(stderr);
     }
 
+    /*
+        Absolute maximum number of escaped bytes with
+        the escape optimize is 2^-n, where n is the
+        number of escape bits used.
 
-    if (!(flags & F_NOOPT)) {
-        if (flags & F_VERBOSE) {
-            fprintf(stderr, "Optimizing LZ77 and RLE lengths...");
-            fflush(stderr);
+        This worst case happens only on equal-
+        distributed normal bytes (01230123..).
+        This is why the typical values are so much smaller.
+     */
+
+    mb = 0;
+    mv = 8*OUT_SIZE;
+    for (escBits=1; escBits<9; escBits++) {
+        int escaped, other = 0, c;
+
+        escMask = (0xff00>>escBits) & 0xff;
+
+        /* Find the optimum path for selected escape bits (no optimize) */
+        OptimizeLength(0);
+
+        /* Optimize the escape selections for this path & escBits */
+        escaped = OptimizeEscape(&escape, &other);
+
+        /* Compare value: bits lost for escaping -- bits lost for prefix */
+        c = (escBits+3)*escaped + other*escBits;
+        if (flags & F_STATS) {
+            fprintf(stderr, " %d:%d", escBits, c);
+            fflush(stderr); /* for SAS/C */
         }
+        if (c < mv) {
+            mb = escBits;
+            mv = c;
+        } else {
+            /* minimum found */
+            break;
+        }
+        if (escBits==4 && (flags & F_STATS)) fprintf(stderr, "\n");
+    }
+    if (mb==1) {    /* Minimum was 1, check 0 */
+        int escaped;
+
+        escBits = 0;
+        escMask = 0;
+
+        /* Find the optimum path for selected escape bits (no optimize) */
+        OptimizeLength(0);
+        /* Optimize the escape selections for this path & escBits */
+        escaped = OptimizeEscape(&escape, NULL);
+
+        if ((flags & F_STATS)) {
+            fprintf(stderr, " %d:%d", escBits, 3*escaped);
+            fflush(stderr); /* for SAS/C */
+        }
+        if (3*escaped < mv) {
+            mb = 0;
+            /* mv = 3*escaped; */
+        }
+    }
+    if ((flags & F_STATS)) fprintf(stderr, "\n");
+
+    if (flags & F_VERBOSE) fprintf(stderr, "Selected %d-bit escapes\n", mb);
+    escBits = mb;
+    escMask = (0xff00>>escBits) & 0xff;
+
+
+    if (flags & F_VERBOSE) {
+        fprintf(stderr, "Optimizing LZ77 and RLE lengths...");
+        fflush(stderr);
     }
 
     /* Find the optimum path (optimize) */
-    OptimizeLength((flags & F_NOOPT)?0:1);
+    OptimizeLength(1);
     if (flags & F_STATS) {
-        if (!(flags & F_NOOPT)) fprintf(stderr, " gained %d units.\n", lzopt/8);
+        fprintf(stderr, " gained %d units.\n", lzopt/8);
     }
     else {
         if (flags & F_VERBOSE) fprintf(stderr, "\n");
     }
 
-    if (1 || (flags & F_AUTOEX)) {
+    {
         long lzstat[5] = {0,0,0,0,0}, i, cur = 0, old = extraLZPosBits;
 
         if (flags & F_VERBOSE) {
@@ -1313,7 +1289,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
 
             if (lzstat[i] < lzstat[cur]) cur = i;
         }
-        extraLZPosBits = (flags & F_AUTOEX)?cur:old;
+        extraLZPosBits = cur;
 
         if (flags & F_STATS) fprintf(stderr, "\n");
 
@@ -1322,9 +1298,9 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
             if (cur != old) fprintf(stderr,"Note: Using option -p%ld you may get better results.\n",cur);
         }
         /* Find the optimum path (optimize) */
-        if (extraLZPosBits != old) OptimizeLength((flags & F_NOOPT)?0:1);
+        if (extraLZPosBits != old) OptimizeLength(1);
     }
-    if (1) {
+    {
         long stat[4] = {0,0,0,0};
 
         for (p=0; p<inlen; ) {
@@ -1611,7 +1587,7 @@ errorexit:
 //=============================================================================
 int TTPack(int argc,char *argv[]) {
     int   startAddr   = 0x258;
-    int   flags       = F_AUTO | F_AUTOEX;
+    int   flags       = 0;
     int   lzlen       = -1;
     int   buflen;
     int   newlen;
@@ -1640,20 +1616,13 @@ int TTPack(int argc,char *argv[]) {
     InitValueLen();
 
     for (n=1; n<argc; n++) {
-        if (!strcmp(argv[n], "-fnorle"))      flags |= F_NORLE;
-        else if (!strcmp(argv[n], "-quiet"))  flags &= ~F_VERBOSE, quiet = 1;
+        if (!strcmp(argv[n], "-quiet"))  flags &= ~F_VERBOSE, quiet = 1;
 
         else if (argv[n][0]=='-' || argv[n][0]=='/') {
             int i = 1;
-            char *val, *tmp, c;
-            long tmpval;
 
             while (argv[n][i]) {
                 switch (argv[n][i]) {
-
-                case 'n':       /* noopt, no rle/lzlen optimization */
-                    flags |= F_NOOPT;
-                    break;
 
                 case 's':
                     flags |= F_STATS;
@@ -1667,67 +1636,6 @@ int TTPack(int argc,char *argv[]) {
                 case 'h':
                 case '?':
                     flags |= F_ERROR;
-                    break;
-
-                case 'r':
-                case 'm':
-                case 'e':
-                case 'p':
-                    c = argv[n][i]; /* Remember the option */
-                    if (argv[n][i+1]) {
-                        val = argv[n]+i+1;
-                    } else if (n+1 < argc) {
-                        val = argv[n+1];
-                        n++;
-                    } else {
-                        flags |= F_ERROR;
-                        break;
-                    }
-
-                    i = strlen(argv[n])-1;
-                    if (*val=='$') tmpval = strtol(val+1, &tmp, 16);
-                    else           tmpval = strtol(val, &tmp, 0);
-
-                    if (*tmp) {
-                        fprintf(stderr,"ERROR: invalid number: \"%s\"\n", val);
-                        flags |= F_ERROR;
-                        break;
-                    }
-
-                    switch (c) {
-                        case 'r':
-                            lzlen = tmpval;
-                            break;
-                        case 'm':
-                            maxGamma = tmpval;
-                            if (maxGamma < 5 || maxGamma > 7) {
-                                fprintf(stderr, "ERROR: Max length must be 5..7!\n");
-                                flags |= F_ERROR;
-                                maxGamma = 7;
-                            }
-                            lrange = LRANGE;
-                            maxlzlen = MAXLZLEN;
-                            maxrlelen = MAXRLELEN;
-                            InitValueLen();
-                            break;
-                        case 'e':
-                            escBits = tmpval;
-                            if (escBits < 0 || escBits > 8) {
-                                fprintf(stderr, "ERROR: Escape bits must be 0..8!\n");
-                                flags |= F_ERROR;
-                            }
-                            else flags &= ~F_AUTO;
-                            escMask = (0xff00>>escBits) & 0xff;
-                            break;
-                        case 'p':
-                            extraLZPosBits = tmpval;
-                            if (extraLZPosBits < 0 || extraLZPosBits > 4) {
-                                fprintf(stderr,"ERROR: Extra LZ-pos bits must be 0..4!\n");
-                                flags |= F_ERROR;
-                            }
-                            else flags &= ~F_AUTOEX;
-                            break;
-                    }
                     break;
 
                 default:
