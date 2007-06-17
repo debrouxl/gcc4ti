@@ -907,8 +907,6 @@ static int PackLz77(int lzsz, int flags, int *startEscape)
     int rescan = 0;
 
 
-
-
     if (lzsz < 0 || lzsz > lrange) {
         Warning(NULL, "LZ range must be from 0 to %d (was %d). Set to %d.\n",
                       lrange, lzsz, lrange);
