@@ -186,7 +186,9 @@ typedef COUNT SIZE;
 // These are for setting only! Do not use them to check values.
 #define FALSE 0
 #define TRUE  (!FALSE)
+#ifndef NULL
 #define NULL  ((void *) 0)
+#endif
 
 // Diagnostic messages.
 #ifdef TARGET_EMBEDDED
