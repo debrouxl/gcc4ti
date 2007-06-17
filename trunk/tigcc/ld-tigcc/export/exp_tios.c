@@ -235,7 +235,7 @@ BOOLEAN ExportPackedTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileS
 			
 			// If this can be resolved to a calculator-dependent value, write the
 			// value into the section data.
-			if (EmitCalcBuiltinValue (Reloc, DestCalc, File, FileSize, DataStart))
+			if (EmitCalcBuiltinValueBuf (Reloc, DestCalc, Buffer, FileSize, DataStart))
 				continue;
 			
 			// We can only emit relocs with a target symbol in the same section.

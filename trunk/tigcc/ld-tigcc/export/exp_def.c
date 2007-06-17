@@ -38,3 +38,21 @@ BOOLEAN EmitCalcBuiltinValue (const RELOC *Reloc, ProgramCalcs DestCalc, EXP_FIL
 	
 	return FALSE;
 }
+
+#ifdef PUCRUNCH_SUPPORT
+// If the reloc can be resolved to a calculator-dependent builtin value,
+// write the value into the data segment in the buffer which starts at
+// DataStart. This function is only needed with pucrunch compression.
+BOOLEAN EmitCalcBuiltinValueBuf (const RELOC *Reloc, ProgramCalcs DestCalc, I1 *Buffer, SIZE BufferSize, OFFSET DataStart)
+{
+	IMAX Value;
+	
+	if (GetCalcBuiltinValue (Reloc, DestCalc, &Value) && (Reloc->Location >= 0) && (Reloc->Location + Reloc->Size <= BufferSize))
+	{
+		WriteTI (Buffer + DataStart + Reloc->Location, Reloc->Size, Value, FALSE, TRUE);
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+#endif /* PUCRUNCH_SUPPORT */

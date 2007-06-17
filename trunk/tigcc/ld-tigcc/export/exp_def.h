@@ -79,4 +79,11 @@ typedef BOOLEAN (*EXPORT_FILE_FUNCTION) (const PROGRAM *Program, EXP_FILE *File,
 // DataStart.
 BOOLEAN EmitCalcBuiltinValue (const RELOC *Reloc, ProgramCalcs DestCalc, EXP_FILE *File, SIZE FileSize, OFFSET DataStart);
 
+#ifdef PUCRUNCH_SUPPORT
+// If the reloc can be resolved to a calculator-dependent builtin value,
+// write the value into the data segment in the buffer which starts at
+// DataStart. This function is only needed with pucrunch compression.
+BOOLEAN EmitCalcBuiltinValueBuf (const RELOC *Reloc, ProgramCalcs DestCalc, I1 *Buffer, SIZE BufferSize, OFFSET DataStart);
+#endif /* PUCRUNCH_SUPPORT */
+
 #endif
