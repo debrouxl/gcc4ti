@@ -22,9 +22,9 @@
 #error Pucrunch compression is only supported for the standalone target.
 #endif
 
-#include <stdio.h>
+#include "exp_def.h"
 
 #define F_VERBOSE    (1<<0)
 #define F_STATS      (1<<1)
 
-int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file);
+int TTPack(int flags, int in_len, unsigned char *in_data, EXP_FILE *out_file);

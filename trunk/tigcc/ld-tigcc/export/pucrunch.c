@@ -147,7 +147,7 @@ static void TTPackInit(void) {
 //=============================================================================
 // the packing code
 //=============================================================================
-static int SavePack(unsigned char *data, int size, FILE *fp, int escape,
+static int SavePack(unsigned char *data, int size, EXP_FILE *fp, int escape,
                     unsigned char *rleValues, int extraLZPosBits)
 {
     int  i;
@@ -178,9 +178,9 @@ static int SavePack(unsigned char *data, int size, FILE *fp, int escape,
 
     for(i=0; i<rleUsed; i++) re.value[i] = rleValues[i+1];
 
-    fwrite(&cth, 1, sizeof(PackedHeader), fp); // write header
-    fwrite(&re,  1, cth.rleentries, fp);       // write rle values
-    fwrite(data, size, 1, fp);                 // write compressed data
+    ExportWrite(fp, &cth, 1, sizeof(PackedHeader)); // write header
+    ExportWrite(fp, &re,  1, cth.rleentries);       // write rle values
+    ExportWrite(fp, data, size, 1);                 // write compressed data
     return 0;
 }
 
@@ -1552,7 +1552,7 @@ errorexit:
 //=============================================================================
 // as usual: the main, but a long one ...
 //=============================================================================
-int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
+int TTPack(int flags, int in_len, unsigned char *in_data, EXP_FILE *out_file) {
     int   startAddr   = 0x258;
     int   lzlen       = -1;
     int   startEscape = 0;
