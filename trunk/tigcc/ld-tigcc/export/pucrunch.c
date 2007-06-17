@@ -515,7 +515,7 @@ static int OutputLz(int *esc, int lzlen, int lzpos, int curpos) {
         if (lzlen==2) {
             PutValue(lzlen-1);
             PutBit(0);
-            if (lzpos > 256) fprintf(stderr,"ERROR at %d: lzpos too long (%d) for lzlen==2\n",curpos, lzpos);
+            if (lzpos > 256) Warning(NULL, "lzpos at %d too long (%d) for lzlen==2\n", curpos, lzpos);
         }
         else {
             PutValue(lzlen-1);
@@ -528,7 +528,7 @@ static int OutputLz(int *esc, int lzlen, int lzpos, int curpos) {
         timesLz++;
         return 3;
     }
-    fprintf(stderr, "ERROR: lzlen too short/long (%d)\n", lzlen);
+    Warning(NULL, "lzlen too short/long (%d)\n", lzlen);
     return lzlen;
 }
 
@@ -730,7 +730,7 @@ static int OptimizeEscape(int *startEscape, int *nonNormal) {
     for (i=0; i<256; i++) b[i] = a[i] = -1;
 
     if (states>256) {
-        fprintf(stderr, "Escape optimize: only 256 states (%d)!\n",states);
+        Warning(NULL, "Escape optimize: only 256 states (%d)!\n",states);
         return 0;
     }
 
@@ -910,17 +910,17 @@ static int PackLz77(int lzsz, int flags, int *startEscape)
 
 
     if (lzsz < 0 || lzsz > lrange) {
-        fprintf(stderr, "LZ range must be from 0 to %d (was %d). Set to %d.\n",
-                lrange, lzsz, lrange);
+        Warning(NULL, "LZ range must be from 0 to %d (was %d). Set to %d.\n",
+                      lrange, lzsz, lrange);
         lzsz = lrange;
     }
     if (lzsz > 65535) {
-        fprintf(stderr,
+        Warning(NULL,
                 "LZ range must be from 0 to 65535 (was %d). Set to 65535.\n",
                 lzsz);
         lzsz = 65535;
     }
-    if (!lzsz) fprintf(stderr, "Warning: zero LZ range. Only RLE packing used.\n");
+    if (!lzsz) Warning(NULL, "Zero LZ range. Only RLE packing used.\n");
 
     InitRleLen();
     length = (int *)calloc(sizeof(int), inlen + 1);
@@ -940,7 +940,7 @@ static int PackLz77(int lzsz, int flags, int *startEscape)
         !lastPair || !backSkip
         || !hashValue)
     {
-        fprintf(stderr, "ERROR: Memory allocation failed!\n");
+        Error(NULL, "Memory allocation failed!\n");
         err_occured = 1;
         goto errorexit;
     }
@@ -1110,11 +1110,11 @@ static int PackLz77(int lzsz, int flags, int *startEscape)
                     }
                 }
                 if (p+maxval > inlen) {
-                    fprintf(stderr,"Error @ %d, lzlen %d, pos %d - exceeds inlen\n",p, maxval, maxpos);
+                    Warning(NULL, "Error @ %d, lzlen %d, pos %d - exceeds inlen\n",p, maxval, maxpos);
                     maxval = inlen - p;
                 }
                 if (maxpos<=256 || maxval > 2) {
-                    if (maxpos < 0) fprintf(stderr, "Error @ %d, lzlen %d, pos %d\n",p, maxval, maxpos);
+                    if (maxpos < 0) Warning(NULL, "Error @ %d, lzlen %d, pos %d\n",p, maxval, maxpos);
                     lzlen[p] = (maxval<maxlzlen)?maxval:maxlzlen;
                     lzpos[p] = maxpos;
                 }
@@ -1468,7 +1468,7 @@ static int PackLz77(int lzsz, int flags, int *startEscape)
 
         default: /* Error Flynn :-) */
             p++;
-            fprintf(stderr, "Internal error: mode %d\n", mode[p]);
+            Warning(NULL, "Internal error: mode %d\n", mode[p]);
             break;
         }
     }
@@ -1581,7 +1581,7 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
 
 
     if (startAddr + inlen -1 > 0xffff) {
-        fprintf(stderr,"ERROR: File is too large to handle (>64936 Bytes)");
+        Error(NULL, "File is too large to handle (>64936 Bytes)");
         if (indata) free(indata);
         return 1;
     }
