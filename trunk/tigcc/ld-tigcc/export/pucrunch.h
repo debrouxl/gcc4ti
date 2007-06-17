@@ -18,6 +18,10 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+#if defined(TARGET_EMBEDDED) || defined(TARGET_DLL)
+#error Pucrunch compression is only supported for the standalone target.
+#endif
+
 #include <stdio.h>
 
 #define F_VERBOSE    (1<<0)
