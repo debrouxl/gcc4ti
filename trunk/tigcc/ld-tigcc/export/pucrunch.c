@@ -1362,7 +1362,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd)
                     }
                     if ((indata[p] & escMask) == escape) {
                         escape = newesc[p];
-                        if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"«");
+                        if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"<<");
                     }
                     if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"\n");
                     j += 1;
