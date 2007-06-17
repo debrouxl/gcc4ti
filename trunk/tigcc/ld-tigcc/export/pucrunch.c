@@ -32,6 +32,8 @@
 #define FIXF_MACHMASK  0xff
 #define FIXF_WRAP	   256
 
+#define VERBOSE_OUT stdout
+
 
 #ifndef min
 #define min(a,b) ((a<b)?(a):(b))
@@ -847,7 +849,7 @@ void InitRle(int flags ATTRIBUTE_UNUSED) {
 void OptimizeRle(int flags) {
     int p, mr, mv, i;
 
-    if (flags & F_STATS) fprintf(stderr, "RLE Byte Code Re-Tune, RLE Ranks:\n");
+    if (flags & F_STATS) fprintf(VERBOSE_OUT, "RLE Byte Code Re-Tune, RLE Ranks:\n");
 
     for (p=0; p<256; p++) rleHist[p] = 0;
 
@@ -881,8 +883,8 @@ void OptimizeRle(int flags) {
         if (mv>0) {
             rleValues[i] = mr;
             if (flags & F_STATS) {
-                fprintf(stderr, " %2d.0x%02x %-3d ", i, mr, mv);
-                if (!((i - 1) % 6)) fprintf(stderr, "\n");
+                fprintf(VERBOSE_OUT, " %2d.0x%02x %-3d ", i, mr, mv);
+                if (!((i - 1) % 6)) fprintf(VERBOSE_OUT, "\n");
             }
             rleHist[mr] = -1;
         }
@@ -893,7 +895,7 @@ void OptimizeRle(int flags) {
     rleUsed = i-1;
 
     if (flags & F_STATS)
-        if (((i - 1) % 6)!=1) fprintf(stderr, "\n");
+        if (((i - 1) % 6)!=1) fprintf(VERBOSE_OUT, "\n");
     InitRleLen();
 }
 
@@ -967,8 +969,8 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     for (p=0; p<inlen; p++) {
         if (flags & F_VERBOSE) {
             if (!(p & 2047)) {
-                fprintf(stderr, "\r%d ", p);
-                fflush(stderr);     /* for SAS/C */
+                fprintf(VERBOSE_OUT, "\r%d ", p);
+                fflush(VERBOSE_OUT);     /* for SAS/C */
             }
         }
         /* check run-length code - must be done, LZ77 search needs it! */
@@ -1144,8 +1146,8 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     }
 
     if (flags & F_VERBOSE) {
-        fprintf(stderr, "\rChecked: %d \n", p);
-        fflush(stderr);
+        fprintf(VERBOSE_OUT, "\rChecked: %d \n", p);
+        fflush(VERBOSE_OUT);
     }
 
 
@@ -1157,8 +1159,8 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
         int mb, mv;
 
         if (flags & F_VERBOSE) {
-            fprintf(stderr, "Selecting the number of escape bits.. ");
-            fflush(stderr);
+            fprintf(VERBOSE_OUT, "Selecting the number of escape bits.. ");
+            fflush(VERBOSE_OUT);
         }
 
         /*
@@ -1187,8 +1189,8 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
             /* Compare value: bits lost for escaping -- bits lost for prefix */
             c = (escBits+3)*escaped + other*escBits;
             if (flags & F_STATS) {
-                fprintf(stderr, " %d:%d", escBits, c);
-                fflush(stderr); /* for SAS/C */
+                fprintf(VERBOSE_OUT, " %d:%d", escBits, c);
+                fflush(VERBOSE_OUT); /* for SAS/C */
             }
             if (c < mv) {
                 mb = escBits;
@@ -1197,7 +1199,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
                 /* minimum found */
                 break;
             }
-            if (escBits==4 && (flags & F_STATS)) fprintf(stderr, "\n");
+            if (escBits==4 && (flags & F_STATS)) fprintf(VERBOSE_OUT, "\n");
         }
         if (mb==1) {    /* Minimum was 1, check 0 */
             int escaped;
@@ -1211,42 +1213,42 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
             escaped = OptimizeEscape(&escape, NULL);
 
             if ((flags & F_STATS)) {
-                fprintf(stderr, " %d:%d", escBits, 3*escaped);
-                fflush(stderr); /* for SAS/C */
+                fprintf(VERBOSE_OUT, " %d:%d", escBits, 3*escaped);
+                fflush(VERBOSE_OUT); /* for SAS/C */
             }
             if (3*escaped < mv) {
                 mb = 0;
                 /* mv = 3*escaped; */
             }
         }
-        if ((flags & F_STATS)) fprintf(stderr, "\n");
+        if ((flags & F_STATS)) fprintf(VERBOSE_OUT, "\n");
 
-        if (flags & F_VERBOSE) fprintf(stderr, "Selected %d-bit escapes\n", mb);
+        if (flags & F_VERBOSE) fprintf(VERBOSE_OUT, "Selected %d-bit escapes\n", mb);
         escBits = mb;
         escMask = (0xff00>>escBits) & 0xff;
     }
 
 
     if (flags & F_VERBOSE) {
-        fprintf(stderr, "Optimizing LZ77 and RLE lengths...");
-        fflush(stderr);
+        fprintf(VERBOSE_OUT, "Optimizing LZ77 and RLE lengths...");
+        fflush(VERBOSE_OUT);
     }
 
     /* Find the optimum path (optimize) */
     OptimizeLength(1);
     if (flags & F_STATS) {
-        fprintf(stderr, " gained %d units.\n", lzopt/8);
+        fprintf(VERBOSE_OUT, " gained %d units.\n", lzopt/8);
     }
     else {
-        if (flags & F_VERBOSE) fprintf(stderr, "\n");
+        if (flags & F_VERBOSE) fprintf(VERBOSE_OUT, "\n");
     }
 
     {
         long lzstat[5] = {0,0,0,0,0}, i, cur = 0, old = extraLZPosBits;
 
         if (flags & F_VERBOSE) {
-            fprintf(stderr, "Selecting LZPOS LO length.. ");
-            fflush(stderr);
+            fprintf(VERBOSE_OUT, "Selecting LZPOS LO length.. ");
+            fflush(VERBOSE_OUT);
         }
 
         for (p=0; p<inlen; ) {
@@ -1274,17 +1276,17 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
             }
         }
         for (i=0; i<5; i++) {
-            if (flags & F_STATS) fprintf(stderr, " %ld:%ld", i + 8, lzstat[i]);
+            if (flags & F_STATS) fprintf(VERBOSE_OUT, " %ld:%ld", i + 8, lzstat[i]);
 
             if (lzstat[i] < lzstat[cur]) cur = i;
         }
         extraLZPosBits = cur;
 
-        if (flags & F_STATS) fprintf(stderr, "\n");
+        if (flags & F_STATS) fprintf(VERBOSE_OUT, "\n");
 
         if (flags & F_VERBOSE) {
-            fprintf(stderr, "Selected %d-bit LZPOS LO part\n",extraLZPosBits + 8);
-            if (cur != old) fprintf(stderr,"Note: Using option -p%ld you may get better results.\n",cur);
+            fprintf(VERBOSE_OUT, "Selected %d-bit LZPOS LO part\n",extraLZPosBits + 8);
+            if (cur != old) fprintf(VERBOSE_OUT,"Note: Using option -p%ld you may get better results.\n",cur);
         }
         /* Find the optimum path (optimize) */
         if (extraLZPosBits != old) OptimizeLength(1);
@@ -1318,10 +1320,10 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
         }
         /* TODO: better formula.. */
         if (maxGamma < 7 && stat[0] + stat[1] + stat[3] > 10) {
-            if (flags & F_VERBOSE) fprintf(stderr,"Note: Using option -m%d you may get better results.\n",maxGamma+1);
+            if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"Note: Using option -m%d you may get better results.\n",maxGamma+1);
         }
         if (maxGamma > 5 && stat[0] + stat[1] + stat[3] < 4) {
-            if (flags & F_VERBOSE) fprintf(stderr,"Note: Using option -m%d you may get better results.\n",maxGamma-1);
+            if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"Note: Using option -m%d you may get better results.\n",maxGamma-1);
         }
     }
 
@@ -1507,7 +1509,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     }
     outlen = outPointer + headerSize;   /* unpack code */
 
-    if (flags & F_VERBOSE) fprintf(stderr, "In: %d, out: %d, ratio: %5.2f%% (%4.2f[%4.2f] b/B)"
+    if (flags & F_VERBOSE) fprintf(VERBOSE_OUT, "In: %d, out: %d, ratio: %5.2f%% (%4.2f[%4.2f] b/B)"
                                    ", gained: %5.2f%%\n",
                                    inlen, outlen, (double)outlen*100.0/(double)inlen + 0.005,
                                    8.0*(double)outlen/(double)inlen + 0.005,
@@ -1515,12 +1517,12 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
                                    100.0 - (double)outlen*100.0/(double)inlen + 0.005);
 
     if (flags & F_VERBOSE) {
-        fprintf(stderr, "Gained RLE: %d (S+L:%d+%d), LZ: %d, Esc: %d"
+        fprintf(VERBOSE_OUT, "Gained RLE: %d (S+L:%d+%d), LZ: %d, Esc: %d"
                 ", Decompressor: %d\n",
                 gainedRle/8, gainedSRle/8, gainedLRle/8,
                 gainedLz/8, -gainedEscaped/8, -headerSize);
 
-        fprintf(stderr, "Times  RLE: %d (%d+%d), LZ: %d, Esc: %d (normal: %d)"
+        fprintf(VERBOSE_OUT, "Times  RLE: %d (%d+%d), LZ: %d, Esc: %d (normal: %d)"
                 ", %d escape bit%s\n",
                 timesRle, timesSRle, timesLRle,
                 timesLz, timesEscaped, timesNormal,
@@ -1529,7 +1531,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     if ((flags & F_STATS)) {
         const char *ll[] = {"2", "3-4", "5-8", "9-16", "17-32", "33-64",
                             "65-128", "129-256"};
-        fprintf(stderr, "(Gained by RLE Code: %d, LZPOS LO Bits %d"
+        fprintf(VERBOSE_OUT, "(Gained by RLE Code: %d, LZPOS LO Bits %d"
                 ", maxLen: %d, tag bit/prim. %4.2f)\n",
                 gainedRlecode/8 - rleUsed,
                 extraLZPosBits + 8,
@@ -1538,22 +1540,22 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
                          timesEscaped*(escBits + 3))/
                 (double)(timesRle+timesLz+timesNormal) + 0.0049);
 
-        fprintf(stderr, "   LZPOS HI+2 LZLEN S-RLE RLEcode\n");
-        fprintf(stderr, "   ------------------------------\n");
+        fprintf(VERBOSE_OUT, "   LZPOS HI+2 LZLEN S-RLE RLEcode\n");
+        fprintf(VERBOSE_OUT, "   ------------------------------\n");
         for (i=0; i<=maxGamma; i++) {
-            fprintf(stderr, "%-7s %5d %5d", ll[i],
+            fprintf(VERBOSE_OUT, "%-7s %5d %5d", ll[i],
                     lenStat[i][0], lenStat[i][1]);
             if (i<maxGamma)
-                fprintf(stderr, " %5d", lenStat[i][2]);
+                fprintf(VERBOSE_OUT, " %5d", lenStat[i][2]);
             else
-                fprintf(stderr, "     -");
+                fprintf(VERBOSE_OUT, "     -");
 
             if (i<6)
-                fprintf(stderr, "   %5d%s\n", lenStat[i][3], (i==5)?"*":"");
+                fprintf(VERBOSE_OUT, "   %5d%s\n", lenStat[i][3], (i==5)?"*":"");
             else
-                fprintf(stderr, "       -\n");
+                fprintf(VERBOSE_OUT, "       -\n");
         }
-        fprintf(stderr, "LZ77 rescan gained %d bytes\n", rescan/8);
+        fprintf(VERBOSE_OUT, "LZ77 rescan gained %d bytes\n", rescan/8);
     }
 
 errorexit:
@@ -1609,9 +1611,9 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
     }
 
     if (flags & F_VERBOSE) {
-        fprintf(stderr, "Load address 0x%04x=%d, Last byte 0x%04x=%d\n",
+        fprintf(VERBOSE_OUT, "Load address 0x%04x=%d, Last byte 0x%04x=%d\n",
                          startAddr, startAddr, startAddr+inlen-1, startAddr+inlen-1);
-        fprintf(stderr, "New load address 0x%04x=%d\n", memStart, memStart);
+        fprintf(VERBOSE_OUT, "New load address 0x%04x=%d\n", memStart, memStart);
     }
 
     n = PackLz77(lzlen, flags, &startEscape, startAddr + inlen, memEnd, type);
@@ -1621,7 +1623,7 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
 
         if (endAddr - ((outPointer + 255) & ~255) < memStart + 3) {
             /* would overwrite the decompressor, move a bit upwards */
-            if (flags & F_VERBOSE) fprintf(stderr,"$%x < $%x, decompressor overwrite possible, moving upwards\n",
+            if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,"$%x < $%x, decompressor overwrite possible, moving upwards\n",
                                           endAddr - ((outPointer + 255) & ~255), memStart + 3);
             endAddr = memStart + 3 + ((outPointer + 255) & ~255);
         }
@@ -1640,7 +1642,7 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
 
         timeused = clock()-timeused;
         if (!timeused) timeused++;
-        if (flags & F_VERBOSE) fprintf(stderr,
+        if (flags & F_VERBOSE) fprintf(VERBOSE_OUT,
                                        "Compressed %d bytes in %4.2f seconds (%4.2f kB/sec)\n",
                                        inlen,
                                        (double)timeused/CLOCKS_PER_SEC,
