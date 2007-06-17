@@ -29,9 +29,6 @@
 #include "../formats/packhead.h"    // compressed header definition
 #include "pucrunch.h"
 
-#define FIXF_MACHMASK  0xff
-#define FIXF_WRAP	   256
-
 #define VERBOSE_OUT stdout
 
 
@@ -150,7 +147,7 @@ void TTPackInit(void) {
 //=============================================================================
 // the packing code
 //=============================================================================
-int SavePack(int flags ATTRIBUTE_UNUSED,int type, unsigned char *data, int size, FILE *fp,
+int SavePack(int flags ATTRIBUTE_UNUSED, unsigned char *data, int size, FILE *fp,
              int start ATTRIBUTE_UNUSED, int escape, unsigned char *rleValues,
              int endAddr ATTRIBUTE_UNUSED, int extraLZPosBits,
              int memStart ATTRIBUTE_UNUSED, int memEnd ATTRIBUTE_UNUSED)
@@ -159,39 +156,34 @@ int SavePack(int flags ATTRIBUTE_UNUSED,int type, unsigned char *data, int size,
 
     if (!data)   return 10;
 
-    if ((type & FIXF_MACHMASK) == 0) {
-        /* Save without decompressor */
+    /* Save without decompressor */
 
-        PackedHeader   cth;
-        RLEEntries     re;
+    PackedHeader   cth;
+    RLEEntries     re;
 
-        cth.origsize_lo  = inlen & 0xff;
-        cth.origsize_hi  = (inlen >> 8);
-        cth.magic1       = MAGIC_CHAR1;
-        cth.magic2       = MAGIC_CHAR2;
-        cth.compsize_lo  = (size + rleUsed + sizeof(PackedHeader)) & 0xff;
-        cth.compsize_hi  = (size + rleUsed + sizeof(PackedHeader)) >> 8;
-        cth.esc1         = (escape >> (8-escBits));
-        cth.notused3     = 0; // just to make sure it has a defined value
-        cth.notused4     = 0; // just to make sure it has a defined value
-        cth.esc2         = escBits;
-        cth.gamma1       = maxGamma + 1;
-        cth.gamma2       = (1 << maxGamma);
-        cth.extralz      = extraLZPosBits;
-        cth.notused1     = 0; // just to make sure it has a defined value
-        cth.notused2     = 0; // just to make sure it has a defined value
-        cth.rleentries   = rleUsed;
+    cth.origsize_lo  = inlen & 0xff;
+    cth.origsize_hi  = (inlen >> 8);
+    cth.magic1       = MAGIC_CHAR1;
+    cth.magic2       = MAGIC_CHAR2;
+    cth.compsize_lo  = (size + rleUsed + sizeof(PackedHeader)) & 0xff;
+    cth.compsize_hi  = (size + rleUsed + sizeof(PackedHeader)) >> 8;
+    cth.esc1         = (escape >> (8-escBits));
+    cth.notused3     = 0; // just to make sure it has a defined value
+    cth.notused4     = 0; // just to make sure it has a defined value
+    cth.esc2         = escBits;
+    cth.gamma1       = maxGamma + 1;
+    cth.gamma2       = (1 << maxGamma);
+    cth.extralz      = extraLZPosBits;
+    cth.notused1     = 0; // just to make sure it has a defined value
+    cth.notused2     = 0; // just to make sure it has a defined value
+    cth.rleentries   = rleUsed;
 
-        for(i=0; i<rleUsed; i++) re.value[i] = rleValues[i+1];
+    for(i=0; i<rleUsed; i++) re.value[i] = rleValues[i+1];
 
-        fwrite(&cth, 1, sizeof(PackedHeader), fp); // write header
-        fwrite(&re,  1, cth.rleentries, fp);       // write rle values
-        fwrite(data, size, 1, fp);                 // write compressed data
-        return 0;
-    }
-
-    fprintf(stderr, "FATAL: invalid type!!\n");
-    return 10;
+    fwrite(&cth, 1, sizeof(PackedHeader), fp); // write header
+    fwrite(&re,  1, cth.rleentries, fp);       // write rle values
+    fwrite(data, size, 1, fp);                 // write compressed data
+    return 0;
 }
 
 
@@ -903,7 +895,7 @@ void OptimizeRle(int flags) {
 //=============================================================================
 //
 //=============================================================================
-int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int type)
+int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd)
 {
     int i, j, outlen, p, headerSize;
     int escape;
@@ -1494,19 +1486,7 @@ int PackLz77(int lzsz, int flags, int *startEscape,int endAddr, int memEnd, int 
     else
         reservedBytes = 0;
 
-    // TOMTOM !!!
-
-    if ((type & FIXF_MACHMASK) == 0) {
-        headerSize = 16 + rleUsed;
-    } else
-    {
-        if (endAddr + reservedBytes + 3 > memEnd) {
-            type |= FIXF_WRAP;
-        } else {
-            type &= ~FIXF_WRAP;
-        }
-        headerSize = 47 + rleUsed - 31;
-    }
+    headerSize = 16 + rleUsed;
     outlen = outPointer + headerSize;   /* unpack code */
 
     if (flags & F_VERBOSE) fprintf(VERBOSE_OUT, "In: %d, out: %d, ratio: %5.2f%% (%4.2f[%4.2f] b/B)"
@@ -1586,7 +1566,6 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
 
     int   memStart    = 0x801;
     int   memEnd      = 0x10000;
-    int   type        = 0;
 
 
     TTPackInit();
@@ -1616,7 +1595,7 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
         fprintf(VERBOSE_OUT, "New load address 0x%04x=%d\n", memStart, memStart);
     }
 
-    n = PackLz77(lzlen, flags, &startEscape, startAddr + inlen, memEnd, type);
+    n = PackLz77(lzlen, flags, &startEscape, startAddr + inlen, memEnd);
 
     if (!n) {
         int endAddr = startAddr + inlen; /* end for uncompressed data */
@@ -1632,10 +1611,9 @@ int TTPack(int flags, int in_len, unsigned char *in_data, FILE *out_file) {
         /* bytes reserved for temporary data expansion (escaped chars) */
         endAddr += 3 + reservedBytes;
 
-        // type      ... may vary
         // outBuffer ... static global array (65536 Bytes)
 
-        SavePack(flags,type, outBuffer, outPointer, out_file,
+        SavePack(flags, outBuffer, outPointer, out_file,
                  startAddr, startEscape, rleValues,
                  endAddr, extraLZPosBits,
                  memStart, memEnd);
