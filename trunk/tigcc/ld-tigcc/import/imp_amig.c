@@ -1,6 +1,6 @@
 /* imp_amig.c: Routines to import an AmigaOS-hunks file
 
-   Copyright (C) 2002-2005 Kevin Kofler
+   Copyright (C) 2002-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -112,7 +112,7 @@ BOOLEAN ImportAmigaOSFile (PROGRAM *Program, const I1 *File, SIZE FileSize, cons
 				TestInFile(ptr,I1[hunkSize]);
 				hunkName = malloc(hunkSize+1);
 				TestMem(hunkName);
-				strncpy(hunkName,ptr,hunkSize);
+				strncpy(hunkName,(const char *)ptr,hunkSize);
 				hunkName[hunkSize]=0;
 				ptr += hunkSize;
 				break;
@@ -505,7 +505,7 @@ BOOLEAN ImportAmigaOSFile (PROGRAM *Program, const I1 *File, SIZE FileSize, cons
 					TestInFile(ptr,I1[hunkSize]);
 					symName = malloc(hunkSize+1);
 					TestMem(symName);
-					strncpy(symName,ptr,hunkSize);
+					strncpy(symName,(const char *)ptr,hunkSize);
 					symName[hunkSize]=0;
 					ptr+=hunkSize;
 
@@ -648,7 +648,7 @@ BOOLEAN ImportAmigaOSFile (PROGRAM *Program, const I1 *File, SIZE FileSize, cons
 					symSize = (hunkSize<MAX_SYM_LEN)?hunkSize:MAX_SYM_LEN;
 
 					for_each(symbol,currSection->Symbols) {
-						if (!strncmp(symbol->Name,ptr,symSize) && !(ptr[symSize])) {
+						if (!strncmp(symbol->Name,(const char *)ptr,symSize) && !(ptr[symSize])) {
 							found = TRUE;
 							break;
 						}
@@ -665,7 +665,7 @@ BOOLEAN ImportAmigaOSFile (PROGRAM *Program, const I1 *File, SIZE FileSize, cons
 						currSymbol = calloc (1, sizeof (SYMBOL));
 						TestMem(currSymbol);
 						currSymbol->Parent = currSection;
-						strncpy(currSymbol->Name,ptr,symSize);
+						strncpy(currSymbol->Name,(const char *)ptr,symSize);
 						currSymbol->Name[symSize+1]=0;
 						ptr+=hunkSize;
 						// Do NOT handle special symbols specially here! Those symbols are

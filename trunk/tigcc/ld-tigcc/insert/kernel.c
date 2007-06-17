@@ -1,7 +1,7 @@
 /* kernel.c: Routines to handle automatic insertion of section contents in kernel format
 
    Copyright (C) 2003 Sebastian Reichelt
-   Copyright (C) 2003-2005 Kevin Kofler
+   Copyright (C) 2003-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -329,7 +329,7 @@ BOOLEAN InsertKernelLibraries (SECTION *Section)
 							// Output its name.
 							if (strlen (CurLib->Lib->Name) > 8)
 								Warning (Section->FileName, "Library name `%s' too long; cutting off at 8th character.", CurLib->Lib->Name);
-							strncpy (NewData, CurLib->Lib->Name, 8);
+							strncpy ((char *)NewData, CurLib->Lib->Name, 8);
 							WriteTI1 (*((TI1 *) (NewData + 9)), CurLib->Lib->Version);
 							NewData += 10;
 						}
@@ -432,7 +432,7 @@ BOOLEAN InsertFargo020Libraries (SECTION *Section)
 							if (CurLib->FunctionCount)
 							{
 								// Output its name.
-								strcpy (LibName, CurLib->Lib->Name);
+								strcpy ((char *)LibName, CurLib->Lib->Name);
 								// Create a new reloc at the current location, pointing to
 								// the location of the library name.
 								{

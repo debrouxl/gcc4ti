@@ -1,6 +1,6 @@
 /* imp_amiga.c: Routines to import an AmigaOS-hunks file
 
-   Copyright (C) 2003-2005 Kevin Kofler
+   Copyright (C) 2003-2007 Kevin Kofler
    Copyright (C) 2003 Sebastian Reichelt
 
    This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,7 @@ BOOLEAN ArImportAmigaOSFile (OBJECT_FILE *ObjectFile)
 					
 					{
 						char symName[hunkSize+1];
-						strncpy(symName,ptr,hunkSize);
+						strncpy(symName,(const char *)ptr,hunkSize);
 						symName[hunkSize] = 0;
 						ptr += hunkSize;
 

@@ -1,6 +1,6 @@
 /* comprrlc.c: Routines for compressed relocation tables
 
-   Copyright (C) 2003-2005 Kevin Kofler
+   Copyright (C) 2003-2007 Kevin Kofler
    Portions copyright (C) 2002-2003 Sebastian Reichelt
 
    This program is free software; you can redistribute it and/or modify
@@ -636,7 +636,7 @@ BOOLEAN InsertPreOsLibraries (SECTION *Section, SECTION *MergedSection, const LO
 							// Output its name.
 							if (strlen (CurLib->Lib->Name) > 8)
 								Warning (Section->FileName, "Library name `%s' too long; cutting off at 8th character.", CurLib->Lib->Name);
-							strncpy (NewData, CurLib->Lib->Name, 8);
+							strncpy ((char *)NewData, CurLib->Lib->Name, 8);
 							WriteTI1 (*((TI1 *) (NewData + 9)), CurLib->Lib->Version);
 							NewData += 10;
 						}
@@ -868,7 +868,7 @@ BOOLEAN InsertFargo021Libraries (SECTION *Section, SECTION *MergedSection, const
 							if (CurLib->FunctionCount)
 							{
 								// Output its name.
-								strcpy (LibName, CurLib->Lib->Name);
+								strcpy ((char *)LibName, CurLib->Lib->Name);
 								LibName += strlen (CurLib->Lib->Name) + 1;
 							}
 						}

@@ -1,6 +1,7 @@
 /* other.c: Routines to handle automatic insertion of section contents
 
-   Copyright (C) 2003 Sebastian Reichelt, Kevin Kofler
+   Copyright (C) 2003 Sebastian Reichelt
+   Copyright (C) 2003-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -136,7 +137,7 @@ BOOLEAN InsertDataVarName (SECTION *Section)
 		
 		// Copy the string into the allocated space.
 		if (NewData)
-			strcpy (NewData, Program->DataVarInfo->Name);
+			strcpy ((char *)NewData, Program->DataVarInfo->Name);
 		else
 			return FALSE;
 	}
