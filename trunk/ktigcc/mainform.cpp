@@ -4483,8 +4483,7 @@ void MainForm::linkProject()
       K3Process::Stdout|K3Process::MergedStderr));
     procio->setWorkingDirectory(projectDir);
     *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
-           <<"-v";
-    *procio<<linkerOptions<<objectFiles;
+           <<"-v"<<linkerOptions<<objectFiles;
     if (settings.std_lib)
       *procio<<QString(settings.flash_os?"%1/lib/flashos.a"
                                         :(settings.fargo?"%1/lib/fargo.a"
