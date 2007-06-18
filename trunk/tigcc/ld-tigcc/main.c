@@ -86,7 +86,7 @@ static char CalcTolower(char Lower)
 	unsigned char c = Lower;
 	if ((c >= 'A' && c <= 'Z')
 	    || (c >= 192 && c <= 222 && c != 215))
-		c -= 32;
+		c += 32;
 	return c;
 }
 
