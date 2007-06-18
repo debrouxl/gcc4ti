@@ -1,6 +1,7 @@
 /* generic.h: Header file to be included by all other files
 
    Copyright (C) 2002-2004 Sebastian Reichelt
+   Copyright (C) 2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -77,6 +78,12 @@ TIOS_UPGRADE_FILE_SUPPORT
 #define ATTRIBUTE_PACKED __attribute__((__packed__))
 #define ATTRIBUTE_UNUSED __attribute__((__unused__))
 #define ATTRIBUTE_INTERFACE __attribute__((__cdecl__))
+
+#if defined(__GNUC__) && (__GNUC__>=4 || (__GNUC__==3 && __GNUC_MINOR__>=3))
+#define ATTRIBUTE_MAY_ALIAS __attribute__((__may_alias__))
+#else
+#define ATTRIBUTE_MAY_ALIAS /**/
+#endif
 
 // When compiling an executable, don't do anything with exported functions.
 // Otherwise, default to the cdecl calling convention.

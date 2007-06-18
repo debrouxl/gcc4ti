@@ -1,6 +1,7 @@
 /* integers.h: Definitions for integers with arbitrary endianness
 
    Copyright (C) 2002-2003 Sebastian Reichelt
+   Copyright (C) 2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -49,7 +50,8 @@ typedef I4 ZI4;
 // Defined as structure to avoid unguarded reading/writing.
 typedef struct ATTRIBUTE_PACKED {
 	I1 Val;
-} TI1;
+} TI1_struct;
+typedef TI1_struct ATTRIBUTE_MAY_ALIAS TI1;
 
 // 2 Byte Target Integer
 typedef struct ATTRIBUTE_PACKED {
@@ -58,7 +60,8 @@ typedef struct ATTRIBUTE_PACKED {
 #else /* !TARGET_BIG_ENDIAN */
 	TI1 Lo, Hi;
 #endif /* !TARGET_BIG_ENDIAN */
-} TI2;
+} TI2_struct;
+typedef TI2_struct ATTRIBUTE_MAY_ALIAS TI2;
 
 // 4 Byte Target Integer
 typedef struct ATTRIBUTE_PACKED {
@@ -67,7 +70,8 @@ typedef struct ATTRIBUTE_PACKED {
 #else /* !TARGET_BIG_ENDIAN */
 	TI2 Lo, Hi;
 #endif /* !TARGET_BIG_ENDIAN */
-} TI4;
+} TI4_struct;
+typedef TI4_struct ATTRIBUTE_MAY_ALIAS TI4;
 
 // *** Host Integer Definitions ***
 
@@ -75,7 +79,8 @@ typedef struct ATTRIBUTE_PACKED {
 // Defined as structure to avoid unguarded reading/writing.
 typedef struct ATTRIBUTE_PACKED {
 	unsigned char Val;
-} HI1;
+} HI1_struct;
+typedef HI1_struct ATTRIBUTE_MAY_ALIAS HI1;
 
 // 2 Byte Host Integer
 typedef struct ATTRIBUTE_PACKED {
@@ -84,7 +89,8 @@ typedef struct ATTRIBUTE_PACKED {
 #else /* !HOST_BIG_ENDIAN */
 	HI1 Lo, Hi;
 #endif /* !HOST_BIG_ENDIAN */
-} HI2;
+} HI2_struct;
+typedef HI2_struct ATTRIBUTE_MAY_ALIAS HI2;
 
 // 4 Byte Host Integer
 typedef struct ATTRIBUTE_PACKED {
@@ -93,7 +99,8 @@ typedef struct ATTRIBUTE_PACKED {
 #else /* !HOST_BIG_ENDIAN */
 	HI2 Lo, Hi;
 #endif /* !HOST_BIG_ENDIAN */
-} HI4;
+} HI4_struct;
+typedef HI4_struct ATTRIBUTE_MAY_ALIAS HI4;
 
 // *** Macros to read arbitrary integers ***
 
