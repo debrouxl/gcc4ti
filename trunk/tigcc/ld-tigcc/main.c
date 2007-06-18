@@ -76,7 +76,38 @@ EXP_LINK_FILES ()
 #else /* !TARGET_EMBEDDED */
 static void DecodeOnCalcName(char *Dest, const char *Src)
 {
-	strncpy (Dest, Src, MAX_NAME_LEN);
+	COUNT Count = 0;
+	do {
+		if (*Src == '%'
+		    && ((Src[1] >= '0' && Src[1] <= '9')
+		        || (Src[1] >= 'A' && Src[1] <= 'F')
+		        || (Src[1] >= 'a' && Src[1] <= 'f'))
+		    && ((Src[2] >= '0' && Src[2] <= '9')
+		        || (Src[2] >= 'A' && Src[2] <= 'F')
+		        || (Src[2] >= 'a' && Src[2] <= 'f')))
+		{
+			char Src1 = *(++Src);
+			char Src2 = *(++Src);
+			if (Src1 >= '0' && Src1 <= '9')
+				Src1 -= '0';
+			else if (Src1 >= 'A' && Src1 <= 'F')
+				Src1 += (10 - 'A');
+			else if (Src1 >= 'a' && Src1 <= 'f')
+				Src1 += (10 - 'a');
+			if (Src2 >= '0' && Src2 <= '9')
+				Src2 -= '0';
+			else if (Src2 >= 'A' && Src2 <= 'F')
+				Src2 += (10 - 'A');
+			else if (Src2 >= 'a' && Src2 <= 'f')
+				Src2 += (10 - 'a');
+			*(Dest++) = (Src1 << 4) + Src2;
+			Src++;
+		}
+		else if (*Src)
+			*(Dest++) = *(Src++);
+		else
+			break;
+	} while (++Count < MAX_NAME_LEN);
 }
 
 // Maps uppercase characters in the calculator charset to lowercase.
