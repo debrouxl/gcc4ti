@@ -79,6 +79,17 @@ static void DecodeOnCalcName(char *Dest, const char *Src)
 	strncpy (Dest, Src, MAX_NAME_LEN);
 }
 
+// Maps uppercase characters in the calculator charset to lowercase.
+// This matches AMS conversion rules, so Greek letters are not converted.
+static char CalcTolower(char Lower)
+{
+	unsigned char c = Lower;
+	if ((c >= 'A' && c <= 'Z')
+	    || (c >= 192 && c <= 222 && c != 215))
+		c -= 32;
+	return c;
+}
+
 int main (int ArgCount, const char **Args)
 {
 	OPTIMIZE_INFO _OptimizeInfo;

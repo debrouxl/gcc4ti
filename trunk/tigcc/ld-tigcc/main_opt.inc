@@ -214,7 +214,7 @@
 									*S = 0;
 								// Convert to lowercase.
 								for (S = ProgramName; *S; S++)
-									*S = tolower (*S);
+									*S = CalcTolower (*S);
 							}
 						}
 					}
@@ -254,7 +254,7 @@
 										break;
 									}
 									else
-										*S = tolower (*S);
+										*S = CalcTolower (*S);
 								}
 							}
 						}
@@ -264,7 +264,7 @@
 						{
 							char *S;
 							for (S = ProgramName; *S; S++)
-								*S = tolower (*S);
+								*S = CalcTolower (*S);
 						}
 					}
 					else
@@ -294,7 +294,7 @@
 										break;
 									}
 									else
-										*S = tolower (*S);
+										*S = CalcTolower (*S);
 								}
 							}
 							sprintf (DataVarString, "%s\\", DataFolder);
@@ -308,7 +308,7 @@
 						{
 							char *S;
 							for (S = DataName; *S; S++)
-								*S = tolower (*S);
+								*S = CalcTolower (*S);
 						}
 						strcat (DataVarString, DataName);
 						DatVarInfo->Name = DataVarString;
@@ -448,7 +448,7 @@
 				*S = 0;
 			// Convert to lowercase.
 			for (S = ProgramName; *S; S++)
-				*S = tolower (*S);
+				*S = CalcTolower (*S);
 		}
 	}
 }
