@@ -4469,10 +4469,11 @@ void MainForm::linkProject()
       errorsCompilingFlag=TRUE;
   } else {
     // Link executable using ld-tigcc.
-    QByteArray projectName, dataVarName, packFullName, packName;
+    QByteArray packName;
+    QString pstarterName; // urlencoded
     QStringList linkerOptions=process_settings(rootListItem->text(0),
-                                               projectName,dataVarName,
-                                               packFullName,packName);
+                                               projectBaseName,
+                                               pstarterName,packName);
     // The QTextCodec has to be passed explicitly, or it will default to
     // ISO-8859-1 regardless of the locale, which is just broken.
     procio=new K3ProcIO(QTextCodec::codecForLocale());
@@ -4482,10 +4483,7 @@ void MainForm::linkProject()
       K3Process::Stdout|K3Process::MergedStderr));
     procio->setWorkingDirectory(projectDir);
     *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
-           <<"-v"<<"-o"<<projectBaseName
-           <<"-n"<<(settings.pack?packFullName:projectName);
-    if (!dataVarName.isNull())
-      *procio<<"-d"<<dataVarName<<"--output-data-var"<<projectBaseName+"-data";
+           <<"-v";
     *procio<<linkerOptions<<objectFiles;
     if (settings.std_lib)
       *procio<<QString(settings.flash_os?"%1/lib/flashos.a"
@@ -4536,7 +4534,7 @@ void MainForm::linkProject()
         K3Process::Stdout|K3Process::MergedStderr));
       procio->setWorkingDirectory(projectDir);
       *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
-             <<"-o"<<pstarterBaseName<<"-n"<<projectName
+             <<"-o"<<pstarterBaseName<<"-n"<<pstarterName
              <<(pstarterBaseName+".o");
       if (settings.outputbin) *procio<<"--outputbin";
       connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));

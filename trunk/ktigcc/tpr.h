@@ -189,8 +189,8 @@ int getPathType(const QString &thePath);
 
 QStringList process_libopts(void);
 QStringList process_settings(const QString &prjNameUnicode,
-                             QByteArray &projectName, QByteArray &dataVarName,
-                             QByteArray &packFullName, QByteArray &packName);
+                             const QString &projectBaseName,
+                             QString &pstarterName, QByteArray &packName);
 
 class TiconvTextCodec : public QTextCodec {
   public:

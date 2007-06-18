@@ -1157,7 +1157,7 @@ bool moveFile(const QString &src, const QString &dest)
   return qdir.remove(src);
 }
 
-// Replaces the first occurrence of "tempprog" in a pstarter or PPG with name.
+// Replaces the first occurrence of "tempprog" in a pstarter with name.
 // returns 0 on success, >0 on read failure, <0 on write failure
 int insertName(const char *src, const char *dest, const char *name)
 {
@@ -1342,41 +1342,56 @@ QStringList process_libopts(void)
   return args;
 }
 
+static QString urlencode(const QByteArray &byteArray)
+{
+  QString result;
+  int len=byteArray.size();
+  for (int i=0; i<len; i++) {
+    unsigned char c=byteArray.at(i);
+    if (c<128) result+=c; else result+=QString::number(c,16).prepend('%');
+  }
+  return result;
+}
+
 /*
    Build linker command line arguments
 */
 QStringList process_settings(const QString &prjNameUnicode,
-                             QByteArray &projectName, QByteArray &dataVarName,
-                             QByteArray &packFullName, QByteArray &packName)
+                             const QString &projectBaseName,
+                             QString &pstarterName, QByteArray &packName)
 {
   QStringList args;
+  args<<"-o"<<projectBaseName<<"-n";
 
   // Convert the project name to the calculator charset.
-  projectName=TiconvTextCodec::instance->fromUnicode(prjNameUnicode);
+  QByteArray projectName=TiconvTextCodec::instance->fromUnicode(prjNameUnicode);
 
-  // Split the PPG name into folder and file.
-  QString packNameUnicode;
-  int slashPos=settings.pack_name.find('\\');
-  if (slashPos>=0) {
-    packNameUnicode=settings.pack_name.mid(slashPos+1);
-  } else {
-    packNameUnicode=settings.pack_name;
-  }
+  if (settings.pack && !settings.pack_name.isEmpty()) {
+    // Split the PPG name into folder and file.
+    QString packNameUnicode;
+    int slashPos=settings.pack_name.find('\\');
+    if (slashPos>=0) {
+      packNameUnicode=settings.pack_name.mid(slashPos+1);
+    } else {
+      packNameUnicode=settings.pack_name;
+    }
 
-  // Convert the PPG file name to the calculator charset.
-  packFullName=TiconvTextCodec::instance->fromUnicode(settings.pack_name);
-  packName=TiconvTextCodec::instance->fromUnicode(packNameUnicode);
+    // Convert the PPG file name to the calculator charset.
+    packName=TiconvTextCodec::instance->fromUnicode(packNameUnicode);
+    args<<urlencode(TiconvTextCodec::instance->fromUnicode(settings.pack_name));
+    pstarterName=urlencode(projectName);
+  } else args<<urlencode(projectName);
 
   if (settings.use_data_var && !settings.data_var.isEmpty()) {
-    // We can't just append this to the argument list because this needs to be
-    // in the calculator charset.
-    dataVarName=TiconvTextCodec::instance->fromUnicode(settings.data_var);
+    args<<"-d"
+        <<urlencode(TiconvTextCodec::instance->fromUnicode(settings.data_var))
+        <<"--output-data-var"<<projectBaseName+"-data";
     if (!settings.copy_data_var) {
       args.append("--data-var-copy=never");
     } else if (!settings.copy_data_var_arc) {
       args.append("--data-var-copy=always");
     }
-  } else dataVarName=QByteArray();
+  }
 
   if (settings.optimize_nops) {
     args.append("--optimize-nops");
