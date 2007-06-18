@@ -243,7 +243,7 @@
 						{
 							Name++;
 							// Extract folder name.
-							strncpy (ProgramFolder, Args [CurArg], MAX_NAME_LEN);
+							DecodeOnCalcName (ProgramFolder, Args [CurArg]);
 							{
 								char *S;
 								for (S = ProgramFolder; *S; S++)
@@ -260,7 +260,7 @@
 						}
 						else
 							Name = Args [CurArg];
-						strncpy (ProgramName, Name, MAX_NAME_LEN);
+						DecodeOnCalcName (ProgramName, Name);
 						{
 							char *S;
 							for (S = ProgramName; *S; S++)
@@ -283,7 +283,7 @@
 						{
 							Name++;
 							// Extract folder name.
-							strncpy (DataFolder, Args [CurArg], MAX_NAME_LEN);
+							DecodeOnCalcName (DataFolder, Args [CurArg]);
 							{
 								char *S;
 								for (S = DataFolder; *S; S++)
@@ -304,7 +304,7 @@
 							Name = Args [CurArg];
 							*DataVarString = 0;
 						}
-						strncpy (DataName, Name, MAX_NAME_LEN);
+						DecodeOnCalcName (DataName, Name);
 						{
 							char *S;
 							for (S = DataName; *S; S++)

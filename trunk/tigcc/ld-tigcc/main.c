@@ -74,6 +74,11 @@ EXP_LINK_FILES ()
 	const char **CurFile;
 	BOOLEAN IsArchive;
 #else /* !TARGET_EMBEDDED */
+static void DecodeOnCalcName(char *Dest, const char *Src)
+{
+	strncpy (Dest, Src, MAX_NAME_LEN);
+}
+
 int main (int ArgCount, const char **Args)
 {
 	OPTIMIZE_INFO _OptimizeInfo;
