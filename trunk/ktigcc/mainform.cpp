@@ -3702,7 +3702,6 @@ void MainForm::projectAddFiles()
 }
 
 static bool stopCompilingFlag, errorsCompilingFlag;
-static bool ti89_targeted, ti92p_targeted, v200_targeted, dataFileGenerated;
 static QString compileStats;
 static QDateTime newestHeaderTimestamp;
 static QStringList objectFiles;
@@ -3827,7 +3826,6 @@ void MainForm::startCompiling()
   deletableAsmFiles.clear();
   errorList->errorListView->clear();
   programOutput=QString::null;
-  ti89_targeted=ti92p_targeted=v200_targeted=dataFileGenerated=FALSE;
   compileStats=QString::null;
   projectProgramOutputAction->setEnabled(FALSE);
   procio=static_cast<K3ProcIO *>(NULL);
@@ -4107,20 +4105,14 @@ void MainForm::procio_readReady()
         break;
       case 1:
         line=line.trimmed();
-        // Collect targets (the data file renaming needs to know them).
-        if (line=="TI-89") ti89_targeted=TRUE;
-        else if (line=="TI-92 Plus") ti92p_targeted=TRUE;
-        else if (line=="V200") v200_targeted=TRUE;
         // The next line is the first one to display in the dialog. (TIGCC IDE
         // does the same.)
-        else if (line.startsWith("Program Variable Name:",FALSE))
+        if (line.startsWith("Program Variable Name:",FALSE))
           ldTigccStatPhase=2;
         break;
       case 2:
         compileStats.append(line.simplified());
         compileStats.append('\n');
-        if (line.trimmed().startsWith("Data Variable Size:",FALSE))
-          dataFileGenerated=TRUE;
         break;
     }
   }
@@ -4492,7 +4484,8 @@ void MainForm::linkProject()
     *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
            <<"-v"<<"-o"<<projectBaseName
            <<"-n"<<(settings.pack?packFullName:projectName);
-    if (!dataVarName.isNull()) *procio<<"-d"<<dataVarName;
+    if (!dataVarName.isNull())
+      *procio<<"-d"<<dataVarName<<"--output-data-var"<<projectBaseName+"-data";
     *procio<<linkerOptions<<objectFiles;
     if (settings.std_lib)
       *procio<<QString(settings.flash_os?"%1/lib/flashos.a"
@@ -4510,29 +4503,6 @@ void MainForm::linkProject()
     delete procio;
     procio=static_cast<K3ProcIO *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
-    // In the PPG case, the data files get a -data tag from the linker so the
-    // names don't conflict. In the uncompressed case, rename the data file here
-    // to match both that and the previous behavior.
-    if (!settings.pack && dataFileGenerated)  {
-      QDir qdir;
-      const int numTargets=3;
-      bool targeted[numTargets]={ti89_targeted,ti92p_targeted,v200_targeted};
-      static const char dextsbin[numTargets][5]={".y89",".y9x",".yv2"};
-      static const char dextswrapped[numTargets][5]={".89y",".9xy",".v2y"};
-      static const char (*dexts)[5]=settings.outputbin?dextsbin:dextswrapped;
-      for (int target=0; target<numTargets; target++) {
-        if (targeted[numTargets]) {
-          qdir.remove(projectBaseName+"-data"+dexts[target]);
-          if (!moveFile(projectBaseName+dexts[target],
-                        projectBaseName+"-data"+dexts[target])) {
-            new ErrorListItem(this,etError,QString::null,QString::null,
-                              "Failed to rename data file.",-1,-1);
-            errorsCompilingFlag=TRUE;
-          }
-          if (errorsCompilingFlag || stopCompilingFlag) return;
-        }
-      }
-    }
     if (settings.pack) {
       if (errorsCompilingFlag || stopCompilingFlag) return;
       statusBar()->message("Creating launcher...");
