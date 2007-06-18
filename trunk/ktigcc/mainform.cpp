@@ -4585,22 +4585,26 @@ void MainForm::linkProject()
     postBuild.replace("\"($TI92FILE)\"","($TI92FILE)",FALSE);
     postBuild.replace("($TI89FILE)",
       KShell::quoteArg(libopts.use_ti89?projectBaseName+(
-        settings.archive?".a":settings.flash_os?"-89.tib":settings.pack?".89y":
+        settings.archive?".a":settings.flash_os?"-89.tib":
+        settings.pack?(settings.outputbin?".y89":".89y"):
         settings.outputbin?".z89":".89z"
       ):""),FALSE);
     postBuild.replace("($TI89TIFILE)",
       KShell::quoteArg(libopts.use_ti89?projectBaseName+(
-        settings.archive?".a":settings.flash_os?"-89ti.tib":settings.pack?".89y":
+        settings.archive?".a":settings.flash_os?"-89ti.tib":
+        settings.pack?(settings.outputbin?".y89":".89y"):
         settings.outputbin?".z89":".89z"
       ):""),FALSE);
     postBuild.replace("($TI92PLUSFILE)",
       KShell::quoteArg(libopts.use_ti92p?projectBaseName+(
-        settings.archive?".a":settings.flash_os?"-9x.tib":settings.pack?".9xy":
+        settings.archive?".a":settings.flash_os?"-9x.tib":
+        settings.pack?(settings.outputbin?".y9x":".9xy"):
         settings.outputbin?".z9x":".9xz"
       ):""),FALSE);
     postBuild.replace("($V200FILE)",
       KShell::quoteArg(libopts.use_v200?projectBaseName+(
-        settings.archive?".a":settings.flash_os?"-v2.tib":settings.pack?".v2y":
+        settings.archive?".a":settings.flash_os?"-v2.tib":
+        settings.pack?(settings.outputbin?".yv2":".v2y"):
         settings.outputbin?".zv2":".v2z"
       ):""),FALSE);
     postBuild.replace("($TI92FILE)",
