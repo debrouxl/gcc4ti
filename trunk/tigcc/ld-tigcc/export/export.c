@@ -1,7 +1,7 @@
 /* export.c: Routines for file exports
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2005 Kevin Kofler
+   Copyright (C) 2003-2007 Kevin Kofler
    Copyright (C) 2004 Billy Charvet
 
    This program is free software; you can redistribute it and/or modify
@@ -285,6 +285,10 @@ SIZE DestFileSize = 0;
 // Folder and variable name for main file.
 char ProgramFolder[MAX_NAME_LEN+1] = "main", ProgramName[MAX_NAME_LEN+1] = "program";
 #ifdef DATA_VAR_SUPPORT
+// Destination file name without extension for the data file.
+// If NULL, a default name is picked (either DestFile or DestFile+"-data").
+const char *DestDataFile = NULL;
+SIZE DestDataFileSize = 0;
 // Folder and variable name for data file.
 char DataFolder[MAX_NAME_LEN+1] = "", DataName[MAX_NAME_LEN+1] = "data";
 #endif /* DATA_VAR_SUPPORT */
@@ -399,12 +403,20 @@ BOOLEAN GetOutputFile (INT_EXP_FILE *File, SIZE FileSize, unsigned int DestCalc,
 				
 				{
 					SIZE FileNameSize = DestFileSize;
+					const char *DestFileName = DestFile;
+#ifdef DATA_VAR_SUPPORT
+					if (FileRole == FR_DATA && DestDataFile)
+					{
+						FileNameSize = DestDataFileSize;
+						DestFileName = DestDataFile;
+					}
+#endif /* DATA_VAR_SUPPORT */
 					
 					// Create a temporary file name string.
 					char CurOutputFileName[FileNameSize+5+1+MAX_FILE_EXT_LEN+1];
-					strncpy (CurOutputFileName, DestFile, FileNameSize);
+					strncpy (CurOutputFileName, DestFileName, FileNameSize);
 #if defined(DATA_VAR_SUPPORT) && defined(PUCRUNCH_SUPPORT)
-					if (Pack && FileRole == FR_DATA)
+					if (Pack && FileRole == FR_DATA && !DestDataFile)
 					{
 						strncpy (CurOutputFileName + FileNameSize, "-data", 5);
 						FileNameSize += 5;

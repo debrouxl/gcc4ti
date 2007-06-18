@@ -1,6 +1,6 @@
 /* export.h: Routines for file exports
 
-   Copyright (C) 2003 Kevin Kofler
+   Copyright (C) 2003-2007 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ extern const char *DestFile;
 extern SIZE DestFileSize;
 extern char ProgramFolder[MAX_NAME_LEN+1], ProgramName[MAX_NAME_LEN+1];
 #ifdef DATA_VAR_SUPPORT
+extern const char *DestDataFile;
+extern SIZE DestDataFileSize;
 extern char DataFolder[MAX_NAME_LEN+1], DataName[MAX_NAME_LEN+1];
 #endif /* DATA_VAR_SUPPORT */
 #ifdef PUCRUNCH_SUPPORT

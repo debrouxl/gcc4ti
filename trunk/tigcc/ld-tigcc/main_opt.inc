@@ -220,6 +220,16 @@
 					else
 						Error (NULL, "`--output' option must be followed by a name.");
 				}
+				else if (ArgMatches ("output-data-var"))
+				{
+					if ((++CurArg) < ArgCount)
+					{
+						DestDataFile = Args [CurArg];
+						DestDataFileSize = strlen (DestDataFile);
+					}
+					else
+						Error (NULL, "`--output-data-var' option must be followed by a name.");
+				}
 				else if ((ArgMatches ("varname")) || (ArgMatches ("n")))
 				{
 					if ((++CurArg) < ArgCount)
