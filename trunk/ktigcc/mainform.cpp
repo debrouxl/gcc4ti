@@ -121,7 +121,6 @@ class DnDListView : public K3ListView {
 #include <ktexteditor/smartinterface.h>
 #include <ktexteditor/commandinterface.h>
 #include <ktexteditor/configinterface.h>
-#include <ktexteditor/highlightinginterface.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <ktexteditor/configpage.h>
@@ -609,11 +608,8 @@ void DnDListView::dropEvent(QDropEvent *e) {
               && IS_EDITABLE_CATEGORY(destCategory)
               && srcCategory!=destCategory) {
             // update highlighting mode
-            KTextEditor::HighlightingInterface *hliface
-              =qobject_cast<KTextEditor::HighlightingInterface*>(
-                static_cast<ListViewFile *>(currItem)->kateView->document());
             QString fileText=static_cast<ListViewFile *>(currItem)->kateView->document()->text();
-            hliface->setHighlighting(
+            static_cast<ListViewFile *>(currItem)->kateView->document()->setHighlightingMode(
               (destCategory==qllFilesListItem?
                 QLL_HL_MODE:
               (destCategory==sFilesListItem||(destCategory==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
@@ -1890,11 +1886,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   newView->hide();
   newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
   // Set highlighting mode.
-  KTextEditor::HighlightingInterface *hliface
-    =qobject_cast<KTextEditor::HighlightingInterface*>(newView->document());
   QString firstLine;
   if (doc->lines()) firstLine=doc->line(0);
-  hliface->setHighlighting(
+  newView->document()->setHighlightingMode(
     (category==qllFilesListItem?
       QLL_HL_MODE:
     (category==sFilesListItem||(category==hFilesListItem&&!firstLine.isEmpty()&&firstLine[0]=='|'))?
@@ -1996,9 +1990,7 @@ void MainForm::adoptSourceFile(void *srcFile)
   COUNTER_FOR_CATEGORY(category)++;
   // Set highlighting mode.
   QString fileText=newView->document()->text();
-  KTextEditor::HighlightingInterface *hliface
-    =qobject_cast<KTextEditor::HighlightingInterface*>(newView->document());
-  hliface->setHighlighting(
+  newView->document()->setHighlightingMode(
     (category==qllFilesListItem?
       QLL_HL_MODE:
     (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
@@ -2605,27 +2597,20 @@ void MainForm::filePreferences()
       if (IS_FILE(item)) {
         KTextEditor::View *kateView=static_cast<ListViewFile *>(item)->kateView;
         if (kateView) {
-          KTextEditor::HighlightingInterface *hliface
-            =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
-          hliface->setHighlighting("None");
+          kateView->document()->setHighlightingMode("None");
         }
       }
     }
     foreach (SourceFileWindow *sourceFile, sourceFiles) {
-      KTextEditor::HighlightingInterface *hliface
-        =qobject_cast<KTextEditor::HighlightingInterface*>(
-          sourceFile->kateView->document());
-      hliface->setHighlighting("None");
+      sourceFile->kateView->document()->setHighlightingMode("None");
     }
     KParts::Factory *factory=(KParts::Factory *)
       KLibLoader::self()->factory("katepart");
     if (!factory) qFatal("Failed to load KatePart");
     KTextEditor::Document *doc=(KTextEditor::Document *)
       factory->createPart(0,this,"KTextEditor::Document");
-    KTextEditor::HighlightingInterface *hliface
-      =qobject_cast<KTextEditor::HighlightingInterface*>(doc);
-    hliface->setHighlighting("Asm6502"); // Don't ask...
-    hliface->setHighlighting("None");
+    doc->setHighlightingMode("Asm6502"); // Don't ask...
+    doc->setHighlightingMode("None");
     KTextEditor::Editor *editor=doc->editor();
     int numConfigPages=editor->configPages();
     for (int i=0; i<numConfigPages; i++) {
@@ -2664,9 +2649,7 @@ void MainForm::filePreferences()
             8
           );
           // Kate seems really insisting on making it a pain to update syntax highlighting settings.
-          KTextEditor::HighlightingInterface *hliface
-            =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
-          hliface->setHighlighting(
+          kateView->document()->setHighlightingMode(
             (category==qllFilesListItem?
               QLL_HL_MODE:
             (category==sFilesListItem||(category==hFilesListItem&&!fileText.isNull()&&!fileText.isEmpty()&&fileText[0]=='|'))?
@@ -4855,7 +4838,7 @@ void MainForm::debugRun()
           // Fire up TiEmu if it isn't running yet.
           if (!tiemuInstance(tiemuDBus)) return;
           if (!tiemuDBus) {
-            if (!KRun::runCommand("tiemu")) {
+            if (!KRun::runCommand("tiemu", this)) {
               KMessageBox::error(this,"Can't run TiEmu.");
               return;
             }

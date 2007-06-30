@@ -53,7 +53,6 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/cursor.h>
 #include <ktexteditor/range.h>
-#include <ktexteditor/highlightinginterface.h>
 #include <ktexteditor/configinterface.h>
 #include <kconfig.h>
 #include <ktexteditor/configpage.h>
@@ -509,9 +508,7 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &hlMod
   newView->hide();
   newView->setSizePolicy(QSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored,0,0));
   // Set highlighting mode.
-  KTextEditor::HighlightingInterface *hliface
-    =qobject_cast<KTextEditor::HighlightingInterface*>(newView->document());
-  hliface->setHighlighting(hlModeName);
+  newView->document()->setHighlightingMode(hlModeName);
   // Set options.
   KTextEditor::ConfigInterface *configiface
     =qobject_cast<KTextEditor::ConfigInterface*>(newView);
@@ -661,9 +658,7 @@ void SourceFileWindow::applyPreferences()
     setTabWidth(kateView,isASMFile?preferences.tabWidthAsm:
                          isCFile?preferences.tabWidthC:8);
     // Kate seems really insisting on making it a pain to update syntax highlighting settings.
-    KTextEditor::HighlightingInterface *hliface
-      =qobject_cast<KTextEditor::HighlightingInterface*>(kateView->document());
-    hliface->setHighlighting(HL_MODE);
+    kateView->document()->setHighlightingMode(HL_MODE);
     // Force redrawing to get the tab width right, repaint() is ignored for some reason.
     kateView->hide();
     kateView->show();
