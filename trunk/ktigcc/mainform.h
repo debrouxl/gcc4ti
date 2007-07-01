@@ -121,9 +121,9 @@ public slots:
     virtual void findOpenFileAtCursor();
     virtual void findFindSymbolDeclaration();
     virtual void projectAddFiles();
-    virtual void procio_processExited();
-    virtual void procio_readReady();
-    virtual void procio_readReady_recordOnly();
+    virtual void process_finished();
+    virtual void process_readyRead();
+    virtual void process_readyRead_recordOnly();
     virtual void projectCompile();
     virtual void projectMake();
     virtual void projectBuild();

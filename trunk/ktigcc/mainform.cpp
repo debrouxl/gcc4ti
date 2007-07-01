@@ -138,7 +138,7 @@ class DnDListView : public K3ListView {
 #include <kicontheme.h>
 #include <kicon.h>
 #include <kiconloader.h>
-#include <k3procio.h>
+#include <kprocess.h>
 #include <kshell.h>
 #include <ktextbrowser.h>
 #include <krun.h>
@@ -3690,7 +3690,7 @@ static QDateTime newestHeaderTimestamp;
 static QStringList objectFiles;
 static QStringList deletableObjectFiles;
 static QStringList deletableAsmFiles;
-static K3ProcIO *procio;
+static KProcess *process;
 
 QString MainForm::writeTempSourceFile(void *srcFile, bool inProject)
 {
@@ -3811,7 +3811,7 @@ void MainForm::startCompiling()
   programOutput=QString::null;
   compileStats=QString::null;
   projectProgramOutputAction->setEnabled(FALSE);
-  procio=static_cast<K3ProcIO *>(NULL);
+  process=static_cast<KProcess *>(NULL);
   // Write all the headers and incbin files to the temporary directory.
   Q3ListViewItemIterator lvit(hFilesListItem);
   Q3ListViewItem *item;
@@ -3890,12 +3890,12 @@ static QString errorFunction;
 static bool errorFlag;
 static unsigned ldTigccStatPhase=0;
 
-void MainForm::procio_processExited()
+void MainForm::process_finished()
 {
   // If we're in a modal dialog, let it complete or exiting the event loop will
   // crash.
   if (QCoreApplication::loopLevel()>2) {
-    QTimer::singleShot(100,this,SLOT(procio_processExited()));
+    QTimer::singleShot(100,this,SLOT(process_finished()));
     return;
   }
   errorFunction=QString::null;
@@ -3904,13 +3904,14 @@ void MainForm::procio_processExited()
 }
 
 
-void MainForm::procio_readReady()
+void MainForm::process_readyRead()
 {
   static int a68kErrorLine=0; // A68k errors are split onto several lines.
   static int errorLine, errorColumn;
   static QString errorFile;
-  QString line;
-  while (procio->readln(line)>=0) {
+  while (process->canReadLine()) {
+    QString line=process->readLine();
+    line.chop(1); // zap newline
     // ld-tigcc doesn't currently know the difference between host charset and
     // calculator charset, so the variable name won't display properly if it
     // contains non-ASCII characters. Fix that up.
@@ -4105,12 +4106,11 @@ void MainForm::procio_readReady()
   }
 }
 
-void MainForm::procio_readReady_recordOnly()
+void MainForm::process_readyRead_recordOnly()
 {
   QString line;
-  while (procio->readln(line)>=0) {
-    programOutput.append(line);
-    programOutput.append('\n');
+  while (process->canReadLine()) {
+    programOutput.append(process->readLine());
     projectProgramOutputAction->setEnabled(TRUE);
   }
 }
@@ -4211,31 +4211,26 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
         stopCompilingFlag=TRUE;
       }
       if (!stopCompilingFlag) {
-        // The QTextCodec has to be passed explicitly, or it will default to
-        // ISO-8859-1 regardless of the locale, which is just broken.
-        procio=new K3ProcIO(QTextCodec::codecForLocale());
-        // Use MergedStderr instead of Stderr so the messages get ordered
-        // properly.
-        procio->setComm(static_cast<K3Process::Communication>(
-          K3Process::Stdout|K3Process::MergedStderr));
-        procio->setWorkingDirectory(fileDir);
-        *procio<<(QString("%1/bin/a68k").arg(tigcc_base))
-               <<fileName<<(QString("-o%1").arg(tempObjectFile))
-               <<(QString("-i%1/include/asm/").arg(tigcc_base))<<"-q"<<args;
+        process=new KProcess();
+        process->setOutputChannelMode(KProcess::MergedChannels);
+        process->setWorkingDirectory(fileDir);
+        *process<<(QString("%1/bin/a68k").arg(tigcc_base))
+                <<fileName<<(QString("-o%1").arg(tempObjectFile))
+                <<(QString("-i%1/include/asm/").arg(tigcc_base))<<"-q"<<args;
         if (settings.cut_ranges||settings.archive)
-          *procio<<"-a"; // all relocs
+          *process<<"-a"; // all relocs
         if (settings.optimize_returns||settings.archive)
-          *procio<<"-d"; // keep locals
-        connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-        connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-        procio->start();
+          *process<<"-d"; // keep locals
+        connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
+        connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead()));
+        process->start();
         // We need to block here, but events still need to be handled. The most
         // effective way to do this is to enter the event loop recursively,
         // even though it is not recommended by Qt.
         QCoreApplication::enter_loop();
         // This will be reached only after exitLoop() is called.
-        delete procio;
-        procio=static_cast<K3ProcIO *>(NULL);
+        delete process;
+        process=static_cast<KProcess *>(NULL);
       }
     } else {
       bool deleteTempAsmFile=FALSE;
@@ -4254,69 +4249,59 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           stopCompilingFlag=TRUE;
         }
         if (!stopCompilingFlag) {
-          // The QTextCodec has to be passed explicitly, or it will default to
-          // ISO-8859-1 regardless of the locale, which is just broken.
-          procio=new K3ProcIO(QTextCodec::codecForLocale());
-          // Use MergedStderr instead of Stderr so the messages get ordered
-          // properly.
-          procio->setComm(static_cast<K3Process::Communication>(
-            K3Process::Stdout|K3Process::MergedStderr));
-          procio->setWorkingDirectory(fileDir);
-          *procio<<(QString("%1/bin/gcc").arg(tigcc_base))
-                 <<"-S"<<"-I"<<fileDir
-                 <<"-B"<<(QString("%1/bin/").arg(tigcc_base))<<"-I-"
-                 <<"-I"<<(QString("%1/include/c").arg(tigcc_base))<<args;
+          process=new KProcess();
+          process->setOutputChannelMode(KProcess::MergedChannels);
+          process->setWorkingDirectory(fileDir);
+          *process<<(QString("%1/bin/gcc").arg(tigcc_base))
+                  <<"-S"<<"-I"<<fileDir
+                  <<"-B"<<(QString("%1/bin/").arg(tigcc_base))<<"-I-"
+                  <<"-I"<<(QString("%1/include/c").arg(tigcc_base))<<args;
           if (category==qllFilesListItem) { // Quill needs special switches.
-            *procio<<"-I"<<(QString("%1/include/quill").arg(tigcc_base))
-                   <<"-include"<<quill_drv;
+            *process<<"-I"<<(QString("%1/include/quill").arg(tigcc_base))
+                    <<"-include"<<quill_drv;
           }
           if (settings.use_data_var)
-            *procio<<"-mno-merge-sections";
+            *process<<"-mno-merge-sections";
           if (!preferences.allowImplicitDeclaration)
-            *procio<<"-Werror-implicit-function-declaration";
+            *process<<"-Werror-implicit-function-declaration";
           if (settings.debug_info)
-            *procio<<"-gdwarf-2"<<"-g3"<<"-fasynchronous-unwind-tables";
+            *process<<"-gdwarf-2"<<"-g3"<<"-fasynchronous-unwind-tables";
           if (settings.fargo)
-            *procio<<"-DFARGO";
+            *process<<"-DFARGO";
           else if (settings.flash_os)
-            *procio<<"-DFLASH_OS";
+            *process<<"-DFLASH_OS";
           else if (!settings.archive) { // This leaves only regular programs.
-            *procio<<process_libopts();
+            *process<<process_libopts();
           }
-          *procio<<fileName<<"-o"<<tempAsmFile;
-          connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-          connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-          procio->start();
+          *process<<fileName<<"-o"<<tempAsmFile;
+          connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
+          connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead()));
+          process->start();
           // We need to block here, but events still need to be handled. The most
           // effective way to do this is to enter the event loop recursively,
           // even though it is not recommended by Qt.
           QCoreApplication::enter_loop();
           // This will be reached only after exitLoop() is called.
-          delete procio;
-          procio=static_cast<K3ProcIO *>(NULL);
+          delete process;
+          process=static_cast<KProcess *>(NULL);
         }
         if (!stopCompilingFlag && qdir.exists(tempAsmFile)) {
           // Run patcher.
-          // The QTextCodec has to be passed explicitly, or it will default to
-          // ISO-8859-1 regardless of the locale, which is just broken.
-          procio=new K3ProcIO(QTextCodec::codecForLocale());
-          // Use MergedStderr instead of Stderr so the messages get ordered
-          // properly.
-          procio->setComm(static_cast<K3Process::Communication>(
-            K3Process::Stdout|K3Process::MergedStderr));
-          procio->setWorkingDirectory(fileDir);
-          *procio<<(QString("%1/bin/patcher").arg(tigcc_base))
-                 <<tempAsmFile<<"-o"<<tempAsmFile;
-          connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-          connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-          procio->start();
+          process=new KProcess();
+          process->setOutputChannelMode(KProcess::MergedChannels);
+          process->setWorkingDirectory(fileDir);
+          *process<<(QString("%1/bin/patcher").arg(tigcc_base))
+                  <<tempAsmFile<<"-o"<<tempAsmFile;
+          connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
+          connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead()));
+          process->start();
           // We need to block here, but events still need to be handled. The most
           // effective way to do this is to enter the event loop recursively,
           // even though it is not recommended by Qt.
           QCoreApplication::enter_loop();
           // This will be reached only after exitLoop() is called.
-          delete procio;
-          procio=static_cast<K3ProcIO *>(NULL);
+          delete process;
+          process=static_cast<KProcess *>(NULL);
         }
         if (qdir.exists(tempAsmFile)) {
           if (!stopCompilingFlag) {
@@ -4348,34 +4333,29 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           stopCompilingFlag=TRUE;
         }
         if (!stopCompilingFlag) {
-          // The QTextCodec has to be passed explicitly, or it will default to
-          // ISO-8859-1 regardless of the locale, which is just broken.
-          procio=new K3ProcIO(QTextCodec::codecForLocale());
-          // Use MergedStderr instead of Stderr so the messages get ordered
-          // properly.
-          procio->setComm(static_cast<K3Process::Communication>(
-            K3Process::Stdout|K3Process::MergedStderr));
-          procio->setWorkingDirectory(fileDir);
-          *procio<<(QString("%1/bin/as").arg(tigcc_base))
-                 <<"-I"<<fileDir<<"-mc68000"
-                 <<"-I"<<(QString("%1/include/s").arg(tigcc_base))<<args;
+          process=new KProcess();
+          process->setOutputChannelMode(KProcess::MergedChannels);
+          process->setWorkingDirectory(fileDir);
+          *process<<(QString("%1/bin/as").arg(tigcc_base))
+                  <<"-I"<<fileDir<<"-mc68000"
+                  <<"-I"<<(QString("%1/include/s").arg(tigcc_base))<<args;
           if (settings.cut_ranges||settings.archive)
-            *procio<<"--all-relocs";
+            *process<<"--all-relocs";
           if (settings.optimize_returns||settings.archive)
-            *procio<<"--keep-locals";
+            *process<<"--keep-locals";
           if (settings.debug_info)
-            *procio<<"--gdwarf2";
-          *procio<<fileNameToAssemble<<"-o"<<tempObjectFile;
-          connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-          connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-          procio->start();
+            *process<<"--gdwarf2";
+          *process<<fileNameToAssemble<<"-o"<<tempObjectFile;
+          connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
+          connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead()));
+          process->start();
           // We need to block here, but events still need to be handled. The most
           // effective way to do this is to enter the event loop recursively,
           // even though it is not recommended by Qt.
           QCoreApplication::enter_loop();
           // This will be reached only after exitLoop() is called.
-          delete procio;
-          procio=static_cast<K3ProcIO *>(NULL);
+          delete process;
+          process=static_cast<KProcess *>(NULL);
         }
       }
       if (deleteTempAsmFile) qdir.remove(tempAsmFile);
@@ -4424,26 +4404,21 @@ void MainForm::linkProject()
                        .arg(QFileInfo(projectFileName).baseName()));
   if (settings.archive) {
     // Link static library using ar-tigcc.
-    // The QTextCodec has to be passed explicitly, or it will default to
-    // ISO-8859-1 regardless of the locale, which is just broken.
-    procio=new K3ProcIO(QTextCodec::codecForLocale());
-    // Use MergedStderr instead of Stderr so the messages get ordered
-    // properly.
-    procio->setComm(static_cast<K3Process::Communication>(
-      K3Process::Stdout|K3Process::MergedStderr));
-    procio->setWorkingDirectory(projectDir);
-    *procio<<(QString("%1/bin/ar-tigcc").arg(tigcc_base))
-           <<"-o"<<(projectBaseName+".a")<<"--no-names"<<objectFiles;
-    connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-    connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-    procio->start();
+    process=new KProcess();
+    process->setOutputChannelMode(KProcess::MergedChannels);
+    process->setWorkingDirectory(projectDir);
+    *process<<(QString("%1/bin/ar-tigcc").arg(tigcc_base))
+            <<"-o"<<(projectBaseName+".a")<<"--no-names"<<objectFiles;
+    connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
+    connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead()));
+    process->start();
     // We need to block here, but events still need to be handled. The most
     // effective way to do this is to enter the event loop recursively,
     // even though it is not recommended by Qt.
     QCoreApplication::enter_loop();
     // This will be reached only after exitLoop() is called.
-    delete procio;
-    procio=static_cast<K3ProcIO *>(NULL);
+    delete process;
+    process=static_cast<KProcess *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
     QFileInfo fileInfo(projectBaseName+".a");
     if (fileInfo.exists())
@@ -4457,31 +4432,26 @@ void MainForm::linkProject()
     QStringList linkerOptions=process_settings(rootListItem->text(0),
                                                projectBaseName,
                                                pstarterName,packName);
-    // The QTextCodec has to be passed explicitly, or it will default to
-    // ISO-8859-1 regardless of the locale, which is just broken.
-    procio=new K3ProcIO(QTextCodec::codecForLocale());
-    // Use MergedStderr instead of Stderr so the messages get ordered
-    // properly.
-    procio->setComm(static_cast<K3Process::Communication>(
-      K3Process::Stdout|K3Process::MergedStderr));
-    procio->setWorkingDirectory(projectDir);
-    *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
-           <<"-v"<<linkerOptions<<objectFiles;
+    process=new KProcess();
+    process->setOutputChannelMode(KProcess::MergedChannels);
+    process->setWorkingDirectory(projectDir);
+    *process<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
+            <<"-v"<<linkerOptions<<objectFiles;
     if (settings.std_lib)
-      *procio<<QString(settings.flash_os?"%1/lib/flashos.a"
-                                        :(settings.fargo?"%1/lib/fargo.a"
-                                                        :"%1/lib/tigcc.a"))
+      *process<<QString(settings.flash_os?"%1/lib/flashos.a"
+                                         :(settings.fargo?"%1/lib/fargo.a"
+                                                         :"%1/lib/tigcc.a"))
                .arg(tigcc_base);
-    connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-    connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-    procio->start();
+    connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
+    connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead()));
+    process->start();
     // We need to block here, but events still need to be handled. The most
     // effective way to do this is to enter the event loop recursively,
     // even though it is not recommended by Qt.
     QCoreApplication::enter_loop();
     // This will be reached only after exitLoop() is called.
-    delete procio;
-    procio=static_cast<K3ProcIO *>(NULL);
+    delete process;
+    process=static_cast<KProcess *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
     if (settings.pack) {
       if (errorsCompilingFlag || stopCompilingFlag) return;
@@ -4507,28 +4477,23 @@ void MainForm::linkProject()
       }
       if (errorsCompilingFlag || stopCompilingFlag) return;
       // Link the pstarter with ld-tigcc.
-      // The QTextCodec has to be passed explicitly, or it will default to
-      // ISO-8859-1 regardless of the locale, which is just broken.
-      procio=new K3ProcIO(QTextCodec::codecForLocale());
-      // Use MergedStderr instead of Stderr so the messages get ordered
-      // properly.
-      procio->setComm(static_cast<K3Process::Communication>(
-        K3Process::Stdout|K3Process::MergedStderr));
-      procio->setWorkingDirectory(projectDir);
-      *procio<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
-             <<"-o"<<pstarterBaseName<<"-n"<<pstarterName
-             <<(pstarterBaseName+".o");
-      if (settings.outputbin) *procio<<"--outputbin";
-      connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-      connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady()));
-      procio->start();
+      process=new KProcess();
+      process->setOutputChannelMode(KProcess::MergedChannels);
+      process->setWorkingDirectory(projectDir);
+      *process<<(QString("%1/bin/ld-tigcc").arg(tigcc_base))
+              <<"-o"<<pstarterBaseName<<"-n"<<pstarterName
+              <<(pstarterBaseName+".o");
+      if (settings.outputbin) *process<<"--outputbin";
+      connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
+      connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead()));
+      process->start();
       // We need to block here, but events still need to be handled. The most
       // effective way to do this is to enter the event loop recursively,
       // even though it is not recommended by Qt.
       QCoreApplication::enter_loop();
       // This will be reached only after exitLoop() is called.
-      delete procio;
-      procio=static_cast<K3ProcIO *>(NULL);
+      delete process;
+      process=static_cast<KProcess *>(NULL);
       if (errorsCompilingFlag || stopCompilingFlag) return;
       // Now copy those pstarters actually requested.
       for (int target=0; target<numTargets; target++) {
@@ -4601,25 +4566,20 @@ void MainForm::linkProject()
       errorsCompilingFlag=TRUE;
     }
     if (errorsCompilingFlag || stopCompilingFlag) return;
-    // The QTextCodec has to be passed explicitly, or it will default to
-    // ISO-8859-1 regardless of the locale, which is just broken.
-    procio=new K3ProcIO(QTextCodec::codecForLocale());
-    // Use MergedStderr instead of Stderr so the messages get ordered
-    // properly.
-    procio->setComm(static_cast<K3Process::Communication>(
-      K3Process::Stdout|K3Process::MergedStderr));
-    procio->setWorkingDirectory(projectDir);
-    *procio<<args;
-    connect(procio,SIGNAL(processExited(K3Process*)),this,SLOT(procio_processExited()));
-    connect(procio,SIGNAL(readReady(K3ProcIO*)),this,SLOT(procio_readReady_recordOnly()));
-    procio->start();
+    process=new KProcess();
+    process->setOutputChannelMode(KProcess::MergedChannels);
+    process->setWorkingDirectory(projectDir);
+    *process<<args;
+    connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
+    connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead_recordOnly()));
+    process->start();
     // We need to block here, but events still need to be handled. The most
     // effective way to do this is to enter the event loop recursively,
     // even though it is not recommended by Qt.
     QCoreApplication::enter_loop();
     // This will be reached only after exitLoop() is called.
-    delete procio;
-    procio=static_cast<K3ProcIO *>(NULL);
+    delete process;
+    process=static_cast<KProcess *>(NULL);
     if (errorsCompilingFlag || stopCompilingFlag) return;
   }
   // Delete object and/or assembly files.
@@ -4718,8 +4678,11 @@ void MainForm::projectForceQuit()
 {
   if (!compiling) return;
   stopCompilingFlag=TRUE;
-  if (procio && procio->isRunning()) {
-    procio->kill();
+  if (process && process->state()!=QProcess::NotRunning) {
+    process->terminate();
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInput,100);
+    if (process && process->state()!=QProcess::NotRunning)
+      process->kill();
   }
 }
 
@@ -5137,7 +5100,7 @@ void MainForm::toolsMenu_activated(int id)
 {
   if (id!=toolsMenu->idAt(0) && id!=toolsMenu->idAt(1)) {
     const Tool &tool=tools[id];
-    K3Process process(this);
+    KProcess process(this);
     int err;
     QStringList args=KShell::splitArgs(tool.commandLine,
                                        KShell::TildeExpand|KShell::AbortOnMeta,
@@ -5174,7 +5137,7 @@ void MainForm::toolsMenu_activated(int id)
       process << args;
     if (!tool.workingDirectory.isEmpty())
       process.setWorkingDirectory(tool.workingDirectory);
-    if (!process.start(K3Process::DontCare))
+    if (!process.startDetached())
       KMessageBox::error(this,QString("Can't run \'%1\'.").arg(tool.commandLine));
   }
 }
