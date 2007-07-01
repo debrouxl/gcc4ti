@@ -32,7 +32,7 @@
 #include <QEventLoop>
 #include <QDir>
 #include <QLinkedList>
-#include <k3procio.h>
+#include <kprocess.h>
 #include <kmessagebox.h>
 #include <unistd.h>
 
@@ -42,31 +42,28 @@ SourceFileFunctions getCFunctions(const QString &text)
   SourceFileFunctions result;
   write_temp_file("parser_temp_source.c",text,0);
   {
-    // The QTextCodec has to be passed explicitly, or it will default to
-    // ISO-8859-1 regardless of the locale, which is just broken.
-    K3ProcIO procio(QTextCodec::codecForLocale());
-    // Use MergedStderr instead of Stderr so the messages get ordered
-    // properly.
-    procio.setComm(static_cast<K3Process::Communication>(
-      K3Process::Stdout|K3Process::MergedStderr));
-    procio.setWorkingDirectory(tempdir);
-    procio<<"ctags"<<"-f"<<"-"<<"-n"<<"-u"<<"-h"<<".h"<<"--language-force=C"
-          <<"--C-kinds=pf"<<"--fields=k"<<"-I"<<"CALLBACK,__ATTR_TIOS__,"
+    KProcess process;
+    process.setOutputChannelMode(KProcess::MergedChannels);
+    process.setWorkingDirectory(tempdir);
+    process<<"ctags"<<"-f"<<"-"<<"-n"<<"-u"<<"-h"<<".h"<<"--language-force=C"
+           <<"--C-kinds=pf"<<"--fields=k"<<"-I"<<"CALLBACK,__ATTR_TIOS__,"
             "__ATTR_TIOS_NORETURN__,__ATTR_TIOS_CALLBACK__,__ATTR_GCC__,"
             "__ATTR_LIB_C__,__ATTR_LIB_ASM__,__ATTR_LIB_ASM_NORETURN__,"
             "__ATTR_LIB_CALLBACK_C__,__ATTR_LIB_CALLBACK_ASM__"
-          <<"parser_temp_source.c";
-    if (!procio.start()) {
+           <<"parser_temp_source.c";
+    process.start();
+    if (process.error() == QProcess::FailedToStart) {
       delete_temp_file("parser_temp_source.c");
       KMessageBox::error(0,"Could not run ctags.\nThis feature requires "
                            "Exuberant Ctags, which can be obtained from: "
                            "http://ctags.sourceforge.net");
       return result;
     }
-    QString line;
-    int ret;
-    while ((ret=procio.readln(line))>=0 || procio.isRunning()) {
-      if (ret>=0) {
+    bool ret;
+    while ((ret=process.canReadLine()) || process.state()!=QProcess::NotRunning) {
+      if (ret) {
+        QString line=process.readLine();
+        line.chop(1); // zap newline
         QStringList columns=line.split('\t');
         int numColumns=columns.count();
         QString identifier;
@@ -176,21 +173,17 @@ CompletionInfo parseFileCompletion(const QString &fileText,
   fileTextCleaned.remove(QRegExp("\\b(asm|_asm|__asm)\\(\"%?[adAD][0-7]\"\\)"));
   write_temp_file("parser_temp_source.c",fileTextCleaned,0);
   {
-    // The QTextCodec has to be passed explicitly, or it will default to
-    // ISO-8859-1 regardless of the locale, which is just broken.
-    K3ProcIO procio(QTextCodec::codecForLocale());
-    // Use MergedStderr instead of Stderr so the messages get ordered
-    // properly.
-    procio.setComm(static_cast<K3Process::Communication>(
-      K3Process::Stdout|K3Process::MergedStderr));
-    procio.setWorkingDirectory(tempdir);
-    procio<<"ctags"<<"-f"<<"-"<<"-n"<<"-u"<<"-h"<<".h"<<"--language-force=C"
-          <<"--C-kinds=defgpstuvx"<<"--fields=kS"<<"-I"<<"CALLBACK,__ATTR_TIOS__,"
-            "__ATTR_TIOS_NORETURN__,__ATTR_TIOS_CALLBACK__,__ATTR_GCC__,"
-            "__ATTR_LIB_C__,__ATTR_LIB_ASM__,__ATTR_LIB_ASM_NORETURN__,"
-            "__ATTR_LIB_CALLBACK_C__,__ATTR_LIB_CALLBACK_ASM__"
-          <<"parser_temp_source.c";
-    if (!procio.start()) {
+    KProcess process;
+    process.setOutputChannelMode(KProcess::MergedChannels);
+    process.setWorkingDirectory(tempdir);
+    process<<"ctags"<<"-f"<<"-"<<"-n"<<"-u"<<"-h"<<".h"<<"--language-force=C"
+           <<"--C-kinds=defgpstuvx"<<"--fields=kS"<<"-I"<<"CALLBACK,__ATTR_TIOS__,"
+             "__ATTR_TIOS_NORETURN__,__ATTR_TIOS_CALLBACK__,__ATTR_GCC__,"
+             "__ATTR_LIB_C__,__ATTR_LIB_ASM__,__ATTR_LIB_ASM_NORETURN__,"
+             "__ATTR_LIB_CALLBACK_C__,__ATTR_LIB_CALLBACK_ASM__"
+           <<"parser_temp_source.c";
+    process.start();
+    if (process.error() == QProcess::FailedToStart) {
       delete_temp_file("parser_temp_source.c");
       KMessageBox::error(0,"Could not run ctags.\nThis feature requires "
                            "Exuberant Ctags, which can be obtained from: "
@@ -198,10 +191,11 @@ CompletionInfo parseFileCompletion(const QString &fileText,
       result.dirty=true;
       return result;
     }
-    QString line;
-    int ret;
-    while ((ret=procio.readln(line))>=0 || procio.isRunning()) {
-      if (ret>=0) {
+    bool ret;
+    while ((ret=process.canReadLine()) || process.state()!=QProcess::NotRunning) {
+      if (ret) {
+        QString line=process.readLine();
+        line.chop(1); // zap newline
         QStringList columns=line.split('\t');
         int numColumns=columns.count();
         QString identifier;
