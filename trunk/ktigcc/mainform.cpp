@@ -2831,6 +2831,21 @@ void MainForm::editDecreaseIndent()
     CURRENT_VIEW->action("tools_unindent")->trigger();
 }
 
+class NonModalFindDialog : public KFindDialog {
+  public:
+    explicit NonModalFindDialog(QWidget *parent=0, long options=0,
+      const QStringList &findStrings=QStringList(), bool hasSelection=false)
+      : KFindDialog(parent,options,findStrings,hasSelection)
+    {
+      setModal(false);
+    }
+    // Override accept() not to close the dialog.
+    virtual void accept(void)
+    {
+      setResult(QDialog::Accepted);
+    }
+};
+
 void MainForm::findFind()
 {
   if (kfinddialog)
@@ -2838,8 +2853,7 @@ void MainForm::findFind()
   else {
     // Never set hasSelection because finding in selection doesn't really make
     // sense with my non-modal find dialog setup.
-    kfinddialog=new KFindDialog(this,KFind::FromCursor,findHistory);
-    kfinddialog->setModal(false);
+    kfinddialog=new NonModalFindDialog(this,KFind::FromCursor,findHistory);
     connect(kfinddialog, SIGNAL(okClicked()), this, SLOT(findFind_next()));
     connect(kfinddialog, SIGNAL(cancelClicked()), this, SLOT(findFind_stop()));
     kfinddialog->show();
