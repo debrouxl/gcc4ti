@@ -52,7 +52,7 @@ SourceFileFunctions getCFunctions(const QString &text)
             "__ATTR_LIB_CALLBACK_C__,__ATTR_LIB_CALLBACK_ASM__"
            <<"parser_temp_source.c";
     process.start();
-    if (process.error() == QProcess::FailedToStart) {
+    if (!process.waitForStarted()) {
       delete_temp_file("parser_temp_source.c");
       KMessageBox::error(0,"Could not run ctags.\nThis feature requires "
                            "Exuberant Ctags, which can be obtained from: "
@@ -183,7 +183,7 @@ CompletionInfo parseFileCompletion(const QString &fileText,
              "__ATTR_LIB_CALLBACK_C__,__ATTR_LIB_CALLBACK_ASM__"
            <<"parser_temp_source.c";
     process.start();
-    if (process.error() == QProcess::FailedToStart) {
+    if (!process.waitForStarted()) {
       delete_temp_file("parser_temp_source.c");
       KMessageBox::error(0,"Could not run ctags.\nThis feature requires "
                            "Exuberant Ctags, which can be obtained from: "
