@@ -47,36 +47,13 @@
 
 // versions of the syntax highlighting description file:
 // 1.00 = KTIGCC 20060807 Beta
-// 1.01 = KTIGCC 1
-// 1.80 = current
-#define CURRENT_SYNFILE_VERSION "1.80"
+// 1.01 = KTIGCC 20060814 Beta - 1.07 
+// 1.02 = current KTIGCC 1 (since 1.08)
+// 1.80 = KTIGCC 2 up to 1.80-20070702
+// 1.81 = current KTIGCC 2 (since 1.80-20070702)
+#define CURRENT_SYNFILE_VERSION "1.81"
 
 TIGCCPrefs preferences;
-
-static void genAllCaseVariants(QString keyword, unsigned pos,
-                               QStringList &stringList)
-{
-  // WARNING: Exponential complexity in the keyword length. Yuck!
-  // Blame Kate's lack of flexibility.
-  // Also note that this just LOOKS like a functional recursion, there ARE side
-  // effects.
-  QChar c=keyword[pos];
-  if (c.isNull())
-    stringList.append(keyword);
-  else {
-    QChar upper=c.toUpper();
-    QChar lower=c.toLower();
-    if (lower==upper)
-      genAllCaseVariants(keyword,pos+1,stringList);
-    else {
-      keyword[pos]=upper;
-      genAllCaseVariants(keyword,pos+1,stringList);
-      keyword[pos]=lower;
-      genAllCaseVariants(keyword,pos+1,stringList);
-      keyword[pos]=c;
-    }
-  }
-}
 
 static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
                            const QString &name, const QString &internalName)
@@ -118,21 +95,7 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
   foreach (const Syn_WordList &wordList, synprefs.wordLists) {
     CHILD_NODE(list,highlighting,"list");
     ADD_ATTR(list,"name",wordList.name);
-    QStringList stringList;
-    if (wordList.caseSensitive || allWordListsCaseInsensitive)
-      stringList=wordList.list;
-    else {
-      // This is really ugly. Why can't Kate allow me to specify
-      // case-sensitivity per word list?
-      foreach (const QString &keyword, wordList.list) {
-        // This is bad, but I need to cap time, memory and disk space
-        // requirements somewhere.
-        if (keyword.length()<=10)
-          genAllCaseVariants(keyword,0,stringList);
-        else
-          stringList.append(keyword);
-      }
-    }
+    QStringList stringList=wordList.list;
     foreach (QString keyword, stringList) {
       CHILD_NODE(item,list,"item");
       ADD_TEXT(item,keyword);
@@ -186,6 +149,8 @@ static void writeSyntaxXML(const Syn_SettingsForDoc &synprefs,
     ADD_ATTR(detectWordList,"attribute",wordList.name);
     ADD_ATTR(detectWordList,"context","#stay");
     ADD_ATTR(detectWordList,"String",wordList.name);
+    if (!(wordList.caseSensitive || allWordListsCaseInsensitive))
+      ADD_ATTR(detectWordList,"insensitive","true");
   }
   CHILD_NODE(numFloat,defaultContext,"Float");
   ADD_ATTR(numFloat,"attribute","Number");
