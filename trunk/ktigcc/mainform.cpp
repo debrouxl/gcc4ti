@@ -482,7 +482,7 @@ tprLibOpts libopts;
 static QString projectFileName;
 static QString lastDirectory;
 QClipboard *clipboard;
-static QShortcut *shortcuts[17];
+static QShortcut *shortcuts[18];
 static KFindDialog *kfinddialog;
 QStringList findHistory, replacementHistory;
 static Q3ListViewItem *findCurrentDocument;
@@ -1171,6 +1171,8 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
   shortcuts[15]->setEnabled(TRUE);
   shortcuts[16]=new QShortcut(Qt::CTRL+Qt::Key_F9,this);
   shortcuts[16]->setEnabled(TRUE);
+  shortcuts[17]=new QShortcut(Qt::CTRL+Qt::Key_Return,this);
+  shortcuts[17]->setEnabled(FALSE);
   connect(shortcuts[0],SIGNAL(activated()),this,SLOT(shortcut_0_activated()));
   connect(shortcuts[1],SIGNAL(activated()),this,SLOT(shortcut_1_activated()));
   connect(shortcuts[2],SIGNAL(activated()),this,SLOT(shortcut_2_activated()));
@@ -1188,6 +1190,7 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
   connect(shortcuts[14],SIGNAL(activated()),this,SLOT(shortcut_14_activated()));
   connect(shortcuts[15],SIGNAL(activated()),this,SLOT(shortcut_15_activated()));
   connect(shortcuts[16],SIGNAL(activated()),this,SLOT(shortcut_16_activated()));
+  connect(shortcuts[17],SIGNAL(activated()),this,SLOT(findOpenFileAtCursor()));
   kfinddialog = static_cast<KFindDialog *>(NULL);
   kreplace = static_cast<KReplaceWithSelection *>(NULL);
   connect(fileNewAction,SIGNAL(triggered()),this,SLOT(fileNewProject()));
@@ -1320,7 +1323,7 @@ MainForm::~MainForm()
   }
   if (kreplace) delete kreplace;
   if (kfinddialog) delete kfinddialog;
-  for (int i=0; i<17; i++) delete shortcuts[i];
+  for (int i=0; i<18; i++) delete shortcuts[i];
   delete te_popup;
   delete leftStatusLabel;
   delete rowStatusLabel;
@@ -5271,6 +5274,7 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
     shortcuts[8]->setEnabled(FALSE);
     shortcuts[9]->setEnabled(FALSE);
     shortcuts[10]->setEnabled(FALSE);
+    shortcuts[17]->setEnabled(FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
@@ -5304,6 +5308,7 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
       shortcuts[8]->setEnabled(TRUE);
       shortcuts[9]->setEnabled(TRUE);
       shortcuts[10]->setEnabled(TRUE);
+      shortcuts[17]->setEnabled(TRUE);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -5330,6 +5335,7 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
       shortcuts[8]->setEnabled(FALSE);
       shortcuts[9]->setEnabled(FALSE);
       shortcuts[10]->setEnabled(FALSE);
+      shortcuts[17]->setEnabled(FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -5358,6 +5364,7 @@ void MainForm::fileTreeClicked(Q3ListViewItem *item)
     shortcuts[8]->setEnabled(FALSE);
     shortcuts[9]->setEnabled(FALSE);
     shortcuts[10]->setEnabled(FALSE);
+    shortcuts[17]->setEnabled(FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();

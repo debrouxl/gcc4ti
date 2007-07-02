@@ -71,7 +71,7 @@ public:
   QLabel *charsStatusLabel;
   QLabel *rightStatusLabel;
   Q3PopupMenu *te_popup;
-  QShortcut *shortcuts[11];
+  QShortcut *shortcuts[12];
   KFindDialog *kfinddialog;
   int findCurrentLine;
   KDirWatch *dirWatch;

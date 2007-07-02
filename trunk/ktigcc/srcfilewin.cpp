@@ -247,6 +247,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
   shortcuts[8]=new QShortcut(Qt::CTRL+Qt::Key_J,this);
   shortcuts[9]=new QShortcut(Qt::CTRL+Qt::Key_Space,this);
   shortcuts[10]=new QShortcut(Qt::CTRL+Qt::Key_M,this);
+  shortcuts[11]=new QShortcut(Qt::CTRL+Qt::Key_Return,this);
   shortcuts[0]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Undo))->isEnabled());
   shortcuts[1]->setEnabled(CURRENT_VIEW->action(KStandardAction::name(KStandardAction::Redo))->isEnabled());
   shortcuts[2]->setEnabled(CURRENT_VIEW->selection());
@@ -258,6 +259,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
   shortcuts[8]->setEnabled(TRUE);
   shortcuts[9]->setEnabled(TRUE);
   shortcuts[10]->setEnabled(TRUE);
+  shortcuts[11]->setEnabled(TRUE);
   connect(shortcuts[0],SIGNAL(activated()),this,SLOT(shortcut_0_activated()));
   connect(shortcuts[1],SIGNAL(activated()),this,SLOT(shortcut_1_activated()));
   connect(shortcuts[2],SIGNAL(activated()),this,SLOT(shortcut_2_activated()));
@@ -269,6 +271,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
   connect(shortcuts[8],SIGNAL(activated()),this,SLOT(shortcut_8_activated()));
   connect(shortcuts[9],SIGNAL(activated()),this,SLOT(shortcut_9_activated()));
   connect(shortcuts[10],SIGNAL(activated()),this,SLOT(shortcut_10_activated()));
+  connect(shortcuts[11],SIGNAL(activated()),this,SLOT(findOpenFileAtCursor()));
   if (preferences.useSystemIcons) {
     // Set the preferred icon size so system toolbar icons don't get annoying
     // padding.
@@ -317,7 +320,7 @@ SourceFileWindow::~SourceFileWindow()
     findHistory=kfinddialog->findHistory();
     delete kfinddialog;
   }
-  for (int i=0; i<11; i++) delete shortcuts[i];
+  for (int i=0; i<12; i++) delete shortcuts[i];
   delete te_popup;
   delete rowStatusLabel;
   delete colStatusLabel;
