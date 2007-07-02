@@ -1,7 +1,7 @@
 %define tigccdir /usr/local/tigcc
 
 Name: ktigcc
-Version: 1.07
+Version: 1.08
 Release: 1
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{tigccdir}/doc/ktigcc
 
 %changelog
+* Mon Jul 2 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Bump version to 1.08.
+
 * Mon Apr 30 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Use standard icon name for the mimetype icon symlink.
 Add compatibility symlink with the legacy name with the gnome-mime- prefix.
