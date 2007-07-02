@@ -37,6 +37,12 @@
 #include <kconfig.h>
 #include <glib.h>
 #include "mainform.h"
+
+// Check for KDE version at compile time to avoid wasting users' time
+#if KDE_VERSION < KDE_MAKE_VERSION(3,5,7)
+#error KDE 3.5.7 or higher required
+#endif
+
 using namespace std;
 void qCleanupImages_ktigcc();
 void qInitImages_ktigcc();
@@ -70,6 +76,10 @@ int main(int argc, char *argv[])
   // Hopefully it is a .UTF-8 locale, if it isn't, don't complain about
   // characters lost converting!
   QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
+
+  // Check for KDE version
+  if (KDE::version() < KDE_MAKE_VERSION(3,5,7))
+    qFatal("KDE 3.5.7 or higher required");
 
   KAboutData about("ktigcc","TIGCC IDE for KDE","1.08",
   "TIGCC C and ASM SDK", KAboutData::License_GPL,

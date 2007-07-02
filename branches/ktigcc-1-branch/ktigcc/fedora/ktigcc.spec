@@ -8,8 +8,8 @@ Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}.tar.bz2
 Group: Development/Tools
 License: GPL
-BuildRequires: qt-devel >= 1:3.3.0 kdelibs-devel >= 6:3.5.2 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
-Requires: kdelibs >= 6:3.5.2 kdebase >= 6:3.5.2 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt-devel >= 1:3.2.0 ctags
+BuildRequires: qt-devel >= 1:3.3.0 kdelibs-devel >= 6:3.5.7 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
+Requires: kdelibs >= 6:3.5.7 kdebase >= 6:3.5.7 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt-devel >= 1:3.2.0 ctags
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: KTIGCC is an IDE for TIGCC using KDE
 %description
@@ -120,6 +120,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Mon Jul 2 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump version to 1.08.
+Require at least kdelibs 3.5.7 (needed for case-insensitive keyword lists).
 
 * Mon Apr 30 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Use standard icon name for the mimetype icon symlink.
