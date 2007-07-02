@@ -1922,6 +1922,7 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   newView->setContextMenu(te_popup);
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
+  newView->action(KStandardAction::name(KStandardAction::Find))->setShortcut(QKeySequence());
   return newView;
 }
 
