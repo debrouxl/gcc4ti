@@ -106,7 +106,7 @@ static void DecodeOnCalcName(char *Dest, const char *Src)
 		else if (*Src)
 			*(Dest++) = *(Src++);
 		else
-			break;
+			*(Dest++) = 0;
 	} while (++Count < MAX_NAME_LEN);
 }
 
