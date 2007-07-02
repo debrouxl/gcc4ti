@@ -794,7 +794,7 @@ enum CharModes {cmNone, cmNormalText, cmNumber, cmMultiSymbol, cmString, cmChar,
 int saveAndSplitFileText(const char *fileName, const QString &fileText,
                          bool split, bool addCLineDirective,
                          bool addASMLineDirective, const QString &origFileName,
-                         LineStartList *pLineStartList)
+                         LineStartList *pLineStartList, bool addNewline)
 {
   FILE *f;
   LineStartList lineStartList;
@@ -1025,7 +1025,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
       if (fwrite(s,1,l,f)<l) return -2;
     }
     if (writeToFile(f,text)) {fclose(f); return -2;}
-    if (fwrite("\n",1,1,f)<1) {fclose(f); return -2;}
+    if (addNewline && fwrite("\n",1,1,f)<1) {fclose(f); return -2;}
   }
   if (fclose(f)) return -2;
   if (pLineStartList) *pLineStartList=lineStartList;
@@ -1035,7 +1035,7 @@ int saveAndSplitFileText(const char *fileName, const QString &fileText,
 int saveFileText(const char *fileName,const QString &fileText)
 {
   return saveAndSplitFileText(fileName,fileText,FALSE,FALSE,FALSE,QString::null,
-                              static_cast<LineStartList *>(NULL));
+                              static_cast<LineStartList *>(NULL),FALSE);
 }
 
 void kurlNewFileName(KURL &dir,const QString &newFileName)

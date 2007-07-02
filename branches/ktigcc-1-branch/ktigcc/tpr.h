@@ -173,7 +173,7 @@ void mkdir_multi(const char *fileName);
 int saveAndSplitFileText(const char *fileName, const QString &fileText,
                          bool split, bool addCLineDirective,
                          bool addASMLineDirective, const QString &origFileName,
-                         LineStartList *pLineStartList);
+                         LineStartList *pLineStartList, bool addNewline=true);
 int saveFileText(const char *fileName,const QString &fileText);
 
 void kurlNewFileName(KURL &dir,const QString &newFileName);
