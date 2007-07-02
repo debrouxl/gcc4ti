@@ -1,0 +1,267 @@
+This is a summary of the changes in KTIGCC since the first alpha release:
+
+CVS ktigcc-1-branch (2007-07-02):
+
+* KDElibs 3.5.7 or higher are now required.
+* Ctrl+Return now works for "Open file at cursor" (not just Ctrl+Numpad Enter)
+* Fixed extra newline incorrectly added each time a file is saved.
+* Now generating smaller syntax highlighting descriptions for mixes of
+  case-sensitive and case-insensitive word lists (using new KatePart feature).
+
+
+KTIGCC 1.07 (2007-04-03):
+
+* Added a full changelog (generated from CVS logs).
+* Fixed stray indentation at the end of the line when autoclosing a curly brace
+  as ENTER is pressed.
+* Fixed highlighting update when moving a file to Header Files from another
+  editable category. (The first character was read from the wrong buffer.)
+* Don't hardcode ~/.kde for the KDEHOME directory.
+* Fixed missing word wrap on the data variable reloc label in Program Options.
+* Fixed A68k items in the New menu being shown even when A68k is not installed.
+* Don't grab the keyboard globally (stealing key presses from other apps) in the
+  Errors&Warnings pane, only override the Ctrl+C and Ctrl+Ins accelerators.
+* Fixed adding to the recent file list getting confused by changes to the list
+  from other KTIGCC instances.
+* Fixed the wrong recent file getting opened when opening triggers save prompt.
+
+
+KTIGCC 1.06 (2006-11-25):
+
+* Added Anjuta 2 project, removed Anjuta 1 project.
+* Fixed missing layout in the Operating System tab of the Program Options
+  dialog.
+* Fixed wrong length computations when writing to a file in UTF-8 or other
+  multibyte charsets. (This broke debugging information for projects in a path
+  containing non-ASCII characters.)
+* Added tas to the default Integer Arithmetic instructions.
+* Added xdef, globl, altmacro and noaltmacro to the default GNU as directives.
+* Ctrl+Tab/Ctrl+G now skips the project root and the categories.
+* When saving a project for the first time, if it is still named "Project1", a
+  name based on the .tpr file name is now set (as in TIGCC IDE).
+* Disabled debugging and informational messages from libti*.
+
+
+KTIGCC 1.05 (2006-10-24):
+
+* Added missing -lkdeui to link line (needed for OS X).
+* Fixed RPM specfile dependency to work on FC6.
+
+
+KTIGCC 1.04 (2006-09-25):
+
+* Use explicit memset to zero the buffer in loadFileText because the C++ way
+  doesn't seem to work on OS X.
+* Link all required KDE libraries explicitly instead of relying on the linker
+  pulling them in (which the OS X linker doesn't do).
+* Use the .ui, .moc and .obj subdirectories on all platforms.
+* Don't try to set an rpath on OS X, it is neither supported nor needed.
+
+
+KTIGCC 1.03 (2006-09-17):
+
+* Don't show symbol info for reserved keywords even in the case of an exact
+  match (fixes unhelpful prototype help for "asm").
+* Added workaround for rpmbuild 4.4.2 with tar 1.15.91 to make rpm target.
+
+
+KTIGCC 1.02 (2006-09-05):
+
+* Fixed inverted logic bug causing the Debug menu and toolbar buttons to get
+  hidden during File/New/Project.
+* Fixed the Project Options dialog not reacting correctly to changing the target
+  from a regular program to another target or the other way round.
+* Fixed detection of "??=" in source file splitting.
+* Fixed bug in source file splitting causing the float in x>=0. to get split.
+
+
+KTIGCC 1.01 (2006-08-21):
+
+* Find and Replace dialogs now remember history (but only for the current KTIGCC
+  session).
+
+
+KTIGCC 1.00 (2006-08-20):
+
+* Added NEWS file containing the history information previously published in the
+  changelog snippets on SourceForge.
+* Fixed moving files across file systems after compilation not working.
+* The RPM now associates .tpr files with KTIGCC in KDE and GNOME.
+
+
+KTIGCC 20060814 beta:
+
+Improvements:
+* Kate's automatic indentation (ENTER indents the new line
+  the same as the old one) is now enabled.
+* The syntax highlighting descriptions are now
+  automatically regenerated if they are missing or out of
+  date.
+* Tab now reliably inserts a tab. Use Ctrl+I to indent the
+  selection (or the current line). (The other Kate defaults
+  were also changed to match TIGCC IDE more closely.)
+* Implemented coding template popups.
+* Implemented "Find symbol declaration".
+* Implemented Ctrl+Tab to switch between source files. As
+  Ctrl+Tab is taken up by the default KDE shortcut
+  settings, Ctrl+G can also be used.
+* Implemented completion on Ctrl+Space. As Ctrl+Space
+  conflicts with X input methods, Ctrl+M can also be used.
+* Implemented prototype tooltips on opening a parenthesis.
+* Because of conflicts (Ctrl+F9 is reserved by KDE for
+  virtual desktop switching, Ctrl+Alt+F9 and
+  Shift+Ctrl+Alt+F9 by X.Org X11 for virtual console
+  switching), F8 can now be used instead of Ctrl+F9. So F8
+  is Make and Alt+F8 is Compile. The Ctrl+F9 and
+  Ctrl+Alt+F9 combos are also supported if they reach
+  KTIGCC.
+* Implemented the Shift+Ctrl+Alt+F9 (or Alt+Shift+F8, as
+  per the above - note that you may have to press Alt first
+  to get the combo recognized) combo (undocumented in TIGCC
+  IDE) to switch transfer targets (TiEmu or real
+  calculator) without going through the preferences.
+
+Bugfixes:
+* "New folder" wasn't always selecting the new folder for
+  renaming. (Same for new files.)
+* Fixed file descriptor leak in loadFileText.
+* Opening the documentation could cause compilation and
+  parsing (ctags) to lockup waiting for the external
+  process (due to a conflict between Qt's and KDE's child
+  process abstractions).
+
+Notes:
+* Debian (and derivate) users no longer need qt3-apps-dev
+  to build KTIGCC.
+* The KTIGCC RPM now requires ktigcc-completion-data, which
+  contains completion information for TIGCCLIB. KTIGCC
+  itself will run without it, but warn you (and suggest
+  either downloading it or generating it yourself from the
+  documentation source code).
+
+
+KTIGCC 20060807 beta:
+
+Improvements:
+* Implemented customization of syntax highlighting.
+* The default projects directory (i.e. the directory the
+  file dialogs are set to on startup) is now
+  ~/tigcc-projects (where ~ stands for your home directory)
+  instead of $TIGCC/projects (which is not writable out of
+  the box for regular users in system-wide TIGCC setups).
+  It is created on startup if it's not there.
+* The background color of list views and tree views is no
+  longer hardcoded to white. (That was done to disable the
+  alternating between 2 background colors, which is now
+  disabled in a cleaner way.)
+
+Bugfixes:
+* KTIGCC now always adds a newline at the end of the
+  temporary copies used for compiling, not just for C files
+  (fixes warnings the Windows IDE filters out).
+* "Discard" in a save prompt no longer resets the
+  "modified" flag, so if you don't actually close the
+  file/project being prompted for (for example because
+  you're just opening an out-of-project file rather than a
+  project), you'll be prompted for saving again later.
+* "Save all" now saves out-of-project files only if they
+  are actually modified (same as for in-project files).
+* Ctrl+C/Ctrl+Ins now work as expected when the error
+  window is shown: They apply to the error window if it has
+  the focus, and the main window otherwise.
+* KTIGCC now prompts for saving out-of-project source files
+  before exiting.
+
+Note: The "Find symbol declaration" menu entry has been
+      hidden because it is not implemented yet.
+
+
+KTIGCC 20060731 alpha:
+
+* TIGCC/*nix 0.96 Beta 7 r1 is now required. This allows
+  KTIGCC to link compressed programs with an external data
+  file only once. (It used to link them twice to work
+  around a now-fixed ld-tigcc limitation.)
+* Implemented the following menu items:
+  - Find / Open file at cursor
+  - Help / News
+  - the Tools menu
+* Fixed 2 path handling bugs:
+  - files already having an absolute path were mishandled
+    when saving a new project for the first time
+  - file names passed on the command line were not
+    converted to absolute paths, causing problems
+
+
+KTIGCC 20060723 alpha:
+
+KTIGCC now requires the 20060723 snapshot of libti* and
+TiEmu and makes use of its improvements. In particular:
+* faster transfers to TiEmu: sending to TiEmu now longer
+requires a harcoded 12-second wait. Instead, TiEmu now
+reports by itself whether the emulated calculator is ready
+or not. Thus, if TiEmu was already started, or if you have
+a fast computer and "restrict to actual speed" unchecked,
+the wait will be much less than 12 seconds.
+* the source code for linking has been simplified by using
+the new libticalcs2 APIs and dropping the compatibility
+workaround for the new libticables2 ticables_is_usb_enabled
+function.
+
+I have also fixed the test for qassistantclient.h to work
+on Debian and derivates.
+
+
+KTIGCC 20060720 alpha:
+
+* Implemented Find/Functions (both the dialog and the
+toolbar dropdown).
+* Exuberant Ctags (http://ctags.sourceforge.net) is now a
+runtime requirement, used to locate C prototypes and
+functions.
+* Pushbuttons for standard actions (OK, Cancel, Close) now
+show icons next to the text if KDE has been configured that
+way.
+* Fixed "use system icons" not to pad icons to 32x32.
+* "Use system icons" is now the default, this can be
+changed in the preferences.
+
+
+KTIGCC 20060717 alpha:
+
+Fixed bugs in compiling:
+* The hack to fix ld-tigcc's output so "Program Variable
+Name" is in the correct character set was always
+adding "main\" because it checked for / instead of \ as the
+path separator.
+* External data file support for compressed programs was
+completely broken.
+* Opening a modal dialog during compilation could crash
+KTIGCC.
+
+Fixed Remove on a directory to prompt for saving for all
+modified files in the directory. Pressing Del in the file
+tree is now equivalent to Remove.
+
+Implemented the Debug menu.
+
+libtifiles2 and libticalcs2 are now required too.
+
+
+KTIGCC 20060715 alpha:
+
+KTIGCC can now compile projects (compile sources into object files and link them
+into executables or static libraries, i.e. the Project menu is now complete).
+
+KDElibs 3.5.2 or higher are now required.
+
+
+KTIGCC 20060626 alpha:
+
+KTIGCC can now open source files not belonging to a project in detached source
+file windows.
+
+
+KTIGCC 20060622 alpha:
+
+This is the first snapshot of KTIGCC.
