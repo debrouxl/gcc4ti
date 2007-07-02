@@ -1098,6 +1098,8 @@ void MainForm::init()
   accel->setItemEnabled(15,TRUE);
   accel->insertItem(CTRL+Key_F9,16);
   accel->setItemEnabled(16,TRUE);
+  accel->insertItem(CTRL+Key_Return,17);
+  accel->setItemEnabled(17,FALSE);
   connect(accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   fileTreeAccel=new QAccel(this);
   fileTreeAccel->insertItem(Key_Delete,0);
@@ -1279,6 +1281,10 @@ void MainForm::te_popup_activated(int index)
 
 void MainForm::accel_activated(int index)
 {
+  if (index == 17) {
+    findOpenFileAtCursor();
+    return;    
+  }
   if (CURRENT_VIEW && CURRENT_VIEW->hasFocus()) {
     switch (index) {
       case 0: editUndo(); break;
@@ -5280,6 +5286,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(8,FALSE);
     accel->setItemEnabled(9,FALSE);
     accel->setItemEnabled(10,FALSE);
+    accel->setItemEnabled(17,FALSE);
   } else if (IS_FILE(item)) {
     fileNewFolderAction->setEnabled(TRUE);
     CATEGORY_OF(category,item->parent());
@@ -5319,6 +5326,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(8,TRUE);
       accel->setItemEnabled(9,TRUE);
       accel->setItemEnabled(10,TRUE);
+      accel->setItemEnabled(17,TRUE);
     } else {
       filePrintAction->setEnabled(FALSE);
       filePrintQuicklyAction->setEnabled(FALSE);
@@ -5345,6 +5353,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
       accel->setItemEnabled(8,FALSE);
       accel->setItemEnabled(9,FALSE);
       accel->setItemEnabled(10,FALSE);
+      accel->setItemEnabled(17,FALSE);
     }
   } else {
     fileNewFolderAction->setEnabled(FALSE);
@@ -5373,6 +5382,7 @@ void MainForm::fileTreeClicked(QListViewItem *item)
     accel->setItemEnabled(8,FALSE);
     accel->setItemEnabled(9,FALSE);
     accel->setItemEnabled(10,FALSE);
+    accel->setItemEnabled(17,FALSE);
   }
   currentListItem=item;
   updateLeftStatusLabel();

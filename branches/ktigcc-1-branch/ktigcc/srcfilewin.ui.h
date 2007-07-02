@@ -226,6 +226,7 @@ void SourceFileWindow::initBase()
   THIS->accel->insertItem(CTRL+Key_J,8);
   THIS->accel->insertItem(CTRL+Key_Space,9);
   THIS->accel->insertItem(CTRL+Key_M,10);
+  THIS->accel->insertItem(CTRL+Key_Return,11);
   THIS->accel->setItemEnabled(0,!!(CURRENT_VIEW->getDoc()->undoCount()));
   THIS->accel->setItemEnabled(1,!!(CURRENT_VIEW->getDoc()->redoCount()));
   THIS->accel->setItemEnabled(2,CURRENT_VIEW->getDoc()->hasSelection());
@@ -237,6 +238,7 @@ void SourceFileWindow::initBase()
   THIS->accel->setItemEnabled(8,TRUE);
   THIS->accel->setItemEnabled(9,TRUE);
   THIS->accel->setItemEnabled(10,TRUE);
+  THIS->accel->setItemEnabled(11,TRUE);
   connect(THIS->accel,SIGNAL(activated(int)),this,SLOT(accel_activated(int)));
   if (preferences.useSystemIcons) {
     setUsesBigPixmaps(TRUE);
@@ -334,6 +336,10 @@ void SourceFileWindow::te_popup_activated(int index)
 
 void SourceFileWindow::accel_activated(int index)
 {
+  if (index == 11) {
+    findOpenFileAtCursor();
+    return;    
+  }
   if (CURRENT_VIEW && CURRENT_VIEW->hasFocus()) {
     switch (index) {
       case 0: editUndo(); break;
