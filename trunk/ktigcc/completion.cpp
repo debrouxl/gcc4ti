@@ -654,34 +654,13 @@ CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileN
         column--;
     }
   }
-#if 0 // FIXME: Finish porting completion.
-  connect(parent,SIGNAL(completionAborted()),this,SLOT(slotDone()));
-  connect(parent,SIGNAL(completionDone()),this,SLOT(slotDone()));
+  connect(parent,SIGNAL(completionAborted(KTextEditor::View*)),this,SLOT(slotDone()));
+  connect(parent,SIGNAL(completionExecuted(KTextEditor::View*,const KTextEditor::Cursor&,KTextEditor::CodeCompletionModel*,int)),this,SLOT(slotDone()));
   KTextEditor::CodeCompletionInterface *complIFace
     =qobject_cast<KTextEditor::CodeCompletionInterface *>(parent);
-  qDebug("%s",parent->document()->text(KTextEditor::Range(
-                                KTextEditor::Cursor(line,column),cursor)).utf8().data());
   complIFace->startCompletion(KTextEditor::Range(
                                 KTextEditor::Cursor(line,column),cursor),
                               new CompletionModel(this,entries));
-  // Unfortunately, Kate doesn't always send the completionAborted or
-  // completionDone event when it closes its popup. Work around that.
-  QWidgetList *list=QApplication::topLevelWidgets();
-  QWidgetListIt it(*list);
-  while (QWidget *w=it.current()) {
-    ++it;
-    if (w->isVisible() && w->testWFlags(Qt::WType_Popup)
-        && !std::strcmp(w->className(),"QVBox")) {
-      completionPopup=w;
-      break;
-    }
-  }
-  delete list;
-  if (completionPopup)
-    completionPopup->installEventFilter(this);
-#else
-  slotDone();
-#endif
 }
 
 void CompletionPopup::slotDone()
@@ -691,16 +670,6 @@ void CompletionPopup::slotDone()
     emit closed();
     deleteLater();
   }
-}
-
-bool CompletionPopup::eventFilter(QObject *o, QEvent *e)
-{
-  if (!done && o==completionPopup && e->type()==QEvent::Hide) {
-    done=true;
-    emit closed();
-    deleteLater();
-  }
-  return false;
 }
 
 ArgHintPopup::ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
@@ -729,7 +698,7 @@ ArgHintPopup::ArgHintPopup(KTextEditor::View *parent, const QString &fileName,
   QString identifier=textLine.mid(startColumn,endColumn-startColumn);
   QStringList prototypes=prototypesForIdentifier(identifier,entries);
   if (prototypes.isEmpty()) goto nothingFound;  
-#if 0 // FIXME: Port argument hint.
+#if 0 // FIXME: Rewrite argument hint.
   connect(parent,SIGNAL(argHintHidden()),this,SLOT(slotDone()));
   parent->showArgHint(prototypes,"()",",");
   // Unfortunately, Kate doesn't always send the argHintHidden event when it

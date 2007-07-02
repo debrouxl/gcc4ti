@@ -128,8 +128,6 @@ class CompletionPopup : public QObject {
     void slotDone();
   signals:
     void closed();
-  protected:
-    bool eventFilter(QObject *o, QEvent *e);
   private:
     bool done;
     QWidget *completionPopup;
