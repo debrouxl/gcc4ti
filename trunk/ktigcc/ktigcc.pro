@@ -157,13 +157,6 @@ HAVE_TICALCS = $$system(pkg-config --atleast-version=$$TICALCS_MINVERSION ticalc
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticalcs2)
 LIBS += $$system(pkg-config --libs ticalcs2)
 
-win32 {
-  # Hack out hardcoded prefix from the glib2 binary package's pkg-config file.
-  HARDCODED_GLIB_PREFIX = $$system(pkg-config --variable=prefix glib-2.0)
-  PKGCONFIG_CFLAGS ~= s!$$HARDCODED_GLIB_PREFIX!$$KDEPREFIX!g
-  LIBS ~= s!$$HARDCODED_GLIB_PREFIX!$$KDEPREFIX!g
-}
-
 TIGCC = $$(TIGCC)
 isEmpty(TIGCC) {
   TIGCC = /usr/local/tigcc

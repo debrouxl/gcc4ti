@@ -7,5 +7,5 @@ export KDEPREFIX=~/.wine/c/kde4
 TIEMUPREFIX=~/.wine/c/tiemu
 #export C_INCLUDE_PATH=$KDEPREFIX/include:$TIEMUPREFIX/include:/usr/local/i386-mingw32/include
 #export LIBRARY_PATH=$KDEPREFIX/lib:$TIEMUPREFIX/lib:/usr/local/i386-mingw32/lib/w32api:/usr/local/i386-mingw32/lib
-export PKG_CONFIG_PATH=/usr/local/i386-mingw32/lib/pkgconfig:$KDEPREFIX/lib/pkgconfig:$TIEMUPREFIX/lib/pkgconfig
+export PKG_CONFIG_PATH=/usr/local/i386-mingw32/lib/pkgconfig:$KDEPREFIX/lib/pkgconfig:$TIEMUPREFIX/lib/pkgconfig:/target/lib/pkgconfig
 export QMAKESPEC=win32-cross-g++
