@@ -1,0 +1,85 @@
+This file describes how to install KTIGCC.
+
+A. Installing KTIGCC from RPMs
+==============================
+
+The recommended installation method for Fedora is to use the provided RPMs.
+WARNING: This section is ONLY for Fedora 7 (and possibly later versions, though
+         this is not guaranteed to work) users. If you're not running Fedora 7
+         (or later), please skip to the next section.
+
+1. Obtain the required prerequisites:
+   1.1. The following RPMs from Fedora are required:
+        glib2 (used by libti*)
+        qt4
+        qt4-doc (for the Qt Assistant help file viewer)
+        ctags (to locate C functions/prototypes)
+        These can be installed with:
+        yum install glib2 qt4 qt4-doc ctags
+   1.2. The following RPMs from kde-redhat unstable are required:
+        kdelibs4 (obviously) and kdebase4 (required for some features), as well
+        as kdepimlibs (required by kdebase4), version 3.91.0 - can be obtained
+          from http://apt.kde-redhat.org/apt/kde-redhat/fedora/7/
+          (in i386/RPMS.unstable resp. x86_64/RPMS.unstable)
+   1.3. The following RPMs packaged by me are required:
+        tigcc, ktigcc-completion-data, libticables2, libtifiles2, libticalcs2 and
+        libticonv
+        They can be obtained from:
+        http://repo.calcforge.org/fedora/
+2. Install KTIGCC:
+   For i386 (32-bit x86) architectures:
+   rpm -Uvh tigcc*.i386.rpm ktigcc-completion-data*.noarch.rpm libti*.i386.rpm ktigcc*.i386.rpm
+   For x86_64 (64-bit AMD64/EM64T) architectures:
+   rpm -Uvh tigcc*.x86_64.rpm ktigcc-completion-data*.noarch.rpm libti*.x86_64.rpm ktigcc*.x86_64.rpm
+   (RPMs are currently available only for the i386 and x86_64 architectures.)
+3. KTIGCC should now show up in the menu. If it doesn't and you're running KDE,
+   try:
+   dcop kded kbuildsycoca "recreate()"
+   It can also be found in /usr/bin, which is in your $PATH, so running ktigcc
+   from an X11 terminal will also work.
+
+B. Installing KTIGCC from source
+================================
+
+1. Obtain and install the required prerequisites:
+   glib2 (*)
+   Qt 4 (*) (NOT Qt 3)
+   kdelibs from KDE 4, version 3.90.1 (*) (NOT KDE 3)
+   kdebase from KDE 4 (should be the same version as kdelibs)
+   Qt 4 Assistant (often included in qt4, qt4-doc or qt4-devel packages)
+   pkg-config
+   Exuberant Ctags - can be obtained from http://ctags.sourceforge.net
+   libticables2 (*), libtifiles2 (*), libticalcs2 (*) and libticonv (*) - can be
+     obtained from http://sourceforge.net/project/showfiles.php?group_id=23169
+   TIGCC/*nix and TIGCCLIB completion data for KTIGCC (ktigcc-completion-data) -
+     can be obtained from http://tigcc.ticalc.org/linux/
+   (*) If your distribution provides both a runtime and a -devel or -dev version
+       of these packages, the -devel or -dev version is also needed.
+   1.1. Installation instructions for libti*
+        The libti* libraries are standard autotools projects, they should build
+        and install just fine with:
+        ./configure
+        make
+        make install
+   1.2. Installation instructions for TIGCC/*nix
+        Please refer to the INSTALL document coming with the TIGCC/*nix source
+        tarball. The main stumbling blocks:
+        * You have to fetch the GCC and GNU as sources separately and symlink
+          the extracted versions to download/gcc.ti and download/binutils.ti
+          respectively.
+        * There is no configure script or makefile. Instead, do this:
+          cd scripts
+          ./Install
+          and an interactive wizard will prompt you for everything else.
+        This procedure is described in detail in the TIGCC/*nix INSTALL file.
+   1.3. Installation instructions for ktigcc-completion-data
+        The tarball contains a file named "completion". This file should be
+        extracted to `kde-config --expandvars --install data`/ktigcc/ (usually
+        /usr/share/apps/ktigcc/).
+2. qmake-qt4 (or qmake if that points to Qt 4 qmake)
+   (You can run ./configure, but that just runs qmake-qt4.)
+   WARNING: You need the Qt 4 version of qmake. Make sure you don't accidentally
+            run the Qt 3 one.
+3. make
+4. make install
+5. KTIGCC can now be found in your $TIGCC/bin directory.
