@@ -24,7 +24,7 @@
      set __current_rowread_result by calling _rowread_inverted,
      and also return this value
      (see the section in the doc about the ',' operator). */
-#define __keytest_optimized(row,col) (!!((__current_row==row?__current_rowread_result:(__current_row=row,__current_rowread_result=_rowread_inverted(1<<(row))))&(1<<(col))))
+#define __keytest_optimized(row,col) (!!((__current_row==((short)(row))?__current_rowread_result:(__current_row=((short)(row)),__current_rowread_result=_rowread_inverted(1<<(row))))&(1<<(col))))
 
 /* Begin Auto-Generated Part */
 #define KB_AUTOREPEAT (1<<11)
