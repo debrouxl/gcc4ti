@@ -147,16 +147,20 @@ HAVE_TICALCS = $$system(pkg-config --atleast-version=$$TICALCS_MINVERSION ticalc
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticalcs2)
 LIBS += $$system(pkg-config --libs ticalcs2)
 
-TIGCC = $$(TIGCC)
-isEmpty(TIGCC) {
-  TIGCC = /usr/local/tigcc
+isEmpty(PREFIX) {
+  PREFIX = $$(PREFIX)
 }
-target.path = $$TIGCC/bin
-documentation.path = $$TIGCC/doc/ktigcc
+isEmpty(PREFIX) {
+  PREFIX = /usr/local
+}
+target.path = $$PREFIX/bin
+documentation.path = $$PREFIX/share/doc/ktigcc
 documentation.files = COPYING NEWS ChangeLog
 INSTALLS += target documentation
 
-CXXFLAGS = $$(CXXFLAGS)
+isEmpty(CXXFLAGS) {
+  CXXFLAGS = $$(CXXFLAGS)
+}
 isEmpty(CXXFLAGS) {
   debug {
     CXXFLAGS = -Os -g
@@ -175,8 +179,6 @@ distbz2.target = dist-bzip2
 distbz2.commands = zcat ktigcc.tar.gz | bzip2 --best -c > ktigcc.tar.bz2
 distbz2.depends = dist
 rpm.target = rpm
-# The TAR_OPTIONS=--wildcards is a workaround for rpmbuild 4.4.2 being
-# incompatible with tar 1.15.91 (Fedora bug #206841).
-rpm.commands = TAR_OPTIONS=--wildcards rpmbuild -ta ktigcc.tar.bz2
+rpm.commands = rpmbuild -ta ktigcc.tar.bz2
 rpm.depends = distbz2
 QMAKE_EXTRA_UNIX_TARGETS += distbz2 rpm

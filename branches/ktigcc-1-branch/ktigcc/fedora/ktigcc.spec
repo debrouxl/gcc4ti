@@ -1,5 +1,3 @@
-%define tigccdir /usr/local/tigcc
-
 Name: ktigcc
 Version: 1.08
 Release: 1
@@ -19,7 +17,7 @@ KTIGCC is an IDE for the TIGCC cross-toolchain on *nix/X11 platforms, using the 
 %setup -n %{name}
 
 %build
-CXXFLAGS="$RPM_OPT_FLAGS" qmake
+qmake PREFIX="%{_prefix}" CXXFLAGS="$RPM_OPT_FLAGS"
 make
 
 %install
@@ -52,7 +50,7 @@ GenericName=TIGCC IDE for KDE
 Encoding=UTF-8
 Version=1.0
 Type=Application
-Exec=%{tigccdir}/bin/ktigcc
+Exec=%{_bindir}/ktigcc
 Icon=ktigcc
 Terminal=false
 Categories=Development;
@@ -105,7 +103,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
-%{tigccdir}/bin/ktigcc
+%{_bindir}/ktigcc
 %{_datadir}/icons/hicolor/16x16/apps/ktigcc.png
 %{_datadir}/icons/hicolor/16x16/mimetypes/application-x-tigcc-project.png
 %{_datadir}/icons/hicolor/16x16/mimetypes/gnome-mime-application-x-tigcc-project.png
@@ -115,9 +113,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/tigcc-ktigcc.desktop
 %{_datadir}/mime/packages/ktigcc.xml
 %{_datadir}/mimelnk/application/x-tigcc-project.desktop
-%doc %{tigccdir}/doc/ktigcc
+%doc %{_datadir}/doc/ktigcc
 
 %changelog
+* Mon Jul 9 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Pass CXXFLAGS on the qmake command line instead of the environment.
+Install into PREFIX=/usr.
+
 * Mon Jul 2 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Bump version to 1.08.
 Require at least kdelibs 3.5.7 (needed for case-insensitive keyword lists).
