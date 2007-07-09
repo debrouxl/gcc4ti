@@ -157,16 +157,20 @@ HAVE_TICALCS = $$system(pkg-config --atleast-version=$$TICALCS_MINVERSION ticalc
 PKGCONFIG_CFLAGS += $$system(pkg-config --cflags ticalcs2)
 LIBS += $$system(pkg-config --libs ticalcs2)
 
-TIGCC = $$(TIGCC)
-isEmpty(TIGCC) {
-  TIGCC = /usr/local/tigcc
+isEmpty(PREFIX) {
+  PREFIX = $$(PREFIX)
 }
-target.path = $$TIGCC/bin
-documentation.path = $$TIGCC/doc/ktigcc
+isEmpty(PREFIX) {
+  PREFIX = /usr/local
+}
+target.path = $$PREFIX/bin
+documentation.path = $$PREFIX/share/doc/ktigcc
 documentation.files = COPYING NEWS ChangeLog
 INSTALLS += target documentation
 
-CXXFLAGS = $$(CXXFLAGS)
+isEmpty(CXXFLAGS) {
+  CXXFLAGS = $$(CXXFLAGS)
+}
 isEmpty(CXXFLAGS) {
   debug {
     CXXFLAGS = -Os -g

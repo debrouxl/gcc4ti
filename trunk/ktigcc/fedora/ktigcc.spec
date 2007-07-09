@@ -1,5 +1,3 @@
-%define tigccdir /usr/local/tigcc
-
 Name: ktigcc
 Version: 1.80
 Release: 1
@@ -8,8 +6,8 @@ Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}-%{version}.tar.bz2
 Group: Development/Tools
 License: GPL
-BuildRequires: qt4-devel >= 4.2.0 kdelibs4-devel = 3.90.1 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
-Requires: kdelibs4 = 3.90.1 kdebase4 = 3.90.1 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt4-doc ctags
+BuildRequires: qt4-devel >= 4.2.0 kdelibs4-devel = 3.91.0 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
+Requires: kdelibs4 = 3.91.0 kdebase4 = 3.91.0 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt4-doc ctags
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: KTIGCC is an IDE for TIGCC using KDE
 %description
@@ -19,7 +17,7 @@ KTIGCC is an IDE for the TIGCC cross-toolchain on *nix/X11 platforms, using the 
 %setup
 
 %build
-CXXFLAGS="$RPM_OPT_FLAGS" qmake-qt4
+qmake-qt4 PREFIX="%{_prefix}" CXXFLAGS="$RPM_OPT_FLAGS"
 make
 
 %install
@@ -52,7 +50,7 @@ GenericName=TIGCC IDE for KDE
 Encoding=UTF-8
 Version=1.0
 Type=Application
-Exec=%{tigccdir}/bin/ktigcc
+Exec=%{_bindir}/ktigcc
 Icon=ktigcc
 Terminal=false
 Categories=Development;
@@ -105,7 +103,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
-%{tigccdir}/bin/ktigcc
+%{_bindir}/ktigcc
 %{_datadir}/icons/hicolor/16x16/apps/ktigcc.png
 %{_datadir}/icons/hicolor/16x16/mimetypes/application-x-tigcc-project.png
 %{_datadir}/icons/hicolor/16x16/mimetypes/gnome-mime-application-x-tigcc-project.png
@@ -115,9 +113,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/tigcc-ktigcc.desktop
 %{_datadir}/mime/packages/ktigcc.xml
 %{_datadir}/mimelnk/application/x-tigcc-project.desktop
-%doc %{tigccdir}/doc/ktigcc
+%doc %{_datadir}/doc/ktigcc
 
 %changelog
+* Mon Jul 9 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Pass CXXFLAGS on the qmake command line instead of the environment.
+Install into PREFIX=/usr.
+Require at least kdelibs 3.91.0.
+
 * Mon Apr 30 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Use standard icon name for the mimetype icon symlink.
 Add compatibility symlink with the legacy name with the gnome-mime- prefix.
