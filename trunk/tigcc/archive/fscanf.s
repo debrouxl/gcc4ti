@@ -1,5 +1,5 @@
 |fscanf() implementation for TIGCCLIB - callback functions
-|Copyright (C) Kevin Kofler, 2002-2003
+|Copyright (C) Kevin Kofler, 2002-2007
 
 /*Prototypes:
   CALLBACK short __fscanf_get(FILE *param);
