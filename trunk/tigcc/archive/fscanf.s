@@ -18,5 +18,5 @@ __fscanf_unget:
 |#define ungetc(c,f) ((f)->unget=((c)|0x8000))
 bset.b #7,4(%a7)
 movea.l 6(%a7),%a0
-move.l 4(%a7),12(%a0)
+move.w 4(%a7),12(%a0)
 rts
