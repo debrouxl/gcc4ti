@@ -4219,7 +4219,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
     QDir qdir;
     if (category==asmFilesListItem) {
       // Assemble A68k file
-      int err;
+      KShell::Errors err;
       QStringList args=KShell::splitArgs(settings.a68k_switches,
                                          KShell::TildeExpand|KShell::AbortOnMeta,
                                          &err);
@@ -4257,7 +4257,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
         fileNameToAssemble=fileName;
       } else /* C or Quill */ {
         // Compile C/Quill file to assembly
-        int err;
+        KShell::Errors err;
         QStringList args=KShell::splitArgs(settings.cc_switches,
                                            KShell::TildeExpand|KShell::AbortOnMeta,
                                            &err);
@@ -4341,7 +4341,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
       }
       // Assemble GNU as file
       if (!stopCompilingFlag && !fileNameToAssemble.isNull()) {
-        int err;
+        KShell::Errors err;
         QStringList args=KShell::splitArgs(settings.as_switches,
                                            KShell::TildeExpand|KShell::AbortOnMeta,
                                            &err);
@@ -4574,7 +4574,7 @@ void MainForm::linkProject()
       KShell::quoteArg(settings.fargo?projectBaseName+(
         settings.outputbin?".p92":".92p"
       ):""),FALSE);
-    int err;
+    KShell::Errors err;
     QStringList args=KShell::splitArgs(postBuild,
                                        KShell::TildeExpand|KShell::AbortOnMeta,
                                        &err);
@@ -5119,7 +5119,7 @@ void MainForm::toolsMenu_activated(int id)
   if (id!=toolsMenu->idAt(0) && id!=toolsMenu->idAt(1)) {
     const Tool &tool=tools[id];
     KProcess process(this);
-    int err;
+    KShell::Errors err;
     QStringList args=KShell::splitArgs(tool.commandLine,
                                        KShell::TildeExpand|KShell::AbortOnMeta,
                                        &err);
