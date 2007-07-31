@@ -19,14 +19,6 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 */
 
-// Detect KAboutData API change which happened between the official KDE 3.91.0
-// and the snapshot kde-windows is using. If the new API is used, klocale.h is
-// included by kaboutdata.h.
-#include <kaboutdata.h>
-#ifdef KLOCALE_H
-#define NEW_KABOUTDATA_API
-#endif
-
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
@@ -36,6 +28,7 @@
 #include <QSettings>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
+#include <kaboutdata.h>
 #include <QTextCodec>
 #include <QIcon>
 #include <QSize> 
@@ -49,17 +42,8 @@
 #include "tpr.h"
 using namespace std;
 
-#ifdef NEW_KABOUTDATA_API
 // convert to KLocalizedString without translating (we don't support NLS)
 #define KLS(x) ki18nc("untranslatable",(x))
-#else
-static KCmdLineOptions options[] =
-{
-    { "+[file]", "Project or file to open at startup", 0 },
-    KCmdLineLastOption
-};
-#define KLS(x) (x)
-#endif
 
 const char *tigcc_base;
 char tempdir[]="/tmp/ktigccXXXXXX";
@@ -87,10 +71,7 @@ int main(int argc, char *argv[])
   // characters lost converting!
   QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
 
-  KAboutData about("ktigcc",
-#ifdef NEW_KABOUTDATA_API
-  QByteArray(), // catalogName
-#endif
+  KAboutData about("ktigcc", QByteArray(), // catalogName
   KLS("TIGCC IDE for KDE"),"1.80",
   KLS("TIGCC C and ASM SDK"), KAboutData::License_GPL,
   KLS("Copyright (C) 2004-2007 Kevin Kofler and Joey Adams. All rights reserved.\n"
@@ -107,10 +88,8 @@ int main(int argc, char *argv[])
   "http://tigcc.ticalc.org/linux/", "Bugs@tigcc.ticalc.org");
   pabout=&about;
   KCmdLineArgs::init(argc,argv,&about);
-#ifdef NEW_KABOUTDATA_API
   KCmdLineOptions options;
   options.add("+[file]", KLS("Project or file to open at startup"));
-#endif
   KCmdLineArgs::addCmdLineOptions(options);
   KCmdLineArgs::addStdCmdLineOptions();
   KApplication app;
