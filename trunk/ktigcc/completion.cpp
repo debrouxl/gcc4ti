@@ -619,8 +619,8 @@ QVariant CompletionModel::data(const QModelIndex &index, int role) const
       return (int)Public|GlobalScope;
     case ScopeIndex:
       return -1;
-    case MatchType:
-      return true;
+    case MatchQuality:
+      return 10;
     case HighlightingMethod:
       return QVariant();
     case InheritanceDepth:
