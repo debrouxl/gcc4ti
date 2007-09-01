@@ -1,6 +1,6 @@
 Name: ktigcc
 Version: 1.08
-Release: 1
+Release: 2
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}.tar.bz2
@@ -116,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/doc/ktigcc
 
 %changelog
+* Sun Sep 2 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.08-2
+Rebuild for tilibs soname bumps.
+
 * Mon Jul 9 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Pass CXXFLAGS on the qmake command line instead of the environment.
 Install into PREFIX=/usr.
