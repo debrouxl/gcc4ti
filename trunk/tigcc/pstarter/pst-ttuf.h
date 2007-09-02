@@ -257,13 +257,13 @@ jbne invalid_archive
 |	d7 => which bit we are at in the compressed data.
 |-----------------------------------------------------------------------
 
-CORRECT_IN_MASK	MACRO
+.macro correct_in_mask
 	tst.b		%d7
-	bne.s		\@fun
+	bne.s		0f
 	moveq		#8,%d7
 	move.b	(%a6)+,%d6
-\@fun
-	ENDM
+0:
+.endm
 
 
 
@@ -330,10 +330,10 @@ ttunpack_decompress:
 |To remove checking if escbits == 0 in the literal byte
 |  loop, there are two points used for continuing.
 |--------------------------------------------------------
-	lea		__ReturnPointForNonZeroEscapeBits(pc),%a4
+	lea		__ReturnPointForNonZeroEscapeBits(%pc),%a4
 	tst.b		%d4
 	bne.s		__Skipper
-	lea		__SelIsStartEscape(pc),%a4
+	lea		__SelIsStartEscape(%pc),%a4
 __Skipper:
 |--------------------------------------------------------
 |a2 will point to a table that maps a byte to the
@@ -380,7 +380,7 @@ __SelIsNOTStartEscape:
 |  sel = (escbits) ? __GetBits(escbits) : startesc;
 |  if (sel == startesc) {
 |---------------------------------------------------------
-__ReturnPointForNonZeroEscapeBits
+__ReturnPointForNonZeroEscapeBits:
 	move.b	%d6,-(%a7)
 	move.w	(%a7)+,%d0
 	move.b	(%a6)+,%d6
@@ -433,7 +433,7 @@ __LzPosHi_IsNot254:
 	beq.s		__extralZposBitsIsZero
 	lsl.w		%d1,%d0				|shift it by 'extralzposbits'
 	moveq		#0,%d1
-	bset.w	%d7,%d1
+	bset.l	%d7,%d1
 	subq.w	#1,%d1
 	and.b		%d6,%d1
 	sub.w		%a1,%d7
@@ -603,7 +603,7 @@ __NextBitClear_DoZipAfterAll:
 __GetValue:					|This function has a goal of counting till it finds
 	moveq		#0,%d0
 	move.w	%d7,%d1
-	bset.w	%d7,%d0
+	bset.l	%d7,%d0
 	subq.w	#1,%d0			|made the mask
 	and.b		%d0,%d6			|mask out bits of interest, clear bits that we have already
 						|  passed by
@@ -627,7 +627,7 @@ __SameByte:
 	moveq		#0,%d0
 	subq.b	#1,%d1
 	beq.s       __inl_exit4
-	bset.w	%d7,%d0
+	bset.l	%d7,%d0
 	subq.w	#1,%d0
 	and.b		%d6,%d0
 	sub.w		%d1,%d7
