@@ -1,5 +1,5 @@
 | TIGCC Program Starter - ttunpack decompression support (fast & large version)
-| Copyright (C) 2004-2005 Samuel Stearley, Kevin Kofler
+| Copyright (C) 2004-2007 Samuel Stearley, Kevin Kofler
 |
 | THE LICENSE:
 |
@@ -123,6 +123,7 @@ jbne invalid_archive
 |
 | 2006-03-20 Kevin Kofler: Ported to GNU as. Removed options not used in
 |                          pstarter.
+| 2007-09-02 Kevin Kofler: Fixed GNU as port to actually build.
 |
 |THE LICENSE:
 |
