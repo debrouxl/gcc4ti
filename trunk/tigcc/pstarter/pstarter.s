@@ -1,5 +1,5 @@
 | TIGCC Program Starter
-| Copyright (C) 2004-2005 Kevin Kofler, Lionel Debroux.
+| Copyright (C) 2004-2007 Kevin Kofler, Lionel Debroux.
 |
 | This launcher is free software; you can redistribute it and/or
 | modify it under the terms of the GNU Lesser General Public
@@ -511,10 +511,9 @@ rts
 
 .data
 
-.byte 0
-ProgramName:      | program name
-.asciz "tempprog" | to be patched in by TIGCC
-
 DecompressedHandle: .word 0 | handle to free, 0 if no freeing needed
 CompressedHandle: .word 0 | handle to unlock, 0 if no unlocking needed
 
+.byte 0
+ProgramName:      | program name
+.asciz "tempprog" | to be patched in by TIGCC
