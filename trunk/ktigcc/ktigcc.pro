@@ -118,9 +118,16 @@ win32 {
   INCLUDEPATH += $$KDEINCDIR
 
   KDELIBDIR = $$KDEPREFIX/lib$$system(kde4-config --libsuffix)
+  KDEDEVELLIBDIR = $$KDELIBDIR
+  exists($$KDEDEVELLIBDIR/kde4/devel) {
+    KDEDEVELLIBDIR = $$KDEDEVELLIBDIR/kde4/devel
+  }
+
+  !equals(KDEDEVELLIBDIR,/usr/lib):!equals(KDEDEVELLIBDIR,/usr/lib64) {
+    QMAKE_LIBDIR = $$KDEDEVELLIBDIR $$QMAKE_LIBDIR
+  }
 
   !equals(KDELIBDIR,/usr/lib):!equals(KDELIBDIR,/usr/lib64) {
-    QMAKE_LIBDIR = $$KDELIBDIR $$QMAKE_LIBDIR
     !darwin-*:!macx-* {
       LIBS += -Wl,--rpath,"$$KDELIBDIR"
     }
