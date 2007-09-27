@@ -234,9 +234,6 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
     disableViewEvents=FALSE; \
   } while(0)
 
-// For some reason, this flag is not in the public ConfigFlags enum.
-#define CF_REMOVE_TRAILING_DYN 0x4000000
-
 static Q3ListViewItem *currentListItem;
 static Q3ListViewItem *replaceCurrentDocument;
 static int replaceCurrentLine;

@@ -108,9 +108,6 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
 #define CURRENT_VIEW (this->kateView)
 #define HL_MODE ((hlEnabled && *hlEnabled)?hlMode:"None")
 
-// For some reason, this flag is not in the public ConfigFlags enum.
-#define CF_REMOVE_TRAILING_DYN 0x4000000
-
 class KReplaceWithSelectionS : public KReplace {
   public:
     KReplaceWithSelectionS(const QString &pattern, const QString &replacement,
