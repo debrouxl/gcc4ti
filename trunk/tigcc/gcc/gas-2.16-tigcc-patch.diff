@@ -9,6 +9,18 @@ diff -Naur binutils-2.16.1.orig/bfd/config.bfd binutils-2.16.1-src/bfd/config.bf
      ;;
    m68*-*-hpux*)
      targ_defvec=hp300hpux_vec
+diff -Naur binutils-2.16.1.orig/bfd/opncls.c binutils-2.16.1-src/bfd/opncls.c
+--- binutils-2.16.1.orig/bfd/opncls.c	2005-03-07 11:32:38.000000000 +0100
++++ binutils-2.16.1-src/bfd/opncls.c	2007-10-02 16:12:11.000000000 +0200
+@@ -483,7 +483,7 @@
+   nbfd->filename = filename;
+   nbfd->direction = read_direction;
+ 
+-  stream = open (nbfd, open_closure);
++  stream = (open) (nbfd, open_closure);
+   if (stream == NULL)
+     {
+       _bfd_delete_bfd (nbfd);
 diff -Naur binutils-2.16.1.orig/gas/as.c binutils-2.16.1-src/gas/as.c
 --- binutils-2.16.1.orig/gas/as.c	2005-03-03 02:29:52.000000000 +0100
 +++ binutils-2.16.1-src/gas/as.c	2007-02-18 22:05:31.000000000 +0100
