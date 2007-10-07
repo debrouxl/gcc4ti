@@ -1151,6 +1151,14 @@ BOOLEAN FixupRelativeReloc (RELOC *Reloc)
 			if (Result)
 				FreeReloc (Reloc);
 		}
+#ifdef DEBUGGING_INFO_SUPPORT
+		// If this is the .deleted section, ignore this error, as it can legitimately happen and doesn't matter anyway.
+		else if (Section->DebuggingInfoType == DI_DELETED)
+		{
+			Result = TRUE;
+			FreeReloc (Reloc);
+		}
+#endif
 		else
 			Error (CurFileName, "Relative reloc at 0x%lX to `%s' in different section.", (long) Reloc->Location, Reloc->Target.SymbolName);
 	}
