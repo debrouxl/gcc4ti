@@ -8747,13 +8747,13 @@ diff -Naur gcc-4.1.2.orig/gcc/varasm.c gcc-4.1.2-src/gcc/varasm.c
  enum section_category
 diff -Naur gcc-4.1.2.orig/gcc/version.c gcc-4.1.2-src/gcc/version.c
 --- gcc-4.1.2.orig/gcc/version.c	2005-03-16 07:04:10.000000000 +0100
-+++ gcc-4.1.2-src/gcc/version.c	2007-04-17 16:44:02.000000000 +0200
++++ gcc-4.1.2-src/gcc/version.c	2007-10-08 07:41:43.000000000 +0200
 @@ -8,7 +8,7 @@
     in parentheses.  You may also wish to include a number indicating
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.2-tigcc-2)"
++#define VERSUFFIX " (TIGCC 4.1.2-tigcc-3)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
@@ -8779,7 +8779,7 @@ diff -Naur gcc-4.1.2.orig/libcpp/directives.c gcc-4.1.2-src/libcpp/directives.c
    /* New GCC-specific pragmas should be put in the GCC namespace.  */
 diff -Naur gcc-4.1.2.orig/libcpp/expr.c gcc-4.1.2-src/libcpp/expr.c
 --- gcc-4.1.2.orig/libcpp/expr.c	2005-06-29 04:34:39.000000000 +0200
-+++ gcc-4.1.2-src/libcpp/expr.c	2007-02-19 02:32:34.000000000 +0100
++++ gcc-4.1.2-src/libcpp/expr.c	2007-10-08 07:38:20.000000000 +0200
 @@ -171,6 +171,13 @@
  	  radix = 16;
  	  str++;
@@ -8794,7 +8794,7 @@ diff -Naur gcc-4.1.2.orig/libcpp/expr.c gcc-4.1.2-src/libcpp/expr.c
      }
  
    /* Now scan for a well-formed integer or float.  */
-@@ -205,11 +212,15 @@
+@@ -205,14 +212,25 @@
  	}
      }
  
@@ -8813,20 +8813,34 @@ diff -Naur gcc-4.1.2.orig/libcpp/expr.c gcc-4.1.2-src/libcpp/expr.c
  
    if (float_flag != NOT_FLOAT)
      {
-@@ -293,6 +304,12 @@
++      if (radix == 2)
++	{
++	  cpp_error (pfile, CPP_DL_ERROR,
++		     "invalid prefix \"0b\" for floating constant");
++	  return CPP_N_INVALID;
++	}
++
+       if (radix == 16 && CPP_PEDANTIC (pfile) && !CPP_OPTION (pfile, c99))
+ 	cpp_error (pfile, CPP_DL_PEDWARN,
+ 		   "use of C99 hexadecimal floating constant");
+@@ -288,11 +306,16 @@
+   if ((result & CPP_N_IMAGINARY) && CPP_PEDANTIC (pfile))
+     cpp_error (pfile, CPP_DL_PEDWARN,
+ 	       "imaginary constants are a GCC extension");
++  if (radix == 2 && CPP_PEDANTIC (pfile))
++    cpp_error (pfile, CPP_DL_PEDWARN,
++	       "binary constants are a GCC extension");
+ 
+   if (radix == 10)
      result |= CPP_N_DECIMAL;
    else if (radix == 16)
      result |= CPP_N_HEX;
 +  else if (radix == 2)
-+    {
-+      if (CPP_PEDANTIC (pfile))
-+        cpp_error(pfile, CPP_DL_PEDWARN, "binary constants are a TIGCC extension");
-+      result |= CPP_N_BINARY;
-+    }
++    result |= CPP_N_BINARY;
    else
      result |= CPP_N_OCTAL;
  
-@@ -343,6 +360,11 @@
+@@ -343,6 +366,11 @@
  	  base = 16;
  	  p += 2;
  	}
@@ -8838,6 +8852,34 @@ diff -Naur gcc-4.1.2.orig/libcpp/expr.c gcc-4.1.2-src/libcpp/expr.c
  
        /* We can add a digit to numbers strictly less than this without
  	 needing the precision and slowness of double integers.  */
+@@ -398,12 +426,25 @@
+ append_digit (cpp_num num, int digit, int base, size_t precision)
+ {
+   cpp_num result;
+-  unsigned int shift = 3 + (base == 16);
++  unsigned int shift;
+   bool overflow;
+   cpp_num_part add_high, add_low;
+ 
+-  /* Multiply by 8 or 16.  Catching this overflow here means we don't
++  /* Multiply by 2, 8 or 16.  Catching this overflow here means we don't
+      need to worry about add_high overflowing.  */
++  switch (base)
++    {
++    case 2:
++      shift = 1;
++      break;
++
++    case 16:
++      shift = 4;
++      break;
++
++    default:
++      shift = 3;
++    }
+   overflow = !!(num.high >> (PART_PRECISION - shift));
+   result.high = num.high << shift;
+   result.low = num.low << shift;
 diff -Naur gcc-4.1.2.orig/libcpp/files.c gcc-4.1.2-src/libcpp/files.c
 --- gcc-4.1.2.orig/libcpp/files.c	2005-11-04 03:10:19.000000000 +0100
 +++ gcc-4.1.2-src/libcpp/files.c	2007-02-19 02:32:34.000000000 +0100
