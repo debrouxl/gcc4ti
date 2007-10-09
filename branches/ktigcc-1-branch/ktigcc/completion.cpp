@@ -113,8 +113,8 @@ static bool findSymbolInFileRecursive(const QString &symbol,
     const QString &headerName=*it;
     QString headerText=mainForm->textForHeader(headerName);
     if (!headerText.isNull()) {
-      if (!findSymbolInFile(symbol,headerText,headerName,mainForm,symbolFile,
-                            symbolLine,systemHeader))
+      if (!findSymbolInFileRecursive(symbol,headerText,headerName,mainForm,
+                                     symbolFile,symbolLine,systemHeader))
         return false;
       if (!symbolFile.isNull()) return true;
     }
@@ -185,7 +185,7 @@ static bool completionEntriesForFileRecursive(const QString &fileText,
     const QString &headerName=*it;
     QString headerText=mainForm->textForHeader(headerName);
     if (!headerText.isNull())
-      if (!completionEntriesForFile(headerText,headerName,mainForm,result))
+      if (!completionEntriesForFileRecursive(headerText,headerName,mainForm,result))
         return false;
   }
   return true;
