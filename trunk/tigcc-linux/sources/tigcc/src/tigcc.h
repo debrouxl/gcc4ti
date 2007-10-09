@@ -2,7 +2,7 @@
  *  stuffs.
  *  Copyright (C) 2001 John David Ratliff
  *  Copyright (C) 2001-2002 Romain Liévin
- *  Copyright (C) 2002-2006 Kevin Kofler
+ *  Copyright (C) 2002-2007 Kevin Kofler
  *  Modified by Nils Gesbert, 2003
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #define _TIGCC_H
 
 #define VERSION "1.3.2"
-#define TIGCC_VERSION "0.96 Beta 8 r1"
+#define TIGCC_VERSION "0.96 Beta 9 r1"
 
 /* global enumerations */
 enum Boolean 	{FALSE,TRUE};
