@@ -1,6 +1,6 @@
 Name: ktigcc
-Version: 1.08
-Release: 2
+Version: 1.09
+Release: 1
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}.tar.bz2
@@ -116,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/doc/ktigcc
 
 %changelog
+* Tue Oct 9 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.09-1
+Bump version to 1.09.
+
 * Sun Sep 2 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.08-2
 Rebuild for tilibs soname bumps.
 

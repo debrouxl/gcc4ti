@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
   if (KDE::version() < KDE_MAKE_VERSION(3,5,7))
     qFatal("KDE 3.5.7 or higher required");
 
-  KAboutData about("ktigcc","TIGCC IDE for KDE","1.08",
+  KAboutData about("ktigcc","TIGCC IDE for KDE","1.09",
   "TIGCC C and ASM SDK", KAboutData::License_GPL,
   "Copyright (C) 2004-2007 Kevin Kofler and Joey Adams. All rights reserved.\n"
   "TIGCC Copyright (C) 1999-2007 The TIGCC Team.",
