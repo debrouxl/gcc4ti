@@ -5,9 +5,9 @@ Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}-%{version}.tar.bz2
 Group: Development/Tools
-License: GPL
-BuildRequires: qt4-devel >= 4.2.0 kdelibs4-devel = 3.92.0 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
-Requires: kdelibs4 = 3.92.0 kdebase4 = 3.92.0 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt4-doc ctags
+License: GPLv2+
+BuildRequires: qt4-devel >= 4.2.0 kdelibs4-devel = 3.94.0 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
+Requires: kdelibs4 = 3.94.0 kdebase4 = 3.94.0 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt4-doc ctags
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: KTIGCC is an IDE for TIGCC using KDE
 %description
@@ -116,6 +116,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/doc/ktigcc
 
 %changelog
+* Fri Oct 19 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
+Require kdelibs 3.94.0.
+Specify GPL version in License tag.
+
 * Tue Jul 31 2007 Kevin Kofler <Kevin@tigcc.ticalc.org>
 Require kdelibs 3.92.0.
 
