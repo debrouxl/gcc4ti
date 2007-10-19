@@ -37,6 +37,7 @@
 #include <ktexteditor/codecompletionmodel.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <cstring>
 #include "completion.h"
 #include "parsing.h"
@@ -458,7 +459,7 @@ bool parseSystemHeaders(QWidget *parent, const QString &directory,
 
 void loadSystemHeaderCompletion(void)
 {
-  KConfig config("data","ktigcc/completion",KConfig::NoGlobals);
+  KConfig config("ktigcc/completion",KConfig::CascadeConfig,"data");
   QStringList groupList=config.groupList();
   if (groupList.isEmpty()) {
     KMessageBox::queuedMessageBox(0,KMessageBox::Sorry,
@@ -477,17 +478,17 @@ void loadSystemHeaderCompletion(void)
   foreach (const QString &key, groupList) {
     if (key.endsWith(" Lines")) continue;
     CompletionInfo completionInfo;
-    config.setGroup(key);
-    completionInfo.includedSystem=config.readListEntry("Included");
-    unsigned numEntries=config.readUnsignedNumEntry("Num Entries");
+    KConfigGroup group=config.group(key);
+    completionInfo.includedSystem=group.readEntry("Included",QStringList());
+    unsigned numEntries=group.readEntry("Num Entries",0u);
     for (unsigned i=0; i<numEntries; i++) {
       CompletionEntry entry;
-      entry.type=config.readEntry(QString("Entry %1 Type").arg(i));
-      entry.text=config.readEntry(QString("Entry %1 Text").arg(i));
-      entry.prefix=config.readEntry(QString("Entry %1 Prefix").arg(i));
-      entry.postfix=config.readEntry(QString("Entry %1 Postfix").arg(i));
-      entry.comment=config.readEntry(QString("Entry %1 Comment").arg(i));
-      entry.userdata=config.readEntry(QString("Entry %1 User Data").arg(i));
+      entry.type=group.readEntry(QString("Entry %1 Type").arg(i));
+      entry.text=group.readEntry(QString("Entry %1 Text").arg(i));
+      entry.prefix=group.readEntry(QString("Entry %1 Prefix").arg(i));
+      entry.postfix=group.readEntry(QString("Entry %1 Postfix").arg(i));
+      entry.comment=group.readEntry(QString("Entry %1 Comment").arg(i));
+      entry.userdata=group.readEntry(QString("Entry %1 User Data").arg(i));
       completionInfo.entries.append(entry);
     }
     QMap<QString,QString> entryMap=config.entryMap(key+" Lines");
@@ -500,27 +501,27 @@ void loadSystemHeaderCompletion(void)
 
 void saveSystemHeaderCompletion(void)
 {
-  KConfig config("data","ktigcc/completion",KConfig::NoGlobals);
+  KConfig config("ktigcc/completion",KConfig::CascadeConfig,"data");
   for (QMap<QString,CompletionInfo>::ConstIterator it=systemHeaderCompletion.begin();
        it!=systemHeaderCompletion.end(); ++it) {
     const QString &key=it.key();
     const CompletionInfo &completionInfo=*it;
-    config.setGroup(key);
-    config.writeEntry("Included",completionInfo.includedSystem);
+    KConfigGroup group=config.group(key);
+    group.writeEntry("Included",completionInfo.includedSystem);
     unsigned i=0;
     foreach (const CompletionEntry &entry, completionInfo.entries) {
-      config.writeEntry(QString("Entry %1 Type").arg(i),entry.type);
-      config.writeEntry(QString("Entry %1 Text").arg(i),entry.text);
-      config.writeEntry(QString("Entry %1 Prefix").arg(i),entry.prefix);
-      config.writeEntry(QString("Entry %1 Postfix").arg(i),entry.postfix);
-      config.writeEntry(QString("Entry %1 Comment").arg(i),entry.comment);
-      config.writeEntry(QString("Entry %1 User Data").arg(i++),entry.userdata);
+      group.writeEntry(QString("Entry %1 Type").arg(i),entry.type);
+      group.writeEntry(QString("Entry %1 Text").arg(i),entry.text);
+      group.writeEntry(QString("Entry %1 Prefix").arg(i),entry.prefix);
+      group.writeEntry(QString("Entry %1 Postfix").arg(i),entry.postfix);
+      group.writeEntry(QString("Entry %1 Comment").arg(i),entry.comment);
+      group.writeEntry(QString("Entry %1 User Data").arg(i++),entry.userdata);
     }
-    config.writeEntry("Num Entries",i);
-    config.setGroup(key+" Lines");
+    group.writeEntry("Num Entries",i);
+    KConfigGroup linesGroup=config.group(key+" Lines");
     for (QMap<QString,unsigned>::ConstIterator it=completionInfo.lineNumbers.begin();
          it!=completionInfo.lineNumbers.end(); ++it)
-      config.writeEntry(it.key(),*it);
+      linesGroup.writeEntry(it.key(),*it);
   }
   config.sync();
 }

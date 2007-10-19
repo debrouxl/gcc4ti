@@ -27,6 +27,7 @@
 #include <kio/netaccess.h>
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
+#include <kconfiggroup.h>
 #include <kpushbutton.h> 
 #include <QVariant>
 #include <QImage>
@@ -75,10 +76,8 @@ bool NewsDialog::loadNews()
 {
   QString tmpFile;
   bool result=FALSE;
-  pconfig->setGroup("News Headlines");
-  QDateTime defaultDateTime;
-  QDate latestHeadline=pconfig->readDateTimeEntry("Latest Headline",
-                                                  &defaultDateTime).date();
+  KConfigGroup config=pconfig->group("News Headlines");
+  QDate latestHeadline=config.readEntry("Latest Headline",QDateTime()).date();
   if(KIO::NetAccess::download(
       KUrl("http://tigcc.ticalc.org/linux/newsheadlines.txt"),tmpFile,this)) {
     #define ERROR(s) do {KMessageBox::error(this,(s)); goto done;} while(0)
@@ -106,7 +105,7 @@ bool NewsDialog::loadNews()
       if (std::sscanf(line,"%4u%2u%2u",&y,&m,&d)<3) ERROR("Invalid news file.");
       if (latestHeadline.isNull() || QDate(y,m,d)>latestHeadline) {
         if (!result) {
-          pconfig->writeEntry("Latest Headline",QDateTime(QDate(y,m,d)));
+          config.writeEntry("Latest Headline",QDateTime(QDate(y,m,d)));
           pconfig->sync();
         }
         result=itemIsNew=TRUE;

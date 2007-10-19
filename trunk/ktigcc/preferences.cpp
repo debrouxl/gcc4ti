@@ -40,6 +40,7 @@
 #include <QPair>
 #include <QLinkedList>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include "ktigcc.h"
 #include "preferences.h"
 #include "preferencesdlg.h"
@@ -438,44 +439,44 @@ static void checkSynHighlightVersions(void)
 
 static bool loadSyntaxPreference(Syn_SettingsForDoc &synprefs, const QString &group)
 {
-  pconfig->setGroup(group+" Syntax Highlighting");
-  synprefs.enabled=pconfig->readBoolEntry("Enabled",true);
-  synprefs.numberColor=pconfig->readEntry("Number Color",QColor());
+  KConfigGroup config=pconfig->group(group+" Syntax Highlighting");
+  synprefs.enabled=config.readEntry("Enabled",true);
+  synprefs.numberColor=config.readEntry("Number Color",QColor());
   if (!synprefs.numberColor.isValid()) return FALSE;
-  synprefs.symbolColor=pconfig->readEntry("Symbol Color",QColor());
+  synprefs.symbolColor=config.readEntry("Symbol Color",QColor());
   if (!synprefs.symbolColor.isValid()) return FALSE;
-  unsigned numParenthesisColors=pconfig->readUnsignedNumEntry("Num Parenthesis Colors");
+  unsigned numParenthesisColors=config.readEntry("Num Parenthesis Colors",0u);
   for (unsigned i=0; i<numParenthesisColors; i++) {
-    QColor parenthesisColor=pconfig->readEntry(QString("Parenthesis Color %1").arg(i),QColor());
+    QColor parenthesisColor=config.readEntry(QString("Parenthesis Color %1").arg(i),QColor());
     if (!parenthesisColor.isValid()) return FALSE;
     synprefs.parenthesisColors.append(parenthesisColor);
   }
-  synprefs.numberStyle=pconfig->readUnsignedNumEntry("Number Style");
-  synprefs.symbolStyle=pconfig->readUnsignedNumEntry("Symbol Style");
-  synprefs.parenthesisStyle=pconfig->readUnsignedNumEntry("Parenthesis Style");
-  unsigned numCustomStyles=pconfig->readUnsignedNumEntry("Num Custom Styles");
+  synprefs.numberStyle=config.readEntry("Number Style",0u);
+  synprefs.symbolStyle=config.readEntry("Symbol Style",0u);
+  synprefs.parenthesisStyle=config.readEntry("Parenthesis Style",0u);
+  unsigned numCustomStyles=config.readEntry("Num Custom Styles",0u);
   for (unsigned i=0; i<numCustomStyles; i++) {
     Syn_CustomStyle customStyle;
-    customStyle.name=pconfig->readEntry(QString("Custom Style %1 Name").arg(i),QString("Style %1").arg(i));
-    customStyle.beginning=pconfig->readEntry(QString("Custom Style %1 Beginning").arg(i));
-    customStyle.ending=pconfig->readEntry(QString("Custom Style %1 Ending").arg(i));
+    customStyle.name=config.readEntry(QString("Custom Style %1 Name").arg(i),QString("Style %1").arg(i));
+    customStyle.beginning=config.readEntry(QString("Custom Style %1 Beginning").arg(i));
+    customStyle.ending=config.readEntry(QString("Custom Style %1 Ending").arg(i));
     if (customStyle.ending=="\\s") customStyle.ending=" "; // work around KDE bug
-    QString ignoreEndingAfter=pconfig->readEntry(QString("Custom Style %1 Ignore Ending After").arg(i));
+    QString ignoreEndingAfter=config.readEntry(QString("Custom Style %1 Ignore Ending After").arg(i));
     customStyle.ignoreEndingAfter=ignoreEndingAfter.isEmpty()?QChar():ignoreEndingAfter[0];
-    customStyle.switchable=pconfig->readBoolEntry(QString("Custom Style %1 Switchable").arg(i));
-    customStyle.lineStartOnly=pconfig->readBoolEntry(QString("Custom Style %1 Line Start Only").arg(i));
-    customStyle.color=pconfig->readEntry(QString("Custom Style %1 Color").arg(i),QColor());
-    customStyle.style=pconfig->readUnsignedNumEntry(QString("Custom Style %1 Style").arg(i));
+    customStyle.switchable=config.readEntry(QString("Custom Style %1 Switchable").arg(i),false);
+    customStyle.lineStartOnly=config.readEntry(QString("Custom Style %1 Line Start Only").arg(i),false);
+    customStyle.color=config.readEntry(QString("Custom Style %1 Color").arg(i),QColor());
+    customStyle.style=config.readEntry(QString("Custom Style %1 Style").arg(i),0u);
     synprefs.customStyles.append(customStyle);
   }
-  unsigned numWordLists=pconfig->readUnsignedNumEntry("Num Word Lists");
+  unsigned numWordLists=config.readEntry("Num Word Lists",0u);
   for (unsigned i=0; i<numWordLists; i++) {
     Syn_WordList wordList;
-    wordList.name=pconfig->readEntry(QString("Word List %1 Name").arg(i),QString("Word List %1").arg(i));
-    wordList.list=pconfig->readListEntry(QString("Word List %1 List").arg(i));
-    wordList.color=pconfig->readEntry(QString("Word List %1 Color").arg(i),QColor());
-    wordList.style=pconfig->readUnsignedNumEntry(QString("Word List %1 Style").arg(i));
-    wordList.caseSensitive=pconfig->readBoolEntry(QString("Word List %1 Case Sensitive").arg(i));
+    wordList.name=config.readEntry(QString("Word List %1 Name").arg(i),QString("Word List %1").arg(i));
+    wordList.list=config.readEntry(QString("Word List %1 List").arg(i),QStringList());
+    wordList.color=config.readEntry(QString("Word List %1 Color").arg(i),QColor());
+    wordList.style=config.readEntry(QString("Word List %1 Style").arg(i),0u);
+    wordList.caseSensitive=config.readEntry(QString("Word List %1 Case Sensitive").arg(i),false);
     synprefs.wordLists.append(wordList);
   }
   return TRUE;
@@ -492,38 +493,38 @@ static bool loadSyntaxPreferences(void)
 static void saveSyntaxPreference(const Syn_SettingsForDoc &synprefs, const QString &group)
 {
   unsigned i;
-  pconfig->setGroup(group+" Syntax Highlighting");
-  pconfig->writeEntry("Enabled",synprefs.enabled);
-  pconfig->writeEntry("Number Color",synprefs.numberColor);
-  pconfig->writeEntry("Symbol Color",synprefs.symbolColor);
+  KConfigGroup config=pconfig->group(group+" Syntax Highlighting");
+  config.writeEntry("Enabled",synprefs.enabled);
+  config.writeEntry("Number Color",synprefs.numberColor);
+  config.writeEntry("Symbol Color",synprefs.symbolColor);
   i=0;
   foreach (const QColor &color, synprefs.parenthesisColors)
-    pconfig->writeEntry(QString("Parenthesis Color %1").arg(i++),color);
-  pconfig->writeEntry("Num Parenthesis Colors",i);
-  pconfig->writeEntry("Number Style",(unsigned)synprefs.numberStyle);
-  pconfig->writeEntry("Symbol Style",(unsigned)synprefs.symbolStyle);
-  pconfig->writeEntry("Parenthesis Style",(unsigned)synprefs.parenthesisStyle);
+    config.writeEntry(QString("Parenthesis Color %1").arg(i++),color);
+  config.writeEntry("Num Parenthesis Colors",i);
+  config.writeEntry("Number Style",(unsigned)synprefs.numberStyle);
+  config.writeEntry("Symbol Style",(unsigned)synprefs.symbolStyle);
+  config.writeEntry("Parenthesis Style",(unsigned)synprefs.parenthesisStyle);
   i=0;
   foreach (const Syn_CustomStyle &customStyle, synprefs.customStyles) {
-    pconfig->writeEntry(QString("Custom Style %1 Name").arg(i),customStyle.name);
-    pconfig->writeEntry(QString("Custom Style %1 Beginning").arg(i),customStyle.beginning);
-    pconfig->writeEntry(QString("Custom Style %1 Ending").arg(i),customStyle.ending);
-    pconfig->writeEntry(QString("Custom Style %1 Ignore Ending After").arg(i),QString(customStyle.ignoreEndingAfter));
-    pconfig->writeEntry(QString("Custom Style %1 Switchable").arg(i),customStyle.switchable);
-    pconfig->writeEntry(QString("Custom Style %1 Line Start Only").arg(i),customStyle.lineStartOnly);
-    pconfig->writeEntry(QString("Custom Style %1 Color").arg(i),customStyle.color);
-    pconfig->writeEntry(QString("Custom Style %1 Style").arg(i++),(unsigned)customStyle.style);
+    config.writeEntry(QString("Custom Style %1 Name").arg(i),customStyle.name);
+    config.writeEntry(QString("Custom Style %1 Beginning").arg(i),customStyle.beginning);
+    config.writeEntry(QString("Custom Style %1 Ending").arg(i),customStyle.ending);
+    config.writeEntry(QString("Custom Style %1 Ignore Ending After").arg(i),QString(customStyle.ignoreEndingAfter));
+    config.writeEntry(QString("Custom Style %1 Switchable").arg(i),customStyle.switchable);
+    config.writeEntry(QString("Custom Style %1 Line Start Only").arg(i),customStyle.lineStartOnly);
+    config.writeEntry(QString("Custom Style %1 Color").arg(i),customStyle.color);
+    config.writeEntry(QString("Custom Style %1 Style").arg(i++),(unsigned)customStyle.style);
   }
-  pconfig->writeEntry("Num Custom Styles",i);
+  config.writeEntry("Num Custom Styles",i);
   i=0;
   foreach (const Syn_WordList &wordList, synprefs.wordLists) {
-    pconfig->writeEntry(QString("Word List %1 Name").arg(i),wordList.name);
-    pconfig->writeEntry(QString("Word List %1 List").arg(i),wordList.list);
-    pconfig->writeEntry(QString("Word List %1 Color").arg(i),wordList.color);
-    pconfig->writeEntry(QString("Word List %1 Style").arg(i),(unsigned)wordList.style);
-    pconfig->writeEntry(QString("Word List %1 Case Sensitive").arg(i++),wordList.caseSensitive);
+    config.writeEntry(QString("Word List %1 Name").arg(i),wordList.name);
+    config.writeEntry(QString("Word List %1 List").arg(i),wordList.list);
+    config.writeEntry(QString("Word List %1 Color").arg(i),wordList.color);
+    config.writeEntry(QString("Word List %1 Style").arg(i),(unsigned)wordList.style);
+    config.writeEntry(QString("Word List %1 Case Sensitive").arg(i++),wordList.caseSensitive);
   }
-  pconfig->writeEntry("Num Word Lists",i);
+  config.writeEntry("Num Word Lists",i);
 }
 
 static void saveSyntaxPreferences(void)
@@ -1592,105 +1593,76 @@ static void defaultSynHighlight(void)
 static void updateEditorPreferences(void)
 {
   KConfig kateschema("kateschemarc");
+  KConfigGroup kateNormal=kateschema.group("kate - Normal");
+  KConfigGroup ktigccNormal=kateschema.group("ktigcc - Normal");
   QColor color;
   if (preferences.useBgColor) {
-    kateschema.setGroup("ktigcc - Normal");
-    kateschema.writeEntry("Color Background",preferences.bgColor);
-    kateschema.writeEntry("Color Highlighted Line",preferences.bgColor);
+    ktigccNormal.writeEntry("Color Background",preferences.bgColor);
+    ktigccNormal.writeEntry("Color Highlighted Line",preferences.bgColor);
   } else {
-    kateschema.setGroup("kate - Normal");
-    color=kateschema.readEntry("Color Background",QColor(255,255,255));
-    kateschema.setGroup("ktigcc - Normal");
-    kateschema.writeEntry("Color Background",color);
-    kateschema.setGroup("kate - Normal");
-    color=kateschema.readEntry("Color Highlighted Line",QColor(240,240,240));
-    kateschema.setGroup("ktigcc - Normal");
-    kateschema.writeEntry("Color Highlighted Line",color);
+    color=kateNormal.readEntry("Color Background",QColor(255,255,255));
+    ktigccNormal.writeEntry("Color Background",color);
+    color=kateNormal.readEntry("Color Highlighted Line",QColor(240,240,240));
+    ktigccNormal.writeEntry("Color Highlighted Line",color);
   }
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color Highlighted Bracket",QColor(255,255,153));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color Highlighted Bracket",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color Icon Bar",QColor(234,233,232));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color Icon Bar",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color Line Number",QColor(0,0,0));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color Line Number",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color MarkType1",QColor(0,0,255));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color MarkType1",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color MarkType2",QColor(255,0,0));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color MarkType2",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color MarkType3",QColor(255,255,0));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color MarkType3",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color MarkType4",QColor(255,0,255));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color MarkType4",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color MarkType5",QColor(160,160,164));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color MarkType5",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color MarkType6",QColor(0,255,0));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color MarkType6",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color MarkType7",QColor(255,0,0));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color MarkType7",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color Selection",QColor(76,89,166));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color Selection",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color Tab Marker",QColor(0,0,0));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color Tab Marker",color);
-  kateschema.setGroup("kate - Normal");
-  color=kateschema.readEntry("Color Word Wrap Marker",QColor(120,120,120));
-  kateschema.setGroup("ktigcc - Normal");
-  kateschema.writeEntry("Color Word Wrap Marker",color);
-  kateschema.writeEntry("Font",preferences.editorFont);
+  color=kateNormal.readEntry("Color Highlighted Bracket",QColor(255,255,153));
+  ktigccNormal.writeEntry("Color Highlighted Bracket",color);
+  color=kateNormal.readEntry("Color Icon Bar",QColor(234,233,232));
+  ktigccNormal.writeEntry("Color Icon Bar",color);
+  color=kateNormal.readEntry("Color Line Number",QColor(0,0,0));
+  ktigccNormal.writeEntry("Color Line Number",color);
+  color=kateNormal.readEntry("Color MarkType1",QColor(0,0,255));
+  ktigccNormal.writeEntry("Color MarkType1",color);
+  color=kateNormal.readEntry("Color MarkType2",QColor(255,0,0));
+  ktigccNormal.writeEntry("Color MarkType2",color);
+  color=kateNormal.readEntry("Color MarkType3",QColor(255,255,0));
+  ktigccNormal.writeEntry("Color MarkType3",color);
+  color=kateNormal.readEntry("Color MarkType4",QColor(255,0,255));
+  ktigccNormal.writeEntry("Color MarkType4",color);
+  color=kateNormal.readEntry("Color MarkType5",QColor(160,160,164));
+  ktigccNormal.writeEntry("Color MarkType5",color);
+  color=kateNormal.readEntry("Color MarkType6",QColor(0,255,0));
+  ktigccNormal.writeEntry("Color MarkType6",color);
+  color=kateNormal.readEntry("Color MarkType7",QColor(255,0,0));
+  ktigccNormal.writeEntry("Color MarkType7",color);
+  color=kateNormal.readEntry("Color Selection",QColor(76,89,166));
+  ktigccNormal.writeEntry("Color Selection",color);
+  color=kateNormal.readEntry("Color Tab Marker",QColor(0,0,0));
+  ktigccNormal.writeEntry("Color Tab Marker",color);
+  color=kateNormal.readEntry("Color Word Wrap Marker",QColor(120,120,120));
+  ktigccNormal.writeEntry("Color Word Wrap Marker",color);
+  ktigccNormal.writeEntry("Font",preferences.editorFont);
 }
 
 void loadPreferences(void)
 {
   // This doesn't really _load_ a preference...
   if (!pconfig->hasGroup("Kate Document Defaults")) {
-    pconfig->setGroup("Kate Document Defaults");
-    pconfig->writeEntry("Tab Handling",0);
-    pconfig->writeEntry("Basic Config Flags",0x1000020u);
+    KConfigGroup docDefaults=pconfig->group("Kate Document Defaults");
+    docDefaults.writeEntry("Tab Handling",0);
+    docDefaults.writeEntry("Basic Config Flags",0x1000020u);
     pconfig->sync();
   }
 
-  pconfig->setGroup("Preferences");
+  KConfigGroup config=pconfig->group("Preferences");
 
   // General
-  preferences.stopAtFirstError=pconfig->readBoolEntry("Stop at First Error",false);
-  preferences.jumpToError=pconfig->readBoolEntry("Jump to Error",true);
-  preferences.successMessage=pconfig->readBoolEntry("Success Message",true);
-  preferences.deleteAsmFiles=pconfig->readBoolEntry("Delete Asm Files",true);
-  preferences.deleteObjFiles=pconfig->readBoolEntry("Delete Object Files",false);
-  preferences.splitSourceFiles=pconfig->readBoolEntry("Split Source Files",true);
-  preferences.allowImplicitDeclaration=pconfig->readBoolEntry("Allow Implicit Declaration",true);
-  preferences.autoSave=pconfig->readBoolEntry("Auto Save",true);
-  preferences.downloadHeadlines=pconfig->readBoolEntry("Download Headlines",false);
-  preferences.deleteOverwrittenErrors=pconfig->readBoolEntry("Delete Overwritten Errors",true);
-  preferences.useSystemIcons=pconfig->readBoolEntry("Use System Icons",true);
+  preferences.stopAtFirstError=config.readEntry("Stop at First Error",false);
+  preferences.jumpToError=config.readEntry("Jump to Error",true);
+  preferences.successMessage=config.readEntry("Success Message",true);
+  preferences.deleteAsmFiles=config.readEntry("Delete Asm Files",true);
+  preferences.deleteObjFiles=config.readEntry("Delete Object Files",false);
+  preferences.splitSourceFiles=config.readEntry("Split Source Files",true);
+  preferences.allowImplicitDeclaration=config.readEntry("Allow Implicit Declaration",true);
+  preferences.autoSave=config.readEntry("Auto Save",true);
+  preferences.downloadHeadlines=config.readEntry("Download Headlines",false);
+  preferences.deleteOverwrittenErrors=config.readEntry("Delete Overwritten Errors",true);
+  preferences.useSystemIcons=config.readEntry("Use System Icons",true);
 
   // Transfer
-  preferences.linkTarget=(LinkTargets)pconfig->readNumEntry("Link Target",LT_NONE);
-  preferences.linkPort=(CablePort)pconfig->readNumEntry("Link Port",PORT_1);
-  preferences.linkCable=(CableModel)pconfig->readNumEntry("Link Cable",CABLE_GRY);
+  preferences.linkTarget=(LinkTargets)config.readEntry("Link Target",(int)LT_NONE);
+  preferences.linkPort=(CablePort)config.readEntry("Link Port",(int)PORT_1);
+  preferences.linkCable=(CableModel)config.readEntry("Link Cable",(int)CABLE_GRY);
   // Don't allow selecting a USB cable if libticables2 has been compiled without
   // USB support or if USB support can't be used.
   if (!have_usb) {
@@ -1701,25 +1673,25 @@ void loadPreferences(void)
   }
 
   // Editor
-  preferences.tabWidthC=pconfig->readUnsignedNumEntry("Tab Width C",2);
-  preferences.tabWidthAsm=pconfig->readUnsignedNumEntry("Tab Width Asm",8);
-  preferences.useBgColor=pconfig->readBoolEntry("Use Background Color",false);
-  preferences.bgColor=pconfig->readEntry("Background Color",QColor(255,255,255));
-  preferences.editorFont=pconfig->readEntry("Editor Font",QFont("Monospace",10));
-  preferences.useCalcCharset=pconfig->readBoolEntry("Use Calc Charset",true);
-  preferences.autoBlocks=pconfig->readBoolEntry("Auto Blocks",true);
-  preferences.removeTrailingSpaces=pconfig->readBoolEntry("Remove Trailing Spaces",false);
+  preferences.tabWidthC=config.readEntry("Tab Width C",2u);
+  preferences.tabWidthAsm=config.readEntry("Tab Width Asm",8u);
+  preferences.useBgColor=config.readEntry("Use Background Color",false);
+  preferences.bgColor=config.readEntry("Background Color",QColor(255,255,255));
+  preferences.editorFont=config.readEntry("Editor Font",QFont("Monospace",10));
+  preferences.useCalcCharset=config.readEntry("Use Calc Charset",true);
+  preferences.autoBlocks=config.readEntry("Auto Blocks",true);
+  preferences.removeTrailingSpaces=config.readEntry("Remove Trailing Spaces",false);
 
   updateEditorPreferences();
 
   // Coding
-  if (pconfig->hasKey("Num Coding Templates")) {
-    unsigned numTemplates=pconfig->readUnsignedNumEntry("Num Coding Templates");
+  if (config.hasKey("Num Coding Templates")) {
+    unsigned numTemplates=config.readEntry("Num Coding Templates",0u);
     preferences.templates.clear();
     for (unsigned i=0; i<numTemplates; i++) {
       preferences.templates.append(qMakePair(
-        pconfig->readEntry(QString("Coding Template %1 Name").arg(i)),
-        pconfig->readEntry(QString("Coding Template %1 Text").arg(i))));
+        config.readEntry(QString("Coding Template %1 Name").arg(i)),
+        config.readEntry(QString("Coding Template %1 Text").arg(i))));
     }
   } else {
     preferences.templates.clear();
@@ -1742,35 +1714,35 @@ void loadPreferences(void)
 
 void savePreferences(void)
 {
-  pconfig->setGroup("Preferences");
+  KConfigGroup config=pconfig->group("Preferences");
 
   // General
-  pconfig->writeEntry("Stop at First Error",(bool)preferences.stopAtFirstError);
-  pconfig->writeEntry("Jump to Error",(bool)preferences.jumpToError);
-  pconfig->writeEntry("Success Message",(bool)preferences.successMessage);
-  pconfig->writeEntry("Delete Asm Files",(bool)preferences.deleteAsmFiles);
-  pconfig->writeEntry("Delete Object Files",(bool)preferences.deleteObjFiles);
-  pconfig->writeEntry("Split Source Files",(bool)preferences.splitSourceFiles);
-  pconfig->writeEntry("Allow Implicit Declaration",(bool)preferences.allowImplicitDeclaration);
-  pconfig->writeEntry("Auto Save",(bool)preferences.autoSave);
-  pconfig->writeEntry("Download Headlines",(bool)preferences.downloadHeadlines);
-  pconfig->writeEntry("Delete Overwritten Errors",(bool)preferences.deleteOverwrittenErrors);
-  pconfig->writeEntry("Use System Icons",(bool)preferences.useSystemIcons);
+  config.writeEntry("Stop at First Error",(bool)preferences.stopAtFirstError);
+  config.writeEntry("Jump to Error",(bool)preferences.jumpToError);
+  config.writeEntry("Success Message",(bool)preferences.successMessage);
+  config.writeEntry("Delete Asm Files",(bool)preferences.deleteAsmFiles);
+  config.writeEntry("Delete Object Files",(bool)preferences.deleteObjFiles);
+  config.writeEntry("Split Source Files",(bool)preferences.splitSourceFiles);
+  config.writeEntry("Allow Implicit Declaration",(bool)preferences.allowImplicitDeclaration);
+  config.writeEntry("Auto Save",(bool)preferences.autoSave);
+  config.writeEntry("Download Headlines",(bool)preferences.downloadHeadlines);
+  config.writeEntry("Delete Overwritten Errors",(bool)preferences.deleteOverwrittenErrors);
+  config.writeEntry("Use System Icons",(bool)preferences.useSystemIcons);
 
   // Transfer
-  pconfig->writeEntry("Link Target",(int)preferences.linkTarget);
-  pconfig->writeEntry("Link Port",(int)preferences.linkPort);
-  pconfig->writeEntry("Link Cable",(int)preferences.linkCable);
+  config.writeEntry("Link Target",(int)preferences.linkTarget);
+  config.writeEntry("Link Port",(int)preferences.linkPort);
+  config.writeEntry("Link Cable",(int)preferences.linkCable);
 
   // Editor
-  pconfig->writeEntry("Tab Width C",(unsigned)preferences.tabWidthC);
-  pconfig->writeEntry("Tab Width Asm",(unsigned)preferences.tabWidthAsm);
-  pconfig->writeEntry("Use Background Color",(bool)preferences.useBgColor);
-  pconfig->writeEntry("Background Color",preferences.bgColor);
-  pconfig->writeEntry("Editor Font",preferences.editorFont);
-  pconfig->writeEntry("Use Calc Charset",(bool)preferences.useCalcCharset);
-  pconfig->writeEntry("Auto Blocks",(bool)preferences.autoBlocks);
-  pconfig->writeEntry("Remove Trailing Spaces",(bool)preferences.removeTrailingSpaces);
+  config.writeEntry("Tab Width C",(unsigned)preferences.tabWidthC);
+  config.writeEntry("Tab Width Asm",(unsigned)preferences.tabWidthAsm);
+  config.writeEntry("Use Background Color",(bool)preferences.useBgColor);
+  config.writeEntry("Background Color",preferences.bgColor);
+  config.writeEntry("Editor Font",preferences.editorFont);
+  config.writeEntry("Use Calc Charset",(bool)preferences.useCalcCharset);
+  config.writeEntry("Auto Blocks",(bool)preferences.autoBlocks);
+  config.writeEntry("Remove Trailing Spaces",(bool)preferences.removeTrailingSpaces);
 
   updateEditorPreferences();
 
@@ -1778,10 +1750,10 @@ void savePreferences(void)
   unsigned i=0;
   typedef const QPair<QString,QString> &StringPairConstRef;
   foreach (StringPairConstRef pair, preferences.templates) {
-    pconfig->writeEntry(QString("Coding Template %1 Name").arg(i),pair.first);
-    pconfig->writeEntry(QString("Coding Template %1 Text").arg(i++),pair.second);
+    config.writeEntry(QString("Coding Template %1 Name").arg(i),pair.first);
+    config.writeEntry(QString("Coding Template %1 Text").arg(i++),pair.second);
   }
-  pconfig->writeEntry("Num Coding Templates",i);
+  config.writeEntry("Num Coding Templates",i);
 
   // Syntax, save to disk
   saveSyntaxPreferences();

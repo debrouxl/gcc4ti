@@ -1281,27 +1281,27 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
     debugRunAction->setVisible(FALSE);
     debugPauseAction->setVisible(FALSE);
   }
-  pconfig->setGroup("Recent files");
+  KConfigGroup recentFiles=pconfig->group("Recent files");
   if (parg) {
     QString fileName=QDir().absoluteFilePath(parg);
     if (!openProject(fileName)) goto openRecent;
   } else {
     openRecent:;
-    QString mostrecent=pconfig->readEntry("Current project");
+    QString mostrecent=recentFiles.readEntry("Current project");
     if (!mostrecent.isNull() && !mostrecent.isEmpty())
       openProject(mostrecent);
   }
   updateRecent();
-  pconfig->setGroup("Tools");
-  unsigned toolCount=pconfig->readUnsignedNumEntry("Count",0);
+  KConfigGroup toolsConfig=pconfig->group("Tools");
+  unsigned toolCount=toolsConfig.readEntry("Count",0u);
   tools.resize(toolCount);
   for (unsigned idx=0; idx<toolCount; idx++) {
     pconfig->setGroup(QString("Tool %1").arg(idx));
     Tool &tool=tools[idx];
-    tool.title=pconfig->readEntry("Title");
-    tool.commandLine=pconfig->readEntry("Command Line");
-    tool.workingDirectory=pconfig->readEntry("Working Directory");
-    tool.runInTerminal=pconfig->readBoolEntry("Terminal");
+    tool.title=toolsConfig.readEntry("Title");
+    tool.commandLine=toolsConfig.readEntry("Command Line");
+    tool.workingDirectory=toolsConfig.readEntry("Working Directory");
+    tool.runInTerminal=toolsConfig.readEntry("Terminal",false);
   }
   updateToolsMenu();
   connect(toolsMenu,SIGNAL(activated(int)),this,SLOT(toolsMenu_activated(int)));
@@ -1658,8 +1658,8 @@ void MainForm::fileNewProject()
   if (compiling || savePrompt())
     return;
   clearProject();
-  pconfig->setGroup("Recent files");
-  pconfig->writeEntry("Current project","");
+  KConfigGroup recentFiles=pconfig->group("Recent files");
+  recentFiles.writeEntry("Current project","");
   pconfig->sync();
 }
 
@@ -1735,8 +1735,8 @@ QStringList MainForm::SGetFileName_Multiple(const QString &fileFilter,const QStr
 
 void MainForm::updateRecent()
 {
-  pconfig->setGroup("Recent files");
-  QString recent=pconfig->readEntry("Recent file 1");
+  KConfigGroup recentFiles=pconfig->group("Recent files");
+  QString recent=recentFiles.readEntry("Recent file 1");
   if (recent.isNull())
     fileRecent1Action->setVisible(FALSE);
   else {
@@ -1746,7 +1746,7 @@ void MainForm::updateRecent()
     fileRecent1Action->setText(recentcut);
     fileRecent1Action->setStatusTip(recent);
   }
-  recent=pconfig->readEntry("Recent file 2");
+  recent=recentFiles.readEntry("Recent file 2");
   if (recent.isNull())
     fileRecent2Action->setVisible(FALSE);
   else {
@@ -1756,7 +1756,7 @@ void MainForm::updateRecent()
     fileRecent2Action->setText(recentcut);
     fileRecent2Action->setStatusTip(recent);
   }
-  recent=pconfig->readEntry("Recent file 3");
+  recent=recentFiles.readEntry("Recent file 3");
   if (recent.isNull())
     fileRecent3Action->setVisible(FALSE);
   else {
@@ -1766,7 +1766,7 @@ void MainForm::updateRecent()
     fileRecent3Action->setText(recentcut);
     fileRecent3Action->setStatusTip(recent);
   }
-  recent=pconfig->readEntry("Recent file 4");
+  recent=recentFiles.readEntry("Recent file 4");
   if (recent.isNull())
     fileRecent4Action->setVisible(FALSE);
   else {
@@ -1784,21 +1784,21 @@ void MainForm::addRecent(const QString &fileName)
   // Pick up any changes to the list of recent files from other instances
   pconfig->sync();
   pconfig->reparseConfiguration();
-  pconfig->setGroup("Recent files");
+  KConfigGroup recentFiles=pconfig->group("Recent files");
   // Find recent file to overwrite. If it isn't one of the first 3, by
   // elimination, it is the last, thus the test only goes up to <4, not <=4.
   for (i=1;i<4;i++) {
-    QString recenti=pconfig->readEntry(QString("Recent file %1").arg(i));
+    QString recenti=recentFiles.readEntry(QString("Recent file %1").arg(i));
     if (recenti.isNull() || !recenti.compare(fileName))
       break;
   }
   // Move entries up
   for (j=i;j>1;j--) {
-    pconfig->writeEntry(QString("Recent file %1").arg(j),pconfig->readEntry(QString("Recent file %1").arg(j-1)));
+    recentFiles.writeEntry(QString("Recent file %1").arg(j),recentFiles.readEntry(QString("Recent file %1").arg(j-1)));
   }
   // The first recent file is the current project.
-  pconfig->writeEntry("Recent file 1",fileName);
-  pconfig->writeEntry("Current project",fileName);
+  recentFiles.writeEntry("Recent file 1",fileName);
+  recentFiles.writeEntry("Current project",fileName);
   pconfig->sync();
   updateRecent();
 }
@@ -5072,18 +5072,18 @@ void MainForm::toolsConfigure()
   ToolsDialog toolsDialog(this);
   toolsDialog.exec();
   if (toolsDialog.result()==QDialog::Accepted) {
-    pconfig->setGroup("Tools");
+    KConfigGroup toolsConfig=pconfig->group("Tools");
     unsigned toolCount=tools.count();
-    pconfig->writeEntry("Count",toolCount);
+    toolsConfig.writeEntry("Count",toolCount);
     for (unsigned idx=0; idx<toolCount; idx++) {
       pconfig->setGroup(QString("Tool %1").arg(idx));
       Tool &tool=tools[idx];
-      pconfig->writeEntry("Title",tool.title);
-      pconfig->writeEntry("Command Line",tool.commandLine);
-      pconfig->writeEntry("Working Directory",tool.workingDirectory);
-      pconfig->writeEntry("Terminal",tool.runInTerminal);
-      pconfig->sync();
+      toolsConfig.writeEntry("Title",tool.title);
+      toolsConfig.writeEntry("Command Line",tool.commandLine);
+      toolsConfig.writeEntry("Working Directory",tool.workingDirectory);
+      toolsConfig.writeEntry("Terminal",tool.runInTerminal);
     }
+    pconfig->sync();
     updateToolsMenu();
   }
 }
