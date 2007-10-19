@@ -1207,17 +1207,14 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
     editCopyAction->setIcon(KIcon("edit-copy"));
     editPasteAction->setIcon(KIcon("edit-paste"));
     projectAddFilesAction->setIcon(KIcon("edit-add"));
-    projectCompileAction->setIcon(KIcon("compfile"));
-    projectMakeAction->setIcon(KIcon("make-kdevelop"));
+    projectCompileAction->setIcon(KIcon("run-build-file"));
+    projectMakeAction->setIcon(KIcon("run-build"));
     projectBuildAction->setIcon(KIcon("rebuild"));
     helpContentsAction->setIcon(KIcon("help-contents"));
     helpDocumentationAction->setIcon(KIcon("help-contents"));
-    helpSearchAction->setIcon(KIcon("file-find"));
+    helpSearchAction->setIcon(KIcon("system-search"));
     findFindAction->setIcon(KIcon("edit-find"));
-    if (KIconLoader::global()->iconPath("edit-find-replace",KIconLoader::Small,TRUE).isEmpty())
-      findReplaceAction->setIcon(KIcon("file-find"));
-    else
-      findReplaceAction->setIcon(KIcon("edit-find-replace"));
+    findReplaceAction->setIcon(KIcon("edit-find-replace"));
     helpIndexAction->setIcon(KIcon("fileview-text"));
     editUndoAction->setIcon(KIcon("edit-undo"));
     editRedoAction->setIcon(KIcon("edit-redo"));
@@ -2693,17 +2690,14 @@ void MainForm::filePreferences()
       editCopyAction->setIcon(KIcon("edit-copy"));
       editPasteAction->setIcon(KIcon("edit-paste"));
       projectAddFilesAction->setIcon(KIcon("edit-add"));
-      projectCompileAction->setIcon(KIcon("compfile"));
-      projectMakeAction->setIcon(KIcon("make-kdevelop"));
+      projectCompileAction->setIcon(KIcon("run-build-file"));
+      projectMakeAction->setIcon(KIcon("run-build"));
       projectBuildAction->setIcon(KIcon("rebuild"));
       helpContentsAction->setIcon(KIcon("help-contents"));
       helpDocumentationAction->setIcon(KIcon("help-contents"));
-      helpSearchAction->setIcon(KIcon("file-find"));
+      helpSearchAction->setIcon(KIcon("system-search"));
       findFindAction->setIcon(KIcon("edit-find"));
-      if (KIconLoader::global()->iconPath("edit-find-replace",KIconLoader::Small,TRUE).isEmpty())
-        findReplaceAction->setIcon(KIcon("file-find"));
-      else
-        findReplaceAction->setIcon(KIcon("edit-find-replace"));
+      findReplaceAction->setIcon(KIcon("edit-find-replace"));
       helpIndexAction->setIcon(KIcon("fileview-text"));
       editUndoAction->setIcon(KIcon("edit-undo"));
       editRedoAction->setIcon(KIcon("edit-redo"));

@@ -276,7 +276,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileSaveAction->setIcon(KIcon("document-save"));
     fileAddToProjectAction->setIcon(KIcon("edit-add"));
-    fileCompileAction->setIcon(KIcon("compfile"));
+    fileCompileAction->setIcon(KIcon("run-build-file"));
     filePrintAction->setIcon(KIcon("document-print"));
     filePrintQuicklyAction->setIcon(KIcon("document-print"));
     editClearAction->setIcon(KIcon("edit-delete"));
@@ -284,10 +284,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
     editCopyAction->setIcon(KIcon("edit-copy"));
     editPasteAction->setIcon(KIcon("edit-paste"));
     findFindAction->setIcon(KIcon("edit-find"));
-    if (KIconLoader::global()->iconPath("edit-find-replace",KIconLoader::Small,TRUE).isEmpty())
-      findReplaceAction->setIcon(KIcon("file-find"));
-    else
-      findReplaceAction->setIcon(KIcon("edit-find-replace"));
+    findReplaceAction->setIcon(KIcon("edit-find-replace"));
     editUndoAction->setIcon(KIcon("edit-undo"));
     editRedoAction->setIcon(KIcon("edit-redo"));
     findFunctionsAction->setIcon(KIcon("view-tree"));
@@ -672,7 +669,7 @@ void SourceFileWindow::applyPreferences()
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileSaveAction->setIcon(KIcon("document-save"));
     fileAddToProjectAction->setIcon(KIcon("edit-add"));
-    fileCompileAction->setIcon(KIcon("compfile"));
+    fileCompileAction->setIcon(KIcon("run-build-file"));
     filePrintAction->setIcon(KIcon("document-print"));
     filePrintQuicklyAction->setIcon(KIcon("document-print"));
     editClearAction->setIcon(KIcon("edit-delete"));
@@ -680,10 +677,7 @@ void SourceFileWindow::applyPreferences()
     editCopyAction->setIcon(KIcon("edit-copy"));
     editPasteAction->setIcon(KIcon("edit-paste"));
     findFindAction->setIcon(KIcon("edit-find"));
-    if (KIconLoader::global()->iconPath("edit-find-replace",KIconLoader::Small,TRUE).isEmpty())
-      findReplaceAction->setIcon(KIcon("file-find"));
-    else
-      findReplaceAction->setIcon(KIcon("edit-find-replace"));
+    findReplaceAction->setIcon(KIcon("edit-find-replace"));
     editUndoAction->setIcon(KIcon("edit-undo"));
     editRedoAction->setIcon(KIcon("edit-redo"));
     findFunctionsAction->setIcon(KIcon("view-tree"));
