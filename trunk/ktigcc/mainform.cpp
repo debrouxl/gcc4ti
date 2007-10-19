@@ -1256,7 +1256,7 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
   findFunctionsButton->setMenu(findFunctionsPopup);
   errorListDock=new QDockWidget("Errors and Warnings",this);
   errorListDock->setFloating(false);
-  errorListDock->setFeatures(QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable);
+  errorListDock->setFeatures(QDockWidget::DockWidgetClosable);
   errorListDock->setAllowedAreas(Qt::BottomDockWidgetArea);
   errorList=new ErrorList(errorListDock);
   errorListDock->setWidget(errorList);
