@@ -1296,12 +1296,12 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
   unsigned toolCount=toolsConfig.readEntry("Count",0u);
   tools.resize(toolCount);
   for (unsigned idx=0; idx<toolCount; idx++) {
-    pconfig->setGroup(QString("Tool %1").arg(idx));
+    KConfigGroup toolConfig=pconfig->group(QString("Tool %1").arg(idx));
     Tool &tool=tools[idx];
-    tool.title=toolsConfig.readEntry("Title");
-    tool.commandLine=toolsConfig.readEntry("Command Line");
-    tool.workingDirectory=toolsConfig.readEntry("Working Directory");
-    tool.runInTerminal=toolsConfig.readEntry("Terminal",false);
+    tool.title=toolConfig.readEntry("Title");
+    tool.commandLine=toolConfig.readEntry("Command Line");
+    tool.workingDirectory=toolConfig.readEntry("Working Directory");
+    tool.runInTerminal=toolConfig.readEntry("Terminal",false);
   }
   updateToolsMenu();
   connect(toolsMenu,SIGNAL(activated(int)),this,SLOT(toolsMenu_activated(int)));
@@ -5076,12 +5076,12 @@ void MainForm::toolsConfigure()
     unsigned toolCount=tools.count();
     toolsConfig.writeEntry("Count",toolCount);
     for (unsigned idx=0; idx<toolCount; idx++) {
-      pconfig->setGroup(QString("Tool %1").arg(idx));
+      KConfigGroup toolConfig=pconfig->group(QString("Tool %1").arg(idx));
       Tool &tool=tools[idx];
-      toolsConfig.writeEntry("Title",tool.title);
-      toolsConfig.writeEntry("Command Line",tool.commandLine);
-      toolsConfig.writeEntry("Working Directory",tool.workingDirectory);
-      toolsConfig.writeEntry("Terminal",tool.runInTerminal);
+      toolConfig.writeEntry("Title",tool.title);
+      toolConfig.writeEntry("Command Line",tool.commandLine);
+      toolConfig.writeEntry("Working Directory",tool.workingDirectory);
+      toolConfig.writeEntry("Terminal",tool.runInTerminal);
     }
     pconfig->sync();
     updateToolsMenu();
