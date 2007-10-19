@@ -226,7 +226,7 @@ enum {TIGCCOpenProjectFileFilter,TIGCCAddFilesFilter};
                                         othFileCount)
 #define CURRENT_VIEW (static_cast<KTextEditor::View *>(widgetStack->visibleWidget()))
 
-#define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),K3Icon::Small,K3Icon::SizeSmall):QPixmap(":/images/" name))
+#define SYSICON(sysname,name) (preferences.useSystemIcons?KIconLoader::global()->loadIcon((sysname),KIconLoader::Small,KIconLoader::SizeSmall):QPixmap(":/images/" name))
 
 #define SET_TEXT_SAFE(doc,text) do { \
     disableViewEvents=TRUE; \
@@ -1194,7 +1194,7 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
   if (preferences.useSystemIcons) {
     // Set the preferred icon size so system toolbar icons don't get annoying
     // padding.
-    int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+    int toolbarIconSize=KIconLoader().currentSize(KIconLoader::MainToolbar);
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileNewAction->setIcon(KIcon("document-new"));
     fileNewMenu->menuAction()->setIcon(KIcon("document-new"));
@@ -1214,7 +1214,7 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
     helpDocumentationAction->setIcon(KIcon("help-contents"));
     helpSearchAction->setIcon(KIcon("file-find"));
     findFindAction->setIcon(KIcon("edit-find"));
-    if (KIconLoader::global()->iconPath("edit-find-replace",K3Icon::Small,TRUE).isEmpty())
+    if (KIconLoader::global()->iconPath("edit-find-replace",KIconLoader::Small,TRUE).isEmpty())
       findReplaceAction->setIcon(KIcon("file-find"));
     else
       findReplaceAction->setIcon(KIcon("edit-find-replace"));
@@ -2680,7 +2680,7 @@ void MainForm::filePreferences()
     if (preferences.useSystemIcons) {
       // Set the preferred icon size so system toolbar icons don't get annoying
       // padding.
-      int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+      int toolbarIconSize=KIconLoader().currentSize(KIconLoader::MainToolbar);
       setIconSize(QSize(toolbarIconSize,toolbarIconSize));
       fileNewAction->setIcon(KIcon("document-new"));
       fileNewMenu->menuAction()->setIcon(KIcon("document-new"));
@@ -2700,7 +2700,7 @@ void MainForm::filePreferences()
       helpDocumentationAction->setIcon(KIcon("help-contents"));
       helpSearchAction->setIcon(KIcon("file-find"));
       findFindAction->setIcon(KIcon("edit-find"));
-      if (KIconLoader::global()->iconPath("edit-find-replace",K3Icon::Small,TRUE).isEmpty())
+      if (KIconLoader::global()->iconPath("edit-find-replace",KIconLoader::Small,TRUE).isEmpty())
         findReplaceAction->setIcon(KIcon("file-find"));
       else
         findReplaceAction->setIcon(KIcon("edit-find-replace"));

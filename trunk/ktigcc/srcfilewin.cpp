@@ -272,7 +272,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
   if (preferences.useSystemIcons) {
     // Set the preferred icon size so system toolbar icons don't get annoying
     // padding.
-    int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+    int toolbarIconSize=KIconLoader().currentSize(KIconLoader::MainToolbar);
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileSaveAction->setIcon(KIcon("document-save"));
     fileAddToProjectAction->setIcon(KIcon("edit-add"));
@@ -284,7 +284,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
     editCopyAction->setIcon(KIcon("edit-copy"));
     editPasteAction->setIcon(KIcon("edit-paste"));
     findFindAction->setIcon(KIcon("edit-find"));
-    if (KIconLoader::global()->iconPath("edit-find-replace",K3Icon::Small,TRUE).isEmpty())
+    if (KIconLoader::global()->iconPath("edit-find-replace",KIconLoader::Small,TRUE).isEmpty())
       findReplaceAction->setIcon(KIcon("file-find"));
     else
       findReplaceAction->setIcon(KIcon("edit-find-replace"));
@@ -668,7 +668,7 @@ void SourceFileWindow::applyPreferences()
   if (preferences.useSystemIcons) {
     // Set the preferred icon size so system toolbar icons don't get annoying
     // padding.
-    int toolbarIconSize=KIconLoader().currentSize(K3Icon::MainToolbar);
+    int toolbarIconSize=KIconLoader().currentSize(KIconLoader::MainToolbar);
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileSaveAction->setIcon(KIcon("document-save"));
     fileAddToProjectAction->setIcon(KIcon("edit-add"));
@@ -680,7 +680,7 @@ void SourceFileWindow::applyPreferences()
     editCopyAction->setIcon(KIcon("edit-copy"));
     editPasteAction->setIcon(KIcon("edit-paste"));
     findFindAction->setIcon(KIcon("edit-find"));
-    if (KIconLoader::global()->iconPath("edit-find-replace",K3Icon::Small,TRUE).isEmpty())
+    if (KIconLoader::global()->iconPath("edit-find-replace",KIconLoader::Small,TRUE).isEmpty())
       findReplaceAction->setIcon(KIcon("file-find"));
     else
       findReplaceAction->setIcon(KIcon("edit-find-replace"));
