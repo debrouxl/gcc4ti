@@ -619,11 +619,11 @@ void DnDListView::dropEvent(QDropEvent *e) {
           }
           // update icon
           currItem->setPixmap(0,
-            destCategory==cFilesListItem||destCategory==qllFilesListItem?SYSICON("source-c","filec.png"):
-            destCategory==hFilesListItem?SYSICON("source-h","fileh.png"):
-            destCategory==sFilesListItem||destCategory==asmFilesListItem?SYSICON("source-s","files.png"):
-            destCategory==txtFilesListItem?SYSICON("txt","filet.png"):
-            destCategory==oFilesListItem||destCategory==aFilesListItem?SYSICON("binary","fileo.png"):
+            destCategory==cFilesListItem||destCategory==qllFilesListItem?SYSICON("text-x-csrc","filec.png"):
+            destCategory==hFilesListItem?SYSICON("text-x-chdr","fileh.png"):
+            destCategory==sFilesListItem||destCategory==asmFilesListItem?SYSICON("text-x-hex","files.png"):
+            destCategory==txtFilesListItem?SYSICON("text-plain","filet.png"):
+            destCategory==oFilesListItem||destCategory==aFilesListItem?SYSICON("application-x-object","fileo.png"):
             SYSICON("unknown","filex.png"));
         }
       } else if (IS_FILE(item)) {
@@ -1821,11 +1821,11 @@ Q3ListViewItem * MainForm::openFile(Q3ListViewItem * category, Q3ListViewItem * 
   newFile->modifiedSinceLastCompile=FALSE;
   newFile->setText(0,fileCaption);
   newFile->setPixmap(0,
-    category==cFilesListItem||category==qllFilesListItem?SYSICON("source-c","filec.png"):
-    category==hFilesListItem?SYSICON("source-h","fileh.png"):
-    category==sFilesListItem||category==asmFilesListItem?SYSICON("source-s","files.png"):
-    category==txtFilesListItem?SYSICON("txt","filet.png"):
-    category==oFilesListItem||category==aFilesListItem?SYSICON("binary","fileo.png"):
+    category==cFilesListItem||category==qllFilesListItem?SYSICON("text-x-csrc","filec.png"):
+    category==hFilesListItem?SYSICON("text-x-chdr","fileh.png"):
+    category==sFilesListItem||category==asmFilesListItem?SYSICON("text-x-hex","files.png"):
+    category==txtFilesListItem?SYSICON("text-plain","filet.png"):
+    category==oFilesListItem||category==aFilesListItem?SYSICON("application-x-object","fileo.png"):
     SYSICON("unknown","filex.png"));
   newFile->fileName=fileName;
   if (IS_EDITABLE_CATEGORY(category)) {
@@ -1972,10 +1972,10 @@ void MainForm::adoptSourceFile(void *srcFile)
   newFile->isNew=FALSE;
   newFile->setText(0,caption);
   newFile->setPixmap(0,
-    category==cFilesListItem||category==qllFilesListItem?SYSICON("source-c","filec.png"):
-    category==hFilesListItem?SYSICON("source-h","fileh.png"):
-    category==sFilesListItem||category==asmFilesListItem?SYSICON("source-s","files.png"):
-    SYSICON("txt","filet.png"));
+    category==cFilesListItem||category==qllFilesListItem?SYSICON("text-x-csrc","filec.png"):
+    category==hFilesListItem?SYSICON("text-x-chdr","fileh.png"):
+    category==sFilesListItem||category==asmFilesListItem?SYSICON("text-x-hex","files.png"):
+    SYSICON("text-plain","filet.png"));
   newFile->fileName=fileName;
   newFile->modifiedSinceLastCompile=newView->document()->isModified();
   // Adopt View object.
@@ -2659,11 +2659,11 @@ void MainForm::filePreferences()
             "None"));
         }
         item->setPixmap(0,
-          category==cFilesListItem||category==qllFilesListItem?SYSICON("source-c","filec.png"):
-          category==hFilesListItem?SYSICON("source-h","fileh.png"):
-          category==sFilesListItem||category==asmFilesListItem?SYSICON("source-s","files.png"):
-          category==txtFilesListItem?SYSICON("txt","filet.png"):
-          category==oFilesListItem||category==aFilesListItem?SYSICON("binary","fileo.png"):
+          category==cFilesListItem||category==qllFilesListItem?SYSICON("text-x-csrc","filec.png"):
+          category==hFilesListItem?SYSICON("text-x-chdr","fileh.png"):
+          category==sFilesListItem||category==asmFilesListItem?SYSICON("text-x-hex","files.png"):
+          category==txtFilesListItem?SYSICON("text-plain","filet.png"):
+          category==oFilesListItem||category==aFilesListItem?SYSICON("application-x-object","fileo.png"):
           SYSICON("unknown","filex.png"));
       } else qWarning("Internal error: What's this item?");
     }
@@ -5759,11 +5759,11 @@ void MainForm::newFile( Q3ListViewItem *parent )
                  "// Main Function\nvoid _main(void)\n{\n"
                  "\t// Place your code here.\n}\n"):"")),
                  category==cFilesListItem||category==qllFilesListItem
-                                                    ?SYSICON("source-c","filec.png"):
-                 category==hFilesListItem?SYSICON("source-h","fileh.png"):
+                                                    ?SYSICON("text-x-csrc","filec.png"):
+                 category==hFilesListItem?SYSICON("text-x-chdr","fileh.png"):
                  category==sFilesListItem||category==asmFilesListItem
-                                                    ?SYSICON("source-s","files.png"):
-                 category==txtFilesListItem?SYSICON("txt","filet.png"):SYSICON("unknown","filex.png"));
+                                                    ?SYSICON("text-x-hex","files.png"):
+                 category==txtFilesListItem?SYSICON("text-plain","filet.png"):SYSICON("unknown","filex.png"));
 }
 
 Q3ListViewItem *MainForm::resolveParent(Q3ListViewItem *category)
@@ -5783,21 +5783,21 @@ Q3ListViewItem *MainForm::resolveParent(Q3ListViewItem *category)
 void MainForm::fileNewCHeader()
 {
   if (compiling) return;
-  newFile(resolveParent(hFilesListItem),"// Header File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source-h","fileh.png"));
+  newFile(resolveParent(hFilesListItem),"// Header File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("text-x-chdr","fileh.png"));
 }
 
 
 void MainForm::fileNewGNUAssemblyHeader()
 {
   if (compiling) return;
-  newFile(resolveParent(hFilesListItem),"| Header File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source-h","fileh.png"));
+  newFile(resolveParent(hFilesListItem),"| Header File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("text-x-chdr","fileh.png"));
 }
 
 
 void MainForm::fileNewA68kAssemblyHeader()
 {
   if (compiling) return;
-  newFile(resolveParent(hFilesListItem),"; Header File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source-h","fileh.png"));
+  newFile(resolveParent(hFilesListItem),"; Header File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("text-x-chdr","fileh.png"));
 }
 
 
@@ -5811,28 +5811,28 @@ void MainForm::fileNewCSourceFile()
 void MainForm::fileNewGNUAssemblySourceFile()
 {
   if (compiling) return;
-  newFile(resolveParent(sFilesListItem),"| Assembly Source File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source-s","files.png"));
+  newFile(resolveParent(sFilesListItem),"| Assembly Source File\n| Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("text-x-hex","files.png"));
 }
 
 
 void MainForm::fileNewA68kAssemblySourceFile()
 {
   if (compiling) return;
-  newFile(resolveParent(asmFilesListItem),"; Assembly Source File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source-s","files.png"));
+  newFile(resolveParent(asmFilesListItem),"; Assembly Source File\n; Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("text-x-hex","files.png"));
 }
 
 
 void MainForm::fileNewQuillSourceFile()
 {
   if (compiling) return;
-  newFile(resolveParent(qllFilesListItem),"// Quill Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("source-c","filec.png"));
+  newFile(resolveParent(qllFilesListItem),"// Quill Source File\n// Created "+QDateTime::currentDateTime ().toString(Qt::LocalDate)+"\n",SYSICON("text-x-csrc","filec.png"));
 }
 
 
 void MainForm::fileNewTextFile()
 {
   if (compiling) return;
-  newFile(resolveParent(txtFilesListItem),"",SYSICON("txt","filet.png"));
+  newFile(resolveParent(txtFilesListItem),"",SYSICON("text-plain","filet.png"));
 }
 
 
