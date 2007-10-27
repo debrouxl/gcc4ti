@@ -1055,11 +1055,11 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
   leftStatusLabel->setMaximumWidth(splitter->sizes().first());
   statusBar()->addWidget(leftStatusLabel,1);
   rowStatusLabel=new QLabel("",this);
-  rowStatusLabel->setAlignment(Qt::AlignRight);
+  rowStatusLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   statusBar()->addWidget(rowStatusLabel,1);
   rowStatusLabel->hide();
   colStatusLabel=new QLabel("",this);
-  colStatusLabel->setAlignment(Qt::AlignRight);
+  colStatusLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   statusBar()->addWidget(colStatusLabel,1);
   colStatusLabel->hide();
   charsStatusLabel=new QLabel("",this);
