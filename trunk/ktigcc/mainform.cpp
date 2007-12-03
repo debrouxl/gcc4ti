@@ -1076,7 +1076,7 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
   fileTree->setAlternateBackground(QColor());
   rootListItem=new ListViewRoot(fileTree);
   rootListItem->setText(0,"Project1");
-  rootListItem->setPixmap(0,SYSICON("exec","tpr.png"));
+  rootListItem->setPixmap(0,SYSICON("system-run","tpr.png"));
   rootListItem->setOpen(TRUE);
   Q3ListViewItem *folderListItem=new ListViewFolder(rootListItem);
   hFilesListItem=folderListItem;
@@ -1209,7 +1209,7 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
     projectAddFilesAction->setIcon(KIcon("edit-add"));
     projectCompileAction->setIcon(KIcon("run-build-file"));
     projectMakeAction->setIcon(KIcon("run-build"));
-    projectBuildAction->setIcon(KIcon("rebuild"));
+    projectBuildAction->setIcon(KIcon("view-refresh"));
     helpContentsAction->setIcon(KIcon("help-contents"));
     helpDocumentationAction->setIcon(KIcon("help-contents"));
     helpSearchAction->setIcon(KIcon("system-search"));
@@ -1223,7 +1223,7 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
     editDecreaseIndentAction->setIcon(KIcon("format-indent-less"));
     projectStopCompilationAction->setIcon(KIcon("process-stop"));
     projectForceQuitAction->setIcon(KIcon("dialog-cancel"));
-    helpNewsAction->setIcon(KIcon("kontact-news"));
+    helpNewsAction->setIcon(KIcon("view-pim-news"));
     debugRunAction->setIcon(KIcon("media-playback-start"));
     debugPauseAction->setIcon(KIcon("media-playback-pause"));
     toolsConfigureAction->setIcon(KIcon("configure"));
@@ -2623,7 +2623,7 @@ void MainForm::filePreferences()
     it=Q3ListViewItemIterator(fileTree);
     for (item=it.current();item;item=(++it).current()) {
       if (item == rootListItem) {
-        item->setPixmap(0,SYSICON("exec","tpr.png"));
+        item->setPixmap(0,SYSICON("system-run","tpr.png"));
       } else if (IS_FOLDER(item)) {
         // Bluecurve's "folder-open" isn't actually more open than "folder".
         item->setPixmap(0,(item==currentListItem)?SYSICON(KIconTheme::current()=="Bluecurve"?"folder-accept":"folder-open","folder2.png")
@@ -2692,7 +2692,7 @@ void MainForm::filePreferences()
       projectAddFilesAction->setIcon(KIcon("edit-add"));
       projectCompileAction->setIcon(KIcon("run-build-file"));
       projectMakeAction->setIcon(KIcon("run-build"));
-      projectBuildAction->setIcon(KIcon("rebuild"));
+      projectBuildAction->setIcon(KIcon("view-refresh"));
       helpContentsAction->setIcon(KIcon("help-contents"));
       helpDocumentationAction->setIcon(KIcon("help-contents"));
       helpSearchAction->setIcon(KIcon("system-search"));
@@ -2706,7 +2706,7 @@ void MainForm::filePreferences()
       editDecreaseIndentAction->setIcon(KIcon("format-indent-less"));
       projectStopCompilationAction->setIcon(KIcon("process-stop"));
       projectForceQuitAction->setIcon(KIcon("dialog-cancel"));
-      helpNewsAction->setIcon(KIcon("kontact-news"));
+      helpNewsAction->setIcon(KIcon("view-pim-news"));
       debugRunAction->setIcon(KIcon("media-playback-start"));
       debugPauseAction->setIcon(KIcon("media-playback-pause"));
       toolsConfigureAction->setIcon(KIcon("configure"));
