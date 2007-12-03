@@ -109,6 +109,7 @@ class DnDListView : public K3ListView {
 #include <QAssistantClient>
 #include <QDBusConnection>
 #include <QDBusReply>
+#include <QAction>
 #include <kapplication.h>
 #include <kparts/factory.h>
 #include <klibloader.h>
@@ -145,6 +146,7 @@ class DnDListView : public K3ListView {
 #include <kpushbutton.h>
 #include <kmacroexpander.h>
 #include <kstandardaction.h>
+#include <kactioncollection.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1919,7 +1921,9 @@ void *MainForm::createView(const QString &fileName, const QString &fileText, Q3L
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   newView->setContextMenu(te_popup);
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
-  newView->action(KStandardAction::name(KStandardAction::Find))->setShortcut(QKeySequence());
+  // Clear unwanted KatePart shortcuts causing conflicts
+  QList<QAction *>actions=newView->actionCollection()->actions();
+  foreach(QAction *action, actions) action->setShortcuts(QKeySequence::UnknownKey);
   return newView;
 }
 

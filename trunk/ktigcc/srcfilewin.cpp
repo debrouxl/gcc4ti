@@ -46,6 +46,7 @@
 #include <QCloseEvent>
 #include <QTextCodec>
 #include <QAssistantClient>
+#include <QAction>
 #include <kparts/factory.h>
 #include <klibloader.h>
 #include <ktexteditor/editor.h>
@@ -69,6 +70,7 @@
 #include <kiconloader.h>
 #include <kpushbutton.h>
 #include <kstandardaction.h>
+#include <kactioncollection.h>
 #include <cstdio>
 #include <cstdlib>
 #include "ktigcc.h"
@@ -526,7 +528,9 @@ void *SourceFileWindow::createView(const QString &fileName, const QString &hlMod
   connect(newView->document(),SIGNAL(undoChanged()),this,SLOT(current_view_undoChanged()));
   newView->setContextMenu(te_popup);
   newView->setCursorPosition(KTextEditor::Cursor(0,0));
-  newView->action(KStandardAction::name(KStandardAction::Find))->setShortcut(QKeySequence());
+  // Clear unwanted KatePart shortcuts causing conflicts
+  QList<QAction *>actions=newView->actionCollection()->actions();
+  foreach(QAction *action, actions) action->setShortcuts(QKeySequence::UnknownKey);
   return newView;
 }
 
