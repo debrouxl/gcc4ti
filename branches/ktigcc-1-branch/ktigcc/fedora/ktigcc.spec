@@ -1,13 +1,13 @@
 Name: ktigcc
 Version: 1.09
-Release: 1
+Release: 2
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}.tar.bz2
 Group: Development/Tools
-License: GPL
-BuildRequires: qt-devel >= 1:3.3.0 kdelibs-devel >= 6:3.5.7 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
-Requires: kdelibs >= 6:3.5.7 kdebase >= 6:3.5.7 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt-devel >= 1:3.2.0 ctags
+License: GPLv2+
+BuildRequires: qt-devel >= 1:3.3.0 kdelibs3-devel >= 3.5.7 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
+Requires: kdelibs3 >= 3.5.7 kdebase3 >= 3.5.7 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt-devel >= 1:3.2.0 ctags
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: KTIGCC is an IDE for TIGCC using KDE
 %description
@@ -116,6 +116,11 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/doc/ktigcc
 
 %changelog
+* Sun Jan 13 2008 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.09-2
+Rebuild for tilibs soname bumps.
+Specify GPL version in License tag.
+BR/Require kdelibs3/kdebase3 instead of kdelibs/kdebase.
+
 * Tue Oct 9 2007 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.09-1
 Bump version to 1.09.
 
