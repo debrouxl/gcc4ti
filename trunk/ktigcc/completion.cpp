@@ -608,14 +608,12 @@ QVariant CompletionModel::data(const QModelIndex &index, int role) const
         case 3:
           return m_entries[index.row()].text;
         case 4:
-          return QVariant(); // arguments (currently in postfix)
+          return ' ' + m_entries[index.row()].postfix; // arguments
         case 5:
-          return m_entries[index.row()].postfix;
+          return m_entries[index.row()].comment; // postfix
         default:
           return QVariant();
       }
-    case Qt::StatusTipRole:
-      return m_entries[index.row()].comment;
     case CompletionRole:
       return (int)Public|GlobalScope;
     case ScopeIndex:
