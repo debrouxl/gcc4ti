@@ -1208,7 +1208,7 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
     editCutAction->setIcon(KIcon("edit-cut"));
     editCopyAction->setIcon(KIcon("edit-copy"));
     editPasteAction->setIcon(KIcon("edit-paste"));
-    projectAddFilesAction->setIcon(KIcon("edit-add"));
+    projectAddFilesAction->setIcon(KIcon("list-add"));
     projectCompileAction->setIcon(KIcon("run-build-file"));
     projectMakeAction->setIcon(KIcon("run-build"));
     projectBuildAction->setIcon(KIcon("view-refresh"));
@@ -1217,10 +1217,10 @@ MainForm::MainForm(QWidget* parent, const char* name, Qt::WindowFlags fl)
     helpSearchAction->setIcon(KIcon("system-search"));
     findFindAction->setIcon(KIcon("edit-find"));
     findReplaceAction->setIcon(KIcon("edit-find-replace"));
-    helpIndexAction->setIcon(KIcon("fileview-text"));
+    helpIndexAction->setIcon(KIcon("view-list-text"));
     editUndoAction->setIcon(KIcon("edit-undo"));
     editRedoAction->setIcon(KIcon("edit-redo"));
-    findFunctionsAction->setIcon(KIcon("view-tree"));
+    findFunctionsAction->setIcon(KIcon("view-list-tree"));
     editIncreaseIndentAction->setIcon(KIcon("format-indent-more"));
     editDecreaseIndentAction->setIcon(KIcon("format-indent-less"));
     projectStopCompilationAction->setIcon(KIcon("process-stop"));
@@ -2693,7 +2693,7 @@ void MainForm::filePreferences()
       editCutAction->setIcon(KIcon("edit-cut"));
       editCopyAction->setIcon(KIcon("edit-copy"));
       editPasteAction->setIcon(KIcon("edit-paste"));
-      projectAddFilesAction->setIcon(KIcon("edit-add"));
+      projectAddFilesAction->setIcon(KIcon("list-add"));
       projectCompileAction->setIcon(KIcon("run-build-file"));
       projectMakeAction->setIcon(KIcon("run-build"));
       projectBuildAction->setIcon(KIcon("view-refresh"));
@@ -2702,10 +2702,10 @@ void MainForm::filePreferences()
       helpSearchAction->setIcon(KIcon("system-search"));
       findFindAction->setIcon(KIcon("edit-find"));
       findReplaceAction->setIcon(KIcon("edit-find-replace"));
-      helpIndexAction->setIcon(KIcon("fileview-text"));
+      helpIndexAction->setIcon(KIcon("view-list-text"));
       editUndoAction->setIcon(KIcon("edit-undo"));
       editRedoAction->setIcon(KIcon("edit-redo"));
-      findFunctionsAction->setIcon(KIcon("view-tree"));
+      findFunctionsAction->setIcon(KIcon("view-list-tree"));
       editIncreaseIndentAction->setIcon(KIcon("format-indent-more"));
       editDecreaseIndentAction->setIcon(KIcon("format-indent-less"));
       projectStopCompilationAction->setIcon(KIcon("process-stop"));

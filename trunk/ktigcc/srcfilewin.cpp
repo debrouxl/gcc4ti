@@ -277,7 +277,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
     int toolbarIconSize=KIconLoader().currentSize(KIconLoader::MainToolbar);
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileSaveAction->setIcon(KIcon("document-save"));
-    fileAddToProjectAction->setIcon(KIcon("edit-add"));
+    fileAddToProjectAction->setIcon(KIcon("list-add"));
     fileCompileAction->setIcon(KIcon("run-build-file"));
     filePrintAction->setIcon(KIcon("document-print"));
     filePrintQuicklyAction->setIcon(KIcon("document-print"));
@@ -289,7 +289,7 @@ SourceFileWindow::SourceFileWindow(MainForm *mainfrm, const QString &fn,
     findReplaceAction->setIcon(KIcon("edit-find-replace"));
     editUndoAction->setIcon(KIcon("edit-undo"));
     editRedoAction->setIcon(KIcon("edit-redo"));
-    findFunctionsAction->setIcon(KIcon("view-tree"));
+    findFunctionsAction->setIcon(KIcon("view-list-tree"));
     editIncreaseIndentAction->setIcon(KIcon("format-indent-more"));
     editDecreaseIndentAction->setIcon(KIcon("format-indent-less"));
   }
@@ -672,7 +672,7 @@ void SourceFileWindow::applyPreferences()
     int toolbarIconSize=KIconLoader().currentSize(KIconLoader::MainToolbar);
     setIconSize(QSize(toolbarIconSize,toolbarIconSize));
     fileSaveAction->setIcon(KIcon("document-save"));
-    fileAddToProjectAction->setIcon(KIcon("edit-add"));
+    fileAddToProjectAction->setIcon(KIcon("list-add"));
     fileCompileAction->setIcon(KIcon("run-build-file"));
     filePrintAction->setIcon(KIcon("document-print"));
     filePrintQuicklyAction->setIcon(KIcon("document-print"));
@@ -684,7 +684,7 @@ void SourceFileWindow::applyPreferences()
     findReplaceAction->setIcon(KIcon("edit-find-replace"));
     editUndoAction->setIcon(KIcon("edit-undo"));
     editRedoAction->setIcon(KIcon("edit-redo"));
-    findFunctionsAction->setIcon(KIcon("view-tree"));
+    findFunctionsAction->setIcon(KIcon("view-list-tree"));
     editIncreaseIndentAction->setIcon(KIcon("format-indent-more"));
     editDecreaseIndentAction->setIcon(KIcon("format-indent-less"));
   } else {
