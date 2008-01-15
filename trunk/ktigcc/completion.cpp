@@ -659,10 +659,9 @@ CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileN
   connect(parent,SIGNAL(completionExecuted(KTextEditor::View*,const KTextEditor::Cursor&,KTextEditor::CodeCompletionModel*,int)),this,SLOT(slotDone()));
   KTextEditor::CodeCompletionInterface *complIFace
     =qobject_cast<KTextEditor::CodeCompletionInterface *>(parent);
-  completionModel = new CompletionModel(this,entries);
   complIFace->startCompletion(KTextEditor::Range(
                                 KTextEditor::Cursor(line,column),cursor),
-                              completionModel);
+                              new CompletionModel(this,entries));
 }
 
 void CompletionPopup::slotDone()
