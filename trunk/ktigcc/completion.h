@@ -131,6 +131,7 @@ class CompletionPopup : public QObject {
   private:
     bool done;
     QWidget *completionPopup;
+    CompletionModel *completionModel;
 };
 
 class ArgHintPopup : public QObject {

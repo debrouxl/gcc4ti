@@ -659,15 +659,25 @@ CompletionPopup::CompletionPopup(KTextEditor::View *parent, const QString &fileN
   connect(parent,SIGNAL(completionExecuted(KTextEditor::View*,const KTextEditor::Cursor&,KTextEditor::CodeCompletionModel*,int)),this,SLOT(slotDone()));
   KTextEditor::CodeCompletionInterface *complIFace
     =qobject_cast<KTextEditor::CodeCompletionInterface *>(parent);
+  completionModel = new CompletionModel(this,entries);
   complIFace->startCompletion(KTextEditor::Range(
                                 KTextEditor::Cursor(line,column),cursor),
-                              new CompletionModel(this,entries));
+                              completionModel);
 }
 
 void CompletionPopup::slotDone()
 {
   if (!done) {
     done=true;
+
+    // This hack forces clearing the completion model so we can free it.
+    KTextEditor::View *view=qobject_cast<KTextEditor::View *>(parent());
+    KTextEditor::CodeCompletionInterface *complIFace
+      =qobject_cast<KTextEditor::CodeCompletionInterface *>(parent());
+    KTextEditor::Cursor cursor=view->cursorPosition();
+    complIFace->startCompletion(KTextEditor::Range(cursor,cursor),NULL);
+    complIFace->abortCompletion();
+
     emit closed();
     deleteLater();
   }
