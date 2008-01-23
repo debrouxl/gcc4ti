@@ -1,7 +1,7 @@
 /* exp_os.c: Routines to export to a Flash OS
 
    Copyright (C) 2004 Billy Charvet
-   Copyright (C) 2004 Kevin Kofler
+   Copyright (C) 2004-2008 Kevin Kofler
    Copyright (C) 2004 Sebastian Reichelt
 
    This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ BOOLEAN ExportFlashOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize
 	
 	// Get a pointer to the main section.
 	const char *SectionFileName = NULL;
-	OFFSET DataStart = 0;
+	OFFSET DataStart, DataEnd;
 	I4 ROMBase;
 	const I1 ZeroByte = 0;
 	
@@ -100,6 +100,7 @@ BOOLEAN ExportFlashOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize
 	// Pad the main section to an even length.
 	if (MainSection->Size & 0x1)
 		ExportWrite (File, &ZeroByte, 1, 1);
+	DataEnd = ExportTell (File);
 	
 	if (!(IsEmpty (MainSection->Relocs)))
 	{
@@ -138,6 +139,7 @@ BOOLEAN ExportFlashOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize
 				// space in the OS.
 			}
 		}
+		ExportSeek (File, DataEnd);
 	}
 	
 	if ((!(IsEmpty (MainSection->ROMCalls))) && (!(MainSection->ROMCalls.Handled)))
