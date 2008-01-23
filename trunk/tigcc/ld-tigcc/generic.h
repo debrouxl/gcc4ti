@@ -1,7 +1,7 @@
 /* generic.h: Header file to be included by all other files
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2007 Kevin Kofler
+   Copyright (C) 2007-2008 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ TIOS_UPGRADE_FILE_SUPPORT
 
 // This defines the current version of ld-tigcc and ar-tigcc.
 #define PROGRAM_VERSION_STRING "1.08"
-#define COPYRIGHT_NOTICE_STRING "Copyright (C) 2002-2007 Sebastian Reichelt, Kevin Kofler and Billy Charvet"
+#define COPYRIGHT_NOTICE_STRING "Copyright (C) 2002-2008 Sebastian Reichelt, Kevin Kofler and Billy Charvet"
 
 // Handling of user-defined functionality dependencies.
 #ifdef TARGET_DLL
