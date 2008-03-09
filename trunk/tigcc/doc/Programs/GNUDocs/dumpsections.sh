@@ -25,20 +25,20 @@ for f in "$1"/*.hss ; do
   if [ -n "$title" ] ; then
     case "$title" in
       .*)
-        echo '  else if Pos('\'"$title"\'', Ref) > 0 then' >>DumpSections.out
+        echo '  else if (Ref.contains("'"$title"'"))' >>DumpSections.out
         ;;
       *)
         case "$1" in
           *cpp*)
-            echo '  else if Ref = '\'"$title"\'' then' >>DumpSections.out
+            echo '  else if (Ref == "'"$title"'")' >>DumpSections.out
             ;;
           *)
-            echo '  else if Ref = '\'"$title,,$title"\'' then' >>DumpSections.out
+            echo '  else if (Ref == "'"$title,,$title"'")' >>DumpSections.out
             ;;
         esac
         ;;
     esac
     fb=`basename "$f"`
-    echo '    Result := '\'`basename $1`/"${fb%.hss}"\' >>DumpSections.out
+    echo '    Result = "'`basename $1`/"${fb%.hss}"\"\; >>DumpSections.out
   fi
 done
