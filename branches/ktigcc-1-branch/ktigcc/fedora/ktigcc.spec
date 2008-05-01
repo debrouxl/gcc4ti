@@ -1,13 +1,14 @@
 Name: ktigcc
 Version: 1.09
-Release: 2
+Release: 3
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}.tar.bz2
+Patch0: ktigcc-1.09-assistant-qt4.diff
 Group: Development/Tools
 License: GPLv2+
-BuildRequires: qt-devel >= 1:3.3.0 kdelibs3-devel >= 3.5.7 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
-Requires: kdelibs3 >= 3.5.7 kdebase3 >= 3.5.7 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt-devel >= 1:3.2.0 ctags
+BuildRequires: kdelibs3-devel >= 3.5.7 glib2-devel >= 2.10.0 libticonv-devel >= 20060723 libticables2-devel >= 20060723 libtifiles2-devel >= 20060723 libticalcs2-devel >= 20060723 desktop-file-utils >= 0.10
+Requires: kdelibs3 >= 3.5.7 kdebase3 >= 3.5.7 tigcc >= 1:0.96b07r1 ktigcc-completion-data >= 0.96b07r1 qt4-assistant ctags
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: KTIGCC is an IDE for TIGCC using KDE
 %description
@@ -15,6 +16,9 @@ KTIGCC is an IDE for the TIGCC cross-toolchain on *nix/X11 platforms, using the 
 
 %prep
 %setup -n %{name}
+%patch0 -p1
+# fix wrong header file included (breaks with GCC 4.3)
+sed -i -e 's/<cstdlib>/<cstring>/g' callbacks.cpp
 
 %build
 qmake PREFIX="%{_prefix}" CXXFLAGS="$RPM_OPT_FLAGS"
@@ -116,6 +120,12 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/doc/ktigcc
 
 %changelog
+* Thu May 1 2008 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.09-3
+Don't BuildRequire qt-devel explicitly.
+Patch to support and prefer Qt 4 Assistant.
+Require qt4-assistant instead of qt-devel.
+Fix wrong header file included in callbacks.cpp (breaks with GCC 4.3).
+
 * Sun Jan 13 2008 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.09-2
 Rebuild for tilibs soname bumps.
 Specify GPL version in License tag.
