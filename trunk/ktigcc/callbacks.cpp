@@ -19,7 +19,7 @@
 */
 
 #include "callbacks.h"
-#include <cstdlib>
+#include <cstring>
 #include <kprogressdialog.h>
 #include <ticalcs.h>
 #include <QApplication>

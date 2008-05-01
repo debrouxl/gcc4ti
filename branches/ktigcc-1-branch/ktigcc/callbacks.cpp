@@ -1,7 +1,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2006 Kevin Kofler
+   Copyright (C) 2006-2008 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 */
 
 #include "callbacks.h"
-#include <cstdlib>
+#include <cstring>
 #include <kprogress.h>
 #include <ticalcs.h>
 #include <qapplication.h>
