@@ -1,7 +1,7 @@
 /* gcunused.c: Routines to remove unused sections
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2005 Kevin Kofler
+   Copyright (C) 2003-2008 Kevin Kofler
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 #include "gcunused.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "manip.h"
@@ -94,7 +95,27 @@ NextLibCall:;
 	// debugging information purposes.
 #ifdef DEBUGGING_INFO_SUPPORT
 	if (Program->HaveDebuggingInfo)
+	{
 		Section->DebuggingInfoType = DI_DELETED;
+
+		// Remove all ROM_CALLs, RAM_CALLs and library calls from the
+		// deleted section. GDB can't handle them anyway and they cause
+		// invalid entries in the relocation table.
+#define FreeItems(Type,Item) \
+({ \
+	Type *Item, *Next##Item; \
+	for (Item = GetLast (Section->Item##s); Item; Item = Next##Item) \
+	{ \
+		Next##Item = GetPrev (Item); \
+		free (Item); \
+	} \
+	GetFirst (Section->Item##s) = GetLast (Section->Item##s) = NULL; \
+})
+		FreeItems (LIB_CALL, LibCall);
+		FreeItems (RAM_CALL, RAMCall);
+		FreeItems (ROM_CALL, ROMCall);
+#undef FreeItems
+	}
 	else
 #endif /* DEBUGGING_INFO_SUPPORT */
 		FreeSection (Section);
