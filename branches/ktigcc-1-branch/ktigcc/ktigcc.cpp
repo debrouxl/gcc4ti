@@ -39,8 +39,8 @@
 #include "mainform.h"
 
 // Check for KDE version at compile time to avoid wasting users' time
-#if KDE_VERSION < KDE_MAKE_VERSION(3,5,2)
-#error KDE 3.5.2 or higher required
+#if KDE_VERSION < KDE_MAKE_VERSION(3,5,7)
+#error KDE 3.5.7 or higher required
 #endif
 
 using namespace std;
@@ -78,8 +78,8 @@ int main(int argc, char *argv[])
   QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
 
   // Check for KDE version
-  if (KDE::version() < KDE_MAKE_VERSION(3,5,2))
-    qFatal("KDE 3.5.2 or higher required");
+  if (KDE::version() < KDE_MAKE_VERSION(3,5,7))
+    qFatal("KDE 3.5.7 or higher required");
 
   KAboutData about("ktigcc","TIGCC IDE for KDE","1.09",
   "TIGCC C and ASM SDK", KAboutData::License_GPL,
