@@ -50,8 +50,8 @@ diff -ur ktigcc/assistant.h ktigcc-assistant-qt4/assistant.h
 +    QString assistantExecutable;
  };
 diff -ur ktigcc/ktigcc.cpp ktigcc-assistant-qt4/ktigcc.cpp
---- ktigcc/ktigcc.cpp	2007-10-09 21:36:50.000000000 +0200
-+++ ktigcc-assistant-qt4/ktigcc.cpp	2008-04-30 05:09:44.000000000 +0200
+--- ktigcc/ktigcc.cpp	2007-10-09 03:31:28.000000000 +0200
++++ ktigcc-assistant-qt4/ktigcc.cpp	2008-06-06 02:56:10.000000000 +0200
 @@ -21,10 +21,12 @@
  
  #include <cstdio>
@@ -65,13 +65,22 @@ diff -ur ktigcc/ktigcc.cpp ktigcc-assistant-qt4/ktigcc.cpp
  #include <kapplication.h>
  #include <kcmdlineargs.h>
  #include <kaboutdata.h>
-@@ -227,7 +229,39 @@
+@@ -37,6 +39,7 @@
+ #include <kconfig.h>
+ #include <glib.h>
+ #include "mainform.h"
++#include "tpr.h"
+ 
+ // Check for KDE version at compile time to avoid wasting users' time
+ #if KDE_VERSION < KDE_MAKE_VERSION(3,5,7)
+@@ -227,7 +230,40 @@
  
  void force_qt_assistant_page(int n)
  {
 -  QString fname=QDir::homeDirPath()+"/.qt/qt_assistantrc";
 +  bool useQt4=(QFile::exists("/usr/bin/assistant_adp") || QFile::exists("/usr/bin/assistant-qt4"));
 +  QString fname=QDir::homeDirPath()+(useQt4?"/.config/Trolltech/Assistant.conf":"/.qt/qt_assistantrc");
++  mkdir_multi(fname);
 +  char qtVersion[5]="3.3";
 +  size_t verlen=3;
 +  if (useQt4) {
@@ -106,7 +115,7 @@ diff -ur ktigcc/ktigcc.cpp ktigcc-assistant-qt4/ktigcc.cpp
    FILE *f=fopen(fname,"r+b");
    if (!f) f=fopen(fname,"w+b");
    if (!f) exit(1);
-@@ -237,13 +271,21 @@
+@@ -237,13 +273,21 @@
    char buffer[flen+1];
    memset(buffer,0,flen+1);
    if (fread(buffer,1,flen,f)<flen) exit(1);

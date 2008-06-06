@@ -1,6 +1,6 @@
 Name: ktigcc
 Version: 1.09
-Release: 3
+Release: 4
 Vendor: TIGCC Team (http://tigcc.ticalc.org)
 Packager: Kevin Kofler <Kevin@tigcc.ticalc.org>
 Source: %{name}.tar.bz2
@@ -120,6 +120,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/doc/ktigcc
 
 %changelog
+* Fri Jun 6 2008 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.09-4
+Fix Qt 4 Assistant patch not to crash if ~/.config/Trolltech doesn't exist yet.
+
 * Thu May 1 2008 Kevin Kofler <Kevin@tigcc.ticalc.org> - 1.09-3
 Don't BuildRequire qt-devel explicitly.
 Patch to support and prefer Qt 4 Assistant.
