@@ -756,6 +756,38 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					HasValue = TRUE;
 				}
 			}
+			else if (SymNameMatches ("link_time_y")) // Preliminary name
+			{
+				if (Program->ResolveAllBuiltins)
+				{
+					NewValue = Program->LinkTime.year;
+					HasValue = TRUE;
+				}
+			}
+			else if (SymNameMatches ("link_time_m")) // Preliminary name
+			{
+				if (Program->ResolveAllBuiltins)
+				{
+					NewValue = Program->LinkTime.month;
+					HasValue = TRUE;
+				}
+			}
+			else if (SymNameMatches ("link_time_d")) // Preliminary name
+			{
+				if (Program->ResolveAllBuiltins)
+				{
+					NewValue = Program->LinkTime.day;
+					HasValue = TRUE;
+				}
+			}
+			else if (SymNameMatches ("link_time_timestamp")) // Preliminary name
+			{
+				if (Program->ResolveAllBuiltins)
+				{
+					NewValue = Program->LinkTime.LinkTime;
+					HasValue = TRUE;
+				}
+			}
 			else if (SymNameMatches ("kernel_flags"))
 			{
 				if (Program->ResolveAllBuiltins)

@@ -25,6 +25,8 @@
 #include "lists.h"
 #include "intrface.h"
 
+#include <time.h>
+
 #define MAX_SYM_LEN 255
 
 struct PROGRAM;
@@ -138,6 +140,10 @@ typedef struct PROGRAM {
 #endif /* DATA_VAR_SUPPORT */
 	OPTIMIZE_INFO
 		*OptimizeInfo;    // Optimization settings and results.
+	struct {
+		time_t LinkTime;
+		unsigned short year, month, day;
+	} LinkTime;           // Time info, initialized when linking starts.
 } PROGRAM;
 
 // Section in a Program
