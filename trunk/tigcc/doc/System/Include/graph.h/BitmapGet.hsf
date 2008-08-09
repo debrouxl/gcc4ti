@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=graph.h
 Definition=void BitmapGet (const SCR_RECT *rect, void *BitMap);
-See Also=BitmapPut, BitmapSize, CalcBitmapSize
+See Also=graph.h/BitmapPut, graph.h/BitmapSize, graph.h/CalcBitmapSize
 
 [ROM Call]
 Index=$185
@@ -14,25 +14,25 @@ Gets a bitmap from the port graphical functions are writing to.
 
 [Explanation]
 BitmapGet stores a series of bytes (the size of which is defined by
-<A HREF="$$LINK(BitmapSize)">BitmapSize</A>) defining a bitmap for a rectangular
-area (whose boundaries are given using the <A HREF="$$LINK(SCR_RECT)">SCR_RECT</A>
+<A HREF="$$LINK(graph.h/BitmapSize)">BitmapSize</A>) defining a bitmap for a rectangular
+area (whose boundaries are given using the <A HREF="$$LINK(graph.h/SCR_RECT)">SCR_RECT</A>
 structure <I>rect</I>) into a buffer pointed to by <I>BitMap</I>. The data is
 fetched in the port  graphical functions are writing to (see
-<A HREF="$$LINK(PortSet)">PortSet</A>). The first two words at the address
+<A HREF="$$LINK(graph.h/PortSet)">PortSet</A>). The first two words at the address
 <I>BitMap</I> will contain the height and the width (in pixels) of the rectangular
 area respectively, then the actual data follows. <I>BitMap</I> is
-usually a pointer to a <A HREF="$$LINK(BITMAP)">BITMAP</A> structure.
+usually a pointer to a <A HREF="$$LINK(graph.h/BITMAP)">BITMAP</A> structure.
 <BR><BR>
 Here is a simple example (called "Bitmap Test"), which uses BitmapGet and
-<A HREF="$$LINK(BitmapPut)">BitmapPut</A> to get the contents of the TI-89 screen and
+<A HREF="$$LINK(graph.h/BitmapPut)">BitmapPut</A> to get the contents of the TI-89 screen and
 to restore it later:
 $$EXAMPLE(Bitmap Test.c)
 Note that this is just an example: for saving/restoring the whole screen,
-functions <A HREF="$$LINK(LCD_save)">LCD_save</A> and
-<A HREF="$$LINK(LCD_restore)">LCD_restore</A> are much more efficient!
+functions <A HREF="$$LINK(graph.h/LCD_save)">LCD_save</A> and
+<A HREF="$$LINK(graph.h/LCD_restore)">LCD_restore</A> are much more efficient!
 And, <CODE>'buffer'</CODE> will probably be allocated using
 <A HREF="$$LINK(alloc.h/malloc)">malloc</A> in a more realistic example...
 
 [References]
-In=ScrRectScroll, ScrRectShift, menus.h/MenuKey, wingraph.h/WinBitmapGet, wingraph.h/WinOpen, unknown.h/_ROM_CALL_421
-Out=BitmapInit
+In=graph.h/ScrRectScroll, graph.h/ScrRectShift, menus.h/MenuKey, wingraph.h/WinBitmapGet, wingraph.h/WinOpen, unknown.h/_ROM_CALL_421
+Out=graph.h/BitmapInit

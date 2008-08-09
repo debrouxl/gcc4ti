@@ -5,7 +5,7 @@ Subtype=ROM Call
 Header Files=vat.h
 Definition=short FolderDel (SYM_STR SymName);
 Real Definition=#define FolderDel(c) __Folder_Del((c),0)
-See Also=FolderClear
+See Also=vat.h/FolderClear
 
 [ROM Call]
 Index=$66
@@ -16,7 +16,7 @@ Deletes a folder, including all files in it.
 [Explanation]
 FolderDel deletes the folder <I>SymName</I>
 including all files in it, and returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the operation was successful,
-else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> (e.g. if the folder is not found). See <A HREF="$$LINK(SYMSTR)">SYMSTR</A> for rules
+else returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> (e.g. if the folder is not found). See <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> for rules
 about <I>SymName</I>. If the folder <I>SymName</I> is the current folder, the new current
 folder after deleting will become the "main" folder.
 If the folder <I>SymName</I> is "main", then all symbols from it will be deleted,
@@ -26,12 +26,12 @@ the folder even if they are locked, in use, or archived!
 <B>Note:</B> This function was buggy in TIGCCLIB releases prior to 2.3. I didn't know that the original
 TIOS entry called "FolderDel" requires in fact two parameters: another one is a Boolean flag. As
 this parameter was not passed before, the behaviour of this routine was random (see also
-<A HREF="$$LINK(FolderClear)">FolderClear</A>). Now, to keep the compatibility with already written
+<A HREF="$$LINK(vat.h/FolderClear)">FolderClear</A>). Now, to keep the compatibility with already written
 programs, I modified FolderDel to always pass <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> as an extra parameter
 (in this case, FolderDel behaves as described above; when it is <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>,
-FolderDel behaves as <A HREF="$$LINK(FolderClear)">FolderClear</A>).
+FolderDel behaves as <A HREF="$$LINK(vat.h/FolderClear)">FolderClear</A>).
 
 [References]
-In=FolderDelAllTemp, FolderDelTemp, bascmd.h/cmd_blddata, events.h/handleVarLinkKey, link.h/LIO_Receive, link.h/OSLinkCmd, unknown.h/gr_del_vars_in_folder, unknown.h/gr_DelFolder
-Out=IsMainFolderStr, SymCmp, TokToStrN, alloc.h/HeapFree, alloc.h/HeapRealloc, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/next_expression_index, estack.h/push_parse_text, estack.h/top_estack, flash.h/EM_abandon, mem.h/memmove, string.h/strcat, string.h/strchr, system.h/OSDisableBreak, system.h/OSEnableBreak, unknown.h/CheckGraphRef, unknown.h/statFree, unknown.h/_mu16u16, unknown.h/_ds32s32
+In=vat.h/FolderDelAllTemp, vat.h/FolderDelTemp, bascmd.h/cmd_blddata, events.h/handleVarLinkKey, link.h/LIO_Receive, link.h/OSLinkCmd, unknown.h/gr_del_vars_in_folder, unknown.h/gr_DelFolder
+Out=vat.h/IsMainFolderStr, vat.h/SymCmp, vat.h/TokToStrN, alloc.h/HeapFree, alloc.h/HeapRealloc, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, estack.h/next_expression_index, estack.h/push_parse_text, estack.h/top_estack, flash.h/EM_abandon, mem.h/memmove, string.h/strcat, string.h/strchr, system.h/OSDisableBreak, system.h/OSEnableBreak, unknown.h/CheckGraphRef, unknown.h/statFree, unknown.h/_mu16u16, unknown.h/_ds32s32
 Out_EV_eventLoop=1

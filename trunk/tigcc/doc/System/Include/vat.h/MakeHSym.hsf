@@ -15,10 +15,10 @@ Makes a HSym structure.
 [Explanation]
 MakeHSym is an internal function, used very often in other TIOS routines. It converts the
 VAT symbol entry pointed to by <I>SymPtr</I> which belongs to the folder associated with
-handle <I>FldHandle</I> to the <A HREF="$$LINK(HSym)">HSym</A> structure. As HSym-s are basically a
+handle <I>FldHandle</I> to the <A HREF="$$LINK(vat.h/HSym)">HSym</A> structure. As HSym-s are basically a
 combination of the folder’s handle and the offset of a symbol into that
 folder, they are valid until a symbol is added or removed from the folder
-they belong to. Dereferencing them with <A HREF="$$LINK(DerefSym)">DerefSym</A> produces a direct
+they belong to. Dereferencing them with <A HREF="$$LINK(vat.h/DerefSym)">DerefSym</A> produces a direct
 pointer to the symbol entry, but such pointer are not valid after a heap compression is done.
 The main usage of MakeHSym is when you need to preserve a pointer to the symbol entry after
 a heap compression, like in following example:
@@ -28,10 +28,10 @@ SymPtr = DerefSym (hsym);
 </PRE>
 In this example, an eventual heap compression would cause the pointer to be invalid
 since it is a direct pointer into memory. So the <I>SymPtr</I> is converted to a
-<A HREF="$$LINK(HSym)">HSym</A> structure with MakeHsym (along with the handle of the folder that the
+<A HREF="$$LINK(vat.h/HSym)">HSym</A> structure with MakeHsym (along with the handle of the folder that the
 symbol belongs to). After the code that may cause heap compression is
-executed, the HSym is converted back into a <A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> pointer with
-<A HREF="$$LINK(DerefSym)">DerefSym</A>.
+executed, the HSym is converted back into a <A HREF="$$LINK(vat.h/SYM_ENTRY)">SYM_ENTRY</A> pointer with
+<A HREF="$$LINK(vat.h/DerefSym)">DerefSym</A>.
 
 [References]
-In=AddSymToFolder, FindSymInFolder, SymAdd, SymAddMain, SymAddTwin, SymFind, SymFindHome, SymFindMain, VarRecall, VarStore
+In=vat.h/AddSymToFolder, vat.h/FindSymInFolder, vat.h/SymAdd, vat.h/SymAddMain, vat.h/SymAddTwin, vat.h/SymFind, vat.h/SymFindHome, vat.h/SymFindMain, vat.h/VarRecall, vat.h/VarStore

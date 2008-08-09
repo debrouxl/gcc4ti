@@ -16,17 +16,17 @@ EV_paintOneWindows searches through a linked list of windows (see
 <A HREF="$$LINK(wingraph.h/)">wingraph.h</A> header file) for the first window
 which has <A HREF="$$LINK(wingraph.h/WinFlags)">WF_DIRTY</A> flag set. If the found window
 is visible (i.e. if <A HREF="$$LINK(wingraph.h/WinFlags)">WF_VISIBLE</A> flag is set), the
-<A HREF="$$LINK(EventIDs)">CM_WPAINT</A> message is sent to the application which
+<A HREF="$$LINK(events.h/EventIDs)">CM_WPAINT</A> message is sent to the application which
 is the owner of the window (note that <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A>
 stores the task ID of the current application in <I>TaskID</I> field of the
 <A HREF="$$LINK(wingraph.h/WINDOW)">WINDOW</A> structure). See also notes about
-<A HREF="$$LINK(EV_sendEvent)">EV_sendEvent</A>. After sending this message,
+<A HREF="$$LINK(events.h/EV_sendEvent)">EV_sendEvent</A>. After sending this message,
 <A HREF="$$LINK(wingraph.h/WinFlags)">WF_DIRTY</A> flag of the window is cleared, and this flag is
 set in all other windows in the linked list of windows which overlap with this
 window (because repainting of this window may cause trashing of another windows).
 <BR><BR>
 EV_paintOneWindow returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the window was "painted"
-(more precise, if <A HREF="$$LINK(EventIDs)">CM_WPAINT</A> message is sent), otherwise it
+(more precise, if <A HREF="$$LINK(events.h/EventIDs)">CM_WPAINT</A> message is sent), otherwise it
 returns <A HREF="$$LINK(alloc.h/Bool)">FALSE</A> (i.e. if none to paint).
 <BR><BR>
 Here is an example which ilustrates that painting of all TIOS windows is "event
@@ -52,5 +52,5 @@ You can see that everything will be correct if you make the following loop:
 </PRE>
 
 [References]
-In=EV_eventLoop, EV_paintWindows, unknown.h/paint_all_except
-Out=EV_sendEvent, graph.h/QScrRectOverlap, wingraph.h/FirstWindow
+In=events.h/EV_eventLoop, events.h/EV_paintWindows, unknown.h/paint_all_except
+Out=events.h/EV_sendEvent, graph.h/QScrRectOverlap, wingraph.h/FirstWindow

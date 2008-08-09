@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=vat.h
 Definition=HSym SymFind (SYM_STR SymName);
-See Also=SymFindMain, SymFindHome, SymFindPtr
+See Also=vat.h/SymFindMain, vat.h/SymFindHome, vat.h/SymFindPtr
 
 [ROM Call]
 Index=$60
@@ -16,12 +16,12 @@ Finds a symbol.
 SymFind searches the variable allocation table (VAT) for a symbol (i.e. variable)
 <I>SymName</I>. <I>SymName</I> may also contain a folder name together with
 the symbol name (separated by "\"), else only the currently active
-folder will be searched. SymFind returns a structure of type <A HREF="$$LINK(HSym)">HSym</A>,
+folder will be searched. SymFind returns a structure of type <A HREF="$$LINK(vat.h/HSym)">HSym</A>,
 which contains the handle of the variable table list belonging to the folder
 (current, or folder given in the name), and the offset from the beginning of the list to the actual VAT symbol
-entry. Use <A HREF="$$LINK(DerefSym)">DerefSym</A> to get a pointer to the actual VAT
+entry. Use <A HREF="$$LINK(vat.h/DerefSym)">DerefSym</A> to get a pointer to the actual VAT
 symbol entry instead. In case of an error (for example, if the symbol does not exist), SymFind
-returns <A HREF="$$LINK(HS_NULL)">HS_NULL</A>. Note that most reserved symbols (i.e. system variables)
+returns <A HREF="$$LINK(vat.h/HS_NULL)">HS_NULL</A>. Note that most reserved symbols (i.e. system variables)
 are not stored in the VAT table, so you cannot locate them using SymFind.
 <BR><BR>
 <B>Note:</B> <I>SymName</I> is not an ordinary C string. Instead, this is a sequence
@@ -34,15 +34,15 @@ character as well, and all TIOS routines for VAT handling need a pointer to the
 you must do the following:
 <PRE>hsym = SymFind ("\0tetris"+7);
 </PRE>
-To make this job easier, the macro <A HREF="$$LINK(SYMSTR)">SYMSTR</A> is implemented,
+To make this job easier, the macro <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> is implemented,
 so you may simply do
 <PRE>hsym = SymFind (SYMSTR ("tetris"));
 </PRE>
-You may use the older <A HREF="$$LINK(dollar)">$</A> macro constructor as well.
+You may use the older <A HREF="$$LINK(vat.h/dollar)">$</A> macro constructor as well.
 <BR><BR>
 Note also that all legal TIOS symbol names must be in lowercase!
 
 [References]
-In=checkCurrent, EM_moveSymFromExtMem, EM_moveSymToExtMem, EM_twinSymFromExtMem, bascmd.h/cmd_blddata, bascmd.h/cmd_newdata, bascmd.h/cmd_newprob, error.h/ERD_process, stdio.h/fopen, unknown.h/de_initRes, unknown.h/de_loop, unknown.h/gr_de_value, unknown.h/gr_execute_seq, unknown.h/gr_seq_value, unknown.h/Regraph, unknown.h/time_loop, unknown.h/_ROM_CALL_45E
-Out=MakeHSym, SymFindPtr
+In=vat.h/checkCurrent, vat.h/EM_moveSymFromExtMem, vat.h/EM_moveSymToExtMem, vat.h/EM_twinSymFromExtMem, bascmd.h/cmd_blddata, bascmd.h/cmd_newdata, bascmd.h/cmd_newprob, error.h/ERD_process, stdio.h/fopen, unknown.h/de_initRes, unknown.h/de_loop, unknown.h/gr_de_value, unknown.h/gr_execute_seq, unknown.h/gr_seq_value, unknown.h/Regraph, unknown.h/time_loop, unknown.h/_ROM_CALL_45E
+Out=vat.h/MakeHSym, vat.h/SymFindPtr
 Out_EV_eventLoop=1

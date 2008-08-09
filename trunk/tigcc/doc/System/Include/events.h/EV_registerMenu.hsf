@@ -17,24 +17,24 @@ registers the toolbar menu pointed to by <I>MenuPtr</I> with the current applica
 <I>MenuPtr</I> is exactly the same pointer as expected in <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A>
 function. Note that registering the menu will not automatically display nor activate the menu.
 The application will draw the menu (using <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A>) on
-receipt of <A HREF="$$LINK(EventIDs)">CM_ACTIVATE</A> message. So if you, for example, attach a new
-menu to the "Home screen" application, you need to send <A HREF="$$LINK(EventIDs)">CM_ACTIVATE</A>
-message to it too. Also, before calling EV_registerMenu, a <A HREF="$$LINK(EventIDs)">CM_DEACTIVATE</A>
+receipt of <A HREF="$$LINK(events.h/EventIDs)">CM_ACTIVATE</A> message. So if you, for example, attach a new
+menu to the "Home screen" application, you need to send <A HREF="$$LINK(events.h/EventIDs)">CM_ACTIVATE</A>
+message to it too. Also, before calling EV_registerMenu, a <A HREF="$$LINK(events.h/EventIDs)">CM_DEACTIVATE</A>
 message should to be sent to the application.
 <BR><BR>
-When a menu is attached to the application, each keypress event (a <A HREF="$$LINK(EventIDs)">CM_KEYPRESS</A>
+When a menu is attached to the application, each keypress event (a <A HREF="$$LINK(events.h/EventIDs)">CM_KEYPRESS</A>
 message) which represents keys F1, F2 etc. activates the menu (more precise, it is dispatched
 to the <A HREF="$$LINK(menus.h/MenuKey)">MenuKey</A> function). After execution of
 <A HREF="$$LINK(menus.h/MenuKey)">MenuKey</A>, the value returned from it (this is the ID
 of the selected item, see <A HREF="$$LINK(menus.h/MenuAddText)">MenuAddText</A>) is sent as an event
 to the application. So, the <I>ID</I> value for each menu item must be carefully planned: if you
 want to have the "Cut" option in the menu, its <I>ID</I> needs to be 0x720
-(<A HREF="$$LINK(EventIDs)">CM_MENU_CUT</A>). Options which represent tokens (as in "Algebra" and
+(<A HREF="$$LINK(events.h/EventIDs)">CM_MENU_CUT</A>). Options which represent tokens (as in "Algebra" and
 "Calc" submenus) have <I>ID</I> less than 0x500, because tokens are send as XR strings
 (see <A HREF="$$LINK(system.h/XR_stringPtr)">XR_stringPtr</A>). If you plan to create a serious
 event driven application which has toolbar menus (a flash application for example), it must
 behave in the same way (i.e. its event handler must process F-key events as described), and
-it must respond on <A HREF="$$LINK(EventIDs)">CM_ACTIVATE</A> message as described above. Of course, how to
+it must respond on <A HREF="$$LINK(events.h/EventIDs)">CM_ACTIVATE</A> message as described above. Of course, how to
 put an application in Flash ROM without TI certificate and TI professional SDK is greater
 problem...
 <BR><BR>

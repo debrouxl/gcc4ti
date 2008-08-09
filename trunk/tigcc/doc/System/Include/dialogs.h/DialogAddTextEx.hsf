@@ -13,7 +13,7 @@ Adds a text, an image, or a custom item into a dialog box.
 DialogAddTextEx gives two possibilities:
 <BR><BR>
 The first one (if, as is the case of
-<A HREF="$$LINK(DialogAddText)">DialogAddText</A>, the <I>flags</I> parameter
+<A HREF="$$LINK(dialogs.h/DialogAddText)">DialogAddText</A>, the <I>flags</I> parameter
 doesn't contain the DF_OWNER_DRAW flag) is to add the text <I>text</I> to the
 dialog structure associated with the handle <I>Handle</I> at the position
 (<I>x</I>, <I>y</I>), where the coordinates are relative to the top-left corner
@@ -26,7 +26,7 @@ dialog structure associated with the handle <I>Handle</I> at the position
 of the dialog box. (This position can later be ignored so owner draw items will
 not necessarily have to stick to this position.) You can create every kind of
 item you wish with this function (such as text, buttons, bitmaps...) as far as
-you create a callback function (see <A HREF="$$LINK(DialogNew)">DialogNew</A>
+you create a callback function (see <A HREF="$$LINK(dialogs.h/DialogNew)">DialogNew</A>
 for more details on the <I>CallBack</I> function). See the DF_OWNER_DRAW flag
 below for more information.
 <BR><BR>
@@ -37,7 +37,7 @@ function that creates an item (i.e. every function beginning with
 'DialogAdd...') will increase this identification number.
 <BR><BR>
 The parameter <I>flags</I> can be a combination of the following, defined in
-the <A HREF="$$LINK(DialogFlags)">DialogFlags</A> enumeration (DF_OWNER_DRAW
+the <A HREF="$$LINK(dialogs.h/DialogFlags)">DialogFlags</A> enumeration (DF_OWNER_DRAW
 is very important as it can increase the numbers of possible items in dialogs):
 <TABLE BORDER CELLPADDING="3">
 <TR>
@@ -54,17 +54,17 @@ is very important as it can increase the numbers of possible items in dialogs):
 <TR>
   <TD>DF_OWNER_DRAW</TD>
   <TD>AMS 2.00 or higher: The callback function (see
-      <A HREF="$$LINK(DialogNew)">DialogNew</A> for more information) is
+      <A HREF="$$LINK(dialogs.h/DialogNew)">DialogNew</A> for more information) is
       responsible for drawing this item (which can be text, an image, or
       anything else). The parameters <I>text</I>, <I>x</I> and <I>y</I> will in
       this case be ignored. This can only be done if the dialog was created with
-      <A HREF="$$LINK(DialogNew)">DialogNew</A> and not
-      <A HREF="$$LINK(DialogNewSimple)">DialogNewSimple</A>.<BR><BR>
+      <A HREF="$$LINK(dialogs.h/DialogNew)">DialogNew</A> and not
+      <A HREF="$$LINK(dialogs.h/DialogNewSimple)">DialogNewSimple</A>.<BR><BR>
       If the DF_OWNER_DRAW flag is set, then the callback is passed the item
       identification number and a pointer to an
-      <A HREF="$$LINK(OWNER_DRAW_STRUCT)">OWNER_DRAW_STRUCT</A> structure. 
+      <A HREF="$$LINK(dialogs.h/OWNER_DRAW_STRUCT)">OWNER_DRAW_STRUCT</A> structure. 
       The first value <I>Item</I> in this structure is a direct pointer to the
-      <A HREF="$$LINK(DIALOG_ITEM)">DIALOG_ITEM</A> structure for the item to
+      <A HREF="$$LINK(dialogs.h/DIALOG_ITEM)">DIALOG_ITEM</A> structure for the item to
       be drawn. The second value <I>pW</I> is a pointer to the
       <A HREF="$$LINK(wingraph.h/WINDOW)">WINDOW</A> structure for the dialog box.
       Using this pointer, the callback can draw anything and anywhere to the
@@ -77,17 +77,17 @@ text or owner draw items so you will not be able to focus on them.
 
 <BR><BR>
 DialogAddTextEx returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case
-of an error, may return <A HREF="$$LINK(DialogMessages)">DB_MEMFULL</A> if you
-used <A HREF="$$LINK(DialogFlags)">DF_SCREEN_SAVE</A>, else returns
+of an error, may return <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_MEMFULL</A> if you
+used <A HREF="$$LINK(dialogs.h/DialogFlags)">DF_SCREEN_SAVE</A>, else returns
 <I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
 cause heap compression.
 <BR><BR>
 DialogAddTextEx is in fact a macro created for your convenience. It calls
-<A HREF="$$LINK(DialogAdd)">DialogAdd</A> with D_TEXT as the <I>ItemType</I>
+<A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A> with D_TEXT as the <I>ItemType</I>
 parameter. Note that DialogAddTextEx is the same macro as
-<A HREF="$$LINK(DialogAddText)">DialogAddText</A> except for the parameter
+<A HREF="$$LINK(dialogs.h/DialogAddText)">DialogAddText</A> except for the parameter
 <I>flags</I> which is always set to zero in
-<A HREF="$$LINK(DialogAddText)">DialogAddText</A>.
+<A HREF="$$LINK(dialogs.h/DialogAddText)">DialogAddText</A>.
 
 [References]
-Out=DialogAdd
+Out=dialogs.h/DialogAdd

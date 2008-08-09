@@ -13,9 +13,9 @@ Sets the event message handler (i.e. installs an event driven application).
 
 [Explanation]
 EV_captureEvents sets a new event message handler to the routine pointed to by <I>NewHandler</I>,
-overriding any current handler. <I>NewHandler</I> is the pointer of type <A HREF="$$LINK(EVENT_HANDLER)">EVENT_HANDLER</A>,
+overriding any current handler. <I>NewHandler</I> is the pointer of type <A HREF="$$LINK(events.h/EVENT_HANDLER)">EVENT_HANDLER</A>,
 which is the pointer to a void function (i.e. procedure) which accepts one parameter of
-<A HREF="$$LINK(EVENT)">EVENT</A> type. If <I>NewHandler</I> is <A HREF="$$LINK(alloc.h/NULL)">NULL</A>,
+<A HREF="$$LINK(events.h/EVENT)">EVENT</A> type. If <I>NewHandler</I> is <A HREF="$$LINK(alloc.h/NULL)">NULL</A>,
 EV_captureEvents restores the standard event handler (which depends on the current application
 like "Home Screen", "Graph", etc.). EV_captureEvents returns the pointer to the previous installed
 event handler.
@@ -28,7 +28,7 @@ instead of having an application which has an internal "main loop" in which all 
 performed, an event driven application accepts a message (or event), checks the type of the
 event (a keypress is, for example, one type of the event), process it, then exits immediately
 after processing the event. So, the user needs to make a loop in which necessary events are
-collected and dispatched (using <A HREF="$$LINK(EV_sendEvent)">EV_sendEvent</A>) to the application.
+collected and dispatched (using <A HREF="$$LINK(events.h/EV_sendEvent)">EV_sendEvent</A>) to the application.
 The main advantage of such an approach is in the fact that the main loop is under the control of
 the user, even if the application itself may be written by somebody else. So, the user can
 decide in the loop what events will be sent to an application etc. This would not be possible
@@ -38,15 +38,15 @@ kind of multitasking. Note that each modern operating system (for example Window
 based on such event dispatching/handling mechanism!
 <BR><BR>
 To understand more about event driven applications, you need to read about all other
-functions in this header file (especially <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A>,
-<A HREF="$$LINK(EV_sendEvent)">EV_sendEvent</A> and <A HREF="$$LINK(EV_defaultHandler)">EV_defaultHandler</A>
+functions in this header file (especially <A HREF="$$LINK(events.h/EV_eventLoop)">EV_eventLoop</A>,
+<A HREF="$$LINK(events.h/EV_sendEvent)">EV_sendEvent</A> and <A HREF="$$LINK(events.h/EV_defaultHandler)">EV_defaultHandler</A>
 may be very useful in user programs). Probably the most frequent usage of these functions in
 user programs will be to access the text editor
 application (see <A HREF="$$LINK(textedit.h/)">textedit.h</A> header file), which is event driven.
 In this header file, there is also a good example about using some event functions.
 <BR><BR>
 <B>Note:</B> If you want to "hook" on the existing event handler instead to complete overriding the
-current handler, it is better to use <A HREF="$$LINK(EV_hook)">EV_hook</A>.
+current handler, it is better to use <A HREF="$$LINK(events.h/EV_hook)">EV_hook</A>.
 
 [References]
-In=ABT_dialog, EV_defaultHandler, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog, error.h/ERD_dialog, gdraw.h/GD_Text, stdio.h/fgetchar, stdio.h/gets, stdio.h/getsn, unknown.h/EV_quit, unknown.h/GT_Trace
+In=events.h/ABT_dialog, events.h/EV_defaultHandler, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog, error.h/ERD_dialog, gdraw.h/GD_Text, stdio.h/fgetchar, stdio.h/gets, stdio.h/getsn, unknown.h/EV_quit, unknown.h/GT_Trace

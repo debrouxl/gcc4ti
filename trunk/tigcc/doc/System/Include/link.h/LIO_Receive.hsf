@@ -13,22 +13,22 @@ Receives a file from the link interface.
 
 [Explanation]
 LIO_Receive is a high-level function which receives a file (a variable for example) through
-the link interface and fills the <A HREF="$$LINK(LIO_CTX)">LIO_CTX</A> structure pointed to by <I>file</I>
+the link interface and fills the <A HREF="$$LINK(link.h/LIO_CTX)">LIO_CTX</A> structure pointed to by <I>file</I>
 accordingly. However, this function is not so easy for usage, because you need to interpret
 the file context structure pointed to by <I>file</I> manually after using this function, which
 is not a trivial task. If you want just to receive a variable through the link interface,
-function <A HREF="$$LINK(getcalc)">getcalc</A> is much easier to use. The advantage of this routine is
-greater generality in comparing to <A HREF="$$LINK(getcalc)">getcalc</A> (for example, it allows
+function <A HREF="$$LINK(link.h/getcalc)">getcalc</A> is much easier to use. The advantage of this routine is
+greater generality in comparing to <A HREF="$$LINK(link.h/getcalc)">getcalc</A> (for example, it allows
 transfer even between incompatible TI models, if properly used; sorry, I don't know too much
 about it).
 <BR><BR>
-The parameter <I>DevType</I> determines the device type (see <A HREF="$$LINK(LIO_Send)">LIO_Send</A> for
+The parameter <I>DevType</I> determines the device type (see <A HREF="$$LINK(link.h/LIO_Send)">LIO_Send</A> for
 the explanation about its meaning). It seems that it is possible to set <I>DevType</I> to zero
 (it probably means "receive from anything").
 <BR><BR>
 The parameter <I>skipmuch</I> is a boolean parameter (if it is non-zero, a
 lot of code in this function is skipped over). <I>skipmuch</I> has to do with the Silent Link mode (see
-<A HREF="$$LINK(OSCheckSilentLink)">OSCheckSilentLink</A>).
+<A HREF="$$LINK(link.h/OSCheckSilentLink)">OSCheckSilentLink</A>).
 When receiving a file manually, the AMS calls LIO_Receive with
 a value of 0 for <I>skipmuch</I>;
 in Silent Link mode, LIO_Receive is called with a value of 1
@@ -39,6 +39,6 @@ value (this value describes the type of the error, but I am not sure about the c
 of particular values).
 
 [References]
-In=getcalc, LIO_GetMultiple, OSLinkCmd
-Out=LIO_RecvData, LIO_SendData, OSLinkClose, OSLinkReset, OSLinkTxQueueActive, alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapLock, alloc.h/HeapRealloc, alloc.h/HeapUnlock, cert.h/cgetsn, dialogs.h/Dialog, error.h/ER_catch, error.h/ER_success, estack.h/HToESI, flash.h/BatTooLowFlash, flash.h/EM_abandon, flash.h/FL_download, flash.h/FL_getHardwareParmBlock, flash.h/FL_getVerNum, mem.h/memcpy, mem.h/memset, stdio.h/sprintf, string.h/strcat, string.h/strncpy, system.h/AB_getGateArrayVersion, system.h/OSClearBreak, system.h/XR_stringPtr, unknown.h/gen_version, unknown.h/is_executable, unknown.h/LoadSymFromFindHandle, unknown.h/OO_GetAppAttr, unknown.h/ST_flags_var: ST_flags, unknown.h/TIOS_EV_getAppID, vat.h/ClearUserDef, vat.h/FolderCount, vat.h/FolderDel, vat.h/StrToTokN, vat.h/SymCpy0, vat.h/SymDel, vat.h/SymDelTwin, vat.h/SymFindFirst, vat.h/SymFindFolderName, vat.h/SymFindNext, unknown.h/_ROM_CALL_418, unknown.h/_ROM_CALL_424, unknown.h/_ROM_CALL_428, unknown.h/_ROM_CALL_4FD, unknown.h/_ROM_CALL_4FE
+In=link.h/getcalc, link.h/LIO_GetMultiple, link.h/OSLinkCmd
+Out=link.h/LIO_RecvData, link.h/LIO_SendData, link.h/OSLinkClose, link.h/OSLinkReset, link.h/OSLinkTxQueueActive, alloc.h/HeapAlloc, alloc.h/HeapFree, alloc.h/HeapLock, alloc.h/HeapRealloc, alloc.h/HeapUnlock, cert.h/cgetsn, dialogs.h/Dialog, error.h/ER_catch, error.h/ER_success, estack.h/HToESI, flash.h/BatTooLowFlash, flash.h/EM_abandon, flash.h/FL_download, flash.h/FL_getHardwareParmBlock, flash.h/FL_getVerNum, mem.h/memcpy, mem.h/memset, stdio.h/sprintf, string.h/strcat, string.h/strncpy, system.h/AB_getGateArrayVersion, system.h/OSClearBreak, system.h/XR_stringPtr, unknown.h/gen_version, unknown.h/is_executable, unknown.h/LoadSymFromFindHandle, unknown.h/OO_GetAppAttr, unknown.h/ST_flags_var: ST_flags, unknown.h/TIOS_EV_getAppID, vat.h/ClearUserDef, vat.h/FolderCount, vat.h/FolderDel, vat.h/StrToTokN, vat.h/SymCpy0, vat.h/SymDel, vat.h/SymDelTwin, vat.h/SymFindFirst, vat.h/SymFindFolderName, vat.h/SymFindNext, unknown.h/_ROM_CALL_418, unknown.h/_ROM_CALL_424, unknown.h/_ROM_CALL_428, unknown.h/_ROM_CALL_4FD, unknown.h/_ROM_CALL_4FE
 Out_EV_eventLoop=1

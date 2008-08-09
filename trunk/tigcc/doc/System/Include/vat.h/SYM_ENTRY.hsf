@@ -11,7 +11,7 @@ A structure representing a VAT symbol entry.
 [Explanation]
 Principally, SYM_ENTRY consists of the symbol name, the flags, and the handle associated with the symbol.
 The flags are defined as a union, so you can access to all flags together using the field <I>flags_n</I>
-(in such case, constants defined in the enum <A HREF="$$LINK(SymFlags)">SymFlags</A> may be useful for
+(in such case, constants defined in the enum <A HREF="$$LINK(vat.h/SymFlags)">SymFlags</A> may be useful for
 bit masking), or access to individual flags (which are defined as bit fields) using the field <I>bits</I>.
 Some flags are unused, and some flags have an unknown meaning. At the moment, the known flags are:
 <I>locked</I> (set for locked symbols), <I>hidden</I> (set for symbols which are hidden for
@@ -19,14 +19,14 @@ the TI-Basic; in fact, "hidden" files are files which are currently opened, i.e.
 <I>checked</I> (set for symbols which are checked in VAR-LINK dialog), <I>folder</I> (set for folder entries),
 <I>collapsed</I> (set for collapsed folders; this makes sense only on AMS 2.xx),
 <I>archived</I> (set for archived symbols), <I>twin</I> (set for
-twin symols, see <A HREF="$$LINK(SymAddTwin)">SymAddTwin</A>), and <I>local</I> (set for local symbols).
+twin symols, see <A HREF="$$LINK(vat.h/SymAddTwin)">SymAddTwin</A>), and <I>local</I> (set for local symbols).
 For example, if "SymPtr" is the pointer to the VAT symbol entry, the following command makes
 this symbol invisible for TIOS:
 <PRE>SymPtr-&gt;flags.bits.hidden = 1;
 </PRE>
 Note that the <I>twin</I> bit may only be set if the symbol is really a twin
 symbol, i.e. an entry with the same name exists. Otherwise, the system will
-crash upon the next call to <A HREF="$$LINK(SymAdd)">SymAdd</A>.
+crash upon the next call to <A HREF="$$LINK(vat.h/SymAdd)">SymAdd</A>.
 <BR><BR>
 The <I>handle</I> field always contains a handle to a
 <A HREF="$$LINK(estack.h/MULTI_EXPR)">MULTI_EXPR</A> structure. It must contain valid data
@@ -34,7 +34,7 @@ for the operating system to operate properly.
 <BR><BR>
 Each symbol has also associated compatibility flag (field <I>compat</I>). It determines how
 the symbol will behave during sending to unexpanded (non-Plus) TI-92. There are four possible values
-of the compatibility flag (these constants are defined in enum <A HREF="$$LINK(CompatFlags)">CompatFlags</A>):
+of the compatibility flag (these constants are defined in enum <A HREF="$$LINK(vat.h/CompatFlags)">CompatFlags</A>):
 <BR><BR>
 <TABLE BORDER CELLPADDING="5">
 <TR><TD>CF_NONE</TD><TD>Sends immediately</TD></TR>

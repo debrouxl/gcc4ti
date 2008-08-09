@@ -11,9 +11,9 @@ An enumeration describing IDs of system messages.
 
 [Explanation]
 EventIDs is enumerated type for describing ID numbers of system messages (they are
-stored in the <I>Type</I> field of the <A HREF="$$LINK(EVENT)">EVENT</A> structure. All possible
+stored in the <I>Type</I> field of the <A HREF="$$LINK(events.h/EVENT)">EVENT</A> structure. All possible
 ID numbers (everything is in hex) are described in the following table. "Extra field" describes which
-subfield in <I>extra</I> union field of <A HREF="$$LINK(EVENT)">EVENT</A> structure
+subfield in <I>extra</I> union field of <A HREF="$$LINK(events.h/EVENT)">EVENT</A> structure
 is used for storing extra information (if any). "(depr.)" after a name specifies that
 this name is deprecated.
 <BR><BR>
@@ -34,7 +34,7 @@ this name is deprecated.
     <TD VALIGN="TOP">0x1 - 0x4FF</TD>
     <TD VALIGN="TOP">CM_LAST_STRING_NUMBER</TD>
     <TD VALIGN="TOP">Built-in strings:<BR>
-Strings for the AMS are stored in a table for lanugage customization. <A HREF="$$LINK(EV_defaultHandler)">EV_defaultHandler</A> will
+Strings for the AMS are stored in a table for lanugage customization. <A HREF="$$LINK(events.h/EV_defaultHandler)">EV_defaultHandler</A> will
 turn these events into CM_PASTE_STRING events for the application to process. For compatibility
 with TI's Flash Studio, CM_LAST_STRING_NUMBER (0x4FF) is defined here.</TD>
     <TD VALIGN="TOP">&nbsp;</TD>
@@ -66,7 +66,7 @@ This message is used for example in spinning of 3D graph.</TD>
     <TD VALIGN="TOP">0x701</TD>
     <TD VALIGN="TOP">CM_INIT</TD>
     <TD VALIGN="TOP">Init application. This message is sent
-from <A HREF="$$LINK(EV_centralDispatcher)">EV_centralDispatcher</A> after a reset
+from <A HREF="$$LINK(events.h/EV_centralDispatcher)">EV_centralDispatcher</A> after a reset
 or when batteries are inserted.</TD>
     <TD VALIGN="TOP">&nbsp;</TD>
   </TR>
@@ -78,7 +78,7 @@ to a task when it is being started. <I>r</I> is a rectangle with the requested w
 location and size chosen by the user from the mode screen settings.
 The application passes it to <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> to create
 its initial window. <I>StartType</I> field of the message is checked here
-(see <A HREF="$$LINK(EV_startTask)">EV_startTask</A>), because some applications display a
+(see <A HREF="$$LINK(events.h/EV_startTask)">EV_startTask</A>), because some applications display a
 "Current/Open/New" submenu on the APPS menu, so this field is needed to tell
 the application which submenu command was selected by the user.</TD>
     <TD VALIGN="TOP">r</TD>
@@ -89,8 +89,8 @@ the application which submenu command was selected by the user.</TD>
     <TD VALIGN="TOP">Activate. Applications usually respond to this message by
 highlighting their window border to make it apparent to the user which application
 is active, by setting menu command states,
-and by updating (or activating) registered menus (see <A HREF="$$LINK(EV_registerMenu)">EV_registerMenu</A>.
-Calling <A HREF="$$LINK(EV_defaultHandler)">EV_defaultHandler</A> will register and start the default toolbar
+and by updating (or activating) registered menus (see <A HREF="$$LINK(events.h/EV_registerMenu)">EV_registerMenu</A>.
+Calling <A HREF="$$LINK(events.h/EV_defaultHandler)">EV_defaultHandler</A> will register and start the default toolbar
 for the running application.</TD>
     <TD VALIGN="TOP">&nbsp;</TD>
   </TR>
@@ -187,9 +187,9 @@ This event will be sent when batteries are replaced, and after the FLASH app has
     <TD VALIGN="TOP">Keypress. This is the most common event. Note that a lot of system and mode events
 (opening system menus, dialogs etc.) are also processed as keypresses. They all have correct
 keypresses attached to them (usually DIAMOND + <B>...</B>). Tokens
-are usually send via <A href="$$LINK(EV_sendString)">EV_sendString</A> and do not have to be
+are usually send via <A href="$$LINK(events.h/EV_sendString)">EV_sendString</A> and do not have to be
 processed as single keypresses. All special keypresses may be passed to
-<A href="$$LINK(EV_defaultHandler)">EV_defaultHandler</A> for further processing.</TD>
+<A href="$$LINK(events.h/EV_defaultHandler)">EV_defaultHandler</A> for further processing.</TD>
     <TD VALIGN="TOP">Key</TD>
   </TR>
   <TR>
@@ -221,7 +221,7 @@ Should eventually be handled by the default text editor handler.</TD>
     <TD VALIGN="TOP">0x723</TD>
     <TD VALIGN="TOP">CM_PASTE_STRING<BR>CM_STRING&nbsp;(depr.)</TD>
     <TD VALIGN="TOP">Paste static (constant) text into the event paste buffer (in fact, it only sets a pointer
-to PasteText). See <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A> and <A HREF="$$LINK(EV_sendString)">EV_sendString</A>.</TD>
+to PasteText). See <A HREF="$$LINK(events.h/EV_eventLoop)">EV_eventLoop</A> and <A HREF="$$LINK(events.h/EV_sendString)">EV_sendString</A>.</TD>
     <TD VALIGN="TOP">PasteText</TD>
   </TR>
   <TR>
@@ -274,7 +274,7 @@ Should eventually be handled by the default text editor handler.</TD>
   <TR>
     <TD VALIGN="TOP">0x740</TD>
     <TD VALIGN="TOP">CM_CURSOR_FLASH<BR>CM_BLINK&nbsp;(depr.)</TD>
-    <TD VALIGN="TOP">Flash cursor (0.5 sec timer expired, see <A HREF="$$LINK(EV_eventLoop)">EV_eventLoop</A>).</TD>
+    <TD VALIGN="TOP">Flash cursor (0.5 sec timer expired, see <A HREF="$$LINK(events.h/EV_eventLoop)">EV_eventLoop</A>).</TD>
     <TD VALIGN="TOP">&nbsp;</TD>
   </TR>
   <TR>
@@ -297,8 +297,8 @@ at the edit cursor.</TD>
     <TD VALIGN="TOP">CM_WPAINT</TD>
     <TD VALIGN="TOP">Paint window. Pointer to a window which need to be painted is attached.
 Applications should check to see if it belongs to the application and to redraw it if it is.
-See <A HREF="$$LINK(EV_paintWindows)">EV_paintWindows</A>. These are not sent to the capturing hook,
-unless an application ID number is set to <A HREF="$$LINK(StandardTaskIDs)">CM_NULL</A> (force redraw).
+See <A HREF="$$LINK(events.h/EV_paintWindows)">EV_paintWindows</A>. These are not sent to the capturing hook,
+unless an application ID number is set to <A HREF="$$LINK(events.h/StandardTaskIDs)">CM_NULL</A> (force redraw).
 <A HREF="$$LINK(wingraph.h/WinOpen)">WinOpen</A> stores the current application ID number
 in <I>TaskId</I> field of <A HREF="$$LINK(wingraph.h/WINDOW)">WINDOW</A> structure.</TD>
     <TD VALIGN="TOP">w</TD>
@@ -337,7 +337,7 @@ this and similar event messages; there are no default actions for them).</TD>
   <TR>
     <TD VALIGN="TOP">0x780</TD>
     <TD VALIGN="TOP">CM_MODE_CHANGE</TD>
-    <TD VALIGN="TOP">Notify Mode Change (see <A HREF="$$LINK(MO_notifyModeChange)">MO_notifyModeChange</A>).</TD>
+    <TD VALIGN="TOP">Notify Mode Change (see <A HREF="$$LINK(events.h/MO_notifyModeChange)">MO_notifyModeChange</A>).</TD>
     <TD VALIGN="TOP">&nbsp;</TD>
   </TR>
   <TR>

@@ -13,19 +13,19 @@ Sets up for nonlocal goto.
 
 [Explanation]
 setjmp captures the complete task state in <I>j_buf</I> and returns 0.
-<I>j_buf</I> is usually a buffer of type <A HREF="$$LINK(JMP_BUF)">JMP_BUF</A>.
-A later call to <A HREF="$$LINK(longjmp)">longjmp</A> with <I>j_buf</I> restores
+<I>j_buf</I> is usually a buffer of type <A HREF="$$LINK(setjmp.h/JMP_BUF)">JMP_BUF</A>.
+A later call to <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A> with <I>j_buf</I> restores
 the captured task state and returns in such a way that setjmp appears to have
 returned with the value <I>val</I>. A task state consists of address registers A2-A7,
 data registers D2-D7, and the program counter.
 <BR><BR>
-setjmp must be called before <A HREF="$$LINK(longjmp)">longjmp</A>. The routine that
+setjmp must be called before <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A>. The routine that
 calls setjmp and sets  up <I>j_buf</I> must still be active and cannot have
-returned before the <A HREF="$$LINK(longjmp)">longjmp</A> is
+returned before the <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A> is
 called. If it has returned, the results are unpredictable (and usually results
 with a crash). setjmp is useful for dealing with errors and exceptions
 encountered in a low-level subroutine of a program. setjmp returns 0 when it
-is initially called. If the return is from a call to <A HREF="$$LINK(longjmp)">longjmp</A>,
+is initially called. If the return is from a call to <A HREF="$$LINK(setjmp.h/longjmp)">longjmp</A>,
 setjmp returns a nonzero value.
 <BR><BR>
 <B>Note:</B> The saved task state is not complete enough that setjmp can be used to

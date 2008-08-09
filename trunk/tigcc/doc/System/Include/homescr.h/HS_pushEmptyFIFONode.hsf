@@ -5,7 +5,7 @@ Subtype=ROM Call
 Header Files=homescr.h
 Definition=void HS_pushEmptyFIFONode (HANDLE Node);
 Real Definition=#define HS_pushEmptyFIFONode (*(__get_HS_pushEmptyFIFONode ()))
-See Also=HS_pushFIFONode, HomeStorePair
+See Also=homescr.h/HS_pushFIFONode, homescr.h/HomeStorePair
 
 [Description]
 Inserts a new almost-empty FIFO node into the history.
@@ -13,18 +13,18 @@ Inserts a new almost-empty FIFO node into the history.
 [Explanation]
 HS_pushEmptyFIFONode inserts the entry/answer pair identified by <I>Node</I>
 into the linked list of FIFO nodes. <I>Node</I> must contain a handle to a
-<A HREF="$$LINK(FIFO_NODE)">FIFO_NODE</A> structure, but only the <I>Expr</I>
+<A HREF="$$LINK(homescr.h/FIFO_NODE)">FIFO_NODE</A> structure, but only the <I>Expr</I>
 fields of the entry and answer need to be filled. It should have
-been allocated using <A HREF="$$LINK(HS_newFIFONode)">HS_newFIFONode</A>.
+been allocated using <A HREF="$$LINK(homescr.h/HS_newFIFONode)">HS_newFIFONode</A>.
 <BR><BR>
 This function first fills the structure pointed to by <I>Node</I>, then calls
-<A HREF="$$LINK(HS_pushFIFONode)">HS_pushFIFONode</A> to insert the new node.
+<A HREF="$$LINK(homescr.h/HS_pushFIFONode)">HS_pushFIFONode</A> to insert the new node.
 Unfortunately, it also calls
 <A HREF="$$LINK(statline.h/ST_stack)">ST_stack</A> from
 <A HREF="$$LINK(statline.h/)">statline.h</A> to redraw the history status
 line indicator of the Home Screen, which can not be prevented using
 <A HREF="$$LINK(graph.h/PortSet)">PortSet</A> or the method used in
-<A HREF="$$LINK(HomeStore)">HomeStore</A>.
+<A HREF="$$LINK(homescr.h/HomeStore)">HomeStore</A>.
 In theory, it is possible to fill the structure by hand, but this is very
 tedious.
 <BR><BR>
@@ -33,9 +33,9 @@ jump table of any AMS version up to 2.05, and probably will never be. Getting
 the address of this function is implemented using a <I>very</I> dirty hack.
 However, it is the main function for storing items in the Home Screen
 history, so you probably cannot avoid it unless you want to fill the
-<A HREF="$$LINK(FIFO_NODE)">FIFO_NODE</A> structure yourself. An error is
+<A HREF="$$LINK(homescr.h/FIFO_NODE)">FIFO_NODE</A> structure yourself. An error is
 thrown if the address of this function could not be determined.
 
 [References]
-In=HomePushEStack, HomeStorePair
-Out=HS_pushFIFONode
+In=homescr.h/HomePushEStack, homescr.h/HomeStorePair
+Out=homescr.h/HS_pushFIFONode

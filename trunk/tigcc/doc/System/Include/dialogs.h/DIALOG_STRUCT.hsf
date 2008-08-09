@@ -3,25 +3,25 @@ Name=DIALOG
 Type=Type
 Header Files=dialogs.h
 Definition=typedef struct { unsigned short TextOffset; unsigned short NumItems; unsigned char Width, Height; Dialog_Callback_t CallBack; DIALOG_ITEM Fields[]; } DIALOG;
-See Also=Dialog, DialogAdd, DIALOG_ITEM, DialogNew, SIZED_DIALOG
+See Also=dialogs.h/Dialog, dialogs.h/DialogAdd, dialogs.h/DIALOG_ITEM, dialogs.h/DialogNew, dialogs.h/SIZED_DIALOG
 
 [Description]
 A scructure for defining dialogs.
 
 [Explanation]
 DIALOG is the structure to define a pre-filled dialog box, to be used as the
-first argument to the <A HREF="$$LINK(Dialog)">Dialog</A> function. It
-enables making a dialog without using <A HREF="$$LINK(DialogNew)">DialogNew</A>,
-<A HREF="$$LINK(DialogAddTitle)">DialogAddTitle</A>, and all the other macros
-that use <A HREF="$$LINK(DialogAdd)">DialogAdd</A>.
+first argument to the <A HREF="$$LINK(dialogs.h/Dialog)">Dialog</A> function. It
+enables making a dialog without using <A HREF="$$LINK(dialogs.h/DialogNew)">DialogNew</A>,
+<A HREF="$$LINK(dialogs.h/DialogAddTitle)">DialogAddTitle</A>, and all the other macros
+that use <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A>.
 <BR><BR>
 There is a constraint in this structure which cannot be described within a C
 data type: The last item in the <I>Fields</I> array must be an item of type
-<A HREF="$$LINK(DialogTypes)">D_END</A>, and all other fields of this item
+<A HREF="$$LINK(dialogs.h/DialogTypes)">D_END</A>, and all other fields of this item
 must be filled with zero.
 <BR><BR>
 <I>TextOffset</I> is used to know where the strings that the dialog uses are.
-Most dialog fields (of type <A HREF="$$LINK(DIALOG_ITEM)">DIALOG_ITEM</A>)
+Most dialog fields (of type <A HREF="$$LINK(dialogs.h/DIALOG_ITEM)">DIALOG_ITEM</A>)
 have a member <I>oText</I>, which is of type
 <CODE><A HREF="$$INFOLINK(keywords/unsigned)">unsigned</A> <A HREF="$$INFOLINK(keywords/short)">short</A></CODE>
 as well. For each item, both numbers will be added to the address of the
@@ -34,15 +34,15 @@ greater than the address of the DIALOG structure; for example because both
 the DIALOG structure and the strings are contained in a larger structure.
 <BR><BR>
 <I>NumItem</I> must be set to the number of items without the terminating
-<A HREF="$$LINK(DialogTypes)">D_END</A> item. <I>Width</I>, <I>Height</I> and
+<A HREF="$$LINK(dialogs.h/DialogTypes)">D_END</A> item. <I>Width</I>, <I>Height</I> and
 <I>Callback</I> are the same as the arguments for
-<A HREF="$$LINK(DialogNew)">DialogNew</A>.
+<A HREF="$$LINK(dialogs.h/DialogNew)">DialogNew</A>.
 <BR><BR>
-For most of the <A HREF="$$LINK(DIALOG_ITEM)">DIALOG_ITEM</A> structures, the
+For most of the <A HREF="$$LINK(dialogs.h/DIALOG_ITEM)">DIALOG_ITEM</A> structures, the
 structures' members are the same as the arguments used by the corresponding
-macro made with <A HREF="$$LINK(DialogAdd)">DialogAdd</A>, just care about
+macro made with <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A>, just care about
 using offsets instead of pointers for strings, and add the flag
-<A HREF="$$LINK(DialogFlags)">DF_SKIP</A> to ScrollRegions, Menus, Titles and
+<A HREF="$$LINK(dialogs.h/DialogFlags)">DF_SKIP</A> to ScrollRegions, Menus, Titles and
 text.
 <BR><BR>
 The order in wich you place the items is very important. Usually, the order
@@ -59,5 +59,5 @@ the values of pointers and handles each time you execute your program.
 Also, DIALOG contains a variable-size array of items, and variable-size
 arrays cannot be initialized with non-constant values. However, a DIALOG
 instance is usually non-constant. See the
-<A HREF="$$LINK(SIZED_DIALOG)">SIZED_DIALOG</A> macro, which was created to
+<A HREF="$$LINK(dialogs.h/SIZED_DIALOG)">SIZED_DIALOG</A> macro, which was created to
 avoid this problem.

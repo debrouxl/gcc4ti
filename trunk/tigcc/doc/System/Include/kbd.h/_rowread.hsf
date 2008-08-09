@@ -4,7 +4,7 @@ Type=Function
 Subtype=tigcc.a
 Header Files=kbd.h
 Definition=unsigned short _rowread (unsigned short row);
-See Also=_rowread_internal, _rowread_inverted, _keytest
+See Also=kbd.h/_rowread_internal, kbd.h/_rowread_inverted, kbd.h/_keytest
 
 [Library Call]
 Asm=1
@@ -23,7 +23,7 @@ line indicators, which are displayed from Auto-Int 1).
 <BR><BR>
 Setting a bit in <I>row</I> masks the corresponding row of the keyboard from being
 read, so if <I>row</I> is zero, all rows are read at the same time. Take a look
-at <A HREF="$$LINK(_rowread_inverted)">_rowread_inverted</A> as well.
+at <A HREF="$$LINK(kbd.h/_rowread_inverted)">_rowread_inverted</A> as well.
 In the result, all bits (cols) corresponding to keys which are being held down
 are set.
 See below for some examples.
@@ -100,7 +100,7 @@ _rowread(~0b100) &amp; 0b1000
 _rowread(~0x4) &amp; 0x8
 _rowread(0xFFFB) &amp; 0x8
 </PRE>
-But generally it is much easier to use the <A HREF="$$LINK(_keytest)">_keytest</A> macro instead.
+But generally it is much easier to use the <A HREF="$$LINK(kbd.h/_keytest)">_keytest</A> macro instead.
 <BR><BR>
 Because of the way the TI-89 and TI-92+'s keyboard is wired, if you hold down three
 keys that form the corners of a rectangle, the calculator will think you are
@@ -119,4 +119,4 @@ About the internal implementation: _rowread sends <I>row</I> to the I/O port
 returns the byte read from 0x60001B (inverted for easier testing in C programs).
 
 [References]
-In=_keytest, _keytest_optimized, _rowread_internal, _rowread_inverted
+In=kbd.h/_keytest, kbd.h/_keytest_optimized, kbd.h/_rowread_internal, kbd.h/_rowread_inverted

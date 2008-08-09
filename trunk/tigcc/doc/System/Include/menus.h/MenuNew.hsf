@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=menus.h
 Definition=HANDLE MenuNew (short Flags, short Width, short Height);
-See Also=MenuBegin, MenuKey, MenuLoad, DynMenuAdd, DynMenuChange, MenuAddText, MenuAddIcon
+See Also=menus.h/MenuBegin, menus.h/MenuKey, menus.h/MenuLoad, menus.h/DynMenuAdd, menus.h/DynMenuChange, menus.h/MenuAddText, menus.h/MenuAddIcon
 
 [ROM Call]
 Index=$43
@@ -17,8 +17,8 @@ MenuNew allocates memory for a new toolbar menu (i.e. a menu which looks like th
 menu of the home screen), initializes the allocated block with the necessary structures, and
 returns a handle to it (or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of an error).
 You can later free the memory by calling <A HREF="$$LINK(alloc.h/HeapFree)">HeapFree</A>,
-but note that this is done automatically if you use the <A HREF="$$LINK(MenuBeginFlags)">MBF_HMENU</A>
-flag when calling the <A HREF="$$LINK(MenuBegin)">MenuBegin</A> function.
+but note that this is done automatically if you use the <A HREF="$$LINK(menus.h/MenuBeginFlags)">MBF_HMENU</A>
+flag when calling the <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> function.
 <I>Width</I> and <I>Height</I> are the width and the height of the menu in pixels.
 Passing 0 means that the width or height should be calculated automatically;
 however, AMS 1.xx simply uses the default values in this case. Values which
@@ -30,39 +30,39 @@ the available width of the menu, the menu items will scroll left or right if nec
 This routine may cause heap compression.
 <BR><BR>
 The parameter <I>Flags</I> contains various flags defined in the enum
-<A HREF="$$LINK(MenuFlagsEnum)">MenuFlagsEnum</A>. TI recommends passing 0,
-but the TIOS mainly passes <A HREF="$$LINK(MenuFlagsEnum)">MF_TOOLBOX</A> when
+<A HREF="$$LINK(menus.h/MenuFlagsEnum)">MenuFlagsEnum</A>. TI recommends passing 0,
+but the TIOS mainly passes <A HREF="$$LINK(menus.h/MenuFlagsEnum)">MF_TOOLBOX</A> when
 calling this routine. This parameter is copied to the <I>Flags</I> field of
-the menu structure (see <A HREF="$$LINK(MenuPopup)">MenuPopup</A> for info
+the menu structure (see <A HREF="$$LINK(menus.h/MenuPopup)">MenuPopup</A> for info
 about this structure).
 <BR><BR>
 The method for creating menus on AMS 2.00 or later which TI proposes is as
 follows:
 <OL>
 <LI>Create an empty, dynamic menu structure with MenuNew or
-<A HREF="$$LINK(MenuLoad)">MenuLoad</A>.</LI>
-<LI>Build the menu with <A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A> or <A HREF="$$LINK(DynMenuChange)">DynMenuChange</A> using the
-handle returned by MenuNew or <A HREF="$$LINK(MenuLoad)">MenuLoad</A> (each of these routines
-returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if not enough memory, or check <A HREF="$$LINK(MenuFlags)">MenuFlags</A> when
+<A HREF="$$LINK(menus.h/MenuLoad)">MenuLoad</A>.</LI>
+<LI>Build the menu with <A HREF="$$LINK(menus.h/DynMenuAdd)">DynMenuAdd</A> or <A HREF="$$LINK(menus.h/DynMenuChange)">DynMenuChange</A> using the
+handle returned by MenuNew or <A HREF="$$LINK(menus.h/MenuLoad)">MenuLoad</A> (each of these routines
+returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if not enough memory, or check <A HREF="$$LINK(menus.h/MenuFlags)">MenuFlags</A> when
 done with all of the additions/changes).</LI>
-<LI>Call <A HREF="$$LINK(MenuBegin)">MenuBegin</A> setting the <A HREF="$$LINK(MenuBeginFlags)">MBF_HMENU</A> flag and passing the
-handle returned by MenuNew or <A HREF="$$LINK(MenuLoad)">MenuLoad</A> as the argument after
-the Flags parameter (<A HREF="$$LINK(MenuBegin)">MenuBegin</A> has a variable number of
+<LI>Call <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> setting the <A HREF="$$LINK(menus.h/MenuBeginFlags)">MBF_HMENU</A> flag and passing the
+handle returned by MenuNew or <A HREF="$$LINK(menus.h/MenuLoad)">MenuLoad</A> as the argument after
+the Flags parameter (<A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> has a variable number of
 arguments). <A HREF="$$LINK(alloc.h/NULL)">NULL</A> can be passed as the pointer to the menu
 structure (since the dereferenced handle points to this structure). (If interested, see
-<A HREF="$$LINK(MenuPopup)">MenuPopup</A> for more informations on menu structures.)
+<A HREF="$$LINK(menus.h/MenuPopup)">MenuPopup</A> for more informations on menu structures.)
 This will lock the handle returned from MenuNew and save it.</LI>
-<LI>Using the handle returned from <A HREF="$$LINK(MenuBegin)">MenuBegin</A> (this is a separate
+<LI>Using the handle returned from <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> (this is a separate
 handle!), you may then call all of the normal menu functions
-(<A HREF="$$LINK(MenuCheck)">MenuCheck</A>, <A HREF="$$LINK(MenuKey)">MenuKey</A>, <A HREF="$$LINK(MenuOn)">MenuOn</A>,
-<A HREF="$$LINK(MenuTopStat)">MenuTopStat</A>, <A HREF="$$LINK(MenuTopSelect)">MenuTopSelect</A>, etc.).</LI>
-<LI>When done with the menu, call <A HREF="$$LINK(MenuEnd)">MenuEnd</A> on the handle returned
-from <A HREF="$$LINK(MenuBegin)">MenuBegin</A>. This will free the handle returned from
-<A HREF="$$LINK(MenuBegin)">MenuBegin</A> as well as the handle returned from MenuNew.</LI>
+(<A HREF="$$LINK(menus.h/MenuCheck)">MenuCheck</A>, <A HREF="$$LINK(menus.h/MenuKey)">MenuKey</A>, <A HREF="$$LINK(menus.h/MenuOn)">MenuOn</A>,
+<A HREF="$$LINK(menus.h/MenuTopStat)">MenuTopStat</A>, <A HREF="$$LINK(menus.h/MenuTopSelect)">MenuTopSelect</A>, etc.).</LI>
+<LI>When done with the menu, call <A HREF="$$LINK(menus.h/MenuEnd)">MenuEnd</A> on the handle returned
+from <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A>. This will free the handle returned from
+<A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> as well as the handle returned from MenuNew.</LI>
 </OL>
-Do not forget that once you call <A HREF="$$LINK(MenuBegin)">MenuBegin</A>, you may not unlock the
-handle returned from MenuNew, nor call <A HREF="$$LINK(DynMenuAdd)">DynMenuAdd</A> or
-<A HREF="$$LINK(DynMenuChange)">DynMenuChange</A>.
+Do not forget that once you call <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A>, you may not unlock the
+handle returned from MenuNew, nor call <A HREF="$$LINK(menus.h/DynMenuAdd)">DynMenuAdd</A> or
+<A HREF="$$LINK(menus.h/DynMenuChange)">DynMenuChange</A>.
 <BR><BR>
 It might also be useful for you to have the following information:
 <BR><BR>

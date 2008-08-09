@@ -5,7 +5,7 @@ Subtype=Macro
 Header Files=intr.h
 Definition=void PRG_setStart (unsigned char val);
 Real Definition=#define PRG_setStart(x) (*((volatile unsigned char *) 0x600017) = (x))
-See Also=PRG_getStart, PRG_setRate
+See Also=intr.h/PRG_getStart, intr.h/PRG_setRate
 
 [Description]
 Specifies the starting value of the variable incremented by the programmable
@@ -15,7 +15,7 @@ rate generator.
 PRG_setStart sets the starting value of the variable incremented by the
 programmable rate generator. This variable is incremented by 1 every time the
 programmable rate generator is triggered (at a speed which can be set using
-<A HREF="$$LINK(PRG_setRate)">PRG_setRate</A>). When it overflows from 0xFF
+<A HREF="$$LINK(intr.h/PRG_setRate)">PRG_setRate</A>). When it overflows from 0xFF
 to 0x00, auto interrupt 5 is triggered, and it is reset to <I>val</I>. To
 conclude, the way the value of this variable changes is shown here:
 <BR><BR>
@@ -24,4 +24,4 @@ conclude, the way the value of this variable changes is shown here:
 <BR><BR>
 <B>Note:</B> If a program uses this function, it should restore the previous
 value before the end of the program, as determined by
-<A HREF="$$LINK(PRG_getStart)">PRG_getStart</A>.
+<A HREF="$$LINK(intr.h/PRG_getStart)">PRG_getStart</A>.

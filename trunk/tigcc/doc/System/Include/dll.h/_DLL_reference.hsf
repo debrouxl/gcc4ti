@@ -4,17 +4,17 @@ Type=Function
 Subtype=Macro Constructor
 Header Files=dll.h
 Definition=#define _DLL_reference(type,index) ((type*const) _DLL_entry (index))
-See Also=_DLL_call, _DLL_call_attr, _DLL_glbvar
+See Also=dll.h/_DLL_call, dll.h/_DLL_call_attr, dll.h/_DLL_glbvar
 
 [Description]
 Returns a pointer to a global variable in a DLL.
 
 [Explanation]
 _DLL_reference gets a void pointer to the location of the <I>index</I>-th exported symbol of the
-currently loaded DLL (using <A HREF="$$LINK(_DLL_entry)">_DLL_entry</A>), then casts this pointer to a constant pointer
+currently loaded DLL (using <A HREF="$$LINK(dll.h/_DLL_entry)">_DLL_entry</A>), then casts this pointer to a constant pointer
 of type <I>type</I>. This macro is usually used for accessing arrays exported from the DLL.
 For example, suppose that the DLL contains the following declarations in the DLL interface
-section (see <A HREF="$$LINK(DLL_INTERFACE)">DLL_INTERFACE</A>):
+section (see <A HREF="$$LINK(dll.h/DLL_INTERFACE)">DLL_INTERFACE</A>):
 <PRE>char foo[] = "FooString";
 int bar[5] = {10, 20, 30, 40, 50};
 ...
@@ -22,7 +22,7 @@ DLL_EXPORTS foo, bar
 </PRE>
 Then <I>foo</I> will get the index number 0, and <I>bar</I> will get the index number 1.
 To 'import' these two arrays from the DLL
-(assuming that the DLL has been loaded sucessfully using <A HREF="$$LINK(LoadDLL)">LoadDLL</A>),
+(assuming that the DLL has been loaded sucessfully using <A HREF="$$LINK(dll.h/LoadDLL)">LoadDLL</A>),
 you should use the following defines: 
 <PRE>#define foo _DLL_reference (const char, 0)
 #define bar _DLL_reference (int, 1)

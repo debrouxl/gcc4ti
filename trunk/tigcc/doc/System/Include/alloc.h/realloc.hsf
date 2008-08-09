@@ -4,7 +4,7 @@ Type=Function
 Subtype=tigcc.a
 Header Files=alloc.h, stdlib.h
 Definition=void *realloc (void *Ptr, unsigned long NewSize);
-See Also=malloc, calloc, free, realloc_throw
+See Also=alloc.h/malloc, alloc.h/calloc, alloc.h/free, alloc.h/realloc_throw
 
 [Library Call]
 Asm=1
@@ -19,27 +19,27 @@ Reallocates allocated memory.
 [Explanation]
 realloc attempts to shrink or expand the previously allocated block to <I>NewSize</I>
 bytes. The <I>Ptr</I> argument points to a memory block previously obtained by calling
-<A HREF="$$LINK(malloc)">malloc</A>, <A HREF="$$LINK(calloc)">calloc</A>, or realloc.
-It may also be <A HREF="$$LINK(NULL)">NULL</A>; in this case the function simply calls <A HREF="$$LINK(malloc)">malloc</A>.
+<A HREF="$$LINK(alloc.h/malloc)">malloc</A>, <A HREF="$$LINK(alloc.h/calloc)">calloc</A>, or realloc.
+It may also be <A HREF="$$LINK(alloc.h/NULL)">NULL</A>; in this case the function simply calls <A HREF="$$LINK(alloc.h/malloc)">malloc</A>.
 <BR><BR>
 realloc adjusts the size of the allocated block to <I>NewSize</I>, copying the contents to a new location
 if necessary (note that the block will not stay in high memory after the reallocation, but
 it will still remain locked; see other functions from this header file for more info).
 realloc returns the address of the reallocated block, which can be different than the address
-of the original block. If the block cannot be reallocated, realloc returns <A HREF="$$LINK(NULL)">NULL</A>.
+of the original block. If the block cannot be reallocated, realloc returns <A HREF="$$LINK(alloc.h/NULL)">NULL</A>.
 <BR><BR>
 Usually realloc keeps the current contents of the block intact; only the portion of the block
 which is newly allocated is not initialized and contains random content. However, unlike
-<A HREF="$$LINK(HeapRealloc)">HeapRealloc</A>, the function frees the block pointed to by
+<A HREF="$$LINK(alloc.h/HeapRealloc)">HeapRealloc</A>, the function frees the block pointed to by
 <I>Ptr</I> if there was an error, so you can not assume that the data pointed to by <I>Ptr</I>
 is still valid. This is done because there is no way to guarantee that <I>Ptr</I> is still
-valid after the heap compression which <A HREF="$$LINK(HeapRealloc)">HeapRealloc</A> tries to
-perform (this function uses <A HREF="$$LINK(HeapRealloc)">HeapRealloc</A> internally).
+valid after the heap compression which <A HREF="$$LINK(alloc.h/HeapRealloc)">HeapRealloc</A> tries to
+perform (this function uses <A HREF="$$LINK(alloc.h/HeapRealloc)">HeapRealloc</A> internally).
 <BR><BR>
 <B>Note:</B> realloc is introduced to increase compatibility with ANSI C. It is better to use
-the official TIOS function <A HREF="$$LINK(HeapRealloc)">HeapRealloc</A>, which uses a system of handles
+the official TIOS function <A HREF="$$LINK(alloc.h/HeapRealloc)">HeapRealloc</A>, which uses a system of handles
 to memory blocks.
 
 [References]
-Out=HeapAllocPtr, HeapFree, HeapRealloc, HeapUnlock, HLock
-In=realloc_throw, stdlib.h/atexit
+Out=alloc.h/HeapAllocPtr, alloc.h/HeapFree, alloc.h/HeapRealloc, alloc.h/HeapUnlock, alloc.h/HLock
+In=alloc.h/realloc_throw, stdlib.h/atexit

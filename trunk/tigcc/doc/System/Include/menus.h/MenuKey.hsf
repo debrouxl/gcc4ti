@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=menus.h
 Definition=short MenuKey (HANDLE ExecHandle, short KeyCode);
-See Also=MenuBegin
+See Also=menus.h/MenuBegin
 
 [ROM Call]
 Index=$39
@@ -15,10 +15,10 @@ Activates a toolbar menu by processing a key press.
 [Explanation]
 MenuKey is the heart of all toolbar menus. It activates the menu associated with the handle
 <I>ExecHandle</I>, where <I>ExecHandle</I> is a handle returned from
-<A HREF="$$LINK(MenuBegin)">MenuBegin</A> (not from <A HREF="$$LINK(MenuNew)">MenuNew</A>).
+<A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> (not from <A HREF="$$LINK(menus.h/MenuNew)">MenuNew</A>).
 The parameter <I>KeyCode</I> is the code of the key
 associated with the menu item (toolbox) which will be activated. If this toolbox has a
-pulldown menu assigned to it (<A HREF="$$LINK(DynMenuFlags)">DMF_TOP_SUB</A>), it will be opened,
+pulldown menu assigned to it (<A HREF="$$LINK(menus.h/DynMenuFlags)">DMF_TOP_SUB</A>), it will be opened,
 and the user can navigate through the menu
 using the arrow keys. If the toolbox has no pulldown menu, MenuKey returns
 immediately. A typical method of calling MenuKey is to pass a result of
@@ -28,13 +28,13 @@ the key code) to the parameter <I>KeyCode</I>:
 </PRE>
 MenuKey returns the following values (as far as I know; maybe other return values also exist):
 <UL>
-<LI><A HREF="$$LINK(MenuKeyValues)">M_NOITEM</A>, if the user pressed ESC while the menu was active, or if the code of a disabled
-toolbox (see <A HREF="$$LINK(MenuTopStat)">MenuTopStat</A>) was passed to MenuKey;</LI>
-<LI><A HREF="$$LINK(MenuKeyValues)">M_NOTMENUKEY</A>, if a wrong key code was passed to it (i.e. a key code which is not associated
+<LI><A HREF="$$LINK(menus.h/MenuKeyValues)">M_NOITEM</A>, if the user pressed ESC while the menu was active, or if the code of a disabled
+toolbox (see <A HREF="$$LINK(menus.h/MenuTopStat)">MenuTopStat</A>) was passed to MenuKey;</LI>
+<LI><A HREF="$$LINK(menus.h/MenuKeyValues)">M_NOTMENUKEY</A>, if a wrong key code was passed to it (i.e. a key code which is not associated
 with any menu item);</LI>
 <LI>a positive value, if the user selects a menu item normally. In this case, the return
 value will be the identification number (<I>ID</I>) of the selected menu item
-(see <A HREF="$$LINK(MenuAddText)">MenuAddText</A>).</LI>
+(see <A HREF="$$LINK(menus.h/MenuAddText)">MenuAddText</A>).</LI>
 </UL>
 Note that this approach is very flexible, because the actual reading of the keypress is
 done in the user program, so it allows various ways of "hooking" into the "heart" of the menu.
@@ -46,6 +46,6 @@ Here is an example of defining a menu and using MenuKey to activate it (called "
 $$EXAMPLE(Menu Example 1.c)
 
 [References]
-Out=FKeyI_H, alloc.h/HeapAllocESTACK, alloc.h/HeapFree, graph.h/BitmapGet, graph.h/BitmapPut, graph.h/BitmapSize, graph.h/CalcBitmapSize, graph.h/DrawChar, graph.h/DrawClipRect, graph.h/DrawFkey, graph.h/DrawLine, graph.h/DrawMultiLines, graph.h/DrawPix, graph.h/DrawStr, graph.h/DrawStrWidth, graph.h/FontSetSys, graph.h/PortRestore, graph.h/RestoreScrState, graph.h/SaveScrState, graph.h/ScrRect, graph.h/ScrRectFill, graph.h/ScrToWin, graph.h/SetCurAttr, graph.h/SetCurClip, kbd.h/alphaLockOff, kbd.h/alphaLockOn, kbd.h/GKeyIn, kbd.h/restoreAlphaLock, mem.h/memset, statline.h/ST_eraseHelp, statline.h/ST_helpMsg, string.h/strlen, system.h/CU_cursorState, system.h/CU_restore, system.h/CU_stop, system.h/XR_stringPtr, system.h/CTypeTable, unknown.h/_ROM_CALL_3EA, unknown.h/_ROM_CALL_41E, unknown.h/_ROM_CALL_420, unknown.h/_ROM_CALL_422
+Out=menus.h/FKeyI_H, alloc.h/HeapAllocESTACK, alloc.h/HeapFree, graph.h/BitmapGet, graph.h/BitmapPut, graph.h/BitmapSize, graph.h/CalcBitmapSize, graph.h/DrawChar, graph.h/DrawClipRect, graph.h/DrawFkey, graph.h/DrawLine, graph.h/DrawMultiLines, graph.h/DrawPix, graph.h/DrawStr, graph.h/DrawStrWidth, graph.h/FontSetSys, graph.h/PortRestore, graph.h/RestoreScrState, graph.h/SaveScrState, graph.h/ScrRect, graph.h/ScrRectFill, graph.h/ScrToWin, graph.h/SetCurAttr, graph.h/SetCurClip, kbd.h/alphaLockOff, kbd.h/alphaLockOn, kbd.h/GKeyIn, kbd.h/restoreAlphaLock, mem.h/memset, statline.h/ST_eraseHelp, statline.h/ST_helpMsg, string.h/strlen, system.h/CU_cursorState, system.h/CU_restore, system.h/CU_stop, system.h/XR_stringPtr, system.h/CTypeTable, unknown.h/_ROM_CALL_3EA, unknown.h/_ROM_CALL_41E, unknown.h/_ROM_CALL_420, unknown.h/_ROM_CALL_422
 In=bascmd.h/cmd_toolbar, events.h/EV_defaultHandler, events.h/handleVarLinkKey
 Out_EV_eventLoop=1

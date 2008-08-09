@@ -21,37 +21,37 @@ It is not likely that following information will be very useful for you (except 
 you are an expert who wants to make a new high perfomance flash application), but anyway
 here is the pseudo-code which describes what exactly EV_startApp does:
 <PRE>if <I>TaskID</I> is equal to the current application
-  if <I>StartType</I> is <A HREF="$$LINK(StartTypes)">AP_START_CURRENT</A>
-    send <A HREF="$$LINK(EventIDs)">CM_START_CURRENT</A> to the current application
+  if <I>StartType</I> is <A HREF="$$LINK(events.h/StartTypes)">AP_START_CURRENT</A>
+    send <A HREF="$$LINK(events.h/EventIDs)">CM_START_CURRENT</A> to the current application
   else {<I>change task</I>}
-    send <A HREF="$$LINK(EventIDs)">CM_UNFOCUS</A>, <A HREF="$$LINK(EventIDs)">CM_DEACTIVATE</A> and <A HREF="$$LINK(EventIDs)">CM_ENDTASK</A> to the current application
-    call <A HREF="$$LINK(EV_startTask)">EV_startTask</A>, passing <I>StartTask</I> to it
-    send <A HREF="$$LINK(EventIDs)">CM_ACTIVATE</A> and <A HREF="$$LINK(EventIDs)">CM_FOCUS</A> to the current application
+    send <A HREF="$$LINK(events.h/EventIDs)">CM_UNFOCUS</A>, <A HREF="$$LINK(events.h/EventIDs)">CM_DEACTIVATE</A> and <A HREF="$$LINK(events.h/EventIDs)">CM_ENDTASK</A> to the current application
+    call <A HREF="$$LINK(events.h/EV_startTask)">EV_startTask</A>, passing <I>StartTask</I> to it
+    send <A HREF="$$LINK(events.h/EventIDs)">CM_ACTIVATE</A> and <A HREF="$$LINK(events.h/EventIDs)">CM_FOCUS</A> to the current application
   endif
 else {<I>new application</I>}
-  send <A HREF="$$LINK(EventIDs)">CM_UNFOCUS</A> and <A HREF="$$LINK(EventIDs)">CM_DEACTIVATE</A> to the current application
+  send <A HREF="$$LINK(events.h/EventIDs)">CM_UNFOCUS</A> and <A HREF="$$LINK(events.h/EventIDs)">CM_DEACTIVATE</A> to the current application
   if <I>TaskID</I> is equal to the application on the other side
    and if the calculator is in "two-graph" mode
    or <I>TaskID</I> is not "Graph", "Window Editor", "Table" nor "Y=&nbsp;Editor"
     set current application to <I>TaskID</I>
     invert current side
-    call <A HREF="$$LINK(EV_notifySwitchGraph)">EV_notifySwitchGraph</A>
-    if <I>StartType</I> is not <A HREF="$$LINK(StartTypes)">AP_START_CURRENT</A>
-      send <A HREF="$$LINK(EventIDs)">CM_ENDTASK</A> to the new application
-      call <A HREF="$$LINK(EV_startTask)">EV_startTask</A>, passing <I>StartTask</I> to it
+    call <A HREF="$$LINK(events.h/EV_notifySwitchGraph)">EV_notifySwitchGraph</A>
+    if <I>StartType</I> is not <A HREF="$$LINK(events.h/StartTypes)">AP_START_CURRENT</A>
+      send <A HREF="$$LINK(events.h/EventIDs)">CM_ENDTASK</A> to the new application
+      call <A HREF="$$LINK(events.h/EV_startTask)">EV_startTask</A>, passing <I>StartTask</I> to it
     endif
   else
-    send <A HREF="$$LINK(EventIDs)">CM_ENDTASK</A> to the current application
+    send <A HREF="$$LINK(events.h/EventIDs)">CM_ENDTASK</A> to the current application
     set current application to <I>TaskID</I>
-    call <A HREF="$$LINK(EV_startTask)">EV_startTask</A>, passing <I>StartTask</I> to it
+    call <A HREF="$$LINK(events.h/EV_startTask)">EV_startTask</A>, passing <I>StartTask</I> to it
   endif
-  send <A HREF="$$LINK(EventIDs)">CM_ACTIVATE</A> and <A HREF="$$LINK(EventIDs)">CM_FOCUS</A> to the new application
+  send <A HREF="$$LINK(events.h/EventIDs)">CM_ACTIVATE</A> and <A HREF="$$LINK(events.h/EventIDs)">CM_FOCUS</A> to the new application
 endif
 </PRE>
 Under normal circumstances, you should start another application with
-<I>StartType</I> set to <A HREF="$$LINK(StartTypes)">AP_START_CURRENT</A>.
+<I>StartType</I> set to <A HREF="$$LINK(events.h/StartTypes)">AP_START_CURRENT</A>.
 <BR><BR>
-<B>Note:</B> Task ID numbers are inconsistent between AMS versions (see <A HREF="$$LINK(EV_getAppID)">EV_getAppID</A> for
+<B>Note:</B> Task ID numbers are inconsistent between AMS versions (see <A HREF="$$LINK(events.h/EV_getAppID)">EV_getAppID</A> for
 more info). So, if you, for example, want to start the "Numeric Solver" application, the AMS-independent
 way to do this is
 <PRE>EV_startApp (EV_getAppID ("TIINSLVR"), AP_START_CURRENT);
@@ -60,5 +60,5 @@ Also, some common applications (like "Graph", "Table" or "Home screen") may be s
 safely using some commands from <A HREF="$$LINK(bascmd.h/)">bascmd.h</A> header file.
 
 [References]
-In=EV_defaultHandler, EV_switch, bascmd.h/cmd_disp, bascmd.h/cmd_disphome, bascmd.h/cmd_disptbl, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_prompt, bascmd.h/cmd_table, error.h/ERD_process, homescr.h/HomeExecute, unknown.h/EV_quit, unknown.h/GraphActivate, unknown.h/_ROM_CALL_455
-Out=EV_notifySwitchGraph, EV_sendEvent, EV_startTask, MO_isMultigraphTask, unknown.h/EV_appA, unknown.h/EV_appB, unknown.h/EV_appSide, unknown.h/EV_currentApp
+In=events.h/EV_defaultHandler, events.h/EV_switch, bascmd.h/cmd_disp, bascmd.h/cmd_disphome, bascmd.h/cmd_disptbl, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_output, bascmd.h/cmd_pause, bascmd.h/cmd_prompt, bascmd.h/cmd_table, error.h/ERD_process, homescr.h/HomeExecute, unknown.h/EV_quit, unknown.h/GraphActivate, unknown.h/_ROM_CALL_455
+Out=events.h/EV_notifySwitchGraph, events.h/EV_sendEvent, events.h/EV_startTask, events.h/MO_isMultigraphTask, unknown.h/EV_appA, unknown.h/EV_appB, unknown.h/EV_appSide, unknown.h/EV_currentApp

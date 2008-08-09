@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=menus.h
 Definition=HANDLE MenuAddText (HANDLE Handle, short ParentID, const char *Text, short ID, short Flags);
-See Also=MenuNew, MenuLoad, DynMenuAdd, DynMenuChange, MenuAddIcon
+See Also=menus.h/MenuNew, menus.h/MenuLoad, menus.h/DynMenuAdd, menus.h/DynMenuChange, menus.h/MenuAddIcon
 
 [ROM Call]
 Index=$41
@@ -19,7 +19,7 @@ text added second will be the second option, and so on.
 <BR><BR>
 <I>ID</I> is the identification number
 of the item. It is used to identify the item in many other functions;
-for example it will later be returned by the <A HREF="$$LINK(MenuKey)">MenuKey</A> function
+for example it will later be returned by the <A HREF="$$LINK(menus.h/MenuKey)">MenuKey</A> function
 if the user selects this menu entry. Moreover, this value can be used by a child
 entry to identify its parent. If <I>ID</I> equals 0, the TIOS will generate the
 ID automatically (1 for the first menu entry, 2 for the second entry, etc.).
@@ -27,7 +27,7 @@ The legal range for <I>ID</I> is 1 to 4095. If <I>ID</I> is greater than 4095,
 it will be truncated (ANDed with 0x0FFF).
 <BR><BR>
 <B>Note:</B> If you are adding to a prefilled static menu (i.e. written in your
-source code and loaded using <A HREF="$$LINK(MenuLoad)">MenuLoad</A>), do <I>not</I> use
+source code and loaded using <A HREF="$$LINK(menus.h/MenuLoad)">MenuLoad</A>), do <I>not</I> use
 the range 0x0F00 to 0x0FFF (i.e. do not use an ID greater than 3839).
 <BR><BR>
 The parameter <I>ParentID</I> must 
@@ -37,13 +37,13 @@ parent), or to the ID of the parent entry if this entry is a child
 Note that if this entry is at top level, <I>ParentID</I> can also be
 set to -1, which means it has no child. (For some reason, this seems to be the
 only way to prevent any other entry to be a child of this one;
-as the <A HREF="$$LINK(DynMenuFlags)">DMF_TOP</A> flag still allows child entries.)
+as the <A HREF="$$LINK(menus.h/DynMenuFlags)">DMF_TOP</A> flag still allows child entries.)
 <BR><BR>
 MenuAddText returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of
 an error, otherwise it returns <I>Handle</I>. If there is an error adding the new entry,
-the <A HREF="$$LINK(MenuFlagsEnum)">MF_ERROR</A> flag in the menu structure
-is set (you can use <A HREF="$$LINK(MenuFlags)">MenuFlags</A> to get this flag,
-but do <I>not</I> confuse menu structure flags such as <A HREF="$$LINK(MenuFlagsEnum)">MF_ERROR</A>
+the <A HREF="$$LINK(menus.h/MenuFlagsEnum)">MF_ERROR</A> flag in the menu structure
+is set (you can use <A HREF="$$LINK(menus.h/MenuFlags)">MenuFlags</A> to get this flag,
+but do <I>not</I> confuse menu structure flags such as <A HREF="$$LINK(menus.h/MenuFlagsEnum)">MF_ERROR</A>
 and the parameter <I>Flags</I> in MenuAddText which gives the type of entry).
 MenuAddText may cause heap compression.
 <BR><BR>
@@ -51,12 +51,12 @@ Although the TIOS menu system allows for toolbar menus with associated
 pulldown menus which have their own submenus (i.e. more than one level of nesting),
 it is not possible to create such menus in AMS 1.xx using this command. If you really want more
 levels of nesting and need to stay compatible, you need to use pre-filled static structures and
-pass them directly to the <A HREF="$$LINK(MenuBegin)">MenuBegin</A> function
-(see <A HREF="$$LINK(MenuPopup)">MenuPopup</A> for more info). But, note that this
+pass them directly to the <A HREF="$$LINK(menus.h/MenuBegin)">MenuBegin</A> function
+(see <A HREF="$$LINK(menus.h/MenuPopup)">MenuPopup</A> for more info). But, note that this
 is somewhat complicated.
 <BR><BR>
 The <I>Flags</I> parameter contains one of the following flags, 
-defined in the enum <A HREF="$$LINK(DynMenuFlags)">DynMenuFlags</A>:
+defined in the enum <A HREF="$$LINK(menus.h/DynMenuFlags)">DynMenuFlags</A>:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
 <TR>
@@ -93,5 +93,5 @@ Here is an example for this function (called "Menu Example 1"):
 $$EXAMPLE(Menu Example 1.c)
 
 [References]
-Out=DynMenuAdd
+Out=menus.h/DynMenuAdd
 In=bascmd.h/cmd_custom, bascmd.h/cmd_toolbar, events.h/MO_modeDialog, unknown.h/_ROM_CALL_3F7, unknown.h/_ROM_CALL_3F8, unknown.h/_ROM_CALL_486

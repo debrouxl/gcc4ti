@@ -17,7 +17,7 @@ the current application. In the normal operation of the calculator (i.e. when no
 program is running), the TIOS is just in this loop. Calling this function in the user program
 makes sense (and may be very useful if you are happy with set of events which are processed in
 this function) only if the program installs a custom event handler using
-<A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A> function, so the events may be trapped by
+<A HREF="$$LINK(events.h/EV_captureEvents)">EV_captureEvents</A> function, so the events may be trapped by
 the user program.
 <BR><BR>
 Here is the exact description what happens in the each iteration of this loop (not in
@@ -27,37 +27,37 @@ exact order, but this is not important):
 timer <A HREF="$$LINK(system.h/Timers)">APD_TIMER</A> expires (see
 <A HREF="$$LINK(system.h/OSRegisterTimer)">OSRegisterTimer</A>), the calculator is
 turned off.</LI>
-<LI>If a key is pressed, the event <A HREF="$$LINK(EventIDs)">CM_KEYPRESS</A> is
-send (using <A HREF="$$LINK(EV_sendEvent)">EV_sendEvent</A>) to the current application. Note
+<LI>If a key is pressed, the event <A HREF="$$LINK(events.h/EventIDs)">CM_KEYPRESS</A> is
+send (using <A HREF="$$LINK(events.h/EV_sendEvent)">EV_sendEvent</A>) to the current application. Note
 if the current application is "Home screen", this may cause evaluation of the input
 line (if the pressed key was ENTER key), including execution of user programs, etc.
 This may also cause changing of the current application (for example, if the user pressed
 APPS key).</LI>
-<LI>If there is a string in the event paste buffer (see <A HREF="$$LINK(EV_sendString)">EV_sendString</A>),
+<LI>If there is a string in the event paste buffer (see <A HREF="$$LINK(events.h/EV_sendString)">EV_sendString</A>),
 the content of the buffer is processed exactly as if all codes in the buffer are typed from
-the keyboard (i.e. a sequence of <A HREF="$$LINK(EventIDs)">CM_KEYPRESS</A> events
+the keyboard (i.e. a sequence of <A HREF="$$LINK(events.h/EventIDs)">CM_KEYPRESS</A> events
 are send to the current application).</LI>
 <LI>If there is no keypress, if the cursor is enabled (see <A HREF="$$LINK(system.h/CU_start)">CU_start</A>)
 and if <A HREF="$$LINK(system.h/Timers)">CURSOR_TIMER</A> expires (see
 <A HREF="$$LINK(system.h/OSRegisterTimer)">OSRegisterTimer</A>),
-<A HREF="$$LINK(EventIDs)">CM_BLINK</A> event is send to the current application.</LI>
+<A HREF="$$LINK(events.h/EventIDs)">CM_BLINK</A> event is send to the current application.</LI>
 <LI>If a global variable which contains the error code is non-zero, an error dialog is
 displayed (using <A HREF="$$LINK(error.h/ERD_dialog)">ERD_dialog</A>).</LI>
 <LI>If there are twin symbols (see <A HREF="$$LINK(vat.h/SymAddTwin)">SymAddTwin</A>) in the VAT
 table, they are deleted. This performs cleaning up the RAM after executing of archived
 programs.</LI>
-<LI>If painting is enabled (see <A HREF="$$LINK(EV_suspendPainting)">EV_suspendPainting</A> and
-<A HREF="$$LINK(EV_restorePainting)">EV_restorePainting</A>), event <A HREF="$$LINK(EventIDs)">CM_WPAINT</A>
-is send using <A HREF="$$LINK(EV_paintOneWindow)">EV_paintOneWindow</A> function.</LI>
-<LI>If there are no other activities, <A HREF="$$LINK(EventIDs)">CM_IDLE</A> event is send to the
+<LI>If painting is enabled (see <A HREF="$$LINK(events.h/EV_suspendPainting)">EV_suspendPainting</A> and
+<A HREF="$$LINK(events.h/EV_restorePainting)">EV_restorePainting</A>), event <A HREF="$$LINK(events.h/EventIDs)">CM_WPAINT</A>
+is send using <A HREF="$$LINK(events.h/EV_paintOneWindow)">EV_paintOneWindow</A> function.</LI>
+<LI>If there are no other activities, <A HREF="$$LINK(events.h/EventIDs)">CM_IDLE</A> event is send to the
 current application, and the function <A HREF="$$LINK(system.h/idle)">idle</A> is called.</LI>
 </UL>
 <BR>
 Note that when an user ASM program is started, the current application is always "Home screen",
-until the user changes the current application using <A HREF="$$LINK(EV_startApp)">EV_startApp</A> or
-installs thier own event driven "task" using <A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A>.
+until the user changes the current application using <A HREF="$$LINK(events.h/EV_startApp)">EV_startApp</A> or
+installs thier own event driven "task" using <A HREF="$$LINK(events.h/EV_captureEvents)">EV_captureEvents</A>.
 So, if you simply call EV_eventLoop in the your program, without previous usage of
-<A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A> or <A HREF="$$LINK(EV_startApp)">EV_startApp</A>,
+<A HREF="$$LINK(events.h/EV_captureEvents)">EV_captureEvents</A> or <A HREF="$$LINK(events.h/EV_startApp)">EV_startApp</A>,
 you will have an illusion that you are not in the your program but in the home screen, because
 all collected events will be dispatched to the "Home screen" application. Note that in this
 case, there is no way to exit this loop, and your program will stay "resident" and
@@ -67,11 +67,11 @@ including running other programs etc.
 <BR><BR>
 As EV_eventLoop enters the endless loop, the only method (and this is the proposed method in
 TIOS) to exit the loop is to throw an error from the user event handler installed using
-<A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A>. This is possible because in the event loop
+<A HREF="$$LINK(events.h/EV_captureEvents)">EV_captureEvents</A>. This is possible because in the event loop
 there are no error handlers in place, so <A HREF="$$LINK(error.h/ER_throw)">ER_throw</A> passes
 control to the previous level of error handler. In terms of normal operation (i.e. while you
 are typing in the home screen) this is handled
-by <A HREF="$$LINK(EV_centralDispatcher)">EV_centralDispatcher</A>, which restarts the event loop.
+by <A HREF="$$LINK(events.h/EV_centralDispatcher)">EV_centralDispatcher</A>, which restarts the event loop.
 However, in custom event handling it is used to return from the event loop to the calling code.
 To achieve this, you need to catch errors using <A HREF="$$LINK(error.h/ER_catch)">ER_catch</A>
 or using <A HREF="$$LINK(error.h/TRY)">TRY</A><B>...</B><A HREF="$$LINK(error.h/ONERR)">ONERR</A><B>...</B><A HREF="$$LINK(error.h/ENDTRY)">ENDTRY</A>
@@ -86,7 +86,7 @@ ENDTRY
 Of course, user handler must decide what to do with events dispatched by EV_eventLoop. Very
 nice example of usage of this methodology is given in <A HREF="$$LINK(textedit.h/)">textedit.h</A>
 header file. Another example may be found with the description of
-<A HREF="$$LINK(CAT_dialog)">CAT_dialog</A> function.
+<A HREF="$$LINK(events.h/CAT_dialog)">CAT_dialog</A> function.
 These principles are used often in the TIOS. For example, error dialogs are principally
 implemented as follows (although there are no obvious reasons why events are used in this
 example):
@@ -123,6 +123,6 @@ To exit from EV_eventLoop, the best idea is to throw error codes less than 8, as
 never used as error codes in normal error handling.
 
 [References]
-In=EV_centralDispatcher, EV_defaultHandler, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog, error.h/ERD_dialog, unknown.h/EV_quit, unknown.h/GT_Trace
-Out=EV_paintOneWindow, EV_sendEvent, EV_sendEventSide, error.h/ERD_dialog, estack.h/HToESI, kbd.h/kbhit, kbd.h/ngetchx, statline.h/ST_busy, system.h/CU_cursorState, system.h/idle, system.h/off, system.h/OSClearBreak, system.h/OSEnableBreak, system.h/OSTimerExpired, system.h/OSTimerRestart, system.h/XR_stringPtr, unknown.h/ERD_dismissNotice, unknown.h/ERD_notice, unknown.h/EV_currentApp, unknown.h/EV_errorCode, unknown.h/LoadSymFromFindHandle, unknown.h/OO_firstACB, vat.h/SymDelTwin, vat.h/SymFindFirst, vat.h/SymFindNext, unknown.h/_ROM_CALL_424, unknown.h/_ROM_CALL_471
+In=events.h/EV_centralDispatcher, events.h/EV_defaultHandler, bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog, error.h/ERD_dialog, unknown.h/EV_quit, unknown.h/GT_Trace
+Out=events.h/EV_paintOneWindow, events.h/EV_sendEvent, events.h/EV_sendEventSide, error.h/ERD_dialog, estack.h/HToESI, kbd.h/kbhit, kbd.h/ngetchx, statline.h/ST_busy, system.h/CU_cursorState, system.h/idle, system.h/off, system.h/OSClearBreak, system.h/OSEnableBreak, system.h/OSTimerExpired, system.h/OSTimerRestart, system.h/XR_stringPtr, unknown.h/ERD_dismissNotice, unknown.h/ERD_notice, unknown.h/EV_currentApp, unknown.h/EV_errorCode, unknown.h/LoadSymFromFindHandle, unknown.h/OO_firstACB, vat.h/SymDelTwin, vat.h/SymFindFirst, vat.h/SymFindNext, unknown.h/_ROM_CALL_424, unknown.h/_ROM_CALL_471
 Out_EV_eventLoop=1

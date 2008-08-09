@@ -19,7 +19,7 @@ Registers an event (vectored) timer.
 [Explanation]
 Before release 2.04 of the AMS, TIOS also had two event (vectored) timers numbered as 1 and 2
 (in addition to 6 notify timers which may be registered using
-<A HREF="$$LINK(OSRegisterTimer)">OSRegisterTimer</A>). In AMS 2.04, Texas Instruments decided
+<A HREF="$$LINK(system.h/OSRegisterTimer)">OSRegisterTimer</A>). In AMS 2.04, Texas Instruments decided
 for some strange reasons to remove these vectored timers from the TIOS. I was very angry due to
 this decision, so I decided to reimplement these timers independently of the TIOS, to
 make them work on any AMS version. Well, now you have it. More precise, you now have
@@ -50,7 +50,7 @@ is unexpected for the normal program flow.
 OSVRegisterTimer returns a nonzero value if the registration was successful, else
 returns zero. This happens if you give wrong parameters, or if the timer <I>timer_no</I>
 is already in use. So, you must first free the timer using
-<A HREF="$$LINK(OSVFreeTimer)">OSVFreeTimer</A> (as I completely rewrote these routines, I
+<A HREF="$$LINK(system.h/OSVFreeTimer)">OSVFreeTimer</A> (as I completely rewrote these routines, I
 also corrected some bugs in them which were presented in TIOS routines; you know about
 them if you read the documentation about OSVRegisterTimer in earlier releases of
 TIGCCLIB). As event timers now work indepentently of TIOS timers, both event timers
@@ -58,7 +58,7 @@ TIGCCLIB). As event timers now work indepentently of TIOS timers, both event tim
 both event timers (called "Timers"):
 $$EXAMPLE(Timers.c)
 In this implementation of OSVRegisterTimer, it is not necessary to free timers using
-<A HREF="$$LINK(OSVFreeTimer)">OSVFreeTimer</A> before first usage of them, because they are
+<A HREF="$$LINK(system.h/OSVFreeTimer)">OSVFreeTimer</A> before first usage of them, because they are
 free by default at the begining. However, nothing wrong will happen if you try to free
 them explicitely (which was necessary in previous releases of TIGCCLIB).
 <BR><BR>

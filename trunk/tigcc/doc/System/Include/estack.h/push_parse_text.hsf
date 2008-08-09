@@ -20,11 +20,11 @@ statements is pushed on the expression stack too). push_parse_text returns <A HR
 if the expression is a multi expression (i.e. if it contains "<B>:</B>" [separator], "-&gt;" [store] or
 TI-Basic statements), otherwise it returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>. This routine may cause expansion
 of the expression stack or heap compression.
-TIGCCLIB internally uses this function (together with <A HREF="$$LINK(estack_number_to_Float)">estack_number_to_Float</A>)
+TIGCCLIB internally uses this function (together with <A HREF="$$LINK(estack.h/estack_number_to_Float)">estack_number_to_Float</A>)
 in the implementation of <A HREF="$$LINK(timath.h/atof)">atof</A> function.
-For more examples of usage of this function, see <A HREF="$$LINK(NG_approxESI)">NG_approxESI</A>,
-<A HREF="$$LINK(NG_rationalESI)">NG_rationalESI</A>, <A HREF="$$LINK(NG_execute)">NG_execute</A> etc.
-The "inverse" function of push_parse_text is <A HREF="$$LINK(display_statements)">display_statements</A>.
+For more examples of usage of this function, see <A HREF="$$LINK(estack.h/NG_approxESI)">NG_approxESI</A>,
+<A HREF="$$LINK(estack.h/NG_rationalESI)">NG_rationalESI</A>, <A HREF="$$LINK(estack.h/NG_execute)">NG_execute</A> etc.
+The "inverse" function of push_parse_text is <A HREF="$$LINK(estack.h/display_statements)">display_statements</A>.
 <BR><BR>
 If you want to perform highly advanced symbolic operations with expressions, you should know that expressions
 created by push_parse_text are not always organized on a way which allows the most efficient symbolic
@@ -34,16 +34,16 @@ into <CODE>'3*x'</CODE> and converts
 <CODE>'x-y'</CODE>. However, expressions
 created by push_parse_text are always as-is, i.e.
 <CODE>'3*x'</CODE> will be just <CODE>'3*x'</CODE>, not <CODE>'x*3'</CODE>. Some routines
-(like <A HREF="$$LINK(numeric_factor_index)">numeric_factor_index</A> for example) may be fooled if
+(like <A HREF="$$LINK(estack.h/numeric_factor_index)">numeric_factor_index</A> for example) may be fooled if
 the expression is not "sorted" correctly. Also, some routines
-(like <A HREF="$$LINK(lead_term_index)">lead_term_index</A>, <A HREF="$$LINK(lead_factor_index)">lead_factor_index</A>
+(like <A HREF="$$LINK(estack.h/lead_term_index)">lead_term_index</A>, <A HREF="$$LINK(estack.h/lead_factor_index)">lead_factor_index</A>
 etc.) may also be fooled with expressions like <CODE>'x-y'</CODE> and
 <CODE>'x/y'</CODE>, because operators <CODE>'-'</CODE> and <CODE>'/'</CODE> are usually never seen in
 expressions during symbolic processing (the processing is more unique if addition and
 subtraction are treated as the same operation; the same is true for <CODE>'*'</CODE> and
 <CODE>'/'</CODE>). So, if you
 planed to perform some advanced symbolic processing which is based on accessing various
-part of the expression, always call <A HREF="$$LINK(push_internal_simplify)">push_internal_simplify</A>
+part of the expression, always call <A HREF="$$LINK(estack.h/push_internal_simplify)">push_internal_simplify</A>
 after calling push_parse_text. This function pushes on the expression stack the same expression
 but converted in internal canonic form.
 <BR><BR>
@@ -51,9 +51,9 @@ but converted in internal canonic form.
 syntax, so you need to use <A HREF="$$LINK(error.h/TRY)">TRY</A> etc. to catch
 eventual errors. And, the string must be built using TI-Basic conventions (for
 example, you must use 0xAD ("small" minus) instead of <CODE>'-'</CODE> for
-unary minus, etc. See <A HREF="$$LINK(NG_tokenize)">NG_tokenize</A> for a more powerful function which
+unary minus, etc. See <A HREF="$$LINK(estack.h/NG_tokenize)">NG_tokenize</A> for a more powerful function which
 doesn't throw any errors, and which can determine the exact location and type of the error.
 
 [References]
-In=NG_tokenize, TokenizeSymName, basfunc.h/push_str_to_expr, events.h/handleVarLinkKey, homescr.h/HomeExecute, timath.h/atof, vat.h/FolderDel, vat.h/FolderRename, vat.h/HSymDel, vat.h/SymFindFolderName, unknown.h/_ROM_CALL_46F, unknown.h/_ROM_CALL_5F1
-Out=are_expressions_identical, check_estack_size, delete_between, delete_expression, is_valid_smap_aggregate, map_tail, move_between_to_top, next_expression_index, push_between, push_expression, push_Float, push_quantum, push_quantum_pair, push_reversed_tail, top_estack, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, system.h/OSCheckBreak, system.h/CTypeTable, unknown.h/fix_loop_displacements, unknown.h/is_pathname, unknown.h/next_token, unknown.h/nonblank, unknown.h/primary_tag_list, unknown.h/push_ans_entry, unknown.h/push_var, vat.h/CheckReservedName, vat.h/DerefSym, vat.h/FindSymInFolder, vat.h/TempFolderName, unknown.h/_ROM_CALL_4D4, unknown.h/_ROM_CALL_5C5, unknown.h/_ROM_CALL_5EF, unknown.h/_ROM_CALL_5F0
+In=estack.h/NG_tokenize, estack.h/TokenizeSymName, basfunc.h/push_str_to_expr, events.h/handleVarLinkKey, homescr.h/HomeExecute, timath.h/atof, vat.h/FolderDel, vat.h/FolderRename, vat.h/HSymDel, vat.h/SymFindFolderName, unknown.h/_ROM_CALL_46F, unknown.h/_ROM_CALL_5F1
+Out=estack.h/are_expressions_identical, estack.h/check_estack_size, estack.h/delete_between, estack.h/delete_expression, estack.h/is_valid_smap_aggregate, estack.h/map_tail, estack.h/move_between_to_top, estack.h/next_expression_index, estack.h/push_between, estack.h/push_expression, estack.h/push_Float, estack.h/push_quantum, estack.h/push_quantum_pair, estack.h/push_reversed_tail, estack.h/top_estack, error.h/ER_catch, error.h/ER_success, error.h/ER_throwVar, system.h/OSCheckBreak, system.h/CTypeTable, unknown.h/fix_loop_displacements, unknown.h/is_pathname, unknown.h/next_token, unknown.h/nonblank, unknown.h/primary_tag_list, unknown.h/push_ans_entry, unknown.h/push_var, vat.h/CheckReservedName, vat.h/DerefSym, vat.h/FindSymInFolder, vat.h/TempFolderName, unknown.h/_ROM_CALL_4D4, unknown.h/_ROM_CALL_5C5, unknown.h/_ROM_CALL_5EF, unknown.h/_ROM_CALL_5F0

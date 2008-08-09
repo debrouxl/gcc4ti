@@ -9,14 +9,14 @@ Definition=HSym VarRecall (SYM_STR SymName, unsigned short Flags);
 Index=$85
 
 [Description]
-A higher-level variant of <A HREF="$$LINK(SymFind)">SymFind</A>.
+A higher-level variant of <A HREF="$$LINK(vat.h/SymFind)">SymFind</A>.
 
 [Explanation]
-VarRecall works like <A HREF="$$LINK(SymFind)">SymFind</A>, but it is able to handle system variables which
+VarRecall works like <A HREF="$$LINK(vat.h/SymFind)">SymFind</A>, but it is able to handle system variables which
 do not have an entry in the variable allocation table. <I>SymName</I> is a pointer to the
-terminating zero byte of the VAT variable name (see <A HREF="$$LINK(SYMSTR)">SYMSTR</A> for more info
+terminating zero byte of the VAT variable name (see <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> for more info
 about symbol names). <I>Flags</I> is a collection of flags defined in the
-enum <A HREF="$$LINK(VarRecallFlags)">VarRecallFlags</A>:
+enum <A HREF="$$LINK(vat.h/VarRecallFlags)">VarRecallFlags</A>:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
 <TR>
@@ -34,7 +34,7 @@ enum <A HREF="$$LINK(VarRecallFlags)">VarRecallFlags</A>:
 </TABLE>
 <BR>
 Note that you cannot create the necessary token for system variables with the
-<A HREF="$$LINK(SYMSTR)">SYMSTR</A> or <A HREF="$$LINK(dollar)">$</A> macro.
+<A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> or <A HREF="$$LINK(vat.h/dollar)">$</A> macro.
 Instead, system variables have their own tags. For example, to recall the
 system variable called "xmin", you have to use the following code:
 <PRE>hsym = VarRecall ((const ESQ []){XMIN_TAG, EXT_SYSTEM_TAG} + 1, 0);
@@ -46,21 +46,21 @@ hsym = VarRecall (top_estack, 0);
 </PRE>
 To make the handling of system variables consistent with normal variables
 even though system variables do not have an entry in the variable allocation
-table, VarRecall returns a reference to a dummy <A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> if a system
+table, VarRecall returns a reference to a dummy <A HREF="$$LINK(vat.h/SYM_ENTRY)">SYM_ENTRY</A> if a system
 variable is requested. It actually copies the contents of the system variable
 into an internal buffer and adds the appropriate tag. Since one dummy entry
 is used for many system variables, you have to store the contents of each
 variable in your program if you need to access more than one value at a time.
 <BR><BR>
-In other words, a dummy <A HREF="$$LINK(HSym)">HSym</A> descriptor which is created for system variabes
+In other words, a dummy <A HREF="$$LINK(vat.h/HSym)">HSym</A> descriptor which is created for system variabes
 is shared by all variables not in the VAT. Thus the next call to VarRecall
 for such a variable will return the same descriptor, but with a different
 value (and the previous descriptor will be invalid). So if VarRecall is used
 for system variables, it is best to keep a copy of the value pointed to by
-the <A HREF="$$LINK(HSym)">HSym</A> if it is needed.
+the <A HREF="$$LINK(vat.h/HSym)">HSym</A> if it is needed.
 <BR><BR>
 It might be useful to know (but it is not reliable) that internally, the
-<I>folder</I> field of the returned <A HREF="$$LINK(HSym)">HSym</A> contains a handle to the following type of
+<I>folder</I> field of the returned <A HREF="$$LINK(vat.h/HSym)">HSym</A> contains a handle to the following type of
 structure:
 <PRE>struct SysVarSym {
   unsigned short DataSize;
@@ -73,20 +73,20 @@ structure:
 The offset field is then either 62 for system variables (offset to the <I>sysVar</I>
 field), 76 for the "tblInput" variable (offset to the <I>tblInput</I> field), or 90
 for units (offset to the <I>unit</I> field). The reason that three different
-<A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> type fields are used is that they contain different flags and
+<A HREF="$$LINK(vat.h/SYM_ENTRY)">SYM_ENTRY</A> type fields are used is that they contain different flags and
 handles. <I>sysVar</I> and <I>unit</I> both contain the same handle as the <I>folder</I> field of
-the <A HREF="$$LINK(HSym)">HSym</A>, whereas <I>tblInput</I> contains a handle to an external memory location.
-The compatibility flag is <A HREF="$$LINK(CompatFlags)">CF_NONE</A> for system variables (including "tblInput"),
-but <A HREF="$$LINK(CompatFlags)">CF_NEW</A> for units. All three fields contain the <A HREF="$$LINK(SymFlags)">SF_LOCKED</A> flag.
+the <A HREF="$$LINK(vat.h/HSym)">HSym</A>, whereas <I>tblInput</I> contains a handle to an external memory location.
+The compatibility flag is <A HREF="$$LINK(vat.h/CompatFlags)">CF_NONE</A> for system variables (including "tblInput"),
+but <A HREF="$$LINK(vat.h/CompatFlags)">CF_NEW</A> for units. All three fields contain the <A HREF="$$LINK(vat.h/SymFlags)">SF_LOCKED</A> flag.
 <BR><BR>
-If the <A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> structures use the same handle
-as the folder field of the <A HREF="$$LINK(HSym)">HSym</A> returned by VarRecall,
+If the <A HREF="$$LINK(vat.h/SYM_ENTRY)">SYM_ENTRY</A> structures use the same handle
+as the folder field of the <A HREF="$$LINK(vat.h/HSym)">HSym</A> returned by VarRecall,
 they use in fact the first 62 bytes of this internal structure. This saves a
 handle in the operating system.
 <BR><BR>
 When dealing with system variables and units, it is not reliable to use the
-<I>name</I> field of the <A HREF="$$LINK(SYM_ENTRY)">SYM_ENTRY</A> structure
-whose address is obtained with <A HREF="$$LINK(DerefSym)">DerefSym</A>
+<I>name</I> field of the <A HREF="$$LINK(vat.h/SYM_ENTRY)">SYM_ENTRY</A> structure
+whose address is obtained with <A HREF="$$LINK(vat.h/DerefSym)">DerefSym</A>
 (which is, of course, one of the three structures mentioned above). It is
 blank for all system variables and units except "tblInput".
 <BR><BR>
@@ -99,5 +99,5 @@ looked up with VarRecall.
 
 [References]
 In=bascmd.h/cmd_andpic, bascmd.h/cmd_archive, bascmd.h/cmd_custom, bascmd.h/cmd_cyclepic, bascmd.h/cmd_delvar, bascmd.h/cmd_dialog, bascmd.h/cmd_fill, bascmd.h/cmd_get, bascmd.h/cmd_lock, bascmd.h/cmd_movevar, bascmd.h/cmd_passerr, bascmd.h/cmd_popup, bascmd.h/cmd_rclgdb, bascmd.h/cmd_rclpic, bascmd.h/cmd_request, bascmd.h/cmd_rplcpic, bascmd.h/cmd_showstat, bascmd.h/cmd_sinreg, bascmd.h/cmd_sorta, bascmd.h/cmd_sortd, bascmd.h/cmd_toolbar, bascmd.h/cmd_unarchiv, bascmd.h/cmd_unlock, bascmd.h/cmd_xorpic, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_gettype, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_randpoly, basfunc.h/push_solve, basfunc.h/push_zeros, dialogs.h/VarOpen, estack.h/push_internal_simplify, events.h/handleRclKey, events.h/handleVarLinkKey, files.h/TIOS_FDelete: FDelete, files.h/TIOS_FOpen: FOpen, link.h/OSLinkCmd, link.h/sendcalc, unknown.h/delete_list_element, unknown.h/did_push_approx_inflection_point, unknown.h/did_push_var_val, unknown.h/does_push_fetch, unknown.h/GetStatValue, estack.h/push_simplify, unknown.h/push_user_func, unknown.h/_ROM_CALL_437, unknown.h/_ROM_CALL_438, unknown.h/_ROM_CALL_468, unknown.h/_ROM_CALL_4D1
-Out=CheckSysFunc, DerefSym, FindSymInFolder, IsMainFolderStr, MakeHSym, SymFindPtr, TempFolderName, args.h/RemainingArgCnt, estack.h/HToESI, estack.h/next_expression_index, estack.h/push_expression, estack.h/push_Float, estack.h/push_quantum, estack.h/top_estack, graphing.h/gr_active, graphing.h/gr_flags, mem.h/memcpy, string.h/strcmp, system.h/XR_stringPtr, timath.h/is_transfinite, timath.h/round14, system.h/CTypeTable, unknown.h/EV_currentApp, unknown.h/gr_find_de_result, unknown.h/gr_find_func_index, unknown.h/ParseSymName, unknown.h/_ROM_CALL_46B
+Out=vat.h/CheckSysFunc, vat.h/DerefSym, vat.h/FindSymInFolder, vat.h/IsMainFolderStr, vat.h/MakeHSym, vat.h/SymFindPtr, vat.h/TempFolderName, args.h/RemainingArgCnt, estack.h/HToESI, estack.h/next_expression_index, estack.h/push_expression, estack.h/push_Float, estack.h/push_quantum, estack.h/top_estack, graphing.h/gr_active, graphing.h/gr_flags, mem.h/memcpy, string.h/strcmp, system.h/XR_stringPtr, timath.h/is_transfinite, timath.h/round14, system.h/CTypeTable, unknown.h/EV_currentApp, unknown.h/gr_find_de_result, unknown.h/gr_find_func_index, unknown.h/ParseSymName, unknown.h/_ROM_CALL_46B
 Out_EV_eventLoop=1

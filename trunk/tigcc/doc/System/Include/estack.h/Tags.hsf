@@ -47,7 +47,7 @@ An enumeration to describe types of entries on the expression stack.
 
 [Explanation]
 This enum is very large, as there are a lot of various entries.
-See <A HREF="$$LINK(top_estack)">top_estack</A> for more info about how entries on the
+See <A HREF="$$LINK(estack.h/top_estack)">top_estack</A> for more info about how entries on the
 expression stack are organized.
 Here is a complete list of tags with their values in hexadecimal notation, along with their meaning written in RPN:
 <BR><BR>
@@ -80,7 +80,7 @@ Here is a complete list of tags with their values in hexadecimal notation, along
 <TR><TD VALIGN="TOP">19</TD><TD VALIGN="TOP">VAR_O_TAG</TD><TD VALIGN="TOP">variable <B>o</B></TD></TR>
 <TR><TD VALIGN="TOP">1A</TD><TD VALIGN="TOP">VAR_P_TAG</TD><TD VALIGN="TOP">variable <B>p</B></TD></TR>
 <TR><TD VALIGN="TOP">1B</TD><TD VALIGN="TOP">VAR_Q_TAG</TD><TD VALIGN="TOP">variable <B>q</B></TD></TR>
-<TR><TD VALIGN="TOP">1C</TD><TD VALIGN="TOP">EXT_SYSTEM_TAG</TD><TD VALIGN="TOP">system token (a byte before the tag identifies a system variable, see <A HREF="$$LINK(SysvarTags)">SysvarTags</A>)</TD></TR>
+<TR><TD VALIGN="TOP">1C</TD><TD VALIGN="TOP">EXT_SYSTEM_TAG</TD><TD VALIGN="TOP">system token (a byte before the tag identifies a system variable, see <A HREF="$$LINK(estack.h/SysvarTags)">SysvarTags</A>)</TD></TR>
 <TR><TD VALIGN="TOP">1D</TD><TD VALIGN="TOP">ARB_REAL_TAG</TD><TD VALIGN="TOP">arbitrary real number <B>@<I>xxx</I></B> (byte before the tag determines <I>xxx</I>)</TD></TR>
 <TR><TD VALIGN="TOP">1E</TD><TD VALIGN="TOP">ARB_INT_TAG</TD><TD VALIGN="TOP">arbitrary integer number <B>@n<I>xxx</I></B> (byte before the tag determines <I>xxx</I>)</TD></TR>
 <TR><TD VALIGN="TOP">1F</TD><TD VALIGN="TOP">POSINT_TAG</TD><TD VALIGN="TOP">positive integer tag</TD></TR>
@@ -280,8 +280,8 @@ Here is a complete list of tags with their values in hexadecimal notation, along
 <TR><TD VALIGN="TOP">E0</TD><TD VALIGN="TOP">TEXT_TAG</TD><TD VALIGN="TOP">text tag (not used in expressions)</TD></TR>
 <TR><TD VALIGN="TOP">E1</TD><TD VALIGN="TOP">FIG_TAG</TD><TD VALIGN="TOP">figure tag (not used in expressions)</TD></TR>
 <TR><TD VALIGN="TOP">E2</TD><TD VALIGN="TOP">MAC_TAG</TD><TD VALIGN="TOP">macro tag (not used in expressions)</TD></TR>
-<TR><TD VALIGN="TOP">E3</TD><TD VALIGN="TOP">EXT_TAG</TD><TD VALIGN="TOP">extra TI-Basic function token (see <A HREF="$$LINK(ExtTags)">ExtTags</A>)</TD></TR>
-<TR><TD VALIGN="TOP">E4</TD><TD VALIGN="TOP">EXT_INSTR_TAG</TD><TD VALIGN="TOP">TI-Basic command token (not used in expressions, see <A HREF="$$LINK(InstructionTags)">InstructionTags</A>)</TD></TR>
+<TR><TD VALIGN="TOP">E3</TD><TD VALIGN="TOP">EXT_TAG</TD><TD VALIGN="TOP">extra TI-Basic function token (see <A HREF="$$LINK(estack.h/ExtTags)">ExtTags</A>)</TD></TR>
+<TR><TD VALIGN="TOP">E4</TD><TD VALIGN="TOP">EXT_INSTR_TAG</TD><TD VALIGN="TOP">TI-Basic command token (not used in expressions, see <A HREF="$$LINK(estack.h/InstructionTags)">InstructionTags</A>)</TD></TR>
 <TR><TD VALIGN="TOP">E5</TD><TD VALIGN="TOP">END_TAG</TD><TD VALIGN="TOP">end of the expression or the list</TD></TR>
 <TR><TD VALIGN="TOP">E6</TD><TD VALIGN="TOP">COMMENT_TAG</TD><TD VALIGN="TOP">comment (not used in expressions): <B>'\0'</B> <I>string</I> <B>'\0'</B> <I>indentation</I> <B>COMMENT_TAG</B>, where <I>indentation</I> is a single byte indicating the number of spaces between <B>&copy;</B> and the first comment character</TD></TR>
 <TR><TD VALIGN="TOP">E7</TD><TD VALIGN="TOP">NEXTEXPR_TAG</TD><TD VALIGN="TOP">"<B>:</B>" between tokens on same line in the program (not used in expressions): <I>indentation</I> <B>NEXTEXPR_TAG</B>, where <I>indentation</I> is a single byte indicating the number of spaces between <B>:</B> and the first character of the next logical line</TD></TR>

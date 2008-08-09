@@ -5,15 +5,15 @@ Subtype=Macro
 Header Files=gray.h
 Definition=void GrayDBufToggleSync (void);
 Real Definition=#define GrayDBufToggleSync() ({short __ishw2=_GrayIsRealHW2();if(__ishw2)GrayWaitNSwitches(1);GrayDBufToggle();if(!__ishw2)GrayWaitNSwitches(1);})
-See Also=GrayDBufToggle, GrayDBufSetActiveIdxSync, GrayDBufSetActiveIdx
+See Also=gray.h/GrayDBufToggle, gray.h/GrayDBufSetActiveIdxSync, gray.h/GrayDBufSetActiveIdx
 
 [Description]
 Synchronizes and toggles the currently visible double buffer.
 
 [Explanation]
 GrayDBufToggleSync waits until the next plane switch occurs
-(using <A HREF="$$LINK(GrayWaitNSwitches)">GrayWaitNSwitches</A>) and calls
-<A HREF="$$LINK(GrayDBufToggle)">GrayDBufToggle</A>. Due to grayscale
+(using <A HREF="$$LINK(gray.h/GrayWaitNSwitches)">GrayWaitNSwitches</A>) and calls
+<A HREF="$$LINK(gray.h/GrayDBufToggle)">GrayDBufToggle</A>. Due to grayscale
 routine implementation differences, the order of the synchronizing and
 switching depends on the hardware version. On HW1, the toggles are
 effective only after a plane switch, so GrayDBufToggleSync toggles first

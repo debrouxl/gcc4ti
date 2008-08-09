@@ -27,23 +27,23 @@ So you must use <A HREF="$$LINK(alloc.h/HLock)">HLock</A> to lock and dereferenc
 </PRE>
 A second way which is almost equal to the one above but only works on AMS 2.00 or higher
 is to pass <A HREF="$$LINK(alloc.h/NULL)">NULL</A> to
-<I>MenuPtr</I> and <A HREF="$$LINK(MenuBeginFlags)">MBF_HMENU</A> to <I>Flags</I>.
+<I>MenuPtr</I> and <A HREF="$$LINK(menus.h/MenuBeginFlags)">MBF_HMENU</A> to <I>Flags</I>.
 Then the optional parameter after <I>Flags</I> will take the handle instead:
 <PRE>exec_handle = MenuBegin (NULL, x, y, Flags | MBF_HMENU, handle);
 </PRE>
-But note that in this case, the handle will be freed when <A HREF="$$LINK(MenuEnd)">MenuEnd</A> is called.
+But note that in this case, the handle will be freed when <A HREF="$$LINK(menus.h/MenuEnd)">MenuEnd</A> is called.
 <BR><BR>
 Alternatively (but only if you are an expert), you can pass a pointer to a
 pre-filled static menu structure to <I>MenuPtr</I> (like the TIOS usually does). Using this approach you can
-save a lot of memory. See <A HREF="$$LINK(MenuPopup)">MenuPopup</A> for more info about this.
+save a lot of memory. See <A HREF="$$LINK(menus.h/MenuPopup)">MenuPopup</A> for more info about this.
 <BR><BR>
 MenuBegin does not activate the menu. Instead, it creates yet another structure which is necessary to execute the
 menu, and returns the handle to it (or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of an error,
 i.e. if there was not enough memory to allocate the new structure).
-To activate the menu, you must call <A HREF="$$LINK(MenuKey)">MenuKey</A> with this handle.
+To activate the menu, you must call <A HREF="$$LINK(menus.h/MenuKey)">MenuKey</A> with this handle.
 <BR><BR>
 The <I>Flags</I> parameter contains a combination of the following flags, defined in the enum
-<A HREF="$$LINK(MenuBeginFlags)">MenuBeginFlags</A>:
+<A HREF="$$LINK(menus.h/MenuBeginFlags)">MenuBeginFlags</A>:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
 <TR>
@@ -52,7 +52,7 @@ The <I>Flags</I> parameter contains a combination of the following flags, define
 </TR>
 <TR>
   <TD VALIGN="TOP">MBF_REDEF</TD>
-  <TD>Allow for the top-level items (special text/icon combination) to be redefined with the <A HREF="$$LINK(MenuTopRedef)">MenuTopRedef</A> function.
+  <TD>Allow for the top-level items (special text/icon combination) to be redefined with the <A HREF="$$LINK(menus.h/MenuTopRedef)">MenuTopRedef</A> function.
 <BR>
 <B>Note:</B> The only way to create redefinable menu items is to use a pre-filled menu structure.</TD>
 </TR>
@@ -75,20 +75,20 @@ The <I>Flags</I> parameter contains a combination of the following flags, define
   <TD>AMS 2.00 or higher: The parameter after <I>Flags</I> should be the handle of a dynamically created menu.
       If this flag is used, the parameter <I>MenuPtr</I> is ignored and should be set to <A HREF="$$LINK(alloc.h/NULL)">NULL</A>.
       The handle is locked and dereferenced and used instead of MenuPtr.
-      The handle is saved internally, and calling <A HREF="$$LINK(MenuEnd)">MenuEnd</A> on the handle returned by MenuBegin will free this handle.
+      The handle is saved internally, and calling <A HREF="$$LINK(menus.h/MenuEnd)">MenuEnd</A> on the handle returned by MenuBegin will free this handle.
       If you wish to use both MAX_MENU_WIDTH and MBF_HMENU at the same time, see below.</TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">MBF_NO_DRAWTOP</TD>
   <TD>AMS 2.00 or higher: Set up the menu-draw structure and return a handle to it, but do not draw the menu.
-      You have to call <A HREF="$$LINK(MenuOn)">MenuOn</A> to draw it.</TD>
+      You have to call <A HREF="$$LINK(menus.h/MenuOn)">MenuOn</A> to draw it.</TD>
 </TR>
 </TABLE>
 <BR>
-If both <A HREF="$$LINK(MenuBeginFlags)">MAX_MENU_WIDTH</A> and <A HREF="$$LINK(MenuBeginFlags)">MBF_HMENU</A> are set, the first parameter after <I>Flags</I> represents the maximum menu width, and the second parameter after <I>Flags</I> represents the handle to a dynamic menu.
+If both <A HREF="$$LINK(menus.h/MenuBeginFlags)">MAX_MENU_WIDTH</A> and <A HREF="$$LINK(menus.h/MenuBeginFlags)">MBF_HMENU</A> are set, the first parameter after <I>Flags</I> represents the maximum menu width, and the second parameter after <I>Flags</I> represents the handle to a dynamic menu.
 <BR><BR>
 This routine may cause heap compression.
 
 [References]
 In=bascmd.h/cmd_toolbar, events.h/EV_defaultHandler, events.h/handleVarLinkKey, unknown.h/CustomBegin
-Out=MenuOn, alloc.h/HeapAlloc, alloc.h/HeapLock, graph.h/CalcBitmapSize, graph.h/DrawStrWidth, mem.h/memset, unknown.h/_ROM_CALL_41E
+Out=menus.h/MenuOn, alloc.h/HeapAlloc, alloc.h/HeapLock, graph.h/CalcBitmapSize, graph.h/DrawStrWidth, mem.h/memset, unknown.h/_ROM_CALL_41E

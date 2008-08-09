@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=dialogs.h
 Definition=HANDLE DialogAdd (HANDLE Handle, short flags, short x, short y, short ItemType, ...);
-See Also=DialogDo, DialogNew, DIALOG_STRUCT: DIALOG
+See Also=dialogs.h/DialogDo, dialogs.h/DialogNew, dialogs.h/DIALOG_STRUCT: DIALOG
 
 [ROM Call]
 Index=$33
@@ -17,10 +17,10 @@ DialogAdd is a universal item-adding function. It is a very complicated
 function which accepts 6 to 12 parameters depending on the type of the item
 which will be added. This type is determined by the <I>ItemType</I>
 parameter. In fact, all other functions whose names begin with "DialogAdd..."
-(such as <A HREF="$$LINK(DialogAddTextEx)">DialogAddTextEx</A>,
-<A HREF="$$LINK(DialogAddTitleEx)">DialogAddTitleEx</A>,
-<A HREF="$$LINK(DialogAddRequestEx)">DialogAddRequestEx</A>,
-<A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A>, etc.) are
+(such as <A HREF="$$LINK(dialogs.h/DialogAddTextEx)">DialogAddTextEx</A>,
+<A HREF="$$LINK(dialogs.h/DialogAddTitleEx)">DialogAddTitleEx</A>,
+<A HREF="$$LINK(dialogs.h/DialogAddRequestEx)">DialogAddRequestEx</A>,
+<A HREF="$$LINK(dialogs.h/DialogAddPulldownEx)">DialogAddPulldownEx</A>, etc.) are
 implemented as macros which call DialogAdd with appropriate parameters (for
 easier usage), so you can mainly avoid this function. You can read the
 <CODE>dialogs.h</CODE> header file to see how exactly these macros are
@@ -33,13 +33,13 @@ function that creates an item (i.e. every function beginning with
 'DialogAdd...') will increase this identification number.
 <BR><BR>
 DialogAdd returns <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> in case of an
-error, may return <A HREF="$$LINK(DialogMessages)">DB_MEMFULL</A> if you used
-<A HREF="$$LINK(DialogFlags)">DF_SCREEN_SAVE</A>, else returns <I>Handle</I>.
+error, may return <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_MEMFULL</A> if you used
+<A HREF="$$LINK(dialogs.h/DialogFlags)">DF_SCREEN_SAVE</A>, else returns <I>Handle</I>.
 This routine (as well as all other 'DialogAdd...' routines) may cause heap
 compression.
 <BR><BR>
 <I>ItemType</I> can be filled with one of the following commands, defined in
-the <A HREF="$$LINK(DialogTypes)">DialogTypes</A> enum:
+the <A HREF="$$LINK(dialogs.h/DialogTypes)">DialogTypes</A> enum:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
 <TR>
@@ -52,67 +52,67 @@ the <A HREF="$$LINK(DialogTypes)">DialogTypes</A> enum:
   <TD VALIGN="TOP">D_HEADER</TD>
   <TD VALIGN="TOP">Title bar, up to two buttons</TD>
   <TD VALIGN="TOP"><CODE>const char *title, unsigned short LeftButton, unsigned short RightButton</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddTitleEx)">DialogAddTitleEx</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddTitleEx)">DialogAddTitleEx</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_TEXT</TD>
   <TD VALIGN="TOP">Text or personalized item</TD>
   <TD VALIGN="TOP"><CODE>const char *text</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddTextEx)">DialogAddTextEx</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddTextEx)">DialogAddTextEx</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_EDIT_FIELD</TD>
   <TD VALIGN="TOP">Request (edit) box</TD>
   <TD VALIGN="TOP"><CODE>const char *label, unsigned short offset, unsigned short MaxLen, unsigned short width</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddRequestEx)">DialogAddRequestEx</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddRequestEx)">DialogAddRequestEx</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_HEDIT</TD>
   <TD VALIGN="TOP">Request (edit) box</TD>
   <TD VALIGN="TOP"><CODE>const char *label, unsigned short width</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddDynamicRequest)">DialogAddDynamicRequest</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddDynamicRequest)">DialogAddDynamicRequest</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_POPUP</TD>
   <TD VALIGN="TOP">Pulldown menu</TD>
   <TD VALIGN="TOP"><CODE>const char *label, void *Popup, unsigned short buffer</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddStaticPulldown)">DialogAddStaticPulldown</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddStaticPulldown)">DialogAddStaticPulldown</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_DYNPOPUP</TD>
   <TD VALIGN="TOP">AMS 2.00 or higher: Pulldown menu</TD>
   <TD VALIGN="TOP"><CODE>const char *label, Dialog_GetHandle_t GetPopup, unsigned short index</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddDynamicPulldown)">DialogAddDynamicPulldown</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddDynamicPulldown)">DialogAddDynamicPulldown</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_HPOPUP</TD>
   <TD VALIGN="TOP">Pulldown menu</TD>
   <TD VALIGN="TOP"><CODE>const char *label, HANDLE MenuHandle, unsigned short index</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddPulldownEx)">DialogAddPulldownEx</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_MENU</TD>
   <TD VALIGN="TOP">AMS 2.00 or higher: Main menu</TD>
   <TD VALIGN="TOP"><CODE>void *Menu, unsigned short MaxMenuWidth</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddMenu)">DialogAddMenu</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddMenu)">DialogAddMenu</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_SCROLL_REGION</TD>
   <TD VALIGN="TOP">Scroll region</TD>
   <TD VALIGN="TOP"><CODE>unsigned short x1, unsigned short y1, unsigned short FirstItem, unsigned short LastItem, unsigned short NumDspItems, unsigned short TotNumItems, unsigned short ItemHeight</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddScrollRegion)">DialogAddScrollRegion</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddScrollRegion)">DialogAddScrollRegion</A></TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">D_XFLAGS</TD>
   <TD VALIGN="TOP">AMS 2.00 or higher: Extended dialog properties</TD>
   <TD VALIGN="TOP"><CODE>unsigned short xFlags1, unsigned short xFlags2, unsigned short xFlags3, unsigned short xFlags4</CODE></TD>
-  <TD VALIGN="TOP"><A HREF="$$LINK(DialogAddXFlags)">DialogAddXFlags</A></TD>
+  <TD VALIGN="TOP"><A HREF="$$LINK(dialogs.h/DialogAddXFlags)">DialogAddXFlags</A></TD>
 </TR>
 </TABLE>
 <BR>
 The parameter <I>flags</I> depends on the type of element you are creating
 and can be a combination of the following flags, defined in the
-<A HREF="$$LINK(DialogFlags)">DialogFlags</A> enum:
+<A HREF="$$LINK(dialogs.h/DialogFlags)">DialogFlags</A> enum:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
 <TR>
@@ -125,7 +125,7 @@ and can be a combination of the following flags, defined in the
   <TD VALIGN="TOP">(any)</TD>
   <TD>When applied to the first item in the dialog, the dialog code saves the
       area underneath the dialog box when it is started. DialogAdd returns
-      <A HREF="$$LINK(DialogMessages)">DB_MEMFULL</A> if there is not enough
+      <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_MEMFULL</A> if there is not enough
       memory to do this.</TD>
 </TR>
 <TR>
@@ -157,11 +157,11 @@ and can be a combination of the following flags, defined in the
   <TD VALIGN="TOP">DF_OWNER_DRAW</TD>
   <TD VALIGN="TOP">Text</TD>
   <TD>AMS 2.00 or higher: The callback function (see
-      <A HREF="$$LINK(DialogNew)">DialogNew</A> for more information) is
+      <A HREF="$$LINK(dialogs.h/DialogNew)">DialogNew</A> for more information) is
       responsible for drawing this item (which can be text, an image, or
       anything else). This can only be done if the dialog was created with
-      <A HREF="$$LINK(DialogNew)">DialogNew</A> and not
-      <A HREF="$$LINK(DialogNewSimple)">DialogNewSimple</A>.</TD>
+      <A HREF="$$LINK(dialogs.h/DialogNew)">DialogNew</A> and not
+      <A HREF="$$LINK(dialogs.h/DialogNewSimple)">DialogNewSimple</A>.</TD>
 </TR>
 <TR>
   <TD VALIGN="TOP">DF_POPUP_RADIO</TD>
@@ -194,9 +194,9 @@ and can be a combination of the following flags, defined in the
 <BR>
 <B>Note:</B> If you want your program to work in AMS 1.xx, you cannot pass
 D_MENU, D_DYNPOPUP, and D_XFLAGS to this function. Nevertheless, you can
-initialize a <A HREF="$$LINK(DIALOG_STRUCT)">DIALOG</A> structure with these
+initialize a <A HREF="$$LINK(dialogs.h/DIALOG_STRUCT)">DIALOG</A> structure with these
 items, and the program will still work on AMS 1.xx.
 
 [References]
-In=DialogAddPulldown, DialogAddRequest, DialogAddText, DialogAddTitle, DialogAddDynamicPulldown, DialogAddDynamicRequest, DialogAddMenu, DialogAddPulldownEx, DialogAddRequestEx, DialogAddScrollRegion, DialogAddStaticPulldown, DialogAddTextEx, DialogAddTitleEx, DialogAddXFlags, DlgMessage, VarNew, VarOpen, VarSaveAs, bascmd.h/cmd_dialog, bascmd.h/cmd_request, events.h/EV_defaultHandler, homescr.h/HomeExecute, unknown.h/VarSaveTitle
+In=dialogs.h/DialogAddPulldown, dialogs.h/DialogAddRequest, dialogs.h/DialogAddText, dialogs.h/DialogAddTitle, dialogs.h/DialogAddDynamicPulldown, dialogs.h/DialogAddDynamicRequest, dialogs.h/DialogAddMenu, dialogs.h/DialogAddPulldownEx, dialogs.h/DialogAddRequestEx, dialogs.h/DialogAddScrollRegion, dialogs.h/DialogAddStaticPulldown, dialogs.h/DialogAddTextEx, dialogs.h/DialogAddTitleEx, dialogs.h/DialogAddXFlags, dialogs.h/DlgMessage, dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs, bascmd.h/cmd_dialog, bascmd.h/cmd_request, events.h/EV_defaultHandler, homescr.h/HomeExecute, unknown.h/VarSaveTitle
 Out=alloc.h/HeapRealloc, alloc.h/HeapSize, mem.h/memcpy, mem.h/memmove, mem.h/memset, string.h/strlen

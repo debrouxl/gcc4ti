@@ -4,25 +4,25 @@ Type=Function
 Subtype=Macro Constructor
 Header Files=dll.h
 Definition=#define _DLL_glbvar(type,index) (*(_DLL_reference (type, index)))
-See Also=_DLL_call, _DLL_call_attr, _DLL_reference
+See Also=dll.h/_DLL_call, dll.h/_DLL_call_attr, dll.h/_DLL_reference
 
 [Description]
 Returns a dereferenced pointer to a global variable in a DLL.
 
 [Explanation]
 _DLL_glbvar gets a void pointer to the location of the <I>index</I>-th exported symbol of the
-currently loaded DLL (using <A HREF="$$LINK(_DLL_entry)">_DLL_entry</A>), casts this
+currently loaded DLL (using <A HREF="$$LINK(dll.h/_DLL_entry)">_DLL_entry</A>), casts this
 pointer to a pointer of type <I>type</I>, and then dereferences it. As the constructed object is a dereferenced
 pointer, it is a valid <A HREF="$$INFOLINK(opers/lvalue)">lvalue</A>, so it can be used as a global variable.
 This macro is usually used for accessing global variables exported by the DLL.
 For example, suppose that the DLL contains the following declarations in the DLL interface
-section (see <A HREF="$$LINK(DLL_INTERFACE)">DLL_INTERFACE</A>):
+section (see <A HREF="$$LINK(dll.h/DLL_INTERFACE)">DLL_INTERFACE</A>):
 <PRE>unsigned short foo;
 ...
 DLL_EXPORTS &amp;foo
 </PRE>
 Then <I>foo</I> will get the index number 0. To 'import' this global variable from the DLL
-(assuming that the DLL is sucessfully loaded using <A HREF="$$LINK(LoadDLL)">LoadDLL</A>),
+(assuming that the DLL is sucessfully loaded using <A HREF="$$LINK(dll.h/LoadDLL)">LoadDLL</A>),
 you should use the following definition:
 <PRE>#define foo _DLL_glbvar (unsigned short, 0)
 </PRE>

@@ -20,10 +20,10 @@ other fields will be filled by EV_sendEvent function before sending the message.
 <BR><BR>
 The <I>Type</I> field of the event structure is interpreted as following:
 <UL>
-<LI>If <I>Type</I> &gt;=0x700, the message is an event command message (like <A HREF="$$LINK(EventIDs)">CM_KEYPRESS</A>,
-<A HREF="$$LINK(EventIDs)">CM_WPAINT</A>, etc. These codes are defined in enum <A HREF="$$LINK(EventIDs)">EventIDs</A>. These
+<LI>If <I>Type</I> &gt;=0x700, the message is an event command message (like <A HREF="$$LINK(events.h/EventIDs)">CM_KEYPRESS</A>,
+<A HREF="$$LINK(events.h/EventIDs)">CM_WPAINT</A>, etc. These codes are defined in enum <A HREF="$$LINK(events.h/EventIDs)">EventIDs</A>. These
 messages are the most common messages, and such messages are the most usable messages
-in user applications. See <A HREF="$$LINK(EventIDs)">EventIDs</A> for detailed description of the meaning
+in user applications. See <A HREF="$$LINK(events.h/EventIDs)">EventIDs</A> for detailed description of the meaning
 of such messages.</LI>
 <LI> If 0x500 &lt;=<I>Type</I> &lt; 0x700, the message is a custom command message. The interpretation
 of such messages is strictly task-dependent. The TIOS uses such messages in dialogs, etc.</LI>
@@ -32,23 +32,23 @@ is sent as the message. This is used for internal purposes in TIOS.</LI>
 </UL>
 Here is the description what EV_sendEvent exactly does:
 <UL>
-<LI>If <A HREF="$$LINK(EV_hook)">EV_hook</A> pointer is not <A HREF="$$LINK(alloc.h/NULL)">NULL</A>, then a routine
+<LI>If <A HREF="$$LINK(events.h/EV_hook)">EV_hook</A> pointer is not <A HREF="$$LINK(alloc.h/NULL)">NULL</A>, then a routine
 pointed to by it is called, passing <I>event</I> to it.</LI>
-<LI>If there is an user event handler installed (using <A HREF="$$LINK(EV_captureEvents)">EV_captureEvents</A>),
+<LI>If there is an user event handler installed (using <A HREF="$$LINK(events.h/EV_captureEvents)">EV_captureEvents</A>),
 the user handler is called, and <I>event</I> is passed to it. In this case, parameter
-<I>TaskID</I> is ignored. The only exception is when the message is <A HREF="$$LINK(EventIDs)">CM_WPAINT</A>.
-In this case, the user handler is called only if <I>TaskID</I> is <A HREF="$$LINK(StandardTaskIDs)">AP_NULL</A>.</LI>
+<I>TaskID</I> is ignored. The only exception is when the message is <A HREF="$$LINK(events.h/EventIDs)">CM_WPAINT</A>.
+In this case, the user handler is called only if <I>TaskID</I> is <A HREF="$$LINK(events.h/StandardTaskIDs)">AP_NULL</A>.</LI>
 <LI>If there is no user event handler installed, the message <I>event</I> is sent to the
 default application-dependent event handler, which is determined by parameter <I>TaskID</I>.
 Note that default application-dependent event handler will not be called if there is an
-user event handler installed. The exception is when the message is <A HREF="$$LINK(EventIDs)">CM_WPAINT</A>.
+user event handler installed. The exception is when the message is <A HREF="$$LINK(events.h/EventIDs)">CM_WPAINT</A>.
 This message is always dispatched to the default application-dependent handler, except if
-<I>TaskID</I> is <A HREF="$$LINK(StandardTaskIDs)">AP_NULL</A>.</LI>
+<I>TaskID</I> is <A HREF="$$LINK(events.h/StandardTaskIDs)">AP_NULL</A>.</LI>
 </UL>
 Note that task ID numbers are inconsistent between AMS versions, so always call
-<A HREF="$$LINK(EV_getAppID)">EV_getAppID</A> before to determine an appropriate task ID,
-or use special task IDs <A HREF="$$LINK(StandardTaskIDs)">AP_CURRENT</A>,
-<A HREF="$$LINK(StandardTaskIDs)">AP_RUNNING</A> and <A HREF="$$LINK(StandardTaskIDs)">AP_NONE</A>,
+<A HREF="$$LINK(events.h/EV_getAppID)">EV_getAppID</A> before to determine an appropriate task ID,
+or use special task IDs <A HREF="$$LINK(events.h/StandardTaskIDs)">AP_CURRENT</A>,
+<A HREF="$$LINK(events.h/StandardTaskIDs)">AP_RUNNING</A> and <A HREF="$$LINK(events.h/StandardTaskIDs)">AP_NONE</A>,
 which are AMS-independent.
 <BR><BR>
 If you want to send an event from the user event handler, you can enter into
@@ -66,9 +66,9 @@ functionality is to set the calculator to "APPROX" mode. But, note that this is 
 example, which should give you an idea how to redefine the keyboard.
 <BR><BR>
 <B>Note:</B> The destination application does not have to be started or active to receive
-messages. You should first start the application using <A HREF="$$LINK(EV_startApp)">EV_startApp</A>
+messages. You should first start the application using <A HREF="$$LINK(events.h/EV_startApp)">EV_startApp</A>
 if it is important that the application be on the screen before it receives an event.
 
 [References]
-In=EV_centralDispatcher, EV_defaultHandler, EV_eventLoop, EV_notifySwitchGraph, EV_paintOneWindow, EV_sendString, EV_startApp, EV_startTask, EV_switch, handleRclKey, handleVarLinkKey, MO_notifyModeChange, bascmd.h/cmd_disptbl, bascmd.h/cmd_table, homescr.h/HomeExecute, unknown.h/CustomMenuItem, unknown.h/GraphActivate, unknown.h/_ROM_CALL_424, unknown.h/_ROM_CALL_428, unknown.h/_ROM_CALL_455
-Out=EV_sendEventSide, unknown.h/EV_appSide
+In=events.h/EV_centralDispatcher, events.h/EV_defaultHandler, events.h/EV_eventLoop, events.h/EV_notifySwitchGraph, events.h/EV_paintOneWindow, events.h/EV_sendString, events.h/EV_startApp, events.h/EV_startTask, events.h/EV_switch, events.h/handleRclKey, events.h/handleVarLinkKey, events.h/MO_notifyModeChange, bascmd.h/cmd_disptbl, bascmd.h/cmd_table, homescr.h/HomeExecute, unknown.h/CustomMenuItem, unknown.h/GraphActivate, unknown.h/_ROM_CALL_424, unknown.h/_ROM_CALL_428, unknown.h/_ROM_CALL_455
+Out=events.h/EV_sendEventSide, unknown.h/EV_appSide

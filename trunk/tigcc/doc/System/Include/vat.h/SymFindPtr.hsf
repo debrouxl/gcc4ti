@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=vat.h
 Definition=SYM_ENTRY *SymFindPtr (SYM_STR SymName, unsigned short Flags);
-See Also=SymFind, SymFindMain, SymFindHome
+See Also=vat.h/SymFind, vat.h/SymFindMain, vat.h/SymFindHome
 
 [ROM Call]
 Index=$283
@@ -13,23 +13,23 @@ Index=$283
 Finds a symbol and returns a pointer to the VAT entry.
 
 [Explanation]
-SymFindPtr acts like <A HREF="$$LINK(SymFind)">SymFind</A> and related
-functions, but instead of a <A HREF="$$LINK(HSym)">HSym</A>
+SymFindPtr acts like <A HREF="$$LINK(vat.h/SymFind)">SymFind</A> and related
+functions, but instead of a <A HREF="$$LINK(vat.h/HSym)">HSym</A>
 structure, it returns a pointer to the actual VAT entry. SymFindPtr returns
 <A HREF="$$LINK(alloc.h/NULL)">NULL</A> in case of an error.
 So, it acts somewhat as a combination of
-<A HREF="$$LINK(SymFind)">SymFind</A> and
-<A HREF="$$LINK(DerefSym)">DerefSym</A>.
+<A HREF="$$LINK(vat.h/SymFind)">SymFind</A> and
+<A HREF="$$LINK(vat.h/DerefSym)">DerefSym</A>.
 <BR><BR>
 <I>Flags</I> is an additional argument which determines the searching method.
 It is a set of binary flags. The exact meaning of these flags are still
 unknown for me, but at the moment, I know the following for sure:
 <UL>
 <LI>If <I>Flags</I>&nbsp;=&nbsp;0, the search is performed like using the
-<A HREF="$$LINK(SymFind)">SymFind</A> function (i.e. through current or given
+<A HREF="$$LINK(vat.h/SymFind)">SymFind</A> function (i.e. through current or given
 folder);</LI>
 <LI>If <I>Flags</I>&nbsp;=&nbsp;4, the search is performed like using the
-<A HREF="$$LINK(SymFindMain)">SymFindMain</A> function (i.e. through main
+<A HREF="$$LINK(vat.h/SymFindMain)">SymFindMain</A> function (i.e. through main
 folder only).</LI>
 </UL>
 What I also know is that if b15 in <I>Flags</I> is set, the search is
@@ -45,9 +45,9 @@ As an example of usage, this is a legal method how to lock a variable named
 "tetris":
 <PRE>SymFindPtr(SYMSTR("tetris"),0)-&gt;flags.bits.locked = 1;
 </PRE>
-See <A HREF="$$LINK(SYMSTR)">SYMSTR</A> for info about symbol names.
+See <A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> for info about symbol names.
 
 [References]
-In=SymAddTwin, SymDel, SymFind, SymFindMain, SymMove, VarRecall, VarStore, unknown.h/GraphOrTableCmd, unknown.h/_ROM_CALL_439
-Out=CheckSysFunc, FolderAdd, SymCmp, dialogs.h/DlgMessage, system.h/XR_stringPtr, unknown.h/ParseSymName, unknown.h/_mu16u16
+In=vat.h/SymAddTwin, vat.h/SymDel, vat.h/SymFind, vat.h/SymFindMain, vat.h/SymMove, vat.h/VarRecall, vat.h/VarStore, unknown.h/GraphOrTableCmd, unknown.h/_ROM_CALL_439
+Out=vat.h/CheckSysFunc, vat.h/FolderAdd, vat.h/SymCmp, dialogs.h/DlgMessage, system.h/XR_stringPtr, unknown.h/ParseSymName, unknown.h/_mu16u16
 Out_EV_eventLoop=1

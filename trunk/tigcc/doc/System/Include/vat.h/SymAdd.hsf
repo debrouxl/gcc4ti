@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=vat.h
 Definition=HSym SymAdd (SYM_STR SymName);
-See Also=SymAddMain, FolderAdd, estack.h/MULTI_EXPR
+See Also=vat.h/SymAddMain, vat.h/FolderAdd, estack.h/MULTI_EXPR
 
 [ROM Call]
 Index=$5C
@@ -14,12 +14,12 @@ Adds a symbol.
 
 [Explanation]
 SymAdd creates a new entry in the variable allocation table (VAT) for a symbol called
-<I>SymName</I>, and returns the same type of result as the <A HREF="$$LINK(SymFind)">SymFind</A>
+<I>SymName</I>, and returns the same type of result as the <A HREF="$$LINK(vat.h/SymFind)">SymFind</A>
 function. If the symbol <I>SymName</I> already exists, SymAdd deletes the old
 symbol before creating a new one (except if <I>SymName</I> is a folder name;
-this case is considered an error). In case of an error, SymAdd returns <A HREF="$$LINK(HS_NULL)">HS_NULL</A>.
+this case is considered an error). In case of an error, SymAdd returns <A HREF="$$LINK(vat.h/HS_NULL)">HS_NULL</A>.
 This function may throw an error if the symbol already exists and it is locked.
-See <A HREF="$$LINK(SymFind)">SymFind</A> and <A HREF="$$LINK(DerefSym)">DerefSym</A> for more info.
+See <A HREF="$$LINK(vat.h/SymFind)">SymFind</A> and <A HREF="$$LINK(vat.h/DerefSym)">DerefSym</A> for more info.
 <BR><BR>
 <I>SymName</I> may also contain a folder name together with the symbol name
 (separated by "\"). In this case, the symbol will be added in the given folder.
@@ -62,6 +62,6 @@ space, and without assigning the handle in the entry. I didn't check whether a r
 TI-89 crashes after this, but the debugger in VTI crashes!? Rusty, this is a bug...
 
 [References]
-Out=MakeHSym, unknown.h/_ROM_CALL_439
+Out=vat.h/MakeHSym, unknown.h/_ROM_CALL_439
 In=bascmd.h/cmd_blddata, stdio.h/fopen
 Out_EV_eventLoop=1

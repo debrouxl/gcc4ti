@@ -5,7 +5,7 @@ Subtype=Macro
 Header Files=intr.h
 Definition=void SetIntVec (long IntVec, INT_HANDLER Handler);
 Real Definition=#define SetIntVec(i,h) ({asm volatile ("bclr.b #2,0x600001");(void) (*(INT_HANDLER*)(i) = (h));asm volatile ("bset.b #2,0x600001");})
-See Also=GetIntVec, IntVecs, DEFINE_INT_HANDLER
+See Also=intr.h/GetIntVec, intr.h/IntVecs, intr.h/DEFINE_INT_HANDLER
 
 [Description]
 Sets an interrupt vector.
@@ -14,12 +14,12 @@ Sets an interrupt vector.
 SetIntVec sets the interrupt vector located at the absolute address
 <I>IntVec</I> to the interrupt handler pointed to by
 <I>Handler</I>. <I>Handler</I> should be either a value returned from
-<A HREF="$$LINK(GetIntVec)">GetIntVec</A>, or the address of a user-defined interrupt
-handler defined using <A HREF="$$LINK(DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A>.
+<A HREF="$$LINK(intr.h/GetIntVec)">GetIntVec</A>, or the address of a user-defined interrupt
+handler defined using <A HREF="$$LINK(intr.h/DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A>.
 Note that <I>Handler</I> may not be the address of an ordinary C function.
 <BR><BR>
 Typical values of <I>IntVec</I> are given in the following table as enumerated
-in the <A HREF="$$LINK(IntVecs)">IntVecs</A> enum:
+in the <A HREF="$$LINK(intr.h/IntVecs)">IntVecs</A> enum:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
 <TR>
@@ -77,7 +77,7 @@ in the <A HREF="$$LINK(IntVecs)">IntVecs</A> enum:
 <TD>0x70</TD><TD>AUTO_INT_4<BR>INT_VEC_LINK</TD><TD>Link port activity</TD>
 </TR>
 <TR>
-<TD>0x74</TD><TD>AUTO_INT_5</TD><TD>System timer running at approximately 18 Hz (see <A HREF="$$LINK(PRG_setRate)">PRG_setRate</A>, <A HREF="$$LINK(PRG_setStart)">PRG_setStart</A>)</TD>
+<TD>0x74</TD><TD>AUTO_INT_5</TD><TD>System timer running at approximately 18 Hz (see <A HREF="$$LINK(intr.h/PRG_setRate)">PRG_setRate</A>, <A HREF="$$LINK(intr.h/PRG_setStart)">PRG_setStart</A>)</TD>
 </TR>
 <TR>
 <TD>0x78</TD><TD>AUTO_INT_6<BR>INT_VEC_ON_KEY_PRESS</TD><TD>'ON' key press</TD>
@@ -143,4 +143,4 @@ All traps may be triggered manually using the TRAP assembler instruction.
 </TR>
 </TABLE>
 <BR>
-See <A HREF="$$LINK(DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A> for an example of usage.
+See <A HREF="$$LINK(intr.h/DEFINE_INT_HANDLER)">DEFINE_INT_HANDLER</A> for an example of usage.

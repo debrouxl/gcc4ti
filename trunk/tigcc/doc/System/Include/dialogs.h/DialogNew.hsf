@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=dialogs.h
 Definition=HANDLE DialogNew (short Width, short Height, Dialog_Callback_t Callback);
-See Also=DialogDo, Dialog, DialogAdd, DIALOG_STRUCT: DIALOG
+See Also=dialogs.h/DialogDo, dialogs.h/Dialog, dialogs.h/DialogAdd, dialogs.h/DIALOG_STRUCT: DIALOG
 
 [ROM Call]
 Index=$34
@@ -13,11 +13,11 @@ Index=$34
 Creates a new dialog box which can interact with the user program.
 
 [Explanation]
-DialogNew acts like <A HREF="$$LINK(DialogNewSimple)">DialogNewSimple</A>,
+DialogNew acts like <A HREF="$$LINK(dialogs.h/DialogNewSimple)">DialogNewSimple</A>,
 but accepts a pointer to a user callback function <I>Callback</I> as a third
 parameter (i.e. you must pass the pointer of a function you wrote in your
 source code which contains the parameter types defined by
-<A HREF="$$LINK(Dialog_Callback_t)">Dialog_Callback_t</A>). This function is
+<A HREF="$$LINK(dialogs.h/Dialog_Callback_t)">Dialog_Callback_t</A>). This function is
 called more than once during the dialog's execution.
 <BR><BR>
 Such a user function allows for interaction between the dialog box and the
@@ -40,24 +40,24 @@ user pressed ENTER in a request box or after execution of any pulldown menu.
 This function has to return a value, whose meaning also depends on the input
 <I>Message</I> parameter. However, in simple dialog boxes without any dynamic
 elements, you may always pass <A HREF="$$LINK(alloc.h/Bool)">TRUE</A>, which
-is the same as <A HREF="$$LINK(DialogMessages)">DB_CONTINUE</A>, i.e.
+is the same as <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_CONTINUE</A>, i.e.
 the standard return value. Note that if you do not want to take care of the
 <I>Callback</I> function at all (i.e. if you do not want to write such a
 function) you can use the already written
-<A HREF="$$LINK(NoCallBack)">NoCallBack</A> function, which does nothing but
+<A HREF="$$LINK(dialogs.h/NoCallBack)">NoCallBack</A> function, which does nothing but
 return <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> whatever the entering message
 is (but in that case, the best thing is to use
-<A HREF="$$LINK(DialogNewSimple)">DialogNewSimple</A>, which in fact is a
-macro using both DialogNew and <A HREF="$$LINK(NoCallBack)">NoCallBack</A>).
+<A HREF="$$LINK(dialogs.h/DialogNewSimple)">DialogNewSimple</A>, which in fact is a
+macro using both DialogNew and <A HREF="$$LINK(dialogs.h/NoCallBack)">NoCallBack</A>).
 <BR><BR>
 Note that if you choose not to create a CallBack function, some of the items
-(such as <A HREF="$$LINK(DialogTypes)">D_MENU</A>) and the
-<A HREF="$$LINK(DialogFlags)">DF_OWNER_DRAW</A> flag will not be very
+(such as <A HREF="$$LINK(dialogs.h/DialogTypes)">D_MENU</A>) and the
+<A HREF="$$LINK(dialogs.h/DialogFlags)">DF_OWNER_DRAW</A> flag will not be very
 useful for you as they need to be handled in the callback function.
 <BR><BR>
 The following table shows what the <I>Message</I> value can be, when events
 occur and what you should return from <I>Callback</I>. The constants are
-defined in the enum <A HREF="$$LINK(DialogMessages)">DialogMessages</A>:
+defined in the enum <A HREF="$$LINK(dialogs.h/DialogMessages)">DialogMessages</A>:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
 <TR>
@@ -68,9 +68,9 @@ defined in the enum <A HREF="$$LINK(DialogMessages)">DialogMessages</A>:
       This nonnegative value is in fact the identification number of an item
       in a dialog. This identification number is created automatically when
       you use one of the creation functions
-      <A HREF="$$LINK(DialogAdd)">DialogAdd</A>,
-      <A HREF="$$LINK(DialogAddText)">DialogAddText</A>,
-      <A HREF="$$LINK(DialogAddPulldown)">DialogAddPulldown</A>,
+      <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A>,
+      <A HREF="$$LINK(dialogs.h/DialogAddText)">DialogAddText</A>,
+      <A HREF="$$LINK(dialogs.h/DialogAddPulldown)">DialogAddPulldown</A>,
       and all other functions starting with "DialogAdd". A value of 0
       represents the first item you created in the dialog box, 1 is the
       second one, 2 the third one, and so on.
@@ -79,7 +79,7 @@ defined in the enum <A HREF="$$LINK(DialogMessages)">DialogMessages</A>:
       item. See below for a list of possible meanings.
       <BR>
       The return value should be a message from the enum
-      <A HREF="$$LINK(DialogMessages)">DialogMessages</A>:
+      <A HREF="$$LINK(dialogs.h/DialogMessages)">DialogMessages</A>:
       <BR>
       <TABLE BORDER CELLPADDING="3">
       <TR>
@@ -116,8 +116,8 @@ defined in the enum <A HREF="$$LINK(DialogMessages)">DialogMessages</A>:
       <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the item is enabled and
       should not be grayed out, or <A HREF="$$LINK(alloc.h/Bool)">FALSE</A>
       if the item is disabled and must be grayed out). Note that static items
-      such as <A HREF="$$LINK(DialogTypes)">D_TITLE</A> and
-      <A HREF="$$LINK(DialogTypes)">D_TEXT</A> are not even drawn if they
+      such as <A HREF="$$LINK(dialogs.h/DialogTypes)">D_TITLE</A> and
+      <A HREF="$$LINK(dialogs.h/DialogTypes)">D_TEXT</A> are not even drawn if they
       are disabled.
   </TD>
 </TR>
@@ -126,9 +126,9 @@ defined in the enum <A HREF="$$LINK(DialogMessages)">DialogMessages</A>:
   <TD>Query the title of a dynamic header.
       <BR>
       This event occurs when a special title bar which may be added to the
-      dialog using <A HREF="$$LINK(DialogAdd)">DialogAdd</A> with
+      dialog using <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A> with
       <I>ItemType</I> set to
-      <A HREF="$$LINK(DialogTypes)">D_DYNHEADER</A> is created. The
+      <A HREF="$$LINK(dialogs.h/DialogTypes)">D_DYNHEADER</A> is created. The
       <I>Value</I> parameter will be zero, and the callback function must
       return the text for the title of the dialog box.
       <BR>
@@ -141,10 +141,10 @@ defined in the enum <A HREF="$$LINK(DialogMessages)">DialogMessages</A>:
   <TD>Query the text buffer of a dynamic edit field.
       <BR>
       This event occurs when a special request box which may be added to the
-      dialog using <A HREF="$$LINK(DialogAdd)">DialogAdd</A> with
-      <I>ItemType</I> set to <A HREF="$$LINK(DialogTypes)">D_HEDIT</A>
+      dialog using <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A> with
+      <I>ItemType</I> set to <A HREF="$$LINK(dialogs.h/DialogTypes)">D_HEDIT</A>
       (or using
-      <A HREF="$$LINK(DialogAddDynamicRequest)">DialogAddDynamicRequest</A>)
+      <A HREF="$$LINK(dialogs.h/DialogAddDynamicRequest)">DialogAddDynamicRequest</A>)
       is created or gets the focus. The value contained in <I>Value</I> is
       the identification number of this edit box item in the dialog. The
       callback function must return a handle which points to a buffer from
@@ -155,7 +155,7 @@ defined in the enum <A HREF="$$LINK(DialogMessages)">DialogMessages</A>:
       the associated buffer (see the example below).
       <BR>
       <B>Note:</B> See
-      <A HREF="$$LINK(DialogAddDynamicRequest)">DialogAddDynamicRequest</A>
+      <A HREF="$$LINK(dialogs.h/DialogAddDynamicRequest)">DialogAddDynamicRequest</A>
       for more details about this special feature.</TD>
 </TR>
 </TABLE>
@@ -168,12 +168,12 @@ The following table shows what the <I>Value</I> parameter is if
   <TD>Pulldown</TD>
   <TD>If the item identified by <I>Message</I> is a pulldown menu (i.e. if
       this item has been created using
-      <A HREF="$$LINK(DialogAddPulldown)">DialogAddPulldown</A> or
-      <A HREF="$$LINK(DialogAddPulldownEx)">DialogAddPulldownEx</A>, or
-      <A HREF="$$LINK(DialogAdd)">DialogAdd</A> with <I>ItemType</I> set to
-      <A HREF="$$LINK(DialogTypes)">D_POPUP</A>,
-      <A HREF="$$LINK(DialogTypes)">D_HPOPUP</A> or
-      <A HREF="$$LINK(DialogTypes)">D_DYNPOPUP</A>), the value contained
+      <A HREF="$$LINK(dialogs.h/DialogAddPulldown)">DialogAddPulldown</A> or
+      <A HREF="$$LINK(dialogs.h/DialogAddPulldownEx)">DialogAddPulldownEx</A>, or
+      <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="$$LINK(dialogs.h/DialogTypes)">D_POPUP</A>,
+      <A HREF="$$LINK(dialogs.h/DialogTypes)">D_HPOPUP</A> or
+      <A HREF="$$LINK(dialogs.h/DialogTypes)">D_DYNPOPUP</A>), the value contained
       in <I>Value</I> is the identification number of the item selected in
       the pulldown menu (<I>not</I> one of a dialog item). The event occurs
       only when the user selects an item and presses ENTER.</TD>
@@ -182,11 +182,11 @@ The following table shows what the <I>Value</I> parameter is if
   <TD>Request</TD>
   <TD>If the item identified by <I>Message</I> is a request item (i.e. if
       this item has been created using
-      <A HREF="$$LINK(DialogAddRequest)">DialogAddRequest</A> or
-      <A HREF="$$LINK(DialogAddRequestEx)">DialogAddRequestEx</A>, or
-      <A HREF="$$LINK(DialogAdd)">DialogAdd</A> with <I>ItemType</I> set to
-      <A HREF="$$LINK(DialogTypes)">D_HEDIT</A> or
-      <A HREF="$$LINK(DialogTypes)">D_EDIT_FIELD</A>), the value
+      <A HREF="$$LINK(dialogs.h/DialogAddRequest)">DialogAddRequest</A> or
+      <A HREF="$$LINK(dialogs.h/DialogAddRequestEx)">DialogAddRequestEx</A>, or
+      <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="$$LINK(dialogs.h/DialogTypes)">D_HEDIT</A> or
+      <A HREF="$$LINK(dialogs.h/DialogTypes)">D_EDIT_FIELD</A>), the value
       contained in <I>Value</I> is a pointer pointing to the data the user
       just entered.
       </TD>
@@ -194,9 +194,9 @@ The following table shows what the <I>Value</I> parameter is if
 <TR>
   <TD>Menu</TD>
   <TD>If the item identified by <I>Message</I> is a menu (i.e. if this item
-      has been added using <A HREF="$$LINK(DialogAddMenu)">DialogAddMenu</A>
-      or <A HREF="$$LINK(DialogAdd)">DialogAdd</A> with <I>ItemType</I> set
-      to <A HREF="$$LINK(DialogTypes)">D_MENU</A>), the value contained
+      has been added using <A HREF="$$LINK(dialogs.h/DialogAddMenu)">DialogAddMenu</A>
+      or <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A> with <I>ItemType</I> set
+      to <A HREF="$$LINK(dialogs.h/DialogTypes)">D_MENU</A>), the value contained
       in <I>Value</I> is in fact the composition of two values: the 16 most
       significant bits (the high word) of <I>Value</I> contain the execution
       handle of the menu (the dialog box code calls
@@ -205,8 +205,8 @@ The following table shows what the <I>Value</I> parameter is if
       contain the key pressed by the user to activate the menu (for your
       convenience, common key values are defined in the
       <A HREF="$$LINK(kbd.h/CommonKeys)">CommonKeys</A> enum). The macros
-      <A HREF="$$LINK(LO_WORD)">LO_WORD</A> and
-      <A HREF="$$LINK(HI_WORD)">HI_WORD</A> have been created to get both
+      <A HREF="$$LINK(dialogs.h/LO_WORD)">LO_WORD</A> and
+      <A HREF="$$LINK(dialogs.h/HI_WORD)">HI_WORD</A> have been created to get both
       values easily. The callback function may activate the menu or change
       anything in it if needed. See
       <A HREF="$$LINK(menus.h/MenuKey)">MenuKey</A> for more details on
@@ -218,23 +218,23 @@ The following table shows what the <I>Value</I> parameter is if
       (This feature is mainly used in the TIOS 'MODE' dialog where pressing
       F1, F2 or F3 changes the page displayed, which is achieved by changing
       the focus.) With AMS 2.xx the return value can also be one of
-      <A HREF="$$LINK(DialogMessages)">DB_REDRAW</A>,
-      <A HREF="$$LINK(DialogMessages)">DB_REDRAW_AND_CONTINUE</A> or
-      <A HREF="$$LINK(DialogMessages)">DB_EXIT</A>, but <I>not</I>
-      <A HREF="$$LINK(DialogMessages)">DB_CONTINUE</A>, since that
+      <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_REDRAW</A>,
+      <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_REDRAW_AND_CONTINUE</A> or
+      <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_EXIT</A>, but <I>not</I>
+      <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_CONTINUE</A>, since that
       value is positive.</TD>
 </TR>
 <TR>
   <TD>Owner Draw Text</TD>
   <TD>If the item identified by <I>Message</I> is an owner draw text/image
       (i.e. if this item has been created using
-      <A HREF="$$LINK(DialogAdd)">DialogAdd</A> with <I>ItemType</I> set to
-      <A HREF="$$LINK(DialogTypes)">D_TEXT</A> and <I>Flags</I>
-      containing <A HREF="$$LINK(DialogXFlags)">DF_OWNER_DRAW</A>), the value
+      <A HREF="$$LINK(dialogs.h/DialogAdd)">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="$$LINK(dialogs.h/DialogTypes)">D_TEXT</A> and <I>Flags</I>
+      containing <A HREF="$$LINK(dialogs.h/DialogXFlags)">DF_OWNER_DRAW</A>), the value
       contained in <I>Value</I> is a pointer to an
-      <A HREF="$$LINK(OWNER_DRAW_STRUCT)">OWNER_DRAW_STRUCT</A> structure.
+      <A HREF="$$LINK(dialogs.h/OWNER_DRAW_STRUCT)">OWNER_DRAW_STRUCT</A> structure.
       The <I>Item</I> field in this structure is a direct pointer to the
-      <A HREF="$$LINK(DIALOG_ITEM)">DIALOG_ITEM</A> structure for the item
+      <A HREF="$$LINK(dialogs.h/DIALOG_ITEM)">DIALOG_ITEM</A> structure for the item
       to be drawn (this is not normally used). The <I>pW</I> field is a
       pointer to the <A HREF="$$LINK(wingraph.h/WINDOW)">WINDOW</A> structure
       for the dialog box. Using this pointer, the callback function can draw
@@ -254,7 +254,7 @@ All other item types cannot be activated; <I>Callback</I> will not be called
 with their identification number as the <I>Message</I> parameter.
 <BR><BR>
 After pressing ENTER in a request box or after execution of a pulldown menu,
-the <A HREF="$$LINK(DialogMessages)">DB_QACTIVE</A> message will be sent to
+the <A HREF="$$LINK(dialogs.h/DialogMessages)">DB_QACTIVE</A> message will be sent to
 all items in the dialog. This permits the user to create dialogs in which the
 selection of various options in pulldown menus enables or disables some other
 items.
@@ -262,8 +262,8 @@ items.
 <B>Note:</B> It might be useful for you to know that dereferencing the handle
 returned by DialogNew with <A HREF="$$LINK(alloc.h/HeapDeref)">HeapDeref</A>
 or with <A HREF="$$LINK(alloc.h/HLock)">HLock</A> returns a pointer to the
-dialog's <A HREF="$$LINK(DIALOG_STRUCT)">DIALOG</A> structure.
+dialog's <A HREF="$$LINK(dialogs.h/DIALOG_STRUCT)">DIALOG</A> structure.
 
 [References]
-In=DialogNewSimple, DlgMessage, VarNew, VarOpen, VarSaveAs, bascmd.h/cmd_dialog, bascmd.h/cmd_request, events.h/EV_defaultHandler, homescr.h/HomeExecute
+In=dialogs.h/DialogNewSimple, dialogs.h/DlgMessage, dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs, bascmd.h/cmd_dialog, bascmd.h/cmd_request, events.h/EV_defaultHandler, homescr.h/HomeExecute
 Out=alloc.h/HeapAlloc, mem.h/memset

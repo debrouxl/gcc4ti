@@ -4,7 +4,7 @@ Type=Function
 Subtype=tigcc.a
 Header Files=system.h
 Definition=void *kbd_queue (void);
-See Also=OSdequeue, kbd.h/
+See Also=system.h/OSdequeue, kbd.h/
 
 [Library Call]
 Asm=1
@@ -17,7 +17,7 @@ kbd_queue returns a pointer to the queue used in TIOS for keyboard handling. It 
 an argument to other queue-related functions. The main purpose of accessing to keyboard queue
 is to make a fast replacement for <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> and
 <A HREF="$$LINK(kbd.h/kbhit)">kbhit</A> functions. This may be achieved using
-<A HREF="$$LINK(OSdequeue)">OSdequeue</A> function. For example, suppose that you have the following
+<A HREF="$$LINK(system.h/OSdequeue)">OSdequeue</A> function. For example, suppose that you have the following
 declarations:
 <PRE>void *kbq = kbd_queue ();
 unsigned short key;
@@ -37,9 +37,9 @@ if (!OSdequeue (&amp;key, kbq))
 }
 </PRE>
 <B>Note:</B> On the first look, it seems that the key repetition feature
-does not work with <A HREF="$$LINK(OSdequeue)">OSdequeue</A>. But, Marcos
+does not work with <A HREF="$$LINK(system.h/OSdequeue)">OSdequeue</A>. But, Marcos
 Lopez informed me that this is not exactly true. Key repetition feature
-works even with <A HREF="$$LINK(OSdequeue)">OSdequeue</A>, but it will not
+works even with <A HREF="$$LINK(system.h/OSdequeue)">OSdequeue</A>, but it will not
 return the keycode itself for the repeated key, but add the
 <A HREF="$$LINK(kbd.h/KB_AUTOREPEAT)">KB_AUTOREPEAT</A> "auto-repeat" bit to
 the keycode (more exactly,
@@ -48,4 +48,4 @@ keycode), so <I>value</I> becomes <I>value</I>&nbsp;+&nbsp;0x800. If you use
 the standard <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> function, this
 additional bit is masked out and your program will get the keycodes it expects.
 But, it is very simple to mask out this bit manually and make the key repetition
-feature work even with <A HREF="$$LINK(OSdequeue)">OSdequeue</A>.
+feature work even with <A HREF="$$LINK(system.h/OSdequeue)">OSdequeue</A>.

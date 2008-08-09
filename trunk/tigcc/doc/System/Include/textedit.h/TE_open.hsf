@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=textedit.h
 Definition=short TE_open (TEXT_EDIT *te, WINDOW *w, WIN_RECT *rect, HANDLE BufHandle, unsigned short cur_offset, unsigned short ReadOnly, unsigned short Flags);
-See Also=TE_openFixed
+See Also=textedit.h/TE_openFixed
 
 [ROM Call]
 Index=$AC
@@ -15,7 +15,7 @@ Initializes the text editor.
 [Explanation]
 TE_open initializes the text editor and displays the initial contents of the editor. All
 text editor operations are controled using a structure of type
-<A HREF="$$LINK(TEXT_EDIT)">TEXT_EDIT</A>. TE_open will initialize such a structure pointed
+<A HREF="$$LINK(textedit.h/TEXT_EDIT)">TEXT_EDIT</A>. TE_open will initialize such a structure pointed
 to by the parameter <I>te</I>, which later needs to be passed to all text editor operations
 (i.e. <I>te</I> must be allocated statically to maintain state between calls to the text
 edit routines). It returns <A HREF="$$LINK(alloc.h/Bool)">TRUE</A> if the edit buffer could
@@ -63,7 +63,7 @@ The parameter <I>cur_offset</I> is the initial position of the cursor
 character. If the contents of the text edit buffer are too
 long to display entirely in the edit region, the text is
 scrolled to make sure the cursor is visible.
-Set <I>cur_offset</I> to <A HREF="$$LINK(TE_FAR_RIGHT)">TE_FAR_RIGHT</A> to place the edit cursor
+Set <I>cur_offset</I> to <A HREF="$$LINK(textedit.h/TE_FAR_RIGHT)">TE_FAR_RIGHT</A> to place the edit cursor
 after the last character in the edit buffer.
 <BR><BR>
 The parameter <I>ReadOnly</I> is the count of characters
@@ -74,7 +74,7 @@ cannot change the text of the <I>ReadOnly</I> characters nor move the edit curso
 <BR><BR>
 <I>Flags</I> is a set of binary flags which controls the editor. Each bit specifies optional
 features of the text editor. Some of these flags are changed automatically during the operation
-of the editor. The flags are defined in the <A HREF="$$LINK(ETE_FLAGS)">ETE_FLAGS</A>
+of the editor. The flags are defined in the <A HREF="$$LINK(textedit.h/ETE_FLAGS)">ETE_FLAGS</A>
 enumeration and have the following meanings:
 <BR><BR>
 <TABLE BORDER CELLPADDING="3">
@@ -128,7 +128,7 @@ Do not set this flag.</TD>
 </TR>
 <TR>
 <TD VALIGN="TOP">TE_FIXED_LENGTH</TD><TD VALIGN="TOP">This flag is an internal flag. It is set
-for text editors opened with <A HREF="$$LINK(TE_openFixed)">TE_openFixed</A>. Do not set this
+for text editors opened with <A HREF="$$LINK(textedit.h/TE_openFixed)">TE_openFixed</A>. Do not set this
 flag.</TD>
 </TR>
 <TR>
@@ -139,7 +139,7 @@ flag.</TD>
 <TR>
 <TD VALIGN="TOP">TE_FOCUSED</TD><TD VALIGN="TOP">This flag is an internal flag. It is set if
 the text editor currently has the focus, i.e. if the cursor is currently in the text editor.
-See <A HREF="$$LINK(TE_focus)">TE_focus</A> and <A HREF="$$LINK(TE_unfocus)">TE_unfocus</A>.
+See <A HREF="$$LINK(textedit.h/TE_focus)">TE_focus</A> and <A HREF="$$LINK(textedit.h/TE_unfocus)">TE_unfocus</A>.
 Do not set this flag.</TD>
 </TR>
 <TR>
@@ -159,10 +159,10 @@ It does not enter the editor loop in which keypresses are processed. In fact, th
 such loop: you need to get keypresses manually (using <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>
 or, even better, using <A HREF="$$LINK(events.h/EV_getc)">EV_getc</A>, or using
 the default event loop <A HREF="$$LINK(events.h/EV_eventLoop)">EV_eventLoop</A>) and to pass them
-to <A HREF="$$LINK(TE_handleEvent)">TE_handleEvent</A> which will process them. Such an approach
-gives much more flexibility. See <A HREF="$$LINK(TE_handleEvent)">TE_handleEvent</A> for an
+to <A HREF="$$LINK(textedit.h/TE_handleEvent)">TE_handleEvent</A> which will process them. Such an approach
+gives much more flexibility. See <A HREF="$$LINK(textedit.h/TE_handleEvent)">TE_handleEvent</A> for an
 example of usage.
 
 [References]
 In=bascmd.h/cmd_input, bascmd.h/cmd_inputstr, bascmd.h/cmd_prompt, dialogs.h/Dialog
-Out=TE_checkSlack, alloc.h/HeapAlloc, string.h/strlen, unknown.h/sf_width, wingraph.h/WinAttr, wingraph.h/WinBegin, wingraph.h/WinChar, wingraph.h/WinFill, unknown.h/_du16u16, unknown.h/_mu16u16, unknown.h/_ROM_CALL_412
+Out=textedit.h/TE_checkSlack, alloc.h/HeapAlloc, string.h/strlen, unknown.h/sf_width, wingraph.h/WinAttr, wingraph.h/WinBegin, wingraph.h/WinChar, wingraph.h/WinFill, unknown.h/_du16u16, unknown.h/_mu16u16, unknown.h/_ROM_CALL_412

@@ -16,20 +16,20 @@ handlers. The syntax is similar to function definition:
 }
 </PRE>
 Note, however, that DEFINE_INT_HANDLER does not define a standard function: it constructs
-an object named <I>HandlerName</I> of <A HREF="$$LINK(INT_HANDLER)">INT_HANDLER</A> type, which is initialized to point
+an object named <I>HandlerName</I> of <A HREF="$$LINK(intr.h/INT_HANDLER)">INT_HANDLER</A> type, which is initialized to point
 to the handler body (implemented internally as a function, but unaccessable
 directly to the rest of the program).
 So, you can not call the interrupt handler using a standard call construction like
 <PRE><I>HandlerName</I> ();</PRE>
 Such behaviour is implemented due to safety reasons: interrupt handlers are not supposed to
 be executed directly. If you need to call the interrupt handler anyway, you can use
-<A HREF="$$LINK(ExecuteHandler)">ExecuteHandler</A> function. Here is an example of the program
+<A HREF="$$LINK(intr.h/ExecuteHandler)">ExecuteHandler</A> function. Here is an example of the program
 which installs the new (user-defined) interrupt handler for auto interrupt 5 (the programable
 timer interrupt), in which the old (default) handler is called as well (called "Interrupt Handler"):
 $$EXAMPLE(Interrupt Handler.c)
-The only legal usage of <A HREF="$$LINK(INT_HANDLER)">INT_HANDLER</A> objects is to be passed
-as arguments to the functions <A HREF="$$LINK(SetIntVec)">SetIntVec</A> or
-<A HREF="$$LINK(ExecuteHandler)">ExecuteHandler</A>.
+The only legal usage of <A HREF="$$LINK(intr.h/INT_HANDLER)">INT_HANDLER</A> objects is to be passed
+as arguments to the functions <A HREF="$$LINK(intr.h/SetIntVec)">SetIntVec</A> or
+<A HREF="$$LINK(intr.h/ExecuteHandler)">ExecuteHandler</A>.
 <BR><BR>
 Be aware that the variable <I>Counter</I> in above example is declared as <CODE><A HREF="$$INFOLINK(keywords/volatile)">volatile</A></CODE>.
 In fact, any global variable which may be changed by the

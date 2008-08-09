@@ -4,7 +4,7 @@ Type=Function
 Subtype=Macro constructor
 Header Files=timath.h
 Real Definition=#define FEXP(x,y) (*(float*)&(bcd){0x4000+y,0x##x##LL<<4*(17-sizeof(#x))})
-See Also=float_to_bcd, bcd_to_float, bcd_var
+See Also=timath.h/float_to_bcd, timath.h/bcd_to_float, timath.h/bcd_var
 
 [Description]
 A deprecated macro used to define floating point numbers.
@@ -22,7 +22,7 @@ number <CODE>4.2*10^-3</CODE> (<CODE>0.0042</CODE> or <CODE>4.2e-3</CODE>).
 but the way on which <CODE>FEXP</CODE> is implemented allows that
 <I>exponent</I> may be a variable or an expression, like
 <CODE>FEXP(314,a)</CODE>, when even <I>mantissa</I> is not a constant, you
-can use function <A HREF="$$LINK(ldexp10)">ldexp10</A>. Anyway, you don't need to
+can use function <A HREF="$$LINK(timath.h/ldexp10)">ldexp10</A>. Anyway, you don't need to
 use <CODE>FEXP</CODE> any more: simply use conventional exponential notation.
 E.g. simply use <CODE>4.2e3</CODE> instead of <CODE>FEXP(42,3)</CODE> etc.
 <BR><BR>
@@ -31,9 +31,9 @@ Note that <CODE>a&nbsp;=&nbsp;FEXP(<I>m</I>,<I>e</I>)</CODE> is not the same as
 and <CODE>bcd_var(a).mantissa&nbsp;=&nbsp;<I>m</I></CODE>. The first part is
 true; the second is not. More precise, <CODE>FEXP</CODE> shifts <I>m</I> to
 the left enough number of times to produce correct normalized mantissa (see
-<A HREF="$$LINK(bcd)">bcd</A> for more info).
+<A HREF="$$LINK(timath.h/bcd)">bcd</A> for more info).
 So, when you type <CODE>a&nbsp;=&nbsp;FEXP(352,3)</CODE> it works like
 <CODE>bcd_var(a).exponent&nbsp;=&nbsp;0x4003</CODE>
 and <CODE>bcd_var(a).mantissa&nbsp;=&nbsp;0x3520000000000000</CODE>.
 For more description about internal format of
-floating point numbers, see <A HREF="$$LINK(bcd)">bcd</A>.
+floating point numbers, see <A HREF="$$LINK(timath.h/bcd)">bcd</A>.

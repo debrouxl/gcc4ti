@@ -4,7 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=kbd.h
 Definition=short GKeyIn (SCR_RECT *cursor_shape, unsigned short Flags);
-See Also=ngetchx, kbhit, system.h/kbd_queue, OSFastArrows
+See Also=kbd.h/ngetchx, kbd.h/kbhit, system.h/kbd_queue, kbd.h/OSFastArrows
 
 [ROM Call]
 Index=$17E
@@ -13,7 +13,7 @@ Index=$17E
 Gets character from the keyboard, with additional possibilities.
 
 [Explanation]
-GKeyIn acts similarly to <A HREF="$$LINK(ngetchx)">ngetchx</A>, with following differences:
+GKeyIn acts similarly to <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>, with following differences:
 <UL>
 <LI>During waiting for a keypress, a flashing cursor may optionally be displayed.
 Parameter <I>cursor_shape</I> is a pointer to <A HREF="$$LINK(graph.h/SCR_RECT)">SCR_RECT</A> structure
@@ -21,12 +21,12 @@ which defines location and shape of the cursor (it is, in fact, a flashing recta
 area which is obtained by XORing a rectangle while waiting on a key). If <I>cursor_shape</I> is
 <A HREF="$$LINK(alloc.h/NULL)">NULL</A>, no cursor will be displayed.</LI>
 <LI>The activity in the status line during waiting for a keypress is set to IDLE (in opposite
-to <A HREF="$$LINK(ngetchx)">ngetchx</A> which sets activity to BUSY). After a keystroke is ready,
+to <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> which sets activity to BUSY). After a keystroke is ready,
 the activity will be switched to BUSY. See <A HREF="$$LINK(statline.h/ST_busy)">ST_busy</A> for
 more info about status line activity indicator.</LI>
 <LI>During waiting for a keypress, if the user waits too long, the calculator will be switched
 off (APD feature - Automatic Power Down). This will not happen with
-<A HREF="$$LINK(ngetchx)">ngetchx</A>. See <A HREF="$$LINK(system.h/)">system.h</A> header file for more
+<A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>. See <A HREF="$$LINK(system.h/)">system.h</A> header file for more
 info about APD.</LI>
 <LI>During waiting for a keypress, the calculator enters into "idle" state (see
 <A HREF="$$LINK(system.h/idle)">idle</A> for more info).</LI>
@@ -35,7 +35,7 @@ used with caution.</LI>
 <LI>If <I>Flags</I> is different than zero, some special behaviour happens.</LI>
 </UL>
 The parameter <I>Flags</I> can be a combination of the following, defined in
-the <A HREF="$$LINK(GKeyFlags)">GKeyFlags</A> enumeration:
+the <A HREF="$$LINK(kbd.h/GKeyFlags)">GKeyFlags</A> enumeration:
 <TABLE BORDER CELLPADDING="3">
 <TR>
 <TD VALIGN="TOP">GKF_NORMAL</TD><TD VALIGN="TOP">No special key processing.
@@ -47,7 +47,7 @@ This is the usual value to set.
 <TD VALIGN="TOP">GKF_MODAL</TD><TD VALIGN="TOP">If the pressed key is a modal
 key (see <A HREF="$$LINK(system.h/QModeKey)">QModeKey</A> for information on
 what is a "modal" key for the TIOS), GKeyIn will return
-<A HREF="$$LINK(CommonKeys)">KEY_ESC</A> instead of the real keystroke code,
+<A HREF="$$LINK(kbd.h/CommonKeys)">KEY_ESC</A> instead of the real keystroke code,
 and the keystroke will not be picked from the keyboard queue. If the pressed
 key is not a mode key, GKeyIn behaves as usual.
 <BR><BR>
@@ -60,8 +60,8 @@ activated from inside a dialog box).</TD>
 <TR>
 <TD VALIGN="TOP">GKF_REPUSH_KEY</TD><TD VALIGN="TOP">GKeyIn will not pick the
 keystroke from the keyboard queue, so the "keypress" flag will remain set.
-You must explicitely pick it using <A HREF="$$LINK(ngetchx)">ngetchx</A> or
-flush the queue using <A HREF="$$LINK(GKeyFlush)">GKeyFlush</A>.</TD>
+You must explicitely pick it using <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A> or
+flush the queue using <A HREF="$$LINK(kbd.h/GKeyFlush)">GKeyFlush</A>.</TD>
 </TR>
 <TR>
 <TD VALIGN="TOP">GKF_ACCEPT</TD><TD VALIGN="TOP">The purpose of this flag is unknown for the moment.</TD>
@@ -70,7 +70,7 @@ flush the queue using <A HREF="$$LINK(GKeyFlush)">GKeyFlush</A>.</TD>
 <TD VALIGN="TOP">GKF_SYS</TD><TD VALIGN="TOP">If the pressed key is a system
 key (see <A HREF="$$LINK(system.h/QSysKey)">QSysKey</A> for information on
 what is a "system" key for the TIOS), GKeyIn will return
-<A HREF="$$LINK(CommonKeys)">KEY_ESC</A> instead of the real keystroke code,
+<A HREF="$$LINK(kbd.h/CommonKeys)">KEY_ESC</A> instead of the real keystroke code,
 and the keystroke will not be picked from the keyboard queue. If the pressed
 key is not a system key, GKeyIn behaves as usual.</TD>
 </TR>
@@ -80,7 +80,7 @@ will be ignored.</TD>
 </TR>
 </TABLE>
 <BR>
-Except in noted special cases, GKeyIn returns the same value as <A HREF="$$LINK(ngetchx)">ngetchx</A>.
+Except in noted special cases, GKeyIn returns the same value as <A HREF="$$LINK(kbd.h/ngetchx)">ngetchx</A>.
 Menus and dialog boxes usually set GKF_MODAL and GKF_SYS, so that if a user presses say the VAR-LINK key in the dialog
 box, the dialog box is closed and then the VAR-LINK key is acted on.
 <BR><BR>
@@ -89,7 +89,7 @@ manager’s handling of keys. Programs should use the event manager to process
 keys in most cases. GKeyIn should only be used in special cases where the event
 manager is not accessible. For games, you'll probably be better off using
 <A HREF="$$LINK(system.h/kbd_queue)">kbd_queue</A> or
-<A HREF="$$LINK(_keytest)">_keytest</A>.
+<A HREF="$$LINK(kbd.h/_keytest)">_keytest</A>.
 <BR><BR>
 <B>Note:</B> Thomas Nussbaumer informed me that <A HREF="$$LINK(system.h/idle)">idle</A> interferes with
 grayscale graphics. As GKeyIn calls the <A HREF="$$LINK(system.h/idle)">idle</A> function, the use of
@@ -97,5 +97,5 @@ GKeyIn while grayscale mode is active is not recommended.
 
 [References]
 Out=unknown.h/_ROM_CALL_3EA
-In=GKeyFlush, bascmd.h/cmd_showstat, bascmd.h/cmd_toolbar, dialogs.h/Dialog, dialogs.h/DlgMessage, events.h/handleVarLinkKey, menus.h/MenuKey, system.h/HelpKeys, unknown.h/GT_Trace
+In=kbd.h/GKeyFlush, bascmd.h/cmd_showstat, bascmd.h/cmd_toolbar, dialogs.h/Dialog, dialogs.h/DlgMessage, events.h/handleVarLinkKey, menus.h/MenuKey, system.h/HelpKeys, unknown.h/GT_Trace
 Out_EV_eventLoop=1
