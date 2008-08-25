@@ -1,8 +1,9 @@
 /* main.c: Main entry point for ld-tigcc, handling the command line input
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2004-2005 Kevin Kofler
+   Copyright (C) 2004-2008 Kevin Kofler
    Copyright (C) 2004 Billy Charvet
+   Copyright (C) 2008 Lionel Debroux
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -126,33 +127,32 @@ static char CalcTolower(char Lower)
 static void ComputeTimeInformation(PROGRAM *Program)
 {
 	// Get the timestamp.
-	if (time(&Program->LinkTime.LinkTime) != (time_t)-1)
+	if (time (&Program->LinkTime.LinkTime) != (time_t) -1)
 	{
-		struct tm * broken_down_time;
-
-		broken_down_time = gmtime(&Program->LinkTime.LinkTime);
-		if (broken_down_time != NULL) {
+		struct tm *broken_down_time = gmtime (&Program->LinkTime.LinkTime);
+		if (broken_down_time)
+		{
 			// gmtime returns the number of years since 1900.
-			Program->LinkTime.year = broken_down_time->tm_year + 1900;
+			Program->LinkTime.Year = broken_down_time->tm_year + 1900;
 			// gmtime returns the month between 0 and 11.
-			Program->LinkTime.month = broken_down_time->tm_mon + 1;
-			Program->LinkTime.day = broken_down_time->tm_mday;
+			Program->LinkTime.Month = broken_down_time->tm_mon + 1;
+			Program->LinkTime.Day = broken_down_time->tm_mday;
 			// Convert from "seconds since Jan 1, 1970" to "seconds since Jan 1, 1997".
 			// 197x: 8x365 days, 2x366 days (leap years: 1972, 1976) => 315532800 seconds
 			// 198x: 7x365 days, 3x366 days (leap years: 1980, 1984, 1988) => 315619200 seconds
 			// 199x: 5x365 days, 2x366 days (leap years: 1992, 1996) => 220924800 seconds
 			// Total: 852076800 seconds.
-			Program->LinkTime.LinkTime -= (time_t)852076800L;
+			Program->LinkTime.LinkTime -= (time_t) 852076800L;
 			return;
 		}
 	}
 
 	// Failed, so set dummy values.
-	Warning (NULL, "Couldn't get current time, setting dummy values.");
-	Program->LinkTime.LinkTime = (time_t)0,
-	Program->LinkTime.year = 1997,
-	Program->LinkTime.month = 1,
-	Program->LinkTime.day = 1;
+	Warning (NULL, "Could not get current time, setting dummy values.");
+	Program->LinkTime.LinkTime = (time_t) 0,
+	Program->LinkTime.Year = 1997,
+	Program->LinkTime.Month = 1,
+	Program->LinkTime.Day = 1;
 }
 
 int main (int ArgCount, const char **Args)

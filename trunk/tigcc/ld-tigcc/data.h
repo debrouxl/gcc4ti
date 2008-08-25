@@ -1,8 +1,9 @@
 /* data.h: Definitions for internal data handling
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2005 Kevin Kofler
+   Copyright (C) 2003-2008 Kevin Kofler
    Copyright (C) 2004 Billy Charvet
+   Copyright (C) 2008 Lionel Debroux
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -142,7 +143,7 @@ typedef struct PROGRAM {
 		*OptimizeInfo;    // Optimization settings and results.
 	struct {
 		time_t LinkTime;
-		unsigned short year, month, day;
+		I2 Year, Month, Day;
 	} LinkTime;           // Time info, initialized when linking starts.
 } PROGRAM;
 

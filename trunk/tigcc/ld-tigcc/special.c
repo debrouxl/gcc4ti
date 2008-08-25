@@ -1,8 +1,9 @@
 /* special.c: Routines to handle special characteristics of the linker
 
    Copyright (C) 2002-2004 Sebastian Reichelt
-   Copyright (C) 2003-2005 Kevin Kofler
+   Copyright (C) 2003-2008 Kevin Kofler
    Copyright (C) 2004 Billy Charvet
+   Copyright (C) 2008 Lionel Debroux
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -756,31 +757,31 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("link_time_y")) // Preliminary name
+			else if (SymNameMatches ("link_time_year"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
-					NewValue = Program->LinkTime.year;
+					NewValue = Program->LinkTime.Year;
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("link_time_m")) // Preliminary name
+			else if (SymNameMatches ("link_time_month"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
-					NewValue = Program->LinkTime.month;
+					NewValue = Program->LinkTime.Month;
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("link_time_d")) // Preliminary name
+			else if (SymNameMatches ("link_time_day"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
-					NewValue = Program->LinkTime.day;
+					NewValue = Program->LinkTime.Day;
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("link_time_timestamp")) // Preliminary name
+			else if (SymNameMatches ("link_time_timestamp"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
