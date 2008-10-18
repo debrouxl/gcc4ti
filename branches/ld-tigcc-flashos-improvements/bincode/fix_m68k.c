@@ -27,6 +27,10 @@
 
 #include <stdlib.h>
 
+#ifdef FLASH_OS_SUPPORT
+static void M68kFixBssAbs16 (RELOC *Reloc, OPTIMIZE_INFO *OptimizeInfo);
+#endif
+
 // Apply generic code fixes and optimizations to a section.
 void M68kFixCode (SECTION *Section)
 {
@@ -80,6 +84,12 @@ void M68kFixCodePreMerge (SECTION *Dest, SECTION *Src, SIZE DestSize)
 					// Fix and possibly optimize or remove the reloc.
 					M68kFixReloc (Reloc, TargetDistance, OptimizeInfo);
 				}
+#ifdef FLASH_OS_SUPPORT
+                                // If we are for a flash os program, and the target is a BSS Section.
+                                if (Dest->Parent->Type == PT_FLASH_OS && Reloc->Target.Symbol
+                                    && Reloc->Target.Symbol->Parent == Reloc->Parent->Parent->BSSSection)
+                                  M68kFixBssAbs16 (Reloc, OptimizeInfo);
+#endif
 			}
 		}
 		
@@ -666,6 +676,181 @@ void M68kFixReloc (RELOC *Reloc, OFFSET TargetDistance, OPTIMIZE_INFO *OptimizeI
 		}
 	}
 }
+
+
+#ifdef FLASH_OS_SUPPORT
+static void M68kFixBssAbs16 (RELOC *Reloc, OPTIMIZE_INFO *OptimizeInfo)
+{
+  SECTION *Section = Reloc->Parent;
+  I1 *Data = Section->Data;
+  OFFSET RelocLocation = Reloc->Location;
+  OFFSET OpcodeLocation;
+  I1 *Opcode;
+
+  // Return if there is no data, the reloc is not optimizable or if the reloc size is not 4 bytes.
+  // If the section doesn't support the cut ranges, it doesn't worth the effort (we don't any reloc to emit).
+  if (!Data || Reloc->Unoptimizable || Reloc->Size != 4 || !Section->CanCutRanges)
+    return;
+  if (!(Reloc->Target.Symbol))
+    return;
+
+  // Test is the reloc is optimizable: the absolute address muse be < 2^15
+  OpcodeLocation  = GetLocationOffset (Reloc->Target.Symbol->Parent, &(Reloc->Target)) + Reloc->FixedOffset;
+  OpcodeLocation += (OFFSET) (OptimizeInfo->FlashOSBSSStart);
+  if (OpcodeLocation >= 0x7FFF)
+    return;
+
+  // Most opcodes are two bytes long, and the reloc follows immediately.
+  OpcodeLocation = RelocLocation - 2;
+  // Safety check before accessing the section data.
+  if (!IsBinaryDataRange (Section, OpcodeLocation, OpcodeLocation + 6, Reloc))
+    return;
+
+  Opcode = Data + OpcodeLocation;
+
+  // *** Move Optimization ***
+  // Optimize LEA(.L) var.L,reg into LEA(.w) var.W),reg.
+  if ((((Opcode [0] & M68K_LEA_ABS_MASK_0) == M68K_LEA_ABS_0) && ((Opcode [1] & M68K_LEA_ABS_MASK_1) == M68K_LEA_ABS_1))
+      // Optimize PEA(.L) var.L into PEA(.L) var.W(%PC).
+      || ((Opcode [0] == M68K_PEA_ABS_0) && (Opcode [1] == M68K_PEA_ABS_1))
+      // Optimize MOVE.x var.L,reg/(reg)/(reg)+ into
+      // MOVE.x var.W(%PC),reg/(reg)/(reg)+.
+      || (((Opcode [0] & M68K_MOVE_ABS_REG_MASK_0) == M68K_MOVE_ABS_REG_0) && ((Opcode [1] & M68K_MOVE_ABS_REG_MASK_1) == M68K_MOVE_ABS_REG_1)
+          && (!((Opcode [0] & M68K_MOVE_ABS_REG_INV_0_MASK_0) == M68K_MOVE_ABS_REG_INV_0_0))
+          && (!(((Opcode [0] & M68K_MOVE_ABS_REG_INV_1_MASK_0) == M68K_MOVE_ABS_REG_INV_1_0) && ((Opcode [1] & M68K_MOVE_ABS_REG_INV_1_MASK_1) == M68K_MOVE_ABS_REG_INV_1_1))))
+      // Optimize MOVE.x var.L,-(reg) into
+      // MOVE.x var.W(%PC),-(reg).
+      || (((Opcode [0] & M68K_MOVE_ABS_PREDEC_MASK_0) == M68K_MOVE_ABS_PREDEC_0) && ((Opcode [1] & M68K_MOVE_ABS_PREDEC_MASK_1) == M68K_MOVE_ABS_PREDEC_1)
+          && (!((Opcode [0] & M68K_MOVE_ABS_PREDEC_INV_0_MASK_0) == M68K_MOVE_ABS_PREDEC_INV_0_0))))
+    {
+      OptimizeInfo->OptimizeMovesResult++;
+      if (OptimizeInfo->OptimizeMoves)
+        {
+          // Turn the opcode into an abs16 one.
+          M68K_MAKE_ABS16_OPCODE_1 (Opcode [1]);
+          // Change the reloc to 2-byte absolute.
+          Reloc->Size = 2;
+          // Cut or fill the gained space.
+          M68kCutOrFillRange (Section, OpcodeLocation + 4, OpcodeLocation + 6, OptimizeInfo);
+        }
+      return;
+    }
+
+  // *** Test Optimization ***
+  // Optimize CMP.x var.L,reg into CMP.x var.W(%PC),reg.
+  if ((((Opcode [0] & M68K_CMP_ABS_REG_MASK_0) == M68K_CMP_ABS_REG_0) && ((Opcode [1] & M68K_CMP_ABS_REG_MASK_1) == M68K_CMP_ABS_REG_1)
+       && (!((Opcode [1] & M68K_CMP_ABS_REG_INV_0_MASK_1) == M68K_CMP_ABS_REG_INV_0_1)))
+      // Optimize BTST reg,var.L into BTST reg,var.W(%PC).
+      || (((Opcode [0] & M68K_BTST_REG_ABS_MASK_0) == M68K_BTST_REG_ABS_0) && ((Opcode [1] & M68K_BTST_REG_ABS_MASK_1) == M68K_BTST_REG_ABS_1)))
+    {
+      OptimizeInfo->OptimizeTestsResult++;
+      if (OptimizeInfo->OptimizeTests)
+        {
+          // Turn the opcode into a abs16 one.
+          M68K_MAKE_ABS16_OPCODE_1 (Opcode [1]);
+          // Change the reloc to 2-byte absolute.
+          Reloc->Size = 2;
+          // Cut or fill the gained space.
+          M68kCutOrFillRange (Section, OpcodeLocation + 4, OpcodeLocation + 6, OptimizeInfo);
+        }
+      return;
+    }
+
+  // *** Calculation Optimization ***
+  // Optimize ADD/SUB.x var.L,reg into
+  // ADD/SUB.x var.W(%PC),reg.
+  if ((((Opcode [0] & M68K_ADDSUB_ABS_REG_0_MASK_0) == M68K_ADDSUB_ABS_REG_0_0) && ((Opcode [1] & M68K_ADDSUB_ABS_REG_0_MASK_1) == M68K_ADDSUB_ABS_REG_0_1))
+      || (((Opcode [0] & M68K_ADDSUB_ABS_REG_1_MASK_0) == M68K_ADDSUB_ABS_REG_1_0) && ((Opcode [1] & M68K_ADDSUB_ABS_REG_1_MASK_1) == M68K_ADDSUB_ABS_REG_1_1))
+      // Optimize MUL/DIV.x var.L,reg into
+      // MUL/DIV.x var.W(%PC),reg.
+      || (((Opcode [0] & M68K_MULDIV_ABS_REG_MASK_0) == M68K_MULDIV_ABS_REG_0) && ((Opcode [1] & M68K_MULDIV_ABS_REG_MASK_1) == M68K_MULDIV_ABS_REG_1))
+      // Optimize AND/OR.x var.L,reg into
+      // AND/OR.x var.W(%PC),reg.
+      || (((Opcode [0] & M68K_ANDOR_ABS_REG_MASK_0) == M68K_ANDOR_ABS_REG_0) && ((Opcode [1] & M68K_ANDOR_ABS_REG_MASK_1) == M68K_ANDOR_ABS_REG_1)))
+    {
+      OptimizeInfo->OptimizeCalcsResult++;
+      if (OptimizeInfo->OptimizeCalcs)
+        {
+          // Turn the opcode into a abs16 one.
+          M68K_MAKE_ABS16_OPCODE_1 (Opcode [1]);
+          // Change the reloc to 2-byte .
+          Reloc->Size = 2;
+          // Cut or fill the gained space.
+          M68kCutOrFillRange (Section, OpcodeLocation + 4, OpcodeLocation + 6, OptimizeInfo);
+        }
+      return;
+    }
+
+  // Check opcodes of 8 bytes without prefix
+  if (!IsBinaryDataRange (Section, OpcodeLocation, OpcodeLocation + 8, Reloc))
+    return;
+
+  // Optimize MOVE.x var.L,ofs(reg) into
+  // MOVE.x var.W,ofs(reg)
+  // We cannot handle this above because of the
+  // offset, which comes after the reloc.
+  if (((Opcode [0] & M68K_MOVE_ABS_OFSREG_MASK_0) == M68K_MOVE_ABS_OFSREG_0) && ((Opcode [1] & M68K_MOVE_ABS_OFSREG_MASK_1) == M68K_MOVE_ABS_OFSREG_1)
+      && (!((Opcode [0] & M68K_MOVE_ABS_OFSREG_INV_0_MASK_0) == M68K_MOVE_ABS_OFSREG_INV_0_0)))
+    {
+      OptimizeInfo->OptimizeMovesResult++;
+      if (OptimizeInfo->OptimizeMoves)
+        {
+          // Turn the opcode into a abs16 one.
+          M68K_MAKE_ABS16_OPCODE_1 (Opcode [1]);
+          // Move the offset to the correct place.
+          Opcode [4] = Opcode [6];
+          Opcode [5] = Opcode [7];
+          // Change the reloc to 2-byte abs16.
+          Reloc->Size = 2;
+          // Cut or fill the gained space.
+          M68kCutOrFillRange (Section, OpcodeLocation + 6, OpcodeLocation + 8, OptimizeInfo);
+        }
+      return;
+    }
+
+  // Now Opcode are bigger (8 bytes)
+  OpcodeLocation = RelocLocation - 4;
+  Opcode = Data + OpcodeLocation;
+
+  if (!IsBinaryDataRange (Section, OpcodeLocation, OpcodeLocation + 8, Reloc))
+    return;
+
+  // Optimize MOVEM.x var.L,regs into
+  // MOVEM var.W,regs.
+  if (((Opcode [0] & M68K_MOVEM_ABS_REGS_MASK_0) == M68K_MOVEM_ABS_REGS_0) && ((Opcode [1] & M68K_MOVEM_ABS_REGS_MASK_1) == M68K_MOVEM_ABS_REGS_1))
+    {
+      OptimizeInfo->OptimizeMovesResult++;
+      if (OptimizeInfo->OptimizeMoves)
+        {
+          // Turn the opcode into a abs16 one.
+          M68K_MAKE_ABS16_OPCODE_1 (Opcode [1]);
+          // Change the reloc to 2-byte relative.
+          Reloc->Size = 2;
+          // Cut or fill the gained space.
+          M68kCutOrFillRange (Section, OpcodeLocation + 6, OpcodeLocation + 8, OptimizeInfo);
+        }
+    }
+
+  // Optimize BTST #num,var.L into
+  // BTST #num,var.W
+  if ((Opcode [0] == M68K_BTST_IMM_ABS_0) && (Opcode [1] == M68K_BTST_IMM_ABS_1) && (Opcode [2] == M68K_BTST_IMM_ABS_2))
+    {
+      OptimizeInfo->OptimizeTestsResult++;
+      if (OptimizeInfo->OptimizeTests)
+        {
+          // Turn the opcode into a abs16 one.
+          M68K_MAKE_ABS16_OPCODE_1 (Opcode [1]);
+          // Change the reloc to 2-byte absolute.
+          Reloc->Size = 2;
+          // Cut or fill the gained space.
+          M68kCutOrFillRange (Section, OpcodeLocation + 6, OpcodeLocation + 8, OptimizeInfo);
+        }
+    }
+
+  // Nothing can be done
+  return;
+}
+#endif
 
 // Checks if a specific reloc might be optimizable. This is currently
 // limited to 4-bytes absolute relocs because that is the only case

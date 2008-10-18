@@ -52,6 +52,8 @@ typedef struct ATTRIBUTE_PACKED {
 		CutRanges,          // Cut unneeded section ranges when optimizing.
 		ReorderSections,    // Reorder sections to shorten references.
 		MergeConstants;     // Merge constants and strings to avoid duplication.
+        B4
+                FlashOSBSSStart;    // Flash OS Start of BSS Section
 	SI4
 		ProgramSize,            // Size of the on-calc program variable.
 		DataSize,               // Size of the data variable.

@@ -37,6 +37,10 @@
 // Make a relative opcode out of an absolute one.
 #define M68K_MAKE_REL_OPCODE_1(Opcode_1) ((Opcode_1)++)
 
+// Make an absolute 16 bits opcode out of an absolute 32 bits address
+#define M68K_MAKE_ABS16_OPCODE_1(Opcode_1) ((Opcode_1)--)
+#define M68K_MAKE_ABS16_OPCODE_0(Opcode_0) ((Opcode_0)-=2)
+
 // *** General Branches ***
 
 // Opcode of the unconditional absolute JMP instruction.

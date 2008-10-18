@@ -67,6 +67,7 @@
 					        "     --native             Link in TIGCC native mode\n"
 #ifdef FLASH_OS_SUPPORT
 					        "     --flash-os           Create (unsigned) Flash OS\n"
+						"     --flash-os-bss-start=<start> Start of the BSS Section in RAM (For Flash OS)\n"
 #endif /* FLASH_OS_SUPPORT */
 #ifdef FARGO_SUPPORT
 					        "     --fargo              Create Fargo II program\n"
@@ -135,6 +136,15 @@
 				{
 					Program.Type = PT_FLASH_OS;
 					Warning (NULL, "Flash OS support in TIGCC is experimental.");
+				}
+				else
+				if (!(strncmp (Arg, "flash-os-bss-start=", sizeof ("flash-os-bss-start=") - 1)))
+				{
+					char *End;
+					Arg += sizeof ("flash-os-bss-start=") - 1;
+					OptInfo->FlashOSBSSStart = strtoul (Arg, &End, 0);
+					if (End == Arg)
+					   Error (NULL, "Invalid number for flash-os-bss-start");
 				}
 				else
 #endif /* FLASH_OS_SUPPORT */

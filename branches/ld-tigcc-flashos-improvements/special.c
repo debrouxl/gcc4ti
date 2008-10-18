@@ -333,8 +333,11 @@ BOOLEAN CreateSpecialGlobalImports (PROGRAM *Program)
 		Result = Result && AddGlobalImport (Program, "__handle_constructors");
 	if (Program->Destructors.Start)
 		Result = Result && AddGlobalImport (Program, "__handle_destructors");
-	if (Program->BSSSection && Program->BSSSection->Initialized)
-		Result = Result && AddGlobalImport (Program, "__initialize_bss");
+	if (Program->BSSSection && Program->BSSSection->Initialized
+#ifdef FLASH_OS_SUPPORT
+            && Program->Type != PT_FLASH_OS
+#endif /* FLASH_OS_SUPPORT */
+          )	Result = Result && AddGlobalImport (Program, "__initialize_bss");
 	
 	// Handle BSS section if any.
 	if (Program->BSSSection && (!(Program->BSSSection->Handled)))
@@ -739,6 +742,16 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else
 					return TRUE;
 			}
+			else if (SymNameMatches ("bss_even_end"))
+			{
+				if (Program->BSSSection)
+				{
+					NewSymbol = Program->BSSSection->SectionSymbol;
+					NewTargetOffset = (OFFSET) ((unsigned long) (Program->BSSSection->Size + 1) & ~1UL);
+				}
+				else
+					return TRUE;
+			}
 			else if (SymNameMatches ("bss_size"))
 			{
 				if (Program->BSSSection)
@@ -822,6 +835,18 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else
 					return TRUE;
 			}
+#ifdef FLASH_OS_SUPPORT
+                        else if (SymNameMatches ("archive_start"))
+                          {
+				if (Program->ResolveAllBuiltins && Program->MainSection)
+                                  {
+                                    SetToEntryPoint = TRUE;
+                                    NewValue = (OFFSET) ((unsigned long) (Program->MainSection->Size + 65535) & ~65535UL) - 0x02000;
+                                  }
+				else
+                                  return TRUE;
+                          }
+#endif
 			else if (SymNameMatches ("kernel_export_table"))
 			{
 				BOOLEAN HasExports = FALSE;

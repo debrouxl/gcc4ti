@@ -111,33 +111,43 @@ BOOLEAN ExportFlashOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize
 		{
 			// Get the current file name for error messages.
 			const char *CurFileName = GetFileName (MainSection, Reloc->Location);
+                        OFFSET TargetLocation = 0;
 			
 			// If this can be resolved to a calculator-dependent value, write the
 			// value into the section data.
 			if (EmitCalcBuiltinValue (Reloc, DestCalc, File, FileSize, DataStart))
 				continue;
 			
-			// We can only emit relocs with a target symbol in the same section.
 			if (!(Reloc->Target.Symbol))
 				FailWithError (CurFileName, "Unresolved reference to `%s'.", Reloc->Target.SymbolName);
-			if (Reloc->Target.Symbol->Parent != MainSection)
-				FailWithError (CurFileName, "Cannot emit reloc to `%s' in different section.", Reloc->Target.SymbolName);
-			
+
 			// We can only emit 4-byte absolute relocs.
-			if (Reloc->Relative || (Reloc->Size != 4))
+                        // Or 2-byte absolute relocs to the BSS Section.
+			if (Reloc->Relative || (Reloc->Size != 4 && (Reloc->Size != 2 || Reloc->Target.Symbol->Parent != Program->BSSSection)))
 				FailWithError (CurFileName, "Cannot emit %ld byte %s reloc to `%s'.", (long) Reloc->Size, Reloc->Relative ? "relative" : "absolute", Reloc->Target.SymbolName);
-			
-			{
-				OFFSET TargetLocation = GetLocationOffset (MainSection, &(Reloc->Target)) + Reloc->FixedOffset;
+
+                        // Check for BSS Section
+                        if (Program->OptimizeInfo->FlashOSBSSStart > 0
+                            && Reloc->Target.Symbol->Parent == Program->BSSSection) {
+                          TargetLocation = GetLocationOffset (Program->BSSSection, &(Reloc->Target)) + Reloc->FixedOffset;
+                          TargetLocation += (OFFSET) (Program->OptimizeInfo->FlashOSBSSStart);
+                          ExportSeek (File, DataStart + Reloc->Location);
+                          ExportWriteTI (File, TargetLocation, Reloc->Size, TRUE, TRUE);
+                          continue;
+                        }
+			// We can only emit relocs with a target symbol in the same section.
+			else if (Reloc->Target.Symbol->Parent != MainSection)
+				FailWithError (CurFileName, "Cannot emit reloc to `%s' in different section.", Reloc->Target.SymbolName);
+
+			TargetLocation = GetLocationOffset (MainSection, &(Reloc->Target)) + Reloc->FixedOffset;
 				
-				TargetLocation += (OFFSET) (ROMBase + 0x12000);
-				ExportSeek (File, DataStart + Reloc->Location);
-				ExportWriteTI (File, TargetLocation, Reloc->Size, TRUE, TRUE);
+                        TargetLocation += (OFFSET) (ROMBase + 0x12000);
+                        ExportSeek (File, DataStart + Reloc->Location);
+                        ExportWriteTI (File, TargetLocation, Reloc->Size, TRUE, TRUE);
 				
-				// Do not increase the statistics, since that would give a false
-				// impression that the relocation entries actually take up some
-				// space in the OS.
-			}
+                        // Do not increase the statistics, since that would give a false
+                        // impression that the relocation entries actually take up some
+                        // space in the OS.
 		}
 		ExportSeek (File, DataEnd);
 	}

@@ -473,6 +473,8 @@ int main (int ArgCount, const char **Args)
 #ifdef FLASH_OS_SUPPORT
 				if (Program.Type == PT_FLASH_OS)
 				{
+                                        if (OptInfo->FlashOSBSSStart > 0 && Program.BSSSection)
+                                          Program.BSSSection->Handled = TRUE;
 					// Flash OS export: merge startup and normal sections separately.
 					// The resulting two parts are merged later, padding the first
 					// part to the full 24 KB of the OS startup area (base 1)
