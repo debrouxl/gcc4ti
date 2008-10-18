@@ -1,0 +1,31 @@
+[Main]
+Title=__ld_insert_mlink_rom_calls
+See Also=insert_kernel_rom_calls: __ld_insert_kernel_rom_calls
+
+[Top]
+__ld_insert_mlink_rom_calls can be used to handle
+<A HREF="$$LINK(symbols_rom_call)">ROM calls</A>. It inserts references to
+ROM calls in a compressed format known from mlink but specifically altered for
+TIGCC:
+<UL>
+<LI>If the program uses at least one ROM call...
+    <UL>
+    <LI>For each ROM call...
+        <UL>
+        <LI>Mlink-type <I>index</I> of the ROM call. The index is encoded as
+            in <A HREF="$$LINK(insert_mlink_relocs)">__ld_insert_mlink_relocs</A>,
+            with <I>offset</I> being the index of the ROM call for the first
+            entry, and the difference of the index of this ROM call and the
+            index of the previous one for the following ones.</LI>
+        <LI>An mlink-type relocation table for this ROM call. See
+            <A HREF="$$LINK(insert_mlink_relocs)">__ld_insert_mlink_relocs</A>
+            for the format used.
+            The reference symbol used if there is no previous reloc (i.e. for
+            the first reloc) is <CODE>__ld_mlink_rom_calls_ref</CODE>.
+            </LI>
+        </UL></LI>
+    <LI><B>1 byte:</B> 0</LI>
+    </UL></LI>
+</UL>
+For more information on processing ROM call relocation, see
+<A HREF="$$LINK(insert_kernel_rom_calls)">__ld_insert_kernel_rom_calls</A>.

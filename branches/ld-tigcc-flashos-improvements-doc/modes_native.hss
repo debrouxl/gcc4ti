@@ -1,0 +1,27 @@
+[Main]
+Title=TIGCC-Native Linking Mode
+
+[Top]
+This mode (which can be enabled using the <B>'--native'</B>
+<A HREF="$$LINK(invocation_ld)">command-line option</A> or the control symbol
+<A HREF="$$LINK(control_tigcc_native)">_tigcc_native</A>) is the
+recommended mode for all new programs. When operating in this mode, the TIGCC
+linker does not process the program in any special way, except that it
+requires the definition of at least one startup section. The idea is that
+stub code should not be handled by the linker itself but rather included
+manually by the program as needed. However, every program (regardless of the
+architecture and operating system) needs to have a prolog that either
+contains the location of the main entry point or is itself the startup code
+of the program. On the TI platforms with official assembly program support,
+execution always starts at the beginning of the program, so the prolog is
+actually the startup code.
+<BR><BR>
+Ideally, every program should be able to use this mode. However, at the
+moment, the output file format cannot be specified other than by switching to
+the appropriate mode. If you want to use a different output file format than
+the default TIOS format (i.e. Nostub DLL or Fargo II), you cannot use
+TIGCC-native mode. At the moment, adding support for explicit selection of
+the output file format does not have any particular benefit, since it does
+not permit the removal of any of the other modes. However, as soon as the
+need for another output format (e.g. raw) arises, there should be a
+command-line option to select the format.

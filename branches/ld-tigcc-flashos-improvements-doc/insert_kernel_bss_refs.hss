@@ -1,0 +1,19 @@
+[Main]
+Title=__ld_insert_kernel_bss_refs
+See Also=insert_kernel_data_refs: __ld_insert_kernel_data_refs, insert_kernel_relocs: __ld_insert_kernel_relocs, insert_mlink_bss_refs: __ld_insert_mlink_bss_refs, insert_compressed_bss_refs: __ld_insert_compressed_bss_refs
+
+[Top]
+__ld_insert_kernel_bss_refs outputs references to the BSS section in the
+format defined in
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A>. The
+only difference is that the <I>relocation address</I> is not the entry point
+of the program but the beginning of the BSS section.
+<BR><BR>
+If you insert these references, the linker assumes that the BSS section is
+handled by you; that is, you have to allocate it dynamically using
+<A HREF="$$LINK(symbols_ld_bss_size)">__ld_bss_size</A> and use a pointer to
+it as the <I>relocation address</I>.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A> also
+apply to this insertion.

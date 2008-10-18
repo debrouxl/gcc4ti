@@ -1,0 +1,55 @@
+[Main]
+Title=Startup Sections
+Index=_st..., _stl...
+
+[Top]
+The concept of <U>startup sections</U> is unique to the TIGCC linker. It only
+makes sense in low-resource environments like calculators. The idea is that a
+file that is imported should be able to specify that it needs certain code to
+be executed at the beginning of the program. Usually, there are two
+approaches to address this situation: constructors and main function
+wrappers.
+<BR><BR>
+If constructors are used to handle this, a lot of memory is wasted: A
+constructor table needs to be created with appropriate code to handle its
+contents; every item needs to save all registers except a few, and sharing
+data between two constructors requires global variables. Moreover, using
+constructors, it is not possible to specify the order in which startup code
+is to be called; however, parts of the startup code often need to rely on
+other parts to be executed first.
+<BR><BR>
+Main function wrappers appear in almost every environment. But since these
+wrappers are fixed, they need to handle all startup code that might possibly
+be needed, instead of letting each file choose its own startup code. For
+example, such fixed startup code would need to handle exceptions even if the
+program never generates them, or fill certain global variables that are never
+read.
+<BR><BR>
+Startup sections are actually a wrapper around the main function, but they
+can achieve even more flexibility than constructors: They are numbered and
+executed in the exact order specified by the numbers, and no extra code is
+executed between two consecutive startup sections, so registers can be used
+to pass data between two sections.
+<BR><BR>
+Startup sections can be used not only to insert code at the beginning of the
+program, but also to generate the required headers for certain file formats.
+Sometimes this is easier than writing the linker code to insert the required
+headers (see <A HREF="$$LINK(formats)">TIGCC Linker File Formats</A>).
+<BR><BR>
+Since libraries may need to contain a header, some stub code that is called
+when the user tries to execute the library, and possibly some startup code,
+they may also have startup sections. However, it does not really make sense
+to include a startup section designed for a program in a library. Therefore,
+there are library startup sections, which may appear in both libraries and
+programs, and program startup sections, which may appear only in programs.
+Library startup sections are always included <I>before</I> program startup
+sections.
+<BR><BR>
+Startup sections are detected based on their name. To declare a program
+startup section, name the section <CODE>_st<I>n</I></CODE>, where <I>n</I> is
+a value from 1 to 99999 (higher values for <I>n</I> may be accepted if the
+object file format supports section names longer than 8 characters, but it is
+not recommended to use them). To declare a library startup section, name it
+<CODE>_stl<I>n</I></CODE>, where <I>n</I> is a value from 1 to 9999 (higher
+values are not permitted). Startup sections are included in ascending order;
+if two startup sections use the same index, their order is undefined.

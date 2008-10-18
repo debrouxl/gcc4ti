@@ -1,0 +1,24 @@
+[Main]
+Title=__ld_omit_bss_init
+
+[Top]
+Defining this symbol in a source file tells the linker that this file does
+not depend on the initialization of the BSS section to zero. The result is
+that all uninitialized global variables defined in that file may contain
+garbage at the beginning of the program. This does not guarantee that the
+initialization is skipped; in fact, if at least one file needs the
+initialization, it is easier to initialize even the variables that were
+declared to not need it.
+<BR><BR>
+For pointer-based object file formats (such as COFF, the format used by the
+<A HREF="http://www.gnu.org/">GNU</A> tools included in TIGCC), this symbol
+really affects all variables in the file it is defined in. For sequential
+formats (such as the AmigaOS format used by the
+<A HREF="$$INFOLINK(a68k)">A68k assembler</A>), it affects only the parts
+that follow the symbol. Since BSS data usually appears at the end of the
+object file, this restriction should not have any effect.
+<BR><BR>
+<B>Note:</B> If you define this symbol, you should use the
+<A HREF="$$INFOLINK(comopts)">compiler option</A>
+<B>'-fno-zero-initialized-in-bss'</B>; otherwise even variables explicitly
+initialized to zero will contain garbage.

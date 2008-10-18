@@ -1,0 +1,19 @@
+[Main]
+Title=Nostub Linking Mode
+
+[Top]
+If this mode is activated using the
+<A HREF="$$LINK(control_nostub)">_nostub</A> control symbol, execution will
+start at the very beginning of the program. The exact entry point depends on
+the order of the object files as passed to the linker as well as the order of
+the sections inside an object file. Because of this insecurity, this mode
+should never be used in new programs. Programs written in assembly should
+define a small <A HREF="$$LINK(startup)">startup section</A> including a jump
+to the actual main function and use
+<A HREF="$$LINK(modes_native)">TIGCC-native mode</A> instead. If the main
+function follows immediately, the jump can even be optimized away by the
+linker.
+<BR><BR>
+If a startup section is defined in nostub mode, the linker emits a warning
+and switches to <A HREF="$$LINK(modes_native)">TIGCC-native mode</A>. This
+ensures that nostub mode really means that no stub is added to the program.

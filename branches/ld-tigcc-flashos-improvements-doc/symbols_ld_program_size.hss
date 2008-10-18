@@ -1,0 +1,18 @@
+[Main]
+Title=__ld_program_size
+
+[Top]
+This built-in symbol represents the size of the main section after all sections
+are merged into one. If all sections are merged into a single section, this is
+the size of the final linked program (<I>without</I> any headers or footers
+required by the output format). If an external data variable is used, this
+would be the size of the main executable only (but see the note about automatic
+insertion below).<BR><BR>
+Resolving of this symbol is delayed until the last pass of the linker in order
+to ensure the size isn't changed by later range-cutting. Currently, this is the
+same pass which also does <A HREF="$$LINK(insert)">automatic insertions</A>, so
+insertions may or may not be counted.<BR><BR>
+This symbol is currently used by the Flash OS support to write the OS size into
+the header which is sent to the calculator. Flash operating systems do not use
+relocation, so the lack of support for automatic insertions is not a problem in
+this context.

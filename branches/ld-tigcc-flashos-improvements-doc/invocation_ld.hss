@@ -1,0 +1,209 @@
+[Main]
+Title=ld-tigcc Command-Line Options
+
+[Top]
+In <CODE>ld-tigcc</CODE>, options and input files may appear in any order in
+the command line. Input files may be either object or archive (static
+library) files. They are handled differently depending on the type of the
+file: Object files are read completely in the order they are supplied;
+archive file members are read only if the program references a symbol they
+export. If multiple archive files export the same symbol,
+<CODE>ld-tigcc</CODE> uses the archive that is supplied first.
+<BR><BR>
+Output file names and variable names are usually set according to the name of
+the first object file in the command line, but they may be changed using the
+<B>'--output'</B> and <B>'--varname'</B> options described below. The file
+extensions depend on the exact output format used; they are usually what the
+transferring software expects them to be.
+<BR><BR>
+<CODE>ld-tigcc</CODE> recognizes the following options:
+<DL>
+<DT><B>-h</B>
+<BR><B>--help</B>
+<DD>Print a short description of all available options.
+<BR><BR>
+<DT><B>--version</B>
+<DD>Print the version number of the tool and a short copyright notice.
+<BR><BR>
+<DT><B>-v</B>
+<BR><B>--verbose</B>
+<DD>Print statistics about the linked program before terminating. These
+include the target calculators, program variable name and size, data variable
+size, BSS size (size of all uninitialized global variables), the total number
+of absolute relocs, the number of relocs which appear in the native format of
+the target OS, and optimization possibilities or results. In the IDE, these
+statistics are displayed automatically, unless this is turned off in the
+preferences or the program is run automatically after successful linking. If
+the linking process fails, no statistics are shown.
+<BR><BR>
+<DT><B>--dump</B>
+<DD>Display all dumps of the program contents during the entire linking
+process. For details about dumps, see <A HREF="$$LINK(dump)">ld-tigcc
+Program Dumps</A>.
+<BR><BR>
+<DT><B>--dump<I>n</I></B>
+<DD>Display the <I>n</I>-th dump of the program contents. For details on the
+different linking stages and the associated dump numbers, see
+<A HREF="$$LINK(dump)">ld-tigcc Program Dumps</A>.
+<BR><BR>
+<DT><B>--native</B>
+<DD>Use TIGCC native mode by default. Without this option, the linker starts
+in kernel mode (for compatibility with existing programs), but this may be
+changed using special symbols (see <A HREF="$$LINK(control)">Symbols to
+Control the Linker</A>). For more information about modes, see
+<A HREF="$$LINK(modes)">TIGCC Linker Modes</A>.
+<BR><BR>
+<DT><B>--fargo</B>
+<DD>Use Fargo II mode and compile for the TI-92. This option is only
+available if Fargo support is compiled in. It exists for compatibility with
+existing Fargo II programs, which do not explicitly specify a mode and a
+target calculator.
+<BR><BR>
+<DT><B>--flash-os</B>
+<DD>Use Flash OS mode. This mode creates an unsigned Flash operating system
+upgrade for the TI-89, TI-89 Titanium, TI-92+ and Voyage 200 calculators.
+This option is only available if Flash OS support is compiled in.
+<BR><BR>
+<DT><B>--remove-unused</B>
+<DD>Remove unused sections. If a section is not referenced by another
+section, this option causes it to be removed. Startup sections are never
+removed; neither is the first section in Nostub mode. Note that in some
+cases, the linker cannot determine whether a section can be removed before
+merging it with another section; in this case, it is not removed even though
+it may not be referenced at all.
+<BR><BR>
+<DT><B>--optimize-relocs</B>
+<DD>Update the destination symbol of relocation entries to the nearest
+available symbol, thereby making the offset as small as possible. This
+improves the readability of dumps and some diagnostic messages, but should
+not have any other effect than this.
+<BR><BR>
+<DT><B>--optimize-code</B>
+<DD>Perform all code optimizations, including NOP, return, branch, move,
+test, and calculation optimization. Note that it is possible for code
+optimization to create invalid code or accidentally change data instead of
+code. The probability is not very high, so you should really enable code
+optimization at least partially, but if your program crashes for no apparent
+reason, try turning off code optimization. For more information about
+optimization, see <A HREF="$$LINK(bincode)">TIGCC Linker Binary Code
+Fixup</A>.
+<DL>
+<DT><B>--optimize-nops</B>
+<DD>Perform <A HREF="$$LINK(bincode_nop)">NOP instruction removal</A>.
+<BR><BR>
+<DT><B>--optimize-returns</B>
+<DD>Perform <A HREF="$$LINK(bincode_return)">return sequence
+optimization</A>.
+<BR><BR>
+<DT><B>--optimize-branches</B>
+<DD>Perform <A HREF="$$LINK(bincode_branch)">branch optimization</A>.
+<BR><BR>
+<DT><B>--optimize-moves</B>
+<DD>Perform <A HREF="$$LINK(bincode_move)">move/load/push optimization</A>.
+<BR><BR>
+<DT><B>--optimize-tests</B>
+<DD>Perform <A HREF="$$LINK(bincode_test)">compare/test optimization</A>.
+<BR><BR>
+<DT><B>--optimize-calcs</B>
+<DD>Perform <A HREF="$$LINK(bincode_calculation)">calculation
+optimization</A>.
+</DL>
+<DT><B>--cut-ranges</B>
+<DD>Optimization has two effects: It can reduce the number of relocation
+entries, and it can make instructions smaller. Usually, the space gained from
+making the instructions smaller is filled with NOPs. If this option is used,
+the linker will attempt to cut out these ranges of code instead, making the
+size of the executable even smaller. This only works for input files that
+were assembled in all-relocs mode, but this is handled automatically if this
+option is used via the <CODE>tigcc</CODE> front-end or the TIGCC IDE.
+<BR><BR>
+<DT><B>--reorder-sections</B>
+<DD>Reorder sections to make references shorter. The fixups (see above) can
+then fit those shorter references into smaller and faster addressing modes,
+so using this option can improve both size and speed. It can also allow the
+fixups to remove relocations or to turn F-Line jumps into faster branches.
+Since computing the optimal reordering is NP complete and <I>very</I>
+expensive in practical terms (the factorial of the number of sections is a
+<I>huge</I> factor), section reordering is implemented through heuristics.
+Therefore, the result is not guaranteed to be optimal. There are rare cases
+where section reordering can still take exponential time, these are due to
+hardcoded short references between sections rendering some reorderings
+impossible. In this case, the linker will emit warnings as impossible
+reorderings are encountered so you can follow the process, or stop it (and
+go fix your program, hardcoded short references between sections are not a
+good idea, that's what linker optimization is for!) if it takes too long.
+Startup sections can be reordered only with other startup sections with the
+<I>same</I> startup number. Non-startup sections can be reordered only with
+other non-startup sections. Sections which are emitted separately (e.g. a
+dynamically allocated BSS section or a data section in an external file)
+cannot be reordered at all.
+<DT><B>--merge-constants</B>
+<DD>Merge identical constants (including strings) to avoid duplication.
+Constant merging works on all symbols (actually, the ranges included within
+2 symbols, where symbols at the same position are considered the same
+symbol) in sections marked mergeable. Constants can be merged if they are
+identical or if one of them is a prefix of the other. This can be used by
+the compiler to avoid duplicating string literals (and, if desired by the
+user, other constants) in multiple object files. Unaligned and aligned
+sections are distinguished to keep the linker from accidentally breaking
+the alignment while merging aligned constants with unaligned ones which
+happen to contain them as a prefix.
+<DT><B>--omit-bss-init</B>
+<DD>Skip the initialization of the BSS section, which holds uninitialized
+global variables. Older versions of TIGCC never initialized the BSS section,
+so many older programs do not rely on the initialization. If you use this
+option, you must be sure that there is really no code that relies on the
+initialization of global variables to zero (which means, among other things,
+that you have to use the <A HREF="$$INFOLINK(comopts)">compiler option</A>
+<B>'-fno-zero-initialized-in-bss'</B>). For a safer alternative, try the
+<A HREF="$$LINK(control_ld_omit_bss_init)">__ld_omit_bss_init</A> control
+symbol.
+<BR><BR>
+<DT><B>--outputbin</B>
+<DD>Instead of creating a wrapped calculator variable that includes a folder
+and variable name, a checksum, and some extra information, write only the raw
+contents of the variable to the file. The file extension is changed in a way
+that allows different files to be generated for each target calculator but
+prevents confusion between raw and wrapped data.
+<BR><BR>
+<DT><B>-o <I>file</I></B>
+<BR><B>--output <I>file</I></B>
+<DD>Write the output to the file named <I>file</I>.<I>ext</I>, where
+<I>ext</I> is the extension that fits the file type. <I>file</I> may include
+a path, but if it includes its own extension, <I>ext</I> will be appended
+anyway. This also sets the variable name to something that resembles
+<I>file</I> as closely as possible. Note that it does not do any error
+checking on the characters of the <I>file</I> parameter.
+<BR><BR>
+<DT><B>-n [<I>folder</I>\]<I>name</I></B>
+<BR><B>--varname [<I>folder</I>\]<I>name</I></B>
+<DD>Include the folder name <I>folder</I> (<CODE>main</CODE> if unspecified)
+and variable name <I>name</I> in the wrapper file. If the file is not wrapped
+(i.e. if <B>'--outputbin'</B> has been specified), this option has no effect.
+<BR><BR>
+<DT><B>-d [<I>folder</I>\]<I>name</I></B>
+<BR><B>--data-var [<I>folder</I>\]<I>name</I></B>
+<DD>Exclude all non-executable data (global variables) from the program and
+create an external variable for it. Note that you are absolutely required to
+make sure that no code is executed from the data section; otherwise it will
+crash depending on the calculator model: Newer calculators have a protection
+device that lets the operating system restrict the areas code can be executed
+from. <I>name</I> is the variable name to be assigned to the data variable.
+<I>folder</I> defines the folder of the variable; if it is not specified, the
+folder from the <B>'--varname'</B> option is used.
+<BR><BR>
+<DT><B>--data-var-copy=<I>condition</I></B>
+<DD>Defines when to create a copy of the data variable in RAM. If
+<I>condition</I> is <CODE>always</CODE>, the program will always work on a
+copy in RAM, which means that you may rely on the data being the same on
+every start of the program. However, if the data variable is not archived,
+you may easily run out of available memory. <CODE>archived</CODE> causes a
+copy to be created only if the data variable is archived; this is the
+default. If the variable is not archived, the program will work on the actual
+contents of the variable, so the values of all global variables will be kept
+even after the program finishes. <CODE>never</CODE> tells the linker to work
+on the original variable unconditionally, but since you may not write to the
+archive memory, you have to make sure that you never modify the value of a
+global variable. If the <B>'--data-var'</B> option is not specified as well,
+this option has no effect.
+</DL>

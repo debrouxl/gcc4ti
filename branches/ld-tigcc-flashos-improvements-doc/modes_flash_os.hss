@@ -1,0 +1,23 @@
+[Main]
+Title=Flash OS Linking Mode
+
+[Top]
+This mode creates an unsigned Flash operating system upgrade for the TI-89,
+TI-89 Titanium, TI-92+ and Voyage 200 calculators. It can be turned on using
+the <B>'--flash-os'</B> <A HREF="$$LINK(invocation_ld)">command-line
+option</A> or the <A HREF="$$LINK(control_flash_os)">_flash_os</A> control
+symbol. It currently supports only the raw TIB output format, which is enabled
+by the <B>'--outputbin'</B> <A HREF="$$LINK(invocation_ld)">option</A>. Support
+for the current 89u/9xu/v2u format is planned and will be the default. It
+creates a <A HREF="$$LINK(global_imports)">global import</A> asking for the
+appropriate Flash OS header (see
+<A HREF="$$LINK(global_imports_auto)">Automatically Created Global Imports</A>
+for more information). Since Flash operating systems are composed of 2
+discontiguous parts, a small (24 KB) startup segment and a large (1944 KB for
+2 MB FlashROMs, 3992 KB for 4 MB FlashROMs) main segment,
+<A HREF="$$LINK(startup)">startup sections</A> are handled in a special way
+in this mode: Startup sections are placed into the startup segment, all other
+sections are merged into the main segment.
+<BR><BR>
+<B>Note:</B> Flash OS support must be compiled in for this mode to be
+available.

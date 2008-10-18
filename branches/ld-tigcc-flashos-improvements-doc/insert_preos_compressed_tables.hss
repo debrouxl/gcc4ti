@@ -1,0 +1,92 @@
+[Main]
+Title=__ld_insert_preos_compressed_tables
+See Also=insert_compressed_relocs: __ld_insert_compressed_relocs, insert_compressed_rom_calls: __ld_insert_compressed_rom_calls, insert_kernel_ram_calls: __ld_insert_kernel_ram_calls, insert_compressed_bss_refs: __ld_insert_compressed_bss_refs
+
+[Top]
+__ld_insert_preos_compressed_tables is the most complex of the automatic
+insertions. It inserts all relocation-related tables in the compressed format
+expected by PreOs 0.68 or higher. PreOs expects those tables to be pointed to
+by the same pointer, so they need to be inserted all at once. The reference
+address expected by PreOs is the same for all relocation tables: 36 (0x24).
+It is defined as the end address of the smallest possible header/stub
+combination. (However, the smallest possible stub is not usable in practice
+because it does not emit <I>any</I> error messages. Therefore, the address
+does not correspond to any actual address in TIGCCLIB, so it is hard-coded in
+the linker.) The tables it inserts are, in order:
+<UL>
+<LI><B>Library import table</B>:
+    <UL>
+    <LI>For each referenced library...
+        <UL>
+        <LI><B>8 bytes:</B> library variable name</LI>
+        <LI><B>1 byte:</B> 0</LI>
+        <LI><B>1 byte:</B> minimum version number (see
+            <A HREF="$$LINK(control_lib_min_version)">Minimum Library
+            Versions</A>)</LI>
+        </UL></LI>
+    <LI>For each referenced library (again)...
+        <UL>
+        <LI><B>PreOs index</B> (see below): number of imported
+            functions/variables minus 1</LI>
+        <LI>For each imported function/variable...
+            <UL>
+            <LI><B>PreOs index</B> (see below): <I>index</I> of the
+                function/variable (relative to the previous one)</LI>
+            <LI>Relocation table for this function/variable. See
+                <A HREF="$$LINK(insert_compressed_relocs)">__ld_insert_compressed_relocs</A>
+                for the format used.</LI>
+            </UL></LI>
+        </UL></LI>
+    </UL></LI>
+<LI><B>ROM call import table</B>:
+    <UL>
+    <LI><B>PreOs index</B> (see below): the number of different ROM calls
+        minus 1</LI>
+    <LI>For each ROM call...
+        <UL>
+        <LI><B>PreOs index</B> (see below): <I>index</I> of the ROM
+            call (relative to the previous one)</LI>
+        <LI>A compressed relocation table for this ROM call. See
+            <A HREF="$$LINK(insert_compressed_relocs)">__ld_insert_compressed_relocs</A>
+            for the format used.</LI>
+        </UL></LI>
+    </UL></LI>
+<LI><B>RAM call import table</B>, in the same format as the ROM call import
+    table. The indices used are the indices <I>after</I> setting the
+    <I>size</I> and <I>type</I> flags described under
+    <A HREF="$$LINK(insert_kernel_ram_calls)">__ld_insert_kernel_ram_calls</A>.</LI>
+<LI><B>Relocation table</B>: See
+    <A HREF="$$LINK(insert_compressed_relocs)">__ld_insert_compressed_relocs</A>
+    for the format used.</LI>
+<LI><B>BSS relocation table</B>:
+    <UL>
+        <LI><B>2 bytes:</B> <I>BSS size</I> / 4</LI>
+        <LI>A compressed relocation table. See
+            <A HREF="$$LINK(insert_compressed_bss_refs)">__ld_insert_compressed_bss_refs</A>
+            for the format used.</LI>
+    </UL></LI>
+</UL>
+PreOs uses a special format for the indices. It is <I>not</I> the same as for
+the relocation table. Instead, a <B>PreOs index</B> is encoded using
+<I>one</I> of the following formats:
+<UL>
+<LI><B>1 byte:</B> <I>offset</I> (must be between 0x00 and 0xFD)</LI>
+<LI><B>2 bytes:</B>
+    <UL>
+    <LI><B>1 byte:</B> 0xFE</LI>
+    <LI><B>1 byte:</B> <I>offset</I> - 0xFE</LI>
+    </UL></LI>
+<LI><B>3 bytes:</B>
+    <UL>
+    <LI><B>1 byte:</B> 0xFF</LI>
+    <LI><B>2 bytes:</B> <I>index</I> (not <I>offset</I>!)</LI>
+    </UL></LI>
+</UL>
+where <I>index</I> is the actual index, and <I>offset</I> is <I>index</I> + 1
+for the first index and the difference between <I>index</I> and the previous
+index for the following ones.
+<BR><BR>
+<B>Note:</B> Since parts of this insertion are dealing with relocs, the
+limitations of
+<A HREF="$$LINK(insert_kernel_relocs)">__ld_insert_kernel_relocs</A> also
+apply to this insertion.

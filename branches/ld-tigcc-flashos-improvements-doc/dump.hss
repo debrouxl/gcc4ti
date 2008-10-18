@@ -1,0 +1,89 @@
+[Main]
+Title=ld-tigcc Program Dumps
+
+[Top]
+If you turn on dumps in <CODE>ld-tigcc</CODE> (using the
+<B>'--dump[<I>n</I>]'</B> option), <CODE>ld-tigcc</CODE> prints the contents of
+the internal data structures to standard output between various events during
+the linking stage. These places are numbered, so that you can turn on a specific
+dump by adding an index to the option. The following table shows the current
+location of the different dumps:
+<DL>
+<DT><B>Dump 0</B>
+<DD>This dump is produced just after all object files have been imported.
+    Relocation entries that refer to different files have not been resolved yet;
+    neither have ROM/RAM/library call symbols been translated into actual
+    ROM/RAM/library calls. Archive members have only been imported if this was
+    specified by a global import.
+<BR><BR>
+<DT><B>Dump 1</B>
+<DD>Relocation entries have been resolved to the maximum extent possible. If
+    they could not be resolved to existing symbols or had been treated as
+    RAM/ROM/library calls, archive members have been imported for them.
+<BR><BR>
+<DT><B>Dump 2</B>
+<DD>All uninitialized and zero-data sections have been merged, as well as all
+    data sections if this was necessary. Automatic global imports have been
+    added.
+<BR><BR>
+<DT><B>Dump 3</B>
+<DD>All global imports have been processed; even the ones which contained
+    negations.
+<BR><BR>
+<DT><B>Dump 4</B>
+<DD>Relocation entries from the archive members which were just
+    imported by global imports have been resolved, possibly importing new
+    archive members.
+    If relocation optimization is enabled, another dump is appended with the
+    same contents after relocation optimization. If removal of unused
+    sections is enabled, a third dump is inserted after this removal.
+<BR><BR>
+<DT><B>Dump 5</B>
+<DD>All sections which are not externalized have been merged. Note that some
+    parts of the code fixup need to be done just before the sections are merged,
+    so there is also a lot of code fixup and optimization between dumps 4 and 5.
+<BR><BR>
+<DT><B>Dump 6</B>
+<DD>The remaining code fixup and optimization has been performed.
+<BR><BR>
+<DT><B>Dump 7</B>
+<DD>Certain built-in symbols whose value depends on the program contents have
+    been resolved. Insertions that were requested to be added at an arbitrary
+    place have been added to the end of the program.
+<BR><BR>
+<DT><B>Dump 8</B>
+<DD>Relative relocation entries have been replaced by the actual distances they
+    had represented.
+</DL>
+The program dumps are usually self-explaining; however, a few items require
+special attention:
+<DL>
+<DT><B>&lt;<I>n</I>B: <I>target</I> [- <I>relation</I>] [+/- offset]&gt;</B>
+<DD>Indicates a relocation entry or ROM/RAM/library call. <I>target</I> and
+    <I>relation</I> have the form <I>symbol</I>[+/-<I>offset</I>], which
+    stands for the address of <I>symbol</I>, corrected by <I>offset</I>.
+    <I>n</I> specifies the number of bytes reserved for the address/offset of
+    the target.
+<BR><BR>
+<DT><B>&lt;<I>n</I>B: ... (rel)&gt;</B>
+<DD>Indicates that the relocation entry is relative to its own address.
+<BR><BR>
+<DT><B>&lt;<I>n</I>B: <I>symbol</I> (?) ...&gt;</B>
+<DD>Indicates a relocation entry which has not been resolved yet.
+<BR><BR>
+<DT><B>&lt;<I>n</I>B: <I>symbol</I> (-&gt;) ...&gt;</B>
+<DD>Indicates a relocation entry pointing into another section.
+<BR><BR>
+<DT><B>&lt;<I>n</I>B: ...&gt; (!)</B>
+<DD>Indicates that the section data at the place of the relocation entry is
+    nonzero. This usually indicates a problem, but in rare cases, it is
+    valid. For example, if you use ROM/RAM/library calls with an offset, this
+    offset is usually emitted into the section contents, but the actual call
+    still exists.
+<BR><BR>
+<DT><B><I>address</I>: (!)</B>
+<DD>Indicates an internal inconsistency (for example an item outside of a
+    section, overlapping items, or an internal ordering error).
+</DL>
+Section offsets and data are always output in hexadecimal notation. Question
+marks indicate uninitialized data, which may have random content.
