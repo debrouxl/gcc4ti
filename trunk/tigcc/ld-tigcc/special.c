@@ -739,6 +739,16 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else
 					return TRUE;
 			}
+			else if (SymNameMatches ("bss_even_end"))
+			{
+				if (Program->BSSSection)
+				{
+					NewSymbol = Program->BSSSection->SectionSymbol;
+					NewTargetOffset = (OFFSET) ((unsigned long) (Program->BSSSection->Size + 1) & ~1UL);
+				}
+				else
+					return TRUE;
+			}
 			else if (SymNameMatches ("bss_size"))
 			{
 				if (Program->BSSSection)
