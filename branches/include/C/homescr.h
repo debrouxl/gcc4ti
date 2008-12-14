@@ -1,7 +1,9 @@
 #ifndef __HOMESCR
 #define __HOMESCR
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 typedef void(*__HS_pushEmptyFIFONode__type__)(short)__ATTR_TIOS__;
 extern __HS_pushEmptyFIFONode__type__ __get_HS_pushEmptyFIFONode(void)__ATTR_LIB_C__;

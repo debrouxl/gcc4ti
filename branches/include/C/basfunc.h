@@ -1,7 +1,9 @@
 #ifndef __BASFUNC
 #define __BASFUNC
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define NULL_INDEX ((CESI)0)

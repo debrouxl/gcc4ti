@@ -1,7 +1,9 @@
 #ifndef __STRING
 #define __STRING
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define NULL ((void*)0)

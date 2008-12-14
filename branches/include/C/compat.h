@@ -1,7 +1,9 @@
 #ifndef __COMPAT
 #define __COMPAT
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define KEY_DIAMOND (PSEUDO_CONST_KBD(16384,8192))

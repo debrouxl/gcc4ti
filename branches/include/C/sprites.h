@@ -1,7 +1,9 @@
 #ifndef __SPRITES
 #define __SPRITES
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 enum SprtModes{SPRT_XOR,SPRT_OR,SPRT_AND};

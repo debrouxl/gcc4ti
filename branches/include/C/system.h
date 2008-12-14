@@ -1,7 +1,9 @@
 #ifndef __SYSTEM
 #define __SYSTEM
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define KB_AUTOREPEAT (1<<11)

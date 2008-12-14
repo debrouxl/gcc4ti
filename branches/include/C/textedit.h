@@ -1,7 +1,9 @@
 #ifndef __TEXTEDIT
 #define __TEXTEDIT
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define TE_FAR_RIGHT (0xFFFF)

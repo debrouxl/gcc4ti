@@ -1,7 +1,9 @@
 #ifndef __GRAY
 #define __GRAY
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /*===========================================================================*/
 /*                                                                           */

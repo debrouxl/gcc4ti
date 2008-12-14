@@ -1,7 +1,9 @@
 #ifndef __FLASH
 #define __FLASH
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #define __EM_findEmptySlot _rom_call(void*,(long,short),15F)
 

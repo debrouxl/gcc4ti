@@ -1,7 +1,9 @@
 #ifndef __VALUES
 #define __VALUES
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #ifdef __INT_SHORT__
 #define MAXINT 0x7FFF

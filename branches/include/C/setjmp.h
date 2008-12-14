@@ -1,7 +1,9 @@
 #ifndef __SETJMP
 #define __SETJMP
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 typedef struct{unsigned long D2,D3,D4,D5,D6,D7;unsigned long A2,A3,A4,A5,A6,A7;unsigned long PC;}JMP_BUF[1];

@@ -1,7 +1,9 @@
 #ifndef __INTR
 #define __INTR
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 extern void __attribute__((__may_alias__)) __dummy_handler__;
 

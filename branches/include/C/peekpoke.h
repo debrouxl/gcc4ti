@@ -1,7 +1,9 @@
 #ifndef __PEEKPOKE
 #define __PEEKPOKE
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define peek_bit(addr,bit) (!!(*((unsigned char*)(long)(addr))&(1<<(bit))))

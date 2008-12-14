@@ -1,7 +1,9 @@
 #ifndef __ESTACK
 #define __ESTACK
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #define _push_zstr(s) ({register const char*__p=(s);register long __l=_rom_call(long,(const char*),27E)(__p);char __s[__l+2];__s[0]=0;push_expr_quantum(_rom_call(char*,(char*,const char*),26C)(__s+1,__p)+__l,STR_TAG);})
 #define _push_zstr_const(s) (push_expr_quantum(SYMSTR(s),STR_TAG))

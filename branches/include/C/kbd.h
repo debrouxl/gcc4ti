@@ -1,7 +1,9 @@
 #ifndef __KBD
 #define __KBD
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* We have to use this internal macro since _keytest needs to be able to
    accept single parameters (in particular, the RR_... constant pairs). */

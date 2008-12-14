@@ -1,7 +1,9 @@
 #ifndef __ERROR
 #define __ERROR
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #ifndef __HAVE_Bool

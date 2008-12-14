@@ -1,7 +1,9 @@
 #ifndef __CTYPE_H
 #define __CTYPE_H
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* NOTE: These macros use GNU C extensions for defining safe and "smart" */
 /* macros, so they are not portable to other C dialects                  */

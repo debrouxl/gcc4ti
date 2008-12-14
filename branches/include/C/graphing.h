@@ -1,7 +1,9 @@
 #ifndef __GRAPHING
 #define __GRAPHING
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #ifndef __HAVE_Attrs

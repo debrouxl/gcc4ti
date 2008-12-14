@@ -1,7 +1,9 @@
 #ifndef __STDARG
 #define __STDARG
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #ifndef __HAVE_va_list

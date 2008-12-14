@@ -1,7 +1,9 @@
 #ifndef __STDINT
 #define __STDINT
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define INT_FAST16_MAX (32767)

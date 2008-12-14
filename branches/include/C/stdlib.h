@@ -1,7 +1,9 @@
 #ifndef __STDLIB
 #define __STDLIB
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #ifndef DOORS
 #define ldiv(n,d) ({ldiv_t __r;long __n=(n),__d=(d);asm("move.l 0xC8,%%a5;move.l %2,%%d1;move.l %3,%%d0;move.l (%%a5,2720),%%a0;jsr (%%a0);move.l %%d1,%0;move.l %2,%%d1;move.l %3,%%d0;move.l (%%a5,2724),%%a0;jsr (%%a0);move.l %%d1,%1" : "=&g"(__r.quot),"=g"(__r.rem) : "g"(__n),"g"(__d) : "a0","a1","a5","d0","d1","d2");__r;})

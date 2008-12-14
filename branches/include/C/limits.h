@@ -1,7 +1,9 @@
 #ifndef __LIMITS
 #define __LIMITS
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #ifdef __CHAR_UNSIGNED__
 #define CHAR_MAX 255

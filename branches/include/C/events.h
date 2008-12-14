@@ -1,7 +1,9 @@
 #ifndef __EVENTS
 #define __EVENTS
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define MO_option ((unsigned short*const)(_rom_call_addr_hack(447,(((unsigned short*const)(long)*(short*)((char*)MO_currentOptions+6))),200)))

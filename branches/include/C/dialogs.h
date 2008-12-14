@@ -1,7 +1,9 @@
 #ifndef __DIALOGS
 #define __DIALOGS
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #define DialogAddScroll(h,x,y,w,g,f,t,p,u,m) DialogAdd(h,0,x,y,3,(short)w,(short)g,(short)f,(short)t,(short)p,(short)u,(short)m)
 

@@ -1,7 +1,9 @@
 #ifndef __WINGRAPH
 #define __WINGRAPH
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define BITMAP_HDR_SIZE 4

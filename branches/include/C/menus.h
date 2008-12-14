@@ -1,7 +1,9 @@
 #ifndef __MENUS
 #define __MENUS
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* These constants are needed for use in "asm" statements */
 asm(".set MT_TEXT,0x8000");

@@ -1,7 +1,9 @@
 #ifndef __ASMTYPES
 #define __ASMTYPES
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 typedef unsigned short BOOL;

@@ -1,7 +1,9 @@
 #ifndef __TIMATH
 #define __TIMATH
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define FIVE (5.)

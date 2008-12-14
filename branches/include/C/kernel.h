@@ -170,57 +170,57 @@ void	kernel_RegisterVector (unsigned short vect asm("d0"), const void *func asm(
 extern const char kernel_SystemDir[];
 
 /* Use other TIGCC headers */
-#include <alloc.h>
-#include <args.h>
-#include <asmtypes.h>
-#include <assert.h>
-#include <bascmd.h>
-#include <basfunc.h>
-#include <basop.h>
-#include <cert.h>
+#include "alloc.h"
+#include "args.h"
+#include "asmtypes.h"
+#include "assert.h"
+#include "bascmd.h"
+#include "basfunc.h"
+#include "basop.h"
+#include "cert.h"
 // HEADER NOT INCLUED FOR NOW: compat.h (FIXME)
-#include <ctype.h>
+#include "ctype.h"
 // HEADER NOT INCLUED FOR NOW: default.h (FIXME)
-#include <dialogs.h>
+#include "dialogs.h"
 // HEADER NOT INCLUED: dll.h
 // HEADER IS INCOMPATIBLE WITH THIS ONE: doors.h
-#include <error.h>
-#include <estack.h>
-#include <events.h>
-#include <files.h>
-#include <flash.h> // TODO: merge FL_getHardwareParmBlock definitions.
-#include <float.h>
-#include <gdraw.h>
-#include <graph.h>
-#include <graphing.h>
+#include "error.h"
+#include "estack.h"
+#include "events.h"
+#include "files.h"
+#include "flash.h" // TODO: merge FL_getHardwareParmBlock definitions.
+#include "float.h"
+#include "gdraw.h"
+#include "graph.h"
+#include "graphing.h"
 // HEADER NOT INCLUED: gray.h
-#include <homescr.h>
-#include <intr.h>
-#include <kbd.h>
-#include <limits.h>
-#include <link.h>
-#include <mem.h>
-#include <menus.h>
+#include "homescr.h"
+#include "intr.h"
+#include "kbd.h"
+#include "limits.h"
+#include "link.h"
+#include "mem.h"
+#include "menus.h"
 // HEADER NOT INCLUED: nostub.h
-#include <peekpoke.h>
-#include <rsa.h>
-#include <setjmp.h>
-#include <sprites.h>
-#include <statline.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h> // TODO: modify the #ifndef DOORS.
-#include <string.h>
-#include <system.h>
-#include <textedit.h>
-#include <timath.h>
-#include <unknown.h> // HEADER NOT INCLUED ??
-#include <values.h>
-#include <vat.h>
-//#include <version.h> HEADER NOT INCLUED MAYBE ?
-#include <wingraph.h>
+#include "peekpoke.h"
+#include "rsa.h"
+#include "setjmp.h"
+#include "sprites.h"
+#include "statline.h"
+#include "stdarg.h"
+#include "stddef.h"
+#include "stdint.h"
+#include "stdio.h"
+#include "stdlib.h" // TODO: modify the #ifndef DOORS.
+#include "string.h"
+#include "system.h"
+#include "textedit.h"
+#include "timath.h"
+#include "unknown.h" // HEADER NOT INCLUED ??
+#include "values.h"
+#include "vat.h"
+//#include "version.h" HEADER NOT INCLUED MAYBE ?
+#include "wingraph.h"
 
 
 /* From tigcclib.h */

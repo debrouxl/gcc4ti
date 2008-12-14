@@ -1,7 +1,9 @@
 #ifndef __DLL
 #define __DLL
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #define __DLL_SIGNATURE 0x444C4C20
 typedef struct{unsigned long Signature,ID;unsigned short major,minor;void*jump_table[];}__DLL_interface_struct;

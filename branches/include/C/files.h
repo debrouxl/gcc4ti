@@ -1,7 +1,9 @@
 #ifndef __FILES
 #define __FILES
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #ifndef __HAVE_FindOptions

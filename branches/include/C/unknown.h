@@ -1,7 +1,9 @@
 #ifndef __UNKNOWN
 #define __UNKNOWN
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define SYM_LEN 8

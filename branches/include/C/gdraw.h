@@ -1,7 +1,9 @@
 #ifndef __GDRAW
 #define __GDRAW
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #ifndef __HAVE_GraphModes

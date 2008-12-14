@@ -1,7 +1,9 @@
 #ifndef __CERT
 #define __CERT
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define H_NULL 0

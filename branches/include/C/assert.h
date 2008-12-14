@@ -1,7 +1,9 @@
 #ifndef __ASSERT
 #define __ASSERT
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #ifndef NDEBUG
 

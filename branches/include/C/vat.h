@@ -1,7 +1,9 @@
 #ifndef __VAT
 #define __VAT
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 void *alloca(long)__ATTR_GCC__;
 #define SYMSTR_CONST(s) ((SYM_STR)(("\0"s)+sizeof(s)))

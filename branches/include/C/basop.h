@@ -1,7 +1,9 @@
 #ifndef __BASOP
 #define __BASOP
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #ifndef __HAVE_ESQ

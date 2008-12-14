@@ -1,7 +1,9 @@
 #ifndef __RSA
 #define __RSA
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 typedef struct{unsigned char Len;unsigned char Data[];}BN;

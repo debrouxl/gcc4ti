@@ -1,7 +1,9 @@
 #ifndef __STDIO
 #define __STDIO
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define EOF (-1)

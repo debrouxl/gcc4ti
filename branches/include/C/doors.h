@@ -8,7 +8,9 @@
 
 #else
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 #define __REDEFINE_ALL_ROM_CALLS
 #include <romsymb.h>
 

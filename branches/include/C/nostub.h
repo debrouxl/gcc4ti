@@ -8,7 +8,9 @@
 
 #else
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 #ifndef _GENERIC_ARCHIVE
 

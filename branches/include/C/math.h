@@ -1,7 +1,9 @@
 #ifndef __MATH
 #define __MATH
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define HALF_PI (1.570796326794897)

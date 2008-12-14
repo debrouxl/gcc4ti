@@ -1,7 +1,9 @@
 #ifndef __FLOAT_H
 #define __FLOAT_H
 
+#ifndef KERNEL_NEW
 #include <default.h>
+#endif
 
 /* Begin Auto-Generated Part */
 #define DBL_DIG 16
