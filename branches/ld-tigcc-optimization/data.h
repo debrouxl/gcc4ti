@@ -24,6 +24,7 @@
 
 #include "generic.h"
 #include "lists.h"
+#include "tree.h"
 #include "intrface.h"
 
 #include <time.h>
