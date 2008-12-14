@@ -26,7 +26,7 @@ interface
 uses
 	MasterUnit,
 	Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-	StdCtrls, ExtCtrls, ComObj, ActiveX, TiEmuOLELib_TLB;
+	StdCtrls, ExtCtrls;
 
 type
 	TVTIStartForm = class(TForm)
@@ -39,7 +39,8 @@ type
 	private
 		ProcessHandle: THandle;
 	public
-		TiEmuInterface: ITiEmuOLE;
+		VTIWindow: HWnd;
+		VTIType: TVTICalcType;
 	end;
 
 implementation
@@ -75,8 +76,6 @@ end;
 procedure TVTIStartForm.FindTimerTimer(Sender: TObject);
 var
 	ExitCode: Cardinal;
-	Unknown: IUnknown;
-	OLEResult: HResult;
 begin
 	if GetExitCodeProcess (ProcessHandle, ExitCode) then begin
 		if ExitCode <> STILL_ACTIVE then begin
@@ -84,11 +83,15 @@ begin
 			Exit;
 		end;
 	end;
-	OLEResult := GetActiveObject(CLASS_TiEmuOLE, nil, Unknown);
-	if OLEResult = S_OK then begin
-		OleCheck(Unknown.QueryInterface(ITiEmuOLE, TiEmuInterface));
+  VTIWindow := FindWindow ('TEmuWnd', 'Virtual TI-89');
+  if VTIWindow = 0 then begin
+    VTIWindow := FindWindow ('TEmuWnd', 'Virtual TI-92+');
+    if VTIWindow <> 0 then
+      VTIType := cvVTITI92Plus;
+  end else
+    VTIType := cvVTITI89;
+	if VTIWindow <> 0 then
 		ModalResult := mrOK;
-	end;
 end;
 
 end.

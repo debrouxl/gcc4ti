@@ -468,6 +468,7 @@ type
 		procedure SortFiles;
 		procedure DisplayFolderMessage;
 		procedure ClearDebugInfo;
+		function GetVTIWindow: HWnd;
 		function GetTiEmuInterface: ITiEmuOLE;
 		procedure SendFiles(FNList: array of string);
 		procedure ExecuteCommandLine(const Line: string);
@@ -4691,6 +4692,38 @@ begin
 		Execute;
 	finally
 		Free;
+	end;
+end;
+
+function TMainForm.GetVTIWindow: HWnd;
+begin
+	CurVTIType := cvVTINone;
+	Result := FindWindow ('TEmuWnd', 'Virtual TI-89');
+	if Result = 0 then begin
+		Result := FindWindow ('TEmuWnd', 'Virtual TI-92+');
+		if Result = 0 then begin
+			Result := FindWindow ('TEmuWnd', 'Virtual TI-92');
+			if Result <> 0 then
+				CurVTIType := cvVTITI92;
+		end else
+			CurVTIType := cvVTITI92Plus;
+	end else
+		CurVTIType := cvVTITI89;
+	if Result = 0 then begin
+		if Length (VTIPath) > 0 then begin
+			with TVTIStartForm.Create (Self) do try
+				if ShowModal = mrOK then begin
+					Result := VTIWindow;
+					CurVTIType := VTIType;
+				end else
+					Abort;
+			finally
+				Free;
+			end;
+		end else begin
+			ShowDefaultMessageBox ('Virtual TI is not running.', 'Error', mtProgramError);
+			Abort;
+		end;
 	end;
 end;
 
