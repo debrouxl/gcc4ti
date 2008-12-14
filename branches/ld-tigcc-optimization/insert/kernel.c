@@ -509,7 +509,7 @@ BOOLEAN InsertKernelExports (SECTION *Section, BOOLEAN TrailingZeroBytes)
 	// The number of exports is equal to the highest export number + 1.
 	for_each (CurSection, Program->Sections)
 	{
-		for_each (CurSymbol, CurSection->Symbols)
+		tree_for_each (CurSymbol, CurSection->Symbols)
 		{
 			if (CurSymbol->Exported)
 			{
@@ -532,7 +532,7 @@ BOOLEAN InsertKernelExports (SECTION *Section, BOOLEAN TrailingZeroBytes)
 			for_each (CurSection, Program->Sections)
 			{
 				// For each symbol...
-				for_each (CurSymbol, CurSection->Symbols)
+				tree_for_each (CurSymbol, CurSection->Symbols)
 				{
 					// Check if it is exported.
 					if (CurSymbol->Exported)

@@ -44,7 +44,7 @@ BOOLEAN InsertNostubComments (SECTION *Section)
 	// Get the number and the highest ID of _nostub comments.
 	for_each (CurSection, Program->Sections)
 	{
-		for_each (CurSymbol, CurSection->Symbols)
+		tree_for_each (CurSymbol, CurSection->Symbols)
 		{
 			if (CurSymbol->Exported && (!(strncmp (CurSymbol->Name, SYMPF_NOSTUB_DATA, sizeof (SYMPF_NOSTUB_DATA) - 1))))
 			{
@@ -78,7 +78,7 @@ BOOLEAN InsertNostubComments (SECTION *Section)
 				for_each (CurSection, Program->Sections)
 				{
 					// For each symbol...
-					for_each (CurSymbol, CurSection->Symbols)
+					tree_for_each (CurSymbol, CurSection->Symbols)
 					{
 						// Check whether it belongs to the _nostub comment export we are looking for.
 						if (CurSymbol->Exported && (!(strncmp (CurSymbol->Name, SYMPF_NOSTUB_DATA, sizeof (SYMPF_NOSTUB_DATA) - 1))))

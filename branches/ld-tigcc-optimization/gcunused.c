@@ -175,7 +175,7 @@ void MarkMainSection (PROGRAM *Program)
 			continue;
 
 		// For each symbol...
-		for_each (Symbol, Section->Symbols)
+		tree_for_each (Symbol, Section->Symbols)
 		{
 			// If the name matches, we have found the right symbol.
 			if (Symbol->Exported && (!(strcmp ("__main", Symbol->Name))))

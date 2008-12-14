@@ -204,7 +204,7 @@ SYMBOL *CreateSectionSymbol (SECTION *Section, const char *SectionName)
 	if (!(Section->SectionSymbol))
 	{
 		// Insert the symbol at the beginning of the linked list.
-		Push (Section->Symbols, Symbol);
+		TreePush (Section->Symbols, Symbol);
 		// Mark the symbol as the section's beginning symbol.
 		Section->SectionSymbol = Symbol;
 	}
@@ -297,7 +297,7 @@ SECTION *FindStartupSection (const PROGRAM *Program, OFFSET StartupNumber)
 void InsertSymbol (SECTION *Section, SYMBOL *Symbol)
 {
 	const SYMBOL *NextSymbol = FindSymbolAtPos (Section, Symbol->Location, TRUE);
-	InsertBefore (Section->Symbols, Symbol, NextSymbol);
+	TreeInsertBefore (Section->Symbols, Symbol, NextSymbol);
 }
 
 // Increase the counters for references between the two sections, if the sections
@@ -439,7 +439,7 @@ SYMBOL *ResolveLocation (PROGRAM *Program, SECTION *Section, LOCATION *Location)
 			SYMBOL *CurSymbol;
 			
 			// For each symbol...
-			for_each (CurSymbol, CurSection->Symbols)
+			tree_for_each (CurSymbol, CurSection->Symbols)
 			{
 				// If the name matches, we have found the right symbol.
 				if (CurSymbol->Exported && (!(strcmp (Location->SymbolName, CurSymbol->Name))))
@@ -1256,11 +1256,11 @@ SYMBOL *MakeCommonSymbol (PROGRAM *Program, const char *SymName, SIZE Size, BOOL
 	{
 		// Check only for sections with uninitialized or zeroed data.
 		// Check if it has at least one symbol in it.
-		if ((!(CurSection->Data)) && (!(IsEmpty (CurSection->Symbols))))
+		if ((!(CurSection->Data)) && (!(TreeIsEmpty (CurSection->Symbols))))
 		{
 			SYMBOL *CurSymbol;
 			// For each symbol...
-			for_each (CurSymbol, CurSection->Symbols)
+			tree_for_each (CurSymbol, CurSection->Symbols)
 			{
 				// Check if the symbol name matches.
 				if (CurSymbol->Exported && (!(strcmp (CurSymbol->Name, SymName))))
@@ -1329,7 +1329,7 @@ SYMBOL *MakeCommonSymbol (PROGRAM *Program, const char *SymName, SIZE Size, BOOL
 			Symbol->Parent = Section;
 			strncpy (Symbol->Name, SymName, MAX_SYM_LEN);
 			Symbol->Exported = TRUE;
-			Append (Section->Symbols, Symbol);
+			TreeAppend (Section->Symbols, Symbol);
 			
 			// Since the new symbol is at the beginning of the section, it is
 			// sufficient as a section symbol.
@@ -1391,7 +1391,7 @@ SECTION_MARKERS *CreateSectionMarkers (SECTION_MARKERS *Marker, SECTION *Section
 		strcpy (Symbol->Name, Section->SectionSymbol->Name);
 		if (strlen (Symbol->Name) + sizeof (" end") - 1 <= MAX_SYM_LEN)
 			strcat (Symbol->Name, " end");
-		Append (Section->Symbols, Symbol);
+		TreeAppend (Section->Symbols, Symbol);
 		Marker->End = Symbol;
 		
 		return Marker;

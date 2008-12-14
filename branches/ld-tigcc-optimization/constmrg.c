@@ -59,7 +59,7 @@ void MergeConstants (PROGRAM *Program)
 		SYMBOL *Symbol1, *NextSymbol1;
 		NextSection1 = GetNext (Section1);
 		if (!Section1->Mergeable) continue; // Ignore non-mergeable sections.
-		for (Symbol1 = GetFirst(Section1->Symbols); Symbol1; Symbol1 = NextSymbol1)
+		for (Symbol1 = TreeFirst(Section1->Symbols); Symbol1; Symbol1 = NextSymbol1)
 		{
 			// Compute the length of the constant.
 			OFFSET Constant1Start = Symbol1->Location, Constant1End, Constant1Length;
@@ -79,7 +79,7 @@ void MergeConstants (PROGRAM *Program)
 				SYMBOL *Symbol2, *NextSymbol2;
 				NextSection2 = GetNext (Section2);
 				if (!Section2->Mergeable) continue; // Ignore non-mergeable sections.
-				for (Symbol2 = GetFirst(Section2->Symbols); Symbol2; Symbol2 = NextSymbol2)
+				for (Symbol2 = TreeFirst(Section2->Symbols); Symbol2; Symbol2 = NextSymbol2)
 				{
 					// Compute the length of the constant.
 					OFFSET Constant2Start = Symbol2->Location, Constant2End, Constant2Length;
@@ -104,13 +104,13 @@ void MergeConstants (PROGRAM *Program)
 						SYMBOL *CurSymbol, *NextSymbol;
 						for (CurSymbol = Symbol2; CurSymbol && CurSymbol->Location == Constant2Start; CurSymbol = NextSymbol)
 						{
-							NextSymbol = GetNext (CurSymbol);
+							NextSymbol = TreeNext (CurSymbol);
 							// Don't move the section symbol.
 							if (CurSymbol == Section2->SectionSymbol) continue;
-							Unlink (Section2->Symbols, CurSymbol);
+							TreeUnlink (Section2->Symbols, CurSymbol);
 							CurSymbol->Parent = Section1;
 							CurSymbol->Location = Constant1Start;
-							InsertBefore (Section1->Symbols, CurSymbol, NextSymbol1);
+							TreeInsertBefore (Section1->Symbols, CurSymbol, NextSymbol1);
 						}
 						// Delete Constant2.
 						if (Constant2Length == Section2->Size && !NextSymbol2)
@@ -120,10 +120,10 @@ void MergeConstants (PROGRAM *Program)
 							// but if it is, we don't want the linker to segfault. Do this here,
 							// because even when not explicitly skipping it in the loop above, it
 							// won't always be caught by the loop.
-							Unlink (Section2->Symbols, Section2->SectionSymbol);
+							TreeUnlink (Section2->Symbols, Section2->SectionSymbol);
 							Section2->SectionSymbol->Parent = Section1;
 							Section2->SectionSymbol->Location = Constant1Start;
-							InsertBefore (Section1->Symbols, Section2->SectionSymbol, NextSymbol1);
+							TreeInsertBefore (Section1->Symbols, Section2->SectionSymbol, NextSymbol1);
 							// If the Section2 was the next Section1, we must update NextSection1.
 							if (Section2 == NextSection1)
 								NextSection1 = GetNext (NextSection1);
@@ -147,13 +147,13 @@ void MergeConstants (PROGRAM *Program)
 						SYMBOL *CurSymbol, *NextSymbol;
 						for (CurSymbol = Symbol1; CurSymbol && CurSymbol->Location == Constant1Start; CurSymbol = NextSymbol)
 						{
-							NextSymbol = GetNext (CurSymbol);
+							NextSymbol = TreeNext (CurSymbol);
 							// Don't move the section symbol.
 							if (CurSymbol == Section1->SectionSymbol) continue;
-							Unlink (Section1->Symbols, CurSymbol);
+							TreeUnlink (Section1->Symbols, CurSymbol);
 							CurSymbol->Parent = Section2;
 							CurSymbol->Location = Constant2Start;
-							InsertBefore (Section2->Symbols, CurSymbol, NextSymbol2);
+							TreeInsertBefore (Section2->Symbols, CurSymbol, NextSymbol2);
 						}
 						// Delete Constant1.
 						if (Constant1Length == Section1->Size && !NextSymbol1)
@@ -163,10 +163,10 @@ void MergeConstants (PROGRAM *Program)
 							// but if it is, we don't want the linker to segfault. Do this here,
 							// because even when not explicitly skipping it in the loop above, it
 							// won't always be caught by the loop.
-							Unlink (Section1->Symbols, Section1->SectionSymbol);
+							TreeUnlink (Section1->Symbols, Section1->SectionSymbol);
 							Section1->SectionSymbol->Parent = Section2;
 							Section1->SectionSymbol->Location = Constant2Start;
-							InsertBefore (Section2->Symbols, Section1->SectionSymbol, NextSymbol2);
+							TreeInsertBefore (Section2->Symbols, Section1->SectionSymbol, NextSymbol2);
 							// Free the section.
 							FreeSection (Section1);
 						}
@@ -213,24 +213,24 @@ FreeAndOutOfMem:
 							// Move the label group of Constant1 into the new section.
 							for (CurSymbol = Symbol1; CurSymbol && CurSymbol->Location == Constant1Start; CurSymbol = NextSymbol)
 							{
-								NextSymbol = GetNext (CurSymbol);
+								NextSymbol = TreeNext (CurSymbol);
 								// Don't move the section symbol.
 								if (CurSymbol == Section1->SectionSymbol) continue;
-								Unlink (Section1->Symbols, CurSymbol);
+								TreeUnlink (Section1->Symbols, CurSymbol);
 								CurSymbol->Parent = Section;
 								CurSymbol->Location = 0;
-								Append (Section->Symbols, CurSymbol);
+								TreeAppend (Section->Symbols, CurSymbol);
 							}
 							// Move the label group of Constant2 into the new section.
 							for (CurSymbol = Symbol2; CurSymbol && CurSymbol->Location == Constant2Start; CurSymbol = NextSymbol)
 							{
-								NextSymbol = GetNext (CurSymbol);
+								NextSymbol = TreeNext (CurSymbol);
 								// Don't move the section symbol.
 								if (CurSymbol == Section2->SectionSymbol) continue;
-								Unlink (Section2->Symbols, CurSymbol);
+								TreeUnlink (Section2->Symbols, CurSymbol);
 								CurSymbol->Parent = Section;
 								CurSymbol->Location = 0;
-								Append (Section->Symbols, CurSymbol);
+								TreeAppend (Section->Symbols, CurSymbol);
 							}
 						}
 						// Delete Constant1.
@@ -241,9 +241,9 @@ FreeAndOutOfMem:
 							// but if it is, we don't want the linker to segfault. Do this here,
 							// because even when not explicitly skipping it in the loop above, it
 							// won't always be caught by the loop.
-							Unlink (Section1->Symbols, Section1->SectionSymbol);
+							TreeUnlink (Section1->Symbols, Section1->SectionSymbol);
 							Section1->SectionSymbol->Parent = Section;
-							Append (Section->Symbols, Section1->SectionSymbol);
+							TreeAppend (Section->Symbols, Section1->SectionSymbol);
 							// Free the section.
 							FreeSection (Section1);
 						}
@@ -262,9 +262,9 @@ FreeAndOutOfMem:
 							// but if it is, we don't want the linker to segfault. Do this here,
 							// because even when not explicitly skipping it in the loop above, it
 							// won't always be caught by the loop.
-							Unlink (Section2->Symbols, Section2->SectionSymbol);
+							TreeUnlink (Section2->Symbols, Section2->SectionSymbol);
 							Section2->SectionSymbol->Parent = Section;
-							Append (Section->Symbols, Section2->SectionSymbol);
+							TreeAppend (Section->Symbols, Section2->SectionSymbol);
 							// If the Section2 was the next Section1, we must update NextSection1.
 							if (Section2 == NextSection1)
 								NextSection1 = GetNext (NextSection1);

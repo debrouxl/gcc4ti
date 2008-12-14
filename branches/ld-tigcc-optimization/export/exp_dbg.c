@@ -115,7 +115,7 @@ static void CountSectionCOFFSize (const SECTION *Section, void *UserData)
 			Size += NameLen + 1;
 	}
 
-	for_each (Symbol, Section->Symbols)
+	tree_for_each (Symbol, Section->Symbols)
 	{
 		COUNT NameLen = strlen (Symbol->Name);
 		// Symbol table entry
@@ -177,7 +177,7 @@ static void CountSymbols (const SECTION *Section, void *UserData)
 
 	(*(COUNT *)UserData)++; // section symbol
 
-	for_each (Symbol, Section->Symbols)
+	tree_for_each (Symbol, Section->Symbols)
 	{
 		(*(COUNT *)UserData)++;
 	}
@@ -299,7 +299,7 @@ static void FindCOFFSymbolNumber (const SECTION *Section, void *UserData)
 
 	((COFFSymbolNumberStruct *)UserData)->Current++; // section symbol
 
-	for_each (Symbol, Section->Symbols)
+	tree_for_each (Symbol, Section->Symbols)
 	{
 		if (((COFFSymbolNumberStruct *)UserData)->Symbol == Symbol)
 		{
@@ -418,7 +418,7 @@ static void WriteSymbolTable (const SECTION *Section, void *UserData)
 		ExportWrite (((SectionOffsets *)UserData)->File, &COFFSymbol, sizeof (COFF_SYMBOL), 1);
 	}
 
-	for_each (Symbol, Section->Symbols)
+	tree_for_each (Symbol, Section->Symbols)
 	{
 		COFF_SYMBOL COFFSymbol;
 		COUNT NameLen = strlen (Symbol->Name);
@@ -460,7 +460,7 @@ static void WriteStringTable (const SECTION *Section, void *UserData)
 		}
 	}
 
-	for_each (Symbol, Section->Symbols)
+	tree_for_each (Symbol, Section->Symbols)
 	{
 		COUNT NameLen = strlen (Symbol->Name);
 

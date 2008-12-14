@@ -647,7 +647,7 @@ BOOLEAN ImportAmigaOSFile (PROGRAM *Program, const I1 *File, SIZE FileSize, cons
 					TestInFile(ptr,I1[hunkSize]);
 					symSize = (hunkSize<MAX_SYM_LEN)?hunkSize:MAX_SYM_LEN;
 
-					for_each(symbol,currSection->Symbols) {
+					tree_for_each (symbol, currSection->Symbols) {
 						if (!strncmp(symbol->Name,(const char *)ptr,symSize) && !(ptr[symSize])) {
 							found = TRUE;
 							break;

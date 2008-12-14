@@ -432,7 +432,7 @@ BOOLEAN CreateSpecialGlobalImports (PROGRAM *Program)
 		for_each (TempSection, Program->Sections)
 		{
 			SYMBOL *TempSymbol;
-			for_each (TempSymbol, TempSection->Symbols)
+			tree_for_each (TempSymbol, TempSection->Symbols)
 			{
 				if (TempSymbol->Exported && (!(strncmp (TempSymbol->Name, "_nostub_data__", sizeof ("_nostub_data__") - 1))))
 				{
@@ -838,7 +838,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				for_each (TempSection, Program->Sections)
 				{
 					SYMBOL *TempSymbol;
-					for_each (TempSymbol, TempSection->Symbols)
+					tree_for_each (TempSymbol, TempSection->Symbols)
 					{
 						if (TempSymbol->Exported)
 						{
@@ -1028,7 +1028,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 		// The number of exports is equal to the highest export number + 1.
 		for_each (TempSection, Program->Sections)
 		{
-			for_each (TempSymbol, TempSection->Symbols)
+			tree_for_each (TempSymbol, TempSection->Symbols)
 			{
 				if (TempSymbol->Exported)
 				{
@@ -1043,7 +1043,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 	{
 		for_each (TempSection, Program->Sections)
 		{
-			for_each (TempSymbol, TempSection->Symbols)
+			tree_for_each (TempSymbol, TempSection->Symbols)
 			{
 				if (TempSymbol->Exported && (!(strncmp (TempSymbol->Name, SYMPF_NOSTUB_DATA, sizeof (SYMPF_NOSTUB_DATA) - 1))))
 				{
@@ -1277,7 +1277,7 @@ SYMBOL *HandleAutoInsertion (SECTION *Section, const char *SymbolName)
 				Result->Location = Section->Size;
 				strncpy (Result->Name, SymbolName, MAX_SYM_LEN);
 				Result->Exported = TRUE;
-				Append (Section->Symbols, Result);
+				TreeAppend (Section->Symbols, Result);
 				
 				// Insert the data.
 				if (AppendInsertionData (Section, SymbolName + sizeof (SYMPF_BUILTIN_INSERT) - 1, Section, TRUE))

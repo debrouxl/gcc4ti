@@ -93,12 +93,12 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 	fprintf (File, Section->Code ? "%sCode\n" : "%sData\n", Indent);
 	
 	{
-		const SEGMENT  *NextSegment = GetFirst (Section->Segments);
-		const SYMBOL   *NextSymbol  = GetFirst (Section->Symbols);
-		const RELOC    *NextReloc   = TreeFirst(Section->Relocs);
-		const ROM_CALL *NextROMCall = GetFirst (Section->ROMCalls);
-		const RAM_CALL *NextRAMCall = GetFirst (Section->RAMCalls);
-		const LIB_CALL *NextLibCall = GetFirst (Section->LibCalls);
+		const SEGMENT  *NextSegment = GetFirst  (Section->Segments);
+		const SYMBOL   *NextSymbol  = TreeFirst (Section->Symbols);
+		const RELOC    *NextReloc   = TreeFirst (Section->Relocs);
+		const ROM_CALL *NextROMCall = GetFirst  (Section->ROMCalls);
+		const RAM_CALL *NextRAMCall = GetFirst  (Section->RAMCalls);
+		const LIB_CALL *NextLibCall = GetFirst  (Section->LibCalls);
 		
 		OFFSET CurPos = 0;
 		SIZE SectionSize = Section->Size;
