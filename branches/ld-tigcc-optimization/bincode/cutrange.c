@@ -125,7 +125,7 @@ void CutRange (SECTION *Section, OFFSET Start, OFFSET End)
 			RELOC *Reloc;
 			
 			// For each reloc...
-			for_each (Reloc, RelocSection->Relocs)
+			tree_for_each (Reloc, RelocSection->Relocs)
 			{
 				// Only adjust relocs targeting this section.
 				if (Reloc->Target.Symbol && (Reloc->Target.Symbol->Parent == Section))

@@ -45,12 +45,12 @@ SIZE GetTIOSFileSize (const PROGRAM *Program)
 		// Add 2 for the two null bytes at the beginning of the reloc table.
 		SIZE Size = MainSection->Size + 2;
 		
-		if (!(IsEmpty (MainSection->Relocs)))
+		if (!(TreeIsEmpty (MainSection->Relocs)))
 		{
 			RELOC *Reloc;
 			
 			// Add the size needed for the relocs.
-			for_each (Reloc, MainSection->Relocs)
+			tree_for_each (Reloc, MainSection->Relocs)
 			{
 				// If this can be resolved to a calculator-dependent value, ignore the
 				// reloc for now.
@@ -111,12 +111,12 @@ BOOLEAN ExportTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize, P
 	// Write out two zero bytes as a separator.
 	ExportWriteTI2 (File, 0);
 	
-	if (!(IsEmpty (MainSection->Relocs)))
+	if (!(TreeIsEmpty (MainSection->Relocs)))
 	{
 		RELOC *Reloc;
 		
 		// Write out the relocation table.
-		for (Reloc = GetLast (MainSection->Relocs); Reloc; Reloc = GetPrev (Reloc))
+		for (Reloc = TreeLast (MainSection->Relocs); Reloc; Reloc = TreePrev (Reloc))
 		{
 			// Get the current file name for error messages.
 			const char *CurFileName = GetFileName (MainSection, Reloc->Location);
@@ -223,12 +223,12 @@ BOOLEAN ExportPackedTIOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileS
 	// Write out two zero bytes as a separator.
 	BufferWriteTI2 (0);
 	
-	if (!(IsEmpty (MainSection->Relocs)))
+	if (!(TreeIsEmpty (MainSection->Relocs)))
 	{
 		RELOC *Reloc;
 		
 		// Write out the relocation table.
-		for (Reloc = GetLast (MainSection->Relocs); Reloc; Reloc = GetPrev (Reloc))
+		for (Reloc = TreeLast (MainSection->Relocs); Reloc; Reloc = TreePrev (Reloc))
 		{
 			// Get the current file name for error messages.
 			const char *CurFileName = GetFileName (MainSection, Reloc->Location);

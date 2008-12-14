@@ -362,7 +362,7 @@ BOOLEAN CreateSpecialGlobalImports (PROGRAM *Program)
 	{
 		BOOLEAN Done = FALSE;
 		RELOC *TempReloc;
-		for_each (TempReloc, TempSection->Relocs)
+		tree_for_each (TempReloc, TempSection->Relocs)
 		{
 			if ((!(TempReloc->Relative || TempReloc->Target.Builtin || (TempReloc->Target.Symbol && (TempReloc->Target.Symbol->Parent->Handled)))))
 			{
@@ -981,7 +981,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 			// is false, do not handle TrueValue.
 			if ((!TrueValue) || Program->ResolveAllBuiltins)
 			{
-				for_each (TempReloc, TempSection->Relocs)
+				tree_for_each (TempReloc, TempSection->Relocs)
 					if (!(TempReloc->Relative || TempReloc->Target.Builtin || (TempReloc->Target.Symbol && (TempReloc->Target.Symbol->Parent->Handled))))
 						IncreaseCounter (1);
 			}
@@ -993,7 +993,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 		{
 			// Count all absolute relocs to the data section.
 			for_each (TempSection, Program->Sections)
-				for_each (TempReloc, TempSection->Relocs)
+				tree_for_each (TempReloc, TempSection->Relocs)
 					if (TempReloc->Target.Symbol && (TempReloc->Target.Symbol->Parent == Program->DataSection) && (!(TempReloc->Relative || TempReloc->Target.Builtin)))
 						IncreaseCounter (1);
 		}
@@ -1004,7 +1004,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 		{
 			// Count all absolute relocs to the BSS section.
 			for_each (TempSection, Program->Sections)
-				for_each (TempReloc, TempSection->Relocs)
+				tree_for_each (TempReloc, TempSection->Relocs)
 					if (TempReloc->Target.Symbol && (TempReloc->Target.Symbol->Parent == Program->BSSSection) && (!(TempReloc->Relative || TempReloc->Target.Builtin)))
 						IncreaseCounter (1);
 		}

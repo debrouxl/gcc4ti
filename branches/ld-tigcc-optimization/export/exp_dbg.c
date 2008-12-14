@@ -125,7 +125,7 @@ static void CountSectionCOFFSize (const SECTION *Section, void *UserData)
 			Size += NameLen + 1;
 	}
 
-	for_each (Reloc, Section->Relocs)
+	tree_for_each (Reloc, Section->Relocs)
 	{
 		// If this can be resolved to a calculator-dependent value, ignore the
 		// reloc for now.
@@ -191,7 +191,7 @@ static void CountSymbolTableOffset (const SECTION *Section, void *UserData)
 	if (Section->Data)
 		Size = Section->Size;
 
-	for_each (Reloc, Section->Relocs)
+	tree_for_each (Reloc, Section->Relocs)
 	{
 		// If this can be resolved to a calculator-dependent value, ignore the
 		// reloc for now.
@@ -229,7 +229,7 @@ static void WriteSectionHeader (const SECTION *Section, void *UserData)
 	if (Section->Data)
 		Size = Section->Size;
 
-	for_each (Reloc, Section->Relocs)
+	tree_for_each (Reloc, Section->Relocs)
 	{
 		// If this can be resolved to a calculator-dependent value, ignore the
 		// reloc for now.
@@ -321,7 +321,7 @@ static void PatchRelocOffsetsIn (const SECTION *Section, void *UserData ATTRIBUT
 {
 	const RELOC *Reloc;
 
-	for_each (Reloc, Section->Relocs)
+	tree_for_each (Reloc, Section->Relocs)
 	{
 		// If this can be resolved to a calculator-dependent value, ignore the
 		// reloc for now.
@@ -351,7 +351,7 @@ static void WriteSectionContents (const SECTION *Section, void *UserData)
 		ExportWrite (((SectionOffsets *)UserData)->File, Section->Data, Section->Size, 1);
 
 	// Write reloc table.
-	for_each (Reloc, Section->Relocs)
+	tree_for_each (Reloc, Section->Relocs)
 	{
 		COFF_RELOC COFFReloc;
 
@@ -372,7 +372,7 @@ static void PatchRelocOffsetsOut (const SECTION *Section, void *UserData ATTRIBU
 {
 	const RELOC *Reloc;
 
-	for_each (Reloc, Section->Relocs)
+	tree_for_each (Reloc, Section->Relocs)
 	{
 		// If this can be resolved to a calculator-dependent value, ignore the
 		// reloc for now.

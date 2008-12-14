@@ -61,11 +61,11 @@ BOOLEAN ExportDataFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize AT
 	DataStart = ExportTell (File);
 	ExportWrite (File, DataSection->Data, DataSection->Size, 1);
 	
-	if (!(IsEmpty (DataSection->Relocs)))
+	if (!(TreeIsEmpty (DataSection->Relocs)))
 	{
 		RELOC *Reloc;
 		
-		for_each (Reloc, DataSection->Relocs)
+		tree_for_each (Reloc, DataSection->Relocs)
 		{
 			// If this can be resolved to a calculator-dependent value, write the
 			// value into the section data.

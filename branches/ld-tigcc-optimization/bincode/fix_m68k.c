@@ -48,9 +48,9 @@ void M68kFixCodePreMerge (SECTION *Dest, SECTION *Src, SIZE DestSize)
 		RELOC *Reloc, *NextReloc;
 		
 		// For each reloc...
-		for (Reloc = (DestSize ? GetFirst (Dest->Relocs) : GetLast (Dest->Relocs)); Reloc; Reloc = NextReloc)
+		for (Reloc = (DestSize ? TreeFirst (Dest->Relocs) : TreeLast (Dest->Relocs)); Reloc; Reloc = NextReloc)
 		{
-			NextReloc = (DestSize ? GetNext (Reloc) : GetPrev (Reloc));
+			NextReloc = (DestSize ? TreeNext (Reloc) : TreePrev (Reloc));
 			
 			// Completely ignore builtin relocs. Also ignore relation-relative
 			// relocs, since the only relative relocs we can optimize further
@@ -813,13 +813,13 @@ COUNT M68kGetSectionRelationship (const SECTION *Section1, const SECTION *Sectio
 	COUNT Result = 0;
 	
 	const RELOC *Reloc;
-	for_each (Reloc, Section1->Relocs)
+	tree_for_each (Reloc, Section1->Relocs)
 	{
 		const SYMBOL *TargetSymbol = Reloc->Target.Symbol;
 		if (TargetSymbol && TargetSymbol->Parent == Section2)
 			Result += M68kGetRelocImportance (Reloc, Section1->Size - Reloc->Location + TargetSymbol->Location + Reloc->Target.Offset + Reloc->FixedOffset);
 	}
-	for_each (Reloc, Section2->Relocs)
+	tree_for_each (Reloc, Section2->Relocs)
 	{
 		const SYMBOL *TargetSymbol = Reloc->Target.Symbol;
 		if (TargetSymbol && TargetSymbol->Parent == Section1)

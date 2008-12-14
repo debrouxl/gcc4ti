@@ -107,9 +107,9 @@ void FreeSection (SECTION *Section)
 	
 	{
 		RELOC *Reloc, *NextReloc;
-		for (Reloc = GetLast (Section->Relocs); Reloc; Reloc = NextReloc)
+		for (Reloc = TreeLast (Section->Relocs); Reloc; Reloc = NextReloc)
 		{
-			NextReloc = GetPrev (Reloc);
+			NextReloc = TreePrev (Reloc);
 			FreeReloc (Reloc);
 		}
 	}
@@ -133,7 +133,7 @@ void FreeSection (SECTION *Section)
 void FreeReloc (RELOC *Reloc)
 {
 	SECTION *Section = Reloc->Parent;
-	Unlink (Section->Relocs, Reloc);
+	TreeUnlink (Section->Relocs, Reloc);
 	// Need to free the symbol name, if it is not a reference to Symbol->Name.
 	FreeLocationSymbolName (Section, &(Reloc->Target));
 	// Need to free the relation if it exists.
@@ -329,7 +329,7 @@ static void IncRefCounts (SECTION *SourceSection, SECTION *TargetSection, const 
 void InsertReloc (SECTION *Section, RELOC *Reloc)
 {
 	const RELOC *NextReloc = FindRelocAtPos (Section, Reloc->Location, TRUE);
-	InsertBefore (Section->Relocs, Reloc, NextReloc);
+	TreeInsertBefore (Section->Relocs, Reloc, NextReloc);
 	HandleLocation (Reloc, &(Reloc->Target));
 	HandleLocation (Reloc, Reloc->Relation);
 	{
@@ -711,9 +711,9 @@ BOOLEAN ResolveRelocs (PROGRAM *Program, BOOLEAN Force)
 			RELOC *Reloc, *NextReloc;
 			
 			// For each reloc...
-			for (Reloc = GetFirst (Section->Relocs); Reloc; Reloc = NextReloc)
+			for (Reloc = TreeFirst (Section->Relocs); Reloc; Reloc = NextReloc)
 			{
-				NextReloc = GetNext (Reloc);
+				NextReloc = TreeNext (Reloc);
 				
 				// Try to resolve it.
 				if (!(ResolveReloc (Reloc, Force)))
@@ -760,7 +760,7 @@ void OptimizeRelocs (PROGRAM *Program)
 		RELOC *Reloc;
 		
 		// For each reloc...
-		for_each (Reloc, Section->Relocs)
+		tree_for_each (Reloc, Section->Relocs)
 		{
 			// Optimize the target.
 			OptimizeLocation (&(Reloc->Target));
@@ -1068,10 +1068,10 @@ BOOLEAN FixupRelativeRelocs (PROGRAM *Program)
 			RELOC *Reloc, *NextReloc;
 			
 			// For each reloc in the section...
-			for (Reloc = GetFirst (Section->Relocs); Reloc; Reloc = NextReloc)
+			for (Reloc = TreeFirst (Section->Relocs); Reloc; Reloc = NextReloc)
 			{
 				// Get the next reloc now because we might remove this one.
-				NextReloc = GetNext (Reloc);
+				NextReloc = TreeNext (Reloc);
 				
 				if (Reloc->Relative)
 				{

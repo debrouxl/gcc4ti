@@ -87,11 +87,11 @@ BOOLEAN ExportFargoFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize A
 	// Write out the TI-BASIC fork.
 	ExportWrite (File, FARGO_TIBASIC_FORK, sizeof (FARGO_TIBASIC_FORK), 1);
 
-	if (!(IsEmpty (MainSection->Relocs)))
+	if (!(TreeIsEmpty (MainSection->Relocs)))
 	{
 		RELOC *Reloc;
 		
-		for_each (Reloc, MainSection->Relocs)
+		tree_for_each (Reloc, MainSection->Relocs)
 		{
 			// If this can be resolved to a calculator-dependent value, write the
 			// value into the section data.

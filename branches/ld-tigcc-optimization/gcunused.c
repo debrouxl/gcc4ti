@@ -48,7 +48,7 @@ static void MarkSection (SECTION *Section)
 
 	// Recursively mark the target section and the relation section of all
 	// relocs in this section
-	for_each (Reloc, Section->Relocs)
+	tree_for_each (Reloc, Section->Relocs)
 	{
 		MarkLocation (&(Reloc->Target));
 		MarkLocation (Reloc->Relation);

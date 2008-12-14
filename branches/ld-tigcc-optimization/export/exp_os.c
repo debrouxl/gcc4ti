@@ -102,12 +102,12 @@ BOOLEAN ExportFlashOSFile (const PROGRAM *Program, EXP_FILE *File, SIZE FileSize
 		ExportWrite (File, &ZeroByte, 1, 1);
 	DataEnd = ExportTell (File);
 	
-	if (!(IsEmpty (MainSection->Relocs)))
+	if (!(TreeIsEmpty (MainSection->Relocs)))
 	{
 		RELOC *Reloc;
 		
 		// Write out the relocation entries.
-		for (Reloc = GetLast (MainSection->Relocs); Reloc; Reloc = GetPrev (Reloc))
+		for (Reloc = TreeLast (MainSection->Relocs); Reloc; Reloc = TreePrev (Reloc))
 		{
 			// Get the current file name for error messages.
 			const char *CurFileName = GetFileName (MainSection, Reloc->Location);

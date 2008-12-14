@@ -95,7 +95,7 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 	{
 		const SEGMENT  *NextSegment = GetFirst (Section->Segments);
 		const SYMBOL   *NextSymbol  = GetFirst (Section->Symbols);
-		const RELOC    *NextReloc   = GetFirst (Section->Relocs);
+		const RELOC    *NextReloc   = TreeFirst(Section->Relocs);
 		const ROM_CALL *NextROMCall = GetFirst (Section->ROMCalls);
 		const RAM_CALL *NextRAMCall = GetFirst (Section->RAMCalls);
 		const LIB_CALL *NextLibCall = GetFirst (Section->LibCalls);

@@ -61,7 +61,7 @@ static COUNT GetRelocCountFromTo (const SECTION *Src, const SECTION *Dest)
 {
 	COUNT Result = 0;
 	RELOC *Reloc;
-	for_each (Reloc, Src->Relocs)
+	tree_for_each (Reloc, Src->Relocs)
 	{
 		SYMBOL *TargetSymbol = Reloc->Target.Symbol;
 		if (TargetSymbol && TargetSymbol->Parent == Dest && M68kIsRelocOptimizable (Reloc))
@@ -575,7 +575,7 @@ static COUNT ComputeGoodness(SECTION **Sections, COUNT RecursionDepth,
 		RELOC *Reloc;
 		HandledSection = *PHandledSection;
 		// Look for references FROM the handled section TO the current section.
-		for_each (Reloc, HandledSection->Relocs)
+		tree_for_each (Reloc, HandledSection->Relocs)
 		{
 			if (!Reloc->Relation && Reloc->Target.Symbol
 			    && Reloc->Target.Symbol->Parent == CurrentSection)
@@ -592,7 +592,7 @@ static COUNT ComputeGoodness(SECTION **Sections, COUNT RecursionDepth,
 			}
 		}
 		// Look for references TO the handled section FROM the current section.
-		for_each (Reloc, CurrentSection->Relocs)
+		tree_for_each (Reloc, CurrentSection->Relocs)
 		{
 			if (!Reloc->Relation && Reloc->Target.Symbol
 			    && Reloc->Target.Symbol->Parent == HandledSection)

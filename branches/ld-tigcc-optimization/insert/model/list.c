@@ -65,13 +65,13 @@ OFFSET RelocListModel (SECTION *SourceSection, RELOC **NextItem, RELOC_USER_DATA
 	// with this SourceSection. The caller cannot fill *NextItem because it does
 	// not know how to get the first item.
 	if (!(*NextItem))
-		*NextItem = GetFirst (SourceSection->Relocs);
+		*NextItem = TreeFirst (SourceSection->Relocs);
 	
 	// Loop until we are done with counting or can return the next reloc that is
 	// important for us.
 	while ((CurReloc = *NextItem))
 	{
-		*NextItem = GetNext (CurReloc);
+		*NextItem = TreeNext (CurReloc);
 		
 		// Returning a location < 0 would be fatal, since it means we are done.
 		if ((CurReloc->Location >= 0) && (CurReloc->Location + CurReloc->Size <= SourceSection->Size))
