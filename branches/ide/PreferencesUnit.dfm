@@ -5,7 +5,7 @@ object PreferencesForm: TPreferencesForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Preferences'
-  ClientHeight = 321
+  ClientHeight = 365
   ClientWidth = 321
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,12 +20,12 @@ object PreferencesForm: TPreferencesForm
   OnShow = FormShow
   DesignSize = (
     321
-    321)
+    365)
   PixelsPerInch = 96
   TextHeight = 13
   object OKButton: TButton
     Left = 144
-    Top = 288
+    Top = 332
     Width = 81
     Height = 25
     Anchors = [akRight, akBottom]
@@ -36,7 +36,7 @@ object PreferencesForm: TPreferencesForm
   end
   object CancelButton: TButton
     Left = 232
-    Top = 288
+    Top = 332
     Width = 81
     Height = 25
     Anchors = [akRight, akBottom]
@@ -49,7 +49,7 @@ object PreferencesForm: TPreferencesForm
     Left = 8
     Top = 8
     Width = 305
-    Height = 273
+    Height = 317
     ActivePage = GeneralSheet
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 2
@@ -174,46 +174,62 @@ object PreferencesForm: TPreferencesForm
       ImageIndex = 3
       DesignSize = (
         297
-        245)
+        289)
       object TargetBox: TGroupBox
         Left = 16
         Top = 16
         Width = 265
-        Height = 209
+        Height = 253
         Anchors = [akLeft, akTop, akRight]
         Caption = '&Target'
         TabOrder = 0
+        OnClick = TargetBoxClick
         DesignSize = (
           265
-          209)
+          253)
         object VTIBox: TRadioButton
+          Left = 16
+          Top = 82
+          Width = 65
+          Height = 17
+          Hint = '89/92/92+ HW1/2, known bugs but faster'
+          Caption = '&Virtual TI'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 4
+          OnClick = TargetBoxClick
+        end
+        object TIEmuBox: TRadioButton
           Left = 16
           Top = 38
           Width = 65
           Height = 17
+          Hint = 'all models, many more features but larger and slower'
           Caption = 'TiE&mu'
           Checked = True
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 1
           TabStop = True
           OnClick = TargetBoxClick
         end
         object RealCalcBox: TRadioButton
           Left = 16
-          Top = 82
+          Top = 126
           Width = 97
           Height = 17
           Caption = 'R&eal Calculator'
-          TabOrder = 4
+          TabOrder = 7
           OnClick = TargetBoxClick
         end
         object PortBox: TGroupBox
           Left = 35
-          Top = 101
+          Top = 145
           Width = 78
           Height = 93
           Caption = 'Link &Port'
           Enabled = False
-          TabOrder = 5
+          TabOrder = 8
           object PortCOM1Box: TRadioButton
             Left = 10
             Top = 20
@@ -253,12 +269,12 @@ object PreferencesForm: TPreferencesForm
         end
         object CableBox: TGroupBox
           Left = 123
-          Top = 101
+          Top = 145
           Width = 126
           Height = 93
           Caption = 'C&able Type'
           Enabled = False
-          TabOrder = 6
+          TabOrder = 9
           object CableBlackBox: TRadioButton
             Left = 10
             Top = 28
@@ -289,6 +305,14 @@ object PreferencesForm: TPreferencesForm
         end
         object VTIPathEdit: TEdit
           Left = 35
+          Top = 100
+          Width = 158
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 5
+        end
+        object TIEmuPathEdit: TEdit
+          Left = 35
           Top = 56
           Width = 158
           Height = 21
@@ -297,13 +321,23 @@ object PreferencesForm: TPreferencesForm
         end
         object VTIPathBrowseButton: TButton
           Left = 196
+          Top = 100
+          Width = 53
+          Height = 21
+          Anchors = [akTop, akRight]
+          Caption = '&Browse...'
+          TabOrder = 6
+          OnClick = VTIPathBrowseButtonClick
+        end
+        object TIEmuPathBrowseButton: TButton
+          Left = 196
           Top = 56
           Width = 53
           Height = 21
           Anchors = [akTop, akRight]
           Caption = '&Browse...'
           TabOrder = 3
-          OnClick = VTIPathBrowseButtonClick
+          OnClick = TIEmuPathBrowseButtonClick
         end
       end
     end
@@ -312,7 +346,7 @@ object PreferencesForm: TPreferencesForm
       ImageIndex = 1
       DesignSize = (
         297
-        245)
+        289)
       object Label2: TLabel
         Left = 16
         Top = 17

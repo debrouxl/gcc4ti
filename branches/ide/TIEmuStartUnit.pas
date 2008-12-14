@@ -19,7 +19,7 @@
   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 }
 
-unit VTIStartUnit;
+unit TIEmuStartUnit;
 
 interface
 
@@ -29,7 +29,7 @@ uses
 	StdCtrls, ExtCtrls, ComObj, ActiveX, TiEmuOLELib_TLB;
 
 type
-	TVTIStartForm = class(TForm)
+	TTIEmuStartForm = class(TForm)
 		Label1: TLabel;
 		CancelButton: TButton;
     FindTimer: TTimer;
@@ -49,30 +49,30 @@ implementation
 uses
 	UtilsWin;
 
-procedure TVTIStartForm.FormShow(Sender: TObject);
+procedure TTIEmuStartForm.FormShow(Sender: TObject);
 var
 	StartupInfo: TStartupInfo;
 	ProcessInfo: TProcessInformation;
 begin
 	FillChar (StartupInfo, SizeOf (StartupInfo), 0);
 	StartupInfo.cb := SizeOf (StartupInfo);
-	if CreateProcess (nil, PChar (VTIPath), nil, nil, False, CREATE_NEW_PROCESS_GROUP or DETACHED_PROCESS, nil, PChar (ExtractFilePath (VTIPath)), StartupInfo, ProcessInfo) then begin
+	if CreateProcess (nil, PChar (TIEmuPath), nil, nil, False, CREATE_NEW_PROCESS_GROUP or DETACHED_PROCESS, nil, PChar (ExtractFilePath (TIEmuPath)), StartupInfo, ProcessInfo) then begin
 		ProcessHandle := ProcessInfo.hProcess;
 		CloseHandle (ProcessInfo.hThread);
 	end else begin
-		ShowDefaultMessageBox ('An error occurred while trying to start Virtual TI.', 'Error', mtProgramError);
+		ShowDefaultMessageBox ('An error occurred while trying to start TiEmu.', 'Error', mtProgramError);
 		ModalResult := mrAbort;
 	end;
 end;
 
-procedure TVTIStartForm.FormClose(Sender: TObject;
+procedure TTIEmuStartForm.FormClose(Sender: TObject;
 	var Action: TCloseAction);
 begin
 	if ProcessHandle <> 0 then
 		CloseHandle (ProcessHandle);
 end;
 
-procedure TVTIStartForm.FindTimerTimer(Sender: TObject);
+procedure TTIEmuStartForm.FindTimerTimer(Sender: TObject);
 var
 	ExitCode: Cardinal;
 	Unknown: IUnknown;

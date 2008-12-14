@@ -61,8 +61,9 @@ type
 	TSpecialSupportOption = (ssA68k, ssQuill, ssPack, ssFlashOS, ssFargo);
 	TSpecialSupport = set of TSpecialSupportOption;
 	TProjectTarget = (ptRegular, ptFlashOS, ptFargo, ptArchive);
-	TTransferTarget = (ttNone, ttVTI, ttCalc);
-	TTiEmuCalcType = (cvNone = 0, cvTI92 = 1, cvTI89 = 2, cvTI92Plus = 4, cvV200 = 8, cvTI89Ti = 16);
+	TTransferTarget = (ttNone, ttVTI, ttCalc, ttTIEmu);
+	TVTICalcType = (cvVTINone, cvVTITI89, cvVTITI92Plus, cvVTITI92);
+	TTiEmuCalcType = (cvTIEmuNone = 0, cvTIEmuTI92 = 1, cvTIEmuTI89 = 2, cvTIEmuTI92Plus = 4, cvTIEmuV200 = 8, cvTIEmuTI89Ti = 16);
 	TKernelFormat = (kfUnknown, kfNone, kfStandard, kfCompressedTables);
 	TRelocFormat = (rfUnknown, rfNone, rfDirect, rfAMS, rfKernel, rfCompressed, rfMlink, rfFLine);
 
@@ -143,6 +144,7 @@ var
 	LastNewsDate: Integer;
 	TransferTarget: TTransferTarget;
 	VTIPath: string;
+	TIEmuPath: string;
 	LinkPort: TLinkPort;
 	LinkCable: TLinkCableType;
 	SpecialSupport: TSpecialSupport;
