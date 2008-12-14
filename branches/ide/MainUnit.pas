@@ -4766,6 +4766,18 @@ end;
 
 procedure TMainForm.SendFiles(FNList: array of string);
 var
+	Win: HWnd;
+procedure SendKey(Key: Byte);
+begin
+	PostMessage (Win, WM_KEYDOWN, Key, 0);
+	PostMessage (Win, WM_KEYUP, Key, 0);
+end;
+var
+	EditWin,
+	ButtonWin: HWnd;
+	StartTime: Cardinal;
+	FileString: string;
+	Name: array [0..32] of Char;
 	I: Integer;
 	FirstI: Integer;
 	TiEmuInterface: ITiEmuOLE;
@@ -4848,6 +4860,63 @@ begin
 			finally
 				Enabled := True;
 			end;
+		end else if TransferTarget = ttVTI then begin
+			Win := GetVTIWindow;
+			GetWindowThreadProcessID (Win, @ProcID);
+			SendKey (VK_SCROLL);
+			SendKey (VK_ESCAPE);
+			if CurVTIType = cvVTITI89 then
+				SendKey (VK_HOME);
+			SendKey (VK_F10);
+			StartTime := GetTickCount;
+			SendWin := 0;
+			repeat
+				EnumWindows (@EnumWindowsFunc, 0);
+			until (SendWin <> 0) or (GetTickCount - StartTime >= 10000);
+			if SendWin = 0 then begin
+				ShowDefaultMessageBox ('Error displaying send dialog.', 'Error', mtProgramError);
+				Abort;
+			end else begin
+				SetForegroundWindow (SendWin);
+				repeat
+					EditWin := GetWindow (SendWin, GW_CHILD);
+					GetClassName (EditWin, Name, 32);
+					while (EditWin <> 0) and (UpperCase (AnsiString (Name)) <> 'EDIT') do begin
+						EditWin := GetWindow (EditWin, GW_HWNDNEXT);
+						if EditWin <> 0 then
+							GetClassName (EditWin, Name, 32);
+					end;
+					if EditWin <> 0 then begin
+						StartTime := GetTickCount;
+						while (SendMessage (EditWin, WM_GETTEXTLENGTH, 0, 0) <= 0) and (GetTickCount - StartTime < 5000) do;
+						FileString := '';
+						for I := Low (FNList) to High (FNList) do begin
+							if CurVTIType = cvVTITI92Plus then
+								FNList [I] := StringReplace (FNList [I], '.89', '.9x', []);
+							if not FileExists (FNList [I]) then begin
+								ShowDefaultMessageBox ('The file "' + FNList [I] + '" could not be found.', 'Error', mtProgramError);
+								Abort;
+							end;
+							Insert ('"' + FNList [I] + '" ', FileString, Length (FileString) + 1);
+						end;
+						Delete (FileString, Length (FileString), 1);
+						SendMessage (EditWin, WM_SETTEXT, 0, Integer (PChar (FileString)));
+					end;
+					ButtonWin := GetWindow (SendWin, GW_CHILD);
+					GetClassName (ButtonWin, Name, 32);
+					while (ButtonWin <> 0) and ((UpperCase (AnsiString (Name)) <> 'BUTTON') or ((GetWindowLong (ButtonWin, GWL_STYLE) and BS_DEFPUSHBUTTON) = 0) or ((GetWindowLong (ButtonWin, GWL_STYLE) and BS_CHECKBOX) <> 0)) do begin
+						ButtonWin := GetWindow (ButtonWin, GW_HWNDNEXT);
+						if ButtonWin <> 0 then
+							GetClassName (ButtonWin, Name, 32);
+					end;
+				until SendMessage (EditWin, WM_GETTEXTLENGTH, 0, 0) >= Length (FNList [Low (FNList)]);
+				if ButtonWin <> 0 then begin
+					SendMessage (ButtonWin, WM_LBUTTONDOWN, 0, 0);
+					SendMessage (ButtonWin, WM_LBUTTONUP, 0, 0);
+				end;
+			end;
+			ShowWindow (Win, SW_SHOWNORMAL);
+			SetForegroundWindow (Win);
 		end else if TransferTarget = ttCalc then begin
 			FillChar (Connection, SizeOf (Connection), 0);
 			Connection.Port := LinkPort;
@@ -4916,6 +4985,15 @@ end;
 
 procedure TMainForm.ExecuteCommandLine(const Line: string);
 var
+	Win: HWnd;
+procedure SendKey(Key: Byte);
+begin
+	SendMessage (Win, WM_KEYDOWN, Key, 0);
+	SendMessage (Win, WM_KEYUP, Key, 0);
+	Sleep (20);
+end;
+var
+	I: Integer;
 	TiEmuInterface: ITiEmuOLE;
 	Connection: TLinkConnection;
 begin
@@ -4927,6 +5005,39 @@ begin
 			ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
 			Abort;
 		end;
+  end else if TransferTarget = ttVTI then begin
+		Win := GetVTIWindow;
+		SendKey (VK_SCROLL);
+		SendKey (VK_ESCAPE);
+		SendKey (VK_ESCAPE);
+		if CurVTIType = cvVTITI89 then
+			SendKey (VK_HOME);
+		SendKey (VK_DELETE);
+		SendKey (VK_DELETE);
+		for I := 1 to Length (Line) do
+			if Line [I] in ['A'..'Z', 'a'..'z', '0'..'9'] then
+				SendKey (Byte (UpCase (Line [I])))
+			else if Line [I] = '(' then
+				SendKey ($DB)
+			else if Line [I] = ')' then
+				SendKey ($DD)
+			else if Line [I] = ',' then
+				SendKey ($BC)
+			else if Line [I] = '.' then
+				SendKey (VK_DECIMAL)
+			else if Line [I] = '+' then
+				SendKey (VK_ADD)
+			else if Line [I] = '-' then
+				SendKey (VK_SUBTRACT)
+			else if Line [I] = '*' then
+				SendKey (VK_MULTIPLY)
+			else if Line [I] = '/' then
+				SendKey (VK_DIVIDE)
+			else if Line [I] = '\' then begin
+				SendKey (VK_MENU);
+				SendKey (Byte ('2'));
+			end;
+		SendKey (VK_RETURN);
 	end else if TransferTarget = ttCalc then begin
 		FillChar (Connection, SizeOf (Connection), 0);
 		Connection.Port := LinkPort;
@@ -4988,25 +5099,52 @@ end;
 
 procedure TMainForm.DebugPause(Sender: TObject);
 var
+	Win: HWnd;
 	TiEmuInterface: ITiEmuOLE;
+procedure SendKey(Key: Byte);
 begin
+	PostMessage (Win, WM_KEYDOWN, Key, 0);
+	PostMessage (Win, WM_KEYUP, Key, 0);
+end;
+begin
+  if TransferTarget = ttTIEmu then begin
 	TiEmuInterface := GetTiEmuInterface;
 	try
 		TiEmuInterface.enter_debugger;
 	except
 		ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+    end
+	end else if TransferTarget = ttVTI then begin
+	  Win := GetVTIWindow;
+  	SendKey (VK_F11);
+	  ShowWindow (Win, SW_SHOWNORMAL);
+  	SetForegroundWindow (Win);
 	end;
 end;
 
 procedure TMainForm.DebugReset(Sender: TObject);
 var
+	Win: HWnd;
 	TiEmuInterface: ITiEmuOLE;
+procedure SendKey(Key: Byte);
 begin
+	PostMessage (Win, WM_KEYDOWN, Key, 0);
+	PostMessage (Win, WM_KEYUP, Key, 0);
+end;
+begin
+  if TransferTarget = ttTIEmu then begin
 	TiEmuInterface := GetTiEmuInterface;
 	try
 		TiEmuInterface.reset_calc(False);
 	except
 		ShowDefaultMessageBox ('OLE function call failed.', 'Error', mtProgramError);
+    end
+	end	else if TransferTarget = ttVTI then begin
+  	Win := GetVTIWindow;
+  	SendKey (VK_APPS);
+	  SendKey (Byte ('T'));
+  	ShowWindow (Win, SW_SHOWNORMAL);
+	  SetForegroundWindow (Win);
 	end;
 end;
 
