@@ -10,7 +10,7 @@
 #define INT_FAST32_MIN (-2147483647L)
 #define INT_FAST64_MAX (9223372036854775807LL)
 #define INT_FAST64_MIN (-9223372036854775807LL)
-#define INT_FAST8_MAX (127)
+#define INT_FAST8_MAX (32767)
 #define INT_FAST8_MIN (-127)
 #define INT_LEAST16_MAX (32767)
 #define INT_LEAST16_MIN (-32767)
@@ -35,7 +35,7 @@
 #define UINT_FAST16_MAX (65535)
 #define UINT_FAST32_MAX (4294967295UL)
 #define UINT_FAST64_MAX (18446744073709551615ULL)
-#define UINT_FAST8_MAX (255)
+#define UINT_FAST8_MAX (65535)
 #define UINT_LEAST16_MAX (65535)
 #define UINT_LEAST32_MAX (4294967295U)
 #define UINT_LEAST64_MAX (18446744073709551615ULL)
@@ -49,7 +49,7 @@
 typedef short int int_fast16_t;
 typedef long int int_fast32_t;
 typedef long long int int_fast64_t;
-typedef signed char int_fast8_t;
+typedef short int int_fast8_t;
 typedef short int int_least16_t;
 typedef long int int_least32_t;
 typedef long long int int_least64_t;
@@ -63,7 +63,7 @@ typedef long int intptr_t;
 typedef unsigned short int uint_fast16_t;
 typedef unsigned long int uint_fast32_t;
 typedef unsigned long long int uint_fast64_t;
-typedef unsigned char uint_fast8_t;
+typedef unsigned short int uint_fast8_t;
 typedef unsigned short int uint_least16_t;
 typedef unsigned long int uint_least32_t;
 typedef unsigned long long int uint_least64_t;
