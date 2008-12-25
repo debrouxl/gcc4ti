@@ -77,6 +77,7 @@ type
     TransferSheet: TTabSheet;
     TargetBox: TGroupBox;
     VTIBox: TRadioButton;
+    TIEmuBox: TRadioButton;
     RealCalcBox: TRadioButton;
     PortBox: TGroupBox;
     PortCOM1Box: TRadioButton;
@@ -89,6 +90,8 @@ type
     NoneBox: TRadioButton;
     VTIPathEdit: TEdit;
     VTIPathBrowseButton: TButton;
+    TIEmuPathEdit: TEdit;
+    TIEmuPathBrowseButton: TButton;
     BrowseDlg: TOpenDialog;
     DragDropEditCheckBox: TCheckBox;
     RemoveTrailingSpcCheckBox: TCheckBox;
@@ -122,6 +125,7 @@ type
 		procedure PageControllerChange(Sender: TObject);
     procedure TargetBoxClick(Sender: TObject);
     procedure VTIPathBrowseButtonClick(Sender: TObject);
+    procedure TIEmuPathBrowseButtonClick(Sender: TObject);
 	private
 	public
 		BackColor: TColor;
@@ -473,6 +477,8 @@ procedure TPreferencesForm.TargetBoxClick(Sender: TObject);
 begin
 	VTIPathEdit.Enabled := VTIBox.Checked;
 	VTIPathBrowseButton.Enabled := VTIPathEdit.Enabled;
+	TIEmuPathEdit.Enabled := TIEmuBox.Checked;
+	TIEmuPathBrowseButton.Enabled := TIEmuPathEdit.Enabled;
 	PortBox.Enabled := RealCalcBox.Checked;
 	PortCOM1Box.Enabled := PortBox.Enabled;
 	PortCOM2Box.Enabled := PortBox.Enabled;
@@ -489,6 +495,15 @@ begin
 		FileName := VTIPathEdit.Text;
 		if Execute then
 			VTIPathEdit.Text := FileName;
+	end;
+end;
+
+procedure TPreferencesForm.TIEmuPathBrowseButtonClick(Sender: TObject);
+begin
+	with BrowseDlg do begin
+		FileName := TIEmuPathEdit.Text;
+		if Execute then
+			TIEmuPathEdit.Text := FileName;
 	end;
 end;
 

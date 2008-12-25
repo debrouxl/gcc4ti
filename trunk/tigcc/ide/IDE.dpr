@@ -49,6 +49,7 @@ uses
 	ToolPropertiesUnit in 'ToolPropertiesUnit.pas' {ToolPropertiesForm},
 	ProgramOutputUnit in 'ProgramOutputUnit.pas' {ProgramOutputForm},
 	VTIStartUnit in 'VTIStartUnit.pas' {VTIStartForm},
+	TIEmuStartUnit in 'TIEmuStartUnit.pas' {TIEmuStartForm},
 {$IFDEF CODINGEXT}
 	CodeCompletion in 'CodeCompletion\CodeCompletion.pas',
 	CompletionForm in 'CodeCompletion\CompletionForm.pas' {CompForm},

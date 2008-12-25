@@ -1,10 +1,10 @@
-object VTIStartForm: TVTIStartForm
+object TIEmuStartForm: TTIEmuStartForm
   Left = 211
   Top = 165
   ActiveControl = CancelButton
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'Starting Virtual TI...'
+  Caption = 'Starting TiEmu...'
   ClientHeight = 86
   ClientWidth = 241
   Color = clBtnFace
@@ -26,7 +26,7 @@ object VTIStartForm: TVTIStartForm
     Height = 13
     Alignment = taCenter
     AutoSize = False
-    Caption = 'Please wait while Virtual TI is being started...'
+    Caption = 'Please wait while TiEmu is being started...'
   end
   object CancelButton: TButton
     Left = 80
