@@ -1,5 +1,6 @@
-#TPRbuilder makefile
-#Copyright (C) 2003, Kevin Kofler
+# TPRbuilder makefile
+# Copyright (C) 2003, Kevin Kofler
+# Copyright (C) 2009, Lionel Debroux
 
 ifeq ($(OSTYPE), msys)
 EXEEXT = .exe
@@ -9,7 +10,7 @@ endif
 
 all: tprbuilder$(EXEEXT)
 
-CC = gcc
+CC ?= gcc
 CFLAGS = -Os -s -fno-exceptions
 WARN_CFLAGS = -Wall -W -Wwrite-strings
 

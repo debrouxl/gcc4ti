@@ -1,3 +1,7 @@
+# ld-tigcc makefile
+# Copyright (C) 2002-2009, Kevin Kofler
+# Copyright (C) 2009, Lionel Debroux
+
 ifeq ($(OSTYPE), msys)
 EXEEXT = .exe
 else
@@ -14,7 +18,7 @@ else
 ALL_TARGETS = $(LD_TIGCC) $(AR_TIGCC)
 endif
 
-CC = gcc
+CC ?= gcc
 CFLAGS = -s -Os -fno-exceptions
 WARN_CFLAGS = -W -Wall -Wwrite-strings -Wpointer-arith
 DEFINES = -DCOFF_SUPPORT -DAMIGAOS_SUPPORT -DTIOS_SUPPORT -DFLASH_OS_SUPPORT -DNOSTUB_DLL_SUPPORT -DFARGO_SUPPORT -DDATA_VAR_SUPPORT -DTIOS_FILE_SUPPORT -DTIOS_UPGRADE_FILE_SUPPORT -DDEBUGGING_INFO_SUPPORT -DCOFF_TIGCC_EXTENSIONS -DAMIGAOS_TIGCC_EXTENSIONS
