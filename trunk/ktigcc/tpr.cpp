@@ -3,7 +3,7 @@
    
    tpr handling routines adapted from tprbuilder
    Copyright (C) 2002 Romain Liévin
-   Copyright (C) 2002-2007 Kevin Kofler
+   Copyright (C) 2002-2009 Kevin Kofler
    Copyright (C) 2006 Joey Adams
 
    This program is free software; you can redistribute it and/or modify
@@ -318,7 +318,6 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
                 continue; \
             } else
             
-//this new macro was added to make merging with save_tpr more consistent.
 #define minams_param(token,setting) \
             if ( (p=find_param(buffer, "Minimum AMS Version=")) ) \
             { \
@@ -338,7 +337,7 @@ static int parse_file(FILE *f,TPRDataStruct *dest)
             boolean_param("Use Kernel=",use_kernel)
             boolean_param("Use PreOS=",use_preos)
             boolean_param("Minimum AMS Version Defined=",use_minams)
-            minams_param("Minimum AMS Version=",minams);
+            minams_param("Minimum AMS Version=",minams)
             boolean_param("Unofficial OS Support=",unofficial_os)
             reloc_param("Reloc Format=",reloc_format)
             reloc_param("ROM Call Format=",rom_call_format)
@@ -700,7 +699,7 @@ static int save_tpr(FILE *f,TPRDataStruct *dest)
     boolean_param("Use Kernel=",use_kernel)
     boolean_param("Use PreOS=",use_preos)
     boolean_param("Minimum AMS Version Defined=",use_minams)
-    minams_param("Minimum AMS Version=",minams);
+    minams_param("Minimum AMS Version=",minams)
     boolean_param("Unofficial OS Support=",unofficial_os)
     reloc_param("Reloc Format=",reloc_format)
     reloc_param("ROM Call Format=",rom_call_format)

@@ -9,7 +9,7 @@
 /*
    ktigcc - TIGCC IDE for KDE
 
-   Copyright (C) 2004-2007 Kevin Kofler
+   Copyright (C) 2004-2009 Kevin Kofler
    Copyright (C) 2006 Joey Adams
 
    This program is free software; you can redistribute it and/or modify
@@ -4385,7 +4385,7 @@ void MainForm::linkProject()
       char dextswrapped[numTargets][5]={".89y",".9xy",".v2y"};
       char (*dexts)[5]=(settings.outputbin&&!settings.pack)?dextsbin:dextswrapped;
       for (int target=0; target<numTargets; target++) {
-        if (targeted[numTargets]) {
+        if (targeted[target]) {
           qdir.remove(projectBaseName+"-data"+dexts[target]);
           if (!moveFile(linkOutput+dexts[target],
                         projectBaseName+"-data"+dexts[target])) {
