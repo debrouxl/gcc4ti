@@ -45,11 +45,11 @@ enum CommonKeys{KEY_F1=268,KEY_F2=269,KEY_F3=270,KEY_F4=271,KEY_F5=272,KEY_F6=27
 enum GKeyFlags{GKF_NORMAL=0,GKF_MODAL=1,GKF_REPUSH_KEY=2,GKF_ACCEPT=4,GKF_SYS=8,GKF_NO_EVS=16};
 enum StatKeys{STAT_2ND=1,STAT_DIAMOND=2,STAT_SHIFT=3,STAT_HAND=4};
 #define OSFastArrows (*((unsigned char*)(_rom_call_addr_hack_concat(0x15C,_ROM_CALL_15C,((unsigned char*)((unsigned long)(*(((short*)(_rom_call_addr(51)))+0x80)))),200,0x508))))
-#define _keytest_optimized(rowcol...) (__keytest_optimized(rowcol))
 #define _keytest(rowcol...) (__keytest(rowcol))
+#define _keytest_optimized(rowcol...) (__keytest_optimized(rowcol))
+extern unsigned short _rowread(short asm("d0"))__ATTR_LIB_ASM__;
 #define _rowread_internal(row) (~(_rowread(row)))
 #define _rowread_inverted(row) (_rowread(~((short)(row))))
-extern unsigned short _rowread(short asm("d0"))__ATTR_LIB_ASM__;
 #define GKeyDown ({__need_in_use_bit;_rom_call(short,(void),17F);})
 #define GKeyFlush ({__need_in_use_bit;_rom_call(void,(void),180);})
 #define GKeyIn ({__need_in_use_bit;_rom_call(short,(SCR_RECT*,short),17E);})

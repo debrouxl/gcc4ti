@@ -51,8 +51,8 @@ extern unsigned short fwrite(const void*,short,short,FILE*)__ATTR_LIB_C__;
 #define getchar fgetchar
 extern char *gets(char* asm("a2"))__ATTR_LIB_ASM__;
 extern char *getsn(char* asm("a2"),long asm("d3"))__ATTR_LIB_ASM__;
-#define printf_xy(x,y,f...) ({char __s[200];_rom_call_attr(short,(char*,const char*,...),__attribute__((__format__(__printf__,2,3))),53)(__s ,##f);_rom_call(void,(short,short,const char*,short),1A9)(x,y,__s,4);})
 extern void printf(const char*,...)__ATTR_TIOS__;
+#define printf_xy(x,y,f...) ({char __s[200];_rom_call_attr(short,(char*,const char*,...),__attribute__((__format__(__printf__,2,3))),53)(__s ,##f);_rom_call(void,(short,short,const char*,short),1A9)(x,y,__s,4);})
 #define putc fputc
 #define putchar fputchar
 extern void puts(const char*)__ATTR_LIB_ASM__;

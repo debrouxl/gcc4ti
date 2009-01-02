@@ -62,13 +62,13 @@ typedef short WIN_COORDS;
 #define __HAVE_WIN_RECT
 typedef struct{short x0,y0,x1,y1;}WIN_RECT;
 #endif
-#ifndef __HAVE_WINDOW_AMS1
-#define __HAVE_WINDOW_AMS1
-typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
-#endif
 #ifndef __HAVE_WINDOW
 #define __HAVE_WINDOW
 typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
+#endif
+#ifndef __HAVE_WINDOW_AMS1
+#define __HAVE_WINDOW_AMS1
+typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
 #endif
 #ifndef __HAVE_WinFlags
 #define __HAVE_WinFlags

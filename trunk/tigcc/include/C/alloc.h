@@ -22,11 +22,11 @@ typedef unsigned short HANDLE;
 #define __HAVE_alloca
 void *alloca(long)__ATTR_GCC__;
 #endif
-extern void *calloc_throw(short asm("d0"),short asm("d1"))__ATTR_LIB_ASM__;
 #ifndef __HAVE_calloc
 #define __HAVE_calloc
 extern void *calloc(short asm("d0"),short asm("d1"))__ATTR_LIB_ASM__;
 #endif
+extern void *calloc_throw(short asm("d0"),short asm("d1"))__ATTR_LIB_ASM__;
 #define free _rom_call(void,(void*),A3)
 #define FreeHandles _rom_call(short,(void),23B)
 #define HeapAlloc _rom_call(HANDLE,(long),90)
@@ -54,13 +54,13 @@ extern HANDLE HeapReallocThrow(HANDLE asm("d0"),long asm("a0"))__ATTR_LIB_ASM__;
 #define HeapSize _rom_call(unsigned long,(HANDLE),9E)
 #define HeapUnlock _rom_call(HANDLE,(HANDLE),9F)
 #define HLock _rom_call(void*,(HANDLE),99)
-extern void *malloc_throw(long asm("a0"))__ATTR_LIB_ASM__;
 #define malloc _rom_call(void*,(long),A2)
-extern void *realloc_throw(void* asm("a0"),long asm("d0"))__ATTR_LIB_ASM__;
+extern void *malloc_throw(long asm("a0"))__ATTR_LIB_ASM__;
 #ifndef __HAVE_realloc
 #define __HAVE_realloc
 extern void *realloc(void* asm("a0"),long asm("d0"))__ATTR_LIB_ASM__;
 #endif
+extern void *realloc_throw(void* asm("a0"),long asm("d0"))__ATTR_LIB_ASM__;
 #if MIN_AMS>=200
 enum HeapWalkCmds{H_WALK_VERIFY=0,H_WALK_STATUS=1,H_WALK_DUMP=2
 #if MIN_AMS>=204

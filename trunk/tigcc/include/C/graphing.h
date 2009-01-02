@@ -20,25 +20,25 @@ enum GraphModes{GR_FUNC=1,GR_PAR=2,GR_POL=3,GR_SEQ=4,GR_3D=5,GR_DE=6};
 #define __HAVE_HSym
 typedef struct{HANDLE folder;unsigned short offset;}HSym;
 #endif
-#ifndef __HAVE_WINDOW_AMS1
-#define __HAVE_WINDOW_AMS1
-typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
-#endif
 #ifndef __HAVE_WINDOW
 #define __HAVE_WINDOW
 typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
+#endif
+#ifndef __HAVE_WINDOW_AMS1
+#define __HAVE_WINDOW_AMS1
+typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
 #endif
 #ifndef __HAVE_DB3
 #define __HAVE_DB3
 typedef struct{long cVertices;HANDLE hVertices;long cEdges;HANDLE hEdges;HANDLE hContours;long ciVertices;HANDLE hiVertices;long ciEdges;HANDLE hiEdges;short DCM[3][3];short DCM0[3][3];short DCMhome[3][3];short cDCMangle;unsigned short nSpinDir;unsigned char nSpinSpeed;unsigned char bSpinning;short calp,salp;}DB3;
 #endif
-#ifndef __HAVE_EQU_DS_AMS1
-#define __HAVE_EQU_DS_AMS1
-typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
-#endif
 #ifndef __HAVE_EQU_DS
 #define __HAVE_EQU_DS
 typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS;
+#endif
+#ifndef __HAVE_EQU_DS_AMS1
+#define __HAVE_EQU_DS_AMS1
+typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
 #endif
 #ifndef __HAVE_FUNCID
 #define __HAVE_FUNCID
