@@ -1,6 +1,7 @@
 
-           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 9
+           GCC4TI Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 9
           ================================================================
+(based on TIGCC v0.96 Beta 8 + CVS modifications)
 
 Xavier Vassor       Xavier@tigcc.ticalc.org    (original linker and tigcc)
 Zeljko Juric        Zeljko@tigcc.ticalc.org    (library and documentation)
@@ -11,22 +12,24 @@ Niklas Brunlid      Niklas@tigcc.ticalc.org    (bugfixes and additions)
 Jean Canazzi        Jean@tigcc.ticalc.org      (first modification of GCC)
 Philipp Winkler     p.winkler@atn.nu           (library help file conversion)
 
-Email us at:        Team@tigcc.ticalc.org
+Lionel Debroux      lionel_debroux@yahoo.fr  
+Patrick Pelissier   patrick.pelissier@gmail.com
+
+Email us at:        tigccpp@box.godzil.net
 
 
                       +-------------------------------+
                       |        README CONTENTS        |
                       |===============================|
                       |  1. Disclaimer                |
-                      |  2. About TIGCC               |
+                      |  2. About GCC4TI              |
                       |  3. Installation              |
                       |  4. The Library               |
                       |  5. The Command Line Compiler |
                       |  6. The IDE                   |
                       |  7. Examples                  |
-                      |  8. Missing Features          |
-                      |  9. Bug Reports               |
-                      | 10. History                   |
+                      |  8. Bug Reports               |
+                      |  9. History                   |
                       +-------------------------------+
 
 1. Disclaimer
@@ -34,14 +37,14 @@ Email us at:        Team@tigcc.ticalc.org
 
 Original files Copyright (C) 1999-2005 Xavier Vassor, Niklas Brunlid,
                                        and Jean Canazzi
-ld-tigcc Copyright (C) 2002-2008 Sebastian Reichelt and Kevin Kofler
-Library & Documentation Copyright (C) 2000-2007 Zeljko Juric and contributors
-IDE Copyright (C) 2000-2007 Sebastian Reichelt and contributors
-TIGCC Tools Suite Copyright (C) 2000-2004 Thomas Nussbaumer
+ld-tigcc Copyright (C) 2002-2009 Sebastian Reichelt and Kevin Kofler
+Library & Documentation Copyright (C) 2000-2009 Zeljko Juric and contributors
+IDE Copyright (C) 2000-2009 Sebastian Reichelt and contributors
+TIGCC Tools Suite Copyright (C) 2000-2009 Thomas Nussbaumer
                                           (http://tict.ticalc.org/)
 
 Included programs with different licenses:
-A68k Copyright (C) 1987-2005 Charlie Gibbs, David Ellsworth, Kevin Kofler,
+A68k Copyright (C) 1987-2009 Charlie Gibbs, David Ellsworth, Kevin Kofler,
                              Julien Muchembled, and Paul Froissart
 
 Setup executable created using NSIS (http://nsis.sourceforge.net) and
@@ -67,51 +70,36 @@ beyond the GPL.
 
 A different license applies to A68k.
 
-Official Release: http://www.ticalc.org/pub/win/asm/tigcc.zip
-     Source Code: http://www.ticalc.org/pub/win/asm/tigccsrc.zip
-Beta Version: http://tigcc.ticalc.org/beta/tigcc.zip
- Source Code: http://tigcc.ticalc.org/beta/tigccsrc.zip
 
-2. About TIGCC
+2. About GCC4TI
 --------------
 
-TIGCC is our attempt to make it possible to program in C for the TI-89 and
-TI-92 Plus. To do this we originally recompiled a version of GCC-M68k (which
-was found at http://fiddes.net/coldfire/) to make it work with the C calling
-convention used by TI's compiler. Much later, this was replaced by the
-original GCC found at http://www.cygwin.com. Then we wrote a linker to make
-it produce .89z or .9xz files. And since we also wanted to allow the use of
-assembly, we programmed it so that you can use the .asm files and compile
-them with a68k. Finally we wrote tigcc.exe, a program which will
-automatically call the necessary programs to compile everything you specify
-in the command line. Additional items, such as the TIGCC Library and the IDE,
-have been added to TIGCC over time. The most recent important change is the
-addition of native floating point support, which was made possible by
-recompiling GCC again.
+GCC4TI is a fork ( http://en.wikipedia.org/wiki/Fork_(software_development) )
+of TIGCC, with different goals and different planning.
 
-Please check out tigcc.ticalc.org, the official TIGCC site, for more
-information.
+Please check out http://trac.godzil.net/gcc4ti/ , the official GCC4TI site,
+for more information on the todo/wish list.
 
 3. Installation
 ---------------
 
-In the ZIP file containing TIGCC, you will find a program called 'Setup.exe'.
-Run this program and follow the instructions of the setup program. It will
-add a few new items to your start menu, so you should not use a program group
-that already exists.
+In the ZIP file containing GCC4TI, you will find a program called
+'setup-gcc4ti.exe'. Run this program and follow the instructions of the setup
+program. It will add a few new items to your start menu, so you should not
+use a program group that already exists.
 
-If you want to uninstall TIGCC, you can do this at any time from either the
+If you want to uninstall GCC4TI, you can do this at any time from either the
 start menu or the control panel. Please be aware that this will remove the
 whole folder in which the program was installed, not only the files which
 were installed by the setup program.
 
-If you experience any problems installing TIGCC, or running it after it has
-been installed, please use the bug report form on tigcc.ticalc.org.
+If you experience any problems installing GCC4TI, or running it after it has
+been installed, please use the GCC4TI mailing list, tigccpp@box.godzil.net .
 
 4. The Library
 --------------
 
-The library included in this release of TIGCC is a collection of over 750
+The library included in this release of GCC4TI is a collection of over 750
 functions. With this library, it is possible to create kernel-free (so-called
 "nostub") programs as well as programs that make use of kernel features. A
 very detailed documentation in HTML Help format is included, in which more
@@ -155,7 +143,7 @@ non-standard options:
 
 -g
   The '-g' switch in GCC turns on debugging information in the preferred
-  format for the target. In TIGCC, this is DWARF 2, which can be used with a
+  format for the target. In GCC4TI, this is DWARF 2, which can be used with a
   GDB-enabled TiEmu.
 
 -standalone
@@ -171,7 +159,7 @@ non-standard options:
   This option is ignored for compatibility.
 
 For more info about standard options that are recognized by the compiler,
-have a look at the TIGCC Documentation, or visit
+have a look at the GCC4TI Documentation, or visit
 http://gcc.gnu.org/onlinedocs/gcc_3.html.
 
 In addition, you can use '-WA,...' instead of '-Wa,...' to pass options to
@@ -198,7 +186,7 @@ itself.
 -----------
 
 There are some examples made by Zeljko Juric in the folder "Examples". You
-can compile and modify them to learn how to use TIGCC. Most of them can also
+can compile and modify them to learn how to use GCC4TI. Most of them can also
 be found at some place in the documentation, with explanations and in some
 sort of context.
 
@@ -206,9 +194,9 @@ sort of context.
 --------------
 
 There may still be some bugs in the linker, in tigcc.exe, and in the IDE. If
-you encounter a bug, please use the bug report form on tigcc.ticalc.org.
+you encounter a bug, please use the GCC4TI mailing list, tigccpp@box.godzil.net
 
 9. History
 -----------
 
-See http://tigcc.ticalc.org/doc/info.html#history
+See http://tigcc.ticalc.org/doc/info.html#history for the TIGCC history.
