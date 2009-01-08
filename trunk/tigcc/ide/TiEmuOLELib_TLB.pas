@@ -11,7 +11,7 @@ unit TiEmuOLELib_TLB;
 // manual modifications will be lost.                                         
 // ************************************************************************ //
 
-// PASTLWTR : $Revision: 1.1 $
+// PASTLWTR : $Revision$
 // File generated on 10/29/06 7:32:18 PM from Type Library described below.
 
 // ************************************************************************  //

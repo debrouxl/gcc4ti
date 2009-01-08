@@ -56,7 +56,7 @@
 // DON'T EDIT THE NEXT REVISION BY HAND! THIS IS DONE AUTOMATICALLY BY THE
 // CVS SYSTEM !!!
 //-----------------------------------------------------------------------------
-#define CVS_FILE_REVISION "$Revision: 1.2 $"
+#define CVS_FILE_REVISION "$Revision$"
 
 
 //=============================================================================
