@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TIGCC Tools Suite
+* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
 * file name:       ttpack.c
 * initial date:    14/08/2000
 * authors:         albert@cs.tut.fi
@@ -9,22 +9,23 @@
 *
 * -----------------------------------------------------------------------------
 *
-* based on code from Pasi 'Albert' Ojala, albert@cs.tut.fi
+* Packing program using the PuCrunch algorithm.
+* Based on code from Pasi 'Albert' Ojala, albert@cs.tut.fi
+* Heavily reduced to fit to the needs by thomas.nussbaumer@gmx.net
 * Pucrunch 1997-2005 by Pasi 'Albert' Ojala, a1bert@iki.fi
+* See http://www.cs.tut.fi/~albert/Dev/pucrunch/ for details on the used algorithm
 * Pucrunch is under GNU LGPL:
 *  See http://creativecommons.org/licenses/LGPL/2.1/ or
 *      http://www.gnu.org/copyleft/lesser.html
+*
 *
 *  The decompression code is distributed under the
 *  WXWindows Library Licence:
 *  See http://www.wxwidgets.org/licence3.txt
 *
 *  In short: binary version of the decompression code can
-*  accompany the compressed data or used in decompression
+*  accompany the compressed data or be used in decompression
 *  programs.
-*
-* heavily reduced to fit to the needs by thomas.nussbaumer@gmx.net
-*
 ******************************************************************************/
 
 #ifndef __TTPACK__
@@ -43,18 +44,14 @@
 #include <time.h>
 
 #include "tt.h"          // generic defines
-#include "ttversion.h"   // tigcc tools suite version info
+#include "ttversion.h"   // GCC4TI Tools version info
 #include "revtools.h"    // used for id displaying
 #include "packhead.h"    // compressed header definition
 
-#ifdef CVS_FILE_REVISION
-#undef CVS_FILE_REVISION
+#ifdef FILE_REVISION
+#undef FILE_REVISION
 #endif
-//-----------------------------------------------------------------------------
-// DON'T EDIT THE NEXT REVISION BY HAND! THIS IS DONE AUTOMATICALLY BY THE
-// CVS SYSTEM !!!
-//-----------------------------------------------------------------------------
-#define CVS_FILE_REVISION "$Revision$"
+#define FILE_REVISION "1.9"
 
 //=============================================================================
 // outputs usage information of this tool
@@ -254,8 +251,8 @@ int SavePack(int flags,int type, unsigned char *data, int size, char *target,
 
             if (flags & F_TEXTOUTPUT) {
                 unsigned int loop;
-                unsigned int written=0;
-                for (i=0;i<sizeof(PackedHeader);i++,written++) {
+                unsigned int written = 0;
+                for (i=0;i<(int)sizeof(PackedHeader);i++,written++) {
                     fprintf(fp,"0x%02x,",*(((unsigned char*)&cth)+i));
                     if ((!(written % DEFAULT_ITEMS_PER_LINE)) && written) fputc('\n',fp);
                 }
@@ -263,8 +260,8 @@ int SavePack(int flags,int type, unsigned char *data, int size, char *target,
                     fprintf(fp,"0x%02x,",re.value[i]);
                     if (!(written % DEFAULT_ITEMS_PER_LINE)) fputc('\n',fp);
                 }
-                for (loop=0;loop < size;loop++,written++) {
-                    if (loop < size - 1)  fprintf(fp,"0x%02x,",data[loop]);
+                for (loop=0;loop < (unsigned int)size;loop++,written++) {
+                    if (loop < (unsigned int)size - 1)  fprintf(fp,"0x%02x,",data[loop]);
                     else                  fprintf(fp,"0x%02x",data[loop]);
                     if (!(written % DEFAULT_ITEMS_PER_LINE)) fputc('\n',fp);
                 }
@@ -2194,6 +2191,10 @@ int TTPack(int argc,char *argv[]) {
 //=============================================================================
 // Revision History
 //=============================================================================
+//
+// Revision 1.9  2009/01/25           Lionel Debroux
+// Changes by Romain Liévin and/or me for 64-bit compatibility.
+// Adapt to new version display (revtools.h).
 //
 // Revision 1.8  2002/03/14 10:47:41  tnussb
 // (1) new flag "-quiet" added (suppress standard messages)

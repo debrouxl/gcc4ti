@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TIGCC Tools Suite
+* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
 * file name:       ttbin2oth.c
 * initial date:    14/08/2000
 * author:          thomas.nussbaumer@gmx.net
@@ -9,7 +9,7 @@
 ******************************************************************************/
 
 /*
-  This file is part of ttbin2oth.
+  This file is part of GCC4TI Tools.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -49,14 +49,10 @@
 #include "tt.h"
 #include "strhead.h"
 
-#ifdef CVS_FILE_REVISION
-#undef CVS_FILE_REVISION
+#ifdef FILE_REVISION
+#undef FILE_REVISION
 #endif
-//-----------------------------------------------------------------------------
-// DON'T EDIT THE NEXT REVISION BY HAND! THIS IS DONE AUTOMATICALLY BY THE
-// CVS SYSTEM !!!
-//-----------------------------------------------------------------------------
-#define CVS_FILE_REVISION "$Revision$"
+#define FILE_REVISION "1.11"
 
 
 //=============================================================================
@@ -250,7 +246,11 @@ int TTBin2OTH(int argc,char *argv[]) {
 // Revision History
 //=============================================================================
 //
-// Revision 1.10  2002/05/07 16:33:46  tnussb
+// Revision 1.11 2009/01/25           Lionel Debroux
+// Changes by Romain Liévin and/or me for 64-bit compatibility.
+// Adapt to new version display (revtools.h).
+//
+// Revision 1.10 2002/05/07 16:33:46  tnussb
 // generic commit
 //
 // Revision 1.9  2002/05/07 15:58:46  tnussb

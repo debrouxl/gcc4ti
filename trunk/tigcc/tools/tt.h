@@ -1,23 +1,22 @@
 /******************************************************************************
 *
-* project name:    TIGCC Tools Suite 
-* file name:       strhead.h
+* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* file name:       tt.h
 * initial date:    13/08/2000
-* author:          thomas.nussbaumer@gmx.net 
-* description:     header structure of a TI string or OTH variable stored on
-*                  the PC
+* author:          thomas.nussbaumer@gmx.net
+* description:     generic definitions for GCC4TI Tools
 *
 ******************************************************************************/
 
 /*
-  This file is part of ttbin2oth.
+  This file is part of GCC4TI Tools.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
   version 2.1 of the License, or (at your option) any later version.
 
-  As a special exception, UNMODIFIED copies of ttbin2oth may also be
+  As a special exception, UNMODIFIED copies of the GCC4TI Tools may also be
   redistributed or sold without source code, for any purpose. (The Lesser
   General Public License restrictions do apply in other respects; for example,
   they cover modification of the program.) This exception notice must be
@@ -33,22 +32,18 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __STRHEAD_H__
-#define __STRHEAD_H__
+#ifndef __TT_H__
+#define __TT_H__
 
-typedef struct {
-    char          signature[8]; // "**TI92P*" or "**TI89**"
-    unsigned char fill1[2];     // 01 00
-    char          folder[8];    // folder name
-    char          desc[40];     // ---- not used ----
-    unsigned char fill2[6];     // 01 00 52 00 00 00
-    char          name[8];      // varname
-    unsigned char type[4];      // 0C 00 00 00
-    unsigned char size[4];      // complete file size (including checksum)
-    unsigned char fill3[6];     // A5 5A 00 00 00 00
-    unsigned char datasize[2];  // data size
-}
-StrHeader;
+#define CALC_TI89    0
+#define CALC_TI92P   1
+
+#define SIGNATURE_TI89   "**TI89**"
+#define SIGNATURE_TI92P  "**TI92P*"
+
+#define DEFAULT_FOLDER   "main"
+
+#define DEFAULT_ITEMS_PER_LINE  10
 
 #endif
 
@@ -60,24 +55,15 @@ StrHeader;
 // Revision History
 //=============================================================================
 //
-// Revision 1.1  2000/08/23 20:31:13  Thomas Nussbaumer
-// renamed from pc_strdef.h
+// Revision 1.3  2000/08/23 20:29:43  Thomas Nussbaumer
+// added a 'P' to the TI92p definitions
 //
+// Revision 1.2  2000/08/23 01:04:41  Thomas Nussbaumer
+// corrected signature of TI92p
 //
-// ---------------------------------------------------------------------------
-// revision info before file was renamed
-// ---------------------------------------------------------------------------
-// Revision 1.4  2000/08/23 01:05:00  Thomas Nussbaumer
-// minor comment added
-//
-// Revision 1.3  2000/08/20 15:25:24  Thomas Nussbaumer
-// bug fixed: size[] and datasize[] must be unsigned
-//
-// Revision 1.2  2000/08/13 20:24:51  Thomas Nussbaumer
-// some definitions moved to tt.h
-//
-// Revision 1.1  2000/08/13 16:02:13  Thomas Nussbaumer
+// Revision 1.1  2000/08/13 20:24:16  Thomas Nussbaumer
 // initial version
+//
 //
 //
 //

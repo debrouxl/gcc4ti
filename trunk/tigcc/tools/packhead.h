@@ -1,28 +1,26 @@
 /******************************************************************************
 *
-* project name:    TIGCC Tools Suite 
+* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
 * file name:       packhead.h
 * initial date:    14/08/2000
-* author:          thomas.nussbaumer@gmx.net 
+* author:          thomas.nussbaumer@gmx.net
 * description:     header definition of compressed data
 *
 ******************************************************************************/
 
 /*
-  This file is part of the TIGCC Tools Suite.
+  This file is part of GCC4TI Tools.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
   version 2.1 of the License, or (at your option) any later version.
 
-  As a special exception, UNMODIFIED copies of some TIGCC Tools Suite utilities
-  may also be redistributed or sold without source code, for any purpose. (The
-  Lesser General Public License restrictions do apply in other respects; for
-  example, they cover modification of the program.) Please refer to the main
-  source file for the individual utility as to whether this is the case for a
-  particular tool. This exception notice must be removed on modified copies of
-  this file.
+  As a special exception, UNMODIFIED copies of ttbin2oth may also be
+  redistributed or sold without source code, for any purpose. (The Lesser
+  General Public License restrictions do apply in other respects; for example,
+  they cover modification of the program.) This exception notice must be
+  removed on modified copies of this file.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,7 +41,7 @@
 
 #define MAX_RLE_ENTRIES 31
 
-// size = 16 bytes 
+// size = 16 bytes
 typedef struct {
     unsigned char origsize_lo; // original size lowbyte
     unsigned char origsize_hi; // original size highbyte
@@ -68,7 +66,7 @@ typedef struct {
 #define IsPacked(p)         ((p)->magic1 == MAGIC_CHAR1 && (p)->magic2 == MAGIC_CHAR2)
 
 
-typedef struct { 
+typedef struct {
     unsigned char value[MAX_RLE_ENTRIES];
 } RLEEntries;
 
@@ -93,4 +91,4 @@ typedef struct {
 // Revision 1.1  2000/08/14 22:49:57  Thomas Nussbaumer
 // initial version
 //
-// 
+//

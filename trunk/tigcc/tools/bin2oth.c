@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TIGCC Tools Suite
+* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
 * file name:       bin2oth.c
 * initial date:    22/08/2000
 * author:          thomas.nussbaumer@gmx.net
@@ -15,7 +15,7 @@
 ******************************************************************************/
 
 /*
-  This file is part of ttbin2oth.
+  This file is part of ttbin2oth, one of the GCC4TI Tools.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -203,8 +203,12 @@ unsigned char* DataBuffer2OTHBuffer(int            calctype,
 // Revision History
 //=============================================================================
 //
+// Revision 1.8  2009/01/25           Lionel Debroux
+// Changes by Romain Liévin and/or me for 64-bit compatibility.
+// Adapt to new version display (revtools.h).
+//
 // Revision 1.7  2002/05/13 15:17:43  tnussb
-// statically header information fixed (thanx to Sebastian again)
+// static header information fixed (thanx to Sebastian again)
 //
 // Revision 1.6  2002/05/13 14:09:56  tnussb
 // TT_MAX_OTHDATA ... corrected (thanx to Sebastian Reichelt)
