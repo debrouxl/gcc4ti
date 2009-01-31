@@ -1,5 +1,8 @@
-| TIGCC Program Starter
-| Copyright (C) 2004-2007 Kevin Kofler, Lionel Debroux.
+| TI-68k Specific Program Starter ("pstarter") version 2.x.
+| For HW1/2/3/4 TI-68k calculators running AMS 1.00-3.10 (or compatible).
+| Copyright (C) 2004-2009 Kevin Kofler, Lionel Debroux.
+| pstarter version 1.x was
+| Copyright (C) 2000-2004 Thomas Nussbaumer and contributors.
 |
 | This launcher is free software; you can redistribute it and/or
 | modify it under the terms of the GNU Lesser General Public
@@ -153,6 +156,14 @@ addq.l #6,%a7
 
 | Check if the archive is valid and compute the uncompressed size
 GET_UNCOMPRESSED_SIZE
+
+| AI1/AI2 disabling
+.ifdef disable_auto_ints
+trap #12
+move.w %d0,-(%sp)
+move.w #0x0200,%sr
+.endif
+
 | Allocate the memory needed to decompress the program
 | NOTE: We can't use HeapAllocPtr here because of kernel-based programs.
 move.l %d6,-(%a7)
@@ -168,9 +179,15 @@ move.w %d0,-(%a2) | save handle for freeing
 move.l (%a5,0x99*4),%a0 /* HLock */
 jsr (%a0)
 addq.l #4,%a7
+
 | Decompress the archive
 MEM_TO_MEM_DECOMPRESS
 
+| AI1/AI2 enabling
+.ifdef disable_auto_ints
+trap #12
+move.w (%sp)+,%sr
+.endif
 
 | LAUNCH DECOMPRESSED PROGRAM
 | NOTE: Some of this code is the same as in ttstart. This is
@@ -384,7 +401,7 @@ jbsr (%a0)
 addq.l #6,%sp
 __symbol_search_loop__:
 | Store failure value in %d0
-clr.w %d0
+moveq #0,%d0
 | If the SYM_ENTRY pointer is 0, quit.
 move.l %a0,%d5
 jbeq __symbol_search_done__
@@ -511,6 +528,7 @@ rts
 
 .data
 
+.even
 DecompressedHandle: .word 0 | handle to free, 0 if no freeing needed
 CompressedHandle: .word 0 | handle to unlock, 0 if no unlocking needed
 
