@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
 * file name:       ttpack.c
 * initial date:    14/08/2000
 * authors:         albert@cs.tut.fi
@@ -44,7 +44,7 @@
 #include <time.h>
 
 #include "tt.h"          // generic defines
-#include "ttversion.h"   // GCC4TI Tools version info
+#include "ttversion.h"   // TI-68k Developer Utilities version info
 #include "revtools.h"    // used for id displaying
 #include "packhead.h"    // compressed header definition
 

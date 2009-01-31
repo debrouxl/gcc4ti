@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
 * file name:       tthex2bin.c
 * initial date:    18/03/2002
 * author:          thomas.nussbaumer@gmx.net
@@ -9,7 +9,7 @@
 ******************************************************************************/
 
 /*
-  This file is part of GCC4TI Tools.
+  This file is part of TI-68k Developer Utilities.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

@@ -1,4 +1,4 @@
-# GCC4TI Tools Makefile
+# TI-68k Developer Utilities Makefile
 # Copyright (C) 2009, Lionel Debroux
 
 ifeq ($(OSTYPE), msys)

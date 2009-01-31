@@ -1,22 +1,22 @@
 /******************************************************************************
 *
-* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
 * file name:       tt.h
 * initial date:    13/08/2000
 * author:          thomas.nussbaumer@gmx.net
-* description:     generic definitions for GCC4TI Tools
+* description:     generic definitions for TI-68k Developer Utilities
 *
 ******************************************************************************/
 
 /*
-  This file is part of GCC4TI Tools.
+  This file is part of TI-68k Developer Utilities.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
   version 2.1 of the License, or (at your option) any later version.
 
-  As a special exception, UNMODIFIED copies of the GCC4TI Tools may also be
+  As a special exception, UNMODIFIED copies of the TI-68k Developer Utilities may also be
   redistributed or sold without source code, for any purpose. (The Lesser
   General Public License restrictions do apply in other respects; for example,
   they cover modification of the program.) This exception notice must be

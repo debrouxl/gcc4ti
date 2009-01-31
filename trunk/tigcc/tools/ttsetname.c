@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
 * file name:       ttsetname.c
 * initial date:    18/10/2002
 * author:          thomas.nussbaumer@@gmx.net
@@ -9,7 +9,7 @@
 ******************************************************************************/
 
 /*
-  This file is part of GCC4TI Tools.
+  This file is part of TI-68k Developer Utilities.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -176,6 +176,6 @@ int main(int argc,char *argv[]) {
 //=============================================================================
 //
 // Revision 1.2  2009/01/25           Lionel Debroux
-// Initial import in the GCC4TI Tools (this tool used to be in TI-Chess)
+// Initial import in the TI-68k Developer Utilities (this tool used to be in TI-Chess)
 // Adapt to new version display (revtools.h).
 //

@@ -1,15 +1,15 @@
 /******************************************************************************
 *
-* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
 * file name:       ttversion.h
 * initial date:    13/08/2000
 * author:          thomas.nussbaumer@gmx.net
-* description:     GCC4TI Tools (formerly TIGCC Tools Suite) version definitions
+* description:     TI-68k Developer Utilities (formerly TIGCC Tools Suite) version definitions
 *
 ******************************************************************************/
 
 /*
-  This file is part of GCC4TI Tools.
+  This file is part of TI-68k Developer Utilities.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
 * file name:       revtools.h
 * initial date:    23/08/2000
 * author:          thomas.nussbaumer@gmx.net
@@ -11,7 +11,7 @@
 ******************************************************************************/
 
 /*
-  This file is part of GCC4TI Tools.
+  This file is part of TI-68k Developer Utilities.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,7 @@
 
 #define PRINT_ID(name)  {fprintf(stdout,"\n");fprintf(stdout, name" ");\
                          fprintf(stdout,FILE_REVISION);\
-                         fprintf(stdout," - GCC4TI Tools v"TTV_MAIN TTV_SUB"\n" \
+                         fprintf(stdout," - TI-68k Developer Utilities v"TTV_MAIN TTV_SUB"\n" \
                                        "(c) thomas.nussbaumer@gmx.net "__DATE__" "__TIME__"\n\n");}
 
 

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
 * file name:       ttsplit.c
 * initial date:    23/08/2000
 * authors:         thomas.nussbaumer@gmx.net
@@ -9,7 +9,7 @@
 ******************************************************************************/
 
 /*
-  This file is part of GCC4TI Tools.
+  This file is part of TI-68k Developer Utilities.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,7 @@
 
 
 #include "tt.h"          // generic defines
-#include "ttversion.h"   // GCC4TI Tools version info
+#include "ttversion.h"   // TI-68k Developer Utilities version info
 #include "revtools.h"
 
 #ifdef FILE_REVISION

@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    GCC4TI Tools (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
 * file name:       bin2oth.c
 * initial date:    22/08/2000
 * author:          thomas.nussbaumer@gmx.net
@@ -15,7 +15,7 @@
 ******************************************************************************/
 
 /*
-  This file is part of ttbin2oth, one of the GCC4TI Tools.
+  This file is part of ttbin2oth, one of the TI-68k Developer Utilities.
 
   This file is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
