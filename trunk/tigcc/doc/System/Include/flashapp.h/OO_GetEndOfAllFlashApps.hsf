@@ -1,0 +1,23 @@
+[Main]
+Name=OO_GetEndOfAllFlashApps
+Type=Function
+Subtype=ROM Call
+Header Files=flashapp.h
+Definition=unsigned char *OO_GetEndOfAllFlashApps(void);
+MinAMS=2.00
+
+[ROM Call]
+Index=$3D2
+
+[Description]
+Returns a pointer to the first word-aligned byte after the last FlashApp.
+
+[Explanation]
+This function calls <A HREF="$$LINK(flashapp.h/OO_GetFirstFlashAppSectorAddress)">OO_GetFirstFlashAppSectorAddress</A>,
+and then loops through the FlashApps, using the <A HREF="$$LINK(cert.h/CFILE)">CFILE</A> filled
+by OO_GetFirstFlashAppSectorAddress.<BR>
+The first sector after the last sector reserved for FlashApps is the first archive memory sector.
+
+[References]
+In=flash.h/EM_getArchiveMemoryBeginning
+Out=cert.h/cread, flashapp.h/OO_GetFirstFlashAppSectorAddress

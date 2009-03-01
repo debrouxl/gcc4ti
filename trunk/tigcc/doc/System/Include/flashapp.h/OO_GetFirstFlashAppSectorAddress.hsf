@@ -1,0 +1,29 @@
+[Main]
+Name=OO_GetFirstFlashAppSectorAddress
+Type=Function
+Subtype=ROM Call
+Header Files=flashapp.h
+Definition=unsigned char *OO_GetFirstFlashAppSectorAddress(CFILE *certfile);
+MinAMS=2.00
+See Also=flash.h/EM_getArchiveMemoryBeginning, flashapp.h/OO_GetEndOfAllFlashApps
+
+[ROM Call]
+Index=$4F3
+
+[Description]
+Fills given CFILE and returns a pointer to the first byte of the first sector reserved for FlashApps.
+
+[Explanation]
+After execution of this ROM_CALL, <I>certfile</I> contains the following information:
+<UL>
+<LI><CODE>certfile->Start  = ROM_base+0x12000</CODE></LI>
+<LI><CODE>certfile->Pos    = </CODE>end of AMS code, rounded up to the next multiple of 64 KB (= return value of the ROM_CALL).</LI>
+<LI><CODE>certfile->End    = FlashMemoryEnd</CODE></LI>
+<LI><CODE>certfile->EOFVal = FALSE</CODE></LI>
+</UL>
+At least one 64 KB sector is reserved for FlashApps in the Flash Memory. The first such sector
+is the first sector after the end of the AMS code.
+
+[References]
+In=flash.h/EM_survey, flashapp.h/OO_GetEndOfAllFlashApps
+Out=cert.h/copen, cert.h/cread, flash.h/FlashMemoryEnd
