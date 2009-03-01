@@ -208,6 +208,10 @@ typedef struct ErrorFrameStruct{unsigned long A2,A3,A4,A5,A6,A7;unsigned long D3
 #define TRY {ERROR_FRAME __errFrame;unsigned short errCode;errCode=ER_catch(__errFrame);if(!errCode){
 #if MIN_AMS>=101
 #define find_error_message _rom_call(const char*,(short),2C1)
+#if MIN_AMS>=200
+#define ERD_dismissNotice _rom_call(void,(void),476)
+#define ERD_notice _rom_call(short,(unsigned char const*,unsigned char const*),475)
+#endif
 #endif
 /* End Auto-Generated Part */
 

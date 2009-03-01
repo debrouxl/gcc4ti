@@ -61,6 +61,8 @@ extern void *malloc_throw(long asm("a0"))__ATTR_LIB_ASM__;
 extern void *realloc(void* asm("a0"),long asm("d0"))__ATTR_LIB_ASM__;
 #endif
 extern void *realloc_throw(void* asm("a0"),long asm("d0"))__ATTR_LIB_ASM__;
+#if MIN_AMS>=101
+#define hStrAppend _rom_call_hack(void,(HANDLE,unsigned char*),45F,(((((unsigned char*)_rom_call_addr(110)+0x526))+*((signed short*)_rom_call_addr(110)+0x526/2))),200)
 #if MIN_AMS>=200
 enum HeapWalkCmds{H_WALK_VERIFY=0,H_WALK_STATUS=1,H_WALK_DUMP=2
 #if MIN_AMS>=204
@@ -69,6 +71,7 @@ enum HeapWalkCmds{H_WALK_VERIFY=0,H_WALK_STATUS=1,H_WALK_DUMP=2
 };
 #define HeapShuffle _rom_call(void,(void),474)
 #define HeapWalk _rom_call(short,(short),12C)
+#endif
 #endif
 /* End Auto-Generated Part */
 

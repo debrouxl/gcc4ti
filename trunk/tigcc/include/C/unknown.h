@@ -141,6 +141,7 @@ typedef short WIN_COORDS;
 #define __HAVE_WIN_RECT
 typedef struct{short x0,y0,x1,y1;}WIN_RECT;
 #endif
+typedef struct{unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK arg_simp)(ESI);void(*CALLBACK cmd_proc)(void);unsigned long tag_str;}cmd_info;
 typedef enum{SELECT_ON,SELECT_OFF,SELECT_TOGGLE}EQU_SELECT;
 typedef unsigned long pFrame;
 typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK tag_proc)(void);unsigned long tag_str;}tag_info;
@@ -149,7 +150,6 @@ typedef unsigned short unknown_retval;
 #define EV_appA (*((short*)(_rom_call_addr_hack(452,(((unsigned long)*(signed short*)((unsigned char*)_rom_call_addr(D8)+0x20))),200))))
 #define EV_appB (*((short*)(_rom_call_addr_hack(453,(((unsigned long)*(signed short*)((unsigned char*)_rom_call_addr(D8)+0x26))),200))))
 #define EV_appSide (*((unsigned short*)(_rom_call_addr_hack(458,(((unsigned long)*(signed short*)((unsigned char*)_rom_call_addr(D8)+0x1A))),200))))
-#define CharNumber _rom_call(unsigned char,(char,char,unsigned char*),113)
 #define CheckGraphRef _rom_call(short,(const SYM_ENTRY*),7D)
 #define ck_valid_float _rom_call(short,(float*),1E5)
 #define cleanup_de_mem ({__need_in_use_bit;_rom_call(unknown_retval,(),1EC);})
@@ -162,7 +162,6 @@ typedef unsigned short unknown_retval;
 #define CptFuncX(x,y) _tios_float_2(1B9,x,y,float,GR_WIN_VARS*)
 #define CptIndep _rom_call(unsigned char,(float*,float*,short),1C9)
 #define CptLastIndepDE _rom_call(unknown_retval,(),1EF)
-#define CreateEmptyList _rom_call(HANDLE,(void),1E6)
 #define CustomBegin _rom_call(void,(void),14A)
 #define CustomEnd _rom_call(void,(void),14C)
 #define CustomFree _rom_call(void,(void),150)
@@ -373,18 +372,12 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define clear_error_context _rom_call(void,(void),44C)
 #define DataTypeNames _rom_call(unsigned char*,(char),43B)
 #define ER_throwFrame _rom_call(void,(short,pFrame),507)
-#define ERD_dismissNotice _rom_call(void,(void),476)
-#define ERD_notice _rom_call(short,(unsigned char const*,unsigned char const*),475)
 #define estack_to_float(x) _tios_float_1(469,x,CESI)
 #define EV_quit ({__need_in_use_bit;_rom_call(void,(void),48E);})
-#define FirstNonblank _rom_call(unsigned char*,(unsigned char*),4DE)
 #define ForceFloat(x) ({__need_in_use_bit;_tios_float_1(47D,x,ESI);})
-#define freeIdList _rom_call(void,(void),4D6)
 #define GetTagStr _rom_call(char*,(ESI,char*),46C)
-#define hStrAppend _rom_call(void,(HANDLE,unsigned char*),45F)
 #define is_cFloat_agg _rom_call(short,(ESI),465)
 #define is_complex_Float _rom_call(short,(CESI),48B)
-#define LIO_SendIdList _rom_call(unsigned short,(short),3D0)
 #define OO_appGetPublicStorage _rom_call(unsigned long,(void),425)
 #define OO_appIsMarkedDelete _rom_call(short,(short),426)
 #define OO_appMarkDelete _rom_call(void,(short),427)
@@ -413,11 +406,9 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define push_negate_quantum_as_negint _rom_call(void,(ESQ),4F1)
 #define push_simplify_statements ({__need_in_use_bit;_rom_call(void,(ESI),44F);})
 #define QstatRcl _rom_call(short,(void),40B)
-#define sf_width _rom_call(unsigned char,(char),4D3)
 #define statEnd _rom_call(void,(void),409)
 #define statFree ({__need_in_use_bit;_rom_call(void,(void),40A);})
 #define statStart ({__need_in_use_bit;_rom_call(void,(void),408);})
-#define TIOS_EV_getAppID _rom_call(short,(unsigned char const*),454)
 #define TIOS_strtol _rom_call(long,(const char*,char**,short),4FF)
 #define TokenizeName _rom_call(unsigned short,(const char*,unsigned char*),3E9)
 #if MIN_AMS>=202
@@ -437,9 +428,7 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define index_rmng_fctrs_start_fctr_tag _rom_call(ESI,(ESI,ESQ),562)
 #define is_equivalent_to ({__need_in_use_bit;_rom_call(short,(ESI,ESI),578);})
 #define is_neg_lead_numr_coef_re_part _rom_call(short,(ESI),56D)
-#define is_pos_int_and_eq_quantum _rom_call(short,(CESI,ESQ),509)
 #define is_real ({__need_in_use_bit;_rom_call(short,(ESI),5A9);})
-#define is_reciprocal_of_quantum _rom_call(short,(CESI,ESQ),50A)
 #define is_term_improper ({__need_in_use_bit;_rom_call(short,(ESI),556);})
 #define lead_conjunct_factor_index _rom_call(ESI,(ESI),580)
 #define lead_disjunct_term_index _rom_call(ESI,(ESI),57E)
@@ -488,8 +477,8 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define times_top ({__need_in_use_bit;_rom_call(void,(ESI),522);})
 #if MIN_AMS>=204
 typedef enum{EV_OFF=0x0001,EV_SUSPEND_PAINTING=0x0002}EV_FLAGS;
+#define command_tag_list ((const cmd_info*const)(_rom_call_addr(5D8)))
 #define errno (*((short*)(_rom_call_addr(5D9))))
-#define estack_max_index (*((ESI*)(_rom_call_addr(5BF))))
 #define EV_flags (*((EV_FLAGS*)(_rom_call_addr(5DF))))
 #define Float0Index (*((ESI*)(_rom_call_addr(5D0))))
 #define Float1Index (*((ESI*)(_rom_call_addr(5D1))))
@@ -514,7 +503,7 @@ typedef enum{EV_OFF=0x0001,EV_SUSPEND_PAINTING=0x0002}EV_FLAGS;
 #define TIOS_labs _rom_call(long,(long),5BC)
 #define TIOS_ldiv _rom_call(ldiv_t,(long,long),5BD)
 #if MIN_AMS>=205
-#define OSCheckLinkOpen _rom_call(unsigned short,(void),5E3)
+#define secondary_tag_list ((const tag_info*const)(_rom_call_addr(5EE)))
 #endif
 #endif
 #endif

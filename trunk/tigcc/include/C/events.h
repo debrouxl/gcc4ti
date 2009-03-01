@@ -98,6 +98,7 @@ extern short EV_getAppID(const char* asm("a0"))__ATTR_LIB_ASM__;
 #define MO_sendQuit _rom_call(void,(short,short),DF)
 #if MIN_AMS>=200
 #define handleVarLinkKey ({__need_in_use_bit;_rom_call(void,(short),129);})
+#define TIOS_EV_getAppID _rom_call(HANDLE,(const unsigned char*),454)
 #endif
 /* End Auto-Generated Part */
 

@@ -19,7 +19,10 @@ typedef unsigned short HANDLE;
 typedef unsigned long size_t;
 #endif
 typedef struct{unsigned short Field;unsigned short HdrLen;unsigned long Len;void*Data;}CERT_FIELD;
+#ifndef __HAVE_CFILE
+#define __HAVE_CFILE
 typedef struct{void*Start,*Pos,*End;short EOFVal;}CFILE;
+#endif
 #define ceof _rom_call(short,(CFILE*),128)
 #define cfindfield _rom_call(short,(CFILE*,short,CERT_FIELD*),12A)
 #define cgetc _rom_call(unsigned char,(CFILE*),12B)
@@ -39,6 +42,7 @@ typedef struct{void*Start,*Pos,*End;short EOFVal;}CFILE;
 #define cwrite _rom_call(short,(CFILE*,CERT_FIELD*),139)
 #if MIN_AMS>=200
 #define CertificateMemory ((unsigned char*const)(_rom_call_addr(43E)))
+#define freeIdList _rom_call(void,(void),4D6)
 #endif
 /* End Auto-Generated Part */
 

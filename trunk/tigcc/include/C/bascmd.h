@@ -152,6 +152,8 @@ typedef CESI SYM_STR;
 #define cmd_zoomtrig _rom_call(void,(void),3A8)
 #if MIN_AMS>=200
 #define cmd_archive ({__need_in_use_bit;_rom_call(void,(CESI),448);})
+#define cmd_lu_fact ({__need_in_use_bit;_rom_call(void,(ESI,ESI,ESI,ESI,ESI),484);})
+#define cmd_qr_fact ({__need_in_use_bit;_rom_call(void,(ESI,ESI,ESI,ESI),485);})
 #define cmd_unarchiv ({__need_in_use_bit;_rom_call(void,(CESI),449);})
 #endif
 #endif

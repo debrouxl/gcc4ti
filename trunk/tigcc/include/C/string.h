@@ -10,6 +10,7 @@
 typedef unsigned long size_t;
 #endif
 #define _memset _rom_call(void*,(void*,short,long),27B)
+#define CharNumber _rom_call(unsigned char,(char,char,unsigned char*),113)
 #define cmpstri _rom_call(short,(const unsigned char*,const unsigned char*),16F)
 #define memchr _rom_call(void*,(const void*,short,long),273)
 #define memcmp _rom_call(short,(const void*,const void*,long),270)
@@ -33,6 +34,7 @@ typedef unsigned long size_t;
 #define strstr _rom_call(char*,(const char*,const char*),279)
 #define strtok _rom_call(char*,(char*,const char*),27A)
 #if MIN_AMS>=200
+#define FirstNonblank _rom_call(unsigned char*,(unsigned char*),4DE)
 #define memucmp _rom_call(short,(const void*,const void*,long),3CC)
 #define stricmp _rom_call(short,(const unsigned char*,const unsigned char*),407)
 #endif

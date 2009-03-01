@@ -38,6 +38,12 @@ typedef struct{unsigned short hVar;union{const void*pVar;struct{unsigned short F
 #define LIO_Send _rom_call(unsigned short,(LIO_CTX*,short),56)
 #define LIO_SendData _rom_call(unsigned short,(const void*,long),5A)
 #define LIO_SendProduct _rom_call(unsigned short,(LIO_CTX*,short),253)
+#define _OSCheckLinkOpen _rom_call(unsigned short,(void),5E3)
+#if MIN_AMS>=205
+#define OSCheckLinkOpen _OSCheckLinkOpen
+#elif !defined(UNOFFICIAL_OS_SUPPORT)
+#define OSCheckLinkOpen() (TIOS_entries>0x5E3?_OSCheckLinkOpen():((!!(*(unsigned char*)(unsigned long)*((unsigned short*)_rom_call_addr(24A)+7)))))
+#endif
 #define OSCheckSilentLink _rom_call(short,(void),24A)
 #define OSLinkClose _rom_call(void,(void),24E)
 #define OSLinkCmd ({__need_in_use_bit;_rom_call(void,(short),24B);})
@@ -53,6 +59,9 @@ typedef struct{unsigned short hVar;union{const void*pVar;struct{unsigned short F
 #define OSWriteLinkBlock _rom_call(short,(const char*,short),250)
 #define transmit OSWriteLinkBlock
 #define sendcalc ({__need_in_use_bit;_rom_call(unsigned short,(SYM_STR,short,short,unsigned char*),55);})
+#if MIN_AMS>=200
+#define LIO_SendIdList _rom_call(unsigned short,(short),3D0)
+#endif
 /* End Auto-Generated Part */
 
 #endif

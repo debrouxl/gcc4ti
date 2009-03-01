@@ -38,8 +38,13 @@ typedef CESI SYM_STR;
 #define push_dot_div ({__need_in_use_bit;_rom_call(void,(CESI,CESI),4CD);})
 #define push_dot_mult ({__need_in_use_bit;_rom_call(void,(CESI,CESI),4A1);})
 #define push_dot_sub ({__need_in_use_bit;_rom_call(void,(CESI,CESI),4A2);})
+#define push_polar_to_rect_x ({__need_in_use_bit;_rom_call(void,(CESI,CESI),4F9);})
+#define push_polar_to_rect_y ({__need_in_use_bit;_rom_call(void,(CESI,CESI),4FA);})
 #define push_radians ({__need_in_use_bit;_rom_call(void,(CESI),4B3);})
 #define push_substitute_no_simplify _rom_call(void,(CESI,CESI,CESI),489)
+#define push_to_dd ({__need_in_use_bit;_rom_call(void,(CESI),4C6);})
+#define push_to_dms ({__need_in_use_bit;_rom_call(void,(CESI),4C7);})
+#define push_transpose ({__need_in_use_bit;_rom_call(void,(CESI),4D2);})
 #if MIN_AMS>=202
 #define push_and ({__need_in_use_bit;_rom_call(void,(CESI,CESI),5AB);})
 #define push_arg_minus_1 ({__need_in_use_bit;_rom_call(void,(CESI),520);})

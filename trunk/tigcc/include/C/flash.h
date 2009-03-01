@@ -6,6 +6,7 @@
 #define __EM_findEmptySlot _rom_call(void*,(long,short),15F)
 
 /* Begin Auto-Generated Part */
+#define FLASH_SECTOR_SIZE (0x10000)
 #define NULL ((void*)0)
 #ifndef __HAVE_Bool
 #define __HAVE_Bool
@@ -34,8 +35,10 @@ typedef struct{unsigned short len;unsigned long hardwareID;unsigned long hardwar
 #define FL_write _rom_call(void,(const void*,void*,long),171)
 #define GetAMSSize() ((*((unsigned long*)(((char*)ROM_base)+0x12002)))+0x49)
 #if MIN_AMS>=200
+#define CappedHW1ArchiveMemoryBeginning ((unsigned char*const)(_rom_call_addr(43C)))
 #define FlashMemoryEnd ((unsigned char*const)(_rom_call_addr(43D)))
 #define BatTooLowFlash _rom_call(short,(short),434)
+#define EM_getArchiveMemoryBeginning _rom_call(unsigned char *,(void),3CF)
 #endif
 /* End Auto-Generated Part */
 

@@ -110,6 +110,7 @@ typedef struct{void*ScrAddr;unsigned char XMax,YMax;short CurFont,CurAttr,CurX,C
 #define ClientToScr _rom_call(void,(const SCR_RECT*,const SCR_RECT*,SCR_RECT*),42C)
 #define DrawStrWidthP _rom_call(unsigned short,(const char*,short,short),3EE)
 #define MakeScrRect _rom_call(SCR_RECT*,(short,short,short,short,SCR_RECT*),42D)
+#define sf_width _rom_call(unsigned char,(char),4D3)
 #endif
 /* End Auto-Generated Part */
 
