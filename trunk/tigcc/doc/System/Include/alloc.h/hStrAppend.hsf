@@ -1,0 +1,46 @@
+[Main]
+Name=hStrAppend
+Type=Function
+Subtype=ROM Call
+Header Files=alloc.h
+Definition=void hStrAppend (HANDLE h, unsigned char *str);
+MinAMS=1.01
+
+[ROM Call]
+Index=$45F
+Address Hack=((((unsigned char *)_rom_call_addr(110)+0x526))+*((signed short *)_rom_call_addr(110)+0x526/2))
+
+[Description]
+Appends a string to a handle that contains a string.
+
+[Explanation]
+<I>h</I> is the handle to string to be lengthened.<BR>
+<I>str</I> is the string to append to the handle h.<BR>
+This routine may cause heap compression, and it throws "Error: memory" if there is not enough memory to expand the handle <I>h</I>.<BR>
+<BR>
+This routine provides a way to store in the clipboard something you can't paste with DIAMOND+PASTE !<BR>
+<B>But</B>: you need to take great care when you use this routine: use it only on handles your 
+program allocated, because writing garbage into system handles usually crashes the calculator !<BR>
+<BR>
+hStrAppend is normally a ROM_CALL (ROM_CALL 45F) available on AMS 2.xx only, but a wrapper makes the use of this function possible on any AMS version (take great care with very old AMS 1.00 for 92+, though).<BR>
+<BR>
+hStrAppend is implemented as follows:
+<PRE>
+void hStrAppend (HANDLE h, unsigned char *str)
+{
+  unsigned char* str1;
+  unsigned long lstr1, lstr, lbuf;
+  str1 = HeapDeref(h);
+  lstr1 = strlen((char *)str1);                 /* length of string in handle */
+  lstr = strlen((char *)str);                   /* length of string to append */
+  lbuf = lstr1 + lstr + 1;                      /* new space requirement */
+  if (!HeapRealloc(h, lbuf))                    /* try to get new space */
+    ER_throw(670);
+  str1 = (unsigned char *)HeapDeref(h) + lstr1; /* point to end of original string */
+  memcpy(str1, str, lstr+1);                    /* append new string */
+}
+</PRE>
+
+[References]
+Out=alloc.h/HeapRealloc, mem.h/memcpy, string.h/strlen
+In=unknown.h/SP_Define, bascmd.h/cmd_sinreg, unknown.h/_ROM_CALL_45B

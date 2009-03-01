@@ -1,0 +1,22 @@
+[Main]
+Name=LIO_SendIdList
+Type=Function
+Subtype=ROM Call
+Header Files=link.h
+Definition=unsigned short LIO_SendIdList (unsigned short delete);
+MinAMS=2.00
+See Also=cert.h/freeIdList
+
+[ROM Call]
+Index=$3D0
+
+[Description]
+Sends the ID list of the calculator through the link port.
+
+[Explanation]
+If the ID list does not exist, creates one using the calculator's ID. Otherwise, the calculator ID is appended. This list is then sent over the link port.<BR>
+If <I>delete</I> is TRUE, the ID list is deleted from memory after it is sent.<BR>
+The function returns non-zero if an error occurs, otherwise it returns zero.
+
+[References]
+Out=cert.h/freeIdList, alloc.h/HeapAlloc, cert.h/cgetsn, flash.h/FL_getVerNum, link.h/LIO_RecvData, link.h/LIO_Send, link.h/LIO_SendData, link.h/OSLinkReset, mem.h/memcpy, stdio.h/sprintf
