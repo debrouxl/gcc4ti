@@ -468,6 +468,13 @@ initialization
 			CaseSensitive := False;
 		end;
 		with WordLists.Add do begin
+			Caption := 'Binary-Coded Decimal Instructions';
+			Words.CommaText := 'ABCD,NBCD,SBCD';
+			Color := clBlue;
+			CustomColor := True;
+			CaseSensitive := False;
+		end;
+		with WordLists.Add do begin
 			Caption := 'Bit Manipulation';
 			Words.CommaText := 'BCHG,BCLR,BSET,BTST';
 			Color := clBlue;
@@ -486,7 +493,7 @@ initialization
 		end;
 		with WordLists.Add do begin
 			Caption := 'System Control';
-			Words.CommaText := 'ILLEGAL,RTE,TRAP';
+			Words.CommaText := 'CHK,ILLEGAL,RESET,RTE,STOP,TRAP,TRAPV';
 			Color := clBlue;
 			CustomColor := True;
 			CaseSensitive := False;
@@ -594,6 +601,13 @@ initialization
 			CaseSensitive := False;
 		end;
 		with WordLists.Add do begin
+			Caption := 'Binary-Coded Decimal Instructions';
+			Words.CommaText := 'ABCD,NBCD,SBCD';
+			Color := clBlue;
+			CustomColor := True;
+			CaseSensitive := False;
+		end;
+		with WordLists.Add do begin
 			Caption := 'Bit Manipulation';
 			Words.CommaText := 'BCHG,BCLR,BSET,BTST';
 			Color := clBlue;
@@ -610,7 +624,7 @@ initialization
 		end;
 		with WordLists.Add do begin
 			Caption := 'System Control';
-			Words.CommaText := 'ILLEGAL,RTE,TRAP';
+			Words.CommaText := 'CHK,ILLEGAL,RESET,RTE,STOP,TRAP,TRAPV';
 			Color := clBlue;
 			CustomColor := True;
 			CaseSensitive := False;
