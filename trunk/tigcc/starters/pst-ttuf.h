@@ -100,11 +100,8 @@ rol.w #8,%d6
 | SIDE EFFECTS: may throw a Memory or Data Type error
 | DESTROYS: %d0-%d2/%a0-%a2
 .macro MEM_TO_MEM_DECOMPRESS
-pea.l (%a0) | destination
-pea.l (%a3) | source
 move.l %a0,%a4 | satisfy output constraint
 jbsr ttunpack_decompress
-addq.l #8,%a7
 tst.w %d0
 jbne invalid_archive
 .endm
@@ -121,9 +118,13 @@ jbne invalid_archive
 |
 |   Version 2.28 Fast
 |
-| 2006-03-20 Kevin Kofler: Ported to GNU as. Removed options not used in
-|                          pstarter.
-| 2007-09-02 Kevin Kofler: Fixed GNU as port to actually build.
+| 2006-03-20 Kevin Kofler:   Ported to GNU as. Removed options not used
+|                            in pstarter.
+| 2007-09-02 Kevin Kofler:   Fixed GNU as port to actually build.
+|
+|   Version 2.28 Fast, Register Parameters, a0 -> dest, a3 -> source
+|
+| 2009-05-24 Lionel Debroux: __stkparm__ -> custom __regparm__.
 |
 |THE LICENSE:
 |
@@ -236,16 +237,16 @@ jbne invalid_archive
 .equ __ERRPCK_LZPOSUNDERRUN,2 |254
 
 |-----------------------------------------------------------------------
-|Notes on register useage, might be good Idea to print this.
+|Notes on register usage, might be a good idea to print this.
 |
-|	a0 => trashing, but may not be used by the subroutines
+|	a0 => the destination buffer
 |	a1 => extra z position bits
 |	a2 => a table that maps a byte to the highest bit set in it.
-|	a3 => the bytecodevec table
-|	a4 => The point to jump to when doing a continue
-|	a5 => the destination buffer
-|	a6 => points to the next byte of the compressed data.
+|	a3 => points to the next byte of the compressed data.
 |		updated when d7 overflows.
+|	a4 => the point to jump to when doing a continue
+|	a5 => trashing, but may not be used by the subroutines
+|	a6 => the bytecodevec table
 |
 |	d0 => trashing, output of __GetBits and __GetValue
 |	d1 => trashing, input to __GetBits
@@ -262,7 +263,7 @@ jbne invalid_archive
 	tst.b		%d7
 	bne.s		0f
 	moveq		#8,%d7
-	move.b	(%a6)+,%d6
+	move.b	(%a3)+,%d6
 0:
 .endm
 
@@ -270,8 +271,8 @@ jbne invalid_archive
 
 ttunpack_decompress:
 	movem.l	%d3-%d7/%a2-%a6,-(%a7)
-	move.l	4+10*4(%a7),%a6
-	move.l	8+10*4(%a7),%a5
+|	move.l	4+10*4(%a7),%a3
+|	move.l	8+10*4(%a7),%a0
 |--------------------------------------------------------
 |  startesc = cth->esc1;     //d5
 |  bytecodevec = &src[15];   //a3
@@ -280,9 +281,9 @@ ttunpack_decompress:
 |These are initialized here to insure that certain
 |branches can use the short form.
 |--------------------------------------------------------
-	lea		15(%a6),%a3			|'bytecodevec'
+	lea		15(%a3),%a6			|'bytecodevec'
 	moveq		#0,%d5
-	move.b	esc1(%a6),%d5			|'StartEsc'
+	move.b	esc1(%a3),%d5			|'StartEsc'
 	moveq		#8,%d7				|which bit i am at
 |-------------------------------------------------------------------------------------------------
 |  if (cth->magic1 != __MAGIC_CHAR1 || cth->magic2 != __MAGIC_CHAR2) return __ERRPCK_NOMAGIC;
@@ -291,27 +292,27 @@ ttunpack_decompress:
 |  if ((extralzposbits = cth->extralz) > 4)                          return __ERRPCK_EXTRALZP;
 |-------------------------------------------------------------------------------------------------
 	moveq		#__ERRPCK_NOMAGIC,%d0
-	cmp.b		#__MAGIC_CHAR1,magic1(%a6)	|these could be optimized into 1 word compare
+	cmp.b		#__MAGIC_CHAR1,magic1(%a3)	|these could be optimized into 1 word compare
 	bne.s		__ReturnError			|  if evenly aligned.
-	cmp.b		#__MAGIC_CHAR2,magic2(%a6)
+	cmp.b		#__MAGIC_CHAR2,magic2(%a3)
 	bne.s		__ReturnError
 
 	moveq		#__ERRPCK_MAXGAMMA,%d0
-	cmp.b		#8,gamma1(%a6)
+	cmp.b		#8,gamma1(%a3)
 	bne.s		__ReturnError
-	cmp.b		#128,gamma2(%a6)
+	cmp.b		#128,gamma2(%a3)
 	bne.s		__ReturnError
 
 	moveq		#__ERRPCK_ESCBITS,%d0
 	moveq		#0,%d1
-	move.b	esc2(%a6),%d1
+	move.b	esc2(%a3),%d1
 	move.l	%d1,%d4
 	subq.w	#8,%d1
 	bhi.s		__ReturnError
 
 	moveq		#__ERRPCK_EXTRALZP,%d0
 	moveq		#0,%d1
-	move.b	extralz(%a6),%d1
+	move.b	extralz(%a3),%d1
 	move.l	%d1,%a1			|extralz pos bits
 	subq.w	#5,%d1
 	bgt.s		__ReturnError
@@ -325,8 +326,8 @@ ttunpack_decompress:
 	ror.b		%d4,%d2			|set the upper bits
 	ror.b		%d4,%d5			|shift up start escape
 	moveq		#0,%d0
-	move.b	(%a3),%d0		
-	lea		HEADER_SIZE(%a6,%d0),%a6
+	move.b	(%a6),%d0		
+	lea		HEADER_SIZE(%a3,%d0),%a3
 |--------------------------------------------------------
 |To remove checking if escbits == 0 in the literal byte
 |  loop, there are two points used for continuing.
@@ -356,7 +357,7 @@ ThisByte:
 	addq.w	#1,%d0
 	dbra    	%d1,AllBytes
 	move.l	%a7,%a2
-	move.b	(%a6)+,%d6		|very first byte of compressed data
+	move.b	(%a3)+,%d6		|very first byte of compressed data
 	jmp		(%a4)			|jump into the loop
 |---------------------------------------------------------
 |And when all is done branch here
@@ -374,7 +375,7 @@ __ReturnError:
 |  continue;
 |---------------------------------------------------------
 __SelIsNOTStartEscape:
-	move.b	%d0,(%a5)+			|put litteral byte to the output
+	move.b	%d0,(%a0)+			|put litteral byte to the output
 |---------------------------------------------------------
 |The while(1) loop:
 |
@@ -384,18 +385,18 @@ __SelIsNOTStartEscape:
 __ReturnPointForNonZeroEscapeBits:
 	move.b	%d6,-(%a7)
 	move.w	(%a7)+,%d0
-	move.b	(%a6)+,%d6
+	move.b	(%a3)+,%d6
 	move.b	%d6,%d0
 	lsr.w		%d7,%d0				|__get8bits() done
 	move.b	%d2,%d1
 	and.b		%d0,%d1				|isolate the upper escape bits
 	cmp.b		%d5,%d1				|are they 'startesc'
 	bne.s		__SelIsNOTStartEscape
-	subq.l	#2,%a6
-	move.b	(%a6)+,%d6
+	subq.l	#2,%a3
+	move.b	(%a3)+,%d6
 	sub.w		%d4,%d7
 	bhi.s		__StillInSameByte2
-	move.b	(%a6)+,%d6
+	move.b	(%a3)+,%d6
 	addq.w	#8,%d7
 __StillInSameByte2:
 |---------------------------------------------------------
@@ -439,7 +440,7 @@ __LzPosHi_IsNot254:
 	and.b		%d6,%d1
 	sub.w		%a1,%d7
 	bhi.s		__StillInSameByte61
-	move.b	(%a6)+,%d6
+	move.b	(%a3)+,%d6
 	move.b	%d1,-(%a7)
 	move.w	(%a7)+,%d1
 	move.b	%d6,%d1
@@ -453,7 +454,7 @@ __extralZposBitsIsZero:				|at this point d0.b == 'lzposhi'
 	move.w	(%a7)+,%d1			|shift it into the high byte of 'lzpos', first step of COMBINE_LOWHIGH
 	move.b	%d6,-(%a7)			|start the __Get8Bit
 	move.w	(%a7)+,%d0
-	move.b	(%a6)+,%d6
+	move.b	(%a3)+,%d6
 	move.b	%d6,%d0
 	lsr.w		%d7,%d0				|get 8 bit done
 	move.b	%d0,%d1				|COMBINE_LOWHIGH
@@ -468,10 +469,10 @@ __extralZposBitsIsZero:				|at this point d0.b == 'lzposhi'
 | d2.l must be -lzpos+1
 | d3.w must be lzlen
 |------------------------------------------------------------------------------------
-	lea		0(%a5,%d1.l),%a0
+	lea		0(%a0,%d1.l),%a5
 
 __WriteDataLoop:
-	move.b	(%a0)+,(%a5)+
+	move.b	(%a5)+,(%a0)+
 	dbra		%d3,__WriteDataLoop
 
 	jmp		(%a4)				|continue
@@ -531,7 +532,7 @@ __LessThan128:
 	bsr.s		__GetValue			|get bytecode
 	cmp.b		#32,%d0
 	bcc.s		__GreaterThanOrEqual32
-	move.b	0(%a3,%d0.w),%d0		|byte = bytecodevec[bytecode];
+	move.b	0(%a6,%d0.w),%d0		|byte = bytecodevec[bytecode];
 	bra.s		__RleCopy
 __GreaterThanOrEqual32:
 
@@ -541,7 +542,7 @@ __GreaterThanOrEqual32:
 	move.b	%d6,%d1
 	subq.w	#3,%d7
 	bhi.s		__StillInSameByte2345
-	move.b	(%a6)+,%d6
+	move.b	(%a3)+,%d6
 	move.b	%d1,-(%a7)
 	move.w	(%a7)+,%d1
 	move.b	%d6,%d1
@@ -562,7 +563,7 @@ __StillInSameByte2345:
 __RleCopy:
 
 __RleLoop:
-	move.b	%d0,(%a5)+
+	move.b	%d0,(%a0)+
 	dbra		%d3,__RleLoop
 
 	jmp		(%a4)
@@ -573,14 +574,14 @@ __NextBitClear_DoZipAfterAll:
  CORRECT_IN_MASK
 	move.b	%d6,-(%a7)		|current byte
 	move.w	(%a7)+,%d1
-	move.b	(%a6)+,%d6		|next byte
+	move.b	(%a3)+,%d6		|next byte
 	move.b	%d6,%d1
 	lsr.w		%d7,%d1
 	moveq		#-1,%d3
 	move.b	%d1,%d3
-	lea		0(%a5,%d3.l),%a0
-	move.b	(%a0)+,(%a5)+
-	move.b	(%a0)+,(%a5)+		|'lzlen' is 1, means 2 byte copy.
+	lea		0(%a0,%d3.l),%a5
+	move.b	(%a5)+,(%a0)+
+	move.b	(%a5)+,(%a0)+		|'lzlen' is 1, means 2 byte copy.
 	jmp		(%a4)			|continue
 |-------------------------------------------------------------
 |  __GetValue returns a value in d0.l
@@ -610,7 +611,7 @@ __GetValue:					|This function has a goal of counting till it finds
 						|  passed by
 	eor.b		%d6,%d0			|invert the bits of interest
 	bne.s		__BitsSetInThisByte
-	move.b	(%a6),%d0
+	move.b	(%a3),%d0
 	not.b		%d0
 	addq.w	#8,%d1
 __BitsSetInThisByte:
@@ -623,7 +624,7 @@ __LessThan7:
 	sub.w		%d1,%d7
 	bhi.s		__SameByte
 	addq.w	#8,%d7
-	move.b	(%a6)+,%d6
+	move.b	(%a3)+,%d6
 __SameByte:
 	moveq		#0,%d0
 	subq.b	#1,%d1
@@ -633,7 +634,7 @@ __SameByte:
 	and.b		%d6,%d0
 	sub.w		%d1,%d7
 	bhi.s		__StillInSameByte4
-	move.b	(%a6)+,%d6
+	move.b	(%a3)+,%d6
 	move.b	%d0,-(%a7)
 	move.w	(%a7)+,%d0
 	move.b	%d6,%d0
@@ -653,7 +654,7 @@ __NextBitIsClear_EscapeFromEscape:
  CORRECT_IN_MASK
 	move.b	%d6,-(%a7)
 	move.w	(%a7)+,%d0
-	move.b	(%a6)+,%d0
+	move.b	(%a3)+,%d0
 	move.b	%d0,%d6
 	lsr.w		%d7,%d0			|get8bits done
 	move.b	%d5,%d1			|save old 'startesc'
@@ -663,5 +664,5 @@ __NextBitIsClear_EscapeFromEscape:
 	and.b		%d2,%d0			|isolate the lower bits
 	not.b		%d2
 	or.b		%d1,%d0			|recombine
-	move.b	%d0,(%a5)+
+	move.b	%d0,(%a0)+
 	jmp		(%a4)
