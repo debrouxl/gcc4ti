@@ -122,9 +122,13 @@ jbne invalid_archive
 |                            in pstarter.
 | 2007-09-02 Kevin Kofler:   Fixed GNU as port to actually build.
 |
-|   Version 2.28 Fast, Register Parameters, a0 -> dest, a3 -> source
+|   Version 2.28 Fast, Improper Return Value
+|			Requires even alignment
+|			Register Parameters, a0 -> dest, a3 -> source
 |
-| 2009-05-24 Lionel Debroux: __stkparm__ -> custom __regparm__.
+| 2009-05-24 Lionel Debroux: Save 34 bytes by applying these changes,
+|                            which have been part of the Super Small
+|                            version (pst-ttup.h) for a while.
 |
 |THE LICENSE:
 |
@@ -292,25 +296,18 @@ ttunpack_decompress:
 |  if ((extralzposbits = cth->extralz) > 4)                          return __ERRPCK_EXTRALZP;
 |-------------------------------------------------------------------------------------------------
 	moveq		#__ERRPCK_NOMAGIC,%d0
-	cmp.b		#__MAGIC_CHAR1,magic1(%a3)	|these could be optimized into 1 word compare
-	bne.s		__ReturnError			|  if evenly aligned.
-	cmp.b		#__MAGIC_CHAR2,magic2(%a3)
+	cmp.w		#__MAGIC_CHAR1*256+__MAGIC_CHAR2,magic1(%a3)
 	bne.s		__ReturnError
 
-	moveq		#__ERRPCK_MAXGAMMA,%d0
-	cmp.b		#8,gamma1(%a3)
-	bne.s		__ReturnError
-	cmp.b		#128,gamma2(%a3)
+	cmp.w		#8*256+128,gamma1(%a3)	|gamma1 = 8 and gamma2 = 128?
 	bne.s		__ReturnError
 
-	moveq		#__ERRPCK_ESCBITS,%d0
 	moveq		#0,%d1
 	move.b	esc2(%a3),%d1
 	move.l	%d1,%d4
 	subq.w	#8,%d1
 	bhi.s		__ReturnError
 
-	moveq		#__ERRPCK_EXTRALZP,%d0
 	moveq		#0,%d1
 	move.b	extralz(%a3),%d1
 	move.l	%d1,%a1			|extralz pos bits
@@ -366,7 +363,6 @@ __WeAreDone:
 	moveq		#0,%d0			|return value
 	lea		260(%a7),%a7
 __ReturnError:
-	neg.b		%d0			|turn loaded error code into actual value
 	movem.l	(%a7)+,%d3-%d7/%a2-%a6
 	rts
 
