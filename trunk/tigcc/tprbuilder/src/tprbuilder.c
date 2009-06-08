@@ -3,7 +3,7 @@
 
    Copyright (C) 2002 Romain Liévin
    Copyright (C) 2002-2007 Kevin Kofler
-   Copyright (C) 2005 Lionel Debroux
+   Copyright (C) 2005, 2009 Lionel Debroux
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#ifndef __WIN32__
+#include <sys/wait.h>
+#endif
 
 #include "tprbuilder.h"
 
@@ -376,13 +379,22 @@ int delete(char *filename)
 */
 int execute(char *cmdline)
 {
+    int exitcode;
+
     if (!quiet) {
         fprintf(stderr, "tprbuilder: %s\n", cmdline);
     }
 
-    if(system(cmdline) != 0) {
-        exit(0);
+    exitcode = system(cmdline);
+#ifdef __WIN32__
+    if (exitcode != 0) {
+        exit(exitcode);
     }
+#else
+    if (WEXITSTATUS(exitcode) != 0) {
+        exit(WEXITSTATUS(exitcode));
+    }
+#endif
 
     return 0;
 }
