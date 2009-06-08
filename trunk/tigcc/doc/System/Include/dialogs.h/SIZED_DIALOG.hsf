@@ -8,6 +8,6 @@ Definition=#define SIZED_DIALOG(NumbItems,StrLen) struct { unsigned short TextOf
 A macro to help defining dialogs, it is nearly the same as DIALOG.
 
 [Explanation]
-There are two main dificulties one encouters using the <A HREF="$$LINK(dialogs.h/DIALOG_STRUCT)">DIALOG structure</A>:<BR>First there is a variable size array, and variable size arrays can't be initialized with non constant value.
+There are two main difficulties one encouters using the <A HREF="$$LINK(dialogs.h/DIALOG_STRUCT)">DIALOG structure</A>:<BR>First there is a variable size array, and variable size arrays can't be initialized with non constant value.
 <BR>Secondly it doesn't include strings, which should better be placed just after the DIALOG in memory.
 <BR>SIZED_DIALOG avoids both of these problems: It needs two argument : the number of Items <I>NumbItems</I> and the size of the all the strings together <I>StrLen</I>, and defines a struct from this, wich is the same as <A HREF="$$LINK(dialogs.h/DIALOG_STRUCT)">DIALOG</A> but with some place for the strings: you can define a dilalog using <I>SIZED_DIALOG(NumbItems,StrLen)={/*Dialog definition*/}</I>. It is done in the given examples. If you use that macro, it will fill to the right number of Item, and If you forget to add an item with type D_END after the last used Item, it is automatically done.<BR><BR>Using SIZED_DIALOG also helps to get the offset of the strings. You can initialize it with <I><A HREF="$$LINK(stddef.h/offsetof)">offsetof</A>(SIZED_DIALOG(ItemsNum,0),String)</I>
