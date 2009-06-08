@@ -8564,9 +8564,9 @@ diff -Naur gcc-4.1.2.orig/gcc/varasm.c gcc-4.1.2-src/gcc/varasm.c
 +
 +  /* This is how to output a SMAP BCD real constant. */
 +  REAL_VALUE_TO_TARGET_SMAP_BCD (d, data);
-+  assemble_integer (GEN_INT (data[0]), 2, align, 1);
-+  assemble_integer (GEN_INT (data[1]), 4, nalign, 1);
-+  assemble_integer (GEN_INT (data[2]), 4, nalign, 1);
++  assemble_integer (GEN_INT (data[0] & 0xFFFFUL), 2, align, 1);
++  assemble_integer (GEN_INT (data[1] & 0xFFFFFFFFUL), 4, nalign, 1);
++  assemble_integer (GEN_INT (data[2] & 0xFFFFFFFFUL), 4, nalign, 1);
 +
 +#if 0
    int i;
@@ -8753,7 +8753,7 @@ diff -Naur gcc-4.1.2.orig/gcc/version.c gcc-4.1.2-src/gcc/version.c
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.2-tigcc-3)"
++#define VERSUFFIX " (TIGCC 4.1.2-tigcc-4)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
