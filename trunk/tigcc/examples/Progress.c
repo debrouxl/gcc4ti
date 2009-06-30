@@ -1,6 +1,6 @@
 // Progress bar example for TIGCC
 
-// Define this to display the progress bar in a window
+// Define this to display the progress bar in a (large) window
 //#define USE_WINDOW_PB
 
 #define USE_TI89              // Compile for TI-89

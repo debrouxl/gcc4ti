@@ -5,18 +5,31 @@
 
 .section _st130
 __install_fline_emulator:
+| Save old vector
 	lea.l __ams_fline_vec__(%pc),%a0
-	move.l 0x2C,(%a0)
+	move.l 0x2C:w,(%a0)
+| Save %a2 since we may not destroy it when we return to the OS / launcher.
+	pea (%a2)
+| Unprotect the vector table
+	lea 0x600001,%a2
+	moveq #2,%d0
+	bclr.b %d0,(%a2)
+| Store new vector
 	lea.l __fline_handler(%pc),%a0
-	bclr.b #2,0x600001
 	move.l %a0,0x2C:w
-	bset.b #2,0x600001
+| Protect the vector table
+	bset.b %d0,(%a2)
 
 .section _st1030
 __uninstall_fline_emulator:
-	bclr.b #2,0x600001
+| Unprotect the vector table
+	moveq #2,%d0
+	bclr.b %d0,(%a2)
+| Restore old vector
 	move.l __ams_fline_vec__(%pc),0x2C:w
-	bset.b #2,0x600001
+| Protect the vector table
+	bset.b %d0,(%a2)
+	move.l (%sp)+,%a2
 
 .section _st10030
 __fline_handler:
