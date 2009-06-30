@@ -1,0 +1,64 @@
+Process (An,Dn) as 0(An,Dn)
+
+Wild optimizations? (e.g. MOVE.W #0,D0 -> CLR.W D0)
+                    (also CMP #0 -> TST, CLR.L Dn -> MOVEQ #0,Dn and maybe
+                     MOVE #0,An -> SUB An,An -- Kevin Kofler
+                     also LSL #1 -> ADD -- trazom)
+
+                    (MOVE.L #16,D0 -> MOVE.W #16,D0 -> MOVEQ #16,D0) ???
+                    (NOTE by Kevin Kofler: Paul Froissart's suggestion of a
+                     MOVEF instruction - see below - is a better idea).
+
+Anyway while working on the above I came up with a little wish list for A68k:
+  4) A jump/branch-conditional assembler op.  68000 branch (Bcc) instructions
+     can only branch to a location +/- 32K away.  What I would like to see in
+     A68k are opcodes (i.e. JBxx) which would insert the necessary code to do
+     a long jump if the target of the branch was greater than 32k away.  This
+     is only required for 68000 code of course since 68020's and up support
+     32 bit displacement. An example,
+                JBEQ  target  ; branch if equal to target
+                              ; where target is a long
+                              ; way away
+
+     the assembler would produce code equivalent to:
+
+                BNE   skip
+                JMP   target
+         skip:                ; next instruction
+
+I hope I have given you some ideas and I look forward to your next release of
+A68k.
+
+Cheers,
+Paul Gittings
+
+
+A GOTO directive to continue the assembly at a certain point.
+Add a movef pseudo-instruction :
+- movef #x,dn means if -128<=x<=127 then translate as moveq #x,dn otherwise
+ translate it as move.w #x,dn (this can be done with a macro but the # has to
+ be removed and EQU constants are not supported, only SET constants, possibly
+ improve SET by supporting EQUs and make a SETIMM command which does not do
+  anything if the command doesn't start with a #, and which SETs the variable
+ otherwise, just like a SET without the #)
+Improve local labelling :
+- allow \_nxt_<label> like here :
+  bra \_nxt_<label>
+ Separator_label:
+  ...
+ \<label>
+  where \<label> would be unreachable otherwise . Nesting (\_nxt__nxt_<label>)
+ should be implemented, too. (Same thing with \_prv_)
+(Paul Froissart)
+
+* Allow to use symbols as values in -v instructions.
+* Improve the optimization of forward references, so it can also be applied
+  to things as:
+  add.l #label2-label1,a0
+  label1: dc.b 3
+  label2:
+  (Currently, the ADD -> ADDQ optimization cannot be applied here. Same for
+  ADD->LEA and LEA->ADDQ.)
+(Kevin Kofler)
+
+Allow multiple imports in the same expression? -- PpHd

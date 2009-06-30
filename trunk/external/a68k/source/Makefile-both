@@ -1,0 +1,36 @@
+GCC	= gcc
+GCC-DOS	= /usr/i686-pc-msdosdjgpp/bin/gcc
+DJP-DOS = /usr/i686-pc-msdosdjgpp/bin/djp
+
+CFLAGS = -D__NOPROTO -O3 -s
+
+SRC := A68kmain.c Opcodes.c Operands.c Adirect.c A68kmisc.c Symtab.c Codegen.c
+
+OBJ	= $(SRC:%.c=%.o)
+OBJ-DOS	= $(SRC:%.c=%.obj)
+
+EXE	= A68k
+EXE-DOS	= A68k.exe
+
+all: $(EXE) $(EXE-DOS)
+
+.SUFFIXES: .obj
+
+.c.o:
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+.c.obj:
+	$(GCC-DOS) $(CFLAGS) -c $< -o $@
+
+$(EXE):\
+	$(OBJ) 
+	$(GCC) -s -o $@ $(OBJ)
+
+$(EXE-DOS):\
+	$(OBJ-DOS)
+	$(GCC-DOS) -s -o $@ $(OBJ-DOS)
+	$(DJP-DOS) $@
+
+$(OBJ) $(OBJ-DOS): A68kdef.h A68kglb.h protos.h
+
+clean:; rm -f $(OBJ) $(OBJ-DOS) $(EXE) $(EXE-DOS) core
