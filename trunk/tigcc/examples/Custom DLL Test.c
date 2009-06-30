@@ -1,7 +1,5 @@
 #define USE_TI89
 
-#define SAVE_SCREEN
-
 #include <tigcclib.h>
 
 #define HelloFromDLL _DLL_call(void,(void),0)
