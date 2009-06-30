@@ -22,16 +22,16 @@ echo Installing GCC4TI project builder...
 ORG_PWD=$PWD/..
 cd $ORG_PWD/sources/tprbuilder/src/
 ${make} -e || exit 1
-${install} -d $TIGCC/bin || exit 1
+${install} -d $PREFIX_GCC4TI/bin || exit 1
 iswin1=`echo $GCC4TIHOST | grep -E "msys|mingw|cygwin"`
 iswin2=`uname -a | grep -E "msys|mingw|cygwin"`
 if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
-${install} tprbuilder $TIGCC/bin || exit 1
+${install} tprbuilder $PREFIX_GCC4TI/bin || exit 1
 else
 if [ -f "tprbuilder.exe" ]; then
-${install} tprbuilder.exe $TIGCC/bin || exit 1
+${install} tprbuilder.exe $PREFIX_GCC4TI/bin || exit 1
 else
-${install} tprbuilder $TIGCC/bin/tprbuilder.exe || exit 1
+${install} tprbuilder $PREFIX_GCC4TI/bin/tprbuilder.exe || exit 1
 fi
 fi
 ${make} clean

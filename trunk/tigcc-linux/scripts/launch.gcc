@@ -29,10 +29,10 @@ export CC_FOR_BUILD
 ORG_PWD=$PWD/..
 mkdir $ORG_PWD/build; cd $ORG_PWD/build; mkdir gcc; cd gcc
 if [ "x$GCC4TIHOST" = "x" ]; then
-../../download/gcc.ti/configure --prefix=$TIGCC --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp
+../../download/gcc.ti/configure --prefix=$PREFIX_GCC4TI --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp
 else
 echo Compiling GCC4TI gcc on custom host $GCC4TIHOST
-../../download/gcc.ti/configure --prefix=$TIGCC --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp --host=$GCC4TIHOST
+../../download/gcc.ti/configure --prefix=$PREFIX_GCC4TI --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp --host=$GCC4TIHOST
 fi
 
 if [ $? -ne 0 ]; then
@@ -64,15 +64,15 @@ echo You should have seen an error. This is normal. GCC4TI installation continue
 cd ../../scripts
 
 # Finish gcc installation
-${install} -d $TIGCC/bin/ || exit 1
+${install} -d $PREFIX_GCC4TI/bin/ || exit 1
 iswin1=`echo $GCC4TIHOST | grep -E "msys|mingw|cygwin"`
 iswin2=`uname -a | grep -E "msys|mingw|cygwin"`
 if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
-${install} ../build/gcc/gcc/cc1  $TIGCC/bin/ || exit 1
-${install} ../build/gcc/gcc/xgcc $TIGCC/bin/gcc || exit 1
+${install} ../build/gcc/gcc/cc1  $PREFIX_GCC4TI/bin/ || exit 1
+${install} ../build/gcc/gcc/xgcc $PREFIX_GCC4TI/bin/gcc || exit 1
 else
-${install} ../build/gcc/gcc/cc1.exe  $TIGCC/bin/ || exit 1
-${install} ../build/gcc/gcc/xgcc.exe $TIGCC/bin/gcc.exe || exit 1
+${install} ../build/gcc/gcc/cc1.exe  $PREFIX_GCC4TI/bin/ || exit 1
+${install} ../build/gcc/gcc/xgcc.exe $PREFIX_GCC4TI/bin/gcc.exe || exit 1
 fi
 
 cd $ORG_PWD/scripts

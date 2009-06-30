@@ -92,7 +92,9 @@ KDE installed, you can use:
 to tell the script to use the text-mode (curses) dialog instead of kdialog.
 
 You will be prompted for:
-* the destination directory you want to install GCC4TI to ($TIGCC)
+* the destination directory you want to install GCC4TI to ($PREFIX_GCC4TI,
+  used only internally during the compilation stage: will become $TIGCC when the
+  build is finished)
 * the bootstrap compiler ($CC) you want to compile GCC4TI with (usually "gcc",
   unless you're cross-compiling, e.g. with "i586-mingw32msvc-gcc").
 * the optimization flags ($CFLAGS) you want to compile GCC4TI with (read the GCC
@@ -127,30 +129,30 @@ This is definitely not what you want.
 2.1. Environment variable settings
 ----------------------------------
 
-Now, set the environment variable TIGCC to the directory you want to install
-GCC4TI into (for example /usr/local/share/gcc4ti). You need to set this variable
-in your profile, because the compilation stage needs it to find some tools and
-tigcc front-end needs it to find the header files.
+Now, set the environment variable PREFIX_GCC4TI to the directory you want to
+install GCC4TI into (for example /usr/local/share/gcc4ti). This variable is
+used only during the compilation stage, so as not to interfere with any
+prior user-defined setting for the TIGCC environment variable (which is used
+_after_ the compilation stage).
 
-If you use bash, add it to your .bashrc file in your home
-directory. You could also use your .profile or .login if
-you have those. If you use tcsh or csh, put it in your
-.cshrc file (or if you use .tcshrc, put it there).
+If you use bash, add it to your .bashrc file in your home directory. You could
+also use your .profile or .login if you have those. If you use tcsh or csh, put
+it in your .cshrc file (or if you use .tcshrc, put it there).
 
 I've never used korn shell. You're on your own if you do.
 
 For bash/sh users
 
-	export TIGCC=/usr/local/share/gcc4ti
-	export PATH=$PATH:$TIGCC/bin
+	export PREFIX_GCC4TI=/usr/local/share/gcc4ti
+	export PATH=$PATH:$PREFIX_GCC4TI/bin
 
 For csh/tcsh users
 
-	setenv TIGCC /usr/local/share/gcc4ti
-	set path=($path $TIGCC/bin)
+	setenv PREFIX_GCC4TI /usr/local/share/gcc4ti
+	set path=($path $PREFIX_GCC4TI/bin)
 
 I've had problems using setenv to reset the path in tcsh.
-setenv path "$path ${TIGCC}/bin"
+setenv path "$path ${PREFIX_GCC4TI}/bin"
 doesn't seem to work.
 
 You may need to logout and log back in for that to take
@@ -208,8 +210,8 @@ the automated script.
 At first, you will have to register a variable depending on the location you
 want to install GCC4TI
 
-	export TIGCC=/usr/local/share/gcc4ti
-	export PATH=$PATH:$TIGCC/bin
+	export PREFIX_GCC4TI=/usr/local/share/gcc4ti
+	export PATH=$PATH:$PREFIX_GCC4TI/bin
 	export CFLAGS='-Os -s'
 
 Next, simply go into the scripts directory.
@@ -232,7 +234,7 @@ compiler. For installing the TIGCC library, simply launch:
 	./Install_step_3
 
 If you want to be able to use the tigcc front-end and tprbuilder, you should
-append (not prepend !) $TIGCC/bin to your PATH.
+append (not prepend !) $PREFIX_GCC4TI/bin to your PATH.
 
 You need the TI-68k Developer Utilities (several are required for using the
 tigcc front-end, most others are useful, well, utilities). Simply do:

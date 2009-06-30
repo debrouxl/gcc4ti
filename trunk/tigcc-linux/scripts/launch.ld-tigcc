@@ -43,24 +43,24 @@ linkdll="link.dll"
 fi
 
 ${make} -e all ${linkdll} || exit 1
-${install} -d $TIGCC/bin || exit 1
+${install} -d $PREFIX_GCC4TI/bin || exit 1
 iswin1=`echo $GCC4TIHOST | grep -E "msys|mingw|cygwin"`
 iswin2=`uname -a | grep -E "msys|mingw|cygwin"`
 if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
-${install} ld-tigcc $TIGCC/bin || exit 1
-${install} ar-tigcc $TIGCC/bin || exit 1
+${install} ld-tigcc $PREFIX_GCC4TI/bin || exit 1
+${install} ar-tigcc $PREFIX_GCC4TI/bin || exit 1
 else
 if [ -f "ld-tigcc.exe" ]; then
-${install} ld-tigcc.exe $TIGCC/bin || exit 1
+${install} ld-tigcc.exe $PREFIX_GCC4TI/bin || exit 1
 else
-${install} ld-tigcc $TIGCC/bin/ld-tigcc.exe || exit 1
+${install} ld-tigcc $PREFIX_GCC4TI/bin/ld-tigcc.exe || exit 1
 fi
 if [ -f "ar-tigcc.exe" ]; then
-${install} ar-tigcc.exe $TIGCC/bin || exit 1
+${install} ar-tigcc.exe $PREFIX_GCC4TI/bin || exit 1
 else
-${install} ar-tigcc $TIGCC/bin/ar-tigcc.exe || exit 1
+${install} ar-tigcc $PREFIX_GCC4TI/bin/ar-tigcc.exe || exit 1
 fi
-${install} link.dll $TIGCC/bin || exit 1
+${install} link.dll $PREFIX_GCC4TI/bin || exit 1
 fi
 ${make} clean
 

@@ -25,18 +25,18 @@ cd $(dirname $0)
 
 echo "GCC4TI Installation Wizard"
 
-# Get TIGCC prefix directory
-if [ -z "$TIGCC" ]
-then TIGCC="/usr/local/share/gcc4ti"
+# Get GCC4TI prefix directory
+if [ -z "$PREFIX_GCC4TI" ]
+then PREFIX_GCC4TI="/usr/local/share/gcc4ti"
 fi
-echo -n "Destination directory ($TIGCC): "
-read TIGCCnew
+echo -n "Destination directory ($PREFIX_GCC4TI) - will become \$TIGCC: "
+read PREFIX_GCC4TInew
 # PpHd: use eval so that the user can enter e.g. $HOME/gcc4ti
-TIGCCnew=`eval echo "$TIGCCnew"`
-if [ ! -z "$TIGCCnew" ]
-then TIGCC="$TIGCCnew"
+PREFIX_GCC4TInew=`eval echo "$PREFIX_GCC4TInew"`
+if [ ! -z "$PREFIX_GCC4TInew" ]
+then PREFIX_GCC4TI="$PREFIX_GCC4TInew"
 fi
-export TIGCC
+export PREFIX_GCC4TI
 
 # Get Bootstrap compiler
 if [ -z "$CC" ]
@@ -91,12 +91,14 @@ fi
 echo -n "Add environment settings (\$TIGCC, \$PATH) to bashrc [Y/n]? "
 read AddEnvSettings
 echo
-if [ -z "$AddEnvSettings" -o "$AddEnvSettings" = y -o "$AddEnvSettings" = Y ]
+if [ -z "$AddEnvSettings" -o "x$AddEnvSettings" = xy -o "x$AddEnvSettings" = xY ]
 then
-    $TIGCC/bin/envreg
+    TIGCC=$PREFIX_GCC4TI
+    export TIGCC
+    $PREFIX_GCC4TI/bin/envreg
     echo "Done. You must restart bash for the new environment settings to take effect."
     exit 0;
 fi
 
-echo "Done. Make sure you set \$TIGCC to \"$TIGCC\" and add \$TIGCC/bin to your \$PATH before using GCC4TI."
+echo "Done. Make sure you set \$TIGCC to \"$PREFIX_GCC4TI\" and append \$TIGCC/bin to your \$PATH before using GCC4TI."
 exit 0

@@ -13,35 +13,35 @@ else
         install=ginstall
 fi
 
-${install} -d $TIGCC/doc || exit 1
-cd ..; ${install} -m 644 AUTHORS BUGS CHANGELOG COPYING DIRECTORIES HOWTO INSTALL README README.linux README.osX $TIGCC/doc || exit 1
+${install} -d $PREFIX_GCC4TI/doc || exit 1
+cd ..; ${install} -m 644 AUTHORS BUGS CHANGELOG COPYING DIRECTORIES HOWTO INSTALL README README.linux README.osX $PREFIX_GCC4TI/doc || exit 1
 
-${install} -d $TIGCC/doc/a68k || exit 1
-cd sources/a68k; ${install} -m 644 Bugs.txt Doc.txt History.txt ToDo.txt $TIGCC/doc/a68k || exit 1
+${install} -d $PREFIX_GCC4TI/doc/a68k || exit 1
+cd sources/a68k; ${install} -m 644 Bugs.txt Doc.txt History.txt ToDo.txt $PREFIX_GCC4TI/doc/a68k || exit 1
 
-${install} -d $TIGCC/doc/tigcc || exit 1
-cd ../tigcc; ${install} -m 644 AUTHORS COPYING ChangeLog README $TIGCC/doc/tigcc || exit 1
+${install} -d $PREFIX_GCC4TI/doc/tigcc || exit 1
+cd ../tigcc; ${install} -m 644 AUTHORS COPYING ChangeLog README $PREFIX_GCC4TI/doc/tigcc || exit 1
 
-${install} -d $TIGCC/doc/tprbuilder || exit 1
-cd ../tprbuilder; ${install} -m 644 AUTHORS COPYING ChangeLog README $TIGCC/doc/tprbuilder || exit 1
+${install} -d $PREFIX_GCC4TI/doc/tprbuilder || exit 1
+cd ../tprbuilder; ${install} -m 644 AUTHORS COPYING ChangeLog README $PREFIX_GCC4TI/doc/tprbuilder || exit 1
 
-rm -Rf $TIGCC/doc/parser
+rm -Rf $PREFIX_GCC4TI/doc/parser
 
-${install} -d $TIGCC/doc/patcher || exit 1
-cd ../patcher; ${install} -m 644 AUTHORS COPYING ChangeLog README $TIGCC/doc/patcher || exit 1
+${install} -d $PREFIX_GCC4TI/doc/patcher || exit 1
+cd ../patcher; ${install} -m 644 AUTHORS COPYING ChangeLog README $PREFIX_GCC4TI/doc/patcher || exit 1
 
-rm -Rf $TIGCC/doc/html
-cd ../../tigcclib/doc; cp -Rf html $TIGCC/doc
-rm -Rf $TIGCC/doc/tigcclib
-ln -sf $TIGCC/doc/html $TIGCC/doc/tigcclib
+rm -Rf $PREFIX_GCC4TI/doc/html
+cd ../../tigcclib/doc; cp -Rf html $PREFIX_GCC4TI/doc
+rm -Rf $PREFIX_GCC4TI/doc/tigcclib
+ln -sf $PREFIX_GCC4TI/doc/html $PREFIX_GCC4TI/doc/tigcclib
 iswin1=`echo $GCC4TIHOST | grep -E "msys|mingw|cygwin"`
 iswin2=`uname -a | grep -E "msys|mingw|cygwin"`
 if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
-${install} ../../tigcclib/doc/converter/gcc4tidoc $TIGCC/bin || exit 1
+${install} ../../tigcclib/doc/converter/gcc4tidoc $PREFIX_GCC4TI/bin || exit 1
 fi
 
 echo GCC4TI script: Creating GCC4TI projects folder...
-${install} -d $TIGCC/projects || exit 1
+${install} -d $PREFIX_GCC4TI/projects || exit 1
 
 echo Done.
 
