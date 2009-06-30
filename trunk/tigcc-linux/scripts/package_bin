@@ -1,22 +1,27 @@
 #! /bin/sh
 #
-# This script creates a tarball of the binaries.
-# Everything must have been build prior to running this script.
+# This script creates an Unix installer (self-extractible archive) using
+# "makeself" ( http://megastep.org/makeself/ , package "makeself").
+# Everything must have been built and installed prior to running this script.
 #
 
-OUTDIR=../gcc4ti-sources
+if test \! -d $TIGCC ; then
+   echo "Directory TIGCC=$TIGCC not found."
+   exit 1
+fi
 
-echo GCC4TI script: Packaging binaries:
-#echo stripping...
-#strip $TIGCC/bin/*
-echo clamscan...
-clamscan -ir $TIGCC
-echo tar...
-PWDSAVE="`pwd`"
-cd $TIGCC
-tar -c --exclude=projects/* --exclude=bin/quill.drv --exclude=lib/quill.drv --exclude=lib/fargo.a -f "$PWDSAVE/$OUTDIR/gcc4ti_bin.tar" bin doc examples include lib projects
-cd "$PWDSAVE/$OUTDIR"
-echo bzip2...
-rm -f gcc4ti_bin.tar.bz2
-bzip2 -9 gcc4ti_bin.tar
+MY_PWD="`dirname $0`/.."
+if type makeself > /dev/null 2> /dev/null ; then
+MAKESELF=makeself
+elif type makeself.sh > /dev/null 2> /dev/null ; then
+MAKESELF=makeself.sh
+else
+    echo "MAKESELF not found. Can't generate installation script. Abort."
+    exit 2
+fi
+rm -rf /tmp/gcc4ti
+cp -r $TIGCC /tmp/gcc4ti
+cp $MY_PWD/scripts/setup.sh /tmp/gcc4ti
+$MAKESELF --bzip2 /tmp/gcc4ti $MY_PWD/gcc4ti-install.sh "GCC4TI Install" ./setup.sh
+rm -rf /tmp/gcc4ti
 echo Done.

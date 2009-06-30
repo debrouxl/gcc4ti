@@ -20,6 +20,14 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+oldecho=`echo -n test | grep '\-n'`
+if [ "x$oldecho" = "x" ]; then
+	#This echo supports '-n' (no newline)
+        echon="echo -n"
+else
+        echon=echo
+fi
+
 # Move into the script directory
 cd $(dirname $0)
 
@@ -29,7 +37,7 @@ echo "GCC4TI Installation Wizard"
 if [ -z "$PREFIX_GCC4TI" ]
 then PREFIX_GCC4TI="/usr/local/share/gcc4ti"
 fi
-echo -n "Destination directory ($PREFIX_GCC4TI) - will become \$TIGCC: "
+${echon} "Destination directory ($PREFIX_GCC4TI) - will become \$TIGCC: "
 read PREFIX_GCC4TInew
 # PpHd: use eval so that the user can enter e.g. $HOME/gcc4ti
 PREFIX_GCC4TInew=`eval echo "$PREFIX_GCC4TInew"`
@@ -42,7 +50,7 @@ export PREFIX_GCC4TI
 if [ -z "$CC" ]
 then CC="gcc"
 fi
-echo -n "Bootstrap compiler ($CC): "
+${echon} "Bootstrap compiler ($CC): "
 read CCnew
 if [ ! -z "$CCnew" ]
 then CC="$CCnew"
@@ -57,14 +65,14 @@ fi
 if [ -z "$CFLAGS" ]
 then CFLAGS="-Os -s -fno-exceptions -fomit-frame-pointer"
 fi
-echo -n "Optimization flags ($CFLAGS): "
+${echon} "Optimization flags ($CFLAGS): "
 read CFLAGSnew
 if [ ! -z "$CFLAGSnew" ]
 then CFLAGS="$CFLAGSnew"
 fi
 export CFLAGS
 
-echo -n "Host platform for the generated executables ($GCC4TIHOST), leave empty if not cross-compiling: "
+${echon} "Host platform for the generated executables ($GCC4TIHOST), leave empty if not cross-compiling: "
 read GCC4TIHOSTnew
 if [ ! -z "$GCC4TIHOSTnew" ]
 then GCC4TIHOST="$GCC4TIHOSTnew"
@@ -88,7 +96,7 @@ else
 fi
 
 # Now offer to install environment variables
-echo -n "Add environment settings (\$TIGCC, \$PATH) to bashrc [Y/n]? "
+${echon} "Add environment settings (\$TIGCC, \$PATH) to bashrc [Y/n]? "
 read AddEnvSettings
 echo
 if [ -z "$AddEnvSettings" -o "x$AddEnvSettings" = xy -o "x$AddEnvSettings" = xY ]
