@@ -69,3 +69,4 @@ tprbuilder -q "Window 5.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Wind
 tprbuilder -q "Windows.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Windows.tpr\""; fi
 rm *.??z
 rm *.??y
+rm *.dbg

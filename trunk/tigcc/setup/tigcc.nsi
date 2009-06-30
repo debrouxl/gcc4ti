@@ -22,7 +22,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "GCC4TI"
-!define PRODUCT_VERSION "0.96 Beta 9"
+!define PRODUCT_VERSION "0.96 Beta 10"
 !define PRODUCT_PUBLISHER "GCC4TI Team"
 !define PRODUCT_WEB_SITE "http://trac.godzil.net/gcc4ti"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"

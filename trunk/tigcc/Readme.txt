@@ -1,5 +1,5 @@
 
-           TIGCC Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 9
+           GCC4TI Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 10
           ================================================================
 
 Xavier Vassor       Xavier@tigcc.ticalc.org    (original linker and tigcc)
@@ -10,6 +10,10 @@ Sebastian Reichelt  Sebastian@tigcc.ticalc.org (linker, IDE, GCC fixes)
 Niklas Brunlid      Niklas@tigcc.ticalc.org    (bugfixes and additions)
 Jean Canazzi        Jean@tigcc.ticalc.org      (first modification of GCC)
 Philipp Winkler     p.winkler@atn.nu           (library help file conversion)
+
+Lionel Debroux      lionel_debroux@yahoo.fr  
+Patrick Pelissier   patrick.pelissier@gmail.com
+Manoel Trapier      godzil@godzil.net
 
 Original files Copyright (C) 1999-2005 Xavier Vassor, Niklas Brunlid,
                                        and Jean Canazzi
@@ -32,97 +36,61 @@ This archive contains the sources for...
 - the tprbuilder ('tprbuilder' folder)
 - the link library ('FolderLink' folder)
 - the setup program ('Setup' folder)
-- the ExePack compressor (from the TIGCC Tools Suite) ('ttpack' folder)
+- the TI-68k Developer utilities (formerly TIGCC Tools Suite) ('tools' folder)
 - the standard library archive ('Archive' folder)
 - the ExePack launcher ('pstarter' folder)
 - the documentation ('Doc' folder)
 - various utilities
 
 
-Portability
------------
+GCC / Binutils
+==============
 
-This source code can be compiled without modifications only in Windows. For
-other environments (Unix/Linux, Mac OS X, etc.), you will have to download
-the TIGCC/*nix sources from http://tigcc.ticalc.org/linux/ and follow the
-instructions.
+In order to generate Windows executables, gcc and as have to be (cross-)compiled
+under MinGW / MSYS (www.mingw.org). Starting from version 0.96 Beta 10, GCC4TI
+implements cross-compiling support in the *nix source distribution, so most
+Windows executables can be compiled under *nix.
 
+GCC4TI automatically patches gcc and as to make them support a number of
+TI-68k/AMS peculiarities, and TIGCC/GCC4TI capabilities, such as (but not
+limited to):
+    * TI's calling convention;
+    * TI's (SMAP II BCD) floating-point values and AMS-compatible calling
+      convention;
+    * add support for linker optimization (all-relocs mode, mergeable
+      sections);
+    * various minor bug fixes when dealing with MC68000 (instead of MC68020) code.
 
-GCC
-===
-
-GCC has to be compiled under MinGW (www.mingw.org) if you want to use it
-in a Win32 environment (see instructions below). Cygwin is no longer supported
-by TIGCC. To make it use TI's calling convention, implement floating point
-support, etc., you have to patch a lot of files. The GNU assembler (from
-Binutils) also has to be patched and compiled with MinGW. Simply apply the
-appropriate .diff files in this archive using the GNU 'patch' utility ('patch'
-found on Unix systems may also work).
-
-A reduced version of the full GCC source code can be downloaded at:
-http://tigcc.ticalc.org/sources/gcc-4.0.2.tar.bz2
-Likewise, a reduced version of GNU binutils can be obtained from:
-http://tigcc.ticalc.org/sources/gas-2.16.1.tar.bz2
-However, if possible, it is better to get the official files from
-http://www.gnu.org/. There you can also get the very latest versions of these
-programs, but it is recommended to use the exact versions our patch was tested
-with, newer versions may or may not work and are definitely not supported.
-
-The as (binutils) patches add support for linker optimization (all-relocs
-mode, mergeable sections) and contain some minor bug fixes when dealing with
-MC68000 (instead of MC68020) code.
-
-The recommended approach (and the one we use) to compile TIGCC is to compile
-with MinGW (www.mingw.org), using the MSYS environment. Compiling with Cygwin
-(with or without the '-mno-cygwin' switch) has not been tested for ages.
-
-A typical environment variable setup would be this (typed in on the MSYS
-prompt):
-export CFLAGS='-Os -s -fno-exceptions'
+The *nix compilation procedure works under MSYS, with a small modification:
+before running Install, type
 export C_INCLUDE_PATH=""
-(The latter is necessary if you have GTK+ development packages installed, so
+(which is necessary if you have GTK+ development packages installed, so
 as not to let cc1.exe depend on iconv.dll.)
+in the MSYS command prompt.
 
-A typical configuration and compilation would then look like this (on the
-Cygwin prompt):
-cd <destdir>
-<srcdir>/configure --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap
-<create missing makefiles (see below)>
-make
-<repeat the last 2 steps until you get cc1.exe and xgcc.exe (see below)>
+NOTE1: the GCC4TI scripts can handle paths containing spaces, but the `configure`
+in binutils 2.16.1 and gcc 4.1.2 cannot. Don't use spaces either in the path
+where you decompress the GCC4TI source distribution or in the target PATH ($TIGCC).
 
-Do the same for binutils, except that the configure line looks like this:
-<srcdir>/configure --host=mingw32 --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
-and the required executable is as-new.exe.
-
-In the size-reduced sources available from tigcc.ticalc.org, there are some
-missing directories. This causes the configure script to create empty
-makefiles in the destination directory. The 'make' utility rejects these
-files, however, so you need to replace these with 'Makefile-empty' from this
-archive. Unfortunately, unlike previous versions of GCC and Binutils which
-first configured everything, then allowed you to replace the makefiles, and
-then compiled everything, newer versions configure subdirectories only as
-they are built. Therefore, you often have to replace the makefiles when an
-error occurs and then relaunch 'make'. The TIGCC/*nix build scripts automate
-this.
+NOTE2: when building in MSYS running under Windows XP, we saw NTVDM errors about
+forbidden instructions. As far as we could see, these errors can be safely ignored.
 
 We hope these instructions were clear enough, although they do not really
-fall into the category of how to recompile TIGCC. In fact, the possibilities
+fall into the category of how to recompile GCC4TI. In fact, the possibilities
 might be much greater in future releases of GCC. We will be glad to assist
 you in any way.
 
 
-LD-TIGCC/TPRBUILDER/A68K/TTPACK
-===============================
+LD-TIGCC / TPRBUILDER / A68K / TI-68k Developer Utilities
+=========================================================
 
-ld-tigcc, tprbuilder, A68k and ttpack can be compiled with MinGW32
-(www.mingw.org). ttpack can also be compiled using LCC-Win32.
+All of them can be (cross-)compiled with MinGW / MSYS.
 
 
-TIGCC/IDE
-=========
+TIGCC / TIGCC IDE
+=================
 
-IDE.exe and tigcc.exe, have to be compiled with Borland Delphi 6 or later. To
+IDE.exe and tigcc.exe have to be compiled with Borland Delphi 7 or later. To
 do this, make sure all files in the 'Search Path Items' folder are available
 in your search path. Then install all custom components from the 'Components'
 folder.
@@ -144,8 +112,9 @@ DOC
 ===
 
 First, modify the file HelpSystem.ini in the 'Programs' subfolder of the
-'Doc' folder to reflect your actual folder names. It exists so that the
-'Programs' folder can reside at any given place on the hard disk.
+'Doc' folder to reflect your actual folder names. It contains an example of
+configuration. It exists so that the 'Programs' folder can reside at any
+given place on the hard disk.
 Then, you need to call all 'Update...' programs once.
 
 UpdateInclude.exe and UpdateInfo.exe take one or more complete file name(s)
@@ -176,19 +145,16 @@ Readme.txt file in the documentation folder.
 ARCHIVE
 =======
 
-Use the TIGCC IDE to compile the archive, then copy tigcc.a into the Lib
-folder.
-
-Alternatively you can use the tprbuilder (which calls the command line
-compiler and its '-ar' switch).
+Use tprbuilder or the TIGCC IDE to compile the archive, then copy tigcc.a
+into the lib folder.
 
 
 LAUNCHER (PSTARTER)
 ===================
 
-Use the TIGCC IDE to compile the project, making sure "Delete object
-files on successful linking" is unchecked, then copy pstarter.o into the
-Lib folder.
+Use
+tigcc -c -Wa,--defsym,ttunpack=1,-l pstarter.s -o pstarter.o
+to compile the pstarter, then copy pstarter.o into the lib folder.
 
 
 SETUP
@@ -199,7 +165,7 @@ makeall.bat in the 'setup' folder. The following external utilities (all
 Open Source and free of charge) are needed for that to work:
 * UPX: http://upx.sourceforge.net
 * NSIS: http://nsis.sourceforge.net
-* Info-ZIP: http://www.info-zip.org/pub/infozip/
-* ClamWin: http://www.clamwin.com
+* Info-ZIP or compatible: http://www.info-zip.org/pub/infozip/
+* ClamWin (for some virus checking): http://www.clamwin.com
 You'll also have to adjust the paths in the batch files and in tigcc.nsi
 properly for them to work on your system.

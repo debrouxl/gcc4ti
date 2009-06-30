@@ -1,7 +1,6 @@
 
-           GCC4TI Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 9
+           GCC4TI Cross Compiler for the TI-89 and TI-92 Plus v0.96 Beta 10
           ================================================================
-(based on TIGCC v0.96 Beta 8 + CVS modifications)
 
 Xavier Vassor       Xavier@tigcc.ticalc.org    (original linker and tigcc)
 Zeljko Juric        Zeljko@tigcc.ticalc.org    (library and documentation)
@@ -14,6 +13,7 @@ Philipp Winkler     p.winkler@atn.nu           (library help file conversion)
 
 Lionel Debroux      lionel_debroux@yahoo.fr  
 Patrick Pelissier   patrick.pelissier@gmail.com
+Manoel Trapier      godzil@godzil.net
 
 Email us at:        tigccpp@box.godzil.net
 

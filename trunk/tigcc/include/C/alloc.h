@@ -56,6 +56,7 @@ extern HANDLE HeapReallocThrow(HANDLE asm("d0"),long asm("a0"))__ATTR_LIB_ASM__;
 #define HLock _rom_call(void*,(HANDLE),99)
 #define malloc _rom_call(void*,(long),A2)
 extern void *malloc_throw(long asm("a0"))__ATTR_LIB_ASM__;
+extern HANDLE PtrToHandle(void* asm("a0"))__ATTR_LIB_ASM__;
 #ifndef __HAVE_realloc
 #define __HAVE_realloc
 extern void *realloc(void* asm("a0"),long asm("d0"))__ATTR_LIB_ASM__;

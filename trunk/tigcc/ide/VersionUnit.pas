@@ -24,8 +24,8 @@ unit VersionUnit;
 interface
 
 const
-	TIGCCShortVersion = '0.96b9';
-	TIGCCLongVersion = '0.96 Beta 9';
+	TIGCCShortVersion = '0.96b10';
+	TIGCCLongVersion = '0.96 Beta 10';
 
 implementation
 

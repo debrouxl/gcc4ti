@@ -1,3 +1,9 @@
+Modified:
+Sat Jan 24 2009 Conrad Meyer <cemeyer@u.washington.edu>
+  - Updated to include [References]
+  - Wrap lines at 80 cols.
+
+Comment by Sebastian Reichelt (original author of this file):
 This is just some information I quickly put together, meant especially for Zeljko Juric.  I guess it's better than no documentation at all.
 
  *.ref
@@ -49,6 +55,10 @@ Contains HTML code for the short description of the identifier, which also appea
 
 [Explanation]
 HTML code for the rest of the documentation for the identifier.
+
+[References]
+In: Other symbols that make use of this symbol (comma seperated list of foo.h/Sym items).
+Out: Other symbols that this symbol uses (same format as for "In").
 
  *.hsh
 -------

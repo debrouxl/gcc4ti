@@ -22,11 +22,14 @@
 program TiGcc;
 
 uses
-	Windows, Classes, SysUtils,
-	ParsingUnit in '..\ParsingUnit.pas',
-	CalcUnit in '..\CalcUnit.pas',
-	LinkDLLUnit in '..\LinkDLLUnit.pas',
-	VersionUnit in '..\VersionUnit.pas';
+  Windows,
+  Classes,
+  SysUtils,
+  ParsingUnit in '..\ide\ParsingUnit.pas',
+  CalcUnit in '..\ide\CalcUnit.pas',
+  LinkDLLUnit in '..\ide\LinkDLLUnit.pas',
+  VersionUnit in '..\ide\VersionUnit.pas',
+  UtilsDos in '..\general\UtilsDos.pas';
 
 const
 	SErrorPrefix = 'TIGCC.EXE: ';
@@ -673,7 +676,7 @@ begin
 								Assemble := False;
 								Link := False;
 								if S = '--version' then
-									OutputTextLine ('tigcc.exe built for TIGCC Version ' + TIGCCLongVersion);
+									OutputTextLine ('tigcc.exe built for GCC4TI Version ' + TIGCCLongVersion);
 							end;
 							Insert (' ' + Enquote (S), GCCLine, Length (GCCLine) + 1);
 						end;
