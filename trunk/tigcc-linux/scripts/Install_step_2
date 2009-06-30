@@ -4,16 +4,16 @@
 # The download tree must have been patched before doing this.
 #
 ORG_PWD=$PWD/..
-mkdir $ORG_PWD/build; cd $ORG_PWD/build; mkdir binutils; mkdir gcc;
-(cd $ORG_PWD/scripts && ./launch.binutils && ./launch.gcc) || exit 1
-rm -Rf $ORG_PWD/build
+mkdir "$ORG_PWD/build"; cd "$ORG_PWD/build"; mkdir binutils; mkdir gcc;
+(cd "$ORG_PWD/scripts" && ./launch.binutils && ./launch.gcc) || exit 1
+rm -Rf "$ORG_PWD/build"
 if [ "x$GCC4TIHOST" != "x" ]; then
 echo Compiling GCC4TI on custom host $GCC4TIHOST.
 fi
-(cd $ORG_PWD/scripts && ./launch.a68k && ./launch.ld-tigcc &&
+(cd "$ORG_PWD/scripts" && ./launch.a68k && ./launch.ld-tigcc &&
 ./launch.tigcc && ./launch.tprbuilder && ./launch.patcher &&
 ./launch.envreg) || exit 1
 
-rm -f $PREFIX_GCC4TI/bin/parser
+rm -f "$PREFIX_GCC4TI/bin/parser"
 
 exit 0

@@ -45,9 +45,9 @@ read AddEnvSettings
 echo
 if [ -z "$AddEnvSettings" -o "$AddEnvSettings" = y -o "$AddEnvSettings" = Y ]
 then
-    TIGCC=$PREFIX_GCC4TI
+    TIGCC="$PREFIX_GCC4TI"
     export TIGCC
-    $PREFIX_GCC4TI/bin/envreg
+    "$PREFIX_GCC4TI/bin/envreg"
     echo "Done. You must restart bash for the new environment settings to take effect."
     exit 0;
 fi

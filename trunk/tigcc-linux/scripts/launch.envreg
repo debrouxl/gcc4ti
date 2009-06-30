@@ -18,19 +18,19 @@ else
         install=ginstall
 fi
 
-iswin1=`echo $GCC4TIHOST | grep -E "msys|mingw|cygwin"`
-iswin2=`uname -a | grep -E "msys|mingw|cygwin"`
+iswin1=`echo $GCC4TIHOST | grep -E -i "msys|mingw|cygwin"`
+iswin2=`uname -a | grep -E -i "msys|mingw|cygwin"`
 if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
 
 echo Installing GCC4TI environment registrator...
 ORG_PWD=$PWD/..
-cd $ORG_PWD/sources/envreg/src/
+cd "$ORG_PWD/sources/envreg/src/"
 ${make} -e || exit 1
-${install} -d $PREFIX_GCC4TI/bin || exit 1
-${install} envreg $PREFIX_GCC4TI/bin || exit 1
+${install} -d "$PREFIX_GCC4TI/bin" || exit 1
+${install} envreg "$PREFIX_GCC4TI/bin" || exit 1
 ${make} clean
 
-cd $ORG_PWD/scripts
+cd "$ORG_PWD/scripts"
 
 echo Done.
 

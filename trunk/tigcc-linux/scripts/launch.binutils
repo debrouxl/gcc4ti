@@ -21,12 +21,12 @@ fi
 
 echo GCC4TI script: Configuring, compiling and installing binutils...
 ORG_PWD=$PWD/..
-mkdir $ORG_PWD/build; cd $ORG_PWD/build; mkdir binutils; cd binutils
+mkdir "$ORG_PWD/build"; cd "$ORG_PWD/build"; mkdir binutils; cd binutils
 if [ "x$GCC4TIHOST" = "x" ]; then
-../../download/binutils.ti/configure --disable-serial-configure --prefix=$PREFIX_GCC4TI --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
+../../download/binutils.ti/configure --disable-serial-configure "--prefix=$PREFIX_GCC4TI" --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
 else
 echo Compiling GCC4TI binutils on custom host $GCC4TIHOST
-../../download/binutils.ti/configure --disable-serial-configure --prefix=$PREFIX_GCC4TI --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry --host=$GCC4TIHOST
+../../download/binutils.ti/configure --disable-serial-configure "--prefix=$PREFIX_GCC4TI" --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry --host=$GCC4TIHOST
 fi
 
 if [ $? -ne 0 ]; then
@@ -86,16 +86,16 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-${install} -d $PREFIX_GCC4TI/bin/ || exit 1
-iswin1=`echo $GCC4TIHOST | grep -E "msys|mingw|cygwin"`
-iswin2=`uname -a | grep -E "msys|mingw|cygwin"`
+${install} -d "$PREFIX_GCC4TI/bin/" || exit 1
+iswin1=`echo $GCC4TIHOST | grep -E -i "msys|mingw|cygwin"`
+iswin2=`uname -a | grep -E -i "msys|mingw|cygwin"`
 if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
-${install} gas/as-new $PREFIX_GCC4TI/bin/as || exit 1
+${install} gas/as-new "$PREFIX_GCC4TI/bin/as" || exit 1
 else
-${install} gas/as-new.exe $PREFIX_GCC4TI/bin/as.exe || exit 1
+${install} gas/as-new.exe "$PREFIX_GCC4TI/bin/as.exe" || exit 1
 fi
 
-cd $ORG_PWD/scripts
+cd "$ORG_PWD/scripts"
 
 echo Done.
 
