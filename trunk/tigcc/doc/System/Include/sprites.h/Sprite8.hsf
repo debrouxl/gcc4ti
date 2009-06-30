@@ -31,13 +31,19 @@ XOR mode switches every pixel with a corresponding '1' bit in the <I>sprite</I> 
 <TD VALIGN="TOP">SPRT_OR</TD>
 <TD>OR the sprite into a background. This is mainly used for masked sprites together with SPRT_AND.
 OR means that every pixel with a corresponding '1' bit in the <I>sprite</I> array will be set to black, but all other pixels stay the same.
-If you want to turn all other pixels to white instead, one way to achieve this would be to AND
-the sprite as well.</TD>
+If you want to turn all other pixels to white instead, use SPRT_RPLC.</TD>
 </TR>
 <TR>
 <TD VALIGN="TOP">SPRT_AND</TD>
 <TD>AND the sprite into a background. This is used for masked sprites together with SPRT_OR.
-AND turns off every pixel with a corresponding '0' bit in the <I>sprite</I> array, but all other pixels remain untouched.</TD>
+AND turns off every pixel with a corresponding '0' bit in the <I>sprite</I> array, but all other pixels remain untouched.
+If you want to turn all other pixels to black instead, use SPRT_RPLC.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">SPRT_RPLC</TD>
+<TD>RePLaCe the sprite into a background.
+RPLC sets every pixel with a corresponding '1' bit to black and every pixel with a corresponding '0' bit to white.
+This is equivalent to calling <CODE>Sprite8(x,y,h,sprite,plane,SPRT_AND); Sprite8(x,y,h,sprite,plane,SPRT_OR);</CODE>.</TD>
 </TR>
 </TABLE>
 <BR>
