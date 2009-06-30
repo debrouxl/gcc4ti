@@ -4,6 +4,7 @@ Type=Function
 Subtype=ROM Call
 Header Files=alloc.h
 Definition=HANDLE HeapPtrToHandle (void *Ptr);
+See Also=alloc.h/PtrToHandle
 
 [ROM Call]
 Index=$23A
@@ -12,10 +13,14 @@ Index=$23A
 Determines the handle associated with a block.
 
 [Explanation]
-HeapPtrToHandle returns the handle which is associated with a block that is
-pointed to by <I>Ptr</I> (or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if there is not a handle
-that references the given block).
-This routine works by searching the entire table of handles for the given pointer,
-and so should be used accordingly. It assumes that the heap has not been compressed
-since the dereferenced pointer was
-originally obtained or the block it points to is locked.
+HeapPtrToHandle returns the handle associated to the block whose beginning is
+pointed to by <I>Ptr</I> (or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if <I>Ptr</I>
+does not point to the beginning of a block).
+<BR>
+This routine works by searching the entire table of handles for the given pointer.
+It will return meaningful results only if the block of memory was not moved (e.g. by heap
+compression) since the pointer was originally obtained.
+<BR>
+<B>Note:</B> <A HREF="$$LINK(alloc.h/PtrToHandle)">PtrToHandle</A>, implemented in the
+TIGCC library, returns the handle associated to the block referenced by the pointer,
+even if the pointer does not point to the beginning of the block.

@@ -1,0 +1,33 @@
+[Main]
+Name=PtrToHandle
+Type=Function
+Subtype=tigcc.a
+Header Files=alloc.h
+Definition=HANDLE PtrToHandle (void *Ptr);
+See Also=alloc.h/HeapPtrToHandle
+
+[Registers]
+Ptr=a0
+
+[Library Call]
+Asm=1
+TIOS Callback=0
+
+[Description]
+Determines the handle associated with a block.
+
+[Explanation]
+PtrToHandle returns the handle associated to the block pointed to by <I>Ptr</I>
+(or <A HREF="$$LINK(alloc.h/H_NULL)">H_NULL</A> if <I>Ptr</I> does not point within a block).
+<BR>
+This routine will return meaningful results only if the block of memory was not moved (e.g.
+by heap compression) since the pointer was originally obtained.
+<BR>
+The following program shows the difference between <A HREF="$$LINK(alloc.h/HeapPtrToHandle)">HeapPtrToHandle</A>
+and PtrToHandle:
+$$EXAMPLE(Pointer To Handle.c)
+
+
+[References]
+Out=alloc.h/HeapDeref, alloc.h/HeapSize
+

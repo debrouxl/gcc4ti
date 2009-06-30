@@ -49,6 +49,7 @@ tprbuilder -q "Menu Example 1.tpr"; if [ $? -ne 0 ]; then echo FAILED building "
 tprbuilder -q "Menu Example 2.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Menu Example 2.tpr\""; fi
 tprbuilder -q "Multiply Polynoms.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Multiply Polynoms.tpr\""; fi
 tprbuilder -q "Othello-Reversi.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Othello-Reversi.tpr\""; fi
+tprbuilder -q "Pointer To Handle.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Pointer To Handle.tpr\""; fi
 tprbuilder -q "Popup Menu Example.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Popup Menu Example.tpr\""; fi
 tprbuilder -q "Pretty Print.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Pretty Print.tpr\""; fi
 tprbuilder -q "Print EStack.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Print EStack.tpr\""; fi
