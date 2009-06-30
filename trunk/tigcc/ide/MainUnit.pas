@@ -414,9 +414,13 @@ type
 		NoHideEditor: Boolean;
 		PreviousNode: TTreeNode;
 		SyntaxCBackup: TSyntaxColoring;
+		SyntaxCReset: Boolean;
 		SyntaxAsmGNUBackup: TSyntaxColoring;
+		SyntaxAsmGNUReset: Boolean;
 		SyntaxAsmBackup: TSyntaxColoring;
+		SyntaxAsmReset: Boolean;
 		SyntaxQuillBackup: TSyntaxColoring;
+		SyntaxQuillReset: Boolean;
 		Closing: Boolean;
 		ProgSize: Integer;
 		OptimizeInfo: TLinkLibOptimizeInfo;
@@ -695,12 +699,13 @@ begin
 		Application.OnException := AppException;
 		WindowState := wsMaximized;
 		RecentFiles := TStringList.Create;
+		DocFile := THTMLHelp.Create(Self);
 		ToolsList := TToolsList.Create (Self, TToolsListItem);
 		TIGCCFolder := ExtractFilePath (ParamStr (0));
 		Delete (TIGCCFolder, Pos (UpperCase (IDELocation), UpperCase (TIGCCFolder)), Length (TIGCCFolder));
 		with TRegistry.Create do try
 			RootKey := HKey_Local_Machine;
-			if OpenKeyReadOnly ('\Software\TIGCC Team\TIGCC') then try
+			if OpenKeyReadOnly ('\Software\GCC4TI Team\GCC4TI') then try
 				if ValueExists ('Program Folder') then
 					TIGCCFolder := ReadString ('Program Folder');
 			except end;
@@ -3239,6 +3244,9 @@ begin
 					SyntaxCopy.Assign (SyntaxC);
 					Strm.WriteComponent (SyntaxCopy);
 					WriteBinaryData ('Editor C Syntax Coloring', Strm.Memory^, Strm.Size);
+					if (SyntaxCReset) then begin
+						WriteInteger ('Editor C Syntax Coloring Version', 1);
+					end;
 				finally
 					SyntaxCopy.Free;
 				end;
@@ -3248,6 +3256,9 @@ begin
 					SyntaxCopy.Assign (SyntaxAsmGNU);
 					Strm.WriteComponent (SyntaxCopy);
 					WriteBinaryData ('Editor GNU ASM Syntax Coloring', Strm.Memory^, Strm.Size);
+					if (SyntaxAsmGNUReset) then begin
+						WriteInteger ('Editor GNU ASM Syntax Coloring Version', 1);
+					end;
 				finally
 					SyntaxCopy.Free;
 				end;
@@ -3258,6 +3269,9 @@ begin
 						SyntaxCopy.Assign (SyntaxAsm);
 						Strm.WriteComponent (SyntaxCopy);
 						WriteBinaryData ('Editor ASM Syntax Coloring', Strm.Memory^, Strm.Size);
+						if (SyntaxAsmReset) then begin
+							WriteInteger ('Editor ASM Syntax Coloring Version', 1);
+						end;
 					finally
 						SyntaxCopy.Free;
 					end;
@@ -3269,6 +3283,9 @@ begin
 						SyntaxCopy.Assign (SyntaxQuill);
 						Strm.WriteComponent (SyntaxCopy);
 						WriteBinaryData ('Editor Quill Syntax Coloring', Strm.Memory^, Strm.Size);
+						if (SyntaxQuillReset) then begin
+							WriteInteger ('Editor Quill Syntax Coloring Version', 1);
+						end;
 					finally
 						SyntaxCopy.Free;
 					end;

@@ -456,14 +456,19 @@ end;
 
 procedure TPreferencesForm.ResetButtonClick(Sender: TObject);
 begin
-	if Syntax = SyntaxC then
-		Syntax.Assign (MainForm.SyntaxCBackup)
-	else if Syntax = SyntaxAsmGNU then
-		Syntax.Assign (MainForm.SyntaxAsmGNUBackup)
-	else if Syntax = SyntaxAsm then
-		Syntax.Assign (MainForm.SyntaxAsmBackup)
-	else if Syntax = SyntaxQuill then
+	if Syntax = SyntaxC then begin
+		Syntax.Assign (MainForm.SyntaxCBackup);
+		MainForm.SyntaxCReset := True;
+	end else if Syntax = SyntaxAsmGNU then begin
+		Syntax.Assign (MainForm.SyntaxAsmGNUBackup);
+		MainForm.SyntaxAsmGNUReset := True;
+	end else if Syntax = SyntaxAsm then begin
+		Syntax.Assign (MainForm.SyntaxAsmBackup);
+		MainForm.SyntaxAsmReset := True;
+	end else if Syntax = SyntaxQuill then begin
 		Syntax.Assign (MainForm.SyntaxQuillBackup);
+		MainForm.SyntaxQuillReset := True;
+	end;
 	LanguageSelectionBoxChange (Sender);
 end;
 

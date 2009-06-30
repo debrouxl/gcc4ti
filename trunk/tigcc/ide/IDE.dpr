@@ -63,7 +63,8 @@ uses
 	LinkDLLUnit in 'LinkDLLUnit.pas',
 	FolderUnit in 'FolderUnit.pas',
 	LinkUnit in 'LinkUnit.pas',
-	CalcUnit in 'CalcUnit.pas';
+	CalcUnit in 'CalcUnit.pas',
+	HTMLHelpUnit in '..\components\HTMLHelpUnit.pas';
 
 {$R *.RES}
 

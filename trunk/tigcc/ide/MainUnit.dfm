@@ -5524,7 +5524,7 @@ object MainForm: TMainForm
       FF0FE0000000000000000000000000000000000000000000000000000000}
   end
   object DocFile: THTMLHelp
-    FileName = 'TiGccLib.chm'
+    FileName = 'Tigcc.chm'
     WindowType = 'mainwin'
     MaximizeOnShow = False
     Left = 408
