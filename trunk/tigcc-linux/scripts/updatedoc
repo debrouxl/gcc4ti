@@ -1,44 +1,63 @@
-#!/bin/sh
-TIGCCCVSDIR=../../tigcccvs
-WINDOCDIR=../../tigccdoc/System
+#! /bin/sh
+#
+# This script rebuilds the documentation part of the tree suitable for `package_src`.
+#
+
+TIGCCDIR=../../tigcc
+WINDOCDIR=~/.wine/drive_c/docfiles/
+OUTDIR=../gcc4ti-sources
+WINE=~/wine/wine
+
+mkdir -p $OUTDIR/tigcclib/doc/html
+
+echo Generating documentation \(will take up to several minutes\)...
+echo Includes
+$WINE $TIGCCDIR/doc/Programs/Update/UpdateInclude.exe
+echo Keywords
+$WINE $TIGCCDIR/doc/Programs/Update/UpdateKeywords.exe
+echo Info
+$WINE $TIGCCDIR/doc/Programs/Update/UpdateInfo.exe
+echo Index
+$WINE $TIGCCDIR/doc/Programs/Update/UpdateIndex.exe
 
 echo Creating documentation source tarball...
-rm -f ../tigcclib/doc/source.tar.bz2
+rm -f $OUTDIR/tigcclib/doc/source.tar.bz2
 OLDPWD=`pwd`
-cd $TIGCCCVSDIR/doc
-tar -c --exclude='[cC][vV][sS]' --exclude='.*/[cC][vV][sS]' -f source.tar Programs System
-bzip2 -9 source.tar
+cd $TIGCCDIR/doc
+tar -c --exclude='*/.[sS][vV][nN]' -f $OLDPWD/$OUTDIR/tigcclib/doc/source.tar Programs System
+bzip2 -9 $OLDPWD/$OUTDIR/tigcclib/doc/source.tar
+cp -R converter $OLDPWD/$OUTDIR/tigcclib/doc/
 cd $OLDPWD
-mv -f $TIGCCCVSDIR/doc/source.tar.bz2 ../tigcclib/doc/source.tar.bz2
 
 echo Copying documentation files...
 echo -n .
-rm -f ../tigcclib/doc/html/[a-e]*
+rm -f $OUTDIR/tigcclib/doc/html/[a-e]*
 echo -n .
-rm -f ../tigcclib/doc/html/[f-j]*
+rm -f $OUTDIR/tigcclib/doc/html/[f-j]*
 echo -n .
-rm -f ../tigcclib/doc/html/[k-o]*
+rm -f $OUTDIR/tigcclib/doc/html/[k-o]*
 echo -n .
-rm -f ../tigcclib/doc/html/[p-t]*
+rm -f $OUTDIR/tigcclib/doc/html/[p-t]*
 echo -n .
-rm -f ../tigcclib/doc/html/[u-z]*
+rm -f $OUTDIR/tigcclib/doc/html/[u-z]*
 echo -n .
-cp -pf $WINDOCDIR/CHMFiles/[a-e]*.html ../tigcclib/doc/html/
+cp -pf $WINDOCDIR/CHMFiles/[a-e]*.html $OUTDIR/tigcclib/doc/html/
 echo -n .
-cp -pf $WINDOCDIR/CHMFiles/[f-j]*.html ../tigcclib/doc/html/
+cp -pf $WINDOCDIR/CHMFiles/[f-j]*.html $OUTDIR/tigcclib/doc/html/
 echo -n .
-cp -pf $WINDOCDIR/CHMFiles/[k-o]*.html ../tigcclib/doc/html/
+cp -pf $WINDOCDIR/CHMFiles/[k-o]*.html $OUTDIR/tigcclib/doc/html/
 echo -n .
-cp -pf $WINDOCDIR/CHMFiles/[p-t]*.html ../tigcclib/doc/html/
+cp -pf $WINDOCDIR/CHMFiles/[p-t]*.html $OUTDIR/tigcclib/doc/html/
 echo -n .
-cp -pf $WINDOCDIR/CHMFiles/[u-z]*.html ../tigcclib/doc/html/
+cp -pf $WINDOCDIR/CHMFiles/[u-z]*.html $OUTDIR/tigcclib/doc/html/
 echo -n .
 cp -pf $WINDOCDIR/CHMFiles/*.css $WINDOCDIR/CHMFiles/*.gif \
  $WINDOCDIR/CHMFiles/Contents.hhc $WINDOCDIR/CHMFiles/Index.hhk \
- ../tigcclib/doc/html/
+ $OUTDIR/tigcclib/doc/html/
 echo .
-cd ../tigcclib/doc/html
-echo Converting...
+
+echo Converting CHM documentation to Qt DCF/ADP format \(will take several minutes\)...
+cd $OUTDIR/tigcclib/doc/html
 ../converter/chm2dcf
 ../converter/dcf2adp
 echo Done.

@@ -1,8 +1,12 @@
 #! /bin/sh
 #
-# This script creates a tarball of all binaries.
+# This script creates a tarball of the binaries.
+# Everything must have been build prior to running this script.
 #
-echo TIGCC script: Packaging binaries:
+
+OUTDIR=../gcc4ti-sources
+
+echo GCC4TI script: Packaging binaries:
 #echo stripping...
 #strip $TIGCC/bin/*
 echo clamscan...
@@ -10,9 +14,9 @@ clamscan -ir $TIGCC
 echo tar...
 OLDPWD="`pwd`"
 cd $TIGCC
-tar -c --exclude=projects/* --exclude=bin/quill.drv --exclude=lib/quill.drv --exclude=lib/fargo.a --exclude=lib/flashos.a -f "$OLDPWD/../tigcc_bin.tar" bin doc examples include lib projects
-cd "$OLDPWD"
+tar -c --exclude=projects/* --exclude=bin/quill.drv --exclude=lib/quill.drv --exclude=lib/fargo.a -f "$OLDPWD/$OUTDIR/gcc4ti_bin.tar" bin doc examples include lib projects
+cd "$OLDPWD/$OUTDIR"
 echo bzip2...
-rm -f ../tigcc_bin.tar.bz2
-bzip2 -9 ../tigcc_bin.tar
+rm -f gcc4ti_bin.tar.bz2
+bzip2 -9 gcc4ti_bin.tar
 echo Done.

@@ -1,120 +1,121 @@
-#!/bin/sh
+#! /bin/sh
+#
+# This script updates the tree suitable for `package_src`
+# (except the documentation: this is the duty of `updatedoc`).
+#
 
-TIGCCCVSDIR=../../tigcccvs
-TIGCCLIBDIR=../../tigcc-win32/Lib
-A68KSRCDIR=/e/TI-89/a68k/source
-TIGCCLINUXCVSDIR=../../tigcc-linux-cvs
+TIGCCDIR=../../tigcc
+A68KSRCDIR=../../external/a68k/source
+TIGCCLINUXDIR=../../tigcc-linux
+OUTDIR=../gcc4ti-sources
 
+echo Updating source tree...
+mkdir -p $OUTDIR/tigcclib
+mkdir -p $OUTDIR/sources
 
-# TIGCCLIB components in CVS
+# TIGCCLIB components
 echo Updating archive \(tigcclib/src\)...
-rm -rf ../tigcclib/src/*
-cp -prf $TIGCCCVSDIR/archive/* ../tigcclib/src
-rm -rf ../tigcclib/src/CVS ../tigcclib/src/startup/CVS
+rm -rf $OUTDIR/tigcclib/src
+cp -prf $TIGCCDIR/archive $OUTDIR/tigcclib/src
+rm -Rf $OUTDIR/tigcclib/src/*.a
 
 echo Updating examples...
-rm -rf ../tigcclib/examples/*
-cp -prf $TIGCCCVSDIR/examples/* ../tigcclib/examples
-rm -rf ../tigcclib/examples/CVS
+rm -rf $OUTDIR/tigcclib/examples
+cp -prf $TIGCCDIR/examples $OUTDIR/tigcclib/examples
 
 echo Updating hsf2rc...
-rm -rf ../tigcclib/hsf2rc/*
-cp -prf $TIGCCCVSDIR/hsf2rc/* ../tigcclib/hsf2rc
-rm -rf ../tigcclib/hsf2rc/CVS
+rm -rf $OUTDIR/tigcclib/hsf2rc
+cp -prf $TIGCCDIR/hsf2rc $OUTDIR/tigcclib/hsf2rc
 
 echo Updating include...
-rm -rf ../tigcclib/include/*
-cp -prf $TIGCCCVSDIR/include/C ../tigcclib/include/c
-cp -prf $TIGCCCVSDIR/include/ASM ../tigcclib/include/asm
-cp -prf $TIGCCCVSDIR/include/S ../tigcclib/include/s
-rm -rf ../tigcclib/include/CVS ../tigcclib/include/asm/CVS ../tigcclib/include/c/CVS \
-       ../tigcclib/include/c/Completion ../tigcclib/include/s/CVS
+rm -rf $OUTDIR/tigcclib/include
+mkdir $OUTDIR/tigcclib/include
+cp -prf $TIGCCDIR/include/C $OUTDIR/tigcclib/include/c
+cp -prf $TIGCCDIR/include/ASM $OUTDIR/tigcclib/include/asm
+cp -prf $TIGCCDIR/include/S $OUTDIR/tigcclib/include/s
+rm -rf $OUTDIR/tigcclib/include/c/Completion
 
-echo Updating pstarter...
-rm -rf ../tigcclib/pstarter/*
-cp -prf $TIGCCCVSDIR/pstarter/* ../tigcclib/pstarter
-rm -rf ../tigcclib/pstarter/CVS ../tigcclib/pstarter/lzma/CVS
+echo Updating starters...
+rm -rf $OUTDIR/tigcclib/starters
+cp -prf $TIGCCDIR/starters $OUTDIR/tigcclib/starters
+rm -rf $OUTDIR/tigcclib/starters/build $OUTDIR/tigcclib/starters/test
 
 
-# Toolchain components in CVS
+# Toolchain components
 echo Updating gcc \(TIGCC patches\)...
-rm -rf ../sources/gcc/*
-cp -prf $TIGCCCVSDIR/gcc/* ../sources/gcc
-rm -rf ../sources/gcc/CVS
+rm -rf $OUTDIR/sources/gcc
+cp -prf $TIGCCDIR/gcc $OUTDIR/sources/gcc
 
 echo Updating ld-tigcc...
-rm -rf ../sources/ld-tigcc/*
-cp -prf $TIGCCCVSDIR/ld-tigcc/* ../sources/ld-tigcc
-rm -rf ../sources/ld-tigcc/CVS ../sources/ld-tigcc/ar/CVS ../sources/ld-tigcc/ar/export/CVS \
-       ../sources/ld-tigcc/ar/import/CVS ../sources/ld-tigcc/bincode/CVS ../sources/ld-tigcc/export/CVS \
-       ../sources/ld-tigcc/formats/CVS ../sources/ld-tigcc/import/CVS ../sources/ld-tigcc/insert/CVS \
-       ../sources/ld-tigcc/insert/model/CVS
+rm -rf $OUTDIR/sources/ld-tigcc
+cp -prf $TIGCCDIR/ld-tigcc $OUTDIR/sources/ld-tigcc
+rm -f $OUTDIR/sources/ld-tigcc/*.o $OUTDIR/sources/ld-tigcc/ar/*.o \
+      $OUTDIR/sources/ld-tigcc/ar/export/*.o $OUTDIR/sources/ld-tigcc/ar/import/*.o \
+      $OUTDIR/sources/ld-tigcc/bincode/*.o  $OUTDIR/sources/ld-tigcc/export/*.o \
+      $OUTDIR/sources/ld-tigcc/formats/*.o $OUTDIR/sources/ld-tigcc/import/*.o \
+      $OUTDIR/sources/ld-tigcc/insert/*.o $OUTDIR/sources/ld-tigcc/insert/model/*.o \
+      $OUTDIR/sources/ld-tigcc/ar-tigcc $OUTDIR/sources/ld-tigcc/ld-tigcc \
+      $OUTDIR/sources/ld-tigcc/link.dll
 
 echo Updating tprbuilder...
-rm -rf ../sources/tprbuilder/*
-cp -prf $TIGCCCVSDIR/tprbuilder/* ../sources/tprbuilder
-rm -rf ../sources/tprbuilder/CVS ../sources/tprbuilder/src/CVS
+rm -rf $OUTDIR/sources/tprbuilder
+cp -prf $TIGCCDIR/tprbuilder $OUTDIR/sources/tprbuilder
 
 
-# Other components in CVS
+# Other components
 echo Updating readme...
-rm -f ../README
-cp -pf $TIGCCCVSDIR/readme/Readme.txt ../README
+rm -f $OUTDIR/README
+cp -pf $TIGCCDIR/readme/Readme.txt $OUTDIR/README
 
-echo Updating ttpack...
-rm -rf ../sources/ttpack/*
-cp -prf $TIGCCCVSDIR/ttpack/* ../sources/ttpack
-rm -rf ../sources/ttpack/CVS
+echo Updating TI-68k developer utilities \(formerly TIGCC Tools Suite\)...
+rm -rf $OUTDIR/sources/tools
+cp -prf $TIGCCDIR/tools $OUTDIR/sources/tools
+rm -rf $OUTDIR/sources/tools/bin
 
-
-# Components out of CVS
 echo Updating lib...
-rm -rf ../tigcclib/lib/*
-cp -pf $TIGCCLIBDIR/tigcc.a $TIGCCLIBDIR/pstarter.o ../tigcclib/lib
+rm -rf $OUTDIR/tigcclib/lib
+mkdir $OUTDIR/tigcclib/lib
+cp -pf $TIGCCDIR/archive/tigcc.a $TIGCCDIR/archive/flashos.a \
+       $TIGCCDIR/starters/build/pstarter.o $OUTDIR/tigcclib/lib/
 
 echo Updating a68k...
-rm -rf ../sources/a68k/*
-cp -prf $A68KSRCDIR/* ../sources/a68k
+rm -rf $OUTDIR/sources/a68k
+mkdir -p $OUTDIR/sources/a68k
+cp -pf $A68KSRCDIR/* $OUTDIR/sources/a68k
 
-
-# Components in Linux/*nix CVS
+# Components in Linux/*nix
 echo Updating envreg...
-rm -rf ../sources/envreg/*
-cp -prf $TIGCCLINUXCVSDIR/sources/envreg/* ../sources/envreg
-rm -rf ../sources/envreg/CVS ../sources/envreg/src/CVS
+rm -rf $OUTDIR/sources/envreg
+cp -prf $TIGCCLINUXDIR/sources/envreg $OUTDIR/sources/envreg
 
 echo Updating patcher...
-rm -rf ../sources/patcher/*
-cp -prf $TIGCCLINUXCVSDIR/sources/patcher/* ../sources/patcher
-rm -rf ../sources/patcher/CVS ../sources/patcher/src/CVS
+rm -rf $OUTDIR/sources/patcher
+cp -prf $TIGCCLINUXDIR/sources/patcher $OUTDIR/sources/patcher
 
 echo Updating tigcc...
-rm -rf ../sources/tigcc/*
-cp -prf $TIGCCLINUXCVSDIR/sources/tigcc/* ../sources/tigcc
-rm -rf ../sources/tigcc/CVS ../sources/tigcc/src/CVS
+rm -rf $OUTDIR/sources/tigcc
+cp -prf $TIGCCLINUXDIR/sources/tigcc $OUTDIR/sources/tigcc
 
 echo Updating source directory list...
-cp -prf $TIGCCLINUXCVSDIR/sources/DIRECTORIES ../sources/
+cp -prf $TIGCCLINUXDIR/sources/DIRECTORIES $OUTDIR/sources/
 
 echo Updating text documentation...
-cp -prf $TIGCCLINUXCVSDIR/AUTHORS ../
-cp -prf $TIGCCLINUXCVSDIR/BUGS ../
-cp -prf $TIGCCLINUXCVSDIR/CHANGELOG ../
-cp -prf $TIGCCLINUXCVSDIR/COPYING ../
-cp -prf $TIGCCLINUXCVSDIR/DIRECTORIES ../
-cp -prf $TIGCCLINUXCVSDIR/HOWTO ../
-cp -prf $TIGCCLINUXCVSDIR/INSTALL ../
-cp -prf $TIGCCLINUXCVSDIR/README.linux ../
-cp -prf $TIGCCLINUXCVSDIR/README.osX ../
+cp -prf $TIGCCLINUXDIR/AUTHORS $OUTDIR/
+cp -prf $TIGCCLINUXDIR/BUGS $OUTDIR/
+cp -prf $TIGCCLINUXDIR/CHANGELOG $OUTDIR/
+cp -prf $TIGCCLINUXDIR/COPYING $OUTDIR/
+cp -prf $TIGCCLINUXDIR/DIRECTORIES $OUTDIR/
+cp -prf $TIGCCLINUXDIR/HOWTO $OUTDIR/
+cp -prf $TIGCCLINUXDIR/INSTALL $OUTDIR/
+cp -prf $TIGCCLINUXDIR/README.linux $OUTDIR/
+cp -prf $TIGCCLINUXDIR/README.osX $OUTDIR/
 
 echo Updating installation wizard...
-cp -prf $TIGCCLINUXCVSDIR/Install.sh ../
-chmod +x ../Install.sh
+cp -prf $TIGCCLINUXDIR/Install.sh $OUTDIR/
+chmod +x $OUTDIR/Install.sh
 
 echo Updating scripts...
-rm -rf ./*
-cp -prf $TIGCCLINUXCVSDIR/scripts/* .
-rm -rf CVS
-chmod +x [^S]*
+cp -prf $TIGCCLINUXDIR/scripts/ $OUTDIR/
+chmod +x $OUTDIR/scripts/[^S]*
 
 echo Done.
