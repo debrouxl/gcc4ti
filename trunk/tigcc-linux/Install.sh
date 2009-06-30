@@ -2,6 +2,7 @@
 # Install.sh - GCC4TI binary installation wizard
 #
 # Copyright (C) 2004-2005 Kevin Kofler
+# Copyright (C) 2009 Lionel Debroux
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,12 +39,12 @@ fi
 export TIGCC
 
 # Get current PWD.
-OLDPWD="`pwd`"
+PWDSAVE="`pwd`"
 
 # Unpack the binaries to the destination directory
 mkdir $TIGCC
 cd $TIGCC
-tar -x -j --no-same-owner --same-permissions -f "$OLDPWD/gcc4ti_bin.tar.bz2"
+tar -x -j --no-same-owner --same-permissions -f "$PWDSAVE/gcc4ti_bin.tar.bz2"
 
 # Now offer to install environment variables
 echo -n "Add environment settings (\$TIGCC, \$PATH) to bashrc [Y/n]? "
@@ -87,12 +88,12 @@ fi
 export TIGCC
 
 # Get current PWD.
-OLDPWD="`pwd`"
+PWDSAVE="`pwd`"
 
 # Unpack the binaries to the destination directory
 mkdir $TIGCC
 cd $TIGCC
-tar -x -j --no-same-owner --same-permissions -f "$OLDPWD/tigcc_bin.tar.bz2"
+tar -x -j --no-same-owner --same-permissions -f "$PWDSAVE/tigcc_bin.tar.bz2"
 
 # Now offer to install environment variables
 $DIALOG --title "GCC4TI Installation Wizard" --yesno "Add environment settings ($BACKSLASH\$TIGCC, $BACKSLASH\$PATH) to bashrc?" $DLGSIZE && { $TIGCC/bin/envreg; $DIALOG --title "GCC4TI Installation Wizard" --msgbox "Done. You must restart bash for the new environment settings to take effect." $DLGSIZE; exit 0; }

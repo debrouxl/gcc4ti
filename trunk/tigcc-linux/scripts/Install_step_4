@@ -1,9 +1,24 @@
-#!/bin/sh
+#! /bin/sh
 #
 # Install the TI-68k Developer Utilities
 #
 echo GCC4TI script: Compiling and installing the TI-68k Developer Utilities...
+isos=`uname -a | grep "opensolaris"`
+if [ "x$isos" = "x" ]; then
+	#Assume GNU or BSD install
+        install=install
+else
+        install=ginstall
+fi
+
 cd ../sources/tools/
-./buildall
-mv bin/* $TIGCC/bin
+if [ "x$GCC4TIHOST" != "x" ]; then
+echo Compiling TI-68k Developer Utilities on custom host $GCC4TIHOST.
+fi
+./buildall || exit 1
+${install} -d $TIGCC/bin || exit 1
+${install} bin/* $TIGCC/bin || exit 1
+./clean
 echo Done.
+
+exit 0

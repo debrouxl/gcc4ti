@@ -3,17 +3,41 @@
 # Compile and install the TIGCC project builder
 #
 
-isbsd=`uname | grep "BSD"`
-if [ "$isbsd" = "" ]; then
+isbsd=`uname -a | grep "BSD"`
+isos=`uname -a | grep "opensolaris"`
+if [ "x$isbsd" = "x" -a "x$isos" = "x" ]; then
 	#Assume GNU make
         make=make
 else
         make=gmake
 fi
+if [ "x$isos" = "x" ]; then
+	#Assume GNU or BSD install
+        install=install
+else
+        install=ginstall
+fi
 
 echo Installing GCC4TI project builder...
-cd ../sources/tprbuilder/src/
-${make} -e
-cp tprbuilder $TIGCC/bin
+ORG_PWD=$PWD/..
+cd $ORG_PWD/sources/tprbuilder/src/
+${make} -e || exit 1
+${install} -d $TIGCC/bin || exit 1
+iswin1=`echo $GCC4TIHOST | grep -E "msys|mingw|cygwin"`
+iswin2=`uname -a | grep -E "msys|mingw|cygwin"`
+if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
+${install} tprbuilder $TIGCC/bin || exit 1
+else
+if [ -f "tprbuilder.exe" ]; then
+${install} tprbuilder.exe $TIGCC/bin || exit 1
+else
+${install} tprbuilder $TIGCC/bin/tprbuilder.exe || exit 1
+fi
+fi
 ${make} clean
+
+cd $ORG_PWD/scripts
+
 echo Done.
+
+exit 0

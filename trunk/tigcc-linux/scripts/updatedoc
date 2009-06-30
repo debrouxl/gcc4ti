@@ -6,7 +6,7 @@
 TIGCCDIR=../../tigcc
 WINDOCDIR=~/.wine/drive_c/docfiles/
 OUTDIR=../gcc4ti-sources
-WINE=~/wine/wine
+WINE=wine
 
 mkdir -p $OUTDIR/tigcclib/doc/html
 
@@ -22,12 +22,12 @@ $WINE $TIGCCDIR/doc/Programs/Update/UpdateIndex.exe
 
 echo Creating documentation source tarball...
 rm -f $OUTDIR/tigcclib/doc/source.tar.bz2
-OLDPWD=`pwd`
+PWDSAVE=`pwd`
 cd $TIGCCDIR/doc
-tar -c --exclude='*/.[sS][vV][nN]' -f $OLDPWD/$OUTDIR/tigcclib/doc/source.tar Programs System
-bzip2 -9 $OLDPWD/$OUTDIR/tigcclib/doc/source.tar
-cp -R converter $OLDPWD/$OUTDIR/tigcclib/doc/
-cd $OLDPWD
+tar -c --exclude='*/.[sS][vV][nN]' -f $PWDSAVE/$OUTDIR/tigcclib/doc/source.tar Programs System
+bzip2 -9 $PWDSAVE/$OUTDIR/tigcclib/doc/source.tar
+cp -R converter $PWDSAVE/$OUTDIR/tigcclib/doc/
+cd $PWDSAVE
 
 echo Copying documentation files...
 echo -n .

@@ -3,6 +3,14 @@
 # Apply the patch to the original sources (download directory)
 #
 echo GCC4TI script: Applying patch to original sources...
+isos=`uname -a | grep "opensolaris"`
+if [ "x$isos" = "x" ]; then
+	#Assume GNU or BSD patch
+        patch=patch
+else
+        patch=gpatch
+fi
+
 cd ../download; 
 # Binutils
 echo Patching binutils...
@@ -28,7 +36,7 @@ rm -f -r ld
 rm -f -r opcodes/po
 rm -f -r texinfo
 echo Applying GCC4TI patch
-patch -p1 < ../../sources/gcc/gas-2.16-tigcc-patch.diff
+${patch} -p1 < ../../sources/gcc/gas-2.16-tigcc-patch.diff || exit 1
 cd ..
 # Gcc
 echo Patching GCC...
@@ -54,5 +62,7 @@ rm -f -r include/nlm
 rm -f -r include/regs
 rm -f -r texinfo
 echo Applying GCC4TI patch
-patch -p1 < ../../sources/gcc/gcc-4.1-tigcc-patch.diff
+${patch} -p1 < ../../sources/gcc/gcc-4.1-tigcc-patch.diff || exit 1
 echo Done.
+
+exit 0

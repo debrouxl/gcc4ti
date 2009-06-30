@@ -17,7 +17,7 @@ echo CC environment variable not defined, assuming CC=gcc
 CC=gcc
 fi
 
-if [ -z "`$CC --version | grep mingw`" ] ; then
+if [ -z "`$CC --version | grep mingw`" -a -z "`$CC --version | grep msys`" -a -z "`$CC --version | grep cygwin`" ] ; then
 out=$1
 else
 out=$1.exe
@@ -26,12 +26,13 @@ fi
 echo compiling $1 to $out...
 $CC -Os -Wall -W -Wp,-D_FORTIFY_SOURCE=2 -s -o $out $1.c
 if [ $? -ne 0 ] ; then
+echo compilation failed
 exit 1
 fi
 
-if [ -n `which upx` ] ; then
+if [ type upx >/dev/null 2>/dev/null ] ; then
 echo compressing file
-upx --best $out &>/dev/null
+upx --best $out >/dev/null 2>/dev/null
 else
 echo compression skipped
 fi
@@ -41,3 +42,5 @@ echo moving executable ...
 mkdir -p bin
 mv $out bin/
 fi
+
+exit 0

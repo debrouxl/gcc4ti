@@ -2,8 +2,8 @@ HOW TO COMPILE AND INSTALL GCC4TI FROM SOURCE
 ============================================
 
 Please note: read README.linux first. The instructions below apply only to
-compiling and installing the whole package from source if you need to do that. I
-recommend installing from binaries if possible.
+compiling and installing the whole package from source. I recommend installing
+from binaries if possible.
 
 
 REQUIREMENTS
@@ -13,32 +13,40 @@ You must have the following programs before you attempt
 to install gcc4ti-unix.
 
 REQUIRED:
-	1. gcc 2.95 or later (other compilers might work, but are NOT supported)
+	1. GNU GCC 2.95 or later (other compilers might work, but are NOT supported)
+	   GNU GCC cross-compilers are supported.
 
-	2. binutils 2.8 or later (gnu or equivalent --
-	   ld, ar, as, etc.)
+	2. GNU binutils (ld, ar, as, etc.) 2.8 or later.
+	   Other binutils might work, but are NOT supported.
 
-	3. gnu patch (Solaris patch will NOT work)
+	3. GNU or BSD patch (Solaris patch will NOT work)
 
 	4. bzip2 (to decompress this archive)
 
-	5. tar (gnu tar is best, but Solaris and SGI should be okay)
+	5. tar (all of GNU, BSD and Solaris tar seem to be OK)
 
-	6. gnu make
+	6. GNU make (Solaris make will NOT work)
 
-	7. At least 130 MB of free space (archive expands to over 80,
-	build can take another 30-40 depending upon architecture)
+	7. GNU or BSD install (Solaris install will NOT work)
 
-	8. bison or yacc
+	8. At least 130 MB of free space (archive expands to over 80,
+	   build can take another 30-40 depending upon architecture)
 
-	9. flex
+	9. bison or yacc
+
+	10. flex
 
 OPTIONAL:
-	10. Windows or WINE to compile the documentation from source
+	11. Windows or Wine to compile the documentation from source
 	    (optional: the source distribution includes pre-generated HTML
 	    documentation)
 
-	11. A dialog executable (any of: kdialog, xdialog, gdialog, cdialog or
+	12. Wine or equivalent + binfmt-support with Wine registered, when
+	    cross-compiling, under a *nix host, executables running on Windows
+	    platforms. Without this (or something equivalent), `configure`
+	    aborts early, because the *nix host cannot run Windows executables.
+
+	13. A dialog executable (any of: kdialog, xdialog, gdialog, cdialog or
 	    dialog), if and only if you want to use the wizard (optional: the
 	    wizard now uses plain bash if no dialog executable is available)
 
@@ -93,9 +101,13 @@ to tell the script to use the text-mode (curses) dialog instead of kdialog.
 
 You will be prompted for:
 * the destination directory you want to install GCC4TI to ($TIGCC)
-* the bootstrap compiler ($CC) you want to compile GCC4TI with (usually "gcc")
+* the bootstrap compiler ($CC) you want to compile GCC4TI with (usually "gcc",
+  unless you're cross-compiling, e.g. with "i586-mingw32msvc-gcc").
 * the optimization flags ($CFLAGS) you want to compile GCC4TI with (read the GCC
   documentation or just use the defaults)
+* the host platform of the generated executables ($GCC4TIHOST), leave blank if
+  not cross-compiling. "i586-mingw32msvc" is a value that suits well when
+  CC=i586-mingw32msvc-gcc.
 
 The wizard will ask you whether you want to apply the GCC4TI patch. The answer is
 usually "Yes". It will be "No" only if you are rebuilding the same source for a
@@ -109,6 +121,16 @@ you can also run envreg by hand afterwards.)
 
 2. Use the install scripts directly
 -----------------------------------
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WARNING: below, a number of places mention appending $TIGCC/bin to the path.
+We _really_ mean appending. This is because $TIGCC/bin contains "gcc" and "as" for
+m68k-coff target, and if $TIGCC/bin appears before /usr/bin in the PATH, the "gcc"
+and "as" in $TIGCC/bin would be used instead of the host system's executables...
+This is definitely not what you want.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 2.1. Environment variable settings
 ----------------------------------
@@ -170,10 +192,17 @@ files, so compiling it from source should usually not be necessary.)
 And run the installation script...
 
 	export CFLAGS='-Os -s'
+
+If cross-compiling or using another custom compiler for some reason, set the
+CC and GCC4TIHOST environment variables, e.g.
+	export CC=i586-mingw32msvc-gcc
+	export GCC4TIHOST=i586-mingw32msvc
+
+Then launch the installation procedure.
 	cd scripts; ./Install_All
 
 Assuming you have all the required tools, you should have yourself
-a GCC4TI build in 5 - 60 minutes.
+a GCC4TI build (except the Delphi executables) in 5 - 60 minutes.
 
 I hope this installation goes smoothly for you.
 
@@ -181,8 +210,8 @@ I hope this installation goes smoothly for you.
 -----------------------------------
 
 The following is the "hard" way to do step 2.2. It is used primarily for
-development purposes. You can use this if you experience some problems with the
-automated script.
+development purposes. You can use this if you experience some problems with
+the automated script.
 
 At first, you will have to register a variable depending on the location you
 want to install GCC4TI
@@ -196,6 +225,11 @@ Then you must apply the patch supplied with this package:
 
 	./Install_step_1
 
+If cross-compiling or using another custom compiler for some reason, set the
+CC and GCC4TIHOST environment variables, e.g.
+	export CC=i586-mingw32msvc-gcc
+	export GCC4TIHOST=i586-mingw32msvc
+
 Next, compile binutils and gcc. This may take a while...
 
 	./Install_step_2
@@ -205,12 +239,11 @@ compiler. For installing the TIGCC library, simply launch:
 
 	./Install_step_3
 
-If you want to be able to use it, you should add /usr/local/share/gcc4ti to
-your PATH. The compiler is named m68k-coff-gcc, to avoid namecollision with
-your system's gcc. The other utilities follow the same naming.
+If you want to be able to use the tigcc front-end and tprbuilder, you should
+append (not prepend !) $TIGCC/bin to your PATH.
 
 You need the TI-68k Developer Utilities (several are required for using the
-tigcc front-end). Simply do:
+tigcc front-end, most others are useful, well, utilities). Simply do:
 
 	./Install_step_4
 
@@ -264,4 +297,4 @@ cd ../html
 ../converter/dcf2adp # convert the DCF to an Assistant Document Profile (ADP)
 (There is also a script called updatedoc to automate the copying and
 converting of the documentation.)
-WARNING: chm2dcf is slooooow. You have been warned.
+WARNING: chm2dcf is slow (several minutes on a Core 2 @ 2 GHz).

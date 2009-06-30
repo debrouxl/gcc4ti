@@ -4,20 +4,33 @@
 # The tree must have been patched before doing this.
 #
 
-isbsd=`uname | grep "BSD"`
-if [ "$isbsd" = "" ]; then
+isbsd=`uname -a | grep "BSD"`
+isos=`uname -a | grep "opensolaris"`
+if [ "x$isbsd" = "x" -a "x$isos" = "x" ]; then
 	#Assume GNU make
         make=make
 else
         make=gmake
 fi
+if [ "x$isos" = "x" ]; then
+	#Assume GNU or BSD install
+        install=install
+else
+        install=ginstall
+fi
 
 echo GCC4TI script: Configuring, compiling and installing binutils...
-mkdir ../build; mkdir ../build/binutils;
-cd ../build/binutils; ../../download/binutils.ti/configure --disable-serial-configure --prefix=$TIGCC --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
+ORG_PWD=$PWD/..
+mkdir $ORG_PWD/build; cd $ORG_PWD/build; mkdir binutils; cd binutils
+if [ "x$GCC4TIHOST" = "x" ]; then
+../../download/binutils.ti/configure --disable-serial-configure --prefix=$TIGCC --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
+else
+echo Compiling GCC4TI binutils on custom host $GCC4TIHOST
+../../download/binutils.ti/configure --disable-serial-configure --prefix=$TIGCC --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry --host=$GCC4TIHOST
+fi
 
-if [ $? -ne 0 ]
-    then echo "GCC4TI script: Error while configuring"
+if [ $? -ne 0 ]; then
+    echo "GCC4TI script: Error while configuring binutils"
     exit 1
 fi
 
@@ -68,12 +81,22 @@ echo all: >gas/po/Makefile
 
 #Now this one should really work...
 ${make}
-if [ $? -ne 0 ]
-    then echo "GCC4TI script: Error while making"
+if [ $? -ne 0 ]; then
+    echo "GCC4TI script: Error while making binutils"
     exit 2
 fi
 
-mkdir $TIGCC/bin/
-cp gas/as-new $TIGCC/bin/as
+${install} -d $TIGCC/bin/ || exit 1
+iswin1=`echo $GCC4TIHOST | grep -E "msys|mingw|cygwin"`
+iswin2=`uname -a | grep -E "msys|mingw|cygwin"`
+if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
+${install} gas/as-new $TIGCC/bin/as || exit 1
+else
+${install} gas/as-new.exe $TIGCC/bin/as.exe || exit 1
+fi
+
+cd $ORG_PWD/scripts
 
 echo Done.
+
+exit 0

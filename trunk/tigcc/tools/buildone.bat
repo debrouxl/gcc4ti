@@ -13,13 +13,8 @@ REM at the end of the batch script the final executable is moved into
 REM the calctools bin directory
 REM --------------------------------------------------------------------
 echo compiling %1 ...
-lcc -O %1.c
+gcc %1.c -o %1.exe
 @IF ERRORLEVEL 1 goto failed
-
-echo linking %1 ...
-lcclnk %1.obj
-@IF ERRORLEVEL 1 goto failed
-del %1.obj
 
 start /min /wait upx -9 %1.exe > nul
 @IF ERRORLEVEL 1 goto skipped
