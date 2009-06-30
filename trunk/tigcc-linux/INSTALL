@@ -9,7 +9,7 @@ from binaries if possible.
 REQUIREMENTS
 ------------
 
-You must have the following programs before you attempt
+You must have the following programs AND sources before you attempt
 to install gcc4ti-unix.
 
 REQUIRED:
@@ -36,26 +36,26 @@ REQUIRED:
 
 	10. flex
 
+	11. GNU GCC 4.1.2 and GNU binutils 2.16.1 _sources_, which are used
+	    for compiling gcc and as for m68k-coff target.
+	    You'll need to download them from one of the numerous GCC / binutils
+	    mirrors listed at http://gcc.gnu.org/mirrors.html, e.g.
+	    ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/gcc/releases/gcc-4.1.2/gcc-core-4.1.2.tar.bz2
+	    ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/binutils/releases/binutils-2.16.1.tar.bz2
+	    (DON'T use gcc-4.1.2.tar.bz2, i.e. the full version: it may fail to compile !)
+
 OPTIONAL:
-	11. Windows or Wine to compile the documentation from source
+	12. Windows or Wine to compile the documentation from source
 	    (optional: the source distribution includes pre-generated HTML
 	    documentation)
 
-	12. Wine or equivalent + binfmt-support with Wine registered, when
+	13. Wine or equivalent + binfmt-support with Wine registered, when
 	    cross-compiling, under a *nix host, executables running on Windows
 	    platforms. Without this (or something equivalent), `configure`
 	    aborts early, because the *nix host cannot run Windows executables.
 
-	13. A dialog executable (any of: kdialog, xdialog, gdialog, cdialog or
-	    dialog), if and only if you want to use the wizard (optional: the
-	    wizard now uses plain bash if no dialog executable is available)
-
-If you run into any problems, please contact me and let me know
-where the install failed...
-
-If you want to recompile GCC4TI-Linux, you will need to dowload:
-	gcc-core-4.1.2.tar.bz2 (gcc-core, full gcc may not compile !)
-	binutils-2.16.1.tar.bz2
+If you run into any problems, please contact us (tigccpp AT box.godzil.net) 
+and let us know what platform you're running on, and where the install failed.
 
 Depending on your machine, compilation can take some time !
 
@@ -63,37 +63,29 @@ Depending on your machine, compilation can take some time !
 INSTALLING GCC4TI FOR UNIX
 -------------------------
 
-The installation should be very simple. The package has worked on
-Linux, Solaris 8, and SGI IRIX 6 to try and make the scripts
-compatible. UN*X provides some things better, some things worse. Let us know
-if you have a problem with the worse...
+The installation should be very simple. The package has worked on Ubuntu 9.04,
+Fedora 8, Fedora 11, SimplyMEPIS 8 (very close to Debian Lenny), OpenSolaris
+2009.06, FreeBSD 7.2. UN*X provides some things better, some things worse.
+Let us know if you have a problem with the worse...
 
 First, extract the source to a directory of your choosing such as /tmp.
-
-Unpack binutils & gcc-core packages to the download/ directory as this, and
-create symlinks download/gcc.ti and download/binutils.ti pointing to them:
 
 	mkdir /tmp/gcc4ti-src
 	cd /tmp/gcc4ti-src
 	# substitute the directory you are using for /tmp
 	bunzip2 gcc4ti-src.tar.bz2
 	tar xfv gcc4ti-src.tar
-	mkdir download
-	cd download
-	bunzip2 binutils-2.16.1.tar.bz2 gcc-core-4.1.2.tar.bz2
-	tar xvf binutils-2.16.1.tar
-	tar xvf gcc-core-4.1.2.tar
-	ln -s binutils-2.16.1 binutils.ti
-	ln -s gcc-4.1.2 gcc.ti
-	cd ..
+
+Then, copy or link binutils-2.16.1 and gcc-core-4.1.2.tar.bz2 in that folder.
 
 At this point, you have 2 options:
+
 
 1. Use the installation wizard
 ------------------------------
 
 All you need to do now is:
-	cd scripts; ./Install
+	scripts/Install
 and follow the instructions. If you want a text-mode install on a system with
 KDE installed, you can use:
 	cd scripts; DIALOG=dialog ./Install

@@ -11,58 +11,97 @@ else
         patch=gpatch
 fi
 
-cd ../download; 
+mkdir -p ../download
+cd ../download
+
+# Check if binutils was extracted
+if test \! -d binutils.ti ; then
+    echo "binutils.ti not found."
+    pack=`find .. -name "binutils*.tar.bz2"`
+    if test \! -f "$pack" ; then
+        echo "BINUTILS: Can't find the binutils original tarball. Please get it at ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/binutils/releases/binutils-2.16.1.tar.bz2 and copy or link them where you unpacked gcc4ti-src.tar.bz2"
+        exit 3
+    fi
+    echo "Extracting $pack"
+    (bunzip2 -cd "$pack" | tar xf -) || exit 4
+    echo "$pack extracted."
+    ln -s "`basename $pack .tar.bz2`" binutils.ti || exit 6
+fi
+
+# Check if binutils was extracted
+if test \! -d gcc.ti ; then
+    echo "gcc.ti not found."
+    pack=`find .. -name "gcc-core*.tar.bz2"`
+    if test \! -f "$pack" ; then
+        echo "BINUTILS: Can't find the gcc original tarball. Please get it at ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/gcc/releases/gcc-4.1.2/gcc-core-4.1.2.tar.bz2 and copy or link them where you unpacked gcc4ti-src.tar.bz2"
+        exit 3
+    fi
+    echo "Extracting $pack"
+    (bunzip2 -cd "$pack" | tar xf -) || exit 4
+    echo "$pack extracted."
+    ln -s "`basename $pack .tar.bz2 | sed -e 's/-core//'`" gcc.ti || exit 6
+fi
+
 # Binutils
-echo Patching binutils...
-cd binutils.ti
-echo Removing unneeded directories
-rm -f .brik
-rm -f md5.sum
-rm -f -r INSTALL
-rm -f -r libiberty/testsuite
-rm -f -r maintainer-scripts
-rm -f -r bfd/doc
-rm -f -r bfd/po
-rm -f -r binutils
-rm -f -r cpu
-rm -f -r etc
-rm -f -r gas/doc
-rm -f -r gas/po
-rm -f -r gas/testsuite
-rm -f -r gprof
-rm -f -r include/nlm
-rm -f -r include/regs
-rm -f -r ld
-rm -f -r opcodes/po
-rm -f -r texinfo
-echo Applying GCC4TI patch
-${patch} -p1 < ../../sources/gcc/gas-2.16-tigcc-patch.diff || exit 1
-cd ..
+if grep TIGCC binutils.ti/gas/* > /dev/null; then
+    echo "BINUTILS: Patch already applied. Skipping."
+else
+    echo "Patch binutils..."
+    cd binutils.ti
+    echo Removing unneeded directories
+    rm -f .brik
+    rm -f md5.sum
+    rm -f -r INSTALL
+    rm -f -r libiberty/testsuite
+    rm -f -r maintainer-scripts
+    rm -f -r bfd/doc
+    rm -f -r bfd/po
+    rm -f -r binutils
+    rm -f -r cpu
+    rm -f -r etc
+    rm -f -r gas/doc
+    rm -f -r gas/po
+    rm -f -r gas/testsuite
+    rm -f -r gprof
+    rm -f -r include/nlm
+    rm -f -r include/regs
+    rm -f -r ld
+    rm -f -r opcodes/po
+    rm -f -r texinfo
+    echo Applying GCC4TI patch
+    ${patch} -p1 < ../../sources/gcc/gas-2.16-tigcc-patch.diff || exit 1
+    cd ..
+fi
+
 # Gcc
-echo Patching GCC...
-cd gcc.ti
-echo Removing unneeded directories
-rm -f .brik
-rm -f md5.sum
-rm -f -r INSTALL
-rm -f -r fixincludes
-rm -f -r gcc/ginclude
-rm -f -r gcc/po
-rm -f -r gcc/doc
-rm -f -r gcc/treelang
-rm -f -r gcc/objcp
-rm -f -r libcpp/po
-rm -f -r libmudflap
-rm -f -r libssp
-rm -f -r libiberty/testsuite
-rm -f -r maintainer-scripts
-rm -f -r etc
-rm -f -r gprof
-rm -f -r include/nlm
-rm -f -r include/regs
-rm -f -r texinfo
-echo Applying GCC4TI patch
-${patch} -p1 < ../../sources/gcc/gcc-4.1-tigcc-patch.diff || exit 1
-echo Done.
+if grep TIGCC gcc.ti/gcc/* > /dev/null; then
+    echo "GCC: Patch already applied. Skipping."
+else
+    echo Patching GCC...
+    cd gcc.ti
+    echo Removing unneeded directories
+    rm -f .brik
+    rm -f md5.sum
+    rm -f -r INSTALL
+    rm -f -r fixincludes
+    rm -f -r gcc/ginclude
+    rm -f -r gcc/po
+    rm -f -r gcc/doc
+    rm -f -r gcc/treelang
+    rm -f -r gcc/objcp
+    rm -f -r libcpp/po
+    rm -f -r libmudflap
+    rm -f -r libssp
+    rm -f -r libiberty/testsuite
+    rm -f -r maintainer-scripts
+    rm -f -r etc
+    rm -f -r gprof
+    rm -f -r include/nlm
+    rm -f -r include/regs
+    rm -f -r texinfo
+    echo Applying GCC4TI patch
+    ${patch} -p1 < ../../sources/gcc/gcc-4.1-tigcc-patch.diff || exit 1
+    echo Done.
+fi
 
 exit 0
