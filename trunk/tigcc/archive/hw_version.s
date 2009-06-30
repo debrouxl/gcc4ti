@@ -26,8 +26,8 @@ __get_hw_version:
 	move.w   #0x3000,%sr | set a non-existing flag in %sr (but keep s-flag)
 	move.w   %sr,%d1     | get %sr content and check for non-existing flag
 	move.w   %d0,%sr     | restore old %sr content
-	btst.l   #12,%d1     | this non-existing flag can only be set on the VTI
-	beq.s    L.not_vti   | flag not set -> no VTI
+	lsl.w    #3,%d1      | the non-existing 0x1000 can only be set on VTI
+	bpl.s    L.not_vti   | flag not set -> no VTI
 
     |--------------------------------------------------------------------------
     | VTI detected -> treat as HW1
