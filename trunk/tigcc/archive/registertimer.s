@@ -2,8 +2,10 @@
 
 .text
 OSVRegisterTimer:
+	moveq.l #2,%d1
+	moveq.l #-1,%d2
 	subq.w #1,%d0
-	cmpi.w #2,%d0
+	cmp.w %d1,%d0
 	bcc.s .L__timer_rfai
 	muls.w #12,%d0
 	move.l 0x74,%a0
@@ -14,14 +16,15 @@ OSVRegisterTimer:
 	lea .L__timer_rti5(%pc),%a0
 .L__timer_rins:
 	lea -32(%a0,%d0.w),%a1
-	cmpi.l #-1,(%a1)
+	cmp.l (%a1),%d2
 	bne.s .L__timer_rfai
 	move.l %d3,(%a1)+
 	move.l %d3,(%a1)+
 	move.l %d4,(%a1)
-	bclr.b #2,0x600001
+	lea.l 0x600001,%a1
+	bclr.b %d1,(%a1)
 	move.l %a0,0x74:w
-	bset.b #2,0x600001
+	bset.b %d1,(%a1)
 	moveq #1,%d0
 	rts
 .L__timer_rfai:
@@ -39,16 +42,17 @@ OSVRegisterTimer:
 	movem.l %d0-%d7/%a0-%a6,-(%sp)
 	lea .L__timer_ttab(%pc),%a4
 	moveq #1,%d4
+	moveq #-1,%d3
 .L__timer_i5lp:
-	cmpi.l #-1,(%a4)
+	cmp.l (%a4)+,%d3
 	beq.s .L__timer_i5sk
-	subq.l #1,(%a4,4)
+	subq.l #1,(%a4)
 	bne.s .L__timer_i5sk
-	move.l (%a4),(%a4,4)
-	move.l (%a4,8),%a0
+	move.l -4(%a4),(%a4)
+	move.l 4(%a4),%a0
 	jsr (%a0)
 .L__timer_i5sk:
-	lea (%a4,12),%a4
+	addq.l #8,%a4
 	dbra %d4,.L__timer_i5lp
 	movem.l (%sp)+,%d0-%d7/%a0-%a6
 	move.l .L__timer_told(%pc),-(%sp)
