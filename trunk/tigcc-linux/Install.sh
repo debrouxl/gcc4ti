@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install.sh - TIGCC binary installation wizard
+# Install.sh - GCC4TI binary installation wizard
 #
 # Copyright (C) 2004-2005 Kevin Kofler
 #
@@ -26,9 +26,9 @@ fi
 if [ "$DIALOG" = none ]
 then
 
-echo "TIGCC Installation Wizard"
+echo "GCC4TI Installation Wizard"
 if [ -z "$TIGCC" ]
-then TIGCC="/usr/local/tigcc"
+then TIGCC="/usr/local/share/gcc4ti"
 fi
 echo -n "Destination directory ($TIGCC): "
 read TIGCCnew
@@ -43,7 +43,7 @@ OLDPWD="`pwd`"
 # Unpack the binaries to the destination directory
 mkdir $TIGCC
 cd $TIGCC
-tar -x -j --no-same-owner --same-permissions -f "$OLDPWD/tigcc_bin.tar.bz2"
+tar -x -j --no-same-owner --same-permissions -f "$OLDPWD/gcc4ti_bin.tar.bz2"
 
 # Now offer to install environment variables
 echo -n "Add environment settings (\$TIGCC, \$PATH) to bashrc [Y/n]? "
@@ -53,7 +53,7 @@ if [ -z "$AddEnvSettings" -o "$AddEnvSettings" = y -o "$AddEnvSettings" = Y ]
 then { $TIGCC/bin/envreg; echo "Done. You must restart bash for the new environment settings to take effect."; exit 0; }
 fi
 
-echo "Done. Make sure you set \$TIGCC to \"$TIGCC\" and add \$TIGCC/bin to your \$PATH before using TIGCC."
+echo "Done. Make sure you set \$TIGCC to \"$TIGCC\" and add \$TIGCC/bin to your \$PATH before using GCC4TI."
 exit 0
 fi
 
@@ -78,9 +78,9 @@ else DASHDASH="";BACKSLASH="\\"
 fi
 
 if [ -z "$TIGCC" ]
-then TIGCC="/usr/local/tigcc"
+then TIGCC="/usr/local/share/gcc4ti"
 fi
-TIGCC="`$DIALOG --title "TIGCC Installation Wizard" --inputbox "Destination directory:" $DLGSIZE $DASHDASH "$TIGCC"`"
+TIGCC="`$DIALOG --title "GCC4TI Installation Wizard" --inputbox "Destination directory:" $DLGSIZE $DASHDASH "$TIGCC"`"
 if [ $? != 0 ]
 then { echo Install.sh: Canceled by user; exit 1; }
 fi
@@ -95,6 +95,6 @@ cd $TIGCC
 tar -x -j --no-same-owner --same-permissions -f "$OLDPWD/tigcc_bin.tar.bz2"
 
 # Now offer to install environment variables
-$DIALOG --title "TIGCC Installation Wizard" --yesno "Add environment settings ($BACKSLASH\$TIGCC, $BACKSLASH\$PATH) to bashrc?" $DLGSIZE && { $TIGCC/bin/envreg; $DIALOG --title "TIGCC Installation Wizard" --msgbox "Done. You must restart bash for the new environment settings to take effect." $DLGSIZE; exit 0; }
+$DIALOG --title "GCC4TI Installation Wizard" --yesno "Add environment settings ($BACKSLASH\$TIGCC, $BACKSLASH\$PATH) to bashrc?" $DLGSIZE && { $TIGCC/bin/envreg; $DIALOG --title "GCC4TI Installation Wizard" --msgbox "Done. You must restart bash for the new environment settings to take effect." $DLGSIZE; exit 0; }
 
-$DIALOG --title "TIGCC Installation Wizard" --msgbox "Done. Make sure you set $BACKSLASH\$TIGCC to $BACKSLASH\"$TIGCC$BACKSLASH\" and add $BACKSLASH\$TIGCC/bin to your $BACKSLASH\$PATH before using TIGCC." $DLGSIZE
+$DIALOG --title "GCC4TI Installation Wizard" --msgbox "Done. Make sure you set $BACKSLASH\$TIGCC to $BACKSLASH\"$TIGCC$BACKSLASH\" and add $BACKSLASH\$TIGCC/bin to your $BACKSLASH\$PATH before using GCC4TI." $DLGSIZE

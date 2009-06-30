@@ -1,4 +1,4 @@
-HOW TO COMPILE AND INSTALL TIGCC FROM SOURCE
+HOW TO COMPILE AND INSTALL GCC4TI FROM SOURCE
 ============================================
 
 Please note: read README.linux first. The instructions below apply only to
@@ -10,10 +10,10 @@ REQUIREMENTS
 ------------
 
 You must have the following programs before you attempt
-to install tigcc-unix.
+to install gcc4ti-unix.
 
 REQUIRED:
-	1. gcc 2.95 or later (other compilers are NOT supported)
+	1. gcc 2.95 or later (other compilers might work, but are NOT supported)
 
 	2. binutils 2.8 or later (gnu or equivalent --
 	   ld, ar, as, etc.)
@@ -45,42 +45,38 @@ OPTIONAL:
 If you run into any problems, please contact me and let me know
 where the install failed...
 
-If you want to recompile TIGCC-Linux, you will need to dowload:
-	gcc-core-4.1-20060728.tar.bz2 (gcc-core, full gcc may not compile !)
+If you want to recompile GCC4TI-Linux, you will need to dowload:
+	gcc-core-4.1.2.tar.bz2 (gcc-core, full gcc may not compile !)
 	binutils-2.16.1.tar.bz2
 
 Depending on your machine, compilation can take some time !
 
 
-INSTALLING TIGCC FOR UNIX
+INSTALLING GCC4TI FOR UNIX
 -------------------------
 
 The installation should be very simple. The package has worked on
 Linux, Solaris 8, and SGI IRIX 6 to try and make the scripts
-compatible. UN*X provides some things better, some things worse. Let we know
+compatible. UN*X provides some things better, some things worse. Let us know
 if you have a problem with the worse...
 
 First, extract the source to a directory of your choosing such as /tmp.
 
 Unpack binutils & gcc-core packages to the download/ directory as this, and
-create symlinks download/gcc.ti and download/binutils.ti pointing to them.
-Note that the sources on tigcc.ticalc.org ONLY support Linux/x86 and Windows, so
-you will need the COMPLETE GCC (gcc-core only, not the whole compiler
-collection) and Binutils sources from a GNU mirror for all other platforms. So,
-you should have done it like this:
+create symlinks download/gcc.ti and download/binutils.ti pointing to them:
 
-	mkdir /tmp/tigcc-src
-	cd /tmp/tigcc-src
+	mkdir /tmp/gcc4ti-src
+	cd /tmp/gcc4ti-src
 	# substitute the directory you are using for /tmp
-	bunzip2 tigcc-src.tar.bz2
-	tar xfv tigcc-src.tar
+	bunzip2 gcc4ti-src.tar.bz2
+	tar xfv gcc4ti-src.tar
 	mkdir download
 	cd download
-	bunzip2 binutils-2.16.1.tar.bz2 gcc-core-4.1-20060728.tar.bz2
+	bunzip2 binutils-2.16.1.tar.bz2 gcc-core-4.1.2.tar.bz2
 	tar xvf binutils-2.16.1.tar
-	tar xvf gcc-core-4.0.2.tar
+	tar xvf gcc-core-4.1.2.tar
 	ln -s binutils-2.16.1 binutils.ti
-	ln -s gcc-4.1-20060728 gcc.ti
+	ln -s gcc-4.1.2 gcc.ti
 	cd ..
 
 At this point, you have 2 options:
@@ -96,12 +92,12 @@ KDE installed, you can use:
 to tell the script to use the text-mode (curses) dialog instead of kdialog.
 
 You will be prompted for:
-* the destination directory you want to install TIGCC to ($TIGCC)
-* the bootstrap compiler ($CC) you want to compile TIGCC with (usually "gcc")
-* the optimization flags ($CFLAGS) you want to compile TIGCC with (read the GCC
+* the destination directory you want to install GCC4TI to ($TIGCC)
+* the bootstrap compiler ($CC) you want to compile GCC4TI with (usually "gcc")
+* the optimization flags ($CFLAGS) you want to compile GCC4TI with (read the GCC
   documentation or just use the defaults)
 
-The wizard will ask you whether you want to apply the TIGCC patch. The answer is
+The wizard will ask you whether you want to apply the GCC4TI patch. The answer is
 usually "Yes". It will be "No" only if you are rebuilding the same source for a
 second (or more) time.
 
@@ -118,9 +114,9 @@ you can also run envreg by hand afterwards.)
 ----------------------------------
 
 Now, set the environment variable TIGCC to the directory you want to install
-TIGCC into (for example /usr/local/tigcc). You need to set this variable in your
-profile, because the compilation stage needs it to find some tools and tigcc
-front-end needs it to find the header files.
+GCC4TI into (for example /usr/local/share/gcc4ti). You need to set this variable
+in your profile, because the compilation stage needs it to find some tools and
+tigcc front-end needs it to find the header files.
 
 If you use bash, add it to your .bashrc file in your home
 directory. You could also use your .profile or .login if
@@ -131,12 +127,12 @@ I've never used korn shell. You're on your own if you do.
 
 For bash/sh users
 
-	export TIGCC=/usr/local/tigcc
+	export TIGCC=/usr/local/share/gcc4ti
 	export PATH=$PATH:$TIGCC/bin
 
 For csh/tcsh users
 
-	setenv TIGCC /usr/local/tigcc
+	setenv TIGCC /usr/local/share/gcc4ti
 	set path=($path $TIGCC/bin)
 
 I've had problems using setenv to reset the path in tcsh.
@@ -157,9 +153,9 @@ You only need to resource the file you changed.
 -----------------
 
 The hard part should be over. Now, just change into the directory
-you extracted tigcc into
+you extracted GCC4TI into
 
-	cd /tmp/tigcc-src
+	cd /tmp/gcc4ti-src
 
 Optionally, you can now rebuild the HTML documentation from source: the required
 source code is in tigcclib/doc/source.tar.bz2 in your source tree. See the last
@@ -177,21 +173,7 @@ And run the installation script...
 	cd scripts; ./Install_All
 
 Assuming you have all the required tools, you should have yourself
-a tigcc build in 5 - 60 minutes.
-
-I don't know how much time it will take you. It took less than
-10 minutes on a Linux system with a Pentium II 450 and 128 MB RAM.
-But, it took 45 minutes on a Linux system with a K6 233 and 112MB RAM.
-
-It took nearly 40 minutes on a Solaris Sparc 400 with 256 MB RAM,
-but it had to read off a network with many other users, so that
-may have had some impact on compile time.
-
-It took over an hour on an SGI O2 machine. I would assume it's due
-to the slow SGI c compiler, which binutils and gcc will try and
-compile themselves with. Since you have a recent version of gcc,
-try setting CC=gcc and CXX=g++ to speed things up. You must have
-gcc 2.95 or above for this to work.
+a GCC4TI build in 5 - 60 minutes.
 
 I hope this installation goes smoothly for you.
 
@@ -203,9 +185,9 @@ development purposes. You can use this if you experience some problems with the
 automated script.
 
 At first, you will have to register a variable depending on the location you
-want to install TIGCC
+want to install GCC4TI
 
-	export TIGCC=/usr/local/tigcc
+	export TIGCC=/usr/local/share/gcc4ti
 	export PATH=$PATH:$TIGCC/bin
 	export CFLAGS='-Os -s'
 
@@ -218,17 +200,17 @@ Next, compile binutils and gcc. This may take a while...
 
 	./Install_step_2
 
-If everything went correctly, you now should have a working Tigcc for Linux
+If everything went correctly, you now should have a working GCC4TI for Linux
 compiler. For installing the TIGCC library, simply launch:
 
 	./Install_step_3
 
-If you want to be able to use it, you should add /usr/local/tigcc to your
-PATH. The compiler is named m68k-coff-gcc, to avoid namecollision with your
-system's gcc. The other utilities follow the same naming.
+If you want to be able to use it, you should add /usr/local/share/gcc4ti to
+your PATH. The compiler is named m68k-coff-gcc, to avoid namecollision with
+your system's gcc. The other utilities follow the same naming.
 
-You may need the TIGCC Tools Suite utilities (required for using the tigcc
-front-end). Simply do:
+You need the TI-68k Developer Utilities (several are required for using the
+tigcc front-end). Simply do:
 
 	./Install_step_4
 

@@ -12,12 +12,12 @@ else
         make=gmake
 fi
 
-echo TIGCC script: Configuring, compiling and installing binutils...
+echo GCC4TI script: Configuring, compiling and installing binutils...
 mkdir ../build; mkdir ../build/binutils;
 cd ../build/binutils; ../../download/binutils.ti/configure --disable-serial-configure --prefix=$TIGCC --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
 
 if [ $? -ne 0 ]
-    then echo "TIGCC script: Error while configuring"
+    then echo "GCC4TI script: Error while configuring"
     exit 1
 fi
 
@@ -27,7 +27,7 @@ fi
 
 ${make}
 
-echo You should have seen an error. This is normal. TIGCC installation continues.
+echo You should have seen an error. This is normal. GCC4TI installation continues.
 
 # Create dummy libiberty testuite makefile
 rm -f libiberty/testsuite/Makefile
@@ -35,7 +35,7 @@ echo all: >libiberty/testsuite/Makefile
 
 ${make}
 
-echo You should have seen an error. This is normal. TIGCC installation continues.
+echo You should have seen an error. This is normal. GCC4TI installation continues.
 
 # We do not want to install any documentation. It is redundant with our HTML documentation.
 rm -f bfd/doc/Makefile
@@ -47,7 +47,7 @@ echo all: >bfd/po/Makefile
 
 ${make}
 
-echo You should have seen an error. This is normal. TIGCC installation continues.
+echo You should have seen an error. This is normal. GCC4TI installation continues.
 
 # We do not want any po (NLS) makefiles: we do not use any NLS anyway
 rm -f opcodes/po/Makefile
@@ -55,7 +55,7 @@ echo all: >opcodes/po/Makefile
 
 ${make}
 
-echo You should have seen an error. This is normal. TIGCC installation continues.
+echo You should have seen an error. This is normal. GCC4TI installation continues.
 
 # We do not want to install any documentation. It is redundant with our HTML documentation.
 mkdir gas/doc
@@ -69,7 +69,7 @@ echo all: >gas/po/Makefile
 #Now this one should really work...
 ${make}
 if [ $? -ne 0 ]
-    then echo "TIGCC script: Error while making"
+    then echo "GCC4TI script: Error while making"
     exit 2
 fi
 

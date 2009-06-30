@@ -12,7 +12,7 @@ else
         make=gmake
 fi
 
-echo TIGCC script: Configuring, compiling and installing gcc...
+echo GCC4TI script: Configuring, compiling and installing gcc...
 
 CFLAGS_FOR_BUILD="$CFLAGS"
 export CFLAGS_FOR_BUILD
@@ -23,7 +23,7 @@ mkdir ../build; mkdir ../build/gcc;
 cd ../build/gcc; ../../download/gcc.ti/configure --prefix=$TIGCC --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp
 
 if [ $? -ne 0 ]
-    then echo "TIGCC script: Error while configuring GCC"
+    then echo "GCC4TI script: Error while configuring GCC"
     exit 1
 fi
 
@@ -32,21 +32,21 @@ fi
 #So we have to call make 3 times to get it to work with our removed directories.
 
 ${make}
-echo You should have seen an error. This is normal. TIGCC installation continues.
+echo You should have seen an error. This is normal. GCC4TI installation continues.
 
 # Create dummy libiberty testsuite makefile
 rm -f libiberty/testsuite/Makefile
 echo all: >libiberty/testsuite/Makefile
 
 ${make}
-echo You should have seen an error. This is normal. TIGCC installation continues.
+echo You should have seen an error. This is normal. GCC4TI installation continues.
 
 # Create dummy build-libiberty testsuite makefile
 rm -f `ls -d build-*`/libiberty/testsuite/Makefile
 echo all: >`ls -d build-*`/libiberty/testsuite/Makefile
 
 ${make}
-echo You should have seen an error. This is normal. TIGCC installation continues.
+echo You should have seen an error. This is normal. GCC4TI installation continues.
 
 cd ../../scripts
 
