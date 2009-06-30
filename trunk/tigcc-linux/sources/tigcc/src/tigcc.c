@@ -251,6 +251,7 @@ short int process_arg(short int arg, char *argv[], int argc)
     if (++arg > argc) {
       fprintf(stderr, "Error: you didn't specify a variable name\n");
     } else {
+      oncalcname = argv[arg];
       ld_argv[ld_argc++] = cur_arg;
       ld_argv[ld_argc++] = argv[arg];
     }
@@ -925,7 +926,17 @@ void pack(void)
   // create decompressor (.??z)
   {
     char ld_tigcc_name[strlen(tigcc_base) + 14];
-    char *argv[] = {ld_tigcc_name, "pstarter.o", "-o", tmpfile, NULL};
+    char *argv[7];
+    int i = 1;
+    *argv = ld_tigcc_name;
+    argv[i++] = "pstarter.o";
+    argv[i++] = "-o";
+    argv[i++] = tmpfile;
+    if (oncalcname) {
+      argv[i++] = "-n";
+      argv[i++] = oncalcname;
+    }
+    argv[i] = NULL;
 
     sprintf (ld_tigcc_name, "%s/bin/ld-tigcc", tigcc_base);
     change_extension(tmpfile, "");

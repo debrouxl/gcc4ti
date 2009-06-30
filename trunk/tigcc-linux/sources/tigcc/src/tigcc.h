@@ -23,8 +23,8 @@
 #ifndef _TIGCC_H
 #define _TIGCC_H
 
-#define VERSION "1.3.2"
-#define TIGCC_VERSION "0.96 Beta 9 r1"
+#define VERSION "1.3.3"
+#define TIGCC_VERSION "0.96 Beta 10 r1"
 
 /* global enumerations */
 enum Boolean 	{FALSE,TRUE};
@@ -75,6 +75,7 @@ const char *tigcc_args[] =
 
 /* global vars */
 char *outfile = NULL;
+char *oncalcname = NULL;
 char packfile[9];
 char *tigcc_base = NULL;
 
