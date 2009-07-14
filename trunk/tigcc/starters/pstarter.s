@@ -42,9 +42,6 @@
 .ifdef ttunpack_fast
 .include "pst-ttuf.h"
 .endif
-.ifdef shrink92
-.include "pst-shrn.h"
-.endif
 
 .xdef _ti89
 .xdef _ti92plus
