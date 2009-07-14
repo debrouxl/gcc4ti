@@ -1423,7 +1423,11 @@ m68k_scan_mask (bfd_vma memaddr, disassemble_info *info,
                 pm = NEXTUWORD(buffer);
                 info->fprintf_func (info->stream, ".word 0xfff2,0x%04x", pm/4);
                 if (romcalls_is_loaded())
-                  info->fprintf_func (info->stream, " /*%s*/", romcalls_get_name(pm / 4));
+                  {
+                      const char * rc_name = romcalls_get_name(pm / 4);
+                      if (rc_name != NULL)
+                        info->fprintf_func (info->stream, " /*%s*/", rc_name);
+                  }
                 return 4;
               case 0xffee:  /* jmp __ld_entry_point_plus_0x8000+word */
                 pm = NEXTWORD(buffer);
@@ -1452,7 +1456,11 @@ m68k_scan_mask (bfd_vma memaddr, disassemble_info *info,
               default:  /* 2 byte ROM CALL */
                 info->fprintf_func (info->stream, ".word 0xf800+0x%x", op & 0x7ff);
                 if (romcalls_is_loaded())
-                  info->fprintf_func (info->stream, " /*%s*/", romcalls_get_name(op & 0x7ff));
+                  {
+                    const char * rc_name = romcalls_get_name(op & 0x7ff);
+                    if (rc_name != NULL)
+                      info->fprintf_func (info->stream, " /*%s*/", rc_name);
+                  }
                 return 2;
             }
         }

@@ -68,6 +68,12 @@ void romcalls_get_table_infos(uint32_t *base, uint32_t *size)
 
 	*base = rd_long(&rom[0x12000 + 0x88 + 0xC8]);
 	*size = rd_long(&rom[((*base-4) & 0x0fffff)]);
+
+	if (*size > sizeof(table)/sizeof(table[0]))
+	{
+		fprintf(stderr,"WARNING: this ROM_CALL table has more entries than those of all known AMS versions !\nWARNING: clamping the number of entries.\n");
+		*size = sizeof(table)/sizeof(table[0]);
+	}
 }
 
 /*
@@ -157,10 +163,25 @@ int romcalls_is_addr(uint32_t addr)
 
 const char* romcalls_get_name(int id)
 {
-	if(!loaded)	return "not loaded";
-	return table[id].name;
+	int maxid = size;
+	if (!loaded)	return "not loaded";
+	if (id >= 0)
+	{
+		// Assume maximum number of ROM_CALLs if we're not disassembling an OS.
+		if (maxid == 0)
+		{
+			maxid = sizeof(table)/sizeof(table[0]);
+		}
+		if (id < maxid)
+		{
+			return table[id].name;
+		}
+	}
+	return NULL;
 }
 
+// No need to check the parameter: the only caller of romcalls_get_addr() calls
+// romcalls_get_table_infos() before calling romcalls_get_addr().
 uint32_t romcalls_get_addr(int id)
 {
 	return table[id].addr;
