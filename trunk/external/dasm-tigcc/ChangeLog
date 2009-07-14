@@ -1,0 +1,86 @@
+2007-06-18  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+        * generic.h (ATTRIBUTE_PACKED, ATTRIBUTE_MAY_ALIAS): fix inverted #ifdef __GNUC__ logic
+        * integers.h (TI1, TI2, TI4, HI1, HI2, HI4): Work around GCC bug with __attribute__((may_alias)).
+
+2007-04-06  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+        * main.c (main): check the return values of fread
+        * filetypes.c: include sysdep.h
+          (is_regfile): mark filename with ATTRIBUTE_UNUSED
+
+2007-04-04  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+
+        * main.c: import ttdasm.c from ttdasm, rename to main.c, remove VTI
+                  code, port to TiEmu code
+        * tt.h: import from ttdasm, add USAGE_OUT from tt_version.h
+        * bfd.h, disasm.c, dis-asm.h, disasm.h, disassemble.c, dis-buf.c,
+          dis-init.c, m68k-dis.c, m68k.h, m68k-opc.c, opintl.h, sysdep.h: import
+            from TiEmu-patched GDB. Changes from TiEmu:
+            2007-04-04  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+                    * m68k-dis.c (print_insn_arg): Don't accept floating-point immediates.
+                      (NEXTSINGLE, NEXTDOUBLE, NEXTEXTEND, NEXTPACKED): Remove.
+                      (print_insn_arg): Only accept %usp and %ssp as special registers on the 68000.
+                                        Handle failure return from print_indexed.
+                      (print_indexed): Only allow valid indexed addressing on the 68000.
+            2006-05-14  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+                    * m68k-dis.c (m68k_scan_mask): Remove excess spaces. Fix a use of $ instead of 0x.
+            2005-05-22  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+                    * m68k-dis.c (m68k_scan_mask): Handle A-Line (ER_throw) instructions.
+            2005-05-11  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+                    * m68k-dis.c: Use asm_setjmp and asm_longjmp on Win32.
+            2005-04-29  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+                    * m68k-dis.c (print_insn_arg): Use Motorola syntax. Use %ssp, not %isp.
+                      (print_indexed): Use Motorola syntax.
+                    * m68k-opc.c (m68k_opcode_aliases): Disable.
+                      (m68k_opcodes): Add the optional dots to increase readability.
+            2005-04-29  Kevin Kofler  <Kevin@tigcc.ticalc.org>
+                    * Merge from TIGCC:
+                      2002-01-10  Stephan Effelsberg  <b012414@dvz.fh-koeln.de>
+                      * m68k-opc.c (m68k_opcodes): Fix cmpi operand constraints when aliased as cmp. 
+                                                   (Don't allow PC-relative or indexed PC-relative
+                                                    second operand.)
+                    * m68k-dis.c: Include handles.h and romcalls.h.
+                      (NEXTUWORD): New macro.
+                      (print_insn_m68k): Handle F-Line instructions (ported from Romain Liévin's code in m68kdasm.c).
+                      (print_insn_arg): Print both displacement and target for branches.
+        * bfd.h: remove autogeneration notice, don't include ansidecl.h or symcat.h
+        * m68k-dis.c: header file changes
+                      some char * -> const char * changes for string literals
+                      use entry_point from main instead of handle code
+                      add m68k_arch_features and bfd_m68k_mach_to_features from BFD cpu-m68k.c
+                      removed float instructions from m68000 features
+                      print addresses in assemblable format
+                      only print ROM_CALLs if the table is loaded
+                      print unknown instructions as hex instead of octal
+                      call Offset2Name hook for ROM_CALL addressing
+                      revert asm_setjmp/asm_longjmp TiEmu change
+        * disasm.c: header file changes
+                    remove GDB-specific code
+                    change to disassemble from buffer
+        * er_codes.c, fpudasm.c, hwpm.c, hwpm.h, images.c, images.h, macros.h,
+          mem89.c, mem89.h, mem89tm.c, mem89tm.h, mem92.c, mem92.h, mem92p.c,
+          mem92p.h, mem.c, mem.h, mem_size.h, memv2.c, memv2.h, romcalls.c,
+          romcalls.h, ti68k_def.h, ti68k_err.h, timem.c, timem.h, xmalloc.c:
+            import from TiEmu, remove unused functions, change some included
+            headers, don't require glib
+       * images.c, images.h: change to support direct loading of images without
+                             the conversion to .img
+       * mem*.[ch]: remove handling of I/O ports, hw protection, FlashROM
+                    special-casing and writes
+       * romcalls.c, romcalls.h: use pregenerated ROM_CALL table instead of
+                                 loading it from file, allow accessing the table
+                                 for names even if we don't have addresses,
+                                 remove GList support
+       * romcalls.inc: new file, converted from TiEmu's romcalls.txt
+       * timem.c: rewrite in terms of ld-tigcc integer handling code
+       * error.h, files9x.c, files9x.h, filesxx.c, filetypes.c, rwfile.c,
+         rwfile.h, tifiles.h: import from libtifiles2, remove unused functions,
+            change some included headers, don't require glib
+       * rwfile.c: use ld-tigcc's integer handling code instead of glib's
+       * generic.h: import from ld-tigcc, remove some unused definitions, add
+                    ATTRIBUTE_MAY_ALIAS
+       * int_def.inc, integers.c, integers.h: import from ld-tigcc
+       * integers.c (HI1, HI2, HI4, TI1, TI2, TI4): set ATTRIBUTE_MAY_ALIAS
+       * main.h: new file, declaring some global variables in main.c
+       * Makefile: new file based on ld-tigcc makefile
