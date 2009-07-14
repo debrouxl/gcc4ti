@@ -1,5 +1,5 @@
 /* Hey EMACS -*- linux-c -*- */
-/* $Id: memv2.c 2268 2006-11-06 17:18:51Z roms $ */
+/* $Id: memv2.c 2428 2007-04-04 17:05:38Z roms $ */
 
 /*  TiEmu - Tiemu Is an EMUlator
  *
@@ -41,10 +41,10 @@
 #include "main.h"
 
 // 000000-0fffff : RAM (256 KB)
-// 100000-1fffff : ghost of RAM
-// 200000-2fffff : internal FLASH (v200/V200)
+// 100000-1fffff :
+// 200000-2fffff : internal FLASH (4 MB)
 // 300000-3fffff : 
-// 400000-4fffff : internal FLASH (V200) or nothing (v200)
+// 400000-4fffff :
 // 500000-5fffff : 
 // 600000-6fffff : memory mapped I/O (all HW)
 // 700000-7fffff : memory mapped I/O (HW2, HW3)

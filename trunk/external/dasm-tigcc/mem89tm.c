@@ -1,5 +1,5 @@
 /* Hey EMACS -*- linux-c -*- */
-/* $Id: mem89tm.c 2268 2006-11-06 17:18:51Z roms $ */
+/* $Id: mem89tm.c 2428 2007-04-04 17:05:38Z roms $ */
 
 /*  TiEmu - Tiemu Is an EMUlator
  *
@@ -40,18 +40,18 @@
 #include "mem_size.h"
 #include "main.h"
 
-// 000000-03ffff : RAM (256 KB), not mirrored
+// 000000-03ffff : RAM (256 KB)
 // 100000-1fffff : unused
-// 200000-2fffff : image of 0x000000 (ghost, not mirrored)
+// 200000-2fffff : mirror of 0x000000
 // 300000-3fffff : unused
-// 400000-4fffff : image of 0x000000 (ghost, not mirrored)
+// 400000-4fffff : mirror of 0x000000
 // 500000-5fffff : unused
 // 600000-6fffff : memory mapped I/O (all HW)
 // 700000-7fffff : memory mapped I/O (HW2, HW3), non ghost'ed
-// 800000-8fffff : ROM (TI89 Titanium)
-// 900000-9fffff : idem
-// a00000-afffff : idem
-// b00000-bfffff : idem
+// 800000-8fffff : FLASH (4 MB)
+// 900000-9fffff :
+// a00000-afffff :
+// b00000-bfffff :
 // c00000-cfffff : unused
 // d00000-dfffff :	 ...
 // e00000-efffff :   ...

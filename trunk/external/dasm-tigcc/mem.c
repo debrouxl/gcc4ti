@@ -1,5 +1,5 @@
 /* Hey EMACS -*- linux-c -*- */
-/* $Id: mem.c 2268 2006-11-06 17:18:51Z roms $ */
+/* $Id: mem.c 2601 2007-07-14 08:49:30Z roms $ */
 
 /*  TiEmu - Tiemu Is an EMUlator
  *
@@ -8,6 +8,7 @@
  *  Copyright (c) 2003, Julien Blache
  *  Copyright (c) 2004, Romain Liévin
  *  Copyright (c) 2005, Romain Liévin, Kevin Kofler
+ *  Copyright (c) 2007, Romain Liévin
  *  Copyright (c) 2007, Kevin Kofler
  *
  *  This program is free software; you can redistribute it and/or modify
