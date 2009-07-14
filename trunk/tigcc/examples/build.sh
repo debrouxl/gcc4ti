@@ -42,8 +42,10 @@ tprbuilder -q "Integrate.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Int
 tprbuilder -q "Interrupt Handler.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Interrupt Handler.tpr\""; fi
 tprbuilder -q "Key Yes or No.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Key Yes or No.tpr\""; fi
 tprbuilder -q "Launcher.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Launcher.tpr\""; fi
+tprbuilder -q "List elements.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"List elements.tpr\""; fi
 tprbuilder -q "List variables and folders.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"List variables and folders.tpr\""; fi
 tprbuilder -q "Masked Sprite.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Masked Sprite.tpr\""; fi
+tprbuilder -q "Matrix elements.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Matrix elements.tpr\""; fi
 tprbuilder -q "Memory Error.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Memory Error.tpr\""; fi
 tprbuilder -q "Menu Example 1.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Menu Example 1.tpr\""; fi
 tprbuilder -q "Menu Example 2.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Menu Example 2.tpr\""; fi

@@ -1,0 +1,28 @@
+[Main]
+Name=init_matrix_indices
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=ESI *init_matrix_indices (ESI *indices, CESI expr);
+MinAMS=1.01
+
+[ROM Call]
+Index=$2BB
+
+[Description]
+Computes and stores the indices of the elements of a matrix.
+
+[Explanation]
+init_matrix_indices stores the index of the first element of the first row to <I>indices</I>, then
+it repeatedly calls <A HREF="$$LINK(estack.h/next_expression_index)">next_expression_index</A> and
+stores the result to <I>indices</I> until the <A HREF="$$LINK(estack.h/Tags)">END_TAG</A>
+for the whole matrix is reached.<BR>
+<I>expr</I> is assumed to point to a double <A HREF="$$LINK(estack.h/Tags)">LIST_TAG</A>.
+init_matrix_indices returns <I>indices</I>.
+<BR><BR>
+Here is an example (called "Matrix elements") which displays the matrix elements as returned by
+init_matrix_indices: $$EXAMPLE(Matrix elements.c)
+
+[References]
+Out=estack.h/next_expression_index
+In=unknown.h/get_matrix_indices, unknown.h/push_lu_fact, unknown.h/push_symbolic_qr_fact

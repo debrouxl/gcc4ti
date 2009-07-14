@@ -1,0 +1,28 @@
+[Main]
+Name=init_list_indices
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=ESI *init_list_indices (ESI *indices, CESI expr);
+MinAMS=1.01
+
+[ROM Call]
+Index=$2BA
+
+[Description]
+Computes and stores the indices of the elements of a list.
+
+[Explanation]
+init_list_indices stores the index of the first element to <I>indices</I>, then it
+repeatedly calls <A HREF="$$LINK(estack.h/next_expression_index)">next_expression_index</A> and
+stores the result to <I>indices</I> until <A HREF="$$LINK(estack.h/Tags)">END_TAG</A> is reached.
+<BR>
+<I>expr</I> is assumed to point to a <A HREF="$$LINK(estack.h/Tags)">LIST_TAG</A>.
+init_list_indices returns <I>indices</I>.
+<BR><BR>
+Here is an example (called "List elements") which displays the list elements as returned by
+init_list_indices: $$EXAMPLE(List elements.c)
+
+[References]
+In=unknown.h/get_list_indices, unknown.h/push_symbolic_qr_fact, basfunc.h/push_median
+Out=estack.h/next_expression_index
