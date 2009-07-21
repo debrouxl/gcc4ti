@@ -5,6 +5,7 @@ tprbuilder -q "Approximation Mode.tpr"; if [ $? -ne 0 ]; then echo FAILED buildi
 tprbuilder -q "Argument Test.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Argument Test.tpr\""; fi
 tprbuilder -q "Basecode Parameters.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Basecode Parameters.tpr\""; fi
 tprbuilder -q "Big Numbers.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Big Numbers.tpr\""; fi
+tprbuilder -q "Binary Search.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Binary Search.tpr\""; fi
 tprbuilder -q "Bitmap Test.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Bitmap Test.tpr\""; fi
 tprbuilder -q "Catalog.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Catalog.tpr\""; fi
 tprbuilder -q "Cave Blaster.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Cave Blaster.tpr\""; fi
