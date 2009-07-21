@@ -12,7 +12,7 @@
 // Comparison Function
 CALLBACK short int_comp(const void *a, const void *b)
 {
-  return fcmp (*(const short*)a, *(const short*)b);
+  return (*(const short*)a) - (*(const short*)b);
 }
 
 // Main Function
