@@ -33,7 +33,7 @@ qsort:
 .L4:
 	mulu.w %d7,%d0	;# size, num_items
 	move.w %d0,%a6	;# num_items, num_items.61
-	bra.s .L5	;#
+
 .L6:
 	move.w %d5,%d6	;# k, i
 	mulu.w %d7,%d6	;# size, i
@@ -77,14 +77,14 @@ qsort:
 .L7:
 	cmp.w %a6,%d6	;# num_items.61, i
 	bcs.s .L8	;#
+
 	lsr.w #1,%d5	;#, tmp59
 	move.w %d5,%d0	;# k, tmp60
 	lsr.w #3,%d0	;#, tmp60
 	sub.w %d0,%d5	;# tmp60, k
-.L5:
-	tst.w %d5	;# k
 	bne.s .L6	;#
-	movm.l (%sp)+,%d3-%d7/%a2-%a4/%a6
+
+	movem.l (%sp)+,%d3-%d7/%a2-%a4/%a6
 	rts
 ");
 

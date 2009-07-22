@@ -152,7 +152,7 @@ ciura_qsort:
 4:
 	mulu.w %d7,%d0	;# size, num_items
 	move.w %d0,%a6	;# num_items, num_items.61
-	bra.s 5f	;#
+
 6:
 	move.w %d5,%d6	;# k, i
 	mulu.w %d7,%d6	;# size, i
@@ -201,10 +201,9 @@ ciura_qsort:
 	move.w .Lstep(%pc, %d5.w),%d0
 	swap %d5
 	move.w %d0,%d5
-5:
-	tst.w %d5	;# k
 	bne.s 6b	;#
-	movm.l (%sp)+,%d3-%d7/%a2-%a4/%a6
+
+	movem.l (%sp)+,%d3-%d7/%a2-%a4/%a6
 	rts
 	.even
 .Lstep:
