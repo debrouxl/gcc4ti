@@ -404,7 +404,7 @@ typedef union
 
 #endif
 
-extern float __BC()__ATTR_LIB_ASM__;
+extern float __BC(short,...)__ATTR_LIB_ASM__;
 #define _tios_float_1(f,x,t) ({typedef float(*__temp__type__)(short,t)__ATTR_LIB_ASM__;((__temp__type__)__BC)(4*0x##f,x);})
 #define _tios_float_2(f,x,y,t1,t2) ({typedef float(*__temp__type__)(short,t1,t2)__ATTR_LIB_ASM__;((__temp__type__)__BC)(4*0x##f,x,y);})
 
