@@ -1,0 +1,28 @@
+[Main]
+Name=ClipSprite32
+Type=Function
+Subtype=tigcc.a
+Header Files=sprites.h
+Definition=void ClipSprite32 (short x, short y, short height, const unsigned long *sprite, void *vm_addr, short mode);
+Real Definition=extern void ClipSprite32(short asm("d0"),short asm("d1"),short asm("d2"),__cpulong asm("a0"),void* asm("a1"),short asm("d3"))__ATTR_LIB_ASM__;
+See Also=sprites.h/Sprite32
+
+[Library Call]
+Asm=1
+
+[Registers]
+x=d0
+y=d1
+height=d2
+sprite=a0
+vm_addr=a1
+mode=d3
+
+[Description]
+Safely draws a sprite with a width of 32 pixels or less on the screen.
+
+[Explanation]
+ClipSprite32 works exactly like <A HREF="$$LINK(sprites.h/Sprite32)">Sprite32</A>, but it doesn't draw out of the boundaries of a 240x128 screen,
+unlike Sprite32 if given <CODE>x &lt; 0</CODE>, <CODE>y &lt; 0</CODE>, <CODE>x &gt; 208</CODE> or <CODE>y &gt; 128 - height</CODE>.
+<BR><BR>
+See <A HREF="$$LINK(sprites.h/Sprite8)">Sprite8</A> for more info about sprites.
