@@ -41,7 +41,7 @@ void *alloca(long)__ATTR_GCC__;
 extern short atexit(atexit_t)__ATTR_LIB_ASM__;
 extern short atoi(const char*)__ATTR_LIB_C__;
 extern long atol(const char*)__ATTR_LIB_C__;
-extern void *bsearch(const void*,const void*,short,short,compare_t)__ATTR_LIB_C__;
+extern void *bsearch(const void* asm("a0"),const void* asm("a1"),short asm("d0"),short asm("d1"),compare_t asm("a2"))__ATTR_LIB_ASM__;
 #ifndef __HAVE_calloc
 #define __HAVE_calloc
 extern void *calloc(short asm("d0"),short asm("d1"))__ATTR_LIB_ASM__;
@@ -57,7 +57,7 @@ long labs(long)__ATTR_GCC__;
 #define malloc _rom_call(void*,(long),A2)
 #define max(a,b) ({typeof(a) __a = (a); typeof(b) __b = (b); (__a > __b) ? __a : __b;})
 #define min(a,b) ({typeof(a) __a = (a); typeof(b) __b = (b); (__a < __b) ? __a : __b;})
-extern void qsort(void*,short,short,compare_t)__ATTR_LIB_C__;
+extern void qsort(void* asm("a0"),short asm("d0"),short asm("d1"),compare_t asm("a2"))__ATTR_LIB_ASM__;
 extern short rand(void)__ATTR_LIB_ASM__;
 #define random(x) ((short)((long)(unsigned short)rand()*(unsigned short)(x)/32768))
 #define randomize() srand(*(volatile unsigned char*)0x600017)

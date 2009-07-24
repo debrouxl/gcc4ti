@@ -4,7 +4,18 @@ Type=Function
 Subtype=tigcc.a
 Header Files=sprites.h
 Definition=void Sprite16 (short x, short y, short height, const unsigned short *sprite, void *vm_addr, short mode);
-Real Definition=extern void Sprite16(short,short,short,__cpushort,void*,short)__ATTR_LIB_C__;
+Real Definition=extern void Sprite16(short asm("d0"),short asm("d1"),short asm("d2"),__cpushort asm("a0"),void* asm("a1"),short asm("d3"))__ATTR_LIB_ASM__;
+
+[Library Call]
+Asm=1
+
+[Registers]
+x=d0
+y=d1
+height=d2
+sprite=a0
+vm_addr=a1
+mode=d3
 
 [Description]
 Draws a sprite with a width of 16 pixels or less on the screen.

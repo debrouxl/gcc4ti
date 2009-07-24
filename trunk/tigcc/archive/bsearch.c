@@ -49,13 +49,13 @@ register long __tbl asm ("a5");
  * have to make lim 3, then halve, obtaining 1, so that we will only
  * look at item 3.
  */
-__ATTR_LIB_C__ void *bsearch(const void *key, const void *bptr, short n, short w, compare_t cmp_func);
+void *bsearch(const void *key asm("a0"), const void *bptr asm("a1"), short n asm("d0"), short w asm("d1"), compare_t cmp_func asm("a2")) __ATTR_LIB_ASM__;
 asm("
 	.text
 	.even
 	.globl	bsearch
 bsearch:
-	movem.l %d3-%d5/%a2-%a4,-(%sp)
+	movem.l %d3-%d5/%a3-%a4,-(%sp)
 	move.l %a0,%d5	;# key, key
 	move.w %d1,%d4	;# w, w
 	move.l %a1,%a3	;# bptr, base
@@ -82,7 +82,7 @@ bsearch:
 	suba.l %a4,%a4	;# rptr
 .L4:
 	move.l %a4,%a0	;# rptr, <result>
-	movem.l (%sp)+,%d3-%d5/%a2-%a4
+	movem.l (%sp)+,%d3-%d5/%a3-%a4
 	rts
 ");
 

@@ -4,7 +4,18 @@ Type=Function
 Subtype=tigcc.a
 Header Files=sprites.h
 Definition=void Sprite32 (short x, short y, short height, const unsigned long *sprite, void *vm_addr, short mode);
-Real Definition=extern void Sprite32(short,short,short,__cpulong,void*,short)__ATTR_LIB_C__;
+Real Definition=extern void Sprite32(short asm("d0"),short asm("d1"),short asm("d2"),__cpulong asm("a0"),void* asm("a1"),short asm("d3"))__ATTR_LIB_ASM__;
+
+[Library Call]
+Asm=1
+
+[Registers]
+x=d0
+y=d1
+height=d2
+sprite=a0
+vm_addr=a1
+mode=d3
 
 [Description]
 Draws a sprite with a width of 32 pixels or less on the screen.
@@ -22,10 +33,17 @@ unsigned long integer, and the first 16 bits are still zero as if they actually 
 To take care of this problem, add the <B>'L'</B> (long) suffix to the end of the value.
 <BR><BR>
 If you want to use sprites wider than 32 pixels (which is not very likely), one solution is to
-use DoorsOS and its "put_sprite" function (see <A HREF="$$INFOLINK(faq)">Frequently Asked Questions</A>
-for more info about how to do it). If you don't want to use DoorsOS, the proposed method depends
-on what the use of the sprite will be. If you don't need too fast action, the built-in TIOS function
-<A HREF="$$LINK(graph.h/BitmapPut)">BitmapPut</A> may be good enough. If you need a very fast sprite
-routine for very large sprites, then you must write it yourself.
+use a "kernel"-based program and <CODE>graphlib::put_sprite</CODE> (see <A HREF="$$INFOLINK(faq)">Frequently Asked Questions</A>
+for more info about how to do it). If you don't want to use kernel-based programs, the proposed method depends
+on what the use of the sprite will be:
+<UL>
+<LI>
+If you don't need too fast action, the built-in TIOS function <A HREF="$$LINK(graph.h/BitmapPut)">BitmapPut</A> may be good enough.
+</LI>
+<LI>
+If you need a very fast sprite routine for very large sprites, then you must write it yourself, or use prewritten ones in
+ExtGraph or Genlib.
+</LI>
+</UL>
 <BR><BR>
 See <A HREF="$$LINK(sprites.h/Sprite8)">Sprite8</A> for more info about sprites.

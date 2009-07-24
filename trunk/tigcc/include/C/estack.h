@@ -172,6 +172,8 @@ enum TokenizeSymNameFlags{TSF_FULLY_QUALIFIED=0x01,TSF_ALLOW_RESERVED=0x02,TSF_P
 #define index_main_var _rom_call(ESI,(CESI),2CF)
 #define index_numeric_term _rom_call(ESI,(CESI),2CD)
 #define index_of_lead_base_of_lead_term _rom_call(ESI,(CESI),2CE)
+#define init_list_indices _rom_call(ESI*,(ESI*,CESI),2BA)
+#define init_matrix_indices _rom_call(ESI*,(ESI*,CESI),2BB)
 #define is_advanced_tag _rom_call(short,(ESQ),2D0)
 #define is_antisymmetric ({__need_in_use_bit;_rom_call(short,(CESI,CESI),2D1);})
 #define is_complex0 _rom_call(short,(CESI),2D3)

@@ -15,21 +15,19 @@ Sprite16:
 	and.w #15,%d0 | 4
 	addq.w #1,%d0 | 2
 
-	move.w %d4,-(%a7) | 2
-	move.l %d3,-(%a7) | 2
-| d4: drawing mode.
-	move.w 4+6(%a7),%d4 | 4
-	subq.w #1,%d4 | 2
-| d3: mask used by AND and RPLC.
-	moveq #-1,%d3 | 2
-	clr.w %d3 | 2
-	rol.l %d0,%d3 | 2
+	move.l %d4,-(%a7) | 2
+| d3: drawing mode.
+	subq.w #1,%d3 | 2
+| d4: mask used by AND and RPLC.
+	moveq #-1,%d4 | 2
+	clr.w %d4 | 2
+	rol.l %d0,%d4 | 2
 | Jump to loop entry.
 	bra.s .L__s16_loopentry | 2
 
 | AND.
 .L__s16_Am:
-	or.l %d3,%d1 | 2
+	or.l %d4,%d1 | 2
 	and.l %d1,(%a1) | 2
 
 | Next line.
@@ -44,13 +42,13 @@ Sprite16:
 	moveq #0,%d1 | 2
 	move.w (%a0)+,%d1 | 2
 	lsl.l %d0,%d1 | 2
-	cmp.w #1,%d4 | 4
+	cmp.w #1,%d3 | 4
 	beq.s .L__s16_Am | 2
-	tst.w %d4 | 2
+	tst.w %d3 | 2
 	blt.s .L__s16_Xm | 2
 	beq.s .L__s16_Om | 2
 | RPLC.
-	and.l %d3,(%a1) | 2
+	and.l %d4,(%a1) | 2
 
 | OR.
 .L__s16_Om:
@@ -64,6 +62,6 @@ Sprite16:
 
 | Return
 .L__s16_rts:
-	move.l (%a7)+,%d3 | 2
-	move.w (%a7)+,%d4 | 2
+	addq.w #1,%d3 | 2
+	move.l (%a7)+,%d4 | 2
 	rts | 2

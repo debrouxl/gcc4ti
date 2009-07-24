@@ -17,20 +17,19 @@ Sprite32:
 	sub.w %d0,%d5 | 2
 
 | d4: drawing mode.
-	move.w 4+5*4(%a7),%d4 | 4
-	subq.w #1,%d4 | 2
+	subq.w #1,%d3 | 2
 | d3, d6: masks used by AND and RPLC.
-	moveq #-1,%d3 | 2
-	lsr.w %d0,%d3 | 2
-        move.w %d3,%d6 | 2
-        not.l %d3 | 2
-        swap %d3 | 2
+	moveq #-1,%d4 | 2
+	lsr.w %d0,%d4 | 2
+	move.w %d4,%d6 | 2
+	not.l %d4 | 2
+	swap %d4 | 2
 | Jump to loop entry.
 	bra.s .L__s32_loopentry | 2
 
 | AND.
 .L__s32_Am:
-	or.l %d3,%d1 | 2
+	or.l %d4,%d1 | 2
 	or.w %d6,%d7 | 2
 	and.l %d1,(%a1)+ | 2
 	and.w %d7,(%a1) | 2
@@ -46,15 +45,15 @@ Sprite32:
 
 	move.l (%a0)+,%d1 | 2
 	move.w %d1,%d7 | 2
-        lsr.l %d0,%d1 | 2
-        lsl.w %d5,%d7 | 2
-	cmp.w #1,%d4 | 4
+	lsr.l %d0,%d1 | 2
+	lsl.w %d5,%d7 | 2
+	cmp.w #1,%d3 | 4
 	beq.s .L__s32_Am | 2
-	tst.w %d4 | 2
+	tst.w %d3 | 2
 	blt.s .L__s32_Xm | 2
 	beq.s .L__s32_Om | 2
 | RPLC.
-	and.l %d3,(%a1) | 2
+	and.l %d4,(%a1) | 2
 	and.w %d6,4(%a1) | 2
 | OR.
 .L__s32_Om:

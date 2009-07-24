@@ -6,7 +6,7 @@ register long __tbl asm ("a5");
 // This is not a quick sort, it's a shell sort.
 // For sorting data that has no significant statistical property, on embedded platforms
 // without processor caches, the shell sort is one of the very best size/speed tradeoffs.
-__ATTR_LIB_C__ void qsort(void *list, short num_items, short size, compare_t cmp_func);
+void qsort(void *list asm("a0"), short num_items asm("d0"), short size asm("d1"), compare_t cmp_func asm("a2")) __ATTR_LIB_ASM__;
 
 asm("
 | d3 <- p
@@ -22,10 +22,9 @@ asm("
 	.even
 	.globl qsort
 qsort:
-	movem.l %d3-%d7/%a2-%a4/%a6,-(%sp)
+	movem.l %d3-%d7/%a3-%a4/%a6,-(%sp)
 	move.l %a0,%a4	;# list, list
 	move.w %d1,%d7	;# size, size
-	move.l %a1,%a2	;# cmp_func, cmp_func
 	move.w #4096,%d5	;#, k
 	cmp.w #16,%d0	;#, num_items
 	bhi.s .L4	;#
@@ -84,7 +83,7 @@ qsort:
 	sub.w %d0,%d5	;# tmp60, k
 	bne.s .L6	;#
 
-	movem.l (%sp)+,%d3-%d7/%a2-%a4/%a6
+	movem.l (%sp)+,%d3-%d7/%a3-%a4/%a6
 	rts
 ");
 
@@ -192,4 +191,4 @@ qsort:
 	addq.w #8,%sp
 	rts
 */
-// In six steps, 30 bytes were saved, yielding the ASM routine at the top of this file.
+// In seven steps, 34 bytes were saved, yielding the ASM routine at the top of this file.

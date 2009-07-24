@@ -24,6 +24,7 @@ typedef ESQ*ESI;
 typedef CESI SYM_STR;
 #endif
 #if MIN_AMS>=101
+#define push_format ({__need_in_use_bit;_rom_call(void,(ESI,ESI),315);})
 #define push_getfold _rom_call(void,(void),317)
 #define push_getkey ({__need_in_use_bit;_rom_call(void,(void),316);})
 #define push_getmode _rom_call(void,(CESI),318)
