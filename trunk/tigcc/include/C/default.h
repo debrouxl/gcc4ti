@@ -141,11 +141,15 @@ _INCLUDE_PATCH(__execute_in_ghost_space);
 #if (!defined (NO_AMS_CHECK)) && ((MIN_AMS>101 && (defined (USE_TI89))) || (MIN_AMS>100 && (defined (USE_TI92PLUS))) || (MIN_AMS>206 && (defined (USE_V200))))
 #define _NEED_AMS_CHECK
  _INCLUDE_PATCH(__MIN_AMS_required);
-#if (MIN_AMS>=300)
-  _INCLUDE_PATCH(__MIN_AMS_3_00);
-#if (MIN_AMS>300)
-#warning Cannot check for AMS versions greater than 3.00
+#if (MIN_AMS>=310)
+  _INCLUDE_PATCH(__MIN_AMS_3_10);
+#if (MIN_AMS>310)
+#warning Cannot check for AMS versions greater than 3.10
 #endif
+#elif (MIN_AMS>=301)
+  _INCLUDE_PATCH(__MIN_AMS_3_01);
+#elif (MIN_AMS>=300)
+  _INCLUDE_PATCH(__MIN_AMS_3_00);
 #elif (MIN_AMS>=209)
   _INCLUDE_PATCH(__MIN_AMS_2_09);
 #if (MIN_AMS>209)
