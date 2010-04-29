@@ -13,8 +13,8 @@
 #include <romsymb.h>
 
 /* Begin Auto-Generated Part */
-#define _ram_call(ind,type) ((type)(&_RAM_CALL_##ind))
 #define _ram_call_addr(ind) (&_RAM_CALL_##ind)
+#define _ram_call(ind,type) ((type)(&_RAM_CALL_##ind))
 /* End Auto-Generated Part */
 
 extern void
