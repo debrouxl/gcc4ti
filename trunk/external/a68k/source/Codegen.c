@@ -136,7 +136,7 @@ void GetObjectCode (__NO_PARAMS__) /* using now void in v.2.71.F3d - Kevin Kofle
     }
 
     /* added by Kevin Kofler in v.2.71.F3l: */
-    SrcVal=Src.Value;
+    SrcVal=(long)((int)(Src.Value));
     {struct AddrDiff *p=SrcAddrDiffs;
      while (p) {
        SrcVal+=p->paddr-p->naddr;

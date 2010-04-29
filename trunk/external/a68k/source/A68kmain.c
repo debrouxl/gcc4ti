@@ -25,7 +25,7 @@
 #include "A68kdef.h"
 #include "A68kglb.h"
 
-char *Version = "2.71.F3x (December 23, 2008)";
+char *Version = "2.71.F3z (July 29, 2009)";
 
 int main (argc,argv) int argc; char *argv[];
 {
