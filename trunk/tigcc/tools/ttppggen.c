@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities
 * file name:       ttppggen.c
 * initial date:    28/09/2000
 * authors:         thomas.nussbaumer@gmx.net

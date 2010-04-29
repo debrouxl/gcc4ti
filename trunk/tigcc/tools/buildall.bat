@@ -24,8 +24,8 @@ for %%a in (%ttsct%) do call buildone.bat %%a
 set ttsct=tttiler ttunarchive tthex2bin ttsetname
 for %%a in (%ttsct%) do call buildone.bat %%a
 
-REM set ttsct=ttdos2ebk ttebkgen ttunebk
-REM for %%a in (%ttsct%) do call buildone.bat %%a
+set ttsct=ttdos2ebk ttebkgen ttunebk
+for %%a in (%ttsct%) do call buildone.bat %%a
 
 @echo on
 

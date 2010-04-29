@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities
 * file name:       ttsetname.c
 * initial date:    18/10/2002
 * author:          thomas.nussbaumer@@gmx.net

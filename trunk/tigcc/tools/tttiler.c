@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities
 * file name:       tttiler.c
 * initial date:    24/11/2000
 * authors:         thomas.nussbaumer@gmx.net

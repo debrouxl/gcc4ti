@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities
 * file name:       ttunpack.c
 * initial date:    18/08/2000
 * authors:         albert@cs.tut.fi

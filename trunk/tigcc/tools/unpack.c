@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities
 * file name:       unpack.c
 * initial date:    14/08/2000
 * authors:         albert@cs.tut.fi

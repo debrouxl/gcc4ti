@@ -25,10 +25,10 @@ bin/ttbin2bin.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
 bin/ttchecksum.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
-REM bin/ttdos2ebk.exe >> tooldocs.txt
-REM echo ----------------------------------------------------------------------------- >> tooldocs.txt
-REM bin/ttebkgen.exe >> tooldocs.txt
-REM echo ----------------------------------------------------------------------------- >> tooldocs.txt
+bin/ttdos2ebk.exe >> tooldocs.txt
+echo ----------------------------------------------------------------------------- >> tooldocs.txt
+bin/ttebkgen.exe >> tooldocs.txt
+echo ----------------------------------------------------------------------------- >> tooldocs.txt
 bin/ttextract.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
 bin/ttinfo.exe >> tooldocs.txt
@@ -47,8 +47,8 @@ bin/tttiler.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
 bin/ttunarchive.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
-REM bin/ttunebk.exe >> tooldocs.txt
-REM echo ----------------------------------------------------------------------------- >> tooldocs.txt
+bin/ttunebk.exe >> tooldocs.txt
+echo ----------------------------------------------------------------------------- >> tooldocs.txt
 bin/ttunpack.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
 

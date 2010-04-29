@@ -42,10 +42,10 @@ docs:
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
 	bin/ttchecksum$(EXEEXT) >> tooldocs.txt || true
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
-	#bin/ttdos2ebk$(EXEEXT) >> tooldocs.txt || true
-	#echo "-----------------------------------------------------------------------------" >> tooldocs.txt
-	#bin/ttebkgen$(EXEEXT) >> tooldocs.txt || true
-	#echo "-----------------------------------------------------------------------------" >> tooldocs.txt
+	bin/ttdos2ebk$(EXEEXT) >> tooldocs.txt || true
+	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
+	bin/ttebkgen$(EXEEXT) >> tooldocs.txt || true
+	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
 	bin/ttextract$(EXEEXT) >> tooldocs.txt || true
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
 	bin/ttinfo$(EXEEXT) >> tooldocs.txt || true
@@ -64,8 +64,8 @@ docs:
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
 	bin/ttunarchive$(EXEEXT) >> tooldocs.txt || true
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
-	#bin/ttunebk$(EXEEXT) >> tooldocs.txt || true
-	#echo "-----------------------------------------------------------------------------" >> tooldocs.txt
+	bin/ttunebk$(EXEEXT) >> tooldocs.txt || true
+	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
 	bin/ttunpack$(EXEEXT) >> tooldocs.txt || true
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
 	echo tooldocs.txt generated.

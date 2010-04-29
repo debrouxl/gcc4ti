@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities
 * file name:       tthelp.c
 * initial date:    21/08/2000
 * author:          thomas.nussbaumer@gmx.net
@@ -58,7 +58,7 @@ int main(void) {
                        "ttdos2ebk   ... dos text to ebook conversion\n"\
                        "ttebkgen    ... ebook generator\n"\
                        "ttextract   ... extract from binary using start and endtoken\n"\
-                       "tthelp      ... prints tool list\n"\
+                       "tthelp      ... prints tool list - this tool\n"\
                        "tthex2bin   ... converts textfile with hex or binary numbers into a binary file\n"\
                        "ttinfo      ... prints infos about 89z/89s/89y/9xz/9xs/9xy files\n"\
                        "ttpack      ... packer\n"\

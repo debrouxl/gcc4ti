@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* project name:    TI-68k Developer Utilities (formerly TIGCC Tools Suite)
+* project name:    TI-68k Developer Utilities
 * file name:       tt.h
 * initial date:    13/08/2000
 * author:          thomas.nussbaumer@gmx.net
