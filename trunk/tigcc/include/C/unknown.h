@@ -356,7 +356,7 @@ typedef unsigned short unknown_retval;
 #if MIN_AMS>=200
 typedef union{unsigned short*pW;SYM_ENTRY*pS;unsigned char*pB;}FOLDER_TYPE;
 enum OO_Indices{OO_APP_FLAGS=0x1,OO_APP_NAME=0x2,OO_APP_TOK_NAME=0x3,OO_APP_PROCESS_EVENT=0x4,OO_APP_DEFAULT_MENU=0x5,OO_APP_DEFAULT_MENU_HANDLE=0x6,OO_APP_EXT_COUNT=0x7,OO_APP_EXTENSIONS=0x8,OO_APP_EXT_ENTRIES=0x9,OO_APP_LOCALIZE=0xA,OO_APP_UNLOCALIZE=0xB,OO_APP_CAN_DELETE=0xC,OO_APP_CAN_MOVE=0xD,OO_APP_VIEWER=0xE,OO_APP_ICON=0xF,OO_APP_EXT_HELP=0x10,OO_APP_NOTICE_INSTALL=0x11,OO_APP_ABOUT=0x12,OO_SFONT=0x300,OO_LFONT=0x301,OO_HFONT=0x302,OO_APP_SFONT=0x300,OO_APP_LFONT=0x301,OO_APP_HFONT=0x301,OO_LANGUAGE=0x310,OO_DATE_FORMAT=0x311,OO_BUILTIN_HELP=0x312,OO_KTLIST=0x320,OO_CAT_TABLE=0x312,OO_CAT_INDEX=0x322,OO_CAT_COUNT=0x323,OO_CHAR_MENU=0x330,OO_CHAR_HANDLER=0x331,OO_APPS_HANDLER=0x332,OO_FLASH_APPS_HANDLER=0x333,OO_MATH_HANDLER=0x334,OO_MEM_HANDLER=0x335,OO_STO_HANDLER=0x336,OO_QUIT_HANDLER=0x337};
-typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFolCount;unsigned char*SymFolder,*SymName;HANDLE SymHandle,HomeHandle,MainHandle,DefTempHandle,DefFolderHandle;unsigned short SymErrCode;Bool CallStatFree;HANDLE FindHandle;unsigned short DefFolderName[SYM_LEN+1];struct{FOLDER_TYPE Low,High,Cur;unsigned short CurOffset;}Find,Prev;}SymPG_S;
+typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFolCount;unsigned char*SymFolder,*SymName;HANDLE SymHandle,HomeHandle,MainHandle,DefTempHandle,DefFolderHandle;unsigned short SymErrCode;enum Bool CallStatFree;HANDLE FindHandle;unsigned short DefFolderName[SYM_LEN+1];struct{FOLDER_TYPE Low,High,Cur;unsigned short CurOffset;}Find,Prev;}SymPG_S;
 #define EV_currentApp (*((short*)(_rom_call_addr(45C))))
 #define EV_errorCode (*((short*)(_rom_call_addr(46D))))
 #define EV_runningApp (*((short*)(_rom_call_addr(45D))))
@@ -515,15 +515,15 @@ typedef enum{EV_OFF=0x0001,EV_SUSPEND_PAINTING=0x0002}EV_FLAGS;
 #define DateFormat_Set _rom_call(void,(char),5FD)
 #define DateStr _rom_call(void,(short,short,short,char,char*),5FE)
 #define DayOfTheWeek _rom_call(unsigned short,(short,short,short),5F4)
-#define IsClockOn _rom_call(Bool,(void),5F7)
+#define IsClockOn _rom_call(unsigned short,(void),5F7)
 #define readHandshake _rom_call(unsigned char,(short,void*,short,__pushort,unsigned char*,unsigned char*,short),602)
-#define startBPTimer _rom_call(Bool,(void),604)
-#define stopBPTimer _rom_call(Bool,(void),604)
+#define startBPTimer _rom_call(unsigned short,(void),604)
+#define stopBPTimer _rom_call(unsigned short,(void),605)
 #define TimeFormat_Get _rom_call(unsigned char,(void),5FF)
 #define TimeFormat_Set _rom_call(void,(char),600)
 #define Timer_Start _rom_call(unsigned long,(void),5F8)
 #define Timer_Value _rom_call(unsigned long,(long),5F9)
-#define TimeStr _rom_call(void,(short,short,short,Bool,char,char*),601)
+#define TimeStr _rom_call(void,(short,short,short,short,char,char*),601)
 #define TimeZone_Get _rom_call(signed short,(void),5FA)
 #define TimeZone_Set _rom_call(void,(short),5FB)
 #define writeHandshake _rom_call(unsigned char,(short,void*,short,char,char),603)
