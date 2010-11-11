@@ -2,6 +2,7 @@
 |Copyright (C) Kevin Kofler, 2002-2003
 |Based on documentation examples and the original fgetchar implementation, both
 |by Zeljko Juric
+|Three fixes in 2010 by Lionel Debroux
 
 /* Prototype:
    short __fgetchar(void); */
@@ -13,7 +14,7 @@
 
 __fgetchar_CaptureHandler:
 move.l 4(%a7),%a0
-cmp.w #0x723,(%a0)
+cmp.w #0x723,(%a0) | CM_PASTE_STRING
 bne.s 0f
 move.l 8(%a0),%a0
 lea.l __fgetchar_keycode+2(%pc),%a1
@@ -33,7 +34,7 @@ pea.l (%a2)
 move.l 0xc8:w,%a2
 move.l __ngetchx*4(%a2),%a0
 jsr (%a0)
-cmp.w #4139,%d0
+cmp.w #4139,%d0 | KEY_CHAR
 bne.s 1f
 lea.l __fgetchar_keycode+2(%pc),%a0
 clr.w (%a0)
@@ -41,16 +42,16 @@ pea.l __fgetchar_CaptureHandler(%pc)
 move.l __EV_captureEvents*4(%a2),%a2
 jsr (%a2)
 clr.w (%a7)
-move.w %d3,-(%a7)
-move.w #4096,-(%a7)
+pea 0x1000102B.l | Mod == 2nd, Code == KEY_CHAR
 subq.l #6,%a7
 move.w #0x710,-(%a7)
 pea.l (%a7)
-move.l __EV_defaultHandler*4(%a2),%a0
+move.l 0xc8:w,%a0
+move.l __EV_defaultHandler*4(%a0),%a0
 jsr (%a0)
 clr.l (%a7)
 jsr (%a2)
-lea.l 16(%a7),%a7
+lea.l 20(%a7),%a7
 __fgetchar_keycode:
 move.w #0,%d0
 beq.s 2b
