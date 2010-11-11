@@ -3,7 +3,7 @@ object AboutForm: TAboutForm
   Top = 90
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'About TIGCC'
+  Caption = 'About GCC4TI'
   ClientHeight = 228
   ClientWidth = 345
   Color = clBtnFace
@@ -78,7 +78,7 @@ object AboutForm: TAboutForm
       Top = 16
       Width = 125
       Height = 15
-      Caption = 'TIGCC C and ASM SDK'
+      Caption = 'GCC4TI C and ASM SDK'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -12
@@ -191,7 +191,7 @@ object AboutForm: TAboutForm
       Top = 44
       Width = 209
       Height = 15
-      Caption = 'Copyright © 1999-2006 The TIGCC Team'
+      Caption = 'Copyright © 1999-2010 The TIGCC Team'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -12

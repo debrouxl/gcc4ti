@@ -997,7 +997,7 @@ begin
 		ActionTreeItemNewFile.Enabled := ActionFileNewFile.Enabled;
 		if ActiveControl = ProjectTree then
 			ActionEditDelete.Enabled := DataItem;
-		ActionFilePrint.Enabled := DataItem and (TObject (NewSelection.Data) is TSourceFile) and TSourceFile(NewSelection.Data).Printable and (Printer.Printers.Count > 0);
+		ActionFilePrint.Enabled := DataItem and (TObject (NewSelection.Data) is TSourceFile) and TSourceFile(NewSelection.Data).GetPrintable and (Printer.Printers.Count > 0);
 		ActionFilePrintQuickly.Enabled := ActionFilePrint.Enabled;
 		ActionFindFunctions.Enabled := DataItem and (TObject (NewSelection.Data) is TSourceTextSourceFile);
 		UpdateStatusBar;
@@ -1393,16 +1393,16 @@ begin
 						for I := 0 to Count - 1 do
 							with Items [I] as TSourceFile do
 								if InProject then begin
-									S := SL.Values [ClassItemName];
+									S := SL.Values [GetClassItemName];
 									if Length (S) > 0 then
 										ClassCount := StrToInt (S) + 1
 									else
 										ClassCount := 1;
-									SL.Values [ClassItemName] := IntToStr (ClassCount);
-									WriteString ('Included Files', ClassItemName + ' ' + IntToStr (ClassCount), DynamicName);
+									SL.Values [GetClassItemName] := IntToStr (ClassCount);
+									WriteString ('Included Files', GetClassItemName + ' ' + IntToStr (ClassCount), DynamicName);
 									S := FolderPath;
 									if Length (S) > 0 then
-										WriteString ('Included Files', ClassItemName + ' ' + IntToStr (ClassCount) + ' Folder', S);
+										WriteString ('Included Files', GetClassItemName + ' ' + IntToStr (ClassCount) + ' Folder', S);
 								end;
 				finally
 					SL.Free;
@@ -1569,7 +1569,7 @@ var
 	Node: TTreeNode;
 begin
 	Node := ProjectTree.Selected;
-	if (not Compiling) and Assigned (Node) and Assigned (Node.Data) and (TObject (Node.Data) is TSourceFile) and (TSourceFile(Node.Data).Compilable) then begin
+	if (not Compiling) and Assigned (Node) and Assigned (Node.Data) and (TObject (Node.Data) is TSourceFile) and (TSourceFile(Node.Data).GetCompilable) then begin
 		BeginCompilation;
 		CopyHeaders;
 		TSourceFile(Node.Data).Compile;
@@ -2136,7 +2136,7 @@ begin
 	with SourceFiles do
 		for I := 0 to Count - 1 do
 			with TSourceFile (Items [I]) do
-				if InProject and Compilable and (not FileExists (ChangeFileExt (FileName, '.o'))) then begin
+				if InProject and GetCompilable and (not FileExists (ChangeFileExt (FileName, '.o'))) then begin
 					OperationSuccessful := False;
 					FileNotCompiled (SourceName);
 				end;
@@ -2175,7 +2175,7 @@ begin
 										ReallocMem (ArchiveFileNames, SizeOf (PChar) * (ArchiveFileCount + 1));
 										ArchiveFileNames [ArchiveFileCount - 1] := PChar (FileNameList.Strings [FileNameList.Add (FileName)]);
 										ArchiveFileNames [ArchiveFileCount - 0] := nil;
-									end else if Compilable or (SourceFile is TObjectSourceFile) then begin
+									end else if GetCompilable or (SourceFile is TObjectSourceFile) then begin
 										Inc (ObjectFileCount);
 										ReallocMem (ObjectFileNames, SizeOf (PChar) * (ObjectFileCount + 1));
 										ObjectFileNames [ObjectFileCount - 1] := PChar (FileNameList.Strings [FileNameList.Add (ChangeFileExt (FileName, '.o'))]);
@@ -2330,7 +2330,7 @@ begin
 					with SourceFiles do
 						for I := 0 to Count - 1 do
 							with TSourceFile (Items [I]) do
-								if InProject and Compilable then begin
+								if InProject and GetCompilable then begin
 									Invalidate;
 									if FileExists (ChangeFileExt (FileName, '.o')) then
 										DeleteFile (ChangeFileExt (FileName, '.o'));
@@ -2454,7 +2454,7 @@ begin
 						with TSourceFile (Selected.Data) do begin
 							ActionTreeItemSave.Enabled := TSourceFile (Selected.Data) is TTextSourceFile;
 							ActionTreeItemSaveAs.Enabled := True;
-							ActionTreeItemCompile.Enabled := Compilable;
+							ActionTreeItemCompile.Enabled := GetCompilable;
 						end;
 						with Mouse.CursorPos do
 							SourceFilePopup.Popup (X, Y);
@@ -2518,12 +2518,12 @@ begin
 				if S = '' then
 					S := 'File1';
 				NameConflict := False;
-				if TSourceFile(Node.Data).Compilable then
+				if TSourceFile(Node.Data).GetCompilable then
 					with SourceFiles do
 						for I := 0 to Count - 1 do
 							if Items [I] <> Node.Data then
 								with Items [I] as TSourceFile do
-									if Compilable and (LowerCase (SourceName) = LowerCase (S)) and (WithoutBackslash (FolderPath) = WithoutBackslash (TSourceFile(Node.Data).FolderPath)) then begin
+									if GetCompilable and (LowerCase (SourceName) = LowerCase (S)) and (WithoutBackslash (FolderPath) = WithoutBackslash (TSourceFile(Node.Data).FolderPath)) then begin
 										NameConflict := True;
 										Break;
 									end;
@@ -2644,9 +2644,9 @@ begin
 							ParentForm := nil;
 							F.Free;
 						end;
-						TreeItem := CreateFileNode (TopNode.Item [ClassTreeIndex], Result);
+						TreeItem := CreateFileNode (TopNode.Item [GetClassTreeIndex], Result);
 						with TreeItem do begin
-							ImageIndex    := ClassImageIndex;
+							ImageIndex    := GetClassImageIndex;
 							SelectedIndex := ImageIndex;
 						end;
 					end;
@@ -3320,7 +3320,7 @@ begin
 	with SourceFiles do
 		for I := 0 to Count - 1 do
 			with Items [I] as TSourceFile do
-				if Compilable or (Items [I] is TObjectSourceFile) then begin
+				if GetCompilable or (Items [I] is TObjectSourceFile) then begin
 					StopIt := False;
 					Break;
 				end;
@@ -3331,7 +3331,7 @@ begin
 			for I := 0 to Count - 1 do
 				if (OperationSuccessful or not StopOnErrors) and not OperationCancelled then
 					with Items [I] as TSourceFile do
-						if Compilable and Invalidated then begin
+						if GetCompilable and Invalidated then begin
 							Compile;
 							if not OperationSuccessful then
 								StopIt := True;
@@ -3371,9 +3371,9 @@ begin
 			Folder := GetSelectedFolder (THeaderSourceFile);
 			FileName := GetNewFileName (FolderPath, '.h');
 			OnError := AddError;
-			TreeItem := CreateFileNode (TopNode.Item [ClassTreeIndex], O);
+			TreeItem := CreateFileNode (TopNode.Item [GetClassTreeIndex], O);
 			with TreeItem do begin
-				ImageIndex    := ClassImageIndex;
+				ImageIndex    := GetClassImageIndex;
 				SelectedIndex := ImageIndex;
 			end;
 			ErrorList := Self.ErrorList;
@@ -3423,9 +3423,9 @@ begin
 			Folder := GetSelectedFolder (TCSourceFile);
 			FileName := GetNewFileName (FolderPath, '.c');
 			OnError := AddError;
-			TreeItem := CreateFileNode (TopNode.Item [ClassTreeIndex], O);
+			TreeItem := CreateFileNode (TopNode.Item [GetClassTreeIndex], O);
 			with TreeItem do begin
-				ImageIndex    := ClassImageIndex;
+				ImageIndex    := GetClassImageIndex;
 				SelectedIndex := ImageIndex;
 			end;
 			ErrorList := Self.ErrorList;
@@ -3513,9 +3513,9 @@ begin
 			Folder := GetSelectedFolder (TGNUAsmSourceFile);
 			FileName := GetNewFileName (FolderPath, '.s');
 			OnError := AddError;
-			TreeItem := CreateFileNode (TopNode.Item [ClassTreeIndex], O);
+			TreeItem := CreateFileNode (TopNode.Item [GetClassTreeIndex], O);
 			with TreeItem do begin
-				ImageIndex    := ClassImageIndex;
+				ImageIndex    := GetClassImageIndex;
 				SelectedIndex := ImageIndex;
 			end;
 			ErrorList := Self.ErrorList;
@@ -3552,9 +3552,9 @@ begin
 			Folder := GetSelectedFolder (TAsmSourceFile);
 			FileName := GetNewFileName (FolderPath, '.asm');
 			OnError := AddError;
-			TreeItem := CreateFileNode (TopNode.Item [ClassTreeIndex], O);
+			TreeItem := CreateFileNode (TopNode.Item [GetClassTreeIndex], O);
 			with TreeItem do begin
-				ImageIndex    := ClassImageIndex;
+				ImageIndex    := GetClassImageIndex;
 				SelectedIndex := ImageIndex;
 			end;
 			ErrorList := Self.ErrorList;
@@ -3594,9 +3594,9 @@ begin
 				Folder := GetSelectedFolder (TQuillSourceFile);
 				FileName := GetNewFileName (FolderPath, '.qll');
 				OnError := AddError;
-				TreeItem := CreateFileNode (TopNode.Item [ClassTreeIndex], O);
+				TreeItem := CreateFileNode (TopNode.Item [GetClassTreeIndex], O);
 				with TreeItem do begin
-					ImageIndex    := ClassImageIndex;
+					ImageIndex    := GetClassImageIndex;
 					SelectedIndex := ImageIndex;
 				end;
 				ErrorList := Self.ErrorList;
@@ -3639,9 +3639,9 @@ begin
 		Folder := GetSelectedFolder (TTextSourceFile);
 		FileName := GetNewFileName (FolderPath, '.txt');
 		OnError := AddError;
-		TreeItem := CreateFileNode (TopNode.Item [ClassTreeIndex], O);
+		TreeItem := CreateFileNode (TopNode.Item [GetClassTreeIndex], O);
 		with TreeItem do begin
-			ImageIndex    := ClassImageIndex;
+			ImageIndex    := GetClassImageIndex;
 			SelectedIndex := ImageIndex;
 		end;
 		ErrorList := Self.ErrorList;
@@ -3760,7 +3760,7 @@ begin
 			with Items [I] as TSourceFile do
 				if Items [I] is THeaderSourceFile then
 					Invalidated := False
-				else if Compilable then
+				else if GetCompilable then
 					Invalidate;
 end;
 
@@ -5174,7 +5174,7 @@ begin
 		with SourceFiles do
 			for I := 0 to Count - 1 do
 				with Items [I] as TSourceFile do
-					if (Compilable or (Items [I] is THeaderSourceFile)) and Invalidated then begin
+					if (GetCompilable or (Items [I] is THeaderSourceFile)) and Invalidated then begin
 						Result := True;
 						Break;
 					end;

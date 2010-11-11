@@ -201,8 +201,8 @@ begin
 					OnSelectionChange := EditorChange;
 					PopupMenu := EditorPopup;
 				end;
-	ActionFileCompile.Enabled := Assigned (SourceFile) and SourceFile.Compilable;
-	ActionFilePrint.Enabled := Assigned (SourceFile) and SourceFile.Printable and (Printer.Printers.Count > 0);
+	ActionFileCompile.Enabled := Assigned (SourceFile) and SourceFile.GetCompilable;
+	ActionFilePrint.Enabled := Assigned (SourceFile) and SourceFile.GetPrintable and (Printer.Printers.Count > 0);
 	ActionFilePrintQuickly.Enabled := ActionFilePrint.Enabled;
 	ActionFindFunctions.Enabled := Assigned (SourceFile) and (SourceFile is TSourceTextSourceFile);
 	EditorChange (Editor);
@@ -716,9 +716,9 @@ begin
 	if (not Compiling) and Assigned (SourceFile) then
 		with MainForm, SourceFile do begin
 			ParentForm := nil;
-			N := ProjectTree.Items.AddChildObject (TopNode.Item [ClassTreeIndex], SourceName, Pointer (SourceFile));
+			N := ProjectTree.Items.AddChildObject (TopNode.Item [GetClassTreeIndex], SourceName, Pointer (SourceFile));
 			with N do begin
-				ImageIndex := ClassImageIndex;
+				ImageIndex := GetClassImageIndex;
 				SelectedIndex := ImageIndex;
 			end;
 			TreeItem := N;

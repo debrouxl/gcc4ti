@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 277
   ActiveControl = ProjectTree
   AutoScroll = False
-  Caption = 'TIGCC IDE'
+  Caption = 'GCC4TI IDE'
   ClientHeight = 403
   ClientWidth = 587
   Color = clBtnFace
@@ -75,18 +75,21 @@ object MainForm: TMainForm
     OnMouseDown = ProjectTreeMouseDown
     OnMouseUp = ProjectTreeMouseUp
     OnStartDrag = ProjectTreeStartDrag
-    Items.Data = {
-      01000000210000000200000002000000FFFFFFFFFFFFFFFF0000000007000000
-      0850726F6A65637431250000000000000001000000FFFFFFFFFFFFFFFF000000
-      00000000000C4865616465722046696C6573200000000000000001000000FFFF
-      FFFFFFFFFFFF000000000000000007432046696C65732B000000000000000100
-      0000FFFFFFFFFFFFFFFF000000000000000012474E5520417373656D626C7920
-      46696C6573250000000000000001000000FFFFFFFFFFFFFFFF00000000000000
-      000C4F626A6563742046696C6573260000000000000001000000FFFFFFFFFFFF
-      FFFF00000000000000000D417263686976652046696C65732300000000000000
-      01000000FFFFFFFFFFFFFFFF00000000000000000A546578742046696C657324
-      0000000000000001000000FFFFFFFFFFFFFFFF00000000000000000B4F746865
-      722046696C6573}
+    Items.NodeData = {
+      0101000000290000000200000002000000FFFFFFFFFFFFFFFF00000000070000
+      0008500072006F006A006500630074003100310000000000000001000000FFFF
+      FFFFFFFFFFFF00000000000000000C4800650061006400650072002000460069
+      006C0065007300270000000000000001000000FFFFFFFFFFFFFFFF0000000000
+      0000000743002000460069006C00650073003D0000000000000001000000FFFF
+      FFFFFFFFFFFF00000000000000001247004E005500200041007300730065006D
+      0062006C0079002000460069006C0065007300310000000000000001000000FF
+      FFFFFFFFFFFFFF00000000000000000C4F0062006A0065006300740020004600
+      69006C0065007300330000000000000001000000FFFFFFFFFFFFFFFF00000000
+      000000000D41007200630068006900760065002000460069006C00650073002D
+      0000000000000001000000FFFFFFFFFFFFFFFF00000000000000000A54006500
+      780074002000460069006C00650073002F0000000000000001000000FFFFFFFF
+      FFFFFFFF00000000000000000B4F0074006800650072002000460069006C0065
+      007300}
   end
   object ErrWinPanel: TPanel
     Left = 0
@@ -1269,9 +1272,9 @@ object MainForm: TMainForm
     Filter = 
       'Header Files (*.h)|*.h|C Files (*.c)|*.c|GNU Assembly Files (*.s' +
       ')|*.s|A68k Assembly Files (*.asm)|*.asm|Object Files (*.o)|*.o|A' +
-      'rchive Files (*.a)|*.a|Text Files (*.txt)|*.txt|All TIGCC Files ' +
-      '(*.h;*.c;*.s;*.asm;*.o;*a;*.txt)|*.h;*.c;*.s;*.asm;*.o;*.a;*.txt' +
-      '|All Files (*.*)|*.*'
+      'rchive Files (*.a)|*.a|Text Files (*.txt)|*.txt|All TIGCC/GCC4TI' +
+      ' Files (*.h;*.c;*.s;*.asm;*.o;*a;*.txt)|*.h;*.c;*.s;*.asm;*.o;*.' +
+      'a;*.txt|All Files (*.*)|*.*'
     FilterIndex = 8
     Options = [ofHideReadOnly, ofAllowMultiSelect, ofPathMustExist, ofFileMustExist]
     Title = 'Add Files'
@@ -1315,8 +1318,9 @@ object MainForm: TMainForm
     Filter = 
       'TIGCC Projects (*.tpr)|*.tpr|Header Files (*.h)|*.h|C Files (*.c' +
       ')|*.c|GNU Assembly Files (*.s)|*.s|A68k Assembly Files (*.asm)|*' +
-      '.asm|Text Files (*.txt)|*.txt|All TIGCC Files (*.tpr;*.h;*.c;*.s' +
-      ';*.asm;*.txt)|*.tpr;*.h;*.c;*.s;*.asm;*.txt|All Files (*.*)|*.*'
+      '.asm|Text Files (*.txt)|*.txt|All TIGCC/GCC4TI Files (*.tpr;*.h;' +
+      '*.c;*.s;*.asm;*.txt)|*.tpr;*.h;*.c;*.s;*.asm;*.txt|All Files (*.' +
+      '*)|*.*'
     FilterIndex = 7
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist]
     Title = 'Open Project/File'
@@ -3207,7 +3211,7 @@ object MainForm: TMainForm
     object ActionFileExit: TAction
       Category = 'File'
       Caption = '&Exit'
-      Hint = 'Exit|Close the TIGCC IDE'
+      Hint = 'Exit|Close the GCC4TI IDE'
       ShortCut = 32883
       OnExecute = FileExit
     end
@@ -3309,7 +3313,7 @@ object MainForm: TMainForm
     object ActionHelpDocumentation: TAction
       Category = 'Help'
       Caption = '&Documentation'
-      Hint = 'Documentation|Open the documentation of TIGCC'
+      Hint = 'Documentation|Open the documentation of GCC4TI'
       ImageIndex = 12
       OnExecute = HelpDocumentation
     end

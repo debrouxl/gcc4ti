@@ -77,8 +77,6 @@ type
 	protected
 		Modifying: Boolean;
 		FLastChangeTime: Integer;
-		class function GetCompilable: Boolean; virtual;
-		class function GetPrintable: Boolean; virtual;
 		function GetInProject: Boolean; virtual;
 		procedure SetFileName(const Value: string); virtual;
 		procedure SetModified(const Value: Boolean); virtual;
@@ -86,6 +84,8 @@ type
 		procedure ProcessErrors(const ErrText: string); virtual;
 		procedure ProcessErrorLine(Line: string); dynamic;
 	public
+		class function GetCompilable: Boolean; virtual;
+		class function GetPrintable: Boolean; virtual;
 		class function GetClassFilter: string; virtual;
 		class function GetClassItemName: string; virtual;
 		class function GetClassTreeIndex: Integer; virtual;
@@ -108,12 +108,7 @@ type
 		procedure Edit; virtual;
 		procedure TestChange; virtual;
 		procedure UpdateProgramOutput; virtual;
-		property ClassFilter: string read GetClassFilter;
-		property ClassItemName: string read GetClassItemName;
-		property ClassTreeIndex: Integer read GetClassTreeIndex;
-		property ClassImageIndex: Integer read GetClassImageIndex;
-		property Compilable: Boolean read GetCompilable;
-		property Printable: Boolean read GetPrintable;
+
 		property InProject: Boolean read GetInProject;
 		property Editor: TWinControl read GetEditor;
 		property SourceName: string read GetSourceName write SetSourceName;
@@ -139,7 +134,6 @@ type
 	protected
 		LineStartList: TIntegerList;
 		FTempContent: string;
-		class function GetPrintable: Boolean; override;
 		function GetEditor: TWinControl; override;
 		function GetTextEditor: TMemoComponent; virtual; abstract;
 		function GetInternalTextEditor: TMemoComponent; virtual; abstract;
@@ -151,6 +145,7 @@ type
 		procedure SetParentForm(const Value: TForm); virtual;
 		property InternalTextEditor: TMemoComponent read GetInternalTextEditor;
 	public
+		class function GetPrintable: Boolean; override;
 		destructor Destroy; override;
 		procedure WriteToFile(const FN: string = ''; SetFN: Boolean = False); override;
 		procedure LoadFromFile(const FN: string = ''; SetFN: Boolean = False); override;
@@ -223,12 +218,12 @@ type
 		CurErrFunction: string;
 		InAssemblingState: Boolean;
 		SpecialSwitches: string;
-		class function GetCompilable: Boolean; override;
 		procedure SetModified(const Value: Boolean); override;
 		function GetContentType: TSourceFileType; override;
 		procedure ProcessErrorLine(Line: string); override;
 		procedure ProcessSFile(const SourceFile, DestFile: string);
 	public
+		class function GetCompilable: Boolean; override;
 		class function GetClassFilter: string; override;
 		class function GetClassItemName: string; override;
 		class function GetClassTreeIndex: Integer; override;
@@ -241,11 +236,11 @@ type
 
 	TGNUAsmSourceFile = class(TSourceTextSourceFile)
 	protected
-		class function GetCompilable: Boolean; override;
 		procedure SetModified(const Value: Boolean); override;
 		function GetContentType: TSourceFileType; override;
 		procedure ProcessErrorLine(Line: string); override;
 	public
+		class function GetCompilable: Boolean; override;
 		class function GetClassFilter: string; override;
 		class function GetClassItemName: string; override;
 		class function GetClassTreeIndex: Integer; override;
@@ -258,10 +253,10 @@ type
 
 	TAsmSourceFile = class(TSourceTextSourceFile)
 	protected
-		class function GetCompilable: Boolean; override;
 		procedure SetModified(const Value: Boolean); override;
 		function GetContentType: TSourceFileType; override;
 	public
+		class function GetCompilable: Boolean; override;
 		class function GetClassFilter: string; override;
 		class function GetClassItemName: string; override;
 		class function GetClassTreeIndex: Integer; override;
@@ -742,7 +737,7 @@ var
 begin
 	with TSaveDialog.Create (Application.MainForm) do try
 		Title := 'Save Source File';
-		S := ClassFilter + '|All Files (*.*)|*.*';
+		S := GetClassFilter + '|All Files (*.*)|*.*';
 		if S [1] = '|' then
 			Delete (S, 1, 1);
 		Filter := S;
@@ -935,7 +930,7 @@ begin
 		if Assigned (InternalTextEditor) then
 			InternalTextEditor.AllowUndo := True;
 		inherited;
-		if Compilable then begin
+		if GetCompilable then begin
 			if FileExists (ChangeFileExt (FileName, '.o')) then
 				Invalidated := FileAge (ChangeFileExt (FileName, '.o')) < FileAge (FileName)
 			else

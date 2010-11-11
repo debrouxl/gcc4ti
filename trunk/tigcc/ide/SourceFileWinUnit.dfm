@@ -3,7 +3,7 @@ object SourceFileForm: TSourceFileForm
   Top = 42
   ActiveControl = EditorToolBar
   AutoScroll = False
-  Caption = 'TIGCC IDE Editor'
+  Caption = 'GCC4TI IDE Editor'
   ClientHeight = 311
   ClientWidth = 482
   Color = clBtnFace
