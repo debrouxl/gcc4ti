@@ -64,6 +64,8 @@ extern short OSVRegisterTimer(short asm("d0"),long asm("d3"),Timer_Callback_t as
 #define QModeKey _rom_call(short,(short),182)
 #define QSysKey _rom_call(short,(short),183)
 #define SumStoChkMem _rom_call(short,(void),295)
+#define TIOS_OSVFreeTimer _rom_call(short,(short),285)
+#define TIOS_OSVRegisterTimer _rom_call(short,(short,long,Timer_Callback_t),284)
 #define WordInList _rom_call(short,(short,__pushort),184)
 #define XR_stringPtr(strno) (AMS_1xx?_rom_call(const char*,(short),293)(strno):_rom_call(const char*,(long),293)(strno))
 #if MIN_AMS>=101

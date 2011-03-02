@@ -1,0 +1,23 @@
+[Main]
+Name=TIOS_OSVFreeTimer
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short TIOS_OSVFreeTimer (short timer_no);
+See Also=system.h/OSVFreeTimer
+
+[ROM Call]
+Index=$285
+
+[Description]
+Frees an event (vectored) timer.
+
+[Explanation]
+<B>You really should use <A HREF="$$LINK(system.h/OSVFreeTimer)">OSVFreeTimer</A>, unless
+you know what you, and your users, are doing.</B><BR>
+This is the direct system call, which will usually take less space in your program than the
+library routine for <A HREF="$$LINK(system.h/OSVRegisterTimer)">OSVRegisterTimer</A>,
+<A HREF="$$LINK(system.h/OSVFreeTimer)">OSVFreeTimer</A> and the corresponding interrupt handler.
+If you use it on AMS 1.00-2.03, you'll experience the bugs in TI's implementation (dependence
+between notify and event timers, etc.). If you use it on patched versions of AMS embedding an
+implementation based on the TIGCC/GCC4TI one, you won't.

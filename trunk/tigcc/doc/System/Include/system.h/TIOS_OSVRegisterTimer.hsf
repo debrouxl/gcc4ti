@@ -1,0 +1,23 @@
+[Main]
+Name=TIOS_OSVRegisterTimer
+Type=Function
+Subtype=ROM Call
+Header Files=system.h
+Definition=short TIOS_OSVRegisterTimer (short timer_no, unsigned long T, Timer_Callback_t Action);
+See Also=system.h/OSVRegisterTimer
+
+[ROM Call]
+Index=$284
+
+[Description]
+Registers an event (vectored) timer.
+
+[Explanation]
+<B>You really should use <A HREF="$$LINK(system.h/OSVRegisterTimer)">OSVRegisterTimer</A>, unless
+you know what you, and your users, are doing.</B><BR>
+This is the direct system call, which will usually take less space in your program than the
+library routine for <A HREF="$$LINK(system.h/OSVRegisterTimer)">OSVRegisterTimer</A>,
+<A HREF="$$LINK(system.h/OSVFreeTimer)">OSVFreeTimer</A> and the corresponding interrupt handler.
+If you use it on AMS 1.00-2.03, you'll experience the bugs in TI's implementation (dependence
+between notify and event timers, etc.). If you use it on patched versions of AMS embedding an
+implementation based on the TIGCC/GCC4TI one, you won't.

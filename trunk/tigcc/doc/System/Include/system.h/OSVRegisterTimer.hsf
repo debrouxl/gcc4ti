@@ -4,6 +4,7 @@ Type=Function
 Subtype=tigcc.a
 Header Files=system.h
 Definition=short OSVRegisterTimer (short timer_no, unsigned long T, Timer_Callback_t Action);
+See Also=system.h/TIOS_OSVRegisterTimer
 
 [Library Call]
 Asm=1
@@ -22,7 +23,7 @@ Before release 2.04 of the AMS, TIOS also had two event (vectored) timers number
 <A HREF="$$LINK(system.h/OSRegisterTimer)">OSRegisterTimer</A>). In AMS 2.04, Texas Instruments decided
 for some strange reasons to remove these vectored timers from the TIOS. I was very angry due to
 this decision, so I decided to reimplement these timers independently of the TIOS, to
-make them work on any AMS version. Well, now you have it. More precise, you now have
+make them work on any AMS version. Well, now you have it. More precisely, you now have
 two event (vectored) timers which are numbered as 1 and 2, which work on any AMS release
 (TIOS based implementation as implemented in TIGCCLIB releases prior to 2.2 did not work
 on AMS 2.04 and AMS 2.05).
@@ -51,16 +52,15 @@ OSVRegisterTimer returns a nonzero value if the registration was successful, els
 returns zero. This happens if you give wrong parameters, or if the timer <I>timer_no</I>
 is already in use. So, you must first free the timer using
 <A HREF="$$LINK(system.h/OSVFreeTimer)">OSVFreeTimer</A> (as I completely rewrote these routines, I
-also corrected some bugs in them which were presented in TIOS routines; you know about
-them if you read the documentation about OSVRegisterTimer in earlier releases of
-TIGCCLIB). As event timers now work indepentently of TIOS timers, both event timers
-(1 and 2) are free for use. Here is a simple example of a program which installs
+also corrected some bugs in them which were presented in TIOS routines). As event
+timers now work indepentently of TIOS timers, both event timers (1 and 2) are
+free for use. Here is a simple example of a program which installs
 both event timers (called "Timers"):
 $$EXAMPLE(Timers.c)
 In this implementation of OSVRegisterTimer, it is not necessary to free timers using
 <A HREF="$$LINK(system.h/OSVFreeTimer)">OSVFreeTimer</A> before first usage of them, because they are
-free by default at the begining. However, nothing wrong will happen if you try to free
-them explicitely (which was necessary in previous releases of TIGCCLIB).
+free by default at the beginning. However, nothing wrong will happen if you try to free
+them explicitly (which was necessary in previous releases of TIGCCLIB).
 <BR><BR>
 <B>Note:</B> As already mentioned above, all TIOS bugs in timer routines (dependence between
 notify and event timers, etc.) are now removed, because these routines are rewritten to
