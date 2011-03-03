@@ -7,10 +7,11 @@
 .text
 __umoddi3:
 	movea.l %d3,%a0
-	move.l 4(%a7),%d0
-	move.l 8(%a7),%d1
-	move.l 12(%a7),%d2
-	move.l 16(%a7),%d3
+	movem.l 4(%sp),%d0-%d3 | 4, 16+4*8=48: -12 bytes, -16 clocks
+	|move.l 4(%a7),%d0  | 4, 16
+	|move.l 8(%a7),%d1  | 4, 16
+	|move.l 12(%a7),%d2 | 4, 16
+	|move.l 16(%a7),%d3 | 4, 16
 
 	movea.l %d4,%a1
 	moveq.l #-1,%d4

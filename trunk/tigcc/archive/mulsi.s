@@ -2,8 +2,7 @@
 
 .text
 __mulsi3:
-	move.l (4,%sp),%d1
-	move.l (8,%sp),%d2
+	movem.l (4,%sp),%d1-%d2
 	move.l %d2,%d0
 	mulu %d1,%d0
 	swap %d2

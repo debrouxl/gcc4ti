@@ -32,8 +32,7 @@ atof:
 	move.l %d4,(%a3)
 	move.l 1364(%a4),%a0 /* ER_success */
 	jsr (%a0)
-	move.l (%a6,-10),%d0
-	move.l (%a6,-6),%d1
+	movem.l (%a6,-10),%d0-%d1
 	move.w (%a6,-2),%d2
 	cmpi.b #0x7A,%d5
 	bne.s .L__atof_3

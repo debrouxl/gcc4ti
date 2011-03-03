@@ -7,10 +7,16 @@
 cbprintf:
 |Copy the arguments for vcbprintf(). We have to copy them because of the stack
 |parameter convention of AMS. Register parameters wouldn't need a copy.
-	pea.l 16(%a7) | arglist: do NOT copy this one, pass a pointer to it
-	move.l 16(%a7),-(%a7) | copy format
-	move.l 16(%a7),-(%a7) | copy param
-	move.l 16(%a7),-(%a7) | copy callback
+	lea 16(%sp),%a0
+	pea (%a0)            | arglist: do NOT copy this one, pass a pointer to it
+	move.l -(%a0),-(%sp) | copy format
+	move.l -(%a0),-(%sp) | copy param
+	move.l -(%a0),-(%sp) | copy callback
+	|pea.l 16(%a7) | arglist: do NOT copy this one, pass a pointer to it
+	|move.l 16(%a7),-(%a7) | copy format
+	|move.l 16(%a7),-(%a7) | copy param
+	|move.l 16(%a7),-(%a7) | copy callback
+
 
 |Now call vcbprintf using the usual hack.
 |Copied from Zeljko Juric's printf.
@@ -21,5 +27,5 @@ cbprintf:
 	jsr (%a0.l,%a1)
 
 |Pop the arguments from the stack and return.
-	lea.l 16(%a7),%a7
+	lea.l 16(%sp),%sp
 	rts

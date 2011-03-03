@@ -6,8 +6,7 @@
 __ashrdi3:
 	tst.w 12(%a7)
 	bne.s .L__ashrdi3_return0
-	move.l 4(%a7),%d0
-	move.l 8(%a7),%d1
+	movem.l 4(%a7),%d0-%d1
 	move.w 14(%a7),%d2
 	beq.s .L__ashrdi3_returnn
 	subq.w #1,%d2

@@ -7,10 +7,16 @@
 .text
 __udivdi3:
 	movem.l %d3-%d6,-(%a7)
-	move.l 20(%a7),%d4
-	move.l 24(%a7),%d5
-	move.l 28(%a7),%d2
-	move.l 32(%a7),%d3
+	lea 20(%sp),%a0     | 4, 8
+	move.l (%a0)+,%d4   | 2, 12
+	move.l (%a0)+,%d5   | 2, 12
+	move.l (%a0)+,%d2   | 2, 12
+	move.l (%a0)+,%d3   | 2, 12
+	                    | -4 bytes, -8 clocks
+	|move.l 20(%a7),%d4 | 4, 16
+	|move.l 24(%a7),%d5 | 4, 16
+	|move.l 28(%a7),%d2 | 4, 16
+	|move.l 32(%a7),%d3 | 4, 16
 	moveq.l #0,%d0
 	moveq.l #0,%d1
 

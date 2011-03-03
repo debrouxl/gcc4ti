@@ -7,9 +7,10 @@
 __assertion_failed:
 	link.w %a6,#-1044
 	move.l 0xC8,%a2
-	move.w 16(%a6),(%sp)
-	move.l 12(%a6),-(%sp)
-	move.l 8(%a6),-(%sp)
+	lea 16(%a6),%a0
+	move.w (%a0),(%sp)
+	move.l -(%a0),-(%sp)
+	move.l -(%a0),-(%sp)
 	pea .L__assert_fmt
 	lea -1000(%a6),%a4
 	move.l %a4,-(%sp)
