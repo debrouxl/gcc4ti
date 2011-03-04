@@ -2,14 +2,14 @@
 Title=Information for Assembly Programmers
 
 [Top]
-The TIOS has a very rich set of built-in functions, but unfortunately they are not yet documented
-by TI. However, entry points are documented. As nearly 80% of functions which I defined in this
-library are just TIOS calls (either direct or indirect, depending of whether the compile mode is
-"Doors" or "nostub"), the documentation of these functions are also the documentation of TIOS calls.
-This means that this document documents about 600 TIOS calls, so it may be very valuable
-for assembly programers. When the function is nothing more than simple TIOS call, I give to it
-the name which is exactly the same as the name used in TI list of TIOS entry points. So you can
-easily determine which functions are simple TIOS calls.
+TI's OS for TI-68k calculators, AMS, has a rich set of built-in functions, but unfortunately many
+of them are not yet documented by TI. However, some entry points are documented. As many functions
+which I defined in this library are just OS calls, the documentation of these functions is also
+the documentation of OS calls.
+This means that this document documents more than 600 OS calls, so it may be very valuable
+for assembly programers. When the function is nothing more than simple OS call, I give to it
+either the name used in TI's list of OS entry points, or a name invented by someone. So you can
+easily determine which functions are simple OS calls.
 <BR><BR>
 Of course, function parameters are listed using the C language calling convention, because this is a library for C programing. If you are an assembly programmer, you need to know the following:
 <UL>
@@ -21,7 +21,7 @@ All pointer types occupy four bytes. A float type occupies ten bytes.</LI>
 <LI>Assume that D0-D2/A0-A1 are destroyed by any given ROM function upon return.</LI>
 <LI>Any function which returns any non-pointer type (char, short, int, long), including not-too-long structures (like <A HREF="$$LINK(vat.h/HSym)">HSym</A>), keeps the result in the register D0.</LI>
 <LI>Any function which returns a pointer type keeps the result in the register A0.</LI>
-<LI>All TIOS functions which return a floating point value (like most functions from <A HREF="$$LINK(timath.h/)">timath.h</A> header file) expect that before calling A6 points to the byte after the end byte of 10-byte long buffer where the result will be stored (usually this is a preallocated space on the stack frame). Note that this is not the same as GCC convention for returning floating point values: GCC returns floats in a triplet [D0.l;D1.l;D2.w]. That's why implementing floating point routines was not so easy, especially because A6 is a very important register (used in GCC as the frame pointer).</LI>
+<LI>All OS functions which return a floating point value (like most functions from <A HREF="$$LINK(timath.h/)">timath.h</A> header file) expect that before calling A6 points to the byte after the end byte of 10-byte long buffer where the result will be stored (usually this is a preallocated space on the stack frame). Note that this is not the same as GCC convention for returning floating point values: GCC returns floats in a triplet [D0.l;D1.l;D2.w]. That's why implementing floating point routines was not so easy, especially because A6 is a very important register (used in GCC as the frame pointer).</LI>
 </UL>
 Many users ask me for examples, especially about the usage of floating point functions in ASM programs. I expected that everything I wrote is so clear (for anybody who knows C syntax), but it seems that it is not. OK. I will give two examples (the second one deals with floats):
 <BR><BR>
@@ -35,7 +35,7 @@ void DrawClipEllipse (short x, short y, short a, short b, const <A HREF="$$LINK(
 If you want to simulate the following call
 <PRE>DrawClipEllipse (100, 50, 30, 20, &amp;(SCR_RECT){{0, 0, 159, 99)}, A_NORMAL);
 </PRE>
-in the ASM program, you should do the following code (Doors calling convention will be
+in the ASM program, you should do the following code (kernel calling convention will be
 assumed, due to simplicity):
 <PRE>       move.w #1,-(sp)
        pea    clip(pc)
@@ -64,7 +64,7 @@ Suppose that you want to calculate the integer part of 2.34*log(342.1178). First
 know that hexadecimal representations for 2.34 and 342.1178 are $40002340000000000000 and
 $40023421178000000000 (see <A HREF="$$LINK(timath.h/bcd)">bcd</A> if you don't know
 why). Also, note that <A HREF="$$LINK(timath.h/bcdmul)">bcdmul</A> and
-<A HREF="$$LINK(timath.h/bcdlong)">bcdlong</A> are original TIOS names for functions aliased as <A HREF="$$LINK(timath.h/fmul)">fmul</A> and <A HREF="$$LINK(timath.h/trunc)">trunc</A> (don't be misleaded by the fact that the library defines <A HREF="$$LINK(timath.h/fmul)">fmul</A> &amp; <A HREF="$$LINK(timath.h/trunc)">trunc</A> to work with native <CODE>float</CODE> type and <A HREF="$$LINK(timath.h/bcdmul)">bcdmul</A> &amp; <A HREF="$$LINK(timath.h/bcdlong)">bcdlong</A> to work with <A HREF="$$LINK(timath.h/bcd)">bcd</A> structures; at the fundamental ASM level they are exactly the same routines). Then, this calculation may be performed using the following ASM program:
+<A HREF="$$LINK(timath.h/bcdlong)">bcdlong</A> are original OS names for functions aliased as <A HREF="$$LINK(timath.h/fmul)">fmul</A> and <A HREF="$$LINK(timath.h/trunc)">trunc</A> (don't be misleaded by the fact that the library defines <A HREF="$$LINK(timath.h/fmul)">fmul</A> &amp; <A HREF="$$LINK(timath.h/trunc)">trunc</A> to work with native <CODE>float</CODE> type and <A HREF="$$LINK(timath.h/bcdmul)">bcdmul</A> &amp; <A HREF="$$LINK(timath.h/bcdlong)">bcdlong</A> to work with <A HREF="$$LINK(timath.h/bcd)">bcd</A> structures; at the fundamental ASM level they are exactly the same routines). Then, this calculation may be performed using the following ASM program:
 <PRE>       lea    after(pc),a6         ; Prepare a6 for storing results
        clr.l  -(sp)                ; Push 342.1178
        move.l #$34211780,-(sp)
@@ -101,4 +101,4 @@ This program may be much more optimized if you know how to use stack frames prop
        jsr    tios:bcdlong         ; The final result is now in d0
        unlk   a6                   ; Remove the stack frame
 </PRE>
-<B>Note:</B> Some of the information about TIOS calls given by TI itself on their site is incomplete or even <B>wrong</B>. This document contains more precise information.
+<B>Note:</B> Some of the information about OS calls given by TI itself on their site is incomplete or even <B>wrong</B>. This document contains more precise information.

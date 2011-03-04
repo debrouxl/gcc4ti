@@ -29,7 +29,7 @@ Exports the label given as an argument to other object files or to the linker. T
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>XREF&nbsp;<I>label</I></CODE></TD><TD>
 Imports the label given as an argument. This allows to access variables
-from other object files even if the <B>'-g'</B> switch is not specified. Since TIGCC specifies <B>'-g'</B> by default, there
+from other object files even if the <B>'-g'</B> switch is not specified. Since GCC4TI specifies <B>'-g'</B> by default, there
 is no real need for this directive.
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>PUBLIC&nbsp;<I>label</I></CODE></TD><TD>
@@ -42,10 +42,10 @@ Sets the section the following code will be written to. This is especially usefu
 Specifies the section the following code will be written to as a &quot;BSS section&quot;, a section which will not be initialized at runtime, so it can contain only storage place which does not need to be initialized. Also, BSS sections are <B>not</B> allowed in <CODE>_nostub</CODE> mode.
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>CSEG</CODE></TD><TD>
-Creates a section called &quot;<CODE>CODE</CODE>&quot; where the code will be written to. This directive is not really useful in TIGCC, since both code and data are written to the <CODE>.data</CODE> section by <CODE>GCC</CODE> and <CODE>GNU as</CODE>.
+Creates a section called &quot;<CODE>CODE</CODE>&quot; where the code will be written to. This directive is not really useful in GCC4TI, since both code and data are written to the <CODE>.data</CODE> section by <CODE>GCC</CODE> and <CODE>GNU as</CODE>.
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>DSEG</CODE></TD><TD>
-Creates a section called &quot;<CODE>DATA</CODE>&quot; where the code will be written to. Do not use this directive in TIGCC. Instead, specify <CODE>SECTION&nbsp;.data</CODE>, which is the section name used by <CODE>GCC</CODE> and <CODE>GNU as</CODE> for data sections.
+Creates a section called &quot;<CODE>DATA</CODE>&quot; where the code will be written to. Do not use this directive in GCC4TI. Instead, specify <CODE>SECTION&nbsp;.data</CODE>, which is the section name used by <CODE>GCC</CODE> and <CODE>GNU as</CODE> for data sections.
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>END</CODE></TD><TD>
 Marks the end of the source file. This directive is now optional since v.2.71.F3c.
@@ -132,7 +132,7 @@ Disables the <A HREF="$$LINK(smallcode)">small code and data model</A> after a <
 Places the code following the directive at the address specified by <I>expression</I>, which must be relocatable (that is, of the form <CODE><I>label</I>+<I>number</I></CODE>, where <I>label</I> is a backward reference, not a forward reference). If that address is located before the current position, the code previously generated there will be overwritten. If that adress is located after the current position, the space will be filled with zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>).
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>RORG&nbsp;<I>offset</I></CODE></TD><TD>
-Places the code following the directive at the offset <I>offset</I>, which must be a number, from the beginning of the current object file section. If that address is located before the current position, the code previously generated there will be overwritten. If that adress is located after the current position, the space will be filled with zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>). However, if <CODE>RORG</CODE> is specified before the first executable instruction and in the default section (before any <CODE>SECTION</CODE>, <CODE>BSS</CODE>, <CODE>CSEG</CODE> or <CODE>DSEG</CODE> directive), no spacing will be generated, so it has the effect of adding the number <I>address</I> to all absolute references, thereby pre-relocating the code to that fixed address. But such an use of this directive is not useful in TIGCC, as assembly programs on the TI-89/92+ can be at any place in memory, and the linker always generates a relocation table which allows AMS to take care of the relocation automatically.
+Places the code following the directive at the offset <I>offset</I>, which must be a number, from the beginning of the current object file section. If that address is located before the current position, the code previously generated there will be overwritten. If that adress is located after the current position, the space will be filled with zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>). However, if <CODE>RORG</CODE> is specified before the first executable instruction and in the default section (before any <CODE>SECTION</CODE>, <CODE>BSS</CODE>, <CODE>CSEG</CODE> or <CODE>DSEG</CODE> directive), no spacing will be generated, so it has the effect of adding the number <I>address</I> to all absolute references, thereby pre-relocating the code to that fixed address. But such an use of this directive is not useful in GCC4TI, as assembly programs on the TI-89/92+ can be at any place in memory, and the linker always generates a relocation table which allows AMS to take care of the relocation automatically.
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>NOLIST</CODE></TD><TD>
 The code following this directive will not appear in the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified.
@@ -150,7 +150,7 @@ Skips <I>n</I> lines, or 1 line if <I>n</I> is omitted, in the listing file crea
 Sets the title on the pages of the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified to <I>string</I>. Also begins a new page when specified on the middle of a page.
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>IDNT&nbsp;&quot;<I>name</I>&quot;</CODE></TD><TD>
-Sets the program unit name in the S-record generated when the <B>'-s'</B> switch is specified, to <I>name</I>. The quotes can be omitted. This directive is not useful in TIGCC, since TIGCC does not use S-records.
+Sets the program unit name in the S-record generated when the <B>'-s'</B> switch is specified, to <I>name</I>. The quotes can be omitted. This directive is not useful in GCC4TI, since GCC4TI does not use S-records.
 </TD></TR>
 <TR><TD VALIGN="TOP"><CODE>\<I>localLbl</I></CODE></TD><TD>
 Defines a local label, a label which can be accessed only in the space between the 2 global labels surrounding it. This mainly serves to avoid name conflicts: 2 or more local labels can have the same name as long as they are separated by a global label.

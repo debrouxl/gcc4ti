@@ -25,17 +25,17 @@ multiplication operations.
 <DD>Enable exception handling.  Generates extra code needed to propagate
 exceptions.  In principle, you may need to enable this option when compiling
 C code that needs to interoperate properly with exception handlers, but this
-is useless in TIGCC, as the TIOS uses its own exception handling mechanism
-(see <A HREF="$$LINK(error.h/)">error.h</A>).
+is useless in GCC4TI, as the standard OS uses its own exception handling
+mechanism (see <A HREF="$$LINK(error.h/)">error.h</A>).
 <BR><BR>
 <DT><B>-fnon-call-exceptions</B>
 <DD>Generate code that allows trapping instructions to throw exceptions.
-Probably useless in TIGCC.
+Probably useless in GCC4TI.
 <BR><BR>
 <DT><B>-funwind-tables</B>
 <DD>Similar to <B>'-fexceptions'</B>, except that it will just generate any needed
 static data, but will not affect the generated code in any other way.
-Probably useless in TIGCC.
+Probably useless in GCC4TI.
 <BR><BR>
 <DT><B>-fasynchronous-unwind-tables</B>
 <DD>Generate unwind table in dwarf2 format, if supported by target machine.  The
@@ -66,7 +66,7 @@ This is more efficient for small structures than
 <B>'-fpcc-struct-return'</B>.
 <BR><BR>
 If you specify neither <B>'-fpcc-struct-return'</B> nor
-<B>'-freg-struct-return'</B>, TIGCC defaults to <B>'-freg-struct-return'</B>.
+<B>'-freg-struct-return'</B>, GCC4TI defaults to <B>'-freg-struct-return'</B>.
 <BR><BR>
 <B>Warning:</B> code compiled with the <B>'-freg-struct-return'</B>
 switch is not binary compatible with code compiled with the
@@ -84,7 +84,7 @@ Use it to conform to a non-default application binary interface.
 <BR><BR>
 <DT><B>-fshort-double</B>
 <DD>Use the same size for <CODE>double</CODE> as for <CODE>float</CODE>.
-This is always true in TIGCC, regardless of this switch.
+This is always true in GCC4TI, regardless of this switch.
 <BR><BR>
 <B>Warning:</B> the <B>'-fshort-double'</B> switch causes GCC to generate
 code that is not binary compatible with code generated without that switch.
@@ -113,7 +113,7 @@ effect that if the same variable is declared (without <CODE>extern</CODE>) in
 two different compilations, you will get an error when you link them.
 The only reason this might be useful is if you wish to verify that the
 program will work on other systems which always work this way.  Currently,
-TIGCC does not support this option, since it needs common symbols to
+GCC4TI does not support this option, since it needs common symbols to
 communicate with the linker.
 <BR><BR>
 <DT><B>-fno-ident</B>
@@ -121,7 +121,7 @@ communicate with the linker.
 <BR><BR>
 <DT><B>-fno-gnu-linker</B>
 <DD>Do not output global initializations in the form used by the GNU linker
-Useless in TIGCC, because global initializations are not implemented.
+Useless in GCC4TI, because global initializations are not implemented.
 <BR><BR>
 <DT><B>-finhibit-size-directive</B>
 <DD>Don't output a <CODE>.size</CODE> assembler directive, or anything else that
@@ -204,7 +204,7 @@ three-way choice.
 Refer to all labels only in relation to the register specified in
 <I>reg</I>.  This can make the code somewhat smaller, but you should use this
 option with care as it is not fully supported.
-This option is implemented only in TIGCC.
+This option is implemented only in TIGCC/GCC4TI.
 <BR><BR>
 <DT><B>-fpack-struct</B>
 <DD>Pack all structure members together without holes.
@@ -251,7 +251,7 @@ routines generate output or allocate memory).
 <DT><B>-fstack-check</B>
 <DD>Generate code to verify that you do not go beyond the boundary of the
 stack.  As this requires support from the operating system, it probably does
-not work in TIGCC.
+not work in GCC4TI.
 <BR><BR>
 <DT><B>-fstack-limit-register=<I>reg</I></B>
 <BR><B>-fstack-limit-symbol=<I>sym</I></B>
@@ -301,5 +301,5 @@ The <I>model</I> argument should be one of <CODE>global-dynamic</CODE>,
 The default without <B>'-fpic'</B> is <CODE>initial-exec</CODE>; with
 <B>'-fpic'</B> the default is <CODE>global-dynamic</CODE>.
 <BR><BR>
-Useless in TIGCC, as threads are not supported.
+Useless in TIGCC/GCC4TI, as threads are not supported.
 </DL>

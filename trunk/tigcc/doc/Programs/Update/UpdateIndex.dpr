@@ -1,5 +1,5 @@
 {
-  TIGCC Documentation Tools
+  TIGCC/GCC4TI Documentation Tools
 
   Copyright (C) 2002-2004 Sebastian Reichelt
 

@@ -40,7 +40,7 @@ int main(void)
   dcf=fopen("qt-assistant.dcf","wt");
   if (!dcf) {fclose(hhc);fclose(hhk);fatal("Failed to open qt-assistant.dcf.");}
   fputs("<!DOCTYPE DCF>\n<DCF ref=\"index.html\" category=\"development\" "
-        "title=\"TIGCC Documentation\">\n",dcf);
+        "title=\"GCC4TI Documentation\">\n",dcf);
   for (i=0;i<12;i++) fgets(buffer,32768,hhc); // skip 11 junk lines, read 12th
                                               // line
   while (buffer[strlen(buffer)-1]=='\r'||buffer[strlen(buffer)-1]=='\n')

@@ -3,13 +3,12 @@ Title=Making Kernel-Less (NoStub) Programs
 See Also=nostub.h/
 
 [Top]
-NoStub programs are programs which don't need any kernel like DoorsOS, Universal OS, TeOS,
-PlusShell etc. for execution. This does not imply that they do not work with a kernel installed.
-Starting from release 2.2 of TIGCCLIB, TIGCC produces NoStub
-programs by default (there is no need to include <A HREF="$$LINK(nostub.h/)">nostub.h</A>
-before including any other header files from this library as in releases of
-TIGCCLIB prior 2.2; this will be explained in more details below). As this
-release of the library is highly ANSI-compatible, the first example will be the
+NoStub programs are programs which don't <I>need</I> any kernel like PreOS for execution.
+However, they work with a kernel installed. Starting from release 2.2 of TIGCCLIB, TIGCC (and
+therefore GCC4TI) produces so-called NoStub programs by default (there is no need to include
+<A HREF="$$LINK(nostub.h/)">nostub.h</A> before including any other header files from this
+library as in releases of TIGCCLIB prior 2.2; this will be explained in more details below).
+As this release of the library is highly ANSI-compatible, the first example will be the
 classic Kernighan &amp; Ritchie "Hello world" example (called "Hello World 1", slightly modified
 to include clearing the screen and waiting for the keypress):
 $$EXAMPLE(Hello World 1.c)
@@ -21,7 +20,7 @@ with return type <CODE>void</CODE> (not <CODE>int</CODE> as usual), because you 
 not return a status code to the operating system.
 <BR><BR>
 To compile this program, you can use the
-<A HREF="$$INFOLINK(ide)">TIGCC Integrated Environment</A>, or you can type from the command line
+<A HREF="$$INFOLINK(ide)">GCC4TI Integrated Environment</A>, or you can type from the command line
 (if the file is named "hello.c"):
 <BR><BR>
 <B>tigcc -O2 hello.c</B>
@@ -45,15 +44,15 @@ replacements for these macros in the project options.
 The directive <CODE><A HREF="$$LINK(advanced_savescreen)">SAVE_SCREEN</A></CODE> forces saving the screen contents before
 execution and restoring them after execution of the program.
 <BR><BR>
-Users which are familiar with previous releases of TIGCCLIB may ask what
-has happened to the <A HREF="$$LINK(nostub.h/)">nostub.h</A> header file. Starting from release 2.2
-the use of any header file from TIGCCLIB will automatically include
+Users which are familiar with very old releases of TIGCCLIB might ask what
+has happened to the <A HREF="$$LINK(nostub.h/)">nostub.h</A> header file. Nowadays,
+the use of any header file from GCC4TILIB will automatically include
 the <A HREF="$$LINK(nostub.h/)">nostub.h</A> header file, except if the global preprocessor
 symbol <CODE>USE_KERNEL</CODE> is defined, or if the <A HREF="$$LINK(doors.h/)">doors.h</A>
 is included at the beginning (see section
 <A HREF="$$LINK(kernel)">How to make a kernel-based program</A> for more info). This way you need
 to include <CODE>nostub.h</CODE> manually only if you don't include any
-other header file from TIGCCLIB, which is extremely unlikely. To retain compatibility
+other header file from GCC4TILIB, which is extremely unlikely. To retain compatibility
 with programs created with previous versions of the library, including
 <A HREF="$$LINK(nostub.h/)">nostub.h</A> explicitly will not cause any damage.
 <BR><BR>
@@ -79,7 +78,7 @@ the following:
 </UL>
 $$EXAMPLE(Hello World 2.c)
 Note that <CODE><A HREF="$$LINK(advanced_savescreen)">SAVE_SCREEN</A></CODE> is a new directive introduced in
-TIGCCLIB 2.0. In previous releases of TIGCCLIB you had to save and restore the
+TIGCCLIB 2.0. In older releases of TIGCCLIB you had to save and restore the
 screen manually, like in the following example ("Hello World 3"):
 $$EXAMPLE(Hello World 3.c)
 See <A HREF="$$LINK(graph.h/)">graph.h</A> and <A HREF="$$LINK(kbd.h/)">kbd.h</A> for
