@@ -166,6 +166,20 @@ typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char m
 #define push_tanh ({__need_in_use_bit;_rom_call(void,(CESI),53C);})
 #define push_when ({__need_in_use_bit;_rom_call(void,(CESI),57D);})
 #define push_zeros ({__need_in_use_bit;_rom_call(void,(CESI,CESI),586);})
+#if MIN_AMS>=208
+#define push_acot(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[ACOT_TAG].tag_proc))(__ptr);})
+#define push_acoth(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[ACOTH_TAG].tag_proc))(__ptr);})
+#define push_acsc(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[ACSC_TAG].tag_proc))(__ptr);})
+#define push_acsch(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[ACSCH_TAG].tag_proc))(__ptr);})
+#define push_asec(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[ASEC_TAG].tag_proc))(__ptr);})
+#define push_asech(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[ASECH_TAG].tag_proc))(__ptr);})
+#define push_cot(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[COT_TAG].tag_proc))(__ptr);})
+#define push_coth(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[COTH_TAG].tag_proc))(__ptr);})
+#define push_csc(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[CSC_TAG].tag_proc))(__ptr);})
+#define push_csch(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[CSCH_TAG].tag_proc))(__ptr);})
+#define push_sec(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[SEC_TAG].tag_proc))(__ptr);})
+#define push_sech(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[SECH_TAG].tag_proc))(__ptr);})
+#endif
 #endif
 #endif
 #endif
