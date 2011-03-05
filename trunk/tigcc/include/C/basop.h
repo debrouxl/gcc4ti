@@ -47,6 +47,7 @@ typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char m
 #define push_polar_to_rect_x ({__need_in_use_bit;_rom_call(void,(CESI,CESI),4F9);})
 #define push_polar_to_rect_y ({__need_in_use_bit;_rom_call(void,(CESI,CESI),4FA);})
 #define push_radians ({__need_in_use_bit;_rom_call(void,(CESI),4B3);})
+#define push_subscripted_element ({__need_in_use_bit;_rom_call(void,(CESI),4D1);})
 #define push_substitute_no_simplify _rom_call(void,(CESI,CESI,CESI),489)
 #define push_to_dd ({__need_in_use_bit;_rom_call(void,(CESI),4C6);})
 #define push_to_dms ({__need_in_use_bit;_rom_call(void,(CESI),4C7);})

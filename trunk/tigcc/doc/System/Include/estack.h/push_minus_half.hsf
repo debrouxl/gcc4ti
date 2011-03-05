@@ -1,0 +1,22 @@
+[Main]
+Name=push_minus_half
+Type=Function
+Subtype=ROM Call
+Header Files=estack.h
+Definition=void push_minus_half (void);
+MinAMS=2.00
+See Also=estack.h/push0, estack.h/push1, estack.h/push_minus1, estack.h/push_half, estack.h/push_minus_recip_of_quantum
+
+[ROM Call]
+Index=$4F0
+
+[Description]
+Pushes a tagged fraction -1/2 or a tagged float -0.5, depending on the mode setting.
+
+[Explanation]
+If the mode setting is APPROX, the tagged float -0.5 is pushed onto the EStack.
+Else, the tagged fraction -1/2 is pushed by calling <CODE>push_minus_recip_of_quantum(2);</CODE>
+
+[References]
+Out=estack.h/push_minus_recip_of_quantum, estack.h/push_Float
+In=basfunc.h/did_push_anti_deriv

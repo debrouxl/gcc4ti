@@ -1,0 +1,27 @@
+[Main]
+Name=is_pathname
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=short is_pathname (CESI name);
+MinAMS=1.01
+
+[ROM Call]
+Index=$3C6
+
+[Description]
+Checks if argument points to a pathname.
+
+[Explanation]
+<I>name</I> must be a valid <A HREF="$$LINK(estack.h/SYM_STR)">SYM_STR</A> constructed with
+<A HREF="$$LINK(vat.h/SYMSTR)">SYMSTR</A> or equivalent.<BR>
+This function first checks if <I>name</I> is pointing to the last byte of a SYM_STR (it must be
+0x00), and searches backwards for character 0x5C ('\'). If is_pathname finds one such character,
+it immediately retuns TRUE. If <I>name</I> doesn't point to a 0x00, or there is no '\' in the
+string, it returns FALSE.<BR>
+Note: this function is flawed, as it doesn't check if there is <I>only</I> one '\'. Indeed, a
+string such as SYMSTR("main\foo\bar"), while it is a pathname (it contains '\'), is NOT a valid
+pathname...
+
+[References]
+In=unknown.h/EQU_getNameInfo, unknown.h/push_parse_prgm_or_func_text, bascmd.h/cmd_local, estack.h/push_parse_text, unknown.h/_ROM_CALL_468

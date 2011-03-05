@@ -28,6 +28,10 @@ typedef CESI SYM_STR;
 typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK tag_proc)();unsigned long tag_str;}tag_info;
 #endif
 #define primary_tag_list ((const tag_info*const)(_rom_call_addr_hack(467,((*(unsigned long*)((unsigned char*)_rom_call_addr(10A)+16))),200)))
+#define push_arclen(expr1, expr2, expr3, expr4) ({CESI __ptr1=(CESI)(expr1);CESI __ptr2=(CESI)(expr2);CESI __ptr3=(CESI)(expr3);CESI __ptr4=(CESI)(expr4);((void(*CALLBACK)(CESI,CESI,CESI,CESI))(primary_tag_list[ARCLEN_TAG].tag_proc))(__ptr1,__ptr2,__ptr3,__ptr4);})
+#define push_propfrac(expr1, expr2) ({CESI __ptr1=(CESI)(expr1);CESI __ptr2=(CESI)(expr2);((void(*CALLBACK)(CESI,CESI))(primary_tag_list[PROPFRAC_TAG].tag_proc))(__ptr1,__ptr2);})
+#define push_trig_collect(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[TCOLLECT_TAG].tag_proc))(__ptr);})
+#define push_trig_expand(expr) ({CESI __ptr=(CESI)(expr);((void(*CALLBACK)(CESI))(primary_tag_list[TEXPAND_TAG].tag_proc))(__ptr);})
 #if MIN_AMS>=101
 #define push_format ({__need_in_use_bit;_rom_call(void,(ESI,ESI),315);})
 #define push_getfold _rom_call(void,(void),317)

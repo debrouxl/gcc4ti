@@ -62,6 +62,7 @@ typedef float ti_float;
 #define ccosh _rom_call(void,(float,float,float*,float*),143)
 #define ceil(x) _tios_float_1(105,x,float)
 #define cexp _rom_call(void,(float,float,float*,float*),149)
+#define ck_valid_float _rom_call(short,(float*),1E5)
 #define cln _rom_call(void,(float,float,float*,float*),147)
 #define clog10 _rom_call(void,(float,float,float*,float*),148)
 #define cos(x) _tios_float_1(F9,x,float)

@@ -2,17 +2,19 @@
 Name=ck_valid_float
 Type=Function
 Subtype=ROM Call
-Header Files=unknown.h
-Definition=short ck_valid_float (float *);
+Header Files=timath.h
+Definition=short ck_valid_float (float *ptr);
 
 [ROM Call]
 Index=$1E5
 
 [Description]
-
+Checks if the float pointed to by <I>ptr</I> is valid.
 
 [Explanation]
-
+This function first rounds *ptr to 14 significant digits and underflows it to 0 if the exponent is less than -999 (it 
+returns TRUE in that case). If the float pointed to by ptr is transfinite (see is_float_transfinite) or its exponent is 
+greater than +999, *ptr is set to NAN and FALSE is returned. Else, TRUE is returned.
 
 [References]
 In=unknown.h/cpt_gr_polar, unknown.h/CptIndep, unknown.h/de_loop, unknown.h/FirstSeqPlot, unknown.h/GT_DspTraceCoords, unknown.h/GT_Trace, bascmd.h/cmd_cubicreg, bascmd.h/cmd_expreg, bascmd.h/cmd_linreg, bascmd.h/cmd_lnreg, bascmd.h/cmd_logistic, bascmd.h/cmd_medmed, bascmd.h/cmd_onevar, bascmd.h/cmd_powerreg, bascmd.h/cmd_quadreg, bascmd.h/cmd_quartreg, bascmd.h/cmd_sinreg, bascmd.h/cmd_twovar, gdraw.h/GR3_paint3d, graphing.h/CptDeltax, graphing.h/CptDeltay, vat.h/VarStore
