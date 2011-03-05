@@ -50,6 +50,7 @@ typedef const ESQ*CESI;
 typedef ESQ*ESI;
 #endif
 typedef CALLBACK unsigned short(*CESI_Callback_t)(CESI);
+typedef struct{unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK arg_simp)(ESI);void(*CALLBACK cmd_proc)();unsigned long tag_str;}cmd_info;
 typedef CALLBACK unsigned short(*ESI_Callback_Int_t)(ESI,unsigned short);
 #ifndef __HAVE_ESI_Callback_t
 #define __HAVE_ESI_Callback_t
@@ -99,7 +100,12 @@ typedef struct{unsigned short Size;ESQ Expr[];}MULTI_EXPR;
 #define __HAVE_SYM_STR
 typedef CESI SYM_STR;
 #endif
+typedef struct{unsigned char tag_type_1;unsigned char tag_type_2;unsigned char tag_type_3;unsigned char tag_type_4;unsigned long tag_str;}sysvar_info;
 enum SysvarTags{X_BAR_TAG=1,Y_BAR_TAG=2,SIGMA_X_TAG=3,SIGMA_X2_TAG=4,SIGMA_Y_TAG=5,SIGMA_Y2_TAG=6,SIGMA_XY_TAG=7,SX_TAG=8,SY_TAG=9,SMLSIGMA_X_TAG=0xA,SMLSIGMA_Y_TAG=0xB,NSTAT_TAG=0xC,MINX_TAG=0xD,MINY_TAG=0xE,Q1_TAG=0xF,MEDSTAT_TAG=0x10,Q3_TAG=0x11,MAXX_TAG=0x12,MAXY_TAG=0x13,CORR_TAG=0x14,R2_TAG=0x15,MEDX1_TAG=0x16,MEDX2_TAG=0x17,MEDX3_TAG=0x18,MEDY1_TAG=0x19,MEDY2_TAG=0x1A,MEDY3_TAG=0x1B,XC_TAG=0x1C,YC_TAG=0x1D,ZC_TAG=0x1E,TC_TAG=0x1F,RC_TAG=0x20,THETA_C_TAG=0x21,NC_TAG=0x22,XFACT_TAG=0x23,YFACT_TAG=0x24,ZFACT_TAG=0x25,XMIN_TAG=0x26,XMAX_TAG=0x27,XSCL_TAG=0x28,YMIN_TAG=0x29,YMAX_TAG=0x2A,YSCL_TAG=0x2B,DELTA_X_TAG=0x2C,DELTA_Y_TAG=0x2D,XRES_TAG=0x2E,XGRID_TAG=0x2F,YGRID_TAG=0x30,ZMIN_TAG=0x31,ZMAX_TAG=0x32,ZSCL_TAG=0x33,EYE_THETA_TAG=0x34,EYE_PHI_TAG=0x35,THETA_MIN_TAG=0x36,THETA_MAX_TAG=0x37,THETA_STEP_TAG=0x38,TMIN_TAG=0x39,TMAX_TAG=0x3A,TSTEP_TAG=0x3B,NMIN_TAG=0x3C,NMAX_TAG=0x3D,PLOTSTRT_TAG=0x3E,PLOTSTEP_TAG=0x3F,ZXMIN_TAG=0x40,ZXMAX_TAG=0x41,ZXSCL_TAG=0x42,ZYMIN_TAG=0x43,ZYMAX_TAG=0x44,ZYSCL_TAG=0x45,ZXRES_TAG=0x46,Z_THETA_MIN_TAG=0x47,Z_THETA_MAX_TAG=0x48,Z_THETA_STEP_TAG=0x49,ZTMIN_TAG=0x4A,ZTMAX_TAG=0x4B,ZTSTEP_TAG=0x4C,ZXGRID_TAG=0x4D,ZYGRID_TAG=0x4E,ZZMIN_TAG=0x4F,ZZMAX_TAG=0x50,ZZSCL_TAG=0x51,ZEYE_THETA_TAG=0x52,ZEYE_PHI_TAG=0x53,ZNMIN_TAG=0x54,ZNMAX_TAG=0x55,ZPLTSTEP_TAG=0x56,ZPLTSTRT_TAG=0x57,SEED1_TAG=0x58,SEED2_TAG=0x59,OK_TAG=0x5A,ERRORNUM_TAG=0x5B,SYSMATH_TAG=0x5C,SYSDATA_TAG=0x5D,REGEQ_TAG=0x5E,REGCOEF_TAG=0x5F,TBLINPUT_TAG=0x60,TBLSTART_TAG=0x61,DELTA_TBL_TAG=0x62,FLDPIC_TAG=0x63,EYE_PSI_TAG=0x64,TPLOT_TAG=0x65,DIFTOL_TAG=0x66,ZEYE_PSI_TAG=0x67,T0_TAG=0x68,DTIME_TAG=0x69,NCURVES_TAG=0x6A,FLDRES_TAG=0x6B,ESTEP_TAG=0x6C,ZT0DE_TAG=0x6D,ZTMAXDE_TAG=0x6E,ZTSTEPDE_TAG=0x6F,ZTPLOTDE_TAG=0x70,NCONTOUR_TAG=0x71};
+#ifndef __HAVE_tag_info
+#define __HAVE_tag_info
+typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK tag_proc)();unsigned long tag_str;}tag_info;
+#endif
 #ifndef __HAVE_Tags
 #define __HAVE_Tags
 enum Tags{VAR_NAME_TAG=0x00,_VAR_Q_TAG=0x01,VAR_R_TAG=0x02,VAR_S_TAG=0x03,VAR_T_TAG=0x04,VAR_U_TAG=0x05,VAR_V_TAG=0x06,VAR_W_TAG=0x07,VAR_X_TAG=0x08,VAR_Y_TAG=0x09,VAR_Z_TAG=0x0A,VAR_A_TAG=0x0B,VAR_B_TAG=0x0C,VAR_C_TAG=0x0D,VAR_D_TAG=0x0E,VAR_E_TAG=0x0F,VAR_F_TAG=0x10,VAR_G_TAG=0x11,VAR_H_TAG=0x12,VAR_I_TAG=0x13,VAR_J_TAG=0x14,VAR_K_TAG=0x15,VAR_L_TAG=0x16,VAR_M_TAG=0x17,VAR_N_TAG=0x18,VAR_O_TAG=0x19,VAR_P_TAG=0x1A,VAR_Q_TAG=0x1B,EXT_SYSTEM_TAG=0x1C,ARB_REAL_TAG=0x1D,ARB_INT_TAG=0x1E,POSINT_TAG=0x1F,NEGINT_TAG=0x20,POSFRAC_TAG=0x21,NEGFRAC_TAG=0x22,FLOAT_TAG=0x23,BCD_TAG=0x23,PI_TAG=0x24,EXP_TAG=0x25,IM_TAG=0x26,NEGINFINITY_TAG=0x27,INFINITY_TAG=0x28,PN_INFINITY_TAG=0x29,UNDEF_TAG=0x2A,FALSE_TAG=0x2B,TRUE_TAG=0x2C,STR_TAG=0x2D,NOTHING_TAG=0x2E,ACOSH_TAG=0x2F,ASINH_TAG=0x30,ATANH_TAG=0x31
@@ -122,7 +128,11 @@ enum Tags{VAR_NAME_TAG=0x00,_VAR_Q_TAG=0x01,VAR_R_TAG=0x02,VAR_S_TAG=0x03,VAR_T_
 #endif
 enum TokenizeSymNameFlags{TSF_FULLY_QUALIFIED=0x01,TSF_ALLOW_RESERVED=0x02,TSF_PASS_ERRORS=0x04};
 #define bottom_estack (*((CESI*)(_rom_call_addr_hack(432,((&top_estack-2)),200))))
+#define command_tag_list ((const cmd_info*const)(_rom_call_addr_hack(5D8,((*(unsigned long*)((unsigned char*)_rom_call_addr(10A)+22))),204)))
 #define estack_max_index (*((CESI*)(_rom_call_addr_hack(5BF,((&top_estack-1)),204))))
+#define primary_tag_list ((const tag_info*const)(_rom_call_addr_hack(467,((*(unsigned long*)((unsigned char*)_rom_call_addr(10A)+16))),200)))
+#define secondary_tag_list ((const tag_info*const)(_rom_call_addr_hack(5EE,((*(unsigned long*)((unsigned char*)_rom_call_addr(10A)+16))+12*256/4),205)))
+#define sysvar_tag_list ((const sysvar_info*const)(_rom_call_addr_hack(46B,((*(unsigned long*)((unsigned char*)_rom_call_addr(2B7)+98))-4),200)))
 #define top_estack (*((ESI*)(_rom_call_addr(109))))
 #define CreateEmptyList _rom_call(HANDLE,(void),1E6)
 #define display_statements _rom_call(HANDLE,(CESI,short,short),4E)

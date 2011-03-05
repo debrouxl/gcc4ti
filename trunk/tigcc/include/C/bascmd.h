@@ -22,6 +22,11 @@ typedef ESQ*ESI;
 #define __HAVE_SYM_STR
 typedef CESI SYM_STR;
 #endif
+#ifndef __HAVE_tag_info
+#define __HAVE_tag_info
+typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK tag_proc)();unsigned long tag_str;}tag_info;
+#endif
+#define primary_tag_list ((const tag_info*const)(_rom_call_addr_hack(467,((*(unsigned long*)((unsigned char*)_rom_call_addr(10A)+16))),200)))
 #if MIN_AMS>=101
 #define cmd_andpic ({__need_in_use_bit;_rom_call(void,(SYM_STR,CESI,CESI),32A);})
 #define cmd_blddata ({__need_in_use_bit;_rom_call(void,(ESI),32B);})

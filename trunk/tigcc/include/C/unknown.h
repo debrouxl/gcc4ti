@@ -145,10 +145,8 @@ typedef short WIN_COORDS;
 #define __HAVE_WIN_RECT
 typedef struct{short x0,y0,x1,y1;}WIN_RECT;
 #endif
-typedef struct{unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK arg_simp)(ESI);void(*CALLBACK cmd_proc)(void);unsigned long tag_str;}cmd_info;
 typedef enum{SELECT_ON,SELECT_OFF,SELECT_TOGGLE}EQU_SELECT;
 typedef unsigned long pFrame;
-typedef struct{unsigned char tag_order;unsigned char tag_version;unsigned char min_max_args;unsigned char proc_args;void(*CALLBACK tag_proc)(void);unsigned long tag_str;}tag_info;
 typedef CALLBACK void(*Two_ESI_Callback_t)(ESI,ESI);
 typedef unsigned short unknown_retval;
 #define EV_appA (*((short*)(_rom_call_addr_hack(452,(((unsigned long)*(signed short*)((unsigned char*)_rom_call_addr(D8)+0x20))),200))))
@@ -355,8 +353,8 @@ typedef unsigned short unknown_retval;
 #define store_to_subscripted_element ({__need_in_use_bit;_rom_call(void,(CESI,CESI),2B5);})
 #if MIN_AMS>=200
 typedef union{unsigned short*pW;SYM_ENTRY*pS;unsigned char*pB;}FOLDER_TYPE;
-enum OO_Indices{OO_APP_FLAGS=0x1,OO_APP_NAME=0x2,OO_APP_TOK_NAME=0x3,OO_APP_PROCESS_EVENT=0x4,OO_APP_DEFAULT_MENU=0x5,OO_APP_DEFAULT_MENU_HANDLE=0x6,OO_APP_EXT_COUNT=0x7,OO_APP_EXTENSIONS=0x8,OO_APP_EXT_ENTRIES=0x9,OO_APP_LOCALIZE=0xA,OO_APP_UNLOCALIZE=0xB,OO_APP_CAN_DELETE=0xC,OO_APP_CAN_MOVE=0xD,OO_APP_VIEWER=0xE,OO_APP_ICON=0xF,OO_APP_EXT_HELP=0x10,OO_APP_NOTICE_INSTALL=0x11,OO_APP_ABOUT=0x12,OO_SFONT=0x300,OO_LFONT=0x301,OO_HFONT=0x302,OO_APP_SFONT=0x300,OO_APP_LFONT=0x301,OO_APP_HFONT=0x301,OO_LANGUAGE=0x310,OO_DATE_FORMAT=0x311,OO_BUILTIN_HELP=0x312,OO_KTLIST=0x320,OO_CAT_TABLE=0x312,OO_CAT_INDEX=0x322,OO_CAT_COUNT=0x323,OO_CHAR_MENU=0x330,OO_CHAR_HANDLER=0x331,OO_APPS_HANDLER=0x332,OO_FLASH_APPS_HANDLER=0x333,OO_MATH_HANDLER=0x334,OO_MEM_HANDLER=0x335,OO_STO_HANDLER=0x336,OO_QUIT_HANDLER=0x337};
-typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFolCount;unsigned char*SymFolder,*SymName;HANDLE SymHandle,HomeHandle,MainHandle,DefTempHandle,DefFolderHandle;unsigned short SymErrCode;enum Bool CallStatFree;HANDLE FindHandle;unsigned short DefFolderName[SYM_LEN+1];struct{FOLDER_TYPE Low,High,Cur;unsigned short CurOffset;}Find,Prev;}SymPG_S;
+enum OO_Indices{OO_APP_FLAGS=0x1,OO_APP_NAME=0x2,OO_APP_TOK_NAME=0x3,OO_APP_PROCESS_EVENT=0x4,OO_APP_DEFAULT_MENU=0x5,OO_APP_DEFAULT_MENU_HANDLE=0x6,OO_APP_EXT_COUNT=0x7,OO_APP_EXTENSIONS=0x8,OO_APP_EXT_ENTRIES=0x9,OO_APP_LOCALIZE=0xA,OO_APP_UNLOCALIZE=0xB,OO_APP_CAN_DELETE=0xC,OO_APP_CAN_MOVE=0xD,OO_APP_VIEWER=0xE,OO_APP_ICON=0xF,OO_APP_EXT_HELP=0x10,OO_APP_NOTICE_INSTALL=0x11,OO_APP_ABOUT=0x12,OO_SFONT=0x300,OO_LFONT=0x301,OO_HFONT=0x302,OO_APP_SFONT=0x300,OO_APP_LFONT=0x301,OO_APP_HFONT=0x301,OO_LANGUAGE=0x310,OO_DATE_FORMAT=0x311,OO_BUILTIN_HELP=0x312,OO_KTLIST=0x320,OO_CAT_TABLE=0x321,OO_CAT_INDEX=0x322,OO_CAT_COUNT=0x323,OO_CHAR_MENU=0x330,OO_CHAR_HANDLER=0x331,OO_APPS_HANDLER=0x332,OO_FLASH_APPS_HANDLER=0x333,OO_MATH_HANDLER=0x334,OO_MEM_HANDLER=0x335,OO_STO_HANDLER=0x336,OO_QUIT_HANDLER=0x337};
+typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFolCount;unsigned char*SymFolder,*SymName;HANDLE SymHandle,HomeHandle,MainHandle,DefTempHandle,DefFolderHandle;unsigned short SymErrCode;unsigned short CallStatFree;HANDLE FindHandle;unsigned short DefFolderName[SYM_LEN+1];struct{FOLDER_TYPE Low,High,Cur;unsigned short CurOffset;}Find,Prev;}SymPG_S;
 #define EV_currentApp (*((short*)(_rom_call_addr(45C))))
 #define EV_errorCode (*((short*)(_rom_call_addr(46D))))
 #define EV_runningApp (*((short*)(_rom_call_addr(45D))))
@@ -365,7 +363,6 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define OO_firstACB (*((short*)(_rom_call_addr(451))))
 #define OO_SuperFrame (*((pFrame*)(_rom_call_addr(48F))))
 #define OSModKeyStatus (*((unsigned short*)(_rom_call_addr(431))))
-#define primary_tag_list ((const tag_info*const)(_rom_call_addr(467)))
 #define pSymPG ((SymPG_S*const)(_rom_call_addr(430)))
 #define ST_flags (*((unsigned long*)(_rom_call_addr(443))))
 #define VarOptList ((unsigned short*const)(_rom_call_addr(444)))
@@ -478,7 +475,6 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define times_top ({__need_in_use_bit;_rom_call(void,(ESI),522);})
 #if MIN_AMS>=204
 typedef enum{EV_OFF=0x0001,EV_SUSPEND_PAINTING=0x0002}EV_FLAGS;
-#define command_tag_list ((const cmd_info*const)(_rom_call_addr(5D8)))
 #define errno (*((short*)(_rom_call_addr(5D9))))
 #define EV_flags (*((EV_FLAGS*)(_rom_call_addr(5DF))))
 #define Float0Index (*((ESI*)(_rom_call_addr(5D0))))
@@ -503,8 +499,6 @@ typedef enum{EV_OFF=0x0001,EV_SUSPEND_PAINTING=0x0002}EV_FLAGS;
 #define TIOS_div _rom_call(div_t,(short,short),5BB)
 #define TIOS_labs _rom_call(long,(long),5BC)
 #define TIOS_ldiv _rom_call(ldiv_t,(long,long),5BD)
-#if MIN_AMS>=205
-#define secondary_tag_list ((const tag_info*const)(_rom_call_addr(5EE)))
 #if MIN_AMS>=207
 #define ClockOff _rom_call(void,(void),5F6)
 #define ClockOn _rom_call(void,(void),5F5)
@@ -527,7 +521,6 @@ typedef enum{EV_OFF=0x0001,EV_SUSPEND_PAINTING=0x0002}EV_FLAGS;
 #define TimeZone_Get _rom_call(signed short,(void),5FA)
 #define TimeZone_Set _rom_call(void,(short),5FB)
 #define writeHandshake _rom_call(unsigned char,(short,void*,short,char,char),603)
-#endif
 #endif
 #endif
 #endif
