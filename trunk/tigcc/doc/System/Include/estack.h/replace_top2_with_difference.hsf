@@ -2,20 +2,28 @@
 Name=replace_top2_with_difference
 Type=Function
 Subtype=ROM Call
-Header Files=unknown.h
-Definition=void replace_top2_with_difference (ESI);
+Header Files=estack.h
+Definition=void replace_top2_with_difference (ESI expr);
 MinAMS=2.02
+See Also=estack.h/replace_top2_with_sum
 
 [ROM Call]
 Index=$51C
 
 [Description]
-
+Replace the two top-most expressions on the EStack by their difference.
 
 [Explanation]
-
+The following code:
+<PRE>push_quantum(VAR_A_TAG);
+ptr = top_estack;
+push_quantum(VAR_B_TAG);
+replace_top2_with_difference(ptr);
+</PRE>
+will leave the a - b expression on the EStack.<BR>
+<I>expr</I> should usually be <CODE>next_expression_index(top_estack)</CODE>.
 
 [References]
 In=unknown.h/get_ub, basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_acos, basfunc.h/push_atan, basfunc.h/push_atanh, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_extended_prod, basfunc.h/push_factor, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_solve, basfunc.h/push_summation, basfunc.h/push_zeros, basop.h/push_equals, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not_equals
-Out=estack.h/negate_top, unknown.h/replace_top2_with_sum
+Out=estack.h/negate_top, estack.h/replace_top2_with_sum
 Out_EV_eventLoop=1

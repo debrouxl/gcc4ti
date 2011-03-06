@@ -2,18 +2,26 @@
 Name=replace_top2_with_or
 Type=Function
 Subtype=ROM Call
-Header Files=unknown.h
-Definition=void replace_top2_with_or (ESI);
+Header Files=estack.h
+Definition=void replace_top2_with_or (ESI expr);
 MinAMS=2.02
+See Also=estack.h/replace_top2_with_and
 
 [ROM Call]
 Index=$57C
 
 [Description]
-
+Replace the two top-most expressions on the EStack by their logical OR.
 
 [Explanation]
-
+The following code:
+<PRE>push_quantum(TRUE_TAG);
+ptr = top_estack;
+push_quantum(FALSE_TAG);
+replace_top2_with_or(ptr);
+</PRE>
+will leave the true expression on the EStack.<BR>
+<I>expr</I> should usually be <CODE>next_expression_index(top_estack)</CODE>.
 
 [References]
 In=unknown.h/did_push_approx_inflection_point, unknown.h/get_ub, unknown.h/GM_Intersect, unknown.h/GM_Math1, basfunc.h/did_push_anti_deriv, basfunc.h/push_1st_derivative, basfunc.h/push_csolve, basfunc.h/push_czeros, basfunc.h/push_def_int, basfunc.h/push_desolve, basfunc.h/push_lim, basfunc.h/push_max, basfunc.h/push_min, basfunc.h/push_nsolve, basfunc.h/push_solve, basfunc.h/push_zeros, basop.h/push_and, basop.h/push_equals, basop.h/push_greater_than, basop.h/push_greater_than_or_equals, basop.h/push_less_than, basop.h/push_less_than_or_equals, basop.h/push_not, basop.h/push_not_equals, basop.h/push_xor
