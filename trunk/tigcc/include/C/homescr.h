@@ -44,6 +44,10 @@ extern void HomeStorePair(HANDLE,HANDLE)__ATTR_LIB_C__;
 #define HS_pushFIFONode _rom_call(void,(HANDLE),246)
 #if MIN_AMS>=200
 #define HomeAlone _rom_call(unsigned short,(void),506)
+#if MIN_AMS>=204
+const HANDLE HS_FirstFIFONodeHandle;
+const unsigned short HS_MaxExpressions;
+#endif
 #endif
 /* End Auto-Generated Part */
 

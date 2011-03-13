@@ -136,6 +136,8 @@ extern SYM_ENTRY *FindProgramVar(void)__ATTR_LIB_C__;
 #define GetDataType _rom_call_hack(short,(CESI),435,((*(unsigned long*)((unsigned char*)_rom_call_addr(319)+134))),200)
 #define is_pathname _rom_call(short,(CESI),3C6)
 #if MIN_AMS>=200
+#define DataTypeNames _rom_call(unsigned char*,(char),43B)
+#define GetTagStr _rom_call(char*,(ESI,char*),46C)
 #define SmapTypeStrings _rom_call(const char*,(short),436)
 #endif
 #endif

@@ -1,0 +1,35 @@
+[Main]
+Name=GetTagStr
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=char *GetTagStr (ESI tag, char * buf);
+MinAMS=2.00
+
+[ROM Call]
+Index=$46C
+
+[Description]
+Returns the address of the string representing the special tag pointed to by <I>tag</I>.
+
+[Explanation]
+<I>tag</I> needs to point to one of EXT_SYSTEM_TAG (0x1C), EXT_TAG (0xE3) or EXT_INSTR_TAG (0xE4),
+otherwise garbage is returned.<BR>
+Also, if you pass GetTagStr a tag unrecognized by the AMS version, it returns a pointer to 'ERROR'.
+<BR>
+<BR>
+<I><B>Example</B></I>: The TI-BASIC command ShowStat prints the string name for each statistical
+variable it finds using GetTagStr to print the name of the variable as shown in this example.
+<PRE>
+unsigned char tag[2];
+char buf[24];
+char buf2[11];
+tag[0] = X_BAR_TAG; // in fact, any tag defined in <A HREF="$$LINK(estack.h/SysvarTags)">SysvarTags</A>.
+tag[1] = EXT_SYSTEM_TAG; // Defined in <A HREF="$$LINK(estack.h/Tags)">Tags</A>
+sprintf(buf,"%-7s",GetTagStr(tag+1,buf2));
+</PRE>
+You can use <A HREF="$$LINK(estack.h/HToESI)">HToESI</A> to get a pointer to the tag stored in <I>tag</I>.
+
+[References]
+In=bascmd.h/cmd_showstat, estack.h/Parse2DExpr, estack.h/Parse2DMultiExpr
+Out=string.h/strlen, system.h/XR_stringPtr

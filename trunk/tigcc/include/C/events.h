@@ -97,8 +97,13 @@ extern short EV_getAppID(const char* asm("a0"))__ATTR_LIB_ASM__;
 #define MO_notifyModeChange _rom_call(void,(short),DE)
 #define MO_sendQuit _rom_call(void,(short,short),DF)
 #if MIN_AMS>=200
+#define EV_quit ({__need_in_use_bit;_rom_call(void,(void),48E);})
 #define handleVarLinkKey ({__need_in_use_bit;_rom_call(void,(short),129);})
 #define TIOS_EV_getAppID _rom_call(HANDLE,(const unsigned char*),454)
+#if MIN_AMS>=204
+typedef enum{EV_OFF=0x0001,EV_SUSPEND_PAINTING=0x0002}EV_FLAGS;
+#define EV_flags (*((EV_FLAGS*)(_rom_call_addr(5DF))))
+#endif
 #endif
 /* End Auto-Generated Part */
 

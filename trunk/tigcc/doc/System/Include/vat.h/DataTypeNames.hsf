@@ -1,0 +1,37 @@
+[Main]
+Name=DataTypeNames
+Type=Function
+Subtype=ROM Call
+Header Files=vat.h
+Definition=unsigned char *DataTypeNames (unsigned char);
+MinAMS=2.00
+
+[ROM Call]
+Index=$43B
+
+[Description]
+Returns a pointer to a static string representing the type of the tag passed.
+
+[Explanation]
+On AMS 2.xx, the string is localized for the current language; on AMS 1.xx, the string is in English, because no language localizations are available.<BR>
+Valid values for <I>tag</I> are a subset of <A HREF="$$LINK(estack.h/Tags)">Tags</A> and
+<A HREF="$$LINK(estack.h/InstructionTags)">InstructionTags</A>:
+<PRE>EXT_SYSTEM_TAG (0x1C)
+STR_TAG        (0x2D)
+EQ_TAG         (0x87)
+DATA_TAG       (0xDD)
+GDB_TAG        (0xDE)
+PIC_TAG        (0xDF)
+TEXT_TAG       (0xE0)
+FIG_TAG        (0xE1)
+MAC_TAG        (0xE2)
+ASM_TAG        (0xF3)
+OTH_TAG        (0xF8)
+FUNC_ITAG      (0x17)
+PRGM_ITAG      (0x19)
+</PRE>
+If the tag is not allowed, the address of the string containing "?" is returned.<BR>
+
+[References]
+In=dialogs.h/VarNew, dialogs.h/VarOpen, dialogs.h/VarSaveAs
+Out=system.h/XR_stringPtr
