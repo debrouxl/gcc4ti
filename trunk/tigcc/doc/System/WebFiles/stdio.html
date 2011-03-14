@@ -1,0 +1,1183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>stdio.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;stdio.h&gt; Header File</B></FONT>
+<HR>
+<P><B>ANSI-compatible file and TTY input/output routines</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#cbprintf">cbprintf</A></B><DD>Callback printing function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cbscanf">cbscanf</A></B><DD>Callback parsing function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#clearerr">clearerr</A></B><DD>Resets error indication.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#clrscr">clrscr</A></B><DD>Clears the screen and resets the print position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fclose">fclose</A></B><DD>Closes a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#feof">feof</A></B><DD>Tests a stream for an end-of-file indicator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ferror">ferror</A></B><DD>Tests a stream for a read or write error.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fflush">fflush</A></B><DD>Flushes a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fgetc">fgetc</A></B><DD>Function version of fgetc.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fgetchar">fgetchar</A></B><DD>Function version of <A HREF="#getchar">getchar</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fgetpos">fgetpos</A></B><DD>Gets the current file pointer position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fgets">fgets</A></B><DD>Gets a string from a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fopen">fopen</A></B><DD>Opens a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fprintf">fprintf</A></B><DD>Sends formatted output to a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fputc">fputc</A></B><DD>Function version of fputc.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fputchar">fputchar</A></B><DD>Function version of <A HREF="#putchar">putchar</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fputs">fputs</A></B><DD>Outputs a string to a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fread">fread</A></B><DD>Reads data from a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#freopen">freopen</A></B><DD>Associates a new file with an open stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fscanf">fscanf</A></B><DD>File parsing function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fseek">fseek</A></B><DD>Repositions the file pointer of a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fsetbufsize">fsetbufsize</A></B><DD>Sets the buffer size of a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fsetpos">fsetpos</A></B><DD>Positions the file pointer of a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ftell">ftell</A></B><DD>Returns the current file pointer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fwrite">fwrite</A></B><DD>Writes data to a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#getc">getc</A></B><DD>Gets a character from a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#getchar">getchar</A></B><DD>Gets a character from the keyboard (with echoing to the screen).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#gets">gets</A></B><DD>Gets a string from the keyboard.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#getsn">getsn</A></B><DD>Gets a string from the keyboard avoiding buffer overflows.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#printf_xy">printf_xy</A></B><DD>Sends formatted output to the fixed place on the screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#printf">printf</A></B><DD>Sends formatted output to the screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#putc">putc</A></B><DD>Writes a character to a stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#putchar">putchar</A></B><DD>Outputs a character to the screen in TTY mode.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#puts">puts</A></B><DD>Outputs a string to the screen in TTY mode.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#remove">remove</A></B><DD>Macro that removes a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#rename">rename</A></B><DD>Renames a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#rewind">rewind</A></B><DD>Repositions file pointer to stream's beginning.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#scanf">scanf</A></B><DD>Console input parsing function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#sprintf">sprintf</A></B><DD>Sends formatted output to a string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#sscanf">sscanf</A></B><DD>String parsing function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="string.html#strerror">strerror</A></B><DD>Gives an error message string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#strputchar">strputchar</A></B><DD>Default vcbprintf callback function used in sprintf.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#tmpnam">tmpnam</A></B><DD>Produces a unique random file name.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ungetc">ungetc</A></B><DD>Pushes a character back into input stream.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#unlink">unlink</A></B><DD>Deletes a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vcbprintf">vcbprintf</A></B><DD>Virtual callback printing function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vcbscanf">vcbscanf</A></B><DD>Virtual callback parsing function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vfprintf">vfprintf</A></B><DD>Sends formatted output to a stream using argument list.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vfscanf">vfscanf</A></B><DD>File parsing function using argument list.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vprintf">vprintf</A></B><DD>Sends formatted output to the screen using argument list.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vscanf">vscanf</A></B><DD>Console input parsing function using argument list.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vsprintf">vsprintf</A></B><DD>Sends formatted output to a string using argument list.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vsscanf">vsscanf</A></B><DD>String parsing function using argument list.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#EOF">EOF</A></B><DD>Indicates that the end of a file has been reached.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TMP_MAX">TMP_MAX</A></B><DD>Contains the maximum number of temporary file names.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#FILE">FILE</A></B><DD>A structure describing an opened file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FileFlags">FileFlags</A></B><DD>An enumeration describing internal flags for file handling.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#fpos_t">fpos_t</A></B><DD>A type describing the current position in a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SeekModes">SeekModes</A></B><DD>An enumeration for describing possible modes used in <A HREF="#fseek">fseek</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="stddef.html#size_t">size_t</A></B><DD>A type to define sizes of strings and memory blocks.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="stdarg.html#va_list">va_list</A></B><DD>A void pointer which can be interpreted as an argument list.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vcbprintf_Callback_t">vcbprintf_Callback_t</A></B><DD>Describes a callback function for <A HREF="#vcbprintf">vcbprintf</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vcbscanf_get_Callback_t">vcbscanf_get_Callback_t</A></B><DD>Describes the first callback function for <A HREF="#vcbscanf">vcbscanf</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#vcbscanf_unget_Callback_t">vcbscanf_unget_Callback_t</A></B><DD>Describes the second callback function for <A HREF="#vcbscanf">vcbscanf</A>.</DL>
+<P><B>Note:</B> This implementation of stdio.h is 90% compatible with the ANSI standard.
+I tried to make all functions to be as close to ANSI as possible, without introducing a too large
+overload in the generated code. The main difference is the fact that there are no
+terminal-associated file streams like <B>stdin</B> and <B>stdout</B> which may be redirected.
+However, functions from this header file are mostly not
+TIOS functions - they are completely written by us, so they are not
+embedded in the TIOS. That's why their use may cause your program to be larger than
+if you don't use functions from this header file. The typical increase in size is
+300-2000 bytes, depending on which functions and how many
+different functions from this header file are used in the program. Functions from the <I>scanf</I>
+family are the worst offenders, using any of them takes about 1500 bytes. So,
+although functions from this header file are much more "standard" than TIOS-specific functions,
+it is better to avoid functions like <A HREF="#fopen">fopen</A> etc.
+Instead, use "non-standard" functions from the <A HREF="vat.html">vat.h</A> header file.
+Also avoid using <I>scanf</I> family functions if you don't really have to. Prefer
+<A HREF="#getsn">getsn</A> for input, and <I>atoi</I> family functions for parsing.
+Of course, functions from this header file may be very useful for porting a program from a
+"standard" computer to the TI. But I will repeat again: it is better to avoid them.</P>
+
+<HR>
+<H3><A NAME="cbprintf"><U>cbprintf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> cbprintf (<A HREF="#vcbprintf_Callback_t">vcbprintf_Callback_t</A> callback, <B><A HREF="keywords.html#void">void</A></B> **param, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>Callback printing function.</B></P>
+
+<P>cbprintf is an alternate entry point to the <A HREF="#vcbprintf">vcbprintf</A> function.
+The difference is that the argument is passed directly through the stack instead of through an
+argument list pointer.
+<BR><BR>
+It is implemented here as an assembly wrapper which calls vcbprintf.</P>
+
+<HR>
+<H3><A NAME="cbscanf"><U>cbscanf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> cbscanf(<A HREF="#vcbscanf_get_Callback_t">vcbscanf_get_Callback_t</A> getfun, <A HREF="#vcbscanf_unget_Callback_t">vcbscanf_unget_Callback_t</A> ungetfun, <B><A HREF="keywords.html#void">void</A></B> *param, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>Callback parsing function.</B></P>
+
+<P>cbscanf is an alternate entry point to the <A HREF="#vcbscanf">vcbscanf</A> function.
+The difference is that the argument is passed directly through the stack instead of through an
+argument list pointer.</P>
+
+<HR>
+<H3><A NAME="clearerr"><U>clearerr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> clearerr (<A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Resets error indication.</B></P>
+
+<P>clearerr resets the error and end-of-file indicators of the stream associated to the structure
+pointed to by <I>stream</I> to 0. Once the error indicator is set, stream operations continue to
+return error status until a call is made to clearerr or <A HREF="#rewind">rewind</A>.</P>
+
+<HR>
+<H3><A NAME="clrscr"><U>clrscr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> clrscr (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Clears the screen and resets the print position.</B></P>
+
+<P>Function clrscr is very similar to stantard TIOS function <A HREF="graph.html#ClrScr">ClrScr</A>
+(defined in <A HREF="graph.html">graph.h</A> header file). The difference is in fact that clrscr
+moves the current print/plot position to (0,&nbsp;0), but with <A HREF="graph.html#ClrScr">ClrScr</A>
+the current print/plot position remains intact. More precise, clrscr calls <A HREF="graph.html#ClrScr">ClrScr</A>
+then <A HREF="graph.html#MoveTo">MoveTo</A> passing two zeros as arguments. Always use clrscr
+instead of <A HREF="graph.html#ClrScr">ClrScr</A> if you want to use TTY printing functions like
+<A HREF="#puts">puts</A>, <A HREF="#printf">printf</A> etc.</P>
+
+<HR>
+<H3><A NAME="fclose"><U>fclose</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fclose (<A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Closes a stream.</B></P>
+
+<P>fclose closes the stream associated to the structure pointed to by <I>stream</I>.
+In this implementation, fclose unlocks the file (which is locked during it
+is opened), and frees the file descriptor structure pointed to by <I>stream</I>.
+fclose returns 0 on success. It returns <A HREF="#EOF">EOF</A> if any errors were detected.</P>
+
+<HR>
+<H3><A NAME="feof"><U>feof</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> feof (<A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Tests a stream for an end-of-file indicator.</B></P>
+
+<P>feof is a macro that tests the stream associated to the structure pointed to by <I>stream</I>
+for an end-of-file indicator. Once the indicator is set, read operations on the file return
+the indicator until <A HREF="#fseek">fseek</A>, <A HREF="#fsetpos">fsetpos</A> or
+<A HREF="#rewind">rewind</A> is called, or until the stream is closed. feof returns nonzero if an end-of-file indicator was
+detected on the last (usually input) operation on the given stream. It returns 0 if end-of-file
+has not been reached.</P>
+
+<HR>
+<H3><A NAME="ferror"><U>ferror</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> ferror (<A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Tests a stream for a read or write error.</B></P>
+
+<P>ferror is a macro that tests the stream associated to the structure pointed to by <I>stream</I>
+for a read or write error. It the stream's error indicator has been set, it remains set (and
+all file I/O operations will return error) until <A HREF="#clearerr">clearerr</A> or
+<A HREF="#rewind">rewind</A> is called, or until the stream is closed. ferror returns nonzero
+if an error was detected on the named stream.</P>
+
+<HR>
+<H3><A NAME="fflush"><U>fflush</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fflush (<A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Flushes a stream.</B></P>
+
+<P>fflush is supposed to flush the output buffer for <I>stream</I> to
+the associated file if the given stream has buffered output. As the TI file system is not buffered (of course), fflush has
+no effect, except for undoing the effect of the <A HREF="#ungetc">ungetc</A> function. fflush
+returns 0 on success (which is always the case on the TI).</P>
+
+<HR>
+<H3><A NAME="fgetc"><U>fgetc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fgetc (<A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Function version of fgetc.</B></P>
+
+<P>fgetc is usually equal to <A HREF="#getc">getc</A>, except fgetc is implemented as
+a function, but <A HREF="#getc">getc</A> is implemented as a macro.</P>
+
+<HR>
+<H3><A NAME="fgetchar"><U>fgetchar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fgetchar (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Function version of <A HREF="#getchar">getchar</A>.</B></P>
+
+<P>fgetchar is equal to <A HREF="#getchar">getchar</A>, except fgetchar is implemented as
+a function, but <A HREF="#getchar">getchar</A> is implemented as a macro.</P>
+
+<HR>
+<H3><A NAME="fgetpos"><U>fgetpos</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fgetpos (<A HREF="#FILE">FILE</A> *stream, <A HREF="#fpos_t">fpos_t</A> *pos);</TD></TR></TABLE></P>
+<P><B>Gets the current file pointer position.</B></P>
+
+<P>fgetpos stores the position of the file pointer associated with the stream associated with
+the structure pointed to by <I>stream</I> in the location pointed to by <I>pos</I>
+The exact value is irrelevant. On success, fgetpos returns 0. On failure, it returns a nonzero
+value.
+<BR><BR>
+<B>Note:</B> fgetpos is implemented here as a macro which calls <A HREF="#ftell">ftell</A>.</P>
+
+<HR>
+<H3><A NAME="fgets"><U>fgets</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#int">char</A></B> *fgets (<B><A HREF="keywords.html#int">char</A></B> *s, <B><A HREF="keywords.html#short">short</A></B> n, <A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Gets a string from a stream.</B></P>
+
+<P>fgets reads characters from stream associated to the structure pointed to by <I>stream</I>
+into the string <I>s</I>. It does this by calling <A HREF="#fgetc">fgetc</A> repeatedly.
+The function stops reading when it reads either
+<I>n</I>&nbsp;-&nbsp;1 characters or a '\r' (0x0D) character,
+whichever comes first. fgets retains the newline character at the end of <I>s</I>,
+eventually translated to '\n' character if the stream is opened in "text" mode (see
+<A HREF="#fopen">fopen</A>). A null byte is appended to <I>s</I> to mark the end of the
+string. On success, fgets returns the string pointed to by <I>s</I>.
+It returns <A HREF="alloc.html#NULL">NULL</A> in a case of error.
+<BR><BR>
+<B>Note:</B> fgets is used mainly with files opened in "text" mode. As an example, this command may be
+useful for reading a text line from a TEXT variable.</P>
+
+<HR>
+<H3><A NAME="fopen"><U>fopen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#FILE">FILE</A> *fopen (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *filename, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *mode);</TD></TR></TABLE></P>
+<P><B>Opens a stream.</B></P>
+
+<P>fopen opens the file named by <I>filename</I> (this is a normal C string, which should
+be in lowercase) and associates a stream with it. fopen returns a pointer to be used to identify the
+stream in subsequent operations. The <I>mode</I> string used in calls to fopen is one of
+the following values:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD><B>Mode</B></TD><TD><B>Description</B></TD></TR>
+<TR><TD>r</TD>
+<TD>Open for reading only.</TD></TR>
+<TR><TD>w</TD>
+<TD>Create for writing. If a file by that name already exists, it will be overwritten.</TD></TR>
+<TR><TD>a</TD>
+<TD>Append; open for writing at end of file, or create for writing if the file does not exist.</TD></TR>
+<TR><TD>r+</TD>
+<TD>Open an existing file for update (reading and writing).</TD></TR>
+<TR><TD>w+</TD>
+<TD>Create a new file for update (reading and writing). If a file by that name already exists, it will be overwritten.</TD></TR>
+<TR><TD>a+</TD>
+<TD>Open for append; open for update at the end of the file, or create if the file does not exist.</TD>
+</TR></TABLE>
+<BR>
+On successful completion, fopen returns a pointer to the newly opened
+stream. In the event of error, it returns <A HREF="alloc.html#NULL">NULL</A>. Note that files on TI are
+in fact TIOS variables, so their maximal size is limited (as the size of the variable is limited).
+Maybe in the future I will try to implement files which are limited only by the amount of the
+free memory.
+<BR>
+To specify that a given file is being opened or created in text mode, append
+a 't' to the mode string ("rt", "w+t", and so on). Similarly, to specify binary mode,
+append a 'b' to the mode string ("wb", "a+b", and so on). What "text" or "binary" exactly
+means will be explained a bit later. fopen also allows the t or b to be inserted between the
+letter and the '+' character in the mode string. For example, "rt+" is equivalent to "r+t".
+If a 't' or 'b' is not given in the mode string, 't' is assumed (this slightly differs from
+the ANSI convention: in ANSI C the mode in this case is governed by the global variable
+<B>_fmode</B>, which is not implemented here).
+<BR><BR>
+When a file is opened in "text" mode, it is assumed to be a TEXT variable. On creating, all
+necessary headers and tags for the TEXT variable will be created. On opening for reading,
+the file pointer will be set to the first character in the first text line (asuming that it
+IS a text variable). So, files created in "text" mode can be readed in the TI text editor,
+and you can read variables created in the text editor. All '\n' characters will be translated
+to '\r' 0x20 sequence during writting (to satisfy the format of the text in TEXT variables),
+and a character after '\r' will be swallowed during reading (to skip over the "command byte" at the
+begining of the each line). Here is an example:</P>
+<PRE>FILE *f = fopen ("example", "w");
+fputs ("First line\n", f);
+fputs ("Second line\n", f);
+fputs ("Third line\n", f);
+fclose (f);
+</PRE>
+<P>After this, you will have a TEXT variable called "example" which can be opened in text editor.
+You can read the content of a TEXT variable similarly.
+<BR><BR>
+When a file is opened in "binary" mode, nothing is assumed about the structure of the file.
+It can be a variable of any type. The user is responsible to create appropriate variable
+structure. There will no be any translation of characters, and after opening the file pointer
+will point to the first byte of the variable (after two "length" bytes), regardless of what
+the variable is supposed to be. For example, the string variable has the following structure:
+one zero byte, the content of the string, another zero byte, and finally, the string tag
+(<A HREF="estack.html">STR_TAG</A> or 0x2D byte). Here is an example of creating a file which
+represents a string variable:</P>
+<PRE>FILE *f = fopen ("example", "wb");
+fputc (0, f);
+fputs ("This is a string", f);
+fputc (0, f);
+fputc (STR_TAG, f);
+fclose (f);
+</PRE>
+<P>When a file is opened for update (in both text or binary mode), both input and output can be done on the
+resulting stream. However, ANSI proposes that output cannot be followed directly by input without
+an intervening <A HREF="#fseek">fseek</A> or <A HREF="#rewind">rewind</A>, and that input
+cannot be directly followed by output without an intervening <A HREF="#fseek">fseek</A>,
+<A HREF="#rewind">rewind</A>, or an input that encounters end-of-file. I don't see any reason
+to implement such limitation here.
+<BR><BR>
+The filename pointed to by <I>filename</I> may also contain a path (i.e. a folder name may be
+given in front of the file name). If name of a folder which does not exist is given, and if
+fopen needs to create a new file, a dialog will appear which asks the user whether a new folder
+will be created. If the answer is "NO", fopen fails, returning <A HREF="alloc.html#NULL">NULL</A>.
+If no folder name is given, the current folder is assumed.
+<BR><BR>
+<B>Note:</B> All functions which accept a parameter which is a pointer to a <A HREF="#FILE">FILE</A>
+structure assumes that the pointer is valid, i.e. created using fopen command. As I have no
+any efficient method to check whether the pointer is valid or not, no checking is implemented.
+So, if you pass an invalid pointer to any file handling function, the results are
+unpredictable.</P>
+
+<HR>
+<H3><A NAME="fprintf"><U>fprintf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fprintf (<A HREF="#FILE">FILE</A> *stream, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>Sends formatted output to a stream.</B></P>
+
+<P>fprintf sends formatted output to a string. In fact, it does the following:</P>
+<UL>
+<LI><P>accepts a series of arguments;</P></LI>
+<LI><P>applies to each argument a format specifier contained in the format string
+pointed to by <I>format</I> (see <A HREF="#printf">printf</A> for
+details on format specifiers);</P></LI>
+<LI><P>outputs the formatted data to the stream associated with the structure pointed
+to by <I>stream</I></P></LI>
+</UL>
+<P>There must be the same number of format specifiers as arguments.
+fprintf returns the number of bytes output. In the event of error, it returns <A HREF="#EOF">EOF</A>.</P>
+
+<HR>
+<H3><A NAME="fputc"><U>fputc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fputc (<B><A HREF="keywords.html#short">short</A></B> c, <A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Function version of fputc.</B></P>
+
+<P>fputc is usually equal to <A HREF="#putc">putc</A>, except fputc is implemented as
+a function, but <A HREF="#putc">putc</A> is implemented as a macro.</P>
+
+<HR>
+<H3><A NAME="fputchar"><U>fputchar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fputchar (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Function version of <A HREF="#putchar">putchar</A>.</B></P>
+
+<P>fputchar is usually equal to <A HREF="#putchar">putchar</A>, except fputchar is implemented as
+a function, but <A HREF="#putchar">putchar</A> is implemented as a macro.</P>
+
+<HR>
+<H3><A NAME="fputs"><U>fputs</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fputs (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *s, <A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Outputs a string to a stream.</B></P>
+
+<P>fputs copies the null-terminated string <I>s</I> to the output stream associated to
+the structure pointed to by <I>stream</I>.
+It does this by calling <A HREF="#putc">putc</A> repeatedly. It does not append a newline
+character, and the terminating null character is not copied.
+On successful completion, fputs returns the last character written.
+Otherwise, it returns a value of <A HREF="#EOF">EOF</A>.</P>
+
+<HR>
+<H3><A NAME="fread"><U>fread</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> fread (<B><A HREF="keywords.html#void">void</A></B> *ptr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> size, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> n, <A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Reads data from a stream.</B></P>
+
+<P>fread reads <I>n</I> items of data, each of length <I>size</I> bytes, from the input
+stream associated with the structure pointed to by <I>stream</I> into a block pointed to
+by <I>ptr</I>. The total number of bytes read is <I>n</I>&nbsp;x&nbsp;<I>size</I>. fread
+fread returns the number of items (not bytes) actually read. If the operation was sucessful,
+the returned result should be equal to <I>n</I>. In a case of error, returned result will
+be smaller (possibly zero).
+<BR><BR>
+<B>Note:</B> fread is proposed to be used in "binary" mode (see <A HREF="#fopen">fopen</A>).
+Although this is not strictly necessary, it is is highly recommended opening <I>stream</I>
+in "binary" mode if you want to use this function. Anyway,
+there will not be any character translations during reading, even if the file is opened in
+"text" mode. This function was buggy in releases of TIGCCLIB prior to 2.2; this is now fixed.</P>
+
+<HR>
+<H3><A NAME="freopen"><U>freopen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#FILE">FILE</A> *freopen (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *filename, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *mode, <A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Associates a new file with an open stream.</B></P>
+
+<P>freopen substitutes the named file in place of the open stream. It closes
+stream, regardless of whether the open succeeds. In this implementation, freopen
+is implemented as macro which first calls <A HREF="#fclose">fclose</A> passing
+<I>stream</I> to it, then calls <A HREF="#fopen">fopen</A> passing
+<I>filename</I> and <I>mode</I> to it. Such implementation is not absolutely
+correct, because the address of the file descriptor structure may be changed after
+closing and reopening again (if a garbage collect occurs). This is not a problem
+in programs which uses freopen as in</P>
+<PRE>f=freopen (name, mode, f);
+</PRE>
+<P>but it might cause problems in programs which uses freopen as in</P>
+<PRE>freopen (name, mode, f);
+</PRE>
+<P>To solve this problem, freopen macro will always re-assign the variable <I>f</I> to
+a (eventually) new value, so both above examples will be correct (the only small
+problem is in fact that <I>f</I> must ultimately be an lvalue, i.e, a variable or
+something similar).
+<BR><BR>
+On successful completion, freopen returns the argument <I>stream</I> (possibly
+changed). In the event of error, it returns <A HREF="alloc.html#NULL">NULL</A>.
+<BR><BR>
+<B>Note:</B> This function is usually used for redirecting terminal streams like
+<B>stdout</B> and <B>stdin</B>. This is not possible here,
+because terminal-associated streams are not implemented.</P>
+
+<HR>
+<H3><A NAME="fscanf"><U>fscanf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fscanf(<A HREF="#FILE">FILE</A> *file, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>File parsing function.</B></P>
+
+<P>Works like <A HREF="#sscanf">sscanf</A>, but reads the input from the file <CODE>file</CODE>
+rather than from a buffer of type <CODE>char *</CODE>.</P>
+
+<HR>
+<H3><A NAME="fseek"><U>fseek</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fseek (<A HREF="#FILE">FILE</A> *stream, <B><A HREF="keywords.html#short">long</A></B> offset, <B><A HREF="keywords.html#short">short</A></B> whence);</TD></TR></TABLE></P>
+<P><B>Repositions the file pointer of a stream.</B></P>
+
+<P>fseek sets the file pointer associated with <I>stream</I> to a new position that is
+<I>offset</I> bytes from the file location given by <I>whence</I>.
+For text mode streams (see <A HREF="#fopen">fopen</A>), <I>offset</I> should be 0 or a value returned
+by <A HREF="#ftell">ftell</A>. <I>whence</I> must be one of the following values
+(defined in enum <A HREF="#SeekModes">SeekModes</A>):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>whence</TD><TD>File location</TD></TR>
+<TR><TD>SEEK_SET</TD><TD>File beginning</TD></TR>
+<TR><TD>SEEK_CUR</TD><TD>Current file pointer position</TD></TR>
+<TR><TD>SEEK_END</TD><TD>End-of-file</TD></TR>
+</TABLE>
+<BR>
+fseek discards any character pushed back using <A HREF="#ungetc">ungetc</A>.
+fseek returns 0 if the pointer is successfully moved. It returns a nonzero value
+on failure.</P>
+
+<HR>
+<H3><A NAME="fsetbufsize"><U>fsetbufsize</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> fsetbufsize (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> newsize, <A HREF="#FILE">FILE</A> *f);</TD></TR></TABLE></P>
+<P><B>Sets the buffer size of a file.</B></P>
+
+<P>fsetbufsize sets the buffer size of an open file. The buffer size determines
+how much memory is reallocated to the file every time a write needs more
+memory from the heap. The default size (128 bytes) is set when the file is
+opened and should be sufficient for most uses. Setting a larger value will
+make writes faster at the cost of possibly running out of memory prematurely.
+If <I>newsize</I> is zero or f is <A HREF="alloc.html#NULL">NULL</A>, no
+changes will be made.</P>
+
+<HR>
+<H3><A NAME="fsetpos"><U>fsetpos</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> fsetpos (<A HREF="#FILE">FILE</A> *stream, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#fpos_t">fpos_t</A> *pos);</TD></TR></TABLE></P>
+<P><B>Positions the file pointer of a stream.</B></P>
+
+<P>fsetpos sets the file pointer associated with <I>stream</I> to a new position
+(given in the variable pointed to by <I>pos</I>). The new position is the value
+obtained by a previous call to <A HREF="#fgetpos">fgetpos</A> on that stream.
+It also clears the end-of-file indicator on the file that stream points to
+and undoes any effects of <A HREF="#ungetc">ungetc</A> on that file.
+On success, fsetpos returns 0. On failure, it returns a nonzero value.
+<BR><BR>
+<B>Note:</B> fgetpos is implemented here as a macro which calls <A HREF="#fseek">fseek</A>.</P>
+
+<HR>
+<H3><A NAME="ftell"><U>ftell</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">long</A></B> ftell (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Returns the current file pointer.</B></P>
+
+<P>ftell returns the current file pointer for the stream associated with the structure pointed
+to by <I>stream</I>. The offset is measured in bytes from the beginning of the file.
+The value returned by ftell can be used in a subsequent call to <A HREF="#fseek">fseek</A>.
+ftell returns the current file pointer position on success. It returns <A HREF="#EOF">EOF</A>
+on error.</P>
+
+<HR>
+<H3><A NAME="fwrite"><U>fwrite</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> fwrite (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *ptr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> size, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> n, <A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Writes data to a stream.</B></P>
+
+<P>fwrite writes <I>n</I> items of data, each of length <I>size</I> bytes, to the output
+file associated with the structure pointed to by <I>stream</I>. The data written begins at <I>ptr</I>.
+The total number of bytes written is <I>n</I>&nbsp;x&nbsp;<I>size</I>. <I>ptr</I> in the declarations
+is a pointer to any object. fwrite returns the number of items (not bytes) actually written.
+If the operation was sucessful,
+the returned result should be equal to <I>n</I>. In a case of error, returned result will
+be smaller (possibly zero).
+<BR><BR>
+<B>Note:</B> fwrite is proposed to be used in "binary" mode (see <A HREF="#fopen">fopen</A>).
+Although this is not strictly necessary, it is is highly recommended opening <I>stream</I>
+in "binary" mode if you want to use this function. Anyway,
+there will not be any character translations during writing, even if the file is opened in
+"text" mode. This function was buggy in releases of TIGCCLIB prior to 2.2; this is now fixed.</P>
+
+<HR>
+<H3><A NAME="getc"><U>getc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> getc fgetc</TD></TR></TABLE></P>
+<P><B>Gets a character from a stream.</B></P>
+
+<P>getc gets the next character on the given input stream (associated with the structure
+pointed to by <I>stream</I>), and increments the stream's file pointer to point to the
+next character. If the file is opened in "text" mode (see <A HREF="#fopen">fopen</A>),
+a character after '\r' will be swallowed during reading (to skip over the "command byte" at
+the begining of the each line in a TEXT variable).
+<BR><BR>
+On success, getc returns the character read, after converting it to an integer
+without sign extension. On error (usually end-of-file), it returns <A HREF="#EOF">EOF</A>.</P>
+
+<HR>
+<H3><A NAME="getchar"><U>getchar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> getchar fgetchar</TD></TR></TABLE></P>
+<P><B>Gets a character from the keyboard (with echoing to the screen).</B></P>
+
+<P>fgetchar returns the character read from the keyboard. It is similar to
+<A HREF="kbd.html">ngetchx</A> except getchar shows a cursor (a simple
+underscore), echoes the character read on the screen and supports the CHAR
+menu. '\r' character (i.e. ENTER key) will be echoed as a "new line".
+<BR><BR>
+<B>Note:</B> In ANSI C, <CODE>getchar(c)</CODE> is equal to <CODE>getc(c,&nbsp;stdin)</CODE>, so it can be redirected
+using <A HREF="#freopen">freopen</A>. This is not possible here, because <B>stdin</B>
+is not implemented as a file stream.</P>
+
+<HR>
+<H3><A NAME="gets"><U>gets</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#int">char</A></B> *gets (<B><A HREF="keywords.html#int">char</A></B> *string);</TD></TR></TABLE></P>
+<P><B>Gets a string from the keyboard.</B></P>
+
+<P>gets collects a string of characters terminated by a new line from the
+keyboard (by repeated calling to <A HREF="#getchar">getchar</A>) and puts it into <I>string</I>.
+The new line is replaced by a null character ('\0') in <I>string</I>.
+gets returns when it encounters a new line (i.e. when the ENTER key is pressed); everything up
+to the new line is copied into <I>string</I>. gets returns the string argument <I>string</I>
+(ANSI proposes returning of <A HREF="alloc.html#NULL">NULL</A> in a case of error, but this never occurs
+on the TI). For editing, the backspace key is supported. Here is an example of usage:</P>
+<PRE>char buffer[50];
+int a, b;
+clrscr ();
+puts ("A = ");
+a = atoi (gets (buffer));
+puts ("B = ");
+b = atoi (gets (buffer));
+printf ("%d + %d = %d", a, b, a+b);
+</PRE>
+<P><A HREF="stdlib.html#atoi">atoi</A> is an ANSI C standard function from <A HREF="stdlib.html">stdlib.h</A>
+header file.
+<BR><BR>
+<B>Important:</B> gets does <B>not</B> check buffer bounds, so using
+<A HREF="#getsn">getsn</A> or a custom input routine is recommended instead.</P>
+
+<P>See also: <A HREF="#getsn">getsn</A>, <A HREF="faq.html#68">How can I get input from the keyboard?</A>, <A HREF="textedit.html">textedit.h</A></P>
+<HR>
+<H3><A NAME="getsn"><U>getsn</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#int">char</A></B> *getsn (<B><A HREF="keywords.html#int">char</A></B> *string, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> maxlen);</TD></TR></TABLE></P>
+<P><B>Gets a string from the keyboard avoiding buffer overflows.</B></P>
+
+<P>getsn works like <A HREF="#gets">gets</A>, but with a maximum length specified.
+The maximum length (<CODE>maxlen</CODE>) is the total size of the buffer. In other words, the
+null-terminator is included in the maximum length. When the buffer is full (i.e. when the
+string length is <CODE>maxlen - 1</CODE>), getsn will not accept any more characters.
+Only backspace or ENTER are allowed in that situation.
+Here is an example of usage:</P>
+<PRE>char buffer[50];
+int a, b;
+clrscr ();
+puts ("A = ");
+a = atoi (getsn (buffer, 50));
+puts ("B = ");
+b = atoi (getsn (buffer, 50));
+printf ("%d + %d = %d", a, b, a+b);
+</PRE>
+<P><A HREF="stdlib.html#atoi">atoi</A> is an ANSI C standard function from <A HREF="stdlib.html">stdlib.h</A>
+header file.
+<BR><BR>
+<B>Note:</B> getsn is not an ANSI C standard function, but the equivalent of
+<CODE>fgets (buffer, maxlen, stdin)</CODE> in ANSI C. It is needed because terminal streams are not
+implemented in TIGCCLIB.</P>
+
+<P>See also: <A HREF="#gets">gets</A>, <A HREF="#fgets">fgets</A>, <A HREF="faq.html#68">How can I get input from the keyboard?</A>, <A HREF="textedit.html">textedit.h</A></P>
+<HR>
+<H3><A NAME="printf_xy"><U>printf_xy</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> printf_xy (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>Sends formatted output to the fixed place on the screen.</B></P>
+
+<P>printf_xy is similar to the standard ANSI C <A HREF="#printf">printf</A> function, except:</P>
+<UL>
+<LI><P>this function displays formatted output to the screen at the strictly specified position,
+more precise, starting from the point (<I>x</I>,&nbsp;<I>y</I>);</P></LI>
+<LI><P>text printed with printf_xy will not wrap at the right end of the screen (if the text
+is longer, the result is unpredictable);</P></LI>
+<LI><P>characters '\n' will not be translated to "new line";</P></LI>
+<LI><P>this function will never cause screen scrolling;</P></LI>
+<LI><P>current print/plot position remains intact after executing this function.</P></LI>
+</UL>
+<P>printf_xy is a GNU C macro which calls <A HREF="#sprintf">sprintf</A> and
+<A HREF="graph.html#DrawStr">DrawStr</A>.</P>
+
+<HR>
+<H3><A NAME="printf"><U>printf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> printf (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>Sends formatted output to the screen.</B></P>
+
+<P>printf is nearly full implementation of standard ANSI C printf function, which sends the formatted
+output to the screen in terminal (TTY) mode. In fact, it does the following:</P>
+<UL>
+<LI><P>accepts a series of arguments;</P></LI>
+<LI><P>applies to each a format specifier contained in the format string pointed to by <I>format</I>;</P></LI>
+<LI><P>outputs the formatted data to the screen.</P></LI>
+</UL>
+<P>The printed text will wrap on the right end of the screen. Characters '\n' will be translated
+to "next line" (and this is the only control code which has a special implementation). The
+screen will scroll upwards when necessary (i.e. after printing a text in the last screen line).
+Note that all TI fonts are supported. Of course, printf will update current "print position" to a new
+one after the text is printed.
+<BR><BR>
+printf applies the first format specifier to the first argument after <I>format</I>,
+the second to the second, and so on. The format string, controls how printf will convert
+and format its arguments. There must be enough arguments for the format; if there
+are not, the results will be unpredictable and likely disastrous. Excess arguments
+(more than required by the format) are merely ignored. The format string is a
+character string that contains two types of objects: plain characters and
+conversion specifications. Plain characters are simply copied verbatim to the
+output string. Conversion specifications fetch arguments from the argument list
+and apply formatting to them. printf format specifiers have the following form:
+<BR><BR>
+% [flags] [width] [<B>.</B>prec] [{h|l}] type
+<BR><BR>
+Here is a complete table of supported formatting options (see any book about C
+language for more info):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD WIDTH="90"><B>Flags</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD><I>none</I></TD><TD>Right align (pad spaces or zeros to left)</TD></TR>
+<TR><TD>-</TD><TD>Left align (pad spaces to right)</TD></TR>
+<TR><TD>+</TD><TD>Always force sign (include prefix '+' before positive values)</TD></TR>
+<TR><TD>z</TD><TD>Don't postfix padding (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD><I>space</I></TD><TD>Insert space before positive values</TD></TR>
+<TR><TD>#</TD><TD>Prefix octal values with 0 and hex values (&gt;0) with '0x')<BR>
+Force '<B>.</B>' in float output (and prevent trunctation of trailing zeros)</TD></TR>
+<TR><TD>^</TD><TD>TI-Float format: special character for the exponent and for the minus
+sign, no '+' prefix in the exponent, 0. instead of 0, no leading zeros if the magnitude
+is smaller than 1 (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD>|</TD><TD>Center the output in the field (this option is non-ANSI, i.e. TI specific)</TD></TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="4" WIDTH="100%">
+<TR><TD WIDTH="90"><B>Width</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD><I>num</I></TD><TD>Print at least <I>num</I> characters - padded the rest with blanks</TD></TR>
+<TR><TD>0<I>num</I></TD><TD>(Zero prefixed) Same as above but padded with '0'</TD></TR>
+<TR><TD>*</TD><TD>The width is specified in the arguments list (before value being formatted)</TD></TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="4" WIDTH="100%">
+<TR><TD WIDTH="90"><B>Precision</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD><I>none</I></TD><TD>Default precision</TD></TR>
+<TR><TD><I>num</I></TD><TD><I>num</I> is number of chars, decimal places, or number of significant digits
+(<I>num</I>&lt;=16) to display depending on type (see below)</TD></TR>
+<TR><TD>-1</TD><TD>Default = 6 digits (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD>*</TD><TD>The precision is specified in the argument list (before value being formatted)</TD></TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="4" WIDTH="100%">
+<TR><TD WIDTH="90"><B>Size {h|l}</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD>h</TD><TD>Force short integer</TD></TR>
+<TR><TD>l</TD><TD>Force long integer</TD></TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="4" WIDTH="100%">
+<TR><TD WIDTH="90"><B>Type</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD>d, i</TD><TD>Signed decimal integer</TD></TR>
+<TR><TD>u</TD><TD>Unsigned decimal integer</TD></TR>
+<TR><TD>x</TD><TD>Lowercase hexadecimal integer</TD></TR>
+<TR><TD>X</TD><TD>Uppercase hexadecimal integer</TD></TR>
+<TR><TD>e</TD><TD>Floating point, format [-]<I>d</I><B>.</B><I>dddd</I><B>e</B>[sign]<I>ddd</I> (exponential format)</TD></TR>
+<TR><TD>E</TD><TD>Like 'e' but with uppercase letter for the exponent</TD></TR>
+<TR><TD>f</TD><TD>Floating point, format [-]<I>dddd</I><B>.</B><I>dddd</I></TD></TR>
+<TR><TD>g</TD><TD>Floating point: most compact float format available ('e' or 'f');
+this is the most common option, used for most dialog floats</TD></TR>
+<TR><TD>G</TD><TD>Like 'g' but with uppercase letter for the exponent</TD></TR>
+<TR><TD>r</TD><TD>Floating point, engineering form (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD>R</TD><TD>Like 'r' but with uppercase letter for the exponent</TD></TR>
+<TR><TD>y</TD><TD>Floating point, mode specified float format (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD>Y</TD><TD>Like 'y' but with uppercase letter for the exponent</TD></TR>
+<TR><TD>c</TD><TD>Character</TD></TR>
+<TR><TD>s</TD><TD>String</TD></TR>
+<TR><TD>p</TD><TD>Pointer; principally the same as 'x' - do not use without 'l' modifier</TD></TR>
+<TR><TD>%</TD><TD>None; the character '%' is printed instead</TD></TR>
+</TABLE>
+<BR>
+Here is a short demonstration of usage:</P>
+<PRE>int i, j;
+for (j = F_4x6; j &lt;= F_8x10; j++)
+  {
+    clrscr ();
+    FontSetSys (j);
+    for (i = 1; i &lt;= 1000; i++)
+      printf ("%d ", i);
+    ngetchx ();
+  }
+</PRE>
+<P><B>Note:</B> In ANSI C, printf is an int function, and it returns the number of printed
+characters. Due to some practical reasons, this implementation of printf is a void function.
+This difference is usually not important.</P>
+
+<HR>
+<H3><A NAME="putc"><U>putc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> putc fputc</TD></TR></TABLE></P>
+<P><B>Writes a character to a stream.</B></P>
+
+<P>putc writes the character c to the stream given by <I>stream</I>. It will update the
+stream's file pointer, and expands the size of associated variable if necessary.
+If the file is opened in "text" mode (see <A HREF="#fopen">fopen</A>), all '\n' characters
+will be translated to '\r' 0x20 sequence during writting (to satisfy the format of the text
+in TEXT variables). On success, putc returns the character <I>c</I>. On error, it
+returns <A HREF="#EOF">EOF</A>.</P>
+
+<HR>
+<H3><A NAME="putchar"><U>putchar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> putchar fputchar</TD></TR></TABLE></P>
+<P><B>Outputs a character to the screen in TTY mode.</B></P>
+
+<P>Outputs a character <I>c</I> to the screen in TTY mode. This means the following:</P>
+<UL>
+<LI><P>The current print position will be moved in the text line after printing the last character
+in the screen line;</P></LI>
+<LI><P>after printing the last character in the last screen line, the screen will scroll upwards;</P></LI>
+<LI><P>characters '\n' will be translated to "next line" (and this is the only control code which
+has a special implementation);</P></LI>
+<LI><P>the current print position will be updated after the character is printed.</P></LI>
+</UL>
+<P>All TI fonts are supported.
+<BR><BR>
+putchar returns the character <I>c</I> (ANSI C proposes returning <A HREF="#EOF">EOF</A> in
+a case of error, but printing on TIOS cannot fail).
+<BR><BR>
+<B>Note:</B> In ANSI C, <CODE>putchar(c)</CODE> is equal as <CODE>putc(c,&nbsp;stdout)</CODE>, so it can be redirected
+using <A HREF="#freopen">freopen</A>. This is not possible here, because <B>stdout</B>
+is not implemented as a file stream.</P>
+
+<HR>
+<H3><A NAME="puts"><U>puts</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> puts (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *s);</TD></TR></TABLE></P>
+<P><B>Outputs a string to the screen in TTY mode.</B></P>
+
+<P>puts outputs the null-terminated string <I>s</I> to the screen by repeated calling to
+<A HREF="#putchar">putchar</A> until the end of the string is reached.
+<BR><BR>
+<B>Note:</B> There are two minor differences between this implementation of puts and ANSI definition.
+First, ANSI puts is an int function which returns an undefined nonnegative value, except in
+a case of error (which never occurs on TI). For some practical reasons, puts is here a void
+function. Second, ANSI puts automatically appends a "new line" character after the last printed
+character. This implementation of puts does not append a newline automatically. My opinion is
+that such implementation is more flexible, and it is not problem to append a newline ('\n')
+explicitely if necessary.</P>
+
+<HR>
+<H3><A NAME="remove"><U>remove</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> remove unlink</TD></TR></TABLE></P>
+<P><B>Macro that removes a file.</B></P>
+
+<P>remove deletes the file specified by <I>filename</I>. It is a macro that simply
+translates its call to a call to <A HREF="#unlink">unlink</A> (name known
+from UNIX). So, both remove and <A HREF="#unlink">unlink</A> are equal. Although
+ANSI C proposes rename, <A HREF="#unlink">unlink</A> is more common in UNIX programs.</P>
+
+<HR>
+<H3><A NAME="rename"><U>rename</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> rename (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *oldname, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *newname);</TD></TR></TABLE></P>
+<P><B>Renames a file.</B></P>
+
+<P>rename changes the name of a file from <I>oldname</I> to <I>newname</I>
+(both filenames are normal C strings, which should be in lowercase).
+Filenames may also contain folder names. Folder names in <I>oldname</I> and
+<I>newname</I> need not be the same, so rename can be used to move a file from
+one folder to another. On successfully renaming the file, rename returns 0. In
+the event of error, <A HREF="#EOF">EOF</A> is returned.
+<BR><BR>
+<B>Note:</B> Function <A HREF="vat.html#SymMove">SymMove</A> from <A HREF="vat.html">vat.h</A>
+header file is very similar like rename, except the parameters and returned result
+are somewhat different. As rename is not a TIOS entry and <A HREF="vat.html#SymMove">SymMove</A>
+is, the usage of <A HREF="vat.html#SymMove">SymMove</A> is recommended instead of rename
+(although <A HREF="vat.html#SymMove">SymMove</A> is not ANSI standard).</P>
+
+<HR>
+<H3><A NAME="rewind"><U>rewind</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> rewind (<A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Repositions file pointer to stream's beginning.</B></P>
+
+<P>rewind&nbsp;(<I>stream</I>) is equivalent to</P>
+<PRE>fseek (<I>stream</I>, 0, SEEK_SET)
+</PRE>
+<P>except that rewind clears the end-of-file and error indicators, while fseek only clears
+the end-of-file indicator.</P>
+
+<HR>
+<H3><A NAME="scanf"><U>scanf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> scanf (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>Console input parsing function.</B></P>
+
+<P>Works like <A HREF="#sscanf">sscanf</A>, but reads the input from the keyboard using
+<A HREF="#getsn">getsn</A> rather than from a buffer of type <CODE>char *</CODE>. [ENTER]
+is interpreted as EOF.
+<BR><BR>
+The input is echoed on the screen. <B>No</B> newline will be output at the end of the
+input, no matter whether it resulted from the user pressing [ENTER] or from a
+format matching error.
+<BR><BR>
+The amount of possible user input is limited by available memory. scanf may also return 0 if there
+was no memory left at all to allocate the temporary buffer.</P>
+
+<HR>
+<H3><A NAME="sprintf"><U>sprintf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> sprintf (<B><A HREF="keywords.html#int">char</A></B> *buffer, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>Sends formatted output to a string.</B></P>
+
+<P>sprintf sends formatted output to a string. In fact, it does the following:</P>
+<UL>
+<LI><P>accepts a series of arguments;</P></LI>
+<LI><P>applies to each a format specifier contained in the format string pointed to by <I>format</I>;</P></LI>
+<LI><P>outputs the formatted data to the string pointed to by <I>buffer</I>;</P></LI>
+</UL>
+<P>sprintf applies the first format specifier to the first argument, the second
+to the second, and so on. The format string, controls how sprintf will convert
+and format its arguments. See <A HREF="#printf">printf</A> for more info about
+format specifiers.
+<BR><BR>
+sprintf returns the number of bytes output, not including the terminating null
+byte in the count.</P>
+
+<HR>
+<H3><A NAME="sscanf"><U>sscanf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> sscanf (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *buffer, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, ...);</TD></TR></TABLE></P>
+<P><B>String parsing function.</B></P>
+
+<P>sscanf scans the string <CODE>buffer</CODE> for the formats in the format
+string <CODE>format</CODE> and assigns the input to pointers passed as varargs.
+Returns:</P>
+<UL><LI><P>the number of pointers filled in (the number of matches done) if it is non-0</P></LI>
+<LI><P>0 if no pointers were filled in because of a format matching error</P></LI>
+<LI><P><A HREF="#EOF">EOF</A> (-1) if the input ended before any pointers were filled in</P></LI></UL>
+<P>
+<B>Formats accepted:</B></P>
+<UL><LI><P>any non-whitespace character other than '%': matches a literal character,
+assigns nothing</P></LI>
+<LI><P>whitespace characters: match any whitespace characters, even if they are
+a different kind of whitespace, assign nothing</P></LI>
+<LI><P>'%%': matches a literal '%', assigns nothing</P></LI>
+<LI><P>Any formats of the type '%' + flags + width + type (or '%' + width + flags +
+type, the order isn't actually checked, you can even put the flags in the
+middle of the width):<BR><BR>
+<B>Flags accepted:</B></P>
+<UL><LI><P>'*': skip the matched data (don't assign it to a pointer, and don't count it)</P></LI>
+<LI><P>'h': if an integer type follows, it will be a short integer, otherwise the
+flag is ignored. (This is the default if neither 'h' nor 'l' are
+specified.)</P></LI>
+<LI><P>'l': if an integer type follows, it will be a long integer, otherwise the
+flag is ignored</P></LI>
+<LI><P><B>Warning:</B> "%h" or "%l" alone is <B>not</B> accepted. Always write "%li", "%ld", ...
+explicitely.</P></LI></UL>
+<P>
+<B>Width:</B> Maximum number of bytes to read in for data matching. The maximum is
+65535. Any larger number will be truncated modulo 65536. If the width is
+0 or omitted, the default width for the format is used.</P></LI></UL>
+<P>
+<B>Types accepted:</B></P>
+<UL><LI><P>'u': matches an unsigned decimal integer<BR>
+default width: 65536<BR>
+required pointer: 'unsigned short *' for '%hu', 'unsigned long *' for '%lu'<BR>
+automatically skips leading whitespace</P></LI>
+<LI><P>'d': matches a signed decimal integer (both [-] and [(-)] are accepted)<BR>
+default width: 65536<BR>
+required pointer: 'short *' for '%hd', 'long *' for '%ld'<BR>
+automatically skips leading whitespace</P></LI>
+<LI><P>'o': matches an unsigned octal integer<BR>
+default width: 65536<BR>
+required pointer: 'unsigned short *' for '%ho', 'unsigned long *' for '%lo'<BR>
+automatically skips leading whitespace</P></LI>
+<LI><P>'x' or 'X': matches an unsigned hexadecimal integer (0-9 and both a-f and A-F
+are accepted)<BR>
+default width: 65536<BR>
+required pointer: 'unsigned short *' for '%hx', '%hX', 'unsigned long *' for '%lx', '%lX'<BR>
+automatically skips leading whitespace</P></LI>
+<LI><P>'p': same as '%lx' (even if '%hp' or just '%p' is specified)</P></LI>
+<LI><P>'i': matches an integer in C syntax: may contain a negative sign ([-] or [(-)]),
+is hexadecimal if started with 0x, octal if started with 0, and
+decimal otherwise<BR>
+default width: 65536<BR>
+required pointer: 'short *' or 'unsigned short *' for '%hi', 'long *' or 'unsigned long *' for '%li'<BR>
+automatically skips leading whitespace</P></LI>
+<LI><P>'f', 'g', 'e' or 'E': matches a floating-point number. (This number will be
+parsed by <A HREF="estack.html#push_parse_text">push_parse_text</A> (through <A HREF="timath.html#atof">atof</A>), so it has to
+use the calculator '-' and 'E'.)<BR>
+default <B>and maximum</B> width: 29. This limitation is
+because we need to allocate a buffer for <A HREF="timath.html#atof">atof</A> on the
+stack, and we didn't want to waste too much stack space.<BR>
+required pointer: 'float *'<BR>
+automatically skips leading whitespace</P></LI>
+<LI><P>'s': matches a non-whitespace string, and null-terminates it when copying
+it to the buffer (so make sure you have a buffer of size <CODE>width + 1</CODE>)<BR>
+default width: 65536<BR>
+required pointer: 'char *'<BR>
+automatically skips leading whitespace</P></LI>
+<LI><P>'c': matches a fixed number of characters (the given width). Does NOT
+null-terminate the string when copying it to the buffer.<BR>
+default width: 1 (NOT the maximum width like for the other formats)<BR>
+required pointer: 'char *'<BR>
+does NOT skip leading whitespace (put a space before '%c' if you want
+to skip it)</P></LI>
+<LI><P>'[': matches a regexp-style set of characters:</P>
+<UL><LI><P>']' terminates the set unless it immediately follows the leading '['
+or the leading '[^'</P></LI>
+<LI><P>if '^' is the first character, matches the characters which are NOT in
+the set</P></LI>
+<LI><P>'-' specifies a range of characters (as in '0-9') unless it
+immediately precedes the terminating ']'</P></LI>
+<LI><P>any other characters (including ']' right at the beginning or '-'
+right at the end): match the corresponding literal characters</P></LI></UL>
+<P>
+copies characters until either the input ends, or the specified width
+is reached, or a character which is not in the specified set (when using
+'^': which <B>is</B> in the specified set) is encountered<BR>
+null-terminates the copied string (so make sure you have a buffer of size
+<CODE>width + 1</CODE>)<BR>
+default width: 65536<BR>
+required pointer: 'char *'<BR>
+does <B>not</B> skip leading whitespace (put a space before '%[' if you want
+to skip it)</P></LI>
+<LI><P>'n': does not read anything from the input, but assigns the number of
+characters already read in to the given pointer<BR>
+default width: N/A (the width is ignored, and <B>no</B> characters are read in)<BR>
+required pointer: 'short *'<BR>
+does <B>not</B> skip any whitespace in the input</P></LI></UL>
+
+<HR>
+<H3><A NAME="strputchar"><U>strputchar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> strputchar (<B><A HREF="keywords.html#int">char</A></B> c, <B><A HREF="keywords.html#void">void</A></B> **ptr);</TD></TR></TABLE></P>
+<P><B>Default vcbprintf callback function used in sprintf.</B></P>
+
+<P>strputchar is callback function (passed to <A HREF="#vcbprintf">vcbprintf</A> which is used
+internally for implementation of <A HREF="#sprintf">sprintf</A> (in TIOS) and
+<A HREF="#vsprintf">vsprintf</A> functions. It does nothing more than</P>
+<PRE>*((*(char**)<I>ptr</I>)++) = <I>ch</I>;
+</PRE>
+
+<HR>
+<H3><A NAME="tmpnam"><U>tmpnam</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#int">char</A></B> *tmpnam (<B><A HREF="keywords.html#int">char</A></B> *s);</TD></TR></TABLE></P>
+<P><B>Produces a unique random file name.</B></P>
+
+<P>tmpnam returns a random file name of 8 characters which does not exist on
+the calculator. If <I>s</I> is <A HREF="alloc.html#NULL">NULL</A>,
+tmpnam returns a pointer to a static buffer, otherwise it fills <I>s</I> and
+returns a pointer to it. When passing <A HREF="alloc.html#NULL">NULL</A>
+to tmpnam, it is best to treat the pointer returned as if it were pointing to
+constant data. It is assumed that the buffer pointed to by <I>s</I> is at
+least 9 bytes long.
+<BR><BR>
+tmpnam is capable of returning <A HREF="#TMP_MAX">TMP_MAX</A> or
+<CODE>25^8</CODE> combinations. When nearing
+<A HREF="#TMP_MAX">TMP_MAX</A>, performance decreases significantly,
+and eventually, the function will run into an infinite loop. These factors,
+however, should not pose any problems for the currently supported calculator
+platforms. You will run into the maximum number of handles a lot sooner.
+<BR><BR>
+<B>Note:</B> tmpnam does not actually create any files. If you call it twice
+without creating a file whose name equals the first result, it may,
+in theory, return the same name again.</P>
+
+<HR>
+<H3><A NAME="ungetc"><U>ungetc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> ungetc (<B><A HREF="keywords.html#short">short</A></B> c, <A HREF="#FILE">FILE</A> *stream);</TD></TR></TABLE></P>
+<P><B>Pushes a character back into input stream.</B></P>
+
+<P>ungetc pushes the character <I>c</I> back onto the stream associated with the structure
+pointed to by <I>stream</I>. This character will be returned on the next call to
+<A HREF="#getc">getc</A> (or related functions like <A HREF="#fread">fread</A>) for that stream.
+A second call to ungetc without a call to <A HREF="#getc">getc</A> will force the previous
+character to be forgotten. A call to <A HREF="#fflush">fflush</A>, <A HREF="#fseek">fseek</A>,
+<A HREF="#fsetpos">fsetpos</A>, or <A HREF="#rewind">rewind</A> erases all memory of any
+pushed-back characters. ungetc returns the character pushed back. ANSI C proposes that it
+need to return <A HREF="#EOF">EOF</A> if the operation fails, but in this implementation it
+cannot fail. It is implemented as a very simple macro.
+<BR><BR>
+<B>Note:</B> ungetc is used in some programs to push back a character to the stream associated with
+the keyboard using <CODE>ungetc(c,&nbsp;stdin)</CODE>. This is not possible on TI, because
+terminal-associated streams are not supported. Use <A HREF="kbd.html#pushkey">pushkey</A> instead
+to achieve the same effect.</P>
+
+<HR>
+<H3><A NAME="unlink"><U>unlink</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> unlink (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *filename);</TD></TR></TABLE></P>
+<P><B>Deletes a file.</B></P>
+
+<P>unlink deletes the file specified by <I>filename</I> (it is a normal C string,
+which should be in lowercase). If your file is open, be sure to close it before
+removing it. The string pointed to by <I>filename</I> may include a folder name
+too. On successful completion, unlink returns 0. On error, it returns <A HREF="#EOF">EOF</A>.
+<BR><BR>
+<B>Note:</B> Function <A HREF="vat.html#SymDel">SymDel</A> from <A HREF="vat.html">vat.h</A>
+header file is very similar like unlink (or <A HREF="#remove">remove</A>), except the
+parameter and returned result are somewhat different. As unlink is not a TIOS entry and
+<A HREF="vat.html#SymDel">SymDel</A> is, the usage of <A HREF="vat.html#SymDel">SymDel</A> is
+recommended instead of unlink (although <A HREF="vat.html#SymDel">SymDel</A> is not ANSI
+standard).</P>
+
+<HR>
+<H3><A NAME="vcbprintf"><U>vcbprintf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> vcbprintf (<A HREF="#vcbprintf_Callback_t">vcbprintf_Callback_t</A> callback, <B><A HREF="keywords.html#void">void</A></B> **param, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <A HREF="stdarg.html#va_list">va_list</A> arglist);</TD></TR></TABLE></P>
+<P><B>Virtual callback printing function.</B></P>
+
+<P>vcbprintf is an auxiliary function which is the heart of all v...printf functions.
+<I>arglist</I> is a pointer to the list of arguments (see <A HREF="stdarg.html">stdarg.h</A>
+for more info about argument lists), and <I>format</I> is the format string, as
+usually. vcbprintf applies to each argument a format specifier contained in the format string.
+After this, the formatted data is sent character by character to the callback function
+<I>callback</I> passing the actual characters as the parameter <I>c</I> to it. Also, the parameter
+<I>param</I> of vcbprint is passed as the second parameter to the callback function. This
+allows for much more flexibility, because a callback function usually needs more info than a simple
+character to be processed. The callback function for example can push characters to a stream, so
+in this case <I>param</I> would probably be a pointer to the stream structure. More precisely,</P>
+<PRE>vfprintf (stream, format, arglist);
+</PRE>
+<P>is exactly the same as</P>
+<PRE>vcbprintf ((vcbprintf_callback_t)fputc, (void**)stream, format, arglist);
+</PRE>
+<P>See also <A HREF="textedit.html#TE_pasteText">TE_pasteText</A> for an ununsual but powerful
+example of usage of vcbprintf.
+<BR><BR>
+<I>param</I> is declared as a "double pointer" because it is often used as a pointer to a
+pointer variable (in <A HREF="#vsprintf">vsprintf</A> for example), so the callback function
+is able to change the content of the actual pointer variable (see <A HREF="#strputchar">strputchar</A>).</P>
+
+<HR>
+<H3><A NAME="vcbscanf"><U>vcbscanf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> vcbscanf (<A HREF="#vcbscanf_get_Callback_t">vcbscanf_get_Callback_t</A> getfun, <A HREF="#vcbscanf_unget_Callback_t">vcbscanf_unget_Callback_t</A> ungetfun, <B><A HREF="keywords.html#void">void</A></B> *param, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <A HREF="stdarg.html#va_list">va_list</A> arglist);</TD></TR></TABLE></P>
+<P><B>Virtual callback parsing function.</B></P>
+
+<P>vcbscanf is an auxiliary function which is the heart of all scanf family functions.
+<I>arglist</I> is a pointer to the list of arguments (see <A HREF="stdarg.html">stdarg.h</A>
+for more info about argument lists), and <I>format</I> is the format string, as
+usually (see <A HREF="#sscanf">sscanf</A>). vcbscanf gets its characters using the
+<I>getfun</I> callback. If it reads a character it can't handle, it ungets it using the
+<I>ungetfun</I> callback. Also, the parameter <I>param</I> of vcbscanf is passed as the second
+parameter to the callback function. This allows for much more flexibility, because a callback
+function usually needs more info than a simple character to be processed. The callback function
+for example can get characters from to a stream, so in this case <I>param</I> would probably be
+a pointer to the stream structure. The formatted data is parsed according to the format string, as
+described for <A HREF="#sscanf">sscanf</A>.</P>
+
+<HR>
+<H3><A NAME="vfprintf"><U>vfprintf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> vfprintf (<A HREF="#FILE">FILE</A> *stream, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <A HREF="stdarg.html#va_list">va_list</A> arglist);</TD></TR></TABLE></P>
+<P><B>Sends formatted output to a stream using argument list.</B></P>
+
+<P>The vfprintf functions is known as an alternate entry point for the fprintf functions.
+It behaves exactly like <A HREF="#fprintf">fprintf</A>, but it accepts a pointer to a
+list of arguments instead of an argument list (see <A HREF="stdarg.html">stdarg.h</A>
+header file for more info about argument lists).
+See <A HREF="#printf">printf</A> for details on format specifiers.
+<BR><BR>
+vfprintf accepts <I>arglist</I> which is a pointer to a series of arguments, applies to each
+argument a format specifier contained in the format string pointed to by
+<I>format</I>, and outputs the formatted data to the stream associated with the structure
+pointed to by <I>stream</I>. There must be the same number of format specifiers as arguments.
+<BR><BR>
+vfprintf returns the number of bytes output. In the event of error, vfprintf
+returns <A HREF="#EOF">EOF</A>.</P>
+
+<HR>
+<H3><A NAME="vfscanf"><U>vfscanf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> vfscanf (<A HREF="#FILE">FILE</A> *file, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <A HREF="stdarg.html#va_list">va_list</A> arglist);</TD></TR></TABLE></P>
+<P><B>File parsing function using argument list.</B></P>
+
+<P>The vfscanf function is known as an alternate entry point for the fscanf function.
+It behaves exactly like <A HREF="#fscanf">fscanf</A>, but it accepts a pointer to a
+list of arguments instead of an argument list (see <A HREF="stdarg.html">stdarg.h</A>
+header file for more info about argument lists).
+See <A HREF="#sscanf">sscanf</A> for details on format specifiers.</P>
+
+<HR>
+<H3><A NAME="vprintf"><U>vprintf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> vprintf (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <A HREF="stdarg.html#va_list">va_list</A> arglist);</TD></TR></TABLE></P>
+<P><B>Sends formatted output to the screen using argument list.</B></P>
+
+<P>The vprintf functions is known as an alternate entry point for the
+<A HREF="#printf">printf</A> function. It behaves exactly like <A HREF="#printf">printf</A>,
+but it accepts a pointer to a list of arguments instead of an argument
+list (see <A HREF="stdarg.html">stdarg.h</A> header file for more info about argument lists).
+See <A HREF="#printf">printf</A> for details on format specifiers.
+<BR><BR>
+vprintf accepts <I>arglist</I>, which is a pointer to a series of arguments, applies to
+each a format specifier contained in the format string pointed to by <I>format</I>, and
+outputs the formatted data to the screen. There must be the same number of format
+specifiers as arguments.
+<BR><BR>
+<B>Note:</B> In ANSI C, function vprintf is an int function, and it returns the number of printed
+characters. Due to some practical reasons, this implementation of vprintf is a void function.
+This difference is usually not important.</P>
+
+<HR>
+<H3><A NAME="vscanf"><U>vscanf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> vscanf (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <A HREF="stdarg.html#va_list">va_list</A> arglist);</TD></TR></TABLE></P>
+<P><B>Console input parsing function using argument list.</B></P>
+
+<P>The vfscanf function is known as an alternate entry point for the fscanf function.
+It behaves exactly like <A HREF="#scanf">scanf</A>, but it accepts a pointer to a
+list of arguments instead of an argument list (see <A HREF="stdarg.html">stdarg.h</A>
+header file for more info about argument lists).
+See <A HREF="#sscanf">sscanf</A> for details on format specifiers.</P>
+
+<HR>
+<H3><A NAME="vsprintf"><U>vsprintf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> vsprintf (<B><A HREF="keywords.html#int">char</A></B> *buffer, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <A HREF="stdarg.html#va_list">va_list</A> arglist);</TD></TR></TABLE></P>
+<P><B>Sends formatted output to a string using argument list.</B></P>
+
+<P>The vsprintf functions is known as an alternate entry point for the
+<A HREF="#sprintf">sprintf</A> function. It behaves exactly like <A HREF="#sprintf">sprintf</A>,
+but it accepts a pointer to a list of arguments instead of an argument
+list (see <A HREF="stdarg.html">stdarg.h</A> header file for more info about argument lists).
+See <A HREF="#printf">printf</A> for details on format specifiers.
+<BR><BR>
+vsprintf accepts <I>arglist</I>, which is a pointer to a series of arguments, applies to
+each a format specifier contained in the format string pointed to by <I>format</I>, and
+outputs the formatted data to the string pointed to by <I>buffer</I>. There must be the same
+number of format specifiers as arguments.
+<BR><BR>
+<B>Note:</B> In ANSI C, function vsprintf is an int function, and it returns the number of characters
+stored in <I>buffer</I>. Due to some practical reasons, this implementation of vsprintf is
+a void function. This difference is usually not important.</P>
+
+<HR>
+<H3><A NAME="vsscanf"><U>vsscanf</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> vsscanf (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *buffer, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <A HREF="stdarg.html#va_list">va_list</A> arglist);</TD></TR></TABLE></P>
+<P><B>String parsing function using argument list.</B></P>
+
+<P>The vsscanf function is known as an alternate entry point for the sscanf function.
+It behaves exactly like <A HREF="#sscanf">sscanf</A>, but it accepts a pointer to a
+list of arguments instead of an argument list (see <A HREF="stdarg.html">stdarg.h</A>
+header file for more info about argument lists).
+See <A HREF="#sscanf">sscanf</A> for details on format specifiers.</P>
+
+<HR>
+<H3><A NAME="EOF"><U>EOF</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> EOF (-1)</TD></TR></TABLE></P>
+<P><B>Indicates that the end of a file has been reached.</B></P>
+
+<P>EOF is a constant which is usually returned as the result of file handling functions if an
+end-of-file is reached, or in a case of an error. The ANSI standard does not propose exact value
+of this constant, but it proposes that it must be negative.</P>
+
+<HR>
+<H3><A NAME="TMP_MAX"><U>TMP_MAX</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> TMP_MAX 152587890625</TD></TR></TABLE></P>
+<P><B>Contains the maximum number of temporary file names.</B></P>
+
+<P>TMP_MAX describes the maximum number of temporary file names the
+<A HREF="#tmpnam">tmpnam</A> function can return. This limit equals
+<CODE>25^8</CODE>, i.e. the number of possibilities if you have 25 possible
+values for all 8 characters. You can never run into this limit; see
+<A HREF="#tmpnam">tmpnam</A> for more info.</P>
+
+<HR>
+<H3><A NAME="FILE"><U>FILE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#int">char</A></B> *fpos; <I>/* Current position of file pointer (absolute address) */</I><BR>
+<B><A HREF="keywords.html#void">void</A></B> *base; <I>/* Pointer to the base of the file */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> handle; <I>/* File handle */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> flags; <I>/* Flags (see <A HREF="#FileFlags">FileFlags</A>) */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> unget; <I>/* 1-byte buffer for ungetc (b15=1 if non-empty) */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> alloc; <I>/* Number of currently allocated bytes for the file */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> buffincrement; <I>/* Number of bytes allocated at once */</I><BR>
+</TD></TR></TABLE>
+} FILE;</TD></TR></TABLE></P>
+<P><B>A structure describing an opened file.</B></P>
+
+<P>FILE is the main file control structure for streams. The exact structure of it is very
+platform-dependent, so ANSI C proposes that the exact structure of this structured type should not
+be known, and well-written programs do not need to access the internal fields of this structure.</P>
+
+<HR>
+<H3><A NAME="FileFlags"><U>FileFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> FileFlags {_F_READ = 0x0001, _F_WRIT = 0x0002, _F_RDWR = 0x0003, _F_ERR = 0x0010, _F_EOF = 0x0020, _F_BIN = 0x0040};</TD></TR></TABLE></P>
+<P><B>An enumeration describing internal flags for file handling.</B></P>
+
+<P>These flags describes whether the file is opened in read
+or write mode, whether an end-of-file or a serious error occured, and whether the file is open
+in binary or text mode.</P>
+
+<P>See also: <A HREF="#FILE">FILE</A></P>
+<HR>
+<H3><A NAME="fpos_t"><U>fpos_t</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> fpos_t;</TD></TR></TABLE></P>
+<P><B>A type describing the current position in a file.</B></P>
+
+<P>fpos_t is a scalar type used for saving the current file position using <A HREF="#fgetpos">fgetpos</A>
+and restoring it back using <A HREF="#fsetpos">fsetpos</A>.</P>
+
+<HR>
+<H3><A NAME="SeekModes"><U>SeekModes</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> SeekModes {SEEK_SET, SEEK_CUR, SEEK_END};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible modes used in <A HREF="#fseek">fseek</A>.</B></P>
+
+<HR>
+<H3><A NAME="vcbprintf_Callback_t"><U>vcbprintf_Callback_t</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <A HREF="gnuexts.html#SEC85">CALLBACK</A> <B><A HREF="keywords.html#void">void</A></B> (*vcbprintf_Callback_t) (<B><A HREF="keywords.html#int">char</A></B> c, <B><A HREF="keywords.html#void">void</A></B> **param);</TD></TR></TABLE></P>
+<P><B>Describes a callback function for <A HREF="#vcbprintf">vcbprintf</A>.</B></P>
+
+<HR>
+<H3><A NAME="vcbscanf_get_Callback_t"><U>vcbscanf_get_Callback_t</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <A HREF="gnuexts.html#SEC85">CALLBACK</A> <B><A HREF="keywords.html#short">short</A></B> (*vcbscanf_get_Callback_t) (<B><A HREF="keywords.html#void">void</A></B> *param);</TD></TR></TABLE></P>
+<P><B>Describes the first callback function for <A HREF="#vcbscanf">vcbscanf</A>.</B></P>
+
+<HR>
+<H3><A NAME="vcbscanf_unget_Callback_t"><U>vcbscanf_unget_Callback_t</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <A HREF="gnuexts.html#SEC85">CALLBACK</A> <B><A HREF="keywords.html#short">short</A></B> (*vcbscanf_unget_Callback_t) (<B><A HREF="keywords.html#void">void</A></B> *param);</TD></TR></TABLE></P>
+<P><B>Describes the second callback function for <A HREF="#vcbscanf">vcbscanf</A>.</B></P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

@@ -1,0 +1,374 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>The GCC4TI Integrated Environment</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The GCC4TI Integrated Environment</B></FONT>
+<HR>
+<P>The GCC4TI IDE is a freely distributable Integrated Environment for GCC4TI,
+written by <A HREF="mailto:Sebastian@tigcc.ticalc.org">Sebastian Reichelt</A>
+(retired years ago from TI-68k programming). It is easy to use, even for
+unexperienced programmers.
+This part of the documentation was written by Sebastian.</P>
+
+<UL>
+<LI><B><A HREF="#config">Configuring the IDE</A></B>
+<LI><B><A HREF="#startc">Starting a New C Project</A></B>
+<LI><B><A HREF="#startasm">Starting a New Assembly Project</A></B>
+<LI><B><A HREF="#add">Adding Existing Files</A></B>
+<LI><B><A HREF="#header">Using Header Files</A></B>
+<LI><B><A HREF="#saving">Saving and Renaming Source Files</A></B>
+<LI><B><A HREF="#editor">Editor Features</A></B>
+<LI><B><A HREF="#compiling">Compiling and Running your Program</A></B>
+<LI><B><A HREF="#special">Special Features</A></B>
+<LI><B><A HREF="#planned">Planned Features</A></B>
+<LI><B><A HREF="#disclaimer">Disclaimer</A></B>
+<LI><B><A HREF="#feedback">Feedback</A></B>
+<LI><B><A HREF="#history">Version History</A></B>
+</UL>
+<P><B>Note:</B> If you want to use the command-line compiler to compile
+<CODE>.tpr</CODE> files produced by the IDE, you can use the
+<CODE>tprbuilder</CODE> utility.  It takes the name of a <CODE>.tpr</CODE>
+file as a single parameter.  You may have to tweak your source files a
+little, as the IDE uses a different compilation scheme.</P>
+
+<HR>
+<H2><A NAME="config"><U>Configuring the IDE</U></A></H2>
+<P>Click on 'File/Preferences'.  In the 'Preferences' dialog box, you can customize the IDE with various options.  Some options are very important, others are simply user interface settings.
+<BR><BR>
+If you want to be able to cancel compiling operations more quickly, you can choose to force-quit the application used for the process.  This is not recommended, however, and can make your system unstable.  If you do not choose this option, the IDE compilation window remains on the screen until process is finished.  If you click on 'Stop' again, the process will finally be terminated.  If you choose this option, you should also activate the 'Auto-Save' option.
+<BR><BR>
+If you want to be able to react to compilation errors more quickly, you can choose to stop compilation when the first file was not compiled successfully.  Otherwise, the IDE compiles all files, displaying all errors in the error list.
+<BR><BR>
+When a program is compiled, usually assembly as well as object files are produced and stored in the project folder.  You can have them deleted automatically after the program was linked successfully.
+<BR><BR>
+There is one extremely important option: the automatic splitting of source files into more lines.  This is done in order to accurately find the position of errors in your code.  It might, however, result in an error being reported when there is nothing wrong with the code.  This is unlikely, though, since this option has been tested very thoroughly.
+<BR><BR>
+Another important option is the Template Wizard.  It helps you to get started with a project when you add your first file.  If you disable it, default options will automatically be used.
+<BR><BR>
+To be able to run your program directly from the IDE, you need to specify either to run on VTI, on TIEmu, or you need to select your link port and cable type. Do this in the 'Transfer' tab. You can switch between the two very quickly by pressing Shift+Ctrl+Alt+F9.
+<BR><BR>
+In the 'Syntax Highlighting' tab, you can set your own settings for both ASM and C files.  If syntax highlighting takes up too much time when opening a project, you may want to disable it.
+<BR><BR>
+To customize syntax highlighting, you can specify your own colors and styles for different types of characters using the buttons provided.  To set colors and styles for comments, strings, and compiler directives, use the tree at the bottom of the dialog.  To edit such a 'custom style', double-click on it.  You can also specify the exact beginning and end, using '#13' as substitute for the end of the line.
+<BR><BR>
+In this tree, you can also create your own custom set of words that are supposed to be highlighted some way.  Only a list of reserved words is included by default, but you can add lists of your own if you want to.</P>
+
+<HR>
+<H2><A NAME="startc"><U>Starting a New C Project</U></A></H2>
+<P>Click on 'File/New/Project'.  If the project you had opened before has been modified, you are informed about it, and you have the choice to save your project first.
+<BR><BR>
+When you create a new project, it is best to save it first in order to give it a file name.  Click on 'File/Save Project As...' and save your project.  Note that the executable files (*.89z; *.9xz; *.v2z) are saved with the same name as your project file, even if it is a long file name.  To specify the name your program gets when it is transferred to the calculator, click on the top item in the project tree twice in a row in order to rename it (optionally including a folder name).  Of course, the same restrictions apply as to calculator variable names.  For other options, look under 'Project/Options...', especially 'Program Options...' in the 'Compilation' tab.
+<BR><BR>
+After you did that, you need to create a new C file to start with.  Click on 'File/New/C Source File'.  A file template is displayed, where you can simply add your code at the position where it says:
+<BR><BR>
+<CODE>// Place your code here.</CODE>
+<BR><BR>
+Click on 'Help/Index' for a complete documentation of functions supported by the GCC4TI Library, and you can start programming.</P>
+
+<HR>
+<H2><A NAME="startasm"><U>Starting a New Assembly Project</U></A></H2>
+<P>To start a new Assembly project, you have to perform the same steps as for a C project; the only difference is that you have to click on 'New/GNU Assembly Source File' or 'New/A68k Assembly Source File' instead.  Note that you can also have a mixed project with both file types.  Assembly projects are not supported and tested as well as C projects.</P>
+
+<HR>
+<H2><A NAME="add"><U>Adding Existing Files</U></A></H2>
+<P>To add an existing file, click on 'Project/Add Files...' and select the files you want to add.  These can be C or Assembly source files, header files, or object files.  Generally you can include any file that belongs to your project, even text files, in order to edit them and to keep them together.  Source files always have to be added to the project in order to be found.</P>
+
+<HR>
+<H2><A NAME="header"><U>Using Header Files</U></A></H2>
+<P>Header files can be either C or Assembly files.  If you know enough about C, you can create C-style header files, create C source files implementing the functions defined in the header files, and export functions from them.  Note that you always have to add the header and either the source or object files if you want to use them in another project.  There is also a common include folder for general-purpose header files.
+<BR><BR>
+When you create a C-style header file, you can only include it in C source files.  Similarly, if you create an Assembly-style header file, you can only use it in Assembly source files.
+<BR><BR>
+For tab width and syntax highlighting, it is necessary that you indicate what type of header file you are creating by using a comment at the beginning.  If you enabled the Template Wizard, you can choose what type of header file you want to create.
+<BR><BR>
+Files included in A68k files with 'incbin' have to be in the 'other files' section.</P>
+
+<HR>
+<H2><A NAME="saving"><U>Saving and Renaming Source Files</U></A></H2>
+<P>To rename a source file, simply rename it in the project tree.  To save it with a different name, click on it with your right mouse button, and select 'Save As...' from the popup menu.
+<BR><BR>
+To save changes to a file, right-click on it and select 'Save'.  You can also click on 'File/Save All' to save all files.</P>
+
+<HR>
+<H2><A NAME="editor"><U>Editor Features</U></A></H2>
+<P>To print the current source file, click on 'Print...' from the menu or the toolbar.  To find or replace text, use the 'Find' menu.  There you will also find a menu item to jump to a function in the editor.  Note that this can be done much quicker using the toolbar.
+<BR><BR>
+If you want to open a source file whose name is in the current source code, move your cursor to the file name and press Ctrl+Enter.  If the file is not included in the project, it will be opened in a popup editor.
+<BR><BR>
+If the cursor is on an identifier, press F1 to display help on that identifier.
+<BR><BR>
+You can use Ctrl+Tab or Ctrl+G to switch between source files. Files in the project tree which are not visible at the moment are skipped.
+<BR><BR>
+Press Ctrl+Space or Ctrl+M to activate auto-completion for the current word. Press Ctrl+J to use a predefined template.</P>
+
+<HR>
+<H2><A NAME="compiling"><U>Compiling and Running your Program</U></A></H2>
+<P>To compile and run your program, press F9, or select 'Run' from the 'Debug' menu.  Like 'Project/Make', this will perform all the steps necessary to create the executable file; then it will send the file to the device or program you specified in the preferences.  If some files are not compiled, but they have been changed or need to be recompiled for some reason, click on 'Project/Build'.
+<BR><BR>
+You can also choose only to compile all files without creating an executable file by clicking on 'Compile'.  A 'Compile' item is also available for each source file in the popup menu of the project tree.
+<BR><BR>
+If you need to change the link order of files, you can do this by dragging a file to another place in the same file group.  You can use drag and drop also to move files between categories.
+<BR><BR>
+In the project options, you can specify how your program is built.  This also includes automatic compression.  If you use this feature, two files will be compiled: a small starter program and a compressed program file.  The on-calc variable name that you specify cannot be the same as the on-calc variable name of your program (which will be the name of the starter program in this case).
+<BR><BR>
+In the same dialog, you can also enter the starting parameters for your program.  These parameters are pasted into the command line between the parentheses.
+<BR><BR>
+If one or more errors were found when compiling, an 'Errors and Warnings' box is displayed at the bottom of the main window.  If you click on an error, the IDE jumps to the position in the source file where the error occured, if the position is available.
+<BR><BR>
+The compiler stops at errors, but not at warnings.  To turn warnings off, use the switches available in 'Project/Options...'.  Click <A HREF="comopts.html">here</A> for details about switches supported by the GCC compiler.  Note: Not all of these switches can be used from the IDE.
+<BR><BR>
+If you are experienced in the use of GDB to track down runtime errors, the 'Debug Information' option may help you.  If you set it, GCC4TI will generate a .dbg file which allows you to debug your program using a GDB-enabled version of the TiEmu emulator.</P>
+
+<HR>
+<H2><A NAME="special"><U>Special Features</U></A></H2>
+<DL>
+
+<DT><P>Auto-Indenting:</P><DD><P>If you press Enter in the editor, the cursor will be under the first non-whitespace character of the previous line.
+</P><DT><P>Auto-Blocks:</P><DD><P>If you press '{' on a new line, the corresponding '}' is created automatically, and all formatting with tabs is done automatically as well.  You can disable this feature.
+</P><DT><P>Error Tracking:</P><DD><P>Even if you edit a source file, clicking on an error will still jump to the correct position.  Optionally, error list entries are deleted when you delete the
+character that caused the error.
+</P><DT><P>File Date Checking:</P><DD><P>Files are compiled only if they were modified since the last compilation.
+</P><DT><P>Keyword Search:</P><DD><P>Pressing F1 on a GCC4TI Library function or a keyword will search the index for that function.
+</P><DT><P>Code Auto-Completion:</P><DD><P>The editor implements several features to make writing code using the predefined library calls easier.</P>
+</DL>
+
+<HR>
+<H2><A NAME="planned"><U>Planned Features</U></A></H2>
+<UL>
+<LI><P>A built-in debugger</P></LI>
+<LI><P>A sprite editor producing C or ASM header files</P></LI>
+<LI><P>Program context help</P></LI>
+</UL>
+
+<HR>
+<H2><A NAME="disclaimer"><U>Disclaimer</U></A></H2>
+<P>I cannot be held responsible for any error or system failure caused by this program or any programs related to it.  Use this program at your own risk.</P>
+
+<HR>
+<H2><A NAME="feedback"><U>Feedback</U></A></H2>
+<P>Feel free to <A HREF="http://trac.godzil.net/gcc4ti/">contact us</A> if you have any questions, comments, or bug reports. If you found a bug, please don't just think we will probably find it, because we probably won't. Instead, please use the ticket tracker at <A HREF="http://trac.godzil.net/gcc4ti/">http://trac.godzil.net/gcc4ti/</A>.</P>
+
+<HR>
+<H2><A NAME="history"><U>Version History</U></A></H2>
+<P><B>Version 2.96 (June 2009) - GCC4TI</B></P>
+<UL>
+<LI><P>Added more instructions and macros to the default lists used for syntax coloring.</P></LI>
+</UL>
+<P>
+<B>Version 2.95 (January 2009) - GCC4TI</B></P>
+<UL>
+<LI><P>Added several instructions and macros to the default lists used for syntax coloring.</P></LI>
+<LI><P>Restored VTI support <B>in addition to</B> TIEmu support, as requested by multiple
+experienced TI-68k programmers ever since it was removed from TIGCC.</P></LI>
+</UL>
+<P>
+<B>Version 2.94 (October 2006) - TIGCC</B></P>
+<UL>
+<LI><P>Improved keyboard accelerators (added missing ones and fixed conflicting ones).</P></LI>
+<LI><P>Added <I>Only at beginning of line</I> checkbox to the <I>Edit Custom Style</I> dialog.</P></LI>
+<LI><P>Fixed inverted logic bug in approximate matching for prototype helps.</P></LI>
+<LI><P>Fixed detection of '??=' in source file splitting.</P></LI>
+<LI><P>Changed the Debug menu to use TiEmu (20061030 or later) instead of VTI as the emulator target.</P></LI>
+</UL>
+<P>
+<B>Version 2.93 SP1 (July 2006)</B></P>
+<UL>
+<LI><P>Various minor bugfixes.</P></LI>
+</UL>
+<P>
+<B>Version 2.93 (April 2005)</B></P>
+<UL>
+<LI><P>Added support for Mlink-format relocs.</P></LI>
+<LI><P>Added support for Windows XP theming.</P></LI>
+<LI><P>Added support for DWARF 2 debugging information.</P></LI>
+<LI><P>Fixed multi-line strings in macros in the source splitter.</P></LI>
+</UL>
+<P>
+<B>Version 2.92 (August 2004)</B></P>
+<UL>
+<LI><P>Added support for the new linker, which is now a DLL.</P></LI>
+<LI><P>Added support for data variables.</P></LI>
+<LI><P>Added support for on-calc folder names.</P></LI>
+<LI><P>Removed the Template Wizard in favor of global program options.</P></LI>
+<LI><P>Added a template for comment data.</P></LI>
+<LI><P>Added support for virtual folders used when compiling programs.</P></LI>
+<LI><P>Added an option not to jump to the first error.</P></LI>
+<LI><P>Integrated the calculator linking code into the program.</P></LI>
+<LI><P>Made project loading faster by not loading all files immediately.</P></LI>
+<LI><P>Added ability to copy error messages to clipboard.</P></LI>
+<LI><P>Added code completion patches by Ephyx.</P></LI>
+<LI><P>Various minor fixes and additions.</P></LI>
+</UL>
+<P>
+<B>Version 2.91 (November 2002)</B></P>
+<UL>
+<LI><P>Replaced the title and wizard images and the icons by new ones created by <A HREF="mailto:gereon.cs@web.de">Gereon Kindler</A>.</P></LI>
+<LI><P>Implemented storing file names in relation to the project directory.</P></LI>
+<LI><P>Added optional drag and drop text editing.</P></LI>
+<LI><P>Speeded up source file splitting.</P></LI>
+<LI><P>Implemented a "Remove Trailing Spaces" feature.</P></LI>
+</UL>
+<P>
+<B>Version 2.9 (December 2001)</B></P>
+<UL>
+<LI><P>Added a recent files list.</P></LI>
+<LI><P>Added a customizable tools menu.</P></LI>
+<LI><P>Added the possibility to move files between categories.</P></LI>
+<LI><P>Changed the search function to search through all files.</P></LI>
+<LI><P>Added a window showing the complete output of the program called most recently.</P></LI>
+<LI><P>Changed the print function to use the Windows driver instead of printing directly.</P></LI>
+<LI><P>Added proxy support in the news download.</P></LI>
+<LI><P>Changed the role of Tab and Shift+Tab to indent and unindent selected text, and enabled Shift+Backspace.</P></LI>
+<LI><P>Added support for the 'incbin' A68k directive with 'other files'.</P></LI>
+<LI><P>Added the possibility to specify a path for Virtual TI.</P></LI>
+<LI><P>Added 'none' as a possible target to send the file to.</P></LI>
+<LI><P>Fixed a bug with overwriting existing files.</P></LI>
+<LI><P>Implemented selection by holding down Shift and clicking.</P></LI>
+<LI><P>Fixed the editor to be able to display all fixed-width fonts.</P></LI>
+<LI><P>Fixed the function list to be more reliable.</P></LI>
+</UL>
+<P>
+<B>Version 2.8 SP3 (November 2001)</B></P>
+<UL>
+<LI><P>Fixed the bug which would make closing large files really slow.</P></LI>
+<LI><P>Implemented a Ctrl+Tab shortcut to switch between files.</P></LI>
+</UL>
+<P>
+<B>Version 2.8 SP2 (September 2001)</B></P>
+<UL>
+<LI><P>Introduced special mouse wheel support for people with wheel problems.</P></LI>
+<LI><P>Added the possibility to run a batch file after building.</P></LI>
+<LI><P>Added a detection to warn if a file was modified on the disk.</P></LI>
+</UL>
+<P>
+<B>Version 2.8 SP1 (April 2001)</B></P>
+<UL>
+<LI><P>Fixed send to calc/VTI support for the TI-92 Plus.</P></LI>
+<LI><P>Shift+Ctrl+Alt+F9 shortcut for calc/VTI switch.</P></LI>
+</UL>
+<P>
+<B>Version 2.8 (March 2001)</B></P>
+<UL>
+<LI><P>Background compilation.</P></LI>
+<LI><P>Support for linking multiple files through the GNU linker.</P></LI>
+<LI><P>Support for creating and using archives.</P></LI>
+<LI><P>Creation of debug information in the .s file.</P></LI>
+<LI><P>Drag and drop support from the explorer.</P></LI>
+<LI><P>Headline download (manually and automatically).</P></LI>
+<LI><P>Send to calc/VTI support.</P></LI>
+</UL>
+<P><B>Version 2.71 (November 2000)</B></P>
+<UL>
+<LI><P>Support for GNU assembly files.</P></LI>
+<LI><P>Fixed support for BSR calls.</P></LI>
+<LI><P>Support for compressing files.</P></LI>
+<LI><P>Automatic inclusion of patches.</P></LI>
+<LI><P>Better automatic '{...}' blocks.</P></LI>
+<LI><P>Support for viewing compiler output.</P></LI>
+</UL>
+<P><B>Version 2.7 (October 2000)</B></P>
+<UL>
+<LI><P>Completely self-written new editor with syntax highlighting.</P></LI>
+<LI><P>Support for opening external files.</P></LI>
+<LI><P>Support for version 2.2 of the TIGCC Library.</P></LI>
+<LI><P>Support for the newly recompiled version of TIGCC.</P></LI>
+<LI><P>Function menu.</P></LI>
+<LI><P>Automatic '{...}' blocks.</P></LI>
+<LI><P>Shortcuts for increasing and decreasing the indent.</P></LI>
+<LI><P>Source file splitting to find error positions.</P></LI>
+<LI><P>Complete error tracking and deletion.</P></LI>
+</UL>
+<P><B>Version 2.6 (June 2000)</B></P>
+<UL>
+<LI><P>Part of TIGCC package from now on.</P></LI>
+<LI><P>Fixed a lot of bugs.</P></LI>
+<LI><P>Included help file by Philipp Winkler.</P></LI>
+<LI><P>Works with new folder structure.</P></LI>
+<LI><P>Customizable link order.</P></LI>
+<LI><P>Progress bar with stop button for syntax highlighting.</P></LI>
+<LI><P>More preferences.</P></LI>
+<LI><P>Compilation animation.</P></LI>
+<LI><P>Floatable toolbar.</P></LI>
+<LI><P>Startup screen.</P></LI>
+</UL>
+<P><B>Version 2.5 (May 2000)</B></P>
+<UL>
+<LI><P>Included ASM syntax highlighting.</P></LI>
+<LI><P>Included support for version 2.0 of the TIGCC library.</P></LI>
+<LI><P>Updated error list.</P></LI>
+<LI><P>Fixed C/ASM bug in previous release.</P></LI>
+</UL>
+<P><B>Version 2.4 (May 2000)</B></P>
+<UL>
+<LI><P>Updated preferences dialog.</P></LI>
+<LI><P>Customizable syntax highlighting.</P></LI>
+</UL>
+<P><B>Version 2.3 (May 2000)</B></P>
+<UL>
+<LI><P>Never officially released.</P></LI>
+<LI><P>Syntax highlighting (no customization; C only).</P></LI>
+</UL>
+<P><B>Version 2.2 (May 2000)</B></P>
+<UL>
+<LI><P>Never officially released.</P></LI>
+<LI><P>Bugfixes.</P></LI>
+<LI><P>New compilation window.</P></LI>
+<LI><P>Bringing VTI into foreground.</P></LI>
+</UL>
+<P><B>Version 2.11 (May 2000)</B></P>
+<UL>
+<LI><P>Editor bugfixes.</P></LI>
+</UL>
+<P><B>Version 2.1 (May 2000)</B></P>
+<UL>
+<LI><P>File date checking bugfix.</P></LI>
+<LI><P>More IDE options.</P></LI>
+<LI><P>Find and print functions.</P></LI>
+<LI><P>TIGCC installer.</P></LI>
+<LI><P>Ctrl+Enter shortcut.</P></LI>
+<LI><P>Word wrap (now uses rich text edit control).</P></LI>
+</UL>
+<P><B>Version 2.0 (May 2000)</B></P>
+<UL>
+<LI><P>Never officially released (beta) (too many missing features and bugs).</P></LI>
+<LI><P>File date checking.</P></LI>
+<LI><P>Assembler bug workaround.</P></LI>
+<LI><P>Stable force-quit operation.</P></LI>
+<LI><P>Toolbar, status bar, icons in menus.</P></LI>
+<LI><P>More editor options.</P></LI>
+<LI><P>Header file error display.</P></LI>
+</UL>
+<P><B>Version 1.0 (April 2000)</B></P>
+<UL>
+<LI><P>Initial release.</P></LI>
+<LI><P>Included all three programs.</P></LI>
+<LI><P>Fully functional IDE.</P></LI>
+<LI><P>Extraction of errors from all three programs.</P></LI>
+<LI><P>Almost 100% accurate error tracking.</P></LI>
+<LI><P>Use of projects.</P></LI>
+</UL>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

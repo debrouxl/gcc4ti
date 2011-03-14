@@ -1,0 +1,1987 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>The A68k Assembler</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The A68k Assembler</B></FONT>
+<HR>
+<P>In addition to the <A HREF="gnuasm.html">GNU Assembler</A>, the GCC4TI package also includes
+the A68k assembler by Charlie Gibbs (slightly modified Amiga version). Although GCC4TI also includes
+the GNU assembler used by GCC, A68k is included here because many old assembly programs for the
+TI-89 and TI-92+ are created with this assembler (so including it in the package allows compiling
+existing ASM programs as well), and because, while it is inferior to the GNU assembler in some
+aspects, it also has advantages, mainly easier syntax, but also support for binary include files for
+example.
+The A68k assembler was developed long before the TIGCC and GCC4TI projects were even started, so it
+is somewhat inconsistent with the rest of the project, though some effort has been made to integrate
+it into TIGCC/GCC4TI. For example, you can now call a function from a static library using a simple
+<CODE>bsr</CODE> or <CODE>jsr</CODE> instruction.
+<BR><BR>
+This assembler comes with its own set of header files. All of them are included mainly for
+compatibility reasons (note that some of them are deprecated, obsolete, inconsistent
+or even obscure), so they will not be described here. Information about them may be
+found in various ASM tutorials for TI-89 and TI-92+ (also deprecated, but note that
+nearly 95% of all ASM programs for TI-89 and TI-92+ are written using a now deprecated
+way, because a lot of information about the system was not available at the time
+when these programs were created). We recommend using only <CODE>OS.h</CODE>, which contains a
+list of equates for <CODE>ROM_CALL</CODE>s (but the <CODE>ROM_CALL</CODE> macros are not very
+optimized and should thus be avoided), and functions from TIGCCLIB, which need no header file at all
+(for example, <CODE>bsr GrayOn</CODE> is enough to call the <A HREF="gray.html#GrayOn">GrayOn</A> function). What will be presented here is the original A68k documentation, written by Charlie Gibbs himself. We have however annotated it in some places
+to reflect the changes made in recent versions, and we have added 2 chapters: the list of
+supported assembler directives, which was missing, and the history, which was kept in a separate file.</P>
+
+<UL>
+<LI><B><A HREF="#intro">Introduction - About A68k</A></B>
+<LI><B><A HREF="#restrictions">Restrictions</A></B>
+<LI><B><A HREF="#exts">Extensions</A></B>
+<LI><B><A HREF="#directives">A68k Assembler Directives</A></B>
+<LI><B><A HREF="#smallcode">The Small Code/Data model</A></B>
+<LI><B><A HREF="#files">Files</A></B>
+<LI><B><A HREF="#filenames">File Names</A></B>
+<LI><B><A HREF="#usage">A68k Command-Line Parameters (How to use A68k)</A></B>
+<LI><B><A HREF="#tech">Technical Information</A></B>
+<LI><B><A HREF="#contact">A68k Contact Information and Bug Reports</A></B>
+<LI><B><A HREF="#history">History of A68k</A></B>
+</UL>
+<HR>
+<H2><A NAME="intro"><U>Introduction - About A68k</U></A></H2>
+<P><CENTER><B>
+A68k - a freely distributable assembler for the Amiga<BR>
+by Charlie Gibbs<BR>
+with special thanks to<BR>
+Brian R. Anderson and Jeff Lydiatt<BR>
+The current versions are now part of the GCC4TI project.
+As such, they will be aimed much more at development for the TI-89, TI-89T,
+TI-92+ and V200 calculators than at the Amiga.
+Modifications of this document are marked with <B>(TIGCC/GCC4TI)</B><BR>
+(Version 2.71.F3z - July 29, 2009)
+</B></CENTER>
+<BR><BR>
+<B>Note:</B> This program is Freely Distributable, as opposed to Public
+Domain.  Permission is given to freely distribute this program provided no
+fee is charged, and this documentation file is included with the program.
+<BR><BR>
+This assembler is based on Brian R. Anderson's 68000 cross-
+assembler published in Dr. Dobb's Journal, April through June 1986.
+I have converted it to produce AmigaDOS-format object modules, and
+have made many enhancements, such as macros and INCLUDE files.
+<BR><BR>
+My first step was to convert the original Modula-2 code into C.
+I did this for two reasons.  First, I had access to a C compiler, but
+not a Modula-2 compiler.  Second, I like C better anyway.
+<BR><BR>
+The executable code generator code (GetObjectCode and MergeModes)
+is essentially the same as in the original article, aside from its
+translation into C.  I have almost completely rewritten the remainder
+of the code, however, in order to remove restrictions, add enhancements,
+and adapt it to the AmigaDOS environment.  Since the only reference book
+available to me was the AmigaDOS Developer's Manual (Bantam, February
+1986), this document describes the assembler in terms of that book.</P>
+
+<HR>
+<H2><A NAME="restrictions"><U>Restrictions</U></A></H2>
+<P>Let's get these out of the way first:</P>
+<UL>
+<LI><P>The verification file <B>'-v'</B> option is not supported.  Diagnostic
+messages always appear on the console.  They also appear in the
+listing file, however (see extensions below).  You can produce
+an error file by redirecting console output to a file - the
+line number counter and final summary are displayed on stderr
+so you can still see what's happening.
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+<B>WARNING:</B> The new -v switch introduced in v.2.71.F3c is <B>NOT</B> the same as this one!</TD></TR></TABLE></P></LI>
+<LI><P>The file names in the <CODE>INCLUDE</CODE> directory list <B>'-i'</B> must be
+separated by commas.  The list may not be enclosed in quotes.</P></LI>
+<LI><P>Labels assigned by <CODE>EQUR</CODE> and <CODE>REG</CODE> directives are case-sensitive.</P></LI>
+<LI><P>Strange things will happen if your source code (including
+<CODE>INCLUDE</CODE> files and macro expansions) exceeds 32,766 lines.
+Tough darts.  Break up your source file.  Can you actually
+read that monster?
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+The maximum has been increased from 32,766 to 2,147,483,646 for
+32-bit operating systems starting from version 2.71.F3s.</TD></TR></TABLE></P></LI>
+<LI><P>Directives <CODE>OFFSET</CODE>, <CODE>NOPAGE</CODE>, <CODE>LLEN</CODE>, <CODE>PLEN</CODE>,
+<CODE>NOOBJ</CODE>, <CODE>FAIL</CODE>, <CODE>FORMAT</CODE>, <CODE>NOFORMAT</CODE> and
+<CODE>MASK2</CODE> are not supported, and will be flagged
+as invalid op-codes.
+I feel that <CODE>NOPAGE</CODE>, <CODE>LLEN</CODE>, and <CODE>PLEN</CODE> should not be
+defined within a source module.  It doesn't make sense to me to have to change
+your program just because you want to print your listings on
+different paper.  The command-line switch <B>'-p'</B> (see below) can
+be used as a replacement for <CODE>PLEN</CODE>; setting it to a high value
+(like 32767) is a good substitute for <CODE>NOPAGE</CODE>.  The effect of
+<CODE>LLEN</CODE> can be obtained by running the listing file through an
+appropriate filter.</P></LI>
+</UL>
+
+<HR>
+<H2><A NAME="exts"><U>Extensions</U></A></H2>
+<P>Now for the good stuff:</P>
+<UL>
+<LI><P>Labels can be any length that will fit onto one source line
+(currently 127 characters maximum).  Since labels are stored
+on the heap, the number of labels that can be processed is
+limited only by available memory.
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+The maximum has been increased from 127 to 256 (for
+Win32, starting from 2.71.F3a, for GNU/Linux,
+starting from 2.71.F3c, for all other platforms,
+starting from 2.71.F3s).</TD></TR></TABLE></P></LI>
+<LI><P>The first character of a label can be <CODE>'@'</CODE> if the next character
+is not numeric (this avoids confusion with octal constants).
+This provides compatibility with the Lattice C compiler.</P></LI>
+<LI><P>Since section data and user macro definitions are stored in
+the symbol table (see above), they too are limited only by
+available memory (actually, there is a hard-coded limit of
+32,767 sections, but I doubt anyone will run into that one).</P></LI>
+<LI><P>The only values a label cannot take are the register names -
+A68k can distinguish between the same name used as a label,
+instruction name or directive, macro name, or section name.</P></LI>
+<LI><P>Section and user macro names appear in the symbol table dump,
+and will also be cross-referenced.  Their names can be the same
+as any label (see above); they will be listed separately.</P></LI>
+<LI><P><CODE>INCLUDE</CODE>s and macro calls can be nested indefinitely, limited
+only by available memory.  The message "Secondary heap
+overflow - assembly terminated" will be displayed if memory
+is exhausted.  You can increase the size of this heap using
+the <B>'-w'</B> switch (see below).  Recursive macros are supported;
+recursive <CODE>INCLUDE</CODE>s will, of course, result in a loop that
+will be broken only when the heap overflows.</P></LI>
+<LI><P>The <CODE>EVEN</CODE> directive forces alignment on a word (2-byte)
+boundary.  It does the same thing as <CODE>CNOP&nbsp;0,2</CODE>
+(this one is left over from the original code).</P></LI>
+<LI><P>Backward references to labels within the current <CODE>CODE</CODE> section
+will be converted to PC-relative addressing with displacement
+if this mode is legal for the instruction.  This feature is
+disabled by the <B>'-n'</B> switch.</P></LI>
+<LI><P>If a <CODE>MOVEM</CODE> instruction only specifies one register, it is
+converted to the corresponding <CODE>MOVE</CODE> instruction.  Instructions
+such as <CODE>MOVEM&nbsp;D0-D0,<I>label</I></CODE> will not be converted, however.
+This feature is disabled by the <B>'-n'</B> switch.
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+Starting from v.2.71.F3c, this feature can now also be
+disabled by using the <B>'-rm'</B> switch.</TD></TR></TABLE></P></LI>
+<LI><P><CODE>ADD</CODE>, <CODE>SUB</CODE>, and <CODE>MOVE</CODE> instructions will be converted to
+<CODE>ADDQ</CODE>, <CODE>SUBQ</CODE>, and <CODE>MOVEQ</CODE> respectively if possible.
+Instructions coded explicitly (e.g. <CODE>ADDA</CODE> or <CODE>ADDI</CODE>) will not be converted.  This
+feature is disabled by the <B>'-n'</B> switch.</P></LI>
+<LI><P><CODE>ADD</CODE>, <CODE>CMP</CODE>, <CODE>SUB</CODE>, and <CODE>MOVE</CODE> to an address register are
+converted to <CODE>ADDA</CODE>, <CODE>CMPA</CODE>, <CODE>SUBA</CODE>, and <CODE>MOVEA</CODE>
+respectively, unless (for <CODE>ADD</CODE>, <CODE>SUB</CODE>, or <CODE>MOVE</CODE>)
+they have already been converted to quick form.</P></LI>
+<LI><P><CODE>ADD</CODE>, <CODE>AND</CODE>, <CODE>CMP</CODE>, <CODE>EOR</CODE>, <CODE>OR</CODE>, and
+<CODE>SUB</CODE> of an immediate value are
+converted to <CODE>ADDI</CODE>, <CODE>ANDI</CODE>, <CODE>CMPI</CODE>, <CODE>EORI</CODE>,
+<CODE>ORI</CODE>, and <CODE>SUBI</CODE> respectively (unless the address register or quick
+conversion above has already been done).</P></LI>
+<LI><P>
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+Starting from v.2.71.F3c, <CODE>ADDA</CODE> and <CODE>SUBA</CODE> (or <CODE>ADD</CODE> and <CODE>SUB</CODE>
+to an address register) will now be converted to <CODE>LEA</CODE> if
+possible. This feature can be disabled using the <B>'-n'</B>
+switch (disables all optimizations) or the <B>'-ra'</B> switch
+(disables just this single optimization).</TD></TR></TABLE></P></LI>
+<LI><P>
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+Starting from v.2.71.F3c, <CODE>LEA&nbsp;n(an),an</CODE> will now be converted to <CODE>ADDQ</CODE> or <CODE>SUBQ</CODE> if
+possible. This feature can be disabled using the <B>'-n'</B>
+switch (disables all optimizations) or the <B>'-rl'</B> switch
+(disables just this single optimization).</TD></TR></TABLE></P></LI>
+<LI><P>If both operands of a <CODE>CMP</CODE> instruction are postincrement mode,
+the instruction is converted to <CODE>CMPM</CODE>.</P></LI>
+<LI><P>Operands of the form <CODE>'0(An)'</CODE> will be treated as <CODE>'(An)'</CODE> except for
+the <CODE>MOVEP</CODE> instruction, which always requires a displacement.
+This feature is disabled by the <B>'-n'</B> switch.</P></LI>
+<LI><P>The <CODE>SECTION</CODE> directive allows a third parameter.  This can be
+specified as either <CODE>CHIP</CODE> or <CODE>FAST</CODE> (upper or lower case).  If
+this parameter is present, the hunk will be written with the
+<CODE>MEMF_CHIP</CODE> or <CODE>MEMF_FAST</CODE> bit set.  This allows you to produce
+"pre-ATOMized" object modules.</P></LI>
+<LI><P>The synonyms <CODE>DATA</CODE> and <CODE>BSS</CODE> are accepted for <CODE>SECTION</CODE> directives
+starting data or <CODE>BSS</CODE> hunks.  The <CODE>CHIP</CODE> and <CODE>FAST</CODE> options (see
+above) can also be used, e.g. <CODE>BSS&nbsp;<I>name</I>,CHIP</CODE>.</P></LI>
+<LI><P>The following synonyms have been implemented for compatibility
+with the Aztec assembler:
+</P>
+<UL>
+<LI><P><CODE>CSEG</CODE> is treated the same as <CODE>CODE</CODE> or <CODE>SECTION&nbsp;<I>name</I>,CODE</CODE>.</P></LI>
+<LI><P><CODE>DSEG</CODE> is treated the same as <CODE>DATA</CODE> or <CODE>SECTION&nbsp;<I>name</I>,DATA</CODE>.</P></LI>
+<LI><P><CODE>PUBLIC</CODE> is treated as either <CODE>XDEF</CODE> or <CODE>XREF</CODE>, depending on
+whether or not the symbol in question has been defined in the current source module.
+A single <CODE>PUBLIC</CODE> directive can name a mixture of internally- and externally-defined symbols.</P></LI>
+</UL>
+
+</LI>
+<LI><P>The ability to produce Motorola S-records is retained from the
+original code.  The <B>'-s'</B> switch causes the assembler to produce
+S-format instead of AmigaDOS format.  Relocatable code cannot
+be produced in this format.</P></LI>
+<LI><P>Error messages consist of three parts.
+The position of the offending line is given as a line
+number within the current module.  If the line is within a
+macro expansion or <CODE>INCLUDE</CODE> file, the position of the macro
+call or <CODE>INCLUDE</CODE> statement in the outer module is given as
+well.  This process is repeated until the outermost source
+module is reached.
+Next, the offending source line itself is listed.
+Finally, the errors for that line are displayed.  A flag
+<CODE>'^'</CODE> is placed under the column where the error was detected.</P></LI>
+<LI><P>Named local labels are supported.  These work the same as the
+local labels supported by the Metacomco assembler (<CODE><I>nnn</I>$</CODE>) but
+are formed in the same manner as normal labels, except that
+they must be preceded by a backslash (<CODE>'\'</CODE>).</P></LI>
+<LI><P>The following synonyms have been implemented for compatibility
+with the Assempro assembler:
+</P>
+<UL>
+<LI><P><CODE>ENDIF</CODE> is treated the same as <CODE>ENDC</CODE>.</P></LI>
+<LI><P><CODE>'='</CODE> is treated the same as <CODE>EQU</CODE>.</P></LI>
+<LI><P><CODE>'|'</CODE> is treated the same as <CODE>'!'</CODE> (logical OR).</P></LI>
+</UL>
+
+</LI>
+<LI><P>Quotation marks (<CODE>"</CODE>) can be used as string delimiters
+as well as apostrophes (<CODE>'</CODE>).  Any given string must begin
+and end with the same delimiter.  This allows such statements
+as the following:</P>
+<PRE>     MOVEQ   "'",D0
+     DC.B    "This is Charlie's assembler."
+</PRE>
+<P>Note that you can still define an apostrophe within a string
+delimited by apostrophes if you double it, e.g.</P>
+<PRE>     MOVEQ   '''',D0
+     DC.B    'This is Charlie''s assembler.'
+</PRE>
+
+</LI>
+<LI><P>If any errors are found in the assembly, the object code file
+will be scratched, unless you include the <B>'-k'</B> (keep) flag on
+the command line.</P></LI>
+<LI><P>The symbols <CODE>.A68K</CODE>, <CODE>.a68k</CODE>, <CODE>.a68K</CODE>, and <CODE>.A68k</CODE> are automatically
+defined as <CODE>SET</CODE> symbols having absolute values of 1.
+This enables a source program to determine whether it is
+being assembled by this assembler, and is effectively
+insensitive as to whether or not it is checked in upper case.</P></LI>
+<LI><P>A zeroth positional macro parameter <CODE>'\0'</CODE> is supported.  It
+is replaced by the length of the macro call (<CODE>B</CODE>, <CODE>W</CODE>, or <CODE>L</CODE>,
+defaulting to <CODE>W</CODE>).  For instance, given the macro:</P>
+<PRE>moov MACRO
+     move.\0 \1,\2
+     ENDM
+</PRE>
+<P>the macro call</P>
+<PRE>     moov.l  d0,d1
+</PRE>
+<P>would be expanded as</P>
+<PRE>     move.l  d0,d1
+</PRE>
+
+</LI>
+<LI><P>If an <CODE>INCLUDE</CODE> file doesn't generate any code and no listing
+file is required (including suppression of the listing using
+<CODE>NOLIST</CODE>), it won't be read again in pass 2.  The statement
+numbers will be bumped to keep in proper alignment.  This
+can really speed up assemblies that <CODE>INCLUDE</CODE> lots of <CODE>EQU</CODE>ates.</P></LI>
+<LI><P>The <CODE>ORG</CODE> directive is supported.  It works like <CODE>RORG</CODE>, except
+that it takes the actual address to be jumped to, rather
+than an offset from the start of the current section.
+The given address must be in the current section.
+As far as A68k is concerned, the only real difference
+between <CODE>ORG</CODE> and <CODE>RORG</CODE> is that the <CODE>ORG</CODE> value must be
+relocatable, while the RORG value must be absolute.</P></LI>
+<LI><P>Branch (<CODE>B<I>cc</I></CODE>, including <CODE>BRA</CODE> and <CODE>BSR</CODE>) instructions will be
+converted to short form if possible.  Shortening a branch
+may bring other branches within range of shortening - this
+can set up a ripple effect, and A68k may not catch all
+branches that could theoretically be optimized.  Any branches
+which A68k misses (there shouldn't be too many under normal
+circumstances) can be displayed by specifying the <B>'-f'</B> switch
+(see below).  Branch optimization is disabled by the <B>'-n'</B> switch.</P></LI>
+<LI><P>The <CODE>INCBIN</CODE> directive allows the contents of any file to be
+included in A68k's object code output.  Its format is the same
+as the <CODE>INCLUDE</CODE> directive, but the file can contain any data
+at all, printable or not.  Rather than being processed as
+source code by the assembler, the entire contents of the file
+is copied directly to the current position in the object code
+output file with no reformatting whatsoever.  The effect is
+the same as if <CODE>DC</CODE> statements whose constants represent the
+file's contents were inserted in place of the <CODE>INCBIN</CODE> directive.</P></LI>
+<LI><P>The opcode <CODE>TTL</CODE> is accepted as a synonym for <CODE>TITLE</CODE>.</P></LI>
+<LI><P>A command-line option <B>'-g'</B> causes A68k to treat any undefined
+symbol as <CODE>XREF</CODE>.</P></LI>
+<LI><P>The register list in a <CODE>MOVEM</CODE> instruction can be an
+immediate operand which specifies the actual mask bits.</P></LI>
+<LI><P>
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+The following synonyms are also supported:<BR>
+Starting from 2.71.F3a:</P>
+<UL><LI><P><CODE>BLO</CODE> = <CODE>BCS</CODE></P></LI>
+<LI><P><CODE>BHS</CODE> = <CODE>BCC</CODE></P></LI>
+<LI><P><CODE>DBLO</CODE> = <CODE>DBCS</CODE></P></LI>
+<LI><P><CODE>DBHS</CODE> = <CODE>DBCC</CODE></P></LI>
+<LI><P><CODE>ROLX</CODE> = <CODE>ROXL</CODE></P></LI>
+<LI><P><CODE>RORX</CODE> = <CODE>ROXR</CODE></P></LI></UL>
+<P>Starting from 2.71.F3c:</P>
+<UL><LI><P><CODE>SLO</CODE> = <CODE>SCS</CODE></P></LI>
+<LI><P><CODE>SHS</CODE> = <CODE>SCC</CODE></P></LI></UL>
+<P></TD></TR></TABLE></P></LI>
+</UL>
+
+<HR>
+<H2><A NAME="directives"><U>A68k Assembler Directives</U></A></H2>
+<P><B>Note:</B> This section has been written entirely by the TIGCC Team. Part of the information comes from <CODE>direct.txt</CODE> by Mathieu Lacage, but the whole text is completely rewritten and contains more details. Also, some of the directives listed here are not documented in <CODE>direct.txt</CODE>.
+<BR><BR>
+The <CODE>A68k</CODE> assembler supports the following assembler directives:
+<BR><BR>
+<TABLE>
+<TR><TD VALIGN="TOP">arithmetic operators</TD><TD>
+Arithmetic operators can be used exactly like their C counterparts, except that spaces are not allowed in an expression. But <CODE>((1+2)>>3)/4</CODE> is a perfectly legitimate <CODE>A68k</CODE> expression. Of course, you can not use anything other than <CODE>+</CODE> or <CODE>-</CODE> on labels
+and you cannot use arithmetic on registers at all - you will have to use the corresponding
+assembly instructions.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>INCLUDE&nbsp;&quot;<I>filename.h</I>&quot;</CODE></TD><TD>
+Includes the file given as a parameter at the current source position. The file is read in as assembly source code, as if it was part of the current assembly source.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>INCBIN&nbsp;&quot;<I>filename.bin</I>&quot;</CODE></TD><TD>
+Includes the binary content of the file given as a parameter as-is at the current location in the object file output. The file will <B>NOT</B> be assembled, but included as binary data.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>EVEN</CODE></TD><TD>
+Forces alignment on an even address. The next instruction will be guaranteed to be placed at an even address. This is especially important for <CODE>dc.w</CODE> or <CODE>dc.l</CODE> directives, since accessing a word or longword at an odd address causes an address error.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>CNOP&nbsp;<I>displacement</I>,<I>alignment</I></CODE></TD><TD>
+Forces alignment on an address which is the sum of <I>displacement</I>, which has to be even, and a multiple of <I>alignment</I>, which has to be a power of 2.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>XDEF&nbsp;<I>label</I></CODE></TD><TD>
+Exports the label given as an argument to other object files or to the linker. This also allows linker directives like <CODE>xdef&nbsp;_nostub</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>XREF&nbsp;<I>label</I></CODE></TD><TD>
+Imports the label given as an argument. This allows to access variables
+from other object files even if the <B>'-g'</B> switch is not specified. Since GCC4TI specifies <B>'-g'</B> by default, there
+is no real need for this directive.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>PUBLIC&nbsp;<I>label</I></CODE></TD><TD>
+Imports or exports the label given as an argument, depending on whether it is part of the current source file or not. We recommend using <CODE>XDEF</CODE> or <CODE>XREF</CODE> instead when possible, since they clearly specify what is meant. But <CODE>PUBLIC</CODE> is useful when used in a common header file for multiple source files.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>SECTION&nbsp;&quot;<I>sectname</I>&quot;</CODE></TD><TD>
+Sets the section the following code will be written to. This is especially useful to make <CODE>A68k</CODE> use the same section as <CODE>GCC</CODE>: <CODE>.data</CODE>, in order to make sure the linking order of <CODE>GCC</CODE> files first is respected. (<B>Note:</B> You can deliberately <B>NOT</B> specify <CODE>SECTION&nbsp;&quot;.data&quot;</CODE> if you want the <CODE>A68k</CODE> file to be the main file.)
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>BSS</CODE></TD><TD>
+Specifies the section the following code will be written to as a &quot;BSS section&quot;, a section which will not be initialized at runtime, so it can contain only storage place which does not need to be initialized. Also, BSS sections are <B>not</B> allowed in <CODE>_nostub</CODE> mode.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>CSEG</CODE></TD><TD>
+Creates a section called &quot;<CODE>CODE</CODE>&quot; where the code will be written to. This directive is not really useful in GCC4TI, since both code and data are written to the <CODE>.data</CODE> section by <CODE>GCC</CODE> and <CODE>GNU as</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>DSEG</CODE></TD><TD>
+Creates a section called &quot;<CODE>DATA</CODE>&quot; where the code will be written to. Do not use this directive in GCC4TI. Instead, specify <CODE>SECTION&nbsp;.data</CODE>, which is the section name used by <CODE>GCC</CODE> and <CODE>GNU as</CODE> for data sections.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>END</CODE></TD><TD>
+Marks the end of the source file. This directive is now optional since v.2.71.F3c.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>DC.{B|W|L}&nbsp;<I>data1</I>,<I>data2</I>,<I>...</I></CODE></TD><TD>
+(<B>D</B>efine <B>C</B>onstant(s)) Will insert all the arguments as immediate data into the object file. For example, <CODE>DC.L&nbsp;$12345678</CODE> will insert the bytes <CODE>0x12</CODE>, <CODE>0x34</CODE>, <CODE>0x56</CODE> and <CODE>0x78</CODE> into the resulting object file. <CODE>DC.B&nbsp;'Hello,&nbsp;World!',0</CODE> will insert the null-terminated string <CODE>&quot;Hello,&nbsp;World!&quot;</CODE> into the resulting object file.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>DS.{B|W|L}&nbsp;<I>n</I></CODE></TD><TD>
+(<B>D</B>efine <B>S</B>torage) Will insert <I>n</I> bytes, words or longwords (depending on the size specified) of zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>) into the resulting object file.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>DCB.{B|W|L}&nbsp;<I>n</I>,<I>data</I></CODE></TD><TD>
+(<B>D</B>efine <B>C</B>onstant <B>B</B>lock) Will act as <I>n</I> times the <CODE>DC.B&nbsp;<I>data</I></CODE> instruction. It will insert the immediated data specified by <I>data</I> <I>n</I> times into the resulting object file.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>macroName</I>&nbsp;MACRO<BR>&nbsp;<I>instructions</I><BR>&nbsp;ENDM</CODE></TD><TD>
+This declares a macro so that <CODE>macroName</CODE> can be used as if it was an instruction, with
+the difference that unlike opcodes, macro names are <B>case-sensitive</B>. You can also pass
+arguments to a macro. Those are referenced by a macro as <CODE>\<I>n</I></CODE>, where <I>n</I>
+is the number of the argument, starting from 1. <CODE>\0</CODE> indicates the instruction size. <CODE>\@</CODE> indicates the number of the current macro, which is useful to create unique labels of the form <CODE>\@<I>label</I></CODE> or <CODE>\\@<I>localLbl</I></CODE>.
+Therefore:</P>
+<PRE>PUSH MACRO
+     MOVE.\0 \1,-(a7)
+     ENDM</PRE>
+<P>(defined in "OS.h") allows you to use: <CODE>PUSH.L&nbsp;#1</CODE> when in fact you mean: <CODE>MOVE.L&nbsp;#1,-(a7)</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>&lt;<I>expression</I>&gt;</CODE></TD><TD>
+Makes sure <I>expression</I> will be treated as a single macro parameter, even if it contains separators like commas, semicolons or whitespace.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>constant</I>&nbsp;EQU&nbsp;<I>value</I></CODE><BR><B>OR:</B> <CODE><I>constant</I>&nbsp;=&nbsp;<I>value</I></CODE></TD><TD>
+Defines a symbolic constant. Wherever <I>constant</I> is encountered in the code, it will be
+replaced by <I>value</I>. Note that value can also be an expression, not only a single number.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>regAlias</I>&nbsp;EQUR&nbsp;<I>register</I></CODE></TD><TD>
+Defines an alias for a register. For example, if you are using <CODE>a5</CODE> to hold the address
+of the jump table in your whole program, you can write <CODE>jumpTbl&nbsp;EQUR&nbsp;a5</CODE>, and then
+use <CODE>jumpTbl</CODE> wherever you would use <CODE>a5</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>regListAlias</I>&nbsp;EQUR&nbsp;<I>regList</I></CODE></TD><TD>
+Defines an alias for a list of registers, for use in the <CODE>MOVEM</CODE> instruction. The syntax of <I>regList</I> is the same as in the <CODE>MOVEM</CODE> instruction.
+For example, if you are frequently using <CODE>MOVEM.L&nbsp;d0-d7/a0-a6,-(a7)</CODE> and <CODE>MOVEM.L&nbsp;(a7)+,d0-d7/a0-a6</CODE>, you might define: <CODE>all&nbsp;REG&nbsp;d0-d7/a0-a6</CODE>, and then
+use <CODE>all</CODE> wherever you would use <CODE>d0-d7/a0-a6</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>variable</I>&nbsp;SET&nbsp;<I>value</I></CODE></TD><TD>
+Defines a symbolic variable. Wherever <I>variable</I> is encountered in the code, it will be
+replaced by <I>value</I>. But contrary to an <CODE>EQU</CODE> constant, a <CODE>SET</CODE>
+variable can be modified. It can therefore be used as a counter for example, as in: <CODE>counter&nbsp;SET&nbsp;counter+1</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFEQ&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> equals 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFNE&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> does not equal 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFGE&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is greater than or equal to 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFGT&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is greater than 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFLE&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is less than or equal to 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFLT&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is less than 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFC&nbsp;<I>string1</I>,<I>string2</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>string1</I> and <I>string2</I> are identical (after expansion of <CODE>EQU</CODE> constants). You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFNC&nbsp;<I>string1</I>,<I>string2</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>string1</I> and <I>string2</I> are different (after expansion of <CODE>EQU</CODE> constants). You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFD&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is a defined symbol. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFND&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is not a defined symbol. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>NEAR&nbsp;[<I>register</I>]</CODE></TD><TD>
+Enables the <A HREF="#smallcode">small code and data model</A>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>FAR</CODE></TD><TD>
+Disables the <A HREF="#smallcode">small code and data model</A> after a <CODE>NEAR</CODE> directive.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>ORG&nbsp;<I>expression</I></CODE></TD><TD>
+Places the code following the directive at the address specified by <I>expression</I>, which must be relocatable (that is, of the form <CODE><I>label</I>+<I>number</I></CODE>, where <I>label</I> is a backward reference, not a forward reference). If that address is located before the current position, the code previously generated there will be overwritten. If that adress is located after the current position, the space will be filled with zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>).
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>RORG&nbsp;<I>offset</I></CODE></TD><TD>
+Places the code following the directive at the offset <I>offset</I>, which must be a number, from the beginning of the current object file section. If that address is located before the current position, the code previously generated there will be overwritten. If that adress is located after the current position, the space will be filled with zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>). However, if <CODE>RORG</CODE> is specified before the first executable instruction and in the default section (before any <CODE>SECTION</CODE>, <CODE>BSS</CODE>, <CODE>CSEG</CODE> or <CODE>DSEG</CODE> directive), no spacing will be generated, so it has the effect of adding the number <I>address</I> to all absolute references, thereby pre-relocating the code to that fixed address. But such an use of this directive is not useful in GCC4TI, as assembly programs on the TI-89/92+ can be at any place in memory, and the linker always generates a relocation table which allows AMS to take care of the relocation automatically.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>NOLIST</CODE></TD><TD>
+The code following this directive will not appear in the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>LIST</CODE></TD><TD>
+Reenables the listing of code after a <CODE>NOLIST</CODE> directive.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>PAGE</CODE></TD><TD>
+Inserts a form feed into the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>SPC&nbsp;[<I>n</I>]</CODE></TD><TD>
+Skips <I>n</I> lines, or 1 line if <I>n</I> is omitted, in the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>TTL&nbsp;<I>string</I></CODE><BR><B>OR:</B> <CODE>TITLE&nbsp;<I>string</I></CODE></TD><TD>
+Sets the title on the pages of the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified to <I>string</I>. Also begins a new page when specified on the middle of a page.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IDNT&nbsp;&quot;<I>name</I>&quot;</CODE></TD><TD>
+Sets the program unit name in the S-record generated when the <B>'-s'</B> switch is specified, to <I>name</I>. The quotes can be omitted. This directive is not useful in GCC4TI, since GCC4TI does not use S-records.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>\<I>localLbl</I></CODE></TD><TD>
+Defines a local label, a label which can be accessed only in the space between the 2 global labels surrounding it. This mainly serves to avoid name conflicts: 2 or more local labels can have the same name as long as they are separated by a global label.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>\<I>localLbl</I>@<I>labelNum</I></CODE></TD><TD>
+Defines a local enumeration label, invented mainly for use in macros. The idea is that <I>labelNum</I> can be a variable name which can be expanded while keeping <I>localLbl</I> unchanged. But it is usually a better idea to use <CODE>\@<I>label</I></CODE> or <CODE>\\@<I>localLbl</I></CODE> instead, which will automatically generate unique labels.
+</TD></TR>
+</TABLE></P>
+
+<HR>
+<H2><A NAME="smallcode"><U>The Small Code/Data model</U></A></H2>
+<P>Version 2.4 implements a rudimentary small code/data model.
+It consists of converting any data reference to one of the following
+three addressing modes:
+</P>
+<UL>
+<LI><P>    address register indirect with displacement using a
+        specified address register, defaulting to <CODE>A4</CODE>
+        (for references to the <CODE>DATA</CODE> or <CODE>BSS</CODE> section);</P></LI>
+<LI><P>    program counter indirect with displacement
+        (for references to the <CODE>CODE</CODE> section);</P></LI>
+<LI><P>    absolute word
+        (for absolute and 16-bit relocatable values).</P></LI>
+</UL>
+<P>These conversions do not take place unless a <CODE>NEAR</CODE> directive is
+encountered.  The <CODE>NEAR</CODE> directive can take one operand, which
+must be either an address register or a symbol which has been
+equated (using <CODE>EQUR</CODE>) to an address register.  Register <CODE>A7</CODE> (<CODE>SP</CODE>)
+may not be used.  If no register is given, <CODE>A4</CODE> is assumed.
+<BR><BR>
+     Conversion is done for all operands until a <CODE>FAR</CODE> directive
+is encountered.  <CODE>NEAR</CODE> and <CODE>FAR</CODE> directives can occur any number
+of times, enabling conversion to be turned on and off at will.
+<BR><BR>
+     Backward references which cannot be converted (e.g. external
+labels declared as <CODE>XREF</CODE>) will remain as absolute long addressing.
+All forward references are assumed to be convertible, since during
+pass 1 <CODE>A68k</CODE> has no way of telling whether conversion is possible.
+If conversion turns out to be impossible, invalid object code will
+be generated - an error message ("Invalid forward reference") will
+indicate when this occurs.
+<BR><BR>
+Although the small code/data model can greatly reduce the
+size of assembled programs, several restrictions apply:</P>
+<UL>
+<LI><P>Small code and small data models are active simultaneously.
+You can't have one without the other, since during pass 1
+A68k doesn't know whether forward references are to <CODE>CODE</CODE>
+or to <CODE>DATA</CODE>/<CODE>BSS</CODE>.</P></LI>
+<LI><P>Programs can consist of a maximum of two sections,
+one <CODE>CODE</CODE>, the other <CODE>DATA</CODE> or <CODE>BSS</CODE>.  If you try to define
+a third section, the message "Too many SECTIONs" will
+be displayed.  The <CODE>NEAR</CODE> directive is active only within
+the <CODE>CODE</CODE> section.</P></LI>
+<LI><P>While the <CODE>NEAR</CODE> directive is active, external labels (<CODE>XREF</CODE>)
+must be declared before they are used, <CODE>CODE</CODE> section references
+must be with 32K of the current position (i.e. expressible as
+PC-relative), and <CODE>DATA</CODE>/<CODE>BSS</CODE> section references must be in the
+first 64K of the <CODE>DATA</CODE>/<CODE>BSS</CODE> section (i.e. expressible as
+address register indirect with displacement).  Any instructions
+which do not satisfy these requirements cannot be detected in
+pass 1, so A68k has no choice but to display an error message
+in pass 2 ("Invalid forward reference") which in this case
+indicates that invalid code has been generated.  To properly
+assemble such instructions, you can temporarily disable
+conversion with a <CODE>FAR</CODE> directive, then resume afterwards
+with another <CODE>NEAR</CODE> directive.</P></LI>
+<LI><P>Conversion cannot be done for references between modules.
+All external references must be left as absolute long.</P></LI>
+<LI><P><CODE>A68k</CODE> assumes that the base register (normally <CODE>A4</CODE>) points to
+the start of the <CODE>DATA</CODE>/<CODE>BSS</CODE> section plus 32768 bytes (this
+assumed offset can be changed by the <B>'-m'</B> command-line parameter).
+The register must be preloaded with this value before executing
+any code converted by the <CODE>NEAR</CODE> directive.  One way to do this
+is to code the instruction that loads the register prior to
+the <CODE>NEAR</CODE> directive.  Another way is to use a <CODE>MOVE.L</CODE> with
+immediate mode, which is never converted.  Here are examples
+of the two methods:</P>
+<PRE>     LEA data+32768,a4                NEAR
+     NEAR ;defaults to A4             MOVE.L #data+32768,a4
+     &lt;remainder of code&gt;              &lt;remainder of code&gt;
+     BSS                              BSS
+data:                            data:
+     &lt;data areas&gt;                     &lt;data areas&gt;
+     END                              END
+</PRE>
+
+</LI>
+</UL>
+<P>I'll be the first to admit that this is a very crude and ugly
+implementation.  I hope to improve it in future versions.</P>
+
+<HR>
+<H2><A NAME="files"><U>Files</U></A></H2>
+<P><CODE>A68k</CODE> uses the following files:</P>
+<UL>
+<LI><P>The source code file - this file contains the program to be
+assembled.  This file is an ASCII text file whose last line
+must be an <CODE>END</CODE> statement.
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+This <CODE>END</CODE> statement is no longer necessary starting
+from v.2.71.F3c.<BR>
+Moreover, the assembler will no longer accept an <CODE>END</CODE>
+statement in include files or macros, since it did
+never expect that and caused bugs.</TD></TR></TABLE></P></LI>
+<LI><P>The object code file - this file is created by <CODE>A68k</CODE>, replacing
+any previous version which may exist.  If any errors are
+encountered during the assembly, this file will be scratched,
+unless the <B>'-k'</B> (keep) switch is specified (see below).
+Although this file is normally written in AmigaDOS format,
+the <B>'-s'</B> switch (see below) will cause it to be written in
+Motorola S-record format instead.</P></LI>
+<LI><P>The listing file - this file is optionally created by <CODE>A68k</CODE>
+and contains a listing complete with page headings (including
+form feeds), generated object code, and error messages if any.
+It is suitable for feeding to a printer.</P></LI>
+<LI><P>An equate file - this file is optionally created by <CODE>A68k</CODE>
+and consists of a leading comment line followed by <CODE>EQU</CODE>
+statements, one for each symbol encountered by <CODE>A68k</CODE> whose
+value is absolute.  This file is only created if the <B>'-e'</B>
+command-line switch is specified (see below).</P></LI>
+<LI><P>A header file - if requested, this file is read by <CODE>A68k</CODE>
+immediately prior to the source code file.  It treated
+exactly as if it were requested by an <CODE>INCLUDE</CODE> statement
+at the front of the source file, but is selected only if
+the <B>'-h'</B> command-line switch is specified (see below).</P></LI>
+<LI><P>Include files are selected by <CODE>INCLUDE</CODE> directives within the
+source file, and are inserted in the source code in place
+of the <CODE>INCLUDE</CODE> directive itself.  <CODE>A68k</CODE> first searches the
+current directory for <CODE>INCLUDE</CODE> files; the <B>'-i'</B> command-line
+switch (see below) specifies additional directories which
+can be searched.</P></LI>
+</UL>
+
+<HR>
+<H2><A NAME="filenames"><U>File Names</U></A></H2>
+<P>The names of the above files can be explicitly specified.
+However, <CODE>A68k</CODE> will generate default file names in the following cases:</P>
+<UL>
+<LI><P>If the <B>'-o'</B> switch is omitted, a default name will be assigned
+to the object code file.</P></LI>
+<LI><P>If the <B>'-e'</B> switch is specified with no file name, a default
+name will be assigned to the equate file.</P></LI>
+<LI><P>If the <B>'-l'</B> or <B>'-x'</B> switch is specified with no file name, a
+default name will be assigned to the listing file.</P></LI>
+</UL>
+<P>A default name is generated by deriving a stem name from the source
+code file name, and appending <CODE>'.o'</CODE> for an object code file name (<CODE>'.s'</CODE>
+if the <B>'-s'</B> switch is specified to produce Motorola S-records), <CODE>'.equ'</CODE>
+for an equate file name, or <CODE>'.lst'</CODE> for a listing file name.  The stem
+name consists of all characters of the source file name up to the
+last period (or the entire source file name if it contains no period).
+Here are some examples of default names:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD><B>Source file</B></TD><TD><B>Object file</B></TD><TD><B>Equate file</B></TD><TD><B>Listing file</B></TD></TR>
+<TR><TD>myprog.asm</TD><TD>myprog.o</TD><TD>myprog.equ</TD><TD>myprog.lst</TD></TR>
+<TR><TD>myprog</TD><TD>myprog.o</TD><TD>myprog.equ</TD><TD>myprog.lst</TD></TR>
+<TR><TD>new.prog.asm</TD><TD>new.prog.o</TD><TD>new.prog.equ</TD><TD>new.prog.lst</TD></TR>
+</TABLE></P>
+
+<HR>
+<H2><A NAME="usage"><U>A68k Command-Line Parameters (How to use A68k)</U></A></H2>
+<P>The command-line syntax to run the assembler is as follows:</P>
+<PRE>   a68k &lt;<I>source file name</I>&gt;
+        [&lt;<I>object file name</I>&gt;]
+        [&lt;<I>listing file name</I>&gt;]
+<B>(TIGCC/GCC4TI)</B> [-a]
+        [-d[[!]&lt;<I>prefix</I>&gt;]]
+        [-e[&lt;<I>equate file name</I>&gt;]]
+        [-f]
+        [-g]
+        [-h&lt;<I>header file name</I>&gt;]
+        [-i&lt;<I>include directory list</I>&gt;]
+        [-k]
+        [-l[&lt;<I>listing file name</I>&gt;]]
+        [-m&lt;<I>small data offset</I>&gt;]
+        [-n]
+        [-o&lt;<I>object file name</I>&gt;]
+        [-p&lt;<I>page depth</I>&gt;]
+        [-q[&lt;<I>quiet interval</I>&gt;]]
+<B>(TIGCC/GCC4TI)</B> [-r[a][l][m]]
+        [-s]
+        [-t]
+<B>(TIGCC/GCC4TI)</B> [-u]
+<B>(TIGCC/GCC4TI)</B> [-v&lt;<I>name</I>&gt;[,&lt;<I>value</I>&gt;]
+        [-w[&lt;<I>hash table size</I>&gt;][,&lt;<I>secondary heap size</I>&gt;]]
+        [-x[&lt;<I>listing file name</I>&gt;]]
+        [-y]
+        [-z[&lt;<I>debug start line</I>&gt;][,&lt;<I>debug end line</I>&gt;]]
+</PRE>
+<P>
+These options can be given in any order.  Any parameter which is not
+a switch (denoted by a leading hyphen) is assumed to be a file name;
+up to three file names (assumed to be source, object, and listing file
+names respectively) can be given.  A source file name is always required.
+If a switch is being given a value, that value must immediately follow
+the switch letter with no intervening spaces.  For instance, to specify
+a page depth of 40 lines, the specification <B>'-p40'</B> should be used;
+<B>'-p&nbsp;40'</B> will be rejected.
+<BR><BR>
+Switches perform the following actions:</P>
+<DL>
+
+<DT><P><B>-a</B></P><DD><P>Causes all relocs to be emitted, even PC-relative relocs
+within a section. It also emits address differences in a
+special TIGCC/GCC4TI-specific format. This will allow more
+aggressive linker-side optimization.
+</P><DT><P><B>-d</B></P><DD><P>Causes symbol table entries (hunk_symbol) to be written
+to the object module for the use of symbolic debuggers.
+If the switch is followed by a string of characters, only
+those symbols beginning with that prefix string will be
+written.  This can be used to suppress internal symbols
+generated by compilers.  If the first character is an
+exclamation mark (<CODE>'!'</CODE>), only symbols which do <B>not</B> begin
+with the following characters are written out. Here are some examples:
+<BR><BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD CLASS="NOBORDER"><CODE>-d</CODE></TD><TD CLASS="NOBORDER">writes all symbols</TD></TR>
+<TR><TD CLASS="NOBORDER"><CODE>-dabc&nbsp;&nbsp;&nbsp;</CODE></TD><TD CLASS="NOBORDER">writes only symbols beginning with "abc"</TD></TR>
+<TR><TD CLASS="NOBORDER"><CODE>-d!x</CODE></TD><TD CLASS="NOBORDER">writes symbols which do not begin with "x"</TD></TR>
+</TABLE>
+</P><DT><P><B>-e</B></P><DD><P>Causes an equate file (see above) to be produced.  A file
+name can be specified; otherwise a default name will be used.
+</P><DT><P><B>-f</B></P><DD><P>Causes any branches (<CODE>B<I>cc</I></CODE>, <CODE>BRA</CODE>, <CODE>BSR</CODE>) that could be converted
+to short form to be flagged.  <CODE>A68k</CODE> will convert as many
+branches as possible to short form (unless the <B>'-n'</B> switch is
+is specified), but certain combinations of instructions may
+set up a ripple effect where shortening one branch brings
+another one into range.  This switch will cause <CODE>A68k</CODE> to
+flag any branches that it may have missed; during pass 2
+it is possible to tell this, although during pass 1 it might
+not be.  If the <B>'-n'</B> switch (see below) is specified along
+with this switch (suppressing all optimization), no branches
+will be shortened, but all branches which could be shortened
+will be flagged.
+</P><DT><P><B>-g</B></P><DD><P>Causes any undefined symbols to be treated as if they were
+externally defined (<CODE>XREF</CODE>), rather than being flagged as errors.
+</P><DT><P><B>-h</B></P><DD><P>Causes a header file to be read prior to the source code file.
+A file name must be given.  The action is the same as if the
+first statement of the source file were an <CODE>INCLUDE</CODE> statement
+naming the header file.  To find the header file, the same
+directories will be searched as for <CODE>INCLUDE</CODE> files (see the
+<B>'-i'</B> switch below).
+</P><DT><P><B>-i</B></P><DD><P>Specifies directories to be searched for <CODE>INCLUDE</CODE> files in
+addition to the current directory.  Several names, separated
+by commas, may be specified.  No embedded blanks are allowed.
+For example, the specification</P>
+<PRE>-imylib,df1:another.lib
+</PRE>
+<P>will cause <CODE>INCLUDE</CODE> files to be searched for first in the
+current directory, then in "mylib", then in "df1:another.lib".
+</P><DT><P><B>-k</B></P><DD><P>Causes the object file to be kept even if any errors were
+found.  Otherwise, it will be scratched if any errors occur.
+</P><DT><P><B>-l</B></P><DD><P>Causes a listing file to be produced.  If you want the listing
+file to include a symbol table dump and cross-reference, use
+the <B>'-x'</B> switch instead (see below).
+</P><DT><P><B>-m</B></P><DD><P>Changes the assumed offset from the start of the <CODE>DATA</CODE>/<CODE>BSS</CODE>
+section to the base register used when the small code/data
+option is activated by the <CODE>NEAR</CODE> directive.
+If this parameter is not specified, the offset defaults
+to 32768.
+</P><DT><P><B>-n</B></P><DD><P>Causes all object code optimization (see above) to be disabled.
+</P><DT><P><B>-o</B></P><DD><P>Allows the default name for the object code file (see above)
+to be overridden.
+</P><DT><P><B>-p</B></P><DD><P>Causes the page depth to be set to the specified value.
+This takes the place of the <CODE>PLEN</CODE> directive in the Metacomco
+assembler.  Page depth defaults to 60 lines (<B>'-p60'</B>).
+</P><DT><P><B>-q</B></P><DD><P>Changes the interval at which <CODE>A68k</CODE> displays the line number
+it has reached in its progress through the assembly.  The
+default is to display every 100 lines (<B>'-q100'</B>).  Specifying
+larger values reduces console I/O, making assemblies run
+slightly faster.
+<BR><BR>
+If you specify a negative number (e.g.  <B>'-q-10'</B>), line numbers
+will be displayed at an interval equal to the absolute value
+of the specified number, but will be given as positions
+within the current module (source, macro, or <CODE>INCLUDE</CODE>) rather
+than as a total statement count - the module name will also
+be displayed.
+<BR><BR>
+A special case is the value zero (<B>'-q0'</B> or just <B>'-q'</B>) - this
+will cause all console output, except for error messages,
+to be suppressed.
+</P><DT><P><B>(TIGCC/GCC4TI)</B> <B>-r</B></P><DD><P>Allows to disable specific optimizations:<BR>
+<B>-rm</B> Disable the <CODE>MOVEM</CODE> -> <CODE>MOVE</CODE> optimization<BR>
+<B>-ra</B> Disable the <CODE>ADD(A)/SUB(A)</CODE> -> <CODE>LEA</CODE> optimization<BR>
+<B>-rl</B> Disable the <CODE>LEA</CODE> -> <CODE>ADDQ/SUBQ</CODE> optimization<BR>
+You might use more than one <B>-r</B> switch (as in "<B>-rm -ra</B>") or combine them into a single switch (as in "<B>-rma</B>").
+</P><DT><P><B>-s</B></P><DD><P>Causes the object file to be written in Motorola S-record
+format, rather than AmigaDOS format.  The default name for
+an S-record file ends with <CODE>'.s'</CODE> rather than <CODE>'.o</CODE>; this can
+still be overridden with the <B>'-o'</B> switch, though.
+</P><DT><P><B>-t</B></P><DD><P>Allows tabs in the source file to be passed through to the
+listing file, rather than being expanded.  In addition, tabs
+will be generated in the listing file to skip from the object
+code to the source statement, etc.  This can greatly reduce
+the size of the listing file, as well as making it quicker to
+produce.  Do not use this option if you will be displaying or
+listing the list file on a device which does not assume a tab
+stop at every 8th position.
+</P><DT><P><B>(TIGCC/GCC4TI)</B> <B>-u</B></P><DD><P>Disables automatic alignment of <CODE>DC.W</CODE>,
+<CODE>DC.L</CODE>, <CODE>DCB.W</CODE>, <CODE>DCB.L</CODE>,
+<CODE>DS.W</CODE>, <CODE>DS.L</CODE> and code.
+</P><DT><P><B>(TIGCC/GCC4TI)</B> <B>-v</B></P><DD><P>Allows to set a variable in the command line (like <B>-d</B> with
+<CODE>GCC</CODE>). The variable will be a <CODE>SET</CODE>, not <CODE>EQU</CODE> variable. Syntax:
+"<B>-v</B>&lt;<I>name</I>&gt;[,&lt;<I>value</I>&gt;]" (without spaces, and without the
+quotes). Note that &lt;<I>value</I>&gt; can only be a <B>NUMBER</B> at the
+moment. (We might support symbols as values in a future
+version.) The default value of &lt;<I>value</I>&gt; is 1.
+</P><DT><P><B>-w</B></P><DD><P>Specifies the sizes of fixed memory areas that <CODE>A68k</CODE> allocates
+for its own use.  You should normally never have to specify
+this switch, but it may be useful for tuning.
+<BR><BR>
+The first parameter gives the number of entries that the hash
+table (used for searching the symbol table) will contain.
+The default value of 2047 should be enough for all but the
+very largest programs.  The assembly will not fail if this
+value is too small, but may slow down if too many long hash
+chains must be searched.  The hashing statistics displayed by
+the <B>'-y'</B> switch (see below) can be used to tune this parameter.
+I've heard that you should really specify a prime number for
+this parameter, but I haven't gone into hashing theory enough
+to know whether it's actually necessary.
+<BR><BR>
+The second parameter of the <B>'-w'</B> switch specifies the size (in
+bytes) of the secondary heap, which is used to store nested
+macro and <CODE>INCLUDE</CODE> file information (see below).  It defaults
+to 1024, which should be enough unless you use very deeply
+nested macros and/or <CODE>INCLUDE</CODE> files with long path names.
+<BR><BR>
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+The default sizes are 4095,2048 in the Win32 (since
+v.2.71.F3a) and GNU/Linux (since v.2.71.F3c) versions.</TD></TR></TABLE>
+<BR><BR>
+You can specify either or both parameters.  For example:
+<BR><BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD CLASS="NOBORDER"><CODE>-w4093</CODE></TD><TD CLASS="NOBORDER">secondary heap size remains at 1024 bytes</TD></TR>
+<TR><TD CLASS="NOBORDER"><CODE>-w,2000</CODE></TD><TD CLASS="NOBORDER">hash table size remains at 2047 entries</TD></TR>
+<TR><TD CLASS="NOBORDER"><CODE>-w4093,2000&nbsp;&nbsp;&nbsp;</CODE></TD><TD CLASS="NOBORDER">increases the size of both areas</TD></TR>
+</TABLE>
+<BR>
+If you're really tight for memory, and are assembling small
+modules, you can use this switch to shrink these areas below
+their default sizes.  At the end of an assembly, a message
+will be displayed giving the sizes actually used, in the form
+of the <B>'-w'</B> command you would have to enter to allocate that much
+space.  This is primarily useful to see how much secondary
+heap space was used.
+<BR><BR>
+<B>Note:</B> All other memory used by <CODE>A68k</CODE> (e.g. the actual symbol
+table) is allocated as required (currently in 8K chunks).
+</P><DT><P><B>-x</B></P><DD><P>Works the same as <B>'-l'</B> (see above), except that a symbol table
+dump, including cross-reference information, will be added
+to the end of the listing file.
+</P><DT><P><B>-y</B></P><DD><P>Causes hashing statistics to be displayed at the end of the
+assembly.  First the number of symbols in the table is given,
+followed by a summary of hash chains by length.  Chains with
+length zero denote unused hash table entries.  Ideally (i.e.
+if there were no collisions) there should be as many chains
+with length 1 as there are symbols, and there should be no
+chains of length 2 or greater.  I added this option to help
+me tune my hashing algorithm, but you can also use it to see
+whether you should allocate a larger hash table (using the
+first parameter of the <B>'-w'</B> switch, see above).
+</P><DT><P><B>-z</B></P><DD><P>This switch was provided to help debug <CODE>A68k</CODE> itself.  It causes <CODE>A68k</CODE> to
+list a range of source lines, complete with line number and
+current location counter value, during both passes.  Lines
+are listed immediately after they have been read from the
+source file, before any processing occurs. Here are some examples of the <B>'-z'</B> switch:
+<BR><BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD CLASS="NOBORDER"><CODE>-z</CODE></TD><TD CLASS="NOBORDER">lists all source lines</TD></TR>
+<TR><TD CLASS="NOBORDER"><CODE>-z100,200&nbsp;&nbsp;&nbsp;</CODE></TD><TD CLASS="NOBORDER">lists lines 100 through 200</TD></TR>
+<TR><TD CLASS="NOBORDER"><CODE>-z100</CODE></TD><TD CLASS="NOBORDER">lists all lines starting at 100</TD></TR>
+<TR><TD CLASS="NOBORDER"><CODE>-z,100</CODE></TD><TD CLASS="NOBORDER">lists the first 100 lines</TD></TR>
+</TABLE></P>
+</DL>
+
+<HR>
+<H2><A NAME="tech"><U>Technical Information</U></A></H2>
+<P>The actual symbol table entries (pointed to by the hash table,
+colliding entries are linked together) are stored in 8K chunks which
+are allocated as required.  The first entry of each chunk is reserved
+as a link to the next chunk (or NULL in the last chunk) - this makes
+it easy to find all the chunks to free them when we're finished.  All
+symbol table entries are stored in pass 1.  During pass 2, cross-
+reference table entries are built in the same group of chunks,
+immediately following the last symbol table entry.  Additional chunks
+will continue to be linked in if necessary.
+<BR><BR>
+Symbol names and macro text are stored in another series of linked
+chunks.  These chunks consist of a link pointer followed by strings
+(terminated by nulls) laid end to end.  Symbols are independent entries,
+linked from the corresponding symbol table entry.  Macros are stored as
+consecutive strings, one per line - the end of the macro is indicated by
+an <CODE>ENDM</CODE> statement.  If a macro spans two chunks, the last line in the
+original chunk is followed by a newline character to indicate that the
+macro is continued in the next chunk.
+<BR><BR>
+Relocation information is built during pass 2 in yet another
+series of linked chunks.  If more than one chunk is needed to hold one
+section's relocation information, all additional chunks are released
+at the end of the section.
+<BR><BR>
+The secondary heap is built from both ends, and it grows and
+shrinks according to how many macros and <CODE>INCLUDE</CODE> files are currently
+open.  At all times there will be at least one entry on the heap, for
+the original source code file.  The expression parser also uses the
+secondary heap to store its working stacks - this space is freed as
+soon as an expression has been evaluated.
+<BR><BR>
+The bottom of the heap holds the names of the source code file
+and any macro or <CODE>INCLUDE</CODE> files that are currently open.  The full path
+is given.  A null string is stored for user macros.  Macro arguments
+are stored by additional strings, one for each argument in the macro
+call line.  All strings are stored in minimum space, similar to the
+labels and user macro text on the primary heap.  File names are
+pointed to by the fixed table entries (see below) - macro arguments
+are accessed by stepping past the macro name to the desired argument,
+unless NARG would be exceeded.
+<BR><BR>
+The fixed portion of the heap is built down from the top.  Each
+entry occupies 16 bytes.  Enough information is stored to return to
+the proper position in the outer file once the current macro or
+<CODE>INCLUDE</CODE> file has been completely processed.
+<BR><BR>
+The diagram below illustrates the layout of the secondary heap.</P>
+<PRE>
+Heap2 + maxheap2 -----------&gt;&nbsp;&nbsp;___________________________
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Input file table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+struct InFCtl *InF ---------&gt;&nbsp;|___________________________|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Parser operator stack&nbsp;&nbsp;&nbsp;|
+struct OpStack *Ops --------&gt;&nbsp;|___________________________|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;(unused space)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+struct TermStack *Term -----&gt;&nbsp;|___________________________|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Parser term stack&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+char *NextFNS --------------&gt;&nbsp;|___________________________|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Input file name stack&nbsp;&nbsp;&nbsp;|
+char *Heap2 ----------------&gt;&nbsp;|___________________________|
+</PRE>
+<P>The "high-water mark" for <CODE>NextFNS</CODE> is stored in <CODE>char&nbsp;*High2</CODE>,
+and the "low-water mark" (to stretch a metaphor) for <CODE>InF</CODE> is stored
+in <CODE>struct&nbsp;InFCtl&nbsp;*LowInF</CODE>.  These figures are used only to determine
+the maximum heap usage.</P>
+
+<HR>
+<H2><A NAME="contact"><U>A68k Contact Information and Bug Reports</U></A></H2>
+<P>And Finally...
+<BR><BR>
+<S>     Please send me any bug reports, flames, etc.  I can be reached
+on Mind Link (604/533-2312), at any meeting of the Commodore
+Computer Club / Panorama (PAcific NORthwest AMiga Association),
+or via Jeff Lydiatt or Larry Phillips.  I don't have the time
+or money to live on Compuserve or BIX, but my Usenet address is
+Charlie_Gibbs@mindlink.UUCP (...uunet!van-bc!rsoft!mindlink!a218).
+<BR><BR>
+<B>
+Charlie Gibbs<BR>
+2121 Rindall Avenue<BR>
+Port Coquitlam, B.C.<BR>
+Canada<BR>
+V3C 1T9<BR>
+</B></S>
+<BR><BR>
+<TABLE><TR><TD><B>(GCC4TI)</B></TD><TD>
+Since, as far as we can tell, Charlie Gibbs is no longer
+maintaining A68k since 1991, you are better off filing a bug report
+to the GCC4TI project:
+<A HREF="http://trac.godzil.net/gcc4ti/">http://trac.godzil.net/gcc4ti/</A></TD></TR></TABLE></P>
+
+<HR>
+<H2><A NAME="history"><U>History of A68k</U></A></H2>
+<P><B>Note:</B> This section has been added to the documentation by the TIGCC Team. It was in <I>history.txt</I> before.
+<BR><BR>
+<B>Version 2.71.F3z (Lionel Debroux, July 29, 2009)</B></P>
+<UL><LI><P>Bugfix: Fix moveq #$FFFFFFFE,dn on 64-bit platforms.</P></LI></UL>
+<P><B>Version 2.71.F3y (Patrick Pelissier, June 27, 2009)</B></P>
+<UL><LI><P>Improved: the maximum length of a line has been raised from 256 to 65536.</P></LI></UL>
+
+
+<UL><LI><P>Bugfix: don't compile A68k statically, as it fails on multiple platforms in their
+out of the box configuration (Lionel Debroux).</P></LI></UL>
+<P><B>Version 2.71.F3x (Manoel Trapier, December 23, 2008)</B></P>
+<UL><LI><P>Added: OS X Makefile that generate an Universal Binary version.</P></LI></UL>
+<P><B>Version 2.71.F3w (Kevin Kofler, July 27, 2006)</B></P>
+<UL><LI><P>Bugfix: Fixed compilation on *BSD and recent versions of OS X.</P></LI></UL>
+<P><B>Version 2.71.F3v (Kevin Kofler, July 31, 2005)</B></P>
+<UL><LI><P>Bugfix: Don't crash on EQUs doing arithmetic with other EQUs which do
+arithmetic with undefined symbols, print an error instead.</P></LI></UL>
+<P><B>Version 2.71.F3u (Kevin Kofler, February 2, 2005)</B></P>
+<UL><LI><P>Bugfix: Fixed compilation with GCC 3.4.</P></LI></UL>
+<P><B>Version 2.71.F3t (Kevin Kofler, January 31, 2005)</B></P>
+<UL><LI><P>Added: NO_UNOPTIMIZABLE_RELOCS compile-time define (disabled by default)
+to allow generating AmigaOS-compatible object files again.</P></LI>
+<LI><P>Improved: Branches explicitly coded as .w are now marked unoptimizable.</P></LI>
+<LI><P>Improved: Label references explicitly coded as .l are now marked
+unoptimizable.</P></LI>
+<LI><P>Bugfix: Emitting relocations for undefined symbols which are already in
+the symbol table due to the forward branch optimization code now
+works properly.</P></LI></UL>
+<P><B>Version 2.71.F3s (Kevin Kofler, September 21, 2004)</B></P>
+<UL><LI><P>Added: Support for the "unoptimizable reloc" flag, keeping the linker
+from corrupting some instructions when optimizing.</P></LI>
+<LI><P>Improved: All platforms now use the same maximum line length and chunk
+sizes.</P></LI>
+<LI><P>Improved: The line count limit has been raised from 32767 to INT_MAX.</P></LI></UL>
+<P><B>Version 2.71.F3r (Kevin Kofler, July 19, 2004)</B></P>
+<UL><LI><P>Bugfix: Fixed label(PC,Rn) addressing when "label" was in a different
+section (again) (reported by Julien Moutinho).</P></LI></UL>
+<P><B>Version 2.71.F3q (Kevin Kofler, December 30, 2003)</B></P>
+<UL><LI><P>Bugfix: Fixed label1-label2(an) in all-relocs mode (reported by
+hwti).</P></LI>
+<LI><P>Added: (In all-relocs mode,) don't emit an address difference when the 2
+labels are actually at the same address (or simply the same). This allows to
+keep optimizing label1-label1(an) into (an).</P></LI>
+<LI><P>Bugfix: Fixed a bug when range-checking branches in all-relocs mode
+(reported by hwti).</P></LI>
+<LI><P>Bugfix: Fixed a bug when range-checking short branches in all-relocs mode or
+to a different section (reported by hwti).</P></LI></UL>
+<P><B>Version 2.71.F3p (Kevin Kofler, December 1, 2003)</B></P>
+<UL><LI><P>Bugfix: Fixed label(PC,Rn) addressing in all-relocs mode or when "label" was
+in a different section (reported by Matthieu Gallet).</P></LI></UL>
+<P><B>Version 2.71.F3o (Kevin Kofler, October 5, 2003)</B></P>
+<UL><LI><P>Bugfix: Range checking now works correctly in all-relocs mode. (No more
+spurious out-of-range errors.)</P></LI></UL>
+<P><B>Version 2.71.F3n (Kevin Kofler, September 28, 2003)</B></P>
+<UL><LI><P>Bugfix: Local labels now work in all-relocs mode.</P></LI></UL>
+<P><B>Version 2.71.F3m (Kevin Kofler, September 2, 2003)</B></P>
+<UL><LI><P>Bugfix: PC-relative or indexed references to other sections didn't work.</P></LI>
+<LI><P>Bugfix: x(PC,Dn) or x(PC,An) didn't work in all-relocs mode.</P></LI></UL>
+<P><B>Version 2.71.F3l (Kevin Kofler, July 15, 2003)</B></P>
+<UL><LI><P>Added: The -u switch now also allows unaligned code, which can be useful
+when the code will be copied somewhere else anyway.</P></LI>
+<LI><P>Added: Short branches across hunks or object files are now allowed.</P></LI>
+<LI><P>Added: -a (All relocs) switch, which tells A68k to emit all relocs, even
+PC-relative relocs within a section. It also emits address
+differences in a special TIGCC-specific format. This will allow
+more aggressive linker-side optimization.</P></LI></UL>
+<P><B>Version 2.71.F3k (Kevin Kofler, May 17, 2003)</B></P>
+<UL><LI><P>Bugfix: Increased the forward reference buffer in order to allow
+multiple labels at the same location, as used in PedroM.</P></LI>
+<LI><P>Added: -u (Unaligned) switch, which disables automatic alignment of
+DC.W, DC.L, DCB.W, DCB.L, DS.W and DS.L.</P></LI></UL>
+<P>
+<B>Version 2.71.F3i (Kevin Kofler, February 1, 2002)</B></P>
+<UL><LI><P>Bugfix: Local labels caused a &quot;Pass 1 / Pass 2 phase error&quot;
+when preceded by an include file which
+contained labels, but was skipped in pass 2 (such as OS.h).</P></LI></UL>
+<P>
+<B>Version 2.71.F3h (Kevin Kofler, January 23, 2002)</B></P>
+<UL><LI><P>Bugfix: The TITLE (or TTL) directive did not work at all.
+It now works as it is supposed to.</P></LI>
+<LI><P>Bugfix: No longer crashes when trying to generate a
+listing file with cross-references (using the -x
+switch).</P></LI></UL>
+<P>
+<B>Version 2.71.F3g (Kevin Kofler, January 22, 2002)</B></P>
+<UL><LI><P>Bugfix: The RORG and PUBLIC directives are now recognized
+correctly even if the first letter is not
+capitalized. Thanks to Brandon Sterner for
+reporting the problem with the RORG directive.</P></LI></UL>
+<P>
+<B>Version 2.71.F3f (Kevin Kofler, January 8, 2002)</B></P>
+<UL><LI><P>Now also accepts &quot;;&quot;, and for the -v switch also &quot;=&quot;, as
+separator in command line arguments (wherever &quot;,&quot; is
+allowed), for compatibility with the &quot;-WA,&quot; switch in
+<CODE>tigcc</CODE>.</P></LI></UL>
+<P>
+<B>Version 2.71.F3e (Kevin Kofler, August 3, 2001)</B></P>
+<UL><LI><P>Bugfix: The SUB-&gt;LEA optimisation did not change the
+sign of the immediate value.</P></LI></UL>
+<P>
+<B>Version 2.71.F3d (Kevin Kofler, July 28, 2001)</B></P>
+<UL><LI><P>Bugfix: The ADD(A)/SUB(A)-&gt;LEA and LEA-&gt;ADDQ/SUBQ
+optimizations caused &quot;Pass 1 / Pass 2 phase
+errors&quot; if an optimization was known to be
+possible only in pass 2 (i.e. if using forward
+references to labels in the instruction). A68k
+will not try to optimize those anymore. Maybe a
+future version will provide support for this kind
+of optimization, but it is very difficult to
+implement.</P></LI>
+<LI><P>Bugfix: A68k did not compile correctly on Visual C++
+because I had done a define in an incorrect way.</P></LI></UL>
+<P>
+<B>Version 2.71.F3c (Kevin Kofler, July 20, 2001)</B></P>
+<UL><LI><P>Applied a few patches submitted by Paul Froissart:</P>
+<UL><LI><P>A few more adaptations for compiling with Microsoft
+Visual C++. (Note that I still recommend using GCC for
+Mingw32.)</P></LI>
+<LI><P>A new command line switch:</P>
+<DL>
+<DT><P>-v</P><DD><P>Allows to set a variable in the command line (like
+-d with GCC). The variable will be a SET, not EQU
+variable. Syntax: &quot;-v&lt;name&gt;[,&lt;value&gt;]&quot; (without
+spaces, and without the quotes). Note that &lt;value&gt;
+can only be a NUMBER at the moment. (We might
+support symbols as values in a future version.)
+The default value of &lt;value&gt; is 1.</P>
+</DL>
+</LI>
+<LI><P>Improved the optimization:</P>
+<UL><LI><P>made optional the optimization which changes MOVEM
+with a single register to MOVE</P></LI>
+<LI><P>added an optional optimization which changes ADD(A)
+and SUB(A) to LEA when applicable</P></LI>
+<LI><P>added an optional optimization which changes LEA to
+ADDQ or SUBQ when applicable</P></LI>
+<LI><P>added a command line switch which allows you to
+selectively disable some optimizations:</P>
+<DL>
+<DT><P>-r</P><DD><P>Allows to disable specific optimizations:
+<TABLE CLASS="NOBORDER"><TR><TD CLASS="NOBORDER">-rm</TD><TD CLASS="NOBORDER">Disable the MOVEM -&gt; MOVE optimization</TD></TR>
+<TR><TD CLASS="NOBORDER">-ra</TD><TD CLASS="NOBORDER">Disable the ADD(A)/SUB(A) -&gt; LEA optimization</TD></TR>
+<TR><TD CLASS="NOBORDER">-rl</TD><TD CLASS="NOBORDER">Disable the LEA -&gt; ADDQ/SUBQ optimization</TD></TR></TABLE>
+You may use more than one -r switch (as in
+&quot;-rm -ra&quot;) or combine them into a single switch
+(as in &quot;-rma&quot;).
+You can still use -n to disable ALL optimizations
+(even those not covered by -r).</P>
+</DL>
+</LI></UL>
+</LI>
+<LI><P>Added 2 more synonyms:</P>
+<UL><LI><P>SLO = SCS</P></LI>
+<LI><P>SHS = SCC</P></LI></UL>
+</LI>
+<LI><P>The END directive is now optional. If you do not use
+it, the assembly will automatically end at the end of
+your source file.</P></LI></UL>
+</LI>
+<LI><P>Also fixed a bug found by Paul Froissart involving the
+reporting of invalid flags with the SECTION directive.
+(Not that anyone would use those flags anyway.)</P></LI>
+<LI><P>Adapted and applied a very old patch by John Antonishek,
+which allows you to define a symbol as XDEF even if it
+has been declared as XREF before. This is especially
+useful when using a common include file for globals.</P></LI>
+<LI><P>Moreover, END is not allowed in macros or include files
+anymore since that was causing a few bugs because A68k
+simply did not expect anyone to use it there. The
+quickest remedy is to simply remove the END instruction,
+since it is now optional anyway.</P></LI></UL>
+<P>
+<B>Version 2.71.F3b (Kevin Kofler, July 12, 2001)</B></P>
+<UL><LI><P>Bugfix: Now raises an error if an undefined local label is
+used.</P></LI>
+<LI><P>Bugfix: Branches coded with an explicit length (.W or .L)
+are not optimized (or flagged as optimizable)
+anymore.<BR>
+(In previous versions, .B or .S was not optimized,
+but .W or .L could be optimized to a short branch.
+Now, only branches without an explicit length will
+be optimized.)</P></LI>
+<LI><P>Bugfix: Quoted strings can now be passed as macro
+arguments without the need for '&lt;' and '&gt;', even
+if they contain spaces or separators (',' or ';').
+You can still use '&lt;' and '&gt;', for example in
+order to pass strings like &lt;129,' version'&gt; (which
+will appear as &quot;� version&quot; on a TI-89/92/92+).</P></LI></UL>
+<P>
+<B>Version 2.71.F3a (Kevin Kofler, July 9, 2001)</B></P>
+<UL><LI><P>Win32 port for the TIGCC project, compiled with GCC for
+Mingw32.<BR>
+Even though we recommend Mingw32, A68k should also compile
+with Microsoft Visual C++, thanks to Paul Froissart.
+(Please do NOT ask me questions about compiling with
+Visual C++. I have just put in Paul Froissart's ifdefs.)
+It also compiles with Cygwin, but since the result is
+larger than the Mingw32 version, I do not see any benefit
+in using it.</P></LI>
+<LI><P>Bugfix: My Win32 port of v.2.71.F3 did not support labels
+or variable names which contain accented
+characters.</P></LI>
+<LI><P>Bugfix: Now detects all errors in include files. All
+include files will be treated in pass 2 if an
+error is detected.</P></LI>
+<LI><P>Bugfix by Paul Froissart: fixed a random crash bug due to
+a missing initialization</P></LI>
+<LI><P>Bugfix by Julien Muchembled: allow odd displacements for
+words and longwords if the
+resulting address might be
+even</P></LI>
+<LI><P>The Win32 version is now less greedy with the memory, so
+its limitations are less annoying:</P>
+<UL><LI><P>lines can now be 256 bytes long (Paul Froissart)</P></LI>
+<LI><P>filenames (with path) can now be 259 bytes long (the
+Win32 maximum)</P></LI>
+<LI><P>the default heap sizes have also been increased (Paul
+Froissart)</P></LI></UL>
+</LI>
+<LI><P>Added the following synonyms:</P>
+<UL><LI><P>BLO = BCS</P></LI>
+<LI><P>BHS = BCC</P></LI>
+<LI><P>DBLO = DBCS</P></LI>
+<LI><P>DBHS = DBCC</P></LI>
+<LI><P>ROLX = ROXL</P></LI>
+<LI><P>RORX = ROXR</P></LI></UL>
+</LI></UL>
+<P>
+<B>Version 2.71.F3 (David Ellsworth, July 11, 2000)</B></P>
+<UL><LI><P>Fixed a bug introduced by my modifications that prevented
+branches from being optimized in Global XRef mode.</P></LI></UL>
+<P>
+<B>Version 2.71.F2 (David Ellsworth, January 22, 1998)</B></P>
+<UL><LI><P>Made A68k properly differentiate between PC-relative and
+absolute references to external symbols. Allowed branches
+to reference external labels in Global XRef (-g parameter)
+mode.</P></LI></UL>
+<P>
+<B>Version 2.71.F1 (David Ellsworth, January 7, 1998)</B></P>
+<UL><LI><P>Made changes so that combinations of EQU, XREF, and XDEF
+directives work better together. These changes were made in
+order for Fargo II library linking to be easier to do.</P></LI>
+<LI><P>The F1 stands for Fargo patchlevel 1.</P></LI></UL>
+<P>
+<B>Version 2.71 (Charlie Gibbs, April 16, 1991)</B>
+<BR><BR>
+The following bugs in version 2.62 have been corrected:</P>
+<UL><LI><P>Enforcer checks were being generated if command-line
+parameters that took a numeric value had no value or
+the value was invalid.  CalcValue was attempting to
+look up a label in the symbol table, which having not
+been allocated yet was causing a null pointer to be
+dereferenced.  (Patrick Quaid)</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>Function prototyping has been added.  All function
+prototypes are in a new include file, protos.h, which
+is included by A68kdef.h.  Prototyping can be disabled
+(for compilers which do not support it) by defining
+the symbol __NOPROTO; in this case old-style function
+declarations are generated instead.</P></LI></UL>
+<P>
+<B>Version 2.70 (Charlie Gibbs, February 25, 1991)</B>
+<BR><BR>
+The following bugs in version 2.62 have been corrected:</P>
+<UL><LI><P>The definition of tempstr in WriteSymTab (24 bytes)
+was being overrun in some cases, causing A68k to hang.
+Its length has been increased to MAXLINE.
+(Paul Gittings, John Antonishek)</P></LI>
+<LI><P>If A7 was in a list of registers in the source operand
+of a MOVEM instruction, all registers would be moved
+(i.e. the mask was set to 0xFFFF).  (Risto Kaivola)</P></LI>
+<LI><P>Octal or binary values that set bit 31 were being
+flagged as overflow errors.  (Harvey Taylor)</P></LI>
+<LI><P>ORGs were unnecessarily restricted when the -s flag was
+specified.  Everything should be absolute when S-records
+are generated, and any absolute ORG should be allowed.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>A new INCBIN directive has been added.  It takes a
+single operand, a file name whose contents are
+included as is at the current position in the
+object code file.  (Julian Gold, Colin Fox)</P></LI>
+<LI><P>The opcode TTL is now accepted as a synonym for TITLE.</P></LI>
+<LI><P>The file mode in the creat() call in xopen() has been
+changed from 1 to 0644; this provides a reasonable file
+mode when compiled on a Unix system.  (Paul Gittings)</P></LI>
+<LI><P>A new command-line keyword (-g) has been added.  It
+causes all undefined symbols to be treated as XREF.
+(Paul Gittings, Steve Hawtin (who provided the code))</P></LI>
+<LI><P>All initialized fields in opcodes.c have been made global
+for compatibilty with more compilers.  (Steve Hawtin)</P></LI>
+<LI><P>The register list in a MOVEM instruction can now be an
+immediate operand which specifies the actual mask bits.
+(Paul Gittings, who provided the code)</P></LI>
+<LI><P>The default value for the -q option has been changed
+from 10 to 100.</P></LI></UL>
+<P>
+<B>Version 2.62 (Charlie Gibbs, March 19, 1990)</B>
+<BR><BR>
+The following enhancements have been added:</P>
+<UL><LI><P>A new command-line keyword (-m) has been added.
+It must be immediately followed by a number which
+specifies the offset from the beginning of a small
+data section to the base register specified in the
+NEAR directive (defaulting to A4).  If this parameter
+is omitted, the offset defaults to 32768 bytes.  This
+parameter is meaningful only if the NEAR directive
+is used.  (Colin Fox)</P></LI></UL>
+<P>
+<B>Version 2.61 (Charlie Gibbs, January 11, 1990)</B>
+<BR><BR>
+The following bugs in version 2.6 have been corrected:</P>
+<UL><LI><P>ORG and RORG at the beginning of the program were
+being processed incorrectly.  (Jukka Jarvinen)</P></LI>
+<LI><P>A branch instruction to its own label, e.g.</P>
+<PRE>lab	bra	lab</PRE>
+<P>would cause phase errors; the instruction was
+being shortened on pass 2 but not on pass 1.
+(Kevin Hoare)</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>Labels may begin with '@' if the next character
+is not numeric (to avoid confusion with octal
+constants).  (Colin Fox)</P></LI>
+<LI><P>Write errors now cause A68k to terminate gracefully
+with an appropriate error message.</P></LI></UL>
+<P>
+<B>Version 2.6 (Charlie Gibbs, November 2, 1989)</B>
+<BR><BR>
+The following bugs in version 2.5 have been corrected:</P>
+<UL><LI><P>If a space is left between a file keyword and the file name
+(e.g. A68k -l foo.lst foo.asm) the source file was scratched.
+(E. Lenz)</P></LI>
+<LI><P>All code using post-increment addressing in references to
+toupper() has been reworked to avoid post-increment.  Such
+code does not work correctly if toupper() is a macro.
+(John K. Antonishek)</P></LI>
+<LI><P>The spelling of the include files A68kdef.h and A68kglb.h
+has been made correct as to case.  This simplifies porting
+to case-sensitive file systems.  (John K. Antonishek)</P></LI>
+<LI><P>If comments immediately follow the operands of an XDEF,
+XREF, or PUBLIC statement with no intervening white space
+(as in any of the following statements), A68k would hang:</P>
+<PRE>	XDEF	foo;comments
+	XREF	bar;comments
+	PUBLIC	blah;comments</PRE>
+<P>(Bruce Dawson)</P></LI>
+<LI><P>Numeric values (any radix) which do not fit into 32 bits
+were not being flagged.  (E. Lenz)</P></LI>
+<LI><P>DC statements with no operands were not being flagged.
+(E. Lenz)</P></LI>
+<LI><P>The -f option was suggesting short branches where the
+displacement would be zero, which is illegal.  (E. Lenz)</P></LI>
+<LI><P>Branches outside the current section had the offset
+set to zero.  (Matt Dillon, who provided a fix)</P></LI>
+<LI><P>ADDI, ANDI, CMPI, EORI, ORI, and SUBI instructions whose
+source operand was not immediate were not being flagged.
+(E. Lenz)</P></LI>
+<LI><P>Unary NOT of a byte or word immediate operand whose value
+was negative was being flagged as a size error.
+(John Aycock)</P></LI>
+<LI><P>All forward branches were rejected when the NEAR
+directive was active.  (Colin Fox)</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>Single-byte immediate operands (e.g. MOVE.B #-1,(a0))
+are now padded with a high-order byte of zero, rather
+than being sign-extended.  (E. Lenz)</P></LI>
+<LI><P>The message &quot;Error in operand format.&quot; has been changed
+to &quot;Addressing mode not allowed here.&quot; in places where
+the latter message is more appropriate.</P></LI>
+<LI><P>If the -q option species a value of zero (or no value
+is given, defaulting to zero), all console output will
+be suppressed except for error messages, if any.
+(Matt Dillon)</P></LI>
+<LI><P>The 128-byte restriction on constant length no longer
+applies to the entire code generated by a single DCB
+statement; statements such as</P>
+<PRE>	DCB.L	64,0</PRE>
+<P>can now be handled.  (Colin Fox)</P></LI>
+<LI><P>Forward branches are now optimized.  The occasional
+instruction may be missed due to ripple effects, but
+this shouldn't happen frequently.  The -f switch
+will flag any such instructions.</P></LI>
+<LI><P>The -d switch can now be followed by an optional
+prefix string (with or without a leading !) which
+specifies which symbols should or should not be
+included in the symbol table dump.  (Lionel Hummel)</P></LI></UL>
+<P>
+<B>Version 2.5 (Charlie Gibbs, June 18, 1989)</B>
+<BR><BR>
+The following bugs in version 2.42 have been corrected:</P>
+<UL><LI><P>Upon normal termination, A68k occasionally crashed in
+quit_cleanup by trying to free the relocation table twice.
+(Jeff Lydiatt and D. McClelland, who worked out a fix)</P></LI>
+<LI><P>MEMF_CHIP and MEMF_FAST bits were being set in the
+hunk length, rather than in the hunk type.  (Richard Man)</P></LI>
+<LI><P>BCHG.L, BCLR.L, BSET.L, and BTST.L were causing
+phase errors.  The test to ignore the .L specification
+(added in version 1.21) was being skipped in pass 1
+by an optimization added in version 2.4.  (David Hankins)</P></LI>
+<LI><P>PC-relative offset to a label was calculated as two bytes
+too great for MOVEM instructions.  (Tony Parkhurst)</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>If the length code on an opcode is not .B, .W, .L, .S,
+or omitted, it will be flagged as an error.</P></LI>
+<LI><P>JMP.S and JSR.S are flagged as errors.  (Jim Butterfield)</P></LI>
+<LI><P>Operands of the form (xxxx).W and (xxxx).L are now
+supported.  This enables absolute short or absolute
+long addressing to be explicitly specified.</P></LI>
+<LI><P>All optimization can be disabled by the new -n switch.
+(David Hankins)</P></LI>
+<LI><P>The NEAR directive can now take a single operand, which
+can be any address register (or equated symbol) except
+A7.  If omitted, the register defaults to A4.</P></LI>
+<LI><P>Instructions of the form BTST Dn,#nn are no longer
+flagged.  This obscure variant is nonetheless legal.</P></LI></UL>
+<P>
+<B>Version 2.42 (Charlie Gibbs, January 10, 1989)</B>
+<BR><BR>
+The following bugs in version 2.41 have been corrected:</P>
+<UL><LI><P>Small code/data conversion was sometimes taking place
+when no NEAR directive was active.  (Jeff Lydiatt)</P></LI></UL>
+<P>
+<B>Version 2.41 (Charlie Gibbs, January 6, 1989)</B>
+<BR><BR>
+The following bugs in version 2.4 have been corrected:</P>
+<UL><LI><P>The second operand of LINK instructions was
+being erroneously flagged.</P></LI>
+<LI><P>If a macro was used before it was defined, it
+was being expanded during pass 2 but not during
+pass 1, causing severe phase errors.  Attempts
+to use a macro before it is defined will now
+be flagged as invalid opcodes.  (Colin Fox)</P></LI></UL>
+<P>
+<B>Version 2.4 (Charlie Gibbs, January 4, 1989)</B>
+<BR><BR>
+The following bugs in version 2.31 have been corrected:</P>
+<UL><LI><P>If comments immediately followed the operands of
+a DC statement with no intervening white space,
+A68k would hang.  (Ulf Nordquist)</P></LI>
+<LI><P>In the following command:</P>
+<PRE>a68k -w 15000 myprog.asm</PRE>
+<P>the space between the -w and 15000 would cause A68k
+to look for a source file called &quot;15000&quot;, and to think
+that the object file is to be called &quot;myprog.asm&quot;.
+When it can't find &quot;15000&quot; it would display an error
+message and scratch &quot;myprog.asm&quot;.  (Jeff Lydiatt)</P></LI>
+<LI><P>If an INCLUDE file that is skipped on pass 2 contains
+a macro call, subsequent uses of \@ (macro sequence
+number are subsequently flagged.  The macro counter
+must be bumped along with the line number when
+skipping an INCLUDE.  (Colin Fox, Harvey Taylor)</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>ORG and RORG are now fully implemented.</P></LI>
+<LI><P>The SET symbols A68k, a68K, and a68k are defined in the
+same way as A68K, making it effectively case-insensitive.
+(Colin Fox)</P></LI>
+<LI><P>MOVEM and REG now accept equated register names (EQUR)
+in register lists.  (Bruce Dawson)</P></LI>
+<LI><P>INCLUDE files will now be skipped on pass 2 even when
+a listing file is requested, if the listing has been
+turned off by a NOLIST directive before the INCLUDE,
+and is not turned on until after the end of the
+INCLUDE file has been reached.  (Colin Fox)</P></LI>
+<LI><P>A new switch (-f) causes forward branches (Bcc, BRA, BSR)
+that could be coded as short branches (Bcc.S etc.) to be
+flagged.  This flag is not considered to be an error.</P></LI>
+<LI><P>A limited small code / small data model has been provided.
+It is activated by a NEAR directive in the source code, and
+is de-activated by a FAR directive.  External variables
+must be declared at the beginning of the program, which
+must consist of only two sections (CODE and DATA or BSS).
+All forward data references are assumed to be PC-relative
+if in the CODE section, A4-relative if in the DATA/BSS
+section, and absolute word if absolute values.  Any
+forward references which cannot be resolved to one of
+these three in pass 2 will be flagged as errors, as will
+any attempt to define more than two sections.  A4 is
+assumed to point to the start of the DATA/BSS section
+plus 32768 bytes, and must be loaded by a MOVE.L
+instruction using immediate mode unless this instruction
+is not enclosed within NEAR and FAR directives.</P></LI>
+<LI><P>Miscellaneous optimizations, for speed, including:
+Most of the object code generator in pass 1 is bypassed.
+If GetValue gets a single term it takes a short cut.
+IsOperator now uses a table look-up.
+Instructions now only searches that portion of the
+opcode table whose opcodes start with the same letter
+as the OpCode being searched for.</P></LI></UL>
+<P>
+<B>Version 2.31 (Charlie Gibbs, November 30, 1988)</B>
+<BR><BR>
+The following bugs in version 2.3 have been corrected:</P>
+<UL><LI><P>Even though a macro definition was being skipped
+by IFxx/ENDC, its ENDM directive was still being
+detected, causing spurious diagnostics.  (Harvey Taylor)</P></LI>
+<LI><P>NOP was not being recognized.  When moving all
+directives into the opcode table, NOL and NOLIST
+were placed after NOP, rather than before.  (Colin Fox)</P></LI>
+<LI><P>Symbols defined in the current module and declared
+as PUBLIC were not being written to the object code
+file when -d was specified.  (Colin Fox)</P></LI>
+<LI><P>Conversion of 0(An) to (An) (implemented in version
+1.2) was causing errors in the MOVEP instruction,
+which requires a displacement even if it is zero.
+This conversion is now disabled for MOVEP instructions.</P></LI>
+<LI><P>User macros containing invalid opcodes caused A68k
+to get lost when returning to the outer source file.
+(Colin Fox)</P></LI>
+<LI><P>Large values of -w (over 6000 or so) would cause
+a visit from the Guru.  The work field in HashIt
+was overflowing and going negative.  Changing it
+to unsigned corrected the problem.  (Colin Fox)</P></LI>
+<LI><P>Although user macros are no longer displayed when
+-q is a negative number, the calling file's name
+was still being displayed at the end of the macro.</P></LI></UL>
+<P>
+<B>Version 2.3 (Charlie Gibbs, November 21, 1988)</B>
+<BR><BR>
+The following enhancements have been added:</P>
+<UL><LI><P>All file I/O has been rewritten to use level 1 I/O
+(open, creat, close, read, write, and lseek) instead
+of level 2 I/O.  A68k now does its own buffering and
+unbuffering to reduce system overhead and increase speed.
+(Bruce Dawson)</P></LI>
+<LI><P>All assembler directives have been incorporated into
+the opcode table.  Since the opcode search now looks
+up directives as well, speed is increased.</P></LI>
+<LI><P>Miscellaneous code optimization for additional speed.</P></LI></UL>
+<P>
+<B>Version 2.2 (Charlie Gibbs, November 4, 1988)</B>
+<BR><BR>
+The following bugs in version 2.1 have been corrected:</P>
+<UL><LI><P>Macro definitions within an INCLUDE file were
+disabling the test for skipping the file on pass 2.</P></LI>
+<LI><P>Errors encountered in an INCLUDE file on pass 1
+were not disabling the skip of the file on pass 2 -
+the pertinent error messages could not appear.</P></LI>
+<LI><P>XDEF information and optional symbol table dumps were
+not being written to the object code file for any
+hunks that did not contain relocatable code or data.
+(Colin Fox)</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>If the -q option is specified as a negative value,
+user macros are no longer included in line number
+displays, reducing clutter.</P></LI>
+<LI><P>Some source code has been re-arranged to reduce size.</P></LI></UL>
+<P>
+<B>Version 2.1 (Charlie Gibbs, November 1, 1988)</B>
+<BR><BR>
+The following bugs in version 2.00 have been corrected:</P>
+<UL><LI><P>Macro definitions that span two chunks of memory
+were causing garbage and probably a crash when
+the macro was being expanded.  Pointers were not
+being handled properly when linking the two chunks.</P></LI>
+<LI><P>Statements such as EQU and SET were not being flagged
+as illegal forward references if referencing a label
+defined on the same line, e.g.</P>
+<PRE>LABEL	SET	LABEL+1</PRE>
+</LI>
+<LI><P>The position within macros and INCLUDE files was
+sometimes out by one line when reported in error
+messages (and the new feature of the -q switch).</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>If the -q option is specified as a negative value,
+line numbers will be displayed as positions within
+the current module (whose name is also displayed),
+rather than a total statement count.  (Bruce Dawson)</P></LI>
+<LI><P>INCLUDE files can be skipped on pass 2 even if they
+contain SET statements - the values of all symbols
+SET in the INCLUDE file are stored (as at the end
+of the file) in a separate table and are patched
+when the INCLUDE file is skipped.  (Bruce Dawson)</P></LI></UL>
+<P>
+<B>Version 2.00 (Charlie Gibbs, October 26, 1988)</B>
+<BR><BR>
+The following bugs in version 1.24 have been corrected:</P>
+<UL><LI><P>The last digit of the statement number display
+(lengthened in version 1.24) was not being erased
+before displaying error messages.</P></LI>
+<LI><P>A68k would go into a loop if a user macro was
+missing an ENDC directive.  This error is now
+flagged (see below).</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>The highest statement number displayed at the end of
+each pass is now left on the screen.  This means that,
+at the end of pass 1, you can always see how many lines
+A68k will have to process in pass 2, giving an idea of
+how how much longer you have to wait.  (Colin Fox)</P></LI>
+<LI><P>The symbol table is now built using a hashing algorithm.
+This eliminates the slowdown that occurs in pass 1 as
+the symbol table grows, due to the old insertion process.
+(Bruce Dawson)</P></LI>
+<LI><P>If A68k terminates abnormally for any reason (such as
+insufficient memory) the object file is scratched
+(unless the -k option is set).  (Bruce Dawson)</P></LI>
+<LI><P>Any INCLUDE files which cannot be found are flagged
+as errors in pass 1, and the assembly is aborted
+at the end of pass 1.  (Bruce Dawson)</P></LI>
+<LI><P>Missing ENDC directives are flagged in macro expansions.
+Also, missing or unpaired ENDC directives in user macros
+are flagged.</P></LI>
+<LI><P>If an INCLUDE file doesn't generate any code and no
+listing file is required, it won't be read again in
+pass 2.  The statement numbers will be bumped to keep
+in proper alignment.  This can really speed up
+assemblies that INCLUDE lots of equates.  (Colin Fox)</P></LI></UL>
+<P>
+<B>Version 1.24 (Charlie Gibbs, October 11, 1988)</B>
+<BR><BR>
+The following bugs in version 1.23 have been corrected:</P>
+<UL><LI><P>MOVEA to a data register was not being flagged, even
+though all other invalid addressing modes were.</P></LI>
+<LI><P>Attempts to ORG out of the current hunk (including
+to an absolute address) were not being flagged.  (E. Lenz)</P></LI>
+<LI><P>If the size of the bottom of the primary heap (symbols
+and macro text) exceeded 32K, any further macro
+definitions would expand as endless garbage.  (Colin Fox)</P></LI>
+<LI><P>If the size of the bottom of the primary heap (symbols
+and macro text) exceeded 64K, any further external
+symbols (XDEF) would be flagged as relocatability
+errors upon each reference.  (Colin Fox)</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>Where statement numbers are displayed as fixed-length
+fields, their maximum length has been increased
+from 4 digits to 5.  (Colin Fox)</P></LI>
+<LI><P>The PUBLIC directive has been implemented.
+As with the Aztec assembler, any labels defined as
+PUBLIC will be treated as XDEF if defined within
+the current module, and XREF otherwise.  (Jeff Lydiatt)</P></LI></UL>
+<P>
+<B>Version 1.23 (Charlie Gibbs, September 20, 1988)</B>
+<BR><BR>
+The following bugs in version 1.22 have been corrected:</P>
+<UL><LI><P>The test for a third operand was producing erroneous
+error messages on instructions whose second operand
+was in immediate mode.  The '#' was not being taken
+into account, since it is not copied to DestOp.</P></LI></UL>
+<P>
+<B>Version 1.22 (Charlie Gibbs, August 31, 1988)</B>
+<BR><BR>
+The following bugs in version 1.21 have been corrected:</P>
+<UL><LI><P>Expressions of the form R-A, where R is a relocatable
+term or expression and A is an absolute term or
+expression, were being flagged as relocation errors.
+This was due to a bug in the routine which should
+(but did not) flag expressions of the form A-R.
+(David Ashley)</P></LI>
+<LI><P>Instructions with three operands were not being
+flagged as errors.  This can be caused by an extra
+comma being typed in the instruction, as in:</P>
+<PRE>	BTST #0,state+3,(a5)</PRE>
+<P>The second comma should not be present.  (David Ashley)</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>Excess spacing has been removed from the listing file.
+These changes are similar to those already made to the
+console output (probably at about version 1.05).</P></LI>
+<LI><P>If the first statement in the source file is TTL or
+PAGE, an empty page is no longer produced at the
+start of the listing.</P></LI></UL>
+<P>
+<B>Version 1.21 (Charlie Gibbs, July 29, 1988)</B>
+<BR><BR>
+The following bugs in version 1.2 have been corrected:</P>
+<UL><LI><P>The instruction</P>
+<PRE>	BTST.L	#8,D0</PRE>
+<P>had a long-word value generated for the bit number.
+This bug also applies to BSET, BCLR, and BCHG.
+The .L specification is now ignored.  (Ulf Nordquist)</P></LI></UL>
+<P>
+<B>Version 1.2 (Charlie Gibbs, July 19, 1988)</B>
+<BR><BR>
+The following bugs in version 1.12 have been corrected:</P>
+<UL><LI><P>A reference to the label of the current instruction
+was being converted to PC-relative on pass 2 but not
+on pass 1.  This was causing phase errors.  The label
+hasn't been added to the symbol table at the time the
+instruction is processed.  Conversion to PC-relative
+addressing will now not be attempted in this case,
+although references to * can and will be converted.</P></LI>
+<LI><P>All string-type DC statements, regardless of length,
+were being treated as DC.B.  For example, DC.L 'A'
+would generate only one byte of object code.
+(Gerald Hull)</P></LI>
+<LI><P>DC.W and DC.B statements were not being checked to
+ensure that their values would fit into a word or
+a byte respectively.</P></LI>
+<LI><P>If a comment line had white space preceding the
+asterisk, A68k would hang.  Actually, it was
+interpreting the asterisk as an opcode and trying
+to open a macro file called &quot;*&quot;.  Since under
+AmigaDOS such a file is the console, A68k was
+actually waiting for console input.</P></LI>
+<LI><P>If an instruction with no operands (such as RTS
+or NOP) followed MOVE.L #rel,D0 where &quot;rel&quot; was
+a relocatable symbol, the RTS (etc.) would have
+its nonexistent operands flagged as invalid.</P></LI>
+<LI><P>SECTION names enclosed in quotes were not being
+handled correctly.</P></LI>
+<LI><P>Source modules that did not generate any code, data,
+or BSS areas, but only defined symbols, such as</P>
+<PRE>label	equ	4
+	xdef	label
+	end</PRE>
+<P>were generating incomplete object modules.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>Jeff's experimental hunk code (prefixing hunk names
+with a sequence number before adding to the symbol
+table) has been permanently incorporated.  It seems
+to work better with BLink on programs that have
+hunks continued farther on in the source code.
+(Jeff Lydiatt)</P></LI>
+<LI><P>The macro parameter \0, which is replaced by the
+size specification in the macro call (B, W, or L,
+defaulting to W) is now supported.  (Gerald Hull)</P></LI>
+<LI><P>Operands of the form 0(An) will be treated as (An).
+(Bruce Dawson)</P></LI></UL>
+<P>
+<B>Version 1.12 (Charlie Gibbs, May 25, 1988)</B>
+<BR><BR>
+The following bugs in version 1.11 have been corrected:</P>
+<UL><LI><P>If an instruction with no operands (e.g. RTS)
+followed a MOVE.L #label,D0 the RTS would be
+flagged with a relocatability error.  Src.Mode
+and Dest.Mode were not being cleared.  (Colin Fox)</P></LI></UL>
+<P>
+<B>Version 1.11 (Charlie Gibbs, April 6, 1988)</B>
+<BR><BR>
+The following bugs in version 1.10 have been corrected:</P>
+<UL><LI><P>A68k would go into a loop while processing the
+arguments of a macro call, if these arguments are
+followed by comments separated from the arguments
+by one or more tab characters, and the -t switch
+is specified on the command line.  All tests for
+blanks have been replaced by calls to isspace().</P></LI>
+<LI><P>The operand alignment checks added in version 1.06
+were erroneously testing the following instructions:</P>
+<UL><LI><P>BCHG</P></LI>
+<LI><P>BCLR</P></LI>
+<LI><P>BSET</P></LI>
+<LI><P>BTST</P></LI>
+<LI><P>NBCD</P></LI>
+<LI><P>Scc</P></LI>
+<LI><P>TAS</P></LI></UL>
+<P>These instructions are now exempt from alignment checking.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>A listing file name can now be specified with the
+-x switch; it is no longer necessary to specify
+both the -l and -x switches to produce a cross-
+reference listing with a name other than the default.</P></LI>
+<LI><P>DS statements with more than one operand are
+flagged and ignored (in case they should be DC).</P></LI>
+<LI><P>A character string used as a numeric value is
+flagged and set to zero if it is more than four
+characters long.</P></LI></UL>
+<P>
+<B>Version 1.10 (Charlie Gibbs, March 20, 1988)</B>
+<BR><BR>
+The following bugs in version 1.07 have been corrected:</P>
+<UL><LI><P>BSS sections were not being written to the object
+code file except for a BSS section at the end of
+a program.  This is due to a bug in the code added
+in version 1.05 to overwrite null sections.</P></LI>
+<LI><P>If a source module contained a mixture of lengths
+(8, 16, or 32 bits) in external references (XREF)
+to the same label, all references were being treated
+as if they has the length of the first reference.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>DS operands that are either a forward references
+or relocatable are now flagged.</P></LI>
+<LI><P>Short branches (Bcc.S, including BRA and BSR) to
+the next instruction (i.e. a displacement of zero)
+are illegal - the processor takes the displacement
+from the next word.  Attempts to generate a short
+displacement of zero are now flagged.</P></LI></UL>
+<P>
+<B>Version 1.07 (Charlie Gibbs, March 11, 1988)</B>
+<BR><BR>
+The following bugs in version 1.06 have been corrected:</P>
+<UL><LI><P>Instructions that take no operands (such as RTS)
+were being flagged if they had comments that were
+not preceded by a semicolon.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>The following synonyms have been added:</P>
+<PRE>CSEG  for CODE (Aztec compatibility)
+DSEG  for DATA    &quot;          &quot;
+ENDIF for ENDC (Assempro compatibility)
+=     for EQU      &quot;           &quot;
+|     for !        &quot;           &quot;</PRE>
+</LI>
+<LI><P>Strings and character values may be delimited by
+either apostrophes (') or quotation marks (&quot;).
+The character not used as a delimiter can be used
+within the string without doubling it.  For example,</P>
+<PRE>  DC.B	&quot;This is Charlie's assembler&quot;</PRE>
+<P>produces the same code as</P>
+<PRE>  DC.B	'This is Charlie''s assembler';</PRE>
+</LI>
+<LI><P>The object code file will be scratched if any errors
+were found, unless the -k (keep) flag is set.
+(Bruce Dawson)</P></LI>
+<LI><P>The symbol .A68K is automatically defined at the
+beginning of each assembly as a SET symbol with an
+absolute value of 1.  This enables programs to check
+whether they're being assembled by this assembler.
+(Jeff Lydiatt)</P></LI>
+<LI><P>The symbol table insertion routine has been
+greatly speeded up.</P></LI></UL>
+<P>
+<B>Version 1.06 (Charlie Gibbs, March 6, 1988)</B>
+<BR><BR>
+The following bugs in version 1.05 have been corrected:</P>
+<UL><LI><P>Lines skipped by IFxx/ENDC were not being counted
+in the line number given in error messages.</P></LI>
+<LI><P>DATA and BSS sections may be unnamed, or have names
+the same as CODE sections.  Honest, I thought section
+names had to be unique even across types.</P></LI>
+<LI><P>CHIP and FAST options on the CODE, DATA, and BSS
+synonyms for the SECTION directive were not being
+handled correctly.</P></LI>
+<LI><P>XDEF records and symbol table records (if desired)
+were not being produced for symbols defined ahead
+of the first object-code producing instruction.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>The CNOP instruction can now force alignment
+relative to any boundary up to 128 bytes.
+The second operand must still be a power of 2.</P></LI>
+<LI><P>The -q switch has been added to change the frequency
+with which progress reports (current line number) are
+displayed on the console.  The default remains at
+every 10 lines (-q10).  If you specify -q (no interval)
+or -q0 the line number displays will be suppressed.
+This will make assemblies run slightly faster due to
+reduced console I/O.  (Bill Henning)</P></LI>
+<LI><P>The -t switch has been added to keep any tabs in the
+source file when producing the listing file, as well as
+generating tabs elsewhere whenever possible.  This
+speeds up assemblies and gives smaller listing files,
+but such listing files cannot be displayed on devices
+that do not assume a tab stop in every 8th position.
+(Bruce Dawson)</P></LI>
+<LI><P>Any single-operand instruction with two operands,
+and any no-operand instruction with any operands,
+will be flagged.</P></LI>
+<LI><P>Relocatable 8- or 16-bit immediate operands
+will be flagged.  They blow up BLink.</P></LI>
+<LI><P>Named local labels are now supported.  Their names
+are formed in the same way as normal labels, but are
+then preceded by a backslash.  Their scope is the
+same as normal local labels (nnn$).  (Colin Fox)</P></LI>
+<LI><P>An alignment error will be flagged in the following cases:</P>
+<UL><LI><P>Odd displacement on a LINK instruction</P></LI>
+<LI><P>Bcc or DBcc to an odd address</P></LI>
+<LI><P>In any word or long-word instruction, any operand
+using the following addressing modes:</P>
+<UL><LI><P>Address register indirect with displacement</P></LI>
+<LI><P>Address register indirect with index and displacement</P></LI>
+<LI><P>Absolute short</P></LI>
+<LI><P>Absolute long</P></LI>
+<LI><P>Program counter indirect with displacement</P></LI>
+<LI><P>Program counter indirect with index and displacement</P></LI></UL>
+</LI>
+<LI><P>LEA and PEA instructions are exempt from these tests.</P></LI></UL>
+</LI>
+<LI><P>If a section is found to contain no data, A68k will
+back up to its beginning and overwrite it with the
+next section.  The result is that null sections
+will no longer appear in the object file.</P></LI></UL>
+<P>
+<B>Version 1.05 (Charlie Gibbs, October 30, 1987)</B>
+<BR><BR>
+The following bugs in version 1.04 have been corrected:</P>
+<UL><LI><P>If a section was continued later in the program, e.g.</P>
+<PRE>	SECTION	prog,CODE
+	  &lt;code&gt;
+	SECTION	variables,BSS
+	  &lt;DS statements&gt;
+	SECTION	prog,CODE
+	  &lt;more code&gt;</PRE>
+<P>bad relocation information was being generated for
+the continuation of the SECTION.  This bug was left
+over from version 1.03.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>All console output except for error messages is now
+sent to stderr - this enables stdout to be redirected,
+producing an error file.</P></LI>
+<LI><P>Console (stderr) output has been modified to require
+fewer lines on the screen.</P></LI>
+<LI><P>If an error occurs while expanding a macro or INCLUDE
+file, the position of the call in each outer file is
+given along with the position in the current (innermost)
+file.  Tracing continues until the outermost file (i.e.
+the original source file) is reached.</P></LI></UL>
+<P>
+<B>Version 1.04 (Charlie Gibbs, October 21, 1987)</B>
+<BR><BR>
+The following bugs in version 1.03 have been corrected:</P>
+<UL><LI><P>MOVE was being converted to MOVEQ regardless of
+operand size - this conversion is legal only
+for longword MOVEs.</P></LI>
+<LI><P>Modifications to version 1.03 caused bad relocatable
+entries to be generated.</P></LI></UL>
+<P>
+<B>Version 1.03 (Charlie Gibbs, October 14, 1987)</B>
+<BR><BR>
+The following bugs in version 1.02 have been corrected:</P>
+<UL><LI><P>The following situation was causing phase errors:</P>
+<PRE>	xdef	label
+	bra	label
+	 .
+    &lt;at least 128 bytes of object code&gt;
+	 .
+label:</PRE>
+<P>(The XDEF was fooling A68k into thinking that &quot;label&quot;
+was defined within 128 bytes of the BRA instruction
+on pass 1, although on pass 2 it knew better.</P></LI>
+<LI><P>If the first operand of an two-operand executable
+instruction contained a character term containing a
+left or right parenthesis, it would generate error
+messages and be incorrectly evaluated.</P></LI>
+<LI><P>Labels that don't begin in column 1 (denoted by a
+trailing colon) caused a Guru Meditation.</P></LI>
+<LI><P>Certain ADD and SUB instructions using PC-relative
+addressing may cause phase errors.  If the displacement
+is in the range 1 to 8 inclusive, the instruction was
+erroneously converted to ADDQ or SUBQ during pass 2.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>The -z option has been added to display the
+current source program line on stdout as it
+is read, optionally over a given range.
+This feature is provided for debugging purposes.</P></LI>
+<LI><P>Bcc, BSR, and DBcc to labels in other than the current
+section is now supported.  A 16-bit relocation entry
+will be generated for each such reference.</P></LI>
+<LI><P>PC relative mode will be generated for backward
+references to labels within the current CODE section
+if legal for the current instruction.  Forward
+references will not be converted, since there is
+no way of telling which section the label is in
+during pass 1.</P></LI>
+<LI><P>The cumulative sizes of all sections by type (i.e.
+CODE, DATA, and BSS) will be displayed at the end
+of the listing file and the console display.
+(Bruce Dawson)</P></LI>
+<LI><P>In the symbol table dump, section names will no
+longer be indicated just as SECTION, but rather
+as CODE, DATA, or BSS, depending on type.</P></LI></UL>
+<P>
+<B>Version 1.02 (Charlie Gibbs, September 9, 1987)</B>
+<BR><BR>
+The following bugs in version 1.01 have been corrected:</P>
+<UL><LI><P>Duplicate labels were not being flagged.</P></LI>
+<LI><P>XDEF symbols were not being dumped to the
+object code file when the -d option was set.</P></LI></UL>
+<P>The following enhancements have been added:</P>
+<UL><LI><P>A header file is now supported.  If the parameter
+-h&lt;filespec&gt; is included on the command line, the
+specified file will be included as if the source
+file's first line was &quot; include &lt;filespec&gt;&quot;.
+The file specification may include a path name,
+although the include path names given by the
+-i parameter (if any) will also be searched.</P></LI>
+<LI><P>An equate file can now be produced.  If the parameter
+-e&lt;filespec&gt; is included on the command line, a file
+will be written containing EQU statements for any
+symbol whose value is absolute.  If -e is specified
+without &lt;filespec&gt;, the name of the file will be
+formed in the same way as the list file, except with
+an extension of &quot;.equ&quot;.  (Bruce Dawson)</P></LI></UL>
+<P>The following changes have been made to existing logic:</P>
+<UL><LI><P>No symbol table dump will be produced unless the
+-x (cross-reference) switch is set.  Formerly a
+symbol table dump was always produced, with only
+the cross-reference portion optional.</P></LI></UL>
+<P>
+<B>Version 1.01 (Charlie Gibbs, August 20, 1987)</B>
+<BR><BR>
+The following bugs in version 1.00 have been corrected:</P>
+<UL><LI><P>Long-word constants and storage areas were being
+aligned on a double-word boundary.  The only place
+where double-word alignment is now forced is at a
+break between SECTIONs, since the length of an
+AmigaDOS hunk must be a multiple of 4 bytes.
+(CNOP 0,4 can still be used if double-word
+alignment is desired by the programmer.)</P></LI>
+<LI><P>If a label on an END statement or the first statement
+of a SECTION was named in an XDEF statement, it would
+not be written to the object code file.  The latter
+case includes both the label of a SECTION directive
+and the label of the first executable instruction in
+the absence of any SECTION directives (defaulting to
+an unnamed CODE section).  In the final case (default
+unnamed CODE section), references to XREF symbols
+in the first statement would also not be written
+to the object code file.</P></LI>
+<LI><P>If the last statement in the source file was not
+terminated with a newline character (premature EOF),
+it was being ignored altogether.</P></LI>
+<LI><P>A register list as the source operand of a MOVE
+instruction was not being flagged as an error.
+(MOVE to a register list was being flagged, however.)</P></LI>
+<LI><P>MOVE from USP was generating incorrect code.  Also,
+MOVE from SR or CCR to an address register was
+generating incorrect code rather than being flagged.</P></LI></UL>
+<P>
+<B>Version 1.00 (Charlie Gibbs, June 18, 1987) - initial release</B></P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

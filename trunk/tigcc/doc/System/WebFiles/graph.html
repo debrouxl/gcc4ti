@@ -1,0 +1,1165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>graph.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;graph.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Common (non-windowed) graphic routines</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#BitmapGet">BitmapGet</A></B><DD>Gets a bitmap from the port graphical functions are writing to.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#BitmapInit">BitmapInit</A></B><DD>Initializes a bitmap structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#BitmapPut">BitmapPut</A></B><DD>Puts a bitmap to the screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#BitmapSize">BitmapSize</A></B><DD>Determines a bitmap size in bytes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CalcBitmapSize">CalcBitmapSize</A></B><DD>Calculates the size of a bitmap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ClientToScr">ClientToScr</A></B><DD>Converts a window-based rectangle to screen-based coordinates.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ClrScr">ClrScr</A></B><DD>Clears the entire screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DisplayOff">DisplayOff</A></B><DD>Turns the display off.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DisplayOn">DisplayOn</A></B><DD>Turns the display on.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawChar">DrawChar</A></B><DD>Draws a character.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawClipChar">DrawClipChar</A></B><DD>Draws a clipped character.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawClipEllipse">DrawClipEllipse</A></B><DD>Draws a clipped ellipse.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawClipLine">DrawClipLine</A></B><DD>Draws a clipped line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawClipPix">DrawClipPix</A></B><DD>Draws a clipped pixel.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawClipRect">DrawClipRect</A></B><DD>Draws a clipped rectangle.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawFkey">DrawFkey</A></B><DD>Draws a function key symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawIcon">DrawIcon</A></B><DD>Draws an icon.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawLine">DrawLine</A></B><DD>Draws a line between two specified points.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawMultiLines">DrawMultiLines</A></B><DD>Draws a set of lines in one turn.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawPix">DrawPix</A></B><DD>Draws a pixel.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawStr">DrawStr</A></B><DD>Draws a string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawStrWidth">DrawStrWidth</A></B><DD>Determines the width of a string, in pixels.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawStrWidthP">DrawStrWidthP</A></B><DD>Returns the width of the first <I>len</I> characters of a string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FillLines2">FillLines2</A></B><DD>Draws a filled area between two lines.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FillTriangle">FillTriangle</A></B><DD>Draws a filled triangle.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FontCharWidth">FontCharWidth</A></B><DD>Determines the character width in pixels.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FontGetSys">FontGetSys</A></B><DD>Gets the current font number.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FontSetSys">FontSetSys</A></B><DD>Sets the current font.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetPix">GetPix</A></B><DD>Gets the status of a specified pixel.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LCD_restore">LCD_restore</A></B><DD>Restores the saved content of the LCD screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LCD_save">LCD_save</A></B><DD>Saves the content of the LCD screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LineTo">LineTo</A></B><DD>Draws a clipped line from the current pen position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MakeScrRect">MakeScrRect</A></B><DD>Puts four coordinates into a <A HREF="#SCR_RECT">SCR_RECT</A> and returns a pointer to it.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#MakeWinRect">MakeWinRect</A></B><DD>Builds a structure for representing rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MoveTo">MoveTo</A></B><DD>Sets the current pen position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PortRestore">PortRestore</A></B><DD>Cancels the virtual screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PortSet">PortSet</A></B><DD>Sets up the virtual screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#QScrRectOverlap">QScrRectOverlap</A></B><DD>Determines whether two rectangular areas overlap or not.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RestoreScrState">RestoreScrState</A></B><DD>Restores a a saved state of the graphic system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SaveScrState">SaveScrState</A></B><DD>Saves the state of the graphic system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ScrRectFill">ScrRectFill</A></B><DD>Draws a filled rectangle.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ScrRectOverlap">ScrRectOverlap</A></B><DD>Finds an intersection of two rectangular areas.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ScrRectScroll">ScrRectScroll</A></B><DD>Scrols a rectangular area upwards or downwards.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ScrRectShift">ScrRectShift</A></B><DD>Shifts a rectangular area left or right.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ScrToHome">ScrToHome</A></B><DD>Shifts structure of type SCR_RECT to the home position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ScrToWin">ScrToWin</A></B><DD>Converts a structure of type <A HREF="#SCR_RECT">SCR_RECT</A> to type <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SetCurAttr">SetCurAttr</A></B><DD>Sets the default attribute.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SetCurClip">SetCurClip</A></B><DD>Sets the default clipping area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#sf_width">sf_width</A></B><DD>Returns the width in pixels of character <I>character</I> in the small font.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#ScrRect">ScrRect</A></B><DD>A global pointer to a <A HREF="#SCR_RECT">SCR_RECT</A> structure representing the whole screen.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#BITMAP_HDR_SIZE">BITMAP_HDR_SIZE</A></B><DD>Defines the size of the header of the <A HREF="#BITMAP">BITMAP</A> structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LCD_MEM">LCD_MEM</A></B><DD>A pointer to the area in memory where the contents of the LCD screen are stored.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LCD_SIZE">LCD_SIZE</A></B><DD>An integer constant which represents the size of the LCD screen in bytes.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#Attrs">Attrs</A></B><DD>An enumeration for describing legal attribute values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#BITMAP">BITMAP</A></B><DD>A structure for defining a bitmap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#BoxAttrs">BoxAttrs</A></B><DD>An enumeration for describing addittional box attribute values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#Fonts">Fonts</A></B><DD>An enumeration for describing legal font values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ICON">ICON</A></B><DD>A structure which describes an icon.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LCD_BUFFER">LCD_BUFFER</A></B><DD>Describes a buffer to hold the screen contents.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MULTI_LINE">MULTI_LINE</A></B><DD>A structure for defining multiple lines for the <A HREF="#DrawMultiLines">DrawMultiLines</A> command.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#pICON">pICON</A></B><DD>A pointer to the <A HREF="#ICON">ICON</A> scructure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SCR_COORDS">SCR_COORDS</A></B><DD>An alias type for defining physical screen coordinates.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SCR_RECT">SCR_RECT</A></B><DD>A scructure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SCR_STATE">SCR_STATE</A></B><DD>A structure for saving the state of the graphics system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WIN_COORDS">WIN_COORDS</A></B><DD>An alias type for defining logical screen coordinates.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WIN_RECT">WIN_RECT</A></B><DD>A structure for defining a rectangular area.</DL>
+<P>For a lot of advanced drawing routines, we recommend you to download the <A HREF="http://www.ticalc.org/archives/files/fileinfo/187/18705.html">ExtGraph library</A> by the <A HREF="http://tict.ticalc.org/">TI-Chess Team</A>.</P>
+
+<P>See also: <A HREF="wingraph.html">wingraph.h</A>, <A HREF="sprites.html">sprites.h</A>, <A HREF="gray.html">gray.h</A></P>
+<HR>
+<H3><A NAME="BitmapGet"><U>BitmapGet</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> BitmapGet (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *rect, <B><A HREF="keywords.html#void">void</A></B> *BitMap);</TD></TR></TABLE></P>
+<P><B>Gets a bitmap from the port graphical functions are writing to.</B></P>
+
+<P>BitmapGet stores a series of bytes (the size of which is defined by
+<A HREF="#BitmapSize">BitmapSize</A>) defining a bitmap for a rectangular
+area (whose boundaries are given using the <A HREF="#SCR_RECT">SCR_RECT</A>
+structure <I>rect</I>) into a buffer pointed to by <I>BitMap</I>. The data is
+fetched in the port  graphical functions are writing to (see
+<A HREF="#PortSet">PortSet</A>). The first two words at the address
+<I>BitMap</I> will contain the height and the width (in pixels) of the rectangular
+area respectively, then the actual data follows. <I>BitMap</I> is
+usually a pointer to a <A HREF="#BITMAP">BITMAP</A> structure.
+<BR><BR>
+Here is a simple example (called "Bitmap Test"), which uses BitmapGet and
+<A HREF="#BitmapPut">BitmapPut</A> to get the contents of the TI-89 screen and
+to restore it later:</P>
+<PRE>// Retrieve and store a bitmap
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  SCR_RECT full_screen = {{0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1}};
+  char buffer [BITMAP_HDR_SIZE + LCD_WIDTH*LCD_HEIGHT/8]; // or 2004 for a TI-89 and 3844 for a TI-92+/V200 if you like it more
+  BitmapGet (&amp;full_screen, buffer);          // store screen in buffer
+  clrscr ();
+  printf (&quot;Press any key to\nrestore screen...&quot;);
+  ngetchx ();
+  BitmapPut (0, 0, buffer, &amp;full_screen, A_REPLACE);
+  ngetchx ();
+}
+</PRE>
+<P>Note that this is just an example: for saving/restoring the whole screen,
+functions <A HREF="#LCD_save">LCD_save</A> and
+<A HREF="#LCD_restore">LCD_restore</A> are much more efficient!
+And, <CODE>'buffer'</CODE> will probably be allocated using
+<A HREF="alloc.html#malloc">malloc</A> in a more realistic example...</P>
+
+<P>See also: <A HREF="#BitmapPut">BitmapPut</A>, <A HREF="#BitmapSize">BitmapSize</A>, <A HREF="#CalcBitmapSize">CalcBitmapSize</A></P>
+<HR>
+<H3><A NAME="BitmapInit"><U>BitmapInit</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> BitmapInit (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *rect, <B><A HREF="keywords.html#void">void</A></B> *BitMap);</TD></TR></TABLE></P>
+<P><B>Initializes a bitmap structure.</B></P>
+
+<P>BitmapInit is an auxilary command (used internally in <A HREF="#BitmapGet">BitmapGet</A>,
+so it is not particularly useful). It initializes first two words
+at address <I>BitMap</I> to the height and the width (in pixels) of the rectangular
+area <I>rect</I>.</P>
+
+<HR>
+<H3><A NAME="BitmapPut"><U>BitmapPut</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> BitmapPut (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *BitMap, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Puts a bitmap to the screen.</B></P>
+
+<P>BitmapPut puts a bitmap <I>BitMap</I> (which was taken using <A HREF="#BitmapGet">BitmapGet</A>)
+on the screen at position (<I>x</I>,&nbsp;<I>y</I>), using the attribute <I>Attr</I>.
+The drawn bitmap will be clipped at the boundaries of the area given by the
+<I>clip</I> parameter. See <A HREF="#SetCurClip">SetCurClip</A> for more info about clipping areas.
+The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REPLACE</TD><TD>Replace the destination region with the source bitmap</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Replace the destination region with the inverse of the source bitmap</TD>
+</TR><TR>
+<TD>A_NORMAL</TD><TD>OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Exculsive-OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_AND</TD><TD>AND the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Mask the source bitmap so that every other pixel is turned off and replace
+the destination region with that result (the source region is left unchanged)</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#SetCurAttr">SetCurAttr</A> command for more general info about attributes.
+<BR><BR>
+It seems that the A_REVERSE attribute is broken in current implementations of
+this function: If the value of <I>x</I> is not a multiple of 8, a black vertical
+line will appear across the picture.
+<BR><BR>
+<B>Note:</B> The <A HREF="sprites.html">sprites.h</A> header file supports much faster alternatives to
+the BitmapPut function for bitmap shapes which are not wider than 32 pixels (useful for games
+programming).</P>
+
+<P>See also: <A HREF="#BitmapGet">BitmapGet</A>, <A HREF="#CalcBitmapSize">CalcBitmapSize</A></P>
+<HR>
+<H3><A NAME="BitmapSize"><U>BitmapSize</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> BitmapSize (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *rect);</TD></TR></TABLE></P>
+<P><B>Determines a bitmap size in bytes.</B></P>
+
+<P>BitmapSize returns the size in bytes of a bitmap for a rectangular area given by
+parameter <I>rect</I>. This size includes the data for the bitmap and the header.
+See <A HREF="#BitmapGet">BitmapGet</A> for more info about bitmaps.</P>
+
+<P>See also: <A HREF="#BitmapGet">BitmapGet</A></P>
+<HR>
+<H3><A NAME="CalcBitmapSize"><U>CalcBitmapSize</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> CalcBitmapSize (<A HREF="#BITMAP">BITMAP</A> *b);</TD></TR></TABLE></P>
+<P><B>Calculates the size of a bitmap.</B></P>
+
+<P>CalcBitmapSize calculates the size of the bitmap pointed to by <I>b</I>.
+In fact, CalcBitmapSize has the following implementation:</P>
+<PRE>unsigned short CalcBitmapSize(BITMAP *b)
+{
+  return ((((b->NumCols + 7) >> 3) * b->NumRows) + BITMAP_HDR_SIZE);
+}
+</PRE>
+<P>This means that you can create a bitmap with only <I>NumRows</I> and
+<I>NumCols</I> filled, and pass it to this function.
+<BR><BR>
+You can also define a macro for this purpose.</P>
+
+<P>See also: <A HREF="#BitmapGet">BitmapGet</A>, <A HREF="#BitmapPut">BitmapPut</A>, <A HREF="#BitmapSize">BitmapSize</A></P>
+<HR>
+<H3><A NAME="ClientToScr"><U>ClientToScr</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ClientToScr (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *WindowRect, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *Rect, <A HREF="#SCR_RECT">SCR_RECT</A> *Result);</TD></TR></TABLE></P>
+<P><B>Converts a window-based rectangle to screen-based coordinates.</B></P>
+
+<P>ClientToScr adds the values of <I>x1</I> and <I>y1</I> in <I>WindowRect</I> to all x and y values in <I>Rect</I>, and returns the result in <I>Result</I>.
+This is usually used to convert a window-based <A HREF="#SCR_RECT">SCR_RECT</A> to screen-based coordinates by passing it as the second parameter to this function.
+The first parameter is then a screen-based <A HREF="#SCR_RECT">SCR_RECT</A> of the window's client region.
+This routine is called in <A HREF="wingraph.html#SetWinClip">SetWinClip</A>.</P>
+
+<P>See also: <A HREF="#ScrToWin">ScrToWin</A></P>
+<HR>
+<H3><A NAME="ClrScr"><U>ClrScr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ClrScr (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Clears the entire screen.</B></P>
+
+<P>ClrScr fills the entire screen (real or virtual) with zeros.
+To set up a virtual screen, use <A HREF="#PortSet">PortSet</A>.</P>
+
+<P>Deprecated alias: ClearScreen</P>
+<HR>
+<H3><A NAME="DisplayOff"><U>DisplayOff</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DisplayOff (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Turns the display off.</B></P>
+
+<P>DisplayOff turns the display off. It does not really switch the LCD off, it
+just blanks the screen and keeps it blank. To turn the display back on, you
+must use <A HREF="#DisplayOn">DisplayOn</A>.</P>
+
+<P>See also: <A HREF="#DisplayOn">DisplayOn</A></P>
+<HR>
+<H3><A NAME="DisplayOn"><U>DisplayOn</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DisplayOn (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Turns the display on.</B></P>
+
+<P>DisplayOn turns the display on. It is mostly used after you turned the display off using <A HREF="#DisplayOff">DisplayOff</A>.</P>
+
+<P>See also: <A HREF="#DisplayOff">DisplayOff</A></P>
+<HR>
+<H3><A NAME="DrawChar"><U>DrawChar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawChar (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#int">char</A></B> c, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a character.</B></P>
+
+<P>DrawChar draws a character <I>c</I> at a specific
+(<I>x</I>,&nbsp;<I>y</I>) location. The following
+character attributes are supported (the region defined by a character is 8x10
+for huge font, 6x8 for large font or nx5 for small font, depending on the
+current font set by <A HREF="#FontSetSys">FontSetSys</A> command):
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>The character is ORed into the destination</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>The region created by inversing the character replaces the destination</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>The region defined by the character replaces the destination</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>The character is XORed into the destination</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>The character is masked so that every other pixel is turned off then ORed into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#SetCurAttr">SetCurAttr</A> command for more general info about attributes.</P>
+
+<HR>
+<H3><A NAME="DrawClipChar"><U>DrawClipChar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawClipChar (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> c, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a clipped character.</B></P>
+
+<P>DrawClipChar works exactly like <A HREF="#DrawChar">DrawChar</A>,
+except the character will be clipped
+at the boundaries of the area given by parameter clip.
+See <A HREF="#SetCurClip">SetCurClip</A> for more info about clipping areas.</P>
+
+<HR>
+<H3><A NAME="DrawClipEllipse"><U>DrawClipEllipse</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawClipEllipse (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> a, <B><A HREF="keywords.html#short">short</A></B> b, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a clipped ellipse.</B></P>
+
+<P>DrawClipEllipse draws an ellipse with centre at (<I>x</I>,&nbsp;<I>y</I>), and with
+semiaxes <I>a</I> and <I>b</I>. The ellipse will be clipped at the boundaries
+of the area given by parameter <I>clip</I>.
+See <A HREF="#SetCurClip">SetCurClip</A> for more info about clipping areas.
+The interior of the ellipse remains intact (no fill). The ellipse will be drawn
+using the attribute <I>Attr</I>. Supported attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a elipse</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Erase a ellipse</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>XORs a ellipse into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#SetCurAttr">SetCurAttr</A> for more general information about attributes.
+<BR><BR>
+<B>Note:</B> Set <I>a</I>== <I>b</I> to draw a circle.</P>
+
+<HR>
+<H3><A NAME="DrawClipLine"><U>DrawClipLine</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawClipLine (<B><A HREF="keywords.html#const">const</A></B> <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *Line, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a clipped line.</B></P>
+
+<P>DrawClipLine draws a line from (x0,&nbsp;y0) to (x1,&nbsp;y1) where coordinates (x0,&nbsp;y0)
+and (x1,&nbsp;y1) are given in a <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> structure <I>Line</I>, using the attribute
+<I>Attr</I>. The line will be clipped
+at the boundaries of the area given by parameter <I>clip</I>.
+See <A HREF="#SetCurClip">SetCurClip</A> for more info about clipping areas.
+See <A HREF="#DrawLine">DrawLine</A> for a description of supported atributes.</P>
+
+<HR>
+<H3><A NAME="DrawClipPix"><U>DrawClipPix</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawClipPix (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Draws a clipped pixel.</B></P>
+
+<P>DrawClipPix works exactly like DrawPix, except the pixel will not be drawn if
+its coordinates are out of clipping zone given by <A HREF="#SetCurClip">SetCurClip</A>
+command, and an attribute is not given as an explicite parameter (the attribute given with
+<A HREF="#SetCurAttr">SetCurAttr</A> command will be used instead).</P>
+
+<HR>
+<H3><A NAME="DrawClipRect"><U>DrawClipRect</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawClipRect (<B><A HREF="keywords.html#const">const</A></B> <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a clipped rectangle.</B></P>
+
+<P>DrawClipRect draws a rectangle with (x0,&nbsp;y0) and (x1,&nbsp;y1) as corners,
+where coordinates (x0,&nbsp;y0) and (x1,&nbsp;y1) are given in a <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> structure <I>rect</I>.
+The rectangle will be clipped at the boundaries of the area given by parameter <I>clip</I>.
+See <A HREF="#SetCurClip">SetCurClip</A> for more info about clipping areas.
+The interior of the rectangle remains intact (no fill). The border lines of
+the rectangle will be drawn using the attribute <I>Attr</I>.
+See <A HREF="#DrawLine">DrawLine</A> for a description of supported line atributes. In
+addition, the attribute may be ORed with one or more following constants (which
+are defined in enum <A HREF="#BoxAttrs">BoxAttrs</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>B_NORMAL</TD><TD>Draw a normal rectangle</TD>
+</TR><TR>
+<TD>B_DOUBLE</TD><TD>Draw a double thick rectangle</TD>
+</TR><TR>
+<TD>B_ROUNDED</TD><TD>Draw a rectangle with rounded corners</TD>
+</TR><TR>
+<TD>B_CUT</TD><TD>Draw a rectangle with the upper corners cut (like in toolboxes)</TD>
+</TR><TR>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> I cannot conclude what the difference is if you OR the attribute with
+B_NORMAL or if you do not do so. Maybe I am stupid.</P>
+
+<HR>
+<H3><A NAME="DrawFkey"><U>DrawFkey</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawFkey (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> fkey_no, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a function key symbol.</B></P>
+
+<P>DrawFkey draws a string "F&lt;<I>fkey_no</I>&gt;" at (<I>x</I>,&nbsp;<I>y</I>),
+using the attribute <I>Attr</I>, and
+using small font, regardless of the current font setting. See <A HREF="#DrawChar">DrawChar</A>
+for a description of attribute <I>Attr</I>. <I>fkey_no</I> must be in a range 0-9.</P>
+
+<HR>
+<H3><A NAME="DrawIcon"><U>DrawIcon</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawIcon (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *Icon, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws an icon.</B></P>
+
+<P>DrawIcon draws an icon (a 16x16 bitmap structure given as 16-word group of
+bits) pointed to by pointer <I>Icon</I> at location (<I>x</I>,&nbsp;<I>y</I>)
+using attribute <I>Attr</I>. Pointer
+<I>Icon</I> is usually of type <A HREF="#pICON">pICON</A> (pointer to the
+<A HREF="#ICON">ICON</A> structure). The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>The icon is ORed into the destination</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>The inversed icon is ANDed into the destination</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>The icon is XORed into the destination</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>The icon is masked so that every other pixel is turned off then ORed into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#SetCurAttr">SetCurAttr</A> command for more general info about attributes.
+<BR><BR>
+<B>Note:</B> In antediluvian releases of TIGCCLIB (before 2.0) the documentation said that A_REPLACE
+attribute is supported. Unfortunately, it seems that this is not true (Daniel Pineo informed
+me about this problem). Also, information about usage of A_REVERSE was incorrect.</P>
+
+<P>See also: <A HREF="sprites.html">sprites.h</A></P>
+<HR>
+<H3><A NAME="DrawLine"><U>DrawLine</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawLine (<B><A HREF="keywords.html#short">short</A></B> x0, <B><A HREF="keywords.html#short">short</A></B> y0, <B><A HREF="keywords.html#short">short</A></B> x1, <B><A HREF="keywords.html#short">short</A></B> y1, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a line between two specified points.</B></P>
+
+<P>DrawLine draws a line from
+(<I>x0</I>,&nbsp;<I>y0</I>) to (<I>x1</I>,&nbsp;<I>y1</I>) using
+the attribute <I>Attr</I>. The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a normal line</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Draw an inverse line (i.e. erase the line)</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Draw a line using XORing with the destination</TD>
+</TR><TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#SetCurAttr">SetCurAttr</A> command for more general info about attributes.
+Note that although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS
+and A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which
+are more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act
+like A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to
+draw shaded-fill rectangle using DrawLine in a loop, use vertical lines for drawing, not
+horizontal ones!
+<BR><BR>
+Using DrawLine (and all other graphic comands which does not do clipping) may be
+harmful if called using parameters which are out of legal range (i.e. out of the
+screen area).</P>
+
+<HR>
+<H3><A NAME="DrawMultiLines"><U>DrawMultiLines</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawMultiLines (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *multi_lines);</TD></TR></TABLE></P>
+<P><B>Draws a set of lines in one turn.</B></P>
+
+<P>DrawMultiLines draws a whole set of lines using a single command. The
+parameter <I>multi_lines</I> is a pointer to the byte-area structure
+organized as follows:</P>
+<UL>
+<LI><P>The first byte is the total number of lines;</P></LI>
+<LI><P>Then, each line is described using a 5-byte structure as follows:</P>
+<UL>
+<LI><P>The first byte is line attribute;</P></LI>
+<LI><P>The next four bytes are x0, y0, x1 and y1 respective.</P></LI>
+</UL>
+
+</LI>
+</UL>
+<P>The line will be clipped at the current clipping area boundaries given with
+<A HREF="#SetCurClip">SetCurClip</A> command.
+<I>multi_lines</I> is usually a pointer to the <A HREF="#MULTI_LINE">MULTI_LINE</A>
+structure. See <A HREF="#DrawLine">DrawLine</A> for more info about line attributes.
+<BR><BR>
+Parameters <I>x</I> and <I>y</I> act as a translation shifters. They are added to
+all line coordinates before drawing (the structure itself remains intact), so by using
+the same <I>multi_line</I> with various <I>x</I>-s and <I>y</I>-s, it is possible
+to draw several instances of the same-shape objects on various places on the screen.
+<BR><BR>
+The following example will draw two stars on the screen:</P>
+<PRE>static MULTI_LINE star_shape = {3, {{1, 30, 50, 70, 50},
+                                    {1, 35, 35, 65, 65},
+                                    {1, 35, 65, 65, 35}}};
+...
+DrawMultiLines (0, 0, &amp;star_shape);
+DrawMultiLines (80, 0, &amp;star_shape);
+</PRE>
+
+<HR>
+<H3><A NAME="DrawPix"><U>DrawPix</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawPix (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a pixel.</B></P>
+
+<P>DrawPix draws a pixel at (<I>x</I>,&nbsp;<I>y</I>),
+using the attribute <I>Attr</I>. The following
+attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a pixel</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Erase a pixel</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Invert a pixel</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#SetCurAttr">SetCurAttr</A> command for a more general info about attributes.</P>
+
+<HR>
+<H3><A NAME="DrawStr"><U>DrawStr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawStr (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *str, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a string.</B></P>
+
+<P>DrawStr draws a string <I>str</I> at a
+specific (<I>x</I>,&nbsp;<I>y</I>) location. See <A HREF="#DrawChar">DrawChar</A> for a
+description of attribute <I>Attr</I>.
+<BR><BR>
+<B>Note:</B> Too many people ask me how to draw a content of an integer variable (for example) instead
+of a string. Although this question is answered in the <A HREF="faq.html">Frequently Asked
+Question</A> list, I received a suggestion that it would be better if explained here.
+Well. You need to use <A HREF="stdio.html#sprintf">sprintf</A> to convert a non-string
+variable to a string. For example:</P>
+<PRE>int x, y;
+char buffer[50];
+...
+sprintf (buffer, "%d + %d = %d", x, y, x + y);
+DrawStr (0, 0, buffer, A_NORMAL);
+</PRE>
+
+<P>Deprecated alias: DrawStrXY</P>
+<HR>
+<H3><A NAME="DrawStrWidth"><U>DrawStrWidth</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> DrawStrWidth (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *str, <B><A HREF="keywords.html#short">short</A></B> Font);</TD></TR></TABLE></P>
+<P><B>Determines the width of a string, in pixels.</B></P>
+
+<P>DrawStrWidth returns the actual width of the string <I>str</I> according to the font
+number given by parameter <I>Font</I>. For 8x10 and 6x8 fonts, this is just 8 or 6 times the
+length of the string, but the 4x6 font is proportional.
+See <A HREF="#FontSetSys">FontSetSys</A> for more info on fonts.</P>
+
+<P>See also: <A HREF="#DrawStrWidthP">DrawStrWidthP</A></P>
+<HR>
+<H3><A NAME="DrawStrWidthP"><U>DrawStrWidthP</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> DrawStrWidthP (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *str, <B><A HREF="keywords.html#short">short</A></B> len, <B><A HREF="keywords.html#short">short</A></B> Font);</TD></TR></TABLE></P>
+<P><B>Returns the width of the first <I>len</I> characters of a string.</B></P>
+
+<P>DrawStrWidthP returns the length in pixels of the first <I>len</I> characters of the string <I>str</I> displayed with font <I>Font</I>.
+The difference between DrawStrWidthP and <A HREF="#DrawStrWidth">DrawStrWidth</A> is that DrawStrWidth gives the length in pixels of the full string <I>str</I> displayed with font <I>Font</I>.
+<BR>
+Be careful: <I>len</I> must be less or equal to <CODE>strlen (str)</CODE>!
+<BR><BR>
+This function is interesting only for the <A HREF="#Fonts">F_4x6</A>
+font; for the <A HREF="#Fonts">F_6x8</A> and
+<A HREF="#Fonts">F_8x10</A> fonts, DrawStrWidthP will return
+6*len and 8*len, respectively.
+Also, using </P>
+<PRE>DrawStrWidthP (str, strlen (str), font);</PRE>
+<P>is slower than using</P>
+<PRE>DrawStrWidth (str, font);</PRE>
+<P>Example:</P>
+<PRE>// This line is equivalent to:
+// printf_xy (0, 0, "%hu", DrawStrWidth ("DEFGHIJK", F_4x6));
+printf_xy (0, 0, "%hu",
+  DrawStrWidthP ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + 3, 8, F_4x6));
+</PRE>
+<P>On AMS versions lower than 2.00, you can emulate DrawStrWidthP with:</P>
+<PRE>unsigned short DrawStrWidthP(const char *str, short len, short Font)
+{
+  char s[len+1];
+  short i;
+  // Calling memcpy is slower than copying the string by-hand...
+  for (i = 0; i &lt; len; i++)
+    s[i] = str[i];
+  s[len] = 0;
+  return DrawStrWidth (s, font);
+}
+</PRE>
+<P>or the following assembly code provided by Lionel Debroux:</P>
+<PRE>
+unsigned short DrawStrWidthP(register const char *str asm("a0"), register short len asm("d0"), register short Font asm("d2"));
+asm("DrawStrWidthP:
+    move.w   %d0,%d1
+    beq.s    __end_DrawStrWidthP__
+    btst     #0,%d0
+    beq.s    __allocate_on_the_stack_DSWP__
+    addq.w   #1,%d1
+__allocate_on_the_stack_DSWP__:
+    suba.w   %d1,%sp
+    
+    movea.l  %sp,%a1
+    subq.w   #1,%d0
+__loop_copy_DrawStrWidthP__:
+    move.b   (%a0)+,(%a1)+
+    dbf      %d0,__loop_copy_DrawStrWidthP__
+    clr.b    (%a1)
+    
+    addq.w   #8,%d1
+    move.w   %d1,-(%sp) | save d1 (DrawStrWidth can destroy it)...
+    move.w   %d2,-(%sp)
+    pea      4(%sp)
+    movea.l  0xC8.w,%a0
+    movea.l  0x197*4(%a0),%a0 | DrawStrWidth
+    jsr      (%a0)
+    
+    adda.w   6(%sp),%sp
+__end_DrawStrWidthP__:
+    rts
+");
+ </PRE>
+<P>The C function is about 1% slower than the original implementation.
+The assembly implementation is faster.</P>
+
+<P>See also: <A HREF="#DrawStrWidth">DrawStrWidth</A></P>
+<HR>
+<H3><A NAME="FillLines2"><U>FillLines2</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> FillLines2 (<B><A HREF="keywords.html#const">const</A></B> <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *lower_line, <B><A HREF="keywords.html#const">const</A></B> <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *upper_line, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a filled area between two lines.</B></P>
+
+<P>FillLines2 fills an area bounded with two lines which coordinates are given
+in two <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> structures <I>lower_line</I> (lower bound) and <I>upper_line</I> (upper bound).
+In fact, it draws a filled polygon whose vertices are
+(<I>lower_line</I>.x0,&nbsp;<I>lower_line</I>.y0),
+(<I>lower_line</I>.x1,&nbsp;<I>lower_line</I>.y1),
+(<I>upper_line</I>.x0,&nbsp;<I>upper_line</I>.y0) and
+(<I>upper_line</I>.x1,&nbsp;<I>upper_line</I>.y1)
+using the attribute <I>Attr</I>. Supported attributes are the same as in command
+<A HREF="#FillTriangle">FillTriangle</A>. The drawn polygon will be clipped at the boundaries of the
+area given by parameter <I>clip</I>. See <A HREF="#SetCurClip">SetCurClip</A> for more
+info about clipping areas. If <I>lower_line</I> is above <I>upper_line</I>,
+nothing will be drawn. To be more precise, "above" means "closer to the top of the screen".</P>
+
+<HR>
+<H3><A NAME="FillTriangle"><U>FillTriangle</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> FillTriangle (<B><A HREF="keywords.html#short">short</A></B> x0, <B><A HREF="keywords.html#short">short</A></B> y0, <B><A HREF="keywords.html#short">short</A></B> x1, <B><A HREF="keywords.html#short">short</A></B> y1, <B><A HREF="keywords.html#short">short</A></B> x2, <B><A HREF="keywords.html#short">short</A></B> y2, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a filled triangle.</B></P>
+
+<P>FillTriangle draws a filled triangle with vertices (<I>x0</I>,&nbsp;<I>y0</I>),
+(<I>x1</I>,&nbsp;<I>y1</I>) and (<I>x2</I>,&nbsp;<I>y2</I>) using the
+attribute <I>Attr</I>. The triangle will be clipped at the boundaries of the area
+given by parameter <I>clip</I>. See <A HREF="#SetCurClip">SetCurClip</A> for more
+info about clipping areas. Supported attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draws a solid fill triangle</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Draws an empty triangle (i.e. erase a triangular area)</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>XORs a solid fill triangle into the destination</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draws a triangle filled using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draws a triangle filled using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draws a triangle filled using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draws a triangle filled using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#SetCurAttr">SetCurAttr</A> command for more general info about attributes.</P>
+
+<HR>
+<H3><A NAME="FontCharWidth"><U>FontCharWidth</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FontCharWidth (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Determines the character width in pixels.</B></P>
+
+<P>FontCharWidth returns the actual width of the character <I>c</I> according to current
+font settings.</P>
+
+<P>See also: <A HREF="#DrawStrWidth">DrawStrWidth</A></P>
+<HR>
+<H3><A NAME="FontGetSys"><U>FontGetSys</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> FontGetSys(<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Gets the current font number.</B></P>
+
+<P>FontGetSys returns the current font number.
+See <A HREF="#FontSetSys">FontSetSys</A> for more info.</P>
+
+<HR>
+<H3><A NAME="FontSetSys"><U>FontSetSys</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> FontSetSys (<B><A HREF="keywords.html#short">short</A></B> Font);</TD></TR></TABLE></P>
+<P><B>Sets the current font.</B></P>
+
+<P>FontSetSys changes the current text font. All subsequent characters written
+to the screen will use this font. The supported values for <I>Font</I> are F_4x6,
+F_6x8, and F_8x10, and they are defined in enum <A HREF="#Fonts">Fonts</A>. The 4x6
+font is a proportional font while the 6x8 and 8x10 fonts are fixed-width. FontSetSys
+returns the previously active font number.</P>
+
+<HR>
+<H3><A NAME="GetPix"><U>GetPix</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> GetPix (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Gets the status of a specified pixel.</B></P>
+
+<P>GetPix gets the status of the pixel located at (<I>x</I>,&nbsp;<I>y</I>).
+Returns <A HREF="alloc.html#Bool">TRUE</A> or
+<A HREF="alloc.html#Bool">FALSE</A> depending on whether the corresponding pixel is set or reset.</P>
+
+<HR>
+<H3><A NAME="LCD_restore"><U>LCD_restore</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> LCD_restore (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Restores the saved content of the LCD screen.</B></P>
+
+<P>LCD_restore restores the contents of the screen (saved using <A HREF="#LCD_save">LCD_save</A>)
+from the buffer pointed to by <I>buffer</I>. <I>buffer</I> is usually of type
+<A HREF="#LCD_BUFFER">LCD_BUFFER</A>.
+LCD_restore is a small macro which calls the <A HREF="mem.html#memcpy">memcpy</A> function.
+<BR><BR>
+<B>Note:</B> <A HREF="#LCD_save">LCD_save</A> and LCD_restore do not work in grayscale mode.</P>
+
+<HR>
+<H3><A NAME="LCD_save"><U>LCD_save</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> LCD_save (<B><A HREF="keywords.html#void">void</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Saves the content of the LCD screen.</B></P>
+
+<P>LCD_save saves the complete contents of the screen into the 3840-bytes long buffer
+pointed to by <I>buffer</I>. <I>buffer</I> is usually of type
+<A HREF="#LCD_BUFFER">LCD_BUFFER</A>.
+LCD_save is a small macro which calls the <A HREF="mem.html#memcpy">memcpy</A> function.
+<BR><BR>
+<B>Note:</B> LCD_save and <A HREF="#LCD_restore">LCD_restore</A> do not work in grayscale mode.</P>
+
+<HR>
+<H3><A NAME="LineTo"><U>LineTo</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> LineTo (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Draws a clipped line from the current pen position.</B></P>
+
+<P>LineTo draws a line from the current pen position to the pixel (<I>x</I>,&nbsp;<I>y</I>) using
+the current attribute given with <A HREF="#SetCurAttr">SetCurAttr</A> command,
+then updates the pen position to those coordinates.
+The line will be clipped at the current clipping area boundaries given with
+<A HREF="#SetCurClip">SetCurClip</A> command.</P>
+
+<P>Deprecated alias: DrawTo</P>
+<HR>
+<H3><A NAME="MakeScrRect"><U>MakeScrRect</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SCR_RECT">SCR_RECT</A> *MakeScrRect (<B><A HREF="keywords.html#short">short</A></B> x0, <B><A HREF="keywords.html#short">short</A></B> y0, <B><A HREF="keywords.html#short">short</A></B> x1, <B><A HREF="keywords.html#short">short</A></B> y1, <A HREF="#SCR_RECT">SCR_RECT</A> *s);</TD></TR></TABLE></P>
+<P><B>Puts four coordinates into a <A HREF="#SCR_RECT">SCR_RECT</A> and returns a pointer to it.</B></P>
+
+<P>MakeScrRect is used to create a <A HREF="#SCR_RECT">SCR_RECT</A> from four screen coordinates.
+<BR><BR>
+For example, it can be used to convert a <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> to a <A HREF="#SCR_RECT">SCR_RECT</A> like this
+(<I>s</I> is a <A HREF="#SCR_RECT">SCR_RECT</A>, and <I>rect</I> is a <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A>):</P>
+<PRE>MakeScrRect (rect.x0, rect.y0, rect.x1, rect.y1, &s);
+</PRE>
+<P>In GNU C (like GCC4TI is), it is generally faster to use cast constructors instead of calling MakeScrRect:</P>
+<PRE>s = (SCR_RECT){{x0, y0, x1, y1}};
+</PRE>
+
+<P>See also: <A HREF="wingraph.html#SetWinClip">SetWinClip</A>, <A HREF="wingraph.html#MakeWinRect">MakeWinRect</A></P>
+<HR>
+<H3><A NAME="MoveTo"><U>MoveTo</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MoveTo (<B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Sets the current pen position.</B></P>
+
+<P>MoveTo sets the current pen position to (<I>x</I>,&nbsp;<I>y</I>).</P>
+
+<HR>
+<H3><A NAME="PortRestore"><U>PortRestore</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> PortRestore (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Cancels the virtual screen.</B></P>
+
+<P>PortRestore restores factory defaults for address and dimensions of the
+video memory. PortRestore acts exactly like</P>
+<PRE>PortSet ((void *) 0x4C00, 239, 127);
+</PRE>
+
+<HR>
+<H3><A NAME="PortSet"><U>PortSet</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> PortSet (<B><A HREF="keywords.html#void">void</A></B> *vm_addr, <B><A HREF="keywords.html#short">short</A></B> x_max, <B><A HREF="keywords.html#short">short</A></B> y_max);</TD></TR></TABLE></P>
+<P><B>Sets up the virtual screen.</B></P>
+
+<P>PortSet allows drawing in a virtual screen. All graphic commands which are built-in
+into TIOS does not expect that the video memory must be at 0x4C00, and that the
+video memory is always 240&nbsp;x&nbsp;128 pixels. Using PortSet you can set up a virtual screen
+anywhere in a memory, and of any size. After using PortSet, all graphic commands
+will assume that the video memory starts at <I>vm_addr</I>, and that the dimensions
+of the video memory are (<I>x_max</I>+1)&nbsp;x&nbsp;(<I>y_max</I>+1)
+pixels. This allows to you to use graphic functions even when the actual LCD memory is
+relocated at any other address using I/O hardware ports, or to draw pictures into
+virtual screens (not visible on the real screen), then move them (using
+<A HREF="mem.html#memcpy">memcpy</A> or some other function) to the real screen. This will enable the possibility of
+hiding the actual drawing process, and to display the drawn picture immediately.
+<BR><BR>
+Here is a code fragment which ilustrates the usage of virtual screens:</P>
+<PRE>void *virtual=malloc (LCD_SIZE);  // <I>Allocate the buffer</I>
+...
+if (!virtual) ... // <I>do some error handling - not enough memory!</I>
+PortSet (virtual, 239, 127); // <I>redirect drawing routines to buffer</I>
+</PRE>
+<P>or, even simpler, a virtual screen may simply be in any local variable which is
+long enough:</P>
+<PRE>char virtual[LCD_SIZE];
+...
+PortSet (virtual, 239, 127);
+</PRE>
+<P>Note that, in this case, virtual screen memory will in fact be somewhere on the stack.
+There is nothing bad in this, but keep in mind that the total amount of the
+stack is 16K, so don't put too much data (like big arrays etc.) on the stack
+(i.e. in local variables). If you really need to handle a lot of data, use
+<A HREF="alloc.html#malloc">malloc</A> instead.
+<BR><BR>
+After setting up the virtual screen, you can do any drawing you want - it will be
+redirected to the virtual
+screen. To copy this to the regular screen (i.e. to display it) do this:</P>
+<PRE>memcpy (LCD_MEM, virtual, LCD_SIZE);
+</PRE>
+<P>or even simpler (this is the same):</P>
+<PRE>LCD_restore (virtual);
+</PRE>
+<P><B>Note:</B> Don't forget to do <A HREF="#PortRestore">PortRestore</A> before the end of the program, otherwise TIOS will
+be fooled after returning to TI-Basic!</P>
+
+<HR>
+<H3><A NAME="QScrRectOverlap"><U>QScrRectOverlap</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> QScrRectOverlap (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *r1, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *r2);</TD></TR></TABLE></P>
+<P><B>Determines whether two rectangular areas overlap or not.</B></P>
+
+<P>QScrRectOverlap returns <A HREF="alloc.html#Bool">TRUE</A> or <A HREF="alloc.html#Bool">FALSE</A>
+depending on whether two rectangular areas given in two
+<A HREF="#SCR_RECT">SCR_RECT</A> structures <I>r1</I> and <I>r2</I> overlap or not.</P>
+
+<HR>
+<H3><A NAME="RestoreScrState"><U>RestoreScrState</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> RestoreScrState (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Restores a a saved state of the graphic system.</B></P>
+
+<P>RestoreScrState restores a saved state of the graphic system (saved using
+<A HREF="#SaveScrState">SaveScrState</A> command) from a structure pointed
+to by <I>buffer</I>.</P>
+
+<HR>
+<H3><A NAME="SaveScrState"><U>SaveScrState</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SaveScrState (<B><A HREF="keywords.html#void">void</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Saves the state of the graphic system.</B></P>
+
+<P>SaveStrState saves the current state of the graphic system (including the address and
+dimensions of the virtual screen, current font, attribute, clipping area and pen
+position) into a 18-byte structure pointed to by <I>buffer</I>. <I>buffer</I> is
+usually a pointer to a <A HREF="#SCR_STATE">SCR_STATE</A> structure.</P>
+
+<HR>
+<H3><A NAME="ScrRectFill"><U>ScrRectFill</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ScrRectFill (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *rect, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a filled rectangle.</B></P>
+
+<P>ScrRectFill draws a filled rectangle given by <A HREF="#SCR_RECT">SCR_RECT</A>
+structure <I>rect</I>, using the attribute <I>Attr</I>. The rectangle will be
+clipped at the boundaries of the area given by parameter <I>clip</I>. See
+<A HREF="#SetCurClip">SetCurClip</A> for more info about clipping areas. Supported
+attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>A_NORMAL</TD><TD>Fill with black pixels</TD></TR>
+<TR><TD>A_REVERSE</TD><TD>Fill with white pixels</TD></TR>
+<TR><TD>A_XOR</TD><TD>All pixels in the rectangle will be reversed</TD></TR>
+</TABLE>
+<BR>
+<A HREF="#FillLines2">FillLines2</A> is more complicated and slower function than ScrRectFill,
+but it supports many more attributes. See <A HREF="#SetCurAttr">SetCurAttr</A> for more info about attributes.
+<BR><BR>
+<B>Note:</B> TI said that attribute A_SHADED (set to a pattern of pixels on and off) is also supported,
+but it didn't work when I tried it; at least, it does not work on AMS 1.00.</P>
+
+<HR>
+<H3><A NAME="ScrRectOverlap"><U>ScrRectOverlap</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> ScrRectOverlap (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *r1, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *r2, <A HREF="#SCR_RECT">SCR_RECT</A> *r);</TD></TR></TABLE></P>
+<P><B>Finds an intersection of two rectangular areas.</B></P>
+
+<P>ScrRectOverlap finds an intersection of two rectangular areas given in
+two <A HREF="#SCR_RECT">SCR_RECT</A> structures <I>r1</I> and <I>r2</I>,
+and stores coordinates of the intersection in <I>r</I>. ScrRectOverlap
+returns <A HREF="alloc.html#Bool">TRUE</A> or <A HREF="alloc.html#Bool">FALSE</A> depending on
+whether <I>r1</I> and <I>r2</I> overlap or not.</P>
+
+<HR>
+<H3><A NAME="ScrRectScroll"><U>ScrRectScroll</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ScrRectScroll (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *rect, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> NumRows, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Scrols a rectangular area upwards or downwards.</B></P>
+
+<P>ScrRectScroll scrolls a rectangular area which is an intersection of two
+rectangular areas given using two <A HREF="#SCR_RECT">SCR_RECT</A> structures
+<I>rect</I> and <I>clip</I> upwards by <I>NumRows</I> pixels (or downwards
+if <I>NumRows</I>&nbsp;&lt;&nbsp;0). <I>rect</I> usually represents the actual
+area which need to be scrolled, and <I>clip</I> is the clipping area.
+See <A HREF="#SetCurClip">SetCurClip</A> for more info about clipping areas.
+The attribute <I>Attr</I> determines what happens
+with pixels in a vacant space produced after scrolling:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Pixels in a vacant space are set</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Pixels in a vacant space are reset</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Pixels in a vacant space are inverted</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#SetCurAttr">SetCurAttr</A> command for more general info about attributes.
+<BR><BR>
+<B>Note:</B> This command is internally realized stupidly using
+<A HREF="#BitmapGet">BitmapGet</A> and <A HREF="#BitmapPut">BitmapPut</A>,
+so it is slow.</P>
+
+<HR>
+<H3><A NAME="ScrRectShift"><U>ScrRectShift</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ScrRectShift (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *rect, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip, <B><A HREF="keywords.html#short">short</A></B> NumCols, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Shifts a rectangular area left or right.</B></P>
+
+<P>ScrRectShift shifts a rectangular area which is an intersection of two
+rectangular areas given using two <A HREF="#SCR_RECT">SCR_RECT</A> structures
+<I>rect</I> and <I>clip</I> left by <I>NumRows</I> pixels (or right
+if <I>NumRows</I>&nbsp;&lt;&nbsp;0). The attribute <I>Attr</I> determines what happens
+with pixels in a vacant space produced after shifting. For more info, see
+<A HREF="#ScrRectScroll">ScrRectScroll</A> command.</P>
+
+<HR>
+<H3><A NAME="ScrToHome"><U>ScrToHome</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SCR_RECT">SCR_RECT</A> *ScrToHome (<A HREF="#SCR_RECT">SCR_RECT</A> *rect);</TD></TR></TABLE></P>
+<P><B>Shifts structure of type SCR_RECT to the home position.</B></P>
+
+<P>ScrToHome modifies the structure pointed to by <I>rect</I> so that the modified structure
+will represent the same-shape rectangular area, but with topleft corner at position
+(0,&nbsp;0). ScrToHome returns <I>rect</I> back (but note that the structure pointed to by
+it is modified).</P>
+
+<HR>
+<H3><A NAME="ScrToWin"><U>ScrToWin</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *ScrToWin (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *rect);</TD></TR></TABLE></P>
+<P><B>Converts a structure of type <A HREF="#SCR_RECT">SCR_RECT</A> to type <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A>.</B></P>
+
+<P>ScrToWin accepts a pointer <I>rect</I> to the structure of type <A HREF="#SCR_RECT">SCR_RECT</A>
+and returns a static pointer to a structure of type <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> which
+represents the same rectangular area.
+It is stored at a fixed place in memory, which means that you cannot write something like:</P>
+<PRE>foo (ScrToWin (&r1), ScrToWin (&r2));
+</PRE>
+
+<HR>
+<H3><A NAME="SetCurAttr"><U>SetCurAttr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> SetCurAttr (<B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Sets the default attribute.</B></P>
+
+<P>SetCurAttr sets the default attribute for all commands which haven't an
+attribute as an explicite parameter to <I>Attr</I>. The interpretation of the attribute depends
+of concrete graphic command. Some attributes are only valid for certain
+graphic operation. Legal attribute values are defined in enum <A HREF="#Attrs">Attrs</A>.
+In a general, the following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REVERSE</TD><TD>Destination pixels turned off</TD>
+</TR><TR>
+<TD>A_NORMAL</TD><TD>Destination pixels turned on</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Source pixels XORed with destination pixels</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Destination pixels masked so that every other pixel turned off</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>Source pixels replace destination pixels</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>Source pixels ORed with destination pixels</TD>
+</TR>
+</TABLE>
+<BR>
+For lines the following additional attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+SetCurAttr returns the previous current attribute.
+<BR><BR>
+<B>Note:</B> Although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS
+and A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which
+are more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act
+like A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to
+draw shaded-fill rectangle using a line drawing command (for example, <A HREF="#DrawLine">DrawLine</A>)
+in a loop, use vertical lines for drawing, not horizontal ones! Note also that these
+additional attributes work fine with <A HREF="#FillTriangle">FillTriangle</A> and
+<A HREF="#FillLines2">FillLines2</A>, but not with <A HREF="#ScrRectFill">ScrRectFill</A>!</P>
+
+<HR>
+<H3><A NAME="SetCurClip"><U>SetCurClip</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SetCurClip (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SCR_RECT">SCR_RECT</A> *clip);</TD></TR></TABLE></P>
+<P><B>Sets the default clipping area.</B></P>
+
+<P>SetCurClip sets the default clipping area for commands which are sensitive to
+clipping, but which do not need a clipping area as an explicit parameter (such
+commands are
+<A HREF="#LineTo">LineTo</A> and
+<A HREF="#DrawClipPix">DrawClipPix</A>). The clipping area is a rectangle
+with corners (x0,&nbsp;y0) and (x1,&nbsp;y1) which is given using a <A HREF="#SCR_RECT">SCR_RECT</A> structure
+<I>clip</I>. All clip-sensitive drawings will be clipped (truncated) at the current
+clipping area boundaries. Be warned: the default clipping area at the beginning of the
+program is not the full screen!
+<BR><BR>
+<B>Note:</B> GCC4TI is GNU C, so it allows <A HREF="gnuexts.html#SEC81">cast constructors</A>.
+That's why constructions like</P>
+<PRE>SetCurClip (&amp;(SCR_RECT){{0, 0, 159, 99}});
+</PRE>
+<P>are legal.</P>
+
+<HR>
+<H3><A NAME="sf_width"><U>sf_width</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> sf_width(<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> character);</TD></TR></TABLE></P>
+<P><B>Returns the width in pixels of character <I>character</I> in the small font.</B></P>
+
+<P>See also: <A HREF="#DrawStrWidth">DrawStrWidth</A>, <A HREF="#DrawStrWidthP">DrawStrWidthP</A>, <A HREF="#FontCharWidth">FontCharWidth</A></P>
+<HR>
+<H3><A NAME="ScrRect"><U>ScrRect</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SCR_RECT">SCR_RECT</A> *<B><A HREF="keywords.html#const">const</A></B> ScrRect;</TD></TR></TABLE></P>
+<P><B>A global pointer to a <A HREF="#SCR_RECT">SCR_RECT</A> structure representing the whole screen.</B></P>
+
+<P>ScrRect is a (constant) pointer to a <A HREF="#SCR_RECT">SCR_RECT</A> structure set by TIOS
+to point to a structure which represents the whole screen area without the status
+line. So, if you don't need drawing in the status line, you can set the default
+clipping area using the <A HREF="#SetCurClip">SetCurClip</A> command like</P>
+<PRE>SetCurClip (ScrRect);
+</PRE>
+<P>or, you can use ScrRect in a command which needs clipping area parameter explicitely
+(such command is <A HREF="#DrawClipEllipse">DrawClipEllipse</A>, for example):</P>
+<PRE>DrawClipEllipse (50, 50, 30, 20, ScrRect, A_NORMAL);
+</PRE>
+<P>ScrRect may be used also to determine a calculator type. If</P>
+<PRE>ScrRect-&gt;xy.x1 == 159
+</PRE>
+<P>then the calculator is a TI-89 or TI-89 Titanium, else it is a TI-92 Plus or V200.
+<BR><BR>
+<B>Note:</B> ScrRect is a variable, so it may be changed (more precise, the structure on which it
+points may be changed). By changing it, it is possible to force
+some TIOS commands which normally cannot access to the status line area to get the access
+to this "forbidden" zone, or to force some commands to use only smaller part of the screen.
+Use this possibility with great care, and only if you know exactly what you are doing!</P>
+
+<HR>
+<H3><A NAME="BITMAP_HDR_SIZE"><U>BITMAP_HDR_SIZE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> BITMAP_HDR_SIZE 4</TD></TR></TABLE></P>
+<P><B>Defines the size of the header of the <A HREF="#BITMAP">BITMAP</A> structure.</B></P>
+
+<HR>
+<H3><A NAME="LCD_MEM"><U>LCD_MEM</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> LCD_MEM ((<B><A HREF="keywords.html#void">void</A></B> *) 0x4C00)</TD></TR></TABLE></P>
+<P><B>A pointer to the area in memory where the contents of the LCD screen are stored.</B></P>
+
+<P>See also: <A HREF="#LCD_SIZE">LCD_SIZE</A>, <A HREF="#LCD_BUFFER">LCD_BUFFER</A></P>
+<HR>
+<H3><A NAME="LCD_SIZE"><U>LCD_SIZE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> LCD_SIZE 3840</TD></TR></TABLE></P>
+<P><B>An integer constant which represents the size of the LCD screen in bytes.</B></P>
+
+<P>See also: <A HREF="#LCD_MEM">LCD_MEM</A>, <A HREF="#LCD_BUFFER">LCD_BUFFER</A></P>
+<HR>
+<H3><A NAME="Attrs"><U>Attrs</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> Attrs {A_REVERSE, A_NORMAL, A_XOR, A_SHADED, A_REPLACE, A_OR, A_AND, A_THICK1, A_SHADE_V, A_SHADE_H, A_SHADE_NS, A_SHADE_PS};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing legal attribute values.</B></P>
+
+<P>For more information about attributes, see the <A HREF="#SetCurAttr">SetCurAttr</A> command or the <A HREF="graphing.html#GR_WIN_VARS">GR_WIN_VARS</A> structure.</P>
+
+<P>See also: <A HREF="#SetCurAttr">SetCurAttr</A>, <A HREF="graphing.html#GR_WIN_VARS">GR_WIN_VARS</A>, <A HREF="wingraph.html#WinAttr">WinAttr</A>, <A HREF="wingraph.html#WinFillTriangle">WinFillTriangle</A>, <A HREF="#ScrRectScroll">ScrRectScroll</A>, <A HREF="#ScrRectFill">ScrRectFill</A>, <A HREF="#FillTriangle">FillTriangle</A>, <A HREF="#DrawPix">DrawPix</A>, <A HREF="#DrawClipEllipse">DrawClipEllipse</A>, <A HREF="#DrawIcon">DrawIcon</A>, <A HREF="wingraph.html#WinPixSet">WinPixSet</A>, <A HREF="#DrawChar">DrawChar</A>, <A HREF="wingraph.html#WinBackground">WinBackground</A>, <A HREF="wingraph.html#WinEllipse">WinEllipse</A>, <A HREF="wingraph.html#WinFill">WinFill</A>, <A HREF="#BitmapPut">BitmapPut</A>, <A HREF="wingraph.html#WinChar">WinChar</A></P>
+<HR>
+<H3><A NAME="BITMAP"><U>BITMAP</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> NumRows, NumCols;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Data[];<BR>
+</TD></TR></TABLE>
+} BITMAP;</TD></TR></TABLE></P>
+<P><B>A structure for defining a bitmap.</B></P>
+
+<P>BITMAP is a structure for defining a bitmap, used in commands
+like <A HREF="#BitmapGet">BitmapGet</A>.
+<BR><BR>
+Note that Data[] is a <A HREF="gnuexts.html">GNU C extension</A> for variable-length arrays (GCC4TI is GNU C).</P>
+
+<HR>
+<H3><A NAME="BoxAttrs"><U>BoxAttrs</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> BoxAttrs {B_NORMAL = 0x10, B_ROUNDED = 0x20, B_DOUBLE = 0x40, B_CUT = 0x80};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing addittional box attribute values.</B></P>
+
+<P>For more info about box attributes, see the <A HREF="#DrawClipRect">DrawClipRect</A> command.</P>
+
+<HR>
+<H3><A NAME="Fonts"><U>Fonts</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> Fonts {F_4x6, F_6x8, F_8x10};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing legal font values.</B></P>
+
+<P>For more info about fonts, see <A HREF="#FontSetSys">FontSetSys</A>.</P>
+
+<HR>
+<H3><A NAME="ICON"><U>ICON</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> i[16];<BR>
+</TD></TR></TABLE>
+} ICON;</TD></TR></TABLE></P>
+<P><B>A structure which describes an icon.</B></P>
+
+<P>ICON is a structure which describes an icon (a 16x16 pixel area), which is used in
+the <A HREF="#DrawIcon">DrawIcon</A> command.</P>
+
+<HR>
+<H3><A NAME="LCD_BUFFER"><U>LCD_BUFFER</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#int">char</A></B> LCD_BUFFER[<A HREF="#LCD_SIZE">LCD_SIZE</A>];</TD></TR></TABLE></P>
+<P><B>Describes a buffer to hold the screen contents.</B></P>
+
+<P>LCD_BUFFER is a 3840-bytes long array type. Its main purpose is to declare a buffer
+for saving and restoring the contents of the LCD screen using the functions
+<A HREF="#LCD_save">LCD_save</A> and <A HREF="#LCD_restore">LCD_restore</A>.
+<BR><BR>
+It is long enough to accept the content of the screen on both the TI-89 and the TI-92&nbsp;Plus.</P>
+
+<P>See also: <A HREF="#LCD_MEM">LCD_MEM</A>, <A HREF="#LCD_SIZE">LCD_SIZE</A></P>
+<HR>
+<H3><A NAME="MULTI_LINE"><U>MULTI_LINE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Count;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">signed</A></B> <B><A HREF="keywords.html#int">char</A></B> Attr, x0, y0, x1, y1;<BR>
+</TD></TR></TABLE>
+} Data[];<BR>
+</TD></TR></TABLE>
+} MULTI_LINE;</TD></TR></TABLE></P>
+<P><B>A structure for defining multiple lines for the <A HREF="#DrawMultiLines">DrawMultiLines</A> command.</B></P>
+
+<P>Note that <CODE>Data[]</CODE> is a <A HREF="gnuexts.html">GNU C extension</A> for variable-length arrays (GCC4TI is GNU C).
+Static variables of such types may be initialized with a variable-length constructor,
+for example:</P>
+<PRE>static MULTI_LINE star_shape = {3, {{1, 30, 50, 70, 50},
+                                    {1, 35, 35, 65, 65},
+                                    {1, 35, 65, 65, 35}}};
+</PRE>
+<P>Initialization with a variable-length constructor is not suitable for non-static (auto)
+variables, because the amount of stack storage will not be determined properly.</P>
+
+<HR>
+<H3><A NAME="pICON"><U>pICON</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *pICON;</TD></TR></TABLE></P>
+<P><B>A pointer to the <A HREF="#ICON">ICON</A> scructure.</B></P>
+
+<HR>
+<H3><A NAME="SCR_COORDS"><U>SCR_COORDS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> SCR_COORDS;</TD></TR></TABLE></P>
+<P><B>An alias type for defining physical screen coordinates.</B></P>
+
+<HR>
+<H3><A NAME="SCR_RECT"><U>SCR_RECT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#union">union</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> x0, y0, x1, y1;<BR>
+</TD></TR></TABLE>
+} xy;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> l;<BR>
+</TD></TR></TABLE>
+} SCR_RECT;</TD></TR></TABLE></P>
+<P><B>A scructure for defining a rectangular area.</B></P>
+
+<P>SCR_RECT is a structure (more precisely, an union) for defining a rectangular area
+using physical screen coordinates.
+<BR><BR>
+Instead of giving four coordinates <I>x0</I>, <I>y0</I>, <I>x1</I> and <I>y1</I>,
+it is possible to give all together using a field <I>l</I> which is a packed long
+number.
+<BR><BR>
+<B>Note:</B> GCC4TI is derived from GNU C, so it allows <A HREF="gnuexts.html#SEC81">cast constructors</A>.
+That's why, constructions like</P>
+<PRE>DrawClipEllipse (50, 50, 30, 20, &amp;(SCR_RECT){{0, 0, 159, 99}}, A_NORMAL);
+</PRE>
+<P>are legal. See <A HREF="#DrawClipEllipse">DrawClipEllipse</A> for info about this command.</P>
+
+<P>See also: <A HREF="#ScrRect">ScrRect</A></P>
+<HR>
+<H3><A NAME="SCR_STATE"><U>SCR_STATE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#void">void</A></B> *ScrAddr;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> XMax, YMax;<BR>
+<B><A HREF="keywords.html#short">short</A></B> CurFont, CurAttr, CurX, CurY;<BR>
+<A HREF="#SCR_RECT">SCR_RECT</A> CurClip;<BR>
+</TD></TR></TABLE>
+} SCR_STATE;</TD></TR></TABLE></P>
+<P><B>A structure for saving the state of the graphics system.</B></P>
+
+<P>SCR_STATE is a structure used for saving the state of the graphics system, used in
+the commands <A HREF="#SaveScrState">SaveScrState</A> and
+<A HREF="#RestoreScrState">RestoreScrState</A>.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

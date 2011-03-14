@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>basop.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;basop.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for executing TI-Basic operators</B></P>
+
+<P>Very few of the functions from this header file are documented as of now. Of
+course, the ones which are undocumented have not been tested, either. It is
+very likely that there are errors in this file, so use it with care.
+<BR><BR>
+However, we thought it might be a good idea to provide a header file for all
+of the built-in TI-Basic operators which have a documented entry in the jump
+table.
+This way, you can easily search for particular operators if you need them. If
+you use a function from this header file, please document it, too.
+<BR><BR>
+Many functions from this header file require their arguments to have some
+specific format. They usually have to be internally simplified, which can be
+achieved with the
+<A HREF="estack.html#push_internal_simplify">push_internal_simplify</A>
+function from <A HREF="estack.html">estack.h</A>, and the result is an
+internally simplified expression as well.
+<BR><BR>
+If you do not want to accept the AMS dependency of these functions, you can
+usually construct an expression using their appropriate tags, and then call
+<A HREF="estack.html#push_internal_simplify">push_internal_simplify</A>.</P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#did_push_to_polar">did_push_to_polar</A></B><DD>Executes TI-Basic '>Polar' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_and">push_and</A></B><DD>Executes TI-Basic 'and' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_arg_minus_1">push_arg_minus_1</A></B><DD>Executes TI-Basic '-' operator with constant 1.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_arg_plus_1">push_arg_plus_1</A></B><DD>Executes TI-Basic '+' operator with constant 1.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_assignment">push_assignment</A></B><DD>Executes TI-Basic '->' operator or 'Define' command.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_degrees">push_degrees</A></B><DD>Executes TI-Basic '°' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_difference">push_difference</A></B><DD>Executes TI-Basic '-' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_dot_add">push_dot_add</A></B><DD>Executes TI-Basic '.+' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_dot_div">push_dot_div</A></B><DD>Executes TI-Basic './' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_dot_exponentiate">push_dot_exponentiate</A></B><DD>Executes TI-Basic '.^' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_dot_mult">push_dot_mult</A></B><DD>Executes TI-Basic '.*' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_dot_sub">push_dot_sub</A></B><DD>Executes TI-Basic '.-' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_equals">push_equals</A></B><DD>Executes TI-Basic '=' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_exponentiate">push_exponentiate</A></B><DD>Executes TI-Basic '^' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_factorial">push_factorial</A></B><DD>Executes TI-Basic '!' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_greater_than_or_equals">push_greater_than_or_equals</A></B><DD>Executes TI-Basic '&gt;=' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_greater_than">push_greater_than</A></B><DD>Executes TI-Basic '&gt;' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_indir_name">push_indir_name</A></B><DD>Executes TI-Basic '#' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_less_than_or_equals">push_less_than_or_equals</A></B><DD>Executes TI-Basic '&lt;=' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_less_than">push_less_than</A></B><DD>Executes TI-Basic '&lt;' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_list_plus">push_list_plus</A></B><DD>Executes TI-Basic '.+' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_list_times">push_list_times</A></B><DD>Executes TI-Basic '.*' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_matrix_product">push_matrix_product</A></B><DD>Executes TI-Basic '*' operator for matrices.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_negate">push_negate</A></B><DD>Executes TI-Basic '-' (negation) operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_not_equals">push_not_equals</A></B><DD>Executes TI-Basic '/=' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_not">push_not</A></B><DD>Executes TI-Basic 'not' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_or">push_or</A></B><DD>Executes TI-Basic 'or' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_percent">push_percent</A></B><DD>Executes TI-Basic '%' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_polar_to_rect_x">push_polar_to_rect_x</A></B><DD>Executes TI-Basic 'P>Rx(' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_polar_to_rect_y">push_polar_to_rect_y</A></B><DD>Executes TI-Basic 'P>Ry(' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_pow">push_pow</A></B><DD>Executes TI-Basic '^' operator for floats.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_product">push_product</A></B><DD>Executes TI-Basic '*' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_radians">push_radians</A></B><DD>Executes TI-Basic '<SUP>r</SUP>' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_ratio">push_ratio</A></B><DD>Executes TI-Basic '/' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_square">push_square</A></B><DD>Executes TI-Basic '^' operator with exponent 2.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_subscripted_element">push_subscripted_element</A></B><DD>Executes TI-Basic '[]' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_substitute_no_simplify">push_substitute_no_simplify</A></B><DD>Executes TI-Basic '|' operator (unsimplified).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_substitute_simplify">push_substitute_simplify</A></B><DD>Executes TI-Basic '|' operator (simplified).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_substitute_using_such_that">push_substitute_using_such_that</A></B><DD>Executes TI-Basic '|' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sum">push_sum</A></B><DD>Executes TI-Basic '+' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_to_cylin">push_to_cylin</A></B><DD>Executes TI-Basic '>Cylind' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_to_dd">push_to_dd</A></B><DD>Executes TI-Basic '>DD' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_to_dms">push_to_dms</A></B><DD>Executes TI-Basic '>DMS' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_to_sphere">push_to_sphere</A></B><DD>Executes TI-Basic '>Sphere' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_transpose">push_transpose</A></B><DD>Executes TI-Basic '<SUP>T</SUP>' operator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_xor">push_xor</A></B><DD>Executes TI-Basic 'xor' operator.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="estack.html#primary_tag_list">primary_tag_list</A></B><DD>Array of structures containing information on <A HREF="estack.html#Tags">Tags</A>.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="estack.html#CESI">CESI</A></B><DD>Represents a pointer to a constant expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESI">ESI</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESQ">ESQ</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#EStackIndex">EStackIndex</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#Quantum">Quantum</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#SYM_STR">SYM_STR</A></B><DD>Represents a pointer to the terminating zero byte of a string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#tag_info">tag_info</A></B><DD>Structure containing information about AMS EStack tags (<A HREF="estack.html#Tags">Tags</A>, <A HREF="estack.html#ExtTags">ExtTags</A>).</DL>
+<P><B>Note:</B> All functions from this header file get parameters from the expression stack, so this
+header file must be used in conjunction with <A HREF="estack.html">estack.h</A>. You need to
+learn about the usage of the expression stack before using any function from this header file.
+All functions defined here execute particular TI-Basic operators. They sometimes
+may be useful to perform some operations which cannot be implemented in C easily. But note that
+if you use functions from this header file too much, this will decrease the performance of your
+program significantly. In an extreme case, it will in fact decrease to that of a TI-Basic program! So
+use functions from this header file only if it is really necessary. Also note that these
+functions act exactly like the appropriate TI-Basic commands (including throwing errors if
+something is wrong), so the use of an error tracking mechanism from the <A HREF="error.html">error.h</A>
+header file is highly recommended.</P>
+
+<P>See also: <A HREF="bascmd.html">bascmd.h</A>, <A HREF="basfunc.html">basfunc.h</A></P>
+<HR>
+<H3><A NAME="did_push_to_polar"><U>did_push_to_polar</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> did_push_to_polar ();</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '>Polar' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_and"><U>push_and</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_and (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'and' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_arg_minus_1"><U>push_arg_minus_1</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_arg_minus_1 (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '-' operator with constant 1.</B></P>
+
+<HR>
+<H3><A NAME="push_arg_plus_1"><U>push_arg_plus_1</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_arg_plus_1 (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '+' operator with constant 1.</B></P>
+
+<HR>
+<H3><A NAME="push_assignment"><U>push_assignment</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_assignment (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '->' operator or 'Define' command.</B></P>
+
+<HR>
+<H3><A NAME="push_degrees"><U>push_degrees</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_degrees (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '°' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_difference"><U>push_difference</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_difference (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '-' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_dot_add"><U>push_dot_add</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_dot_add (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '.+' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_dot_div"><U>push_dot_div</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_dot_div (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic './' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_dot_exponentiate"><U>push_dot_exponentiate</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_dot_exponentiate (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '.^' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_dot_mult"><U>push_dot_mult</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_dot_mult (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '.*' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_dot_sub"><U>push_dot_sub</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_dot_sub (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '.-' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_equals"><U>push_equals</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_equals (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '=' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_exponentiate"><U>push_exponentiate</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_exponentiate (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '^' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_factorial"><U>push_factorial</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_factorial (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '!' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_greater_than_or_equals"><U>push_greater_than_or_equals</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_greater_than_or_equals (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '&gt;=' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_greater_than"><U>push_greater_than</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_greater_than (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '&gt;' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_indir_name"><U>push_indir_name</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_indir_name (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '#' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_less_than_or_equals"><U>push_less_than_or_equals</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_less_than_or_equals (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '&lt;=' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_less_than"><U>push_less_than</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_less_than (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '&lt;' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_list_plus"><U>push_list_plus</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_list_plus (<A HREF="estack.html#CESI">CESI</A> ptr1, <A HREF="estack.html#CESI">CESI</A> ptr2);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '.+' operator.</B></P>
+
+<P>Assuming that <I>ptr1</I> and <I>ptr2</I> point to tags of two lists
+(or matrices, which are "lists of lists"),
+push_list_plus pushes the element-by-element sum of these two lists to the
+expression stack. If the lists are not equal in size, an error will be thrown.
+If <I>ptr1</I> or <I>ptr2</I> doesn't point to a list tag, the behavior
+is unpredictable.</P>
+
+<HR>
+<H3><A NAME="push_list_times"><U>push_list_times</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_list_times (<A HREF="estack.html#CESI">CESI</A> ptr1, <A HREF="estack.html#CESI">CESI</A> ptr2);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '.*' operator.</B></P>
+
+<P>Assuming that <I>ptr1</I> and <I>ptr2</I> point to tags of two lists
+(or matrices, which are "lists of lists"),
+push_list_times pushes an element-by-element product of these two lists to the
+expression stack. If the lists are not equal in size, an error will be thrown.
+If <I>ptr1</I> or <I>ptr2</I> doesn't point to a list tag, the behavior
+is unpredictable.</P>
+
+<HR>
+<H3><A NAME="push_matrix_product"><U>push_matrix_product</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_matrix_product (<A HREF="estack.html#CESI">CESI</A> ptr1, <A HREF="estack.html#CESI">CESI</A> ptr2);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '*' operator for matrices.</B></P>
+
+<P>Assuming that <I>ptr1</I> and <I>ptr2</I> point to tags of two matrices
+(which are, in fact, lists of equally sized lists), push_matrix_product pushes
+the matrix product of these two matrices to the
+expression stack. As the matrix product is not comutative, the matrix pointed
+to by <I>ptr1</I> is assumed to be the first factor. If the matrices are not
+compatible for multiplying, an error will be thrown.
+If <I>ptr1</I> or <I>ptr2</I> don't point to matrices, the behavior
+is unpredictable.</P>
+
+<HR>
+<H3><A NAME="push_negate"><U>push_negate</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_negate (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '-' (negation) operator.</B></P>
+
+<HR>
+<H3><A NAME="push_not_equals"><U>push_not_equals</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_not_equals (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '/=' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_not"><U>push_not</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_not (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'not' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_or"><U>push_or</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_or (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'or' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_percent"><U>push_percent</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_percent (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '%' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_polar_to_rect_x"><U>push_polar_to_rect_x</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_polar_to_rect_x(<A HREF="estack.html#CESI">CESI</A> rexpr, <A HREF="estack.html#CESI">CESI</A> thetaexpr);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'P>Rx(' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_polar_to_rect_y"><U>push_polar_to_rect_y</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_polar_to_rect_y(<A HREF="estack.html#CESI">CESI</A> rexpr, <A HREF="estack.html#CESI">CESI</A> thetaexpr);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'P>Ry(' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_pow"><U>push_pow</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_pow (<A HREF="estack.html#CESI">CESI</A> base_ptr, <A HREF="estack.html#CESI">CESI</A> exp_ptr);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '^' operator for floats.</B></P>
+
+<P>Assuming that <I>base_ptr</I> and <I>exp_ptr</I> point to tags of two
+floating point numbers (called <I>x</I> and <I>y</I> for example), push_pow
+calculates <I>x</I>&nbsp;^&nbsp;<I>y</I> and pushes the result to the
+expression stack. If this assumption is not true, garbage will be pushed
+instead.</P>
+
+<HR>
+<H3><A NAME="push_product"><U>push_product</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_product (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '*' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_radians"><U>push_radians</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_radians (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<SUP>r</SUP>' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_ratio"><U>push_ratio</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_ratio (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '/' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_square"><U>push_square</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_square (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '^' operator with exponent 2.</B></P>
+
+<HR>
+<H3><A NAME="push_subscripted_element"><U>push_subscripted_element</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_subscripted_element (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '[]' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_substitute_no_simplify"><U>push_substitute_no_simplify</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_substitute_no_simplify (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '|' operator (unsimplified).</B></P>
+
+<HR>
+<H3><A NAME="push_substitute_simplify"><U>push_substitute_simplify</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_substitute_simplify (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '|' operator (simplified).</B></P>
+
+<HR>
+<H3><A NAME="push_substitute_using_such_that"><U>push_substitute_using_such_that</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_substitute_using_such_that (<A HREF="estack.html#CESI">CESI</A> expr, <A HREF="estack.html#CESI">CESI</A> var, <A HREF="estack.html#CESI">CESI</A> replacement);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '|' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_sum"><U>push_sum</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sum (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '+' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_to_cylin"><U>push_to_cylin</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_to_cylin ();</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '>Cylind' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_to_dd"><U>push_to_dd</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_to_dd(<A HREF="estack.html#CESI">CESI</A> expr);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '>DD' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_to_dms"><U>push_to_dms</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_to_dms(<A HREF="estack.html#CESI">CESI</A> expr);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '>DMS' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_to_sphere"><U>push_to_sphere</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_to_sphere ();</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '>Sphere' operator.</B></P>
+
+<HR>
+<H3><A NAME="push_transpose"><U>push_transpose</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_transpose(<A HREF="estack.html#CESI">CESI</A> mat);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<SUP>T</SUP>' operator.</B></P>
+
+<P>This routine calls <A HREF="estack.html#push_transpose_aux">push_transpose_aux</A> with parameter <I>ConjFlag</I>=1.</P>
+
+<HR>
+<H3><A NAME="push_xor"><U>push_xor</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_xor (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'xor' operator.</B></P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

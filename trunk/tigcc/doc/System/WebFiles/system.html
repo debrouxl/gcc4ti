@@ -1,0 +1,1136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>system.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;system.h&gt; Header File</B></FONT>
+<HR>
+<P><B>System routines (for accessing system timers, queues, etc.)</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#AB_getGateArrayVersion">AB_getGateArrayVersion</A></B><DD>Returns the hardware version of the calculator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#AB_prodid">AB_prodid</A></B><DD>Determines the product ID code.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#AB_prodname">AB_prodname</A></B><DD>Determines the product name.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#AB_serno">AB_serno</A></B><DD>Determines the serial number.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ASM_call">ASM_call</A></B><DD>Calls a subroutine located on absolute address, with saving/restoring all registers.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ASM_fastcall">ASM_fastcall</A></B><DD>Calls a subroutine located on absolute address.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CB_fetchTEXT">CB_fetchTEXT</A></B><DD>Fetches a text from the clipboard.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CB_replaceTEXT">CB_replaceTEXT</A></B><DD>Puts a text into the clipboard.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CU_restore">CU_restore</A></B><DD>Restores the previous cursor state.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CU_start">CU_start</A></B><DD>Starts the cursor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CU_stop">CU_stop</A></B><DD>Stops the cursor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#enter_ghost_space">enter_ghost_space</A></B><DD>Transfers the execution into the "ghost address space".<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EX_getBasecodeParmBlock">EX_getBasecodeParmBlock</A></B><DD>Gets a pointer to the base code parameter block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EX_patch">EX_patch</A></B><DD>Relocates an assembly program.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HelpKeys">HelpKeys</A></B><DD>Displays a keyboard help screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#idle">idle</A></B><DD>Switches the calculator to "idle" state for a while.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#kbd_queue">kbd_queue</A></B><DD>Returns a pointer to the keyboard queue.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LOC_formatDate">LOC_formatDate</A></B><DD>Formats a date into <I>date</I> according to <I>format</I> string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LOC_getLocalDateFormat">LOC_getLocalDateFormat</A></B><DD>Returns a pointer to the date format string specified by the current language mode setting.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LOC_localVersionDate">LOC_localVersionDate</A></B><DD>Formats release date of AMS Operating System according to current language setting.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#NeedStack">NeedStack</A></B><DD>Checks for space on the stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#off">off</A></B><DD>Turns the calculator off.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSCheckBreak">OSCheckBreak</A></B><DD>Checks pressing of BREAK key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSClearBreak">OSClearBreak</A></B><DD>Clears "BREAK key pressed" flag.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSContrastAddress">OSContrastAddress</A></B><DD>Returns a pointer to the contrast value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSContrastDn">OSContrastDn</A></B><DD>Decreases the contrast.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSContrastUp">OSContrastUp</A></B><DD>Increases the contrast.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSdequeue">OSdequeue</A></B><DD>Removes an element from a queue.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSDisableBreak">OSDisableBreak</A></B><DD>Disables the break key ('ON').<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSEnableBreak">OSEnableBreak</A></B><DD>Enables the break key ('ON').<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSenqueue">OSenqueue</A></B><DD>Insert a new element into a queue.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSFreeTimer">OSFreeTimer</A></B><DD>Frees a notify (countdown) timer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSqclear">OSqclear</A></B><DD>Clears a queue.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSqhead">OSqhead</A></B><DD>Gets an element from the head of a queue.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSqinquire">OSqinquire</A></B><DD>Checks whether an element is waiting in a queue.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSRegisterTimer">OSRegisterTimer</A></B><DD>Registers a notify (countdown) timer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSReset">OSReset</A></B><DD>Resets the calculator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSSetSR">OSSetSR</A></B><DD>Sets the processor status register.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSTimerCurVal">OSTimerCurVal</A></B><DD>Determines a current value of a notify (countdown) timer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSTimerExpired">OSTimerExpired</A></B><DD>Determines whether a notify (countdown) timer expired.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSTimerRestart">OSTimerRestart</A></B><DD>Restarts a notify (countdown) timer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSVFreeTimer">OSVFreeTimer</A></B><DD>Frees an event (vectored) timer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSVRegisterTimer">OSVRegisterTimer</A></B><DD>Registers an event (vectored) timer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#QModeKey">QModeKey</A></B><DD>Checks whether argument is code of a mode key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#QSysKey">QSysKey</A></B><DD>Checks whether argument is code of a system key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SumStoChkMem">SumStoChkMem</A></B><DD>Compares memory contents by making a checksum.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_OSVFreeTimer">TIOS_OSVFreeTimer</A></B><DD>Frees an event (vectored) timer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_OSVRegisterTimer">TIOS_OSVRegisterTimer</A></B><DD>Registers an event (vectored) timer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WordInList">WordInList</A></B><DD>Searches for a word in the list.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#XR_stringPtr">XR_stringPtr</A></B><DD>Returns a pointer to a TIOS system message (XR string).</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#CTypeTable">CTypeTable</A></B><DD>A pointer to a table describing the types of the AMS characters.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CU_cursorState">CU_cursorState</A></B><DD>Contains the current cursor state (on or off).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FiftyMsecTick">FiftyMsecTick</A></B><DD>A counter incremented by the standard system auto-int 5 routine.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSContrastValue">OSContrastValue</A></B><DD>Byte containing the value of the current contrast.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSOnBreak">OSOnBreak</A></B><DD>System variable indicating that the ON key was pressed.<BR>
+Used by <A HREF="#OSCheckBreak">OSCheckBreak</A>, 
+<A HREF="#OSClearBreak">OSClearBreak</A>,
+<A HREF="link.html#OSLinkClose">OSLinkClose</A> between others.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ReleaseDate">ReleaseDate</A></B><DD>A pointer to a string containing the release date of the AMS.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ReleaseVersion">ReleaseVersion</A></B><DD>A pointer to a string containing the AMS version.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="kbd.html#KB_AUTOREPEAT">KB_AUTOREPEAT</A></B><DD>A constant defining the "auto-repeat" bit.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#BASECODE_PARM_BLOCK">BASECODE_PARM_BLOCK</A></B><DD>A structure containing version information about the operating system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DEF_QUEUE">DEF_QUEUE</A></B><DD>A structure describing the header of a variable-sized queue.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#QUEUE">QUEUE</A></B><DD>A structure describing a queue with a buffer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#Timer_Callback_t">Timer_Callback_t</A></B><DD>Describes a timer callback function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#Timers">Timers</A></B><DD>An enumeration for describing timer ID numbers.</DL>
+<HR>
+<H3><A NAME="AB_getGateArrayVersion"><U>AB_getGateArrayVersion</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> AB_getGateArrayVersion (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the hardware version of the calculator.</B></P>
+
+<P>AB_getGateArrayVersion returns the version number of the gate array, that is to say the hardware version of the calculator.
+Currently, there are two hardware versions: 1 and 2.
+<BR><BR>
+For an AMS-independent way of getting the hardware version, take a look at
+<A HREF="flash.html#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A>.</P>
+
+<P>See also: <A HREF="flash.html#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A></P>
+<HR>
+<H3><A NAME="AB_prodid"><U>AB_prodid</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> AB_prodid (<B><A HREF="keywords.html#int">char</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Determines the product ID code.</B></P>
+
+<P>AB_prodid fills the <I>buffer</I> with the product ID code of the calculator.
+The ID string is in the form "p-h-r-b", where "p" is the product number (01 for TI-92 Plus, 03
+for TI-89), "h" is the hardware revision level, "r" is the software revision level and
+"b" is the build number. All the above fields consist of hexadecimal digits.
+<I>buffer</I> must be at least 12 bytes long to accept the product ID string.</P>
+
+<HR>
+<H3><A NAME="AB_prodname"><U>AB_prodname</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> AB_prodname (<B><A HREF="keywords.html#int">char</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Determines the product name.</B></P>
+
+<P>AB_prodname fills the <I>buffer</I> with the product name, i.e. the name of the operating
+system software running on the calculator. This is the same name that appears on the second
+line of the "About" window. Not very useful, because
+it seems that so far the product name is always "Advanced Mathematics Software".
+<I>buffer</I> must be at least 40 bytes long to accept the product name.</P>
+
+<HR>
+<H3><A NAME="AB_serno"><U>AB_serno</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> AB_serno (<B><A HREF="keywords.html#int">char</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Determines the serial number.</B></P>
+
+<P>AB_serno tries to fill the <I>buffer</I> with the serial number of the calculator.
+The serial number is constructed from the string returned from
+<A HREF="cert.html#cgetsn">cgetsn</A> function (with one space inserted in the middle), and from
+the hexadecimal value returned from <A HREF="flash.html#FL_getVerNum">FL_getVerNum</A>
+function. Note that these routines are very cryptic, and do some ugly things with the Flash
+memory, so this probably works only on real TI (at least, it does not work under VTI).
+AB_serno returns
+<A HREF="alloc.html#Bool">TRUE</A> if determining the serial number was successful, else returns
+<A HREF="alloc.html#Bool">FALSE</A> (this is a case on VTI, for example).
+The serial number has the form "pphnn nnnnn vvvv", where "pp" is the platform number
+(01 for TI-92 Plus, 03 for TI-89), "h" is hardware revision level, "nnnnnnn" is an ID number
+which is unique to each calculator, and "vvvv" is a verification number.
+All the above fields consist of hexadecimal digits.
+<I>buffer</I> must be at least 17 bytes long to accept the serial number.</P>
+
+<HR>
+<H3><A NAME="ASM_call"><U>ASM_call</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ASM_call (<B><A HREF="keywords.html#void">void</A></B> *base_addr);</TD></TR></TABLE></P>
+<P><B>Calls a subroutine located on absolute address, with saving/restoring all registers.</B></P>
+
+<P>ASM_call pushes all registers onto the stack, performs <A HREF="#ASM_fastcall">ASM_fastcall</A>,
+then restores all saved registers from the stack. Use ASM_call whenever you are not sure about
+behaviour of called subroutine. If you are sure that the called subroutine will preserve all
+registers, you can use <A HREF="#ASM_fastcall">ASM_fastcall</A>: it generates smaller and
+faster code.</P>
+
+<HR>
+<H3><A NAME="ASM_fastcall"><U>ASM_fastcall</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ASM_fastcall (<B><A HREF="keywords.html#void">void</A></B> *base_addr);</TD></TR></TABLE></P>
+<P><B>Calls a subroutine located on absolute address.</B></P>
+
+<P>ASM_fastcall calls an assembly subroutine located at absolute address <I>base_addr</I>.
+As ASM_fastcall is a macro, not a function, <I>base_addr</I> need not to be a pointer. It
+can also be an unsigned (long) integer. In fact,</P>
+<PRE>ASM_fastcall (base_addr);
+</PRE>
+<P>is the same as</P>
+<PRE>((void(*)(void))(base_addr)) ();
+</PRE>
+<P>but much more readable. It performs just a "jsr" to <I>base_addr</I>; it does not perform any
+relocation of relocatable items (to do this, see <A HREF="#EX_patch">EX_patch</A>).
+<BR><BR>
+ASM_fastcall assumes that called subroutine will not destroy any registers. If this
+assumption is not valid, use <A HREF="#ASM_call">ASM_call</A> instead. In fact, if you are
+not very sure about behaviour of called subroutine, it is highly recommended to avoid
+ASM_fastcall and to use <A HREF="#ASM_call">ASM_call</A>. In releases of TIGCCLIB prior
+to 2.1, <A HREF="#ASM_call">ASM_call</A> does exactly what ASM_fastcall does in this release.
+<BR><BR>
+<B>Note:</B> This function should be used with great care, because on HW2 calculators a stupid
+protection device does not allow that the program counter may be on arbitrary place, except
+if some special precausions are performed. Anyway, this function is not designed for common
+use: it is intended for very experienced system programmers. Don't use it if you don't know
+very well what are you doing!</P>
+
+<HR>
+<H3><A NAME="CB_fetchTEXT"><U>CB_fetchTEXT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> CB_fetchTEXT (<A HREF="alloc.html#HANDLE">HANDLE</A> *hText, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> *len);</TD></TR></TABLE></P>
+<P><B>Fetches a text from the clipboard.</B></P>
+
+<P>CB_fetchTEXT stores in the variable pointed to by <I>hText</I> the handle of the text stored
+in the clipboard (use <A HREF="alloc.html#HeapDeref">HeapDeref</A> to get actual pointer to
+the text). It also stores the length of the text in the variable pointed to by <I>len</I>.
+<BR><BR>
+CB_fetchTEXT returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc.html#Bool">FALSE</A> (i.e. if the clipboard is empty or trashed).
+<BR><BR>
+AMS will only store text in the clipboard and will always assume that it contains text. However, 
+programs may try to store non-text data in it, although it's not a good practice, since it 
+might cause strange things to happen on the calculator...
+<BR><BR>
+The clipboard handle is not locked, so it can be moved during heap compression.</P>
+
+<P>See also: <A HREF="#CB_replaceTEXT">CB_replaceTEXT</A></P>
+<HR>
+<H3><A NAME="CB_replaceTEXT"><U>CB_replaceTEXT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> CB_replaceTEXT (<B><A HREF="keywords.html#int">char</A></B> *text, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> len, <B><A HREF="keywords.html#short">short</A></B> strip_CR);</TD></TR></TABLE></P>
+<P><B>Puts a text into the clipboard.</B></P>
+
+<P>CB_replaceTEXT puts <I>len</I> bytes starting from the address <I>text</I> to the
+clipboard. TIOS only uses clipboard for storing text, but it is capable to store other types
+too. <I>strip_CR</I> is Boolean parameter: if it is <A HREF="alloc.html#Bool">TRUE</A>, each byte
+which follows immidiately after '\r' character (0xD) will not be stored in the clipboard
+(this in fact stripes out command characters in text editor: see <A HREF="textedit.html">textedit.h</A>
+header file). CB_replaceTEXT returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc.html#Bool">FALSE</A> (e.g. no enough memory). This routine may cause heap
+compression.</P>
+
+<P>See also: <A HREF="#CB_fetchTEXT">CB_fetchTEXT</A></P>
+<HR>
+<H3><A NAME="CU_restore"><U>CU_restore</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> CU_restore (<B><A HREF="keywords.html#short">short</A></B> State);</TD></TR></TABLE></P>
+<P><B>Restores the previous cursor state.</B></P>
+
+<P>CU_restore restores the previous cursor state (active or inactive). Parameter <I>State</I>
+should be a value returned from <A HREF="#CU_start">CU_start</A> or <A HREF="#CU_stop">CU_stop</A>
+function.</P>
+
+<HR>
+<H3><A NAME="CU_start"><U>CU_start</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> CU_start (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Starts the cursor.</B></P>
+
+<P>CU_start restarts the cursor timer and sets an internal flag which tell that cursor is
+active. This does not mean that the cursor will be displayed on the screen immidiately.
+This mean only that if some routine wants to display cursor, it will be permitted.
+The main usage of this function is in conjuction with text editor functions
+(see <A HREF="textedit.html">textedit.h</A> header file). CU_start returns
+<A HREF="alloc.html#Bool">TRUE</A> or <A HREF="alloc.html#Bool">FALSE</A>, depending of whether the cursor
+was enabled or disabled before calling this function.</P>
+
+<HR>
+<H3><A NAME="CU_stop"><U>CU_stop</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> CU_stop (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Stops the cursor.</B></P>
+
+<P>CU_stop resets an internal flag which tell that cursor is active, so after this function,
+displaying of the cursor will be denied. This function is called often from event driven
+and interrupt driven applications to stop the cursor blinking for a while.
+CU_stop returns <A HREF="alloc.html#Bool">TRUE</A> or <A HREF="alloc.html#Bool">FALSE</A>, depending of whether the cursor
+was enabled or disabled before calling this function.</P>
+
+<HR>
+<H3><A NAME="enter_ghost_space"><U>enter_ghost_space</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> enter_ghost_space (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Transfers the execution into the "ghost address space".</B></P>
+
+<P>enter_ghost_space transfers the program control into the "ghost address space" (i.e. into the
+area above the address 0x40000, which does not exist physically on the calculator, but represents
+a shadow of the regular RAM space). This function is introduced to bypass some protections
+introduced in AMS 2: The protection device does not protect the "ghost space",
+so you have greater rights there. From the logical aspect of view, enter_ghost_space simply
+adds 0x40000 to the program counter. In practice, this is performed in a very awkward way,
+because some new protections in AMS 2 do not allow us to do this directly
+under all conditions. See the <A HREF="faq.html#49">launcher</A> FAQ entry for the
+only example where you should really use this function. You should not to know anything more
+about it.
+<BR><BR>
+However, be sure to call enter_ghost_space only from the <CODE>_main</CODE> function.
+Once you have called it, you may not call any functions from the GCC4TI library or from
+your program without explicitly adding 0x40000 to their address. This does not affect macros
+like <A HREF="#ASM_call">ASM_call</A> or ROM calls.
+<BR><BR>
+Moreover, enter_ghost_space doesn't work on HW3 (the TI-89 Titanium).
+<BR><BR>
+<B>Note:</B> Because of these limitations, enter_ghost_space is deprecated.
+You can use the newer
+<CODE><A HREF="httigcc.html#advanced_ghostspace">EXECUTE_IN_GHOST_SPACE</A></CODE>
+directive instead. EXECUTE_IN_GHOST_SPACE will handle the TI-89 Titanium appropriately.</P>
+
+<HR>
+<H3><A NAME="EX_getBasecodeParmBlock"><U>EX_getBasecodeParmBlock</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *EX_getBasecodeParmBlock (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Gets a pointer to the base code parameter block.</B></P>
+
+<P>EX_getBasecodeParmBlock gets a pointer to a <A HREF="#BASECODE_PARM_BLOCK">BASECODE_PARM_BLOCK</A> structure.
+The base code parameter block contains version information about the
+AMS: the major and minor version number and the date the OS was built.</P>
+
+<P>See also: <A HREF="#BASECODE_PARM_BLOCK">BASECODE_PARM_BLOCK</A></P>
+<HR>
+<H3><A NAME="EX_patch"><U>EX_patch</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EX_patch (<B><A HREF="keywords.html#void">void</A></B> *base_addr, <B><A HREF="keywords.html#void">void</A></B> *tag_ptr);</TD></TR></TABLE></P>
+<P><B>Relocates an assembly program.</B></P>
+
+<P>EX_patch relocates relocatable items in the assembly program (.89z or .9xz file), where
+<I>tag_ptr</I> points to the "PROGRAM" signature (tag) byte (byte 0xF3), and
+<I>base_addr</I> is the address from where the assembly program will be started.
+So, if <I>handle</I> is a handle of an .89z (or .9xz) file, you can execute it using</P>
+<PRE>len = *(unsigned short*)(base_ptr = HLock (handle));
+EX_patch (base_ptr + 2, base_ptr + len + 1);
+ASM_call (base_ptr + 2);
+HeapUnlock (handle);
+</PRE>
+<P>In practice, some protection devices in HW2 calculators make the whole thing much more
+complicated (see the <A HREF="faq.html#49">launcher</A> FAQ entry for more info).
+<BR><BR>
+Note that the relocation table ends just below the tag byte.
+<BR><BR>
+<B>Note:</B> If <I>base_addr</I> is in the ghost space,
+<I>tag_ptr</I> has to be in the ghost space, too!</P>
+
+<P>See also: <A HREF="#enter_ghost_space">enter_ghost_space</A>, <A HREF="httigcc.html#advanced_ghostspace">EXECUTE_IN_GHOST_SPACE</A></P>
+<HR>
+<H3><A NAME="HelpKeys"><U>HelpKeys</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HelpKeys (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Displays a keyboard help screen.</B></P>
+
+<P>HelpKeys displays a keyboard help on the screen (the help screen which may be
+called by pressing Diamond+EE on TI-89), waits for a keypress, then restores
+the screen to the previous state.</P>
+
+<HR>
+<H3><A NAME="idle"><U>idle</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> idle (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Switches the calculator to "idle" state for a while.</B></P>
+
+<P>While idle is running, the calculator rests. idle turns the calculator in "low
+power" state until the next interrupt occurs (then "low power" state will be
+disabled, and idle returns).
+<BR><BR>
+While calculator is in "idle" state, the power consumption decreases significantly.
+TIOS very often calls idle, whenever it is in a kind of "idle loop". So it is very
+useful to be used in programs which waits in a loop for something (waiting for
+specific keypress, timer expiring, etc.). Many programs should use idle to save the
+batteries (editors, reflexive games, explorers, debuggers etc.). Thanks to Julien
+Muchembled for this info.
+<BR><BR>
+<B>Note:</B> Thomas Nussbaumer informed me that idle interferes with grayscale graphics,
+so the use of idle while grayscale mode is active is not recommended.</P>
+
+<HR>
+<H3><A NAME="kbd_queue"><U>kbd_queue</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *kbd_queue (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the keyboard queue.</B></P>
+
+<P>kbd_queue returns a pointer to the queue used in TIOS for keyboard handling. It may be used as
+an argument to other queue-related functions. The main purpose of accessing to keyboard queue
+is to make a fast replacement for <A HREF="kbd.html#ngetchx">ngetchx</A> and
+<A HREF="kbd.html#kbhit">kbhit</A> functions. This may be achieved using
+<A HREF="#OSdequeue">OSdequeue</A> function. For example, suppose that you have the following
+declarations:</P>
+<PRE>void *kbq = kbd_queue ();
+unsigned short key;
+</PRE>
+<P>Then, statements like</P>
+<PRE>if (kbhit ())
+{
+  key = ngetchx ();
+  // <I>Do something with key</I>
+}
+</PRE>
+<P>may be replaced with the much faster equivalent:</P>
+<PRE>
+if (!OSdequeue (&amp;key, kbq))
+{
+  // <I>Do something with key</I>
+}
+</PRE>
+<P><B>Note:</B> On the first look, it seems that the key repetition feature
+does not work with <A HREF="#OSdequeue">OSdequeue</A>. But, Marcos
+Lopez informed me that this is not exactly true. Key repetition feature
+works even with <A HREF="#OSdequeue">OSdequeue</A>, but it will not
+return the keycode itself for the repeated key, but add the
+<A HREF="kbd.html#KB_AUTOREPEAT">KB_AUTOREPEAT</A> "auto-repeat" bit to
+the keycode (more exactly,
+<A HREF="kbd.html#KB_AUTOREPEAT">KB_AUTOREPEAT</A> is OR'd with the
+keycode), so <I>value</I> becomes <I>value</I>&nbsp;+&nbsp;0x800. If you use
+the standard <A HREF="kbd.html#ngetchx">ngetchx</A> function, this
+additional bit is masked out and your program will get the keycodes it expects.
+But, it is very simple to mask out this bit manually and make the key repetition
+feature work even with <A HREF="#OSdequeue">OSdequeue</A>.</P>
+
+<P>See also: <A HREF="#OSdequeue">OSdequeue</A>, <A HREF="kbd.html">kbd.h</A></P>
+<HR>
+<H3><A NAME="LOC_formatDate"><U>LOC_formatDate</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> LOC_formatDate (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *format, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> m, <B><A HREF="keywords.html#short">short</A></B> d, <B><A HREF="keywords.html#int">char</A></B> *date);</TD></TR></TABLE></P>
+<P><B>Formats a date into <I>date</I> according to <I>format</I> string.</B></P>
+
+<P><I>format</I>: string containing date specifiers:<BR>
+    <B>D</B> : One- or two-digit day of month.<BR>
+    <B>DD</B> : Two-digit day of month (leading zero if necessary).<BR>
+    <B>M</B> : One- or two-digit month.<BR>
+    <B>MM</B> : Two-digit month (leading zero if necessary).<BR>
+    <B>YY</B> : Two-digit year (year without century).<BR>
+    <B>YYYY</B> : Four-digit year.<BR>
+    Any other characters are copied to output.<BR>
+<BR>
+<I><B>y</B></I> : Year.<BR>
+<I><B>m</B></I> : Month.<BR>
+<I><B>d</B></I> : Day of month.<BR>
+<BR>
+Examples:</P>
+<PRE>
+char date[16];
+short y = 2000, m = 6, d = 9;
+LOC_formatDate("M/D/YYYY", y, m, d, date);   // 6/9/2000
+LOC_formatDate("MM/DD/YYYY", y, m, d, date); // 06/09/2000
+LOC_formatDate("YYYY.MM.DD", y, m, d, date); // 2000.06.09
+LOC_formatDate("D-M-YY", y, m, d, date);     // 9-6-00
+LOC_formatDate("MM/YYYY", y, m, d, date);    // 06/2000
+</PRE>
+<P>
+<B>The ROM_CALL LOC_formatDate is available only on AMS 2.02 and higher.</B><BR>
+<BR>
+<B>Note</B>: LOC_formatDate doesn't check the parameters, as you'll see if you try:</P>
+<PRE>
+LOC_formatDate("MM/DD/YYYY",32767,32767,32767,buffer);
+</PRE>
+<P>if <I>buffer</I> is large enough.</P>
+
+<P>See also: <A HREF="#LOC_getLocalDateFormat">LOC_getLocalDateFormat</A>, <A HREF="#LOC_localVersionDate">LOC_localVersionDate</A></P>
+<HR>
+<H3><A NAME="LOC_getLocalDateFormat"><U>LOC_getLocalDateFormat</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *LOC_getLocalDateFormat (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the date format string specified by the current language mode setting.</B></P>
+
+<P>Example:</P>
+<PRE>
+char date[16];
+short y = 2000, m = 6, d = 9;
+// Format date according to current language.
+LOC_formatDate(LOC_getLocalDateFormat(), y, m, d, date);
+</PRE>
+
+<P>See also: <A HREF="#LOC_formatDate">LOC_formatDate</A>, <A HREF="#LOC_localVersionDate">LOC_localVersionDate</A></P>
+<HR>
+<H3><A NAME="LOC_localVersionDate"><U>LOC_localVersionDate</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#int">char</A></B> *LOC_localVersionDate (<B><A HREF="keywords.html#int">char</A></B> datebuf[]);</TD></TR></TABLE></P>
+<P><B>Formats release date of AMS Operating System according to current language setting.</B></P>
+
+<P>The Home screen About dialog calls this routine to display the release date of the built-in calculator software.<BR>
+<BR>
+Example:</P>
+<PRE>
+char date[16];
+// Format OS release date according to current language.
+LOC_localVersionDate(date);
+</PRE>
+
+<P>See also: <A HREF="#LOC_formatDate">LOC_formatDate</A>, <A HREF="#LOC_getLocalDateFormat">LOC_getLocalDateFormat</A></P>
+<HR>
+<H3><A NAME="NeedStack"><U>NeedStack</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> NeedStack (<B><A HREF="keywords.html#short">short</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Checks for space on the stack.</B></P>
+
+<P>NeedStack throws a memory error if there is no enough space on the processor stack for <I>Size</I> bytes
+(the hardware stack is 16K in size; when a function calls another function the system will throw an
+error if there is not enough hardware stack to make the call).
+Although this routine is used mainly internally in TIOS, sometimes it may be useful even
+in user programs. For example, a function may have a complex set of operations that may not be
+easily undone in a <A HREF="error.html#ONERR">ONERR</A> block. The function may also require
+that all of the operations do not fail due to a lack of hardware stack. In this case, the
+function can be started with a call to NeedStack to at least guarantee that
+the hardware stack will not overflow during the critical section of the function.
+Critical operations may be, say, direct modifying elements of the VAT table. So, if the
+function calls NeedStack first, this insures
+that none of the critical operations are partially completed due to a lack of
+hardware stack thus leaving the VAT table (for example) in an undefined state. The
+TI-Basic interpreter uses the hardware stack to make recursive calls and
+so all TI-Basic commands and functions cannot rely on the hardware
+stack being at any particular level.</P>
+
+<HR>
+<H3><A NAME="off"><U>off</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> off (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Turns the calculator off.</B></P>
+
+<P>off turns the calculator off. asm("trap #4") does exactly same thing, but calling
+this routine is more official.</P>
+
+<HR>
+<H3><A NAME="OSCheckBreak"><U>OSCheckBreak</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSCheckBreak (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Checks pressing of BREAK key.</B></P>
+
+<P>OSCheckBreak returns <A HREF="alloc.html#Bool">TRUE</A> if BREAK key was pressed
+(for this, BREAK must be enabled using <A HREF="#OSEnableBreak">OSEnableBreak</A>),
+else returns <A HREF="alloc.html#Bool">FALSE</A>. Note that OSCheckBreak will
+remain true until explicite call of <A HREF="#OSClearBreak">OSClearBreak</A>.</P>
+
+<HR>
+<H3><A NAME="OSClearBreak"><U>OSClearBreak</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSClearBreak (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Clears "BREAK key pressed" flag.</B></P>
+
+<P>OSClearBreak clears "BREAK key pressed" flag. See
+<A HREF="#OSCheckBreak">OSCheckBreak</A> for more info.</P>
+
+<HR>
+<H3><A NAME="OSContrastAddress"><U>OSContrastAddress</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *OSContrastAddress;</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the contrast value.</B></P>
+
+<P>It is the address of the byte containing the current contrast (<A HREF="#OSContrastValue">OSContrastValue</A>).<BR>
+See <A HREF="#OSContrastValue">OSContrastValue</A> for more information.</P>
+
+<P>See also: <A HREF="#OSContrastUp">OSContrastUp</A>, <A HREF="#OSContrastDn">OSContrastDn</A>, <A HREF="#OSContrastValue">OSContrastValue</A></P>
+<HR>
+<H3><A NAME="OSContrastDn"><U>OSContrastDn</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSContrastDn (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Decreases the contrast.</B></P>
+
+<P>OSContrastDn decreases the display contrast.
+It is actually a library function calling the real TIOS function called OSContrastDn,
+because the TIOS function destroys the content of a register which needs to be preserved.</P>
+
+<P>See also: <A HREF="#OSContrastUp">OSContrastUp</A>, <A HREF="#OSContrastAddress">OSContrastAddress</A>, <A HREF="#OSContrastValue">OSContrastValue</A></P>
+<HR>
+<H3><A NAME="OSContrastUp"><U>OSContrastUp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSContrastUp (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Increases the contrast.</B></P>
+
+<P>OSContrastUp increases the display contrast.
+It is actually a library function calling the real TIOS function called OSContrastUp,
+because the TIOS function destroys the content of a register which needs to be preserved.</P>
+
+<P>See also: <A HREF="#OSContrastDn">OSContrastDn</A>, <A HREF="#OSContrastAddress">OSContrastAddress</A>, <A HREF="#OSContrastValue">OSContrastValue</A></P>
+<HR>
+<H3><A NAME="OSdequeue"><U>OSdequeue</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSdequeue (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *dest, <B><A HREF="keywords.html#void">void</A></B> *Queue);</TD></TR></TABLE></P>
+<P><B>Removes an element from a queue.</B></P>
+
+<P>OSdequeue removes an element from a queue structure pointed to by <I>Queue</I> and stores
+them in the variable pointed to by <I>dest</I>. As queue is a FIFO structure, first removed element
+is the first element inserted in the queue; the next removed element is the second element
+inserted in the queue, etc. OSdequeue returns <A HREF="alloc.html#Bool">TRUE</A> if the queue was
+empty, else returns <A HREF="alloc.html#Bool">FALSE</A>.
+<BR><BR>
+<B>Note:</B> This function may be used for fast keyboard reading: see <A HREF="#kbd_queue">kbd_queue</A>.</P>
+
+<P>See also: <A HREF="#OSenqueue">OSenqueue</A>, <A HREF="#kbd_queue">kbd_queue</A></P>
+<HR>
+<H3><A NAME="OSDisableBreak"><U>OSDisableBreak</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSDisableBreak (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Disables the break key ('ON').</B></P>
+
+<P>OSDisableBreak disables the break key.
+<BR><BR>
+<B>Note:</B> Although the break (i.e. 'ON') key is disabled during the execution of assembly
+programs, the execution of some TIOS functions may be breaked by pressing 'ON'
+(usually functions which execute some internal loops with long or undeterminate duration,
+like various high-level linking functions, etc.). The use of
+OSDisableBreak will disable the break key even in such cases.</P>
+
+<P>See also: <A HREF="#OSEnableBreak">OSEnableBreak</A></P>
+<HR>
+<H3><A NAME="OSEnableBreak"><U>OSEnableBreak</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSEnableBreak (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Enables the break key ('ON').</B></P>
+
+<P>OSEnableBreak enables the break key (of course, <I>not</I> during execution of
+assembly programs). The break key may be read from assembly programs
+using <A HREF="#OSCheckBreak">OSCheckBreak</A>.</P>
+
+<P>See also: <A HREF="#OSDisableBreak">OSDisableBreak</A></P>
+<HR>
+<H3><A NAME="OSenqueue"><U>OSenqueue</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSenqueue (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> data, <B><A HREF="keywords.html#void">void</A></B> *Queue);</TD></TR></TABLE></P>
+<P><B>Insert a new element into a queue.</B></P>
+
+<P>OSenqueue inserts the element <I>data</I> in a queue (FIFO - First In First Out) structure pointed
+to by <I>Queue</I>. <I>Queue</I> is usually a pointer to the structure of the type
+<A HREF="#QUEUE">QUEUE</A> or <A HREF="#DEF_QUEUE">DEF_QUEUE</A>. OSenqueue returns
+<A HREF="alloc.html#Bool">TRUE</A> if the operation was sucessful, else return <A HREF="alloc.html#Bool">FALSE</A>
+(for example, if the queue is full). See destription of queue types
+<A HREF="#QUEUE">QUEUE</A> and <A HREF="#DEF_QUEUE">DEF_QUEUE</A> for an example
+of usage.</P>
+
+<P>See also: <A HREF="#OSdequeue">OSdequeue</A></P>
+<HR>
+<H3><A NAME="OSFreeTimer"><U>OSFreeTimer</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSFreeTimer (<B><A HREF="keywords.html#short">short</A></B> timer_no);</TD></TR></TABLE></P>
+<P><B>Frees a notify (countdown) timer.</B></P>
+
+<P>OSFreeTimer deactivates and frees the notify (countdown) timer <I>timer_no</I>.
+OSFreeTimer must be called
+before registering a timer using <A HREF="#OSRegisterTimer">OSRegisterTimer</A> if
+the timer was already in use. Returns <A HREF="alloc.html#Bool">FALSE</A> in a case of error,
+else returns <A HREF="alloc.html#Bool">TRUE</A>.</P>
+
+<HR>
+<H3><A NAME="OSqclear"><U>OSqclear</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSqclear (<B><A HREF="keywords.html#void">void</A></B> *Queue);</TD></TR></TABLE></P>
+<P><B>Clears a queue.</B></P>
+
+<P>OSqclear empties and resets the queue structure pointed to by <I>Queue</I>. More precise, it
+resets the structure to {0,&nbsp;0,&nbsp;2,&nbsp;0}.</P>
+
+<P>See also: <A HREF="#OSenqueue">OSenqueue</A></P>
+<HR>
+<H3><A NAME="OSqhead"><U>OSqhead</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> OSqhead (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *dummy, <B><A HREF="keywords.html#void">void</A></B> *Queue);</TD></TR></TABLE></P>
+<P><B>Gets an element from the head of a queue.</B></P>
+
+<P>OSqhead returns an element from the head of a queue structure pointed to by <I>Queue</I> without
+removing it from the queue (the head element is the last element inserted in the queue,
+not the first one). <I>dummy</I> is the dummy parameter: it is not used in the routine.</P>
+
+<P>See also: <A HREF="#OSenqueue">OSenqueue</A></P>
+<HR>
+<H3><A NAME="OSqinquire"><U>OSqinquire</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSqinquire (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *dest, <B><A HREF="keywords.html#void">void</A></B> *Queue);</TD></TR></TABLE></P>
+<P><B>Checks whether an element is waiting in a queue.</B></P>
+
+<P>OSqinquire returns <A HREF="alloc.html#Bool">TRUE</A> if the queue pointed to by <I>Queue</I> is not empty
+(i.e. if there is an element waiting in it), else returns <A HREF="alloc.html#Bool">FALSE</A>. If the
+queue is not empty, OSqinquire also stores the first element which will be removed from the
+queue in the variable pointed to by <I>dest</I>, but in opposite to <A HREF="#OSdequeue">OSdequeue</A>
+the element itself will not be removed from the queue.</P>
+
+<P>See also: <A HREF="#OSenqueue">OSenqueue</A></P>
+<HR>
+<H3><A NAME="OSRegisterTimer"><U>OSRegisterTimer</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSRegisterTimer (<B><A HREF="keywords.html#short">short</A></B> timer_no, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> T);</TD></TR></TABLE></P>
+<P><B>Registers a notify (countdown) timer.</B></P>
+
+<P>TIOS has several notify (countdown) timers. The number of timers is not the same on all AMS versions: 
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B>All AMS versions up to 2.03</B></TD>
+  <TD>6 timers (1 to 6)</TD>
+</TR>
+<TR>
+  <TD><B>AMS 2.04 and 2.05</B></TD>
+  <TD>7 timers (1 to 7)</TD>
+</TR>
+<TR>
+  <TD><B>AMS 2.07, 2.08 and 2.09</B></TD>
+  <TD>8 timers (1 to 8)</TD>
+</TR>
+</TABLE>
+<BR>
+OSRegisterTimer initializes the timer which ID number is <I>timer_no</I>, and sets its initial 
+value to <I>T</I>.
+Every time the Auto-Int 5 is triggered (approximatively 20 times per second if you didn't change
+the programable rate generator), the current value of the timer is decremented by 1. When
+ the current value reaches zero, nothing special happens, but a flag is set which
+ indicates that the timer is expired. This flag may be check using function
+ <A HREF="#OSTimerExpired">OSTimerExpired</A>.
+ <BR><BR>
+ OSRegisterTimer returns <I>timer_no</I> if the registration was successful, else
+ returns zero. This happens if you give wrong parameters, or if the timer <I>timer_no</I>
+is already in use. So, you must first free the timer using <A HREF="#OSFreeTimer">OSFreeTimer</A>.<BR>
+<BR>
+Usual use of the timers:</P>
+<UL>
+<LI><P><B>Timer 1</B> seems to be free for use on all AMS versions.</P></LI>
+<LI><P><B>Timer 2</B> is used for automatic power-down (APD) counting, so this is an official method to 
+change APD rate to, for example, 100 seconds:
+ </P>
+<PRE>OSFreeTimer (APD_TIMER);
+ OSRegisterTimer (APD_TIMER, 100*20);
+</PRE>
+</LI>
+<LI><P><B>Timer 3</B> is used for link communication.</P></LI>
+<LI><P><B>Timer 4</B> is used for cursor blinking.</P></LI>
+<LI><P><B>Timer 5</B> is sometimes used for measuring time in some TI-Basic functions like CyclePic.</P></LI>
+<LI><P><B>Timer 6</B> seems to be free for use on all AMS versions.</P></LI>
+<LI><P><B>Timer 7</B> is used on AMS 2.04 and above by the standard AUTO_INT_5 routine to launch battery level checking routine every 20 ticks. You shouldn't use it...</P></LI>
+<LI><P><B>Timer 8</B> is used on AMS 2.07 and above in particular by the functions related to TI-Navigator.</P></LI>
+</UL>
+<P>
+ Legal timer numbers (like APD_TIMER) are defined in enum <A HREF="#Timers">Timers</A>, to make a
+ program more readable. See also other timer functions for more info.</P>
+
+<P>See also: <A HREF="#FiftyMsecTick">FiftyMsecTick</A>, <A HREF="#OSFreeTimer">OSFreeTimer</A>, <A HREF="#OSTimerCurVal">OSTimerCurVal</A>, <A HREF="#OSTimerExpired">OSTimerExpired</A>, <A HREF="#OSTimerRestart">OSTimerRestart</A></P>
+<HR>
+<H3><A NAME="OSReset"><U>OSReset</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSReset (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Resets the calculator.</B></P>
+
+<P>OSReset resets the calculator without any warnings.</P>
+
+<HR>
+<H3><A NAME="OSSetSR"><U>OSSetSR</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSSetSR (<B><A HREF="keywords.html#short">short</A></B> SR);</TD></TR></TABLE></P>
+<P><B>Sets the processor status register.</B></P>
+
+<P>OSSetSR sets the processor status register to <I>SR</I>. Supervisor and
+trace bits cannot be set up using this routine. For example, use</P>
+<PRE>OSSetSR (0x0700);
+</PRE>
+<P>to disable all interrupts, and</P>
+<PRE>OSSetSR (0x0000);
+</PRE>
+<P>to enable them again. Note that any call to keyboard input routines
+like <A HREF="kbd.html#ngetchx">ngetchx</A> etc. will enable interrupts
+again.
+<BR><BR>
+OSSetSR returns the previous contents of the status register.
+<BR><BR>
+<B>Note:</B> Disabling Auto-Int 1 is often used for making the status line indicators
+not visible on the screen so that the status indicators do not mess up your graphics
+(status line indicators are updated from this interrupt). In this case, you need to
+read the keyboard using <A HREF="kbd.html#_rowread">_rowread</A> function, because
+functions like <A HREF="kbd.html#ngetchx">ngetchx</A> are based on Auto-Int 1.
+However, if you disable interrupts, the grayscale will not work, because the grayscale
+is also based on Auto-Int 1. To solve this problem, instead of <B>disabling</B>
+Auto-Int 1, you may <B>redirect</B> it to nothing. See <A HREF="intr.html#DUMMY_HANDLER">DUMMY_HANDLER</A>
+from <A HREF="intr.html">intr.h</A> for more info.</P>
+
+<HR>
+<H3><A NAME="OSTimerCurVal"><U>OSTimerCurVal</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> OSTimerCurVal (<B><A HREF="keywords.html#short">short</A></B> timer_no);</TD></TR></TABLE></P>
+<P><B>Determines a current value of a notify (countdown) timer.</B></P>
+
+<P>OSTimerCurVal returns a current value of the timer <I>timer_no</I>.</P>
+
+<HR>
+<H3><A NAME="OSTimerExpired"><U>OSTimerExpired</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSTimerExpired (<B><A HREF="keywords.html#short">short</A></B> timer_no);</TD></TR></TABLE></P>
+<P><B>Determines whether a notify (countdown) timer expired.</B></P>
+
+<P>OSTimerExpired returns <A HREF="alloc.html#Bool">TRUE</A> if the notify (countdown) timer <I>timer_no</I>
+expired, else returns <A HREF="alloc.html#Bool">FALSE</A>. See <A HREF="#OSRegisterTimer">OSRegisterTimer</A>
+for more info. For example, a legal way to make a 5-second delay is:</P>
+<PRE>OSFreeTimer (USER_TIMER);
+OSRegisterTimer (USER_TIMER, 5*20);
+while (!OSTimerExpired (USER_TIMER));
+</PRE>
+<P>OSTimerExpired also resets flag which tells that the timer was expired, so the calling
+this function again will return <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="OSTimerRestart"><U>OSTimerRestart</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> OSTimerRestart (<B><A HREF="keywords.html#short">short</A></B> timer_no);</TD></TR></TABLE></P>
+<P><B>Restarts a notify (countdown) timer.</B></P>
+
+<P>OSTimerRestart resets the timer <I>timer_no</I> to its initial value, and
+returns the current value of the timer as was before reseting.</P>
+
+<HR>
+<H3><A NAME="OSVFreeTimer"><U>OSVFreeTimer</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSVFreeTimer (<B><A HREF="keywords.html#short">short</A></B> timer_no);</TD></TR></TABLE></P>
+<P><B>Frees an event (vectored) timer.</B></P>
+
+<P>OSVFreeTimer deactivates and frees the event (vectored) timer <I>timer_no</I>. OSVFreeTimer must
+be called before registering a timer using <A HREF="#OSVRegisterTimer">OSVRegisterTimer</A> if
+the timer was already in use.
+Returns <A HREF="alloc.html#Bool">FALSE</A> in a case of error, else returns <A HREF="alloc.html#Bool">TRUE</A>.
+<BR><BR>
+<B>Note:</B> Don't forget to free an event timer which was registered before exiting the program;
+else very bad things may happen later. I expect that you know why...</P>
+
+<P>See also: <A HREF="#TIOS_OSVFreeTimer">TIOS_OSVFreeTimer</A></P>
+<HR>
+<H3><A NAME="OSVRegisterTimer"><U>OSVRegisterTimer</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSVRegisterTimer (<B><A HREF="keywords.html#short">short</A></B> timer_no, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> T, <A HREF="#Timer_Callback_t">Timer_Callback_t</A> Action);</TD></TR></TABLE></P>
+<P><B>Registers an event (vectored) timer.</B></P>
+
+<P>Before release 2.04 of the AMS, TIOS also had two event (vectored) timers numbered as 1 and 2
+(in addition to 6 notify timers which may be registered using
+<A HREF="#OSRegisterTimer">OSRegisterTimer</A>). In AMS 2.04, Texas Instruments decided
+for some strange reasons to remove these vectored timers from the TIOS. I was very angry due to
+this decision, so I decided to reimplement these timers independently of the TIOS, to
+make them work on any AMS version. Well, now you have it. More precisely, you now have
+two event (vectored) timers which are numbered as 1 and 2, which work on any AMS release
+(TIOS based implementation as implemented in TIGCCLIB releases prior to 2.2 did not work
+on AMS 2.04 and AMS 2.05).
+<BR><BR>
+OSVRegisterTimer initializes the event timer which ID number
+is <I>timer_no</I>, and sets its initial value to <I>T</I>. Every time the
+Auto-Int 5 is triggered (20 times per second if you didn't change the programable
+rate generator), the current value of the timer is decremented by 1. When the
+current value reaches zero, a procedure specified by user will be called, then
+the timer starts counting again from its initial value. The parameter
+<I>Action</I> is the pointer to the procedure which will be triggered every
+time the timer reaches zero. So, the procedure <I>Action</I> will be called
+periodically, with a period determined by <I>T</I>.
+<BR><BR>
+<I>Action</I> need not to be an assembly language procedure; it may be any
+user-defined function written in C. Its body will be executed in the
+supervisor CPU mode and with disabled interrupts (th information is probably
+not important from the user point of view).
+<BR><BR>
+If the function <I>Action</I> changes any global variable
+in the program, such global variable must be declared as "volatile" to inform
+the compiler that its value may be changed asynchronously, i.e. in a way which
+is unexpected for the normal program flow.
+<BR><BR>
+OSVRegisterTimer returns a nonzero value if the registration was successful, else
+returns zero. This happens if you give wrong parameters, or if the timer <I>timer_no</I>
+is already in use. So, you must first free the timer using
+<A HREF="#OSVFreeTimer">OSVFreeTimer</A> (as I completely rewrote these routines, I
+also corrected some bugs in them which were presented in TIOS routines). As event
+timers now work indepentently of TIOS timers, both event timers (1 and 2) are
+free for use. Here is a simple example of a program which installs
+both event timers (called "Timers"):</P>
+<PRE>// Install two timers with counter variables
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+CALLBACK void Action1(void)
+{
+  static int Counter = 0;
+  printf_xy (50, 50, &quot;Counter1 = %d  &quot;, ++Counter);
+}
+
+CALLBACK void Action2(void)
+{
+  static int Counter = 0;
+  printf_xy (70, 70, &quot;Counter2 = %d  &quot;, ++Counter);
+}
+
+void _main(void)
+{
+  OSVRegisterTimer (1, 3, Action1);
+  OSVRegisterTimer (2, 10, Action2);
+  ngetchx ();
+  OSVFreeTimer (1);
+  OSVFreeTimer (2);
+}
+</PRE>
+<P>In this implementation of OSVRegisterTimer, it is not necessary to free timers using
+<A HREF="#OSVFreeTimer">OSVFreeTimer</A> before first usage of them, because they are
+free by default at the beginning. However, nothing wrong will happen if you try to free
+them explicitly (which was necessary in previous releases of TIGCCLIB).
+<BR><BR>
+<B>Note:</B> As already mentioned above, all TIOS bugs in timer routines (dependence between
+notify and event timers, etc.) are now removed, because these routines are rewritten to
+be independent of the TIOS.</P>
+
+<P>See also: <A HREF="#TIOS_OSVRegisterTimer">TIOS_OSVRegisterTimer</A></P>
+<HR>
+<H3><A NAME="QModeKey"><U>QModeKey</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> QModeKey (<B><A HREF="keywords.html#short">short</A></B> code);</TD></TR></TABLE></P>
+<P><B>Checks whether argument is code of a mode key.</B></P>
+
+<P>QModeKey returns <A HREF="alloc.html#Bool">TRUE</A> if <I>code</I> is code of a mode key,
+else returns <A HREF="alloc.html#Bool">FALSE</A>. It assumes that <I>code</I> is
+code as the function <A HREF="kbd.html#ngetchx">ngetchx</A> for reading the keyboard
+returns. Mode keys are keys which may cause change of the current application or
+the configuration of the calculator. The following keys are mode keys on the TI-89:
+HOME, APPS, MODE, VAR-LINK, SWITCH (2nd+APPS), MEM, QUIT, Y=, WINDOW, GRAPH,
+TblSet, TABLE and OFF (codes 277, 265, 266, 4141, 4361, 4150, 4360, 16652, 16653,
+16654, 16655, 16656 and 4363). Note that codes returned by
+<A HREF="kbd.html#ngetchx">ngetchx</A> are mostly equal like codes returned by
+BASIC command GetKey, but codes of arrow keys, and keys pressed together with
+Diamond keys are different. See <A HREF="kbd.html#ngetchx">ngetchx</A> for more info.</P>
+
+<HR>
+<H3><A NAME="QSysKey"><U>QSysKey</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> QSysKey (<B><A HREF="keywords.html#short">short</A></B> code);</TD></TR></TABLE></P>
+<P><B>Checks whether argument is code of a system key.</B></P>
+
+<P>QSysKey returns <A HREF="alloc.html#Bool">TRUE</A> if <I>code</I> is code of a system key,
+else returns <A HREF="alloc.html#Bool">FALSE</A>. It assumes that <I>code</I> is
+code as the function <A HREF="kbd.html#ngetchx">ngetchx</A> for reading the keyboard
+returns. System keys are keys which opens menus, which may have as the result inserting
+characters or tokens in the editor. The following keys are system keys on the TI-89:
+MATH, CATALOG, CHAR and CUSTOM (codes 4149, 278, 4139 and 4373).</P>
+
+<HR>
+<H3><A NAME="SumStoChkMem"><U>SumStoChkMem</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> SumStoChkMem (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Compares memory contents by making a checksum.</B></P>
+
+<P>SumStoChkMem calculates a checksum of the user portion of the RAM memory (more precisely,
+from address 0x400 to 0xFFF (on AMS 1.xx) or to 0xF7F (on AMS 2.xx) and from the bottom of the heap
+to the end of the RAM), and stores the calculated value in an internal system variable. It returns
+<A HREF="alloc.html#Bool">TRUE</A> if the calculated checksum is equal to the previous value of
+this system variable, else returns <A HREF="alloc.html#Bool">FALSE</A>. So, SumStoChkMem may
+be used to check whether the contents of the memory were changed since the last call of
+SumStoChkMem (i.e. between two calls of SumStoChkMem).</P>
+
+<HR>
+<H3><A NAME="TIOS_OSVFreeTimer"><U>TIOS_OSVFreeTimer</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TIOS_OSVFreeTimer (<B><A HREF="keywords.html#short">short</A></B> timer_no);</TD></TR></TABLE></P>
+<P><B>Frees an event (vectored) timer.</B></P>
+
+<P><B>You really should use <A HREF="#OSVFreeTimer">OSVFreeTimer</A>, unless
+you know what you, and your users, are doing.</B><BR>
+This is the direct system call, which will usually take less space in your program than the
+library routine for <A HREF="#OSVRegisterTimer">OSVRegisterTimer</A>,
+<A HREF="#OSVFreeTimer">OSVFreeTimer</A> and the corresponding interrupt handler.
+If you use it on AMS 1.00-2.03, you'll experience the bugs in TI's implementation (dependence
+between notify and event timers, etc.). If you use it on patched versions of AMS embedding an
+implementation based on the TIGCC/GCC4TI one, you won't.</P>
+
+<P>See also: <A HREF="#OSVFreeTimer">OSVFreeTimer</A></P>
+<HR>
+<H3><A NAME="TIOS_OSVRegisterTimer"><U>TIOS_OSVRegisterTimer</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TIOS_OSVRegisterTimer (<B><A HREF="keywords.html#short">short</A></B> timer_no, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> T, <A HREF="#Timer_Callback_t">Timer_Callback_t</A> Action);</TD></TR></TABLE></P>
+<P><B>Registers an event (vectored) timer.</B></P>
+
+<P><B>You really should use <A HREF="#OSVRegisterTimer">OSVRegisterTimer</A>, unless
+you know what you, and your users, are doing.</B><BR>
+This is the direct system call, which will usually take less space in your program than the
+library routine for <A HREF="#OSVRegisterTimer">OSVRegisterTimer</A>,
+<A HREF="#OSVFreeTimer">OSVFreeTimer</A> and the corresponding interrupt handler.
+If you use it on AMS 1.00-2.03, you'll experience the bugs in TI's implementation (dependence
+between notify and event timers, etc.). If you use it on patched versions of AMS embedding an
+implementation based on the TIGCC/GCC4TI one, you won't.</P>
+
+<P>See also: <A HREF="#OSVRegisterTimer">OSVRegisterTimer</A></P>
+<HR>
+<H3><A NAME="WordInList"><U>WordInList</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WordInList (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Word, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *List);</TD></TR></TABLE></P>
+<P><B>Searches for a word in the list.</B></P>
+
+<P>WordInList is a useful short routine which returns <A HREF="alloc.html#Bool">TRUE</A> if the
+word <I>Word</I> is a member of the list (i.e. array) of words pointed to by
+<I>List</I>, otherwise returns <A HREF="alloc.html#Bool">FALSE</A>. The list of words is
+terminated by the word 0.</P>
+
+<HR>
+<H3><A NAME="XR_stringPtr"><U>XR_stringPtr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *XR_stringPtr (<B><A HREF="keywords.html#short">long</A></B> XR_string_no);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to a TIOS system message (XR string).</B></P>
+
+<P>XR_stringPtr returns a pointer to the TIOS system message whose number is given
+in <I>XR_string_no</I>. IDs are not consistent across AMS versions, but since
+AMS 2.00 they have stayed the same and probably will in the future.
+They are often used internally, for example dialog structures and
+<A HREF="events.html#EV_sendString">EV_sendString</A> use them.
+All tokens (like "sin" etc.) are also XR strings.</P>
+
+<HR>
+<H3><A NAME="CTypeTable"><U>CTypeTable</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *CTypeTable;</TD></TR></TABLE></P>
+<P><B>A pointer to a table describing the types of the AMS characters.</B></P>
+
+<P>This table contains 256 elements, one for each character.<BR>
+There are nine different values in this table:<BR>
+<B>0x00 (0b00000000)</B>: characters 0x00-0x0A and 0x0C-0x0D. <I><U>These characters are not supposed to occur in any string returned by the system, they are not part of the char menu either.</U></I><BR><BR>
+<B>0x40 (0b01000000)</B>: characters 0x0B, 0x0E, 0x0F, 0x10-0x2F (system characters + some of the operators), 0x3A-0x3F (colon, semicolon...), 0x40 (at sign), 0x5B-0x5E (brackets...), 0x60, 0x7B-0x7F (braces...), 0x95-0xB4 (maths symbols...), 0xB6-0xBF (maths symbols...), 0xD7, 0xF7. <I><U>These symbols are used by the pretty print, or available in the char menu (some are incorrect in expressions)...</U></I><BR><BR>
+<B>0x48 (0b01001000)</B>: character 0x5F (<I><U>question mark</U></I>).<BR><BR>
+<B>0x4C (0b01001100)</B>: characters 0x30-0x39, i.e. <I><U>numerals</U></I>.<BR><BR>
+<B>0x58 (0b01011000)</B>: characters 0xDF and 0xFF (<I><U>�and </U></I>).<BR><BR>
+<B>0x59 (0b01011001)</B>: characters 0x61-0x7B, 0xE0-0xEF, 0xF0-0xF6, 0xF8-0xFE. <I><U>These characters are lowercase letters, accentuated or not.</U></I><BR><BR>
+<B>0x5A (0b01011010)</B>: characters 0x41-0x5B, 0xC0-0xCF, 0xD0-0xD6, 0xD8-0xDE. <I><U>These characters are uppercase letters, accentuated or not.</U></I><BR><BR>
+<B>0x60 (0b01100000)</B>: character 0x8C (pi).<BR><BR>
+<B>0x78 (0b01111000)</B>: characters 0x80-0x8B, 0x8D-0x8F, 0x90-0x94, 0xB5 (). <I><U>These characters are all greek letters (no meaning for the system), without pi (0x60).</U></I><BR><BR>
+<BR>
+To sum up:<BR>
+<B>bit 0</B> set means: '<I><U>character is a lowercase letter</U></I>' (type 0x59).<BR><BR>
+<B>bit 1</B> set means: '<I><U>character is a uppercase letter</U></I>' (type 0x5A).<BR><BR>
+(bits 0 and 1 are mutually exclusive).<BR>
+<B>bit 2</B> set means: '<I><U>character is a numeral</U></I>' (type 0x4C).<BR><BR>
+<B>bit 3</B> set means: '<I><U>character is valid in a symbol name</U></I>' (types 0x00, 0x40 and 0x60 are invalid in symbol names).<BR><BR>
+<B>bit 4</B> set means: '<I><U>character is valid as starting character for a symbol name</U></I>' (types 0x48 and 0x4C are invalid as first character in symbol names).<BR><BR>
+<B>bit 5</B> set means: '<I><U>character is a greek letter</U></I>' (types 0x60 and 0x78).<BR><BR>
+<B>bit 6</B> set means: '<I><U>character is printable</U></I>' (all types except 0x00).<BR><BR>
+<B>bit 7</B> is currently unused.
+<BR><BR><BR>
+<I>Credits go to Zeljko Juric for the trick used to retrieve the address of that table.</I> This wrapper implements ROM_CALL 442 on any AMS version.</P>
+
+<HR>
+<H3><A NAME="CU_cursorState"><U>CU_cursorState</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">signed</A></B> <B><A HREF="keywords.html#short">short</A></B> CU_cursorState;</TD></TR></TABLE></P>
+<P><B>Contains the current cursor state (on or off).</B></P>
+
+<P>CU_cursorState contains <A HREF="alloc.html#Bool">TRUE</A> if the cursor is on, otherwise it contains <A HREF="alloc.html#Bool">FALSE</A>.
+<BR>
+If it is on, this does not mean that it is displayed, but that it is allowed to be displayed.</P>
+
+<P>See also: <A HREF="#CU_restore">CU_restore</A>, <A HREF="#CU_start">CU_start</A>, <A HREF="#CU_stop">CU_stop</A></P>
+<HR>
+<H3><A NAME="FiftyMsecTick"><U>FiftyMsecTick</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#volatile">volatile</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> FiftyMsecTick;</TD></TR></TABLE></P>
+<P><B>A counter incremented by the standard system auto-int 5 routine.</B></P>
+
+<P>FiftyMsecTick represents the number of times the standard system
+<A HREF="intr.html#IntVecs">AUTO_INT_5</A> routine was executed since the last reset,
+if FiftyMsecTick was not modified. Indeed, this variable is changed only by a routine called
+at reset, and by the system routine for auto-int 5.
+<BR><BR> 
+This variable is a way to measure a delay, without using a system timer with
+<A HREF="#OSFreeTimer">OSFreeTimer</A>,
+<A HREF="#OSRegisterTimer">OSRegisterTimer</A>,
+<A HREF="#OSTimerCurVal">OSTimerCurVal</A>,
+<A HREF="#OSTimerExpired">OSTimerExpired</A>, and
+<A HREF="#OSTimerRestart">OSTimerRestart</A>.
+<BR><BR>
+Note also that unlike all the other system timers, FiftyMsecTick is a countup timer.
+<BR><BR>
+Partially emulating FiftyMSecTick on AMS 1.xx is easy with the functions from
+<A HREF="intr.html">intr.h</A>. However, to fully emulate the functionality, a
+memory-resident (TSR) program has to be installed.</P>
+
+<HR>
+<H3><A NAME="OSContrastValue"><U>OSContrastValue</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> OSContrastValue;</TD></TR></TABLE></P>
+<P><B>Byte containing the value of the current contrast.</B></P>
+
+<P>Note that if you change this byte (valid values are 0-15 on HW1 and 0-31 on HW2), the contrast will not be changed.
+You have to use <A HREF="#OSContrastUp">OSContrastUp</A> and <A HREF="#OSContrastDn">OSContrastDn</A> to actually change the contrast.</P>
+
+<P>See also: <A HREF="#OSContrastUp">OSContrastUp</A>, <A HREF="#OSContrastDn">OSContrastDn</A>, <A HREF="#OSContrastAddress">OSContrastAddress</A></P>
+<HR>
+<H3><A NAME="OSOnBreak"><U>OSOnBreak</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> OSOnBreak;</TD></TR></TABLE></P>
+<P><B>System variable indicating that the ON key was pressed.<BR>
+Used by <A HREF="#OSCheckBreak">OSCheckBreak</A>, 
+<A HREF="#OSClearBreak">OSClearBreak</A>,
+<A HREF="link.html#OSLinkClose">OSLinkClose</A> between others.</B></P>
+
+<P>See also: <A HREF="#OSCheckBreak">OSCheckBreak</A>, <A HREF="#OSClearBreak">OSClearBreak</A></P>
+<HR>
+<H3><A NAME="ReleaseDate"><U>ReleaseDate</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *<B><A HREF="keywords.html#const">const</A></B> ReleaseDate;</TD></TR></TABLE></P>
+<P><B>A pointer to a string containing the release date of the AMS.</B></P>
+
+<P>You might use it in order to determine the AMS version (<A HREF="#ReleaseVersion">ReleaseVersion</A> and <A HREF="compat.html#TIOS_entries">TIOS_entries</A> are much more interesting in order to do that, though).</P>
+
+<P>See also: <A HREF="#ReleaseVersion">ReleaseVersion</A></P>
+<HR>
+<H3><A NAME="ReleaseVersion"><U>ReleaseVersion</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *<B><A HREF="keywords.html#const">const</A></B> ReleaseVersion;</TD></TR></TABLE></P>
+<P><B>A pointer to a string containing the AMS version.</B></P>
+
+<P>You can use it in order to determine the AMS version more precisely than with <A HREF="compat.html#TIOS_entries">TIOS_entries</A> (distinguish between AMS 1.01 and 1.05, 2.02 and 2.03, or 2.07, 2.08 and 2.09), because these versions have the same number of ROM_CALLs.</P>
+
+<P>See also: <A HREF="#ReleaseDate">ReleaseDate</A></P>
+<HR>
+<H3><A NAME="BASECODE_PARM_BLOCK"><U>BASECODE_PARM_BLOCK</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> len; <I>/* length of parameter block */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> releaseVersionMajor; <I>/* Major AMS version */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> releaseVersionMinor; <I>/* Minor AMS version */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> releaseDateYear;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> releaseDateMonth;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> releaseDateDay;<BR>
+</TD></TR></TABLE>
+} BASECODE_PARM_BLOCK;</TD></TR></TABLE></P>
+<P><B>A structure containing version information about the operating system.</B></P>
+
+<P>The base code parameter block contains version information about the
+AMS: the major and minor version number and the date the OS was built.<BR>
+<BR>
+You can get this information with the following program:</P>
+<PRE>// Return the basecode parameter block as a list.
+// Works only on AMS 2.04 and later (returns with an error message on AMS 2.03 and older).
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 204           // Compile for AMS 2.04 or higher
+#define RETURN_VALUE          // Return Pushed Expression
+
+#define NO_CALC_DETECT
+#define NO_EXIT_SUPPORT
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  const BASECODE_PARM_BLOCK *bpb = EX_getBasecodeParmBlock ();
+
+  push_END_TAG ();
+
+  push_quantum (bpb-&gt;releaseDateDay);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;releaseDateMonth);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;releaseDateYear);
+  push_quantum ((bpb-&gt;releaseDateYear)&gt;&gt;8);
+  push_quantum (2);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;releaseVersionMinor);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;releaseVersionMajor);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;len);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+  push_LIST_TAG ();
+}
+</PRE>
+
+<P>See also: <A HREF="#EX_getBasecodeParmBlock">EX_getBasecodeParmBlock</A>, <A HREF="#ReleaseDate">ReleaseDate</A>, <A HREF="#ReleaseVersion">ReleaseVersion</A>, <A HREF="#LOC_localVersionDate">LOC_localVersionDate</A></P>
+<HR>
+<H3><A NAME="DEF_QUEUE"><U>DEF_QUEUE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Head; <I>/* Offset to the head of the queue */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Tail; <I>/* Offset to the tail of the queue */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Size; <I>/* Max number of entries in the queue */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Used; <I>/* Actual number of entries in the queue */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Buffer[];<BR>
+</TD></TR></TABLE>
+} DEF_QUEUE;</TD></TR></TABLE></P>
+<P><B>A structure describing the header of a variable-sized queue.</B></P>
+
+<P>Note that Buffer[] is a <A HREF="gnuexts.html">GNU C extension</A> for variable-sized arrays (GCC4TI is GNU C). The
+main usage of DEF_QUEUE structure is when you want to allocate a queue dynamically on
+the heap (using <A HREF="alloc.html#malloc">malloc</A>). The operator <B>sizeof</B>
+treats variable-sized arrays as zero-length arrays (this is a sense of zero in square brackets).
+So, the following example ilustrates correct allocating of a queue with 100-byte long buffer on the
+heap (note that 100-byte long buffer can store 50 entries, because each int entry is 2 bytes long):</P>
+<PRE>DEF_QUEUE *qptr = malloc (sizeof (DEF_QUEUE) + 100);
+OSqclear (qptr);
+qptr-&gt;Size = 50;
+OSenqueue (<I>some_data</I>, qptr);
+</PRE>
+<P>From this example you can see that you need to fill field <I>Size</I> of the queue
+structure manually.</P>
+
+<HR>
+<H3><A NAME="QUEUE"><U>QUEUE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> QUEUE(n) <B><A HREF="keywords.html#struct">struct</A></B> {<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Head, Tail, Size, Used, Buffer[n/2];}</TD></TR></TABLE></P>
+<P><B>A structure describing a queue with a buffer.</B></P>
+
+<P>QUEUE(n) is a structure which describes a queue with an <I>n</I>-byte long buffer. Strictly
+speaking, QUEUE(n) is not a type but a macro,
+although it works exactly as a type, so you can treat it as a type. It is useful for
+definining a queue without dynamic allocation (i.e. without calling
+<A HREF="alloc.html#malloc">malloc</A>), like in the following example:</P>
+<PRE>QUEUE(100) q;
+OSqclear (&amp;q);
+q.Size = 50;
+OSenqueue (<I>some_data</I>, &amp;q);
+</PRE>
+<P>Note that QUEUE(n) works exactly like a type, so it can be used anywhere where a type
+name is expected, for example in pointer declarations, and even as the argument of
+<B>sizeof</B> etc. This is illustrated in the following example:</P>
+<PRE>QUEUE(100) *qptr = malloc (sizeof (QUEUE(100)));
+OSqclear (qptr);
+qptr-&gt;Size = 50;
+OSenqueue (<I>some_data</I>, qptr);
+</PRE>
+
+<P>See also: <A HREF="#DEF_QUEUE">DEF_QUEUE</A></P>
+<HR>
+<H3><A NAME="Timer_Callback_t"><U>Timer_Callback_t</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <A HREF="gnuexts.html#SEC85">CALLBACK</A> <B><A HREF="keywords.html#void">void</A></B> (*Timer_Callback_t) (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Describes a timer callback function.</B></P>
+
+<P>Timer_Callback_t describes a timer callback function for <A HREF="#OSVRegisterTimer">OSVRegisterTimer</A>.</P>
+
+<HR>
+<H3><A NAME="Timers"><U>Timers</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> Timers {USER1_TIMER = 1, BATT_TIMER = 1, APD_TIMER = 2, LIO_TIMER = 3, CURSOR_TIMER = 4, MISC_TIMER = 5, USER_TIMER = 6, BATTERY_TIMER = 7, BP_TIMER = 8};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing timer ID numbers.</B></P>
+
+<P>BATT_TIMER is deprecated, use USER1_TIMER instead.
+<BR><BR>
+See the timer functions (<A HREF="#OSRegisterTimer">OSRegisterTimer</A> etc.) for more info.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

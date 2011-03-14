@@ -1,0 +1,561 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>intr.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;intr.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for creating interrupt handlers</B></P>
+
+<H3><U>Language Extensions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A></B><DD>Defines an interrupt handler function.</DL>
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#AUTO_INT">AUTO_INT</A></B><DD>Gets an address of an interrupt vector.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DisablePRG">DisablePRG</A></B><DD>Disables the programmable rate generator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DUMMY_HANDLER">DUMMY_HANDLER</A></B><DD>A dummy interrupt handler doing nothing.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EnablePRG">EnablePRG</A></B><DD>Enables the programmable rate generator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ExecuteHandler">ExecuteHandler</A></B><DD>Executes an interrupt handler.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetIntVec">GetIntVec</A></B><DD>Gets an interrupt vector.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#IsPRGEnabled">IsPRGEnabled</A></B><DD>Determines whether the programmable rate generator is enabled.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PRG_getRate">PRG_getRate</A></B><DD>Returns the speed at which the programmable rate generator is incremented.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PRG_getStart">PRG_getStart</A></B><DD>Returns the starting value of the programmable rate generator variable.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PRG_getValue">PRG_getValue</A></B><DD>Returns the current value stored in the programmable rate generator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PRG_setRate">PRG_setRate</A></B><DD>Sets the speed at which the programmable rate generator is incremented.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PRG_setStart">PRG_setStart</A></B><DD>Specifies the starting value of the variable incremented by the programmable
+rate generator.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SetIntVec">SetIntVec</A></B><DD>Sets an interrupt vector.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TRAP">TRAP</A></B><DD>Gets an address of a trap vector.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#AUTO_INT_COUNT">AUTO_INT_COUNT</A></B><DD>Returns the total number of Auto-Int vectors.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FIRST_AUTO_INT">FIRST_AUTO_INT</A></B><DD>Returns the index of the first Auto-Int vector.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FIRST_TRAP">FIRST_TRAP</A></B><DD>Returns the index of the first Auto-Int vector.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LAST_AUTO_INT">LAST_AUTO_INT</A></B><DD>Returns the index of the last Auto-Int vector.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LAST_TRAP">LAST_TRAP</A></B><DD>Returns the index of the last Auto-Int vector.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TRAP_COUNT">TRAP_COUNT</A></B><DD>Returns the total number of Auto-Int vectors.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#INT_HANDLER">INT_HANDLER</A></B><DD>A pointer to an interrupt handler.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#IntVecs">IntVecs</A></B><DD>An enumeration describing interrupt vectors.</DL>
+<HR>
+<H3><A NAME="DEFINE_INT_HANDLER"><U>DEFINE_INT_HANDLER</U></A></H3>
+<P><B>Defines an interrupt handler function.</B></P>
+
+<P>DEFINE_INT_HANDLER is a language extension macro which is used for defining interrupt
+handlers. The syntax is similar to function definition:</P>
+<PRE>DEFINE_INT_HANDLER (<I>HandlerName</I>)
+{
+  // <I>The body of the handler...</I>
+}
+</PRE>
+<P>Note, however, that DEFINE_INT_HANDLER does not define a standard function: it constructs
+an object named <I>HandlerName</I> of <A HREF="#INT_HANDLER">INT_HANDLER</A> type, which is initialized to point
+to the handler body (implemented internally as a function, but unaccessable
+directly to the rest of the program).
+So, you cannot call the interrupt handler using a standard call construction like</P>
+<PRE><I>HandlerName</I> ();</PRE>
+<P>Such behaviour is implemented due to safety reasons: interrupt handlers are not supposed to
+be executed directly. If you need to call the interrupt handler anyway, you can use
+<A HREF="#ExecuteHandler">ExecuteHandler</A> function. Here is an example of the program
+which installs the new (user-defined) interrupt handler for auto interrupt 5 (the programable
+timer interrupt), in which the old (default) handler is called as well (called "Interrupt Handler"):</P>
+<PRE>// Interrupt handler incrementing a counter
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+INT_HANDLER OldInt5 = NULL;
+volatile int Counter = 0;
+
+DEFINE_INT_HANDLER(MyInt5)
+{
+  Counter++;
+  ExecuteHandler (OldInt5);
+}
+
+void _main(void)
+{
+  OldInt5 = GetIntVec (AUTO_INT_5);
+  SetIntVec (AUTO_INT_5, MyInt5);
+  while (!kbhit()) printf_xy (50, 50, &quot;Counter = %d  &quot;, Counter);
+  SetIntVec (AUTO_INT_5, OldInt5);
+  GKeyFlush ();
+}
+</PRE>
+<P>The only legal usage of <A HREF="#INT_HANDLER">INT_HANDLER</A> objects is to be passed
+as arguments to the functions <A HREF="#SetIntVec">SetIntVec</A> or
+<A HREF="#ExecuteHandler">ExecuteHandler</A>.
+<BR><BR>
+Be aware that the variable <I>Counter</I> in above example is declared as <CODE><A HREF="keywords.html#volatile">volatile</A></CODE>.
+In fact, any global variable which may be changed by the
+interrupt handler should be declared as <CODE>volatile</CODE>, especially if it is accessed
+from the other parts of the program (i.e. out of the interrupt handler). This is necessary
+to prevent various optimizations which may be fooled by the fact
+that the variable may be changed in a way which is completely unpredictable from the aspect
+of the normal program flow. For example, various optimizations may force keeping the variable
+content in a register, so if the variable is changed asynchronously, the compiler will not
+know anything about it. <CODE>volatile</CODE> will prevent keeping the variable in a
+register, so it will be reloaded from the memory on each access. The example given above
+will still work if you omit the <CODE>volatile</CODE> keyword, but more complicated programs
+will probably not work correctly without it.</P>
+
+<HR>
+<H3><A NAME="AUTO_INT"><U>AUTO_INT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> AUTO_INT(IntNo) ((<B><A HREF="keywords.html#short">long</A></B>) (IntNo) * 4 + 0x60)</TD></TR></TABLE></P>
+<P><B>Gets an address of an interrupt vector.</B></P>
+
+<P>AUTO_INT returns the absolute address where the interrupt vector for Auto-Int <I>IntNo</I>
+is located.
+<BR><BR>
+You can use it together with
+<A HREF="#FIRST_AUTO_INT">FIRST_AUTO_INT</A>,
+<A HREF="#LAST_AUTO_INT">LAST_AUTO_INT</A>, and
+<A HREF="#AUTO_INT_COUNT">AUTO_INT_COUNT</A>
+to loop through all interrupts.</P>
+
+<HR>
+<H3><A NAME="DisablePRG"><U>DisablePRG</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DisablePRG (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Disables the programmable rate generator.</B></P>
+
+<P>DisablePRG disables the programmable rate generator, which means that the
+value determined by <A HREF="#PRG_getValue">PRG_getValue</A> does not
+change and <A HREF="#IntVecs">AUTO_INT_5</A> is not called any more.
+<BR><BR>
+<B>Note:</B> Auto interrupt 5 is used by the AMS, so the previous state
+(which can be determined using
+<A HREF="#IsPRGEnabled">IsPRGEnabled</A>) should be restored before
+the program terminates.
+<BR><BR>
+This macro does not work in VTI 2.5 Beta 5.</P>
+
+<P>See also: <A HREF="#EnablePRG">EnablePRG</A>, <A HREF="system.html#OSRegisterTimer">OSRegisterTimer</A></P>
+<HR>
+<H3><A NAME="DUMMY_HANDLER"><U>DUMMY_HANDLER</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#INT_HANDLER">INT_HANDLER</A> DUMMY_HANDLER;</TD></TR></TABLE></P>
+<P><B>A dummy interrupt handler doing nothing.</B></P>
+
+<P>DUMMY_HANDLER is an interrupt handler of type <A HREF="#INT_HANDLER">INT_HANDLER</A>
+which consists only of <CODE>'rte'</CODE>. The purpose of this handler is
+to redirect an interrupt vector to "nothing", in cases when disabling interrupts is not
+possible. For example, you cannot disable auto-int 1 in grayscale programs, because grayscale
+support is based on it. Grayscale support installs its own auto-int 1 handler, which executes
+the previously installed handler at the end. Suppose that you don't want it to call the default auto-int 1
+handler, which trashes the status line by displaying keyboard status indicators. You can
+redirect auto-int 1 to the dummy handler <I>before</I> enabling grayscale, so
+after the grayscale interrupt, the dummy handler (i.e. nothing) will be called instead of the
+default auto-int 1 handler:</P>
+<PRE>INT_HANDLER save_int_1;
+...
+save_int_1 = GetIntVec (AUTO_INT_1);
+SetIntVec (AUTO_INT_1, DUMMY_HANDLER);   // <I>redirect auto-int 1 to "nothing"</I>
+// <I>enable grayscale</I>
+// <I>do whatever you want in grayscale</I>
+// <I>disable grayscale</I>
+SetIntVec (AUTO_INT_1, save_int_1);
+</PRE>
+
+<HR>
+<H3><A NAME="EnablePRG"><U>EnablePRG</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EnablePRG (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Enables the programmable rate generator.</B></P>
+
+<P>The programmable rate generator is used by the AMS and is normally on. If it
+has been disabled using <A HREF="#DisablePRG">DisablePRG</A>,
+EnablePRG re-enables it.
+<BR><BR>
+This macro does not work in VTI 2.5 Beta 5.</P>
+
+<P>See also: <A HREF="#DisablePRG">DisablePRG</A>, <A HREF="system.html#OSRegisterTimer">OSRegisterTimer</A></P>
+<HR>
+<H3><A NAME="ExecuteHandler"><U>ExecuteHandler</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ExecuteHandler (<A HREF="#INT_HANDLER">INT_HANDLER</A> Handler);</TD></TR></TABLE></P>
+<P><B>Executes an interrupt handler.</B></P>
+
+<P>ExecuteHandler executes the interrupt handler pointed to by <I>Handler</I>. The
+only purpose of this function is to allow calling the previous
+interrupt handler (usually the default one) from the user-defined interrupt
+handler. This function must not be executed from anywhere out of the user-defined
+interrupt handler (defined using <A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A>).
+Otherwise, you will get the "Privilege Violation" crash, because all interrupt
+handlers expect to be executed in the supervisor CPU mode. Parameter <I>Handler</I>
+should be either the value returned from <A HREF="#GetIntVec">GetIntVec</A>, or the address
+of a user-defined interrupt handler defined using <A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A>.
+It must not be the address of an ordinary C function.
+See <A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A> for an example of usage.</P>
+
+<HR>
+<H3><A NAME="GetIntVec"><U>GetIntVec</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#INT_HANDLER">INT_HANDLER</A> GetIntVec (<B><A HREF="keywords.html#short">long</A></B> IntVec);</TD></TR></TABLE></P>
+<P><B>Gets an interrupt vector.</B></P>
+
+<P>GetIntVec gets the content of the interrupt vector located at the absolute address
+<I>IntVec</I> (typical values of <I>IntVec</I> are defined in enum
+<A HREF="#IntVecs">IntVecs</A>). Typical usage of this function is to get the
+current content of the interrupt vector to be restored later. See
+<A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A> for an example of usage.</P>
+
+<P>See also: <A HREF="#SetIntVec">SetIntVec</A>, <A HREF="#IntVecs">IntVecs</A></P>
+<HR>
+<H3><A NAME="IsPRGEnabled"><U>IsPRGEnabled</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> IsPRGEnabled (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Determines whether the programmable rate generator is enabled.</B></P>
+
+<P>The programmable rate generator is used by the AMS and is normally on.
+However, if you enable or disable it in a program, first you should check
+whether it is currently enabled, which can be done with this macro.</P>
+
+<P>See also: <A HREF="#EnablePRG">EnablePRG</A>, <A HREF="#DisablePRG">DisablePRG</A></P>
+<HR>
+<H3><A NAME="PRG_getRate"><U>PRG_getRate</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> PRG_getRate (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the speed at which the programmable rate generator is incremented.</B></P>
+
+<P>This function returns the current speed of the programmable rate generator.
+For more information, see <A HREF="#PRG_setRate">PRG_setRate</A>.</P>
+
+<P>See also: <A HREF="#PRG_setRate">PRG_setRate</A></P>
+<HR>
+<H3><A NAME="PRG_getStart"><U>PRG_getStart</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> PRG_getStart (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the starting value of the programmable rate generator variable.</B></P>
+
+<P>PRG_getStart returns the starting value of the variable incremented by the
+programmable rate generator. For more information about this variable, see
+<A HREF="#PRG_getValue">PRG_getValue</A>.</P>
+
+<P>See also: <A HREF="#PRG_setStart">PRG_setStart</A>, <A HREF="#PRG_getValue">PRG_getValue</A></P>
+<HR>
+<H3><A NAME="PRG_getValue"><U>PRG_getValue</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> PRG_getValue (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the current value stored in the programmable rate generator.</B></P>
+
+<P>PRG_getValue returns the current value of the variable incremented by the
+programmable rate generator. When this value overflows from 0xFF to 0x00,
+auto interrupt 5 will be triggered (see
+<A HREF="#PRG_setStart">PRG_setStart</A> for more information about
+this value, and <A HREF="#SetIntVec">SetIntVec</A> for more
+information about auto interrupts).</P>
+
+<P>See also: <A HREF="#PRG_setStart">PRG_setStart</A>, <A HREF="#PRG_setRate">PRG_setRate</A></P>
+<HR>
+<H3><A NAME="PRG_setRate"><U>PRG_setRate</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> PRG_setRate (<B><A HREF="keywords.html#short">short</A></B> rate);</TD></TR></TABLE></P>
+<P><B>Sets the speed at which the programmable rate generator is incremented.</B></P>
+
+<P>The programmable rate generator's speed can be controlled by this function.
+Valid values for <I>rate</I> are as follows:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B>Value</B></TD>
+  <TD><B>Speed</B></TD>
+</TR>
+<TR>
+  <TD>0</TD>
+  <TD>OSC2/2^5 (highest rate)</TD>
+</TR>
+<TR>
+  <TD>1</TD>
+  <TD>OSC2/2^9 (default)</TD>
+</TR>
+<TR>
+  <TD>2</TD>
+  <TD>OSC2/2^12</TD>
+</TR>
+<TR>
+  <TD>3</TD>
+  <TD>OSC2/2^18 (lowest rate)</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> Before exiting your program, it is good practice to restore the
+programmable rate generator to its previous value (determined by
+<A HREF="#PRG_getRate">PRG_getRate</A>) so that the AMS does not
+misbehave.</P>
+
+<P>See also: <A HREF="#PRG_getRate">PRG_getRate</A></P>
+<HR>
+<H3><A NAME="PRG_setStart"><U>PRG_setStart</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> PRG_setStart (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> val);</TD></TR></TABLE></P>
+<P><B>Specifies the starting value of the variable incremented by the programmable
+rate generator.</B></P>
+
+<P>PRG_setStart sets the starting value of the variable incremented by the
+programmable rate generator. This variable is incremented by 1 every time the
+programmable rate generator is triggered (at a speed which can be set using
+<A HREF="#PRG_setRate">PRG_setRate</A>). When it overflows from 0xFF
+to 0x00, auto interrupt 5 is triggered, and it is reset to <I>val</I>. To
+conclude, the way the value of this variable changes is shown here:
+<BR><BR>
+<CODE>..., <I>val</I>, <I>val</I>+1, ..., 0xFF, 0x00, (auto interrupt 5),
+<I>val</I>, <I>val</I>+1, ...</CODE>
+<BR><BR>
+<B>Note:</B> If a program uses this function, it should restore the previous
+value before the end of the program, as determined by
+<A HREF="#PRG_getStart">PRG_getStart</A>.</P>
+
+<P>See also: <A HREF="#PRG_getStart">PRG_getStart</A>, <A HREF="#PRG_setRate">PRG_setRate</A></P>
+<HR>
+<H3><A NAME="SetIntVec"><U>SetIntVec</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SetIntVec (<B><A HREF="keywords.html#short">long</A></B> IntVec, <A HREF="#INT_HANDLER">INT_HANDLER</A> Handler);</TD></TR></TABLE></P>
+<P><B>Sets an interrupt vector.</B></P>
+
+<P>SetIntVec sets the interrupt vector located at the absolute address
+<I>IntVec</I> to the interrupt handler pointed to by
+<I>Handler</I>. <I>Handler</I> should be either a value returned from
+<A HREF="#GetIntVec">GetIntVec</A>, or the address of a user-defined interrupt
+handler defined using <A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A>.
+Note that <I>Handler</I> may not be the address of an ordinary C function.
+<BR><BR>
+Typical values of <I>IntVec</I> are given in the following table as enumerated
+in the <A HREF="#IntVecs">IntVecs</A> enum:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD><B>Address</B></TD><TD><B>Associated Constant</B></TD><TD><B>Triggered On</B></TD>
+</TR>
+<TR>
+<TD>0x04</TD><TD>INT_VEC_RESET</TD><TD>Reset (contains pointer to OS entry point)</TD>
+</TR>
+<TR>
+<TD>0x08</TD><TD>INT_VEC_BUS_ERROR</TD><TD>Bus error</TD>
+</TR>
+<TR>
+<TD>0x0C</TD><TD>INT_VEC_ADDRESS_ERROR</TD><TD>Address error (accessing a short or long at an odd address)</TD>
+</TR>
+<TR>
+<TD>0x10</TD><TD>INT_VEC_ILLEGAL_INSTRUCTION</TD><TD>Illegal instruction</TD>
+</TR>
+<TR>
+<TD>0x14</TD><TD>INT_VEC_ZERO_DIVIDE</TD><TD>Division by zero</TD>
+</TR>
+<TR>
+<TD>0x18</TD><TD>INT_VEC_CHK_INS</TD><TD>CHK instruction</TD>
+</TR>
+<TR>
+<TD>0x1C</TD><TD>INT_VEC_TRAPV_INS</TD><TD>TRAPV instruction</TD>
+</TR>
+<TR>
+<TD>0x20</TD><TD>INT_VEC_PRIVILEGE_VIOLATION</TD><TD>Privilege violation</TD>
+</TR>
+<TR>
+<TD>0x24</TD><TD>INT_VEC_TRACE</TD><TD>Code Tracing</TD>
+</TR>
+<TR>
+<TD>0x28</TD><TD>INT_VEC_LINE_1010</TD><TD>Special instructions generated by <A HREF="error.html#ER_throw">ER_throw</A> (0xA???)</TD>
+</TR>
+<TR>
+<TD>0x2C</TD><TD>INT_VEC_LINE_1111</TD><TD><A HREF="httigcc.html#advanced_flinerom">F-Line</A> instructions (0xF???)</TD>
+</TR>
+<TR>
+<TD>0x3C</TD><TD>INT_VEC_UNINITIALIZED_INT</TD><TD>Uninitialized interrupt vector</TD>
+</TR>
+<TR>
+<TD>0x60</TD><TD>INT_VEC_SPURIOUS_INT</TD><TD>Spurious interrupt</TD>
+</TR>
+<TR>
+<TD>0x64</TD><TD>AUTO_INT_1</TD><TD>Main timer hardware interrupt running at approximately 350 Hz</TD>
+</TR>
+<TR>
+<TD>0x68</TD><TD>AUTO_INT_2<BR>INT_VEC_KEY_PRESS</TD><TD>Key press (triggered periodically while key(s) other than 'ON' are held down; the rate depends both on battery strength and on which keys are being held down, and is usually in the ballpark of about 600 Hz)</TD>
+</TR>
+<TR>
+<TD>0x6C</TD><TD>AUTO_INT_3</TD><TD>On most calculators, triggers once per second if enabled using a certain instruction</TD>
+</TR>
+<TR>
+<TD>0x70</TD><TD>AUTO_INT_4<BR>INT_VEC_LINK</TD><TD>Link port activity</TD>
+</TR>
+<TR>
+<TD>0x74</TD><TD>AUTO_INT_5</TD><TD>System timer running at approximately 18 Hz (see <A HREF="#PRG_setRate">PRG_setRate</A>, <A HREF="#PRG_setStart">PRG_setStart</A>)</TD>
+</TR>
+<TR>
+<TD>0x78</TD><TD>AUTO_INT_6<BR>INT_VEC_ON_KEY_PRESS</TD><TD>'ON' key press</TD>
+</TR>
+<TR>
+<TD>0x7C</TD><TD>AUTO_INT_7<BR>INT_VEC_STACK_OVERFLOW</TD><TD>Stack overflow (actually results in Protected Memory Violation)</TD>
+</TR>
+</TABLE>
+<BR>
+All traps may be triggered manually using the TRAP assembler instruction.
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD><B>Address</B></TD><TD><B>Associated Constant</B></TD><TD><B>Default Behavior</B></TD>
+</TR>
+<TR>
+<TD>0x80</TD><TD>TRAP_0</TD><TD>(unknown)</TD>
+</TR>
+<TR>
+<TD>0x84</TD><TD>TRAP_1<BR>INT_VEC_INT_MASK</TD><TD>Change interrupt mask (bits 8-10 of %sr) to %d0.w, output old mask in %d0.l</TD>
+</TR>
+<TR>
+<TD>0x88</TD><TD>TRAP_2<BR>INT_VEC_MANUAL_RESET</TD><TD>Reset calculator</TD>
+</TR>
+<TR>
+<TD>0x8C</TD><TD>TRAP_3</TD><TD>(unknown)</TD>
+</TR>
+<TR>
+<TD>0x90</TD><TD>TRAP_4<BR>INT_VEC_OFF</TD><TD>Turn the calculator off and wait for 'ON' key press</TD>
+</TR>
+<TR>
+<TD>0x94</TD><TD>TRAP_5</TD><TD>(unknown)</TD>
+</TR>
+<TR>
+<TD>0x98</TD><TD>TRAP_6</TD><TD>(unknown)</TD>
+</TR>
+<TR>
+<TD>0x9C</TD><TD>TRAP_7</TD><TD>(unknown)</TD>
+</TR>
+<TR>
+<TD>0xA0</TD><TD>TRAP_8</TD><TD>(unknown)</TD>
+</TR>
+<TR>
+<TD>0xA4</TD><TD>TRAP_9</TD><TD>Access to various system routines</TD>
+</TR>
+<TR>
+<TD>0xA8</TD><TD>TRAP_10<BR>INT_VEC_SELF_TEST</TD><TD>Enter self test</TD>
+</TR>
+<TR>
+<TD>0xAC</TD><TD>TRAP_11<BR>INT_VEC_ARCHIVE</TD><TD>Print "Trap 11" and freeze</TD>
+</TR>
+<TR>
+<TD>0xB0</TD><TD>TRAP_12</TD><TD>Put the processor in supervisor mode; return the previous value of the status register in <CODE>%d0:w</CODE></TD>
+</TR>
+<TR>
+<TD>0xB4</TD><TD>TRAP_13</TD><TD>Print "Trap 13" and freeze</TD>
+</TR>
+<TR>
+<TD>0xB8</TD><TD>TRAP_14</TD><TD>Print "Trap 14" and freeze</TD>
+</TR>
+<TR>
+<TD>0xBC</TD><TD>TRAP_15<BR>INT_VEC_ER_THROW</TD><TD>Print "ER_throw" and freeze</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A> for an example of usage.</P>
+
+<P>See also: <A HREF="#GetIntVec">GetIntVec</A>, <A HREF="#IntVecs">IntVecs</A>, <A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A></P>
+<HR>
+<H3><A NAME="TRAP"><U>TRAP</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> TRAP(TrapNo) ((<B><A HREF="keywords.html#short">long</A></B>) (TrapNo) * 4 + 0x80)</TD></TR></TABLE></P>
+<P><B>Gets an address of a trap vector.</B></P>
+
+<P>TRAP returns the absolute address where the interrupt vector for Trap <I>TrapNo</I>
+is located.
+<BR><BR>
+You can use it together with
+<A HREF="#FIRST_TRAP">FIRST_TRAP</A>,
+<A HREF="#LAST_TRAP">LAST_TRAP</A>, and
+<A HREF="#TRAP_COUNT">TRAP_COUNT</A>
+to loop through all traps.</P>
+
+<HR>
+<H3><A NAME="AUTO_INT_COUNT"><U>AUTO_INT_COUNT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> AUTO_INT_COUNT (<A HREF="#LAST_AUTO_INT">LAST_AUTO_INT</A> - <A HREF="#FIRST_AUTO_INT">FIRST_AUTO_INT</A> + 1)</TD></TR></TABLE></P>
+<P><B>Returns the total number of Auto-Int vectors.</B></P>
+
+<P>You can use it together with
+<A HREF="#FIRST_AUTO_INT">FIRST_AUTO_INT</A>,
+<A HREF="#LAST_AUTO_INT">LAST_AUTO_INT</A>, and
+<A HREF="#AUTO_INT">AUTO_INT</A>
+to loop through all interrupts.</P>
+
+<HR>
+<H3><A NAME="FIRST_AUTO_INT"><U>FIRST_AUTO_INT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> FIRST_AUTO_INT 1</TD></TR></TABLE></P>
+<P><B>Returns the index of the first Auto-Int vector.</B></P>
+
+<P>You can use it together with
+<A HREF="#LAST_AUTO_INT">LAST_AUTO_INT</A>,
+<A HREF="#AUTO_INT_COUNT">AUTO_INT_COUNT</A>, and
+<A HREF="#AUTO_INT">AUTO_INT</A>
+to loop through all interrupts.</P>
+
+<HR>
+<H3><A NAME="FIRST_TRAP"><U>FIRST_TRAP</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> FIRST_TRAP 0</TD></TR></TABLE></P>
+<P><B>Returns the index of the first Auto-Int vector.</B></P>
+
+<P>You can use it together with
+<A HREF="#LAST_TRAP">LAST_TRAP</A>,
+<A HREF="#TRAP_COUNT">TRAP_COUNT</A>, and
+<A HREF="#TRAP">TRAP</A>
+to loop through all interrupts.</P>
+
+<HR>
+<H3><A NAME="LAST_AUTO_INT"><U>LAST_AUTO_INT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> LAST_AUTO_INT 7</TD></TR></TABLE></P>
+<P><B>Returns the index of the last Auto-Int vector.</B></P>
+
+<P>You can use this together with
+<A HREF="#FIRST_AUTO_INT">FIRST_AUTO_INT</A>,
+<A HREF="#AUTO_INT_COUNT">AUTO_INT_COUNT</A>, and
+<A HREF="#AUTO_INT">AUTO_INT</A>
+to loop through all interrupts.</P>
+
+<HR>
+<H3><A NAME="LAST_TRAP"><U>LAST_TRAP</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> LAST_TRAP 15</TD></TR></TABLE></P>
+<P><B>Returns the index of the last Auto-Int vector.</B></P>
+
+<P>You can use this together with
+<A HREF="#FIRST_TRAP">FIRST_TRAP</A>,
+<A HREF="#TRAP_COUNT">TRAP_COUNT</A>, and
+<A HREF="#TRAP">TRAP</A>
+to loop through all interrupts.</P>
+
+<HR>
+<H3><A NAME="TRAP_COUNT"><U>TRAP_COUNT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> TRAP_COUNT (<A HREF="#LAST_TRAP">LAST_TRAP</A> - <A HREF="#FIRST_TRAP">FIRST_TRAP</A> + 1)</TD></TR></TABLE></P>
+<P><B>Returns the total number of Auto-Int vectors.</B></P>
+
+<P>You can use it together with
+<A HREF="#FIRST_TRAP">FIRST_TRAP</A>,
+<A HREF="#LAST_TRAP">LAST_TRAP</A>, and
+<A HREF="#TRAP">TRAP</A>
+to loop through all interrupts.</P>
+
+<HR>
+<H3><A NAME="INT_HANDLER"><U>INT_HANDLER</U></A></H3>
+<P><B>A pointer to an interrupt handler.</B></P>
+
+<P>INT_HANDLER is a pointer type which represents the address of the interrupt handler.
+It might be logical that INT_HANDLER is defined as a pointer to a void function, i.e.</P>
+<PRE>typedef void (*INT_HANDLER)(void);
+</PRE>
+<P>But this is not true. Instead, INT_HANDLER is a pointer to a strange structure
+(its shape is completely irrelevant, as this structure is never used, neither
+explicitely nor implicitely). Such unusual behaviour is implemented due to safety reasons.
+First, with such implementation it is impossible to call an
+interrupt handler using a simple function call (which would be possible if INT_HANDLER
+is implemented as a pointer to a function). Second, as INT_HANDLER is a pointer to an
+unusual structure, the compiler can emit a warning if you try to pass anything which
+is not created using <A HREF="#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A> or returned
+from <A HREF="#GetIntVec">GetIntVec</A> to the functions <A HREF="#SetIntVec">SetIntVec</A>
+and <A HREF="#ExecuteHandler">ExecuteHandler</A>. For example, you will be warned if
+you try to pass an ordinary void function instead of properly-defined interrupt handler
+to the <A HREF="#SetIntVec">SetIntVec</A>.</P>
+
+<HR>
+<H3><A NAME="IntVecs"><U>IntVecs</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> IntVecs {AUTO_INT_1 = 0x64, AUTO_INT_2 = 0x68, AUTO_INT_3 = 0x6C, AUTO_INT_4 = 0x70, AUTO_INT_5 = 0x74, AUTO_INT_6 = 0x78, AUTO_INT_7 = 0x7C, TRAP_0 = 0x80, TRAP_1 = 0x84, TRAP_2 = 0x88, TRAP_3 = 0x8C, TRAP_4 = 0x90, TRAP_5 = 0x94, TRAP_6 = 0x98, TRAP_7 = 0x9C, TRAP_8 = 0xA0, TRAP_9 = 0xA4, TRAP_10 = 0xA8, TRAP_11 = 0xAC, TRAP_12 = 0xB0, TRAP_13 = 0xB4, TRAP_14 = 0xB8, TRAP_15 = 0xBC, INT_VEC_RESET = 0x04, INT_VEC_BUS_ERROR = 0x08, INT_VEC_ADDRESS_ERROR = 0x0C, INT_VEC_ILLEGAL_INSTRUCTION = 0x10, INT_VEC_ZERO_DIVIDE = 0x14, INT_VEC_CHK_INS = 0x18, INT_VEC_TRAPV_INS = 0x1C, INT_VEC_PRIVILEGE_VIOLATION = 0x20, INT_VEC_TRACE = 0x24, INT_VEC_LINE_1010 = 0x28, INT_VEC_LINE_1111 = 0x2C, INT_VEC_UNINITIALIZED_INT = 0x3C, INT_VEC_SPURIOUS_INT = 0x60, INT_VEC_KEY_PRESS = 0x68, INT_VEC_LINK = 0x70, INT_VEC_ON_KEY_PRESS = 0x78, INT_VEC_STACK_OVERFLOW = 0x7C, INT_VEC_INT_MASK = 0x84, INT_VEC_MANUAL_RESET = 0x88, INT_VEC_OFF = 0x90, INT_VEC_SELF_TEST = 0xA8, INT_VEC_ARCHIVE = 0xAC, INT_VEC_ER_THROW = 0xBC};</TD></TR></TABLE></P>
+<P><B>An enumeration describing interrupt vectors.</B></P>
+
+<P>IntVecs is an enumeration for easier access to the standard interrupt vectors.
+These include the usual auto-interrupts and traps as well as the other predefined
+interrupts, which are triggered in special cases.
+<BR><BR>
+Note that some traps have their own names. For example, TRAP_4 equals INT_VEC_OFF.</P>
+
+<P>Deprecated alias: AutoInts</P>
+<P>See also: <A HREF="#SetIntVec">SetIntVec</A>, <A HREF="#GetIntVec">GetIntVec</A></P>
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

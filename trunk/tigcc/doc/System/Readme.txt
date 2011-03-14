@@ -1,7 +1,8 @@
 Modified:
+Mon Mar 14 2011 Lionel Debroux <lionel_debroux@yahoo.fr>
+  - Added a note, in the .hsh section, about manual tasks needed for correct documentation of a new header.
 Sat Jan 24 2009 Conrad Meyer <cemeyer@u.washington.edu>
   - Updated to include [References]
-  - Wrap lines at 80 cols.
 
 Comment by Sebastian Reichelt (original author of this file):
 This is just some information I quickly put together, meant especially for Zeljko Juric.  I guess it's better than no documentation at all.
@@ -64,6 +65,16 @@ Out: Other symbols that this symbol uses (same format as for "In").
 -------
 
 .hsh means "Help System Header".  It is the description of a header file, containing three fields: [Description], [Top], and [Bottom].  They are displayed in this order, and [Description] is also included in the list of header files.  As the names suggest, only [Bottom] is displayed below the list of identifiers.  All of the are in HTML, as always.  A [Main] section with a "See Also" field is also supported.
+NOTE: when creating a new header, for correct operation, UpdateInclude depends on two manual tasks:
+    * creating a .h file containing "/* Begin Auto-Generated Part */" and "/* End Auto-Generated Part */";
+    * adding a
+<LI> <OBJECT TYPE="TEXT/SITEMAP">
+<PARAM NAME="Name" VALUE="[newheaderfile].h">
+<PARAM NAME="Local" VALUE="[newheaderfile].html">
+</OBJECT>
+<UL>
+</UL>
+      block to Contents.hhc.
 
  *.hsi
 -------

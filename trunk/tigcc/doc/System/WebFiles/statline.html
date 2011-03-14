@@ -1,0 +1,418 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>statline.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;statline.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for manipulation of the status line</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#ST_angle">ST_angle</A></B><DD>Sets the angle mode indicator in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_batt">ST_batt</A></B><DD>Sets the battery low indicator in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_busy">ST_busy</A></B><DD>Sets the BUSY indicator in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_eraseHelp">ST_eraseHelp</A></B><DD>Redraws the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_folder">ST_folder</A></B><DD>Sets the folder name indicator in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_graph">ST_graph</A></B><DD>Sets the graph mode indicator in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_helpMsg">ST_helpMsg</A></B><DD>Displays message in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_modKey">ST_modKey</A></B><DD>Sets the modifier key indicator in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_precision">ST_precision</A></B><DD>Sets the precision mode indicator in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_progressBar">ST_progressBar</A></B><DD>Creates a progress bar in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_progressDismiss">ST_progressDismiss</A></B><DD>Removes a progress bar from the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_progressIncrement">ST_progressIncrement</A></B><DD>Increments the value of a progress bar.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_progressUpdate">ST_progressUpdate</A></B><DD>Changes the value of a progress bar.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_readOnly">ST_readOnly</A></B><DD>Sets the "read only" (or "locked") indicator in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_refDsp">ST_refDsp</A></B><DD>Displays a system message in the status line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_stack">ST_stack</A></B><DD>Sets the history pairs indicator in the status line.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_RECT">SCR_RECT</A></B><DD>A scructure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_STATE">SCR_STATE</A></B><DD>A structure for saving the state of the graphics system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_ACTIVITIES">ST_ACTIVITIES</A></B><DD>Contains status bar activity flags.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_FLAGS">ST_FLAGS</A></B><DD>An enumeration containing codes of status line indicators.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A></B><DD>A structure describing a progress bar.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WIN_RECT">WIN_RECT</A></B><DD>A structure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WINDOW">WINDOW</A></B><DD>The main window-describing structure.</DL>
+<HR>
+<H3><A NAME="ST_angle"><U>ST_angle</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_angle (<B><A HREF="keywords.html#short">short</A></B> mode);</TD></TR></TABLE></P>
+<P><B>Sets the angle mode indicator in the status line.</B></P>
+
+<P>ST_angle sets the angle mode indicator to RAD or DEG, depending of whether
+<I>mode</I> is ST_RAD or ST_DEG (these
+constants are defined in enum <A HREF="#ST_FLAGS">ST_FLAGS</A>).
+This indicator would be displayed in the status line. Note that this command
+acts only to the displayed status; it would not change the actual current
+angle mode (use <A HREF="events.html#MO_digestOptions">MO_digestOptions</A>
+if you want to change angle mode).</P>
+
+<HR>
+<H3><A NAME="ST_batt"><U>ST_batt</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_batt (<B><A HREF="keywords.html#short">short</A></B> mode);</TD></TR></TABLE></P>
+<P><B>Sets the battery low indicator in the status line.</B></P>
+
+<P>ST_batt sets the battery low indicator to nothing, BATT with light
+background, or BATT with dark background, depending of whether
+<I>mode</I> is ST_BATT_OK, ST_BATT_LOW or ST_BATT_REPLACE (these
+constants are defined in enum <A HREF="#ST_FLAGS">ST_FLAGS</A>).
+This indicator would be displayed in the status line.</P>
+
+<HR>
+<H3><A NAME="ST_busy"><U>ST_busy</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_busy (<B><A HREF="keywords.html#short">short</A></B> mode);</TD></TR></TABLE></P>
+<P><B>Sets the BUSY indicator in the status line.</B></P>
+
+<P>ST_busy sets the program status indicator to idle, busy or paused,
+depending of whether <I>mode</I> is ST_IDLE, ST_BUSY or ST_PAUSED (these
+constants are defined in enum <A HREF="#ST_FLAGS">ST_FLAGS</A>). This
+indicator would be displayed in the status line. In the idle mode, the
+number of entry/answer pairs in the history area would be displayed, else
+words "BUSY" or "PAUSE" would be displayed. If ST_busy is called with
+argument ST_NORMAL, the indicator would be erased. Note that the TIOS event
+handler always sets "BUSY" indicator before calling an event to an application,
+and clears it when the application returns from handling the event.
+<BR><BR>
+<B>Note:</B> Alternative mode names ACTIVITY_IDLE, ACTIVITY_BUSY and ACTIVITY_PAUSED
+known from DoorsOS will also be accepted, and these constants are defined
+in enum <A HREF="#ST_ACTIVITIES">ST_ACTIVITIES</A>.</P>
+
+<HR>
+<H3><A NAME="ST_eraseHelp"><U>ST_eraseHelp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> ST_eraseHelp (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Redraws the status line.</B></P>
+
+<P>If the status flags indicate that a help message is being displayed, this
+function redraws the status line, effectively removing the message. Returns
+<A HREF="alloc.html#Bool">TRUE</A> or <A HREF="alloc.html#Bool">FALSE</A>, depending of whether
+redrawing was performed or not.</P>
+
+<HR>
+<H3><A NAME="ST_folder"><U>ST_folder</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_folder (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *name);</TD></TR></TABLE></P>
+<P><B>Sets the folder name indicator in the status line.</B></P>
+
+<P>ST_folder sets the folder name indicator to <I>name</I>, i.e. displays the
+given folder name (converted to uppercase letters) at the beginning of the
+status line. Note that this command acts only to the displayed status; it would
+not change the actual current folder (use routines for <A HREF="vat.html">vat.h</A>
+for changing the current folder).</P>
+
+<HR>
+<H3><A NAME="ST_graph"><U>ST_graph</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_graph (<B><A HREF="keywords.html#short">short</A></B> mode);</TD></TR></TABLE></P>
+<P><B>Sets the graph mode indicator in the status line.</B></P>
+
+<P>ST_angle sets the graph mode indicator to FUNC, PAR, POL, SEQ, 3D or DE,
+depending of whether <I>mode</I> is ST_FUNC, ST_PAR, ST_POL, ST_SQR, ST_3D
+or ST_DE (these constants are defined in enum <A HREF="#ST_FLAGS">ST_FLAGS</A>).
+This indicator would be displayed in the status line.
+Note that this command acts only to the displayed status; it would not
+change the actual current graph mode.</P>
+
+<HR>
+<H3><A NAME="ST_helpMsg"><U>ST_helpMsg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_helpMsg (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *msg);</TD></TR></TABLE></P>
+<P><B>Displays message in the status line.</B></P>
+
+<P>ST_helpMsg displays the message <I>msg</I> in the status line,
+also setting a status flag indicating that a message is being displayed.</P>
+
+<P>Deprecated alias: ST_showHelp</P>
+<HR>
+<H3><A NAME="ST_modKey"><U>ST_modKey</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_modKey (<B><A HREF="keywords.html#short">short</A></B> flags);</TD></TR></TABLE></P>
+<P><B>Sets the modifier key indicator in the status line.</B></P>
+
+<P>ST_modKey sets the modifier key indicator to nothing, 2nd, shift, diamond,
+alpha, shifted alpha lock or alpha lock, depending of whehter <I>mode</I>
+is ST_NONE, ST_2ND, ST_SHIFT, ST_DIAMOND, ST_ALPHA, ST_SH_A_LOCK or
+ST_A_LOCK (these constants are defined in enum <A HREF="#ST_FLAGS">ST_FLAGS</A>).
+This indicator would be displayed in the status line. This function has a
+very limited usage, because it is called very often from AutoInt 1, so if
+interrupts are enabled, the modifier key indicator will be changed very soon
+depending of actual state of the keyboard.</P>
+
+<HR>
+<H3><A NAME="ST_precision"><U>ST_precision</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_precision (<B><A HREF="keywords.html#short">short</A></B> mode);</TD></TR></TABLE></P>
+<P><B>Sets the precision mode indicator in the status line.</B></P>
+
+<P>ST_precision sets the precision mode indicator to AUTO, EXACT or APPROX,
+depending of whether <I>mode</I> is ST_AUTO, ST_EXACT or ST_APPROX
+(these constants are defined in enum <A HREF="#ST_FLAGS">ST_FLAGS</A>).
+This indicator would be displayed in the status line.
+Note that this command acts only to the displayed status; it would not
+change the actual current precision mode.</P>
+
+<HR>
+<H3><A NAME="ST_progressBar"><U>ST_progressBar</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_progressBar (<A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A> *pb, <B><A HREF="keywords.html#short">long</A></B> low, <B><A HREF="keywords.html#short">long</A></B> high);</TD></TR></TABLE></P>
+<P><B>Creates a progress bar in the status line.</B></P>
+
+<P>ST_progressBar creates a progress bar in the status line (excluding the busy indicator), representing values ranging from <I>low</I> to <I>high</I>. The progress bar will be stored into <I>pb</I>.
+The function also redraws the line at the top of the status line.
+<BR><BR>
+As an alternative to this function, you can fill an <A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A> structure manually.
+This gives you the possibility to create a progress bar in any window.
+<BR><BR>
+Here is an example (called "Progress Bar"):</P>
+<PRE>// Progress bar example for TIGCC
+
+// Define this to display the progress bar in a (large) window
+//#define USE_WINDOW_PB
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  short j;
+
+#ifdef USE_WINDOW_PB
+  ST_PROGRESS_BAR spb = {NULL, {0, 0, 0, 0}, 0, 0, 100, 100, 0};
+  WINDOW w;
+  memcpy (&amp;(spb.rect), ScrToWin (ScrRect), sizeof (WIN_RECT));
+  spb.physwidth = spb.rect.x1 - spb.rect.x0 + 1;
+  WinOpen (&amp;w, &amp;(spb.rect), WF_SAVE_SCR | WF_NOBORDER);
+  spb.w = &amp;w;
+#else
+  ST_PROGRESS_BAR spb;
+  ST_progressBar (&amp;spb, 0, 100); // Create the progress bar in spb. low=0, high=100.
+                                 // It will be created in the status line.
+#endif
+  
+  for (j = 0; j &lt; 20; j++)
+    {
+      OSFreeTimer (USER_TIMER);
+      OSRegisterTimer (USER_TIMER, 1);
+      while (!OSTimerExpired (USER_TIMER)); // Wait a little...
+      ST_progressIncrement (&amp;spb, 1); // Increment the progress bar by 1/100.
+    }
+  ST_progressUpdate (&amp;spb, 50); // Increment the progress bar up to 50/100.
+  OSFreeTimer (USER_TIMER);
+  OSRegisterTimer (USER_TIMER, 20);
+  while (!OSTimerExpired (USER_TIMER)); // Wait for about 1 second...
+  OSFreeTimer (USER_TIMER);
+  ST_progressUpdate (&amp;spb, 100); // Fill the progress bar entirely.
+  
+  GKeyIn (NULL, 0);
+  ST_progressDismiss (&amp;spb); // Remove the progress bar, redraw status line.
+#ifdef USE_WINDOW_PB
+  WinClose (&amp;w);
+#endif
+}
+</PRE>
+
+<P>See also: <A HREF="#ST_progressDismiss">ST_progressDismiss</A>, <A HREF="#ST_progressIncrement">ST_progressIncrement</A>, <A HREF="#ST_progressUpdate">ST_progressUpdate</A>, <A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A></P>
+<HR>
+<H3><A NAME="ST_progressDismiss"><U>ST_progressDismiss</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_progressDismiss (<A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A> *pb);</TD></TR></TABLE></P>
+<P><B>Removes a progress bar from the status line.</B></P>
+
+<P>ST_progressDismiss removes the progress bar pointed to by <I>pb</I>, and redraws the status line indicators.
+It is not necessary to call this function when you finish using a progress bar.</P>
+
+<P>See also: <A HREF="#ST_progressBar">ST_progressBar</A>, <A HREF="#ST_progressIncrement">ST_progressIncrement</A>, <A HREF="#ST_progressUpdate">ST_progressUpdate</A>, <A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A></P>
+<HR>
+<H3><A NAME="ST_progressIncrement"><U>ST_progressIncrement</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_progressIncrement (<A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A> *pb, <B><A HREF="keywords.html#short">long</A></B> amount);</TD></TR></TABLE></P>
+<P><B>Increments the value of a progress bar.</B></P>
+
+<P>ST_progressIncrement increments the progress bar pointed to by <I>pb</I>, by the quantity given in <I>amount</I>.
+It also displays the busy indicator in the status line.
+<BR><BR>
+If the resulting progress value is greater than the field <I>logwidth</I> of *<I>pb</I>, the bar will be filled completely.
+If <I>amount</I> is zero, the progress bar will simply be redrawn.
+<BR><BR>
+This function is not equivalent to <A HREF="#ST_progressUpdate">ST_progressUpdate</A>.</P>
+
+<P>See also: <A HREF="#ST_progressBar">ST_progressBar</A>, <A HREF="#ST_progressDismiss">ST_progressDismiss</A>, <A HREF="#ST_progressUpdate">ST_progressUpdate</A>, <A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A></P>
+<HR>
+<H3><A NAME="ST_progressUpdate"><U>ST_progressUpdate</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_progressUpdate (<A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A> *pb, <B><A HREF="keywords.html#short">long</A></B> value);</TD></TR></TABLE></P>
+<P><B>Changes the value of a progress bar.</B></P>
+
+<P>ST_progressUpdate updates the progress bar pointed to by <I>pb</I>, setting the progress to <I>value</I>.
+It also displays the busy indicator in the status line.
+<BR><BR>
+If <I>value</I> is greater than the <I>logwidth</I> field of *<I>pb</I>, the bar will be filled completely.
+<BR><BR>
+This function is not equivalent to <A HREF="#ST_progressIncrement">ST_progressIncrement</A>.</P>
+
+<P>See also: <A HREF="#ST_progressBar">ST_progressBar</A>, <A HREF="#ST_progressDismiss">ST_progressDismiss</A>, <A HREF="#ST_progressIncrement">ST_progressIncrement</A>, <A HREF="#ST_PROGRESS_BAR">ST_PROGRESS_BAR</A></P>
+<HR>
+<H3><A NAME="ST_readOnly"><U>ST_readOnly</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_readOnly (<B><A HREF="keywords.html#short">short</A></B> mode);</TD></TR></TABLE></P>
+<P><B>Sets the "read only" (or "locked") indicator in the status line.</B></P>
+
+<P>ST_readOnly sets the "read only" ("locked") indicator in the status line
+if the <I>mode</I> is non-zero, else resets the indicator. But note that
+this indicator appears only when you open a variable in a text editor, and
+that this routine does not set or change the read-only state of the text
+currently being edited. This function is called from <A HREF="textedit.html#TE_indicateReadOnly">TE_indicateReadOnly</A>.</P>
+
+<HR>
+<H3><A NAME="ST_refDsp"><U>ST_refDsp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_refDsp (<B><A HREF="keywords.html#short">short</A></B> msg_no);</TD></TR></TABLE></P>
+<P><B>Displays a system message in the status line.</B></P>
+
+<P>ST_refDsp displays various system messages (determined by <I>msg_no</I>) in
+the status line (this function calls <A HREF="#ST_helpMsg">ST_helpMsg</A>).
+Here is the list of used messages:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>1</TD><TD>TYPE OR USE <I>left right up down</I> + [ENTER]=OK AND [ESC]=CANCEL</TD></TR>
+<TR><TD>2</TD><TD>USE <I>up</I> AND <I>down</I> TO OPEN CHOICES</TD></TR>
+<TR><TD>3</TD><TD>USE <I>left right up down</I> + [ENTER]=OK AND [ESC]=CANCEL</TD></TR>
+<TR><TD>4</TD><TD>TYPE + [ENTER]=OK AND [ESC]=CANCEL</TD></TR>
+<TR><TD>5</TD><TD>USE <I>left right up down</I> OR TYPE + [ESC]=CANCEL</TD></TR>
+<TR><TD>6</TD><TD>USE <I>left right up down</I> + [ENTER]=OK AND [ESC]=CANCEL, OR DRAG</TD></TR>
+<TR><TD>7</TD><TD>DATA PLACED IN VARIABLE SYSDATA</TD></TR>
+<TR><TD>8</TD><TD>DATA PLACED IN HOME SCREEN HISTORY</TD></TR>
+<TR><TD>9</TD><TD>[ENTER]=OK AND [ESC]=CANCEL</TD></TR>
+<TR><TD>10</TD><TD><I>empty</I></TD></TR>
+<TR><TD>11</TD><TD>USE <I>left right</I> + [ENTER]=OK AND [ESC]=CANCEL</TD></TR>
+<TR><TD>12</TD><TD>USE <I>left right</I> + [ENTER]=OK AND [ESC]=CANCEL</TD></TR>
+<TR><TD>13</TD><TD>USE [2ND] [KEYS] OR [ESC]=CANCEL</TD></TR>
+</TABLE></P>
+
+<HR>
+<H3><A NAME="ST_stack"><U>ST_stack</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ST_stack (<B><A HREF="keywords.html#short">short</A></B> index, <B><A HREF="keywords.html#short">short</A></B> total);</TD></TR></TABLE></P>
+<P><B>Sets the history pairs indicator in the status line.</B></P>
+
+<P>ST_stack sets the displayed number of entry/answer pairs in the history
+area to <I>index</I>/<I>total</I>. This indicator is displayed
+in the status line only if the current program activity status (set by
+<A HREF="#ST_busy">ST_busy</A>) is ST_IDLE.
+Note that this command acts only on the displayed status; it does not
+change the actual number of entries in the history area, nor the capacity
+of the history area.</P>
+
+<HR>
+<H3><A NAME="ST_ACTIVITIES"><U>ST_ACTIVITIES</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> ST_ACTIVITIES {ACTIVITY_IDLE, ACTIVITY_BUSY, ACTIVITY_PAUSED, ACTIVITY_NORMAL};</TD></TR></TABLE></P>
+<P><B>Contains status bar activity flags.</B></P>
+
+<P>ST_ACTIVITIES is enumerated type which contains some alias names known from DoorsOS.</P>
+
+<HR>
+<H3><A NAME="ST_FLAGS"><U>ST_FLAGS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> ST_FLAGS {ST_IDLE = 0, ST_BUSY = 1, ST_PAUSE = 2, ST_CLEAR = 3, ST_NORMAL = 3, ST_NOTHING = 0, ST_BATT = 1, ST_BATT_DARK = 2, ST_BATT_OK = 0, ST_BATT_LOW = 1, ST_BATT_REPLACE = 2, ST_RAD = 0, ST_DEG = 1, ST_FUNC = 0, ST_PAR = 2, ST_POL = 3, ST_SEQ = 4, ST_3D = 5, ST_DE = 6, ST_NONE = 0, ST_2ND = 1, ST_SHIFT = 2, ST_DIAMOND = 4, ST_ALPHA = 8, ST_SH_A_LOCK = 16, ST_A_LOCK = 32, ST_AUTO = 0, ST_EXACT = 1, ST_APPROX = 2};</TD></TR></TABLE></P>
+<P><B>An enumeration containing codes of status line indicators.</B></P>
+
+<P>ST_FLAGS is an enumeration which contains codes of various modes which are
+possible to set into the status line using various functions defined in the
+<A HREF="statline.html">statline.h</A> header file.
+<BR><BR>
+Some of these values (like ST_BATT_DARK) are deprecated, and they are included only for
+backwards compatibility.</P>
+
+<HR>
+<H3><A NAME="ST_PROGRESS_BAR"><U>ST_PROGRESS_BAR</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="wingraph.html#WINDOW">WINDOW</A> *w; <I>/* parent window */</I><BR>
+<A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> rect; <I>/* scroll bar area */</I><BR>
+<B><A HREF="keywords.html#short">long</A></B> value; <I>/* current progress */</I><BR>
+<B><A HREF="keywords.html#short">long</A></B> low, high; <I>/* minimum and maximum values for progress */</I><BR>
+<B><A HREF="keywords.html#short">long</A></B> logwidth; <I>/* equal to high-low */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> physwidth; <I>/* equal to rect.x1-rect.x0+1 */</I><BR>
+</TD></TR></TABLE>
+} ST_PROGRESS_BAR;</TD></TR></TABLE></P>
+<P><B>A structure describing a progress bar.</B></P>
+
+<P>ST_PROGRESS_BAR describes a progress bar, which is used with the following functions:
+<A HREF="#ST_progressBar">ST_progressBar</A>,
+<A HREF="#ST_progressDismiss">ST_progressDismiss</A>,
+<A HREF="#ST_progressIncrement">ST_progressIncrement</A>,
+<A HREF="#ST_progressUpdate">ST_progressUpdate</A>.
+<BR><BR>
+You do not need to fill the structure by hand; this is done automatically by <A HREF="#ST_progressBar">ST_progressBar</A>.
+In addition to this, this function already draws the outline of the progress bar.
+<BR>
+However, if you want to fill an ST_PROGRESS_BAR structure by hand, you can do it easily:</P>
+<UL>
+  <LI><P><I>w</I> is a pointer to the window in which you want to display the progress bar.
+      This window has to be initialized with <A HREF="wingraph.html#WinOpen">WinOpen</A> before you use it.
+      Of course, you can use <A HREF="wingraph.html#DeskTop">DeskTop</A> as well.</P></LI>
+  <LI><P><I>rect</I> is the structure that represents the rectangle where the progress bar will be on the screen. Note that the coordinates have to be in the right order (i.e. xmin as <I>rect</I>.<I>x0</I>, xmax as <I>rect</I>.<I>x1</I>).</P></LI>
+  <LI><P><I>value</I> represents the current progress of the task. It must be between <I>low</I> and <I>high</I>.</P></LI>
+  <LI><P><I>low</I> is the minimum value for <I>value</I>. That is to say, if <I>value</I> is equal to <I>low</I>, the progress bar is empty.</P></LI>
+  <LI><P><I>high</I> is the maximum value for <I>value</I>. If <I>value</I> is equal to <I>high</I> the progress bar is filled completely. Of course, <I>high</I> must always be greater than <I>low</I>.</P></LI>
+  <LI><P><I>logwidth</I> must be equal to <CODE>high - low</CODE>.</P></LI>
+  <LI><P><I>physwidth</I> is the length in pixels of the progress bar on the screen. It must be equal to <CODE>rect.x1 - rect.x0 + 1</CODE>.</P></LI>
+</UL>
+<P>Beware that the functions dealing with progress bars are <I>very</I> slow.
+They take more than 20 ms, that is to say half of the time between two timer ticks.
+You can go up to a bit less than 1 second when a progress bar taking the full screen of the 92+ 
+is filled. Filling the screen pixel by pixel with a double loop using logical operations with 
+masks, or better, bit operations, is up to about 10 times faster...
+<BR><BR>
+So it is not a good idea to use these functions if you want to clock the process whose progress is represented by the bar.
+Take a look at the "Progress Bar" example for an implementation demonstrating this pitfall:</P>
+<PRE>// Progress bar example for TIGCC
+
+// Define this to display the progress bar in a (large) window
+//#define USE_WINDOW_PB
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  short j;
+
+#ifdef USE_WINDOW_PB
+  ST_PROGRESS_BAR spb = {NULL, {0, 0, 0, 0}, 0, 0, 100, 100, 0};
+  WINDOW w;
+  memcpy (&amp;(spb.rect), ScrToWin (ScrRect), sizeof (WIN_RECT));
+  spb.physwidth = spb.rect.x1 - spb.rect.x0 + 1;
+  WinOpen (&amp;w, &amp;(spb.rect), WF_SAVE_SCR | WF_NOBORDER);
+  spb.w = &amp;w;
+#else
+  ST_PROGRESS_BAR spb;
+  ST_progressBar (&amp;spb, 0, 100); // Create the progress bar in spb. low=0, high=100.
+                                 // It will be created in the status line.
+#endif
+  
+  for (j = 0; j &lt; 20; j++)
+    {
+      OSFreeTimer (USER_TIMER);
+      OSRegisterTimer (USER_TIMER, 1);
+      while (!OSTimerExpired (USER_TIMER)); // Wait a little...
+      ST_progressIncrement (&amp;spb, 1); // Increment the progress bar by 1/100.
+    }
+  ST_progressUpdate (&amp;spb, 50); // Increment the progress bar up to 50/100.
+  OSFreeTimer (USER_TIMER);
+  OSRegisterTimer (USER_TIMER, 20);
+  while (!OSTimerExpired (USER_TIMER)); // Wait for about 1 second...
+  OSFreeTimer (USER_TIMER);
+  ST_progressUpdate (&amp;spb, 100); // Fill the progress bar entirely.
+  
+  GKeyIn (NULL, 0);
+  ST_progressDismiss (&amp;spb); // Remove the progress bar, redraw status line.
+#ifdef USE_WINDOW_PB
+  WinClose (&amp;w);
+#endif
+}
+</PRE>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

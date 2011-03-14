@@ -1,0 +1,526 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>General Information about GCC4TI</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>General Information about GCC4TI</B></FONT>
+<HR>
+<P>GCC4TI is a C/ASM cross compiler for the TI-89, TI-89 Titanium, TI-92 Plus and V200, derived from TIGCC.
+It is a complex project created by an international team currently led by Patrick Pélissier (PpHd),
+Lionel Debroux and Manoel Trapier (Godzil). We can contacted by various communication means listed on the
+<A HREF="http://trac.godzil.net/gcc4ti/">GCC4TI website</A>:
+<A HREF="mailto:tigccpp@box.godzil.net">the GCC4TI mailing list</A>, a forum,
+tickets (bug reports / feature requests), and an IRC chan.</P>
+
+<UL>
+<LI><B><A HREF="#releaseinfo">Release Information</A></B>
+<LI><B><A HREF="#about">About GCC4TI</A></B>
+<LI><B><A HREF="#bugreports">Reporting Bugs</A></B>
+<LI><B><A HREF="#unknown">Documenting Unknown Functions</A></B>
+<LI><B><A HREF="#credits">Credits</A></B>
+<LI><B><A HREF="#history">History</A></B>
+<LI><B><A HREF="#disclaimer">Disclaimer</A></B>
+</UL>
+<HR>
+<H2><A NAME="releaseinfo"><U>Release Information</U></A></H2>
+<UL>
+<LI><P>GCC4TI v0.96 Beta 11 based on the <A HREF="http://www.gnu.org/software/gcc/">GNU Compiler Collection</A> v4.1.2 and <A HREF="http://www.gnu.org/software/binutils/">GNU Binutils</A> v2.16.1 compiled under <A HREF="http://www.mingw.org/">MinGW32</A> by <A HREF="mailto:lionel_debroux@yahoo.fr">Lionel Debroux</A></P></LI>
+<LI><P>A68k v2.71.F3w by Charlie Gibbs, David Ellsworth, Kevin Kofler, Julien Muchembled, and Paul Froissart</P></LI>
+<LI><P>ld-tigcc v1.09 by Sebastian Reichelt and Kevin Kofler</P></LI>
+<LI><P>GCC4TI Library v2.73 by Zeljko Juric and contributors</P></LI>
+<LI><P>GCC4TI IDE v2.96 and Windows Command Line Executable by Sebastian Reichelt</P></LI>
+<LI><P>Parameter passing by register Copyright (C) 1998-2003 Fred Fish from <A HREF="http://www.geekgadgets.org/">Geek Gadgets</A>; converted to GCC 3.0-4.1 by Kevin Kofler</P></LI>
+<LI><P>Parts from the TI-68k Developer utilities (formerly TIGCC Tools Suite) by the <A HREF="http://tict.ticalc.org/">TI-Chess Team</A> (i.e. <A HREF="mailto:thomas.nussbaumer@gmx.net">Thomas Nussbaumer</A>) as well as his grayscale support have been used.<BR>TIGCC Tools Suite Copyright (C) 2000-2004 Thomas Nussbaumer</P></LI>
+<LI><P>A slightly more advanced GCC patch was originally made by <A HREF="mailto:revol@free.fr">François Revol</A> (mmu_man).</P></LI>
+</UL>
+<P>Get additional files and updates at the <A HREF="http://trac.godzil.net/gcc4ti/">Official GCC4TI Site</A>.</P>
+
+<HR>
+<H2><A NAME="about"><U>About GCC4TI</U></A></H2>
+<P><B>The GCC4TI project builds on the TIGCC foundation. We have started the huge task of bugfixing and improving the stagnating and unmaintained TIGCC in various areas.</B>
+<BR><BR>
+TIGCC is our attempt to make it possible to program in C for the TI-89 and TI-92 Plus. To do this, we originally recompiled a version of GCC-M68k (which was found <A HREF="http://fiddes.net/coldfire/">here</A>) to make it work with the C calling convention used by TI's compiler. Then we wrote a linker to make it produce <CODE>.89z</CODE> or <CODE>.9xz</CODE> files. And since we also wanted to allow the use of assembly, we programmed it so that you can use the
+<CODE>.asm</CODE> files and compile them with the A68k assembler. Finally we wrote <CODE>tigcc</CODE>, a program which will automatically call the necessary programs to compile everything you specify in the command line.
+This was the first public release of TIGCC.
+<BR><BR>
+At that time, Zeljko Juric (i.e. me, because I am writing this documentation) was quite new in TI community (he bought his TI-89 in July 1999). Although he was a good ASM programmer (in Z80 and 80x86 assembler), he found ASM programming on TI calculators a bit unconfortable, so he started searching for a high-level language compiler for TI-89 (TI-Basic was too slow and somewhat limited). Some compilers were written, but they were quite primitive (one of them was usable anyway: Fargo Pascal, which is transformed later in Ultra Pascal). Then he found a first release of TIGCC...
+<BR><BR>
+Some testing proved that it produced quite usable code. But there was a complete lack of library functions. There was just one header file named <CODE>romcalls.h</CODE> which was partially usable only for "Doors" programming. Implemented romcalls were possible to use only under the "DoorsOS" kernel. As Zeljko was not a follower nor a lover of the "kernel" concept, he started to think how to use romcalls without any kernels. After a bit of researching, he suceeded to construct a rom-calling macro which worked independently of any kernel, by calling TIOS functions directly.
+<BR><BR>
+In the meantime, Xavier stopped the development of the still buggy linker for a while; that was why Niklas Brunlid corrected some of the bugs because he needed TIGCC for his project (Prosit). During this period, Zeljko started to research the (almost completely undocumented) TIOS entry points. He discovered that TIOS itself contains many very useful routines which were usually implemented in various external libraries for kernel-based programming. So the natural decision was to make a library of routines, based exclusively on TIOS entries, which would be usable for both kernel-less and kernel-based programming (and to document everything what was found, of course). This was how the <A HREF="hdrindex.html">TIGCC Library</A> was founded in the beginning of 2000.
+<BR><BR>
+After the release of the TIGCC Library, Xavier started to continue developing TIGCC, so integrating the library as an integral part of TIGCC was the next step. This way Zeljko became a member of TIGCC team. He continued to research the dark, deep, and (previously) unknown parts of the operating system to be able to upgrade the library with new routines. So, at the end of March, version 1.5 of the library was released, with a lot of new functions, and also with floating point support (although it had a few bugs at first).
+<BR><BR>
+For a long time, TIGCC was just a command line compiler. Sebastian Reichelt started developing a window-based <A HREF="ide.html">Integrated Environment</A> for TIGCC in April. First versions of it were quite simple, but later some more advanced options were added to it. In the meantime, Zeljko continued researching and developing. Many people pointed out that the lack of "standard" ANSI C library routines like "fopen" etc. was a big disadvantage of TIGCC, so Zeljko decided to implement them in the TIGCC library. The main problem was the impossibility of creating external archives of library routines (the linker did not support them). Then he discovered a black art of cast constructors which allowed implementing these routines in a quite efficient way, using extremely dirty hacks. The main goal
+was that the routines which were not used in the program would not be part of the final executable in any way, but if the routines were used, they were supposed to be included only once. This behaviour was implemented successfully, so version 2.0 was released. This release included about 300 new functions compared to the previous release!
+<BR><BR>
+Finally, Xavier, Sebastian and Zeljko decided to put everything together and stop distributing various part of TIGCC (compiler, linker, library and environment) independently. Instead, starting from release 0.7, TIGCC contained everything packed in one file. The included library was now release 2.2 (which had stable floating point support, established in release 2.1).
+<BR><BR>
+The most important recent change was a complete recompilation of GCC using the sources from the official <A HREF="http://www.cygwin.com/">Cygwin</A> site. This recompilation made it possible to work on the compiler again, which was impossible before because the sources were lost. Native floating point support was implemented by Sebastian in November and December, while Zeljko created the appropriate library functions for this.
+<BR><BR>
+When Sebastian Reichelt and Kevin Kofler found and patched a working AmigaOS to COFF converter at the <A HREF="http://www.geekgadgets.org">Geek Gadgets</A> site, the linker was not needed as a true linker any more, but rather as a converter from the COFF to the TI executable format. Therefore Julien Muchembled contributed a converter of his own, which was much better than the previous <CODE>link</CODE>.
+<BR><BR>
+For TIGCC 0.95, Sebastian wrote a new linker, <CODE>ld-tigcc</CODE>, which, with Kevin's help, changed TIGCC a lot for the better, allowing to optimize any references between object files at link time, and even to merge constants and reorder sections. It also finally made BSS sections in nostub programs possible. More interesting features are still continuously being added to the linker.
+<BR><BR>
+After the TIGCC 0.95 release, the last thing missing from TIGCC was a C debugger. This prompted Kevin to work on integrating GDB into Romain Liévin's TiEmu emulator and adding support for it to TIGCC. The most powerful debugging information format supported by GCC and GDB, DWARF 2, was selected for the debugger.
+<BR><BR>
+Although the version you are using now has evolved from a lot of different little updates, it is more or less a complete, working product. Changes are still being made on GCC4TI, though.</P>
+
+<HR>
+<H2><A NAME="bugreports"><U>Reporting Bugs</U></A></H2>
+<P>There may still be some bugs in the linker, in <CODE>tigcc</CODE>, and in the IDE. If you encounter a bug, please use the ticket system of the <A HREF="http://trac.godzil.net/gcc4ti/">Official GCC4TI Site</A>, or send all the information that is needed to the <A HREF="mailto:tigccpp@box.godzil.net">GCC4TI mailing list</A>r.</P>
+
+<HR>
+<H2><A NAME="unknown"><U>Documenting Unknown Functions</U></A></H2>
+<P>The GCC4TI Library still contains a lot of unknown functions.
+They are defined in <A HREF="unknown.html">unknown.h</A>.
+For some of them, prototypes are already available; some are even partially
+documented. Others are completely unknown.
+<BR><BR>
+If you have information about one of these functions (also from TI's
+<A HREF="http://education.ti.com/downloads/pdf/us/sdk8992pguide.pdf">documentation</A>,
+but you may not simply copy the information there for copyright reasons),
+please take the time to document it. The way to do this is rather simple, and
+you will be doing everyone using this library a big favor.
+<BR><BR>
+At first, you need the GCC4TI source code, available from the <A HREF="http://trac.godzil.net/gcc4ti/">GCC4TI Website</A>.
+Set up the documentation system according to the <CODE>Readme</CODE> and <CODE>HelpSystem.ini</CODE> files, and check
+whether you can update at least the header files by running <CODE>UpdateInclude.exe</CODE>.
+<BR><BR>
+To document a file, or to change the file's prototype, you simply need to edit
+the appropriate <CODE>.hsf</CODE> file in the <CODE>unknown.h</CODE> subfolder of the help system.
+If you have enough documentation to move it to another header file, simply move the <CODE>.hsf</CODE> file
+to the appropriate folder, and update all links from and to the file. (For links from other files to this one,
+you will probably want to use a string replacement program to make the conversion automatically.)
+Then run <CODE>UpdateInclude.exe</CODE> on both the new folder and on
+<CODE>unknown.h</CODE> (if it used to be in <CODE>unknown.h</CODE>).
+Now you will be able to view your documentation in a web browser, and test the
+function with its new prototype.
+<BR><BR>
+When you are finished, please simply send the resulting <CODE>.hsf</CODE> file to
+<A HREF="mailto:tigccpp@box.godzil.net">the GCC4TI mailing list</A>.
+We prefer compressed files because mail systems sometimes mess up attached
+text files, but it doesn't really matter a lot.
+<BR><BR>
+<B>NOTE</B>: in order to reduce hazards of work duplication, you should first
+contact us on the ML to inform people that you'd like to work on such or such
+area ;-)</P>
+
+<HR>
+<H2><A NAME="credits"><U>Credits</U></A></H2>
+<P>These are the people we would like to thank for their contributions to TIGCC and GCC4TI:</P>
+<UL>
+<LI><P><A HREF="mailto:Thomas.Nussbaumer@gmx.net">Thomas Nussbaumer</A> (<A HREF="http://tict.ticalc.org/">website</A>), for his grayscale 'port' from Universal OS, and for the TI-68k Developer Utilities (formerly TIGCC Tools Suite), available on <A HREF="http://tict.ticalc.org/">tict.ticalc.org</A></P></LI>
+<LI><P><A HREF="mailto:Revol@free.fr">François Revol</A>, for his help on GCC-related issues</P></LI>
+<LI><P><A HREF="mailto:JDRatlif@cs.indiana.edu">John David Ratliff</A> (<A HREF="http://www.technoplaza.net/">website</A>), for his tutorials and for the CGI script for the bug report form</P></LI>
+<LI><P><A HREF="mailto:mig53@yahoo.com">Peter J. Rowe</A>, for correcting grammar and spelling mistakes in a large part of the documentation</P></LI>
+<LI><P><A HREF="mailto:gereon.cs@web.de">Gereon Kindler</A>, for the title and wizard images and the new icons in the IDE</P></LI>
+<LI><P><A HREF="mailto:Wazabbe@flashmail.com">Jocelyn Berrendonner</A>, for his immense work on <A HREF="menus.html">menus.h</A>, <A HREF="dialogs.html">dialogs.h</A> and <A HREF="files.html">files.h</A>, and for some other TIGCCLIB updates</P></LI>
+<LI><P><A HREF="mailto:roms@lievin.net">Romain Liévin</A> (<A HREF="http://lpg.ticalc.org/">website</A>), for the <A HREF="http://lpg.ticalc.org/prj_tigcc/">Linux port</A>, the (now outdated) <A HREF="http://lpg.ticalc.org/prj_tigcc/download/TIGCC_Internals.doc" TARGET="_blank">document</A> about the internals of TIGCC, and work on the documentation</P></LI>
+<LI><P><A HREF="mailto:lionel_debroux@yahoo.fr">Lionel Debroux</A> (<A HREF="http://tict.ticalc.org/">website</A>), for documenting AMS 2.xx functions from <A HREF="unknown.html">unknown.h</A> and multiple optimizations</P></LI>
+<LI><P><A HREF="http://www.calvin.edu/~sstear70/">Samuel Stearley</A>, for most of the home screen functions defined in <A HREF="homescr.html">homescr.h</A></P></LI>
+<LI><P><A HREF="mailto:olivier.calc@gmail.com">Olivier Armand</A>, for an improved internal Line 1111 emulator</P></LI>
+<LI><P><A HREF="http://calc.gregd.org/">Greg Dietsche</A>, for a lot of updates to <A HREF="stdio.html">stdio.h</A></P></LI>
+<LI><P><A HREF="http://www.geocities.com/joelt49/">Joel Thompson</A>, for extracting the examples from the documentation, and for some other updates (e.g. to <A HREF="gdraw.html">gdraw.h</A> and <A HREF="vat.html">vat.h</A>)</P></LI>
+<LI><P><A HREF="mailto:dgdg89c@hotmail.com">Daniel De Graaf</A>, for updates to <A HREF="gdraw.html">gdraw.h</A> and <A HREF="estack.html">estack.h</A></P></LI>
+<LI><P><A HREF="http://www.tigen.org/">Ephyx</A>, for the IDE code completion patches and other IDE improvements</P></LI>
+<LI><P><A HREF="mailto:sebastien.leurent@laposte.net">Sébastien Leurent</A>, for his improvements to Wazabbe's <A HREF="dialogs.html">dialogs.h</A></P></LI>
+<LI><P><A HREF="mailto:patrick.pelissier@gmail.com">Patrick Pélissier</A>, for linker-related patches, bug reports and multiple other improvements (build system, etc.)</P></LI>
+<LI><P><A HREF="mailto:godzil@godzil.net">Manoel Trapier</A>, for providing project management infrastructure, a68k MacOS X binaries portability, etc.</P></LI>
+<LI><P><A HREF="mailto:mdemolins@gmail.com">Martial Demolins</A>, for multiple optimizations and bug reports</P></LI>
+<LI><P><A HREF="mailto:joeyadams3.14159@gmail.com">Joseph (Joey) Adams</A>, for improving the existing sprite routines, creating new ones and creating a strong test program</P></LI>
+</UL>
+
+<HR>
+<H2><A NAME="history"><U>History</U></A></H2>
+<P><B>Note:</B> Click <A HREF="history.html">here</A> for the history of the library, or <A HREF="ide.html#history">here</A> for the history of the IDE.
+<BR><BR>
+
+<B>?? ??, ??: GCC4TI v0.96 Beta 11, ld-tigcc v1.09, Library v2.73, IDE v2.96</B>
+</P>
+<UL>
+<LI><P>Added: documentation: merged several long-standing contributions, added brand-new ones.</P></LI>
+<LI><P>Added: imported dasm-tigcc to a public repository, fixed a bug and upgraded some files.
+dasm-tigcc is a GPL'ed improved replacement of ttdasm, which uses the GDB disassembler and
+modified chunks of code from libti* & TIEmu. Creator: Kevin Kofler.</P></LI>
+<LI><P>Bugfix: tigcclib: fix bsearch() while making it smaller.</P></LI>
+<LI><P>Improved: tigcclib: make qsort() faster, especially for large arrays, and significantly smaller.</P></LI>
+<LI><P>Added: testcases: new area for complex tests, with a test for sorting routines.</P></LI>
+<LI><P>Bugfix: tigcclib: switch sprite routines to explicit register parameters.</P></LI>
+<LI><P>Added: tigcclib: generic clipped sprite 8/16/32 routines.</P></LI>
+</UL>
+<P>
+<B>June 27, 2009: GCC4TI v0.96 Beta 10, ld-tigcc v1.09, Library v2.72, IDE v2.96</B>
+</P>
+<UL>
+<LI><P>Bugfix: IDEs: add more instructions to the default lists used for syntax coloring.</P></LI>
+<LI><P>Added: import most of the TI-68k Developer Utilities' "pctools" (formerly TIGCC Tools
+Suite) where they belong.</P></LI>
+<LI><P>Added: documentation: merged several long-standing contributions.</P></LI>
+<LI><P>Updated: pstarter: removed the essentially unused shrnklib support; optimized the
+ttunpack-fast code by applying the same calling convention changes as those applied in the
+ttunpack code (saves about 34 bytes, i.e. > 2%).</P></LI>
+<LI><P>Improved: tprbuilder: return a nonzero exit code if a command run by tprbuilder returned
+a nonzero exit code.</P></LI>
+<LI><P>Bugfix: examples: fix an example whose build has failed since an untested modification
+performed in 2005...</P></LI>
+<LI><P>Added: examples: scripts to check buildability (with tprbuilder) of the examples.</P></LI>
+<LI><P>Bugfix: gcc: fix a 64-bit compatibility problem in the AMS float support (patch applied on
+top of GCC), which triggered harmless warnings in the generated assembly code.</P></LI>
+<LI><P>Greatly improved: build scripts ("canadian cross"-compilation support, more traces, better
+portability, improved packaging, etc.). Most improvements were developed by Lionel Debroux and
+Patrick Pélissier.</P></LI>
+<LI><P>Bugfix: tigcc: fix the build of the Custom DLL example by adding "-n" when invoking ld-tigcc
+to generate the decompressor+launcher.</P></LI>
+<LI><P>Bugfix: examples: rename a number of examples to avoid on-calc name clashes.</P></LI>
+<LI><P>Updated: a number of size optimizations in TIGCCLIB, one of which touches the very commonly
+used SAVE_SCREEN startup code. Most optimizations were developed by Martial Demolins.</P></LI>
+<LI><P>Updated: history files and READMEs.</P></LI>
+</UL>
+<P>
+<B>January 3, 2009: GCC4TI v0.96 Beta 9, ld-tigcc v1.08, Library v2.71, IDE v2.95</B>
+</P>
+<UL>
+<LI><P>Bugfix: IDEs: add various instructions and macros to the default lists used for
+syntax coloring.</P></LI>
+<LI><P>Bugfix: Fix gcc.exe for Vista (GCC 4.1.2-tigcc-pre10).</P></LI>
+<LI><P>Updated: Patched GCC 4.1.2 (release) and GNU as 2.16.1 with the TIGCC patch.</P></LI>
+<LI><P>Bugfix: ld-tigcc: fix warning and runtime abort with _FORTIFY_SOURCE.</P></LI>
+<LI><P>Bugfix: ld-tigcc: adjust TargetDistance after return optimization (fixes bra.s +0 in SIDE).</P></LI>
+<LI><P>Bugfix: tprbuilder: fix buffer overflow in MIN_AMS handling.</P></LI>
+<LI><P>Bugfix: documentation: various tweaks and fixes.</P></LI>
+<LI><P>Bugfix: include & library: various tweaks and fixes.</P></LI>
+<LI><P>Added: ld-tigcc: integrate PuCrunch compression, add --pack switch.</P></LI>
+<LI><P>Added: ld-tigcc: implement --output-data-var switch (allows specifying the on-computer
+file name for the data variable).</P></LI>
+<LI><P>Added: ld-tigcc: better handling of on-calc variable names.</P></LI>
+<LI><P>Bugfix: ld-tigcc: ignore "relative reloc to symbol in different section" error in the
+".deleted" section. This fixes --remove-unused with debugging information and -freg-relative-an.</P></LI>
+<LI><P>Bugfix: ld-tigcc: seek back to the end after FlashOS relocation so the dummy signature ends
+up at the end and not the place of the last relocation in the standalone version.</P></LI>
+<LI><P>Updated: documentation tools: replace Delphi DumpSections with equivalent shell script,
+Port ConvertTexi from Delphi to C++ with Qt 4.</P></LI>
+<LI><P>Bugfix: ld-tigcc: fix "relative reloc at `0xnnn' to `foo' in different section" errors
+when using --remove-unused with debugging information and relocated ROM_CALLs, RAM_CALLs or 
+library calls.</P></LI>
+<LI><P>Added: start the GCC4TI fork of TIGCC, with a different decision scheme.</P></LI>
+<LI><P>Added: ld-tigcc: support for Flash OS timestamps.</P></LI>
+<LI><P>Added: tigcclib: Flash OS library (flashos.a).</P></LI>
+<LI><P>Added: includes: stdint.h and a partial inttypes.h (the platform's vcbprintf doesn't
+support 64-bit integers anyway).</P></LI>
+<LI><P>Added: ld-tigcc: add implementation and documentation of special __ld_bss_even_end
+symbol.</P></LI>
+<LI><P>Updated: Delphi IDE: restore VTI support <B>in addition to</B> TIEmu support, as
+requested by multiple experienced TI-68k programmers for two years.</P></LI>
+<LI><P>Bugfix: ld-tigcc: compilation fix.</P></LI>
+</UL>
+<P>
+<B>October 31, 2006: TIGCC v0.96 Beta 8, ld-tigcc v1.07, Library v2.7, IDE v2.94</B>
+</P>
+<UL>
+<LI><P>Added: A new installer for the Win32 release, based on
+<A HREF="http://nsis.sourceforge.net">NSIS</A>.</P></LI>
+<LI><P>Updated: Many documentation and library updates, see the
+<A HREF="history.html">TIGCCLIB history</A> for details.</P></LI>
+<LI><P>Added: A completely new ExePack (PPG) launcher, with an almost halved size.</P></LI>
+<LI><P>Added: Support for reordering of startup sections (sharing the same startup number) in the
+linker.</P></LI>
+<LI><P>Added: Support for Mlink-format relocs
+(<A HREF="httigcc.html#advanced_mlinkrelocs">MLINK_FORMAT_RELOCS</A>,
+<A HREF="httigcc.html#advanced_mlinkbss">MLINK_FORMAT_BSS</A>,
+<A HREF="httigcc.html#advanced_mlinkrom">MLINK_FORMAT_ROM_CALLS</A>,
+<A HREF="httigcc.html#advanced_mlinkdata">MLINK_FORMAT_DATA_VAR</A>).</P></LI>
+<LI><P>Added: Support for debugging information in DWARF 2 format (to be used with a GDB-enabled
+TiEmu), including some toolchain bugfixes required to support this feature.</P></LI>
+<LI><P>Added: Support for the new _nostub comment specification 1.01 and its new
+<A HREF="httigcc.html#comment_authors">COMMENT_AUTHORS</A> entry.</P></LI>
+<LI><P>Updated: Patched GCC 4.1.2 (prerelease) and GNU as 2.16.1 with the TIGCC patch.</P></LI>
+<LI><P>Bugfix: References in assembly code with an explicitly-coded size are now marked unoptimizable
+in order to make the linker honor the explicit size as well, not just the assembler.</P></LI>
+<LI><P>Bugfix: <CODE>tprbuilder</CODE> doesn't crash on long <CODE>tigcc.exe</CODE> command lines
+under Windows 9x/Me anymore.</P></LI>
+<LI><P>Bugfix: <CODE>ld-tigcc</CODE> doesn't try to range-cut in files compiled without range-cutting
+support (in programs containing files compiled both with and without range-cutting support)
+anymore.</P></LI>
+<LI><P>Bugfix: Removing unused sections in <CODE>ld-tigcc</CODE> now really removes <I>all</I> unused
+sections.</P></LI>
+<LI><P>Bugfix: Uninitialized static or global variables are now always emitted to the expected section
+by GCC.</P></LI>
+<LI><P>Updated: Bugfixes and improvements to external data variable support.</P></LI>
+<LI><P>Bugfix: Fixed a segfault during constant-merging in <CODE>ld-tigcc</CODE>.</P></LI>
+<LI><P>Bugfix: Fixed invalid kernel ROM_CALL or RAM_CALL tables emitted by <CODE>ld-tigcc</CODE> when
+unused section removal optimized all ROM or RAM_CALLs away.</P></LI>
+<LI><P>Bugfix: <CODE>A68k</CODE> doesn't crash on EQUs doing arithmetic with other EQUs which do
+arithmetic with undefined symbols anymore, this invalid code now gives a proper error message.</P></LI>
+<LI><P>Bugfix: Fixed <CODE>-v</CODE> and <CODE>-v0</CODE> being limited to 255 characters in the
+Windows command-line compiler.</P></LI>
+<LI><P>Added: The command-line compiler now supports <CODE>-isystem</CODE> properly.</P></LI>
+<LI><P>Bugfix: Fixed compilation problems on *BSD and Mac OS X.</P></LI>
+<LI><P>Added: The standalone version of <CODE>ld-tigcc</CODE> supports a new
+<CODE>--outputbin-main-only</CODE> switch to be used by KTIGCC.</P></LI>
+<LI><P>Updated: ExePack compression support is now Free Software.</P></LI>
+<LI><P>Updated: On Windows, <CODE>MSVCRT.DLL</CODE> is now required. This DLL comes with all Windows
+versions since Windows 95 OSR 2. For the original Windows 95, it is usually installed by Internet
+Explorer or Microsoft Office.</P></LI>
+<LI><P>Bugfix: Fixed *nix install script not to attempt symlinking <CODE>os.h</CODE> to
+<CODE>OS.h</CODE> on case-insensitive file systems.</P></LI>
+<LI><P>Bugfix: Fixed external data variable support for compressed programs in the *nix command-line
+compiler.</P></LI>
+<LI><P>Bugfix: Fixed multiple uses of -Wa or -WA in the *nix command-line compiler.</P></LI>
+<LI><P>Updated: The IDE now supports TiEmu (20061030 or later) instead of VTI for debugging/testing.</P></LI>
+</UL>
+<P>
+<B>October 24, 2004: TIGCC v0.95, ld-tigcc v1.06, Library v2.6, IDE v2.92</B>
+</P>
+<UL>
+<LI><P>Added: An entirely new <A HREF="ld.html">linker</A>, as a basis for
+all other improvements (see <A HREF="httigcc.html#advanced">Advanced Options of TIGCC</A>).</P></LI>
+<LI><P>Added: Support for dynamic BSS sections in nostub mode.</P></LI>
+<LI><P>Added: Linker-side <A HREF="ld.html#bincode">code optimization</A>.</P></LI>
+<LI><P>Added: Support for data variables.</P></LI>
+<LI><P>Added: Support for <A HREF="gnuexts.html#SEC85_constructor">contructors
+and destructors</A>.</P></LI>
+<LI><P>Added: Experimental optional Fargo II support.</P></LI>
+<LI><P>Updated: Patched GCC 3.3.1 with the TIGCC patch.</P></LI>
+<LI><P>Updated: Updated PPG launcher created by the
+<A HREF="http://tict.ticalc.org/">TI-Chess Team</A>.</P></LI>
+<LI><P>Added: Basic TI-89 Titanium support.</P></LI>
+</UL>
+<P>
+<B>January 24, 2003: TIGCC v0.94 SP4, Obj2TI v1.01e, Library v2.5 SP4, IDE v2.91</B>
+</P>
+<UL>
+<LI><P>Bugfix: Fixed <A HREF="error.html#ER_throw">ER_throw</A> bug with
+4-digit error numbers.</P></LI>
+<LI><P>Bugfix: Fixed bug in
+<CODE><A HREF="htretval.html#retval">ENABLE_ERROR_RETURN</A></CODE>
+with <CODE><A HREF="httigcc.html#minams">MIN_AMS</A></CODE>
+values of 200 or higher.</P></LI>
+<LI><P>Bugfix: Removed the rejection of a minimum AMS version of 2.07.</P></LI>
+</UL>
+<P>
+<B>January 13, 2003: TIGCC v0.94 SP3, Obj2TI v1.01e, Library v2.5 SP3, IDE v2.91</B>
+</P>
+<UL>
+<LI><P>Bugfix: Incorporated a fix for <A HREF="stdio.html#fclose">fclose</A>.</P></LI>
+</UL>
+<P>
+<B>January 12, 2003: TIGCC v0.94 SP2, Obj2TI v1.01e, Library v2.5 SP2, IDE v2.91</B>
+</P>
+<UL>
+<LI><P>Bugfix: Important bugfixes for <A HREF="stdio.html#fopen">fopen</A>,
+<A HREF="stdio.html#fread">fread</A> and
+<A HREF="stdio.html#fwrite">fwrite</A>.</P></LI>
+<LI><P>Bugfix: Changed <A HREF="default.html#import_binary">import_binary</A> to
+export the symbol, and changed the IDE to make it work with it.</P></LI>
+</UL>
+<P>
+<B>December 30, 2002: TIGCC v0.94 SP1, Obj2TI v1.01e, Library v2.5 SP1, IDE v2.91</B>
+</P>
+<UL>
+<LI><P>Bugfix: Fixed <CODE><A HREF="httigcc.html#advanced_fileinuse">SET_FILE_IN_USE_BIT</A></CODE>.</P></LI>
+<LI><P>Bugfix: Fixed the prototype of <A HREF="rsa.html#MD5Update">MD5Update</A>.</P></LI>
+</UL>
+<P>
+<B>December 21, 2002: TIGCC v0.94, Obj2TI v1.01e, Library v2.5, IDE v2.91</B>
+</P>
+<UL>
+<LI><P>Updated: Patched GCC 3.2.1 with the TIGCC patch, with a lot of modifications.</P></LI>
+<LI><P>Updated: Greatly changed the internal structure of the library.</P></LI>
+<LI><P>Added: Applied a patch for argument passing through registers.</P></LI>
+<LI><P>Added: Implemented <A HREF="httigcc.html#advanced_flinerom">F-Line ROM Calls</A>.</P></LI>
+<LI><P>Added: Implemented support for PreOS libraries in <CODE>obj2ti</CODE>.</P></LI>
+<LI><P>Bugfix: Repaired the <B>'-freg-relative-<I>reg</I>'</B> option.</P></LI>
+<LI><P>Updated: Created an option to ignore system folders in the setup program.</P></LI>
+<LI><P>Added: Finally wrote a program to update the version numbers in all places.</P></LI>
+<LI><P>Updated: Enhanced the help file tools to generate the header files as well.</P></LI>
+<LI><P>Added: Added tools to edit the help system files.</P></LI>
+<LI><P>Added: Implemented HTML checking for help system files.</P></LI>
+<LI><P>Added: Added a switch to <CODE>tigcc</CODE> to create archives.</P></LI>
+<LI><P>Updated: Made <CODE>tigcc</CODE> look for archives in the <CODE>'Lib'</CODE> subfolder of the installation.</P></LI>
+<LI><P>Updated: Repaired some bugs to support debugging switches like <B>'-ggdb'</B>.</P></LI>
+<LI><P>Updated: Recompiled all programs under <A HREF="http://www.mingw.org/">MinGW32</A>, thereby removing the need to use <A HREF="http://www.cygwin.com/">Cygwin</A>.</P></LI>
+<LI><P>Updated: Compressed setup program using <A HREF="http://upx.sourceforge.net/">UPX</A>.</P></LI>
+<LI><P>Added: Added "See Also" links to the help system.</P></LI>
+<LI><P>Added: Extracted all examples from the documentation, with a lot of help from <A HREF="mailto:joelt49@yahoo.com">Joel Thompson</A>.</P></LI>
+<LI><P>Added: Added support for <A HREF="htdll.html">nostub libraries</A>.</P></LI>
+<LI><P>Added: Added missing <CODE><A HREF="gnuexts.html#SEC72">long long</A></CODE> operator support.</P></LI>
+</UL>
+<P>
+<B>February 3, 2002: TIGCC v0.93, Obj2TI v1.01, Library v2.41, IDE v2.9</B>
+</P>
+<UL>
+<LI><P>Updated: A lot of updates in the IDE.</P></LI>
+<LI><P>Updated: Completely redesigned the documentation.</P></LI>
+<LI><P>Updated: <A HREF="mailto:mig53@yahoo.com">Peter J. Rowe</A> corrected grammar and spelling mistakes in a large part of the doc.</P></LI>
+<LI><P>Added: Allowed the use of paths for files compiled with <CODE>tigcc</CODE>.</P></LI>
+<LI><P>Bugfix: Fixed a problem with linking multiple A68k files.</P></LI>
+<LI><P>Added: Added the <B>'-WA,...'</B> option to pass switches to <CODE>a68k</CODE>.</P></LI>
+<LI><P>Bugfix: Cleaned up the whole patch code, including the support for <A HREF="stdlib.html#exit">exit</A> and <A HREF="stdlib.html#atexit">atexit</A>.
+Fixes were developed by Patrick Pélissier, Kevin Kofler, and Stephan Effelsberg.</P></LI>
+<LI><P>Bugfix: Used an updated version of the ExePack launcher by Thomas Nussbaumer, with fixes contributed by Olivier Armand and Kevin Kofler.</P></LI>
+<LI><P>Bugfix: Small fixes in the GNU and A68k assemblers.</P></LI>
+<LI><P>Updated: Changed the setup program to only overwrite the files that were really changed.</P></LI>
+</UL>
+<P>
+<B>November 25, 2001: TIGCC v0.92 SP2, Obj2TI v1.01, Library v2.4 SP1, IDE v2.8 SP4</B>
+</P>
+<UL>
+<LI><P>Updated: Applied the TIGCC patch to GCC 3.0.2.</P></LI>
+<LI><P>Bugfix: Fixed a bug which made uninitialized global variables slower and larger.</P></LI>
+<LI><P>Added: Automated the setup creation process to shorten release cycles.</P></LI>
+<LI><P>Updated: Detected Windows NT in setup.</P></LI>
+</UL>
+<P>
+<B>November 9, 2001: TIGCC v0.92 SP1, Obj2TI v1.01, Library v2.4 SP1, IDE v2.8 SP3</B>
+</P>
+<UL>
+<LI><P>Bugfix: Fixed the problem in obj2ti with uninitialized global variables in kernel mode.</P></LI>
+<LI><P>Bugfix: Fixed the A68k integration problem (in objcopy) which prevented RAM calls from being used in 16-bit addressing mode.</P></LI>
+<LI><P>Bugfix: Fixed the IDE bug which made closing large files really slow.</P></LI>
+<LI><P>Added: In the IDE, it is now possible to switch between files quickly using <CODE>Ctrl+Tab</CODE>.</P></LI>
+<LI><P>Updated: The program decompressor is stored as an object file now, instead of an assembly file; this removes the need to run the assembler for compression.</P></LI>
+<LI><P>Updated: Greatly updated the setup program to prevent legal problems.</P></LI>
+</UL>
+<P>
+<B>September 29, 2001: TIGCC v0.92, Obj2TI v1.0, Library v2.4 SP1, IDE v2.8 SP2</B>
+</P>
+<UL>
+<LI><P>Updated: Applied the TIGCC patch to GCC 3.0, which introduces some optimizations and more warnings.</P></LI>
+<LI><P>Updated: Replaced Xavier's linker with new <CODE>obj2ti</CODE> by <A HREF="mailto:Julien@tigcc.ticalc.org">Julien Muchembled</A>.</P></LI>
+<LI><P>Added: Added an AmigaOS to COFF converter for A68k programs. This allows for seamless A68k integration in TIGCC.</P></LI>
+<LI><P>Updated: Included new 32-bit version of A68k by <A HREF="mailto:ghk.kofler@gmx.net">Kevin Kofler</A>.</P></LI>
+<LI><P>Updated: Implemented floating point constant folding. The floating point system can now be used the same way as on any other machine.</P></LI>
+<LI><P>Added: The <B>'-Wl,...'</B> and <B>'-Wa,...'</B> options are now available in the command line compiler. This means that you can pass options to the GNU assembler and GNU linker.</P></LI>
+</UL>
+<P>
+<B>May 1, 2001: TIGCC v0.91 SP1, Link v1.2, Library v2.4 SP1, IDE v2.8 SP1</B>
+</P>
+<UL>
+<LI><P>Bugfix: Kernel support is fixed.</P></LI>
+<LI><P>Bugfix: Support for exit and atexit is clean now. Thanks to <A HREF="mailto:Julien.Muchembled@netcourrier.com">Julien Muchembled</A> for the information.</P></LI>
+<LI><P>Added: A short credits list is now included in the documentation.</P></LI>
+<LI><P>Updated: Little maintainance updates in the IDE had to be made.</P></LI>
+<LI><P>Updated: A few minor bugfixes were also necessary.</P></LI>
+</UL>
+<P>
+<B>March 24, 2001: TIGCC v0.91, Link v1.2, Library v2.4, IDE v2.8</B>
+</P>
+<UL>
+<LI><P>Added: Support for multiple files is now stable since the GNU linker is used.</P></LI>
+<LI><P>Added: Archives (extension <CODE>.a</CODE>) are now supported. A file <CODE>tigcc.a</CODE> has been created, which is included automatically in all projects.</P></LI>
+<LI><P>Added: Important debug information is now included in the <CODE>.s</CODE> file(s) if a program is compiled with the <B>'-g'</B> switch or with the corresponding option in the IDE.</P></LI>
+<LI><P>Added: Support for binary values (<CODE>0b...</CODE>) has been implemented, but its use is strongly deprecated for portability reasons.</P></LI>
+<LI><P>Updated: Various updates in the IDE have been made.</P></LI>
+</UL>
+<P>
+<B>December 18, 2000: TIGCC v0.9, Link v1.2, Library v2.3, IDE v2.71</B>
+</P>
+<UL>
+<LI><P>Updated: Fixed various bugs in the compiler.</P></LI>
+<LI><P>Added: Implemented native floating point support.</P></LI>
+<LI><P>Updated: The IDE and <CODE>tigcc</CODE> now include the necessary patches automatically.</P></LI>
+<LI><P>Bugfix: GCC now works around the uninitialized data bug if the <B>'-mmlink'</B> switch is not used. This makes programs larger, but it is possible not to initialize data and still compile the program correctly until the bug is fixed.</P></LI>
+<LI><P>Added: The compiler now accepts the switches <B>'-mpcrel'</B>, <B>'-mlong'</B>, <B>'-mno-tios'</B>, and <B>'-mmlink'</B>.</P></LI>
+<LI><P>Updated: <CODE>tigcc</CODE> now accepts the <B>'-bsr'</B> switch for using bsr code where possible, the <B>'-pack'</B> switch for compression, and <B>'v'</B> as well as <B>'-v0'</B>.</P></LI>
+<LI><P>Updated: Made some additions and fixes in the IDE and the library.</P></LI>
+<LI><P>Updated: Changed the directory structure again, since the previous one didn't really make sense any more.</P></LI>
+</UL>
+<P>
+<B>October 11, 2000: TIGCC v0.8, Link v1.2, Library v2.22, IDE v2.7</B>
+</P>
+<UL>
+<LI><P>Updated: Recompiled GCC using the latest tools and sources.</P></LI>
+<LI><P>Updated: Included latest versions of the IDE and the Library.</P></LI>
+</UL>
+<P>
+<B>June 26, 2000: TIGCC v0.7, Link v1.2, Library v2.0, IDE v2.6</B>
+</P>
+<UL>
+<LI><P>Updated: The linker now supports <CODE>EXTRA_RAM_TABLE</CODE> symbols.</P></LI>
+<LI><P>Updated: The linker accepts a new switch: <B>'-outputbin'</B> will make it output the raw executable file as it is on the calculator. Of course this <CODE>'.bin'</CODE> file can not be transferred to the calculator.</P></LI>
+<LI><P>Updated: The linker will display the compiled file size even with the quiet switch <B>'-q'</B> enabled.</P></LI>
+<LI><P>Updated: Included library is TIGCCLIB 2.0.</P></LI>
+<LI><P>Added: Included TIGCC IDE by Sebastian Reichelt.</P></LI>
+<LI><P>Updated: The directory structure has been completely changed and is now clearer.</P></LI>
+<LI><P>Updated: The installation is a lot easier thanks to Sebastian Reichelt's setup program.</P></LI>
+</UL>
+<P>
+<B>April 6, 2000: TIGCC v0.65, Link v1.1, Library v1.5</B>
+</P>
+<UL>
+<LI><P>Bugfix: sometimes some weird characters were appended to the file name and it wasn't compiled.</P></LI>
+<LI><P>Updated: TIGCCLIB is now version 1.5.</P></LI>
+</UL>
+<P>
+<B>Februar 5, 2000: TIGCC v0.6, Link v1.1, Library v1.1</B>
+</P>
+<UL>
+<LI><P>Added: The library tigcclib by Zeljko Juric is added in the package.</P></LI>
+<LI><P>The source of <CODE>tigccins</CODE> (the installation program) is included in the distribution.</P></LI>
+<LI><P>Bugfix: Libraries are now compiled correctly (there was a strange bug before).</P></LI>
+<LI><P>Bugfix: Linking multiple object files now seems to work perfectly (mail
+<A HREF="mailto:xvassor@mail.dotcom.fr">Xavier Vassor</A> if you find a bug).</P></LI>
+<LI><P><CODE>link</CODE>, <CODE>tigcc</CODE>, <CODE>tigccins</CODE> are now 32-bit
+console programs (instead of 16-bit DOS programs)</P></LI>
+</UL>
+<P>
+<B>September 26, 1999: TIGCC v0.51, Link v1.01</B>
+</P>
+<UL>
+<LI><P>Bugfix: C symbols that where exported out-of-order by GCC (i.e.
+<CODE>library@0000</CODE>, <CODE>library@0002</CODE>, <CODE>library@0001</CODE>...)
+are now inserted properly in the <CODE>.89z</CODE>/<CODE>.9xz</CODE> file. This will make it possibe to write libraries in C the way it should be done.</P></LI>
+<LI><P>Bugfix: The <CODE>_comment</CODE> symbol is now properly recognized in both C and
+assembly programs.
+Added: Both <CODE>tigcc</CODE> and <CODE>link</CODE> now have the <B>'-q'</B>
+option for quiet assembling or compilation. Does not affect warnings and errors.</P></LI>
+<LI><P>The source of <CODE>link</CODE> and <CODE>tigcc</CODE> is included in the distribution.</P></LI>
+</UL>
+<P>
+<B>July 16, 1999: TIGCC v0.5, Link v1.0</B>
+</P>
+<UL>
+<LI><P>Initial release.</P></LI>
+</UL>
+
+<HR>
+<H2><A NAME="disclaimer"><U>Disclaimer</U></A></H2>
+<P>Original files Copyright (C) 1999-2005 Xavier Vassor, Niklas Brunlid, and Jean Canazzi<BR>
+ld-tigcc Copyright (C) 2002-2008 Sebastian Reichelt and Kevin Kofler<BR>
+Library &amp; Documentation Copyright (C) 2000-2007 Zeljko Juric and contributors<BR>
+IDE Copyright (C) 2000-2007 Sebastian Reichelt and contributors<BR>
+TI-68k Developer Utilities (formerly TIGCC Tools Suite) Copyright (C) 2000-2009 Thomas Nussbaumer (<A HREF="http://tict.ticalc.org/">TI-Chess Team</A>)
+<BR><BR>
+Included programs with different licenses:<BR>
+A68k Copyright (C) 1987-2005 Charlie Gibbs, David Ellsworth, Kevin Kofler, Julien Muchembled, and Paul Froissart
+<BR><BR>
+Some parts of the GCC4TI package are parts of the GNU C compiler package. Like the rest of GCC4TI, these parts are free software; you can redistribute them and/or modify it under the terms of the <A HREF="gnugpl.html">GNU General Public License</A> as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+<BR><BR>
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+<BR><BR>
+You should have received a copy of the <A HREF="gnugpl.html">GNU General Public License</A> along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>
