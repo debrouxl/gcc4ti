@@ -806,23 +806,32 @@ begin
 			GetEnvironmentVariable ('TEMP', TempDir, SizeOf (TempDir));
 			Temp := AnsiString (TempDir);
 		end;
-		if (Length (Temp) <= 0) or (Length (Temp) > 30) or (Pos (' ', Temp) > 0) or (Pos ('TEMP', UpperCase (Temp)) <= 0) then begin
+		if (Length (Temp) <= 0) or (Pos (' ', Temp) > 0) or (Pos ('TEMP', UpperCase (Temp)) <= 0) then begin
 			GetWindowsDirectory (TempDir, SizeOf (TempDir));
 			Temp := WithBackslash (AnsiString (TempDir)) + 'TEMP\';
 			if not DirExists (Temp) then try
 				MkDir (Temp);
-			except end;
+			except
+				on Exception do
+					ShowDefaultMessageBox ('Cannot create TEMP (1)', 'Error', mtProgramError);
+			end;
 		end;
-		if (Length (Temp) <= 0) or (Length (Temp) > 30) or (Pos (' ', Temp) > 0) then begin
+		if (Length (Temp) <= 0) or (Pos (' ', Temp) > 0) then begin
 			Temp := 'C:\TEMP\';
 			if not DirExists (Temp) then try
 				MkDir (Temp);
-			except end;
+			except
+				on Exception do
+					ShowDefaultMessageBox ('Cannot create TEMP (2)', 'Error', mtProgramError);
+			end;
 		end;
 		Temp := WithBackslash (Temp) + IntToHex (GetCurrentProcessID, 8) + '\';
 		if not DirExists (Temp) then try
 			MkDir (Temp);
-		except end;
+		except
+			on Exception do
+				ShowDefaultMessageBox ('Cannot create TEMP (3) !!!', 'Error', mtProgramError);
+		end;
 		TempLockHandle := Windows.FindFirstFile (PChar (Temp + '*.*'), TempLockData);
 		StopOnErrors := False;
 		JumpToError := True;
