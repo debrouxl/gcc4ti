@@ -679,7 +679,7 @@ void a68k(char *file)
     add_to_file_array(tmpfile, obj_files);
 
     if (allrelocs) argv[i++] = "-a";
-    if (optreturns) argv[i++] = "-d";
+    if (optreturns || debug ) argv[i++] = "-d";
     if (quiet) argv[i++] = "-q";
     if (a68k_args) {
       strcpy (a68kargtokens, a68k_args);
