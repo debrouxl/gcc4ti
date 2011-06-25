@@ -6,7 +6,14 @@
 TIGCCDIR=../../tigcc
 WINDOCDIR=~/.wine/drive_c/docfiles/
 OUTDIR=../gcc4ti-sources
+iswin1=`echo $GCC4TIHOST | grep -E -i "msys|mingw|cygwin"`
+iswin2=`uname -a | grep -E -i "msys|mingw|cygwin"`
+if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
 WINE=wine
+else
+WINE=
+fi
+
 
 mkdir -p "$OUTDIR/tigcclib/doc/html"
 
