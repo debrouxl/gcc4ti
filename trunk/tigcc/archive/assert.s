@@ -16,7 +16,7 @@ __assertion_failed:
 	move.l 332(%a2),%a0 /* sprintf */
 	jsr (%a0)
 	move.l 188(%a2),%a0 /* ScrRect */
-	clr.l %d0
+	moveq #0,%d0
 	move.b 2(%a0),%d0
 	swap %d0
 	move.b 3(%a0),%d0

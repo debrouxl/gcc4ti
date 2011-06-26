@@ -59,7 +59,7 @@ L.is_hw1or2:
         cmpi.l #0x40000,%d0
         bcc __ghost_done
         bset.l #18,%d0
-        clr.l %d1
+        moveq #0,%d1
         move.w (%a0,-2),%d1
         add.l %d0,%d1
         subq.l #1,%d1

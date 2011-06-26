@@ -13,7 +13,7 @@ atof:
 	tst.w %d0
 	jbeq .L__atof_1
 	move.l #0x7FFFAA00,%d0
-	clr.l %d1
+	moveq #0,%d1
 	clr.w %d2
 	jbra .L__atof_3
 .L__atof_1:
