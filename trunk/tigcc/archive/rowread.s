@@ -9,9 +9,9 @@ _rowread:
 0:
 	dbra %d0,0b
 | Read the port and write it to %d0 (return value register)
+	moveq #0,%d0
 	move.b 0x60001B,%d0
 | Invert the byte
 	not.b %d0
-	and.w #0xFF,%d0
 | Return
 	rts
