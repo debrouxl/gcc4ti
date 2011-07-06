@@ -16,6 +16,8 @@ extern void __exit(void)__ATTR_LIB_ASM_NORETURN__;
 extern long __randseed;
 
 /* Begin Auto-Generated Part */
+#define EXIT_FAILURE 1
+#define EXIT_SUCCESS 0
 #define NULL ((void*)0)
 #define RAND_MAX 32767
 #ifndef __HAVE_size_t
