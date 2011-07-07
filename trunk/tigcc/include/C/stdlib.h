@@ -73,6 +73,10 @@ extern unsigned long strtoul(const char*,char**,short)__ATTR_LIB_C__;
 #define __HAVE_atof
 extern float atof(const char*)__ATTR_LIB_ASM__;
 #endif
+#if MIN_AMS>=200
+extern double strtod(const char*,char**)__ATTR_LIB_ASM__;
+double TIOS_strtod(const char*,char**);
+#endif
 #endif
 /* End Auto-Generated Part */
 

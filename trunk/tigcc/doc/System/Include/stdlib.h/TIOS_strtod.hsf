@@ -1,0 +1,27 @@
+[Main]
+Name=TIOS_strtod
+Type=Function
+Subtype=ROM Call
+Header Files=stdlib.h
+Definition=double TIOS_strtod(const char *str, char **endptr);
+Attributes=__attribute__((__pure__))
+MinAMS=2.00
+See Also=stdlib.h/strtod
+
+[Library Call]
+Asm=1
+
+Description]
+Converts a string to a floating point value, with optional error-checking.
+
+[Explanation]
+<B>You really should use <A HREF="$$LINK(stdlib.h/strtod)">strtod</A>, unless
+you know what you, and your users, are doing.</B><BR>
+This is the direct system call, which will usually take less space in your program than the
+library routine for <A HREF="$$LINK(stdlib.h/strtod)">strtod</A>.
+<B>But if you use it on AMS 1.00-2.03, never pass NULL as <I>endptr</I>, otherwise the routine
+will trigger a crash !</B>
+
+[References]
+Out=system.h/CTypeTable, unknown.h/errno, estack.h/push_ulong_to_integer, unknown.h/_bcd_math
+In=unknown.h/EQU_getNameInfo, unknown.h/push_parse_prgm_or_func_text, bascmd.h/cmd_get, estack.h/push_parse_text
