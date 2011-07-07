@@ -16,11 +16,12 @@ Returns a pointer to the first byte of the archive memory area.
 [Explanation]
 This ROM_CALL first calls <A HREF="$$LINK(flashapp.h/OO_GetEndOfAllFlashApps)">OO_GetEndOfAllFlashApps</A>
 and rounds the result up to the next Flash sector boundary (multiple of 64 KB). Then, it calls a
-subroutine which, on two hardware models, increases the address to reduce the amount of usable
-archive memory:
+subroutine which, on two hardware models, increases the address to artificially reduce the amount of
+usable archive memory (MaxMem, XPand and tiosmod+amspatch nullify this code):
 <UL>
-<LI>on 89 HW1 and 92+ HW1, capping to <CODE>ROM_base+0x190000</CODE> (see
-<A HREF="$$LINK(flash.h/CappedHW1ArchiveMemoryBeginning)">CappedHW1ArchiveMemoryBeginning</A>)</LI>
+<LI>on 89 HW1 and 92+ HW1 running AMS 2.xx, capping to <CODE>ROM_base+0x190000</CODE> (see
+<A HREF="$$LINK(flash.h/CappedHW1ArchiveMemoryBeginning)">CappedHW1ArchiveMemoryBeginning</A>) - this is
+the size hard-coded in AMS 1.xx;</LI>
 <LI>on V200, capping to <CODE>0x500000</CODE> (<CODE>ROM_base+0x300000</CODE>).</LI>
 </UL>
 Finally, it returns the result to the user.<BR>

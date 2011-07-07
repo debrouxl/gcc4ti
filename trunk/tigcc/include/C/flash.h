@@ -33,7 +33,6 @@ typedef struct{unsigned short len;unsigned long hardwareID;unsigned long hardwar
 #define FL_getHardwareParmBlock() (MIN_AMS<101&&TIOS_entries<0x3CC?(const void*)"\0\x6\0\0\0\x1":_rom_call(const void*,(void),16B)())
 #define FL_getVerNum _rom_call(unsigned short,(void),16D)
 #define FL_write _rom_call(void,(const void*,void*,long),171)
-#define GetAMSSize() ((*((unsigned long*)(((char*)ROM_base)+0x12002)))+0x49)
 #if MIN_AMS>=200
 #define CappedHW1ArchiveMemoryBeginning ((unsigned char*const)(_rom_call_addr(43C)))
 #define FlashMemoryEnd ((unsigned char*const)(_rom_call_addr(43D)))

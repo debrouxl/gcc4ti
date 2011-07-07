@@ -27,7 +27,7 @@ TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF;
 <P><B>Low-level routines for working with the Flash ROM</B></P>
 
 <H3><U>Functions</U></H3>
-<DL INDENT="20"><DT><B><A HREF="#BatTooLowFlash">BatTooLowFlash</A></B><DD>Checks if the battery level is (or ever was) too low to write to the Flash memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_abandon">EM_abandon</A></B><DD>Abandon an archive memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_blockVerifyErase">EM_blockVerifyErase</A></B><DD>Verifies if an archive block is erased.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_findEmptySlot">EM_findEmptySlot</A></B><DD>Finds an empty space in the archive memory of the given size.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_GC">EM_GC</A></B><DD>Performs garbage collection in the archive memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_getArchiveMemoryBeginning">EM_getArchiveMemoryBeginning</A></B><DD>Returns a pointer to the first byte of the archive memory area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_survey">EM_survey</A></B><DD>Collects some useful information about the archive memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_write">EM_write</A></B><DD>Writes a block into the extended memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_addCert">FL_addCert</A></B><DD>Adds a certificate.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_download">FL_download</A></B><DD>Installs the product code.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getCert">FL_getCert</A></B><DD>Gets a certificate.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A></B><DD>Gets a pointer to the hardware parameter block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getVerNum">FL_getVerNum</A></B><DD>Gets a Flash ROM verification number.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_write">FL_write</A></B><DD>Writes a block into the Flash ROM.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetAMSSize">GetAMSSize</A></B><DD>Returns the size of the system code.</DL>
+<DL INDENT="20"><DT><B><A HREF="#BatTooLowFlash">BatTooLowFlash</A></B><DD>Checks if the battery level is (or ever was) too low to write to the Flash memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_abandon">EM_abandon</A></B><DD>Abandon an archive memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_blockVerifyErase">EM_blockVerifyErase</A></B><DD>Verifies if an archive block is erased.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_findEmptySlot">EM_findEmptySlot</A></B><DD>Finds an empty space in the archive memory of the given size.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_GC">EM_GC</A></B><DD>Performs garbage collection in the archive memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_getArchiveMemoryBeginning">EM_getArchiveMemoryBeginning</A></B><DD>Returns a pointer to the first byte of the archive memory area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_survey">EM_survey</A></B><DD>Collects some useful information about the archive memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_write">EM_write</A></B><DD>Writes a block into the extended memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_addCert">FL_addCert</A></B><DD>Adds a certificate.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_download">FL_download</A></B><DD>Installs the product code.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getCert">FL_getCert</A></B><DD>Gets a certificate.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A></B><DD>Gets a pointer to the hardware parameter block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getVerNum">FL_getVerNum</A></B><DD>Gets a Flash ROM verification number.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_write">FL_write</A></B><DD>Writes a block into the Flash ROM.</DL>
 <H3><U>Global Variables</U></H3>
 <DL INDENT="20"><DT><B><A HREF="#CappedHW1ArchiveMemoryBeginning">CappedHW1ArchiveMemoryBeginning</A></B><DD>The address where AMS 2.xx and 3.xx cap the beginning of the archive memory on HW1 calculators.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FlashMemoryEnd">FlashMemoryEnd</A></B><DD>A pointer to the first byte after the end of the archive memory.</DL>
 <H3><U>Constants</U></H3>
@@ -133,11 +133,12 @@ returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
 
 <P>This ROM_CALL first calls <A HREF="flashapp.html#OO_GetEndOfAllFlashApps">OO_GetEndOfAllFlashApps</A>
 and rounds the result up to the next Flash sector boundary (multiple of 64 KB). Then, it calls a
-subroutine which, on two hardware models, increases the address to reduce the amount of usable
-archive memory:</P>
+subroutine which, on two hardware models, increases the address to artificially reduce the amount of
+usable archive memory (MaxMem, XPand and tiosmod+amspatch nullify this code):</P>
 <UL>
-<LI><P>on 89 HW1 and 92+ HW1, capping to <CODE>ROM_base+0x190000</CODE> (see
-<A HREF="#CappedHW1ArchiveMemoryBeginning">CappedHW1ArchiveMemoryBeginning</A>)</P></LI>
+<LI><P>on 89 HW1 and 92+ HW1 running AMS 2.xx, capping to <CODE>ROM_base+0x190000</CODE> (see
+<A HREF="#CappedHW1ArchiveMemoryBeginning">CappedHW1ArchiveMemoryBeginning</A>) - this is
+the size hard-coded in AMS 1.xx;</P></LI>
 <LI><P>on V200, capping to <CODE>0x500000</CODE> (<CODE>ROM_base+0x300000</CODE>).</P></LI>
 </UL>
 <P>Finally, it returns the result to the user.<BR>
@@ -196,14 +197,11 @@ means "full sector", and -1 means "unused sector").
 Each block must completely
 belong to one sector, i.e. it cannot cross over sector boundaries.</P></LI>
 <LI><P>Before each block is a header. It starts with a flag which may be -4
-for deleted blocks, -2 for used blocks and
--1 for free blocks (AMS 2.xx uses
--32 and -64
-instead of -2 and -4, I don't
-know why; maybe old flags may be used for "noname" files, see below).
+for deleted blocks, -2 for used blocks and -1 for free blocks (AMS 2.xx uses
+-32 and -64 instead of -2 and -4, I don't know why; maybe old flags may be used
+for "noname" files, see below).
 So, if you need to keep some data in the archive memory for a longer time, it must be
-marked with -2
-(or -32 on AMS 2.xx), otherwise it may be treated by TIOS as "free space".</P></LI>
+marked with -2 (or -32 on AMS 2.xx), otherwise it may be treated by TIOS as "free space".</P></LI>
 <LI><P>After the flag word, on AMS 2.xx the name of the folder (8 bytes) and the name of the
 stored file (8 bytes) are stored (both of them are zero padded). After this, yet one word
 follows (usually set to zero), exact meaning is unknown to me. This extra information
@@ -236,7 +234,7 @@ be efficiently used without cooperation with TI.</P>
 <P><B>Installs the product code.</B></P>
 
 <P>FL_download installs the product code (there is no exit from this routine). It calls
-startup base code, reinstates vector table, then enters a receiving loop. It seems
+startup boot code, reinstates vector table, then enters a receiving loop. It seems
 that parameter <I>dummy</I> is ignored.</P>
 
 <HR>
@@ -275,20 +273,18 @@ found, it returns the address of the default parameter block.</P>
 <P><B>Writes a block into the Flash ROM.</B></P>
 
 <P>FL_write writes a <I>size</I> bytes long block which begins at address pointed to by <I>src</I>
-into the Flash ROM at the address <I>dest</I>. Writting is allowed only to the user portion
-of the Flash ROM (also known as "archive memory"), which on HW1 calculators starts at 0x390000
-(TI-89) or 0x590000 (TI-92 Plus)
-and on HW2 calculators starts just at the end of the ROM code. User portion of the Flash ROM
-ends on 0x400000 (TI-89) or 0x600000 (TI-92 Plus). Any attempt to write something out of this
-region will be ignored.</P>
-
-<HR>
-<H3><A NAME="GetAMSSize"><U>GetAMSSize</U></A></H3>
-<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> GetAMSSize (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
-<P><B>Returns the size of the system code.</B></P>
-
-<P>GetAMSSize returns the size of the system code of the AMS.
-Note that it is not the size of the bootcode, which is less than 64K.</P>
+(<B>RAM or Flash memory</B>) into the Flash ROM at the address <I>dest</I>. Writing is allowed
+only to the user portion of the Flash ROM (also known as "archive memory"), which starts at an
+address depending on the hardware model and OS version.<BR>
+The general rule on AMS 2.xx and 3.xx is that storage for FlashApps starts at the first sector
+boundary after the end of the OS, and that the archive memory starts at the first sector
+boundary after the end of the FlashApps. There is always at least one sector for FlashApps,
+even if it's empty. See
+<A HREF="#EM_getArchiveMemoryBeginning">EM_getArchiveMemoryBeginning</A> for
+the exceptions to this general rule.<BR>
+User portion of the Flash ROM ends at 0x400000 (TI-89), 0x600000 (TI-92 Plus, V200) or 0x800000
+(TI-89T). Any attempt to write something out of this region will be ignored. Attempts to read
+the Flash memory (in Protection disabled mode) are, however, <I>not</I> filtered.</P>
 
 <HR>
 <H3><A NAME="CappedHW1ArchiveMemoryBeginning"><U>CappedHW1ArchiveMemoryBeginning</U></A></H3>
@@ -335,7 +331,7 @@ There's a way around this limitation, see
 <P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
 <TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
 <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> len; <I>/* length of parameter block */</I><BR>
-<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> hardwareID; <I>/* 1 = TI-92 Plus, 3 = TI-89 */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> hardwareID; <I>/* 1 = TI-92 Plus, 3 = TI-89, 8 = V200, 9 = TI-89T */</I><BR>
 <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> hardwareRevision; <I>/* hardware revision number */</I><BR>
 <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> bootMajor; <I>/* boot code version number */</I><BR>
 <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> bootRevision; <I>/* boot code revision number */</I><BR>
@@ -358,13 +354,14 @@ code versions. It is important to check the value of <I>len</I> before accessing
 values after <I>hardwareID</I>. You can use <A HREF="stddef.html#offsetof">offsetof</A> to
 determine if a particular field is present.
 <BR><BR>
-The TI-89 and TI-92 Plus allocate the same amount of memory for the LCD.
-However, the TI-89 cannot display as much as the TI-92 Plus.
+The TI-89 / 89T and TI-92 Plus / V200 allocate the same amount of memory for the LCD.
+However, the TI-89 / 89T cannot display as much as the TI-92 Plus / V200.
 <I>LCDBitsWide</I> and <I>LCDBitsTall</I> reflect how much of the calculator's
 LCD memory the user can see.
 <BR><BR>
 If <I>len</I> is 24 or more, <I>gateArray</I> contains a hardware version number
-(currently 1 (HW1) or 2 (HW2)). Otherwise, the calculator is certainly a HW1 calculator.
+(currently 1 (HW1) or 2 (HW2) for 89, 92+ and V200; 3 (HW3) or 4 (HW4) for 89T).
+Otherwise, the calculator is certainly a HW1 calculator.
 <BR><BR>
 Here is an example (called "Hardware Parameters") which returns the
 complete hardware parameter block as a list:</P>

@@ -13,12 +13,18 @@ Writes a block into the Flash ROM.
 
 [Explanation]
 FL_write writes a <I>size</I> bytes long block which begins at address pointed to by <I>src</I>
-into the Flash ROM at the address <I>dest</I>. Writting is allowed only to the user portion
-of the Flash ROM (also known as "archive memory"), which on HW1 calculators starts at 0x390000
-(TI-89) or 0x590000 (TI-92 Plus)
-and on HW2 calculators starts just at the end of the ROM code. User portion of the Flash ROM
-ends on 0x400000 (TI-89) or 0x600000 (TI-92 Plus). Any attempt to write something out of this
-region will be ignored.
+(<B>RAM or Flash memory</B>) into the Flash ROM at the address <I>dest</I>. Writing is allowed
+only to the user portion of the Flash ROM (also known as "archive memory"), which starts at an
+address depending on the hardware model and OS version.<BR>
+The general rule on AMS 2.xx and 3.xx is that storage for FlashApps starts at the first sector
+boundary after the end of the OS, and that the archive memory starts at the first sector
+boundary after the end of the FlashApps. There is always at least one sector for FlashApps,
+even if it's empty. See
+<A HREF="$$LINK(flash.h/EM_getArchiveMemoryBeginning)">EM_getArchiveMemoryBeginning</A> for
+the exceptions to this general rule.<BR>
+User portion of the Flash ROM ends at 0x400000 (TI-89), 0x600000 (TI-92 Plus, V200) or 0x800000
+(TI-89T). Any attempt to write something out of this region will be ignored. Attempts to read
+the Flash memory (in Protection disabled mode) are, however, <I>not</I> filtered.
 
 [References]
 In=flash.h/EM_write

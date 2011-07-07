@@ -27,8 +27,9 @@ is given below. First, the field ID number is shown, then the short description 
 follows. Indentation shows that a particular field is a subfield of the field with smaller indentation.
 <UL>
 <LI>
-Layout of AMS header (AMS is part of TIOS which may be replaced, in opposite to Base Code);
-it starts at address 0x212000 on TI-89 and 0x412000 on TI-92 Plus:
+<B>Layout of AMS header</B> (AMS is part of TIOS which may be replaced, unlike Boot Code);
+it starts at address <CODE>ROM_base+0x12000</CODE>, i.e. 0x212000 on TI-89 and V200, 0x412000 on
+TI-92 Plus and 0x812000 on TI-89T.
 <BR><BR>
 <PRE>0x8000 AMS header (organized as a certificate file, although it is not
                    read-protected like "real" certificates)
@@ -45,17 +46,19 @@ it starts at address 0x212000 on TI-89 and 0x412000 on TI-92 Plus:
 
 0x0200 Signature of entire AMS
 </PRE>
-Fields with ID numbers 0x0320 and 0x0200 contains some authenticated number.
-More precise, field with ID number 0x0320 is a unique number for the ROM imate, and
-field with ID 0x0200 is the encrypted digital signature of it.
+Fields with ID numbers 0x0320 and 0x0200 contains an authenticated number.
+More precisely, field with ID number 0x0320 contains a 4-byte field with ID 0x0900, itself
+containing a 32-bit timestamp: number of seconds elapsed since January 1st 1997, 00:00 in
+some timezone (GMT ?), and the time the OS image was signed.
+Field with ID 0x0200 is the encrypted digital signature of it.<BR>
 Product ID is formed by applying format string "%02lX-%lX-%lx-%lX" to the content of
 fields with ID numbers 0x8010, 0x80A0, 0x8020 and 0x8030.
 <BR><BR>
 </LI>
 <LI>
-Layout of Flash ROM certificate (it is stored in the part of the Flash ROM which is read-protected,
-so reading it is extremely hard from any routine which is not the part of the TIOS Base Code);
-it starts at address 0x210004 on TI-89 and 0x410004 on TI-92 Plus:
+Layout of Flash ROM certificate (stored in the part of the Flash ROM which is read-protected
+when the Protection is enabled); it starts at address <CODE>ROM_base+0x10004</CODE>, i.e.
+0x210004 on TI-89 and V200, 0x410004 on TI-92 Plus and 0x810004 on TI-89T:
 <BR><BR>
 <PRE>0x0330 Flash ROM certificate
 
@@ -81,8 +84,8 @@ Layout of .cer files, which are attached to the start of Flash applications:
 
 0x0510 Author name
 
-0x0320 Product code
-0x0200 Product code signature
+0x0320 Product code - same construction and meaning as the field in AMS itself, see above
+0x0200 Product code signature - see above
 0x0700 Unknown certificate data
 
 0x0710 Unknown byte data
@@ -99,13 +102,14 @@ used to add such data to the certificate memory (this routine performs
 very strong checking of what may be written there and under what conditions, so it is not
 possible to write a garbage in this area by calling this routine).
 </LI></UL>
-As it is not possible to access the certificate part of Flash ROM directly, ecxept from the
-Base Code part of TIOS (this area of ROM is read-protected), the usuall method for reading
-certificates is to call <A HREF="$$LINK(flash.h/FL_getCert)">FL_getCert</A> first. This function
-will copy all data from the certificate area which may be shown to the public into the RAM,
-so the certificate can be read later from the RAM. For example, if you need to access the
-certificate data which shows the name of the author of an Flash application (assuming that
-such data is present in the certificate), the usual procedure is:
+As it is not possible to access the certificate part of Flash ROM <I>directly</I>, because this
+area of Flash is read-protected when the Protection is enabled, the <I>usual</I> method (there's
+an <I>unusual</I> method that doesn't even require disabling the Protection from the client
+program) for reading certificates is to call <A HREF="$$LINK(flash.h/FL_getCert)">FL_getCert</A>
+first. This function will copy all data from the certificate area which may be shown to the
+public into the RAM, so that the certificate can be read later from the RAM. For example, if you
+need to access the certificate data which shows the name of the author of an Flash application
+(assuming that such data is present in the certificate), the usual procedure is:
 <PRE>HANDLE handle;
 unsigned long size;
 CFILE context;
