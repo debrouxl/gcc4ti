@@ -60,6 +60,7 @@ extern void puts(const char*)__ATTR_LIB_ASM__;
 extern short rename(const char*,const char*)__ATTR_LIB_C__;
 #define rewind(f) ((void)({FILE*__file1__=(f);fseek(__file1__,0,SEEK_SET);__file1__->flags&=~_F_ERR;}))
 #define scanf(__format__...) ({long __maxbuflen=(_rom_call(unsigned long,(void),9C))()-2;(__maxbuflen>0)?({char*__inputbuf=(_rom_call(void*,(long),A2))(__maxbuflen);getsn(__inputbuf,__maxbuflen);short __result=sscanf(__inputbuf,__format__);(_rom_call(void,(void*),A3))(__inputbuf);__result;}):0;})
+extern short snprintf(char*,long,const char*,...)__ATTR_LIB_C__ __attribute__((__format__(__printf__,3,4)));
 #define sprintf _rom_call_attr(short,(char*,const char*,...),__attribute__((__format__(__printf__,2,3))),53)
 #define sscanf(__buffer__,__format__...) ({__sscanf_string __param__={(__buffer__),0};cbscanf((vcbscanf_get_Callback_t)__sscanf_get,(vcbscanf_unget_Callback_t)__sscanf_unget,&__param__,__format__);})
 #define strerror _rom_call(char*,(short),27D)
@@ -73,6 +74,7 @@ extern short vcbscanf(vcbscanf_get_Callback_t asm("a0"),vcbscanf_unget_Callback_
 #define vfscanf(__file__,__format__,__arglist__) vcbscanf((vcbscanf_get_Callback_t)__fscanf_get,(vcbscanf_unget_Callback_t)__fscanf_unget,(void*)(__file__),(__format__),(__arglist__))
 #define vprintf(f,a) vcbprintf((vcbprintf_Callback_t)fputchar,NULL,(f),(a))
 #define vscanf(__format__,__arglist__) ({long __maxbuflen=(_rom_call(unsigned long,(void),9C))()-2;(__maxbuflen>0)?({char*__inputbuf=(_rom_call(void*,(long),A2))(__maxbuflen);getsn(__inputbuf,__maxbuflen);short __result=vsscanf(__inputbuf,(__format__),(__arglist__));(_rom_call(void,(void*),A3))(__inputbuf);__result;}):0;})
+extern short vsnprintf(char*,long,const char*,va_list)__ATTR_LIB_C__;
 #define vsprintf(b,f,a) ((void)({void*__p=(b);vcbprintf((vcbprintf_Callback_t)strputchar,&__p,(f),(a));*(char*)__p=0;}))
 #define vsscanf(__buffer__,__format__,__arglist__) ({__sscanf_string __param__={(__buffer__),0};vcbscanf((vcbscanf_get_Callback_t)__sscanf_get,(vcbscanf_unget_Callback_t)__sscanf_unget,&__param__,(__format__),(__arglist__));})
 /* End Auto-Generated Part */
