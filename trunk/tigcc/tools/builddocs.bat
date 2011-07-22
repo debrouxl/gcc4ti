@@ -23,6 +23,8 @@ bin/ttbin2oth.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
 bin/ttbin2bin.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
+bin/ttbin2txt.exe >> tooldocs.txt
+echo ----------------------------------------------------------------------------- >> tooldocs.txt
 bin/ttchecksum.exe >> tooldocs.txt
 echo ----------------------------------------------------------------------------- >> tooldocs.txt
 bin/ttdos2ebk.exe >> tooldocs.txt

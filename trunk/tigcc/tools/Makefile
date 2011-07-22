@@ -1,5 +1,5 @@
 # TI-68k Developer Utilities Makefile
-# Copyright (C) 2009, Lionel Debroux
+# Copyright (C) 2009-2011, Lionel Debroux
 
 ifeq ($(OSTYPE), msys)
 EXEEXT = .exe
@@ -10,9 +10,9 @@ endif
 CC ?= gcc
 CFLAGS = -Os -s -fno-exceptions -pipe -Wall -W -Wwrite-strings -Wp,-D_FORTIFY_SOURCE=2
 
-all: setup ttbin2hex ttbin2oth ttbin2str ttextract ttstrip ttarchive ttpack ttunpack ttdos2ebk tthelp ttinfo ttebkgen ttchecksum ttbin2bin ttsplit ttppggen tttiler ttunebk ttunarchive tthex2bin ttsetname
+all: setup ttbin2hex ttbin2oth ttbin2str ttextract ttstrip ttarchive ttpack ttunpack ttdos2ebk tthelp ttinfo ttebkgen ttchecksum ttbin2bin ttsplit ttppggen tttiler ttunebk ttunarchive tthex2bin ttsetname ttbin2txt
 
-ttbin2hex ttbin2oth ttbin2str ttextract ttstrip ttarchive ttpack ttunpack ttdos2ebk tthelp ttinfo ttebkgen ttchecksum ttbin2bin ttsplit ttppggen tttiler ttunebk ttunarchive tthex2bin ttsetname: $?
+ttbin2hex ttbin2oth ttbin2str ttextract ttstrip ttarchive ttpack ttunpack ttdos2ebk tthelp ttinfo ttebkgen ttchecksum ttbin2bin ttsplit ttppggen tttiler ttunebk ttunarchive tthex2bin ttsetname ttbin2txt: $?
 	$(CC) $@.c -o bin/$@ $^ $(CFLAGS) $(WARN_CFLAGS)
 
 clean:
@@ -39,6 +39,8 @@ docs:
 	bin/ttbin2oth$(EXEEXT) >> tooldocs.txt || true
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
 	bin/ttbin2bin$(EXEEXT) >> tooldocs.txt || true
+	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
+	bin/ttbin2txt$(EXEEXT) >> tooldocs.txt || true
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt
 	bin/ttchecksum$(EXEEXT) >> tooldocs.txt || true
 	echo "-----------------------------------------------------------------------------" >> tooldocs.txt

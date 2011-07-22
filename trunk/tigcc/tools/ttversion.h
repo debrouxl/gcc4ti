@@ -35,7 +35,7 @@
 #ifndef __TTVERSION_H__
 #define __TTVERSION_H__
 
-#define TTV_MAIN   "1.40"
+#define TTV_MAIN   "1.41"
 #define TTV_SUB    ""
 #define USAGE_OUT  stdout
 
