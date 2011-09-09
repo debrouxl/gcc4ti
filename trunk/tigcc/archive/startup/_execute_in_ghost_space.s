@@ -19,13 +19,14 @@ __execute_in_ghost_space:
 
     |--------------------------------------------------------------------------
     | check for VTI (trick suggested by Julien Muchembled)
+    | optimized by Lionel Debroux
     |--------------------------------------------------------------------------
 	trap     #12         | enter supervisor mode. returns old (%sr) in %d0.w
 	move.w   #0x3000,%sr | set a non-existing flag in %sr (but keep s-flag)
 	move.w   %sr,%d1     | get %sr content and check for non-existing flag
 	move.w   %d0,%sr     | restore old %sr content
-	btst.l   #12,%d1     | this non-existing flag can only be set on the VTI
-	bne.s    L.is_hw1or2 | flag set -> VTI -> treat as HW1
+	lsl.w    #3,%d1      | this non-existing flag can only be set on the VTI
+	bmi.s    L.is_hw1or2 | flag set -> VTI -> treat as HW1
 
     |--------------------------------------------------------------------------
     | check for HW3
@@ -60,7 +61,7 @@ L.is_hw1or2:
         bcc __ghost_done
         bset.l #18,%d0
         moveq #0,%d1
-        move.w (%a0,-2),%d1
+        move.w -(%a0),%d1
         add.l %d0,%d1
         subq.l #1,%d1
         move.l %d1,-(%sp)
