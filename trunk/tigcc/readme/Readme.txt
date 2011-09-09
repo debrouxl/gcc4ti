@@ -147,9 +147,9 @@ non-standard options:
   GDB-enabled TiEmu.
 
 -standalone
-  Do not link against tigcc.a. All of GCC's internal functions are
-  implemented in this library, as well as all non-TIOS functions. Using one
-  of these will result in an error from the linker.
+  Do not link against tigcc.a / flashos.a / fargo.a. All of GCC's internal
+  functions are implemented in this library, as well as all non-TIOS
+  functions. Using one of these will result in an error from the linker.
 
 -ar
   Create an archive (a static library) instead of a program. The resulting

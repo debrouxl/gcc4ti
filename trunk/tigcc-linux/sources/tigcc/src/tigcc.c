@@ -60,7 +60,7 @@ usage (int status)
           "  -o [outfile]          output to file outfile\n"
           "  -pack [varname]       compress the program using ExePack technology\n"
           "  -outputbin            produce a pure binary file (as with ttstrip)\n"
-          "  -standalone           does not link against the tigcc.a archive\n"
+          "  -standalone           does not link against tigcc.a/flashos.a/fargo.a archive\n"
           "  -r, --redirect        redirect stdout to the tigcc.log file\n"
           "  -Wa/WA,options        pass options to as/a68k\n"
           "  -ar                   create static library (function archive)\n"
