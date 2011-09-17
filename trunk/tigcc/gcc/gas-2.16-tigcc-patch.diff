@@ -1,3 +1,16 @@
+diff -aur binutils-2.16.1.orig/bfd/coffcode.h binutils-2.16.1-src/bfd/coffcode.h
+--- binutils-2.16.1.orig/bfd/coffcode.h 2005-02-24 21:16:55.000000000 +0100
++++ binutils-2.16.1-src/bfd/coffcode.h     2011-07-01 15:46:35.000000000 +0200
+@@ -4995,6 +4995,9 @@
+       cache_ptr = reloc_cache + idx;
+       src = native_relocs + idx;
+
++      // (GCC4TI) HACK: mask out COFF_RELOC_UNOPTIMIZABLE, to make binutils more usable with archives containing that non-standard flag.
++      src->r_type[0] &= ~0x80;
++
+       coff_swap_reloc_in (abfd, src, &dst);
+
+ #ifdef RELOC_PROCESSING
 diff -Naur binutils-2.16.1.orig/bfd/config.bfd binutils-2.16.1-src/bfd/config.bfd
 --- binutils-2.16.1.orig/bfd/config.bfd	2005-01-31 18:18:46.000000000 +0100
 +++ binutils-2.16.1-src/bfd/config.bfd	2005-07-01 00:40:16.000000000 +0200

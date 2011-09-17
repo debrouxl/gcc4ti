@@ -486,11 +486,11 @@ void execute(const char *program, char **argv)
 void compile(char *file) 
 {
   unsigned short local_argc = gcc_argc;
-  char gcc_name[9 + strlen (tigcc_base)];
+  char gcc_name[30 + strlen (tigcc_base)];
   char bindir[6 + strlen (tigcc_base)];
   char includedir[13 + strlen (tigcc_base)];
 
-  sprintf (gcc_name, "%s/bin/gcc", tigcc_base);
+  sprintf (gcc_name, "%s/bin/m68k-coff-tigcc-gcc", tigcc_base);
   sprintf (bindir, "-B%s/bin/", tigcc_base);
   sprintf (includedir, "-I%s/include/c", tigcc_base);
   gcc_argv[0] = gcc_name;
@@ -544,9 +544,9 @@ void compile(char *file)
 
     // patch assembly file
     if(patch) {
-      char patcher_name[strlen(tigcc_base) + 13];
+      char patcher_name[strlen(tigcc_base) + 19];
       char *argv[] = {patcher_name, tmpfile, "-o", tmpfile, NULL};
-      sprintf (patcher_name, "%s/bin/patcher", tigcc_base);
+      sprintf (patcher_name, "%s/bin/tigcc-patcher", tigcc_base);
 
       execute (patcher_name, argv);
     }
@@ -556,7 +556,7 @@ void compile(char *file)
 /* Execute GNU as */
 void assemble(char *file)
 {
-  char as_name[strlen(tigcc_base) + 8];
+  char as_name[strlen(tigcc_base) + 30];
   char includedir[strlen(tigcc_base) + 13];
   char *tmpfile;
   char *argv[7 + (as_args ? strlen (as_args) / 2 : 0) + allrelocs + optreturns + debug];
@@ -580,7 +580,7 @@ void assemble(char *file)
   }
 
   argv[5] = tmpfile;
-  sprintf (as_name, "%s/bin/as", tigcc_base);
+  sprintf (as_name, "%s/bin/m68k-coff-tigcc-as", tigcc_base);
   sprintf (includedir, "-I%s/include/s", tigcc_base);
 
   // add the file to the list

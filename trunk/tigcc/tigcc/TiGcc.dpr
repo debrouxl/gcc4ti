@@ -509,8 +509,8 @@ begin
 
 			// Basic command lines
 			ProgPath := ExtractFilePath (GetShortFileName (ParamStr (0)));
-			GCCLine := ProgPath + 'BIN\GCC.EXE -B' + ProgPath + 'BIN\ -I ' + ProgPath + 'INCLUDE\C\';
-			AsLine := ProgPath + 'BIN\AS.EXE -mc68000 -I ' + ProgPath + 'INCLUDE\S\';
+			GCCLine := ProgPath + 'BIN\m68k-coff-tigcc-GCC.EXE -B' + ProgPath + 'BIN\ -I ' + ProgPath + 'INCLUDE\C\';
+			AsLine := ProgPath + 'BIN\m68k-coff-tigcc-AS.EXE -mc68000 -I ' + ProgPath + 'INCLUDE\S\';
 			A68kLine := ProgPath + 'BIN\A68K.EXE -i' + ProgPath + 'INCLUDE\ASM\ -g -t';
 
 			// Parsing of command line arguments
@@ -740,7 +740,7 @@ begin
 						if LowerCase (ExtractFileExt (Strings [I])) = '.o' then
 							Delete (I);
 
-			// Execution of GCC.exe (compiling and assembling)
+			// Execution of m68k-coff-tigcc-GCC.exe (compiling and assembling)
 			if (GCCFiles.Count > 0) or (Pos ('--', GCCLine) > 0) then begin
 				if (Pos (' -S', GCCLine) <= 0) and (Pos (' -E', GCCLine) <= 0) then
 					Insert (' -S', GCCLine, Length (GCCLine) + 1);

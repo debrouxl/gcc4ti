@@ -776,7 +776,7 @@ void mkdir_multi(const char *fileName)
 {
   int l=strlen(fileName);
   char buffer[l+2];
-  char *ptr;
+  const char *ptr;
 
 #ifdef _WIN32
   ptr=strchr(fileName,'\\');

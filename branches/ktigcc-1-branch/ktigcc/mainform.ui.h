@@ -4151,7 +4151,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           procio->setComm(static_cast<KProcess::Communication>(
             KProcess::Stdout|KProcess::MergedStderr));
           procio->setWorkingDirectory(fileDir);
-          *procio<<(QString("%1/bin/gcc").arg(tigcc_base))
+          *procio<<(QString("%1/bin/m68k-coff-tigcc-gcc").arg(tigcc_base))
                  <<"-S"<<"-I"<<fileDir
                  <<"-B"<<(QString("%1/bin/").arg(tigcc_base))<<"-I-"
                  <<"-I"<<(QString("%1/include/c").arg(tigcc_base))<<args;
@@ -4246,7 +4246,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           procio->setComm(static_cast<KProcess::Communication>(
             KProcess::Stdout|KProcess::MergedStderr));
           procio->setWorkingDirectory(fileDir);
-          *procio<<(QString("%1/bin/as").arg(tigcc_base))
+          *procio<<(QString("%1/bin/m68k-coff-tigcc-as").arg(tigcc_base))
                  <<"-I"<<fileDir<<"-mc68000"
                  <<"-I"<<(QString("%1/include/s").arg(tigcc_base))<<args;
           if (settings.cut_ranges||settings.archive)

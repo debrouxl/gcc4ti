@@ -29,10 +29,10 @@ export CC_FOR_BUILD
 ORG_PWD=$PWD/..
 mkdir "$ORG_PWD/build"; cd "$ORG_PWD/build"; mkdir gcc; cd gcc
 if [ "x$GCC4TIHOST" = "x" ]; then
-../../download/gcc.ti/configure "--prefix=$PREFIX_GCC4TI" --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp
+../../download/gcc.ti/configure "--prefix=$PREFIX_GCC4TI" --program-prefix=m68k-coff-tigcc- --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp
 else
 echo Compiling GCC4TI gcc on custom host $GCC4TIHOST
-../../download/gcc.ti/configure "--prefix=$PREFIX_GCC4TI" --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp --host=$GCC4TIHOST
+../../download/gcc.ti/configure "--prefix=$PREFIX_GCC4TI" --program-prefix=m68k-coff-tigcc- --target=m68k-coff --with-gnu-as --disable-nls --disable-multilib --disable-shared --enable-static --disable-threads --disable-win32-registry --disable-checking --disable-werror --disable-pch --disable-mudflap --disable-libssp --host=$GCC4TIHOST
 fi
 
 if [ $? -ne 0 ]; then
@@ -40,38 +40,42 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-#GCC 4.0 is very annoying because of its habit to configure subdirectories only during make.
-#This keeps us from patching the generated makefile in advance.
-#So we have to call make 3 times to get it to work with our removed directories.
+CC=$CC ${make} -i
+if [ $? -ne 0 ]; then
+    echo "GCC4TI script: Error while making gcc"
+    exit 2
+fi
 
-CC=$CC ${make}
-echo You should have seen an error. This is normal. GCC4TI installation continues.
+CC=$CC ${make} -i install
+if [ $? -ne 0 ]; then
+    echo "GCC4TI script: Error while installing gcc"
+    exit 3
+fi
 
-# Create dummy libiberty testsuite makefile
-rm -f libiberty/testsuite/Makefile
-echo all: >libiberty/testsuite/Makefile
-
-${make}
-echo You should have seen an error. This is normal. GCC4TI installation continues.
-
-# Create dummy build-libiberty testsuite makefile
-rm -f `ls -d build-*`/libiberty/testsuite/Makefile
-echo all: >`ls -d build-*`/libiberty/testsuite/Makefile
-
-${make}
-echo You should have seen an error. This is normal. GCC4TI installation continues.
 
 # Finish gcc installation
-${install} -d "$PREFIX_GCC4TI/bin/" || exit 1
 iswin1=`echo $GCC4TIHOST | grep -E -i "msys|mingw|cygwin"`
 iswin2=`uname -a | grep -E -i "msys|mingw|cygwin"`
 if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
-${install} gcc/cc1  "$PREFIX_GCC4TI/bin/" || exit 1
-${install} gcc/xgcc "$PREFIX_GCC4TI/bin/gcc" || exit 1
+#${install} gcc/cc1  "$PREFIX_GCC4TI/bin/" || exit 1
+${install} gcc/xgcc "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-gcc" || exit 1
+EXT_IF_ANY=
 else
-${install} gcc/cc1.exe  "$PREFIX_GCC4TI/bin/" || exit 1
-${install} gcc/xgcc.exe "$PREFIX_GCC4TI/bin/gcc.exe" || exit 1
+#${install} gcc/cc1.exe  "$PREFIX_GCC4TI/bin/" || exit 1
+${install} gcc/xgcc.exe "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-gcc.exe" || exit 1
+EXT_IF_ANY=".exe"
 fi
+
+mv "$PREFIX_GCC4TI/libexec/gcc/m68k-coff/4.1.2/cc1$EXT_IF_ANY" "$PREFIX_GCC4TI/bin/"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-gcc-4.1.2$EXT_IF_ANY"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-cpp$EXT_IF_ANY"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-gccbug*"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-gcov$EXT_IF_ANY"
+rm -rf "$PREFIX_GCC4TI/info"
+rm -rf "$PREFIX_GCC4TI/libexec"
+rm -rf "$PREFIX_GCC4TI/m68k-coff"
+rm -rf "$PREFIX_GCC4TI/man"
+rm -rf "$PREFIX_GCC4TI/share"
 
 cd "$ORG_PWD/scripts"
 

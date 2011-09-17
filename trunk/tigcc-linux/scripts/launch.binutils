@@ -7,14 +7,14 @@
 isbsd=`uname -a | grep "BSD"`
 isos=`uname -a | grep "opensolaris"`
 if [ "x$isbsd" = "x" -a "x$isos" = "x" ]; then
-	#Assume GNU make
-        make=make
+    # Assume GNU make
+    make=make
 else
         make=gmake
 fi
 if [ "x$isos" = "x" ]; then
-	#Assume GNU or BSD install
-        install=install
+    # Assume GNU or BSD install
+    install=install
 else
         install=ginstall
 fi
@@ -23,10 +23,10 @@ echo GCC4TI script: Configuring, compiling and installing binutils...
 ORG_PWD=$PWD/..
 mkdir "$ORG_PWD/build"; cd "$ORG_PWD/build"; mkdir binutils; cd binutils
 if [ "x$GCC4TIHOST" = "x" ]; then
-../../download/binutils.ti/configure --disable-serial-configure "--prefix=$PREFIX_GCC4TI" --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
+../../download/binutils.ti/configure --disable-serial-configure "--prefix=$PREFIX_GCC4TI" --program-prefix=m68k-coff-tigcc- --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry
 else
 echo Compiling GCC4TI binutils on custom host $GCC4TIHOST
-../../download/binutils.ti/configure --disable-serial-configure "--prefix=$PREFIX_GCC4TI" --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry --host=$GCC4TIHOST
+../../download/binutils.ti/configure --disable-serial-configure "--prefix=$PREFIX_GCC4TI" --program-prefix=m68k-coff-tigcc- --target=m68k-coff --disable-shared --enable-static --disable-multilib --disable-nls --disable-win32-registry --host=$GCC4TIHOST
 fi
 
 if [ $? -ne 0 ]; then
@@ -34,66 +34,42 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-#Binutils 2.14 is very annoying because of its habit to configure subdirectories only during make.
-#This keeps us from patching the generated makefile in advance.
-#So we have to call make 5 times to get it to work with our removed directories.
-
-${make}
-
-echo You should have seen an error. This is normal. GCC4TI installation continues.
-
-# Create dummy libiberty testuite makefile
-rm -f libiberty/testsuite/Makefile
-echo all: >libiberty/testsuite/Makefile
-
-${make}
-
-echo You should have seen an error. This is normal. GCC4TI installation continues.
-
-# We do not want to install any documentation. It is redundant with our HTML documentation.
-rm -f bfd/doc/Makefile
-echo all: >bfd/doc/Makefile
-# We do not want any po (NLS) makefiles either: we do not use any NLS anyway
-mkdir bfd/po
-rm -f bfd/po/Makefile
-echo all: >bfd/po/Makefile
-
-${make}
-
-echo You should have seen an error. This is normal. GCC4TI installation continues.
-
-# We do not want any po (NLS) makefiles: we do not use any NLS anyway
-rm -f opcodes/po/Makefile
-echo all: >opcodes/po/Makefile
-
-${make}
-
-echo You should have seen an error. This is normal. GCC4TI installation continues.
-
-# We do not want to install any documentation. It is redundant with our HTML documentation.
-mkdir gas/doc
-rm -f gas/doc/Makefile
-echo all: >gas/doc/Makefile
-# We do not want any po (NLS) makefiles either: we do not use any NLS anyway
-mkdir gas/po
-rm -f gas/po/Makefile
-echo all: >gas/po/Makefile
-
-#Now this one should really work...
-${make}
+CC=$CC ${make} -i
 if [ $? -ne 0 ]; then
     echo "GCC4TI script: Error while making binutils"
     exit 2
 fi
 
-${install} -d "$PREFIX_GCC4TI/bin/" || exit 1
+CC=$CC ${make} -i install
+if [ $? -ne 0 ]; then
+    echo "GCC4TI script: Error while installing binutils"
+    exit 3
+fi
+
+
+# Finish binutils installation
 iswin1=`echo $GCC4TIHOST | grep -E -i "msys|mingw|cygwin"`
 iswin2=`uname -a | grep -E -i "msys|mingw|cygwin"`
 if [ "x$iswin1" = "x" -a "x$iswin2" = "x" ]; then
-${install} gas/as-new "$PREFIX_GCC4TI/bin/as" || exit 1
+EXT_IF_ANY=
 else
-${install} gas/as-new.exe "$PREFIX_GCC4TI/bin/as.exe" || exit 1
+EXT_IF_ANY=".exe"
 fi
+
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-addr2line$EXT_IF_ANY"
+# tigcc -ar / ar-tigcc has never been a complete replacement for ar.
+#rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-ar$EXT_IF_ANY"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-c++filt$EXT_IF_ANY"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-cxxfilt$EXT_IF_ANY"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-ld$EXT_IF_ANY"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-ranlib$EXT_IF_ANY"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-readelf$EXT_IF_ANY"
+rm -f "$PREFIX_GCC4TI/bin/m68k-coff-tigcc-strings$EXT_IF_ANY"
+rm -rf "$PREFIX_GCC4TI/info"
+rm -rf "$PREFIX_GCC4TI/libexec"
+rm -rf "$PREFIX_GCC4TI/m68k-coff"
+rm -rf "$PREFIX_GCC4TI/man"
+rm -rf "$PREFIX_GCC4TI/share"
 
 cd "$ORG_PWD/scripts"
 

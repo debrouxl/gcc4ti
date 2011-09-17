@@ -1736,7 +1736,7 @@ begin
 	CompStartFile;
 	OperationCancelled := False;
 	OperationSuccessful := False;
-	if FileExists (WithBackslash (TIGCCFolder) + GCCLocation + 'GCC.exe') then begin
+	if FileExists (WithBackslash (TIGCCFolder) + GCCLocation + 'm68k-coff-tigcc-GCC.exe') then begin
 		CompSetMessage ('Compiling File ''' + SourceName + '''');
 		Folder := WithBackslash (Temp + FolderPath);
 		CurErrFunction := '';
@@ -1762,7 +1762,7 @@ begin
 			Switches := Switches + ' ' + PredefinedLibOptions.GetSwitches;
 		CompUpdate;
 		try
-			MainConsole.StartProcess (WithBackslash (TIGCCFolder) + GCCLocation + 'GCC.exe', '-S -I ' + Folder + ' ' + Switches + ' "' + Folder + 'tempprog.c" -o "' + Folder + 'tempprog.s"', WithoutBackslash (WithBackslash (TIGCCFolder) + GCCLocation));
+			MainConsole.StartProcess (WithBackslash (TIGCCFolder) + GCCLocation + 'm68k-coff-tigcc-GCC.exe', '-S -I ' + Folder + ' ' + Switches + ' "' + Folder + 'tempprog.c" -o "' + Folder + 'tempprog.s"', WithoutBackslash (WithBackslash (TIGCCFolder) + GCCLocation));
 			WaitForMainConsole ('Compilation');
 		except
 			ShowDefaultMessageBox ('Could not start compiler.', 'Error', mtProgramError);
@@ -1790,7 +1790,7 @@ begin
 			if DebugInfo then
 				Switches := Switches + ' --gdwarf2';
 			try
-				MainConsole.StartProcess (WithBackslash (TIGCCFolder) + AsLocation + 'As.exe', '-I ' + Folder + ' ' + Switches + ' "' + Folder + 'tempprog.s" -o ' + Temp + 'tempprog.o', WithoutBackslash (WithBackslash (TIGCCFolder) + AsLocation));
+				MainConsole.StartProcess (WithBackslash (TIGCCFolder) + AsLocation + 'm68k-coff-tigcc-As.exe', '-I ' + Folder + ' ' + Switches + ' "' + Folder + 'tempprog.s" -o ' + Temp + 'tempprog.o', WithoutBackslash (WithBackslash (TIGCCFolder) + AsLocation));
 				WaitForMainConsole ('Compilation');
 			except
 				ShowDefaultMessageBox ('Could not start assembler.', 'Error', mtProgramError);
@@ -2062,7 +2062,7 @@ begin
 	CompStartFile;
 	OperationCancelled := False;
 	OperationSuccessful := False;
-	if FileExists (WithBackslash (TIGCCFolder) + AsLocation + 'As.exe') then begin
+	if FileExists (WithBackslash (TIGCCFolder) + AsLocation + 'm68k-coff-tigcc-As.exe') then begin
 		CompSetMessage ('Assembling File ''' + SourceName + '''');
 		Folder := WithBackslash (Temp + FolderPath);
 		if FileExists (Temp + 'TEMPPROG.O') then
@@ -2077,7 +2077,7 @@ begin
 			Switches := Switches + ' --gdwarf2';
 		MainConsole.Title := 'Assembler';
 		try
-			MainConsole.StartProcess (WithBackslash (TIGCCFolder) + AsLocation + 'As.exe', '-I ' + Folder + ' ' + Switches + ' "' + Folder + 'tempprog.s" -o ' + Temp + 'tempprog.o', WithoutBackslash (WithBackslash (TIGCCFolder) + AsLocation));
+			MainConsole.StartProcess (WithBackslash (TIGCCFolder) + AsLocation + 'm68k-coff-tigcc-As.exe', '-I ' + Folder + ' ' + Switches + ' "' + Folder + 'tempprog.s" -o ' + Temp + 'tempprog.o', WithoutBackslash (WithBackslash (TIGCCFolder) + AsLocation));
 			WaitForMainConsole ('Assembling');
 		except
 			ShowDefaultMessageBox ('Could not start assembler.', 'Error', mtProgramError);
