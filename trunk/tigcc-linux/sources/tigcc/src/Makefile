@@ -1,16 +1,23 @@
-#TIGCC frontend makefile
-#Copyright (C) 2003, Kevin Kofler
+# TIGCC frontend makefile
+# Copyright (C) 2003, Kevin Kofler
+# Copyright (C) 2011, Lionel Debroux
 
-all: tigcc
+ifeq ($(OSTYPE), msys)
+EXEEXT = .exe
+else
+EXEEXT =
+endif
 
-CC = gcc
-CFLAGS = -Os -s
-WARN_CFLAGS = -Wall -W
+all: tigcc$(EXEEXT)
 
-tigcc: tigcc.c tigcc.h
-	$(CC) $(CFLAGS) $(WARN_CFLAGS) tigcc.c -o tigcc
+CC ?= gcc
+CFLAGS = -Os -s -fno-exceptions
+WARN_CFLAGS = -Wall -W -Wwrite-strings
+
+tigcc$(EXEEXT): tigcc.c tigcc.h
+	$(CC) $(CFLAGS) $(WARN_CFLAGS) tigcc.c -o tigcc$(EXEEXT)
 
 .PHONY: clean
 
 clean:
-	rm -f tigcc
+	rm -f tigcc$(EXEEXT)

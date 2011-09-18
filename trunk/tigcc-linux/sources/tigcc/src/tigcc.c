@@ -24,7 +24,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#ifndef _WIN32
 #include <sys/wait.h>
+#else
+#include <process.h>
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -451,8 +455,12 @@ static inline void escape_arg(char *escaped_arg, const char *unescaped_arg)
 /* Execute a program */
 void execute(const char *program, char **argv)
 {
+#ifndef __WIN32__
   pid_t pid;
   int status;
+#else
+  intptr_t exitcode;
+#endif
 
   if (printcommands) {
     char **ptr;
@@ -467,6 +475,7 @@ void execute(const char *program, char **argv)
   }
 
   fflush (stdout);
+#ifndef __WIN32__
   pid = fork();
   if (pid == 0) {
     execv (program, argv);
@@ -480,6 +489,13 @@ void execute(const char *program, char **argv)
   }
   /* Fail silently if another program already showed an error message. */
   if (WEXITSTATUS(status)) exit(1);
+#else
+  exitcode = spawnv(_P_WAIT, program, (const char * const *)argv);
+  if (exitcode != 0) {
+    fprintf (stderr, "Error executing %s\n", program);
+    exit (1);
+  }
+#endif
 }
 
 /* Execute GNU cc */
