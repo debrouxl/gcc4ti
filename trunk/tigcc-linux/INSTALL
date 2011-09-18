@@ -1,16 +1,12 @@
 HOW TO COMPILE AND INSTALL GCC4TI FROM SOURCE
 ============================================
 
-Please note: read README.linux first. The instructions below apply only to
-compiling and installing the whole package from source. I recommend installing
-from binaries if possible.
-
 
 REQUIREMENTS
 ------------
 
 You must have the following programs AND sources before you attempt
-to install gcc4ti-unix.
+to install gcc4ti-*nix.
 
 REQUIRED:
 	1. GNU GCC 2.95 or later (other compilers might work, but are NOT supported)
@@ -43,6 +39,8 @@ REQUIRED:
 	    ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/gcc/releases/gcc-4.1.2/gcc-core-4.1.2.tar.bz2
 	    ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/binutils/releases/binutils-2.16.1.tar.bz2
 	    (DON'T use gcc-4.1.2.tar.bz2, i.e. the full version: it may fail to compile !)
+	    NOTE: these files are mirrored in the GCC4TI SVN and Git repositories,
+	    in the /pool path.
 
 OPTIONAL:
 	12. Windows or Wine to compile the documentation from source
@@ -65,22 +63,25 @@ INSTALLING GCC4TI FOR UNIX
 
 The installation should be very simple. The package has worked on Ubuntu 9.04,
 Fedora 8, Fedora 11, SimplyMEPIS 8 (very close to Debian Lenny), OpenSolaris
-2009.06, FreeBSD 7.2. UN*X provides some things better, some things worse.
-Let us know if you have a problem with the worse...
+2009.06, FreeBSD 7.2, and newer versions of some of those. UN*X provides some
+things better, some things worse. Let us know if you have a problem with
+the worse...
 
-NOTE: the GCC4TI scripts can handle paths containing spaces, but the `configure`
-in binutils 2.16.1 and gcc 4.1.2 cannot. Don't use spaces either in the path
-where you decompress the GCC4TI source distribution or in the target PATH ($TIGCC).
+NOTE: while the GCC4TI scripts have been designed to handle paths containing
+spaces, the `configure` in binutils 2.16.1 and gcc 4.1.2 cannot. Don't use
+spaces either in the path where you decompress the GCC4TI source distribution
+or in the target PATH ($TIGCC).
 
 First, extract the source to a directory of your choosing such as /tmp.
 
 	mkdir /tmp/gcc4ti-src
 	cd /tmp/gcc4ti-src
 	# substitute the directory you are using for /tmp
-	bunzip2 gcc4ti-src.tar.bz2
-	tar xfv gcc4ti-src.tar
+	bunzip2 gcc4ti_src.tar.bz2
+	tar xfv gcc4ti_src.tar
 
 Then, copy or link binutils-2.16.1 and gcc-core-4.1.2.tar.bz2 in that folder.
+These files are mirrored in the GCC4TI SVN and Git repositories, in the /pool path.
 
 At this point, you have 2 options:
 
@@ -90,10 +91,7 @@ At this point, you have 2 options:
 
 All you need to do now is:
 	scripts/Install
-and follow the instructions. If you want a text-mode install on a system with
-KDE installed, you can use:
-	cd scripts; DIALOG=dialog ./Install
-to tell the script to use the text-mode (curses) dialog instead of kdialog.
+and follow the instructions.
 
 You will be prompted for:
 * the destination directory you want to install GCC4TI to ($PREFIX_GCC4TI,
@@ -106,10 +104,6 @@ You will be prompted for:
 * the host platform of the generated executables ($GCC4TIHOST), leave blank if
   not cross-compiling. "i586-mingw32msvc" is a value that suits well when
   CC=i586-mingw32msvc-gcc.
-
-The wizard will ask you whether you want to apply the GCC4TI patch. The answer is
-usually "Yes". It will be "No" only if you are rebuilding the same source for a
-second (or more) time.
 
 When done, the wizard will ask you whether you want to add your $TIGCC setting
 to bashrc. If you answer "Yes", you are done here, you only need to restart
@@ -189,7 +183,7 @@ files, so compiling it from source should usually not be necessary.)
 
 And run the installation script...
 
-	export CFLAGS='-Os -s'
+	export CFLAGS='-Os -s -fno-exceptions -fomit-frame-pointer'
 
 If cross-compiling or using another custom compiler for some reason, set the
 CC and GCC4TIHOST environment variables, e.g.
@@ -216,7 +210,7 @@ want to install GCC4TI
 
 	export PREFIX_GCC4TI=/usr/local/share/gcc4ti
 	export PATH=$PATH:$PREFIX_GCC4TI/bin
-	export CFLAGS='-Os -s'
+	export CFLAGS='-Os -s -fno-exceptions -fomit-frame-pointer'
 
 Next, simply go into the scripts directory.
 Then you must apply the patch supplied with this package:
