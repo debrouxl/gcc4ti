@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>flash.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;flash.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Low-level routines for working with the Flash ROM</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#BatTooLowFlash">BatTooLowFlash</A></B><DD>Checks if the battery level is (or ever was) too low to write to the Flash memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_abandon">EM_abandon</A></B><DD>Abandon an archive memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_blockVerifyErase">EM_blockVerifyErase</A></B><DD>Verifies if an archive block is erased.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_findEmptySlot">EM_findEmptySlot</A></B><DD>Finds an empty space in the archive memory of the given size.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_GC">EM_GC</A></B><DD>Performs garbage collection in the archive memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_getArchiveMemoryBeginning">EM_getArchiveMemoryBeginning</A></B><DD>Returns a pointer to the first byte of the archive memory area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_survey">EM_survey</A></B><DD>Collects some useful information about the archive memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_write">EM_write</A></B><DD>Writes a block into the extended memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_addCert">FL_addCert</A></B><DD>Adds a certificate.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_download">FL_download</A></B><DD>Installs the product code.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getCert">FL_getCert</A></B><DD>Gets a certificate.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A></B><DD>Gets a pointer to the hardware parameter block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_getVerNum">FL_getVerNum</A></B><DD>Gets a Flash ROM verification number.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FL_write">FL_write</A></B><DD>Writes a block into the Flash ROM.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#CappedHW1ArchiveMemoryBeginning">CappedHW1ArchiveMemoryBeginning</A></B><DD>The address where AMS 2.xx and 3.xx cap the beginning of the archive memory on HW1 calculators.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FlashMemoryEnd">FlashMemoryEnd</A></B><DD>A pointer to the first byte after the end of the archive memory.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#FLASH_SECTOR_SIZE">FLASH_SECTOR_SIZE</A></B><DD>Size of a Flash sector.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HARDWARE_PARM_BLOCK">HARDWARE_PARM_BLOCK</A></B><DD>Structure describing the calculator hardware.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="stddef.html#size_t">size_t</A></B><DD>A type to define sizes of strings and memory blocks.</DL>
+<P><B>Note:</B> The functions <B>EM_blockErase</B>, <B>EM_blockVerifyErase</B>,
+<B>EM_delete</B>, <B>EM_writeToExtMem</B>, <B>EM_open</B>, and
+<B>EM_put</B>, which were present in the AMS 1.xx TIOS jump table, don't exist
+in the AMS 2.xx TIOS jump table any more. This is a pity; some of them were useful (especially the last three of them).<BR>
+In AMS 2.xx: <B>EM_blockErase</B> is replaced by: <A HREF="kbd.html#OSFastArrows">OSFastArrows</A>.<BR>
+             <B>EM_delete</B> is replaced by: <A HREF="system.html#AB_getGateArrayVersion">AB_getGateArrayVersion</A>.<BR>
+             <B>EM_open</B> is replaced by: <A HREF="kbd.html#SetAlphaStatus">SetAlphaStatus</A>.<BR>
+             <B>EM_put</B> is replaced by: <A HREF="kbd.html#GetAlphaStatus">GetAlphaStatus</A>.<BR>
+It seems that <B>EM_writeToExtMem</B> was simply removed, and there is no function replacing it.
+<BR><BR>
+In addition to the functions defined here, three other functions which work with the archive memory are defined
+in the <A HREF="vat.html">vat.h</A> header
+file: <A HREF="vat.html#EM_moveSymFromExtMem">EM_moveSymFromExtMem</A>,
+<A HREF="vat.html#EM_moveSymToExtMem">EM_moveSymToExtMem</A> and
+<A HREF="vat.html#EM_twinSymFromExtMem">EM_twinSymFromExtMem</A>. Maybe these functions are the
+most useful functions for working with the archive memory. They are defined in
+<A HREF="vat.html">vat.h</A> because they are related to other functions and data structures
+defined in that header file.</P>
+
+<HR>
+<H3><A NAME="BatTooLowFlash"><U>BatTooLowFlash</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> BatTooLowFlash (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> delay);</TD></TR></TABLE></P>
+<P><B>Checks if the battery level is (or ever was) too low to write to the Flash memory.</B></P>
+
+<P>BatTooLowFlash returns <A HREF="alloc.html#Bool">TRUE</A> if the battery level is (or ever was) too low to write to the Flash memory,
+and <A HREF="alloc.html#Bool">FALSE</A> otherwise.
+If <I>delay</I> is non-zero, and <A HREF="system.html#Timers">USER_TIMER</A> is not already in use, a delay of <I>delay</I> will occur before any checking is done.
+<BR><BR>
+For information about <A HREF="system.html#Timers">USER_TIMER</A>, see <A HREF="system.html#OSRegisterTimer">OSRegisterTimer</A>.</P>
+
+<HR>
+<H3><A NAME="EM_abandon"><U>EM_abandon</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EM_abandon (<A HREF="alloc.html#HANDLE">HANDLE</A> h);</TD></TR></TABLE></P>
+<P><B>Abandon an archive memory block.</B></P>
+
+<P>EM_abandon abandons an archive memory block associated with handle <I>h</I>. More precise,
+it frees the handle by clearing the entry in the heap table, and precedes memory block with
+flag which indicate that the block is free.
+<BR><BR>
+<B>Note:</B> Functions like <B>EM_blockErase</B> are removed in AMS 2.xx to increase the
+life of the Flash ROM. Really, it is not necessary to erase a block psyhically. It is
+quite enough to mark it as "deleted", and it will be eventually simply be rewritten later.</P>
+
+<HR>
+<H3><A NAME="EM_blockVerifyErase"><U>EM_blockVerifyErase</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EM_blockVerifyErase (<B><A HREF="keywords.html#void">void</A></B> *src);</TD></TR></TABLE></P>
+<P><B>Verifies if an archive block is erased.</B></P>
+
+<P>EM_blockVerifyErase returns <A HREF="alloc.html#Bool">TRUE</A> if an archive block of 64KB size is erased
+(i.e filled with 0xFFFFFFFF), and <A HREF="alloc.html#Bool">FALSE</A> otherwise.
+It is used in the reset routine of AMS 2.xx.
+<BR><BR>
+<B>Note:</B> This function behaves differently on AMS 1.xx and AMS 2.xx:</P>
+<UL>
+<LI><P>On AMS 1.xx, <I>src</I> may be anything between 0 and 0x60000; it will be rounded down to the nearest multiple of 0x10000.</P></LI>
+<LI><P>On AMS 2.xx, <I>src</I> can only be 0x340000, 0x350000, 0x360000, 0x370000, 0x380000, 0x390000, 0x3A0000, 0x3B0000, 0x3C0000, 0x3D0000, 0x3E0000, 0x3F0000. There is <I>no</I> rounding.</P></LI>
+</UL>
+
+<HR>
+<H3><A NAME="EM_findEmptySlot"><U>EM_findEmptySlot</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *EM_findEmptySlot (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Finds an empty space in the archive memory of the given size.</B></P>
+
+<P>EM_findEmptySlot returns a pointer to a place in the archive memory which is large enough
+to store a block which is <I>Size</I> bytes long. It returns <A HREF="alloc.html#NULL">NULL</A> if
+the requirement cannot be satisfied. In such case, a garbage collection (see
+<A HREF="#EM_GC">EM_GC</A>) is recommended, and there is a chance that a next call of
+EM_findEmptySlot will be successful. If not, there is really not enough space in the archive
+memory for a block of the given size. Thanks to Johan Eilert for information how this function
+should be defined to work on both AMS 1.xx and AMS 2.xx.
+<BR><BR>
+<B>Note:</B> The pointer returned by EM_findEmptySlot points to the place where the actual block
+needs to be stored (see <A HREF="#EM_write">EM_write</A>), not to the place where the header
+of the block should be stored. The header begins 4 bytes before returned value on AMS 1.xx
+and 22 bytes before returned value on AMS 2.xx. Note that you need to write a header for
+each stored block if you don't want problems.
+See <A HREF="#EM_write">EM_write</A> for more info.</P>
+
+<HR>
+<H3><A NAME="EM_GC"><U>EM_GC</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EM_GC (<B><A HREF="keywords.html#short">short</A></B> allowDialog);</TD></TR></TABLE></P>
+<P><B>Performs garbage collection in the archive memory.</B></P>
+
+<P>EM_GC performs garbage collection, i.e. rearranges blocks in the archive memory on such way
+that all used blocks become contiguous, without free blocks between them. If <I>allowDialog</I>
+is <A HREF="alloc.html#Bool">TRUE</A>, a confirmation dialog will be displayed, and if it is
+<A HREF="alloc.html#Bool">FALSE</A>, the garbage collection will be performed without asking user for
+the confirmation. EM_GC returns <A HREF="alloc.html#Bool">TRUE</A> if garbage collection occured, otherwise it
+returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="EM_getArchiveMemoryBeginning"><U>EM_getArchiveMemoryBeginning</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> * EM_getArchiveMemoryBeginning(<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the first byte of the archive memory area.</B></P>
+
+<P>This ROM_CALL first calls <A HREF="flashapp.html#OO_GetEndOfAllFlashApps">OO_GetEndOfAllFlashApps</A>
+and rounds the result up to the next Flash sector boundary (multiple of 64 KB). Then, it calls a
+subroutine which, on two hardware models, increases the address to artificially reduce the amount of
+usable archive memory (MaxMem, XPand and tiosmod+amspatch nullify this code):</P>
+<UL>
+<LI><P>on 89 HW1 and 92+ HW1 running AMS 2.xx, capping to <CODE>ROM_base+0x190000</CODE> (see
+<A HREF="#CappedHW1ArchiveMemoryBeginning">CappedHW1ArchiveMemoryBeginning</A>) - this is
+the size hard-coded in AMS 1.xx;</P></LI>
+<LI><P>on V200, capping to <CODE>0x500000</CODE> (<CODE>ROM_base+0x300000</CODE>).</P></LI>
+</UL>
+<P>Finally, it returns the result to the user.<BR>
+<BR>
+The capping described above can be defeated on both hardware models. This ROM_CALL and
+<A HREF="flashapp.html#OO_GetEndOfAllFlashApps">OO_GetEndOfAllFlashApps</A> can be used to
+detect whether the capping was defeated.</P>
+
+<P>See also: <A HREF="flashapp.html#OO_GetFirstFlashAppSectorAddress">OO_GetFirstFlashAppSectorAddress</A>, <A HREF="#CappedHW1ArchiveMemoryBeginning">CappedHW1ArchiveMemoryBeginning</A></P>
+<HR>
+<H3><A NAME="EM_survey"><U>EM_survey</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EM_survey (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> *inUse, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> *freedByGC, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> *free, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> *unusedSectors, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> *badSectors, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> *allExceptBaseCode);</TD></TR></TABLE></P>
+<P><B>Collects some useful information about the archive memory.</B></P>
+
+<P>EM_survey collects some useful information about the archive memory and stores them
+in six variables pointed to by arguments. *<I>inUse</I> is the number of used bytes.
+*<I>freedByGC</I> is the number of bytes which will be freed by performing
+garbage collection (see <A HREF="#EM_GC">EM_GC</A>). <I>free</I> is the number of
+free bytes (not counting bytes occupied by "deleted" blocks, which will become
+"free" only after the garbage collection). *<I>unusedSectors</I> is the number of
+bytes in "unused" sectors. I don't know why the archive memory contains usually
+one unused sector (i.e. sector which is never used for archiving purposes). The
+program called "MoreMem" just marks such unused sectors as "sectors in use" to
+get more archive memory (?). *<I>badSectors</I> is the number of bytes in bad
+sectors, but I am not so sure what "bad sectors" really means.
+*<I>allExceptBaseCode</I> is the number of all bytes in the Flash ROM which are not
+occupied by TIOS. This argument is new in AMS 2.xx, but you must use six arguments
+even on AMS 1.xx. If you don't need a particular information, you may pass
+<A HREF="alloc.html#NULL">NULL</A> as the argument. TIOS will see it's a null pointer and will
+not save anything in it.
+<BR><BR>
+TIOS uses only <I>freedByGC</I> and <I>free</I> and always passes
+<A HREF="alloc.html#NULL">NULL</A> to everything else. *<I>freedByGC</I>&nbsp;+&nbsp;*<I>free</I>
+is used to tell the user how much archive memory is available. Thanks to Johan Eilert for
+information how EM_survey should be used correctly on both AMS 1.xx and AMS 2.xx.</P>
+
+<HR>
+<H3><A NAME="EM_write"><U>EM_write</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EM_write (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *src, <B><A HREF="keywords.html#void">void</A></B> *dest, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> size);</TD></TR></TABLE></P>
+<P><B>Writes a block into the extended memory.</B></P>
+
+<P>EM_write is mostly identical as <A HREF="#FL_write">FL_write</A>, except an error will be
+thrown if <I>dest</I> points out of the archive memory (i.e. user portion of the Flash ROM).
+<BR><BR>
+<B>Note:</B> For anybody who wants to write something into the archive memory, the following
+information may be useful:</P>
+<UL>
+<LI><P>Blocks in the archive memory are kept in the linked list, but the organization of the
+list is AMS-dependent (see <A HREF="compat.html">compat.h</A> header file to see how to
+check which AMS version is present on the machine). If you don't want problems, you should
+not write any data to the archive memory which are not organized as described below.</P></LI>
+<LI><P>Archive memory is divided in sectors which are 64K long. The first word of each sector
+is the status word, and it cannot be used for storage purposes
+(-2 means "sector in use", -4
+means "full sector", and -1 means "unused sector").
+Each block must completely
+belong to one sector, i.e. it cannot cross over sector boundaries.</P></LI>
+<LI><P>Before each block is a header. It starts with a flag which may be -4
+for deleted blocks, -2 for used blocks and -1 for free blocks (AMS 2.xx uses
+-32 and -64 instead of -2 and -4, I don't know why; maybe old flags may be used
+for "noname" files, see below).
+So, if you need to keep some data in the archive memory for a longer time, it must be
+marked with -2 (or -32 on AMS 2.xx), otherwise it may be treated by TIOS as "free space".</P></LI>
+<LI><P>After the flag word, on AMS 2.xx the name of the folder (8 bytes) and the name of the
+stored file (8 bytes) are stored (both of them are zero padded). After this, yet one word
+follows (usually set to zero), exact meaning is unknown to me. This extra information
+(18 bytes) is not present on AMS 1.xx.</P></LI>
+<LI><P>After this, the next stored word is the size of the block in words increased
+by 1 and with the topmost bit set. This word is used as a link to the next block. This concludes
+the block header. Its size is 4 bytes on AMS 1.xx and 22 bytes on AMS 2.xx.</P></LI>
+<LI><P>Finally, the actual content of the block follows. If a handle is associated with the
+block, the handle points just here, i.e. to the first byte of the actual content.</P></LI>
+</UL>
+<P>Function <A HREF="#EM_findEmptySlot">EM_findEmptySlot</A> may be used for finding an
+empty space in the archive memory of a given size.
+Of course, if you are not an experienced programmer, avoid direct writing in the archive
+memory. Use safe high-level functions like
+<A HREF="vat.html#EM_moveSymToExtMem">EM_moveSymToExtMem</A> instead.</P>
+
+<HR>
+<H3><A NAME="FL_addCert"><U>FL_addCert</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FL_addCert (<B><A HREF="keywords.html#void">void</A></B> *src, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> size);</TD></TR></TABLE></P>
+<P><B>Adds a certificate.</B></P>
+
+<P>FL_addCert adds <I>size</I> bytes long certificate pointed to by <I>src</I> to the
+Flash ROM (see <A HREF="cert.html">cert.h</A> for more info). Returns certificate error
+code (I don't know too much about its meaning). It is unlikely that this routine may
+be efficiently used without cooperation with TI.</P>
+
+<HR>
+<H3><A NAME="FL_download"><U>FL_download</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> FL_download (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> dummy);</TD></TR></TABLE></P>
+<P><B>Installs the product code.</B></P>
+
+<P>FL_download installs the product code (there is no exit from this routine). It calls
+startup boot code, reinstates vector table, then enters a receiving loop. It seems
+that parameter <I>dummy</I> is ignored.</P>
+
+<HR>
+<H3><A NAME="FL_getCert"><U>FL_getCert</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> FL_getCert (<A HREF="alloc.html#HANDLE">HANDLE</A> *hDest, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> *len, <B><A HREF="keywords.html#short">short</A></B> decrypt);</TD></TR></TABLE></P>
+<P><B>Gets a certificate.</B></P>
+
+<P>FL_getCert allocates a space in the RAM and stores in it all relevant information which can
+be collected from the certificate area of Flash ROM (which is read-protected). It stores a handle of allocated
+space to a variable pointed to by <I>hDest</I>, and stores the length of it in the
+variable pointed to by <I>len</I>. <I>decrypt</I> is a Boolean parameter, which
+determines whether the crypted part of the certificate will be stored or not (it will be decrypted
+before storing, so crypted parts of the certificate are always invisible).
+See <A HREF="cert.html">cert.h</A> header file for more info.</P>
+
+<HR>
+<H3><A NAME="FL_getHardwareParmBlock"><U>FL_getHardwareParmBlock</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *FL_getHardwareParmBlock (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Gets a pointer to the hardware parameter block.</B></P>
+
+<P>FL_getHardwareParmBlock returns a pointer to a
+<A HREF="#HARDWARE_PARM_BLOCK">HARDWARE_PARM_BLOCK</A> structure
+describing the hardware. If the parameter block of the boot code is not
+found, it returns the address of the default parameter block.</P>
+
+<HR>
+<H3><A NAME="FL_getVerNum"><U>FL_getVerNum</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FL_getVerNum (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Gets a Flash ROM verification number.</B></P>
+
+<P>FL_getVerNum returns the encrypted Flash ROM verification number from the Flash ROM certificate.</P>
+
+<HR>
+<H3><A NAME="FL_write"><U>FL_write</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> FL_write (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *src, <B><A HREF="keywords.html#void">void</A></B> *dest, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> size);</TD></TR></TABLE></P>
+<P><B>Writes a block into the Flash ROM.</B></P>
+
+<P>FL_write writes a <I>size</I> bytes long block which begins at address pointed to by <I>src</I>
+(<B>RAM or Flash memory</B>) into the Flash ROM at the address <I>dest</I>. Writing is allowed
+only to the user portion of the Flash ROM (also known as "archive memory"), which starts at an
+address depending on the hardware model and OS version.<BR>
+The general rule on AMS 2.xx and 3.xx is that storage for FlashApps starts at the first sector
+boundary after the end of the OS, and that the archive memory starts at the first sector
+boundary after the end of the FlashApps. There is always at least one sector for FlashApps,
+even if it's empty. See
+<A HREF="#EM_getArchiveMemoryBeginning">EM_getArchiveMemoryBeginning</A> for
+the exceptions to this general rule.<BR>
+User portion of the Flash ROM ends at 0x400000 (TI-89), 0x600000 (TI-92 Plus, V200) or 0x800000
+(TI-89T). Any attempt to write something out of this region will be ignored. Attempts to read
+the Flash memory (in Protection disabled mode) are, however, <I>not</I> filtered.</P>
+
+<HR>
+<H3><A NAME="CappedHW1ArchiveMemoryBeginning"><U>CappedHW1ArchiveMemoryBeginning</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *<B><A HREF="keywords.html#const">const</A></B> CappedHW1ArchiveMemoryBeginning;</TD></TR></TABLE></P>
+<P><B>The address where AMS 2.xx and 3.xx cap the beginning of the archive memory on HW1 calculators.</B></P>
+
+<P>This ROM call points to <CODE>ROM_base+0x190000</CODE>, i.e. the address where the archive memory
+starts on HW1 calculators running AMS 2.00+.<BR>
+This is because AMS 2.00+ versions cap the beginning the archive memory, effectively decreasing
+the amount of archive memory available to users by 192 or 256 KB (depending on the AMS version).<BR>
+<BR>
+There's a way around this limitation, see
+<A HREF="#EM_getArchiveMemoryBeginning">EM_getArchiveMemoryBeginning</A>.</P>
+
+<P>See also: <A HREF="#EM_getArchiveMemoryBeginning">EM_getArchiveMemoryBeginning</A></P>
+<HR>
+<H3><A NAME="FlashMemoryEnd"><U>FlashMemoryEnd</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *<B><A HREF="keywords.html#const">const</A></B> FlashMemoryEnd;</TD></TR></TABLE></P>
+<P><B>A pointer to the first byte after the end of the archive memory.</B></P>
+
+<P>FlashMemoryEnd can be used in a function reading the archive memory like this:</P>
+<PRE>void ReadSomethingInArchive(unsigned char *start)
+{
+  unsigned char *end = FlashMemoryEnd;
+  for (; start &lt; end; start++)
+    {
+      // Read something here...
+    }
+}
+</PRE>
+
+<P>See also: <A HREF="compat.html#ROM_base">ROM_base</A></P>
+<HR>
+<H3><A NAME="FLASH_SECTOR_SIZE"><U>FLASH_SECTOR_SIZE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> FLASH_SECTOR_SIZE (0x10000)</TD></TR></TABLE></P>
+<P><B>Size of a Flash sector.</B></P>
+
+<P>On TI-68k calculators, a flash sector is 64 KB (65536 bytes).</P>
+
+<HR>
+<H3><A NAME="HARDWARE_PARM_BLOCK"><U>HARDWARE_PARM_BLOCK</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> len; <I>/* length of parameter block */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> hardwareID; <I>/* 1 = TI-92 Plus, 3 = TI-89, 8 = V200, 9 = TI-89T */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> hardwareRevision; <I>/* hardware revision number */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> bootMajor; <I>/* boot code version number */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> bootRevision; <I>/* boot code revision number */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> bootBuild; <I>/* boot code build number */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> gateArray; <I>/* gate array version number */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> physDisplayBitsWide; <I>/* display width */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> physDisplayBitsTall; <I>/* display height */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> LCDBitsWide; <I>/* visible display width */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> LCDBitsTall; <I>/* visible display height */</I><BR>
+</TD></TR></TABLE>
+} HARDWARE_PARM_BLOCK;</TD></TR></TABLE></P>
+<P><B>Structure describing the calculator hardware.</B></P>
+
+<P>The hardware parameter block contains a description of the calculator hardware.
+This structure is mainly used with the <A HREF="#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A> function.
+<BR><BR>
+Some fields of the HARDWARE_PARM_BLOCK structure are not available in earlier
+versions of the calculator. Only the <I>len</I> and <I>hardwareID</I> fields are available in all boot
+code versions. It is important to check the value of <I>len</I> before accessing any
+values after <I>hardwareID</I>. You can use <A HREF="stddef.html#offsetof">offsetof</A> to
+determine if a particular field is present.
+<BR><BR>
+The TI-89 / 89T and TI-92 Plus / V200 allocate the same amount of memory for the LCD.
+However, the TI-89 / 89T cannot display as much as the TI-92 Plus / V200.
+<I>LCDBitsWide</I> and <I>LCDBitsTall</I> reflect how much of the calculator's
+LCD memory the user can see.
+<BR><BR>
+If <I>len</I> is 24 or more, <I>gateArray</I> contains a hardware version number
+(currently 1 (HW1) or 2 (HW2) for 89, 92+ and V200; 3 (HW3) or 4 (HW4) for 89T).
+Otherwise, the calculator is certainly a HW1 calculator.
+<BR><BR>
+Here is an example (called "Hardware Parameters") which returns the
+complete hardware parameter block as a list:</P>
+<PRE>// Return the hardware parameter block as a list
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return Pushed Expression
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  const HARDWARE_PARM_BLOCK *hpb = FL_getHardwareParmBlock ();
+  const unsigned long *curptr;
+  push_END_TAG ();
+  for (curptr = (const unsigned long *) &amp;(hpb-&gt;hardwareID) + hpb-&gt;len / 4 - 1; (unsigned long) curptr &gt; (unsigned long) hpb; curptr--)
+    {
+      push_quantum (*curptr);
+      push_quantum (1);
+      push_quantum (POSINT_TAG);
+    }
+  push_quantum (hpb-&gt;len);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+  push_LIST_TAG ();
+}
+</PRE>
+
+<P>See also: <A HREF="#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A></P>
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

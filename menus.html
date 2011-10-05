@@ -1,0 +1,1421 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>menus.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;menus.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for creating popup and toolbar menus</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#DynMenuAdd">DynMenuAdd</A></B><DD>Adds a new entry to a dynamic menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DynMenuChange">DynMenuChange</A></B><DD>Changes an entry in a dynamic menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FKeyI_H">FKeyI_H</A></B><DD>Returns the corresponding menu item for a function key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuAddIcon">MenuAddIcon</A></B><DD>Adds a new icon item in a toolbar menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuAddText">MenuAddText</A></B><DD>Adds a new text item in a toolbar menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuBegin">MenuBegin</A></B><DD>Displays a toolbar menu and creates a new structure which is used for executing the menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuCheck">MenuCheck</A></B><DD>Checks/unchecks or returns the state of an item in a pulldown menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuEnd">MenuEnd</A></B><DD>Deallocates an executable menu structure and removes the menu from the screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuFlags">MenuFlags</A></B><DD>Return the flag word for a dynamic menu/popup structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuGetTopRedef">MenuGetTopRedef</A></B><DD>Gets the index of a toolbox icon.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuItemDef">MenuItemDef</A></B><DD>Returns a pointer to the data of a menu item.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuKey">MenuKey</A></B><DD>Activates a toolbar menu by processing a key press.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuLoad">MenuLoad</A></B><DD>Begins a dynamically created menu using a prefilled static menu as the starting point.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuNew">MenuNew</A></B><DD>Creates a new toolbar menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuOff">MenuOff</A></B><DD>Disables a toolbar menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuOn">MenuOn</A></B><DD>Redraws a toolbar menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuPopup">MenuPopup</A></B><DD>Executes a popup menu given a pointer to a popup menu structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuSubStat">MenuSubStat</A></B><DD>Changes the state (enabled/disabled) of an item in a pulldown menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuTopRedef">MenuTopRedef</A></B><DD>Redefines a toolbox icon.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuTopSelect">MenuTopSelect</A></B><DD>Emphasizes a toolbox.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuTopStat">MenuTopStat</A></B><DD>Changes the state (enabled/disabled) of a toolbox.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuUpdate">MenuUpdate</A></B><DD>Draws the default home screen menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PopupAddText">PopupAddText</A></B><DD>Adds a new text item in a popup menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PopupBegin">PopupBegin</A></B><DD>Creates a new popup menu with checkmarks features.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PopupBeginDo">PopupBeginDo</A></B><DD>Executes a dynamically allocated popup using a menu-draw handle.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PopupClear">PopupClear</A></B><DD>Clears a popup or toolbar menu structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PopupDo">PopupDo</A></B><DD>Executes a popup menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PopupNew">PopupNew</A></B><DD>Creates a new popup menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PopupText">PopupText</A></B><DD>Returns a pointer to the text of a popup menu item.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#QMenuTopSelect">QMenuTopSelect</A></B><DD>Returns the currently selected top-level menu item.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VarCreateFolderPopup">VarCreateFolderPopup</A></B><DD>Creates a popup menu containing a list of all folders.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="dialogs.html#CENTER">CENTER</A></B><DD>A constant to describe a centered position for dialogs.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#H_NULL">H_NULL</A></B><DD>A null-handle value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="graph.html#BITMAP">BITMAP</A></B><DD>A structure for defining a bitmap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="kbd.html#CommonKeys">CommonKeys</A></B><DD>An enumeration for describing common key codes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DynMenuFlags">DynMenuFlags</A></B><DD>An enumeration for describing possible flags associated to dynamic menu entries.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#ICON">ICON</A></B><DD>A structure which describes an icon.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ItemTypes">ItemTypes</A></B><DD>An enumeration for describing item types in menus.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuBeginFlags">MenuBeginFlags</A></B><DD>An enumeration for describing possible flags passed to <A HREF="#MenuBegin">MenuBegin</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuCheckCmds">MenuCheckCmds</A></B><DD>An enumeration for describing possible commands for the <A HREF="#MenuCheck">MenuCheck</A> function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuFlagsEnum">MenuFlagsEnum</A></B><DD>An enumeration for describing possible flags contained in a dynamic menu.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MenuKeyValues">MenuKeyValues</A></B><DD>Contains predefined return values of <A HREF="#MenuKey">MenuKey</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#pICON">pICON</A></B><DD>A pointer to the <A HREF="graph.html#ICON">ICON</A> scructure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VCFPFlags">VCFPFlags</A></B><DD>Describes possible flags for <A HREF="#VarCreateFolderPopup">VarCreateFolderPopup</A>.</DL>
+<HR>
+<H3><A NAME="DynMenuAdd"><U>DynMenuAdd</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DynMenuAdd (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> ParentID, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *Data, <B><A HREF="keywords.html#short">short</A></B> ID, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Adds a new entry to a dynamic menu.</B></P>
+
+<P>DynMenuAdd adds a new entry to the dynamic toolbar menu associated with the handle <I>Handle</I>, which must be a handle
+created by <A HREF="#MenuNew">MenuNew</A> or <A HREF="#MenuLoad">MenuLoad</A>.
+The entry added first will be the first option in the menu, the entry added second will be the second option, and so on.
+Each new entry (pointed by <I>Data</I>) can either be a text, an <A HREF="graph.html#ICON">ICON</A> structure, or a
+<A HREF="graph.html#BITMAP">BITMAP</A> structure, depending on the parameter <I>Flags</I>.
+<BR><BR>
+This function is similar to <A HREF="#MenuAddText">MenuAddText</A> and <A HREF="#MenuAddIcon">MenuAddIcon</A>, except that
+it is available only in AMS 2.00 and later (i.e. you have to set <A HREF="httigcc.html#minams">MIN_AMS</A> in GCC4TI to 200 or higher).
+This function also offers a new feature: the use of bitmaps in menus.
+In fact, TI says that <A HREF="#MenuAddText">MenuAddText</A> and <A HREF="#MenuAddIcon">MenuAddIcon</A> are just
+older ways to do the same things, so DynMenuAdd can fully replace those functions if you plan to run your program only on AMS 2.00
+or later.
+<BR><BR>
+<I>ID</I> is the identification number of the item. It is used to identify the item
+in many other functions; for example it will later be returned by the
+<A HREF="#MenuKey">MenuKey</A> function if the user selects this menu item.
+You may also be able to change this new entry using the ID number and
+the function <A HREF="#DynMenuChange">DynMenuChange</A>. Moreover,
+this value can be used by a child entry to identify its parent.
+If <I>ID</I> equals 0, the TIOS will generate the ID automatically (1 for the
+first menu entry, 2 for the second entry, etc.).
+The legal range for <I>ID</I> is 1 to 4095. If <I>ID</I> is greater than 4095,
+it will be truncated (ANDed with 0x0FFF).
+<BR><BR>
+<B>Note:</B> If you are adding to a prefilled static menu (i.e. written in your
+source code and loaded using <A HREF="#MenuLoad">MenuLoad</A>), do <I>not</I>
+use the range 0x0F00 to 0x0FFF (i.e. do not use an ID greater than 3839).
+<BR><BR>
+DynMenuAdd returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case of
+an error, otherwise it returns <I>Handle</I>. An error occurs if the system runs
+out of memory, or if there is an error in the parameters (<I>ParentID</I> not
+found, <I>ParentID</I> found but it was not a possible parent, or maximum
+number of items in a menu exceeded). If there is an error adding the new entry, the
+<A HREF="#MenuFlagsEnum">MF_ERROR</A> flag in the menu structure
+is set (you can use <A HREF="#MenuFlags">MenuFlags</A> to get this flag,
+but do <I>not</I> confuse menu structure flags such as <A HREF="#MenuFlagsEnum">MF_ERROR</A>
+and the parameter <I>Flags</I> in MenuAddText which gives the type of entry).
+DynMenuAdd may cause heap compression.
+<BR><BR>
+The parameter <I>ParentID</I> must be set to 0 if this is a new top-level
+entry (i.e. if this entry has no parent), or to the ID of the parent entry if
+this entry is a child (i.e. this is an item in a pulldown menu).
+Note that if this entry is at top level, <I>ParentID</I> can also be
+set to -1, which means it has no child. (For some reason, this seems to be
+the only way to prevent any other entry to be a child of this one,
+as the <A HREF="#DynMenuFlags">DMF_TOP</A> flag still allows child
+entries.)
+<BR><BR>
+The <I>Flags</I> parameter, defined in the enum <A HREF="#DynMenuFlags">DynMenuFlags</A>, must contain
+one of the flags described in the first following table, bitwise ORed with one of the flags
+described in the second table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TEXT</TD>
+  <TD>The parameter <I>Data</I> points to a text string.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_ICON</TD>
+  <TD>The parameter <I>Data</I> points to an <A HREF="graph.html#ICON">ICON</A> structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_BITMAP</TD>
+  <TD>The parameter <I>Data</I> points to a <A HREF="graph.html#BITMAP">BITMAP</A> structure.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TOP</TD>
+  <TD>New top-level entry that cannot be a parent.
+      <BR>
+      Note that this flag does not seem to prevent any other entry to be a child of this one (i.e. when this flag is set in an entry, that entry can still be a parent). To prevent this, please set -1 for the <I>ParentID</I> parameter as well as setting this flag.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_TOP_SUB</TD>
+  <TD>New top-level entry that can have children.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_CHILD</TD>
+  <TD>Child entry whose parent is the one specified by the parameter <I>ParentID</I>.
+      <BR>
+      This child entry cannot be the parent of another entry (i.e. no submenu available for this entry).
+      <BR>
+      <B>Note:</B> The parent specified by <I>ParentID</I> should have the DMF_TOP_SUB or the DMF_CHILD_SUB flag set.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_CHILD_SUB</TD>
+  <TD>Child entry whose parent is the one specified by the parameter <I>ParentID</I>.
+      <BR>
+      This child entry can be the parent of another entry (i.e. submenus are available for this entry).
+      <BR>
+      With this option, you can create many sublevels of nesting.
+      <BR>
+      <B>Note:</B> The parent specified by <I>ParentID</I> should have the DMF_TOP_SUB or the DMF_CHILD_SUB flag set.</TD>
+</TR>
+</TABLE>
+<BR>
+If you forget to give a <A HREF="#DynMenuFlags">DMF_TEXT</A>,
+<A HREF="#DynMenuFlags">DMF_ICON</A> or <A HREF="#DynMenuFlags">DMF_BITMAP</A>
+flag, DynMenuAdd will automatically consider <I>Data</I> to point to a text string.
+<BR><BR>
+Here is an example for this function (called "Menu Example 2"):</P>
+<PRE>// A simple menu example, with several submenus
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE menu_handle = MenuNew (2, 240, 18);
+  DynMenuAdd (menu_handle, 0, &quot;First&quot;, 1, DMF_TEXT | DMF_TOP_SUB);
+  DynMenuAdd (menu_handle, 1, &quot;Subitem 1.1&quot;, 5, DMF_TEXT | DMF_CHILD_SUB);
+  DynMenuAdd (menu_handle, 5, &quot;Subitem 1.1.1&quot;, 8, DMF_TEXT | DMF_CHILD_SUB);
+  DynMenuAdd (menu_handle, 5, &quot;Subitem 1.1.2&quot;, 9, DMF_TEXT | DMF_CHILD);
+  DynMenuAdd (menu_handle, 8, &quot;Subitem 1.1.1.1&quot;, 10, DMF_TEXT | DMF_CHILD);
+  DynMenuAdd (menu_handle, 1, &quot;Subitem 1.2&quot;, 6, DMF_TEXT | DMF_CHILD);
+  DynMenuAdd (menu_handle, 0, &quot;Second&quot;, 2, DMF_TEXT | DMF_TOP_SUB);
+  DynMenuAdd (menu_handle, 2, &quot;Subitem 2.1&quot;, 7, DMF_TEXT | DMF_CHILD);
+  DynMenuAdd (menu_handle, -1, &quot;Third&quot;, 3, DMF_TEXT | DMF_TOP);
+  DynMenuAdd (menu_handle, -1, &quot;Fourth&quot;, 4, DMF_TEXT | DMF_TOP);
+  HANDLE exec_handle = MenuBegin (NULL, 0, 0, MBF_HMENU, menu_handle);
+  short result;
+  do {
+    result = MenuKey (exec_handle, ngetchx ());
+  } while (result == M_NOTMENUKEY);
+  MenuEnd (exec_handle);
+  MenuUpdate ();
+  push_shortint (result);
+}
+</PRE>
+
+<P>See also: <A HREF="#MenuNew">MenuNew</A>, <A HREF="#MenuLoad">MenuLoad</A>, <A HREF="#DynMenuChange">DynMenuChange</A></P>
+<HR>
+<H3><A NAME="DynMenuChange"><U>DynMenuChange</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DynMenuChange (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> ID, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *NewData, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Changes an entry in a dynamic menu.</B></P>
+
+<P>DynMenuChange replaces an entry created with <A HREF="#DynMenuAdd">DynMenuAdd</A>,
+<A HREF="#MenuAddText">MenuAddText</A>, or <A HREF="#MenuAddIcon">MenuAddIcon</A>
+in the dynamic toolbar menu associated with the handle <I>Handle</I>
+with a new entry (pointed to by <I>NewData</I>). <I>Handle</I> must be a handle created by
+<A HREF="#MenuNew">MenuNew</A> or <A HREF="#MenuLoad">MenuLoad</A>.
+The new entry pointed by <I>NewData</I> can either
+be a text, an <A HREF="graph.html#ICON">ICON</A> structure, or a
+<A HREF="graph.html#BITMAP">BITMAP</A> structure, depending on the
+parameter <I>Flags</I>. <I>ID</I> is the identification number of the existing item you wish to change.
+<BR><BR>
+DynMenuChange returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case of
+an error, otherwise it returns <I>Handle</I>. An error occurs if the system runs out of memory
+or if there is an error in the parameters. If there is an error replacing the entry, the
+<A HREF="#MenuFlagsEnum">MF_ERROR</A> flag in the menu structure is set (you can use
+<A HREF="#MenuFlags">MenuFlags</A> to get this flag, but do <I>not</I>
+confuse menu structure flags such as <A HREF="#MenuFlagsEnum">MF_ERROR</A>
+with the parameter <I>Flags</I> in DynMenuChange which gives the type of entry).
+DynMenuChange may cause heap compression.
+<BR><BR>
+The <I>Flags</I> parameter, defined in the enum <A HREF="#DynMenuFlags">DynMenuFlags</A>,
+contains one of the flags given in the following array:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TEXT</TD>
+  <TD>The parameter <I>NewData</I> points to a text string.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_ICON</TD>
+  <TD>The parameter <I>NewData</I> points to an <A HREF="graph.html#ICON">ICON</A> structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_BITMAP</TD>
+  <TD>The parameter <I>NewData</I> points to a <A HREF="graph.html#BITMAP">BITMAP</A> structure.</TD>
+</TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#MenuNew">MenuNew</A>, <A HREF="#MenuLoad">MenuLoad</A>, <A HREF="#DynMenuAdd">DynMenuAdd</A></P>
+<HR>
+<H3><A NAME="FKeyI_H"><U>FKeyI_H</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FKeyI_H (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> Key);</TD></TR></TABLE></P>
+<P><B>Returns the corresponding menu item for a function key.</B></P>
+
+<P>FKeyI_H returns the corresponding index to the function key given in <I>Key</I>
+of the menu associated with the <I>ExecHandle</I> handle, or returns
+<A HREF="#MenuKeyValues">M_NOTMENUKEY</A> for function keys not used
+in the given menu. The <I>ExecHandle</I> handle should have been returned from
+<A HREF="#MenuBegin">MenuBegin</A>.
+<BR><BR>
+<I>Key</I> should be a function key (i.e. KEY_Fx) given in the enum
+<A HREF="kbd.html#CommonKeys">CommonKeys</A>.
+<A HREF="kbd.html#CommonKeys">KEY_F1</A> will return 0 for the first
+top-level entry if it exists, <A HREF="kbd.html#CommonKeys">KEY_F2</A>
+will return 1 for the second top-level entry if it exists, and so on.
+<BR><BR>
+FKeyI_H can be useful in combination with <A HREF="#MenuKey">MenuKey</A>.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuKey">MenuKey</A></P>
+<HR>
+<H3><A NAME="MenuAddIcon"><U>MenuAddIcon</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> MenuAddIcon (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> ParentID, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *Icon, <B><A HREF="keywords.html#short">short</A></B> ID, <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Adds a new icon item in a toolbar menu.</B></P>
+
+<P>MenuAddIcon is very similar to <A HREF="#MenuAddText">MenuAddText</A>, except instead
+of a text, the added menu item will consist of an icon. The icon
+is a 16x16 bitmap structure given as a 16-word group of bits, and parameter <I>Icon</I>
+is the pointer to it. This pointer is usually of type <A HREF="graph.html#pICON">pICON</A> (pointer
+to the <A HREF="graph.html#ICON">ICON</A> structure).
+All other parameters are explained in the <A HREF="#MenuAddText">MenuAddText</A> function.
+<BR><BR>
+<B>Note:</B> It seems that it is possible to add items with icons instead of text to popup
+menus, too (not only to toolbar menus).</P>
+
+<P>See also: <A HREF="#MenuNew">MenuNew</A>, <A HREF="#MenuLoad">MenuLoad</A>, <A HREF="#DynMenuAdd">DynMenuAdd</A>, <A HREF="#DynMenuChange">DynMenuChange</A>, <A HREF="#MenuAddText">MenuAddText</A></P>
+<HR>
+<H3><A NAME="MenuAddText"><U>MenuAddText</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> MenuAddText (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> ParentID, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *Text, <B><A HREF="keywords.html#short">short</A></B> ID, <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Adds a new text item in a toolbar menu.</B></P>
+
+<P>MenuAddText adds the text <I>Text</I> to the toolbar menu associated with the handle
+<I>Handle</I>. The text added first will be the first option in the menu, the
+text added second will be the second option, and so on.
+<BR><BR>
+<I>ID</I> is the identification number
+of the item. It is used to identify the item in many other functions;
+for example it will later be returned by the <A HREF="#MenuKey">MenuKey</A> function
+if the user selects this menu entry. Moreover, this value can be used by a child
+entry to identify its parent. If <I>ID</I> equals 0, the TIOS will generate the
+ID automatically (1 for the first menu entry, 2 for the second entry, etc.).
+The legal range for <I>ID</I> is 1 to 4095. If <I>ID</I> is greater than 4095,
+it will be truncated (ANDed with 0x0FFF).
+<BR><BR>
+<B>Note:</B> If you are adding to a prefilled static menu (i.e. written in your
+source code and loaded using <A HREF="#MenuLoad">MenuLoad</A>), do <I>not</I> use
+the range 0x0F00 to 0x0FFF (i.e. do not use an ID greater than 3839).
+<BR><BR>
+The parameter <I>ParentID</I> must 
+be set to 0 if this is a new top-level entry (i.e. if this entry has no
+parent), or to the ID of the parent entry if this entry is a child
+(i.e. this is an item in a pulldown menu).
+Note that if this entry is at top level, <I>ParentID</I> can also be
+set to -1, which means it has no child. (For some reason, this seems to be the
+only way to prevent any other entry to be a child of this one;
+as the <A HREF="#DynMenuFlags">DMF_TOP</A> flag still allows child entries.)
+<BR><BR>
+MenuAddText returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case of
+an error, otherwise it returns <I>Handle</I>. If there is an error adding the new entry,
+the <A HREF="#MenuFlagsEnum">MF_ERROR</A> flag in the menu structure
+is set (you can use <A HREF="#MenuFlags">MenuFlags</A> to get this flag,
+but do <I>not</I> confuse menu structure flags such as <A HREF="#MenuFlagsEnum">MF_ERROR</A>
+and the parameter <I>Flags</I> in MenuAddText which gives the type of entry).
+MenuAddText may cause heap compression.
+<BR><BR>
+Although the TIOS menu system allows for toolbar menus with associated
+pulldown menus which have their own submenus (i.e. more than one level of nesting),
+it is not possible to create such menus in AMS 1.xx using this command. If you really want more
+levels of nesting and need to stay compatible, you need to use pre-filled static structures and
+pass them directly to the <A HREF="#MenuBegin">MenuBegin</A> function
+(see <A HREF="#MenuPopup">MenuPopup</A> for more info). But, note that this
+is somewhat complicated.
+<BR><BR>
+The <I>Flags</I> parameter contains one of the following flags, 
+defined in the enum <A HREF="#DynMenuFlags">DynMenuFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TOP</TD>
+  <TD>New top-level entry that cannot be a parent.
+      <BR>
+      Note that this flag does not seem to prevent any other entry to be a child of this one (i.e. when this flag is set in an entry, that entry can still be a parent). To prevent this, please set -1 for the <I>ParentID</I> parameter as well as setting this flag.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_TOP_SUB</TD>
+  <TD>New top-level entry that can have children.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_CHILD</TD>
+  <TD>Child entry whose parent is the one specified by the parameter <I>ParentID</I>.
+      <BR>
+      This child entry cannot be the parent of another entry (i.e. no submenu available for this entry).
+      <BR>
+      <B>Note:</B> The parent specified by <I>ParentID</I> should have the DMF_TOP_SUB or the DMF_CHILD_SUB flag set.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_CHILD_SUB</TD>
+  <TD>AMS 2.00 or higher: Child entry whose parent is the one specified by the parameter <I>ParentID</I>.
+      <BR>
+      This child entry can be the parent of another entry (i.e. submenus are available for this entry).
+      <BR>
+      With this option, you can create many sublevels of nesting.
+      <BR>
+      <B>Note:</B> The parent specified by <I>ParentID</I> should have the DMF_TOP_SUB or the DMF_CHILD_SUB flag set.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+Here is an example for this function (called "Menu Example 1"):</P>
+<PRE>// A simple menu example, with several submenus
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE menu_handle = MenuNew (2, 240, 18);
+  MenuAddText (menu_handle, 0, &quot;First&quot;, 1, DMF_TOP_SUB);
+  MenuAddText (menu_handle, 1, &quot;Subitem 1.1&quot;, 5, DMF_CHILD_SUB);
+  MenuAddText (menu_handle, 5, &quot;Subitem 1.1.1&quot;, 8, DMF_CHILD_SUB);
+  MenuAddText (menu_handle, 5, &quot;Subitem 1.1.2&quot;, 9, DMF_CHILD);
+  MenuAddText (menu_handle, 8, &quot;Subitem 1.1.1.1&quot;, 10, DMF_CHILD);
+  MenuAddText (menu_handle, 1, &quot;Subitem 1.2&quot;, 6, DMF_CHILD);
+  MenuAddText (menu_handle, 0, &quot;Second&quot;, 2, DMF_TOP_SUB);
+  MenuAddText (menu_handle, 2, &quot;Subitem 2.1&quot;, 7, DMF_CHILD);
+  MenuAddText (menu_handle, -1, &quot;Third&quot;, 3, DMF_TOP);
+  MenuAddText (menu_handle, -1, &quot;Fourth&quot;, 4, DMF_TOP);
+  HANDLE exec_handle = MenuBegin (NULL, 0, 0, MBF_HMENU, menu_handle);
+  short result;
+  do {
+    result = MenuKey (exec_handle, ngetchx ());
+  } while (result == M_NOTMENUKEY);
+  MenuEnd (exec_handle);
+  MenuUpdate ();
+  push_shortint (result);
+}
+</PRE>
+
+<P>See also: <A HREF="#MenuNew">MenuNew</A>, <A HREF="#MenuLoad">MenuLoad</A>, <A HREF="#DynMenuAdd">DynMenuAdd</A>, <A HREF="#DynMenuChange">DynMenuChange</A>, <A HREF="#MenuAddIcon">MenuAddIcon</A></P>
+<HR>
+<H3><A NAME="MenuBegin"><U>MenuBegin</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> MenuBegin (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *MenuPtr, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags, ...);</TD></TR></TABLE></P>
+<P><B>Displays a toolbar menu and creates a new structure which is used for executing the menu.</B></P>
+
+<P>MenuBegin shows the toolbar menu pointed to by <I>MenuPtr</I> on the screen.
+The top-left corner of the menu will be at the position (<I>x</I>,&nbsp;<I>y</I>);
+the coordinates are absolute screen coordinates.
+<I>x</I>, <I>y</I>, or both may also have the special value
+<A HREF="dialogs.html#CENTER">CENTER</A>, which tells MenuBegin to center the
+menu in a particular dimension.
+<BR><BR>
+Note that this function does not use a handle if called in a normal fashion.
+Instead, it needs a pointer to the actual menu structure.
+So you must use <A HREF="alloc.html#HLock">HLock</A> to lock and dereference the handle before using this function
+(locking is highly recommended because heap compression may occur):</P>
+<PRE>exec_handle = MenuBegin (HLock (handle), x, y, Flags);
+</PRE>
+<P>A second way which is almost equal to the one above but only works on AMS 2.00 or higher
+is to pass <A HREF="alloc.html#NULL">NULL</A> to
+<I>MenuPtr</I> and <A HREF="#MenuBeginFlags">MBF_HMENU</A> to <I>Flags</I>.
+Then the optional parameter after <I>Flags</I> will take the handle instead:</P>
+<PRE>exec_handle = MenuBegin (NULL, x, y, Flags | MBF_HMENU, handle);
+</PRE>
+<P>But note that in this case, the handle will be freed when <A HREF="#MenuEnd">MenuEnd</A> is called.
+<BR><BR>
+Alternatively (but only if you are an expert), you can pass a pointer to a
+pre-filled static menu structure to <I>MenuPtr</I> (like the TIOS usually does). Using this approach you can
+save a lot of memory. See <A HREF="#MenuPopup">MenuPopup</A> for more info about this.
+<BR><BR>
+MenuBegin does not activate the menu. Instead, it creates yet another structure which is necessary to execute the
+menu, and returns the handle to it (or <A HREF="alloc.html#H_NULL">H_NULL</A> in case of an error,
+i.e. if there was not enough memory to allocate the new structure).
+To activate the menu, you must call <A HREF="#MenuKey">MenuKey</A> with this handle.
+<BR><BR>
+The <I>Flags</I> parameter contains a combination of the following flags, defined in the enum
+<A HREF="#MenuBeginFlags">MenuBeginFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">MBF_WITHICON</TD>
+  <TD>Reserve extra space in memory in order to display menus with icons.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MBF_REDEF</TD>
+  <TD>Allow for the top-level items (special text/icon combination) to be redefined with the <A HREF="#MenuTopRedef">MenuTopRedef</A> function.
+<BR>
+<B>Note:</B> The only way to create redefinable menu items is to use a pre-filled menu structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MBF_SYS_ALLOC</TD>
+  <TD>Unknown for the moment (do not use).</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MBF_MAX_MENU_WIDTH</TD>
+  <TD>AMS 2.00 or higher: The parameter after <I>Flags</I> should be a short integer representing the maximum field width to use for the menu (by default it is the screen width).
+      This maximum field width is only used if the menu width is calculated automatically (i.e. the width was set to 0).
+      If you wish to use both MAX_MENU_WIDTH and MBF_HMENU at the same time, see below.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MBF_STRIKEOUT</TD>
+  <TD>AMS 2.00 or higher: Use strikeout (line drawn through text or icon fields) instead of grayed items to indicate disabled menu items.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MBF_HMENU</TD>
+  <TD>AMS 2.00 or higher: The parameter after <I>Flags</I> should be the handle of a dynamically created menu.
+      If this flag is used, the parameter <I>MenuPtr</I> is ignored and should be set to <A HREF="alloc.html#NULL">NULL</A>.
+      The handle is locked and dereferenced and used instead of MenuPtr.
+      The handle is saved internally, and calling <A HREF="#MenuEnd">MenuEnd</A> on the handle returned by MenuBegin will free this handle.
+      If you wish to use both MAX_MENU_WIDTH and MBF_HMENU at the same time, see below.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MBF_NO_DRAWTOP</TD>
+  <TD>AMS 2.00 or higher: Set up the menu-draw structure and return a handle to it, but do not draw the menu.
+      You have to call <A HREF="#MenuOn">MenuOn</A> to draw it.</TD>
+</TR>
+</TABLE>
+<BR>
+If both <A HREF="#MenuBeginFlags">MAX_MENU_WIDTH</A> and <A HREF="#MenuBeginFlags">MBF_HMENU</A> are set, the first parameter after <I>Flags</I> represents the maximum menu width, and the second parameter after <I>Flags</I> represents the handle to a dynamic menu.
+<BR><BR>
+This routine may cause heap compression.</P>
+
+<HR>
+<H3><A NAME="MenuCheck"><U>MenuCheck</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> MenuCheck (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> ID, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Cmd);</TD></TR></TABLE></P>
+<P><B>Checks/unchecks or returns the state of an item in a pulldown menu.</B></P>
+
+<P>MenuCheck checks/unchecks or returns the state of the check mark of the pulldown submenu item identified by <I>ID</I>
+(see <A HREF="#MenuAddText">MenuAddText</A> for more details about item IDs).
+<I>ExecHandle</I> is a handle returned from the <A HREF="#MenuBegin">MenuBegin</A> function,
+not from <A HREF="#MenuNew">MenuNew</A>.
+<BR><BR>
+If <I>Cmd</I> is set to MC_STATUS, MenuCheck returns the status of the check mark (zero: not checked, nonzero: checked).
+Otherwise it returns <A HREF="alloc.html#Bool">TRUE</A> on success (i.e. item was found) and <A HREF="alloc.html#Bool">FALSE</A> on failure.
+<BR><BR>
+The <I>Cmd</I> parameter must be one of the following values, defined in the enum <A HREF="#MenuCheckCmds">MenuCheckCmds</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">MC_CHECK</TD>
+  <TD>Display a check mark next to the menu item.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MC_UNCHECK</TD>
+  <TD>AMS 2.00 or higher: Remove the check mark.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MC_STATUS</TD>
+  <TD>Return the status of the check mark (zero: not checked, nonzero: checked).</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">MC_FLIP</TD>
+  <TD>Invert the status of the check mark.</TD>
+</TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A></P>
+<HR>
+<H3><A NAME="MenuEnd"><U>MenuEnd</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MenuEnd (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle);</TD></TR></TABLE></P>
+<P><B>Deallocates an executable menu structure and removes the menu from the screen.</B></P>
+
+<P>MenuEnd deletes the structure needed for executing the toolbar menu (such a structure
+is created using <A HREF="#MenuBegin">MenuBegin</A>), and removes the menu from
+the screen by filling the menu area with blank pixels (except if the
+<A HREF="#MenuBeginFlags">MBF_NO_DRAWTOP</A> flag was passed to <A HREF="#MenuBegin">MenuBegin</A>).
+Note that it never restores the
+background which was present before the menu was drawn; you must do this manually. If
+the menu was drawn at the top of the screen (as usually), calling <A HREF="#MenuUpdate">MenuUpdate</A>
+may help. Also note that MenuEnd does not remove the structure created using
+<A HREF="#MenuNew">MenuNew</A> unless you used the <A HREF="#MenuBeginFlags">MBF_HMENU</A> flag;
+you must call <A HREF="alloc.html#HeapFree">HeapFree</A> to remove it.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuKey">MenuKey</A></P>
+<HR>
+<H3><A NAME="MenuFlags"><U>MenuFlags</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> MenuFlags (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Return the flag word for a dynamic menu/popup structure.</B></P>
+
+<P>MenuFlags returns the flags stored in a dynamic menu structure (see
+<A HREF="#MenuPopup">MenuPopup</A> for more information on menu
+structures). For the moment, the only useful flag bit is
+<A HREF="#MenuFlagsEnum">MF_ERROR</A>, which is cleared when the menu
+structure is created and set if adding or changing a menu entry causes a
+memory error. All menu flags are described in the enum
+<A HREF="#MenuFlagsEnum">MenuFlagsEnum</A>.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuKey">MenuKey</A></P>
+<HR>
+<H3><A NAME="MenuGetTopRedef"><U>MenuGetTopRedef</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> MenuGetTopRedef (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> Item);</TD></TR></TABLE></P>
+<P><B>Gets the index of a toolbox icon.</B></P>
+
+<P>MenuGetTopRedef returns the ID of the child item whose icon is used by
+the top-level parent <I>Item</I> as a redefinition icon which
+belongs to the menu associated with the handle <I>ExecHandle</I>. See
+<A HREF="#MenuTopRedef">MenuTopRedef</A> for more info.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuTopRedef">MenuTopRedef</A>, <A HREF="#MenuTopSelect">MenuTopSelect</A></P>
+<HR>
+<H3><A NAME="MenuItemDef"><U>MenuItemDef</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *MenuItemDef (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> ID, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *Type);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the data of a menu item.</B></P>
+
+<P>Given a menu item <I>ID</I>, MenuItemDef returns a pointer to the text,
+<A HREF="graph.html#ICON">ICON</A>, or <A HREF="graph.html#BITMAP">BITMAP</A> defining it
+(or <A HREF="alloc.html#NULL">NULL</A> if <I>ID</I> was not found in the menu identified by
+<I>ExecHandle</I>) and returns its type in <I>Type</I>. <I>ExecHandle</I> is a handle returned from
+<A HREF="#MenuBegin">MenuBegin</A>.
+<BR><BR>
+The value returned in <I>Type</I> can be one of the following types (or 0 if not found), as defined
+in the enum <A HREF="#DynMenuFlags">DynMenuFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TEXT</TD>
+  <TD>The pointer returned points to a text string.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_ICON</TD>
+  <TD>The pointer returned points to an <A HREF="graph.html#ICON">ICON</A> structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_BITMAP</TD>
+  <TD>The pointer returned points to a <A HREF="graph.html#BITMAP">BITMAP</A> structure.</TD>
+</TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#DynMenuAdd">DynMenuAdd</A>, <A HREF="#DynMenuChange">DynMenuChange</A></P>
+<HR>
+<H3><A NAME="MenuKey"><U>MenuKey</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> MenuKey (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> KeyCode);</TD></TR></TABLE></P>
+<P><B>Activates a toolbar menu by processing a key press.</B></P>
+
+<P>MenuKey is the heart of all toolbar menus. It activates the menu associated with the handle
+<I>ExecHandle</I>, where <I>ExecHandle</I> is a handle returned from
+<A HREF="#MenuBegin">MenuBegin</A> (not from <A HREF="#MenuNew">MenuNew</A>).
+The parameter <I>KeyCode</I> is the code of the key
+associated with the menu item (toolbox) which will be activated. If this toolbox has a
+pulldown menu assigned to it (<A HREF="#DynMenuFlags">DMF_TOP_SUB</A>), it will be opened,
+and the user can navigate through the menu
+using the arrow keys. If the toolbox has no pulldown menu, MenuKey returns
+immediately. A typical method of calling MenuKey is to pass a result of
+the <A HREF="kbd.html#ngetchx">ngetchx</A> function (which waits for a keypress and returns
+the key code) to the parameter <I>KeyCode</I>:</P>
+<PRE>result = MenuKey (exec_handle, ngetchx ());
+</PRE>
+<P>MenuKey returns the following values (as far as I know; maybe other return values also exist):</P>
+<UL>
+<LI><P><A HREF="#MenuKeyValues">M_NOITEM</A>, if the user pressed ESC while the menu was active, or if the code of a disabled
+toolbox (see <A HREF="#MenuTopStat">MenuTopStat</A>) was passed to MenuKey;</P></LI>
+<LI><P><A HREF="#MenuKeyValues">M_NOTMENUKEY</A>, if a wrong key code was passed to it (i.e. a key code which is not associated
+with any menu item);</P></LI>
+<LI><P>a positive value, if the user selects a menu item normally. In this case, the return
+value will be the identification number (<I>ID</I>) of the selected menu item
+(see <A HREF="#MenuAddText">MenuAddText</A>).</P></LI>
+</UL>
+<P>Note that this approach is very flexible, because the actual reading of the keypress is
+done in the user program, so it allows various ways of "hooking" into the "heart" of the menu.
+Most importantly, the user program can decide which keys belong to the menu.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of defining a menu and using MenuKey to activate it (called "Menu Example 1"):</P>
+<PRE>// A simple menu example, with several submenus
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE menu_handle = MenuNew (2, 240, 18);
+  MenuAddText (menu_handle, 0, &quot;First&quot;, 1, DMF_TOP_SUB);
+  MenuAddText (menu_handle, 1, &quot;Subitem 1.1&quot;, 5, DMF_CHILD_SUB);
+  MenuAddText (menu_handle, 5, &quot;Subitem 1.1.1&quot;, 8, DMF_CHILD_SUB);
+  MenuAddText (menu_handle, 5, &quot;Subitem 1.1.2&quot;, 9, DMF_CHILD);
+  MenuAddText (menu_handle, 8, &quot;Subitem 1.1.1.1&quot;, 10, DMF_CHILD);
+  MenuAddText (menu_handle, 1, &quot;Subitem 1.2&quot;, 6, DMF_CHILD);
+  MenuAddText (menu_handle, 0, &quot;Second&quot;, 2, DMF_TOP_SUB);
+  MenuAddText (menu_handle, 2, &quot;Subitem 2.1&quot;, 7, DMF_CHILD);
+  MenuAddText (menu_handle, -1, &quot;Third&quot;, 3, DMF_TOP);
+  MenuAddText (menu_handle, -1, &quot;Fourth&quot;, 4, DMF_TOP);
+  HANDLE exec_handle = MenuBegin (NULL, 0, 0, MBF_HMENU, menu_handle);
+  short result;
+  do {
+    result = MenuKey (exec_handle, ngetchx ());
+  } while (result == M_NOTMENUKEY);
+  MenuEnd (exec_handle);
+  MenuUpdate ();
+  push_shortint (result);
+}
+</PRE>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A></P>
+<HR>
+<H3><A NAME="MenuLoad"><U>MenuLoad</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> MenuLoad (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *BaseMenu, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Begins a dynamically created menu using a prefilled static menu as the starting point.</B></P>
+
+<P>MenuLoad creates a dynamic menu, using the prefilled static menu structure <I>BaseMenu</I> with
+the size <I>Size</I> (in bytes) as the starting point. It copies the menu's items, flags, width,
+and height from the static structure. MenuLoad returns the handle of the new dynamically created menu
+which may be used in <A HREF="#DynMenuAdd">DynMenuAdd</A> or <A HREF="#DynMenuChange">DynMenuChange</A>
+and then passed to <A HREF="#MenuBegin">MenuBegin</A> to draw the menu, or returns
+<A HREF="alloc.html#H_NULL">H_NULL</A> if there was not enough memory.
+<BR><BR>
+<B>Note:</B> Please see <A HREF="#MenuPopup">MenuPopup</A> for more informations on menu structures,
+and take a look at the proposed method to execute menus as described in
+<A HREF="#MenuNew">MenuNew</A>.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuNew">MenuNew</A>, <A HREF="#DynMenuAdd">DynMenuAdd</A>, <A HREF="#DynMenuChange">DynMenuChange</A></P>
+<HR>
+<H3><A NAME="MenuNew"><U>MenuNew</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> MenuNew (<B><A HREF="keywords.html#short">short</A></B> Flags, <B><A HREF="keywords.html#short">short</A></B> Width, <B><A HREF="keywords.html#short">short</A></B> Height);</TD></TR></TABLE></P>
+<P><B>Creates a new toolbar menu.</B></P>
+
+<P>MenuNew allocates memory for a new toolbar menu (i.e. a menu which looks like the main
+menu of the home screen), initializes the allocated block with the necessary structures, and
+returns a handle to it (or <A HREF="alloc.html#H_NULL">H_NULL</A> in case of an error).
+You can later free the memory by calling <A HREF="alloc.html#HeapFree">HeapFree</A>,
+but note that this is done automatically if you use the <A HREF="#MenuBeginFlags">MBF_HMENU</A>
+flag when calling the <A HREF="#MenuBegin">MenuBegin</A> function.
+<I>Width</I> and <I>Height</I> are the width and the height of the menu in pixels.
+Passing 0 means that the width or height should be calculated automatically;
+however, AMS 1.xx simply uses the default values in this case. Values which
+are too large are converted to the largest possible values; for the height
+this is a value of 18.
+If the cumulated width of the items in the menu is greater than
+the available width of the menu, the menu items will scroll left or right if necessary.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+The parameter <I>Flags</I> contains various flags defined in the enum
+<A HREF="#MenuFlagsEnum">MenuFlagsEnum</A>. TI recommends passing 0,
+but the TIOS mainly passes <A HREF="#MenuFlagsEnum">MF_TOOLBOX</A> when
+calling this routine. This parameter is copied to the <I>Flags</I> field of
+the menu structure (see <A HREF="#MenuPopup">MenuPopup</A> for info
+about this structure).
+<BR><BR>
+The method for creating menus on AMS 2.00 or later which TI proposes is as
+follows:</P>
+<OL>
+<LI><P>Create an empty, dynamic menu structure with MenuNew or
+<A HREF="#MenuLoad">MenuLoad</A>.</P></LI>
+<LI><P>Build the menu with <A HREF="#DynMenuAdd">DynMenuAdd</A> or <A HREF="#DynMenuChange">DynMenuChange</A> using the
+handle returned by MenuNew or <A HREF="#MenuLoad">MenuLoad</A> (each of these routines
+returns <A HREF="alloc.html#H_NULL">H_NULL</A> if not enough memory, or check <A HREF="#MenuFlags">MenuFlags</A> when
+done with all of the additions/changes).</P></LI>
+<LI><P>Call <A HREF="#MenuBegin">MenuBegin</A> setting the <A HREF="#MenuBeginFlags">MBF_HMENU</A> flag and passing the
+handle returned by MenuNew or <A HREF="#MenuLoad">MenuLoad</A> as the argument after
+the Flags parameter (<A HREF="#MenuBegin">MenuBegin</A> has a variable number of
+arguments). <A HREF="alloc.html#NULL">NULL</A> can be passed as the pointer to the menu
+structure (since the dereferenced handle points to this structure). (If interested, see
+<A HREF="#MenuPopup">MenuPopup</A> for more informations on menu structures.)
+This will lock the handle returned from MenuNew and save it.</P></LI>
+<LI><P>Using the handle returned from <A HREF="#MenuBegin">MenuBegin</A> (this is a separate
+handle!), you may then call all of the normal menu functions
+(<A HREF="#MenuCheck">MenuCheck</A>, <A HREF="#MenuKey">MenuKey</A>, <A HREF="#MenuOn">MenuOn</A>,
+<A HREF="#MenuTopStat">MenuTopStat</A>, <A HREF="#MenuTopSelect">MenuTopSelect</A>, etc.).</P></LI>
+<LI><P>When done with the menu, call <A HREF="#MenuEnd">MenuEnd</A> on the handle returned
+from <A HREF="#MenuBegin">MenuBegin</A>. This will free the handle returned from
+<A HREF="#MenuBegin">MenuBegin</A> as well as the handle returned from MenuNew.</P></LI>
+</OL>
+<P>Do not forget that once you call <A HREF="#MenuBegin">MenuBegin</A>, you may not unlock the
+handle returned from MenuNew, nor call <A HREF="#DynMenuAdd">DynMenuAdd</A> or
+<A HREF="#DynMenuChange">DynMenuChange</A>.
+<BR><BR>
+It might also be useful for you to have the following information:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>&nbsp;</TD><TD>TI-89</TD><TD>TI-92</TD></TR>
+<TR><TD>Maximum menu width (in pixels)</TD><TD>160</TD><TD>240</TD></TR>
+<TR><TD>Top-level font<BR>(as defined in the <A HREF="graph.html#Fonts">Fonts</A> enum)</TD><TD>F_4x6</TD><TD>F_6x8</TD></TR>
+<TR><TD>Sub-level font<BR>(as defined in the <A HREF="graph.html#Fonts">Fonts</A> enum)</TD><TD>F_6x8</TD><TD>F_6x8</TD></TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuKey">MenuKey</A>, <A HREF="#MenuLoad">MenuLoad</A>, <A HREF="#DynMenuAdd">DynMenuAdd</A>, <A HREF="#DynMenuChange">DynMenuChange</A>, <A HREF="#MenuAddText">MenuAddText</A>, <A HREF="#MenuAddIcon">MenuAddIcon</A></P>
+<HR>
+<H3><A NAME="MenuOff"><U>MenuOff</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MenuOff (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle);</TD></TR></TABLE></P>
+<P><B>Disables a toolbar menu.</B></P>
+
+<P>MenuOff grays-out (i.e. disables) the top-level menu defined by <I>ExecHandle</I>
+(a handle returned from <A HREF="#MenuBegin">MenuBegin</A>). To re-enable it,
+call <A HREF="#MenuOn">MenuOn</A>.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuOn">MenuOn</A></P>
+<HR>
+<H3><A NAME="MenuOn"><U>MenuOn</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MenuOn (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle);</TD></TR></TABLE></P>
+<P><B>Redraws a toolbar menu.</B></P>
+
+<P>MenuOn redraws the menu associated with the handle
+<I>ExecHandle</I>, where <I>ExecHandle</I> is a handle returned from the
+<A HREF="#MenuBegin">MenuBegin</A> function. This may be useful after executing
+functions like <A HREF="#MenuTopSelect">MenuTopSelect</A>, or after calling
+<A HREF="#MenuOff">MenuOff</A>. Note that items that were
+disabled with <A HREF="#MenuTopStat">MenuTopStat</A> remain disabled and therefore shaded.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuOff">MenuOff</A>, <A HREF="#MenuTopStat">MenuTopStat</A></P>
+<HR>
+<H3><A NAME="MenuPopup"><U>MenuPopup</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> MenuPopup (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *MenuPtr, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> start_option);</TD></TR></TABLE></P>
+<P><B>Executes a popup menu given a pointer to a popup menu structure.</B></P>
+
+<P>MenuPopup works exactly like <A HREF="#PopupDo">PopupDo</A>, except instead of the handle,
+a pointer to the menu structure is given as the parameter. <A HREF="#PopupDo">PopupDo</A>
+internally calls <A HREF="alloc.html#HeapDeref">HeapDeref</A>, then passes the returned pointer
+to this function. This function is mainly used internally in the TIOS. Its advantage in
+comparison with <A HREF="#PopupDo">PopupDo</A> is the fact that the complete popup menu
+structure may be given as a static pre-filled array of bytes, and you can pass the pointer
+to such a structure to the MenuPopup function. This will save a lot of memory, because you do not need
+to call <A HREF="#PopupNew">PopupNew</A> and a lot of functions like <A HREF="#PopupAddText">PopupAddText</A>.
+Moreover, MenuPopup allows executing menus with more than one level of submenus even in AMS 1.xx, which
+is not possible otherwise. But note that the menu
+structure is a quite complicated variable-shape structure, so if you do not know <I>exactly</I> what
+you are doing, avoid this function! As the menu structure has a variable length and shape,
+it cannot be strictly described as a C language type, but it will be described here using
+non-formal C-like syntax. Note that toolbar menus use the same structure:</P>
+<PRE>packed struct MENU
+  {
+    unsigned short DisplayOffset;  // <I>Contains offset to Display[0] from here</I>
+    unsigned short Flags;          // <I>Various flags: see text below</I>
+    unsigned short TotalItems;     // <I>Total number of items</I>
+    unsigned char Width;           // <I>Menu width, 0 for popup menus</I>
+    unsigned char Height;          // <I>Menu height</I>
+    unsigned short MainItems;      // <I>Number of main items only</I>
+    unsigned short DynSize;        // <I>Dynamic size (see text below)</I>
+    unsigned short RedefOffset;    // <I>Offset to RedefIcons, 0 if RedefItems = 0</I>
+    unsigned short RedefItems;     // <I>Number of redefinable icons</I>
+    long separator = -1;
+
+    MENU_ENTRY main_entries [];    // <I>for each main item</I>
+    long separator = -1;
+
+    struct
+      {
+        MENU_ENTRY sub_entries []; // <I>for each submenu item</I>
+        long separator = -1;
+      } cascade [];                // <I>for each submenu</I>
+
+    packed union
+      {
+        <A HREF="graph.html#ICON">ICON</A> Icon;          // <I>Used in toolbars with icons instead of text</I>
+        char Text [];       // <I>Text, zero terminated</I>
+      } Display [];         // <I>for each menu item</I>
+
+    struct
+      {
+        unsigned short ID;  // <I>ID number</I>
+        <A HREF="graph.html#ICON">ICON</A> Icon;          // <I>Corresponding icon description</I>
+      } RedefIcons [];      // <I>for each redefinable icon (if any)</I>
+  };
+</PRE>
+<P>The <I>Flags</I> field contains various flags defined in the enum
+<A HREF="#MenuFlagsEnum">MenuFlagsEnum</A>.
+The <I>DynSize</I> field for dynamically created menus (i.e. menus created with
+<A HREF="#PopupNew">PopupNew</A>) contains the total length of the MENU structure in bytes (this
+info is needed for the heap manager). For statically allocated menus, you can put zero in this
+field. Also, each element of the array <I>Display</I> should be aligned on a word boundary. This is not
+strictly necessary for text items, but it is necessary for icon items.
+<BR><BR>
+Each menu item is described using a variable-length (4 or 6 bytes) structure called
+MENU_ENTRY, which is described as:</P>
+<PRE>struct MENU_ENTRY
+  {
+    unsigned short ID;                // <I>Item type (see below) ORed with</I>
+                                      //   <I>ID number for this item</I>
+    unsigned short Offset;            // <I>Offset of icon/text (from Display[0])</I>
+                                      //   <I>or <A HREF="system.html#XR_stringPtr">XR_string</A>, depending of item type</I>
+    packed union                      // <I>If the item is cascaded (i.e if it has</I>
+      {                               // <I>  a submenu), we have an extra offset</I>
+        unsigned short CascadeOffset; // <I>Offset from the begining of menu</I>
+      } extras;                       // <I>  structure to the begining of the</I>
+  };                                  // <I>  description of the cascaded submenu</I>
+</PRE>
+<P>Possible item types are MT_TEXT (0x8000), MT_XREF (0x9000), and MT_ICON (0xA000). They may
+optionally be ORed with MT_CASCADE (0x4000) to signalize that the item is cascaded (i.e. that
+the item has a submenu). All these constants are defined in the enum <A HREF="#ItemTypes">ItemTypes</A>.
+The <I>CascadeOffset</I> field exists only if <I>ID</I>&nbsp;&amp;&nbsp;MT_CASCADE is non-zero
+(i.e. if bit b14 in <I>ID</I> is set). If the <I>Offset</I> field for an item of icon type is not
+defined, this is an item with redefinable icons (for example, the toolbar menu item in the Geometry application
+uses such menu items).
+<BR><BR>
+Note that the topmost (b15) bit of the <I>ID</I> field is always set, and the topmost bit of the
+<I>Offset</I> field is always 0. This is necessary because MENU_ENTRY is a variable length
+structure (4 or 6 bytes), depending on whether a cascade is defined. To correctly move up and down
+through menu items, the TIOS uses the following strategy: on pressing down, if MT_CASCADE is set,
+move down 6 bytes, otherwise move down 4 bytes. On pressing up, move back 4 bytes, then check
+bit b15. If it is 0, this is an <I>Offset</I> field, so move back another 2 bytes.
+<BR><BR>
+All of this will become clearer with a concrete example. A variable-sized variable-shape structure
+like MENU cannot be defined using standard C initializers, but it may be defined with the help of
+the built-in assembler. This example (called "Static Popup") defines exactly the same menu as the
+example given with <A HREF="#PopupDo">PopupDo</A>, but saves about 200 bytes:</P>
+<PRE>// Display a predefined popup menu
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+extern void menu;
+asm (&quot;menu:\n&quot;
+&quot;        .word  title_text - menu\n&quot;
+&quot;        .word  0xD5\n&quot;
+&quot;        .word  9\n&quot;
+&quot;        .byte  0, 40\n&quot;
+&quot;        .word  5\n&quot;
+&quot;        .word  0\n&quot;
+&quot;        .word  0\n&quot;
+&quot;        .word  0\n&quot;
+&quot;        .long  -1\n&quot;
+&quot;      main_entries:\n&quot;
+&quot;        .word  MT_TEXT + 1                   /* | is a comment character, */\n&quot;
+&quot;        .word  option_1_text - title_text    /* so use + instead */\n&quot;
+&quot;        .word  MT_TEXT + 2\n&quot;
+&quot;        .word  option_2_text - title_text\n&quot;
+&quot;        .word  MT_TEXT + MT_CASCADE + 3\n&quot;
+&quot;        .word  submenu_3_text - title_text\n&quot;
+&quot;        .word  submenu_3_cascade - menu\n&quot;
+&quot;        .word  MT_TEXT + MT_CASCADE + 4\n&quot;
+&quot;        .word  submenu_4_text - title_text\n&quot;
+&quot;        .word  submenu_4_cascade - menu\n&quot;
+&quot;        .word  MT_TEXT + 5\n&quot;
+&quot;        .word  option_5_text - title_text\n&quot;
+&quot;        .long  -1\n&quot;
+&quot;      submenu_3_cascade:\n&quot;
+&quot;        .word  MT_TEXT + 6\n&quot;
+&quot;        .word  suboption_3_1_text - title_text\n&quot;
+&quot;        .word  MT_TEXT + 7\n&quot;
+&quot;        .word  suboption_3_2_text - title_text\n&quot;
+&quot;        .word  MT_TEXT + 8\n&quot;
+&quot;        .word  suboption_3_3_text - title_text\n&quot;
+&quot;        .long  -1\n&quot;
+&quot;      submenu_4_cascade:\n&quot;
+&quot;        .word  MT_TEXT + 9\n&quot;
+&quot;        .word  suboption_4_1_text - title_text\n&quot;
+&quot;        .long  -1\n&quot;
+&quot;      title_text:\n&quot;
+&quot;        .asciz \&quot;EXAMPLE\&quot;\n&quot;
+&quot;      option_1_text:\n&quot;
+&quot;        .asciz \&quot;Option 1\&quot;\n&quot;
+&quot;      option_2_text:\n&quot;
+&quot;        .asciz \&quot;Option 2\&quot;\n&quot;
+&quot;      submenu_3_text:\n&quot;
+&quot;        .asciz \&quot;Submenu 3\&quot;\n&quot;
+&quot;      submenu_4_text:\n&quot;
+&quot;        .asciz \&quot;Submenu 4\&quot;\n&quot;
+&quot;      option_5_text:\n&quot;
+&quot;        .asciz \&quot;Option 5\&quot;\n&quot;
+&quot;      suboption_3_1_text:\n&quot;
+&quot;        .asciz \&quot;Suboption 3.1\&quot;\n&quot;
+&quot;      suboption_3_2_text:\n&quot;
+&quot;        .asciz \&quot;Suboption 3.2\&quot;\n&quot;
+&quot;      suboption_3_3_text:\n&quot;
+&quot;        .asciz \&quot;Suboption 3.3\&quot;\n&quot;
+&quot;      suboption_4_1_text:\n&quot;
+&quot;        .asciz \&quot;Suboption 4.1\&quot;\n&quot;);
+
+void _main(void)
+{
+  MenuPopup (&amp;menu, CENTER, CENTER, 0);
+}
+</PRE>
+<P>There is an alternative method as well. Note that the field <I>DynSize</I> (the tenth and eleventh byte starting from zero)
+of the MENU structure contains the total length of the structure for dynamically created menus.
+So you can make a menu using commands like <A HREF="#PopupNew">PopupNew</A>,
+<A HREF="#PopupAddText">PopupAddText</A>, etc., and then to use VTI and its debugger to pick up bytes
+from the menu structure knowing the length of it. After this, you may pass a pointer to the
+pre-filled sequence of bytes picked from VTI to this function. I used this approach in the
+following (cryptic) example which is functionally equivalent to the example given above:</P>
+<PRE>static long menu[] = {0x4800D5, 0x90028, 0x500BA, 0, -1, 0x80010008,
+  0x80020012, 0xC003001C, 0x30C004, 0X260040, 0X80050030, -1, 0x8006003A,
+  0x80070048, 0x80080056, -1, 0X80090064, -1, 0x4558414D, 0x504C4500,
+  0x4F707469, 0x6F6E2031, 0x4F4F70, 0x74696F6E, 0x20320053, 0x5375626D,
+  0x656E7520, 0x33005375, 0x626D656E, 0x75203400, 0x4F707469, 0x6F6E2035,
+  0x535375, 0x626F7074, 0x696F6E20, 0x332E3100, 0x5375626F, 0x7074696F,
+  0x6E20332E, 0x32005375, 0x626F7074, 0x696F6E20, 0x332E3300, 0x5375626F,
+  0x7074696F, 0x6E20342E, 0x31000000};
+MenuPopup (&amp;menu, CENTER, CENTER, 0);
+</PRE>
+
+<P>See also: <A HREF="#PopupDo">PopupDo</A></P>
+<HR>
+<H3><A NAME="MenuSubStat"><U>MenuSubStat</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MenuSubStat (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> ID, <B><A HREF="keywords.html#short">short</A></B> State);</TD></TR></TABLE></P>
+<P><B>Changes the state (enabled/disabled) of an item in a pulldown menu.</B></P>
+
+<P>MenuSubStat is very similar to <A HREF="#MenuTopStat">MenuTopStat</A>, but works with
+items in associated pulldown menus. MenuSubStat changes status of the item with the given
+<I>ID</I> (see <A HREF="#MenuAddText">MenuAddText</A>).</P>
+
+<P>See also: <A HREF="#MenuTopStat">MenuTopStat</A></P>
+<HR>
+<H3><A NAME="MenuTopRedef"><U>MenuTopRedef</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MenuTopRedef (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> Item, <B><A HREF="keywords.html#short">short</A></B> ID);</TD></TR></TABLE></P>
+<P><B>Redefines a toolbox icon.</B></P>
+
+<P>MenuTopRedef redefines the icon in the toolbox <I>Item</I> (0 = first, 1 = second,
+etc.), which belongs to the menu associated with the handle <I>ExecHandle</I>, to
+the icon with index <I>Index</I>, i.e. to the icon associated with the submenu
+with the given <I>ID</I>. The menu must have been started using
+<A HREF="#MenuBegin">MenuBegin</A> with the
+<A HREF="#MenuBeginFlags">MBF_REDEF</A> flag set.
+This is used mainly in the Geometry application which has a toolbar menu with redefinable icons.
+<I>ExecHandle</I> is a handle returned from the <A HREF="#MenuBegin">MenuBegin</A> function,
+not one returned from <A HREF="#MenuNew">MenuNew</A>.
+<BR><BR>
+<B>Note:</B> Such menus cannot be
+created using commands like <A HREF="#MenuNew">MenuNew</A>, <A HREF="#MenuAddIcon">MenuAddIcon</A>,
+etc. The only way to make a such menu is to create an appropriate pre-filled static menu
+structure, and to pass a pointer to such a structure to <A HREF="#MenuBegin">MenuBegin</A>.
+See <A HREF="#MenuPopup">MenuPopup</A> for more info about menu structures.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuGetTopRedef">MenuGetTopRedef</A>, <A HREF="#MenuTopSelect">MenuTopSelect</A></P>
+<HR>
+<H3><A NAME="MenuTopSelect"><U>MenuTopSelect</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MenuTopSelect (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> Item);</TD></TR></TABLE></P>
+<P><B>Emphasizes a toolbox.</B></P>
+
+<P>MenuTopSelect emphasizes (selects) the toolbox <I>Item</I> (0 = first, 1 = second,
+etc.) which belongs to the menu associated with the handle <I>ExecHandle</I>, by
+drawing a thick border arround the toolbox. The Geometry application uses this feature.
+This command also redraws the menu. Call this function with
+<I>Item</I>&nbsp;=&nbsp;-1 to cancel the selection.
+<I>ExecHandle</I> is a handle returned from the <A HREF="#MenuBegin">MenuBegin</A> function,
+not one returned from <A HREF="#MenuNew">MenuNew</A>.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#QMenuTopSelect">QMenuTopSelect</A></P>
+<HR>
+<H3><A NAME="MenuTopStat"><U>MenuTopStat</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MenuTopStat (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> Item, <B><A HREF="keywords.html#short">short</A></B> State);</TD></TR></TABLE></P>
+<P><B>Changes the state (enabled/disabled) of a toolbox.</B></P>
+
+<P>MenuTopStat changes the state of the toolbox <I>Item</I> (0 = first, 1 = second,
+etc.) which belongs to the menu associated with the handle <I>ExecHandle</I>.
+<I>ExecHandle</I> is a handle returned from the <A HREF="#MenuBegin">MenuBegin</A> function,
+not one returned from <A HREF="#MenuNew">MenuNew</A>. <I>State</I> is a boolean
+value: if it is <A HREF="alloc.html#Bool">TRUE</A>, the toolbox will be enabled; if it is
+<A HREF="alloc.html#Bool">FALSE</A>, the toolbox will be disabled (i.e. it will be dimmed and
+cannot be selected).
+<BR><BR>
+MenuTopStat does not redraw the menu according to the new state; this must
+be done manually by calling <A HREF="#MenuOn">MenuOn</A>.</P>
+
+<P>See also: <A HREF="#MenuSubStat">MenuSubStat</A></P>
+<HR>
+<H3><A NAME="MenuUpdate"><U>MenuUpdate</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MenuUpdate (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Draws the default home screen menu.</B></P>
+
+<P>MenuUpdate redraws the default home screen menu, which is often useful. More precisely,
+it redraws the menu registered with the current application (for more info, see the
+<A HREF="events.html#EV_registerMenu">EV_registerMenu</A> function from
+<A HREF="events.html">events.h</A>).</P>
+
+<HR>
+<H3><A NAME="PopupAddText"><U>PopupAddText</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> PopupAddText (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> ParentID, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *Text, <B><A HREF="keywords.html#short">short</A></B> ID);</TD></TR></TABLE></P>
+<P><B>Adds a new text item in a popup menu.</B></P>
+
+<P>PopupAddText adds the text <I>Text</I> to the popup menu associated with the handle
+<I>Handle</I>. The text added first will be the first option in the menu, the
+text added second will be the second option, etc. <I>ID</I> is the identification number
+which <A HREF="#PopupDo">PopupDo</A> will return later if the user selected
+this menu option, and which may be used as the <I>ParentID</I> parameter in another call.
+If <I>ID</I> is 0, the TIOS will generate the return value
+automatically (1 for the first menu option, 2 for the second option, etc.). The legal range
+for <I>ID</I> is 1 to 4095. If <I>ID</I> is greater than 4095, it will
+be truncated (ANDed with 0x0FFF).
+The parameter <I>ParentID</I> has the following meaning:</P>
+<UL>
+<LI><P>Use <I>ParentID</I> = -1 for menu items which have no submenu.</P></LI>
+<LI><P>Use <I>ParentID</I> = 0 for menu items which have an associated submenu.</P></LI>
+<LI><P>If <I>ParentID</I> &gt; 0, this is a submenu item which belongs to the submenu
+associated to the menu item whose <I>ID</I> equals <I>ParentID</I>.</P></LI>
+</UL>
+<P>PopupAddText returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case of an error
+(i.e. out of memory, <I>ParentID</I> not found, <I>ParentID</I> found but it was not a
+possible parent, or maximum number of items in a menu exceeded),
+otherwise it returns <I>Handle</I>. If there is an error adding the new entry, the
+<A HREF="#MenuFlagsEnum">MF_ERROR</A> bit in the menu structure is set (see
+<A HREF="#MenuPopup">MenuPopup</A> for more information on menu structures).
+You can use <A HREF="#MenuFlags">MenuFlags</A> to retrieve this flag from the
+structure.
+<BR><BR>
+Although the TIOS menu system allows for menus with more than one level of
+submenus, it is not possible to create such menus using this command. If you really
+want more levels of nesting, you can use <A HREF="#DynMenuAdd">DynMenuAdd</A>,
+which supports more levels of nesting, but is only available in AMS 2.00 or later.
+Alternatively, you can use pre-filled static structures and the
+<A HREF="#MenuPopup">MenuPopup</A> function. But note that this is somewhat
+complicated.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+<B>Note:</B> If <I>text</I> is longer than 18 characters, it will be truncated by storing a
+zero byte into the string after the 18th character. You have to be especially
+careful because the <I>text</I> parameter is <I>not</I> constant in this case.</P>
+
+<P>See also: <A HREF="#DynMenuAdd">DynMenuAdd</A>, <A HREF="#DynMenuChange">DynMenuChange</A>, <A HREF="#PopupNew">PopupNew</A>, <A HREF="#MenuAddText">MenuAddText</A></P>
+<HR>
+<H3><A NAME="PopupBegin"><U>PopupBegin</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> PopupBegin (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Creates a new popup menu with checkmarks features.</B></P>
+
+<P>PopuBegin allocates a menu-draw structure for a dynamic popup associated with
+<I>Handle</I>, so that the popup items can use the enable/disable or check
+mark features of menus.
+PopupBegin returns a handle which must be passed to
+<A HREF="#PopupBeginDo">PopupBeginDo</A>, <I>not</I> to
+<A HREF="#PopupDo">PopupDo</A>.
+The <I>Flags</I> parameter is currently not used and should be set to 0.
+<BR><BR>
+TI gives a strict method of using dynamic popups that use PopupBegin:</P>
+<OL>
+<LI><P>Create an empty, dynamic popup structure with <A HREF="#PopupNew">PopupNew</A>.</P></LI>
+<LI><P>Build the menu with <A HREF="#DynMenuAdd">DynMenuAdd</A> (or <A HREF="#PopupAddText">PopupAddText</A>).</P></LI>
+<LI><P>Pass the handle returned by <A HREF="#PopupNew">PopupNew</A> to PopupBegin.</P></LI>
+<LI><P>The handle returned by PopupBegin can now be passed to
+<A HREF="#MenuSubStat">MenuSubStat</A> to enable/disable
+individual items or <A HREF="#MenuCheck">MenuCheck</A> to turn on/off or test
+the status of checkmarks for individual items.</P></LI>
+<LI><P>Pass the handle returned from PopupBegin to <A HREF="#PopupBeginDo">PopupBeginDo</A> to
+actually execute the pop-up.</P></LI>
+<LI><P>When done with the menu, call <A HREF="#MenuEnd">MenuEnd</A> on the handle returned from
+PopupBegin. This will free that handle <I>and</I> the handle returned from
+<A HREF="#PopupNew">PopupNew</A>.</P></LI>
+</OL>
+<P>Do not forget that once you call PopupBegin, you may not unlock the
+handle returned from <A HREF="#PopupNew">PopupNew</A>, or call
+<A HREF="#DynMenuAdd">DynMenuAdd</A>,
+<A HREF="#DynMenuChange">DynMenuChange</A>, or
+<A HREF="#PopupAddText">PopupAddText</A>.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of a scrolling popup menu with submenus (called "Dynamic Popup Example"):</P>
+<PRE>// A simple popup menu example
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE handle = PopupNew (&quot;EXAMPLE&quot;, 40);
+  PopupAddText (handle, -1, &quot;Option 1&quot;, 1);
+  PopupAddText (handle, -1, &quot;Option 2&quot;, 2);
+  PopupAddText (handle, 0, &quot;Submenu 3&quot;, 3);
+  PopupAddText (handle, 0, &quot;Submenu 4&quot;, 4);
+  PopupAddText (handle, -1, &quot;Option 5&quot;, 5);
+  PopupAddText (handle, 3, &quot;Suboption 3.1&quot;, 6);
+  PopupAddText (handle, 3, &quot;Suboption 3.2&quot;, 7);
+  PopupAddText (handle, 3, &quot;Suboption 3.3&quot;, 8);
+  PopupAddText (handle, 4, &quot;Suboption 4.1&quot;, 9);
+  HANDLE exec_handle = PopupBegin (handle, 0);
+  MenuCheck (exec_handle, 2, MC_CHECK);
+  MenuCheck (exec_handle, 5, MC_FLIP);
+  short result = PopupBeginDo (exec_handle, CENTER, CENTER, 0);
+  push_longint (result);
+  MenuEnd (exec_handle);
+}
+</PRE>
+
+<P>See also: <A HREF="#PopupNew">PopupNew</A>, <A HREF="#PopupBeginDo">PopupBeginDo</A>, <A HREF="#MenuSubStat">MenuSubStat</A>, <A HREF="#MenuCheck">MenuCheck</A>, <A HREF="#MenuEnd">MenuEnd</A></P>
+<HR>
+<H3><A NAME="PopupBeginDo"><U>PopupBeginDo</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> PopupBeginDo (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> StartID);</TD></TR></TABLE></P>
+<P><B>Executes a dynamically allocated popup using a menu-draw handle.</B></P>
+
+<P>PopupBeginDo draws the popup menu associated with the handle
+<I>ExecHandle</I> on the screen. <I>ExecHandle</I> must be returned from
+<A HREF="#PopupBegin">PopupBegin</A> and <I>not</I> directly from
+<A HREF="#PopupNew">PopupNew</A>; take care <I>never</I> to mix
+handles.
+<BR><BR>
+The top-left corner of the dialog will be the at the position (<I>x</I>, <I>y</I>);
+the coordinates are absolute screen coordinates. <I>x</I>, <I>y</I>, or both may also
+have a special value <A HREF="dialogs.html#CENTER">CENTER</A>, which tells PopupBeginDo to
+center the menu in this dimension. After the execution, the original contents of the screen
+will be restored. PopupBeginDo returns the identification number (ID) of the selected menu item (see
+<A HREF="#DynMenuAdd">DynMenuAdd</A>), or 0 if the user pressed ESC.
+<I>StartID</I> determines which option will be selected first when the menu is
+executed. It seems that <I>StartID</I> works correctly only for menus without
+submenus. Anyway, you can always pass 0 to <I>StartID</I>. It causes the function
+to select the first item.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of a scrolling popup menu with submenus (called "Dynamic Popup Example"):</P>
+<PRE>// A simple popup menu example
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE handle = PopupNew (&quot;EXAMPLE&quot;, 40);
+  PopupAddText (handle, -1, &quot;Option 1&quot;, 1);
+  PopupAddText (handle, -1, &quot;Option 2&quot;, 2);
+  PopupAddText (handle, 0, &quot;Submenu 3&quot;, 3);
+  PopupAddText (handle, 0, &quot;Submenu 4&quot;, 4);
+  PopupAddText (handle, -1, &quot;Option 5&quot;, 5);
+  PopupAddText (handle, 3, &quot;Suboption 3.1&quot;, 6);
+  PopupAddText (handle, 3, &quot;Suboption 3.2&quot;, 7);
+  PopupAddText (handle, 3, &quot;Suboption 3.3&quot;, 8);
+  PopupAddText (handle, 4, &quot;Suboption 4.1&quot;, 9);
+  HANDLE exec_handle = PopupBegin (handle, 0);
+  MenuCheck (exec_handle, 2, MC_CHECK);
+  MenuCheck (exec_handle, 5, MC_FLIP);
+  short result = PopupBeginDo (exec_handle, CENTER, CENTER, 0);
+  push_longint (result);
+  MenuEnd (exec_handle);
+}
+</PRE>
+
+<P>See also: <A HREF="#PopupBegin">PopupBegin</A>, <A HREF="#MenuEnd">MenuEnd</A>, <A HREF="#PopupDo">PopupDo</A></P>
+<HR>
+<H3><A NAME="PopupClear"><U>PopupClear</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> PopupClear (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Clears a popup or toolbar menu structure.</B></P>
+
+<P>PopupClear erases all menu items from the popup menu associated with the handle <I>Handle</I>,
+without freeing the memory (the popup structure itself remains intact, only menu items
+are erased). PopupClear returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case of an error,
+otherwise it returns <I>Handle</I>.
+<BR><BR>
+<B>Note:</B> This function is very useful in menus which are parts of dialogs, if
+some changes in a dialog box may force menu items to be refilled (for example when the
+user selects a new folder in the "Open Variable" dialog). Since the dialog box code keeps the handle
+of the menu, a new one cannot be created. So the old popup menu is cleared and new
+entries are added to it.
+<BR><BR>
+It seems that this function can also be used for toolbar menus. As popups
+and toolbar menus just differ in some points, it should work just fine. Then
+<I>Handle</I> is a handle returned from the <A HREF="#MenuNew">MenuNew</A>
+function (not one returned from <A HREF="#MenuBegin">MenuBegin</A>).
+Take care <I>not</I> to execute <A HREF="#MenuBegin">MenuBegin</A> or
+functions which use the menu in any way just after this function
+without refilling the menu with new items using
+<A HREF="#MenuAddText">MenuAddText</A> or <A HREF="#MenuAddIcon">MenuAddIcon</A>,
+or this will result in a crash. Remember that using this function erases all the items;
+using a menu with no items inside is nonsense.
+<BR><BR>
+Also note that the memory allocated to the handle is not released until the
+next call to <A HREF="#DynMenuAdd">DynMenuAdd</A> or
+<A HREF="#PopupAddText">PopupAddText</A>.</P>
+
+<P>See also: <A HREF="#PopupNew">PopupNew</A>, <A HREF="#DynMenuAdd">DynMenuAdd</A>, <A HREF="#DynMenuChange">DynMenuChange</A></P>
+<HR>
+<H3><A NAME="PopupDo"><U>PopupDo</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> PopupDo (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> StartID);</TD></TR></TABLE></P>
+<P><B>Executes a popup menu.</B></P>
+
+<P>PopupDo draws the popup menu associated with the handle <I>Handle</I> on the screen.
+<I>Handle</I> must be returned from <A HREF="#PopupNew">PopupNew</A> and <I>not</I>
+from <A HREF="#PopupBegin">PopupBegin</A>; take care <I>never</I> to mix handles.
+<BR><BR>
+The top-left corner of the dialog will be the at the position (<I>x</I>,&nbsp;<I>y</I>);
+the coordinates are absolute screen coordinates. <I>x</I>, <I>y</I>, or both may also
+have a special value <A HREF="dialogs.html#CENTER">CENTER</A>, which tells PopupDo to
+center the menu in this dimension. After the execution, the original contents of the screen
+will be restored. PopupDo returns the identification number (ID) of the selected menu item (see
+<A HREF="#PopupAddText">PopupAddText</A>), or 0 if the user pressed ESC.
+<I>StartID</I> determines which option will be selected first when the menu is
+executed. It seems that <I>StartID</I> works correctly only for menus without
+submenus. Anyway, you can always pass 0 to <I>StartID</I>. It causes the function
+to select the first item.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of a scrolling popup menu with submenus
+(called "Popup Menu Example"):</P>
+<PRE>// A simple popup menu example
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE handle = PopupNew (&quot;EXAMPLE&quot;, 40);
+  PopupAddText (handle, -1, &quot;Option 1&quot;, 1);
+  PopupAddText (handle, -1, &quot;Option 2&quot;, 2);
+  PopupAddText (handle, 0, &quot;Submenu 3&quot;, 3);
+  PopupAddText (handle, 0, &quot;Submenu 4&quot;, 4);
+  PopupAddText (handle, -1, &quot;Option 5&quot;, 5);
+  PopupAddText (handle, 3, &quot;Suboption 3.1&quot;, 6);
+  PopupAddText (handle, 3, &quot;Suboption 3.2&quot;, 7);
+  PopupAddText (handle, 3, &quot;Suboption 3.3&quot;, 8);
+  PopupAddText (handle, 4, &quot;Suboption 4.1&quot;, 9);
+  short result = PopupDo (handle, CENTER, CENTER, 0);
+  push_longint (result);
+  HeapFree (handle);
+}
+</PRE>
+
+<P>See also: <A HREF="#PopupNew">PopupNew</A>, <A HREF="#MenuPopup">MenuPopup</A></P>
+<HR>
+<H3><A NAME="PopupNew"><U>PopupNew</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> PopupNew (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *Title, <B><A HREF="keywords.html#short">short</A></B> Height);</TD></TR></TABLE></P>
+<P><B>Creates a new popup menu.</B></P>
+
+<P>PopupNew allocates memory for a new popup menu, initializes the allocated block with the
+necessary structures and returns a handle to it (or <A HREF="alloc.html#H_NULL">H_NULL</A> in case of an error).
+You can later free the memory by calling <A HREF="alloc.html#HeapFree">HeapFree</A>.
+<I>Title</I> is the title of the menu (you can pass <A HREF="alloc.html#NULL">NULL</A> if
+you do not want a title), and <I>Height</I> is the height of the menu box in pixels
+(you can pass 0 for autocalculating the height). If the cumulated height of the items in the
+menu is greater than the available height of the menu box, the contents of the menu will
+scroll up or down if necessary.
+<BR><BR>
+This empty popup structure can be modified with <A HREF="#PopupAddText">PopupAddText</A>
+(or <A HREF="#DynMenuAdd">DynMenuAdd</A> and <A HREF="#DynMenuChange">DynMenuChange</A>
+if you wish to use program only on AMS 2.00 or later). The popup can then be executed with
+<A HREF="#PopupDo">PopupDo</A> (or <A HREF="#PopupBegin">PopupBegin</A> and
+<A HREF="#PopupBeginDo">PopupBeginDo</A> on AMS 2.00 or later if specific menu features are
+needed).
+<BR><BR>
+<B>Note:</B> If <I>Title</I> is longer than 18 characters, it will be truncated by storing a
+zero byte into the string after the 18th character. You have to be especially
+careful because the <I>Title</I> parameter is <I>not</I> constant in this case.</P>
+
+<P>See also: <A HREF="#PopupDo">PopupDo</A>, <A HREF="#PopupBegin">PopupBegin</A>, <A HREF="#PopupClear">PopupClear</A>, <A HREF="#DynMenuAdd">DynMenuAdd</A>, <A HREF="#DynMenuChange">DynMenuChange</A>, <A HREF="#PopupAddText">PopupAddText</A></P>
+<HR>
+<H3><A NAME="PopupText"><U>PopupText</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *PopupText (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> ID);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the text of a popup menu item.</B></P>
+
+<P>PopupText returns a pointer to the text of the popup menu item with the
+identification number <I>ID</I> (see <A HREF="#PopupAddText">PopupAddText</A>).
+<I>Handle</I> is the handle associated with the menu.
+This function does not work with toolbar menus; you must use
+<A HREF="#MenuItemDef">MenuItemDef</A>, which does the same for
+toolbar menus on AMS 2.00 or later.</P>
+
+<P>See also: <A HREF="#PopupNew">PopupNew</A>, <A HREF="#PopupDo">PopupDo</A>, <A HREF="#PopupAddText">PopupAddText</A></P>
+<HR>
+<H3><A NAME="QMenuTopSelect"><U>QMenuTopSelect</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> QMenuTopSelect (<A HREF="alloc.html#HANDLE">HANDLE</A> ExecHandle);</TD></TR></TABLE></P>
+<P><B>Returns the currently selected top-level menu item.</B></P>
+
+<P>QMenuTopSelect returns the currently selected top-level menu item (0 = first, 1 = second,
+etc.) or -1 if none is selected.
+<I>ExecHandle</I> refers to a menu-draw handle returned from
+<A HREF="#MenuBegin">MenuBegin</A>.
+<A HREF="#MenuTopSelect">MenuTopSelect</A> is normally used with redefinable menus.</P>
+
+<P>See also: <A HREF="#MenuBegin">MenuBegin</A>, <A HREF="#MenuTopSelect">MenuTopSelect</A></P>
+<HR>
+<H3><A NAME="VarCreateFolderPopup"><U>VarCreateFolderPopup</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> VarCreateFolderPopup (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *CurIndex, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Creates a popup menu containing a list of all folders.</B></P>
+
+<P>VarCreateFolderPopup creates a dynamic popup (or pulldown) menu which
+contains a list of all folders in the VAT folder table, and returns a handle
+to it (or <A HREF="alloc.html#H_NULL">H_NULL</A> in case of an error).
+<BR><BR>
+The parameter <I>Flags</I> is usually zero, but it may contain
+additional flags from the enum <A HREF="#VCFPFlags">VCFPFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">VCFP_ALL</TD>
+  <TD>"All" is included as the first option in the list, like in the "View"
+      dialog of the Var-Link window.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">VCFP_SKIP_CURDIR</TD>
+  <TD>The currently active folder is not included in the list.</TD>
+</TR>
+</TABLE>
+<BR>
+This function also stores the index of the currently active folder in the
+word pointed to by <I>CurIndex</I>.
+<BR><BR>
+<B>Note:</B> You need to free the returned handle later by calling
+<A HREF="alloc.html#HeapFree">HeapFree</A>.
+<BR><BR>
+This routine may cause heap compression.</P>
+
+<HR>
+<H3><A NAME="DynMenuFlags"><U>DynMenuFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> DynMenuFlags {DMF_TEXT = 0x0001, DMF_ICON = 0x0002, DMF_BITMAP = 0x0004, DMF_CHILD_SUB = 0x1000, DMF_CHILD = 0x2000, DMF_TOP_SUB = 0x4000, DMF_TOP = 0x8000};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible flags associated to dynamic menu entries.</B></P>
+
+<P>These constants are used as flags, please see the <A HREF="#MenuAddText">MenuAddText</A> and <A HREF="#MenuAddIcon">MenuAddIcon</A> functions for more information.</P>
+
+<HR>
+<H3><A NAME="ItemTypes"><U>ItemTypes</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> ItemTypes {MT_TEXT = 0x8000, MT_XREF = 0x9000, MT_ICON = 0xA000, MT_CASCADE = 0x4000};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing item types in menus.</B></P>
+
+<P>As these constants are used mainly in "asm" statements, they are defined using a special
+method, so they are visible for the built-in assembler (i.e. in "asm" statements).
+See the example given with the <A HREF="#MenuPopup">MenuPopup</A> command.</P>
+
+<HR>
+<H3><A NAME="MenuBeginFlags"><U>MenuBeginFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> MenuBeginFlags {MBF_WITHICON = 0x01, MBF_REDEF = 0x02, MBF_SYS_ALLOC = 0x04, MBF_MAX_MENU_WIDTH = 0x08, MBF_STRIKEOUT = 0x10, MBF_HMENU = 0x20, MBF_NO_DRAWTOP = 0x40};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible flags passed to <A HREF="#MenuBegin">MenuBegin</A>.</B></P>
+
+<P>These constant are used as flags, please see the <A HREF="#MenuBegin">MenuBegin</A> function for more information.</P>
+
+<HR>
+<H3><A NAME="MenuCheckCmds"><U>MenuCheckCmds</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> MenuCheckCmds {MC_CHECK = 0, MC_UNCHECK = 1, MC_STATUS = 2, MC_FLIP = 3};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible commands for the <A HREF="#MenuCheck">MenuCheck</A> function.</B></P>
+
+<P>These constants are used as commands, meaning that exactly one of the constants must be specified.
+Please see the <A HREF="#MenuCheck">MenuCheck</A> function for more information.</P>
+
+<HR>
+<H3><A NAME="MenuFlagsEnum"><U>MenuFlagsEnum</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> MenuFlagsEnum {MF_POPUP = 0x0001, MF_TOOLBOX = 0x0002, MF_NONSEQ = 0x0004, MF_ICON_TITLE = 0x0008, MF_TEXT_TITLE = 0x0010, MF_NO_NUMS = 0x0020, MF_NO_UNAMED = 0x0040, MF_DYN_POPUP = 0x0080, MF_ALT_ICONS = 0x0100, MF_BITMAP_TITLE = 0x0200, MF_ERROR = 0x0800, MF_ICONS_OVERLAP = 0x1000, MF_TITLE = 0x0218};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible flags contained in a dynamic menu.</B></P>
+
+<P>These constant are used as flags, please see the <A HREF="#MenuFlags">MenuFlags</A> function for more information.
+Note that MF_TITLE is a combination of MF_TEXT_TITLE, MF_ICON_TITLE, and MF_BITMAP_TITLE.</P>
+
+<HR>
+<H3><A NAME="MenuKeyValues"><U>MenuKeyValues</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> MenuKeyValues {M_NOITEM = 0, M_NOTMENUKEY = -2};</TD></TR></TABLE></P>
+<P><B>Contains predefined return values of <A HREF="#MenuKey">MenuKey</A>.</B></P>
+
+<HR>
+<H3><A NAME="VCFPFlags"><U>VCFPFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> VCFPFlags {VCFP_ALL = 0x01, VCFP_SKIP_CURDIR = 0x02};</TD></TR></TABLE></P>
+<P><B>Describes possible flags for <A HREF="#VarCreateFolderPopup">VarCreateFolderPopup</A>.</B></P>
+
+<P>The constants in this enumeration are used as flags, meaning that you can
+combine them through bitwise OR.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

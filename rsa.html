@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>rsa.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;rsa.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for large number arithmetic, message digesting and RSA encryption</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#BN_power17Mod">BN_power17Mod</A></B><DD>Raises a big integer to the 17-th power modulo n.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#BN_powerMod">BN_powerMod</A></B><DD>Raises a big integer to the e-th power modulo n.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#BN_prodMod">BN_prodMod</A></B><DD>Multiplies two big integers modulo n.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cdecrypt">cdecrypt</A></B><DD>Decrypt a message.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MD5Done">MD5Done</A></B><DD>Produces a Message-Digest as a big integer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MD5Final">MD5Final</A></B><DD>Ends an MD5 operation and produces a Message-Digest.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MD5Init">MD5Init</A></B><DD>Initializes Message-Diggest context for usage in MD5 algorithm.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MD5Update">MD5Update</A></B><DD>Process a message block using MD5 algorithm.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#BN">BN</A></B><DD>A structure for describing very large integers (up to 2040 bits).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MD5_CTX">MD5_CTX</A></B><DD>A structure for describing the context data used for implementing the MD5 Message-Digest Algorithm.</DL>
+<HR>
+<H3><A NAME="BN_power17Mod"><U>BN_power17Mod</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> BN_power17Mod (<A HREF="#BN">BN</A> *dest, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#BN">BN</A> *x, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#BN">BN</A> *n);</TD></TR></TABLE></P>
+<P><B>Raises a big integer to the 17-th power modulo n.</B></P>
+
+<P>BN_power17Mod calculates Y&nbsp;=&nbsp;(X&nbsp;^&nbsp;17)&nbsp;<B>mod</B>&nbsp;N
+where Y, X and N are big integers (up to 2040 bits) stored in
+<A HREF="#BN">BN</A> structures pointed to by <I>dest</I>, <I>x</I> and <I>n</I> respectively.
+<BR><BR>
+This is main routine for RSA decryption used in <A HREF="#cdecrypt">cdecrypt</A>
+(see <A HREF="#BN">BN</A> for more info about how RSA works).</P>
+
+<HR>
+<H3><A NAME="BN_powerMod"><U>BN_powerMod</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> BN_powerMod (<A HREF="#BN">BN</A> *dest, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#BN">BN</A> *x, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#BN">BN</A> *e, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#BN">BN</A> *n);</TD></TR></TABLE></P>
+<P><B>Raises a big integer to the e-th power modulo n.</B></P>
+
+<P>BN_powerMod calculates Y&nbsp;=&nbsp;(X&nbsp;^&nbsp;E)&nbsp;<B>mod</B>&nbsp;N
+where Y, X, E and N are big integers (up to 2040 bits) stored in
+<A HREF="#BN">BN</A> structures pointed to by <I>dest</I>, <I>x</I>, <I>e</I> and <I>n</I> respectively.
+This routine is used in TIOS for RSA encryption, but may be used for any other purposes too
+(see <A HREF="#BN">BN</A> for more info about how RSA works).</P>
+
+<HR>
+<H3><A NAME="BN_prodMod"><U>BN_prodMod</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> BN_prodMod (<A HREF="#BN">BN</A> *dest, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#BN">BN</A> *b, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#BN">BN</A> *n);</TD></TR></TABLE></P>
+<P><B>Multiplies two big integers modulo n.</B></P>
+
+<P>BN_prodMod calculates Y&nbsp;=&nbsp;(Y&nbsp;*&nbsp;B)&nbsp;<B>mod</B>&nbsp;N
+where Y, B and N are big integers (up to 2040 bits) stored in
+<A HREF="#BN">BN</A> structures pointed to by <I>dest</I>, <I>b</I> and <I>n</I> respectively.
+This routine is used in TIOS for RSA encryption, but may be used for any other purposes too
+(see <A HREF="#BN">BN</A> for more info about how RSA works).
+<BR><BR>
+Here is an example of program (called "Big Numbers") which takes three (arbitrarily large) integers
+A, B and N, calculates
+(A&nbsp;*&nbsp;B)&nbsp;<B>mod</B>&nbsp;N and returns the result (assuming that A, B
+and N are really integers, i.e. no checking is implemented). This program also illustrates how you
+can get "big" integers from the expression stack, and push them to it:</P>
+<PRE>// Perform big number arithmetic through BN_prodMod
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+#define RETURN_VALUE          // Return a Value
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+#define GetBignumArg(ap, bn) \
+  ({unsigned char __n = *--(unsigned char*)(ap); \
+  char *__p = (char*)(bn) + __n; \
+  (bn)-&gt;Len = __n; \
+  while (__n--) *__p-- = *--(ap); \
+  (void)*(ap)--; })
+
+void push_Bignum(BN *bn)
+{
+  unsigned m, n = bn-&gt;Len;
+  char *p = (char*)bn;
+  m = n;
+  while (n--) push_quantum (*++p);
+  push_quantum_pair (m, POSINT_TAG);
+}
+
+void _main(void)
+{
+  ESI argptr = top_estack;
+  BN *a = malloc (256), *b = malloc (256), *c = malloc (256);
+  GetBignumArg (argptr, a);
+  GetBignumArg (argptr, b);
+  GetBignumArg (argptr, c);
+  while (GetArgType (top_estack) != END_TAG)  // Clean up arguments
+    top_estack = next_expression_index (top_estack);
+  top_estack--;
+  BN_prodMod (a, b, c);
+  push_Bignum (a);
+  free (a); free (b); free (c);
+}
+</PRE>
+
+<HR>
+<H3><A NAME="cdecrypt"><U>cdecrypt</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> cdecrypt (<A HREF="#BN">BN</A> *dest, <B><A HREF="keywords.html#int">char</A></B> *src, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> size, <A HREF="#BN">BN</A> *public_key);</TD></TR></TABLE></P>
+<P><B>Decrypt a message.</B></P>
+
+<P>cdecrypt decrypts the message pointed to by <I>src</I> which is <I>size</I> butes long using
+the public key pointed to by <I>public_key</I>, and stores decrypted message in
+<A HREF="#BN">BN</A> structure pointed to by <I>dest</I> (see <A HREF="#BN">BN</A> for more info
+about how RSA works). Note that the message must be short enough to be decrypted in
+the structure pointed to by <I>dest</I>, because <A HREF="#BN">BN</A> structure is maximally
+255 bytes long.
+<BR><BR>
+TIOS use decryption with public key (N,17) where N is a 512-bit (64-byte) key,
+given at the beginning of the certificate code, although others may (or may not) be used.
+That's why it uses <A HREF="#BN_power17Mod">BN_power17Mod</A>. Generally, for usage in RSA,
+N must be equal to P&nbsp;*&nbsp;Q, where P and Q are large primes, and
+where (P-1)&nbsp;*&nbsp;(Q-1) is relatively prime to 17 (other part of the key).</P>
+
+<HR>
+<H3><A NAME="MD5Done"><U>MD5Done</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MD5Done (<A HREF="#BN">BN</A> *digest, <A HREF="#MD5_CTX">MD5_CTX</A> *context);</TD></TR></TABLE></P>
+<P><B>Produces a Message-Digest as a big integer.</B></P>
+
+<P>MD5Done is very similar as <A HREF="#MD5Final">MD5Final</A>. It calls <A HREF="#MD5Final">MD5Final</A>,
+but stores the computed Message-Digest in <A HREF="#BN">BN</A> structure pointed to by
+<I>digest</I> (i.e. stores the length byte in <I>digest</I>[0]). This function is the
+only extension to MD5 package invented by TI: all other functions is picked up from the
+original MD5 package, but optimized for 16-bit processors (instead of 32-bit).</P>
+
+<HR>
+<H3><A NAME="MD5Final"><U>MD5Final</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MD5Final (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *digest, <A HREF="#MD5_CTX">MD5_CTX</A> *context);</TD></TR></TABLE></P>
+<P><B>Ends an MD5 operation and produces a Message-Digest.</B></P>
+
+<P>MD5Final finalizes MD algorithm, i.e. ends an MD5 Message-Digest operation, writing the
+Message-Digest in the 16-byte buffer pointed to by <I>digest</I> in according to the information
+stored in <I>context</I>.</P>
+
+<P>See also: <A HREF="#MD5Init">MD5Init</A></P>
+<HR>
+<H3><A NAME="MD5Init"><U>MD5Init</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MD5Init (<A HREF="#MD5_CTX">MD5_CTX</A> *context);</TD></TR></TABLE></P>
+<P><B>Initializes Message-Diggest context for usage in MD5 algorithm.</B></P>
+
+<P>MD5Init begins a MD5 Message-Diggest Algorithm, i.e. fills the <A HREF="#MD5_CTX">MD5_CTX</A>
+structure pointed to by <I>context</I> with necessary data. MD5 is the algorithm which takes
+as input a message of arbitrary length and produces as output a 128-bit "fingerprint" or
+"message digest" of the input. It is conjectured that it is computationally infeasible to
+produce two messages having the same message digest, or to produce any message having a
+given prespecified target message digest. The MD5 algorithm is intended for digital signature
+applications, where a large file must be "compressed" in a secure manner before being
+encrypted with a private (secret) key under a public-key cryptosystem such as RSA
+(see <A HREF="#BN">BN</A> for more info about how RSA works).</P>
+
+<HR>
+<H3><A NAME="MD5Update"><U>MD5Update</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MD5Update (<A HREF="#MD5_CTX">MD5_CTX</A> *context, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *input, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> InputLen);</TD></TR></TABLE></P>
+<P><B>Process a message block using MD5 algorithm.</B></P>
+
+<P>MD5Update performs a MD5 block update operation. It continues an MD5 message-digest operation,
+by processing <I>InputLen</I>-byte length message block pointed to by <I>input</I>, and
+by updating the MD5 context pointed to by <I>context</I>. MD5Update may be called as many times
+as necessary, so the message may be processed in blocks.</P>
+
+<P>See also: <A HREF="#MD5Init">MD5Init</A></P>
+<HR>
+<H3><A NAME="BN"><U>BN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Len;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Data[];<BR>
+</TD></TR></TABLE>
+} BN;</TD></TR></TABLE></P>
+<P><B>A structure for describing very large integers (up to 2040 bits).</B></P>
+
+<P>Note that <I>Data</I> contains the number in little endian format.
+<BR><BR>
+TIOS uses big integers for implementing RSA criptography algorithm to authenticate
+(digitally sign) ROM images (and flash applications), more precise, to protect actual
+ROM/Flash certificate data (see <A HREF="cert.html">cert.h</A> header file).
+The basic ideas of RSA are as follows: under certain conditions, function
+<BR><BR>
+Y&nbsp;=&nbsp;(X&nbsp;^&nbsp;A)&nbsp;<B>mod</B>&nbsp;N
+<BR><BR>
+has function
+<BR><BR>
+X&nbsp;=&nbsp;(Y&nbsp;^&nbsp;B)&nbsp;<B>mod</B>&nbsp;N
+<BR><BR>
+as its inverse function, where parameter B depends, of course, of A and N.
+But, computing B from A and N requires that the prime factors of N are known.
+Now, suppose that N&nbsp;=&nbsp;P&nbsp;*&nbsp;Q, where P and Q are large primes,
+such that nobody can factor N in a real time. Suppose also that somebody
+(person <B>XXX</B> for example) knows two large primes P and Q. Person <B>XXX</B> can compute
+N&nbsp;=&nbsp;P&nbsp;*&nbsp;Q. After this, he may insist (for security reasons) that
+anybody which wants to send the message to <B>XXX</B> must to encode the message using
+the formula Y&nbsp;=&nbsp;(X^A)&nbsp;<B>mod</B>&nbsp;N,
+where X is an original message, and Y is encoded message. Constants A and N
+may be published without any danger, and pair (N,A) is so-called public key.
+<B>XXX</B> may decrypt encoded message Y using the formula
+X&nbsp;=&nbsp;(Y^B)&nbsp;<B>mod</B>&nbsp;N
+because <B>XXX</B> can calculate B (he knows the prime factor of N). But
+note that nobody else can decrypt X, because nobody else knows prime factors of N a priori,
+and they cannot be computed in a real time. Pair (N,B) is so-called private key.
+<BR><BR>
+This is only a half of the story. Suppose that person <B>XXX</B> wants to send a
+message to person <B>YYY</B>. He will encrypt the message with the public key of
+person <B>YYY</B>. <B>YYY</B> will, of course, decrypt the message with his private key.
+But, suppose that <B>XXX</B> send together with encoded message another message
+(called "signature") which is encoded using formula
+Y&nbsp;=&nbsp;(X^B)&nbsp;<B>mod</B>&nbsp;N, i.e.
+using PRIVATE key of <B>XXX</B>. Then, if <B>YYY</B> tries to decode such message using
+PUBLIC key of <B>XXX</B>, he must get original message too (so, he will receive
+two identical copies of the message). But, after this, <B>YYY</B> can be sure
+that really <B>XXX</B> sent the message (not some third person), because nobody else
+can compute B from A, i.e. nobody else can produce a message which can be
+decrypted using the public key of <B>XXX</B>!
+<BR><BR>
+To summarize: the RSA algorithm uses two keys, one is public and one private.
+Data encrypted with one of these keys can only be decrypted with the other key.
+So given the procedure is secure, data encryped with the public key can only be
+decrypted with the private key, and valid data decrypted with the public key
+could only be produced by the private key.</P>
+
+<HR>
+<H3><A NAME="MD5_CTX"><U>MD5_CTX</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> state[4]; <I>/* state (ABCD) */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> count[2]; <I>/* number of bits modulo 2^64 (lsb first) */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> buffer[64]; <I>/* input buffer */</I><BR>
+</TD></TR></TABLE>
+} MD5_CTX;</TD></TR></TABLE></P>
+<P><B>A structure for describing the context data used for implementing the MD5 Message-Digest Algorithm.</B></P>
+
+<P>MD5 is the algorithm which takes as input a message of arbitrary length and produces as output
+a 128-bit "fingerprint" or "message digest" of the input. It is conjectured that it is
+computationally infeasible to
+produce two messages having the same message digest, or to produce any message having a
+given prespecified target message digest. The MD5 algorithm is intended for digital signature
+applications, where a large file must be "compressed" in a secure manner before being
+encrypted with a private (secret) key under a public-key cryptosystem such as RSA
+(see <A HREF="#BN">BN</A> for more info about how RSA works). Summary, message digests create
+a unique number for given data. By sending a message digest encrypted with the private key,
+along with the original message, it is possible to check that the message came from the correct
+source. This is done by generating the message digest, and comparing it against the encrypted
+version sent along with the message (decrypted with the public key). If they match, then this
+"authenticates" the message.
+<BR><BR>
+TI implements the MD5 Message-Digest Algorithm optimised for 16 bit operation rather
+than 32 bit operation as in original algorithm. The code is based on "RSA Data Security,
+Inc. MD5 Message-Digest Algorithm". A good reference and source code for this algorithm
+can be found at [<A HREF="http://www.faqs.org/rfcs/rfc1321.html">RFC1321</A>].</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

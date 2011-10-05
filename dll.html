@@ -1,0 +1,440 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>dll.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;dll.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Declarations for creating and using nostub libraries</B></P>
+
+<H3><U>Language Extensions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#DLL_EXPORTS">DLL_EXPORTS</A></B><DD>Exports symbols from the DLL.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DLL_ID">DLL_ID</A></B><DD>Defines the DLL identification number.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DLL_IMPLEMENTATION">DLL_IMPLEMENTATION</A></B><DD>Ends the DLL interface section.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DLL_INTERFACE">DLL_INTERFACE</A></B><DD>Starts the DLL interface section.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DLL_VERSION">DLL_VERSION</A></B><DD>Defines the DLL major and minor version numbers.</DL>
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#_DLL_call_attr">_DLL_call_attr</A></B><DD>Constructs a function definition with attributes for a DLL call.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_DLL_call">_DLL_call</A></B><DD>Constructs a function definition for a DLL call.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_DLL_entry">_DLL_entry</A></B><DD>Returns a pointer to a symbol exported from a DLL.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_DLL_glbvar">_DLL_glbvar</A></B><DD>Returns a dereferenced pointer to a global variable in a DLL.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_DLL_reference">_DLL_reference</A></B><DD>Returns a pointer to a global variable in a DLL.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LoadDLL">LoadDLL</A></B><DD>Loads a DLL into memory and prepares it for use.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LoadDLLThrow">LoadDLLThrow</A></B><DD>Loads a DLL into memory, throwing an error if not successful.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#UnloadDLL">UnloadDLL</A></B><DD>Unloads a previously loaded DLL.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#DLL_ErrorCodes">DLL_ErrorCodes</A></B><DD>An enumeration to describe possible errors when trying to load a DLL.</DL>
+<P>See also: <A HREF="htdll.html">How to use DLLs</A></P>
+<HR>
+<H3><A NAME="DLL_EXPORTS"><U>DLL_EXPORTS</U></A></H3>
+<P><B>Exports symbols from the DLL.</B></P>
+
+<P>The DLL_EXPORTS macro is used for defining the list of symbols which will be exported from the DLL.
+Note that just putting a symbol declaration or a function prototype into the DLL interface
+section does not mean that this symbol or function will automatically be exported: you need to
+put the names of all objects which should be exported after the DLL_EXPORTS interface item.
+<BR><BR>
+DLL_EXPORTS must be followed by a list of symbols which should be exported from the DLL.
+It is possible to exports function names, array names, or addresses of global variables (i.e.
+names of global variables preceded by the address operator <CODE>'&amp;'</CODE>). More precisely,
+all types of pointers may be exported; functions and arrays are always referenced automatically.
+For example, suppose that the interface section contains the following declarations:</P>
+<PRE>int foofunc (int fooarg1, const char *fooarg2);
+char foostring [] = "Foo";
+int fooarray [5] = {1, 2, 3, 4, 5};
+unsigned short fooglbvar;
+</PRE>
+<P>Then, to export these symbols from the DLL, use:</P>
+<PRE>DLL_EXPORTS foofunc, foostring, fooarray, &amp;fooglbvar
+</PRE>
+<P>Each item in the DLL_EXPORTS declaration is assigned an index number, which is important later for
+importing symbols from the DLL (see <A HREF="#_DLL_call">_DLL_call</A>, <A HREF="#_DLL_call_attr">_DLL_call_attr</A>, <A HREF="#_DLL_reference">_DLL_reference</A>, and
+<A HREF="#_DLL_glbvar">_DLL_glbvar</A> for info about how to import symbols from the DLL). The first item gets the
+index number 0, the second gets the index number 1, etc. So, in the above example, <I>foofunc</I>,
+<I>foostring</I>, <I>fooarray</I>, and <I>fooglbvar</I> get the index numbers 0, 1, 2, and 3, respectively.
+<BR><BR>
+DLL_EXPORTS must appear at the very end of the DLL interface section, just after the
+<A HREF="#DLL_VERSION">DLL_VERSION</A> entry, and just before the <A HREF="#DLL_IMPLEMENTATION">DLL_IMPLEMENTATION</A> delimiter, which terminates the
+DLL interface section and starts the implementation section. See <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A> for a detailed
+layout of the DLL interface structure.</P>
+
+<P>See also: <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A>, <A HREF="#_DLL_entry">_DLL_entry</A></P>
+<HR>
+<H3><A NAME="DLL_ID"><U>DLL_ID</U></A></H3>
+<P><B>Defines the DLL identification number.</B></P>
+
+<P>The DLL_ID macro is used for defining the DLL indentification number. It must be followed by a
+32-bit constant unsigned integer, which will be embedded in the DLL image as a part of the
+internal signature. For example:</P>
+<PRE>DLL_ID 372331723
+</PRE>
+<P>Later, when a program wants to load the DLL, it passes the expected ID number as a parameter to the
+<A HREF="#LoadDLL">LoadDLL</A> function. If the expected and embedded ID numbers are not the same, the DLL is simply ignored
+(skipped). As <A HREF="#LoadDLL">LoadDLL</A> searches through all folders for a matching DLL, it is completely legal to
+have several DLLs with the same name (in different folders) which differ only in their ID numbers.
+<BR><BR>
+DLL_ID must appear at the end of the DLL interface section, after all prototypes and global
+declarations, and just before the <A HREF="#DLL_VERSION">DLL_VERSION</A> entry. See <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A> for a detailed layout
+of the DLL interface structure.</P>
+
+<P>See also: <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A>, <A HREF="#LoadDLL">LoadDLL</A></P>
+<HR>
+<H3><A NAME="DLL_IMPLEMENTATION"><U>DLL_IMPLEMENTATION</U></A></H3>
+<P><B>Ends the DLL interface section.</B></P>
+
+<P>This macro ends the DLL interface section. Any symbol declared after it cannot be
+exported from the DLL. Usually, the implementation part contains the bodies of
+all exported functions, and possible some more (helping) functions.
+See <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A> for more information about
+the structure of the interface section.</P>
+
+<P>See also: <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A></P>
+<HR>
+<H3><A NAME="DLL_INTERFACE"><U>DLL_INTERFACE</U></A></H3>
+<P><B>Starts the DLL interface section.</B></P>
+
+<P>The DLL_INTERFACE macro starts the DLL interface section and tells the linker that a DLL image should be
+produced instead of the standard executable image. The DLL interface section <I>must</I> have the
+following general layout:</P>
+<PRE>DLL_INTERFACE
+
+// <I>Declarations of global symbols which should be exported,</I>
+// <I>and prototypes of functions which should be exported.</I>
+
+DLL_ID <I>identification_number</I>
+DLL_VERSION <I>major_version_number</I>, <I>minor_version_number</I>
+DLL_EXPORTS <I>list_of_exported_symbols</I>
+
+DLL_IMPLEMENTATION
+
+// <I>Now the implementation follows</I>
+</PRE>
+<P>In principle, in addition to function prototypes, it is legal to put function implementations
+in the DLL interface section as well, although this is not a good practice from the aspect of
+readability and good structuring. So, a well-designed interface should contain only prototypes.
+<BR><BR>
+Note that just putting a symbol declaration or a function prototype into the DLL interface
+section does not mean that this symbol or function will automatically be exported: you need
+to put the names of all objects which should be exported after the <A HREF="#DLL_EXPORTS">DLL_EXPORTS</A> interface
+item. Also, note that <A HREF="#DLL_IMPLEMENTATION">DLL_IMPLEMENTATION</A> ends the interface section, so any symbol declared
+after it cannot be exported from the DLL.</P>
+
+<P>See also: <A HREF="#DLL_ID">DLL_ID</A>, <A HREF="#DLL_VERSION">DLL_VERSION</A>, <A HREF="#DLL_EXPORTS">DLL_EXPORTS</A>, <A HREF="#DLL_IMPLEMENTATION">DLL_IMPLEMENTATION</A></P>
+<HR>
+<H3><A NAME="DLL_VERSION"><U>DLL_VERSION</U></A></H3>
+<P><B>Defines the DLL major and minor version numbers.</B></P>
+
+<P>The DLL_VERSION macro is used for defining the DLL major and minor version numbers. It must be
+followed by two 16-bit constant unsigned integers, which represent the major and minor version
+numbers, respectively. For example:</P>
+<PRE>DLL_VERSION 2,13
+</PRE>
+<P>Later, when a program wants to load the DLL, it passes the expected major and minor version numbers
+as parameters to the <A HREF="#LoadDLL">LoadDLL</A> function. If the expected and actual major version numbers are not the
+same, or if the expected minor version number is greater than actual minor version number, the DLL
+is simply ignored (skipped). As <A HREF="#LoadDLL">LoadDLL</A> searches through all folders for a matching DLL, it is
+legal to have several DLLs with the same name (in different folders) and with the same ID numbers,
+but with different version numbers. <A HREF="#LoadDLL">LoadDLL</A> will load the first DLL found (if any) with a
+matching name, ID number and major version number, and whose minor version number is greater
+or equal to the expected minor version number.
+<BR><BR>
+DLL_ID must appear at the end of the DLL interface section, just after the <A HREF="#DLL_ID">DLL_ID</A> entry, and
+just before the <A HREF="#DLL_EXPORTS">DLL_EXPORTS</A> entry. See <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A> for a detailed layout of the DLL interface
+structure.</P>
+
+<P>See also: <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A>, <A HREF="#LoadDLL">LoadDLL</A></P>
+<HR>
+<H3><A NAME="_DLL_call_attr"><U>_DLL_call_attr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _DLL_call_attr(type,args,attr,index) (*(type (* attr) args) _DLL_entry (index))</TD></TR></TABLE></P>
+<P><B>Constructs a function definition with attributes for a DLL call.</B></P>
+
+<P>_DLL_call_attr gets a void pointer to the location of the <I>index</I>-th exported symbol of the
+currently loaded DLL (using <A HREF="#_DLL_entry">_DLL_entry</A>), casts this pointer to a temporarily-defined pointer
+to a function which returns <I>type</I>, requires <I>args</I> as arguments, and has the attributes
+defined by <I>attr</I>, and then dereferences it. _DLL_call_attr is very similar to <A HREF="#_DLL_call">_DLL_call</A>, but allows for defining function attributes,
+too. For example, suppose that the DLL contains the following declarations in the DLL
+interface section (see <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A>): </P>
+<PRE>void foo (int, const char *) __attribute__((__regparm__(4)));
+int bar (long) __ATTR_STD__;
+...
+DLL_EXPORTS foo, bar
+</PRE>
+<P>Then, to 'import' <I>foo</I> and <I>bar</I> from the DLL (assuming that it has been loaded sucessfully using
+<A HREF="#LoadDLL">LoadDLL</A>), you should use the following defines:</P>
+<PRE>#define foo _DLL_call_attr (void, (int, const char *), 0, __attribute__((regparm(4))))
+#define bar _DLL_call_attr (int, (long), 1, __ATTR_STD__)
+</PRE>
+
+<P>See also: <A HREF="#_DLL_call">_DLL_call</A>, <A HREF="#_DLL_reference">_DLL_reference</A>, <A HREF="#_DLL_glbvar">_DLL_glbvar</A>, <A HREF="gnuexts.html#SEC85">Declaring Attributes of Functions</A></P>
+<HR>
+<H3><A NAME="_DLL_call"><U>_DLL_call</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _DLL_call(type,args,index) (*(type(*)args) _DLL_entry (index))</TD></TR></TABLE></P>
+<P><B>Constructs a function definition for a DLL call.</B></P>
+
+<P>_DLL_call gets a void pointer to the location of the <I>index</I>-th exported symbol of
+the currently loaded DLL (using <A HREF="#_DLL_entry">_DLL_entry</A>), casts this pointer to a pointer to a function which
+returns <I>type</I> and which requires <I>args</I> as arguments, and dereferences it. This macro is usually used
+for accessing functions exported from the DLL. For example, suppose that the
+DLL contains the following declarations in the DLL interface section (see <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A>):</P>
+<PRE>void foo (int, const char *);
+int bar (long);
+...
+DLL_EXPORTS foo, bar
+</PRE>
+<P>Then <I>foo</I> will get the index number 0, and <I>bar</I> will get the index number 1. To
+call <I>foo</I> from the main program (assuming that the DLL has been loaded sucessfully using
+<A HREF="#LoadDLL">LoadDLL</A>) with arguments <CODE>123</CODE> and <CODE>"foostr"</CODE>, you can principally do</P>
+<PRE>_DLL_call (void, (int, const char *), 0) (123, "foostr");
+</PRE>
+<P>But this is awkward, of course. So, to 'import' <I>foo</I> and <I>bar</I> from the DLL, you
+should use the following defines: </P>
+<PRE>#define foo _DLL_call (void, (int, const char*), 0)
+#define bar _DLL_call (int, (long), 1)
+</PRE>
+<P>Then you can use <I>foo</I> and <I>bar</I> just as normal functions defined in the main program.
+For example:</P>
+<PRE>foo (123, "foostr");
+</PRE>
+<P>Principally, _DLL_call is quite similar to <A HREF="default.html#_rom_call">_rom_call</A>,
+which constructs TIOS function calls instead of DLL function calls. But note that <I>index</I> 
+in _DLL_call is an ordinary integer, which is not true for
+<A HREF="default.html#_rom_call">_rom_call</A>.</P>
+
+<P>See also: <A HREF="#_DLL_call_attr">_DLL_call_attr</A>, <A HREF="#_DLL_reference">_DLL_reference</A>, <A HREF="#_DLL_glbvar">_DLL_glbvar</A></P>
+<HR>
+<H3><A NAME="_DLL_entry"><U>_DLL_entry</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *_DLL_entry (<B><A HREF="keywords.html#int">int</A></B> index);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to a symbol exported from a DLL.</B></P>
+
+<P>_DLL_entry returns a void pointer to the location of the <I>index</I>-th exported symbol of the
+currently loaded DLL (assuming that it has been loaded sucessfully using <A HREF="#LoadDLL">LoadDLL</A>).
+Note that _DLL_entry returns garbage if the DLL is not loaded.
+<BR><BR>
+This function is used internally in
+<A HREF="#_DLL_call">_DLL_call</A>, <A HREF="#_DLL_call_attr">_DLL_call_attr</A>, 
+<A HREF="#_DLL_reference">_DLL_reference</A>, and <A HREF="#_DLL_glbvar">_DLL_glbvar</A>.</P>
+
+<HR>
+<H3><A NAME="_DLL_glbvar"><U>_DLL_glbvar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _DLL_glbvar(type,index) (*(_DLL_reference (type, index)))</TD></TR></TABLE></P>
+<P><B>Returns a dereferenced pointer to a global variable in a DLL.</B></P>
+
+<P>_DLL_glbvar gets a void pointer to the location of the <I>index</I>-th exported symbol of the
+currently loaded DLL (using <A HREF="#_DLL_entry">_DLL_entry</A>), casts this
+pointer to a pointer of type <I>type</I>, and then dereferences it. As the constructed object is a dereferenced
+pointer, it is a valid <A HREF="opers.html#lvalue">lvalue</A>, so it can be used as a global variable.
+This macro is usually used for accessing global variables exported by the DLL.
+For example, suppose that the DLL contains the following declarations in the DLL interface
+section (see <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A>):</P>
+<PRE>unsigned short foo;
+...
+DLL_EXPORTS &amp;foo
+</PRE>
+<P>Then <I>foo</I> will get the index number 0. To 'import' this global variable from the DLL
+(assuming that the DLL is sucessfully loaded using <A HREF="#LoadDLL">LoadDLL</A>),
+you should use the following definition:</P>
+<PRE>#define foo _DLL_glbvar (unsigned short, 0)
+</PRE>
+<P>Then you can use <I>foo</I> just like a normal global variable. For example:</P>
+<PRE>printf ("%d", foo);
+foo = 50;
+</PRE>
+
+<P>See also: <A HREF="#_DLL_call">_DLL_call</A>, <A HREF="#_DLL_call_attr">_DLL_call_attr</A>, <A HREF="#_DLL_reference">_DLL_reference</A></P>
+<HR>
+<H3><A NAME="_DLL_reference"><U>_DLL_reference</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _DLL_reference(type,index) ((type*<B><A HREF="keywords.html#const">const</A></B>) _DLL_entry (index))</TD></TR></TABLE></P>
+<P><B>Returns a pointer to a global variable in a DLL.</B></P>
+
+<P>_DLL_reference gets a void pointer to the location of the <I>index</I>-th exported symbol of the
+currently loaded DLL (using <A HREF="#_DLL_entry">_DLL_entry</A>), then casts this pointer to a constant pointer
+of type <I>type</I>. This macro is usually used for accessing arrays exported from the DLL.
+For example, suppose that the DLL contains the following declarations in the DLL interface
+section (see <A HREF="#DLL_INTERFACE">DLL_INTERFACE</A>):</P>
+<PRE>char foo[] = "FooString";
+int bar[5] = {10, 20, 30, 40, 50};
+...
+DLL_EXPORTS foo, bar
+</PRE>
+<P>Then <I>foo</I> will get the index number 0, and <I>bar</I> will get the index number 1.
+To 'import' these two arrays from the DLL
+(assuming that the DLL has been loaded sucessfully using <A HREF="#LoadDLL">LoadDLL</A>),
+you should use the following defines: </P>
+<PRE>#define foo _DLL_reference (const char, 0)
+#define bar _DLL_reference (int, 1)
+</PRE>
+<P>Then you can use <I>foo</I> and <I>bar</I> just like normal arrays defined in the main program.
+Note that the elements of <I>foo</I> cannot be changed due to the <CODE><A HREF="keywords.html#const">const</A></CODE> qualifier
+in the definition of <I>foo</I> (at least writing to it will trigger a warning).
+However, you can access the elements of <I>bar</I>. For example:</P>
+<PRE>printf ("%s %d", foo, bar[2]);
+bar[2] = 100;
+printf (" %d", bar[2]);
+</PRE>
+
+<P>See also: <A HREF="#_DLL_call">_DLL_call</A>, <A HREF="#_DLL_call_attr">_DLL_call_attr</A>, <A HREF="#_DLL_glbvar">_DLL_glbvar</A></P>
+<HR>
+<H3><A NAME="LoadDLL"><U>LoadDLL</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> LoadDLL (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *VarName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> ID, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Major, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Minor);</TD></TR></TABLE></P>
+<P><B>Loads a DLL into memory and prepares it for use.</B></P>
+
+<P>LoadDLL tries to load a DLL into memory and to prepare it for use. It traverses the
+complete VAT to find a fitting version of the DLL (so it is not necessary for the DLL to be in
+the same directory as the main program). The <I>DLLName</I> parameter is the standard ANSI C name of
+the DLL file which is to be loaded. The <I>ID</I> parameter is a DLL identification number introduced for safety
+reasons: any file which does not have the extension 'DLL', a valid embedded signature and
+an embedded identification number which is equal to <I>ID</I> is ignored (the identification
+number in the DLL itself is set using the <A HREF="#DLL_ID">DLL_ID</A> entry in the DLL interface section). The parameters
+<I>Major</I> and <I>Minor</I> are the expected major and minor version numbers of the DLL (the actual major
+and minor version numbers in the DLL itself are set using the <A HREF="#DLL_VERSION">DLL_VERSION</A> macro in the DLL
+interface section). LoadDLL will refuse to load a DLL if the expected and actual version
+numbers are not the same, or if the expected minor version number is greater than the actual minor
+version number. As LoadDLL searches trough all folders for a matching DLL, it is completely
+legal to have several DLLs with the same name (in different folders), but which differ in
+their ID numbers or version numbers. LoadDLL will load the first DLL found (if any)
+with a matching name, ID number and major version number, and whose minor version number
+is greater or equal to the expected minor version number.
+<BR><BR>
+LoadDLL returns one of the following values:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DLL_OK</TD>
+  <TD>The DLL was loaded and initialized successfully.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_NOTINGHOSTSPACE</TD>
+  <TD>The DLL could not be loaded because the program counter is not in the "ghost space" (the
+      virtual address space where HW2 protections do not take effect). Note that exe-packed
+      programs are always executed in the ghost space; if you do not want to compress your program,
+      you need to define
+      <CODE><A HREF="httigcc.html#advanced_ghostspace">EXECUTE_IN_GHOST_SPACE</A></CODE>.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_NOTFOUND</TD>
+  <TD>The DLL is not found. This means that either a file with the name <I>DLLName</I> is not
+      found in any folder, or such files exist, but none of them has the correct extension ('DLL'), the correct
+      embedded signature, and the correct identification number (determined by the <I>ID</I> parameter).</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_LOCKFAILED</TD>
+  <TD>The attempt to lock the DLL in memory has failed due to some strange reason. This error code
+      is very unlikely.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_OUTOFMEM</TD>
+  <TD>There is not memory to load the DLL into RAM.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_ALREADYLOADED</TD>
+  <TD>There is already another DLL loaded in the RAM. Due to efficiency reasons, only one
+      DLL is allowed to be loaded at the same time. You need to unload the current DLL using
+      <A HREF="#UnloadDLL">UnloadDLL</A> before loading another one. Anyway, using more than
+      one DLL is strongly deprecated if you don't know exactly what you are doing and why you are
+      doing so.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_WRONGVERSION</TD>
+  <TD>There is at least one valid DLL file with the name <I>DLLName</I> and with the correct extension,
+      signature, and identification number, but none of them has a major version number which is
+      equal to the expected major number (determined by the <I>Major</I> parameter) and a minor version number
+      which is greater or equal than the expected minor number (determined by the <I>Minor</I> parameter).</TD>
+</TR>
+</TABLE>
+<BR>
+Only if LoadDLL returns <A HREF="#DLL_ErrorCodes">DLL_OK</A>, it is valid to proceed further and to use functions imported
+from the DLL. No further checking is done by the functions from the DLL, so your program will
+definitely crash if you try to call any function from the DLL if LoadDLL has not returned <A HREF="#DLL_ErrorCodes">DLL_OK</A>.
+Also, don't forget to call <A HREF="#UnloadDLL">UnloadDLL</A> when the DLL is not needed any more (usually at the end of
+the program). So, any program which uses DLLs must have the following code fragment: </P>
+<PRE>if ((status = LoadDLL (<I>DLLName</I>, <I>ID</I>, <I>Major</I>, <I>Minor</I>)) != DLL_OK)
+{
+  // <I>Perform some kind of error processing</I>
+  // <I>and terminate the program in some way</I>
+}
+
+// <I>Proceed further</I>
+
+UnloadDLL ();
+</PRE>
+<P>You may use <A HREF="#LoadDLLThrow">LoadDLLThrow</A> instead, which
+throws an error instead of returning an error code, but this means that you
+cannot determine what caused the problem. As another solution, you may use
+<A HREF="error.html#ER_throw">ER_throw</A> from
+<A HREF="error.html">error.h</A> to throw your own error if loading the
+DLL fails.
+<BR><BR>
+Typically, if you use functions which may throw errors, you can either catch
+these errors using
+<A HREF="error.html#TRY">TRY</A>...<A HREF="error.html#ONERR">ONERR</A>...<A HREF="error.html#ENDTRY">ENDTRY</A>
+blocks, or, if you want to <A HREF="htretval.html#reterr">pass them on to the AMS</A>, you
+can use a single <A HREF="error.html#TRY">TRY</A>...<A HREF="error.html#FINALLY">FINALLY</A>...<A HREF="error.html#ENDFINAL">ENDFINAL</A> block:</P>
+<PRE>if ((status = LoadDLL (<I>DLLName</I>, <I>ID</I>, <I>Major</I>, <I>Minor</I>)) != DLL_OK)
+{
+  // <I>Perform some kind of error processing</I>
+  // <I>and terminate the program in some way</I>
+}
+TRY
+
+  // <I>Proceed further</I>
+
+FINALLY
+  UnloadDLL ();
+ENDFINAL
+</PRE>
+<P>Or, using <A HREF="#LoadDLLThrow">LoadDLLThrow</A>:</P>
+<PRE>LoadDLLThrow (<I>DLLName</I>, <I>ID</I>, <I>Major</I>, <I>Minor</I>);
+TRY
+
+  // <I>Proceed further</I>
+
+FINALLY
+  UnloadDLL ();
+ENDFINAL
+</PRE>
+
+<P>See also: <A HREF="#UnloadDLL">UnloadDLL</A>, <A HREF="#LoadDLLThrow">LoadDLLThrow</A>, <A HREF="#_DLL_call">_DLL_call</A>, <A HREF="#_DLL_call_attr">_DLL_call_attr</A>, <A HREF="#_DLL_reference">_DLL_reference</A>, <A HREF="#_DLL_glbvar">_DLL_glbvar</A></P>
+<HR>
+<H3><A NAME="LoadDLLThrow"><U>LoadDLLThrow</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> LoadDLLThrow (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *VarName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> ID, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Major, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Minor);</TD></TR></TABLE></P>
+<P><B>Loads a DLL into memory, throwing an error if not successful.</B></P>
+
+<P>LoadDLLThrow calls <A HREF="#LoadDLL">LoadDLL</A>, and throws an error
+if the result is not <A HREF="#DLL_ErrorCodes">DLL_OK</A>. This is
+useful if you want to <A HREF="htretval.html#reterr">display an error
+message on the Home Screen</A>.</P>
+
+<P>See also: <A HREF="#LoadDLL">LoadDLL</A>, <A HREF="#UnloadDLL">UnloadDLL</A>, <A HREF="error.html">error.h</A></P>
+<HR>
+<H3><A NAME="UnloadDLL"><U>UnloadDLL</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> UnloadDLL (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Unloads a previously loaded DLL.</B></P>
+
+<P>UnloadDLL unloads the previously loaded DLL and frees the memory used by it. It does nothing if
+the DLL was not previously loaded. Each program which uses DLLs must execute UnloadDLL at the
+end, else the memory used by the DLL will not be freed. After unloading the DLL, it is
+legal to load another DLL. It is even legal to load and unload the same DLL several times in
+the program (if you know exactly what you are doing and why you are doing so).</P>
+
+<P>See also: <A HREF="#LoadDLL">LoadDLL</A></P>
+<HR>
+<H3><A NAME="DLL_ErrorCodes"><U>DLL_ErrorCodes</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> DLL_ErrorCodes {DLL_OK, DLL_NOTINGHOSTSPACE, DLL_NOTFOUND, DLL_LOCKFAILED, DLL_OUTOFMEM, DLL_ALREADYLOADED, DLL_WRONGVERSION};</TD></TR></TABLE></P>
+<P><B>An enumeration to describe possible errors when trying to load a DLL.</B></P>
+
+<P>This enumeration describes possible values returned from the <A HREF="#LoadDLL">LoadDLL</A> function. The value 
+DLL_OK means correct loading. All other values indicate that something is wrong. See 
+<A HREF="#LoadDLL">LoadDLL</A> for the meaning of these codes.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

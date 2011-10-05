@@ -1,0 +1,732 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>kbd.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;kbd.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Keyboard handling routines</B></P>
+
+<H3><U>Language Extensions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#BEGIN_KEYTEST">BEGIN_KEYTEST</A></B><DD>Starts a <A HREF="#_keytest_optimized">_keytest_optimized</A> block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#END_KEYTEST">END_KEYTEST</A></B><DD>Ends a <A HREF="#_keytest_optimized">_keytest_optimized</A> block.</DL>
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#_keytest_optimized">_keytest_optimized</A></B><DD>Optimized low-level keyboard reading for single keys.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_keytest">_keytest</A></B><DD>Low-level keyboard reading for single keys.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rowread_internal">_rowread_internal</A></B><DD>Low-level keyboard reading without inverting.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rowread_inverted">_rowread_inverted</A></B><DD>Low-level keyboard reading with inverting.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rowread">_rowread</A></B><DD>Low-level keyboard reading.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#alphaLockOff">alphaLockOff</A></B><DD>Turns the alpha-lock off on the TI-89.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#alphaLockOn">alphaLockOn</A></B><DD>Turns the alpha-lock on on the TI-89.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetAlphaStatus">GetAlphaStatus</A></B><DD>Returns the current alpha-lock status.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GKeyDown">GKeyDown</A></B><DD>Checks for currently-available keystrokes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GKeyFlush">GKeyFlush</A></B><DD>Flushes the keyboard queue.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GKeyIn">GKeyIn</A></B><DD>Gets character from the keyboard, with additional possibilities.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#kbhit">kbhit</A></B><DD>Checks for unread keystrokes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KeyYesOrNo">KeyYesOrNo</A></B><DD>Checks if a key value represents a 'yes' or 'no' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ngetchx">ngetchx</A></B><DD>Gets character from the keyboard, without echoing to the screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSGetStatKeys">OSGetStatKeys</A></B><DD>Checks whether an arrow key (TI-89) or status key (TI-92+) is pressed.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSInitBetweenKeyDelay">OSInitBetweenKeyDelay</A></B><DD>Sets the rate at which a key autorepeats.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSInitKeyInitDelay">OSInitKeyInitDelay</A></B><DD>Sets the initial autorepeat key delay.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#pushkey">pushkey</A></B><DD>Replaces the keystroke in the keyboard queue with the given code.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#restoreAlphaLock">restoreAlphaLock</A></B><DD>Restores the alpha-lock status.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SetAlphaStatus">SetAlphaStatus</A></B><DD>Sets the alpha-lock status on the TI-89.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#OSFastArrows">OSFastArrows</A></B><DD>A variable determining whether arrow keys are repeated slowly or quickly.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#KB_AUTOREPEAT">KB_AUTOREPEAT</A></B><DD>A constant defining the "auto-repeat" bit.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#Arrows">Arrows</A></B><DD>An enumeration for describing the four arrow keys.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CommonKeys">CommonKeys</A></B><DD>An enumeration for describing common key codes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GKeyFlags">GKeyFlags</A></B><DD>Enumerates different key options flags for the <A HREF="#GKeyIn">GKeyIn</A> routine.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_RECT">SCR_RECT</A></B><DD>A scructure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#StatKeys">StatKeys</A></B><DD>An enumeration for describing modifier key values.</DL>
+<HR>
+<H3><A NAME="BEGIN_KEYTEST"><U>BEGIN_KEYTEST</U></A></H3>
+<P><B>Starts a <A HREF="#_keytest_optimized">_keytest_optimized</A> block.</B></P>
+
+<P>BEGIN_KEYTEST is used to start a block of key reading using
+<A HREF="#_keytest_optimized">_keytest_optimized</A>.</P>
+
+<P>See also: <A HREF="#END_KEYTEST">END_KEYTEST</A>, <A HREF="#_keytest_optimized">_keytest_optimized</A></P>
+<HR>
+<H3><A NAME="END_KEYTEST"><U>END_KEYTEST</U></A></H3>
+<P><B>Ends a <A HREF="#_keytest_optimized">_keytest_optimized</A> block.</B></P>
+
+<P>END_KEYTEST is used to end a block of key reading using
+<A HREF="#_keytest_optimized">_keytest_optimized</A>.</P>
+
+<P>See also: <A HREF="#BEGIN_KEYTEST">BEGIN_KEYTEST</A></P>
+<HR>
+<H3><A NAME="_keytest_optimized"><U>_keytest_optimized</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> _keytest_optimized (<B><A HREF="keywords.html#short">short</A></B> row, <B><A HREF="keywords.html#short">short</A></B> col);</TD></TR></TABLE></P>
+<P><B>Optimized low-level keyboard reading for single keys.</B></P>
+
+<P>_keytest_optimized behaves like <A HREF="#_keytest">_keytest</A>, but
+it produces better code if keys from the same row are read sequentially.
+You have to use it together with <A HREF="#BEGIN_KEYTEST">BEGIN_KEYTEST</A> and <A HREF="#END_KEYTEST">END_KEYTEST</A>.
+<BR><BR>
+An example probably best explains the usage of this function. The following
+piece of code waits until an arrow key is pressed. Since all arrows
+are in the same row, only one call to <A HREF="#_rowread">_rowread</A>
+is necessary.</P>
+<PRE>for (;;)
+  {
+    BEGIN_KEYTEST
+      if (_keytest_optimized (RR_LEFT)
+       || _keytest_optimized (RR_RIGHT)
+       || _keytest_optimized (RR_UP)
+       || _keytest_optimized (RR_DOWN))
+        break;
+    END_KEYTEST
+  }
+</PRE>
+
+<HR>
+<H3><A NAME="_keytest"><U>_keytest</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> _keytest (<B><A HREF="keywords.html#short">short</A></B> row, <B><A HREF="keywords.html#short">short</A></B> col);</TD></TR></TABLE></P>
+<P><B>Low-level keyboard reading for single keys.</B></P>
+
+<P>_keytest uses <A HREF="#_rowread">_rowread</A> to read the key in a
+specific row and column. If the parameters are constants, the argument for
+<A HREF="#_rowread">_rowread</A> and the return mask are optimized
+into single values.
+<BR><BR>
+_keytest returns <A HREF="alloc.html#Bool">TRUE</A> if the key is being
+held down, and <A HREF="alloc.html#Bool">FALSE</A> otherwise.
+<BR><BR>
+Be sure to read the notes about <A HREF="#_rowread">_rowread</A>.
+<BR><BR>
+<A HREF="compat.html">compat.h</A> defines constant pairs for all keys.
+Using these constant pairs, you can use _keytest in this way:</P>
+<PRE>if (_keytest (RR_ESC))
+  ...
+</PRE>
+
+<P>See also: <A HREF="#_keytest_optimized">_keytest_optimized</A></P>
+<HR>
+<H3><A NAME="_rowread_internal"><U>_rowread_internal</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rowread_internal(row) (~(_rowread (row)))</TD></TR></TABLE></P>
+<P><B>Low-level keyboard reading without inverting.</B></P>
+
+<P>_rowread_internal is a function which was previously used internally by <A HREF="#_rowread">_rowread</A>.
+Unlike <A HREF="#_rowread">_rowread</A>, it does not invert the return value.</P>
+
+<HR>
+<H3><A NAME="_rowread_inverted"><U>_rowread_inverted</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rowread_inverted(row) (_rowread (~((<B><A HREF="keywords.html#short">short</A></B>)(row))))</TD></TR></TABLE></P>
+<P><B>Low-level keyboard reading with inverting.</B></P>
+
+<P>_rowread_inverted is similar to <A HREF="#_rowread">_rowread</A>,
+but it also inverts the <I>row</I> passed to it.</P>
+
+<HR>
+<H3><A NAME="_rowread"><U>_rowread</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> _rowread (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> row);</TD></TR></TABLE></P>
+<P><B>Low-level keyboard reading.</B></P>
+
+<P>_rowread is a function for low-level keyboard reading.
+It is implemented for simultaneous reading of more than one key (useful in games), or for reading
+keys when interrupts are disabled (useful if you want to avoid displaying status
+line indicators, which are displayed from Auto-Int 1).
+<BR><BR>
+Setting a bit in <I>row</I> masks the corresponding row of the keyboard from being
+read, so if <I>row</I> is zero, all rows are read at the same time. Take a look
+at <A HREF="#_rowread_inverted">_rowread_inverted</A> as well.
+In the result, all bits (cols) corresponding to keys which are being held down
+are set.
+See below for some examples.
+<BR><BR>
+Here is a table which describes how the keyboard matrix is organized on
+both the TI-89 and TI-92 Plus:
+<BR><BR>
+<B>TI-89:</B>
+<BR>
+<TABLE CELLPADDING="2" CELLSPACING="0">
+<TR><TD>&nbsp;</TD>
+<TD ALIGN="CENTER"><B>C o l u m n</B></TD></TR>
+<TR><TD VALIGN="MIDDLE"><B>R<BR>o<BR>w</B></TD>
+<TD>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;7&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;6&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;5&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;4&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;3&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;2&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;1&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;0&nbsp;&nbsp;</B></TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;0</B></TD><TD ALIGN="CENTER">alpha</TD><TD ALIGN="CENTER">Diamnd</TD><TD ALIGN="CENTER">Shift</TD><TD ALIGN="CENTER">2nd</TD><TD ALIGN="CENTER">Right</TD><TD ALIGN="CENTER">Down</TD><TD ALIGN="CENTER">Left</TD><TD ALIGN="CENTER">Up</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;1</B></TD><TD ALIGN="CENTER">F5</TD><TD ALIGN="CENTER">CLEAR</TD><TD ALIGN="CENTER">^</TD><TD ALIGN="CENTER">/</TD><TD ALIGN="CENTER">*</TD><TD ALIGN="CENTER">-</TD><TD ALIGN="CENTER">+</TD><TD ALIGN="CENTER">ENTER</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;2</B></TD><TD ALIGN="CENTER">F4</TD><TD ALIGN="CENTER">BckSpc</TD><TD ALIGN="CENTER">T</TD><TD ALIGN="CENTER">,</TD><TD ALIGN="CENTER">9</TD><TD ALIGN="CENTER">6</TD><TD ALIGN="CENTER">3</TD><TD ALIGN="CENTER">(-)</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;3</B></TD><TD ALIGN="CENTER">F3</TD><TD ALIGN="CENTER">CATLG</TD><TD ALIGN="CENTER">Z</TD><TD ALIGN="CENTER">)</TD><TD ALIGN="CENTER">8</TD><TD ALIGN="CENTER">5</TD><TD ALIGN="CENTER">2</TD><TD ALIGN="CENTER"><B>.</B></TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;4</B></TD><TD ALIGN="CENTER">F2</TD><TD ALIGN="CENTER">MODE</TD><TD ALIGN="CENTER">Y</TD><TD ALIGN="CENTER">(</TD><TD ALIGN="CENTER">7</TD><TD ALIGN="CENTER">4</TD><TD ALIGN="CENTER">1</TD><TD ALIGN="CENTER">0</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;5</B></TD><TD ALIGN="CENTER">F1</TD><TD ALIGN="CENTER">HOME</TD><TD ALIGN="CENTER">X</TD><TD ALIGN="CENTER">=</TD><TD ALIGN="CENTER">|</TD><TD ALIGN="CENTER">EE</TD><TD ALIGN="CENTER">STO</TD><TD ALIGN="CENTER">APPS</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;6</B></TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">ESC</TD></TR>
+</TABLE>
+</TD></TR></TABLE>
+<BR>
+<B>TI-92 Plus:</B>
+<BR>
+<TABLE CELLPADDING="2" CELLSPACING="0">
+<TR><TD>&nbsp;</TD>
+<TD ALIGN="CENTER"><B>C o l u m n</B></TD></TR>
+<TR><TD VALIGN="MIDDLE"><B>R<BR>o<BR>w</B></TD>
+<TD>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;7&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;6&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;5&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;4&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;3&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;2&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;1&nbsp;&nbsp;</B></TD>
+<TD ALIGN="CENTER"><B>&nbsp;&nbsp;Bit&nbsp;0&nbsp;&nbsp;</B></TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;0</B></TD><TD ALIGN="CENTER">Down</TD><TD ALIGN="CENTER">Right</TD><TD ALIGN="CENTER">Up</TD><TD ALIGN="CENTER">Left</TD><TD ALIGN="CENTER">Hand</TD><TD ALIGN="CENTER">Shift</TD><TD ALIGN="CENTER">Diamnd</TD><TD ALIGN="CENTER">2nd</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;1</B></TD><TD ALIGN="CENTER">3</TD><TD ALIGN="CENTER">2</TD><TD ALIGN="CENTER">1</TD><TD ALIGN="CENTER">F8</TD><TD ALIGN="CENTER">W</TD><TD ALIGN="CENTER">S</TD><TD ALIGN="CENTER">Z</TD><TD ALIGN="CENTER">&nbsp;</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;2</B></TD><TD ALIGN="CENTER">6</TD><TD ALIGN="CENTER">5</TD><TD ALIGN="CENTER">4</TD><TD ALIGN="CENTER">F3</TD><TD ALIGN="CENTER">E</TD><TD ALIGN="CENTER">D</TD><TD ALIGN="CENTER">X</TD><TD ALIGN="CENTER">&nbsp;</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;3</B></TD><TD ALIGN="CENTER">9</TD><TD ALIGN="CENTER">8</TD><TD ALIGN="CENTER">7</TD><TD ALIGN="CENTER">F7</TD><TD ALIGN="CENTER">R</TD><TD ALIGN="CENTER">F</TD><TD ALIGN="CENTER">C</TD><TD ALIGN="CENTER">STO</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;4</B></TD><TD ALIGN="CENTER">,</TD><TD ALIGN="CENTER">)</TD><TD ALIGN="CENTER">(</TD><TD ALIGN="CENTER">F2</TD><TD ALIGN="CENTER">T</TD><TD ALIGN="CENTER">G</TD><TD ALIGN="CENTER">V</TD><TD ALIGN="CENTER">Space</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;5</B></TD><TD ALIGN="CENTER">TAN</TD><TD ALIGN="CENTER">COS</TD><TD ALIGN="CENTER">SIN</TD><TD ALIGN="CENTER">F6</TD><TD ALIGN="CENTER">Y</TD><TD ALIGN="CENTER">H</TD><TD ALIGN="CENTER">B</TD><TD ALIGN="CENTER">/</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;6</B></TD><TD ALIGN="CENTER">P</TD><TD ALIGN="CENTER">ENTER2</TD><TD ALIGN="CENTER">LN</TD><TD ALIGN="CENTER">F1</TD><TD ALIGN="CENTER">U</TD><TD ALIGN="CENTER">J</TD><TD ALIGN="CENTER">N</TD><TD ALIGN="CENTER">^</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;7</B></TD><TD ALIGN="CENTER">*</TD><TD ALIGN="CENTER">APPS</TD><TD ALIGN="CENTER">CLEAR</TD><TD ALIGN="CENTER">F5</TD><TD ALIGN="CENTER">I</TD><TD ALIGN="CENTER">K</TD><TD ALIGN="CENTER">M</TD><TD ALIGN="CENTER">=</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;8</B></TD><TD ALIGN="CENTER">&nbsp;</TD><TD ALIGN="CENTER">ESC</TD><TD ALIGN="CENTER">MODE</TD><TD ALIGN="CENTER">+</TD><TD ALIGN="CENTER">O</TD><TD ALIGN="CENTER">L</TD><TD ALIGN="CENTER"><FONT FACE="Symbol">q</FONT></TD><TD ALIGN="CENTER">BckSpc</TD></TR>
+<TR><TD ALIGN="CENTER"><B>Bit&nbsp;9</B></TD><TD ALIGN="CENTER">(-)</TD><TD ALIGN="CENTER"><B>.</B></TD><TD ALIGN="CENTER">0</TD><TD ALIGN="CENTER">F4</TD><TD ALIGN="CENTER">Q</TD><TD ALIGN="CENTER">A</TD><TD ALIGN="CENTER">ENTER1</TD><TD ALIGN="CENTER">-</TD></TR>
+</TABLE>
+</TD></TR></TABLE>
+<BR>
+Note for TI-92+: ENTER1 is on the alphabetic and numeric keypads.
+ENTER2 is next to the cursor pad.
+<BR><BR>
+You can use binary numbers to mask out the rows you need.
+You can also make use of the fact that a value where only bit <I>i</I> is set equals 1&lt;&lt;<I>i</I>.
+<BR>
+Use the bitwise NOT operator ('~') to invert the value.
+<BR><BR>
+These four expressions all check whether '9' on the TI-89 or 'E' on the TI-92+ is held down. In fact, they are all equal:</P>
+<PRE>_rowread(~((short)(1&lt;&lt;2))) &amp; (1&lt;&lt;3)
+_rowread(~0b100) &amp; 0b1000
+_rowread(~0x4) &amp; 0x8
+_rowread(0xFFFB) &amp; 0x8
+</PRE>
+<P>But generally it is much easier to use the <A HREF="#_keytest">_keytest</A> macro instead.
+<BR><BR>
+Because of the way the TI-89 and TI-92+'s keyboard is wired, if you hold down three
+keys that form the corners of a rectangle, the calculator will think you are
+also holding down the key at the fourth corner. The ON key is special. It is not
+part of the keyboard matrix and therefore cannot be read with _rowread. It
+triggers a special interrupt instead.
+<BR><BR>
+<B>Note:</B> It is recommended to redirect Auto-Int 1 and 5 while reading the keyboard using _rowread,
+because keyboard reading routines implemented in these two interrupts may interfere with _rowread if
+an interrupt occurs just while _rowread is executing.
+See <A HREF="intr.html#DUMMY_HANDLER">DUMMY_HANDLER</A> from <A HREF="intr.html">intr.h</A>
+for information on how to do this.
+<BR><BR>
+About the internal implementation: _rowread sends <I>row</I> to the I/O port
+0x600018 (keyboard row mask), waits a while to allow the I/O to recover, then
+returns the byte read from 0x60001B (inverted for easier testing in C programs).</P>
+
+<P>See also: <A HREF="#_rowread_internal">_rowread_internal</A>, <A HREF="#_rowread_inverted">_rowread_inverted</A>, <A HREF="#_keytest">_keytest</A></P>
+<HR>
+<H3><A NAME="alphaLockOff"><U>alphaLockOff</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> alphaLockOff (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *Status);</TD></TR></TABLE></P>
+<P><B>Turns the alpha-lock off on the TI-89.</B></P>
+
+<P>alphaLockOff first returns the current alpha-lock keyboard status in <I>Status</I>.
+Then it turns the alpha-lock off.
+This routine exists on both the TI-89 and TI-92+, but as there is no alpha-lock on the TI-92+, this function does nothing on the TI-92+.</P>
+
+<P>See also: <A HREF="#alphaLockOn">alphaLockOn</A>, <A HREF="#restoreAlphaLock">restoreAlphaLock</A>, <A HREF="#SetAlphaStatus">SetAlphaStatus</A>, <A HREF="#GetAlphaStatus">GetAlphaStatus</A></P>
+<HR>
+<H3><A NAME="alphaLockOn"><U>alphaLockOn</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> alphaLockOn (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *Status);</TD></TR></TABLE></P>
+<P><B>Turns the alpha-lock on on the TI-89.</B></P>
+
+<P>alphaLockOn first returns the current alpha-lock keyboard status in <I>Status</I>. Then it turns the alpha-lock on.
+This routine exists on both the TI-89 and TI-92+, but as there is no alpha-lock on the TI-92+, this function does nothing on the TI-92+.</P>
+
+<P>See also: <A HREF="#alphaLockOff">alphaLockOff</A>, <A HREF="#restoreAlphaLock">restoreAlphaLock</A>, <A HREF="#SetAlphaStatus">SetAlphaStatus</A>, <A HREF="#GetAlphaStatus">GetAlphaStatus</A></P>
+<HR>
+<H3><A NAME="GetAlphaStatus"><U>GetAlphaStatus</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> GetAlphaStatus (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the current alpha-lock status.</B></P>
+
+<P>GetAlphaStatus returns <A HREF="alloc.html#Bool">TRUE</A> if the alpha-lock is on, and <A HREF="alloc.html#Bool">FALSE</A> otherwise.
+<BR>
+On the TI-92+, the function will always return <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<P>See also: <A HREF="#SetAlphaStatus">SetAlphaStatus</A></P>
+<HR>
+<H3><A NAME="GKeyDown"><U>GKeyDown</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> GKeyDown (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Checks for currently-available keystrokes.</B></P>
+
+<P>Although GKeyDown is different entry in the TIOS jump table than <A HREF="#kbhit">kbhit</A>,
+there is no difference between these two functions. GKeyDown just calls
+<A HREF="#kbhit">kbhit</A> and does nothing more.</P>
+
+<HR>
+<H3><A NAME="GKeyFlush"><U>GKeyFlush</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> GKeyFlush (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Flushes the keyboard queue.</B></P>
+
+<P>GKeyFlush flushes the keyboard queue by repeatedly calling <A HREF="#GKeyIn">GKeyIn</A>
+until the queue is empty.</P>
+
+<HR>
+<H3><A NAME="GKeyIn"><U>GKeyIn</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> GKeyIn (<A HREF="graph.html#SCR_RECT">SCR_RECT</A> *cursor_shape, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Gets character from the keyboard, with additional possibilities.</B></P>
+
+<P>GKeyIn acts similarly to <A HREF="#ngetchx">ngetchx</A>, with following differences:</P>
+<UL>
+<LI><P>During waiting for a keypress, a flashing cursor may optionally be displayed.
+Parameter <I>cursor_shape</I> is a pointer to <A HREF="graph.html#SCR_RECT">SCR_RECT</A> structure
+which defines location and shape of the cursor (it is, in fact, a flashing rectangular
+area which is obtained by XORing a rectangle while waiting on a key). If <I>cursor_shape</I> is
+<A HREF="alloc.html#NULL">NULL</A>, no cursor will be displayed.</P></LI>
+<LI><P>The activity in the status line during waiting for a keypress is set to IDLE (in opposite
+to <A HREF="#ngetchx">ngetchx</A> which sets activity to BUSY). After a keystroke is ready,
+the activity will be switched to BUSY. See <A HREF="statline.html#ST_busy">ST_busy</A> for
+more info about status line activity indicator.</P></LI>
+<LI><P>During waiting for a keypress, if the user waits too long, the calculator will be switched
+off (APD feature - Automatic Power Down). This will not happen with
+<A HREF="#ngetchx">ngetchx</A>. See <A HREF="system.html">system.h</A> header file for more
+info about APD.</P></LI>
+<LI><P>During waiting for a keypress, the calculator enters into "idle" state (see
+<A HREF="system.html#idle">idle</A> for more info).</P></LI>
+<LI><P>GKeyIn bypasses the event manager’s handling of keys so this routine should be
+used with caution.</P></LI>
+<LI><P>If <I>Flags</I> is different than zero, some special behaviour happens.</P></LI>
+</UL>
+<P>The parameter <I>Flags</I> can be a combination of the following, defined in
+the <A HREF="#GKeyFlags">GKeyFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GKF_NORMAL</TD><TD VALIGN="TOP">No special key processing.
+This is the usual value to set.
+<BR><BR>
+<B>Note:</B> GKF_NORMAL is actually 0 (i.e. no flags are set).</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_MODAL</TD><TD VALIGN="TOP">If the pressed key is a modal
+key (see <A HREF="system.html#QModeKey">QModeKey</A> for information on
+what is a "modal" key for the TIOS), GKeyIn will return
+<A HREF="#CommonKeys">KEY_ESC</A> instead of the real keystroke code,
+and the keystroke will not be picked from the keyboard queue. If the pressed
+key is not a mode key, GKeyIn behaves as usual.
+<BR><BR>
+Note that DIALOG boxes usually set GKF_MODAL and
+GKF_SYS so that if the user presses [VAR-LINK] in the dialog
+box, the dialog box is closed and then the [VAR-LINK] key is
+acted on (though there is a flag to allow [VAR-LINK] to be
+activated from inside a dialog box).</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_REPUSH_KEY</TD><TD VALIGN="TOP">GKeyIn will not pick the
+keystroke from the keyboard queue, so the "keypress" flag will remain set.
+You must explicitely pick it using <A HREF="#ngetchx">ngetchx</A> or
+flush the queue using <A HREF="#GKeyFlush">GKeyFlush</A>.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_ACCEPT</TD><TD VALIGN="TOP">The purpose of this flag is unknown for the moment.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_SYS</TD><TD VALIGN="TOP">If the pressed key is a system
+key (see <A HREF="system.html#QSysKey">QSysKey</A> for information on
+what is a "system" key for the TIOS), GKeyIn will return
+<A HREF="#CommonKeys">KEY_ESC</A> instead of the real keystroke code,
+and the keystroke will not be picked from the keyboard queue. If the pressed
+key is not a system key, GKeyIn behaves as usual.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_NO_EVS</TD><TD VALIGN="TOP">Pressing the [CATALOG] key
+will be ignored.</TD>
+</TR>
+</TABLE>
+<BR>
+Except in noted special cases, GKeyIn returns the same value as <A HREF="#ngetchx">ngetchx</A>.
+Menus and dialog boxes usually set GKF_MODAL and GKF_SYS, so that if a user presses say the VAR-LINK key in the dialog
+box, the dialog box is closed and then the VAR-LINK key is acted on.
+<BR><BR>
+<B>Note:</B> TI doesn't recommend to use GKeyIn as it bypasses the event
+manager’s handling of keys. Programs should use the event manager to process
+keys in most cases. GKeyIn should only be used in special cases where the event
+manager is not accessible. For games, you'll probably be better off using
+<A HREF="system.html#kbd_queue">kbd_queue</A> or
+<A HREF="#_keytest">_keytest</A>.
+<BR><BR>
+<B>Note:</B> Thomas Nussbaumer informed me that <A HREF="system.html#idle">idle</A> interferes with
+grayscale graphics. As GKeyIn calls the <A HREF="system.html#idle">idle</A> function, the use of
+GKeyIn while grayscale mode is active is not recommended.</P>
+
+<P>See also: <A HREF="#ngetchx">ngetchx</A>, <A HREF="#kbhit">kbhit</A>, <A HREF="system.html#kbd_queue">kbd_queue</A>, <A HREF="#OSFastArrows">OSFastArrows</A></P>
+<HR>
+<H3><A NAME="kbhit"><U>kbhit</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> kbhit (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Checks for unread keystrokes.</B></P>
+
+<P>kbhit checks to see if a keystroke is currently available. Any available keystrokes can be
+retrieved with <A HREF="#ngetchx">ngetchx</A>. If a keystroke is available, kbhit returns a
+nonzero integer (in fact, it returns the exactly same value as
+<A HREF="#ngetchx">ngetchx</A>); if not, it returns 0. Note that kbhit does not pick a
+keystroke from the keyboard queue. So, kbhit will continue to return non-zero value until
+"keypress" flag is reset by calling <A HREF="#ngetchx">ngetchx</A>,
+<A HREF="#GKeyFlush">GKeyFlush</A> or <A HREF="#GKeyIn">GKeyIn</A>.
+<BR><BR>
+<B>Note:</B> kbhit function is slow, because it also handles receiving eventual bytes from the
+link port (used mainly internally in TIOS when the calculator is in the Home screen). See <A HREF="system.html#kbd_queue">kbd_queue</A>
+for much faster way to check the keyboard state.</P>
+
+<P>See also: <A HREF="#ngetchx">ngetchx</A>, <A HREF="#GKeyIn">GKeyIn</A>, <A HREF="system.html#kbd_queue">kbd_queue</A>, <A HREF="#OSFastArrows">OSFastArrows</A></P>
+<HR>
+<H3><A NAME="KeyYesOrNo"><U>KeyYesOrNo</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> KeyYesOrNo (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> key);</TD></TR></TABLE></P>
+<P><B>Checks if a key value represents a 'yes' or 'no' key.</B></P>
+
+<P>KeyYesOrNo returns:</P>
+<UL>
+<LI><P>1, if <I>key</I> is ENTER, or the first letter of 'yes' in the current language;</P></LI>
+<LI><P>0, if <I>key</I> is ESC, or the first letter of 'no' in the current language;</P></LI>
+<LI><P>-1, if <I>key</I> is neither.</P></LI>
+</UL>
+<P>Here is an example (called "Key Yes or No"):</P>
+<PRE>// Check whether typed keys represent &quot;Yes&quot; or &quot;No&quot;
+// in current language
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  short k, a;
+  ClrScr ();
+  while ((k = GKeyIn (NULL, 0)) != 32)
+    // While the user doesn't type SPACE
+  {
+    a = KeyYesOrNo(k);
+    if (a == 0)
+      DrawStr (0, 0, &quot;FALSE  &quot;, A_REPLACE);
+    else if (a == 1)
+      DrawStr (0, 0, &quot;TRUE   &quot;, A_REPLACE);
+    else
+      DrawStr (0, 0, &quot;NEITHER&quot;, A_REPLACE);
+  }
+  DrawStr (0, 0, &quot;SPACE  &quot;, A_REPLACE);
+  GKeyIn (NULL, 0);
+}
+</PRE>
+
+<HR>
+<H3><A NAME="ngetchx"><U>ngetchx</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> ngetchx (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Gets character from the keyboard, without echoing to the screen.</B></P>
+
+<P>ngetchx reads a single character directly from the keyboard, without echoing
+to the screen. If the keyboard queue is empty, ngetchx will wait for the keypress,
+else the character will be picked from the keyboard queue.
+<BR><BR>
+ngetchx returns the code of the character read from the keyboard. This code is mainly
+the same as TI-Basic function GetKey returns. All keypresses which correspond to the
+ASCII character will return the ASCII code of it, for example pressing on '+' key will
+return the ASCII code of '+' (which is 43 in decimal), so you can write</P>
+<PRE>if (ngetchx () == '+') ...
+</PRE>
+<P>Codes for some other common keypresses which do not
+have an ASCII representation (ESC, ENTER, function keys, etc.) and which are the same on the
+TI-89 and TI-92 Plus are defined in the enum <A HREF="#CommonKeys">CommonKeys</A> (for
+example, <A HREF="#CommonKeys">KEY_ESC</A>, <A HREF="#CommonKeys">KEY_ENTER</A> etc.).
+<BR><BR>
+Be aware that codes assigned to arrow keys is shuffled in
+comparation with TI-Basic. These codes are also different on TI-89 and TI-92 Plus.
+Note that the documentation of releases of TIGCCLIB prior to 2.0 has an error: it recommends
+usage of <A HREF="#OSGetStatKeys">OSGetStatKeys</A> as a calculator-independent
+method for reading arrow keys. This is simply not true. Here is a table of return codes for
+pressing arrow keys on TI-89 and TI-92 Plus:
+<BR><BR>
+<B>TI-89:</B>
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+<TR>
+<TD><B>Key</B></TD>
+<TD><B>Normal</B></TD>
+<TD><B>+Shift</B></TD>
+<TD><B>+2nd</B></TD>
+<TD><B>+Diamond</B></TD>
+<TD><B>+alpha</B></TD>
+</TR>
+<TR><TD><I>Up</I></TD><TD>337</TD><TD>8529</TD><TD>4433</TD><TD>16721</TD><TD>33105</TD></TR>
+<TR><TD><I>Right</I></TD><TD>344</TD><TD>8536</TD><TD>4440</TD><TD>16728</TD><TD>33112</TD></TR>
+<TR><TD><I>Down</I></TD><TD>340</TD><TD>8532</TD><TD>4436</TD><TD>16724</TD><TD>33108</TD></TR>
+<TR><TD><I>Left</I></TD><TD>338</TD><TD>8530</TD><TD>4434</TD><TD>16722</TD><TD>33106</TD></TR>
+</TABLE>
+<BR>
+<B>TI-92+:</B>
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+<TR>
+<TD><B>Key</B></TD>
+<TD><B>Normal</B></TD>
+<TD><B>+Shift</B></TD>
+<TD><B>+2nd</B></TD>
+<TD><B>+Diamond</B></TD>
+<TD><B>+alpha</B></TD>
+</TR>
+<TR><TD><I>Up</I></TD><TD>338</TD><TD>16722</TD><TD>4434</TD><TD>8530</TD><TD>33106</TD></TR>
+<TR><TD><I>Right</I></TD><TD>340</TD><TD>16724</TD><TD>4436</TD><TD>8532</TD><TD>33108</TD></TR>
+<TR><TD><I>Down</I></TD><TD>344</TD><TD>16728</TD><TD>4440</TD><TD>8536</TD><TD>33112</TD></TR>
+<TR><TD><I>Left</I></TD><TD>337</TD><TD>16721</TD><TD>4433</TD><TD>8529</TD><TD>33105</TD></TR>
+</TABLE>
+<BR>
+It is interesting that the ngetchx function is able to handle pressing to more than one arrow keys
+at the same moment. The returned value is then simply logical OR of values for a particular key.
+<BR><BR>
+To increase compatibility between TI-89 and TI-92 Plus, a header file <A HREF="compat.html">compat.h</A>
+is implemented. This file (among others) defines pseudo-constants (known from DoorsOS) like
+<A HREF="compat.html">KEY_LEFT</A>, <A HREF="compat.html">KEY_RIGHT</A>,
+<A HREF="compat.html">KEY_UP</A> and <A HREF="compat.html">KEY_DOWN</A>
+which represent return values for arrow keys. These "pseudo-constants" have different values
+on the TI-89 and TI-92 Plus, so if you use testing like</P>
+<PRE>if (key == KEY_LEFT) ...
+</PRE>
+<P>such test will work fine on both the TI-89 and TI-92 Plus. These pseudo-constants works in both
+"nostub" and "DoorsOS" mode. Pseudo-constants <A HREF="compat.html">KEY_UPRIGHT</A>
+and <A HREF="compat.html">KEY_DOWNLEFT</A> are also defined, with obvious meaning.
+<BR><BR>
+Codes of keystrokes like &lt;Diamond&gt;&nbsp;+&nbsp;&lt;key&gt; are also different in
+comparison with the TI-Basic GetKey function. I will not give a complete table here, because such
+keystrokes are rarely used in programs. If you are interested for a code of the concrete keystroke, you
+can easily find it by yourself. Principally, the code for a keystroke like
+&lt;Diamond&gt;&nbsp;+&nbsp;&lt;key&gt; is mainly equal to the code for &lt;key&gt; increased by
+<A HREF="compat.html">KEY_DIAMOND</A>. This is also a pseudo-constant with value 16384 on TI-89
+and 8192 on TI-92 Plus. The same is true for keystrokes like
+&lt;Shift&gt;&nbsp;+&nbsp;&lt;key&gt;, and the appropriate pseudo-constant which need to be added
+is called <A HREF="compat.html">KEY_SHIFT</A> (8192 on TI-89 and 16384 on TI-92 Plus).
+<BR><BR>
+As a side effett, ngetchx also sets the activity in the status bar to BUSY, so the
+"BUSY" indicator will appear in the status bar. If you want later to remove the "BUSY"
+indicator, you must call <A HREF="statline.html#ST_busy">ST_busy</A> function to do this.
+<BR><BR>
+<B>Note:</B> ngetchx function is slow, because it also handles receiving eventual bytes from the
+link port. This is used in TIOS mainly when the calculator is in the Home screen, but principally,
+if the program is waiting for a keypress using ngetchx function, any valid data which come to the
+link port will be received and processed accordingly (for example, the program waiting for a
+keypress can accept another program via the link port during waiting).
+See <A HREF="system.html#kbd_queue">kbd_queue</A> for much faster way to gets characters from
+the keyboard.</P>
+
+<P>See also: <A HREF="#GKeyIn">GKeyIn</A>, <A HREF="#kbhit">kbhit</A>, <A HREF="system.html#kbd_queue">kbd_queue</A>, <A HREF="#OSFastArrows">OSFastArrows</A></P>
+<HR>
+<H3><A NAME="OSGetStatKeys"><U>OSGetStatKeys</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSGetStatKeys (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Checks whether an arrow key (TI-89) or status key (TI-92+) is pressed.</B></P>
+
+<P>OSGetStatKeys is a strange function: it behaves differently on TI-89
+and on TI-92 Plus. On TI-89 it returns ARROW_LEFT, ARROW_RIGHT, ARROW_UP
+or ARROW_DOWN if one of the corresponding arrow keys is pressed (these
+constants are defined in enum <A HREF="#Arrows">Arrows</A>). On
+TI-92 Plus it returns STAT_2ND, STAT_DIAMOND, STAT_SHIFT of STAT_HAND
+if one of the corresponding status key is pressed (these constants are
+defined in enum <A HREF="#StatKeys">StatKeys</A>). If no arrow keys is
+pressed (TI-89) or if no status keys is pressed (TI-92 Plus), this function
+returns zero. OSGetStatKeys does not wait for a keypress. If more than
+one arrow/status key is pressed, OSGetStatKeys returns a garbage value.
+<BR><BR>
+<B>Note:</B> The information about this functions in releases of TIGCCLIB
+prior to 2.0 were incomplete: I didn't notice different behaviour on
+TI-89 and TI-92 Plus. So, avoid this function in portable programs.</P>
+
+<HR>
+<H3><A NAME="OSInitBetweenKeyDelay"><U>OSInitBetweenKeyDelay</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSInitBetweenKeyDelay (<B><A HREF="keywords.html#short">short</A></B> rate);</TD></TR></TABLE></P>
+<P><B>Sets the rate at which a key autorepeats.</B></P>
+
+<P>OSInitBetweenKeyDelay sets the rate at which a key autorepeats to <I>rate</I>
+(note that only few keys have an autorepeat feature, namely arrow keys and backspace).
+The measuring unit for this function is 1/395&nbsp;s (because
+Auto-Int 1 is triggered 395 times per second), and the default value for
+<I>rate</I> is 48. OSInitBetweenKeyDelay returns the previous autorepeat rate.
+<BR><BR>
+Greg Dietsche pointed out that on HW2 (precisely, if the <I>gateArray</I>
+field of the structure returned by
+<A HREF="flash.html#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A>
+exists and is 2 or higher), TIOS immediately multiplies the value passed to
+it by 3/4.
+This is probably a bug, as this implies that there is no way to restore the
+rate to the value previously returned by OSInitBetweenKeyDelay. To work
+around this problem, OSInitBetweenKeyDelay is defined as a macro which
+detects this modification in a smart way, and tries to revert it for the
+return value.</P>
+
+<HR>
+<H3><A NAME="OSInitKeyInitDelay"><U>OSInitKeyInitDelay</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSInitKeyInitDelay (<B><A HREF="keywords.html#short">short</A></B> delay);</TD></TR></TABLE></P>
+<P><B>Sets the initial autorepeat key delay.</B></P>
+
+<P>OSInitKeyInitDelay sets the time that a key has to be held down before it starts to
+repeat to <I>delay</I> (note that only few keys have autorepeat feature, like
+arrow keys and backspace). Measuring unit for this function is 1/395&nbsp;s (because
+Auto-Int 1 is triggered 395 times per second),
+and the default value for <I>delay</I> is 336 (slightly shorter than 1 second).
+OSInitKeyInitDelay returns previous autorepeat key delay.</P>
+
+<HR>
+<H3><A NAME="pushkey"><U>pushkey</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> pushkey (<B><A HREF="keywords.html#short">short</A></B> code);</TD></TR></TABLE></P>
+<P><B>Replaces the keystroke in the keyboard queue with the given code.</B></P>
+
+<P>If the keyboard queue is empty, pushkey pushes <I>code</I> in the keyboard queue,
+then sets the "keypressed" flag. If the keyboard queue is not empty, pushkey replaces the
+keystroke on the top of the keyboard queue with <I>code</I>. In each case, the next
+call of <A HREF="#ngetchx">ngetchx</A> will return <I>code</I>.</P>
+
+<HR>
+<H3><A NAME="restoreAlphaLock"><U>restoreAlphaLock</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> restoreAlphaLock (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *Status);</TD></TR></TABLE></P>
+<P><B>Restores the alpha-lock status.</B></P>
+
+<P>restoreAlphaLock restores the alpha-lock status to the value saved in <I>Flags</I>,
+which is obtained through a call to <A HREF="#alphaLockOn">alphaLockOn</A> or <A HREF="#alphaLockOff">alphaLockOff</A>.
+It seems that these are the valid values for *<I>Status</I>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">0</TD>
+  <TD>Alpha-lock is turned off.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">1</TD>
+  <TD>Alpha-lock is turned on.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">2</TD>
+  <TD>Uppercase alpha-lock is turned on.
+      However, <A HREF="#GetAlphaStatus">GetAlphaStatus</A> will then return <A HREF="alloc.html#Bool">FALSE</A>.
+      This is the value which is used if the user presses SHIFT and then ALPHA.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">3</TD>
+  <TD>Uppercase alpha-lock is turned on.
+      <A HREF="#GetAlphaStatus">GetAlphaStatus</A> will return <A HREF="alloc.html#Bool">TRUE</A>.</TD>
+</TR>
+</TABLE>
+<BR>
+On the TI-92+, the function does nothing.</P>
+
+<P>See also: <A HREF="#alphaLockOn">alphaLockOn</A>, <A HREF="#alphaLockOff">alphaLockOff</A>, <A HREF="#SetAlphaStatus">SetAlphaStatus</A></P>
+<HR>
+<H3><A NAME="SetAlphaStatus"><U>SetAlphaStatus</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SetAlphaStatus (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Status);</TD></TR></TABLE></P>
+<P><B>Sets the alpha-lock status on the TI-89.</B></P>
+
+<P>There are two valid values for <I>Status</I>: <A HREF="alloc.html#Bool">TRUE</A> turns the alpha-lock on; <A HREF="alloc.html#Bool">FALSE</A> turns it off.
+<BR>
+On the TI-92+, the function does nothing.</P>
+
+<P>See also: <A HREF="#GetAlphaStatus">GetAlphaStatus</A></P>
+<HR>
+<H3><A NAME="OSFastArrows"><U>OSFastArrows</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> OSFastArrows;</TD></TR></TABLE></P>
+<P><B>A variable determining whether arrow keys are repeated slowly or quickly.</B></P>
+
+<P>OSFastArrows tells <A HREF="#ngetchx">ngetchx</A>,
+<A HREF="#GKeyIn">GKeyIn</A>, and
+<A HREF="system.html#OSdequeue">OSdequeue</A> how to handle the arrow
+keys.
+<BR><BR>
+Once a key value is pushed onto the key queue, the same key value is not
+pushed again until the key is released, unless that key is one of the
+following: any of the arrow keys, the contrast keys, delete, or backspace.
+These keys are allowed to "auto-repeat". If one of these keys is pressed
+and held, after an initial delay, the same key value will be pushed again. If
+the keypress continues to be active, the key value will continue to be
+pushed at a rate set by a delay which is slightly shorter than the initial
+delay. If a key is pushed as a result of this auto-repeat feature, the value
+<A HREF="#KB_AUTOREPEAT">KB_AUTOREPEAT</A> is OR’d with the key value
+prior to pushing the key value onto the key queue.
+<BR><BR>
+It seems that the following values are allowed:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">0</TD>
+  <TD>Keys are repeated at normal speed. This is the default. In this case,
+      <A HREF="#ngetchx">ngetchx</A> will clear the
+      <A HREF="#KB_AUTOREPEAT">KB_AUTOREPEAT</A> bit from the key
+      value.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">1</TD>
+  <TD>Same as 0 for <A HREF="#ngetchx">ngetchx</A>,
+      but in text editors like the home screen entry line, keys are not repeated at all.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">2</TD>
+  <TD>The key delay is ignored; <A HREF="#ngetchx">ngetchx</A> returns
+      immediately if an arrow key is pressed. In text editors, the busy
+      indicator is visible, but keys do not seem to be repeated.</TD>
+</TR>
+</TABLE>
+<BR>
+Further information is welcome.</P>
+
+<P>See also: <A HREF="#ngetchx">ngetchx</A>, <A HREF="#OSInitBetweenKeyDelay">OSInitBetweenKeyDelay</A>, <A HREF="#OSInitKeyInitDelay">OSInitKeyInitDelay</A></P>
+<HR>
+<H3><A NAME="KB_AUTOREPEAT"><U>KB_AUTOREPEAT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KB_AUTOREPEAT (1&lt;&lt;11)</TD></TR></TABLE></P>
+<P><B>A constant defining the "auto-repeat" bit.</B></P>
+
+<P><I>KB_AUTOREPEAT</I> is a constant defining the "auto-repeat" bit in key values, please see <A HREF="#OSFastArrows">OSFastArrows</A> for more informations.</P>
+
+<P>See also: <A HREF="#OSFastArrows">OSFastArrows</A></P>
+<HR>
+<H3><A NAME="Arrows"><U>Arrows</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> Arrows {ARROW_UP = 1, ARROW_LEFT = 2, ARROW_DOWN = 3, ARROW_RIGHT = 4};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing the four arrow keys.</B></P>
+
+<P>Arrows is an enumeration for describing the return values of the function
+<A HREF="#OSGetStatKeys">OSGetStatKeys</A>, which is used for reading arrow keys
+(TI-89 only).</P>
+
+<HR>
+<H3><A NAME="CommonKeys"><U>CommonKeys</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> CommonKeys {KEY_F1 = 268, KEY_F2 = 269, KEY_F3 = 270, KEY_F4 = 271, KEY_F5 = 272, KEY_F6 = 273, KEY_F7 = 274, KEY_F8 = 275, KEY_ESC = 264, KEY_QUIT = 4360, KEY_APPS = 265, KEY_SWITCH = 4361, KEY_MODE = 266, KEY_BACKSPACE = 257, KEY_INS = 4353, KEY_CLEAR = 263, KEY_VARLNK = 4141, KEY_CHAR = 4139, KEY_ENTER = 13, KEY_ENTRY = 4109, KEY_STO = 258, KEY_RCL = 4354, KEY_SIGN = 173, KEY_MATH = 4149, KEY_MEM = 4150, KEY_ON = 267, KEY_OFF = 4363};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing common key codes.</B></P>
+
+<P>CommonKeys is enumerated type for decribing codes of various common keypresses, which
+usually does not ASCII representation, and which are the same on TI-89 and TI-92 Plus.
+Note that codes of keypresses like HOME, CATALOG etc. are not defined here, because they
+are not the same on TI-89 and TI-92 Plus. See <A HREF="compat.html">compat.h</A> for more
+info how to detect the calculator version.</P>
+
+<HR>
+<H3><A NAME="GKeyFlags"><U>GKeyFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> GKeyFlags {GKF_NORMAL=0, GKF_MODAL=1, GKF_REPUSH_KEY=2, GKF_ACCEPT=4, GKF_SYS=8, GKF_NO_EVS=16};</TD></TR></TABLE></P>
+<P><B>Enumerates different key options flags for the <A HREF="#GKeyIn">GKeyIn</A> routine.</B></P>
+
+<P>Enumerates different key options flags. The meanings of these flags are given in <A HREF="#GKeyIn">GKeyIn</A>.</P>
+
+<P>See also: <A HREF="#GKeyIn">GKeyIn</A></P>
+<HR>
+<H3><A NAME="StatKeys"><U>StatKeys</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> StatKeys {STAT_2ND = 1, STAT_DIAMOND = 2, STAT_SHIFT = 3, STAT_HAND = 4};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing modifier key values.</B></P>
+
+<P>StatKeys is an enumerated type for describing the return values of the function
+<A HREF="#OSGetStatKeys">OSGetStatKeys</A>, which is used for reading
+the status keys (TI-92 Plus only).</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

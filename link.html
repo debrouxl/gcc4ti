@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>link.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;link.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Calc/calc and calc/computer link interface routines</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#getcalc">getcalc</A></B><DD>Receives a variable (or program) from the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_Get">LIO_Get</A></B><DD>Gets a CBL file from the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_GetMultiple">LIO_GetMultiple</A></B><DD>Gets a multiple (???) from the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_Receive">LIO_Receive</A></B><DD>Receives a file from the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_RecvData">LIO_RecvData</A></B><DD>Receives data from the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_Send">LIO_Send</A></B><DD>Sends a file through the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_SendData">LIO_SendData</A></B><DD>Sends data through the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_SendIdList">LIO_SendIdList</A></B><DD>Sends the ID list of the calculator through the link port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_SendProduct">LIO_SendProduct</A></B><DD>Sends a product code through the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSCheckLinkOpen">OSCheckLinkOpen</A></B><DD>Checks if the link port is open.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSCheckSilentLink">OSCheckSilentLink</A></B><DD>Checks the link state.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSLinkClose">OSLinkClose</A></B><DD>Closes a low-level link communication.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSLinkCmd">OSLinkCmd</A></B><DD>Process the command received through the link port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSLinkOpen">OSLinkOpen</A></B><DD>Opens low-level link communication.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSLinkReset">OSLinkReset</A></B><DD>Resets the link interface.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSLinkTxQueueActive">OSLinkTxQueueActive</A></B><DD>Determines whether the transmit queue is active.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSLinkTxQueueInquire">OSLinkTxQueueInquire</A></B><DD>Determines the number of free bytes in the transmit buffer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSReadLinkBlock">OSReadLinkBlock</A></B><DD>Reads bytes from the link receive buffer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OSWriteLinkBlock">OSWriteLinkBlock</A></B><DD>Inserts bytes into the link transmit buffer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#sendcalc">sendcalc</A></B><DD>Sends a variable (or program) through the link interface.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#CESI">CESI</A></B><DD>Represents a pointer to a constant expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESI">ESI</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESQ">ESQ</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LIO_CTX">LIO_CTX</A></B><DD>A file context structure used in some high-level link commands.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="stddef.html#size_t">size_t</A></B><DD>A type to define sizes of strings and memory blocks.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#SYM_STR">SYM_STR</A></B><DD>Represents a pointer to the terminating zero byte of a string.</DL>
+<P><B>Note:</B> Some functions from this header file are straightforward and quite simple to use, but
+some of them require good knowledge of TI's communication protocols (much better than my
+knowledge about it, so don't ask me about details; protocol information can be found at
+<A HREF="http://www.ticalc.org/pub/text/calcinfo/tixx_guide.zip">http://www.ticalc.org/pub/text/calcinfo/tixx_guide.zip</A>).</P>
+
+<HR>
+<H3><A NAME="getcalc"><U>getcalc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> getcalc (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Receives a variable (or program) from the link interface.</B></P>
+
+<P>getcalc receives a variable (or program) from the link interface (this is exactly what the
+TI-Basic command GetCalc does). <I>SymName</I> is a pointer to the variable name.
+Note that <I>SymName</I> is not an ordinary C string. Instead, it is zero-started zero-terminated
+string, and <I>SymName</I> points to the terminating byte of it (many TIOS functions for
+manipulating with TIOS variables use such strings). See <A HREF="vat.html#SYMSTR">SYMSTR</A> and
+other functions from the <A HREF="vat.html">vat.h</A> header file for more info about symbol names).
+<BR><BR>
+<B>Note:</B> getcalc enters a loop which will not end until the data is received. The only method
+to break out of this loop (if no data is received) is pressing the 'ON' key.</P>
+
+<P>See also: <A HREF="#sendcalc">sendcalc</A>, <A HREF="bascmd.html#cmd_getcalc">cmd_getcalc</A></P>
+<HR>
+<H3><A NAME="LIO_Get"><U>LIO_Get</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LIO_Get (<A HREF="#LIO_CTX">LIO_CTX</A> *file);</TD></TR></TABLE></P>
+<P><B>Gets a CBL file from the link interface.</B></P>
+
+<P>LIO_Get is a high-level function which receives a CBL (Calculator-Based Laboratory) file through the link interface and fills
+<A HREF="#LIO_CTX">LIO_CTX</A> structure pointed to by <I>file</I> accordingly (note that I don't
+know much more about it). LIO_Get returns zero if the operation was successful, else returns a
+non-zero value (this value describes the type of the error, but I am not sure about the concrete
+meaning of particular values).</P>
+
+<HR>
+<H3><A NAME="LIO_GetMultiple"><U>LIO_GetMultiple</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> LIO_GetMultiple (<A HREF="#LIO_CTX">LIO_CTX</A> *file);</TD></TR></TABLE></P>
+<P><B>Gets a multiple (???) from the link interface.</B></P>
+
+<P>Yet another unclear high-level link routine. It is called often as a subroutine in other
+high-level linking routines. In fact, it just performs</P>
+<PRE>LIO_Receive (file, 0, 0);
+</PRE>
+<P>but returns a different result. If <A HREF="#LIO_Receive">LIO_Receive</A> returns 0,
+LIO_GetMultiple returns -1. If <A HREF="#LIO_Receive">LIO_Receive</A> returns 0xFFFF,
+LIO_GetMultiple returns 0. Else, LIO_GetMultiple returns the same value returned from
+<A HREF="#LIO_Receive">LIO_Receive</A>. Don't ask me what it means. Any additional
+info is welcomed.</P>
+
+<HR>
+<H3><A NAME="LIO_Receive"><U>LIO_Receive</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LIO_Receive (<A HREF="#LIO_CTX">LIO_CTX</A> *file, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> DevType, <B><A HREF="keywords.html#short">short</A></B> skipmuch);</TD></TR></TABLE></P>
+<P><B>Receives a file from the link interface.</B></P>
+
+<P>LIO_Receive is a high-level function which receives a file (a variable for example) through
+the link interface and fills the <A HREF="#LIO_CTX">LIO_CTX</A> structure pointed to by <I>file</I>
+accordingly. However, this function is not so easy for usage, because you need to interpret
+the file context structure pointed to by <I>file</I> manually after using this function, which
+is not a trivial task. If you want just to receive a variable through the link interface,
+function <A HREF="#getcalc">getcalc</A> is much easier to use. The advantage of this routine is
+greater generality in comparing to <A HREF="#getcalc">getcalc</A> (for example, it allows
+transfer even between incompatible TI models, if properly used; sorry, I don't know too much
+about it).
+<BR><BR>
+The parameter <I>DevType</I> determines the device type (see <A HREF="#LIO_Send">LIO_Send</A> for
+the explanation about its meaning). It seems that it is possible to set <I>DevType</I> to zero
+(it probably means "receive from anything").
+<BR><BR>
+The parameter <I>skipmuch</I> is a boolean parameter (if it is non-zero, a
+lot of code in this function is skipped over). <I>skipmuch</I> has to do with the Silent Link mode (see
+<A HREF="#OSCheckSilentLink">OSCheckSilentLink</A>).
+When receiving a file manually, the AMS calls LIO_Receive with
+a value of 0 for <I>skipmuch</I>;
+in Silent Link mode, LIO_Receive is called with a value of 1
+once the header has been read, to transfer the file properly.
+<BR><BR>
+LIO_Receive returns zero if the operation was successful, else returns a non-zero
+value (this value describes the type of the error, but I am not sure about the concrete meaning
+of particular values).</P>
+
+<HR>
+<H3><A NAME="LIO_RecvData"><U>LIO_RecvData</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LIO_RecvData (<B><A HREF="keywords.html#void">void</A></B> *dest, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> size, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> WaitDelay);</TD></TR></TABLE></P>
+<P><B>Receives data from the link interface.</B></P>
+
+<P>LIO_RecvData reads <I>size</I> bytes through the link interface, and stores received bytes
+at the address <I>dest</I>. This functions calls repeatedly <A HREF="#OSReadLinkBlock">OSReadLinkBlock</A> function
+as many times as necessary to receive wanted amount of data. Parameter <I>WaitDelay</I> is
+the maximal allowed waiting time: if no data is received during <I>WaitDelay</I> timer ticks
+(one timer tick is 1/20 seconds by default), the reading fails. When <I>WaitDelay</I> is set
+to zero, this means "waiting forever". Anyway, this operation may be interrupted by pressing ON
+key. LIO_RecvData returns zero if the operation was successful, else returns a non-zero value
+(this value describes the type of the error, but I am not sure about the concrete meaning of
+particular values).
+<BR><BR><B>Note:</B> This functions registers <A HREF="system.html#Timers">LIO_TIMER</A> for measuring
+the time. See <A HREF="system.html#OSRegisterTimer">OSRegisterTimer</A> for more info.</P>
+
+<HR>
+<H3><A NAME="LIO_Send"><U>LIO_Send</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LIO_Send (<A HREF="#LIO_CTX">LIO_CTX</A> *file, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> DevType);</TD></TR></TABLE></P>
+<P><B>Sends a file through the link interface.</B></P>
+
+<P>LIO_Send is a high-level function which sends a file (a variable, a screen dump file, etc.)
+described by the <A HREF="#LIO_CTX">LIO_CTX</A> structure pointed to by <I>file</I> through
+the link interface. However, this function is not so easy for usage, because you need to fill
+the file context structure pointed to by <I>file</I> manually before using this function. If
+you want just to send a variable through the link interface, function <A HREF="#sendcalc">sendcalc</A>
+is much easier to use. The advantage of this routine is greater generality in comparing to
+<A HREF="#sendcalc">sendcalc</A> (for example, it allows transfer even between incompatible TI
+models, if properly used; sorry, I don't know too much about it).
+<BR><BR>
+Parameter <I>DevType</I> determines the device type (this information is stored in the header
+of each packet during the communication). It is a collection of flags. Bit b7 is 0 during
+transfer from a computer to a calculator and 1 during transfer from a calculator to a computer
+or another calculator. Bits b6 and b5 are reserved (keep them to 0). Bit b4 is 1 if a device
+is a "special" device, whatever it means (so far, I know that this bit is set if a device is
+TI-89 or CBL). Bits b3-b0 determine the calculator type (so far, I know the following meanings:
+0010 for TI-82, 0011 for TI83, 0101 for TI85, 1000 for TI-89 or TI-92 Plus, and 1001 for TI-92).
+So, <I>DevType</I> should to be 0x98 for sending from TI-89 or 0x88 for sending from TI-92 Plus.
+<BR><BR>
+LIO_Send returns zero if the operation was successful, else returns a non-zero value
+(this value describes the type of the error, but I am not sure about the concrete meaning of
+particular values).</P>
+
+<HR>
+<H3><A NAME="LIO_SendData"><U>LIO_SendData</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LIO_SendData (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *src, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> size);</TD></TR></TABLE></P>
+<P><B>Sends data through the link interface.</B></P>
+
+<P>LIO_SendData sends <I>size</I> bytes from the address <I>src</I> through the link interface.
+This function calls repeatedly <A HREF="#OSWriteLinkBlock">OSWriteLinkBlock</A> function
+as many times as necessary to send all of data. Returns zero if the operation was successful,
+else returns a non-zero value (this value describes the type of the error, but I am not sure
+about the concrete meaning of particular values).</P>
+
+<HR>
+<H3><A NAME="LIO_SendIdList"><U>LIO_SendIdList</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LIO_SendIdList (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> delete);</TD></TR></TABLE></P>
+<P><B>Sends the ID list of the calculator through the link port.</B></P>
+
+<P>If the ID list does not exist, creates one using the calculator's ID. Otherwise, the calculator ID is appended. This list is then sent over the link port.<BR>
+If <I>delete</I> is TRUE, the ID list is deleted from memory after it is sent.<BR>
+The function returns non-zero if an error occurs, otherwise it returns zero.</P>
+
+<P>See also: <A HREF="cert.html#freeIdList">freeIdList</A></P>
+<HR>
+<H3><A NAME="LIO_SendProduct"><U>LIO_SendProduct</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LIO_SendProduct (<A HREF="#LIO_CTX">LIO_CTX</A> *file, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> DevType);</TD></TR></TABLE></P>
+<P><B>Sends a product code through the link interface.</B></P>
+
+<P>LIO_SendProduct is a high-level function which sends a Product Code through the link interface.
+What exactly will be sent is described in <A HREF="#LIO_CTX">LIO_CTX</A> structure pointed to by
+<I>file</I>. Parameter <I>DevType</I> determines the device type (see <A HREF="#LIO_Send">LIO_Send</A> for
+the explanation about its meaning). This routine is called from the VAR_LINK menu.
+Returns zero if the operation was successful, else returns a non-zero
+value (this value describes the type of the error, but I am not sure about the concrete meaning
+of particular values).</P>
+
+<HR>
+<H3><A NAME="OSCheckLinkOpen"><U>OSCheckLinkOpen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> OSCheckLinkOpen (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Checks if the link port is open.</B></P>
+
+<P>This function returns TRUE if the link port is open, FALSE otherwise.</P>
+
+<P>See also: <A HREF="#OSLinkOpen">OSLinkOpen</A></P>
+<HR>
+<H3><A NAME="OSCheckSilentLink"><U>OSCheckSilentLink</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSCheckSilentLink (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Checks the link state.</B></P>
+
+<P>OSCheckSilentLink returns an integer which determines the link state. The meaning of the returned
+value is:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD VALIGN="TOP">0</TD><TD>None (the link is silent)</TD></TR>
+<TR><TD VALIGN="TOP">1</TD><TD>A variable header or extended header is received</TD></TR>
+<TR><TD VALIGN="TOP">2</TD><TD>A direct command, a screen dump, a request with size or a request is in progress</TD></TR>
+<TR><TD VALIGN="TOP">3</TD><TD>The link is ready</TD></TR>
+</TABLE>
+<BR>
+This function is called from high-level keyboard reading functions like
+<A HREF="kbd.html#kbhit">kbhit</A> and <A HREF="kbd.html#ngetchx">ngetchx</A>, and if it returns
+non-zero, <A HREF="#OSLinkCmd">OSLinkCmd</A> is called to process the received packet (as the
+link is interrupt-driven, a packet may be received asynchronously, without the request from
+the program itself). So, the TIOS can receive variables from the link whenever the program is
+waiting for a keypress (used mainly when the calculator is in the Home Screen).</P>
+
+<HR>
+<H3><A NAME="OSLinkClose"><U>OSLinkClose</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSLinkClose (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Closes a low-level link communication.</B></P>
+
+<P>OSLinkClose waits until eventual bytes waiting in transmit queue are sent out, then clears
+both transmit and receive queues, and clear a flag which tells that the communication
+is opened.</P>
+
+<HR>
+<H3><A NAME="OSLinkCmd"><U>OSLinkCmd</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSLinkCmd (<B><A HREF="keywords.html#short">short</A></B> NormalState);</TD></TR></TABLE></P>
+<P><B>Process the command received through the link port.</B></P>
+
+<P>OSLinkCmd should to be called after <A HREF="#OSCheckSilentLink">OSCheckSilentLink</A> if the
+result returned from it is non-zero (this means that there is a packet received from the link
+port, which waits to be processed). This function handles link commands when the calculator
+is in the Home Screen for example (link commands are stored in packets). Parameter
+<I>NormalState</I> should to be set to <A HREF="alloc.html#Bool">TRUE</A> if
+the calculator is in a "normal receiving state", i.e. if the current application is "Home
+Screen", if the screen is not splitted, and if there is no any event-driven "applets" installed
+using <A HREF="events.html#EV_captureEvents">EV_captureEvents</A> (see
+<A HREF="events.html">events.html</A> for more info). This parameter helps TIOS to conclude
+which link commands should be processed, and which commands should be rejected (for example,
+the calculator cannot receive variables if it is not in a "normal receiving state").</P>
+
+<HR>
+<H3><A NAME="OSLinkOpen"><U>OSLinkOpen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSLinkOpen (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Opens low-level link communication.</B></P>
+
+<P>OSLinkOpen clears both transmit and receive queues, then set a flag which tells that the
+communication is opened.</P>
+
+<P>Deprecated alias: flush_link</P>
+<HR>
+<H3><A NAME="OSLinkReset"><U>OSLinkReset</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> OSLinkReset (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Resets the link interface.</B></P>
+
+<P>OSLinkReset resets the link interface. It also resets all link variables and
+performs <A HREF="#OSLinkClose">OSLinkClose</A>.</P>
+
+<P>Deprecated alias: reset_link</P>
+<HR>
+<H3><A NAME="OSLinkTxQueueActive"><U>OSLinkTxQueueActive</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSLinkTxQueueActive (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Determines whether the transmit queue is active.</B></P>
+
+<P>OSLinkTxQueueActive returns <A HREF="alloc.html#Bool">TRUE</A> if the transmit queue is active,
+else returns <A HREF="alloc.html#Bool">FALSE</A>. This function checks bit b1 in I/O port 0x60000C
+(interrupt on transmit buffer empty).</P>
+
+<HR>
+<H3><A NAME="OSLinkTxQueueInquire"><U>OSLinkTxQueueInquire</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> OSLinkTxQueueInquire (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Determines the number of free bytes in the transmit buffer.</B></P>
+
+<P>OSLinkTxQueueInquire returns the number of free bytes in the link transmit buffer. Note that
+this number may change in a time without any obvious actions, because the link communication
+is interrupt driven.</P>
+
+<P>Deprecated alias: tx_free</P>
+<HR>
+<H3><A NAME="OSReadLinkBlock"><U>OSReadLinkBlock</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> OSReadLinkBlock (<B><A HREF="keywords.html#int">char</A></B> *buffer, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> num);</TD></TR></TABLE></P>
+<P><B>Reads bytes from the link receive buffer.</B></P>
+
+<P>OSReadLinkBlock reads at most <I>num</I> bytes into <I>buffer</I> from the link receive
+buffer. Returns the number of bytes read.
+<BR><BR>
+<B>Note:</B> This function is a low-level function. See also <A HREF="#LIO_RecvData">LIO_RecvData</A>
+for a higher-level variant of this function.</P>
+
+<P>Deprecated alias: receive</P>
+<P>See also: <A HREF="#LIO_RecvData">LIO_RecvData</A></P>
+<HR>
+<H3><A NAME="OSWriteLinkBlock"><U>OSWriteLinkBlock</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> OSWriteLinkBlock (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *buffer, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> num);</TD></TR></TABLE></P>
+<P><B>Inserts bytes into the link transmit buffer.</B></P>
+
+<P>OSWriteLinkBlock inserts <I>num</I> bytes from <I>buffer</I> into the link transmit buffer.
+Returns 0 if the operation was sucessful, else returns a non-zero value. <I>num</I> must be
+in the range 1-128. An error occurs if <I>num</I> is out of range or if there is not enough
+room in the transmit buffer to insert <I>num</I> bytes.
+<BR><BR>
+<B>Note:</B> This function is a low-level function. See also <A HREF="#LIO_SendData">LIO_SendData</A>
+for a higher-level variant of this function.</P>
+
+<P>Deprecated alias: transmit</P>
+<P>See also: <A HREF="#LIO_SendData">LIO_SendData</A></P>
+<HR>
+<H3><A NAME="sendcalc"><U>sendcalc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> sendcalc (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <B><A HREF="keywords.html#short">short</A></B> allowSysVars, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> DevType, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *compat);</TD></TR></TABLE></P>
+<P><B>Sends a variable (or program) through the link interface.</B></P>
+
+<P>sendcalc sends a variable (or program) through the link interface (this is exactly what
+the TI-Basic command SendCalc does). <I>SymName</I> is a pointer to the variable name.
+<I>allowSysVars</I> is a Boolean parameter. If it is <A HREF="alloc.html#Bool">TRUE</A>, transfer of
+a system variable will be allowed, and if it is <A HREF="alloc.html#Bool">FALSE</A>, such transfer will
+be rejected. <I>DevType</I> determines the device type (see <A HREF="#LIO_Send">LIO_Send</A> for
+the explanation about its meaning). If <I>Compat</I> is not a <A HREF="alloc.html#NULL">NULL</A> pointer,
+sendcalc also stores in a byte variable pointed to by <I>compat</I> compatibility information
+about the variable which will be transfered (see info about <A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A>
+structure in <A HREF="vat.html">vat.h</A> header file for more info about compatibility flags).
+<BR><BR>
+Note that <I>SymName</I> is not an ordinary C string. Instead, it is zero-started zero-terminated
+string, and <I>SymName</I> points to the terminating byte of it (many TIOS functions for
+manipulating with TIOS variables use such strings). See <A HREF="vat.html#SYMSTR">SYMSTR</A> and
+other functions from the <A HREF="vat.html">vat.h</A> header file for more info about symbol names).
+For example, to send a variable called "example" from
+one TI-89 unit to another, use the following command:</P>
+<PRE>sendcalc (SYMSTR ("example"), FALSE, 0x98, NULL);
+</PRE>
+<P>Replace 0x98 with 0x89 to simulate TI-Basic SendChat command instead of SendCalc.
+<BR><BR>
+sendcalc returns zero if the operation was successful, else returns a non-zero
+value (this value describes the type of the error, but I am not sure about the concrete meaning
+of particular values). This function also may throw an error in a case of various fatal errors,
+so error trapping (using functions from the <A HREF="error.html">error.h</A> header file) is
+recommended.</P>
+
+<P>See also: <A HREF="#getcalc">getcalc</A>, <A HREF="bascmd.html#cmd_sendcalc">cmd_sendcalc</A>, <A HREF="bascmd.html#cmd_sendchat">cmd_sendchat</A></P>
+<HR>
+<H3><A NAME="LIO_CTX"><U>LIO_CTX</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> hVar; <I>/* File handle (or 0 if no handles associated) */</I><BR>
+<B><A HREF="keywords.html#union">union</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *pVar; <I>/* Pointer to the file, used only if hVar is 0 */</I><BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FindFlags;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> NameSym;<BR>
+</TD></TR></TABLE>
+} DirVars; <I>/* Used only if hVar is non-zero */</I><BR>
+</TD></TR></TABLE>
+} extra;<BR>
+<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *VarName; <I>/* Pointer to the var name (ordinary C string) */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> VarSize; <I>/* Size of the variable */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Index; <I>/* Only for CBL access - data sent as float array */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Unknown; <I>/* Sent after index */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> VarType; <I>/* See below */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> VarCompat; <I>/* See info about SYM_ENTRY in vat.h */</I><BR>
+</TD></TR></TABLE>
+} LIO_CTX;</TD></TR></TABLE></P>
+<P><B>A file context structure used in some high-level link commands.</B></P>
+
+<P>LIO_CTX is a file context structure used in some high-level link commands. Some fields of this
+structure are not so clear for me. However, in many applications not all fields need to be set
+properly, so limited use of this structure is possible.
+<BR><BR>
+The field <I>VarType</I> may contain the following values (I don't know much more than I
+wrote in this table, so don't ask me about details):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>0</TD><TD>Expression</TD></TR>
+<TR><TD>4</TD><TD>List</TD></TR>
+<TR><TD>6</TD><TD>Matrix</TD></TR>
+<TR><TD>10</TD><TD>Data</TD></TR>
+<TR><TD>11</TD><TD>Text</TD></TR>
+<TR><TD>12</TD><TD>String</TD></TR>
+<TR><TD>13</TD><TD>GDB variable</TD></TR>
+<TR><TD>14</TD><TD>Geometry figure</TD></TR>
+<TR><TD>16</TD><TD>Picture</TD></TR>
+<TR><TD>17</TD><TD>Picture (???)</TD></TR>
+<TR><TD>18</TD><TD>TI-Basic program</TD></TR>
+<TR><TD>19</TD><TD>TI-Basic function</TD></TR>
+<TR><TD>20</TD><TD>Geometry macro</TD></TR>
+<TR><TD>21</TD><TD>In link protocol, cause execution of assembly block</TD></TR>
+<TR><TD>25</TD><TD>Directory list (used recursively, unless <I>VarType</I> 26 follows)</TD></TR>
+<TR><TD>26</TD><TD>List the folder table entries</TD></TR>
+<TR><TD>27</TD><TD>List contents of a given folder (<I>VarType</I> 26 should follow)</TD></TR>
+<TR><TD>28</TD><TD>Other (OTH) file</TD></TR>
+<TR><TD>29</TD><TD>Backup file</TD></TR>
+<TR><TD>31</TD><TD>Folder entry symbol in group files</TD></TR>
+<TR><TD>32</TD><TD>Used for getting a certificate</TD></TR>
+<TR><TD>33</TD><TD>ASM program</TD></TR>
+<TR><TD>34</TD><TD>ID List</TD></TR>
+<TR><TD>35</TD><TD>Product code (AMS)</TD></TR>
+<TR><TD>36</TD><TD>FLASH application</TD></TR>
+<TR><TD>37</TD><TD>Certificate</TD></TR>
+</TABLE></P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

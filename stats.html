@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>stats.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;stats.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for working with statistics.</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#QstatRcl">QstatRcl</A></B><DD>Tells if <A HREF="vat.html#VarRecall">VarRecall</A> can be used to read the stat variables.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#statEnd">statEnd</A></B><DD>Tells the system that the program is no more working on the stat variables.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#statFree">statFree</A></B><DD>Frees the stat variables (including regeq and regcoef) if they exist.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#statStart">statStart</A></B><DD>Creates stat vars and sets them to invalid values.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#RM_Type">RM_Type</A></B><DD>Global variable that specifies the type of the current stat operation.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#RegModelTypes">RegModelTypes</A></B><DD>An enumeration for describing the different types of the current stat operation.
+
+[Explanation]
+This enum describes the correct values for <A HREF="#RM_Type">RM_Type</A>.</DL>
+<HR>
+<H3><A NAME="QstatRcl"><U>QstatRcl</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> QstatRcl (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Tells if <A HREF="vat.html#VarRecall">VarRecall</A> can be used to read the stat variables.</B></P>
+
+<P>It returns TRUE if the stat variables are valid, FALSE otherwise.</P>
+
+<P>See also: <A HREF="#statEnd">statEnd</A>, <A HREF="#statStart">statStart</A>, <A HREF="#statFree">statFree</A>, <A HREF="vat.html#VarRecall">VarRecall</A></P>
+<HR>
+<H3><A NAME="statEnd"><U>statEnd</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> statEnd (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Tells the system that the program is no more working on the stat variables.</B></P>
+
+<P>This function must be called when the work on the stat variables is finished.</P>
+
+<HR>
+<H3><A NAME="statFree"><U>statFree</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> statFree (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Frees the stat variables (including regeq and regcoef) if they exist.</B></P>
+
+<P>This function may set the dirty flag for the graph (this will force a regraph when the grapher is activated).</P>
+
+<HR>
+<H3><A NAME="statStart"><U>statStart</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> statStart (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Creates stat vars and sets them to invalid values.</B></P>
+
+<P>This function must be called prior to any modifications to the stat variables:</P>
+<PRE>
+statStart(); // Creates and initializes the stat vars to invalid values.
+RM_Type = ... // set to the type you want, see <A HREF="#RM_Type">RM_Type</A>
+// do calculations
+// store to stat vars with VarStore
+statEnd(); // tell the system we are no more working on the stat variables...
+</PRE>
+<P>statStart can throw 'Error: Memory'.</P>
+
+<HR>
+<H3><A NAME="RM_Type"><U>RM_Type</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> RM_Type;</TD></TR></TABLE></P>
+<P><B>Global variable that specifies the type of the current stat operation.</B></P>
+
+<P>Valid values for RM_Type are described in enum <A HREF="#RegModelTypes">RegModelTypes</A>.</P>
+
+<HR>
+<H3><A NAME="RegModelTypes"><U>RegModelTypes</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> RegModelTypes {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+RM_NONE, RM_MEDMED, RM_LIN, RM_LN, RM_EXP, RM_POWER, RM_QUAD, RM_CUBIC, RM_QUART, RM_LOGISTIC, RM_SIN</TD></TR></TABLE>
+};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing the different types of the current stat operation.</B></P>
+
+<P>This enum describes the correct values for <A HREF="#RM_Type">RM_Type</A>.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

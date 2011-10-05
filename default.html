@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>default.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;default.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Default header file which is always included</B></P>
+
+<P>default.h is always included at the top of every other header file.
+<BR><BR>
+In addition to defining the following macros, this header file handles basic symbols
+such as <CODE>USE_TI89</CODE> and related ones, or <CODE>MIN_AMS</CODE>.
+See the info section <A HREF="httigcc.html">How to make a TIGCC/GCC4TI program</A>.</P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#_rom_call_addr_concat">_rom_call_addr_concat</A></B><DD>Returns a void pointer to a TIOS ROM call (internal).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call_addr_hack_concat">_rom_call_addr_hack_concat</A></B><DD>Returns a void pointer for a TIOS ROM call, using an address hack if needed (internal).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call_addr_hack">_rom_call_addr_hack</A></B><DD>Returns a void pointer for a TIOS ROM call, using an address hack if needed.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call_addr">_rom_call_addr</A></B><DD>Returns a void pointer to a TIOS ROM call.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call_attr">_rom_call_attr</A></B><DD>Constructs a function definition with attributes for a TIOS ROM call.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call_concat">_rom_call_concat</A></B><DD>Constructs a function definition for a TIOS ROM call (internal).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call_hack_attr_concat">_rom_call_hack_attr_concat</A></B><DD>Constructs a function definition with an address hack and attributes for a
+TIOS ROM call (internal).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call_hack_attr">_rom_call_hack_attr</A></B><DD>Constructs a function definition with an address hack and attributes for a
+TIOS ROM call.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call_hack">_rom_call_hack</A></B><DD>Constructs a function definition with an address hack for a TIOS ROM call.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_rom_call">_rom_call</A></B><DD>Constructs a function definition for a TIOS ROM call.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#import_binary">import_binary</A></B><DD>Imports a binary file as an arbitrary symbol.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#__jmp_tbl">__jmp_tbl</A></B><DD>A variable which points to the TIOS jump table of ROM calls.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#MIN_AMS_MAJOR">MIN_AMS_MAJOR</A></B><DD>The major part of <CODE>MIN_AMS</CODE>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MIN_AMS_MINOR">MIN_AMS_MINOR</A></B><DD>The minor part of <CODE>MIN_AMS</CODE>.</DL>
+<P>See also: <A HREF="nostub.html">nostub.h</A>, <A HREF="doors.html">doors.h</A></P>
+<HR>
+<H3><A NAME="_rom_call_addr_concat"><U>_rom_call_addr_concat</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_addr_concat(intindex,romindex) (__jmp_tbl [intindex])</TD></TR></TABLE></P>
+<P><B>Returns a void pointer to a TIOS ROM call (internal).</B></P>
+
+<P>_rom_call_addr_concat is an internal macro which is used by
+<A HREF="#_rom_call_addr">_rom_call_addr</A> and
+<A HREF="#_rom_call">_rom_call</A>.
+<BR><BR>
+<I>intindex</I> contains the index of the ROM call as a numeric constant. It
+is used in this definition, as an array subscript for
+<A HREF="#__jmp_tbl">__jmp_tbl</A>, a pointer to the table of ROM calls.
+<I>romindex</I> contains a symbol in the form <CODE>_ROM_CALL_xxx</CODE>,
+where <I>xxx</I> is the index in hexadecimal form without the <CODE>'0x'</CODE>
+prefix.
+<BR><BR>
+Other header files override this definition to use <I>romind</I> instead.
+In particular, <A HREF="doors.html">doors.h</A> includes a
+<CODE>romsymb.h</CODE> header file which defines a list of external variables
+for all ROM call symbols which may appear in <I>romindex</I>, and changes the
+definition to:</P>
+<PRE>#define _rom_call_addr_concat(intindex,romindex) (&romindex)
+</PRE>
+<P>You probably wonder why _rom_call_addr_concat exists at all, since other
+header files might as well override <A HREF="#_rom_call_addr">_rom_call_addr</A>,
+which could be used directly by <A HREF="#_rom_call">_rom_call</A>.
+The reason is that all arguments which are not concatenated are
+<A HREF="cpp.html#SEC11">scanned</A> for macros that have to be expanded.
+If <A HREF="#_rom_call">_rom_call</A> was using
+<A HREF="#_rom_call_addr">_rom_call_addr</A>, passing <I>index</I> to
+it, then the <I>index</I> parameter would be scanned. This turns out to be fatal
+if the user defines a macro such as <CODE>A1</CODE>, and uses the ROM call with
+the index <CODE>0xA1</CODE>.
+<BR><BR>
+Therefore, both <A HREF="#_rom_call_addr">_rom_call_addr</A> and
+<A HREF="#_rom_call">_rom_call</A> have to use concatenation on their
+<I>index</I> parameter. Then they pass the resulting symbols to _rom_call_addr_concat.</P>
+
+<HR>
+<H3><A NAME="_rom_call_addr_hack_concat"><U>_rom_call_addr_hack_concat</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_addr_hack_concat(intindex,romindex,addr,minams,minindex) (MIN_AMS &gt;= (minams) || TIOS_entries &gt;<BR>
+(minindex) ? _rom_call_addr_concat (intindex, romindex) : ({
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+asm (&quot;.xdef __ref_all___reject_unofficial_os&quot;);<BR>
+(<B><A HREF="keywords.html#void">void</A></B> *) (addr);<BR>
+</TD></TR></TABLE>
+}))</TD></TR></TABLE></P>
+<P><B>Returns a void pointer for a TIOS ROM call, using an address hack if needed (internal).</B></P>
+
+<P>_rom_call_addr_hack_concat is a macro used internally by
+<A HREF="#_rom_call_addr_hack">_rom_call_addr_hack</A>. Its only
+purpose is to prevent <A HREF="cpp.html#SEC11">prescan</A> of the
+ROM call index (see
+<A HREF="#_rom_call_addr_concat">_rom_call_addr_concat</A> for more
+information).</P>
+
+<P>See also: <A HREF="#_rom_call_addr_hack">_rom_call_addr_hack</A></P>
+<HR>
+<H3><A NAME="_rom_call_addr_hack"><U>_rom_call_addr_hack</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_addr_hack(index,addr,minams) (_rom_call_addr_hack_concat (0x##index, _ROM_CALL_##index, (addr), (minams), 0x##index))</TD></TR></TABLE></P>
+<P><B>Returns a void pointer for a TIOS ROM call, using an address hack if needed.</B></P>
+
+<P>_rom_call_addr_hack works exactly like
+<A HREF="#_rom_call_addr">_rom_call_addr</A>,
+except that it takes an additional parameter <I>addr</I> specifying an
+alternative way to get the address of the ROM call. If the TIOS jump table
+contains the ROM call specified by <I>index</I>, the address from the jump
+table is used. Otherwise _rom_call_addr_hack computes the address specified by
+<I>addr</I> (which can be any pointer type), and returns it.
+<BR><BR>
+<I>minams</I> specifies the AMS version which first exports the ROM call
+identified by <I>index</I>. If the value of
+<CODE><A HREF="httigcc.html#minams">MIN_AMS</A></CODE> is greater or
+equal to the value of <I>minams</I>, the ROM call is used unconditionally.
+When using this macro directly, you need to make sure that this value is
+correct; otherwise you will get crashes only if a specific value for
+<CODE><A HREF="httigcc.html#minams">MIN_AMS</A></CODE> has been
+chosen and an unsupported AMS version is used.</P>
+
+<P>See also: <A HREF="#_rom_call_addr">_rom_call_addr</A>, <A HREF="#_rom_call_hack">_rom_call_hack</A>, <A HREF="httigcc.html#amsdep_addr">Manually Obtaining the Address of a ROM Function</A></P>
+<HR>
+<H3><A NAME="_rom_call_addr"><U>_rom_call_addr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_addr(index) (_rom_call_addr_concat (0x##index, _ROM_CALL_##index))</TD></TR></TABLE></P>
+<P><B>Returns a void pointer to a TIOS ROM call.</B></P>
+
+<P>_rom_call_addr returns a void pointer to a TIOS ROM call, which you can cast
+to any other pointer type. After this cast, you can dereference it and handle
+it like any other variable.
+<BR><BR>
+Note that <I>index</I> is the index of the ROM Call in hexadecimal form, but
+without the <CODE>'0x'</CODE> prefix. The reason for this unusual convention is
+that kernel programs use ROM calls by referring to <CODE>_ROM_CALL_xxx</CODE>,
+where <I>xxx</I> is the hexadecimal index of the ROM call.
+<BR><BR>
+See <A HREF="#_rom_call_addr_concat">_rom_call_addr_concat</A> for info
+about the reason why _rom_call_addr_concat is used.</P>
+
+<HR>
+<H3><A NAME="_rom_call_attr"><U>_rom_call_attr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_attr(type,args,attr,index) (*({
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#typedef">typedef</A></B> <A HREF="gnuexts.html#SEC85">__ATTR_TIOS__</A> attr type (*__temp__type__) args;<BR>
+(__temp__type__) (__rom_call_addr_concat (0x##index, _ROM_CALL_##index));<BR>
+</TD></TR></TABLE>
+}))</TD></TR></TABLE></P>
+<P><B>Constructs a function definition with attributes for a TIOS ROM call.</B></P>
+
+<P>_rom_call_attr works exactly like <A HREF="#_rom_call">_rom_call</A>,
+except that it takes an additional parameter <I>attr</I> to specify
+attributes for the function.</P>
+
+<P>See also: <A HREF="#_rom_call">_rom_call</A></P>
+<HR>
+<H3><A NAME="_rom_call_concat"><U>_rom_call_concat</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_concat(type,args,intindex,romindex) (*((type (* <A HREF="gnuexts.html#SEC85">__ATTR_TIOS__</A>) args) (__rom_call_addr_concat (intindex, romindex))))</TD></TR></TABLE></P>
+<P><B>Constructs a function definition for a TIOS ROM call (internal).</B></P>
+
+<P>_rom_call_concat is a macro used internally by
+<A HREF="#_rom_call">_rom_call</A> and other macros. Its only purpose
+is to prevent <A HREF="cpp.html#SEC11">prescan</A> of the ROM call
+index (see <A HREF="#_rom_call_addr_concat">_rom_call_addr_concat</A>
+for more information).</P>
+
+<P>See also: <A HREF="#_rom_call">_rom_call</A></P>
+<HR>
+<H3><A NAME="_rom_call_hack_attr_concat"><U>_rom_call_hack_attr_concat</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_hack_attr_concat(type,args,attr,intindex,romindex,addr,minams,minindex) (*({
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#typedef">typedef</A></B> <A HREF="gnuexts.html#SEC85">__ATTR_TIOS__</A> attr type (*__temp__type__hack__) args;<BR>
+(__temp__type__hack__) (MIN_AMS &gt;= (minams) || TIOS_entries &gt;<BR>
+(minindex) ? (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *) (&amp;(_rom_call_concat (<B><A HREF="keywords.html#void">void</A></B>, (<B><A HREF="keywords.html#void">void</A></B>), (intindex), (romindex)))) : ({
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+asm (&quot;.xdef __ref_all___reject_unofficial_os&quot;);<BR>
+(<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *) (addr);<BR>
+</TD></TR></TABLE>
+}));<BR>
+</TD></TR></TABLE>
+}))</TD></TR></TABLE></P>
+<P><B>Constructs a function definition with an address hack and attributes for a
+TIOS ROM call (internal).</B></P>
+
+<P>_rom_call_hack_attr_concat is a macro used internally by
+<A HREF="#_rom_call_hack">_rom_call_hack</A> and
+<A HREF="#_rom_call_hack_attr">_rom_call_hack_attr</A>. Its only
+purpose is to prevent <A HREF="cpp.html#SEC11">prescan</A> of the
+ROM call index (see
+<A HREF="#_rom_call_addr_concat">_rom_call_addr_concat</A> for more
+information).</P>
+
+<P>See also: <A HREF="#_rom_call_hack_attr">_rom_call_hack_attr</A>, <A HREF="#_rom_call_hack">_rom_call_hack</A>, <A HREF="#_rom_call">_rom_call</A></P>
+<HR>
+<H3><A NAME="_rom_call_hack_attr"><U>_rom_call_hack_attr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_hack_attr(type,args,attr,index,addr,minams) (_rom_call_hack_attr_concat (type, args, attr, 0x##index, _ROM_CALL_##index, (addr), (minams), 0x##index))</TD></TR></TABLE></P>
+<P><B>Constructs a function definition with an address hack and attributes for a
+TIOS ROM call.</B></P>
+
+<P>_rom_call_hack_attr works exactly like
+<A HREF="#_rom_call_hack">_rom_call_hack</A>, except that it takes an
+additional parameter <I>attr</I> to specify attributes for the function.</P>
+
+<P>See also: <A HREF="#_rom_call_hack">_rom_call_hack</A>, <A HREF="#_rom_call_addr_hack">_rom_call_addr_hack</A>, <A HREF="#_rom_call_attr">_rom_call_attr</A>, <A HREF="#_rom_call">_rom_call</A></P>
+<HR>
+<H3><A NAME="_rom_call_hack"><U>_rom_call_hack</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call_hack(type,args,index,addr,minams) (_rom_call_hack_attr_concat (type, args, , 0x##index, _ROM_CALL_##index, (addr), (minams), 0x##index))</TD></TR></TABLE></P>
+<P><B>Constructs a function definition with an address hack for a TIOS ROM call.</B></P>
+
+<P>_rom_call_hack works exactly like <A HREF="#_rom_call">_rom_call</A>,
+except that it takes an additional parameter <I>addr</I> specifying an
+alternative way to get the address of the ROM call. If the TIOS jump table
+contains the ROM call specified by <I>index</I>, the address from the jump
+table is used. Otherwise _rom_call_hack computes the address specified by
+<I>addr</I> (which can be any pointer type), and uses it as the address of
+the ROM call.
+<BR><BR>
+<I>minams</I> specifies the AMS version which first exports the ROM call
+identified by <I>index</I>. If the value of
+<CODE><A HREF="httigcc.html#minams">MIN_AMS</A></CODE> is greater or
+equal to the value of <I>minams</I>, the ROM call is used unconditionally.
+When using this macro directly, you need to make sure that this value is
+correct; otherwise you will get crashes only if a specific value for
+<CODE><A HREF="httigcc.html#minams">MIN_AMS</A></CODE> has been
+chosen and an unsupported AMS version is used.</P>
+
+<P>See also: <A HREF="#_rom_call">_rom_call</A>, <A HREF="#_rom_call_hack_attr">_rom_call_hack_attr</A>, <A HREF="#_rom_call_addr_hack">_rom_call_addr_hack</A>, <A HREF="httigcc.html#amsdep_addr">Manually Obtaining the Address of a ROM Function</A></P>
+<HR>
+<H3><A NAME="_rom_call"><U>_rom_call</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _rom_call(type,args,index) (_rom_call_concat (type, args, 0x##index, _ROM_CALL_##index))</TD></TR></TABLE></P>
+<P><B>Constructs a function definition for a TIOS ROM call.</B></P>
+
+<P>_rom_call uses <A HREF="#_rom_call_addr">_rom_call_addr</A> to get a
+void pointer to the location in memory where the function is stored, and then
+casts this pointer to a temporarily defined "pointer to function" type.
+<BR><BR>
+To avoid <A HREF="cpp.html#SEC11">argument prescan</A> of
+<I>index</I>, <A HREF="#_rom_call_addr">_rom_call_addr</A> cannot be
+used directly, but instead another macro has to be used, which has been
+called <A HREF="#_rom_call_addr_concat">_rom_call_addr_concat</A>.</P>
+
+<P>See also: <A HREF="#_rom_call_attr">_rom_call_attr</A>, <A HREF="#_rom_call_hack">_rom_call_hack</A>, <A HREF="#_rom_call_addr">_rom_call_addr</A></P>
+<HR>
+<H3><A NAME="import_binary"><U>import_binary</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> import_binary(filename,symname) asm(&quot;.globl &quot;#symname&quot;\n&quot;#symname&quot;:\n\t.incbin \&quot;&quot;filename&quot;\&quot;&quot;)</TD></TR></TABLE></P>
+<P><B>Imports a binary file as an arbitrary symbol.</B></P>
+
+<P>import_binary imports a binary file at the current position using the
+<CODE><A HREF="gnuasm.html#SEC97B">.incbin</A></CODE> assembler directive.
+The parameter <I>filename</I> specifies the file name in quotes;
+<I>symname</I> specifies the symbol name to assign to the contents.
+You can give the symbol any type using an external definition; for example:</P>
+<PRE>extern unsigned char myarray[];
+import_binary ("myfile.bin", myarray);
+</PRE>
+<P>It is not recommended to use import_binary at any place other than the top
+level, as binary contents placed inside functions will generally be
+interpreted as code.</P>
+
+<HR>
+<H3><A NAME="__jmp_tbl"><U>__jmp_tbl</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> __jmp_tbl (*(<B><A HREF="keywords.html#void">void</A></B>***)0xC8)</TD></TR></TABLE></P>
+<P><B>A variable which points to the TIOS jump table of ROM calls.</B></P>
+
+<P>__jmp_tbl is a global variable, which is implemented here as a macro. Defining
+<CODE><A HREF="httigcc.html#advanced_optrom">OPTIMIZE_ROM_CALLS</A></CODE> causes this definition to be overridden; in
+this case, __jmp_tbl will be a real variable stored in the register <CODE>a5</CODE>.
+<BR><BR>
+__jmp_tbl is always a pointer to a void pointer, so you can treat it as an
+array of void pointers. Its size can be determined using the
+<A HREF="compat.html#TIOS_entries">TIOS_entries</A> pseudo-constant.
+<BR><BR>
+Most of the entries in the jump table point to functions, but some of them
+actually point to global variables of the operating system.
+<BR><BR>
+Usually, it is not desirable to use __jmp_tbl directly. The code may be
+optimized a little better if you use the
+<A HREF="#_rom_call">_rom_call</A> and
+<A HREF="#_rom_call_addr">_rom_call_addr</A> macros instead.</P>
+
+<HR>
+<H3><A NAME="MIN_AMS_MAJOR"><U>MIN_AMS_MAJOR</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> MIN_AMS_MAJOR (MIN_AMS / 100)</TD></TR></TABLE></P>
+<P><B>The major part of <CODE>MIN_AMS</CODE>.</B></P>
+
+<P>MIN_AMS_MAJOR contains the major version number of the defined minimum AMS
+version. It may be used in header files which are supplied to a lot of users
+to test the availability of certain features, in addition to <CODE>MIN_AMS</CODE>
+itself.</P>
+
+<HR>
+<H3><A NAME="MIN_AMS_MINOR"><U>MIN_AMS_MINOR</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> MIN_AMS_MINOR (MIN_AMS % 100)</TD></TR></TABLE></P>
+<P><B>The minor part of <CODE>MIN_AMS</CODE>.</B></P>
+
+<P>MIN_AMS_MINOR contains the minor version number of the defined minimum AMS
+version. It may be used in header files which are supplied to a lot of users
+to test the availability of certain features, in addition to <CODE>MIN_AMS</CODE>
+itself.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

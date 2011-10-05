@@ -1,0 +1,572 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>textedit.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;textedit.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines to access the text editor</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#TE_checkSlack">TE_checkSlack</A></B><DD>Reallocates the text editor buffer if there is not much space left in it.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_close">TE_close</A></B><DD>Closes the text editor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_empty">TE_empty</A></B><DD>Empties the text editor buffer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_focus">TE_focus</A></B><DD>Highlightes the selected text in the editor, and gives the focus to it.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_handleEvent">TE_handleEvent</A></B><DD>Dispatches an event to the text editor to be processed by it.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_indicateReadOnly">TE_indicateReadOnly</A></B><DD>Indicates read-only mode of the editor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_isBlank">TE_isBlank</A></B><DD>Check whether the editor buffer is empty.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_open">TE_open</A></B><DD>Initializes the text editor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_openFixed">TE_openFixed</A></B><DD>Initializes the text editor, with fixed buffer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_pasteText">TE_pasteText</A></B><DD>Pastes a text into the editor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_reopen">TE_reopen</A></B><DD>Re-opens the text editor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_reopenPlain">TE_reopenPlain</A></B><DD>Re-opens the text editor (plain).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_select">TE_select</A></B><DD>Selects a block of text in the editor, or positions the cursor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_shrinkWrap">TE_shrinkWrap</A></B><DD>Shrinks the text editor buffer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_unfocus">TE_unfocus</A></B><DD>Removes the focus from the selected text in the editor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TE_updateCommand">TE_updateCommand</A></B><DD>Updates the command byte in the current line of the text.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#TE_FAR_RIGHT">TE_FAR_RIGHT</A></B><DD>A constant defining the last cursor position in <A HREF="#TE_open">TE_open</A>.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ETE_FLAGS">ETE_FLAGS</A></B><DD>Enumerates optional features for the <A HREF="#TE_open">TE_open</A> function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="events.html#EVENT">EVENT</A></B><DD>A structure describing an event message.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_RECT">SCR_RECT</A></B><DD>A scructure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_STATE">SCR_STATE</A></B><DD>A structure for saving the state of the graphics system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="stddef.html#size_t">size_t</A></B><DD>A type to define sizes of strings and memory blocks.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TEXT_EDIT">TEXT_EDIT</A></B><DD>A structure used to coordinate all text editor operations.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WIN_RECT">WIN_RECT</A></B><DD>A structure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WINDOW">WINDOW</A></B><DD>The main window-describing structure.</DL>
+<HR>
+<H3><A NAME="TE_checkSlack"><U>TE_checkSlack</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_checkSlack (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te);</TD></TR></TABLE></P>
+<P><B>Reallocates the text editor buffer if there is not much space left in it.</B></P>
+
+<P>TE_checkSlack checks how much free space is present in the text editor buffer (associated with the
+structure pointed to by <I>te</I>). If there is not much space left, then the buffer is reallocated
+(expanded). Note that the editor will expand buffer if necessary during normal processing of
+keypresses using <A HREF="#TE_handleEvent">TE_handleEvent</A>, so the user need not to call
+this function, except if it is necessary to check and eventually expand the buffer independently
+of event dispatching procedure. Of course, the editor must not be opened with
+<A HREF="#TE_openFixed">TE_openFixed</A> if you want to use this function.</P>
+
+<HR>
+<H3><A NAME="TE_close"><U>TE_close</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_close (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te);</TD></TR></TABLE></P>
+<P><B>Closes the text editor.</B></P>
+
+<P>TE_close closes the text editor structure pointed to by <I>te</I>. I am not sure whether
+calling this routine is necessary: it performs mainly some irrelevant operations
+(like calling <A HREF="#TE_unfocus">TE_unfocus</A>). I also know that TE_close tries
+to free the memory occupied by the buffer (by calling <A HREF="alloc.html#HeapFreeIndir">HeapFreeIndir</A>)
+if the editor was opened using <A HREF="#TE_openFixed">TE_openFixed</A>, and if the buffer
+was allocated dinamically. So, it seems that it tries to close out a text edit record and to
+release its memory automatically. It seems better to me to release the memory manually
+(it is more safe anyway).</P>
+
+<HR>
+<H3><A NAME="TE_empty"><U>TE_empty</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_empty (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te);</TD></TR></TABLE></P>
+<P><B>Empties the text editor buffer.</B></P>
+
+<P>TE_empty empties the text editor buffer (associated with the structure pointed to by <I>te</I>).
+Note that this routine turns off cursor blink before emptying the edit buffer, but
+does not repaint the edit region. It only makes its parent window dirty
+(i.e. clears its <A HREF="wingraph.html#WinFlags">WF_DIRTY</A> bit) so, the edit region will be eventually
+updated when the next paint message arrives.</P>
+
+<HR>
+<H3><A NAME="TE_focus"><U>TE_focus</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TE_focus (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te);</TD></TR></TABLE></P>
+<P><B>Highlightes the selected text in the editor, and gives the focus to it.</B></P>
+
+<P>TE_focus is usually called after <A HREF="#TE_select">TE_select</A>. It highlightes the
+selected text in the editor (associated with the structure pointed to by <I>te</I>), and
+gives the focus to it, so the selected text will become
+active (after this, any keypress will replace selected text with the newly pressed
+key). Returns <A HREF="alloc.html#Bool">TRUE</A> if focusing was performed, and returns
+<A HREF="alloc.html#Bool">FALSE</A> if not (for example, if the text was already focused).
+<BR><BR>
+<B>Note:</B> TE_focus also enables the cursor using <A HREF="system.html#CU_start">CU_start</A>
+if it was disabled. So, it is sometimes used after calling <A HREF="#TE_select">TE_select</A>
+with <I>Low</I>&nbsp;==&nbsp;<I>High</I>, just to
+display the cursor.</P>
+
+<HR>
+<H3><A NAME="TE_handleEvent"><U>TE_handleEvent</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TE_handleEvent (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te, <A HREF="events.html#EVENT">EVENT</A> *event);</TD></TR></TABLE></P>
+<P><B>Dispatches an event to the text editor to be processed by it.</B></P>
+
+<P>The text editor is an event driven application (see <A HREF="events.html">events.h</A> for more
+info about events). It does not have a "main loop" in which keypresses are collected and
+processed. Instead, the user need to collect keypresses, and to dispatch them to the editor
+using TE_handleEvent. The editor will then process the keypress (for example, it will insert a new
+character, delete a character, scroll the editor area upwards/downwards
+etc. depending of the concrete keypress). In other words, the "main loop" is part of the user program. This
+approach is much more flexible, because the user may decide which
+keys will be processed and which will not be, and the user may program a lot of special
+actions which are not pre-programmed in the editor. For example, the user can redefine keys,
+forbid all keys except uppercase letters, etc. TE_handleEvent returns <A HREF="alloc.html#Bool">TRUE</A>
+if the event was sucessfully processed by the editor, else returns <A HREF="alloc.html#Bool">FALSE</A>.
+<BR><BR>
+TE_handleEvent needs a pointer to the editor control structure <I>te</I>, and a pointer to
+the <A HREF="events.html#EVENT">EVENT</A> structure <I>event</I> which represents the event to be processed. Basically,
+after calling <A HREF="#TE_open">TE_open</A>, the program should enter a loop which does
+keyboard reading, and sending (wanted) keypress events to the editor using TE_handleEvent. The keyboard
+may be read using <A HREF="kbd.html#ngetchx">ngetchx</A>, but this requires manual converting
+of integer keycode to an event structure. It is better idea to use
+<A HREF="events.html#EV_getc">EV_getc</A> which is similar to <A HREF="kbd.html#ngetchx">ngetchx</A>
+but in addition to the returned keycode, it also fills as an event structure. So, the text
+editor operations should be programmed as follows:</P>
+<PRE>EVENT ev;
+TEXT_EDIT te;
+HANDLE h = HeapAlloc (200);                     // <I>initial buffer size</I>
+memset (HeapDeref (h), 0, 200);
+
+TE_open (&amp;te, DeskTop, MakeWinRect (30, 30, 130, 70), h, 0, 0, 3);
+
+CU_start ();                                    // <I>Enable the cursor</I>
+
+while (EV_getc (ACTIVITY_BUSY, &amp;ev) != KEY_ESC) // <I>Get keypress and translate it to</I>
+  {                                             // <I>  the event (until ESC pressed)</I>
+    TE_handleEvent (&amp;te, &amp;ev);                  // <I>Send the event to the editor</I>
+  }                                             // <I>  to be processed</I>
+</PRE>
+<P>In this example, all keypresses are passed to the editor. This need not to be always true; in
+fact, the main loop may contain whatever the user wants. The editor can handle a lot of
+special keypresses, like marking with shift+arrows, cut, copy and paste operations etc, not
+only inserting, deleting and scrolling (note that you can later access the clipboard using
+<A HREF="system.html#CB_fetchTEXT">CB_fetchTEXT</A> and
+<A HREF="system.html#CB_replaceTEXT">CB_replaceTEXT</A> if necessary).
+However, TE_handleEvent cannot handle keypresses
+which represents tokens (like "sin" etc.) nor system keypresses which open menus like "CHAR" etc.
+Fortunately, this problem can be solved easily (see the next example).
+<BR><BR>
+The example given above is not a typical example of event driven program. All events in this
+example are restricted to simple keypresses. Typical event driven program uses
+<A HREF="events.html#EV_eventLoop">EV_eventLoop</A> function, which is an endless loop in which
+all timers, I/O ports etc. are checked for every possible event, and when an event appears, it
+is dispatched to the active application. The program need to install an event handler using
+<A HREF="events.html#EV_captureEvents">EV_captureEvents</A> function, which will capture all
+events, and which need to decide what to do with every particular event. This approach is used
+in the following example, which is written in typical "event driven" maneer.
+In this example (extracted from the "Text Editor" example), all events are dispatched to the text editor,
+except pressing the ESC key (this event will exit the event loop),
+and all events which were not processed sucessfully by the
+editor are dispatched to the default event handler (see <A HREF="events.html#EV_defaultHandler">EV_defaultHandler</A>)
+which for example split tokens to single characters, open menus, etc:</P>
+<PRE>TEXT_EDIT te;
+
+CALLBACK void EventHandler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_KEYPRESS &amp;&amp; ev-&gt;extra.Key.Code == KEY_ESC)
+    ER_throw (1);
+  if (!TE_handleEvent (&amp;te, ev))
+    EV_defaultHandler (ev);
+}
+
+void _main(void)
+{
+  HANDLE h = HeapAlloc (200);
+  ...
+  memset (HeapDeref (h), 0, 200);
+  TE_open (&amp;te, DeskTop, MakeWinRect (30, 30, 130, 70), h, 0, 0, 3);
+  CU_start ();
+  EV_captureEvents (EventHandler);
+  TRY
+    EV_eventLoop ();           // <I>The only way to exit from "EV_eventLoop" is</I>
+  ONERR                        // <I>  to throw an error from the event handler</I>
+    EV_captureEvents (NULL);
+  ENDTRY
+  ...
+}
+</PRE>
+<P>So, event driven programs using the text edit manager typically process events in three
+phases. First, the application event handler examines the event for action it needs to
+take. Either the application handler handles the event and returns to the event
+manager or it proceeds further. Second, the application event handler calls
+TE_handleEvent to allow the text edit manager to process the event. Either
+TE_handleEvent handles the event and returns <A HREF="alloc.html#Bool">TRUE</A>, or it does not
+understand the event and returns <A HREF="alloc.html#Bool">FALSE</A>. If TE_handleEvent does not
+handle the event, the application proceeds further. Third, the application calls
+<A HREF="events.html#EV_defaultHandler">EV_defaultHandler</A> to let the event
+manager have one last try at handling the event. System-wide default
+behavior is implemented in <A HREF="events.html#EV_defaultHandler">EV_defaultHandler</A>.
+Programs may drive the text editor by calling TE_handleEvent with their own created event
+messages (as in previous example), but in practice, the application just forwards events it
+received from the event manager (i.e. from the <A HREF="events.html#EV_eventLoop">EV_eventLoop</A>
+loop). Also note that calling TE_handleEvent may cause the heap compression.
+<BR><BR>
+Beware that <A HREF="events.html#EV_eventLoop">EV_eventLoop</A> is an endless loop, so the only
+way to exit from it is to throw an error from the event handler. This error will be captured later by a
+<A HREF="error.html#TRY">TRY</A><B>...</B><A HREF="error.html#ONERR">ONERR</A><B>...</B><A HREF="error.html#ENDTRY">ENDTRY</A>
+construction.
+<BR><BR>
+<B>Note:</B> For the most of applications, you need not to use any text editor functions except
+<A HREF="#TE_open">TE_open</A> (or <A HREF="#TE_openFixed">TE_openFixed</A>) and TE_handleEvent,
+because TE_handleEvent can do even relatively
+complicated operations like cut/copy/paste, etc. Other text editor functions are needed only
+if the user wants to program some special actions.</P>
+
+<HR>
+<H3><A NAME="TE_indicateReadOnly"><U>TE_indicateReadOnly</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_indicateReadOnly (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te);</TD></TR></TABLE></P>
+<P><B>Indicates read-only mode of the editor.</B></P>
+
+<P>TE_indicateReadOnly indicates read-only mode of the editor (associated with the structure
+pointed to by <I>te</I>) by disabling commands
+"Cut", "Paste", "Clear" and "Del" in all menus registred with the current applications
+(see <A HREF="events.html#EV_registerMenu">EV_registerMenu</A>), and setting the
+status line (using <A HREF="statline.html#ST_readOnly">ST_readOnly</A>).
+Note that this command works only if the editor is opened in read-only mode
+(i.e. if <A HREF="#ETE_FLAGS">TE_READ_ONLY</A> is set in the parameter
+<I>Flags</I> of the <A HREF="#TE_open">TE_open</A>
+function). Also note that you need to call <A HREF="statline.html#ST_readOnly">ST_readOnly</A>
+manually later, when you decide to remove the read-only indicator from the status line.</P>
+
+<HR>
+<H3><A NAME="TE_isBlank"><U>TE_isBlank</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TE_isBlank (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te);</TD></TR></TABLE></P>
+<P><B>Check whether the editor buffer is empty.</B></P>
+
+<P>TE_isBlank returns <A HREF="alloc.html#Bool">TRUE</A> if the text editor buffer (associated with the
+structure pointed to by <I>te</I>) is empty, else returns <A HREF="alloc.html#Bool">FALSE</A>. Note that
+the content of the editor is regarded as "blank" if there is no characters in it, or if
+all characters in it are blanks (spaces).</P>
+
+<HR>
+<H3><A NAME="TE_open"><U>TE_open</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TE_open (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te, <A HREF="wingraph.html#WINDOW">WINDOW</A> *w, <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *rect, <A HREF="alloc.html#HANDLE">HANDLE</A> BufHandle, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> cur_offset, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> ReadOnly, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Initializes the text editor.</B></P>
+
+<P>TE_open initializes the text editor and displays the initial contents of the editor. All
+text editor operations are controled using a structure of type
+<A HREF="#TEXT_EDIT">TEXT_EDIT</A>. TE_open will initialize such a structure pointed
+to by the parameter <I>te</I>, which later needs to be passed to all text editor operations
+(i.e. <I>te</I> must be allocated statically to maintain state between calls to the text
+edit routines). It returns <A HREF="alloc.html#Bool">TRUE</A> if the edit buffer could
+be allocated, or <A HREF="alloc.html#Bool">FALSE</A> if there is insufficient memory to
+allocate the edit buffer. This routine always returns <A HREF="alloc.html#Bool">TRUE</A>
+if <I>BufHandle</I> is passed in with the handle to a text buffer.
+<BR><BR>
+<B>Note:</B> The window <I>w</I> must already be open. The handle <I>BufHandle</I> must not
+be locked.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+<I>w</I> is a pointer to the parent window of the editor: you can create a new window to be
+the parent using <A HREF="wingraph.html#WinOpen">WinOpen</A>, or you can pass
+<A HREF="wingraph.html#DeskTop">DeskTop</A> as the parameter, if you are happy with
+its settings (which is usually the case). <I>rect</I> is a pointer to the
+<A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> structure which describes the actual
+dimensions of the rectangular text editor area (You can pass
+<A HREF="alloc.html#NULL">NULL</A> to use entire client rectangle of the window <I>w</I>
+for the edit region). Note that if you use your own window as a parent window, this
+window must not be "dirty" (i.e. it must not have the
+<A HREF="wingraph.html#WinFlags">WF_DIRTY</A> flag set). Windows created by
+<A HREF="wingraph.html#WinOpen">WinOpen</A> are "dirty" by default, so you need to clear
+the "dirty" flag manually before calling TE_open. For example, you can do</P>
+<PRE><I>w</I>-&gt;Flags &amp;= ~WF_DIRTY;
+</PRE>
+<P><I>BufHandle</I> is the handle of the text editor buffer, which may be pre-filled with the
+text (if you want to edit existing text), or filled with zeros (if you want to create a new
+text). <I>BufHandle</I> may be, for example, the result of a
+<A HREF="alloc.html#HeapAlloc">HeapAlloc</A> operation. <I>BufHandle</I> can also be
+<A HREF="alloc.html#H_NULL">H_NULL</A>, in this case TE_open  will allocate a new handle
+and initialize it with no text. Note that contrary to what I said in the documentation of
+TIGCCLIB releases prior to 2.2, it cannot be a handle of a text variable, because text variables
+contain additional system data on the begining, and the editor expect raw data (see the
+<A HREF="faq.html">Frequently Asked Questions</A> to learn how you can pass a text
+variable to the editor though).
+<BR><BR>
+The contents of the text buffer are a standard zero-terminated string, in which lines of
+text are separated with '\r' characters (0xD). The size of the buffer is managed automatically
+by the editor: it will be expanded if necessary to add more text, so you need not to worry
+about the allocated size.
+<BR><BR>
+The parameter <I>cur_offset</I> is the initial position of the cursor
+(counted from the begining of the buffer). Position 0 is to the left of the first
+character. If the contents of the text edit buffer are too
+long to display entirely in the edit region, the text is
+scrolled to make sure the cursor is visible.
+Set <I>cur_offset</I> to <A HREF="#TE_FAR_RIGHT">TE_FAR_RIGHT</A> to place the edit cursor
+after the last character in the edit buffer.
+<BR><BR>
+The parameter <I>ReadOnly</I> is the count of characters
+at the begining of the buffer which can't be modified (i.e. which are read-only). <I>ReadOnly</I>
+is usually set to zero, except in some special applications. The <I>ReadOnly</I> characters are 
+considered to be part of a prompt (or of command characters as in the text editor) so the user
+cannot change the text of the <I>ReadOnly</I> characters nor move the edit cursor into them.
+<BR><BR>
+<I>Flags</I> is a set of binary flags which controls the editor. Each bit specifies optional
+features of the text editor. Some of these flags are changed automatically during the operation
+of the editor. The flags are defined in the <A HREF="#ETE_FLAGS">ETE_FLAGS</A>
+enumeration and have the following meanings:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">TE_WRAP</TD><TD VALIGN="TOP">Set this flag for multiline edit regions. Reset
+it for single-line edit regions: the editor will operate in "compact" mode, in which the editor
+is only one character high, and where the contents of the editor will scroll left/right when
+necessary (such a mode is used in request boxes in dialogs). In "compact" mode, the contents of
+the editor buffer must not contain '\r' characters, else the editor will be fooled. In multiline
+edit regions, text can wrap around the end of the line to the beginning of the next line. The
+program editor is an example of a multiline edit region. The Home screen entry line is an
+example of a single-line edit region.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_COLON</TD><TD VALIGN="TOP">When set, each line of the editor will be
+preceded with a colon ("<B>:</B>"), like in the "Text editor" or the "Program editor". When
+TE_COLON is reset, there will not be a preceding colon. The program editor uses this flag to
+mark the beginning of each line of the program.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_COMMANDS</TD><TD VALIGN="TOP">When set, the first character of
+each line will be regarded as "command character", and it will be displayed before the colon.
+The "Text editor" application uses this mode to store editor commands (like "P" = "PrintObj"
+etc.). Note that when this flag is set, the parameter <I>cur_offset</I> must not be zero (it
+is usually set to 1 in this case).<BR>
+<B>Note:</B> This flag includes the TE_COLON flag (as needed by the AMS).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_MORE_ARROWS</TD><TD VALIGN="TOP">Set this flag to display arrows at the
+left and right ends of a <I>single-line</I> edit region to indicate when more
+text is to the left or right of the edit region.
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_MORE_ELLIPSES</TD><TD VALIGN="TOP">Set this flag to display ellipses
+(...) at the left and right ends of a <I>single-line</I> edit region to indicate when
+more text is to the left or right of the edit region.<BR>
+<B>Note:</B> This flag includes the TE_MORE_ARROWS flag (as needed by the AMS).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_SELECT</TD><TD VALIGN="TOP">This flag is an internal flag. It is set if
+there currently is a selection in the text editor. It is clear if nothing is selected.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_CURSOR</TD><TD VALIGN="TOP">This flag is an internal flag. It represents
+the current blinking state of the cursor: it is set if the blinking cursor is currently visible.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_FIXED_LENGTH</TD><TD VALIGN="TOP">This flag is an internal flag. It is set
+for text editors opened with <A HREF="#TE_openFixed">TE_openFixed</A>. Do not set this
+flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_CHANGED</TD><TD VALIGN="TOP">This flag is an internal flag. It is a status
+flag which, if 1, indicates the contents of the edit buffer have changed. Do not set this
+flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_FOCUSED</TD><TD VALIGN="TOP">This flag is an internal flag. It is set if
+the text editor currently has the focus, i.e. if the cursor is currently in the text editor.
+See <A HREF="#TE_focus">TE_focus</A> and <A HREF="#TE_unfocus">TE_unfocus</A>.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_AUTO_ANS</TD><TD VALIGN="TOP">Set this flag to 1 to cause "ans(1)" to be
+inserted automatically when the edit buffer is empty and an arithmetic operation is typed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_READ_ONLY</TD><TD VALIGN="TOP">When set, the editor enters read-only mode.
+In this mode, the editor displays text and allows arrow keys to navigate through the edit
+buffer, but it does not allow changing the text, i.e. you can't insert, delete or change any
+characters.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> TE_open just initializes the editor, displays the intial content of it and exits.
+It does not enter the editor loop in which keypresses are processed. In fact, there is no
+such loop: you need to get keypresses manually (using <A HREF="kbd.html#ngetchx">ngetchx</A>
+or, even better, using <A HREF="events.html#EV_getc">EV_getc</A>, or using
+the default event loop <A HREF="events.html#EV_eventLoop">EV_eventLoop</A>) and to pass them
+to <A HREF="#TE_handleEvent">TE_handleEvent</A> which will process them. Such an approach
+gives much more flexibility. See <A HREF="#TE_handleEvent">TE_handleEvent</A> for an
+example of usage.</P>
+
+<P>See also: <A HREF="#TE_openFixed">TE_openFixed</A></P>
+<HR>
+<H3><A NAME="TE_openFixed"><U>TE_openFixed</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TE_openFixed (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te, <A HREF="wingraph.html#WINDOW">WINDOW</A> *w, <A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#int">char</A></B> *buffer, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> maxlen, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Initializes the text editor, with fixed buffer.</B></P>
+
+<P>TE_openFixed is very similar to <A HREF="#TE_open">TE_open</A>, except it uses a fixed allocated
+buffer pointed to by <I>buffer</I> instead of dinamically created buffer associated with handle.
+So, the text buffer cannot expand automatically when necessary. The parameter <I>maxlen</I>
+determines the length of the buffer (the editor will not accept more characters than specified).
+That's why functions <A HREF="#TE_checkSlack">TE_checkSlack</A> and <A HREF="#TE_shrinkWrap">TE_shrinkWrap</A>
+cannot be applied to text editors opened with TE_openFixed.
+<BR><BR>
+<B>Note:</B> After opening text editor using TE_openFixed, it is recommended to manually set position of
+the cursor using <A HREF="#TE_select">TE_select</A> (TE_openFixed has not a parameter for
+initial cursor position in opposite to <A HREF="#TE_open">TE_open</A>), else strange things
+may happen.</P>
+
+<HR>
+<H3><A NAME="TE_pasteText"><U>TE_pasteText</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_pasteText (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *text, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> len);</TD></TR></TABLE></P>
+<P><B>Pastes a text into the editor.</B></P>
+
+<P>TE_pasteText inserts <I>len</I> bytes of the text pointed to by <I>text</I> into the text editor
+buffer (associated with the structure pointed to by <I>te</I>) at the current cursor position.
+These functions may be used together with <A HREF="system.html#CB_fetchTEXT">CB_fetchTEXT</A>
+and <A HREF="system.html#CB_replaceTEXT">CB_replaceTEXT</A> if necessary. Also, this function
+may be used for implementing various (very useful) functions like <B>TE_printf</B>
+which works like <A HREF="stdio.html#printf">printf</A> but "prints" the formatted output
+into the text editor. Among various ways of implementing such functions, I suggested the
+following one (which uses the unusual but powerful function <A HREF="stdio.html#vcbprintf">vcbprintf</A>):</P>
+<PRE>CALLBACK void TE_pasteChar(char c, TEXT_EDIT *te)
+{
+  char str[2] = {c, 0};
+  TE_pasteText (te, str, 1);
+}
+
+void TE_printf(TEXT_EDIT *te, char *format, ...)
+{
+  va_list arglist;
+  va_start (arglist, format);
+  vcbprintf ((vcbprintf_callback_t)TE_pasteChar, (void**)te, format, arglist);
+  va_end (arglist);
+}
+</PRE>
+<P>This example is not so simple, so you need to be familiar with (standard) C to understand it.</P>
+
+<HR>
+<H3><A NAME="TE_reopen"><U>TE_reopen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_reopen (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Focus);</TD></TR></TABLE></P>
+<P><B>Re-opens the text editor.</B></P>
+
+<P>TE_reopen first checks free space in the text editor buffer (associated with the structure
+pointed to by <I>te</I>) by calling <A HREF="#TE_checkSlack">TE_checkSlack</A>, selects all
+characters in the editor buffer using <A HREF="#TE_select">TE_select</A>, and eventually
+gives the focus to them if <I>Focus</I> is <A HREF="alloc.html#Bool">TRUE</A> (<I>Focus</I> is
+Boolean parameter). This function is a good method to re-open previously edited text on
+such way that all text is selected and focused, so the eventual keypress will replace the
+selected text. It is usually used to reopen a text edit record which has been closed by
+<A HREF="#TE_shrinkWrap">TE_shrinkWrap</A>.</P>
+
+<HR>
+<H3><A NAME="TE_reopenPlain"><U>TE_reopenPlain</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_reopenPlain (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Focus);</TD></TR></TABLE></P>
+<P><B>Re-opens the text editor (plain).</B></P>
+
+<P>TE_reopenPlain is similar like <A HREF="#TE_reopen">TE_reopen</A>, but it doesn't call
+<A HREF="#TE_select">TE_select</A> funciton. I am not very sure about usage of this function.</P>
+
+<HR>
+<H3><A NAME="TE_select"><U>TE_select</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_select (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Low, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> High);</TD></TR></TABLE></P>
+<P><B>Selects a block of text in the editor, or positions the cursor.</B></P>
+
+<P>If <I>Low</I>&nbsp;!=&nbsp;<I>High</I>, then TE_select selects all character in the text
+editor described by structure pointed to by <I>te</I>, starting from the character with offset
+<I>Low</I> up to character with offset <I>High</I> (counted from the begining of the text
+buffer). This is the operation which editor usually performs when the user uses shift&nbsp;+&nbsp;arrows.
+Note that you don't need to call TE_select often; usually TE_handleEvent will perform wanted
+job. This is only needed if you want to select a block of text in the editor independently of
+pressing of shift&nbsp;+&nbsp;arrows. Note that selected text will not automatically get a
+focus: you need to call <A HREF="#TE_focus">TE_focus</A> to achieve this.
+<BR><BR>
+If <I>Low</I> is equal to <I>High</I>, then TE_select
+positions the cursor to the position <I>Low</I> (counted from the begining of the text
+buffer).</P>
+
+<HR>
+<H3><A NAME="TE_shrinkWrap"><U>TE_shrinkWrap</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> TE_shrinkWrap (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te);</TD></TR></TABLE></P>
+<P><B>Shrinks the text editor buffer.</B></P>
+
+<P>TE_shrinkWrap shrinks the text editor buffer
+(associated with the structure pointed to by <I>te</I>) to the minimal possible size. After
+calling this function, the size of the buffer will be equal to the actual number of characters
+in the buffer. This function must not be applied to text buffers opened with the
+<A HREF="#TE_openFixed">TE_openFixed</A> function. TE_shrinkWrap returns the handle of
+the text editor buffer as the result. In addition, this function cancels selection highlight
+and turns off the cursor. The edit buffer memory is not freed. Use this routine to prepare the
+edit buffer for further processing or to be stored as a variable.
+<BR><BR>
+If NULL is passed as an argument, TE_shrinkWrap creates a new
+handle for the text editor buffer.</P>
+
+<HR>
+<H3><A NAME="TE_unfocus"><U>TE_unfocus</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TE_unfocus (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te);</TD></TR></TABLE></P>
+<P><B>Removes the focus from the selected text in the editor.</B></P>
+
+<P>TE_unfocus cancels the effect of <A HREF="#TE_focus">TE_focus</A>. Returns <A HREF="alloc.html#Bool">TRUE</A> if
+unfocusing was performed, and returns
+<A HREF="alloc.html#Bool">FALSE</A> if not (for example, if the text was already unfocused).</P>
+
+<HR>
+<H3><A NAME="TE_updateCommand"><U>TE_updateCommand</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> TE_updateCommand (<A HREF="#TEXT_EDIT">TEXT_EDIT</A> *te, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> cmd);</TD></TR></TABLE></P>
+<P><B>Updates the command byte in the current line of the text.</B></P>
+
+<P>TE_updateCommand sets the first byte of the current line (i.e. the line in which the cursor
+is located) of the text editor associated to the structure pointed to by <I>te</I> to <I>cmd</I>,
+i.e. sets the "command byte". This function works correctly only if the editor is opened in "command byte"
+mode, i.e. if if b2&nbsp;=&nbsp;1 in parameter <I>Flags</I> of the <A HREF="#TE_open">TE_open</A>
+function).</P>
+
+<HR>
+<H3><A NAME="TE_FAR_RIGHT"><U>TE_FAR_RIGHT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> TE_FAR_RIGHT (0xFFFF)</TD></TR></TABLE></P>
+<P><B>A constant defining the last cursor position in <A HREF="#TE_open">TE_open</A>.</B></P>
+
+<P>Set the parameter <I>cur_offset</I> in <A HREF="#TE_open">TE_open</A> to TE_FAR_RIGHT will place the edit cursor after the last character in the edit buffer.</P>
+
+<P>See also: <A HREF="#TE_open">TE_open</A></P>
+<HR>
+<H3><A NAME="ETE_FLAGS"><U>ETE_FLAGS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#enum">enum</A></B> ETE_FLAGS {TE_WRAP = 0x0001, TE_COLON = 0x0002, TE_COMMANDS = 0x0006, TE_MORE_ARROWS = 0x0008, TE_MORE_ELLIPSES = 0x0018, TE_SELECT = 0x0020, TE_CURSOR = 0x0040, TE_FIXED_LENGTH = 0x0080, TE_CHANGED = 0x0100, TE_FOCUSED = 0x0200, TE_AUTO_ANS = 0x0400, TE_READ_ONLY = 0x0800} TE_FLAGS;</TD></TR></TABLE></P>
+<P><B>Enumerates optional features for the <A HREF="#TE_open">TE_open</A> function.</B></P>
+
+<P>Enumerates optional features for the <A HREF="#TE_open">TE_open</A> function.
+The meaning of these flags is given in <A HREF="#TE_open">TE_open</A>.</P>
+
+<P>See also: <A HREF="#TE_open">TE_open</A></P>
+<HR>
+<H3><A NAME="TEXT_EDIT"><U>TEXT_EDIT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> TextEditStruct {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="wingraph.html#WINDOW">WINDOW</A> *Parent; <I>/* Pointer to the parent window */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> ReadOnly; <I>/* Number of bytes at start that are read only */</I><BR>
+<A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> Rect; <I>/* Editor area descriptor */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> BufSize; <I>/* Number of currently allocated bytes */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> CurSize; <I>/* Current number of characters in the editor */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> CursorOffset; <I>/* Offset of the cursor */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> StartOffset; <I>/* ScrollX, position at which text is displayed */</I><BR>
+<B><A HREF="keywords.html#union">union</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> SelStart; <I>/* Position of the start of the selection, if any */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> PreChars; <I>/* Deprecated old name of SelStart */</I><BR>
+</TD></TR></TABLE>
+};<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> CharWidth; <I>/* Width in characters */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> CharHeight; <I>/* Height in characters */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LineNum; <I>/* Line number: cursor is on 0..CharHeight-1 */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> CursorX; <I>/* Horizontal char position */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags; <I>/* Editor flags */</I><BR>
+<B><A HREF="keywords.html#union">union</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="alloc.html#HANDLE">HANDLE</A> h; <I>/* Handle of the editor buffer, if opened with TE_open */</I><BR>
+<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *p; <I>/* Ptr to the editor buffer, if opened with TE_openFixed */</I><BR>
+</TD></TR></TABLE>
+} Text;<BR>
+</TD></TR></TABLE>
+} TEXT_EDIT;</TD></TR></TABLE></P>
+<P><B>A structure used to coordinate all text editor operations.</B></P>
+
+<P><B>Note:</B> <I>StartOffset</I> is the first shown character of the entry line,
+but it may be covered by an arrow or ellipsis if the corresponding
+<A HREF="#ETE_FLAGS">flag</A> is set. <I>SelStart</I> is the position of
+the non-extensible end of the selection. This may be either the beginning or
+the end of the selection, depending on whether it expands to the right or to
+the left. Its value is undefined if there is no selection. <I>CursorX</I> is
+the horizontal character position in the line, or position relative to
+<I>StartOffset</I>.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

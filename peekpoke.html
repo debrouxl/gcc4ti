@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>peekpoke.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;peekpoke.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for easier access to the memory and to I/O ports</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#peek_bit">peek_bit</A></B><DD>Fetches a bit from the memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#peek_l">peek_l</A></B><DD>Fetches a double word from the memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#peek_w">peek_w</A></B><DD>Fetches a word from the memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#peek">peek</A></B><DD>Fetches a byte from the memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#peekIO_bit">peekIO_bit</A></B><DD>Reads a bit from an I/O port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#peekIO_w">peekIO_w</A></B><DD>Reads a word from an I/O port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#peekIO">peekIO</A></B><DD>Reads a byte from an I/O port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#poke_bchg">poke_bchg</A></B><DD>Inverts a bit at a memory address.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#poke_bclr">poke_bclr</A></B><DD>Clears a bit at a memory address.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#poke_bset">poke_bset</A></B><DD>Sets a bit at a memory address.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#poke_l">poke_l</A></B><DD>Stores a double word in memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#poke_w">poke_w</A></B><DD>Stores a word in memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#poke">poke</A></B><DD>Stores a byte in memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#pokeIO_bchg">pokeIO_bchg</A></B><DD>Inverts a bit in an I/O port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#pokeIO_bclr">pokeIO_bclr</A></B><DD>Clears a bit in an I/O port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#pokeIO_bset">pokeIO_bset</A></B><DD>Sets a bit in an I/O port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#pokeIO_w">pokeIO_w</A></B><DD>Sends a word to an I/O port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#pokeIO">pokeIO</A></B><DD>Sends a byte to an I/O port.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#speek_l">speek_l</A></B><DD>Fetches a signed double word from the memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#speek_w">speek_w</A></B><DD>Fetches a signed word from the memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#speek">speek</A></B><DD>Fetches a signed byte from the memory.</DL>
+<HR>
+<H3><A NAME="peek_bit"><U>peek_bit</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> peek_bit (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *addr, <B><A HREF="keywords.html#short">short</A></B> bit);</TD></TR></TABLE></P>
+<P><B>Fetches a bit from the memory.</B></P>
+
+<P>peek_bit is a macro which fetches bit <I>bit</I> from the memory address <I>addr</I>.
+For example, to read the first bit from the video memory (the pixel in the upper left corner), do this:</P>
+<PRE>byte = peek_bit (0x4C00, 7);
+</PRE>
+<P>Note that it is better to use <A HREF="graph.html#LCD_MEM">LCD_MEM</A> in this case.
+<BR><BR>
+<B>Note:</B> Do not use peek_bit for reading I/O ports! Use <A HREF="#peekIO_bit">peekIO_bit</A> instead.</P>
+
+<HR>
+<H3><A NAME="peek_l"><U>peek_l</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> peek_l(addr) (*((<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)))</TD></TR></TABLE></P>
+<P><B>Fetches a double word from the memory.</B></P>
+
+<P>peek_l is like <A HREF="#peek">peek</A>, but fetches a double word from the memory instead of
+a byte.</P>
+
+<HR>
+<H3><A NAME="peek_w"><U>peek_w</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> peek_w(addr) (*((<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)))</TD></TR></TABLE></P>
+<P><B>Fetches a word from the memory.</B></P>
+
+<P>peek_w is like <A HREF="#peek">peek</A>, but fetches a word from the memory instead of
+a byte.
+<BR><BR>
+<B>Note:</B> Do not use peek_w for reading I/O ports! Use <A HREF="#peekIO_w">peekIO_w</A> instead.</P>
+
+<HR>
+<H3><A NAME="peek"><U>peek</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> peek(addr) (*((<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)))</TD></TR></TABLE></P>
+<P><B>Fetches a byte from the memory.</B></P>
+
+<P>peek is a macro which fetches a byte from the memory address <I>addr</I>,
+where <I>addr</I> does not necessarily need to be a pointer. Instead, it can be of
+any type (usually an integer) which may represent a memory address in a way which makes sense.
+This way it allows for fetching bytes from memory using the style which is
+common in most dialects of the BASIC language. For example, to read a first byte from the
+video memory, do this:</P>
+<PRE>byte = peek (0x4C00);
+</PRE>
+<P>Note that it is better to use <A HREF="graph.html#LCD_MEM">LCD_MEM</A> in this case.
+<BR><BR>
+<B>Note:</B> Do not use peek for reading I/O ports! Use <A HREF="#peekIO">peekIO</A> instead.</P>
+
+<HR>
+<H3><A NAME="peekIO_bit"><U>peekIO_bit</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> peekIO_bit (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *port, <B><A HREF="keywords.html#short">short</A></B> bit);</TD></TR></TABLE></P>
+<P><B>Reads a bit from an I/O port.</B></P>
+
+<P>This macro exists because <A HREF="#peek_bit">peek_bit</A> is not reliable when reading data from memory-mapped I/O ports.
+See the notes about <A HREF="#peekIO">peekIO</A> if you want to know why.</P>
+
+<HR>
+<H3><A NAME="peekIO_w"><U>peekIO_w</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> peekIO_w(port) (*((<B><A HREF="keywords.html#volatile">volatile</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(port)))</TD></TR></TABLE></P>
+<P><B>Reads a word from an I/O port.</B></P>
+
+<P>peekIO_w is like <A HREF="#peekIO">peekIO</A>, but reads a word from the I/O port instead of
+a byte.</P>
+
+<HR>
+<H3><A NAME="peekIO"><U>peekIO</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> peekIO(port) (*((<B><A HREF="keywords.html#volatile">volatile</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(port)))</TD></TR></TABLE></P>
+<P><B>Reads a byte from an I/O port.</B></P>
+
+<P><A HREF="#peek">peek</A> is not reliable when reading data from memory-mapped I/O ports.
+For example, suppose that the user wants to wait until the programable timer on
+the TI-89 (its value may be read from the address 0x600017) reaches the value 255. The
+following construction seems quite good:</P>
+<PRE>while (peek (0x600017) != 255);
+</PRE>
+<P>However, it will cause an infinity loop. Namely, the compiler will notice that the
+same value is read in the loop. As a normal memory location cannot be changed without
+explicitely writing to it, and there is nothing in the loop which changes the data at the address
+0x600017, the optimizer will move memory reading out of the loop to
+make the code more efficient. Such behaviour is correct for ordinary memory locations.
+But the compiler does not know anything about the
+fact that 0x600017 is not an ordinary memory location but an I/O port, which may be
+changed unpredictably (purely by the hardware, without any program control). To prevent
+such behaviour, use peekIO instead of <A HREF="#peek">peek</A>, i.e. write</P>
+<PRE>while (peekIO (0x600017) != 255);
+</PRE>
+<P>Basically, peekIO works exactly like <A HREF="#peek">peek</A>, but prevents any unwanted optimizations
+generated by the compiler. Always use peekIO for reading memory-mapped I/O ports, else you may have
+trouble (especially in short loops). For example, to read the keyboard column mask on TI-89, do</P>
+<PRE>key_mask = peekIO (0x60001B);
+</PRE>
+<P>peekIO may be used even for reading bytes in memory, but <A HREF="#peek">peek</A>
+will generate better code when working with memory. However, use peekIO to read any memory
+location which may change in a way which is unpredictable from the aspect of a normal program
+flow (for example, a memory location which is changed in the body of the interrupt handler).</P>
+
+<HR>
+<H3><A NAME="poke_bchg"><U>poke_bchg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> poke_bchg (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *addr, <B><A HREF="keywords.html#short">short</A></B> bit);</TD></TR></TABLE></P>
+<P><B>Inverts a bit at a memory address.</B></P>
+
+<P>This macro inverts bit <I>bit</I> at memory address <I>addr</I>.
+It is useful if you do not want to store a whole byte at this address, but only
+need to invert the state of a single bit.
+As usual, the rightmost bit of a value is numbered 0, and the leftmost bit is
+7 in this case.
+For example, let's assume the address <I>addr</I> contains the value 0b10011010,
+and you call this macro like this:</P>
+<PRE>poke_bchg (addr, 3);
+</PRE>
+<P>Then the value will be 0b10010010 afterwards. Making the same call again will
+restore the previous value 0b10011010,
+<BR><BR>
+<B>Note:</B> Do not use poke_bchg for sending bits to I/O ports! Use <A HREF="#pokeIO_bchg">pokeIO_bchg</A>
+instead.</P>
+
+<HR>
+<H3><A NAME="poke_bclr"><U>poke_bclr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> poke_bclr (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *addr, <B><A HREF="keywords.html#short">short</A></B> bit);</TD></TR></TABLE></P>
+<P><B>Clears a bit at a memory address.</B></P>
+
+<P>This macro clears bit <I>bit</I> at memory address <I>addr</I>.
+It is useful if you do not want to store a whole byte at this address, but only
+need to set a single bit to 0.
+As usual, the rightmost bit of a value is numbered 0, and the leftmost bit is
+7 in this case.
+For example, let's assume the address <I>addr</I> contains the value 0b10011010,
+and you call this macro like this:</P>
+<PRE>poke_bclr (addr, 3);
+</PRE>
+<P>Then the value will be 0b10010010 afterwards.
+<BR><BR>
+<B>Note:</B> Do not use poke_bclr for sending bits to I/O ports! Use <A HREF="#pokeIO_bclr">pokeIO_bclr</A>
+instead.</P>
+
+<HR>
+<H3><A NAME="poke_bset"><U>poke_bset</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> poke_bset (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *addr, <B><A HREF="keywords.html#short">short</A></B> bit);</TD></TR></TABLE></P>
+<P><B>Sets a bit at a memory address.</B></P>
+
+<P>This macro sets bit <I>bit</I> at memory address <I>addr</I>, which can
+be any which which may be cast to <CODE>unsigned char *</CODE>.
+It is useful if you do not want to store a whole byte at this address, but only
+need to set a single bit to 1.
+As usual, the rightmost bit of a value is numbered 0, and the leftmost bit is
+7 in this case.
+For example, let's assume the address <I>addr</I> contains the value 0b10010010,
+and you call this macro like this:</P>
+<PRE>poke_bset (addr, 3);
+</PRE>
+<P>Then the value will be 0b10011010 afterwards.
+<BR><BR>
+<B>Note:</B> Do not use poke_bset for sending bits to I/O ports! Use <A HREF="#pokeIO_bset">pokeIO_bset</A>
+instead.</P>
+
+<HR>
+<H3><A NAME="poke_l"><U>poke_l</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> poke_l(addr,val) (<B><A HREF="keywords.html#void">void</A></B>)(*((<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)) = (val))</TD></TR></TABLE></P>
+<P><B>Stores a double word in memory.</B></P>
+
+<P>poke_l is like <A HREF="#poke">poke</A>, but stores a double word in memory instead of
+a byte.</P>
+
+<HR>
+<H3><A NAME="poke_w"><U>poke_w</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> poke_w(addr,val) (<B><A HREF="keywords.html#void">void</A></B>)(*((<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)) = (val))</TD></TR></TABLE></P>
+<P><B>Stores a word in memory.</B></P>
+
+<P>poke_w is like <A HREF="#poke">poke</A>, but stores a word in memory instead of
+a byte.</P>
+
+<HR>
+<H3><A NAME="poke"><U>poke</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> poke(addr,val) (<B><A HREF="keywords.html#void">void</A></B>)(*((<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)) = (val))</TD></TR></TABLE></P>
+<P><B>Stores a byte in memory.</B></P>
+
+<P>poke is a macro which stores a byte <I>val</I> at the memory address <I>addr</I>,
+where <I>addr</I> does not necessarily need to be a pointer. Instead, it can be of
+any type (usually an integer) which may represent a memory address in a way which makes sense.
+This way it allows for storing bytes in memory using the style which is common in most dialects
+of the BASIC language. For example, to store a byte 255 at the first byte of the video memory, do this:</P>
+<PRE>poke (0x4C00, 255);
+</PRE>
+<P><B>Note:</B> Do not use poke for sending bytes to I/O ports! Use <A HREF="#pokeIO">pokeIO</A>
+instead.</P>
+
+<HR>
+<H3><A NAME="pokeIO_bchg"><U>pokeIO_bchg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> pokeIO_bchg (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *port, <B><A HREF="keywords.html#short">short</A></B> bit);</TD></TR></TABLE></P>
+<P><B>Inverts a bit in an I/O port.</B></P>
+
+<P>This macro exists because <A HREF="#poke_bchg">poke_bchg</A> is not reliable when sending data to memory-mapped I/O ports.
+See the notes about <A HREF="#pokeIO">pokeIO</A> if you want to know why.</P>
+
+<HR>
+<H3><A NAME="pokeIO_bclr"><U>pokeIO_bclr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> pokeIO_bclr (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *port, <B><A HREF="keywords.html#short">short</A></B> bit);</TD></TR></TABLE></P>
+<P><B>Clears a bit in an I/O port.</B></P>
+
+<P>This macro exists because <A HREF="#poke_bclr">poke_bclr</A> is not reliable when sending data to memory-mapped I/O ports.
+See the notes about <A HREF="#pokeIO">pokeIO</A> if you want to know why.</P>
+
+<HR>
+<H3><A NAME="pokeIO_bset"><U>pokeIO_bset</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> pokeIO_bset (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *port, <B><A HREF="keywords.html#short">short</A></B> bit);</TD></TR></TABLE></P>
+<P><B>Sets a bit in an I/O port.</B></P>
+
+<P>This macro exists because <A HREF="#poke_bset">poke_bset</A> is not reliable when sending data to memory-mapped I/O ports.
+See the notes about <A HREF="#pokeIO">pokeIO</A> if you want to know why.</P>
+
+<HR>
+<H3><A NAME="pokeIO_w"><U>pokeIO_w</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> pokeIO_w(port,val) (<B><A HREF="keywords.html#void">void</A></B>)(*((<B><A HREF="keywords.html#volatile">volatile</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(port)) = (val))</TD></TR></TABLE></P>
+<P><B>Sends a word to an I/O port.</B></P>
+
+<P>pokeIO_w is like <A HREF="#pokeIO">pokeIO</A>, but sends a word to the I/O port instead of
+a byte.</P>
+
+<HR>
+<H3><A NAME="pokeIO"><U>pokeIO</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> pokeIO(port,val) (<B><A HREF="keywords.html#void">void</A></B>)(*((<B><A HREF="keywords.html#volatile">volatile</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(port)) = (val))</TD></TR></TABLE></P>
+<P><B>Sends a byte to an I/O port.</B></P>
+
+<P><A HREF="#poke">poke</A> is not reliable when sending data to memory-mapped I/O ports.
+Suppose that you have a device mapped to the address <I>port</I>, and that this device
+requests sending a sequence ot bytes 127,0,255,0 to this address to be reset. If you
+simply try to do</P>
+<PRE>poke (<I>port</I>, 127);
+poke (<I>port</I>, 0);
+poke (<I>port</I>, 255);
+poke (<I>port</I>, 0);
+</PRE>
+<P>the compiler will (incorrectly) conclude that sending a sequence of bytes to the same address is
+nonsense, because new values will overwrite previous ones (assuming that the address
+points to the memory), so the optimizer will
+ignore all stores but the last one. Such behavior is correct if <I>port</I> is a
+normal memory address, but it may be fatal if <I>port</I> is an address of a memory-mapped I/O
+port. To prevent such behaviour, use pokeIO instead of <A HREF="#poke">poke</A>, i.e. write</P>
+<PRE>pokeIO (<I>port</I>, 127);
+pokeIO (<I>port</I>, 0);
+pokeIO (<I>port</I>, 255);
+pokeIO (<I>port</I>, 0);
+</PRE>
+<P>Basically, pokeIO works exactly like <A HREF="#poke">poke</A>, but prevents any unwanted optimizations
+generated by the compiler. It may be used even for storing bytes in memory, but <A HREF="#poke">poke</A>
+will generate better code when working with memory.</P>
+
+<HR>
+<H3><A NAME="speek_l"><U>speek_l</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> speek_l(addr) (*((<B><A HREF="keywords.html#short">signed</A></B> <B><A HREF="keywords.html#short">long</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)))</TD></TR></TABLE></P>
+<P><B>Fetches a signed double word from the memory.</B></P>
+
+<P>speek_l is like <A HREF="#peek_l">peek_l</A>, but the result is interpreted as a signed double word.</P>
+
+<HR>
+<H3><A NAME="speek_w"><U>speek_w</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> speek_w(addr) (*((<B><A HREF="keywords.html#short">signed</A></B> <B><A HREF="keywords.html#short">short</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)))</TD></TR></TABLE></P>
+<P><B>Fetches a signed word from the memory.</B></P>
+
+<P>speek_w is like <A HREF="#peek_w">peek_w</A>, but the result is interpreted as a signed word.</P>
+
+<HR>
+<H3><A NAME="speek"><U>speek</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> speek(addr) (*((<B><A HREF="keywords.html#short">signed</A></B> <B><A HREF="keywords.html#int">char</A></B>*)(<B><A HREF="keywords.html#short">long</A></B>)(addr)))</TD></TR></TABLE></P>
+<P><B>Fetches a signed byte from the memory.</B></P>
+
+<P>speek is like <A HREF="#peek">peek</A>, but the result is interpreted as a signed byte.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

@@ -1,0 +1,279 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>args.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;args.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for retrieving arguments passed to the program</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#ArgCount">ArgCount</A></B><DD>Returns the number of arguments passed to the program.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EX_getArg">EX_getArg</A></B><DD>Returns a pointer to the nth argument.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EX_getBCD">EX_getBCD</A></B><DD>Gets the nth floating point argument.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetArgType">GetArgType</A></B><DD>Returns the type of the current argument.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetFloatArg">GetFloatArg</A></B><DD>Returns the current argument of floating point type.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetIntArg">GetIntArg</A></B><DD>Returns the current argument of integer type.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetLongLongArg">GetLongLongArg</A></B><DD>Returns the current argument of double-long integer type.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetStrnArg">GetStrnArg</A></B><DD>Returns the current argument of string type.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetSymstrArg">GetSymstrArg</A></B><DD>Returns a pointer to the terminating zero byte of the current argument of string type.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#InitArgPtr">InitArgPtr</A></B><DD>Initializes a pointer to the first argument passed to the program.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RemainingArgCnt">RemainingArgCnt</A></B><DD>Returns the remaining number of arguments passed to the program.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SkipArg">SkipArg</A></B><DD>Skips the current argument.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="estack.html#top_estack">top_estack</A></B><DD>Points to the top of the expression stack.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="timath.html#bcd">bcd</A></B><DD>Represents the internal organization of floating point numbers
+in the format recognized by the TIOS.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#CESI">CESI</A></B><DD>Represents a pointer to a constant expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESI">ESI</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESQ">ESQ</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#EStackIndex">EStackIndex</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#Quantum">Quantum</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#SYM_STR">SYM_STR</A></B><DD>Represents a pointer to the terminating zero byte of a string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#Tags">Tags</A></B><DD>An enumeration to describe types of entries on the expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="timath.html#ti_float">ti_float</A></B><DD>An alias for the standard ANSI float type.</DL>
+<P><B>Note:</B> The header file <A HREF="estack.html">estack.h</A> contains a much more powerful set of
+functions to manipulate the expression stack.</P>
+
+<HR>
+<H3><A NAME="ArgCount"><U>ArgCount</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> ArgCount (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the number of arguments passed to the program.</B></P>
+
+<P>ArgCount returns the number of arguments passed to the called program. It is a simple
+macro which calls TIOS function <A HREF="#RemainingArgCnt">RemainingArgCnt</A>.</P>
+
+<P>See also: <A HREF="#RemainingArgCnt">RemainingArgCnt</A></P>
+<HR>
+<H3><A NAME="EX_getArg"><U>EX_getArg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="estack.html#ESI">ESI</A> EX_getArg (<B><A HREF="keywords.html#short">short</A></B> n);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the nth argument.</B></P>
+
+<P>EX_getArg is TIOS function which may be useful if you want to access arguments in
+non_sequential order. EX_getArg returns a pointer to the argument which ordinal
+number is <I>n</I> (which may be later processed using <A HREF="#GetIntArg">GetIntArg</A>
+etc.). Arguments are numbered from zero (i.e. 0, 1, 2, <B>...</B> N-1
+where N is the total number of arguments). Note that when <I>n</I>&nbsp;=&nbsp;N,
+EX_getArg returns <A HREF="alloc.html#NULL">NULL</A>, and when <I>n</I>&nbsp;&gt;&nbsp;N,
+EX_getArg throws an error, so it is good idea to check in advance the total number
+of arguments using <A HREF="#ArgCount">ArgCount</A>.</P>
+
+<HR>
+<H3><A NAME="EX_getBCD"><U>EX_getBCD</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EX_getBCD (<B><A HREF="keywords.html#short">short</A></B> n, <B><A HREF="keywords.html#float">float</A></B> *dest);</TD></TR></TABLE></P>
+<P><B>Gets the nth floating point argument.</B></P>
+
+<P>EX_getBCD is a somewhat limited TIOS function. It first calls <A HREF="#EX_getArg">EX_getArg</A>
+passing <I>n</I> to it. Then, if the argument pointed to by the result of
+<A HREF="#EX_getArg">EX_getArg</A> is not a floating point number, EX_getBCD returns
+<A HREF="alloc.html#Bool">FALSE</A>, otherwise it stores the floating point value to the variable pointed to by
+<I>dest</I> and returns <A HREF="alloc.html#Bool">TRUE</A>.</P>
+
+<HR>
+<H3><A NAME="GetArgType"><U>GetArgType</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> GetArgType (<A HREF="estack.html#CESI">CESI</A> ap);</TD></TR></TABLE></P>
+<P><B>Returns the type of the current argument.</B></P>
+
+<P>GetArgType returns a one-byte value which determines the type of the current argument
+(pointed to by <I>ap</I>). There are many types of arguments: strings, integers
+(positive or negative), fractions, floats, symbols, various algebraic expressions,
+lists, matrices, etc. The enum <A HREF="estack.html#Tags">Tags</A>
+defines a lot of constants: the most commonly used in argument lists are
+STR_TAG, POSINT_TAG, NEGINT_TAG, FLOAT_TAG, POSFRAC_TAG, ENDFRAC_TAG,
+COMPLEX_TAG, LIST_TAG and END_TAG. They represent respectively a string, a positive integer, a negative
+integer, a floating point value, a positive fraction, a negative fraction, a complex number,
+a beginning of the list structure and an end-of-list marker (which also has meaning "no more arguments").
+Any values except these need to be regarded as "an expression": you need to handle them
+"by hand" (of course, if you know how).
+See <A HREF="#InitArgPtr">InitArgPtr</A> for an example of usage.<BR><BR>
+<B>Note:</B> You can use <A HREF="#SkipArg">SkipArg</A> to bypass the argument which you don't know
+how to handle (or, which you don't want to handle for any reason).</P>
+
+<HR>
+<H3><A NAME="GetFloatArg"><U>GetFloatArg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#float">float</A></B> GetFloatArg (<A HREF="estack.html#CESI">CESI</A> &amp;ap);</TD></TR></TABLE></P>
+<P><B>Returns the current argument of floating point type.</B></P>
+
+<P>GetFloatArg is a macro which returns the current floating point argument
+(pointed to by <I>ap</I>) and modifies <I>ap</I> to point to the next argument in
+the argument list. So, each successive time GetFloatArg is used, it returns the next
+argument in the argument list.
+Note that GetFloatArg assumes that the current argument <I>is</I> a floating point value (not an
+integer). This may be checked using <A HREF="#GetArgType">GetArgType</A>. If this
+is not true, the result of GetFloatArg is unpredictable.</P>
+
+<P>See also: <A HREF="estack.html#estack_number_to_Float">estack_number_to_Float</A></P>
+<HR>
+<H3><A NAME="GetIntArg"><U>GetIntArg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> GetIntArg (<A HREF="estack.html#CESI">CESI</A> &amp;ap);</TD></TR></TABLE></P>
+<P><B>Returns the current argument of integer type.</B></P>
+
+<P>GetIntArg is a macro which returns the current integer argument
+(pointed to by <I>ap</I>) and modifies <I>ap</I> to point to the next argument in
+the argument list. So, each successive time GetIntArg is used, it returns the next
+argument in the argument list. If the argument is a negative number (check the sign using
+<A HREF="#GetArgType">GetArgType</A>), GetIntArg returns its absolute value.
+See <A HREF="#InitArgPtr">InitArgPtr</A> for an example of usage.
+Note that GetIntArg assumes that the current argument IS an integer, either positive
+or negative (this may be checked using <A HREF="#GetArgType">GetArgType</A>). If this
+is not true, the result of GetIntArg is unpredictable.
+<BR><BR>
+If the current argument type is a fraction, do the following to pick it:</P>
+<PRE>numerator = GetIntArg (ap);
+ap++;
+denominator = GetIntArg (ap);
+</PRE>
+<P>i.e. pick two integers, with increasing argument pointer between two picks.
+<BR><BR>
+<B>Note:</B> It is not recommended to do something like</P>
+<PRE>a = GetIntArg (top_estack);
+</PRE>
+<P>It works fine sometimes, but not always. GetIntArg
+is a function-looking macro, with <B>changes</B> the value of its actual
+argument. So, if you write the statement mentioned above,
+you will also change the value of TIOS system variable <A HREF="estack.html#top_estack">top_estack</A>,
+which is not always a good idea. So, I strictly recommend using an auxiliary variable,
+like in the following example:</P>
+<PRE>ESI argptr = top_estack;
+...
+a = GetIntArg (argptr);
+</PRE>
+<P>Using this method, you will avoid unexpected changes of <A HREF="estack.html#top_estack">top_estack</A>.</P>
+
+<P>See also: <A HREF="#GetLongLongArg">GetLongLongArg</A></P>
+<HR>
+<H3><A NAME="GetLongLongArg"><U>GetLongLongArg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> <B><A HREF="keywords.html#short">long</A></B> GetLongLongArg (<A HREF="estack.html#CESI">CESI</A> &amp;ap);</TD></TR></TABLE></P>
+<P><B>Returns the current argument of double-long integer type.</B></P>
+
+<P>GetLongLongArg works like <A HREF="#GetIntArg">GetIntArg</A>, but
+returns a <A HREF="gnuexts.html#SEC72">double-long integer</A>.</P>
+
+<P>See also: <A HREF="#GetIntArg">GetIntArg</A></P>
+<HR>
+<H3><A NAME="GetStrnArg"><U>GetStrnArg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *GetStrnArg (<A HREF="estack.html#CESI">CESI</A> &amp;ap);</TD></TR></TABLE></P>
+<P><B>Returns the current argument of string type.</B></P>
+
+<P>GetStrnArg is a macro which returns the current string argument
+(pointed to by <I>ap</I>) and modifies <I>ap</I> to point to the next argument in
+the argument list. So, each successive time GetStrnArg is used, it returns the next
+argument in the argument list.
+See <A HREF="#InitArgPtr">InitArgPtr</A> for an example of usage.
+Note that GetStrnArg assumes that the current argument IS a string (this may be
+checked using <A HREF="#GetArgType">GetArgType</A>). If this is not true, the
+effect of GetStrnArg is unpredictable.</P>
+
+<HR>
+<H3><A NAME="GetSymstrArg"><U>GetSymstrArg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="estack.html#SYM_STR">SYM_STR</A> GetSymstrArg (<A HREF="estack.html#CESI">CESI</A> &amp;ap);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the terminating zero byte of the current argument of string type.</B></P>
+
+<P>GetSymstrArg does the same task as <A HREF="#GetStrnArg">GetStrnArg</A> but returns
+a pointer to the terminating zero byte of the string, instead of a pointer to the
+first byte of the string. This function is implemented because nearly all functions for
+TIOS VAT handling need just the pointer to the terminating byte of the string. As
+the arguments are stored in memory as strings which are bounded with zero bytes from
+both sides, the result of GetSymstrArg may be directly passed to TIOS VAT routines.
+See <A HREF="vat.html">vat.h</A> for more info.</P>
+
+<HR>
+<H3><A NAME="InitArgPtr"><U>InitArgPtr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> InitArgPtr (<A HREF="estack.html#CESI">CESI</A> &amp;ap);</TD></TR></TABLE></P>
+<P><B>Initializes a pointer to the first argument passed to the program.</B></P>
+
+<P>InitArgPtr is a macro which initializes <I>ap</I> (which is a pointer of type
+<A HREF="estack.html#ESI">ESI</A>) to point to the first argument passed to the assembly
+program. Principally, calling</P>
+<PRE>InitArgPtr (argptr);
+</PRE>
+<P>is equal to doing</P>
+<PRE>argptr = top_estack;
+</PRE>
+<P>See <A HREF="estack.html#top_estack">top_estack</A> for more info.
+<BR><BR>
+InitArgPtr must be used before the first call to <A HREF="#GetStrnArg">GetStrnArg</A> etc.
+Here is an example of a program which reads string or integer arguments passed to it,
+and displays them on the screen, one by one (called "Argument Test"):</P>
+<PRE>// An example of passing arguments to C program
+// Try this program calling argtest(arg1,arg2,...)
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#define MIN_AMS 100
+
+#include &lt;graph.h&gt;
+#include &lt;printf.h&gt;
+#include &lt;kbd.h&gt;
+#include &lt;args.h&gt;
+
+void _main(void)
+{
+  ESI argptr;
+  int argtype;
+  long num;
+  InitArgPtr (argptr);
+  while ((argtype = GetArgType (argptr)) != END_TAG)
+    {
+      DrawStr (0, 30, &quot;                          &quot;, A_REPLACE);
+      if (argtype == STR_TAG)
+        DrawStr (0, 30, GetStrnArg (argptr), A_REPLACE);
+      else if (argtype == POSINT_TAG || argtype == NEGINT_TAG)
+        {
+          num = GetIntArg (argptr);
+          if (argtype == NEGINT_TAG)
+            num = -num;
+          printf_xy (0, 30, &quot;%ld&quot;, num);
+        }
+      else
+        {
+          DrawStr (0, 30, &quot;Wrong arg type!&quot;, A_REPLACE);
+          ngetchx ();
+          break;
+        }
+      ngetchx ();
+    }
+}
+</PRE>
+<P>If the name of this program is <B>example.89z</B>, try to call it on the calculator using</P>
+<PRE>example ("strarg1", 123, -12, "strarg2")
+</PRE>
+<P>to see how it works in practice.
+<BR><BR>
+<B>Note:</B> I used notation "&amp;<I>ap</I>" in the prototype description, although passing by
+reference does not exist in ordinary C (only in C++). However, this macro is implemented
+in such a way that it simulates "passing by reference".</P>
+
+<HR>
+<H3><A NAME="RemainingArgCnt"><U>RemainingArgCnt</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> RemainingArgCnt (<A HREF="estack.html#CESI">CESI</A> ap);</TD></TR></TABLE></P>
+<P><B>Returns the remaining number of arguments passed to the program.</B></P>
+
+<P>RemainingArgCnt returns the number of remaining arguments passed to the called program,
+i.e. the number of arguments which are not yet picked up. It is a simple
+alias for the TIOS function <A HREF="estack.html#remaining_element_count">remaining_element_count</A>.</P>
+
+<P>See also: <A HREF="#ArgCount">ArgCount</A></P>
+<HR>
+<H3><A NAME="SkipArg"><U>SkipArg</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SkipArg (<A HREF="estack.html#CESI">CESI</A> &amp;ap);</TD></TR></TABLE></P>
+<P><B>Skips the current argument.</B></P>
+
+<P>SkipArg is a macro which modifies <I>ap</I> to point to the next argument in
+the argument list, regardless of its type. Note that this function must not be
+called if <A HREF="#GetArgType">GetArgType</A> returns <A HREF="estack.html#END_TAG">END_TAG</A>,
+i.e. if there is no more arguments. Else, an error will be thrown.
+<BR><BR>
+<B>Note:</B> SkipArg is implemented by calling TIOS function
+<A HREF="estack.html#next_expression_index">next_expression_index</A>.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

@@ -1,0 +1,2585 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>The GCC4TI Linker</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The GCC4TI Linker</B></FONT>
+<HR>
+<P>This is the documentation of the GCC4TI linker, the tool that reads the
+compiled and assembled files and merges them into a single program. Most
+parts of this documentation only need to be read by experts; you may safely
+skip over all parts that you do not understand.</P>
+
+<UL>
+<LI><B><A HREF="#operation">GCC4TI Linker Purpose and Operation</A></B>
+<LI><B><A HREF="#invocation">Invoking ld-tigcc and ar-tigcc</A></B>
+<LI><B><A HREF="#modes">Linking Modes of the GCC4TI Linker</A></B>
+<LI><B><A HREF="#formats">GCC4TI Linker File Formats</A></B>
+<LI><B><A HREF="#control">Symbols to Control the Linker</A></B>
+<LI><B><A HREF="#startup">Startup Sections</A></B>
+<LI><B><A HREF="#global_imports">Global Imports</A></B>
+<LI><B><A HREF="#symbols">Symbols Built into the GCC4TI Linker</A></B>
+<LI><B><A HREF="#insert">Automatically Inserted Section Contents</A></B>
+<LI><B><A HREF="#bincode">GCC4TI Linker Binary Code Fixup</A></B>
+<LI><B><A HREF="#dump">ld-tigcc Program Dumps</A></B>
+<LI><B><A HREF="#compiling">Recompiling ld-tigcc and ar-tigcc</A></B>
+</UL>
+<HR>
+<H2><A NAME="operation"><U>GCC4TI Linker Purpose and Operation</U></A></H2>
+<P>The purpose of a linker is to take executable code and data from different
+files and merge it into a single program. It must resolve dependencies
+between the files, and there are many architecture-dependent features linkers
+are required to support. The complicated part about linking is that binary
+code can be encapsulated in different formats; most linkers, including the
+GCC4TI linker, can import code from several formats and export it to yet
+another one (see <A HREF="#formats">GCC4TI Linker File Formats</A>).
+<BR><BR>
+The GCC4TI linker can handle two kinds of files: object files and archive
+files. Object files are produced by the compiler or assembler. They contain
+the code and global variables of the program; all object files passed to the
+linker are processed and then included in the final output. Archive files,
+also known as static libraries, are collections of object files. An archive
+member is included only if this is requested by another file.
+<BR><BR>
+Files can reference each other via text strings called <U>symbols</U>. These
+symbols are usually labels in assembly code, or functions and global
+variables in C code. The most popular way of referencing symbols is to ask
+that the final address or offset of a specific symbol be inserted at or added
+to a specific location in the code. This is called <U>relocation</U>.
+<BR><BR>
+When the linker is executed, it first reads all object files passed to it and
+imports their contents into its internal data structures. Then it tries to
+resolve the references to symbols defined in another file. If a symbol cannot
+be resolved, it is looked up in the symbol tables of all archive files passed
+to the linker; if it is still not found, this is an error. Archive members
+are imported immediately if required, and they may reference symbols defined
+in other files as well. Some special actions are performed based on the
+contents of the imported files, code and data blocks (<U>sections</U>) are
+sorted and merged if required, and offsets between different locations in the
+code are inserted whereever the object files requested this. Finally, the
+program is exported to an executable file.</P>
+
+<HR>
+<H2><A NAME="invocation"><U>Invoking ld-tigcc and ar-tigcc</U></A></H2>
+<P>The GCC4TI linker is available in two forms: as a standalone command line
+program or as a dynamic link library (DLL). On Windows, GCC4TI uses the DLL
+version for improved speed, but experienced programmers probably want to
+use the command line version in some cases because it is a more advanced.
+<BR><BR>
+In the <A HREF="ide.html">IDE</A>, linker options can be set in the
+project settings. The <CODE>tigcc</CODE> command line compiler accepts most
+of the options of <CODE>ld-tigcc</CODE> and passes them to the linker.</P>
+
+<UL>
+<LI><B><A HREF="#invocation_ld">ld-tigcc Command-Line Options</A></B>
+<LI><B><A HREF="#invocation_ar">ar-tigcc Command-Line Options</A></B>
+</UL>
+<H3><A NAME="invocation_ld"><U>ld-tigcc Command-Line Options</U></A></H3>
+<P>In <CODE>ld-tigcc</CODE>, options and input files may appear in any order in
+the command line. Input files may be either object or archive (static
+library) files. They are handled differently depending on the type of the
+file: Object files are read completely in the order they are supplied;
+archive file members are read only if the program references a symbol they
+export. If multiple archive files export the same symbol,
+<CODE>ld-tigcc</CODE> uses the archive that is supplied first.
+<BR><BR>
+Output file names and variable names are usually set according to the name of
+the first object file in the command line, but they may be changed using the
+<B>'--output'</B> and <B>'--varname'</B> options described below. The file
+extensions depend on the exact output format used; they are usually what the
+transferring software expects them to be.
+<BR><BR>
+<CODE>ld-tigcc</CODE> recognizes the following options:</P>
+<DL>
+
+<DT><P><B>-h</B>
+<BR><B>--help</B></P><DD><P>Print a short description of all available options.
+</P><DT><P><B>--version</B></P><DD><P>Print the version number of the tool and a short copyright notice.
+</P><DT><P><B>-v</B>
+<BR><B>--verbose</B></P><DD><P>Print statistics about the linked program before terminating. These
+include the target calculators, program variable name and size, data variable
+size, BSS size (size of all uninitialized global variables), the total number
+of absolute relocs, the number of relocs which appear in the native format of
+the target OS, and optimization possibilities or results. In the IDE, these
+statistics are displayed automatically, unless this is turned off in the
+preferences or the program is run automatically after successful linking. If
+the linking process fails, no statistics are shown.
+</P><DT><P><B>--dump</B></P><DD><P>Display all dumps of the program contents during the entire linking
+process. For details about dumps, see <A HREF="#dump">ld-tigcc
+Program Dumps</A>.
+</P><DT><P><B>--dump<I>n</I></B></P><DD><P>Display the <I>n</I>-th dump of the program contents. For details on the
+different linking stages and the associated dump numbers, see
+<A HREF="#dump">ld-tigcc Program Dumps</A>.
+</P><DT><P><B>--native</B></P><DD><P>Use GCC4TI native mode by default. Without this option, the linker starts
+in kernel mode (for compatibility with existing programs), but this may be
+changed using special symbols (see <A HREF="#control">Symbols to
+Control the Linker</A>). For more information about modes, see
+<A HREF="#modes">GCC4TI Linker Modes</A>.
+</P><DT><P><B>--fargo</B></P><DD><P>Use Fargo II mode and compile for the TI-92. This option is only
+available if Fargo support is compiled in. It exists for compatibility with
+existing Fargo II programs, which do not explicitly specify a mode and a
+target calculator.
+</P><DT><P><B>--flash-os</B></P><DD><P>Use Flash OS mode. This mode creates an unsigned Flash operating system
+upgrade for the TI-89, TI-89 Titanium, TI-92+ and Voyage 200 calculators.
+This option is only available if Flash OS support is compiled in.
+</P><DT><P><B>--remove-unused</B></P><DD><P>Remove unused sections. If a section is not referenced by another
+section, this option causes it to be removed. Startup sections are never
+removed; neither is the first section in Nostub mode. Note that in some
+cases, the linker cannot determine whether a section can be removed before
+merging it with another section; in this case, it is not removed even though
+it may not be referenced at all.
+</P><DT><P><B>--optimize-relocs</B></P><DD><P>Update the destination symbol of relocation entries to the nearest
+available symbol, thereby making the offset as small as possible. This
+improves the readability of dumps and some diagnostic messages, but should
+not have any other effect than this.
+</P><DT><P><B>--optimize-code</B></P><DD><P>Perform all code optimizations, including NOP, return, branch, move,
+test, and calculation optimization. Note that it is possible for code
+optimization to create invalid code or accidentally change data instead of
+code. The probability is not very high, so you should really enable code
+optimization at least partially, but if your program crashes for no apparent
+reason, try turning off code optimization. For more information about
+optimization, see <A HREF="#bincode">GCC4TI Linker Binary Code
+Fixup</A>.</P>
+<DL>
+
+<DT><P><B>--optimize-nops</B></P><DD><P>Perform <A HREF="#bincode_nop">NOP instruction removal</A>.
+</P><DT><P><B>--optimize-returns</B></P><DD><P>Perform <A HREF="#bincode_return">return sequence
+optimization</A>.
+</P><DT><P><B>--optimize-branches</B></P><DD><P>Perform <A HREF="#bincode_branch">branch optimization</A>.
+</P><DT><P><B>--optimize-moves</B></P><DD><P>Perform <A HREF="#bincode_move">move/load/push optimization</A>.
+</P><DT><P><B>--optimize-tests</B></P><DD><P>Perform <A HREF="#bincode_test">compare/test optimization</A>.
+</P><DT><P><B>--optimize-calcs</B></P><DD><P>Perform <A HREF="#bincode_calculation">calculation
+optimization</A>.</P>
+</DL>
+
+<DT><P><B>--cut-ranges</B></P><DD><P>Optimization has two effects: It can reduce the number of relocation
+entries, and it can make instructions smaller. Usually, the space gained from
+making the instructions smaller is filled with NOPs. If this option is used,
+the linker will attempt to cut out these ranges of code instead, making the
+size of the executable even smaller. This only works for input files that
+were assembled in all-relocs mode, but this is handled automatically if this
+option is used via the <CODE>tigcc</CODE> front-end or the GCC4TI IDE.
+</P><DT><P><B>--reorder-sections</B></P><DD><P>Reorder sections to make references shorter. The fixups (see above) can
+then fit those shorter references into smaller and faster addressing modes,
+so using this option can improve both size and speed. It can also allow the
+fixups to remove relocations or to turn F-Line jumps into faster branches.
+Since computing the optimal reordering is NP complete and <I>very</I>
+expensive in practical terms (the factorial of the number of sections is a
+<I>huge</I> factor), section reordering is implemented through heuristics.
+Therefore, the result is not guaranteed to be optimal. There are rare cases
+where section reordering can still take exponential time, these are due to
+hardcoded short references between sections rendering some reorderings
+impossible. In this case, the linker will emit warnings as impossible
+reorderings are encountered so you can follow the process, or stop it (and
+go fix your program, hardcoded short references between sections are not a
+good idea, that's what linker optimization is for!) if it takes too long.
+Startup sections can be reordered only with other startup sections with the
+<I>same</I> startup number. Non-startup sections can be reordered only with
+other non-startup sections. Sections which are emitted separately (e.g. a
+dynamically allocated BSS section or a data section in an external file)
+cannot be reordered at all.</P><DT><P><B>--merge-constants</B></P><DD><P>Merge identical constants (including strings) to avoid duplication.
+Constant merging works on all symbols (actually, the ranges included within
+2 symbols, where symbols at the same position are considered the same
+symbol) in sections marked mergeable. Constants can be merged if they are
+identical or if one of them is a prefix of the other. This can be used by
+the compiler to avoid duplicating string literals (and, if desired by the
+user, other constants) in multiple object files. Unaligned and aligned
+sections are distinguished to keep the linker from accidentally breaking
+the alignment while merging aligned constants with unaligned ones which
+happen to contain them as a prefix.</P><DT><P><B>--omit-bss-init</B></P><DD><P>Skip the initialization of the BSS section, which holds uninitialized
+global variables. Old versions of TIGCC never initialized the BSS section,
+so many older programs do not rely on the initialization. If you use this
+option, you must be sure that there is really no code that relies on the
+initialization of global variables to zero (which means, among other things,
+that you have to use the <A HREF="comopts.html">compiler option</A>
+<B>'-fno-zero-initialized-in-bss'</B>). For a safer alternative, try the
+<A HREF="#control_ld_omit_bss_init">__ld_omit_bss_init</A> control
+symbol.
+</P><DT><P><B>--outputbin</B></P><DD><P>Instead of creating a wrapped calculator variable that includes a folder
+and variable name, a checksum, and some extra information, write only the raw
+contents of the variable to the file. The file extension is changed in a way
+that allows different files to be generated for each target calculator but
+prevents confusion between raw and wrapped data.
+</P><DT><P><B>-o <I>file</I></B>
+<BR><B>--output <I>file</I></B></P><DD><P>Write the output to the file named <I>file</I>.<I>ext</I>, where
+<I>ext</I> is the extension that fits the file type. <I>file</I> may include
+a path, but if it includes its own extension, <I>ext</I> will be appended
+anyway. This also sets the variable name to something that resembles
+<I>file</I> as closely as possible. Note that it does not do any error
+checking on the characters of the <I>file</I> parameter.
+</P><DT><P><B>-n [<I>folder</I>\]<I>name</I></B>
+<BR><B>--varname [<I>folder</I>\]<I>name</I></B></P><DD><P>Include the folder name <I>folder</I> (<CODE>main</CODE> if unspecified)
+and variable name <I>name</I> in the wrapper file. If the file is not wrapped
+(i.e. if <B>'--outputbin'</B> has been specified), this option has no effect.
+</P><DT><P><B>-d [<I>folder</I>\]<I>name</I></B>
+<BR><B>--data-var [<I>folder</I>\]<I>name</I></B></P><DD><P>Exclude all non-executable data (global variables) from the program and
+create an external variable for it. Note that you are absolutely required to
+make sure that no code is executed from the data section; otherwise it will
+crash depending on the calculator model: Newer calculators have a protection
+device that lets the operating system restrict the areas code can be executed
+from. <I>name</I> is the variable name to be assigned to the data variable.
+<I>folder</I> defines the folder of the variable; if it is not specified, the
+folder from the <B>'--varname'</B> option is used.
+</P><DT><P><B>--data-var-copy=<I>condition</I></B></P><DD><P>Defines when to create a copy of the data variable in RAM. If
+<I>condition</I> is <CODE>always</CODE>, the program will always work on a
+copy in RAM, which means that you may rely on the data being the same on
+every start of the program. However, if the data variable is not archived,
+you may easily run out of available memory. <CODE>archived</CODE> causes a
+copy to be created only if the data variable is archived; this is the
+default. If the variable is not archived, the program will work on the actual
+contents of the variable, so the values of all global variables will be kept
+even after the program finishes. <CODE>never</CODE> tells the linker to work
+on the original variable unconditionally, but since you may not write to the
+archive memory, you have to make sure that you never modify the value of a
+global variable. If the <B>'--data-var'</B> option is not specified as well,
+this option has no effect.</P>
+</DL>
+
+<H3><A NAME="invocation_ar"><U>ar-tigcc Command-Line Options</U></A></H3>
+<P>The <CODE>ar-tigcc</CODE> tool can be used to create archives recognized by
+<CODE>ld-tigcc</CODE>. The output format is the format used by
+<A HREF="http://www.gnu.org/">GNU</A> <CODE>ar</CODE>, for which this tool is
+a replacement. This allows for maximum compatibility between archives and
+programs created with different versions of GCC4TI.
+<BR><BR>
+In <CODE>ar-tigcc</CODE>, options and input files may appear in any order in
+the command line. Input files can have any file format; they are simply
+written into the archive in the order specified in the command line. However,
+object files whose format is recognized are searched for exported symbols, so
+that <CODE>ar-tigcc</CODE> can create a symbol table for the archive.
+<BR><BR>
+If no output file name is specified, <CODE>ar-tigcc</CODE> uses the name of
+the first input file and appends a <CODE>'.a'</CODE> extension to it. It is
+highly recommended that you specify a different name with the
+<CODE>'--output'</CODE> option.
+<BR><BR>
+<CODE>ar-tigcc</CODE> recognizes the following options:</P>
+<DL>
+
+<DT><P><B>-h</B>
+<BR><B>--help</B></P><DD><P>Print a short description of all available options.
+</P><DT><P><B>--version</B></P><DD><P>Print the version number of the tool and a short copyright notice.
+</P><DT><P><B>--dump</B></P><DD><P>Display a small dump of the archive file contents. This includes the
+members as well as the symbols they export.
+</P><DT><P><B>-o <I>file</I></B>
+<BR><B>--output <I>file</I></B>
+<BR><B>-rc <I>file</I></B>
+<BR><B>-qc <I>file</I></B></P><DD><P>Write the output to the file named <I>file</I>. Unlike
+<CODE>ld-tigcc</CODE>, <CODE>ar-tigcc</CODE> does not append a file extension
+to <I>file</I>. <B>'-rc'</B> and <B>'-qc'</B> are recognized for
+compatibility with GNU <CODE>ar</CODE>, so that certain command lines work
+with GNU <CODE>ar</CODE> as well as <CODE>ar-tigcc</CODE>.
+</P><DT><P><B>--no-names</B></P><DD><P>Omit the file names of the input files in the archive. The archive will
+only contain names of the form <CODE>fl<I>n</I>.o</CODE>, where <I>n</I> is
+the index of the file starting at 1. Omitting file names may be a good idea,
+especially if you use long file names, since the traditional archive format
+imposes a maximum of 15 characters on the length of file names. Otherwise, if
+a file name exceeds this maximum, it will be cut off at the 16th character.
+The IDE and the <CODE>tigcc</CODE> command line compiler always use this
+option.</P>
+</DL>
+
+<HR>
+<H2><A NAME="modes"><U>Linking Modes of the GCC4TI Linker</U></A></H2>
+<P>A <U>linking mode</U> defines how the linker treats the contents of the
+program after they have been read from the object files. The GCC4TI linker has
+several different modes; some of them are related to specific output file
+formats, and some of them are present only for historical reasons.</P>
+
+<UL>
+<LI><B><A HREF="#modes_native">GCC4TI-Native Linking Mode</A></B>
+<LI><B><A HREF="#modes_nostub">Nostub Linking Mode</A></B>
+<LI><B><A HREF="#modes_nostub_dll">Nostub DLL Linking Mode</A></B>
+<LI><B><A HREF="#modes_kernel">Kernel Linking Mode</A></B>
+<LI><B><A HREF="#modes_fargo">Fargo II Linking Mode</A></B>
+<LI><B><A HREF="#modes_flash_os">Flash OS Linking Mode</A></B>
+</UL>
+<P>The recommended mode for normal GCC4TI programs is
+<A HREF="#modes_native">GCC4TI-native mode</A>. It is the simplest
+mode; the program is basically an empty sheet of paper, which can be filled
+with code of all sorts. The default mode is actually
+<A HREF="#modes_kernel">kernel mode</A> unless you set the appropriate
+<A HREF="#invocation_ld">command-line option</A>, to make old existing
+programs work without modifications.</P>
+
+<H3><A NAME="modes_native"><U>GCC4TI-Native Linking Mode</U></A></H3>
+<P>This mode (which can be enabled using the <B>'--native'</B>
+<A HREF="#invocation_ld">command-line option</A> or the control symbol
+<A HREF="#control_tigcc_native">_tigcc_native</A>) is the
+recommended mode for all new programs. When operating in this mode, the GCC4TI
+linker does not process the program in any special way, except that it
+requires the definition of at least one startup section. The idea is that
+stub code should not be handled by the linker itself but rather included
+manually by the program as needed. However, every program (regardless of the
+architecture and operating system) needs to have a prolog that either
+contains the location of the main entry point or is itself the startup code
+of the program. On the TI platforms with official assembly program support,
+execution always starts at the beginning of the program, so the prolog is
+actually the startup code.
+<BR><BR>
+Ideally, every program should be able to use this mode. However, at the
+moment, the output file format cannot be specified other than by switching to
+the appropriate mode. If you want to use a different output file format than
+the default TIOS format (i.e. Nostub DLL or Fargo II), you cannot use
+GCC4TI-native mode. At the moment, adding support for explicit selection of
+the output file format does not have any particular benefit, since it does
+not permit the removal of any of the other modes. However, as soon as the
+need for another output format (e.g. raw) arises, there should be a
+command-line option to select the format.</P>
+
+<H3><A NAME="modes_nostub"><U>Nostub Linking Mode</U></A></H3>
+<P>If this mode is activated using the
+<A HREF="#control_nostub">_nostub</A> control symbol, execution will
+start at the very beginning of the program. The exact entry point depends on
+the order of the object files as passed to the linker as well as the order of
+the sections inside an object file. Because of this insecurity, this mode
+should never be used in new programs. Programs written in assembly should
+define a small <A HREF="#startup">startup section</A> including a jump
+to the actual main function and use
+<A HREF="#modes_native">GCC4TI-native mode</A> instead. If the main
+function follows immediately, the jump can even be optimized away by the
+linker.
+<BR><BR>
+If a startup section is defined in nostub mode, the linker emits a warning
+and switches to <A HREF="#modes_native">GCC4TI-native mode</A>. This
+ensures that nostub mode really means that no stub is added to the program.</P>
+
+<H3><A NAME="modes_nostub_dll"><U>Nostub DLL Linking Mode</U></A></H3>
+<P>If the linker is told to use Nostub DLL mode using the
+<A HREF="#control_nostub_dll">__nostub_dll</A> control symbol, it acts
+like in <A HREF="#modes_native">GCC4TI-native mode</A>, except that it
+causes the linker to use the Nostub DLL output
+<A HREF="#formats">format</A> instead of the default output format.
+Since the stub for nostub DLLs is defined as conventional C code rather than
+imported as a startup section, this mode does not require the definition of a
+startup section.</P>
+
+<H3><A NAME="modes_kernel"><U>Kernel Linking Mode</U></A></H3>
+<P>In this mode, which is enabled by default, the linker acts the same way as in
+<A HREF="#modes_native">GCC4TI-native mode</A>, but it creates a
+<A HREF="#global_imports">global import</A> asking for the appropriate
+kernel format header. See <A HREF="#global_imports_auto">Automatically
+Created Global Imports</A> for more information.</P>
+
+<H3><A NAME="modes_fargo"><U>Fargo II Linking Mode</U></A></H3>
+<P>This mode is used to create a program that can be run on a TI-92 with Fargo
+II installed. It can be turned on using the <B>'--fargo'</B>
+<A HREF="#invocation_ld">command-line option</A> or the
+<A HREF="#control_fargo">_fargo</A> control symbol. It uses the Fargo
+II output <A HREF="#formats">format</A>, which is binary data wrapped
+in an empty TI-BASIC program. It creates a
+<A HREF="#global_imports">global import</A> asking for the appropriate
+Fargo II header (see <A HREF="#global_imports_auto">Automatically
+Created Global Imports</A> for more information). And it also causes the
+value of <A HREF="#symbols_ld_entry_point">__ld_entry_point</A> to be
+decreased by two, to point to the two size bytes in the TIOS file format
+rather than the beginning of the program data.
+<BR><BR>
+<B>Note:</B> Fargo support must be compiled in for this mode to be available.</P>
+
+<H3><A NAME="modes_flash_os"><U>Flash OS Linking Mode</U></A></H3>
+<P>This mode creates an unsigned Flash operating system upgrade for the TI-89,
+TI-89 Titanium, TI-92+ and Voyage 200 calculators. It can be turned on using
+the <B>'--flash-os'</B> <A HREF="#invocation_ld">command-line
+option</A> or the <A HREF="#control_flash_os">_flash_os</A> control
+symbol. It currently supports only the raw TIB output format, which is enabled
+by the <B>'--outputbin'</B> <A HREF="#invocation_ld">option</A>. Support
+for the current 89u/9xu/v2u format is planned and will be the default. It
+creates a <A HREF="#global_imports">global import</A> asking for the
+appropriate Flash OS header (see
+<A HREF="#global_imports_auto">Automatically Created Global Imports</A>
+for more information). Since Flash operating systems are composed of 2
+discontiguous parts, a small (24 KB) startup segment and a large (1944 KB for
+2 MB FlashROMs, 3992 KB for 4 MB FlashROMs) main segment,
+<A HREF="#startup">startup sections</A> are handled in a special way
+in this mode: Startup sections are placed into the startup segment, all other
+sections are merged into the main segment.
+<BR><BR>
+<B>Note:</B> Flash OS support must be compiled in for this mode to be
+available.</P>
+
+<HR>
+<H2><A NAME="formats"><U>GCC4TI Linker File Formats</U></A></H2>
+<P>The GCC4TI linker recognizes several file formats. Currently, it can import
+COFF and AmigaOS files and export TIOS ASM files, Nostub DLL files (which are
+TIOS custom files with a special format), and Fargo II files (which are TIOS
+PRGM files with special hidden data). A small overview of the capabilities of
+each format is described in the following table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD><B>Format</B></TD>
+<TD><B>Sections</B></TD>
+<TD><B>Relocations</B></TD>
+<TD><B>Unresolved Relocations</B></TD>
+<TD><B>Symbols</B></TD>
+<TD><B>ROM Calls</B></TD>
+<TD><B>RAM Calls</B></TD>
+<TD><B>Library Calls</B></TD>
+<TD><B>Library Exports</B></TD>
+<TD><B>Debug Information</B></TD>
+<TD><B>Version Number</B></TD>
+<TD><B>Additional Information</B></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>COFF</B></TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>AmigaOS</B></TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (except 1-byte absolute)</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through unresolved relocations)</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+<TD VALIGN="TOP">Yes</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+<TD VALIGN="TOP">Yes (through symbols)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>TIOS ASM</B></TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">4-byte absolute only</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format)</TD>
+<TD VALIGN="TOP">No (but kernels exist that interpret a special header format with a comment, and a header for additional information may be inserted manually)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>Nostub DLL</B></TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">4-byte absolute only</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Yes (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Yes (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">No</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>Fargo II</B></TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">4-byte absolute only (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Yes (through library calls, but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">Yes (through library calls, but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">Yes (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">Yes (but required header is not inserted directly by the linker)</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Single comment only (but required header is not inserted directly by the linker)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP"><B>TI Flash OS (TIB, 89u/9xu/v2u)</B></TD>
+<TD VALIGN="TOP">2 fixed sections (24 KB startup, 1944/3992 KB main)</TD>
+<TD VALIGN="TOP">No, runs from fixed address</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">No</TD>
+<TD VALIGN="TOP">Yes (but not yet supported by the linker)</TD>
+<TD VALIGN="TOP">Product name and date stamp only (but not yet supported by the linker)</TD>
+</TR>
+</TABLE></P>
+
+<HR>
+<H2><A NAME="control"><U>Symbols to Control the Linker</U></A></H2>
+<P>In addition to options specified in the command line, the GCC4TI linker can
+be controlled using special symbol names. They should be used directly only
+in assembly programs; C programs should rely on the appropriate library
+facilities if they are available.
+<BR><BR>
+These are the symbols the linker treats as control symbols:</P>
+
+<UL>
+<LI><B><A HREF="#control_ref_all">__ref_all_...</A></B>
+<LI><B><A HREF="#control_tigcc_native">_tigcc_native</A></B>
+<LI><B><A HREF="#control_nostub">_nostub</A></B>
+<LI><B><A HREF="#control_nostub_dll">_nostub_dll</A></B>
+<LI><B><A HREF="#control_fargo">_fargo</A></B>
+<LI><B><A HREF="#control_flash_os">_flash_os</A></B>
+<LI><B><A HREF="#control_library">_library</A></B>
+<LI><B><A HREF="#control_calc">_ti92, _ti89, _ti92plus, _v200</A></B>
+<LI><B><A HREF="#control_flag">_flag_...</A></B>
+<LI><B><A HREF="#control_version">_version...</A></B>
+<LI><B><A HREF="#control_lib_min_version">...@version..., ...__version...</A></B>
+<LI><B><A HREF="#control_ld_use_fline_jumps">__ld_use_fline_jumps</A></B>
+<LI><B><A HREF="#control_ld_use_4byte_fline_jumps">__ld_use_4byte_fline_jumps</A></B>
+<LI><B><A HREF="#control_ld_omit_bss_init">__ld_omit_bss_init</A></B>
+<LI><B><A HREF="#control_ld_ignore_global_imports">__ld_ignore_global_imports</A></B>
+</UL>
+<P>Symbols can be created in a variety of ways; they can be:</P>
+<UL>
+<LI><P>labels;</P></LI>
+<LI><P>undefined exported symbols;</P></LI>
+<LI><P>imported (used but undefined) symbols;</P></LI>
+<LI><P>common symbols.</P></LI>
+</UL>
+<P>Not all assemblers support all types of symbols; for example, the
+<A HREF="a68k.html">A68k assembler</A> does not support exporting
+symbols which are not defined somewhere in the same file. This assembler is
+also somewhat special from the linker's point of view: It only outputs
+exported and imported symbols by default; local labels can be supplied in a
+symbol table, but since it is optional, the linker does not use it to receive
+control information.
+<BR><BR>
+If a symbol is detected as a control symbol, it is not imported into the
+internal data structures as usual. There are two reasons for this: First,
+if a user accidentally defines a control symbol somewhere (some traditional
+control symbol names are quite short), the resulting error can help detect
+this problem. Second, if common symbols are used, they would waste space in
+the executable otherwise.</P>
+
+<H3><A NAME="control_ref_all"><U>__ref_all_...</U></A></H3>
+<P>Defining __ref_all_<I>name</I> creates a
+<A HREF="#global_imports">global import</A> for all symbols named
+<I>name</I>. Importing the same symbol twice does not have any particular
+effect; however, sometimes this is necessary if you want a global import to
+succeed as early as possible.
+<BR><BR>
+If none of the archives supplied to the linker exports a symbol with this
+name (or a related name using
+<A HREF="#global_imports_conditional">conditional reaction</A>), the
+linker outputs a warning.</P>
+
+<H3><A NAME="control_tigcc_native"><U>_tigcc_native</U></A></H3>
+<P>Defining this symbol switches to <A HREF="#modes_native">GCC4TI native
+mode</A>. We recommend that you define this in all new programs, and then
+create or import <A HREF="#startup">startup sections</A>.</P>
+
+<H3><A NAME="control_nostub"><U>_nostub</U></A></H3>
+<P>Defining this symbol switches to <A HREF="#modes_nostub">NoStub
+mode</A>. It can only be used in assembly files, since it is impossible to
+guarantee for some code to be at the beginning of the file.</P>
+
+<H3><A NAME="control_nostub_dll"><U>_nostub_dll</U></A></H3>
+<P>Defining this symbol switches to <A HREF="#modes_nostub_dll">NoStub
+DLL mode</A> and tells the linker to compile a library instead of a program.
+If NoStub DLL support is not compiled in, the symbol is not treated in a
+special way.</P>
+
+<H3><A NAME="control_fargo"><U>_fargo</U></A></H3>
+<P>Defining this symbol switches to <A HREF="#modes_fargo">Fargo II
+mode</A>. If Fargo support is not compiled in, the symbol is not treated in a
+special way.</P>
+
+<H3><A NAME="control_flash_os"><U>_flash_os</U></A></H3>
+<P>Defining this symbol switches to <A HREF="#modes_flash_os">Flash OS
+mode</A>. If Flash OS support is not compiled in, the symbol is not treated in
+a special way.</P>
+
+<H3><A NAME="control_library"><U>_library</U></A></H3>
+<P>Defining this symbol causes a library to be created instead of a program.
+The linker will warn about program <A HREF="#startup">startup
+sections</A> being included, and depending on the
+<A HREF="#modes">linking mode</A> some different
+<A HREF="#global_imports_auto">automatic global imports</A> will be
+created.</P>
+
+<H3><A NAME="control_calc"><U>_ti92, _ti89, _ti92plus, _v200</U></A></H3>
+<P>You need to define one or more of these symbols to specify the calculator for
+which the program is to be linked. This only controls which output files are
+created; the linker does not check whether a file format really exists for a
+given calculator. Kernel compatibility flags (see
+<A HREF="#control_flag">_flag_...</A>) are added according to the
+symbol:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">_ti89</TD>
+<TD VALIGN="TOP">Flag 0 (0x01)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">_ti92plus</TD>
+<TD VALIGN="TOP">Flag 1 (0x02)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">_v200</TD>
+<TD VALIGN="TOP">Flag 5 (0x20)</TD>
+</TR>
+</TABLE></P>
+
+<H3><A NAME="control_flag"><U>_flag_...</U></A></H3>
+<P>Defining _flag_<I>n</I> sets the <I>n</I>-th bit in the kernel compatibility
+flags. Some flags are reserved for calculator compatibility information (see
+<A HREF="#control_calc">here</A>); the others can be used to pass
+additional information to the kernel. Note that the meaning of a particular
+flag may vary between kernels. Kernel flags occupy a single byte; therefore
+the range of <I>n</I> is 0 through 7.</P>
+
+<P>See also: <A HREF="#symbols_ld_kernel_flags">__ld_kernel_flags</A></P>
+<H3><A NAME="control_version"><U>_version...</U></A></H3>
+<P>If you define the symbol _version<I>ver</I>, the program/library version
+number is set to <I>ver</I>, interpreted as a hexadecimal value. Note that
+the kernel format limits the reserved space for the version number to one
+byte; this means that kernels only accept two digits for <I>ver</I>.</P>
+
+<P>See also: <A HREF="#symbols_ld_file_version">__ld_file_version</A></P>
+<H3><A NAME="control_lib_min_version"><U>...@version..., ...__version...</U></A></H3>
+<P>To specify a required minimum version number for a library used by the
+program, you can define <I>lib</I>@version<I>ver</I> or
+<I>lib</I>__version<I>ver</I>. <I>lib</I> is the name of the library (see
+<A HREF="#symbols_lib_call">Library Calls</A>); <I>ver</I> is the
+minimum version number to be accepted, interpreted as a hexadecimal value
+(see <A HREF="#control_version">_version...</A>).</P>
+
+<P>See also: <A HREF="#symbols_lib_call">Library Calls</A></P>
+<H3><A NAME="control_ld_use_fline_jumps"><U>__ld_use_fline_jumps</U></A></H3>
+<P>Defining this symbol tells the linker to use relative
+<A HREF="#bincode_branch_fline">F-Line branches</A> for branches which
+would otherwise need to be absolute. These are supported by AMS 2.04 or
+higher and by various F-Line emulators, including GCC4TI's own emulator.</P>
+
+<P>See also: <A HREF="#control_ld_use_4byte_fline_jumps">__ld_use_4byte_fline_jumps</A></P>
+<H3><A NAME="control_ld_use_4byte_fline_jumps"><U>__ld_use_4byte_fline_jumps</U></A></H3>
+<P>Defining this symbol tells the linker to use program-relative
+<A HREF="#bincode_branch_fline">F-Line branches</A> for branches which
+would otherwise need to be absolute. These branches are 4 bytes long, whereas
+normal relative F-Line branches have a size of 6 bytes. However, since they
+are relative to the program's entry point, the program must install its own
+emulator to handle them.
+<BR><BR>
+4 byte F-Line branches are useful only if range-cutting is enabled.</P>
+
+<P>See also: <A HREF="#control_ld_use_fline_jumps">__ld_use_fline_jumps</A></P>
+<H3><A NAME="control_ld_omit_bss_init"><U>__ld_omit_bss_init</U></A></H3>
+<P>Defining this symbol in a source file tells the linker that this file does
+not depend on the initialization of the BSS section to zero. The result is
+that all uninitialized global variables defined in that file may contain
+garbage at the beginning of the program. This does not guarantee that the
+initialization is skipped; in fact, if at least one file needs the
+initialization, it is easier to initialize even the variables that were
+declared to not need it.
+<BR><BR>
+For pointer-based object file formats (such as COFF, the format used by the
+<A HREF="http://www.gnu.org/">GNU</A> tools included in GCC4TI), this symbol
+really affects all variables in the file it is defined in. For sequential
+formats (such as the AmigaOS format used by the
+<A HREF="a68k.html">A68k assembler</A>), it affects only the parts
+that follow the symbol. Since BSS data usually appears at the end of the
+object file, this restriction should not have any effect.
+<BR><BR>
+<B>Note:</B> If you define this symbol, you should use the
+<A HREF="comopts.html">compiler option</A>
+<B>'-fno-zero-initialized-in-bss'</B>; otherwise even variables explicitly
+initialized to zero will contain garbage.</P>
+
+<H3><A NAME="control_ld_ignore_global_imports"><U>__ld_ignore_global_imports</U></A></H3>
+<P>Defining this symbol in a source file tells the linker that from this file
+on, defining a <A HREF="#control_ref_all">__ref_all_...</A> symbol has
+no effect. This should not be used except in very special circumstances.</P>
+
+<HR>
+<H2><A NAME="startup"><U>Startup Sections</U></A></H2>
+<P>The concept of <U>startup sections</U> is unique to the GCC4TI linker. It only
+makes sense in low-resource environments like calculators. The idea is that a
+file that is imported should be able to specify that it needs certain code to
+be executed at the beginning of the program. Usually, there are two
+approaches to address this situation: constructors and main function
+wrappers.
+<BR><BR>
+If constructors are used to handle this, a lot of memory is wasted: A
+constructor table needs to be created with appropriate code to handle its
+contents; every item needs to save all registers except a few, and sharing
+data between two constructors requires global variables. Moreover, using
+constructors, it is not possible to specify the order in which startup code
+is to be called; however, parts of the startup code often need to rely on
+other parts to be executed first.
+<BR><BR>
+Main function wrappers appear in almost every environment. But since these
+wrappers are fixed, they need to handle all startup code that might possibly
+be needed, instead of letting each file choose its own startup code. For
+example, such fixed startup code would need to handle exceptions even if the
+program never generates them, or fill certain global variables that are never
+read.
+<BR><BR>
+Startup sections are actually a wrapper around the main function, but they
+can achieve even more flexibility than constructors: They are numbered and
+executed in the exact order specified by the numbers, and no extra code is
+executed between two consecutive startup sections, so registers can be used
+to pass data between two sections.
+<BR><BR>
+Startup sections can be used not only to insert code at the beginning of the
+program, but also to generate the required headers for certain file formats.
+Sometimes this is easier than writing the linker code to insert the required
+headers (see <A HREF="#formats">GCC4TI Linker File Formats</A>).
+<BR><BR>
+Since libraries may need to contain a header, some stub code that is called
+when the user tries to execute the library, and possibly some startup code,
+they may also have startup sections. However, it does not really make sense
+to include a startup section designed for a program in a library. Therefore,
+there are library startup sections, which may appear in both libraries and
+programs, and program startup sections, which may appear only in programs.
+Library startup sections are always included <I>before</I> program startup
+sections.
+<BR><BR>
+Startup sections are detected based on their name. To declare a program
+startup section, name the section <CODE>_st<I>n</I></CODE>, where <I>n</I> is
+a value from 1 to 99999 (higher values for <I>n</I> may be accepted if the
+object file format supports section names longer than 8 characters, but it is
+not recommended to use them). To declare a library startup section, name it
+<CODE>_stl<I>n</I></CODE>, where <I>n</I> is a value from 1 to 9999 (higher
+values are not permitted). Startup sections are included in ascending order;
+if two startup sections use the same index, their order is undefined.</P>
+
+<HR>
+<H2><A NAME="global_imports"><U>Global Imports</U></A></H2>
+<P>Just like <A HREF="#startup">startup sections</A>, the concept of
+<U>global imports</U> is unique to the GCC4TI linker. Global imports and
+startup sections are closely related to each other: It is best to keep
+startup sections in archive files, so they can be imported as needed, but
+the existing method of importing archive file members does not work. Usually,
+an archive file member is imported if a symbol it exports is referenced in
+a relocation entry. However, code that requires a specific startup section to
+be included does not necessarily reference any of the symbols in the
+corresponding archive member; it just needs the startup code to be there. A
+global import solves this problem by importing an archive member without
+inserting its address anywhere.
+<BR><BR>
+Actually, a global import imports all archive members that export the symbol
+referenced by the import (and even more, see
+<A HREF="#global_imports_conditional">Conditional Reaction to Global
+Imports</A>). If no archive member exports this symbol, a warning is emitted.
+This way, it is very easy to create archive files that react to multiple
+imports; for example:</P>
+<UL>
+<LI><P>File 1 exports the symbols <I>A</I> and <I>B</I>.</P></LI>
+<LI><P>File 2 exports the symbols <I>B</I> and <I>C</I>.</P></LI>
+<LI><P>File 3 exports the symbols <I>A</I> and <I>C</I>.</P></LI>
+</UL>
+<P>A global import for <I>A</I> would cause the files 1 and 3 to be included in
+the program. If it could only import one file, 6 files would be needed to get
+the same result:</P>
+<UL>
+<LI><P>File 1 exports the symbol <I>A</I> and creates two global imports for <I>File4</I> and <I>File6</I>.</P></LI>
+<LI><P>File 2 exports the symbol <I>B</I> and creates two global imports for <I>File4</I> and <I>File5</I>.</P></LI>
+<LI><P>File 3 exports the symbol <I>C</I> and creates two global imports for <I>File5</I> and <I>File6</I>.</P></LI>
+<LI><P>File 4 exports the symbol <I>File4</I>.</P></LI>
+<LI><P>File 5 exports the symbol <I>File5</I>.</P></LI>
+<LI><P>File 6 exports the symbol <I>File6</I>.</P></LI>
+</UL>
+<P>Global import can be created using the
+<A HREF="#control_ref_all">__ref_all_...</A> control symbol. Some
+global imports are also created automatically by the linker on certain
+conditions.</P>
+
+<UL>
+<LI><B><A HREF="#global_imports_conditional">Conditional Reaction to Global Imports</A></B>
+<LI><B><A HREF="#global_imports_auto">Automatically Created Global Imports</A></B>
+</UL>
+<H3><A NAME="global_imports_conditional"><U>Conditional Reaction to Global Imports</U></A></H3>
+<P>Sometimes, it is convenient for an archive member to react to a global import
+differently than just to be included whenever the import is created. For
+example, a startup section may be optimized better if a certain register
+already holds a certain value, otherwise it must compute the value by itself.
+The GCC4TI linker defines two symbol operators for this purpose:</P>
+<UL>
+<LI><P>..._AND_...</P></LI>
+<LI><P>NOT_...</P></LI>
+</UL>
+<P>To be included only if the global imports <I>A</I> and <I>B</I> are defined,
+a file must export the symbol <CODE><I>A</I>_AND_<I>B</I></CODE>. To be
+included only if the global import <I>A</I> is not defined, a file must
+export the symbol <CODE>NOT_<I>A</I></CODE>. Symbol operators may be
+combined, i.e. a file exporting <CODE>NOT_<I>A</I>_AND_<I>B</I></CODE> is
+included only if no global import <I>A</I> exists, and a global import
+<I>B</I> is defined.
+<BR><BR>
+There is a small quirk related to negated conditions: At some point, the
+linker needs to assume that no global imports <I>A</I> and <I>B</I> exist,
+and any file exporting the symbol <CODE>NOT_<I>A</I></CODE> or
+<CODE>NOT_<I>B</I></CODE> needs to be imported. However, the file which
+exported <CODE>NOT_<I>B</I></CODE> may actually create a global import
+<I>A</I> after the file exporting <CODE>NOT_<I>A</I></CODE> has been
+imported. The linker does not detect this, so you need to be careful not to
+create such situations. They are especially difficult to detect if a lot of
+combinations of AND and NOT operators are used, and if a lot of files that
+react to global imports create imports of their own.</P>
+
+<H3><A NAME="global_imports_auto"><U>Automatically Created Global Imports</U></A></H3>
+<P>In addition to user-defined global imports, the GCC4TI linker also defines
+some global imports of its own, whenever special code is needed to handle a
+situation:
+</P>
+<DL>
+
+<DT><P><B>__kernel_program_header</B></P><DD><P>This global import is created automatically if the linker
+    is operating in <A HREF="#modes_kernel">kernel mode</A>, and if the
+    file is not declared as a library (see the
+    <A HREF="#control_library">_library</A> control symbol).
+</P><DT><P><B>__kernel_library_header</B></P><DD><P>This global import is created automatically if the linker
+    is operating in <A HREF="#modes_kernel">kernel mode</A>, and if the
+    file is declared as a library (see the
+    <A HREF="#control_library">_library</A> control symbol).
+</P><DT><P><B>__fargo_program_header</B></P><DD><P>This global import is created automatically if the linker
+    is operating in <A HREF="#modes_fargo">Fargo II mode</A>, and if the
+    file is not declared as a library (see the
+    <A HREF="#control_library">_library</A> control symbol).
+</P><DT><P><B>__fargo_library_header</B></P><DD><P>This global import is created automatically if the linker
+    is operating in <A HREF="#modes_fargo">Fargo II mode</A>, and if the
+    file is declared as a library (see the
+    <A HREF="#control_library">_library</A> control symbol).
+</P><DT><P><B>__flash_os_header</B></P><DD><P>This global import is created automatically if the linker
+    is operating in <A HREF="#modes_flash_os">Flash OS mode</A>.
+</P><DT><P><B>__nostub_comment_header</B></P><DD><P>This global import is created automatically if NoStub data (comment) exports
+    are defined for the program. The file reacting to this import must use
+    <A HREF="#symbols_ld_nostub_comment_count">__ld_nostub_comment_count
+    </A> and
+    <A HREF="#insert_nostub_comments">__ld_insert_nostub_comments</A>
+    to insert the actual data exports into the header.
+</P><DT><P><B>__handle_constructors</B></P><DD><P>This global import is created automatically if constructors
+    are defined for the program. The file which handles this import must query
+    the constructor section using the
+    <A HREF="#symbols_ld_constructors_start">__ld_constructors_start</A>,
+    <A HREF="#symbols_ld_constructors_end">__ld_constructors_end</A>,
+    <A HREF="#symbols_ld_constructors_size">__ld_constructors_size</A>,
+    and <A HREF="#symbols_ld_constructor_count">__ld_constructor_count</A>
+    symbols.
+</P><DT><P><B>__handle_destructors</B></P><DD><P>This global import is created automatically if destructors
+    are defined for the program. The file which handles this import must query
+    the destructor section using the
+    <A HREF="#symbols_ld_destructors_start">__ld_destructors_start</A>,
+    <A HREF="#symbols_ld_destructors_end">__ld_destructors_end</A>,
+    <A HREF="#symbols_ld_destructors_size">__ld_destructors_size</A>,
+    and <A HREF="#symbols_ld_destructor_count">__ld_destructor_count</A>
+    symbols.
+</P><DT><P><B>__handle_bss</B></P><DD><P>This global import is created automatically if the program
+    contains a BSS section (a section containing uninitialized global variables).
+    No file needs to react to this import; if the BSS section is not created at
+    run time (using <A HREF="#symbols_ld_bss_size">__ld_bss_size</A>,
+    <A HREF="#symbols_ld_bss_ref_count">__ld_bss_ref_count</A>, and
+    an appropriate <A HREF="#insert">insertion</A> for the relocation), it
+    is simply passed on to the output file. If the output format does not support
+    sections, the BSS section is merged with the other sections. However, if the
+    program reacts to this import, it absolutely <I>must</I> handle the
+    relocation entries pointing into the BSS section.
+</P><DT><P><B>__initialize_bss</B></P><DD><P>This global import is created automatically if the program
+    contains a BSS section, and the program requires the contents of this section
+    to be initialized to zero. The file reacting to this import must use
+    <A HREF="#symbols_ld_bss_start">__ld_bss_start</A>,
+    <A HREF="#symbols_ld_bss_end">__ld_bss_end</A>, and
+    <A HREF="#symbols_ld_bss_size">__ld_bss_size</A> to query the location
+    and size of the BSS section.
+    <BR><BR>
+    </P><DT><P><B>__handle_relocs</B>
+    </P><DD><P>This global import is created automatically if the program
+    contains absolute relocation entries. If no file reacts to this import,
+    relocation entries have to be handled by the output format. The file reacting
+    to this import must use
+    <A HREF="#symbols_ld_reloc_count">__ld_reloc_count</A> and an
+    appropriate <A HREF="#insert">insertion</A> to get information about
+    the necessary relocation.
+</P><DT><P><B>__handle_rom_calls</B></P><DD><P>This global import is created automatically if the program
+    contains ROM calls. If no file reacts to this import, ROM calls are handled
+    by the output format. The file reacting to this import must use
+    <A HREF="#symbols_ld_rom_call_count">__ld_rom_call_count</A> and an
+    appropriate <A HREF="#insert">insertion</A> to get information about
+    the ROM calls.
+</P><DT><P><B>__handle_ram_calls</B></P><DD><P>This global import is created automatically if the program
+    contains RAM calls. If no file reacts to this import, RAM calls are handled
+    by the output format. The file reacting to this import must use
+    <A HREF="#symbols_ld_ram_call_count">__ld_ram_call_count</A> and an
+    appropriate <A HREF="#insert">insertion</A> to get information about
+    the RAM calls.
+</P><DT><P><B>__handle_libraries</B></P><DD><P>This global import is created automatically if the program
+    references at least one library. If no file reacts to this import, library
+    calls are handled by the output format. The file reacting to this import must
+    use <A HREF="#symbols_ld_lib_count">__ld_lib_count</A> and an
+    appropriate <A HREF="#insert">insertion</A> to get information about
+    the libraries.
+</P><DT><P><B>__handle_data_var</B></P><DD><P>This global import is created automatically if the data
+    section of the program is not included in the program itself but in an
+    external file. The file that handles this import must open this file and
+    relocate the program accordingly. It must refer to
+    <A HREF="#symbols_ld_data_var_name_end">__ld_data_var_name_end</A>,
+    <A HREF="#symbols_ld_data_size">__ld_data_size</A>, and an appropriate
+    <A HREF="#insert">insertion</A> for the relocation.
+</P><DT><P><B>__data_var_create_copy</B></P><DD><P>This global import is created automatically if the data
+    section of the program is not included in the program itself but in an
+    external file, and this file needs to be copied into memory (either always or
+    under certain circumstances).
+</P><DT><P><B>__data_var_copy_if_archived</B></P><DD><P>This global import is created automatically if the data
+    section of the program is not included in the program itself but in an
+    external file, and this file needs to be copied into memory only if it is
+    archived. This import is created only in combination with
+    __data_var_create_copy.</P>
+</DL>
+
+<HR>
+<H2><A NAME="symbols"><U>Symbols Built into the GCC4TI Linker</U></A></H2>
+<P>The GCC4TI linker is capable of resolving references to certain built-in
+symbols. These symbols act just like normal externally defined symbols; for
+example, it is possible to specify an offset to be added to the symbol in the
+reference. The symbols may resolve to numbers or addresses. The kind of
+symbol should be obvious for each individual symbol; for example, it does not
+make sense to jump to <A HREF="#symbols_ld_bss_size">__ld_bss_size</A>
+because it resolves to a number. All numbers have to be used as immediate
+values; if a symbol resolves to a number, treating it as an address and
+reading the value at this address will return garbage.
+<BR><BR>
+The following symbol names are treated as built-in symbol names, and resolved
+in a special way:</P>
+
+<UL>
+<LI><B><A HREF="#symbols_rom_call">_ROM_CALL_...</A></B>
+<LI><B><A HREF="#symbols_ti_ams_api">tiamsapi_...</A></B>
+<LI><B><A HREF="#symbols_ram_call">_RAM_CALL_...</A></B>
+<LI><B><A HREF="#symbols_extra_ram_addr">_extraramaddr@..., _extraramaddr__...</A></B>
+<LI><B><A HREF="#symbols_lib_call">...@????, ...__????</A></B>
+<LI><B><A HREF="#symbols_ld_calc_const">__ld_calc_const_...</A></B>
+<LI><B><A HREF="#symbols_ld_entry_point">__ld_entry_point</A></B>
+<LI><B><A HREF="#symbols_ld_entry_point_plus_0x8000">__ld_entry_point_plus_0x8000</A></B>
+<LI><B><A HREF="#symbols_ld_program_size">__ld_program_size</A></B>
+<LI><B><A HREF="#symbols_ld_constructors_start">__ld_constructors_start</A></B>
+<LI><B><A HREF="#symbols_ld_constructors_end">__ld_constructors_end</A></B>
+<LI><B><A HREF="#symbols_ld_constructors_size">__ld_constructors_size</A></B>
+<LI><B><A HREF="#symbols_ld_constructor_count">__ld_constructor_count</A></B>
+<LI><B><A HREF="#symbols_ld_destructors_start">__ld_destructors_start</A></B>
+<LI><B><A HREF="#symbols_ld_destructors_end">__ld_destructors_end</A></B>
+<LI><B><A HREF="#symbols_ld_destructors_size">__ld_destructors_size</A></B>
+<LI><B><A HREF="#symbols_ld_destructor_count">__ld_destructor_count</A></B>
+<LI><B><A HREF="#symbols_ld_reloc_count">__ld_reloc_count</A></B>
+<LI><B><A HREF="#symbols_ld_data_start">__ld_data_start</A></B>
+<LI><B><A HREF="#symbols_ld_data_end">__ld_data_end</A></B>
+<LI><B><A HREF="#symbols_ld_data_size">__ld_data_size</A></B>
+<LI><B><A HREF="#symbols_ld_data_ref_count">__ld_data_ref_count</A></B>
+<LI><B><A HREF="#symbols_ld_bss_start">__ld_bss_start</A></B>
+<LI><B><A HREF="#symbols_ld_bss_end">__ld_bss_end</A></B>
+<LI><B><A HREF="#symbols_ld_bss_even_end">__ld_bss_even_end</A></B>
+<LI><B><A HREF="#symbols_ld_bss_size">__ld_bss_size</A></B>
+<LI><B><A HREF="#symbols_ld_bss_ref_count">__ld_bss_ref_count</A></B>
+<LI><B><A HREF="#symbols_ld_rom_call_count">__ld_rom_call_count</A></B>
+<LI><B><A HREF="#symbols_ld_ram_call_count">__ld_ram_call_count</A></B>
+<LI><B><A HREF="#symbols_ld_lib_count">__ld_lib_count</A></B>
+<LI><B><A HREF="#symbols_ld_referenced_lib_count">__ld_referenced_lib_count</A></B>
+<LI><B><A HREF="#symbols_ld_export_count">__ld_export_count</A></B>
+<LI><B><A HREF="#symbols_ld_nostub_comment_count">__ld_nostub_comment_count</A></B>
+<LI><B><A HREF="#symbols_ld_has">__ld_has_...</A></B>
+<LI><B><A HREF="#symbols_ld_file_version">__ld_file_version</A></B>
+<LI><B><A HREF="#symbols_ld_kernel_flags">__ld_kernel_flags</A></B>
+<LI><B><A HREF="#symbols_ld_kernel_bss_table">__ld_kernel_bss_table</A></B>
+<LI><B><A HREF="#symbols_ld_kernel_export_table">__ld_kernel_export_table</A></B>
+<LI><B><A HREF="#symbols_ld_data_var_name_end">__ld_data_var_name_end</A></B>
+<LI><B><A HREF="#symbols_ld_hardware_id">__ld_hardware_id</A></B>
+<LI><B><A HREF="#symbols_ld_link_time_year">__ld_link_time_year</A></B>
+<LI><B><A HREF="#symbols_ld_link_time_month">__ld_link_time_month</A></B>
+<LI><B><A HREF="#symbols_ld_link_time_day">__ld_link_time_day</A></B>
+<LI><B><A HREF="#symbols_ld_link_time_timestamp">__ld_link_time_timestamp</A></B>
+<LI><B><A HREF="#symbols_exit">_exit</A></B>
+<LI><B><A HREF="#symbols_comment">_comment</A></B>
+<LI><B><A HREF="#symbols_extraram">_extraram</A></B>
+<LI><B><A HREF="#symbols_library">_library</A></B>
+</UL>
+<H3><A NAME="symbols_rom_call"><U>_ROM_CALL_...</U></A></H3>
+<P>The symbol _ROM_CALL_<I>index</I> is resolved to the ROM call with the index
+<I>index</I>, interpreted as a hexadecimal value. The operating system
+translates references to such symbols in a way that they point to the
+specified ROM call. This is usually a function, but it can also be a
+variable.</P>
+
+<P>See also: <A HREF="#symbols_ti_ams_api">tiamsapi_...</A>, <A HREF="#symbols_ram_call">_RAM_CALL_...</A></P>
+<H3><A NAME="symbols_ti_ams_api"><U>tiamsapi_...</U></A></H3>
+<P>The symbol tiamsapi_<I>index</I> is resolved to the ROM call with the index
+<I>index</I>, interpreted as a decimal value. The operating system translates
+references to such symbols in a way that they point to the specified ROM
+call. This is usually a function, but it can also be a variable.</P>
+
+<P>See also: <A HREF="#symbols_rom_call">_ROM_CALL_...</A></P>
+<H3><A NAME="symbols_ram_call"><U>_RAM_CALL_...</U></A></H3>
+<P>The symbol _RAM_CALL_<I>index</I> is resolved to the RAM call with the index
+<I>index</I>, interpreted as a hexadecimal value. If RAM calls are supported,
+the operating system translates references to such symbols in a way that they
+either point to a specific location in memory, or are replaced by a specific
+value.</P>
+
+<P>See also: <A HREF="#symbols_rom_call">_ROM_CALL_...</A>, <A HREF="#symbols_extra_ram_addr">Extra RAM Addresses</A></P>
+<H3><A NAME="symbols_extra_ram_addr"><U>_extraramaddr@..., _extraramaddr__...</U></A></H3>
+<P>_extraramaddr@<I>index</I> and _extraramaddr__<I>index</I> are treated as
+references to an extra RAM address with the index <I>index</I> interpreted as
+a hexadecimal value. <I>index</I> is an index into the extra RAM table
+defined by the program (using the
+<A HREF="#symbols_extraram">_extraram</A> symbol). The value which
+__extraramaddr... symbols are resolved to is either the TI-89 or the
+TI-92(+)/V200 value of the table row specified by <I>index</I>.
+<BR><BR>
+Internally, extra RAM addresses are stored as RAM calls and treated the same
+way.
+<A HREF="#insert_kernel_ram_calls">__ld_insert_kernel_ram_calls</A>
+and <A HREF="#insert_preos_compressed_tables">
+__ld_insert_preos_compressed_tables</A> output RAM calls and extra RAM
+addresses similarly to each other.</P>
+
+<P>See also: <A HREF="#symbols_extraram">_extraram</A>, <A HREF="#symbols_ram_call">_RAM_CALL...</A></P>
+<H3><A NAME="symbols_lib_call"><U>...@????, ...__????</U></A></H3>
+<P>The symbol <I>libname</I>@<I>index</I> or <I>libname</I>__<I>index</I> is
+resolved to a call to the library <I>libname</I> with the index <I>index</I>,
+interpreted as a hexadecimal value. <I>index</I> must have exactly four
+hexadecimal digits; otherwise it will not be recognized. If library calls are
+supported, the operating system loads the specified libraries and translates
+references to such symbols in a way that they point to the appropriate
+exported symbol in the library.
+<BR><BR>
+Library symbols are exported in the same way they are imported, except that
+the first part of the symbol (the library name) is not checked. If an
+exported symbol in an object file has the form <I>libname</I>@<I>index</I> or
+<I>libname</I>__<I>index</I>, where <I>index</I> is a four-digit hexadecimal
+number and <I>libname</I> does not start with a dot or an underscore, it is
+automatically exported from the program or library. The reason for this
+somewhat ambiguous pattern is purely traditional.</P>
+
+<P>See also: <A HREF="#control_lib_min_version">Minimum Library Versions</A>, <A HREF="#symbols_rom_call">_ROM_CALL_...</A>, <A HREF="#symbols_ram_call">_RAM_CALL_...</A></P>
+<H3><A NAME="symbols_ld_calc_const"><U>__ld_calc_const_...</U></A></H3>
+<P>__ld_calc_const_<I>constants</I>, where <I>constants</I> is an
+underscore-separated list of positive integer values in decimal or
+hexadecimal notation (prefixed with <CODE>0x</CODE>), resolves to one of the
+values in <I>constants</I>. The actual value depends on the calculator
+belonging to the file that is generated. This feature adds the possibility to
+compile a program for multiple calculators at once and still generate
+different files for each calculator.
+<BR><BR>
+The order of the calculator-specific values in <I>constants</I> is as
+follows:</P>
+<OL>
+<LI><P>TI-92</P></LI>
+<LI><P>TI-89</P></LI>
+<LI><P>TI-92 Plus</P></LI>
+<LI><P>V200</P></LI>
+</OL>
+<P>Values for calculators which the linker is currently not generating any
+output file for may be omitted. If a significant value is omitted, the value
+is assumed to be zero, and a warning is emitted.</P>
+
+<H3><A NAME="symbols_ld_entry_point"><U>__ld_entry_point</U></A></H3>
+<P>References to this symbol are resolved to the first address of the program
+that contains executable code. If startup sections are defined, this is the
+address of the first startup section. However, the exact meaning of the
+symbol is defined by the <A HREF="#modes">mode</A> the linker is
+operating in, since startup sections do not necessarily need to contain code,
+and an "entry point" in the sense of this symbol does not exist in all types
+of files.
+<BR><BR>
+<B>Note:</B> In <A HREF="#modes_fargo">Fargo II mode</A>, all
+references to this symbol are manually shifted by two bytes in the negative
+direction, since Fargo heavily uses the program variable's address as a base
+address, instead of the address of the Fargo header.</P>
+
+<H3><A NAME="symbols_ld_entry_point_plus_0x8000"><U>__ld_entry_point_plus_0x8000</U></A></H3>
+<P>This symbol is the same as
+<A HREF="#symbols_ld_entry_point">__ld_entry_point</A> plus
+<CODE>0x8000</CODE> (32 KB).</P>
+
+<H3><A NAME="symbols_ld_program_size"><U>__ld_program_size</U></A></H3>
+<P>This built-in symbol represents the size of the main section after all sections
+are merged into one. If all sections are merged into a single section, this is
+the size of the final linked program (<I>without</I> any headers or footers
+required by the output format). If an external data variable is used, this
+would be the size of the main executable only (but see the note about automatic
+insertion below).<BR><BR>
+Resolving of this symbol is delayed until the last pass of the linker in order
+to ensure the size isn't changed by later range-cutting. Currently, this is the
+same pass which also does <A HREF="#insert">automatic insertions</A>, so
+insertions may or may not be counted.<BR><BR>
+This symbol is currently used by the Flash OS support to write the OS size into
+the header which is sent to the calculator. Flash operating systems do not use
+relocation, so the lack of support for automatic insertions is not a problem in
+this context.</P>
+
+<H3><A NAME="symbols_ld_constructors_start"><U>__ld_constructors_start</U></A></H3>
+<P>This built-in symbol represents the beginning of the constructor section of
+the program. A constructor section contains an array of pointers to
+functions, all of which do not take any parameters. These functions are to be
+executed at program startup. If no constructors are used, an error is
+reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_constructors_end">__ld_constructors_end</A>, <A HREF="#symbols_ld_constructors_size">__ld_constructors_size</A>, <A HREF="#symbols_ld_constructor_count">__ld_constructor_count</A>, <A HREF="#symbols_ld_destructors_start">__ld_destructors_start</A></P>
+<H3><A NAME="symbols_ld_constructors_end"><U>__ld_constructors_end</U></A></H3>
+<P>This built-in symbol represents the end of the constructor section of the
+program. A constructor section contains an array of pointers to functions,
+all of which do not take any parameters. These functions are to be executed
+at program startup. If no constructors are used, an error is reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_constructors_start">__ld_constructors_start</A>, <A HREF="#symbols_ld_constructors_size">__ld_constructors_size</A>, <A HREF="#symbols_ld_constructor_count">__ld_constructor_count</A></P>
+<H3><A NAME="symbols_ld_constructors_size"><U>__ld_constructors_size</U></A></H3>
+<P>This built-in symbol represents the size of the constructor section of the
+program. A constructor section contains an array of pointers to functions,
+all of which do not take any parameters. If no constructors are used, the
+symbol resolves to a value of 0. The value equals the value of
+<A HREF="#symbols_ld_constructor_count">__ld_constructor_count</A>
+multiplied by the size of a pointer, which is 4.</P>
+
+<P>See also: <A HREF="#symbols_ld_constructors_start">__ld_constructors_start</A>, <A HREF="#symbols_ld_constructors_end">__ld_constructors_end</A>, <A HREF="#symbols_ld_constructor_count">__ld_constructor_count</A></P>
+<H3><A NAME="symbols_ld_constructor_count"><U>__ld_constructor_count</U></A></H3>
+<P>This built-in symbol represents the number of constructors the program uses.
+If no constructors are used, it resolves to a value of 0. The value equals
+the value of
+<A HREF="#symbols_ld_constructors_size">__ld_constructors_size</A>
+divided by the size of a pointer, which is 4.</P>
+
+<P>See also: <A HREF="#symbols_ld_constructors_start">__ld_constructors_start</A>, <A HREF="#symbols_ld_constructors_end">__ld_constructors_end</A>, <A HREF="#symbols_ld_constructors_size">__ld_constructors_size</A>, <A HREF="#symbols_ld_destructor_count">__ld_destructor_count</A></P>
+<H3><A NAME="symbols_ld_destructors_start"><U>__ld_destructors_start</U></A></H3>
+<P>This built-in symbol represents the beginning of the destructor section of
+the program. A destructor section contains an array of pointers to
+functions, all of which do not take any parameters. These functions are to be
+executed at program startup. If no destructors are used, an error is
+reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_destructors_end">__ld_destructors_end</A>, <A HREF="#symbols_ld_destructors_size">__ld_destructors_size</A>, <A HREF="#symbols_ld_destructor_count">__ld_destructor_count</A>, <A HREF="#symbols_ld_constructors_start">__ld_constructors_start</A></P>
+<H3><A NAME="symbols_ld_destructors_end"><U>__ld_destructors_end</U></A></H3>
+<P>This built-in symbol represents the end of the destructor section of the
+program. A destructor section contains an array of pointers to functions,
+all of which do not take any parameters. These functions are to be executed
+at program exit. If no destructors are used, an error is reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_destructors_start">__ld_destructors_start</A>, <A HREF="#symbols_ld_destructors_size">__ld_destructors_size</A>, <A HREF="#symbols_ld_destructor_count">__ld_destructor_count</A></P>
+<H3><A NAME="symbols_ld_destructors_size"><U>__ld_destructors_size</U></A></H3>
+<P>This built-in symbol represents the size of the destructor section of the
+program. A destructor section contains an array of pointers to functions,
+all of which do not take any parameters. If no destructors are used, the
+symbol resolves to a value of 0. The value equals the value of
+<A HREF="#symbols_ld_destructor_count">__ld_destructor_count</A>
+multiplied by the size of a pointer, which is 4.</P>
+
+<P>See also: <A HREF="#symbols_ld_destructors_start">__ld_destructors_start</A>, <A HREF="#symbols_ld_destructors_end">__ld_destructors_end</A>, <A HREF="#symbols_ld_destructor_count">__ld_destructor_count</A></P>
+<H3><A NAME="symbols_ld_destructor_count"><U>__ld_destructor_count</U></A></H3>
+<P>This built-in symbol represents the number of destructors the program uses.
+If no destructors are used, it resolves to a value of 0. The value equals
+the value of
+<A HREF="#symbols_ld_destructors_size">__ld_destructors_size</A>
+divided by the size of a pointer, which is 4.</P>
+
+<P>See also: <A HREF="#symbols_ld_destructors_start">__ld_destructors_start</A>, <A HREF="#symbols_ld_destructors_end">__ld_destructors_end</A>, <A HREF="#symbols_ld_destructors_size">__ld_destructors_size</A>, <A HREF="#symbols_ld_constructor_count">__ld_constructor_count</A></P>
+<H3><A NAME="symbols_ld_reloc_count"><U>__ld_reloc_count</U></A></H3>
+<P>This built-in symbol resolves to the number of absolute relocation entries in
+this program/library, except relocation entries to sections which are handled
+separately. If the program contains an external BSS and/or data section,
+relocs to this section are not counted, since they cannot be handled in the
+same manner as relocs into the program code.</P>
+
+<P>See also: <A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>, <A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A>, <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>, <A HREF="#insert_fargo021_relocs">__ld_insert_fargo021_relocs</A>, <A HREF="#insert_preos_compressed_tables">__ld_insert_preos_compressed_tables</A></P>
+<H3><A NAME="symbols_ld_data_start"><U>__ld_data_start</U></A></H3>
+<P>This built-in symbol represents the starting address of the data section, if
+the program does not mix text and data (for example if the data is written
+into an external file). It points to the location behind the last item in the
+section. If the program does not contain an explicit data section, an error
+is reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_data_end">__ld_data_end</A>, <A HREF="#symbols_ld_data_size">__ld_data_size</A></P>
+<H3><A NAME="symbols_ld_data_end"><U>__ld_data_end</U></A></H3>
+<P>This built-in symbol represents the end of the data section, if the program
+does not mix text and data (for example if the data is written into an
+external file). It points to the location behind the last item in the
+section. If the program does not contain an explicit data section, an error
+is reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_data_start">__ld_data_start</A>, <A HREF="#symbols_ld_data_size">__ld_data_size</A></P>
+<H3><A NAME="symbols_ld_data_size"><U>__ld_data_size</U></A></H3>
+<P>This built-in symbol represents the size of the data section in bytes, if the
+program does not mix text and data (for example if the data is written into
+an external file). If the program does not contain a data section, the symbol
+resolves to the value 0.</P>
+
+<P>See also: <A HREF="#symbols_ld_data_start">__ld_data_start</A>, <A HREF="#symbols_ld_data_end">__ld_data_end</A></P>
+<H3><A NAME="symbols_ld_data_ref_count"><U>__ld_data_ref_count</U></A></H3>
+<P>This built-in symbol represents the number of references to the data section,
+if the program does not mix text and data (for example if the data is written
+into an external file). If the program does not contain an explicit data
+section, it resolves to the value 0. If the data section is merged with the
+other sections, the references counted by this symbol and the references
+counted by <A HREF="#symbols_ld_reloc_count">__ld_reloc_count</A> will
+overlap.</P>
+
+<P>See also: <A HREF="#insert_kernel_data_refs">__ld_insert_kernel_data_refs</A>, <A HREF="#insert_mlink_data_refs">__ld_insert_mlink_data_refs</A>, <A HREF="#insert_compressed_data_refs">__ld_insert_compressed_data_refs</A></P>
+<H3><A NAME="symbols_ld_bss_start"><U>__ld_bss_start</U></A></H3>
+<P>This built-in symbol represents the starting address of the BSS section. If
+the program does not contain a BSS section, an error is reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_bss_end">__ld_bss_end</A>, <A HREF="#symbols_ld_bss_even_end">__ld_bss_even_end</A>, <A HREF="#symbols_ld_bss_size">__ld_bss_size</A></P>
+<H3><A NAME="symbols_ld_bss_end"><U>__ld_bss_end</U></A></H3>
+<P>This built-in symbol represents the end of the BSS section. It points to the
+location behind the last item in the section. If the program does not contain
+a BSS section, an error is reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_bss_start">__ld_bss_start</A>, <A HREF="#symbols_ld_bss_size">__ld_bss_size</A>, <A HREF="#symbols_ld_bss_even_end">__ld_bss_even_end</A></P>
+<H3><A NAME="symbols_ld_bss_even_end"><U>__ld_bss_even_end</U></A></H3>
+<P>This built-in symbol points to the first even location behind the last item
+in the BSS section. In other words, it is equal to
+<A HREF="#symbols_ld_bss_end">__ld_bss_end</A>
+rounded up to the next multiple of 2.
+If the program does not contain a BSS section, an error is reported.</P>
+
+<P>See also: <A HREF="#symbols_ld_bss_end">__ld_bss_end</A>, <A HREF="#symbols_ld_bss_start">__ld_bss_start</A>, <A HREF="#symbols_ld_bss_size">__ld_bss_size</A></P>
+<H3><A NAME="symbols_ld_bss_size"><U>__ld_bss_size</U></A></H3>
+<P>This built-in symbol represents the size of the BSS section in bytes. If the
+program does not contain a BSS section, the symbol resolves to the value 0.</P>
+
+<P>See also: <A HREF="#symbols_ld_bss_start">__ld_bss_start</A>, <A HREF="#symbols_ld_bss_end">__ld_bss_end</A>, <A HREF="#symbols_ld_bss_even_end">__ld_bss_even_end</A></P>
+<H3><A NAME="symbols_ld_bss_ref_count"><U>__ld_bss_ref_count</U></A></H3>
+<P>This built-in symbol represents the number of references to the BSS section.
+If the program does not contain a BSS section, it resolves to a value of 0.
+If the BSS section is merged with the other sections, the references counted
+by this symbol and the references counted by
+<A HREF="#symbols_ld_reloc_count">__ld_reloc_count</A> will overlap.</P>
+
+<P>See also: <A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A>, <A HREF="#insert_mlink_bss_refs">__ld_insert_mlink_bss_refs</A>, <A HREF="#insert_compressed_bss_refs">__ld_compressed_bss_refs</A>, <A HREF="#insert_fargo021_bss_refs">__ld_fargo021_bss_refs</A>, <A HREF="#insert_preos_compressed_tables">__ld_insert_preos_compressed_tables</A></P>
+<H3><A NAME="symbols_ld_rom_call_count"><U>__ld_rom_call_count</U></A></H3>
+<P>This built-in symbol resolves to the number of
+<A HREF="#symbols_rom_call">ROM calls</A> in this program/library. If
+the program/library does not reference any ROM code exports, it resolves to a
+value of 0.</P>
+
+<P>See also: <A HREF="#insert_kernel_rom_calls">__ld_insert_kernel_rom_calls</A>, <A HREF="#insert_mlink_rom_calls">__ld_insert_mlink_rom_calls</A>, <A HREF="#insert_compressed_rom_calls">__ld_insert_compressed_rom_calls</A>, <A HREF="#insert_preos_compressed_tables">__ld_insert_preos_compressed_tables</A>, <A HREF="#symbols_rom_call">ROM Calls</A></P>
+<H3><A NAME="symbols_ld_ram_call_count"><U>__ld_ram_call_count</U></A></H3>
+<P>This built-in symbol resolves to the number of
+<A HREF="#symbols_ram_call">RAM calls</A> in this program/library. If
+the program/library does not reference any RAM exports, it resolves to a
+value of 0. <A HREF="#symbols_extra_ram_addr">Extra RAM address</A>
+references count as RAM calls as well. Note that RAM calls are handled purely
+by kernels, i.e. by middleware residing in the RAM.</P>
+
+<P>See also: <A HREF="#insert_kernel_ram_calls">__ld_insert_kernel_ram_calls</A>, <A HREF="#insert_preos_compressed_tables">__ld_insert_preos_compressed_tables</A>, <A HREF="#symbols_ram_call">RAM Calls</A>, <A HREF="#symbols_extra_ram_addr">Extra RAM Addresses</A></P>
+<H3><A NAME="symbols_ld_lib_count"><U>__ld_lib_count</U></A></H3>
+<P>This built-in symbol resolves to the number of libraries needed by this
+program/library. The libraries do not actually need to be used; it is enough
+for a file to specify a required minimum version for a specific library
+(see <A HREF="#control_lib_min_version">Minimum Library Versions</A>).
+The idea is that a program should be able to specify a minimum version for a
+library even if the library is only referenced indirectly via another one.
+See <A HREF="#symbols_ld_referenced_lib_count">__ld_referenced_lib_count</A>
+for a way to count only the libraries that are actually used.</P>
+
+<P>See also: <A HREF="#symbols_ld_referenced_lib_count">__ld_referenced_lib_count</A>, <A HREF="#insert_kernel_libs">__ld_insert_kernel_libs</A>, <A HREF="#insert_fargo020_libs">__ld_insert_fargo020_libs</A>, <A HREF="#insert_fargo021_libs">__ld_insert_fargo021_libs</A>, <A HREF="#insert_preos_compressed_tables">__ld_insert_preos_compressed_tables</A>, <A HREF="#symbols_lib_call">Library Calls</A>, <A HREF="#control_lib_min_version">Minimum Library Versions</A></P>
+<H3><A NAME="symbols_ld_referenced_lib_count"><U>__ld_referenced_lib_count</U></A></H3>
+<P>This built-in symbol acts like
+<A HREF="#symbols_ld_lib_count">__ld_lib_count</A>, except that it
+counts only the libraries that are actually used. If the program only
+specified a minimum version for a library, but did not use any of its
+exported symbols, this library is not counted.</P>
+
+<P>See also: <A HREF="#symbols_ld_lib_count">__ld_lib_count</A>, <A HREF="#insert_kernel_libs">__ld_insert_kernel_libs</A>, <A HREF="#insert_fargo020_libs">__ld_insert_fargo020_libs</A>, <A HREF="#insert_fargo021_libs">__ld_insert_fargo021_libs</A>, <A HREF="#insert_preos_compressed_tables">__ld_insert_preos_compressed_tables</A>, <A HREF="#symbols_lib_call">Library Calls</A>, <A HREF="#control_lib_min_version">Minimum Library Versions</A></P>
+<H3><A NAME="symbols_ld_export_count"><U>__ld_export_count</U></A></H3>
+<P>This built-in symbol resolves to the number of exported items in the current
+program/library. This equals the highest export number present in the linked
+files (see <A HREF="#symbols_lib_call">Library Calls</A>) plus 1. For
+example, defining a single exported entry named <CODE>mylib@00FF</CODE>
+causes the export table to be 0x100 functions long, and therefore this symbol
+to be resolved to a value of 0x100.</P>
+
+<P>See also: <A HREF="#insert_kernel_exports">__ld_insert_kernel_exports</A>, <A HREF="#symbols_lib_call">Library Calls</A></P>
+<H3><A NAME="symbols_ld_nostub_comment_count"><U>__ld_nostub_comment_count</U></A></H3>
+<P>This built-in symbol resolves to the number of NoStub data exports in the
+current program. Unlike for library exports, skipped indices are <I>not</I>
+counted.</P>
+
+<P>See also: <A HREF="#insert_nostub_comments">__ld_insert_nostub_comments</A></P>
+<H3><A NAME="symbols_ld_has"><U>__ld_has_...</U></A></H3>
+<P>The symbol __ld_has_<I>item</I>s resolves to a nonzero value if
+__ld_<I>item</I>_count is greater than zero. Currently this value is -1, but
+do not rely on this!</P>
+
+<H3><A NAME="symbols_ld_file_version"><U>__ld_file_version</U></A></H3>
+<P>This symbol resolves to the version number of the current program, defined
+with <A HREF="#control_version">_version...</A>. If no version number
+has been defined, it resolves to a value of 0.</P>
+
+<P>See also: <A HREF="#control_version">_version...</A></P>
+<H3><A NAME="symbols_ld_kernel_flags"><U>__ld_kernel_flags</U></A></H3>
+<P>This symbol resolves to the value of the kernel flags. Kernel flags may be
+specified with <A HREF="#control_flag">_flag_...</A> and with
+<A HREF="#control_calc">calculator control symbols</A>.</P>
+
+<P>See also: <A HREF="#control_flag">_flag_...</A></P>
+<H3><A NAME="symbols_ld_kernel_bss_table"><U>__ld_kernel_bss_table</U></A></H3>
+<P>Usually, this symbol is simply resolved to a user-defined symbol named
+<CODE>__kernel_bss_table</CODE>. However, if the program does not contain a
+BSS section, it is redirected to the entry point of the program. The effect
+is that constructs of the form</P>
+<PRE>.word __ld_kernel_bss_table-<I>entry_point</I>
+</PRE>
+<P>resolve to 0 if no BSS section is used.
+<BR><BR>
+<B>Note:</B> If a program/library defines <CODE>__kernel_bss_table</CODE>, it
+absolutely <I>must</I> handle the BSS section. See
+<A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A> for
+a way to get information about references into the BSS section.</P>
+
+<H3><A NAME="symbols_ld_kernel_export_table"><U>__ld_kernel_export_table</U></A></H3>
+<P>Usually, this symbol is simply resolved to a user-defined symbol named
+<CODE>__kernel_export_table</CODE>. However, if the program does not contain
+any exported symbols, it is redirected to the entry point of the program. The
+effect is that constructs of the form</P>
+<PRE>.word __ld_kernel_export_table-<I>entry_point</I>
+</PRE>
+<P>resolve to 0 if no exports exist.</P>
+
+<H3><A NAME="symbols_ld_data_var_name_end"><U>__ld_data_var_name_end</U></A></H3>
+<P>This symbol is resolved to the address of the user-defined symbol
+<CODE>__data_var_name_start</CODE>, plus the length in bytes of the data
+variable name, plus 1 for the zero byte at the beginning. If no data variable
+is specified for the program, an error is reported. The symbol
+<CODE>__data_var_name_start</CODE> must be defined and exported by the
+program.</P>
+
+<H3><A NAME="symbols_ld_hardware_id"><U>__ld_hardware_id</U></A></H3>
+<P>This built-in symbol resolves to the hardware ID of the target calculator
+type, a number used in the Flash OS stub.</P>
+
+<H3><A NAME="symbols_ld_link_time_year"><U>__ld_link_time_year</U></A></H3>
+<P>This built-in symbol represents the current year when starting the linking
+process. It is written in binary form, not in string form.</P>
+
+<H3><A NAME="symbols_ld_link_time_month"><U>__ld_link_time_month</U></A></H3>
+<P>This built-in symbol represents the current month when starting the linking
+process. It is written in binary form, not in string form.</P>
+
+<H3><A NAME="symbols_ld_link_time_day"><U>__ld_link_time_day</U></A></H3>
+<P>This built-in symbol represents the current day when starting the linking
+process. It is written in binary form, not in string form.</P>
+
+<H3><A NAME="symbols_ld_link_time_timestamp"><U>__ld_link_time_timestamp</U></A></H3>
+<P>This built-in symbol represents the number of seconds elapsed between
+January 1st 1997, 00:00:00 UTC and the beginning of the linking process.
+It is written in binary form, not in string form.<BR><BR>
+This built-in is provided so that the Flash OS support library can define a
+meaningful value for the 0x900 subfield of the 0x320 certificate field contained
+in the Flash OS header, thus mimicking AMS and its FlashApps.</P>
+
+<H3><A NAME="symbols_exit"><U>_exit</U></A></H3>
+<P>Usually, this symbol is not handled in a special way. However, if it does
+not exist at all, it is redirected to the entry point of the program. The
+effect is that constructs of the form</P>
+<PRE>.word _exit-<I>entry_point</I>
+</PRE>
+<P>resolve to 0 if the symbol is undefined.
+<BR><BR>
+The kernel headers of the standard library reference this symbol as the
+program/library destructor. For kernel programs and libraries, it is called
+whenever the program exits or the library is unloaded.</P>
+
+<H3><A NAME="symbols_comment"><U>_comment</U></A></H3>
+<P>Usually, this symbol is not handled in a special way. However, if it does
+not exist at all, it is redirected to the entry point of the program. The
+effect is that constructs of the form</P>
+<PRE>.word _comment-<I>entry_point</I>
+</PRE>
+<P>resolve to 0 if the symbol is undefined.
+<BR><BR>
+The kernel headers reference this symbol as the comment string of the
+program. If it exists, it must be a zero-terminated ASCII string.</P>
+
+<H3><A NAME="symbols_extraram"><U>_extraram</U></A></H3>
+<P>Usually, this symbol is not handled in a special way. However, if it does
+not exist at all, it is redirected to the entry point of the program. The
+effect is that constructs of the form</P>
+<PRE>.word _extraram-<I>entry_point</I>
+</PRE>
+<P>resolve to 0 if the symbol is undefined.
+<BR><BR>
+The kernel headers of the standard library reference this symbol as an extra
+RAM table. The table is organized in pairs of 16 bit values. Of each pair,
+the first value is relevant for the TI-89, and the second value is relevant
+for the TI-92(+)/V200 calculator family. In C, you would define an extra RAM
+table like this:</P>
+<PRE>struct {
+  short value89, value9x;
+} _extraram[] = {{v1_89, v1_9x}, {v2_89, v2_9x}, ...};
+</PRE>
+<P>However, extra RAM tables are barely usable in C: The compiler does not
+support using external symbols as immediate values, except if you take their
+address.</P>
+
+<P>See also: <A HREF="#symbols_extra_ram_addr">Extra RAM Addresses</A></P>
+<H3><A NAME="symbols_library"><U>_library</U></A></H3>
+<P>Usually, this symbol is not handled in a special way. However, if it does
+not exist at all, it is redirected to the entry point of the program. The
+effect is that constructs of the form</P>
+<PRE>.word _library-<I>entry_point</I>
+</PRE>
+<P>resolve to 0 if the symbol is undefined.
+<BR><BR>
+<B>Note:</B> _library is also a <A HREF="#control">control symbol</A>,
+which means that under normal circumstances, references to it are not
+allowed. However, in <A HREF="#modes_fargo">Fargo II mode</A>,
+programs and libraries have special permission to use this symbol.</P>
+
+<HR>
+<H2><A NAME="insert"><U>Automatically Inserted Section Contents</U></A></H2>
+<P>The GCC4TI linker can insert certain variable-length data into the contents of
+sections. If a symbol (i.e., a label) at the end of a section is recognized
+as an insertion point, then the linker appends the data specified by the
+symbol name. If the symbol is not at the end of a section, the insertion will
+fail without notice, since these contents may have been inserted
+automatically already.
+<BR><BR>
+You may refer to an insertion symbol even if you did not put a label at a
+specific place. In this case, the data is written to an arbitrary place
+(usually the end of the program, but do <I>not</I> rely on this). However,
+all object files and archives are searched for exported symbols with this
+name first, to avoid duplication of the data.
+<BR><BR>
+This method is only used if some program-related data cannot be expressed
+using simple <A HREF="#symbols">built-in symbols</A>. It should be
+used with care, as the inserted data may be invalid under certain
+circumstances. The format of the data is fixed and usually represents some
+already established data format, but new data formats may be developed on
+demand. The insertion symbols which are currently recognized are:</P>
+
+<UL>
+<LI><B><A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A></B>
+<LI><B><A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A></B>
+<LI><B><A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A></B>
+<LI><B><A HREF="#insert_fargo021_relocs">__ld_insert_fargo021_relocs</A></B>
+<LI><B><A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A></B>
+<LI><B><A HREF="#insert_mlink_bss_refs">__ld_insert_mlink_bss_refs</A></B>
+<LI><B><A HREF="#insert_compressed_bss_refs">__ld_insert_compressed_bss_refs</A></B>
+<LI><B><A HREF="#insert_fargo020_bss_refs">__ld_insert_fargo020_bss_refs</A></B>
+<LI><B><A HREF="#insert_fargo021_bss_refs">__ld_insert_fargo021_bss_refs</A></B>
+<LI><B><A HREF="#insert_kernel_data_refs">__ld_insert_kernel_data_refs</A></B>
+<LI><B><A HREF="#insert_mlink_data_refs">__ld_insert_mlink_data_refs</A></B>
+<LI><B><A HREF="#insert_compressed_data_refs">__ld_insert_compressed_data_refs</A></B>
+<LI><B><A HREF="#insert_kernel_rom_calls">__ld_insert_kernel_rom_calls</A></B>
+<LI><B><A HREF="#insert_mlink_rom_calls">__ld_insert_mlink_rom_calls</A></B>
+<LI><B><A HREF="#insert_compressed_rom_calls">__ld_insert_compressed_rom_calls</A></B>
+<LI><B><A HREF="#insert_kernel_ram_calls">__ld_insert_kernel_ram_calls</A></B>
+<LI><B><A HREF="#insert_kernel_libs">__ld_insert_kernel_libs</A></B>
+<LI><B><A HREF="#insert_fargo020_libs">__ld_insert_fargo020_libs</A></B>
+<LI><B><A HREF="#insert_fargo021_libs">__ld_insert_fargo021_libs</A></B>
+<LI><B><A HREF="#insert_kernel_exports">__ld_insert_kernel_exports</A></B>
+<LI><B><A HREF="#insert_fargo_exports">__ld_insert_fargo_exports</A></B>
+<LI><B><A HREF="#insert_preos_compressed_tables">__ld_insert_preos_compressed_tables</A></B>
+<LI><B><A HREF="#insert_nostub_comments">__ld_insert_nostub_comments</A></B>
+<LI><B><A HREF="#insert_data_var_name">__ld_insert_data_var_name</A></B>
+</UL>
+<H3><A NAME="insert_kernel_relocs"><U>__ld_insert_kernel_relocs</U></A></H3>
+<P>Relocation entries indicate that the program needs to know some addresses
+which are only available at run time. In this case, the addresses referred
+to are locations inside the program code or data. Usually, all references to
+absolute addresses inside the program are inserted into the section if one
+of these two insertions is used; however, sections may be marked as being
+handled in another way, which prevents relocation entries to them from being
+output in this way. The data section is automatically marked as handled if
+it is externalized; the BSS section is marked as handled by referencing
+<A HREF="#symbols_ld_kernel_bss_table">__ld_kernel_bss_table</A>, by
+using
+<A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A>
+before inserting the relocation entries, or by reacting to the
+<A HREF="#global_imports_auto">__handle_bss</A> global import.
+<BR><BR>
+__ld_insert_kernel_relocs uses the kernel format for storing relocation
+entries, which is used by kernels on the TI-89, TI-92 Plus, and V200, and by
+Fargo v0.2.0:</P>
+<UL>
+<LI><P>For each relocation entry...
+    </P>
+<UL>
+    <LI><P><B>2 bytes:</B> <I>location</I> (may not be 0)</P></LI>
+    </UL>
+</LI>
+<LI><P><B>2 bytes:</B> 0</P></LI>
+</UL>
+<P>If a program uses this insertion, it must process it as follows:</P>
+<UL>
+<LI><P>For each relocation entry...
+    </P>
+<UL>
+    <LI><P>Get the starting address of the program (via
+        <A HREF="#symbols_ld_entry_point">__ld_entry_point</A>);</P></LI>
+    <LI><P>Add the <I>location</I> value;</P></LI>
+    <LI><P>Modify the 4-byte value (<I>offset</I>) at the resulting address:
+        </P>
+<UL>
+        <LI><P>Get the starting address of the program (<I>relocation
+            address</I>);</P></LI>
+        <LI><P>Add the value of <I>offset</I>;</P></LI>
+        <LI><P>Write the resulting address to the 4-byte space covered by
+            <I>offset</I>.</P></LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+</UL>
+<P>Before program termination, this process has to be reverted, so that it can
+be repeated the next time the program starts. Since programs may be moved in
+memory while they are not executed, they may <I>not</I> simply deactivate
+the relocation code. This would also prevent programs from being transferred
+between devices.
+<BR><BR>
+<B>Note:</B> Relocation entries may only be inserted at a single place in the
+program. The reason for this is that the linker may have to add new
+relocation entries after they have been written into the section. Instead of
+keeping track of which entries have already been processed, we thought it
+would be easier to remove them once they have been written into a section.
+Also, it is dangerous to use this insertion from anything other than a
+startup section.</P>
+
+<P>See also: <A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A>, <A HREF="#insert_kernel_data_refs">__ld_insert_kernel_data_refs</A>, <A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A>, <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A></P>
+<H3><A NAME="insert_mlink_relocs"><U>__ld_insert_mlink_relocs</U></A></H3>
+<P>__ld_insert_mlink_relocs inserts relocs in a compressed format known
+from mlink. For more information on inserting and processing relocs, see
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+In the following format description, <I>offset</I> refers to the difference
+in words (half of the difference in bytes) between the start of this reloc
+and the start of the previous reloc. If there is no previous reloc (i.e. for
+the first reloc), <I>offset</I> is the distance in words between this reloc
+and the symbol <CODE>__ld_mlink_relocs_ref</CODE>. This symbol must be
+exported to be found. If it is not found, the entry point is used instead
+(see <A HREF="#symbols_ld_entry_point">__ld_entry_point</A>).</P>
+<UL>
+<LI><P>For each relocation entry...
+    </P>
+<UL>
+    <LI><P>Any of the following, whichever fits:
+        </P>
+<UL>
+        <LI><P>For 0 &lt;= <I>offset</I> &lt; 128: <B>1 byte:</B>
+            0x80 + <I>offset</I></P></LI>
+        <LI><P>For 128 &lt;= <I>offset</I> &lt; 16384: <B>2 bytes:</B>
+            <I>offset</I> / 128, 0x80 + (<I>offset</I> % 128)</P></LI>
+        <LI><P>For 16384 &lt;= <I>offset</I> &lt; 2097152: <B>3 bytes:</B>
+            <I>offset</I> / 16384, (<I>offset</I> % 16384) / 128,
+            0x80 + (<I>offset</I> % 128)</P></LI>
+        <LI><P>Anything higher isn't interesting for us because of the 64 KB
+            file size limit.</P></LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+<LI><P><B>1 byte:</B> 0</P></LI>
+</UL>
+<P><B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_mlink_bss_refs">__ld_insert_mlink_bss_refs</A>, <A HREF="#insert_mlink_data_refs">__ld_insert_mlink_data_refs</A>, <A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A></P>
+<H3><A NAME="insert_compressed_relocs"><U>__ld_insert_compressed_relocs</U></A></H3>
+<P>__ld_insert_compressed_relocs inserts relocs in a compressed format known
+from Fargo. For more information on inserting and processing relocs, see
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+In the following format description, <I>offset</I> refers to the difference
+in words (half of the difference in bytes) between the start of this reloc
+and the end of the previous reloc. If there is no previous reloc (i.e. for
+the first reloc), <I>offset</I> is the distance in words between this reloc
+and the symbol <CODE>__ld_compressed_relocs_ref</CODE>. This symbol must be
+exported to be found. If it is not found, the entry point is used instead
+(see <A HREF="#symbols_ld_entry_point">__ld_entry_point</A>).</P>
+<UL>
+<LI><P>For each relocation entry...
+    </P>
+<UL>
+    <LI><P>If we are inside a nibble sequence (see below):
+        </P>
+<UL>
+        <LI><P><B>1 nibble (1/2 byte):</B> <I>offset</I></P></LI>
+        </UL>
+</LI>
+    <LI><P>Else: Any of the following, whichever fits:
+        </P>
+<UL>
+        <LI><P><B>1 byte:</B> <I>offset</I> + 1 (must be between 0x01 and
+            0x7F)</P></LI>
+        <LI><P><B>1 byte:</B>
+            </P>
+<UL>
+            <LI><P>1<SUP>st</SUP> nibble: <I>nibble_count</I> / 2 + 0x6
+                (must be between 0x8 and 0xB)</P></LI>
+            <LI><P>2<SUP>nd</SUP> nibble: <I>offset</I></P></LI>
+            </UL>
+<P>            A nibble sequence of <I>nibble_count</I> nibbles follows
+            (see above).
+        </P></LI>
+        <LI><P><B>2 bytes:</B> <I>offset</I> + 0xBF81 (must be between 0xC000
+            and 0xFFFE)</P></LI>
+        <LI><P>A variable-length sequence:
+            </P>
+<UL>
+            <LI><P><B>2 bytes:</B> 0xFFFF</P></LI>
+            <LI><P>Any of the four possibilities, with <I>offset</I> decreased
+                by 0x407E</P></LI>
+            </UL>
+<P>        </P></LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+<LI><P><B>1 byte:</B> 0</P></LI>
+</UL>
+<P><B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_compressed_bss_refs">__ld_insert_compressed_bss_refs</A>, <A HREF="#insert_compressed_data_refs">__ld_insert_compressed_data_refs</A>, <A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A></P>
+<H3><A NAME="insert_fargo021_relocs"><U>__ld_insert_fargo021_relocs</U></A></H3>
+<P>__ld_insert_fargo021_relocs inserts relocs in the compressed format used by
+Fargo 0.2.1. For more information on inserting and processing relocs, see
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+This insertion is the same as
+<A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>,
+except that the the reference symbol used if there is no previous reloc (i.e.
+for the first reloc) is <CODE>__ld_fargo021_relocs_ref</CODE>. It is expected
+by Fargo to be at a fixed position: the position of the format flag in the
+Fargo header. This is currently handled by the definition of the Fargo header.
+<BR><BR>
+Fargo support must be compiled in for this insertion to be defined.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>, <A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A></P>
+<H3><A NAME="insert_kernel_bss_refs"><U>__ld_insert_kernel_bss_refs</U></A></H3>
+<P>__ld_insert_kernel_bss_refs outputs references to the BSS section in the
+format defined in
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>. The
+only difference is that the <I>relocation address</I> is not the entry point
+of the program but the beginning of the BSS section.
+<BR><BR>
+If you insert these references, the linker assumes that the BSS section is
+handled by you; that is, you have to allocate it dynamically using
+<A HREF="#symbols_ld_bss_size">__ld_bss_size</A> and use a pointer to
+it as the <I>relocation address</I>.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_kernel_data_refs">__ld_insert_kernel_data_refs</A>, <A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>, <A HREF="#insert_mlink_bss_refs">__ld_insert_mlink_bss_refs</A>, <A HREF="#insert_compressed_bss_refs">__ld_insert_compressed_bss_refs</A></P>
+<H3><A NAME="insert_mlink_bss_refs"><U>__ld_insert_mlink_bss_refs</U></A></H3>
+<P>__ld_insert_mlink_bss_refs inserts relocs in the format defined in
+<A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A>.
+The only differences are that the <I>relocation address</I> is not the entry
+point of the program but the beginning of the BSS section and that the
+reference symbol used if there is no previous reloc (i.e. for the first reloc)
+is <CODE>__ld_mlink_bss_refs_ref</CODE>.
+<BR><BR>
+If you insert these references, the linker assumes that the BSS section is
+handled by you; that is, you have to allocate it dynamically using
+<A HREF="#symbols_ld_bss_size">__ld_bss_size</A> and use a pointer to
+it as the <I>relocation address</I>.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_mlink_data_refs">__ld_insert_mlink_data_refs</A>, <A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A>, <A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A></P>
+<H3><A NAME="insert_compressed_bss_refs"><U>__ld_insert_compressed_bss_refs</U></A></H3>
+<P>__ld_insert_compressed_bss_refs inserts relocs in the format defined in
+<A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>.
+The only differences are that the <I>relocation address</I> is not the entry
+point of the program but the beginning of the BSS section and that the
+reference symbol used if there is no previous reloc (i.e. for the first reloc)
+is <CODE>__ld_compressed_bss_refs_ref</CODE>.
+<BR><BR>
+If you insert these references, the linker assumes that the BSS section is
+handled by you; that is, you have to allocate it dynamically using
+<A HREF="#symbols_ld_bss_size">__ld_bss_size</A> and use a pointer to
+it as the <I>relocation address</I>.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_compressed_data_refs">__ld_insert_compressed_data_refs</A>, <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>, <A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A></P>
+<H3><A NAME="insert_fargo020_bss_refs"><U>__ld_insert_fargo020_bss_refs</U></A></H3>
+<P>__ld_insert_fargo020_bss_refs acts like
+<A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A>,
+except that it always outputs the two terminating zero bytes, even if no
+references into the BSS section exist.
+<BR><BR>
+Fargo support must be compiled in for this insertion to be defined.</P>
+
+<P>See also: <A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A></P>
+<H3><A NAME="insert_fargo021_bss_refs"><U>__ld_insert_fargo021_bss_refs</U></A></H3>
+<P>__ld_insert_fargo021_bss_refs inserts relocs in the compressed format used by
+Fargo 0.2.1. It acts like
+<A HREF="#insert_compressed_bss_refs">__ld_insert_compressed_bss_refs</A>,
+except that the size of the BSS section is automatically output (as a 2-byte
+entry) in front of the actual relocation table, and that the reference symbol
+used if there is no previous reloc (i.e. for the first reloc) is
+<CODE>__ld_fargo021_bss_refs_ref</CODE>. It is expected by Fargo to be at a
+fixed position: the position of the format flag in the Fargo header. This is
+currently handled by the definition of the Fargo header.
+<BR><BR>
+For more information on inserting and processing relocs, see
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+Fargo support must be compiled in for this insertion to be defined.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_fargo021_relocs">__ld_insert_fargo021_relocs</A>, <A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A></P>
+<H3><A NAME="insert_kernel_data_refs"><U>__ld_insert_kernel_data_refs</U></A></H3>
+<P>__ld_insert_kernel_data_refs outputs references to the data section in the
+format defined in
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>. The
+only difference is that the <I>relocation address</I> is not the entry point
+of the program but the beginning of the data section.
+<BR><BR>
+If you read the data from an external variable (see
+<A HREF="#global_imports_auto">__handle_data_var</A>), you have to use
+the address of the variable (or a copy) as the <I>relocation address</I>.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A>, <A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A>, <A HREF="#insert_mlink_data_refs">__ld_insert_mlink_data_refs</A>, <A HREF="#insert_compressed_data_refs">__ld_insert_compressed_data_refs</A></P>
+<H3><A NAME="insert_mlink_data_refs"><U>__ld_insert_mlink_data_refs</U></A></H3>
+<P>__ld_insert_mlink_data_refs outputs references to the data section in the
+format defined in
+<A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A>.
+The only differences are that the <I>relocation address</I> is not the entry
+point of the program but the beginning of the data section and that the
+reference symbol used if there is no previous reloc (i.e. for the first reloc)
+is <CODE>__ld_mlink_data_refs_ref</CODE>.
+<BR><BR>
+If you read the data from an external variable (see
+<A HREF="#global_imports_auto">__handle_data_var</A>), you have to use
+the address of the variable (or a copy) as the <I>relocation address</I>.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_mlink_bss_refs">__ld_insert_mlink_bss_refs</A>, <A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A>, <A HREF="#insert_kernel_data_refs">__ld_insert_kernel_data_refs</A></P>
+<H3><A NAME="insert_compressed_data_refs"><U>__ld_insert_compressed_data_refs</U></A></H3>
+<P>__ld_insert_compressed_data_refs outputs references to the data section in the
+format defined in
+<A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>.
+The only differences are that the <I>relocation address</I> is not the entry
+point of the program but the beginning of the data section and that the
+reference symbol used if there is no previous reloc (i.e. for the first reloc)
+is <CODE>__ld_compressed_data_refs_ref</CODE>.
+<BR><BR>
+If you read the data from an external variable (see
+<A HREF="#global_imports_auto">__handle_data_var</A>), you have to use
+the address of the variable (or a copy) as the <I>relocation address</I>.
+<BR><BR>
+<B>Note:</B> The limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_compressed_bss_refs">__ld_insert_compressed_bss_refs</A>, <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>, <A HREF="#insert_kernel_data_refs">__ld_insert_kernel_data_refs</A></P>
+<H3><A NAME="insert_kernel_rom_calls"><U>__ld_insert_kernel_rom_calls</U></A></H3>
+<P>__ld_insert_kernel_rom_calls can be used to handle
+<A HREF="#symbols_rom_call">ROM calls</A>. It inserts references to
+ROM calls in the format used by kernels:</P>
+<UL>
+<LI><P>If the program uses at least one ROM call...
+    </P>
+<UL>
+    <LI><P><B>2 bytes:</B> the number of different ROM calls minus 1</P></LI>
+    <LI><P>For each ROM call...
+        </P>
+<UL>
+        <LI><P><B>2 bytes:</B> <I>index</I> of the ROM call</P></LI>
+        <LI><P>Relocation table for this ROM call:
+            </P>
+<UL>
+            <LI><P>For each reference...
+                </P>
+<UL>
+                <LI><P><B>2 bytes:</B> <I>location</I> (may not be 0)</P></LI>
+                </UL>
+</LI>
+            <LI><P><B>2 bytes:</B> 0</P></LI>
+            </UL>
+</LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+</UL>
+<P>If a program uses this insertion, it must process it as follows:</P>
+<UL>
+<LI><P>For each ROM call...
+    </P>
+<UL>
+    <LI><P>For each relocation entry...
+        </P>
+<UL>
+        <LI><P>Get the starting address of the program (via
+            <A HREF="#symbols_ld_entry_point">__ld_entry_point</A>);</P></LI>
+        <LI><P>Add the <I>location</I> value;</P></LI>
+        <LI><P>Modify the 4-byte value (<I>offset</I>) at the resulting address:
+            </P>
+<UL>
+            <LI><P>Get the address of the ROM function/variable indexed by
+                <I>index</I>;</P></LI>
+            <LI><P>Add the value of <I>offset</I>;</P></LI>
+            <LI><P>Write the resulting address to the 4-byte space covered by
+                <I>offset</I>.</P></LI>
+            </UL>
+</LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+</UL>
+<P>Before program termination, this process has to be reverted, so that it can
+be repeated the next time the program starts. Simply deactivating the
+relocation code would prevent programs from being transferred between
+devices.</P>
+
+<P>See also: <A HREF="#insert_mlink_rom_calls">__ld_insert_mlink_rom_calls</A>, <A HREF="#insert_compressed_rom_calls">__ld_insert_compressed_rom_calls</A></P>
+<H3><A NAME="insert_mlink_rom_calls"><U>__ld_insert_mlink_rom_calls</U></A></H3>
+<P>__ld_insert_mlink_rom_calls can be used to handle
+<A HREF="#symbols_rom_call">ROM calls</A>. It inserts references to
+ROM calls in a compressed format known from mlink but specifically altered for
+GCC4TI:</P>
+<UL>
+<LI><P>If the program uses at least one ROM call...
+    </P>
+<UL>
+    <LI><P>For each ROM call...
+        </P>
+<UL>
+        <LI><P>Mlink-type <I>index</I> of the ROM call. The index is encoded as
+            in <A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A>,
+            with <I>offset</I> being the index of the ROM call for the first
+            entry, and the difference of the index of this ROM call and the
+            index of the previous one for the following ones.</P></LI>
+        <LI><P>An mlink-type relocation table for this ROM call. See
+            <A HREF="#insert_mlink_relocs">__ld_insert_mlink_relocs</A>
+            for the format used.
+            The reference symbol used if there is no previous reloc (i.e. for
+            the first reloc) is <CODE>__ld_mlink_rom_calls_ref</CODE>.
+            </P></LI>
+        </UL>
+</LI>
+    <LI><P><B>1 byte:</B> 0</P></LI>
+    </UL>
+</LI>
+</UL>
+<P>For more information on processing ROM call relocation, see
+<A HREF="#insert_kernel_rom_calls">__ld_insert_kernel_rom_calls</A>.</P>
+
+<P>See also: <A HREF="#insert_kernel_rom_calls">__ld_insert_kernel_rom_calls</A></P>
+<H3><A NAME="insert_compressed_rom_calls"><U>__ld_insert_compressed_rom_calls</U></A></H3>
+<P>__ld_insert_compressed_rom_calls can be used to handle
+<A HREF="#symbols_rom_call">ROM calls</A>. It inserts references to
+ROM calls in a compressed format known from Fargo but specifically altered for
+GCC4TI:</P>
+<UL>
+<LI><P>If the program uses at least one ROM call...
+    </P>
+<UL>
+    <LI><P>For each ROM call...
+        </P>
+<UL>
+        <LI><P>Compressed <I>index</I> of the ROM call. The index is encoded as
+            in <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>,
+            with <I>offset</I> being the index of the ROM call for the first
+            entry, and the difference of the index of this ROM call and the
+            index of the previous one plus 1 for the following ones. The
+            compressed index is considered part of the relocation table that
+            follows, so nibble encoding can be used.</P></LI>
+        <LI><P>A compressed relocation table for this ROM call. See
+            <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>
+            for the format used.
+            The reference symbol used if there is no previous reloc (i.e. for
+            the first reloc) is <CODE>__ld_compressed_rom_calls_ref</CODE>.
+            </P></LI>
+        </UL>
+</LI>
+    <LI><P><B>1 byte:</B> 0</P></LI>
+    </UL>
+</LI>
+</UL>
+<P>For more information on processing ROM call relocation, see
+<A HREF="#insert_kernel_rom_calls">__ld_insert_kernel_rom_calls</A>.</P>
+
+<P>See also: <A HREF="#insert_kernel_rom_calls">__ld_insert_kernel_rom_calls</A></P>
+<H3><A NAME="insert_kernel_ram_calls"><U>__ld_insert_kernel_ram_calls</U></A></H3>
+<P>__ld_insert_kernel_ram_calls can be used to handle
+<A HREF="#symbols_ram_call">RAM calls</A>. It inserts references to
+RAM calls in the format used by kernels:</P>
+<UL>
+<LI><P>If the program uses at least one RAM call...
+    </P>
+<UL>
+    <LI><P><B>2 bytes:</B> the number of different RAM calls minus 1</P></LI>
+    <LI><P>For each RAM call...
+        </P>
+<UL>
+        <LI><P><B>2 bytes:</B> RAM call information:
+            </P>
+<UL>
+            <LI><P>Bits 0 through 13: <I>index</I></P></LI>
+            <LI><P>Bit 14: <I>type</I>
+                (0: <A HREF="#symbols_ram_call">RAM call</A>;
+                 1: <A HREF="#symbols_extra_ram_addr">extra RAM
+                    address</A>)</P></LI>
+            <LI><P>Bit 15: <I>size</I> (0: 4 bytes; 1: 2 bytes)</P></LI>
+            </UL>
+</LI>
+        <LI><P>Relocation table for this RAM call:
+            </P>
+<UL>
+            <LI><P>For each reference...
+                </P>
+<UL>
+                <LI><P><B>2 bytes:</B> <I>location</I> (may not be 0)</P></LI>
+                </UL>
+</LI>
+            <LI><P><B>2 bytes:</B> 0</P></LI>
+            </UL>
+</LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+</UL>
+<P>If a program uses this insertion, it must process it as follows:</P>
+<UL>
+<LI><P>For each RAM call...
+    </P>
+<UL>
+    <LI><P>For each relocation entry...
+        </P>
+<UL>
+        <LI><P>Get the starting address of the program (via
+            <A HREF="#symbols_ld_entry_point">__ld_entry_point</A>);</P></LI>
+        <LI><P>Add the <I>location</I> value;</P></LI>
+        <LI><P>Modify the value (<I>offset</I>) at the resulting address (2 or
+            4 bytes depending on <I>size</I>):
+            </P>
+<UL>
+            <LI><P>If <I>type</I> indicates an extra RAM address:
+                </P>
+<UL>
+                <LI><P>Determine the location of the extra RAM table row indexed
+                    by <I>index</I> (see
+                    <A HREF="#symbols_extraram">_extraram</A>);</P></LI>
+                <LI><P>Get the correct value for the current calculator from
+                    this row;</P></LI>
+                </UL>
+<P>                Else:
+                </P>
+<UL>
+                <LI><P>Get the address/value of the RAM function/variable
+                    indexed by <I>index</I>;</P></LI>
+                </UL>
+</LI>
+            <LI><P>Add the value of <I>offset</I>;</P></LI>
+            <LI><P>Write the resulting address/value to the space covered by
+                <I>offset</I>.</P></LI>
+            </UL>
+</LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+</UL>
+<P>Before program termination, this process has to be reverted, so that it can
+be repeated the next time the program starts. Simply deactivating the
+relocation code would prevent programs from being transferred between
+devices.</P>
+
+<H3><A NAME="insert_kernel_libs"><U>__ld_insert_kernel_libs</U></A></H3>
+<P>__ld_insert_kernel_libs can be used to handle
+<A HREF="#symbols_lib_call">library calls</A>. It inserts references
+to libraries in the format used by kernels:</P>
+<UL>
+<LI><P>For each referenced library...
+    </P>
+<UL>
+    <LI><P><B>8 bytes:</B> library variable name</P></LI>
+    <LI><P><B>1 byte:</B> 0</P></LI>
+    <LI><P><B>1 byte:</B> minimum version number (see
+        <A HREF="#control_lib_min_version">Minimum Library
+        Versions</A>)</P></LI>
+    </UL>
+</LI>
+<LI><P>For each referenced library (again)...
+    </P>
+<UL>
+    <LI><P><B>2 bytes:</B> number of imported functions/variables minus 1</P></LI>
+    <LI><P>For each imported function/variable...
+        </P>
+<UL>
+        <LI><P><B>2 bytes:</B> <I>index</I> of the function/variable</P></LI>
+        <LI><P>Relocation table for this function/variable:
+            </P>
+<UL>
+            <LI><P>For each reference...
+                </P>
+<UL>
+                <LI><P><B>2 bytes:</B> <I>location</I> (may not be 0)</P></LI>
+                </UL>
+</LI>
+            <LI><P><B>2 bytes:</B> 0</P></LI>
+            </UL>
+</LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+</UL>
+<P>If a program uses this insertion, it must process it as follows:</P>
+<UL>
+<LI><P>For each library...
+    </P>
+<UL>
+    <LI><P>Do whatever is necessary to check the version and load it into the
+        program's address space;</P></LI>
+    <LI><P>For each relocation entry...
+        </P>
+<UL>
+        <LI><P>Get the starting address of the program (via
+            <A HREF="#symbols_ld_entry_point">__ld_entry_point</A>);</P></LI>
+        <LI><P>Add the <I>location</I> value;</P></LI>
+        <LI><P>Modify the 4-byte value (<I>offset</I>) at the resulting address:
+            </P>
+<UL>
+            <LI><P>Get the address of the library function/variable indexed by
+                <I>index</I>;</P></LI>
+            <LI><P>Add the value of <I>offset</I>;</P></LI>
+            <LI><P>Write the resulting address to the 4-byte space covered by
+                <I>offset</I>.</P></LI>
+            </UL>
+</LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+</UL>
+<P>Before program termination, this process has to be reverted, so that it can
+be repeated the next time the program starts. Since programs and libraries
+may be moved in memory while they are not executed, they may <I>not</I>
+simply deactivate the relocation code. This would also prevent programs from
+being transferred between devices.</P>
+
+<P>See also: <A HREF="#insert_fargo020_libs">__ld_insert_fargo020_libs</A>, <A HREF="#insert_fargo021_libs">__ld_insert_fargo021_libs</A></P>
+<H3><A NAME="insert_fargo020_libs"><U>__ld_insert_fargo020_libs</U></A></H3>
+<P>__ld_insert_fargo020_libs can be used to handle
+<A HREF="#symbols_lib_call">library calls</A>. It inserts references
+to libraries in the format used by Fargo v0.2.0:</P>
+<UL>
+<LI><P>For each referenced library...
+    </P>
+<UL>
+    <LI><P><B>2 bytes:</B> program-relative location of the library name</P></LI>
+    <LI><P>For each imported function/variable...
+        </P>
+<UL>
+        <LI><P><B>2 bytes:</B> <I>index</I> of the function/variable plus 1</P></LI>
+        <LI><P>Relocation table for this function/variable:
+            </P>
+<UL>
+            <LI><P>For each reference...
+                </P>
+<UL>
+                <LI><P><B>2 bytes:</B> <I>location</I> (may not be 0)</P></LI>
+                </UL>
+</LI>
+            <LI><P><B>2 bytes:</B> 0</P></LI>
+            </UL>
+</LI>
+        </UL>
+</LI>
+    <LI><P><B>2 bytes:</B> 0</P></LI>
+    </UL>
+</LI>
+<LI><P><B>2 bytes:</B> 0</P></LI>
+</UL>
+<P>The libraries have to be processed using the method described in
+<A HREF="#insert_kernel_libs">__ld_insert_kernel_libs</A>, except that
+library versions are not implemented by this format.
+<BR><BR>
+<B>Note:</B> This insertion is available only if Fargo support is compiled
+in.</P>
+
+<P>See also: <A HREF="#insert_fargo021_libs">__ld_insert_fargo021_libs</A>, <A HREF="#insert_kernel_libs">__ld_insert_kernel_libs</A></P>
+<H3><A NAME="insert_fargo021_libs"><U>__ld_insert_fargo021_libs</U></A></H3>
+<P>__ld_insert_fargo021_libs can be used to handle
+<A HREF="#symbols_lib_call">library calls</A>. It inserts references
+to libraries in the format used by Fargo v0.2.1:</P>
+<UL>
+<LI><P><B>2 bytes:</B> number of referenced libraries</P></LI>
+<LI><P><B>2 bytes:</B> program-relative location of the null-separated
+    null-terminated library name list</P></LI>
+<LI><P>For each referenced library...
+    </P>
+<UL>
+    <LI><P>For each imported function/variable...
+        </P>
+<UL>
+        <LI><P>Compressed <I>index</I> of the function/variable. The format is
+            <I>not</I> the same as for the relocation table. It is encoded
+            using <I>one</I> of the following formats:
+            </P>
+<UL>
+            <LI><P><B>1 byte:</B> <I>offset</I> (must be between 0x01 and
+                0x7F)</P></LI>
+            <LI><P><B>2 bytes:</B> <I>offset</I> + 0x8000 (must be between
+                0x8000 and 0xFFFF)</P></LI>
+            </UL>
+<P>            where <I>offset</I> is the index plus 1 for the first index, and
+            the difference between the index and the previous index for the
+            following ones.</P></LI>
+        <LI><P>A compressed relocation table for this function/variable. See
+            <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>
+            for the format used.
+            The reference symbol used if there is no previous reloc (i.e. for
+            the first reloc) is <CODE>__ld_fargo021_libs_ref</CODE>. It is
+            expected by Fargo to be at a fixed position: the position of the
+            format flag in the Fargo header. This is currently handled by the
+            definition of the Fargo header.</P></LI>
+        </UL>
+</LI>
+    <LI><P><B>2 bytes:</B> 0</P></LI>
+    </UL>
+</LI>
+<LI><P><B>2 bytes:</B> 0</P></LI>
+</UL>
+<P>The libraries have to be processed using the method described in
+<A HREF="#insert_kernel_libs">__ld_insert_kernel_libs</A>, except that
+library versions are not implemented by this format.
+<BR><BR>
+<B>Note:</B> This insertion is available only if Fargo support is compiled
+in.</P>
+
+<P>See also: <A HREF="#insert_fargo020_libs">__ld_insert_fargo020_libs</A>, <A HREF="#insert_kernel_libs">__ld_insert_kernel_libs</A></P>
+<H3><A NAME="insert_kernel_exports"><U>__ld_insert_kernel_exports</U></A></H3>
+<P>__ld_insert_kernel_exports can be used to export symbols from a library. It
+treats all symbols that are declared external and look like
+&quot;<I>libname</I>@<I>index</I>&quot; or
+&quot;<I>libname</I>__<I>index</I>&quot; as exported entries. <I>index</I> is
+a hexadecimal number which must have exactly 4 digits.
+<BR><BR>
+__ld_insert_kernel_exports inserts library exports in the format used by
+kernels:</P>
+<UL>
+<LI><P>For each exported item...
+    </P>
+<UL>
+    <LI><P><B>2 bytes:</B> <I>location</I> (offset from the beginning of the
+        library; may be 0 if nothing was specified)</P></LI>
+    </UL>
+</LI>
+<LI><P><B>2 bytes:</B> 0</P></LI>
+</UL>
+<P><B>Note:</B> Since exported entries are stored one after another, skipped
+entries will take up additional space in the export table. For example, if
+you only define one symbol called &quot;<I>libname</I>@0010&quot;, then there
+will be 16*2=32 bytes of zeroes in the export table.</P>
+
+<P>See also: <A HREF="#insert_fargo_exports">__ld_insert_fargo_exports</A></P>
+<H3><A NAME="insert_fargo_exports"><U>__ld_insert_fargo_exports</U></A></H3>
+<P>__ld_insert_fargo_exports can be used to export symbols from a library. It
+treats all symbols that are declared external and look like
+&quot;<I>libname</I>@<I>index</I>&quot; or
+&quot;<I>libname</I>__<I>index</I>&quot; as exported entries. <I>index</I> is
+a hexadecimal number which must have exactly 4 digits.
+<BR><BR>
+__ld_insert_fargo_exports inserts library exports in the format used by the
+Fargo II kernel:</P>
+<UL>
+<LI><P>For each exported item...
+    </P>
+<UL>
+    <LI><P><B>2 bytes:</B> <I>location</I> (offset from the beginning of the
+        library; may be 0 if nothing was specified)</P></LI>
+    </UL>
+</LI>
+</UL>
+<P><B>Note:</B> Since exported entries are stored one after another, skipped
+entries will take up additional space in the export table. For example, if
+you only define one symbol called &quot;<I>libname</I>@0010&quot;, then there
+will be 16*2=32 bytes of zeroes in the export table.
+<BR><BR>
+This insertion is available only if Fargo support is compiled in.</P>
+
+<P>See also: <A HREF="#insert_kernel_exports">__ld_insert_kernel_exports</A></P>
+<H3><A NAME="insert_preos_compressed_tables"><U>__ld_insert_preos_compressed_tables</U></A></H3>
+<P>__ld_insert_preos_compressed_tables is the most complex of the automatic
+insertions. It inserts all relocation-related tables in the compressed format
+expected by PreOs 0.68 or higher. PreOs expects those tables to be pointed to
+by the same pointer, so they need to be inserted all at once. The reference
+address expected by PreOs is the same for all relocation tables: 36 (0x24).
+It is defined as the end address of the smallest possible header/stub
+combination. (However, the smallest possible stub is not usable in practice
+because it does not emit <I>any</I> error messages. Therefore, the address
+does not correspond to any actual address in GCC4TILIB, so it is hard-coded in
+the linker.) The tables it inserts are, in order:</P>
+<UL>
+<LI><P><B>Library import table</B>:
+    </P>
+<UL>
+    <LI><P>For each referenced library...
+        </P>
+<UL>
+        <LI><P><B>8 bytes:</B> library variable name</P></LI>
+        <LI><P><B>1 byte:</B> 0</P></LI>
+        <LI><P><B>1 byte:</B> minimum version number (see
+            <A HREF="#control_lib_min_version">Minimum Library
+            Versions</A>)</P></LI>
+        </UL>
+</LI>
+    <LI><P>For each referenced library (again)...
+        </P>
+<UL>
+        <LI><P><B>PreOs index</B> (see below): number of imported
+            functions/variables minus 1</P></LI>
+        <LI><P>For each imported function/variable...
+            </P>
+<UL>
+            <LI><P><B>PreOs index</B> (see below): <I>index</I> of the
+                function/variable (relative to the previous one)</P></LI>
+            <LI><P>Relocation table for this function/variable. See
+                <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>
+                for the format used.</P></LI>
+            </UL>
+</LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+<LI><P><B>ROM call import table</B>:
+    </P>
+<UL>
+    <LI><P><B>PreOs index</B> (see below): the number of different ROM calls
+        minus 1</P></LI>
+    <LI><P>For each ROM call...
+        </P>
+<UL>
+        <LI><P><B>PreOs index</B> (see below): <I>index</I> of the ROM
+            call (relative to the previous one)</P></LI>
+        <LI><P>A compressed relocation table for this ROM call. See
+            <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>
+            for the format used.</P></LI>
+        </UL>
+</LI>
+    </UL>
+</LI>
+<LI><P><B>RAM call import table</B>, in the same format as the ROM call import
+    table. The indices used are the indices <I>after</I> setting the
+    <I>size</I> and <I>type</I> flags described under
+    <A HREF="#insert_kernel_ram_calls">__ld_insert_kernel_ram_calls</A>.</P></LI>
+<LI><P><B>Relocation table</B>: See
+    <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>
+    for the format used.</P></LI>
+<LI><P><B>BSS relocation table</B>:
+    </P>
+<UL>
+        <LI><P><B>2 bytes:</B> <I>BSS size</I> / 4</P></LI>
+        <LI><P>A compressed relocation table. See
+            <A HREF="#insert_compressed_bss_refs">__ld_insert_compressed_bss_refs</A>
+            for the format used.</P></LI>
+    </UL>
+</LI>
+</UL>
+<P>PreOs uses a special format for the indices. It is <I>not</I> the same as for
+the relocation table. Instead, a <B>PreOs index</B> is encoded using
+<I>one</I> of the following formats:</P>
+<UL>
+<LI><P><B>1 byte:</B> <I>offset</I> (must be between 0x00 and 0xFD)</P></LI>
+<LI><P><B>2 bytes:</B>
+    </P>
+<UL>
+    <LI><P><B>1 byte:</B> 0xFE</P></LI>
+    <LI><P><B>1 byte:</B> <I>offset</I> - 0xFE</P></LI>
+    </UL>
+</LI>
+<LI><P><B>3 bytes:</B>
+    </P>
+<UL>
+    <LI><P><B>1 byte:</B> 0xFF</P></LI>
+    <LI><P><B>2 bytes:</B> <I>index</I> (not <I>offset</I>!)</P></LI>
+    </UL>
+</LI>
+</UL>
+<P>where <I>index</I> is the actual index, and <I>offset</I> is <I>index</I> + 1
+for the first index and the difference between <I>index</I> and the previous
+index for the following ones.
+<BR><BR>
+<B>Note:</B> Since parts of this insertion are dealing with relocs, the
+limitations of
+<A HREF="#insert_kernel_relocs">__ld_insert_kernel_relocs</A> also
+apply to this insertion.</P>
+
+<P>See also: <A HREF="#insert_compressed_relocs">__ld_insert_compressed_relocs</A>, <A HREF="#insert_compressed_rom_calls">__ld_insert_compressed_rom_calls</A>, <A HREF="#insert_kernel_ram_calls">__ld_insert_kernel_ram_calls</A>, <A HREF="#insert_compressed_bss_refs">__ld_insert_compressed_bss_refs</A></P>
+<H3><A NAME="insert_nostub_comments"><U>__ld_insert_nostub_comments</U></A></H3>
+<P>__ld_insert_nostub_comments is used to export data symbols in the NoStub
+comment header. It treats all symbols that are declared external and look
+like &quot;_nostub_data__<I>index</I>&quot; as exported entries.
+<I>index</I> is a hexadecimal number which must have exactly 4 digits.
+<BR><BR>
+__ld_insert_nostub_comments inserts data exports in the format used by
+the NoStub comment specification:</P>
+<UL>
+<LI><P>For each exported item (in ascending ID order)...
+    </P>
+<UL>
+    <LI><P><B>2 bytes:</B> <I>export ID</I> (type index of the export, as
+        specified after the double underscore)</P></LI>
+    <LI><P><B>2 bytes:</B> <I>location</I> (offset from the beginning of the
+        program)</P></LI>
+    </UL>
+</LI>
+</UL>
+
+<H3><A NAME="insert_data_var_name"><U>__ld_insert_data_var_name</U></A></H3>
+<P>__ld_insert_data_var_name inserts an ANSI string containing the name of the
+data variable as specified during the invocation of the linker. A terminating
+zero byte is appended; however, the name does not automatically <I>start</I>
+with a zero byte.</P>
+
+<HR>
+<H2><A NAME="bincode"><U>GCC4TI Linker Binary Code Fixup</U></A></H2>
+<P>The GCC4TI linker can do many operations on binary code. If you want it to
+behave correctly in all cases, you need to make sure that no executable code
+is included in a data section, and no data is included in a code section.
+However, GCC4TI usually merges all data into the code section to optimize
+references to it, so in rare cases it is possible for the linker to generate
+incorrect code.
+<BR><BR>
+Binary code fixup is divided into several categories:</P>
+
+<UL>
+<LI><B><A HREF="#bincode_nop">NOP Instruction Removal</A></B>
+<LI><B><A HREF="#bincode_return">Return Sequence Optimization</A></B>
+<LI><B><A HREF="#bincode_branch">Branch Fixup and Optimization</A></B>
+<LI><B><A HREF="#bincode_move">Move/Load/Push Instruction Optimization</A></B>
+<LI><B><A HREF="#bincode_test">Compare/Test Instruction Optimization</A></B>
+<LI><B><A HREF="#bincode_calculation">Calculation Instruction Optimization</A></B>
+</UL>
+<H3><A NAME="bincode_nop"><U>NOP Instruction Removal</U></A></H3>
+<P>The GCC4TI linker features the removal of unnecessary NOP instructions. For
+file formats which may insert a NOP (No OPeration) instruction at the end of
+a section in order to align its size to a specific boundary, it can remove
+this instruction to save a little space. Currently only the AmigaOS format is
+known to do this (see <A HREF="#formats">GCC4TI Linker File
+Formats</A>). If the section ends with more than one NOP instruction, all
+instructions are kept.</P>
+
+<H3><A NAME="bincode_return"><U>Return Sequence Optimization</U></A></H3>
+<P>The GCC4TI linker can optimize function return sequences. If a section ends
+with a subroutine branch followed by a simple return instruction, the
+subroutine branch is converted into a simple unconditional branch (jump),
+and the return instruction is removed. Note that this may fail easily if
+there is a branch to the return instruction somewhere; if the return
+instruction is removed, the branch will point to arbitrary code or data.
+You can make this less likely by telling the assembler to emit all local
+labels, so the linker knows it cannot optimize a return sequence because
+there is a label in front of the return instruction. With the
+<A HREF="gnuasm.html">GNU Assembler</A>, this is done by using the
+<B>'--keep-locals'</B> option, which is included automatically if
+range-cutting is enabled. With the <A HREF="a68k.html">A68k Assembler</A>,
+the <B>'-d'</B> switch does the job.</P>
+
+<H3><A NAME="bincode_branch"><U>Branch Fixup and Optimization</U></A></H3>
+<P>On some architectures, certain branches are not permitted. For example, on
+the MC68000 processor, it is not possible to branch to the next instruction
+using a short branch. While the assembler usually detects such invalid
+situations, they may still occur if the branch target is in a different
+section or file. The GCC4TI linker detects such invalid situations and tries
+to resolve them as well as possible: If it is invalid for a branch at the end
+of a section to point to the beginning of the next section, it is removed
+unless it is a subroutine branch. For subroutine branches, a NOP instruction
+is inserted instead.
+<BR><BR>
+In addition to fixing invalid branches, the GCC4TI linker can optimize branch
+instructions to reduce the number of absolute relocations needed. If an
+absolute branch (jump or subroutine branch) can be converted to a relative
+branch, the operating system does not need to insert the destination address
+at run time; therefore this will save space. Moreover, if range-cutting is
+enabled, optimizing branches can reduce the size of the code.</P>
+
+<UL>
+<LI><B><A HREF="#bincode_branch_fline">F-Line Branch Optimization</A></B>
+</UL>
+<H4><A NAME="bincode_branch_fline"><U>F-Line Branch Optimization</U></A></H4>
+<P>The linker can convert absolute branches (which would normally need a
+relocation entry) into special relative F-Line sequences. These sequences are
+handled by an interrupt handler. The fact that an interrupt is needed makes
+these branches significantly slower, but using them can save quite a bit of
+space in the program.
+<BR><BR>
+There are two types of F-Line branches: The default version can be activated
+using the <A HREF="#control_ld_use_fline_jumps">__ld_use_fline_jumps</A>
+control symbol. Each branch has a size of six bytes. They are relative to
+their own address, which means that they can be supported by the AMS, and in
+fact, the AMS implements an interrupt handler for these branches starting
+from version 2.04. The other version can be activated using the
+<A HREF="#control_ld_use_4byte_fline_jumps">__ld_use_4byte_fline_jumps</A>
+control symbol. As the name says, each branch has a size of four bytes. They
+are relative to the program's entry point, so only an emulator that is
+installed from the program can handle them. Since they use codes that are
+otherwise used for ROM calls, this might break applications that are called
+from the program, if any. However, this is very unlikely, as the two ROM
+calls used are not defined yet.</P>
+
+<H3><A NAME="bincode_move"><U>Move/Load/Push Instruction Optimization</U></A></H3>
+<P>If this type of optimization is turned on, then the GCC4TI linker optimizes
+all instructions that move data between two places. This includes
+instructions to move data between memory and registers or between two places
+in memory, instructions to load the address a of memory location into a
+register, and instructions to push the contents of a memory location on the
+stack. Note that due to the great variety of such instructions, this
+optimization is more likely to cause errors than others.
+<BR><BR>
+This optimization can reduce the number of absolute references to locations
+inside the program, and it can also decrease the size of the code if
+range-cutting is enabled.</P>
+
+<H3><A NAME="bincode_test"><U>Compare/Test Instruction Optimization</U></A></H3>
+<P>If this type of optimization is turned on, then the GCC4TI linker optimizes
+all instructions that compare the contents of a memory location with
+something. This includes operations that compare data and operations that
+test whether something is zero.
+<BR><BR>
+This optimization can reduce the number of absolute references to locations
+inside the program, and it can also decrease the size of the code if
+range-cutting is enabled.</P>
+
+<H3><A NAME="bincode_calculation"><U>Calculation Instruction Optimization</U></A></H3>
+<P>If this type of optimization is turned on, then the GCC4TI linker optimizes
+all instructions that perform calculations based on data stored in memory.
+This includes addition, subtraction, multiplication, division, and bitwise
+manipulation instructions.
+<BR><BR>
+This optimization can reduce the number of absolute references to locations
+inside the program, and it can also decrease the size of the code if
+range-cutting is enabled.</P>
+
+<HR>
+<H2><A NAME="dump"><U>ld-tigcc Program Dumps</U></A></H2>
+<P>If you turn on dumps in <CODE>ld-tigcc</CODE> (using the
+<B>'--dump[<I>n</I>]'</B> option), <CODE>ld-tigcc</CODE> prints the contents of
+the internal data structures to standard output between various events during
+the linking stage. These places are numbered, so that you can turn on a specific
+dump by adding an index to the option. The following table shows the current
+location of the different dumps:</P>
+<DL>
+
+<DT><P><B>Dump 0</B></P><DD><P>This dump is produced just after all object files have been imported.
+    Relocation entries that refer to different files have not been resolved yet;
+    neither have ROM/RAM/library call symbols been translated into actual
+    ROM/RAM/library calls. Archive members have only been imported if this was
+    specified by a global import.
+</P><DT><P><B>Dump 1</B></P><DD><P>Relocation entries have been resolved to the maximum extent possible. If
+    they could not be resolved to existing symbols or had been treated as
+    RAM/ROM/library calls, archive members have been imported for them.
+</P><DT><P><B>Dump 2</B></P><DD><P>All uninitialized and zero-data sections have been merged, as well as all
+    data sections if this was necessary. Automatic global imports have been
+    added.
+</P><DT><P><B>Dump 3</B></P><DD><P>All global imports have been processed; even the ones which contained
+    negations.
+</P><DT><P><B>Dump 4</B></P><DD><P>Relocation entries from the archive members which were just
+    imported by global imports have been resolved, possibly importing new
+    archive members.
+    If relocation optimization is enabled, another dump is appended with the
+    same contents after relocation optimization. If removal of unused
+    sections is enabled, a third dump is inserted after this removal.
+</P><DT><P><B>Dump 5</B></P><DD><P>All sections which are not externalized have been merged. Note that some
+    parts of the code fixup need to be done just before the sections are merged,
+    so there is also a lot of code fixup and optimization between dumps 4 and 5.
+</P><DT><P><B>Dump 6</B></P><DD><P>The remaining code fixup and optimization has been performed.
+</P><DT><P><B>Dump 7</B></P><DD><P>Certain built-in symbols whose value depends on the program contents have
+    been resolved. Insertions that were requested to be added at an arbitrary
+    place have been added to the end of the program.
+</P><DT><P><B>Dump 8</B></P><DD><P>Relative relocation entries have been replaced by the actual distances they
+    had represented.</P>
+</DL>
+<P>The program dumps are usually self-explaining; however, a few items require
+special attention:</P>
+<DL>
+
+<DT><P><B>&lt;<I>n</I>B: <I>target</I> [- <I>relation</I>] [+/- offset]&gt;</B></P><DD><P>Indicates a relocation entry or ROM/RAM/library call. <I>target</I> and
+    <I>relation</I> have the form <I>symbol</I>[+/-<I>offset</I>], which
+    stands for the address of <I>symbol</I>, corrected by <I>offset</I>.
+    <I>n</I> specifies the number of bytes reserved for the address/offset of
+    the target.
+</P><DT><P><B>&lt;<I>n</I>B: ... (rel)&gt;</B></P><DD><P>Indicates that the relocation entry is relative to its own address.
+</P><DT><P><B>&lt;<I>n</I>B: <I>symbol</I> (?) ...&gt;</B></P><DD><P>Indicates a relocation entry which has not been resolved yet.
+</P><DT><P><B>&lt;<I>n</I>B: <I>symbol</I> (-&gt;) ...&gt;</B></P><DD><P>Indicates a relocation entry pointing into another section.
+</P><DT><P><B>&lt;<I>n</I>B: ...&gt; (!)</B></P><DD><P>Indicates that the section data at the place of the relocation entry is
+    nonzero. This usually indicates a problem, but in rare cases, it is
+    valid. For example, if you use ROM/RAM/library calls with an offset, this
+    offset is usually emitted into the section contents, but the actual call
+    still exists.
+</P><DT><P><B><I>address</I>: (!)</B></P><DD><P>Indicates an internal inconsistency (for example an item outside of a
+    section, overlapping items, or an internal ordering error).</P>
+</DL>
+<P>Section offsets and data are always output in hexadecimal notation. Question
+marks indicate uninitialized data, which may have random content.</P>
+
+<HR>
+<H2><A NAME="compiling"><U>Recompiling ld-tigcc and ar-tigcc</U></A></H2>
+<P>Recompiling <CODE>ld-tigcc</CODE> and <CODE>ar-tigcc</CODE> (or the
+corresponding link DLL) from source may be useful if you want to make the
+linker as efficient as possible by disabling certain features. Recompilation
+requires <A HREF="http://gcc.gnu.org/">GCC</A> and
+<A HREF="http://www.gnu.org/software/make/">GNU make</A>. If you are using
+Linux, you may simply run <CODE>make</CODE> in the source code directory; the
+same is probably true for other Unix variants. If you are using Windows, you
+need to download <A HREF="http://www.mingw.org/msys.html">MSYS</A> or make
+some minor modifications to the makefile.
+<BR><BR>
+If you only want to disable some features, you can take a look at the
+definitions in the makefile (the file called <CODE>Makefile</CODE>). The
+<CODE>DEFINES</CODE> variable contains the general features to be included;
+<CODE>EXE_DEFINES</CODE> contains the features that should only be included
+in the executable files (not in the DLL). All available definitions are
+documented at the top of <CODE>generic.h</CODE>.
+<BR><BR>
+For example, if you want to disable support for the AmigaOS files generated
+by the <A HREF="a68k.html">A68k Assembler</A>, you may simply remove
+the <B>'-DAMIGAOS_SUPPORT'</B> definition from the <CODE>DEFINES</CODE>
+variable. Note that some combinations are invalid; for example, if you
+disable support for all object file formats, you will get a "file format not
+recognized" error whenever you try to link some files.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

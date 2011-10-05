@@ -1,0 +1,320 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>ctype.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;ctype.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for checking and changing character types</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#_tolower">_tolower</A></B><DD>Translates uppercase characters to lowercase.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_toupper">_toupper</A></B><DD>Translates uppercase characters to lowercase.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isalnum">isalnum</A></B><DD>Checks whether a character is an alphanumeric.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isalpha">isalpha</A></B><DD>Checks whether a character is a letter.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isascii">isascii</A></B><DD>Checks whether a character is an ASCII character.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#iscntrl">iscntrl</A></B><DD>Checks whether a character is a control character.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isdigit">isdigit</A></B><DD>Checks whether a character is a digit.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isextalnum">isextalnum</A></B><DD>Checks whether a character is an extended alphanumeric.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isextlower">isextlower</A></B><DD>Checks whether a character is a lowercase, including foreign ones.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isextpunct">isextpunct</A></B><DD>Checks whether a character is an extended punctuation character.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isextupper">isextupper</A></B><DD>Checks whether a character is an uppercase, including foreign ones.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isfrgn">isfrgn</A></B><DD>Checks whether a character is a foreign letter.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isfrgnalnum">isfrgnalnum</A></B><DD>Checks whether a character is a foreign letter which is valid in a variable name.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isfrgnlower">isfrgnlower</A></B><DD>Checks whether a character is a foreign lowercase.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isfrgnupper">isfrgnupper</A></B><DD>Checks whether a character is a foreign uppercase.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isgraph">isgraph</A></B><DD>Checks whether a character is a graph character.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isGreek">isGreek</A></B><DD>Checks whether a character is a Greek letter.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#islower">islower</A></B><DD>Checks whether a character is a lowercase.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isprint">isprint</A></B><DD>Checks whether a character is a printing character.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ispunct">ispunct</A></B><DD>Checks whether a character is a punctuation character.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isspace">isspace</A></B><DD>Checks whether a character is a white space.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isupper">isupper</A></B><DD>Checks whether a character is an uppercase.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#isxdigit">isxdigit</A></B><DD>Checks whether a character is a hex digit.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#toascii">toascii</A></B><DD>Translates characters to ASCII format.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#toextlower">toextlower</A></B><DD>Translates characters to lowercase, including foreign ones.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#toextupper">toextupper</A></B><DD>Translates characters to uppercase, including foreign ones.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#tolower">tolower</A></B><DD>Translates characters to lowercase.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#toupper">toupper</A></B><DD>Translates characters to uppercase.</DL>
+<P><B>Note:</B> All of these functions are inline functions which are implemented using GNU C smart macros
+(except the simplest ones, which are ordinary macros). Some of them expand to relatively
+large code, so if you call any of them more than twice in a program, it will be a good idea
+to define an ordinary function which calls this macro. For example, if you want
+to call <A HREF="#isxdigit">isxdigit</A> more than twice, define the following to save memory:</P>
+<PRE>int _isxdigit(int c)
+{
+  return isxdigit (c);
+}
+</PRE>
+<P>Then call _isxdigit instead.</P>
+
+<HR>
+<H3><A NAME="_tolower"><U>_tolower</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> _tolower (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Translates uppercase characters to lowercase.</B></P>
+
+<P>_tolower does the same conversion as <A HREF="#tolower">tolower</A> or
+<A HREF="#toextlower">toextlower</A>, except that it
+should be used only when <I>c</I> is known to be uppercase (either ordinary
+or foreign). It is faster, and
+generates much shorter code than <A HREF="#tolower">tolower</A>. _tolower returns  the
+converted value of <I>c</I> if it is uppercase; otherwise, the result is undefined.
+_tolower is a simple macro.</P>
+
+<HR>
+<H3><A NAME="_toupper"><U>_toupper</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> _toupper (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Translates uppercase characters to lowercase.</B></P>
+
+<P>_toupper does the same conversion as <A HREF="#toupper">toupper</A> or
+<A HREF="#toextupper">toextupper</A>, except that it
+should be used only when <I>c</I> is known to be lowercase (either ordinary or foreign).
+It is faster, and
+generates much shorter code than <A HREF="#toupper">toupper</A>. _toupper returns  the
+converted value of <I>c</I> if it is lowercase; otherwise, the result is undefined.
+_toupper is a simple macro.</P>
+
+<HR>
+<H3><A NAME="isalnum"><U>isalnum</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isalnum (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is an alphanumeric.</B></P>
+
+<P>isalnum returns nonzero if <I>c</I> is a letter ('A' to 'Z' or 'a' to 'z') or a digit ('0' to '9'), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros, which expands to a
+medium-sized code.</P>
+
+<HR>
+<H3><A NAME="isalpha"><U>isalpha</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isalpha (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a letter.</B></P>
+
+<P>isalpha returns nonzero if <I>c</I> is a letter ('A' to 'Z' or 'a' to 'z'), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros, which expands to a
+relatively small code.</P>
+
+<HR>
+<H3><A NAME="isascii"><U>isascii</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isascii (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is an ASCII character.</B></P>
+
+<P>isascii returns nonzero if <I>c</I> is in the range 0 to 127 (0x00-0x7F), otherwise it returns zero.
+It is a simple macro.</P>
+
+<HR>
+<H3><A NAME="iscntrl"><U>iscntrl</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> iscntrl (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a control character.</B></P>
+
+<P>iscntrl returns nonzero if <I>c</I> is a TIOS control character, otherwise it returns zero. Note that
+in TIOS control characters are reduced to the range from 0x00 to 0x0D.
+iscntrl is a simple macro.</P>
+
+<HR>
+<H3><A NAME="isdigit"><U>isdigit</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isdigit (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a digit.</B></P>
+
+<P>isdigit returns nonzero if <I>c</I> is a digit ('0' to '9'), otherwise it returns zero.
+It is a small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="isextalnum"><U>isextalnum</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isextalnum (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is an extended alphanumeric.</B></P>
+
+<P>isextalnum returns nonzero if <I>c</I> is a symbol which may be used in variable names,
+including ordinary alphanumerics (see <A HREF="#isalnum">isalnum</A>), underscore ('_') and
+foreign alphanumerics (see <A HREF="#isfrgnalnum">isfrgnalnum</A>), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros and a library variable. The first call of isextalnum
+expands to a large code, but any next call of it expands to a relatively small code.</P>
+
+<HR>
+<H3><A NAME="isextlower"><U>isextlower</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isextlower (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a lowercase, including foreign ones.</B></P>
+
+<P>isextlower returns nonzero if <I>c</I> is a lowercase letter, either ordinary ('a' to 'z')
+or foreign one (see <A HREF="#isfrgnlower">isfrgnlower</A>), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros, which expands to a
+medium-sized code.</P>
+
+<HR>
+<H3><A NAME="isextpunct"><U>isextpunct</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isextpunct (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is an extended punctuation character.</B></P>
+
+<P>isextpunct returns nonzero if <I>c</I> is a character which is printable
+(see <A HREF="#isprint">isprint</A> but which is not an extended alphanumeric
+(see <A HREF="#isextalnum">isextalnum</A>), otherwise it returns zero. Extended punctuation
+characters include ordinary punctuation characters (see <A HREF="#ispunct">ispunct</A>) and
+some extra ones.
+isextpunct is an inline function which is implemented using GNU C smart macros. The first call of it
+expands to a large code, but any next call of it expands to a relatively small code.</P>
+
+<HR>
+<H3><A NAME="isextupper"><U>isextupper</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isextupper (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is an uppercase, including foreign ones.</B></P>
+
+<P>isextupper returns nonzero if <I>c</I> is an uppercase letter, either ordinary ('A' to 'Z')
+or foreign one (see <A HREF="#isfrgnupper">isfrgnupper</A>), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros, which expands to a
+medium-sized code.</P>
+
+<HR>
+<H3><A NAME="isfrgn"><U>isfrgn</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isfrgn (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a foreign letter.</B></P>
+
+<P>isfrgn returns nonzero if <I>c</I> is a foreign letter (including Greek ones), either
+uppercase or lowercase (see <A HREF="#isGreek">isGreek</A>, <A HREF="#isfrgnupper">isfrgnupper</A>
+and <A HREF="#isfrgnlower">isfrgnlower</A>), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros, which expands to a
+relatively large code.</P>
+
+<HR>
+<H3><A NAME="isfrgnalnum"><U>isfrgnalnum</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isfrgnalnum (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a foreign letter which is valid in a variable name.</B></P>
+
+<P>isfrgnalnum is the same as <A HREF="#isfrgn">isfrgn</A>, except small Greek "pi" is excluded,
+because it is the reserved symbol and it is not valid in a variable name.
+isfrgnalnum is an inline function which is implemented using GNU C smart macros, which expands
+to a relatively large code.</P>
+
+<HR>
+<H3><A NAME="isfrgnlower"><U>isfrgnlower</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isfrgnlower (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a foreign lowercase.</B></P>
+
+<P>isfrgnlower returns nonzero if <I>c</I> is a non-Greek foreign lowercase letter (0xE0 to 0xFE except
+0xF7), otherwise it returns zero.
+It is a relatively small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="isfrgnupper"><U>isfrgnupper</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isfrgnupper (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a foreign uppercase.</B></P>
+
+<P>isfrgnupper returns nonzero if <I>c</I> is a non-Greek foreign uppercase letter (0xC0 to 0xDE except
+0xD7), otherwise it returns zero.
+It is a relatively small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="isgraph"><U>isgraph</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isgraph (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a graph character.</B></P>
+
+<P>isgraph returns nonzero if <I>c</I> is printing character, like
+<A HREF="#isprint">isprint</A>, except that a space character is excluded; otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros, which expands to a
+relatively small code.</P>
+
+<HR>
+<H3><A NAME="isGreek"><U>isGreek</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isGreek (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a Greek letter.</B></P>
+
+<P>isGreek returns nonzero if <I>c</I> is a Greek letter (0x80 to 0x94 and 0xB5), otherwise it returns zero.
+It is a relatively small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="islower"><U>islower</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> islower (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a lowercase.</B></P>
+
+<P>islower returns nonzero if <I>c</I> is a lowercase letter ('a' to 'z'), otherwise it returns zero.
+It is a small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="isprint"><U>isprint</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isprint (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a printing character.</B></P>
+
+<P>isprint returns nonzero if <I>c</I> is a printing character, otherwise it returns zero.
+In TIOS, all characters in a range 0x0E to 0xFF and 0x0B are marked as "printable".
+isprint is a relatively small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="ispunct"><U>ispunct</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> ispunct (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a punctuation character.</B></P>
+
+<P>ispunct returns nonzero if <I>c</I> is a punctuation character, otherwise it returns zero. Punctuation
+characters are all characters in standard ASCII graph range (0x21 to 0x7F), which are not
+alphanumeric character (see <A HREF="#isalnum">isalnum</A>).
+ispunct is an inline function which is implemented using GNU C smart macros, which expands to a
+relatively large code.</P>
+
+<HR>
+<H3><A NAME="isspace"><U>isspace</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isspace (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a white space.</B></P>
+
+<P>isspace returns nonzero if <I>c</I> is a space, tab, carriage return, new line,
+vertical tab, or formfeed (0x09 to 0x0D and 0x20), otherwise it returns zero.
+It is a relatively small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="isupper"><U>isupper</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isupper (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is an uppercase.</B></P>
+
+<P>isupper returns nonzero if <I>c</I> is an uppercase letter ('A' to 'Z'), otherwise it returns zero.
+It is a small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="isxdigit"><U>isxdigit</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> isxdigit (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Checks whether a character is a hex digit.</B></P>
+
+<P>isxdigit returns nonzero if <I>c</I> is a hexadecimal digit ('0' to '9', 'A' to 'F' or 'a' to 'f'), otherwise it returns zero.
+It is an inline function which is implemented using GNU C smart macros, which expands to a
+medium-sized code.</P>
+
+<HR>
+<H3><A NAME="toascii"><U>toascii</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> toascii (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Translates characters to ASCII format.</B></P>
+
+<P>toascii converts the integer <I>c</I> to ASCII by clearing all but
+the lower 7 bits. This gives a value in the range 0 to 127.
+Returns the converted value of <I>c</I>.
+toascii is a simple macro.</P>
+
+<HR>
+<H3><A NAME="toextlower"><U>toextlower</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> toextlower (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Translates characters to lowercase, including foreign ones.</B></P>
+
+<P>toextlower works like <A HREF="#tolower">tolower</A>, but it also converts foreign
+uppercase characters (see <A HREF="#isfrgnupper">isfrgnupper</A>).
+toextupper is an inline function which is implemented using GNU C smart macros, which
+expands to a medium-sized code.</P>
+
+<HR>
+<H3><A NAME="toextupper"><U>toextupper</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> toextupper (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Translates characters to uppercase, including foreign ones.</B></P>
+
+<P>toextupper works like <A HREF="#toupper">toupper</A>, but it also converts foreign
+lowercase characters (see <A HREF="#isfrgnlower">isfrgnlower</A>).
+toextupper is an inline function which is implemented using GNU C smart macros, which
+expands to a medium-sized code.</P>
+
+<HR>
+<H3><A NAME="tolower"><U>tolower</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> tolower (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Translates characters to lowercase.</B></P>
+
+<P>tolower is a function that converts an integer <I>c</I> to its lowercase value
+('a' to 'z') if it was uppercase ('A' to 'Z'). All others are left unchanged.
+Returns the converted value of <I>c</I>.
+tolower is a relatively small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A NAME="toupper"><U>toupper</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> toupper (<B><A HREF="keywords.html#short">short</A></B> c);</TD></TR></TABLE></P>
+<P><B>Translates characters to uppercase.</B></P>
+
+<P>toupper is a function that converts an integer <I>c</I> to its uppercase value
+('A' to 'Z') if it was lowercase ('a' to 'z'). All others are left unchanged.
+Returns the converted value of <I>c</I>.
+toupper is a relatively small inline function which is implemented using GNU C smart macros.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

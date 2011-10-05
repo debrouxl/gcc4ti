@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>setjmp.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;setjmp.h&gt; Header File</B></FONT>
+<HR>
+<P><B>ANSI-compatible routines for non-local jumps</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#longjmp">longjmp</A></B><DD>Performs nonlocal goto.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#setjmp">setjmp</A></B><DD>Sets up for nonlocal goto.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#JMP_BUF">JMP_BUF</A></B><DD>A type for capturing a task state.</DL>
+<HR>
+<H3><A NAME="longjmp"><U>longjmp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> longjmp (<B><A HREF="keywords.html#void">void</A></B> *j_buf, <B><A HREF="keywords.html#short">short</A></B> ret_val);</TD></TR></TABLE></P>
+<P><B>Performs nonlocal goto.</B></P>
+
+<P>A call to longjmp restores the task state captured by the last call to
+<A HREF="#setjmp">setjmp</A> with the argument <I>j_buf</I>. It then
+returns in such a way that <A HREF="#setjmp">setjmp</A> appears to have
+returned with the value <I>ret_val</I>. <I>j_buf</I> is usually a
+buffer of type <A HREF="#JMP_BUF">JMP_BUF</A>. See
+<A HREF="#setjmp">setjmp</A> for more info.
+<BR><BR>
+<B>Note:</B> longjmp should not be called with a value 0 as <I>ret_val</I>.</P>
+
+<HR>
+<H3><A NAME="setjmp"><U>setjmp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> setjmp (<B><A HREF="keywords.html#void">void</A></B> *j_buf);</TD></TR></TABLE></P>
+<P><B>Sets up for nonlocal goto.</B></P>
+
+<P>setjmp captures the complete task state in <I>j_buf</I> and returns 0.
+<I>j_buf</I> is usually a buffer of type <A HREF="#JMP_BUF">JMP_BUF</A>.
+A later call to <A HREF="#longjmp">longjmp</A> with <I>j_buf</I> restores
+the captured task state and returns in such a way that setjmp appears to have
+returned with the value <I>val</I>. A task state consists of address registers A2-A7,
+data registers D2-D7, and the program counter.
+<BR><BR>
+setjmp must be called before <A HREF="#longjmp">longjmp</A>. The routine that
+calls setjmp and sets  up <I>j_buf</I> must still be active and cannot have
+returned before the <A HREF="#longjmp">longjmp</A> is
+called. If it has returned, the results are unpredictable (and usually results
+with a crash). setjmp is useful for dealing with errors and exceptions
+encountered in a low-level subroutine of a program. setjmp returns 0 when it
+is initially called. If the return is from a call to <A HREF="#longjmp">longjmp</A>,
+setjmp returns a nonzero value.
+<BR><BR>
+<B>Note:</B> The saved task state is not complete enough that setjmp can be used to
+implement coroutines (i.e. multitasking). Namely, registers A0, A1, D0, D1 and SR
+are not included into the task state.</P>
+
+<HR>
+<H3><A NAME="JMP_BUF"><U>JMP_BUF</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> D2, D3, D4, D5, D6, D7;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> A2, A3, A4, A5, A6, A7;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> PC;<BR>
+</TD></TR></TABLE>
+} JMP_BUF [1];</TD></TR></TABLE></P>
+<P><B>A type for capturing a task state.</B></P>
+
+<P>JMP_BUF is a type designed for capturing a task state needed for
+the <A HREF="#setjmp">setjmp</A> and <A HREF="#longjmp">longjmp</A> commands.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

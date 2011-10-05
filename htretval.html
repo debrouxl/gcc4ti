@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Returning Values</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>Returning Values</B></FONT>
+<HR>
+<UL>
+<LI><B><A HREF="#retval">Returning Values Like TI-Basic Functions</A></B>
+<LI><B><A HREF="#retvar">Returning Values Through Variables</A></B>
+<LI><B><A HREF="#reterr">Returning TI-Basic Errors</A></B>
+</UL>
+<HR>
+<H2><A NAME="retval"><U>Returning Values Like TI-Basic Functions</U></A></H2>
+<P>It is possible to write programs which return a value to the TI-Basic, i.e. which act
+like TI-Basic function (with some serious limitations; read below for more
+info). To do this, put the following statement at the begining of the program (or
+at the begining of the main module of your program):</P>
+<PRE>#define RETURN_VALUE
+</PRE>
+<P>This will work in both NoStub and kernel mode. Such statement will cause
+the last value pushed to the expression stack to become the "result"
+of the program. For pushing values on expression stack, use routines from the
+<A HREF="estack.html">estack.h</A> header file. For example, use
+<A HREF="estack.html#push_shortint">push_shortint</A> or
+<A HREF="estack.html#push_longint">push_longint</A> to push integer values,
+<A HREF="estack.html#push_Float">push_Float</A> to push floating point values,
+<A HREF="estack.html#push_zstr">push_zstr</A> to push strings, etc. Note
+that if you declared <CODE>RETURN_VALUE</CODE>, you <I>must</I> push something on the
+expression stack.
+<BR><BR>
+If you plan to write a function which returns a value to TI-Basic in either ASM or C, you
+should also clean up all arguments of the function from the expression stack before
+pushing the result including the <A HREF="estack.html#END_TAG">END_TAG</A>. If you
+neglect to do this, then using the function as an argument of another one will not work
+correctly. Also, you should leave exactly one value on the expression stack (i.e. you
+should delete all eventual temporary results from the expression stack). Here is a
+sample code how you can clean up function arguments from the expression stack:</P>
+<PRE>while (GetArgType (top_estack) != END_TAG)
+  top_estack = next_expression_index (top_estack);
+top_estack--;
+</PRE>
+<P>Here is a complete example (called "Add Arguments") of a
+very simple program which gets two arguments (assuming that they are small
+positive integers, without any checking), and returns their sum (see
+<A HREF="args.html">args.h</A> for more info about getting the arguments):</P>
+<PRE>// Add the first two integers passed to the program
+
+#define RETURN_VALUE
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#define MIN_AMS 101
+
+#include &lt;args.h&gt;
+#include &lt;estack.h&gt;
+
+void _main(void)
+{
+  ESI argptr = top_estack;
+  short a = GetIntArg (argptr);
+  short b = GetIntArg (argptr);
+  while (GetArgType (top_estack) != END_TAG)  // Clean up arguments
+    top_estack = next_expression_index (top_estack);
+  top_estack--;
+  push_longint (a + b);
+}
+</PRE>
+<P>Test this program from TI-Basic by giving <CODE>add(2,3)</CODE> (assuming that
+you compiled it and gave the name "add.c" to it). Note that if you neglect cleaning
+up arguments from the expression stack, then something like
+<CODE>add(add(3,5),add(4,7))</CODE> will not give the correct result!
+<BR><BR>
+You can even return <B>lists</B> as the result. To do this, push first
+End_Of_List marker (using <A HREF="estack.html#push_END_TAG">push_END_TAG</A>), then
+push elements of the list in the reverse order, and finnaly push List marker on the
+expression stack using <A HREF="estack.html#push_LIST_TAG">push_LIST_TAG</A>. The following
+program (called "Folder") returns the list of all variables in the folder which is given as the argument:</P>
+<PRE>// Get the variables in a folder as a list
+
+#define RETURN_VALUE
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#define MIN_AMS 101
+
+#include &lt;args.h&gt;
+#include &lt;estack.h&gt;
+#include &lt;vat.h&gt;
+
+void _main(void)
+{
+  ESI argptr = top_estack;
+  SYM_ENTRY *SymPtr = SymFindFirst (GetSymstrArg (argptr), 1);
+  while (GetArgType (top_estack) != END_TAG)  // Clean up arguments
+    top_estack = next_expression_index (top_estack);
+  top_estack--;
+  push_END_TAG ();
+  while (SymPtr)
+    {
+      push_ANSI_string (SymPtr-&gt;name);
+      SymPtr = SymFindNext ();
+    }
+  push_LIST_TAG ();
+}
+</PRE>
+<P>Give the name "folder.c" to it, compile it using<BR><BR>
+<B>tigcc -O2 folder.c</B><BR><BR>
+then try, for example, <CODE>folder("main")</CODE> from the TI-Basic. Happy? Many
+users asked me how to make such a program!
+<BR><BR>
+Now about problems. Everything works fine in AMS 1.xx, but AMS 2.xx forbids the use of
+ASM programs in expressions. So, in the above example, <CODE>'add(2,3)'</CODE> will
+work perfectly, but <CODE>'5+add(2,3)'</CODE> or even
+<CODE>'add(2,3)-&gt;a'</CODE> will not. This stupidity
+makes returning values mostly useless. What to do? Unfortunately, I can't do nothing
+from GCC4TI itself, because an ASM program will not be executed at all if AMS 2.xx
+detects its presence in an expression. However, there is a solution: it is possible to
+make a resident program which will intercept such "stupid" behaviour of AMS 2.xx and to
+allow executing ASM programs in expressions. Such interception is already implemented
+in PreOS and KerNO. So, if you have installed a fresh release of PreOS or KerNO, everything
+will work OK even on AMS 2.xx. There is also a TSR called IPR which intercepts only this
+error and the "ASAP or Exec string too long" error available at
+<A HREF="http://membres.lycos.fr/sirryl/download/index.php?url=download.php">Cyril
+Pascal's (Paxal's) web page</A> for those who don't want to install a full-featured
+kernel. But for HW2 calculators, the <A HREF="http://ti89prog.kevinkofler.cjb.net">HW2
+AMS 2 TSR support (h220xTSR)</A> needs to be installed before IPR.
+This does <B>not</B> mean that your program must be compiled in "kernel" mode:
+it may be a "nostub" program, but PreOs, KerNO or IPR must be present on the calculator
+(to intercept stupid behavior of AMS 2.xx). To conclude: if you have AMS 2.xx and if
+you want to use "returning a value" feature, you must have installed PreOs, KerNO or
+IPR. If you are a programmer, please note this fact in the documentation of any program
+which uses this feature!
+<BR><BR>
+As an alternative, you may use <A HREF="#retvar">returning values
+through variables</A>.</P>
+
+<HR>
+<H2><A NAME="retvar"><U>Returning Values Through Variables</U></A></H2>
+<P>As mentioned in the previous section, returning a value from ASM program on a similar
+way like TI-Basic functions return values causes problems with AMS 2.xx. Therefore,
+another way for returning values (which works well unconditionally) was introduced.
+This method will be ilustrated using a concrete example. Look the following
+modified "Folder" program given in the previous section (called "Folder List"):</P>
+<PRE>// Write the variables in a folder into a list variable
+
+#define RETURN_VALUE dirlist
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;args.h&gt;
+#include &lt;estack.h&gt;
+#include &lt;vat.h&gt;
+
+void _main(void)
+{
+  ESI argptr = top_estack;
+  SYM_ENTRY *SymPtr = SymFindFirst (GetSymstrArg (argptr), 1);
+  push_END_TAG ();
+  while (SymPtr)
+    {
+      push_ANSI_string (SymPtr-&gt;name);
+      SymPtr = SymFindNext ();
+    }
+  push_LIST_TAG ();
+}
+</PRE>
+<P>The only difference between this program and the program in the previous section is in
+the usage of the <CODE>RETURN_VALUE</CODE> directive: in this example, it is followed
+with a variable name (<CODE>dirlist</CODE> in this example). If
+<CODE>RETURN_VALUE</CODE> is followed with a variable name (which must be a legal
+TI-Basic variable name in lowercase), the last value pushed to the expression stack would
+be stored in the TI-Basic variable with the given name. So, in this example, after execution
+of the program, the result of the program (a folder list) will be stored in TI-Basic
+variable called <CODE>dirlist</CODE> (if such variable does not exist, it will be
+created). See the <A HREF="#retval">previous section</A> for more info about this example. I hope that this
+explanation is clear enough, so more detailed explanation is not necessary.</P>
+
+<HR>
+<H2><A NAME="reterr"><U>Returning TI-Basic Errors</U></A></H2>
+<P>Basically, you can return errors using
+<A HREF="error.html#ER_throw">ER_throw</A> or
+<A HREF="error.html#ER_throwVar">ER_throwVar</A> from
+<A HREF="error.html">error.h</A>. Many functions from this library
+throw errors, which you can simply pass on to the operating system, possibly using
+<A HREF="error.html#TRY">TRY</A>...<A HREF="error.html#FINALLY">FINALLY</A>...<A HREF="error.html#ENDFINAL">ENDFINAL</A> blocks.
+<BR><BR>
+However, for the system to operate normally after this, you need to write</P>
+<PRE>#define ENABLE_ERROR_RETURN
+</PRE>
+<P>at the beginning of your program. Otherwise, the screen will not be updated
+properly and other cleanup code (for example for <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>)
+is not executed. Most importantly, however, the program handle remains locked
+in AMS 1.xx because of a bug in the operating system. If you try to start the
+program again, you will get an "Invalid Program Reference" error.
+<BR><BR>
+<B>Note:</B> The workaround for this bug works only in kernel-less programs.
+For kernel-based programs, working around the bug is the kernel's
+responsibility. If you want to use this directive in kernel mode, you need to
+check which kernels perform such a workaround, and tell your users about this
+fact.
+<BR><BR>
+The following example (called "Memory Error") demonstrates how this directive
+may be used together with
+<A HREF="error.html#TRY">TRY</A>...<A HREF="error.html#FINALLY">FINALLY</A>...<A HREF="error.html#ENDFINAL">ENDFINAL</A> blocks:</P>
+<PRE>// Allocate memory as long as possible, then throw an error
+// All allocated memory will be freed again!
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define ENABLE_ERROR_RETURN   // Enable Returning Errors to TIOS
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+#define BLOCK_SIZE 1024
+
+void AllocRecursively(void)
+{
+  void *ptr = malloc_throw (BLOCK_SIZE);
+  TRY
+    // Could do something with ptr here...
+    AllocRecursively ();
+    // Could still do something with ptr...
+  FINALLY
+    free (ptr);
+  ENDFINAL
+}
+
+// Main Function
+void _main(void)
+{
+  AllocRecursively ();
+}
+</PRE>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

@@ -1,0 +1,931 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>compat.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;compat.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Various calc-dependent and AMS-dependent pseudo-constants</B></P>
+
+<P>This header file contains a set of various pseudo-constants (i.e. macros defined to
+look and work like constants), dedicated to increase compatibility between the TI-89 and
+TI-92 Plus and between AMS versions. These "constants" have different values on the
+TI-89 and TI-92 Plus (or on AMS 1.xx and AMS 2.xx). Using these pseudo-constants,
+you can, for example, perform keyboard reading and graphic calculations in a more sophisticated way,
+check the AMS version and perform some AMS-dependent actions (although this is not recommended
+if not really necessary), etc.
+<BR><BR>
+The following table shows all defined pseudo-constants.
+A lot of them are known from DoorsOS, but they are defined here to work in both "nostub"
+and "Doors" mode.</P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#PSEUDO_CONST_CALC">PSEUDO_CONST_CALC</A></B><DD>A macro to construct a pseudo-constant from calculator-based values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PSEUDO_CONST_KBD">PSEUDO_CONST_KBD</A></B><DD>A macro to construct a pseudo-constant from keyboard-based values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PSEUDO_CONST_SCREEN">PSEUDO_CONST_SCREEN</A></B><DD>A macro to construct a pseudo-constant from screen-based values.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#AMS_1xx">AMS_1xx</A></B><DD><A HREF="alloc.html#Bool">TRUE</A> on AMS 1.xx, <A HREF="alloc.html#Bool">FALSE</A> on AMS 2.xx and AMS 3.xx.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#AMS_2xx">AMS_2xx</A></B><DD><A HREF="alloc.html#Bool">TRUE</A> on AMS 2.xx, <A HREF="alloc.html#Bool">FALSE</A> on AMS 1.xx and AMS 3.xx.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#AMS_3xx">AMS_3xx</A></B><DD><A HREF="alloc.html#Bool">TRUE</A> on AMS 3.xx, <A HREF="alloc.html#Bool">FALSE</A> on AMS 1.xx and AMS 2.xx.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CALCULATOR">CALCULATOR</A></B><DD>Describes the calculator model.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HW_VERSION">HW_VERSION</A></B><DD>Describes the hardware version.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_DIAMOND">KEY_DIAMOND</A></B><DD>The number added to the key code if the Diamond key is pressed with it (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_DOWN">KEY_DOWN</A></B><DD>Key code for the down arrow key (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_DOWNLEFT">KEY_DOWNLEFT</A></B><DD>Key code for simultaneous pressing of the down and left arrow keys (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_LEFT">KEY_LEFT</A></B><DD>Key code for the left arrow key (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_OFF2">KEY_OFF2</A></B><DD>The key code for Diamond+ON (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_RIGHT">KEY_RIGHT</A></B><DD>Key code for the right arrow key (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_SHIFT">KEY_SHIFT</A></B><DD>The number added to the key code if the Shift key is pressed with it (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_UP">KEY_UP</A></B><DD>Key code for the up arrow key (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#KEY_UPRIGHT">KEY_UPRIGHT</A></B><DD>Key code for simultaneous pressing on up and right arrow keys (see <A HREF="kbd.html#ngetchx">ngetchx</A>).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LCD_HEIGHT">LCD_HEIGHT</A></B><DD>Height of the screen in pixels.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LCD_LINE_BYTES">LCD_LINE_BYTES</A></B><DD>Number of bytes in the visible part of a screen line.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LCD_WIDTH">LCD_WIDTH</A></B><DD>Width of the screen in pixels.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ROM_base">ROM_base</A></B><DD>Base address of the ROM (0x200000 on TI-89 or V200, 0x400000 on TI-92 Plus, 0x800000 on TI-89 Titanium).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_0">RR_0</A></B><DD>A pseudo-constant pair for the '0' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_1">RR_1</A></B><DD>A pseudo-constant pair for the '1' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_2">RR_2</A></B><DD>A pseudo-constant pair for the '2' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_3">RR_3</A></B><DD>A pseudo-constant pair for the '3' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_4">RR_4</A></B><DD>A pseudo-constant pair for the '4' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_5">RR_5</A></B><DD>A pseudo-constant pair for the '5' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_6">RR_6</A></B><DD>A pseudo-constant pair for the '6' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_7">RR_7</A></B><DD>A pseudo-constant pair for the '7' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_8">RR_8</A></B><DD>A pseudo-constant pair for the '8' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_9">RR_9</A></B><DD>A pseudo-constant pair for the '9' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_2ND">RR_2ND</A></B><DD>A pseudo-constant pair for the '2nd' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_A">RR_A</A></B><DD>A pseudo-constant pair for the 'A' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_ALPHA">RR_ALPHA</A></B><DD>A pseudo-constant pair for the Alpha key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_APPS">RR_APPS</A></B><DD>A pseudo-constant pair for the 'APPS' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_B">RR_B</A></B><DD>A pseudo-constant pair for the 'B' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_BCKSPC">RR_BCKSPC</A></B><DD>A pseudo-constant pair for the backspace key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_C">RR_C</A></B><DD>A pseudo-constant pair for the 'C' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_CATALOG">RR_CATALOG</A></B><DD>A pseudo-constant pair for the 'CATALOG' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_CLEAR">RR_CLEAR</A></B><DD>A pseudo-constant pair for the 'CLEAR' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_COMMA">RR_COMMA</A></B><DD>A pseudo-constant pair for the ',' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_COS">RR_COS</A></B><DD>A pseudo-constant pair for the 'COS' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_D">RR_D</A></B><DD>A pseudo-constant pair for the 'D' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_DIAMOND">RR_DIAMOND</A></B><DD>A pseudo-constant pair for the Diamond key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_DIVIDE">RR_DIVIDE</A></B><DD>A pseudo-constant pair for the '/' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_DOT">RR_DOT</A></B><DD>A pseudo-constant pair for the '.' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_DOWN">RR_DOWN</A></B><DD>A pseudo-constant pair for the down arrow key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_E">RR_E</A></B><DD>A pseudo-constant pair for the 'E' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_EE">RR_EE</A></B><DD>A pseudo-constant pair for the 'EE' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_ENTER1">RR_ENTER1</A></B><DD>A pseudo-constant pair for the first 'ENTER' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_ENTER2">RR_ENTER2</A></B><DD>A pseudo-constant pair for the second 'ENTER' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_ENTER">RR_ENTER</A></B><DD>A pseudo-constant pair for the 'ENTER' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_EQUALS">RR_EQUALS</A></B><DD>A pseudo-constant pair for the '=' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_ESC">RR_ESC</A></B><DD>A pseudo-constant pair for the 'ESC' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F1">RR_F1</A></B><DD>A pseudo-constant pair for the 'F1' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F2">RR_F2</A></B><DD>A pseudo-constant pair for the 'F2' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F3">RR_F3</A></B><DD>A pseudo-constant pair for the 'F3' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F4">RR_F4</A></B><DD>A pseudo-constant pair for the 'F4' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F5">RR_F5</A></B><DD>A pseudo-constant pair for the 'F5' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F6">RR_F6</A></B><DD>A pseudo-constant pair for the 'F6' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F7">RR_F7</A></B><DD>A pseudo-constant pair for the 'F7' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F8">RR_F8</A></B><DD>A pseudo-constant pair for the 'F8' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_F">RR_F</A></B><DD>A pseudo-constant pair for the 'F' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_G">RR_G</A></B><DD>A pseudo-constant pair for the 'G' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_H">RR_H</A></B><DD>A pseudo-constant pair for the 'H' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_HAND">RR_HAND</A></B><DD>A pseudo-constant pair for the Hand key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_HOME">RR_HOME</A></B><DD>A pseudo-constant pair for the 'HOME' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_I">RR_I</A></B><DD>A pseudo-constant pair for the 'I' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_J">RR_J</A></B><DD>A pseudo-constant pair for the 'J' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_K">RR_K</A></B><DD>A pseudo-constant pair for the 'K' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_L">RR_L</A></B><DD>A pseudo-constant pair for the 'L' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_LEFT">RR_LEFT</A></B><DD>A pseudo-constant pair for the left arrow key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_LN">RR_LN</A></B><DD>A pseudo-constant pair for the 'LN' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_M">RR_M</A></B><DD>A pseudo-constant pair for the 'M' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_MINUS">RR_MINUS</A></B><DD>A pseudo-constant pair for the '-' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_MODE">RR_MODE</A></B><DD>A pseudo-constant pair for the 'MODE' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_MULTIPLY">RR_MULTIPLY</A></B><DD>A pseudo-constant pair for the '*' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_N">RR_N</A></B><DD>A pseudo-constant pair for the 'N' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_NEGATE">RR_NEGATE</A></B><DD>A pseudo-constant pair for the negation key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_NO_KEY">RR_NO_KEY</A></B><DD>A constant which means that a specific key does not exist.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_O">RR_O</A></B><DD>A pseudo-constant pair for the 'O' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_P">RR_P</A></B><DD>A pseudo-constant pair for the 'P' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_PAREN_CLOSE">RR_PAREN_CLOSE</A></B><DD>A pseudo-constant pair for the ')' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_PAREN_OPEN">RR_PAREN_OPEN</A></B><DD>A pseudo-constant pair for the '(' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_PLUS">RR_PLUS</A></B><DD>A pseudo-constant pair for the '+' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_POWER">RR_POWER</A></B><DD>A pseudo-constant pair for the '^' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_Q">RR_Q</A></B><DD>A pseudo-constant pair for the 'Q' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_R">RR_R</A></B><DD>A pseudo-constant pair for the 'R' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_RIGHT">RR_RIGHT</A></B><DD>A pseudo-constant pair for the right arrow key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_S">RR_S</A></B><DD>A pseudo-constant pair for the 'S' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_SHIFT">RR_SHIFT</A></B><DD>A pseudo-constant pair for the Shift key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_SIN">RR_SIN</A></B><DD>A pseudo-constant pair for the 'SIN' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_SPACE">RR_SPACE</A></B><DD>A pseudo-constant pair for the space key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_STORE">RR_STORE</A></B><DD>A pseudo-constant pair for the Store key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_T">RR_T</A></B><DD>A pseudo-constant pair for the 'T' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_TAN">RR_TAN</A></B><DD>A pseudo-constant pair for the 'TAN' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_THETA">RR_THETA</A></B><DD>A pseudo-constant pair for the '<FONT FACE="Symbol">q</FONT>' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_U">RR_U</A></B><DD>A pseudo-constant pair for the 'U' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_UP">RR_UP</A></B><DD>A pseudo-constant pair for the up arrow key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_V">RR_V</A></B><DD>A pseudo-constant pair for the 'V' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_W">RR_W</A></B><DD>A pseudo-constant pair for the 'W' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_WITH">RR_WITH</A></B><DD>A pseudo-constant pair for the '|' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_X">RR_X</A></B><DD>A pseudo-constant pair for the 'X' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_Y">RR_Y</A></B><DD>A pseudo-constant pair for the 'Y' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RR_Z">RR_Z</A></B><DD>A pseudo-constant pair for the 'Z' key.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TI89_CLASSIC">TI89_CLASSIC</A></B><DD><A HREF="alloc.html#Bool">TRUE</A> on a classic TI-89 (i.e. a TI-89 which is <I>not</I> a TI-89 Titanium), <A HREF="alloc.html#Bool">FALSE</A> otherwise.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TI89_TITANIUM">TI89_TITANIUM</A></B><DD><A HREF="alloc.html#Bool">TRUE</A> on a TI-89 Titanium, <A HREF="alloc.html#Bool">FALSE</A> otherwise.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TI89">TI89</A></B><DD><A HREF="alloc.html#Bool">TRUE</A> on a TI-89, <A HREF="alloc.html#Bool">FALSE</A> otherwise.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TI92PLUS">TI92PLUS</A></B><DD><A HREF="alloc.html#Bool">TRUE</A> on TI-92 Plus, <A HREF="alloc.html#Bool">FALSE</A> otherwise.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_entries">TIOS_entries</A></B><DD>Number of entries in the TIOS jump table.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#V200">V200</A></B><DD><A HREF="alloc.html#Bool">TRUE</A> on V200, <A HREF="alloc.html#Bool">FALSE</A> otherwise.</DL>
+<P><B>Note:</B> All of these pseudo-constants are in fact macros. Although they expand to relatively small
+code (in "Doors" mode they are mainly implemented as RAM calls and managed by kernel), it is recommended to
+store a pseudo-constant in an ordinary variable if you use it a lot of times in the program (especially in "nostub"
+mode), and to use this variable instead. For example, if you use the <A HREF="#KEY_LEFT">KEY_LEFT</A> pseudo-constant
+too often, it is recommended to define</P>
+<PRE>int key_left = KEY_LEFT;
+</PRE>
+<P>somewhere at the beginning of the program, and to use</P>
+<PRE>if (key == key_left) ...
+</PRE>
+<P>instead of</P>
+<PRE>if (key == KEY_LEFT) ...
+</PRE>
+<P>Such indirection will save memory, but note that this is necessary only if you use
+the same pseudo-constant a lot in the program (say, more than 5 times).
+<BR><BR>
+There is yet another note. Pseudo-Constants work as constants in nearly all cases, but
+they are not really constants, so they cannot be used in <B>case</B> labels
+inside <B>switch</B> statements, i.e. the following is not legal:</P>
+<PRE>switch (ngetchx ())
+  {
+    case KEY_LEFT:
+      ...
+    case KEY_RIGHT:
+      ...
+    ...
+  }
+</PRE>
+<P>Instead, use <B>if...else</B> constructions:</P>
+<PRE>key = ngetchx ();
+if (key == KEY_LEFT)
+  {
+    ...
+  }
+else if (key == KEY_RIGHT)
+  {
+    ...
+  }
+...
+</PRE>
+<P>The pseudo-constants really become constants if you compile only for one
+calculator model. For example, if you define <CODE>USE_TI89</CODE> and nothing
+else, <A HREF="#CALCULATOR">CALCULATOR</A> will have the value <CODE>0</CODE>,
+and all other pseudo-constants will be optimized into single values.
+Or, if you define <CODE>MIN_AMS</CODE> to be <CODE>200</CODE>,
+<A HREF="#AMS_1xx">AMS_1xx</A> will always be false.</P>
+
+<HR>
+<H3><A NAME="PSEUDO_CONST_CALC"><U>PSEUDO_CONST_CALC</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> PSEUDO_CONST_CALC(calc92,calc89,calc92plus,calcv200) (<A HREF="#CALCULATOR">CALCULATOR</A> ? ((<A HREF="#CALCULATOR">CALCULATOR</A> == 1) ? (calc92plus) : (calcv200)) : (calc89))</TD></TR></TABLE></P>
+<P><B>A macro to construct a pseudo-constant from calculator-based values.</B></P>
+
+<P>PSEUDO_CONST_CALC is a macro used by
+<A HREF="#PSEUDO_CONST_SCREEN">PSEUDO_CONST_SCREEN</A> and
+<A HREF="#PSEUDO_CONST_KBD">PSEUDO_CONST_KBD</A>. Most of the time,
+you should not use it directly, but use these two macros instead.
+<BR><BR>
+It takes several values for the different calculators that GCC4TI can
+currently compile code for, and returns one of them based on the calculator
+that the program currently uses.
+The values must be plain positive integers up to 65535 (0xFFFF) in decimal
+or hexadecimal notation, otherwise this macro may fail in some cases.
+<BR><BR>
+Uses of this macro may be optimized by defining
+<CODE><A HREF="httigcc.html#advanced_optcalc">OPTIMIZE_CALC_CONSTS</A></CODE>.</P>
+
+<P>See also: <A HREF="#PSEUDO_CONST_SCREEN">PSEUDO_CONST_SCREEN</A>, <A HREF="#PSEUDO_CONST_KBD">PSEUDO_CONST_KBD</A></P>
+<HR>
+<H3><A NAME="PSEUDO_CONST_KBD"><U>PSEUDO_CONST_KBD</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> PSEUDO_CONST_KBD(kbd89,kbd92) PSEUDO_CONST_CALC(kbd92, kbd89, kbd92, kbd92)</TD></TR></TABLE></P>
+<P><B>A macro to construct a pseudo-constant from keyboard-based values.</B></P>
+
+<P>PSEUDO_CONST_KBD takes several values for different keyboard layouts, and
+returns one of them based on the keyboard that the program currently uses.
+The values must be plain positive integers up to 65535 (0xFFFF) in decimal
+or hexadecimal notation, otherwise this macro may fail in some cases.
+<BR><BR>
+Currently, there are two different keyboard layouts: The TI-89 keyboard,
+which looks like a normal calculator keyboard with extra keys, and the
+TI-92/TI-92+/V200 keyboard, which has a QWERTY layout.
+The two parameters specify the values to use whichever keyboard layout is
+encountered, which means that the number of parameters may increase as new
+hardware becomes available. If you want to use this macro in your
+application, you must decide for yourself whether this feature is desirable:
+On the one hand, it can prevent your code from being compiled in future
+releases of GCC4TI; on the other hand, you can easily port your programs to
+new hardware just by fixing all of the compile-time errors.</P>
+
+<P>See also: <A HREF="#PSEUDO_CONST_CALC">PSEUDO_CONST_CALC</A>, <A HREF="#PSEUDO_CONST_SCREEN">PSEUDO_CONST_SCREEN</A></P>
+<HR>
+<H3><A NAME="PSEUDO_CONST_SCREEN"><U>PSEUDO_CONST_SCREEN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> PSEUDO_CONST_SCREEN(screen89,screen92) PSEUDO_CONST_CALC(screen92, screen89, screen92, screen92)</TD></TR></TABLE></P>
+<P><B>A macro to construct a pseudo-constant from screen-based values.</B></P>
+
+<P>PSEUDO_CONST_SCREEN takes several values for different types of screens, and
+returns one of them based on the screen that the program currently uses.
+The values must be plain positive integers up to 65535 (0xFFFF) in decimal
+or hexadecimal notation, otherwise this macro may fail in some cases.
+<BR><BR>
+Currently, there are two types of screens: The TI-89 LCD with a size of
+160x100 pixels, and the TI-92/TI-92+/V200 LCD with a size of 240x128 pixels.
+The two parameters specify the values to use whichever screen type is
+encountered, which means that the number of parameters may increase as new
+hardware becomes available. If you want to use this macro in your
+application, you must decide for yourself whether this feature is desirable:
+On the one hand, it can prevent your code from being compiled in future
+releases of GCC4TI; on the other hand, you can easily port your programs to
+new hardware just by fixing all of the compile-time errors.</P>
+
+<P>See also: <A HREF="#PSEUDO_CONST_CALC">PSEUDO_CONST_CALC</A>, <A HREF="#PSEUDO_CONST_KBD">PSEUDO_CONST_KBD</A></P>
+<HR>
+<H3><A NAME="AMS_1xx"><U>AMS_1xx</U></A></H3>
+<P><B><A HREF="alloc.html#Bool">TRUE</A> on AMS 1.xx, <A HREF="alloc.html#Bool">FALSE</A> on AMS 2.xx and AMS 3.xx.</B></P>
+
+<P>This pseudo-constant is in fact defined globally, in <A HREF="default.html">default.h</A>.</P>
+
+<HR>
+<H3><A NAME="AMS_2xx"><U>AMS_2xx</U></A></H3>
+<P><B><A HREF="alloc.html#Bool">TRUE</A> on AMS 2.xx, <A HREF="alloc.html#Bool">FALSE</A> on AMS 1.xx and AMS 3.xx.</B></P>
+
+<P>This pseudo-constant is in fact defined globally, in <A HREF="default.html">default.h</A>.</P>
+
+<HR>
+<H3><A NAME="AMS_3xx"><U>AMS_3xx</U></A></H3>
+<P><B><A HREF="alloc.html#Bool">TRUE</A> on AMS 3.xx, <A HREF="alloc.html#Bool">FALSE</A> on AMS 1.xx and AMS 2.xx.</B></P>
+
+<P>This pseudo-constant is in fact defined globally, in <A HREF="default.html">default.h</A>.</P>
+
+<HR>
+<H3><A NAME="CALCULATOR"><U>CALCULATOR</U></A></H3>
+<P><B>Describes the calculator model.</B></P>
+
+<P>This pseudo-constant is 0 on the TI-89, 1 on the TI-92 Plus, and 3 on the V200.</P>
+
+<HR>
+<H3><A NAME="HW_VERSION"><U>HW_VERSION</U></A></H3>
+<P><B>Describes the hardware version.</B></P>
+
+<P>This pseudo-constant is 1 on a HW1 calculator and 2 on a HW2 calculator.
+It reads the value of the <I>gateArray</I> field in the
+<A HREF="flash.html#HARDWARE_PARM_BLOCK">HARDWARE_PARM_BLOCK</A>
+structure returned by
+<A HREF="flash.html#FL_getHardwareParmBlock">FL_getHardwareParmBlock</A>.</P>
+
+<HR>
+<H3><A NAME="KEY_DIAMOND"><U>KEY_DIAMOND</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_DIAMOND (PSEUDO_CONST_KBD (16384, 8192))</TD></TR></TABLE></P>
+<P><B>The number added to the key code if the Diamond key is pressed with it (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="KEY_DOWN"><U>KEY_DOWN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_DOWN (PSEUDO_CONST_KBD (340, 344))</TD></TR></TABLE></P>
+<P><B>Key code for the down arrow key (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="KEY_DOWNLEFT"><U>KEY_DOWNLEFT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_DOWNLEFT (PSEUDO_CONST_KBD (342, 345))</TD></TR></TABLE></P>
+<P><B>Key code for simultaneous pressing of the down and left arrow keys (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="KEY_LEFT"><U>KEY_LEFT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_LEFT (PSEUDO_CONST_KBD (338, 337))</TD></TR></TABLE></P>
+<P><B>Key code for the left arrow key (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="KEY_OFF2"><U>KEY_OFF2</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_OFF2 (PSEUDO_CONST_KBD (16651, 8459))</TD></TR></TABLE></P>
+<P><B>The key code for Diamond+ON (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="KEY_RIGHT"><U>KEY_RIGHT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_RIGHT (PSEUDO_CONST_KBD (344, 340))</TD></TR></TABLE></P>
+<P><B>Key code for the right arrow key (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="KEY_SHIFT"><U>KEY_SHIFT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_SHIFT (PSEUDO_CONST_KBD (8192, 16384))</TD></TR></TABLE></P>
+<P><B>The number added to the key code if the Shift key is pressed with it (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="KEY_UP"><U>KEY_UP</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_UP (PSEUDO_CONST_KBD (337, 338))</TD></TR></TABLE></P>
+<P><B>Key code for the up arrow key (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="KEY_UPRIGHT"><U>KEY_UPRIGHT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> KEY_UPRIGHT (PSEUDO_CONST_KBD (345, 342))</TD></TR></TABLE></P>
+<P><B>Key code for simultaneous pressing on up and right arrow keys (see <A HREF="kbd.html#ngetchx">ngetchx</A>).</B></P>
+
+<HR>
+<H3><A NAME="LCD_HEIGHT"><U>LCD_HEIGHT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> LCD_HEIGHT (PSEUDO_CONST_SCREEN (100, 128))</TD></TR></TABLE></P>
+<P><B>Height of the screen in pixels.</B></P>
+
+<P>This value is 100 on the TI-89, and 128 on the TI-92 Plus and V200.</P>
+
+<HR>
+<H3><A NAME="LCD_LINE_BYTES"><U>LCD_LINE_BYTES</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> LCD_LINE_BYTES (PSEUDO_CONST_SCREEN (20, 30))</TD></TR></TABLE></P>
+<P><B>Number of bytes in the visible part of a screen line.</B></P>
+
+<P>This value is 20 on the TI-89, and 30 on the TI-92 Plus and V200.</P>
+
+<HR>
+<H3><A NAME="LCD_WIDTH"><U>LCD_WIDTH</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> LCD_WIDTH (PSEUDO_CONST_SCREEN (160, 240))</TD></TR></TABLE></P>
+<P><B>Width of the screen in pixels.</B></P>
+
+<P>This value is 160 on the TI-89, and 240 on the TI-92 Plus and V200.</P>
+
+<HR>
+<H3><A NAME="ROM_base"><U>ROM_base</U></A></H3>
+<P><B>Base address of the ROM (0x200000 on TI-89 or V200, 0x400000 on TI-92 Plus, 0x800000 on TI-89 Titanium).</B></P>
+
+<HR>
+<H3><A NAME="RR_0"><U>RR_0</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_0 (PSEUDO_CONST_KBD (4, 9)), (PSEUDO_CONST_KBD (0, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '0' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_1"><U>RR_1</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_1 (PSEUDO_CONST_KBD (4, 1)), (PSEUDO_CONST_KBD (1, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '1' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_2"><U>RR_2</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_2 (PSEUDO_CONST_KBD (3, 1)), (PSEUDO_CONST_KBD (1, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '2' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_3"><U>RR_3</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_3 (PSEUDO_CONST_KBD (2, 1)), (PSEUDO_CONST_KBD (1, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '3' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_4"><U>RR_4</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_4 (PSEUDO_CONST_KBD (4, 2)), (PSEUDO_CONST_KBD (2, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '4' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_5"><U>RR_5</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_5 (PSEUDO_CONST_KBD (3, 2)), (PSEUDO_CONST_KBD (2, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '5' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_6"><U>RR_6</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_6 2, (PSEUDO_CONST_KBD (2, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '6' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_7"><U>RR_7</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_7 (PSEUDO_CONST_KBD (4, 3)), (PSEUDO_CONST_KBD (3, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '7' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_8"><U>RR_8</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_8 3, (PSEUDO_CONST_KBD (3, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '8' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_9"><U>RR_9</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_9 (PSEUDO_CONST_KBD (2, 3)), (PSEUDO_CONST_KBD (3, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '9' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_2ND"><U>RR_2ND</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_2ND 0, (PSEUDO_CONST_KBD (4, 0))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '2nd' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_A"><U>RR_A</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_A (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 9)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'A' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_ALPHA"><U>RR_ALPHA</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_ALPHA (PSEUDO_CONST_KBD (0, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>)), (PSEUDO_CONST_KBD (7, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the Alpha key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_APPS"><U>RR_APPS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_APPS (PSEUDO_CONST_KBD (5, 7)), (PSEUDO_CONST_KBD (0, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'APPS' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_B"><U>RR_B</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_B (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 5)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'B' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_BCKSPC"><U>RR_BCKSPC</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_BCKSPC (PSEUDO_CONST_KBD (2, 8)), (PSEUDO_CONST_KBD (6, 0))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the backspace key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_C"><U>RR_C</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_C (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'C' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_CATALOG"><U>RR_CATALOG</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_CATALOG (PSEUDO_CONST_KBD (3, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>)), (PSEUDO_CONST_KBD (6, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'CATALOG' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_CLEAR"><U>RR_CLEAR</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_CLEAR (PSEUDO_CONST_KBD (1, 7)), (PSEUDO_CONST_KBD (6, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'CLEAR' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_COMMA"><U>RR_COMMA</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_COMMA (PSEUDO_CONST_KBD (2, 4)), (PSEUDO_CONST_KBD (4, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the ',' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_COS"><U>RR_COS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_COS (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 5)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'COS' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_D"><U>RR_D</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_D (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'D' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_DIAMOND"><U>RR_DIAMOND</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_DIAMOND 0, (PSEUDO_CONST_KBD (6, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the Diamond key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_DIVIDE"><U>RR_DIVIDE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_DIVIDE (PSEUDO_CONST_KBD (1, 5)), (PSEUDO_CONST_KBD (4, 0))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '/' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_DOT"><U>RR_DOT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_DOT (PSEUDO_CONST_KBD (3, 9)), (PSEUDO_CONST_KBD (0, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '.' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_DOWN"><U>RR_DOWN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_DOWN 0, (PSEUDO_CONST_KBD (2, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the down arrow key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_E"><U>RR_E</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_E (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'E' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_EE"><U>RR_EE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_EE (PSEUDO_CONST_KBD (5, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>)), (PSEUDO_CONST_KBD (2, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'EE' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_ENTER1"><U>RR_ENTER1</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_ENTER1 (PSEUDO_CONST_KBD (1, 9)), (PSEUDO_CONST_KBD (0, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the first 'ENTER' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_ENTER2"><U>RR_ENTER2</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_ENTER2 (PSEUDO_CONST_KBD (1, 6)), (PSEUDO_CONST_KBD (0, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the second 'ENTER' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_ENTER"><U>RR_ENTER</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_ENTER <A HREF="#RR_ENTER1">RR_ENTER1</A></TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'ENTER' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_EQUALS"><U>RR_EQUALS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_EQUALS (PSEUDO_CONST_KBD (5, 7)), (PSEUDO_CONST_KBD (4, 0))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '=' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_ESC"><U>RR_ESC</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_ESC (PSEUDO_CONST_KBD (6, 8)), (PSEUDO_CONST_KBD (0, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'ESC' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F1"><U>RR_F1</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F1 (PSEUDO_CONST_KBD (5, 6)), (PSEUDO_CONST_KBD (7, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F1' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F2"><U>RR_F2</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F2 4, (PSEUDO_CONST_KBD (7, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F2' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F3"><U>RR_F3</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F3 (PSEUDO_CONST_KBD (3, 2)), (PSEUDO_CONST_KBD (7, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F3' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F4"><U>RR_F4</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F4 (PSEUDO_CONST_KBD (2, 9)), (PSEUDO_CONST_KBD (7, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F4' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F5"><U>RR_F5</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F5 (PSEUDO_CONST_KBD (1, 7)), (PSEUDO_CONST_KBD (7, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F5' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F6"><U>RR_F6</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F6 (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 5)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F6' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F7"><U>RR_F7</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F7 (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F7' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F8"><U>RR_F8</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F8 (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F8' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_F"><U>RR_F</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_F (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'F' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_G"><U>RR_G</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_G (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 4)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'G' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_H"><U>RR_H</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_H (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 5)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'H' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_HAND"><U>RR_HAND</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_HAND (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 0)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the Hand key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_HOME"><U>RR_HOME</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_HOME (PSEUDO_CONST_KBD (5, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>)), (PSEUDO_CONST_KBD (6, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'HOME' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_I"><U>RR_I</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_I (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 7)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'I' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_J"><U>RR_J</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_J (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 6)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'J' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_K"><U>RR_K</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_K (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 7)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'K' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_L"><U>RR_L</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_L (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 8)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'L' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_LEFT"><U>RR_LEFT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_LEFT 0, (PSEUDO_CONST_KBD (1, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the left arrow key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_LN"><U>RR_LN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_LN (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 6)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'LN' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_M"><U>RR_M</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_M (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 7)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'M' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_MINUS"><U>RR_MINUS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_MINUS (PSEUDO_CONST_KBD (1, 9)), (PSEUDO_CONST_KBD (2, 0))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '-' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_MODE"><U>RR_MODE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_MODE (PSEUDO_CONST_KBD (4, 8)), (PSEUDO_CONST_KBD (6, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'MODE' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_MULTIPLY"><U>RR_MULTIPLY</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_MULTIPLY (PSEUDO_CONST_KBD (1, 7)), (PSEUDO_CONST_KBD (3, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '*' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_N"><U>RR_N</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_N (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 6)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'N' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_NEGATE"><U>RR_NEGATE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_NEGATE (PSEUDO_CONST_KBD (2, 9)), (PSEUDO_CONST_KBD (0, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the negation key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_NO_KEY"><U>RR_NO_KEY</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_NO_KEY 0xF</TD></TR></TABLE></P>
+<P><B>A constant which means that a specific key does not exist.</B></P>
+
+<P>This constant is used whenever a specific key only exists on one calculator.</P>
+
+<HR>
+<H3><A NAME="RR_O"><U>RR_O</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_O (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 8)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'O' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_P"><U>RR_P</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_P (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 6)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'P' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_PAREN_CLOSE"><U>RR_PAREN_CLOSE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_PAREN_CLOSE (PSEUDO_CONST_KBD (3, 4)), (PSEUDO_CONST_KBD (4, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the ')' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_PAREN_OPEN"><U>RR_PAREN_OPEN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_PAREN_OPEN 4, (PSEUDO_CONST_KBD (4, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '(' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_PLUS"><U>RR_PLUS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_PLUS (PSEUDO_CONST_KBD (1, 8)), (PSEUDO_CONST_KBD (1, 4))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '+' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_POWER"><U>RR_POWER</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_POWER (PSEUDO_CONST_KBD (1, 6)), (PSEUDO_CONST_KBD (5, 0))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '^' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_Q"><U>RR_Q</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_Q (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 9)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'Q' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_R"><U>RR_R</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_R (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'R' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_RIGHT"><U>RR_RIGHT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_RIGHT 0, (PSEUDO_CONST_KBD (3, 6))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the right arrow key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_S"><U>RR_S</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_S (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'S' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_SHIFT"><U>RR_SHIFT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_SHIFT 0, (PSEUDO_CONST_KBD (5, 2))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the Shift key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_SIN"><U>RR_SIN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_SIN (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 5)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'SIN' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_SPACE"><U>RR_SPACE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_SPACE (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 4)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 0))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the space key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_STORE"><U>RR_STORE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_STORE (PSEUDO_CONST_KBD (5, 3)), (PSEUDO_CONST_KBD (1, 0))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the Store key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_T"><U>RR_T</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_T (PSEUDO_CONST_KBD (2, 4)), (PSEUDO_CONST_KBD (5, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'T' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_TAN"><U>RR_TAN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_TAN (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 5)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 7))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'TAN' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_THETA"><U>RR_THETA</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_THETA (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 8)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '<FONT FACE="Symbol">q</FONT>' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_U"><U>RR_U</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_U (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 6)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'U' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_UP"><U>RR_UP</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_UP 0, (PSEUDO_CONST_KBD (0, 5))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the up arrow key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_V"><U>RR_V</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_V (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 4)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'V' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_W"><U>RR_W</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_W (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 1)), (PSEUDO_CONST_KBD (<A HREF="#RR_NO_KEY">RR_NO_KEY</A>, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'W' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_WITH"><U>RR_WITH</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_WITH (PSEUDO_CONST_KBD (5, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>)), (PSEUDO_CONST_KBD (3, <A HREF="#RR_NO_KEY">RR_NO_KEY</A>))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the '|' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_X"><U>RR_X</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_X (PSEUDO_CONST_KBD (5, 2)), (PSEUDO_CONST_KBD (5, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'X' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_Y"><U>RR_Y</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_Y (PSEUDO_CONST_KBD (4, 5)), (PSEUDO_CONST_KBD (5, 3))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'Y' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="RR_Z"><U>RR_Z</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> RR_Z (PSEUDO_CONST_KBD (3, 1)), (PSEUDO_CONST_KBD (5, 1))</TD></TR></TABLE></P>
+<P><B>A pseudo-constant pair for the 'Z' key.</B></P>
+
+<P>This pseudo-constant pair defines the location of a specific key in the keyboard matrix used in <A HREF="kbd.html#_keytest">_keytest</A>.</P>
+
+<HR>
+<H3><A NAME="TI89_CLASSIC"><U>TI89_CLASSIC</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> TI89_CLASSIC (<A HREF="#TI89">TI89</A> &amp;&amp; <A HREF="#HW_VERSION">HW_VERSION</A>&lt;3)</TD></TR></TABLE></P>
+<P><B><A HREF="alloc.html#Bool">TRUE</A> on a classic TI-89 (i.e. a TI-89 which is <I>not</I> a TI-89 Titanium), <A HREF="alloc.html#Bool">FALSE</A> otherwise.</B></P>
+
+<P>See also: <A HREF="#TI89">TI89</A></P>
+<HR>
+<H3><A NAME="TI89_TITANIUM"><U>TI89_TITANIUM</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> TI89_TITANIUM (<A HREF="#TI89">TI89</A> &amp;&amp; <A HREF="#HW_VERSION">HW_VERSION</A>&gt;=3)</TD></TR></TABLE></P>
+<P><B><A HREF="alloc.html#Bool">TRUE</A> on a TI-89 Titanium, <A HREF="alloc.html#Bool">FALSE</A> otherwise.</B></P>
+
+<P>See also: <A HREF="#TI89">TI89</A></P>
+<HR>
+<H3><A NAME="TI89"><U>TI89</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> TI89 (<A HREF="#CALCULATOR">CALCULATOR</A> == 0)</TD></TR></TABLE></P>
+<P><B><A HREF="alloc.html#Bool">TRUE</A> on a TI-89, <A HREF="alloc.html#Bool">FALSE</A> otherwise.</B></P>
+
+<P>See also: <A HREF="#TI89_CLASSIC">TI89_CLASSIC</A>, <A HREF="#TI89_TITANIUM">TI89_TITANIUM</A></P>
+<HR>
+<H3><A NAME="TI92PLUS"><U>TI92PLUS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> TI92PLUS (<A HREF="#CALCULATOR">CALCULATOR</A> == 1)</TD></TR></TABLE></P>
+<P><B><A HREF="alloc.html#Bool">TRUE</A> on TI-92 Plus, <A HREF="alloc.html#Bool">FALSE</A> otherwise.</B></P>
+
+<HR>
+<H3><A NAME="TIOS_entries"><U>TIOS_entries</U></A></H3>
+<P><B>Number of entries in the TIOS jump table.</B></P>
+
+<P>This pseudo-constant may also be used to determine the AMS version:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>684</TD>
+  <TD>0x2AC</TD>
+  <TD>AMS 1.00 (TI-92 Plus only)</TD>
+</TR>
+<TR>
+  <TD>972</TD>
+  <TD>0x3CC</TD>
+  <TD>AMS 1.01 (or 1.00 for TI-89), AMS 1.05</TD>
+</TR>
+<TR>
+  <TD>1288</TD>
+  <TD>0x508</TD>
+  <TD>AMS 2.01</TD>
+</TR>
+<TR>
+  <TD>1463</TD>
+  <TD>0x5B7</TD>
+  <TD>AMS 2.02, AMS 2.03</TD>
+</TR>
+<TR>
+  <TD>1506</TD>
+  <TD>0x5E2</TD>
+  <TD>AMS 2.04</TD>
+</TR>
+<TR>
+  <TD>1519</TD>
+  <TD>0x5EF</TD>
+  <TD>AMS 2.05</TD>
+</TR>
+<TR>
+  <TD>1543</TD>
+  <TD>0x607</TD>
+  <TD>AMS 2.06 (internal beta), 2.07, 2.08, 2.09</TD>
+</TR>
+<TR>
+  <TD>1544</TD>
+  <TD>0x608</TD>
+  <TD>AMS 3.00, 3.01</TD>
+</TR>
+</TABLE>
+<BR>
+It is, in fact, defined globally, in <A HREF="default.html">default.h</A>.
+<BR><BR>
+You can precisely determine the AMS version using <A HREF="system.html#ReleaseVersion">ReleaseVersion</A>.</P>
+
+<HR>
+<H3><A NAME="V200"><U>V200</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> V200 (<A HREF="#CALCULATOR">CALCULATOR</A> == 3)</TD></TR></TABLE></P>
+<P><B><A HREF="alloc.html#Bool">TRUE</A> on V200, <A HREF="alloc.html#Bool">FALSE</A> otherwise.</B></P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

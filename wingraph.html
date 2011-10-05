@@ -1,0 +1,1208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>wingraph.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;wingraph.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for windowed graphics</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#BitmapSizeExt">BitmapSizeExt</A></B><BR><BR><DT><B><A HREF="#DrawStaticButton">DrawStaticButton</A></B><DD>Draws a button in a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DrawWinBorder">DrawWinBorder</A></B><DD>Draws a border of a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MakeWinRect">MakeWinRect</A></B><DD>Builds a structure for representing rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RectWinToScr">RectWinToScr</A></B><DD>Converts relative to absolute coordinates then clips them to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RectWinToScrExt">RectWinToScrExt</A></B><DD>Converts relative to absolute coordinates then clips them to a window, taking into account negative coordinates.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#RectWinToWin">RectWinToWin</A></B><DD>Converts relative window coordinates to absolute coordinates.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SetWinClip">SetWinClip</A></B><DD>Changes the clipping area of a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinActivate">WinActivate</A></B><DD>Activates a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinAttr">WinAttr</A></B><DD>Sets the default window attribute.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinBackground">WinBackground</A></B><DD>Sets the default window background.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinBackupToScr">WinBackupToScr</A></B><DD>Shows a current backup screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinBegin">WinBegin</A></B><DD>Setup a window for writing to without activating the window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinBeginPaint">WinBeginPaint</A></B><DD>Saves the current screen state of given window, and prepares the settings for drawing in the LCD memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinBitmapGet">WinBitmapGet</A></B><DD>Gets a bitmap from a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinBitmapPut">WinBitmapPut</A></B><DD>Puts a bitmap to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinBitmapSize">WinBitmapSize</A></B><DD>Determines a size of a bitmap (eventually clipped) in bytes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinBitmapSizeExt">WinBitmapSizeExt</A></B><DD>Determines a size of a bitmap (eventually clipped) in bytes, taking into account negative coordinates.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinChar">WinChar</A></B><DD>Draws a character to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinCharXY">WinCharXY</A></B><DD>Draws a series of characters to a window at the specific location.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinClose">WinClose</A></B><DD>Closes a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinClr">WinClr</A></B><DD>Clears a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinDeactivate">WinDeactivate</A></B><DD>Deactivates a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinDupStat">WinDupStat</A></B><DD>Turns the duplicate status on or off.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinEllipse">WinEllipse</A></B><DD>Draws an ellipse to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinEnd">WinEnd</A></B><DD>Ends writing to a non-active window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinEndPaint">WinEndPaint</A></B><DD>Restores the screen state saved with <A HREF="#WinBeginPaint">WinBeginPaint</A> in given window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinFill">WinFill</A></B><DD>Draws a filled rectangle to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinFillLines2">WinFillLines2</A></B><DD>Draws a filled area between two lines to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinFillTriangle">WinFillTriangle</A></B><DD>Draws a filled triangle to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinFont">WinFont</A></B><DD>Sets the current window font.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinGetCursor">WinGetCursor</A></B><DD>Returns the cursor location for a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinHeight">WinHeight</A></B><DD>Height of a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinHide">WinHide</A></B><DD>Hides a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinHome">WinHome</A></B><DD>Moves the pen location for a window to the home position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinLine">WinLine</A></B><DD>Draws a line to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinLineExt">WinLineExt</A></B><DD>Draws a line to a window, more accurately than <A HREF="#WinLine">WinLine</A> when clipping.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinLineNC">WinLineNC</A></B><DD>Draws a line to a window, without range checking.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinLineRel">WinLineRel</A></B><DD>Draws a line to a window from the current pen position, using relative displacements.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinLineTo">WinLineTo</A></B><DD>Draws a line to a window from the current pen position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinMoveCursor">WinMoveCursor</A></B><DD>Moves the pen position (???).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinMoveRel">WinMoveRel</A></B><DD>Sets the current window pen position relative to the previous position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinMoveTo">WinMoveTo</A></B><DD>Sets the current window pen position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinOpen">WinOpen</A></B><DD>Opens a new window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinPixGet">WinPixGet</A></B><DD>Gets the status of a pixel in a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinPixSet">WinPixSet</A></B><DD>Sets a pixel in a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinRect">WinRect</A></B><DD>Draws a rectangle to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinRemove">WinRemove</A></B><DD>Closes the window pointed to by <I>w</I>, and frees the memory assigned to that window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinReOpen">WinReOpen</A></B><DD>Reopens an existing window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinScrollH">WinScrollH</A></B><DD>Shifts a region of a window left or right.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinScrollV">WinScrollV</A></B><DD>Scrolls a region of a window upwards or downwards.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinSetCursor">WinSetCursor</A></B><DD>Moves the cursor (???).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinShow">WinShow</A></B><DD>Makes a window visible for the repainting routine.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinStr">WinStr</A></B><DD>Draws a string to a window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinStrXY">WinStrXY</A></B><DD>Draws a string to a window at a specific location.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinStrXYWrap">WinStrXYWrap</A></B><DD>Draws a word-wrapped string to a window at position x, y <I><U>(window-based)</U></I>, and returns the height in pixels of the text drawn.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinToScr">WinToScr</A></B><DD>Converts a WIN_RECT into a SCR_RECT, clipping the coordinates if necessary.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinWidth">WinWidth</A></B><DD>Width of a window.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#DeskTop">DeskTop</A></B><DD>A pointer to the desktop window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FirstWindow">FirstWindow</A></B><DD>A pointer to the head of the list of all windows.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="graph.html#BITMAP_HDR_SIZE">BITMAP_HDR_SIZE</A></B><DD>Defines the size of the header of the <A HREF="graph.html#BITMAP">BITMAP</A> structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="graph.html#Attrs">Attrs</A></B><DD>An enumeration for describing legal attribute values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#BITMAP">BITMAP</A></B><DD>A structure for defining a bitmap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#BoxAttrs">BoxAttrs</A></B><DD>An enumeration for describing addittional box attribute values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="dialogs.html#Buttons">Buttons</A></B><DD>An enumeration to describe possible button types.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#Fonts">Fonts</A></B><DD>An enumeration for describing legal font values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#ICON">ICON</A></B><DD>A structure which describes an icon.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#pICON">pICON</A></B><DD>A pointer to the <A HREF="graph.html#ICON">ICON</A> scructure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_COORDS">SCR_COORDS</A></B><DD>An alias type for defining physical screen coordinates.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_RECT">SCR_RECT</A></B><DD>A scructure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_STATE">SCR_STATE</A></B><DD>A structure for saving the state of the graphics system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WIN_COORDS">WIN_COORDS</A></B><DD>An alias type for defining logical screen coordinates.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WIN_RECT">WIN_RECT</A></B><DD>A structure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WINDOW_AMS1">WINDOW_AMS1</A></B><DD>The main window-describing structure (AMS 1.xx version).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WINDOW">WINDOW</A></B><DD>The main window-describing structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinFlags">WinFlags</A></B><DD>An enumeration for describing flags which control the window manager.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#winWriteFlags">winWriteFlags</A></B><DD>Enumeration for parameter flags to <A HREF="#WinStrXYWrap">WinStrXYWrap</A>.</DL>
+<P>See also: <A HREF="graph.html">graph.h</A></P>
+<HR>
+<H3><A NAME="BitmapSizeExt"><U>BitmapSizeExt</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> BitmapSizeExt (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *WinRect);</TD></TR></TABLE></P>
+<P>See also: <A HREF="graph.html#CalcBitmapSize">CalcBitmapSize</A></P>
+<HR>
+<H3><A NAME="DrawStaticButton"><U>DrawStaticButton</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawStaticButton (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> ButtonType, <B><A HREF="keywords.html#short">short</A></B> x);</TD></TR></TABLE></P>
+<P><B>Draws a button in a window.</B></P>
+
+<P>DrawStaticButton draws a button at the bottom of the window pointed to by <I>w</I>,
+where <I>x</I> is distance (in pixels) from the left edge of the window to the left
+edge of the button. Parameter <I>ButtonType</I> determines the type of the button.
+The set of possible types is very limited, and they are defined in enum
+<A HREF="dialogs.html#Buttons">Buttons</A> (any other values will cause a crash). The meanings
+of these constants are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>BT_OK</TD><TD>Button "Enter=OK"</TD>
+</TR><TR>
+<TD>BT_SAVE</TD><TD>Button "Enter=SAVE"</TD>
+</TR><TR>
+<TD>BT_YES</TD><TD>Button "Enter=YES"</TD>
+</TR><TR>
+<TD>BT_CANCEL</TD><TD>Button "Esc=CANCEL"</TD>
+</TR><TR>
+<TD>BT_NO</TD><TD>Button "ESC=NO"</TD>
+</TR><TR>
+<TD>BT_GOTO</TD><TD>Button "Enter=GOTO"</TD>
+</TR></TABLE>
+<BR>
+<B>Note:</B> The current font (set using <A HREF="#WinFont">WinFont</A>) must be F_4x6
+for this function to work correctly.</P>
+
+<HR>
+<H3><A NAME="DrawWinBorder"><U>DrawWinBorder</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> DrawWinBorder (<A HREF="#WINDOW">WINDOW</A> *w, <A HREF="graph.html#SCR_RECT">SCR_RECT</A> *rect);</TD></TR></TABLE></P>
+<P><B>Draws a border of a window.</B></P>
+
+<P>DrawWinBorder is an internal function which draws a border of the window, and optionally
+a title bar. The actual dimensions of the border are given in the <A HREF="graph.html#SCR_RECT">SCR_RECT</A>
+structure <I>rect</I>, but all other parameters (border shape, etc.) will be picked from
+the structure pointed to by <I>w</I>. Not very useful as a standalone function, although
+may be sometimes used in combination with <A HREF="#WinBackupToScr">WinBackupToScr</A>.
+Note that you can pass &amp;<I>w</I>.Window as the <I>rect</I> parameter.</P>
+
+<HR>
+<H3><A NAME="MakeWinRect"><U>MakeWinRect</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#WIN_RECT">WIN_RECT</A> *MakeWinRect (<B><A HREF="keywords.html#short">short</A></B> x0, <B><A HREF="keywords.html#short">short</A></B> y0, <B><A HREF="keywords.html#short">short</A></B> x1, <B><A HREF="keywords.html#short">short</A></B> y1);</TD></TR></TABLE></P>
+<P><B>Builds a structure for representing rectangular area.</B></P>
+
+<P>MakeWinRect accepts coordinates of two corners (<I>x0</I>,&nbsp;<I>y0</I>) and (<I>x1</I>,&nbsp;<I>y1</I>)
+of an rectangular area, and returns the pointer to the structure of type
+<A HREF="#WIN_RECT">WIN_RECT</A> in which these coordinates are embeded. This function may be
+useful in combination with a rich set of TIOS functions which expect a structure of type
+<A HREF="#WIN_RECT">WIN_RECT</A> as explicit argument, like
+<A HREF="#WinOpen">WinOpen</A>, <A HREF="#WinLine">WinLine</A>, etc.
+<BR><BR>
+<B>Note:</B> This function returns a static pointer, which will be rewritten with each call. So, you
+must not use it inside functions which needs more than one parameter of type
+<A HREF="#WIN_RECT">WIN_RECT</A> like <A HREF="#WinFillLines2">WinFillLines2</A> etc.</P>
+
+<HR>
+<H3><A NAME="RectWinToScr"><U>RectWinToScr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="graph.html#SCR_RECT">SCR_RECT</A> *RectWinToScr (<B><A HREF="keywords.html#const">const</A></B> <A HREF="graph.html#SCR_RECT">SCR_RECT</A> *win_area, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <A HREF="graph.html#SCR_RECT">SCR_RECT</A> *result_area);</TD></TR></TABLE></P>
+<P><B>Converts relative to absolute coordinates then clips them to a window.</B></P>
+
+<P>RectWinToScr first converts coordinates in the structure <I>rect</I> (which are assumed to be relative
+to the topleft corner of the structure <I>win_area</I>) to the absolute screen coordinates.
+Converted rectangular area is then clipped at the boundaries of the rectangular area
+<I>win_area</I>, and coordinates of resulting rectangular area are stored to the structure
+pointed to by <I>result_area</I>. RectWinToScr returns <I>result_area</I>. If converted
+rectangular area does not overlap with <I>win_area</I>, <I>result_area</I> will be
+undefined, and RectWinToScr returns <A HREF="alloc.html#NULL">NULL</A>.</P>
+
+<HR>
+<H3><A NAME="RectWinToScrExt"><U>RectWinToScrExt</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="graph.html#SCR_RECT">SCR_RECT</A> *RectWinToScrExt (<B><A HREF="keywords.html#const">const</A></B> <A HREF="graph.html#SCR_RECT">SCR_RECT</A> *win_area, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <A HREF="graph.html#SCR_RECT">SCR_RECT</A> *result_area);</TD></TR></TABLE></P>
+<P><B>Converts relative to absolute coordinates then clips them to a window, taking into account negative coordinates.</B></P>
+
+<P>See also: <A HREF="#RectWinToScr">RectWinToScr</A></P>
+<HR>
+<H3><A NAME="RectWinToWin"><U>RectWinToWin</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#WIN_RECT">WIN_RECT</A> *RectWinToWin (<B><A HREF="keywords.html#const">const</A></B> <A HREF="graph.html#SCR_RECT">SCR_RECT</A> *win_area, <A HREF="#WIN_RECT">WIN_RECT</A> *rect);</TD></TR></TABLE></P>
+<P><B>Converts relative window coordinates to absolute coordinates.</B></P>
+
+<P>RectWinToWin converts coordinates in the structure <I>rect</I> (which are assumed to be relative
+to the topleft corner of the structure <I>win_area</I>) to the absolute screen coordinates.
+The converted coordinates are stored again in structure pointed to by <I>rect</I>.
+RectWinToWin returns <I>rect</I> back (but note that the structure pointed to by it is modified).</P>
+
+<HR>
+<H3><A NAME="SetWinClip"><U>SetWinClip</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SetWinClip (<A HREF="#WINDOW">WINDOW</A> *w, <A HREF="graph.html#SCR_RECT">SCR_RECT</A> *s);</TD></TR></TABLE></P>
+<P><B>Changes the clipping area of a window.</B></P>
+
+<P>SetWinClip changes the clipping area of the window pointed to by <I>w</I>, to the <A HREF="graph.html#SCR_RECT">SCR_RECT</A> pointed to by <I>s</I>,
+and changes the contents of <I>s</I> from window-based to screen-based coordinates.
+<BR><BR>
+The original coordinates in <I>s</I> must be <B>window-based</B>, i.e (0,0) is the upper left corner of the window.</P>
+
+<HR>
+<H3><A NAME="WinActivate"><U>WinActivate</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinActivate (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Activates a window.</B></P>
+
+<P>WinActivate makes the window pointed to by <I>w</I> the current active window.
+This will cause the following events:</P>
+<UL>
+<LI><P>The currently active window will be deactivated (its border will be changed to a single-line
+border);</P></LI>
+<LI><P>The border for the window will switch to a double-line border (except in single-border
+mode, in rounded-border mode or if the window is a full-screen window);</P></LI>
+<LI><P>The graphics system will be reset to the current windows defaults (draw attributes, current
+(x,&nbsp;y) location, etc.).</P></LI>
+<LI><P>The window will be marked as visible (see <A HREF="#WinHide">WinHide</A>).</P></LI>
+</UL>
+<P>See <A HREF="#WinOpen">WinOpen</A> for more info.
+<BR><BR>
+<B>Note:</B> Because of memory requirements, only the active window may be drawn to. Once a window
+becomes the active window, it may use any of the window drawing routines. If you try to draw
+in a non-active window, a garbage may appear on the screen. If no other window overlaps a
+window (even if there are multiple windows on the screen), then you may write to a non-active
+window by using <A HREF="#WinBegin">WinBegin</A> and <A HREF="#WinEnd">WinEnd</A> to bracket
+the writes.</P>
+
+<HR>
+<H3><A NAME="WinAttr"><U>WinAttr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinAttr (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Sets the default window attribute.</B></P>
+
+<P>WinAttr sets the attribute for the next write (or draw) to the window pointed to by <I>w</I>
+to <I>Attr</I>. This attribute will be used in all drawing commands which have not an
+attribute as explicite parameter. The interpretation of the attribute depends of concrete
+graphic command. Some attributes are only valid for certain graphic operation. Legal attribute
+values are defined in enum <A HREF="graph.html#Attrs">Attrs</A>. In a general, the following attributes
+are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REVERSE</TD><TD>Destination pixels turned off</TD>
+</TR><TR>
+<TD>A_NORMAL</TD><TD>Destination pixels turned on</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Source pixels XORed with destination pixels</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Destination pixels masked so that every other pixel turned off</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>Source pixels replace destination pixels</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>Source pixels ORed with destination pixels</TD>
+</TR>
+</TABLE>
+<BR>
+For lines the following additional attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+WinAttr returns the previous current attribute.
+<BR><BR>
+<B>Note:</B> Although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS and
+A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which are
+more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act like
+A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to draw
+shaded-fill rectangle using a line drawing command (for example, <A HREF="#WinLine">WinLine</A>)
+in a loop, use vertical lines for drawing, not horizontal ones! Note also that these additional
+attributes work fine with <A HREF="#WinFillTriangle">WinFillTriangle</A> and
+<A HREF="#WinFillLines2">WinFillLines2</A>, but not with <A HREF="#WinFill">WinFill</A>!</P>
+
+<HR>
+<H3><A NAME="WinBackground"><U>WinBackground</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinBackground (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Sets the default window background.</B></P>
+
+<P>WinBackground changes the current default attribute for the background of a window
+pointed to by <I>w</I> (used to clear the window using <A HREF="#WinClr">WinClr</A>).
+Note that the background attribute is also used to fill up a newly created area when
+a window content is scrolled in any direction. Valid values for <I>Attr</I> are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>A_NORMAL</TD><TD>Black background</TD></TR>
+<TR><TD>A_REVERSE</TD><TD>White background</TD></TR>
+<TR><TD>A_XOR</TD><TD>All pixels will be reversed during clearing</TD></TR>
+</TABLE>
+<BR>
+See <A HREF="#WinAttr">WinAttr</A> for more info about attributes.
+<BR><BR>
+<B>Note:</B> TI said that attribute A_SHADED (set to a pattern of pixels on and off) is also supported,
+but it didn't work when I tried it; at least, it does not work on AMS 1.00.</P>
+
+<HR>
+<H3><A NAME="WinBackupToScr"><U>WinBackupToScr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinBackupToScr (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Shows a current backup screen.</B></P>
+
+<P>If the window pointed to by <I>w</I> is active, WinBackupToScreen copies the current backup
+screen (duplicate screen) to the real screen (more precise, to the client area of the
+window), else does nothing. This routine assumes that a window is opened with the
+<A HREF="#WinFlags">WF_DUP_SCR</A> flag (see <A HREF="#WinOpen">WinOpen</A>). Then, all output
+to that window is saved in a backup screen image (allocated in the heap). So, this routine
+copies the contents of that image to the real screen.</P>
+
+<P>See also: <A HREF="#DrawWinBorder">DrawWinBorder</A></P>
+<HR>
+<H3><A NAME="WinBegin"><U>WinBegin</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinBegin (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Setup a window for writing to without activating the window.</B></P>
+
+<P>WinBegin setup the window pointed to by <I>w</I> for writing to it without activating it.
+When writing to the window is done, call <A HREF="#WinEnd">WinEnd</A>. See
+<A HREF="#WinActivate">WinActivate</A> for more info.</P>
+
+<HR>
+<H3><A NAME="WinBeginPaint"><U>WinBeginPaint</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinBeginPaint (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Saves the current screen state of given window, and prepares the settings for drawing in the LCD memory.</B></P>
+
+<P>WinBeginPaint just saves the current screen state in <CODE>w->savedScrState</CODE>, 
+executes <A HREF="graph.html#PortRestore">PortRestore</A> and sets the current font to
+<CODE>w->CurFont</CODE>. So, emulating it on AMS 1.xx is easy.<BR>
+WinBeginPaint is always paired with <A HREF="#WinEndPaint">WinEndPaint</A> which restores the screen state.<BR>
+WinBeginPaint is commonly used to respond a CM_ACTIVATE message.</P>
+
+<P>See also: <A HREF="#WinEndPaint">WinEndPaint</A></P>
+<HR>
+<H3><A NAME="WinBitmapGet"><U>WinBitmapGet</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinBitmapGet (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#void">void</A></B> *BitMap);</TD></TR></TABLE></P>
+<P><B>Gets a bitmap from a window.</B></P>
+
+<P>WinBitmapGet stores a series of bytes (the size of which is defined by
+<A HREF="#WinBitmapSize">WinBitmapSize</A>) defining a bitmap for a rectangular
+area (whose boundaries are given using <A HREF="#WIN_RECT">WIN_RECT</A> structure
+<I>rect</I>) into a buffer pointed to by <I>BitMap</I>. All coordinates are relative
+to the topleft corner of the window pointed to by <I>w</I>. Actual stored bitmap may
+be smaller than area defined by <I>rect</I> due to clipping on the boundaries of the
+clipping area of the window.
+<BR><BR>
+The first two words at address <I>BitMap</I> will contain the height and the width
+(in pixels) of the rectangular area respectively (after eventual clipping), then actual
+data follows. <I>BitMap</I> is usually a pointer to a <A HREF="graph.html#BITMAP">BITMAP</A>
+structure. WinBitmapGet returns <A HREF="alloc.html#Bool">FALSE</A> if the region defined by
+<I>rect</I> is outside of the window, and returns <A HREF="alloc.html#Bool">TRUE</A> if it is
+partially or entirely inside the window.</P>
+
+<HR>
+<H3><A NAME="WinBitmapPut"><U>WinBitmapPut</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinBitmapPut (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#void">void</A></B> *BitMap, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Puts a bitmap to a window.</B></P>
+
+<P>WinBitmapPut puts a bitmap <I>BitMap</I> (which was taken using <A HREF="#WinBitmapGet">WinBitmapGet</A>)
+to the window pointed to by <I>w</I> at the position (<I>x</I>,&nbsp;<I>y</I>), using the attribute <I>Attr</I>.
+The coordinates are relative to the topleft corner of the window pointed to by <I>w</I>.
+The drawn bitmap will be clipped at the boundaries of the clipping area of the window.
+The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REPLACE</TD><TD>Replace the destination region with the source bitmap</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Replace the destination region with the inverse of the source bitmap</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Exculsive-OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_AND</TD><TD>AND the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Mask the source bitmap so that every other pixel is turned off and replace
+the destination region with that result (the source region is left unchanged)</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#WinAttr">WinAttr</A> command for a more general info about attributes.</P>
+
+<HR>
+<H3><A NAME="WinBitmapSize"><U>WinBitmapSize</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> WinBitmapSize (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect);</TD></TR></TABLE></P>
+<P><B>Determines a size of a bitmap (eventually clipped) in bytes.</B></P>
+
+<P>WinBitmapSize returns the size in bytes of a bitmap for a part of rectangular area given by
+parameter <I>rect</I> which belongs to the window pointed to by <I>w</I> (may be smaller than
+the size of this area due to clipping). This size includes the data for the bitmap and the
+header. All coordinates in <I>rect</I> are relative to the topleft corner of the window.
+See <A HREF="#WinBitmapGet">WinBitmapGet</A> for more info about bitmaps.
+<BR><BR>
+<B>Note:</B> WinBitmapSize will clip any negative coordinates to zero.</P>
+
+<P>See also: <A HREF="#WinBitmapSizeExt">WinBitmapSizeExt</A></P>
+<HR>
+<H3><A NAME="WinBitmapSizeExt"><U>WinBitmapSizeExt</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> WinBitmapSizeExt (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *WinRect);</TD></TR></TABLE></P>
+<P><B>Determines a size of a bitmap (eventually clipped) in bytes, taking into account negative coordinates.</B></P>
+
+<P>The difference between <A HREF="#WinBitmapSize">WinBitmapSize</A> and WinBitmapSizeExt is that WinBitmapSizeExt takes into account negative coordinates.
+So, use <A HREF="#WinBitmapSize">WinBitmapSize</A> if negative coordinates have to be clipped to zero.</P>
+
+<P>See also: <A HREF="graph.html#CalcBitmapSize">CalcBitmapSize</A>, <A HREF="#WinBitmapGet">WinBitmapGet</A>, <A HREF="#WinBitmapPut">WinBitmapPut</A>, <A HREF="#WinBitmapSize">WinBitmapSize</A></P>
+<HR>
+<H3><A NAME="WinChar"><U>WinChar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinChar (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#int">char</A></B> c);</TD></TR></TABLE></P>
+<P><B>Draws a character to a window.</B></P>
+
+<P>DrawChar writes a character <I>c</I> at the current (x,&nbsp;y) location of the window
+pointed to by <I>w</I>, using the current window attribute (set using <A HREF="#WinAttr">WinAttr</A>).
+The character will be clipped at the boundaries of the window clipping area. The following
+character attributes are supported (the region defined by a character is 8x10
+for huge font, 6x8 for large font or nx5 for small font, depending on the
+current font set by <A HREF="#WinFont">WinFont</A> command):
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>The character is ORed into the destination</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>The region created by inversing the character replaces the destination</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>The region defined by the character replaces the destination</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>The character is XORed into the destination</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>The character masked so that every other pixel is turned off then ORed into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#WinAttr">WinAttr</A> command for a more general info about attributes.
+<BR><BR>
+<B>Note:</B> If the window is opened in TTY mode (see <A HREF="#WinOpen">WinOpen</A>), the current printing
+location will be updated, and newline ('\n' or '\r') and formfeed ('\f') characters will be
+handled correctly.
+<BR><BR>
+<B>Note:</B> On all AMS versions, WinChar calls most of the time a subroutine which is exported in the jump 
+table on AMS 2.xx as ROM_CALL_412. It doesn't call it if the window is opened in TTY mode and 
+the character is '\n', '\r' or '\f'. As a consequence, that subroutine is not of much use, as the
+same effect (showing these characters as symbols) can be obtained by unsetting the WF_TTY flag. It
+is mentioned here only for completeness.</P>
+
+<HR>
+<H3><A NAME="WinCharXY"><U>WinCharXY</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinCharXY (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#int">char</A></B> c, <B><A HREF="keywords.html#short">short</A></B> Count);</TD></TR></TABLE></P>
+<P><B>Draws a series of characters to a window at the specific location.</B></P>
+
+<P>DrawCharXY writes a <I>Count</I> number of character <I>c</I> to a window pointed to by
+<I>w</I> at a specific (<I>x</I>,&nbsp;<I>y</I>) location (the coordinates are relative
+to the topleft corner of the window). The current (x,&nbsp;y) location is updated it the
+wintow is in TTY mode (see <A HREF="#WinOpen">WinOpen</A> for more description about window modes).
+See <A HREF="#WinChar">WinChar</A> for more info about drawing characters.</P>
+
+<HR>
+<H3><A NAME="WinClose"><U>WinClose</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinClose (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Closes a window.</B></P>
+
+<P>WinClose closes a window pointed to by <I>w</I>, releasing any memory assigned to it and
+activating the next window in the window-list. This may mean redrawing portions of
+the screen in order to keep it up-to-date.</P>
+
+<HR>
+<H3><A NAME="WinClr"><U>WinClr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinClr (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Clears a window.</B></P>
+
+<P>WinClr clears the client area (i.e. area without the border and without the optional
+title bar) of the window pointed to by <I>w</I> (using the current clip region), and
+resets the current (x,&nbsp;y) position to the home of the client region. The current
+background pattern (set using <A HREF="#WinBackground">WinBackground</A>)
+is used to fill the client area.</P>
+
+<HR>
+<H3><A NAME="WinDeactivate"><U>WinDeactivate</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinDeactivate (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Deactivates a window.</B></P>
+
+<P>WinDeactivate deactivates a window pointed to by <I>w</I>. In fact, it only changes its border
+to the single-line border, without giving a focus to any other window. It is really only needed
+if an application has multiple windows. The purpose is to provide a visual clue to the user that
+a particular window has lost the current focus and that another window (which will be activated
+with <A HREF="#WinActivate">WinActivate</A>) has received the focus. When
+<A HREF="#WinActivate">WinActivate</A> is called, the window with the current focus (the last
+one to do an activating) is automatically deactivated with WinDeactivate and so it is not
+necessary to explicitly call WinDeactivate.</P>
+
+<HR>
+<H3><A NAME="WinDupStat"><U>WinDupStat</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinDupStat (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> Stat);</TD></TR></TABLE></P>
+<P><B>Turns the duplicate status on or off.</B></P>
+
+<P>WinDupStat turn the duplicate status of the window pointed to by <I>w</I> on
+(<I>Stat</I>&nbsp;=&nbsp;<A HREF="alloc.html#Bool">TRUE</A>) or off
+(<I>Stat</I>&nbsp;=&nbsp;<A HREF="alloc.html#Bool">FALSE</A>). When the duplicate status is
+turned off, all writes to a window go only to the screen. When turned on, all writes
+go to both the screen and the backup window. This only applies to windows created with
+the <A HREF="#WinFlags">WF_DUP_SCR</A> flag set. See <A HREF="#WinOpen">WinOpen</A> for
+more info. Beware that duplicate writes slow down all writes to windows with
+<A HREF="#WinFlags">WF_DUP_SCR</A> flag set. WinDupStat also returns the previous
+duplicate writing status.
+<BR><BR>
+<B>Note:</B> This is an official information from TI. I must admit that many things about
+window management (especially about overlapping windows) is still very obscure to me.</P>
+
+<HR>
+<H3><A NAME="WinEllipse"><U>WinEllipse</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinEllipse (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> a, <B><A HREF="keywords.html#short">short</A></B> b);</TD></TR></TABLE></P>
+<P><B>Draws an ellipse to a window.</B></P>
+
+<P>WinEllipse draws an ellipse with centre at (<I>x</I>,&nbsp;<I>y</I>) and with
+semiaxes <I>a</I> and <I>b</I> to the window pointed to by <I>w</I>. The coordinates
+are relative to the topleft
+corner of the window. The ellipse will be clipped at the boundaries of the clipping
+area of the window. The interior of the ellipse remains intact (no fill). The ellipse
+will be drawn using the current window attribute (set using <A HREF="#WinFill">WinFill</A>).
+Supported attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a elipse</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Erase a ellipse</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>XORs a ellipse into the destination</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> Set <I>a</I>=<I>b</I> to draw a circle.</P>
+
+<HR>
+<H3><A NAME="WinEnd"><U>WinEnd</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinEnd (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Ends writing to a non-active window.</B></P>
+
+<P>If you write to a non-active window, then bracket the writes with
+<A HREF="#WinBegin">WinBegin</A> and WinEnd.
+See <A HREF="#WinActivate">WinActivate</A> for more info.</P>
+
+<HR>
+<H3><A NAME="WinEndPaint"><U>WinEndPaint</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinEndPaint (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Restores the screen state saved with <A HREF="#WinBeginPaint">WinBeginPaint</A> in given window.</B></P>
+
+<P><CODE>WinEndPaint(&w);</CODE> does nothing more than <CODE>RestoreScrState(&(w.savedScrState));</CODE><BR>
+WinEndPaint is always paired with <A HREF="#WinBeginPaint">WinBeginPaint</A>, and it is commonly used to respond a CM_DEACTIVATE message.</P>
+
+<P>See also: <A HREF="#WinBeginPaint">WinBeginPaint</A></P>
+<HR>
+<H3><A NAME="WinFill"><U>WinFill</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinFill (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a filled rectangle to a window.</B></P>
+
+<P>WinFill draws a filled rectangle (i.e. fills a rectangular region of a window)
+given by <A HREF="#WIN_RECT">WIN_RECT</A> structure <I>rect</I> to the window
+pointed to by <I>w</I>, using the attribute <I>Attr</I>.
+All coordinates are relative to the topleft corner of the window. The rectangle will be
+clipped at the boundaries of the clipping area of the window. Supported attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>A_NORMAL</TD><TD>Fill with black pixels</TD></TR>
+<TR><TD>A_REVERSE</TD><TD>Fill with white pixels</TD></TR>
+<TR><TD>A_XOR</TD><TD>All pixels in the rectangle will be reversed</TD></TR>
+</TABLE>
+<BR>
+<A HREF="#WinFillLines2">WinFillLines2</A> is more complicated and slower function than WinFill,
+but it supports much more attributes. See <A HREF="#WinAttr">WinAttr</A> for more info about attributes.
+<BR><BR>
+<B>Note:</B> TI said that attribute A_SHADED (set to a pattern of pixels on and off) is also supported,
+but it didn't work when I tried it; at least, it does not work on AMS 1.00.</P>
+
+<HR>
+<H3><A NAME="WinFillLines2"><U>WinFillLines2</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinFillLines2 (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *lower_line, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *upper_line, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a filled area between two lines to a window.</B></P>
+
+<P>WinFillLines2 fills an area bounded with two lines which coordinates are given
+in two <A HREF="#WIN_RECT">WIN_RECT</A> structures <I>lower_line</I> (lower bound) and
+<I>upper_line</I> (upper bound) to the window pointed to by <I>w</I>.
+In fact, it draws a filled polygon whose vertices are
+(<I>lower_line</I>.x0,&nbsp;<I>lower_line</I>.y0),
+(<I>lower_line</I>.x1,&nbsp;<I>lower_line</I>.y1),
+(<I>upper_line</I>.x0,&nbsp;<I>upper_line</I>.y0) and
+(<I>upper_line</I>.x1,&nbsp;<I>upper_line</I>.y1)
+using the attribute <I>Attr</I>.
+All coordinates are relative to the topleft corner of the window.
+Supported attributes are the same as in command
+<A HREF="#WinFillTriangle">WinFillTriangle</A>. The drawn polygon will be clipped at the
+boundaries of the clipping area of the window. If <I>lower_line</I> is above
+<I>upper_line</I>, nothing will be drawn.
+To be more precise, "above" means "closer to the top of the screen".</P>
+
+<HR>
+<H3><A NAME="WinFillTriangle"><U>WinFillTriangle</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinFillTriangle (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x0, <B><A HREF="keywords.html#short">short</A></B> y0, <B><A HREF="keywords.html#short">short</A></B> x1, <B><A HREF="keywords.html#short">short</A></B> y1, <B><A HREF="keywords.html#short">short</A></B> x2, <B><A HREF="keywords.html#short">short</A></B> y2, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a filled triangle to a window.</B></P>
+
+<P>FillTriangle draws a filled triangle with vertices (<I>x0</I>,&nbsp;<I>y0</I>),
+(<I>x1</I>,&nbsp;<I>y1</I>) and (<I>x2</I>,&nbsp;<I>y2</I>) to the window
+pointed to by <I>w</I>, using the attribute <I>Attr</I>.
+All coordinates are relative to the topleft corner of the window.
+The triangle will be clipped at the boundaries of the clipping area of the window.
+Supported attributes are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draws a solid fill triangle</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Draws an empty triangle (i.e. erase a triangular area)</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>XORs a solid fill triangle into the destination</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draws a triangle filled using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draws a triangle filled using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draws a triangle filled using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draws a triangle filled using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#WinAttr">WinAttr</A> command for a more general info about attributes.
+<BR><BR>
+<B>Note:</B> The 3D grapher in HIDDEN SURFACE mode uses this routine to shade the
+graph using <A HREF="graph.html#Attrs">A_REVERSE</A> if the surface is visible and <A HREF="graph.html#Attrs">A_NORMAL</A>
+if it is hidden (by splitting the graph into 6-sided polygons and splitting those into
+triangles).</P>
+
+<HR>
+<H3><A NAME="WinFont"><U>WinFont</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinFont (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> Font);</TD></TR></TABLE></P>
+<P><B>Sets the current window font.</B></P>
+
+<P>WinFont changes the current text font for the window pointed to by <I>w</I>. All subsequent
+characters written to the window will use this font. The supported values for <I>Font</I>
+are F_4x6, F_6x8, and F_8x10, and they are defined in enum <A HREF="graph.html#Fonts">Fonts</A>.
+The 4x6 font is a proportional font while the 6x8 and 8x10 fonts are fixed-width.</P>
+
+<HR>
+<H3><A NAME="WinGetCursor"><U>WinGetCursor</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinGetCursor (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> *x, <B><A HREF="keywords.html#short">short</A></B> *y);</TD></TR></TABLE></P>
+<P><B>Returns the cursor location for a window.</B></P>
+
+<P>WinGetCursor returns the cursor location for the window pointed to by <I>w</I>
+into <I>x</I> and <I>y</I>. But, I am not quite sure what the "cursor" is.
+See notes about <A HREF="#WinMoveCursor">WinMoveCursor</A>.</P>
+
+<HR>
+<H3><A NAME="WinHeight"><U>WinHeight</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinHeight (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Height of a window.</B></P>
+
+<P>WinHeight returns the height of the client (drawable) area of the window pointed to by
+<I>w</I>. The window region is the region that was defined when the window was
+created with <A HREF="#WinOpen">WinOpen</A>. If the window is full screen (not counting
+the status bar which may not be overlapped), then the client region is equal to the
+window region. The client region is reduced by adding borders or a title to a window.</P>
+
+<HR>
+<H3><A NAME="WinHide"><U>WinHide</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinHide (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Hides a window.</B></P>
+
+<P>WinHide hides a window pointed to by <I>w</I> (mark it as not-visible so that it is never
+activated by the system) and updates the screen. When a window is activated
+(see <A HREF="#WinActivate">WinActivate</A>) or when it is opened (unless the
+<A HREF="#WinFlags">WF_VIRTUAL</A> flag is passed to <A HREF="#WinOpen">WinOpen</A>), it is
+marked as visible. All windows in the system are kept in a linked list. When a window in the
+system is closed, the next visible window in the system is activated and becomes the currently
+active window. Since virtual windows are never displayed on the screen they are never considered
+visible. An application's main window is always visible since that is the only view the user has
+of the application. From the other side, an application may open other windows that it does not
+want to ever be activated. In that case, use WinHide so that they will never be activated by
+the system. Although the given window will not be activated by the system, writes to it still
+go to the screen (unless it is a virtual window).</P>
+
+<HR>
+<H3><A NAME="WinHome"><U>WinHome</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinHome (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Moves the pen location for a window to the home position.</B></P>
+
+<P>WinHome moves the pen location for the window pointed to by <I>w</I> to the home position.
+Note that in TTY mode this is (1&nbsp;1) otherwise it is (0,&nbsp;0). See
+<A HREF="#WinOpen">WinOpen</A> for more info about window modes.</P>
+
+<HR>
+<H3><A NAME="WinLine"><U>WinLine</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinLine (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *Line);</TD></TR></TABLE></P>
+<P><B>Draws a line to a window.</B></P>
+
+<P>WinLine draws a line from (x0,&nbsp;y0) to (x1,&nbsp;y1) to the window pointed to by <I>w</I>
+where coordinates (x0,&nbsp;y0) and (x1,&nbsp;y1) are given in a
+<A HREF="#WIN_RECT">WIN_RECT</A> structure <I>Line</I>, using the
+current attribute. The line will be clipped at the boundaries of the
+window clipping area. See <A HREF="#WinLineTo">WinLineTo</A> for a description of
+supported atributes.</P>
+
+<HR>
+<H3><A NAME="WinLineExt"><U>WinLineExt</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinLineExt (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *Line);</TD></TR></TABLE></P>
+<P><B>Draws a line to a window, more accurately than <A HREF="#WinLine">WinLine</A> when clipping.</B></P>
+
+<P>WinLineExt acts like <A HREF="#WinLine">WinLine</A>, except that clipping is done more 
+smoothly and drawing is sometimes more accurate: instead of just clipping the coordinates to the 
+window clipping area, as <A HREF="#WinLine">WinLine</A> does, WinLineExt draws the line 
+between the endpoints, drawing only the pixels that are in the window clipping area.<BR>
+This can lead to little differences between a line drawn by 
+<A HREF="#WinLine">WinLine</A> and the same line drawn by WinLineExt.<BR>
+<BR>
+The drawback is that WinLineExt is slower than WinLine.</P>
+
+<P>See also: <A HREF="#WinAttr">WinAttr</A>, <A HREF="#WinLine">WinLine</A>, <A HREF="#WinLineRel">WinLineRel</A>, <A HREF="#WinLineTo">WinLineTo</A></P>
+<HR>
+<H3><A NAME="WinLineNC"><U>WinLineNC</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinLineNC (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *Line);</TD></TR></TABLE></P>
+<P><B>Draws a line to a window, without range checking.</B></P>
+
+<P>WinLineNC works like <A HREF="#WinLine">WinLine</A> except no range checking is done on the
+line drawn. Use it with extreme caution as invalid lines could trash the system.</P>
+
+<HR>
+<H3><A NAME="WinLineRel"><U>WinLineRel</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinLineRel (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> dx, <B><A HREF="keywords.html#short">short</A></B> dy);</TD></TR></TABLE></P>
+<P><B>Draws a line to a window from the current pen position, using relative displacements.</B></P>
+
+<P>WinLineRel acts like <A HREF="#WinLine">WinLine</A>, but <I>dx</I> and <I>dy</I>
+are relative to the current pen position.</P>
+
+<HR>
+<H3><A NAME="WinLineTo"><U>WinLineTo</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinLineTo (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Draws a line to a window from the current pen position.</B></P>
+
+<P>WinLineTo draws a line to the window pointed to by <I>w</I> from the current pen position to
+the pixel (<I>x</I>,&nbsp;<I>y</I>) using the current attribute given with
+<A HREF="#WinAttr">WinAttr</A> command, then updates the pen position to those coordinates.
+The current pen position can be initialized with <A HREF="#WinMoveTo">WinMoveTo</A>.
+Note that the coordinates are relative to the topleft corner of the window.
+The line will be clipped at the boundaries of the window clipping area. Here is a list of
+the supported attributes:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a normal line</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Draw an inverse line (i.e. erase the line)</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Draw a line using XORing with the destination</TD>
+</TR><TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="#WinAttr">WinAttr</A> command for a more general info about attributes.
+Note that although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS
+and A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which
+are more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act
+like A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to
+draw shaded-fill rectangle using <A HREF="#WinLine">WinLine</A> in a loop, use vertical lines for drawing, not
+horizontal ones!</P>
+
+<HR>
+<H3><A NAME="WinMoveCursor"><U>WinMoveCursor</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinMoveCursor (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Moves the pen position (???).</B></P>
+
+<P>On the Texas Instruments site, TI comments related to this function are (cite):
+use <A HREF="#WinMoveTo">WinMoveTo</A> to move pen position, use
+<A HREF="#WinSetCursor">WinSetCursor</A> to move cursor. Obviously, I am too stupid
+to conclude what is the difference between the pen position and the cursor. To be
+more precise, I don't know what "cursor" means to them. I don't see any difference
+between this command and <A HREF="#WinMoveTo">WinMoveTo</A>. Any info is welcomed.
+If this fact may help, <A HREF="#WinMoveTo">WinMoveTo</A> changes CurX and CurY
+fields of the <A HREF="#WINDOW">WINDOW</A> structure, WinMoveCursor changes both
+CurX, CurY and CursorX, CursorY pairs, and <A HREF="#WinSetCursor">WinSetCursor</A> changes only
+CursorX and CursorY field. Please help!!!</P>
+
+<HR>
+<H3><A NAME="WinMoveRel"><U>WinMoveRel</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinMoveRel (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> dx, <B><A HREF="keywords.html#short">short</A></B> dy);</TD></TR></TABLE></P>
+<P><B>Sets the current window pen position relative to the previous position.</B></P>
+
+<P>WinMoveRel acts like <A HREF="#WinMoveTo">WinMoveTo</A>, but <I>dx</I> and <I>dy</I>
+are relative to the current pen position.</P>
+
+<HR>
+<H3><A NAME="WinMoveTo"><U>WinMoveTo</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinMoveTo (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Sets the current window pen position.</B></P>
+
+<P>WinMoveTo sets the current pen position for the window pointed to by <I>w</I> to
+(<I>x</I>,&nbsp;<I>y</I>). The coordinates are relative to the topleft corner of the window.
+WinMoveTo affects where <A HREF="#WinChar">WinChar</A> and <A HREF="#WinStr">WinStr</A> draw
+characters and strings as well as the line position for <A HREF="#WinLineRel">WinLineRel</A>
+and <A HREF="#WinLineTo">WinLineTo</A>.</P>
+
+<HR>
+<H3><A NAME="WinOpen"><U>WinOpen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinOpen (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags, ...);</TD></TR></TABLE></P>
+<P><B>Opens a new window.</B></P>
+
+<P>WinOpen opens a new window, initializing all fields of the
+<A HREF="#WINDOW">WINDOW</A> structure pointed to by <I>w</I>, and then links this window into the
+current list of windows as the topmost window. <I>rect</I> is the pointer
+to the rectangular structure of type <A HREF="#WIN_RECT">WIN_RECT</A> which defines the
+window area. The flags defined in <I>Flags</I> may be
+set as one or more of the following constants defined in the enum <A HREF="#WinFlags">WinFlags</A>
+(they have to be ORed; note that WF_SAVE_SCR and WF_DUP_SCR are mutually exclusive):
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD VALIGN="TOP">WF_SAVE_SCR</TD>
+<TD>Save the screen region underneath the window (restore it when the window is closed).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_DUP_SCR</TD>
+<TD>Keep a duplicate copy of all data written to the window; when the window needs to be
+updated, the application will not receive a <A HREF="events.html#CM_WPAINT">CM_WPAINT</A> message, instead the system will update
+the window (see <A HREF="events.html#EV_paintOneWindow">EV_paintOneWindow</A> for more info).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_TTY</TD>
+<TD VALIGN="TOP">Write characters in TTY mode (translate '\n' and '\r' to a newline, '\f' to clear screen, and wrap
+at end of lines).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_NOBOLD</TD>
+<TD VALIGN="TOP">When window is activated, do not make the window's border bold.</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_NOBORDER</TD>
+<TD VALIGN="TOP">Do not draw a border around the window.</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_ROUNDEDBORDER</TD>
+<TD VALIGN="TOP">Draw a rounded border instead of rectangular border (this option implies WF_NOBOLD as well).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_TITLE</TD>
+<TD VALIGN="TOP">Draw a title bar; in this case the <I>Flags</I> parameter must be followed by a text string
+which will be used as the window title (according to my experience, it seems that only
+windows with rounded borders may have title bars).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_VIRTUAL</TD>
+<TD VALIGN="TOP">Set this flag for virtual windows which are just allocated
+bitmaps in memory and which are not limited to the size of the screen;
+no writes to actual LCD are done, only writes to a duplicate screen area
+(so WF_DUP_SCR must also be set).</TD>
+</TR>
+</TABLE>
+<BR>
+WinOpen returns <A HREF="alloc.html#Bool">FALSE</A> if there is not enough memory to
+allocate the save buffer, else returns <A HREF="alloc.html#Bool">TRUE</A>. Here is an example
+(called "Window 4") which displays "hello everyone" in a window (assuming that there were no errors):</P>
+<PRE>#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  WINDOW *wind = HeapAllocPtr (sizeof (WINDOW));
+  WinOpen (wind, MakeWinRect (20, 20, 80, 50), WF_SAVE_SCR | WF_TTY);
+  WinActivate (wind);
+  WinFont (wind, F_6x8);
+  WinStr (wind, &quot;hello everyone&quot;);
+  ngetchx ();
+  WinClose (wind);
+  HeapFreePtr (wind);
+}
+</PRE>
+<P>Like any other function which allocates a memory block, WinOpen may cause
+heap compression.
+<BR><BR>
+<B>Note:</B> You must call <A HREF="#WinActivate">WinActivate</A> to display a window on the screen,
+although TI said that you do not need to do so. Also, don't forget to <B>close</B> all windows
+(using <A HREF="#WinClose">WinClose</A> or <A HREF="#WinRemove">WinRemove</A>)
+before the end of the program, else the TI will crash later, when the TIOS window manager tries to
+refresh a window in the list which ceased to exist after terminating the program!</P>
+
+<HR>
+<H3><A NAME="WinPixGet"><U>WinPixGet</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinPixGet (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Gets the status of a pixel in a window.</B></P>
+
+<P>WinPixGet gets the status of the pixel located at (<I>x</I>,&nbsp;<I>y</I>), where
+coordinates are relative to the topleft corner of the window. Returns <A HREF="alloc.html#Bool">TRUE</A> or
+<A HREF="alloc.html#Bool">FALSE</A> depending of whether corresponding pixel is set or reset.
+Also returns <A HREF="alloc.html#Bool">FALSE</A> if coordinates are outside current window.</P>
+
+<HR>
+<H3><A NAME="WinPixSet"><U>WinPixSet</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinPixSet (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Sets a pixel in a window.</B></P>
+
+<P>WinPixSet set a pixel at (<I>x</I>,&nbsp;<I>y</I>) in the window pointed to by <I>w</I>
+using the current window attribute (set using <A HREF="#WinAttr">WinAttr</A>). The coordinates
+are relative to the topleft corner of the window (the pixel will not be drawn if the coordinates
+are out of the window). The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a pixel</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Erase a pixel</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Invert a pixel</TD>
+</TR>
+</TABLE></P>
+
+<HR>
+<H3><A NAME="WinRect"><U>WinRect</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinRect (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#short">short</A></B> Attr);</TD></TR></TABLE></P>
+<P><B>Draws a rectangle to a window.</B></P>
+
+<P>WinRect draws a rectangle with (x0,&nbsp;y0) and (x1,&nbsp;y1) as corners
+to the window pointed to by <I>w</I>, where coordinates (x0,&nbsp;y0) and (x1,&nbsp;y1)
+are given in a <A HREF="#WIN_RECT">WIN_RECT</A> structure <I>rect</I>. All coordinates
+are relative to the topleft corner of the window. The rectangle will be clipped at the
+boundaries of the clipping area of the window. The interior of the rectangle remains
+intact (no fill). The border lines of the rectangle will be drawn using the attribute
+<I>Attr</I>. See <A HREF="#WinLineTo">WinLineTo</A> for a description of supported line
+atributes. In addition, the attribute may be ORed with one or more following constants
+(which are defined in enum <A HREF="graph.html#BoxAttrs">BoxAttrs</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>B_NORMAL</TD><TD>Draw a normal rectangle</TD>
+</TR><TR>
+<TD>B_DOUBLE</TD><TD>Draw a double thick rectangle</TD>
+</TR><TR>
+<TD>B_ROUNDED</TD><TD>Draw a rectangle with rounded corners</TD>
+</TR><TR>
+<TD>B_CUT</TD><TD>Draw a rectangle with the upper corners cut (like in toolboxes)</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> I cannot conclude which is the difference if you OR the attribute
+with B_NORMAL or if you do not so. Maybe I am stupid.</P>
+
+<HR>
+<H3><A NAME="WinRemove"><U>WinRemove</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinRemove (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> UpdateScreen);</TD></TR></TABLE></P>
+<P><B>Closes the window pointed to by <I>w</I>, and frees the memory assigned to that window.</B></P>
+
+<P>If <I>UpdateScreen</I> is TRUE, the next window in the linked list of windows is activated and the screen is updated.<BR>
+If <I>UpdateScreen</I> is FALSE, no window is activated and the screen is not updated.<BR>
+In fact, <A HREF="#WinClose">WinClose</A> calls WinRemove with UpdateScreen = TRUE on all AMS versions.<BR>
+Virtual windows (the ones with <A HREF="#WinFlags">WF_VIRTUAL</A> flag set) should be closed with:</P>
+<PRE>
+WinRemove(&w,FALSE);
+</PRE>
+
+<P>See also: <A HREF="#WinClose">WinClose</A>, <A HREF="#WinOpen">WinOpen</A></P>
+<HR>
+<H3><A NAME="WinReOpen"><U>WinReOpen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinReOpen (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags, ...);</TD></TR></TABLE></P>
+<P><B>Reopens an existing window.</B></P>
+
+<P>WinReOpen acts like <A HREF="#WinOpen">WinOpen</A>, but reopens an existing window. Not valid
+for windows created in <A HREF="#WinFlags">WF_SAVE_SCR</A> mode (unless using just to call
+<A HREF="#WinOpen">WinOpen</A>). If the window is not in the "list of windows" then just
+calls <A HREF="#WinOpen">WinOpen</A>. Otherwise, it updates the Client, Window, Clip, and Port
+regions of the window. If the new window is of the same size as the old one, then the Port
+region (DUP_SCR) is not cleared. Returns <A HREF="alloc.html#Bool">TRUE</A> if the window re-opened OK,
+and returns <A HREF="alloc.html#Bool">FALSE</A> if not (bad window or not enough memory to enlarge
+DUP_SCR).
+<BR><BR>
+<B>Note:</B> This is the official information by Texas Instruments. I am not sure that I fully
+understood what they want to say. It seems that you can reopen a window on a new place
+(keeping the same size), then redraw the window on a new position using
+<A HREF="#WinBackupToScr">WinBackupToScr</A>.</P>
+
+<HR>
+<H3><A NAME="WinScrollH"><U>WinScrollH</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinScrollH (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#short">short</A></B> NumCols);</TD></TR></TABLE></P>
+<P><B>Shifts a region of a window left or right.</B></P>
+
+<P>WinScrollH shifts the rectangular area determined by <I>rect</I> of the window
+pointed to by <I>w</I> left by <I>NumRows</I> pixels (or right
+if <I>NumRows</I>&nbsp;&lt;&nbsp;0). The coordinates in <I>rect</I> are relative
+to the topleft corner od the window. Blank areas (i.e. the vacant space produced after
+scrolling) are filled with current background for the window (see
+<A HREF="#WinBackground">WinBackground</A>).
+<BR><BR>
+<B>Note:</B> This command is not very fast because it is realized using
+<A HREF="#WinBitmapGet">WinBitmapGet</A> and <A HREF="#WinBitmapPut">WinBitmapPut</A>.
+If the region to be scrolled starts on a byte boundary (left-most pixel), then the
+region will scroll much faster.</P>
+
+<HR>
+<H3><A NAME="WinScrollV"><U>WinScrollV</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinScrollV (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *rect, <B><A HREF="keywords.html#short">short</A></B> NumRows);</TD></TR></TABLE></P>
+<P><B>Scrolls a region of a window upwards or downwards.</B></P>
+
+<P>WinScrollV scrolls the rectangular area determined by <I>rect</I> of the window
+pointed to by <I>w</I> upwards by <I>NumRows</I> pixels (or downwards
+if <I>NumRows</I>&nbsp;&lt;&nbsp;0). The coordinates in <I>rect</I> are relative
+to the topleft corner od the window. Blank areas (i.e. the vacant space produced after
+scrolling) are filled with current background for the window (see
+<A HREF="#WinBackground">WinBackground</A>).
+<BR><BR>
+<B>Note:</B> This command is not very fast because it is realized using
+<A HREF="#WinBitmapGet">WinBitmapGet</A> and <A HREF="#WinBitmapPut">WinBitmapPut</A>.</P>
+
+<HR>
+<H3><A NAME="WinSetCursor"><U>WinSetCursor</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinSetCursor (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y);</TD></TR></TABLE></P>
+<P><B>Moves the cursor (???).</B></P>
+
+<P>See the note under <A HREF="#WinMoveCursor">WinMoveCursor</A>. WinSetCursor
+really does not produce any visible effect for me. It is a macro defined by
+TI which changes <I>CursorX</I> and <I>CursorY</I> fields of the <A HREF="#WINDOW">WINDOW</A>
+structure.</P>
+
+<HR>
+<H3><A NAME="WinShow"><U>WinShow</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinShow (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Makes a window visible for the repainting routine.</B></P>
+
+<P>This is a simple macro defined by Texas Instruments. It sets <A HREF="#WinFlags">WF_VISIBLE</A> flag of the
+window pointed to by <I>w</I>, making the window "visible" for event-driven repainting routine.
+This flag is used only in event driven applications (see <A HREF="events.html">event.h</A>
+header file, especially <A HREF="events.html#EV_paintOneWindow">EV_paintOneWindow</A> function).</P>
+
+<HR>
+<H3><A NAME="WinStr"><U>WinStr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinStr (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *str);</TD></TR></TABLE></P>
+<P><B>Draws a string to a window.</B></P>
+
+<P>WinStr draws the string <I>str</I> to the window pointed to by <I>w</I> at the current pen
+location. The current pen location is updated to point to the end of where the string was
+written if the window is in TTY mode (see <A HREF="#WinOpen">WinOpen</A> for more description
+about window modes). See <A HREF="#WinChar">WinChar</A> routine for a description of character
+attributes and fonts.</P>
+
+<HR>
+<H3><A NAME="WinStrXY"><U>WinStrXY</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> WinStrXY (<A HREF="#WINDOW">WINDOW</A> *w, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *str);</TD></TR></TABLE></P>
+<P><B>Draws a string to a window at a specific location.</B></P>
+
+<P>WinStrXY draws the string <I>str</I> to a window pointed to by <I>w</I> at the specific
+(<I>x</I>,&nbsp;<I>y</I>) location (the coordinates are relative to the topleft corner
+of the window). See <A HREF="#WinStr">WinStr</A> for more info.</P>
+
+<HR>
+<H3><A NAME="WinStrXYWrap"><U>WinStrXYWrap</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinStrXYWrap (<A HREF="#WINDOW">WINDOW</A> *w, <A HREF="#WIN_COORDS">WIN_COORDS</A> x, <A HREF="#WIN_COORDS">WIN_COORDS</A> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *s, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> flags);</TD></TR></TABLE></P>
+<P><B>Draws a word-wrapped string to a window at position x, y <I><U>(window-based)</U></I>, and returns the height in pixels of the text drawn.</B></P>
+
+<P><I><B>w</B></I> is the pointer to a window.<BR>
+<I><B>x</B></I> and <I><B>y</B></I> is the place where to draw the string, x is also the left margin to wrap on.<BR>
+<I><B>s</B></I> is the pointer to the string to write.<BR>
+<I><B>flags</B></I>: correct values are described in <A HREF="#winWriteFlags">winWriteFlags</A>.<BR>
+<BR>
+<B>This function is available in the jump table only on AMS 2.04 and later, and the parameter WWF_WRAP_BACK_TO_ZERO is taken into account only on AMS 2.07 and later.</B></P>
+
+<P>See also: <A HREF="#winWriteFlags">winWriteFlags</A></P>
+<HR>
+<H3><A NAME="WinToScr"><U>WinToScr</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="graph.html#SCR_RECT">SCR_RECT</A> *WinToScr (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#WIN_RECT">WIN_RECT</A> *win_rect, <A HREF="graph.html#SCR_RECT">SCR_RECT</A> *dest_rect);</TD></TR></TABLE></P>
+<P><B>Converts a WIN_RECT into a SCR_RECT, clipping the coordinates if necessary.</B></P>
+
+<P>WinToScr converts coordinates (<CODE>shorts</CODE>) in the structure <I>win_rect</I> to the same 
+coordinates (<CODE>unsigned char</CODE>), storing the result in the structure pointed to by 
+<I>dest_rect</I>, except that the coordinates that are negative are clipped to 0, and the 
+coordinates greater than 0xFF are clipped to 0xFF.
+WinToScr returns <I>dest_rect</I> back (but the structure pointed to by it is modified).<BR>
+<BR>
+If you want a WinToScr that works on all AMS versions, you can use:</P>
+<PRE>
+#undef WinToScr
+SCR_RECT *WinToScr (const WIN_RECT *win_rect, SCR_RECT *dest_rect);
+asm("
+WinToScr:
+move.l   4(%sp),%a1
+move.l   8(%sp),%a0
+moveq    #4-1,%d1
+_loop_WTS_:
+move.w   (%a1)+,%d0
+bge.s    _not_negative_WTS_
+moveq    #0,%d0 | clr.w %d0 or eor.w %d0,%d0 are enough and just as fast.
+bra.s    _store_WTS_
+_not_negative_WTS_:
+cmpi.w   #0xFF,%d0
+bls.s    _store_WTS_
+moveq    #-1,%d0
+_store_WTS_:
+move.b   %d0,(%a0)+
+dbf      %d1,_loop_WTS_
+subq.l   #4,%a0
+rts
+");
+</PRE>
+
+<HR>
+<H3><A NAME="WinWidth"><U>WinWidth</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> WinWidth (<A HREF="#WINDOW">WINDOW</A> *w);</TD></TR></TABLE></P>
+<P><B>Width of a window.</B></P>
+
+<P>WinWidth returns the width of the client (drawable) area of the window pointed to by <I>w</I>.
+The window region is the region that was defined when the window was
+created with <A HREF="#WinOpen">WinOpen</A>. If the window is full screen (not counting
+the status bar which may not be overlapped), then the client region is equal to the
+window region. The client region is reduced by adding borders or a title to a window.</P>
+
+<HR>
+<H3><A NAME="DeskTop"><U>DeskTop</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#WINDOW">WINDOW</A> *<B><A HREF="keywords.html#const">const</A></B> DeskTop;</TD></TR></TABLE></P>
+<P><B>A pointer to the desktop window.</B></P>
+
+<P>DeskTop is a constant static pointer (i.e. it can't be changed, but the structure pointed to by it
+may be changed) which points to the desktop window. This is a window without a border which
+occupies the whole screen area except the status line, but the clipping area of this window
+is set to exclude the area occupied by the toolbar menu, so you cannot draw over the menu
+area if you use this window as a parameter to any window drawing function (except if you
+changed <I>Clip</I> field of the structure pointed to by DeskTop manually). Usually, if you
+want to use a function which expects a parameter
+which is a pointer to a window structure, but if you don't want to create your own window,
+you can pass DeskTop as the parameter to it (of course, if you don't need to draw something
+in the menu or status line area).</P>
+
+<HR>
+<H3><A NAME="FirstWindow"><U>FirstWindow</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#WINDOW">WINDOW</A> *FirstWindow;</TD></TR></TABLE></P>
+<P><B>A pointer to the head of the list of all windows.</B></P>
+
+<P>FirstWindow is a pointer to the first window in the linked list of all created windows.
+By starting from FirstWindow and tracking the <I>Next</I> field of a
+<A HREF="#WINDOW">WINDOW</A> structure pointed to by it, it is possible to access to all
+created windows (the last one is the window which <I>Next</I> field is equal
+to <A HREF="alloc.html#NULL">NULL</A>).
+<BR><BR>
+<B>Note:</B> Under normal conditions, FirstWindow points to the Home screen window, which is
+defined as a window without a border, which occupies the space between the toolbar
+menu and the command input line. When this is just a window which you want to use in your
+program, you can pass FirstWindow as a parameter to any window routine
+(although <A HREF="#DeskTop">DeskTop</A> is probably a better choice). And, by changing
+a structure pointed to by FirstWindow, it is possible to make Home screen "larger" or
+"smaller", or to perform similar "dirty" tricks. See
+<A HREF="events.html#EV_registerMenu">EV_registerMenu</A> for a dirty example.</P>
+
+<HR>
+<H3><A NAME="WIN_COORDS"><U>WIN_COORDS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#short">short</A></B> WIN_COORDS;</TD></TR></TABLE></P>
+<P><B>An alias type for defining logical screen coordinates.</B></P>
+
+<HR>
+<H3><A NAME="WIN_RECT"><U>WIN_RECT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> x0, y0, x1, y1;<BR>
+</TD></TR></TABLE>
+} WIN_RECT;</TD></TR></TABLE></P>
+<P><B>A structure for defining a rectangular area.</B></P>
+
+<P>WIN_RECT is a scructure for defining a rectangular area using logical screen coordinates.
+<BR><BR>
+<B>Note:</B> GCC4TI is derived from GNU C, so it allows <A HREF="gnuexts.html#SEC81">cast constructors</A>.
+That's why constructions like</P>
+<PRE>WinOpen (&amp;w, &amp;(WIN_RECT){30, 30, 130, 80}, WF_SAVE_SCR);
+</PRE>
+<P>are legal. See <A HREF="#WinOpen">WinOpen</A> for info about this command.</P>
+
+<HR>
+<H3><A NAME="WINDOW_AMS1"><U>WINDOW_AMS1</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> WindowStruct_AMS1 {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags; <I>/* Window flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> CurFont; <I>/* Current font */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> CurAttr; <I>/* Current attribute */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Background; <I>/* Current background attribute */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> TaskId; <I>/* Task ID of owner */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> CurX, CurY; <I>/* Current (x,y) position (relative coordinates) */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> CursorX, CursorY; <I>/* Cursor (x,y) position */</I><BR>
+<A HREF="graph.html#SCR_RECT">SCR_RECT</A> Client; <I>/* Client region of the window (excludes border) */</I><BR>
+<A HREF="graph.html#SCR_RECT">SCR_RECT</A> Window; <I>/* Entire window region including border */</I><BR>
+<A HREF="graph.html#SCR_RECT">SCR_RECT</A> Clip; <I>/* Current clipping region */</I><BR>
+<A HREF="graph.html#SCR_RECT">SCR_RECT</A> Port; <I>/* Port region for duplicate screen */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> DupScr; <I>/* Handle of the duplicated or saved screen area */</I><BR>
+<B><A HREF="keywords.html#struct">struct</A></B> WindowStruct *Next; <I>/* Pointer to the next window in the linked list */</I><BR>
+<B><A HREF="keywords.html#int">char</A></B> *Title; <I>/* Pointer to the (optional) title */</I><BR>
+</TD></TR></TABLE>
+} WINDOW_AMS1;</TD></TR></TABLE></P>
+<P><B>The main window-describing structure (AMS 1.xx version).</B></P>
+
+<P>WINDOW_AMS1 is the AMS 1.xx version of the <A HREF="#WINDOW">WINDOW</A>
+structure. It is a little smaller, since the last two fields are missing.
+Usually, this is not important, but it is a problem if a window structure is
+included in other structures (like <A HREF="graphing.html#EQU_DS">EQU_DS</A>).</P>
+
+<P>See also: <A HREF="#WINDOW">WINDOW</A></P>
+<HR>
+<H3><A NAME="WINDOW"><U>WINDOW</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> WindowStruct {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags; <I>/* Window flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> CurFont; <I>/* Current font */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> CurAttr; <I>/* Current attribute */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Background; <I>/* Current background attribute */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> TaskId; <I>/* Task ID of owner */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> CurX, CurY; <I>/* Current (x,y) position (relative coordinates) */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> CursorX, CursorY; <I>/* Cursor (x,y) position */</I><BR>
+<A HREF="graph.html#SCR_RECT">SCR_RECT</A> Client; <I>/* Client region of the window (excludes border) */</I><BR>
+<A HREF="graph.html#SCR_RECT">SCR_RECT</A> Window; <I>/* Entire window region including border */</I><BR>
+<A HREF="graph.html#SCR_RECT">SCR_RECT</A> Clip; <I>/* Current clipping region */</I><BR>
+<A HREF="graph.html#SCR_RECT">SCR_RECT</A> Port; <I>/* Port region for duplicate screen */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> DupScr; <I>/* Handle of the duplicated or saved screen area */</I><BR>
+<B><A HREF="keywords.html#struct">struct</A></B> WindowStruct *Next; <I>/* Pointer to the next window in the linked list */</I><BR>
+<B><A HREF="keywords.html#int">char</A></B> *Title; <I>/* Pointer to the (optional) title */</I><BR>
+<A HREF="graph.html#SCR_STATE">SCR_STATE</A> savedScrState; <I>/* Saved state of the graphics system */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Reserved[16]; <I>/* Reserved, do not use */</I><BR>
+</TD></TR></TABLE>
+} WINDOW;</TD></TR></TABLE></P>
+<P><B>The main window-describing structure.</B></P>
+
+<P>WINDOW is the main window-describing structure which is used in all window-based TIOS
+functions.</P>
+
+<HR>
+<H3><A NAME="WinFlags"><U>WinFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> WinFlags {WF_SYS_ALLOC = 0x0001, WF_STEAL_MEM = 0x0002, WF_DONT_REALLOC = 0x0004, WF_ROUNDEDBORDER = 0x0008, WF_SAVE_SCR = 0x0010, WF_DUP_SCR = 0x0020, WF_TTY = 0x0040, WF_ACTIVE = 0x0080, WF_NOBORDER = 0x0100, WF_NOBOLD = 0x0200, WF_DUP_ON = 0x0400, WF_VIRTUAL = 0x0800, WF_TITLE = 0x1000, WF_DIRTY = 0x2000, WF_TRY_SAVE_SCR = 0x4010, WF_VISIBLE = 0x8000};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing flags which control the window manager.</B></P>
+
+<P>These flags are used in the <A HREF="#WinOpen">WinOpen</A> command. Usage of
+some of them are still not very clear to me. See <A HREF="#WinOpen">WinOpen</A>
+to see what I know about them (any additional info is welcomed).
+<BR><BR>
+WF_DIRTY and WF_VISIBLE are used in event driven applications, see <A HREF="events.html#EV_paintOneWindow">EV_paintOneWindow</A>
+function.</P>
+
+<HR>
+<H3><A NAME="winWriteFlags"><U>winWriteFlags</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> winWriteFlags {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+WWF_DRAW = 1, WWF_WRAP_ON_COMMAS = 2, WWF_WRAP_BACK_TO_ZERO = 4</TD></TR></TABLE>
+};</TD></TR></TABLE></P>
+<P><B>Enumeration for parameter flags to <A HREF="#WinStrXYWrap">WinStrXYWrap</A>.</B></P>
+
+<P><I><B>WWF_DRAW</B></I> means that the function will draw the string. If it is not set in the flags, the height of the text drawn is returned and nothing else is done.<BR>
+<I><B>WWF_WRAP_ON_COMMAS</B></I> means that the function will also wrap on commas, not only on spaces (\x20) and carriage returns (\x0A).<BR>
+<I><B>WWF_WRAP_BACK_TO_ZERO</B></I> means that the function will go back to the first column of the window after the first line. This option is available only on AMS 2.07 and more.</P>
+
+<P>See also: <A HREF="#WinStrXYWrap">WinStrXYWrap</A></P>
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

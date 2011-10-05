@@ -1,0 +1,531 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>files.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;files.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for accessing files (needs AMS 2.00 or later)</B></P>
+
+<P>This set of routines (available only in AMS 2.00 or later) gives the possibility of managing custom type files.
+<BR><BR>
+They give a 'higher' level way for managing custom type symbols in the Variable Allocation Table than the routines in <A HREF="vat.html">vat.h</A>.
+<BR><BR>
+They can in any case be used in conjunction with the <A HREF="vat.html">vat.h</A> routines.
+<BR><BR>
+<I>However</I>, files.h routines are different from the file routines contained in <A HREF="stdio.html">stdio.h</A>. First of all, they do not use the same files structures.
+Moreover, <A HREF="stdio.html">stdio.h</A> file functions are GCC4TI library functions working with any AMS versions while files.h functions are AMS (TIOS) functions which are only available under AMS 2.00 and later.
+They do have the advantage of not requiring extra code in your program, unlike stdio.h.
+<BR><BR>
+Therefore the following routines must <I>never</I> be used with <A HREF="stdio.html">stdio.h</A> file routines for the same file stream at the same time.</P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#TIOS_FAccess">FAccess</A></B><DD>Check to see if a file can be opened for a given mode without modifying the file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FClose">FClose</A></B><DD>Close a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FCreate">FCreate</A></B><DD>Create an empty file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FDelete">FDelete</A></B><DD>Deletes a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FEof">FEof</A></B><DD>Returns TRUE if a file is at the end.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FFindFirst">FFindFirst</A></B><DD>Find the first file of a given type.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FFindNext">FFindNext</A></B><DD>Find the next symbol as set up by a call to <A HREF="#TIOS_FFindFirst">FFindFirst</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FGetC">FGetC</A></B><DD>Read a byte from an open file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FGetPos">FGetPos</A></B><DD>Return the current file position.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FGetSize">FGetSize</A></B><DD>Return the number of bytes currently stored in an opened file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FOpen">FOpen</A></B><DD>Open a file for a specific mode.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FPutC">FPutC</A></B><DD>Write a byte to a file opened in write mode.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FRead">FRead</A></B><DD>Read a given number of bytes from an open file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FSetBufSize">FSetBufSize</A></B><DD>Set the buffer size of a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FSetPos">FSetPos</A></B><DD>Set the position of the next read or write for an opened file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FSetSize">FSetSize</A></B><DD>Truncate the size of a file opened in write mode.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FSetVer">FSetVer</A></B><DD>Change the version number of an opened file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FStatus">FStatus</A></B><DD>Return the status of a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FType">FType</A></B><DD>Gives the type of a specified file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_FWrite">FWrite</A></B><DD>Write a specified number of bytes to a file.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#fileMode">fileMode</A></B><DD>An enumeration for describing possible file modes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FILES">FILES</A></B><DD>A structure for defining a file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FileStatusEnum">FileStatusEnum</A></B><DD>An enumeration for describing possible file statuses.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="vat.html#FindOptions">FindOptions</A></B><DD>Describes options for <A HREF="vat.html#SymFindFirst">SymFindFirst</A> and <A HREF="#TIOS_FFindFirst">FFindFirst</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="vat.html#HSym">HSym</A></B><DD>A structure representing a symbol reference.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A></B><DD>A structure representing a VAT symbol entry.</DL>
+<P>See also: <A HREF="stdio.html">stdio.h</A>, <A HREF="vat.html">vat.h</A></P>
+
+<HR>
+<H3><A NAME="TIOS_FAccess"><U>FAccess</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FAccess (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *fileName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> mode, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *typeName);</TD></TR></TABLE></P>
+<P><B>Check to see if a file can be opened for a given mode without modifying the file.</B></P>
+
+<P>FAccess checks to see if the file <I>fileName</I> can be opened for the given mode <I>mode</I> without modifying the
+file first. The file, if it exists, must have the same type as <I>typeName</I>. <I>fileName</I> and <I>typeName</I> are normal zero-terminated C strings (i.e. you do not have to tokenize them).
+<BR><BR>
+<I>mode</I> is the given mode to be checked. This parameter can either be <A HREF="#fileMode">FM_READ_ACCESS</A> or <A HREF="#fileMode">FM_WRITE_ACCESS</A>.
+<BR><BR>
+<I>typeName</I> is a string which gives the type of the file to open. <I>typeName</I> is a normal-zero terminated C string which must contain one to four characters.
+<BR><BR>
+The value returned by FAccess is one of the following, as described in the <A HREF="#FileStatusEnum">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>The file can be opened in the given mode.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>The file cannot be opened for the specified mode. (It may be locked or not of custom (OTH) data-type.)</TD>
+</TR>
+<TR>
+<TD>FS_NOT_FOUND</TD><TD><I>fileName</I> does not exist.</TD>
+</TR>
+<TR>
+<TD>FS_BAD_NAME</TD><TD><I>fileName</I> is invalid.</TD>
+</TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FCreate">FCreate</A></P>
+<HR>
+<H3><A NAME="TIOS_FClose"><U>FClose</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FClose (<A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Close a file.</B></P>
+
+<P>FClose closes the file <I>fsPtr</I>. This is required for files opened in WRITE mode. For files in
+READ mode, FClose just updates the <I>fsPtr</I>->fileMode and <I>fsPtr</I>->fileStatus fields in the <A HREF="#FILES">FILES</A> structure.
+<BR><BR>
+<I>fsPtr</I> is a pointer to a <A HREF="#FILES">FILES</A> structure that was previously opened with <A HREF="#TIOS_FOpen">FOpen</A>.
+<BR><BR>
+FClose returns <A HREF="#FileStatusEnum">FS_OK</A> if the file was successfully closed. There is extra overhead required
+for a file that is always kept around by the file system and so closing a
+file will only return an error if the file or the heap has been damaged.</P>
+
+<P>See also: <A HREF="#TIOS_FAccess">FAccess</A>, <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FStatus">FStatus</A></P>
+<HR>
+<H3><A NAME="TIOS_FCreate"><U>FCreate</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FCreate (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *fileName, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *typeName);</TD></TR></TABLE></P>
+<P><B>Create an empty file.</B></P>
+
+<P>FCreate creates an empty file with the name <I>fileName</I> and the type <I>typeName</I>. It is normally only needed if multiple files must be
+simultaneously opened in write mode. <I>Filename</I> is not a tokenized variable name (as required by the symbol
+table code) but rather a normal zero-terminated C string of characters. It must not be a reserved
+name. If <I>filename</I> does not contain a folder name, the file will be stored in
+the current folder. Internally, files are stored as custom (third-party) data type files
+(i.e. they are defined with the <A HREF="estack.html#OTH_TAG">OTH_TAG</A>). They will show up to the user in the VAR-LINK screen
+as the type specified when the FILE was opened (up to four letters).
+<BR><BR>
+<I>typeName</I> must point to a normal zero-terminated C string of at most four characters which
+describes the file type (<A HREF="#FileStatusEnum">FS_ERROR</A> is returned if it does not).
+<BR><BR>
+FCreate returns one of the following values, as described in the <A HREF="#FileStatusEnum">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>The file was opened for the specified mode.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>The file cannot be opened for the specified mode. (It may be locked or not of custom (OTH) data-type.)</TD>
+</TR>
+<TR>
+<TD>FS_BAD_NAME</TD><TD><I>fileName</I> is invalid.</TD>
+</TR>
+<TR>
+<TD>FS_MEMORY</TD><TD>Not enough memory.</TD>
+</TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#TIOS_FClose">FClose</A>, <A HREF="#TIOS_FOpen">FOpen</A></P>
+<HR>
+<H3><A NAME="TIOS_FDelete"><U>FDelete</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FDelete (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *fileName);</TD></TR></TABLE></P>
+<P><B>Deletes a file.</B></P>
+
+<P>FDelete deletes the file <I>fileName</I>. <I>fileName</I> is a normal zero-terminated C string (i.e. it musn't be tokenized).
+<BR>
+<B>Note:</B> FDelete may invalidate any current <A HREF="vat.html#HSym">HSym</A>s.
+<BR><BR>
+FDelete may return one of the following values as described in the <A HREF="#FileStatusEnum">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>File deleted.</TD>
+</TR>
+<TR>
+<TD>FS_BAD_NAME</TD><TD>Bad filename.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>File not deleted because it is locked, in use, a folder, in Flash, or it does not exist.</TD>
+</TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#TIOS_FCreate">FCreate</A></P>
+<HR>
+<H3><A NAME="TIOS_FEof"><U>FEof</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FEof (<A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Returns TRUE if a file is at the end.</B></P>
+
+<P>FEof returns <A HREF="alloc.html#Bool">TRUE</A> if the file <I>fsPtr</I> is at the end of File mark, and <A HREF="alloc.html#Bool">FALSE</A> otherwise. <I>fsPtr</I> must be a pointer to a <A HREF="#FILES">FILES</A> structure opened with <A HREF="#TIOS_FOpen">FOpen</A>.
+<BR><BR>
+Note that this is not an error condition (as returned by <A HREF="#TIOS_FStatus">FStatus</A>) and can
+be changed not only by reading from a file but also by changing the current file
+position.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FSetPos">FSetPos</A>, <A HREF="#TIOS_FGetPos">FGetPos</A></P>
+<HR>
+<H3><A NAME="TIOS_FFindFirst"><U>FFindFirst</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A> *FFindFirst (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Options, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *typeName, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *folderName);</TD></TR></TABLE></P>
+<P><B>Find the first file of a given type.</B></P>
+
+<P>FFindFirst finds the first file of the type <I>typeName</I> and returns a <A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A>
+pointer to it (or <A HREF="alloc.html#NULL">NULL</A> if none found). <I>typeName</I> must point to a normal zero-terminated C string (i.e. not a tokenized form) of at most four characters which
+describes the file type. Use <A HREF="#TIOS_FFindNext">FFindNext</A> to find subsequent
+entries, <A HREF="alloc.html#NULL">NULL</A> will be returned after the last entry is found.
+<BR><BR>
+<I>Options</I> can be one of the following flags as described in the <A HREF="vat.html#FindOptions">FindOptions</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FO_NONE</TD><TD>When this flag is set, <I>folderName</I> is a string pointer to the folder to search.</TD>
+</TR>
+<TR>
+<TD>FO_RECURSE</TD><TD>When this flag is set, FFindFirst searches all folders (<I>folderName</I> is ignored).</TD>
+</TR>
+</TABLE>
+<BR><BR>
+FFindFirst returns a <A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A> pointer to the first file with a type matching <I>typeName</I> or <A HREF="alloc.html#NULL">NULL</A> if none found.
+The Name field of the <A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A> contains the name of the file being searched for as an 8 character string. If using <A HREF="vat.html#FindOptions">FO_RECURSE</A>, then
+calling <A HREF="vat.html#SymFindFolderName">SymFindFolderName</A> will return the folder of the symbol just found.
+<BR><BR>
+<B>Note:</B> <A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A> pointers are only valid until heap compression is done or
+another symbol is added to the symbol table.</P>
+
+<P>See also: <A HREF="#TIOS_FFindNext">FFindNext</A>, <A HREF="vat.html#SymFindFolderName">SymFindFolderName</A></P>
+<HR>
+<H3><A NAME="TIOS_FFindNext"><U>FFindNext</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A> *FFindNext (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Find the next symbol as set up by a call to <A HREF="#TIOS_FFindFirst">FFindFirst</A>.</B></P>
+
+<P>FFindNext finds the next symbol as set up by a call to <A HREF="#TIOS_FFindFirst">FFindFirst</A> and returns a
+<A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A> pointer to it, or <A HREF="alloc.html#NULL">NULL</A> if no more symbols can be found.<BR>
+The pointer returned by FFindNext is a <A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A> pointer to a file with a type matching the one set up by a previous
+call to <A HREF="#TIOS_FFindFirst">FFindFirst</A>. If using FO_RECURSE, then calling
+<A HREF="vat.html#SymFindFolderName">SymFindFolderName</A> will return the folder of the symbol just found.<BR>
+Note that <A HREF="#TIOS_FFindFirst">FFindFirst</A> must have been called previously to find the first symbol.
+<BR><BR>
+<B>Note:</B> <A HREF="vat.html#SYM_ENTRY">SYM_ENTRY</A> pointers are only valid until heap compression is done or
+another symbol is added to the symbol table.</P>
+
+<P>See also: <A HREF="#TIOS_FFindFirst">FFindFirst</A>, <A HREF="vat.html#SymFindFolderName">SymFindFolderName</A></P>
+<HR>
+<H3><A NAME="TIOS_FGetC"><U>FGetC</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FGetC (<A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Read a byte from an open file.</B></P>
+
+<P>FGetC reads a byte from the open file <I>fsPtr</I> (which may be opened in either READ or WRITE mode) at the current file position
+and returns the byte, or <A HREF="#FileStatusEnum">FS_EOF</A> if the end of file was reached.<BR>
+<I>fsPtr</I> is a pointer to a <A HREF="#FILES">FILES</A> structure previously opened with <A HREF="#TIOS_FOpen">FOpen</A>.
+<BR><BR>
+Note that the <A HREF="#FILES">FILES</A> structure pointed to by <I>fsPtr</I> <I>must</I> have been opened with <A HREF="#TIOS_FOpen">FOpen</A>.
+<BR><BR>
+FGetC returns the next byte in the file, or <A HREF="#FileStatusEnum">FS_EOF</A> if the end of file has been reached.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FPutC">FPutC</A>, <A HREF="#TIOS_FRead">FRead</A>, <A HREF="#TIOS_FSetPos">FSetPos</A></P>
+<HR>
+<H3><A NAME="TIOS_FGetPos"><U>FGetPos</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FGetPos (<A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Return the current file position.</B></P>
+
+<P>FGetPos returns the current file position (where the next read or write would occur)
+for the file pointed to by <I>fsPtr</I>.<I>fsPtr</I> is a pointer to a <A HREF="#FILES">FILES</A> structure previously opened with <A HREF="#TIOS_FOpen">FOpen</A>.
+<BR><BR>
+Note that the <A HREF="#FILES">FILES</A> structure pointed to by <I>fsPtr</I> <I>must</I> have been previously opened with <A HREF="#TIOS_FOpen">FOpen</A>.
+<BR><BR>
+FGetPos returns the current file position.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FSetPos">FSetPos</A>, <A HREF="#TIOS_FEof">FEof</A></P>
+<HR>
+<H3><A NAME="TIOS_FGetSize"><U>FGetSize</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FGetSize (<A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Return the number of bytes currently stored in an opened file.</B></P>
+
+<P>FGetSize returns the number of bytes currently stored in the opened file <I>fsPtr</I>.
+<BR><BR>
+The <A HREF="#FILES">FILES</A> structure pointed to by <I>fsPtr</I> <I>must</I> have been previously opened
+with <A HREF="#TIOS_FOpen">FOpen</A> (either in read or in write mode).</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FSetSize">FSetSize</A></P>
+<HR>
+<H3><A NAME="TIOS_FOpen"><U>FOpen</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FOpen (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *fileName, <A HREF="#FILES">FILES</A> *fsPtr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> mode, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *typeName);</TD></TR></TABLE></P>
+<P><B>Open a file for a specific mode.</B></P>
+
+<P>FOpen opens the file <I>fileName</I> for the mode <I>mode</I>. <I>fileName</I> is not a tokenized variable name (as required by the symbol
+table code), but rather a normal zero-terminated C string of characters. It must not be a reserved
+name. If <I>fileName</I> does not contain a folder name, the file will be stored in (or read from)
+the current folder. Internally, files are stored as custom (third-party) data-type files
+(<A HREF="estack.html#OTH_TAG">OTH_TAG</A>). They will show up to the user in the VAR-LINK screen
+as the type specified when the file was opened (up to four letters).
+<BR><BR>
+When a file is opened with FOpen in <A HREF="#fileMode">FM_WRITE</A> or <A HREF="#fileMode">FM_APPEND</A> mode,
+the associated variable is locked and inaccessible by any other routines in
+the system. It must be closed with <A HREF="#TIOS_FClose">FClose</A> to return the variable to a not-in-use mode,
+to write the file type and the <A HREF="estack.html#OTH_TAG">OTH_TAG</A>, and to close
+the associated buffer. For files opened in <A HREF="#fileMode">FM_READ</A> mode, the call to <A HREF="#TIOS_FClose">FClose</A>
+will merely update the mode of the file in the <A HREF="#FILES">FILES</A> structure to closed and
+clear the associated error status.
+<BR><BR>
+There is no separate mode to open a file for both reading and writing.
+However, if a file is opened in <A HREF="#fileMode">FM_APPEND</A> mode, the contents of the file
+are not erased and the file may be subsequently positioned to any location
+in the file (random access) and either read from or written to.
+For all access modes, the given name must not be a system variable. For
+<A HREF="#fileMode">FM_READ</A> and <A HREF="#fileMode">FM_APPEND</A> the name must correspond to an existing file of a custom data-type. For
+<A HREF="#fileMode">FM_WRITE</A> the file must either not exist or correspond to a file of a custom
+data-type which is not locked or marked in-use.
+<BR><BR>
+Note that for files in read mode, <A HREF="#TIOS_FClose">FClose</A> merely updates the
+<I>fsPtr</I>->fileMode field in the <A HREF="#FILES">FILES</A> structure to indicate it is closed. For write mode, it must be
+called to update information in the file needed by the system. While a file is
+in write mode, it is marked as in-use so that no other application, nor the
+system itself, will try to access it (it will not be visible in the VAR-LINK screen
+either). Files in write or append mode may be accessed randomly by
+using <A HREF="#TIOS_FSetPos">FSetPos</A>.
+<BR><BR>
+<B>Note:</B> Any number of files may be simultaneously opened in read mode. If multiple
+files are opened simultaneously in write (or append) mode, all but the
+first file must already exist before they are opened. Use the <A HREF="#TIOS_FCreate">FCreate</A> routine if
+they need to be created as empty files before they are opened with FOpen.
+<BR><BR>
+<I>typeName</I> must point to a normal (non-tokenized) zero-terminated C string of at most four characters
+which describes the file type (<A HREF="#FileStatusEnum">FS_ERROR</A> is returned
+if it does not). If there is an existing file with the
+same name as <I>fileName</I>, the types must match.
+<BR><BR>
+<I>fsPtr</I> is a pointer to a structure of type <A HREF="#FILES">FILES</A>.
+<BR><BR>
+The parameter <I>mode</I> can be one of the following commands, as described in the <A HREF="#fileMode">fileMode</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FM_READ</TD><TD>The file must exist and can only be read.</TD>
+</TR>
+<TR>
+<TD>FM_WRITE</TD><TD>Open the file for writing and erase its contents. Create the file if it does not exist.</TD>
+</TR>
+<TR>
+<TD>FM_APPEND</TD><TD>If the file exists, open it for writing at the end of the file. If it does not exist, then create it and open it for writing.</TD>
+</TR>
+</TABLE>
+<BR>
+FOpen returns one of the following values as described in the <A HREF="#FileStatusEnum">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>The file was opened for the specified mode.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>The file cannot be opened for the specified mode. (It may be locked or not of custom (OTH) data-type, or <I>typeName</I> may be invalid.)</TD>
+</TR>
+<TR>
+<TD>FS_BAD_NAME</TD><TD><I>fileName</I> is invalid.</TD>
+</TR>
+<TR>
+<TD>FS_MEMORY</TD><TD>Not enough memory.</TD>
+</TR>
+</TABLE>
+<BR>
+The return value is also stored in <I>fsPtr</I>->fileStatus in the <A HREF="#FILES">FILES</A> structure.<BR>
+The <A HREF="#FILES">FILES</A> pointer <I>fsPtr</I> may then be used in subsequent file routines.
+<BR><BR>
+This routine may cause heap compression or invalidate any current <A HREF="vat.html#HSym">HSym</A>s.</P>
+
+<P>See also: <A HREF="#TIOS_FAccess">FAccess</A>, <A HREF="#TIOS_FClose">FClose</A>, <A HREF="#TIOS_FRead">FRead</A>, <A HREF="#TIOS_FGetC">FGetC</A>, <A HREF="#TIOS_FSetPos">FSetPos</A>, <A HREF="#TIOS_FStatus">FStatus</A>, <A HREF="#TIOS_FWrite">FWrite</A>, <A HREF="#TIOS_FPutC">FPutC</A></P>
+<HR>
+<H3><A NAME="TIOS_FPutC"><U>FPutC</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FPutC (<B><A HREF="keywords.html#short">short</A></B> byte, <A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Write a byte to a file opened in write mode.</B></P>
+
+<P>FPutC writes the byte <I>byte</I> to the file <I>fsPtr</I> opened in write mode at the current file position. 
+The <A HREF="#FILES">FILES</A> structure pointed to by <I>fsPtr</I> must have been opened with
+<A HREF="#TIOS_FOpen">FOpen</A> in write mode.
+<BR><BR>
+FPutC returns <A HREF="#FileStatusEnum">FS_OK</A> if successful, <A HREF="#FileStatusEnum">FS_ERROR</A> if the file is not opened for write
+mode or <A HREF="#FileStatusEnum">FS_MEMORY</A> if the system is out of memory.
+<BR><BR>
+<B>Note:</B> Any error will cause the file status to be set to <A HREF="#FileStatusEnum">FS_ERROR</A> so that multiple
+writes may be performed without checking the return status as long as an
+<A HREF="#TIOS_FStatus">FStatus</A> is done at the end to make sure all of the writes were successful.
+<BR><BR>
+This routine may cause heap compression.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FGetC">FGetC</A>, <A HREF="#TIOS_FWrite">FWrite</A>, <A HREF="#TIOS_FSetPos">FSetPos</A>, <A HREF="#TIOS_FStatus">FStatus</A></P>
+<HR>
+<H3><A NAME="TIOS_FRead"><U>FRead</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FRead (<B><A HREF="keywords.html#void">void</A></B> *buffer, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> bytesToRead, <A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Read a given number of bytes from an open file.</B></P>
+
+<P>FRead reads <I>bytesToRead</I> bytes from the open file <I>fsPtr</I> (which may be opened in either read or
+write mode) into <I>buffer</I>. <I>fsPtr</I> must be a pointer to a <A HREF="#FILES">FILES</A> structure previously opened with
+<A HREF="#TIOS_FOpen">FOpen</A>. <I>buffer</I> must be a pointer to a buffer at least <I>bytesToRead</I> bytes long.
+<BR><BR>
+FRead returns <A HREF="#FileStatusEnum">FS_OK</A> if the file read was successful or <A HREF="#FileStatusEnum">FS_EOF</A> if it read past the end of the file.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FWrite">FWrite</A>, <A HREF="#TIOS_FGetC">FGetC</A>, <A HREF="#TIOS_FSetPos">FSetPos</A></P>
+<HR>
+<H3><A NAME="TIOS_FSetBufSize"><U>FSetBufSize</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FSetBufSize (<A HREF="#FILES">FILES</A> *fsPtr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> newBufSize);</TD></TR></TABLE></P>
+<P><B>Set the buffer size of a file.</B></P>
+
+<P>FSetBufSize sets the buffer size of the file <I>fsPtr</I> to a new one: <I>newBufSize</I>. 
+The buffer size determines how much memory
+is reallocated to the file every time a write needs more memory from the
+heap. The default size (128 bytes) is set when the file is opened and
+should be sufficient for most uses. Setting a larger value will make writes
+faster but at the cost of possibly prematurely running out of memory.
+<BR><BR>
+FSetBufSize returns the value stored in <I>newBufSize</I>.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FWrite">FWrite</A></P>
+<HR>
+<H3><A NAME="TIOS_FSetPos"><U>FSetPos</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FSetPos (<A HREF="#FILES">FILES</A> *fsPtr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> pos);</TD></TR></TABLE></P>
+<P><B>Set the position of the next read or write for an opened file.</B></P>
+
+<P>FSetPos sets the position <I>pos</I> of the next read or write for the opened file <I>fsPtr</I> and returns the new
+position (which may be less than specified if the end of the file is exceeded). <I>fsPtr</I> must be a pointer 
+to a <A HREF="#FILES">FILES</A> structure previously opened with <A HREF="#TIOS_FOpen">FOpen</A>.
+<BR><BR>
+<I>pos</I> is the file position (0 being the first byte in the file) to set.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FGetPos">FGetPos</A>, <A HREF="#TIOS_FEof">FEof</A></P>
+<HR>
+<H3><A NAME="TIOS_FSetSize"><U>FSetSize</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FSetSize (<A HREF="#FILES">FILES</A> *fsPtr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> fileSize);</TD></TR></TABLE></P>
+<P><B>Truncate the size of a file opened in write mode.</B></P>
+
+<P>FSetSize truncates the size of the file opened in write mode to <I>fileSize</I>, which may
+not exceed the current file size. Return the new file size, but no more than
+the current size. Note that in read mode, the current file size is always
+returned without making any changes. <I>fsPtr</I> must be a pointer to a
+<A HREF="#FILES">FILES</A> structure previously opened with <A HREF="#TIOS_FOpen">FOpen</A> for
+writing.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FGetSize">FGetSize</A></P>
+<HR>
+<H3><A NAME="TIOS_FSetVer"><U>FSetVer</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> FSetVer (<A HREF="#FILES">FILES</A> *fsPtr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> newVer);</TD></TR></TABLE></P>
+<P><B>Change the version number of an opened file.</B></P>
+
+<P>FSetVer changes the version number of the opened file <I>fsPtr</I> to the new one <I>newVer</I> and returns the old version
+number. Note that the file can be in read or write mode. <I>fsPtr</I> is a pointer 
+to a <A HREF="#FILES">FILES</A> structure previously opened with <A HREF="#TIOS_FOpen">FOpen</A> in
+either read or write mode. The version number of a file is stored in the file’s symbol table entry. It is a
+byte and is used internally by TIOS to verify that a newer version of a
+symbol is not sent to an older TI-89, TI-92, or TI-92 Plus.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A></P>
+<HR>
+<H3><A NAME="TIOS_FStatus"><U>FStatus</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FStatus (<A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Return the status of a file.</B></P>
+
+<P>FStatus returns the status of the file <I>fsPtr</I>: <A HREF="#FileStatusEnum">FS_OK</A> 
+if no errors have occurred, or
+<A HREF="#FileStatusEnum">FS_ERROR</A> if any errors have occurred. Note that errors accumulate so
+that multiple writes may be done on a file as long as the status is checked
+after the last write. The only way to clear the status is to close the file.
+<BR><BR>
+<I>fsPtr</I> must be a pointer to a <A HREF="#FILES">FILES</A> structure previously opened with <A HREF="#TIOS_FOpen">FOpen</A>.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FClose">FClose</A>, <A HREF="#TIOS_FWrite">FWrite</A>, <A HREF="#TIOS_FPutC">FPutC</A></P>
+<HR>
+<H3><A NAME="TIOS_FType"><U>FType</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FType (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *fileName, <B><A HREF="keywords.html#int">char</A></B> *buf);</TD></TR></TABLE></P>
+<P><B>Gives the type of a specified file.</B></P>
+
+<P>FType writes the type of the file <I>fileName</I> into the buffer <I>buf</I> as a zero-terminated string. 
+The buffer should be a least 5 bytes long (four bytes + a zero terminating byte). <I>fileName</I> file must not be opened for write mode.
+<BR><BR>
+FType can return one of the following values as enumerated in the <A HREF="#FileStatusEnum">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>Ftype successfully wrote the type of the file into <I>buf</I>.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>An error occured while opening the file, or the file was opened successfully, but the type field is invalid.</TD>
+</TR>
+<TR>
+<TD>FS_BAD_NAME</TD><TD><I>fileName</I> is invalid.</TD>
+</TR>
+</TABLE>
+<BR>
+Note that FType will always fail if the given file is already opened for write mode.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A></P>
+<HR>
+<H3><A NAME="TIOS_FWrite"><U>FWrite</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FWrite (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *buffer, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> bytesToWrite, <A HREF="#FILES">FILES</A> *fsPtr);</TD></TR></TABLE></P>
+<P><B>Write a specified number of bytes to a file.</B></P>
+
+<P>FWrite writes <I>bytesToWrite</I> bytes of data from the buffer <I>buffer</I> to the output file associated with the <A HREF="#FILES">FILES</A> structure pointed to by <I>fsPtr</I>. 
+The data written begins at the current file position. <I>buffer</I> is a pointer to any object.
+<BR><BR>
+FWrite returns one of the following values as enumerated in the <A HREF="#FileStatusEnum">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>The write was successful.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>The file <I>fsPtr</I> is not opened in write mode.</TD>
+</TR>
+<TR>
+<TD>FS_MEMORY</TD><TD>Out of memory.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> Any error will cause the file status to be set to <A HREF="#FileStatusEnum">FS_ERROR</A> so that multiple
+writes may be performed without checking the return status as long as an
+<A HREF="#TIOS_FStatus">FStatus</A> is done at the end to make sure all of the writes were successful.</P>
+
+<P>See also: <A HREF="#TIOS_FOpen">FOpen</A>, <A HREF="#TIOS_FPutC">FPutC</A>, <A HREF="#TIOS_FRead">FRead</A>, <A HREF="#TIOS_FClose">FClose</A></P>
+<HR>
+<H3><A NAME="fileMode"><U>fileMode</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> fileMode {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+FM_CLOSED=0, FM_READ=1, FM_WRITE=2, FM_APPEND=3, FM_READ_ACCESS=1, FM_WRITE_ACCESS=4</TD></TR></TABLE>
+};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible file modes.</B></P>
+
+<P>These constants describe the file modes stored in the <A HREF="#FILES">FILES</A> structure and needed by nearly every <A HREF="files.html">files.h</A> function.</P>
+
+<HR>
+<H3><A NAME="FILES"><U>FILES</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> fileStruct {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> dataLen;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> dataPos;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> bufSize;<BR>
+HANDLE dataH;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> fileFlags, <A HREF="#fileMode">fileMode</A>;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> fileStatus;<BR>
+<A HREF="vat.html#HSym">HSym</A> hSym;<BR>
+<B><A HREF="keywords.html#int">char</A></B> type[5];<BR>
+</TD></TR></TABLE>
+} FILES;</TD></TR></TABLE></P>
+<P><B>A structure for defining a file.</B></P>
+
+<P>fileStruct is a structure for defining a file, used in commands like <A HREF="#TIOS_FOpen">FOpen</A>.</P>
+
+<HR>
+<H3><A NAME="FileStatusEnum"><U>FileStatusEnum</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> FileStatusEnum {FS_OK = 0x0000, FS_EOF = 0xFFFF, FS_ERROR = 0xFFFE, FS_BAD_NAME = 0xFFFD, FS_MEMORY = 0xFFFC, FS_NOT_FOUND = 0xFFFB};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible file statuses.</B></P>
+
+<P>These constants describe the file status codes stored in the <A HREF="#FILES">FILES</A> structure and returned by nearly every <A HREF="files.html">files.h</A> function.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

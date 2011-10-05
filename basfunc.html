@@ -1,0 +1,1184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>basfunc.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;basfunc.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for executing TI-Basic functions</B></P>
+
+<P>Very few of the functions from this header file are documented as of now. Of
+course, the ones which are undocumented have not been tested, either. It is
+very likely that there are errors in this file, so use it with care.
+<BR><BR>
+However, we thought it might be a good idea to provide a header file for all
+of the built-in TI-Basic functions which have a documented entry in the jump
+table.
+This way, you can easily search for particular symbolic math functions if you
+need them. If you use a function from this header file, please document it,
+too.
+<BR><BR>
+Many functions from this header file require their arguments to have some
+specific format. They usually have to be internally simplified, which can be
+achieved with the
+<A HREF="estack.html#push_internal_simplify">push_internal_simplify</A>
+function from <A HREF="estack.html">estack.h</A>, and the result is an
+internally simplified expression as well. For optional arguments, you can
+usually pass <A HREF="estack.html#NULL_INDEX">NULL_INDEX</A>.
+<BR><BR>
+If you do not want to accept the AMS dependency of these functions, you can
+usually construct an expression using their appropriate tags, and then call
+<A HREF="estack.html#push_internal_simplify">push_internal_simplify</A>.</P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#did_push_anti_deriv">did_push_anti_deriv</A></B><DD>Executes TI-Basic '<FONT FACE="Symbol">&#242;</FONT>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#did_push_series">did_push_series</A></B><DD>Executes TI-Basic 'taylor' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_1st_derivative">push_1st_derivative</A></B><DD>Executes TI-Basic '<FONT FACE="Symbol">&#182;</FONT>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_abs">push_abs</A></B><DD>Executes TI-Basic 'abs' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_acos">push_acos</A></B><DD>Executes TI-Basic 'cos<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_acosh">push_acosh</A></B><DD>Executes TI-Basic 'cosh<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_acot">push_acot</A></B><DD>Executes TI-Basic 'cot<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_acoth">push_acoth</A></B><DD>Executes TI-Basic 'coth<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_acsc">push_acsc</A></B><DD>Executes TI-Basic 'csc<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_acsch">push_acsch</A></B><DD>Executes TI-Basic 'csch<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_approx">push_approx</A></B><DD>Executes TI-Basic 'approx' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_arclen">push_arclen</A></B><DD>Executes TI-Basic 'arcLen' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_asec">push_asec</A></B><DD>Executes TI-Basic 'sec<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_asech">push_asech</A></B><DD>Executes TI-Basic 'sech<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_asin">push_asin</A></B><DD>Executes TI-Basic 'sin<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_asinh">push_asinh</A></B><DD>Executes TI-Basic 'sinh<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_atan">push_atan</A></B><DD>Executes TI-Basic 'tan<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_atanh">push_atanh</A></B><DD>Executes TI-Basic 'tanh<SUP>-1</SUP>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_augment">push_augment</A></B><DD>Executes TI-Basic 'augment' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_ceiling">push_ceiling</A></B><DD>Executes TI-Basic 'ceiling' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_char">push_char</A></B><DD>Executes TI-Basic 'char' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_coldim">push_coldim</A></B><DD>Executes TI-Basic 'colDim' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_colnorm">push_colnorm</A></B><DD>Executes TI-Basic 'colNorm' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_comb">push_comb</A></B><DD>Executes TI-Basic 'nCr' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_comdenom">push_comdenom</A></B><DD>Executes TI-Basic 'comDenom' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_conj">push_conj</A></B><DD>Executes TI-Basic 'conj' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_cos">push_cos</A></B><DD>Executes TI-Basic 'cos' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_cosh">push_cosh</A></B><DD>Executes TI-Basic 'cosh' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_cot">push_cot</A></B><DD>Executes TI-Basic 'cot' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_coth">push_coth</A></B><DD>Executes TI-Basic 'coth' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_cross_product">push_cross_product</A></B><DD>Executes TI-Basic 'crossP' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_csc">push_csc</A></B><DD>Executes TI-Basic 'csc' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_csch">push_csch</A></B><DD>Executes TI-Basic 'csch' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_csolve">push_csolve</A></B><DD>Executes TI-Basic 'cSolve' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_cumsum">push_cumsum</A></B><DD>Executes TI-Basic 'cumSum' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_cylin_vector">push_cylin_vector</A></B><DD>Executes the simplification of a vector written under cylindrical form.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_czeros">push_czeros</A></B><DD>Executes TI-Basic 'cZeros' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_def_int">push_def_int</A></B><DD>Executes TI-Basic '<FONT FACE="Symbol">&#242;</FONT>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_denominator">push_denominator</A></B><DD>Executes TI-Basic 'getDenom' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_dense_poly_eval">push_dense_poly_eval</A></B><DD>Executes TI-Basic 'polyEval(' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_desolve">push_desolve</A></B><DD>Executes TI-Basic 'deSolve' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_determinant">push_determinant</A></B><DD>Executes TI-Basic 'det' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_diag">push_diag</A></B><DD>Executes TI-Basic 'diag' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_dimension">push_dimension</A></B><DD>Executes TI-Basic 'dim' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_div_dif_1c">push_div_dif_1c</A></B><DD>Executes TI-Basic 'nDeriv(' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_div_dif_1f">push_div_dif_1f</A></B><DD>Executes TI-Basic 'avgRC(' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_dotproduct">push_dotproduct</A></B><DD>Executes TI-Basic 'dotP' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_eigvc">push_eigvc</A></B><DD>Executes TI-Basic 'eigVc' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_eigvl">push_eigvl</A></B><DD>Executes TI-Basic 'eigVl' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_exp">push_exp</A></B><DD>Executes TI-Basic '<I>e</I>^' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_expand">push_expand</A></B><DD>Executes TI-Basic 'expand' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_extended_prod">push_extended_prod</A></B><DD>Executes TI-Basic '<FONT FACE="Symbol">&#213;</FONT>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_factor">push_factor</A></B><DD>Executes TI-Basic 'factor' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_floor">push_floor</A></B><DD>Executes TI-Basic 'floor' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_format">push_format</A></B><DD>Executes TI-Basic 'format' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_fractional_part">push_fractional_part</A></B><DD>Executes TI-Basic 'fPart' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_gcd_numbers">push_gcd_numbers</A></B><DD>Executes TI-Basic 'gcd' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_getfold">push_getfold</A></B><DD>Executes TI-Basic 'getFold' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_getkey">push_getkey</A></B><DD>Executes TI-Basic 'getKey' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_getmode">push_getmode</A></B><DD>Executes TI-Basic 'getMode' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_gettype">push_gettype</A></B><DD>Executes TI-Basic 'getType' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_identity_mat">push_identity_mat</A></B><DD>Executes TI-Basic 'identity' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_im">push_im</A></B><DD>Executes TI-Basic 'imag' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_instring">push_instring</A></B><DD>Executes TI-Basic 'inString' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_integer_gcd">push_integer_gcd</A></B><DD>Executes TI-Basic 'gcd' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_integer_lcm">push_integer_lcm</A></B><DD>Executes TI-Basic 'lcm' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_integer_part">push_integer_part</A></B><DD>Executes TI-Basic 'iPart' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_integer_quotient">push_integer_quotient</A></B><DD>Executes TI-Basic 'intDiv' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_integer_remainder">push_integer_remainder</A></B><DD>Executes TI-Basic 'remain' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_is_prime">push_is_prime</A></B><DD>Executes TI-Basic 'isPrime' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_left">push_left</A></B><DD>Executes TI-Basic 'left' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_lim">push_lim</A></B><DD>Executes TI-Basic 'limit' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_list_to_mat">push_list_to_mat</A></B><DD>Executes TI-Basic 'list>mat' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_ln">push_ln</A></B><DD>Executes TI-Basic 'ln' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_log10">push_log10</A></B><DD>Executes TI-Basic 'log' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_mat_to_list">push_mat_to_list</A></B><DD>Executes TI-Basic 'mat>list' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_matnorm">push_matnorm</A></B><DD>Executes TI-Basic 'matNorm' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_max1">push_max1</A></B><DD>Executes TI-Basic 'max' function for a single matrix.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_max2">push_max2</A></B><DD>Executes TI-Basic 'max' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_max">push_max</A></B><DD>Executes TI-Basic 'fMax' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_mean">push_mean</A></B><DD>Executes TI-Basic 'mean' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_median">push_median</A></B><DD>Executes TI-Basic 'median' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_mid">push_mid</A></B><DD>Executes TI-Basic 'mid' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_min1">push_min1</A></B><DD>Executes TI-Basic 'min' function for a single matrix.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_min2">push_min2</A></B><DD>Executes TI-Basic 'min' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_min">push_min</A></B><DD>Executes TI-Basic 'fMin' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_mod">push_mod</A></B><DD>Executes TI-Basic 'mod' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_mrow">push_mrow</A></B><DD>Executes TI-Basic 'mRow' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_mrowadd">push_mrowadd</A></B><DD>Executes TI-Basic 'mRowAdd' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_newlist">push_newlist</A></B><DD>Executes TI-Basic 'newList' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_newmat">push_newmat</A></B><DD>Executes TI-Basic 'newMat' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_nint">push_nint</A></B><DD>Executes TI-Basic 'nInt' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_nsolve">push_nsolve</A></B><DD>Executes TI-Basic 'nSolve' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_nth_derivative">push_nth_derivative</A></B><DD>Executes TI-Basic '<FONT FACE="Symbol">&#182;</FONT>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_numerator">push_numerator</A></B><DD>Executes TI-Basic 'getNum' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_ord">push_ord</A></B><DD>Executes TI-Basic 'ord' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_part">push_part</A></B><DD>Executes TI-Basic 'part' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_perm">push_perm</A></B><DD>Executes TI-Basic 'nPr' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_phase">push_phase</A></B><DD>Executes TI-Basic 'R>P<FONT FACE="Symbol">q</FONT>' function for a complex number (?).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_polar_vector">push_polar_vector</A></B><DD>Executes the simplification of a vector written under polar form.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_prodlist">push_prodlist</A></B><DD>Executes TI-Basic 'product' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_propfrac">push_propfrac</A></B><DD>Executes TI-Basic 'propFrac' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_pttest">push_pttest</A></B><DD>Executes TI-Basic 'ptTest' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_pxltest">push_pxltest</A></B><DD>Executes TI-Basic 'pxlTest' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_r_cis">push_r_cis</A></B><DD>Executes TI-Basic 'R>P<FONT FACE="Symbol">q</FONT>' function (?).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_rand">push_rand</A></B><DD>Executes TI-Basic 'rand' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_randmat">push_randmat</A></B><DD>Executes TI-Basic 'randMat' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_randnorm">push_randnorm</A></B><DD>Executes TI-Basic 'randNorm' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_randpoly">push_randpoly</A></B><DD>Executes TI-Basic 'randPoly' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_re">push_re</A></B><DD>Executes TI-Basic 'real' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_rec_to_angle">push_rec_to_angle</A></B><DD>Executes TI-Basic 'R>P<FONT FACE="Symbol">q</FONT>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_red_row_ech">push_red_row_ech</A></B><DD>Executes TI-Basic 'rref' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_right">push_right</A></B><DD>Executes TI-Basic 'right' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_rotate">push_rotate</A></B><DD>Executes TI-Basic 'rotate' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_round">push_round</A></B><DD>Executes TI-Basic 'round' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_row_echelon">push_row_echelon</A></B><DD>Executes TI-Basic 'ref' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_rowadd">push_rowadd</A></B><DD>Executes TI-Basic 'rowAdd' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_rowdim">push_rowdim</A></B><DD>Executes TI-Basic 'rowDim' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_rownorm">push_rownorm</A></B><DD>Executes TI-Basic 'rowNorm' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_rowswap">push_rowswap</A></B><DD>Executes TI-Basic 'rowSwap' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sec">push_sec</A></B><DD>Executes TI-Basic 'sec' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sech">push_sech</A></B><DD>Executes TI-Basic 'sech' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sequence">push_sequence</A></B><DD>Executes TI-Basic 'seq' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_setfold">push_setfold</A></B><DD>Executes TI-Basic 'setFold' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_setgraph">push_setgraph</A></B><DD>Executes TI-Basic 'setGraph' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_setmode">push_setmode</A></B><DD>Executes TI-Basic 'setMode' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_settable">push_settable</A></B><DD>Executes TI-Basic 'setTable' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_shift">push_shift</A></B><DD>Executes TI-Basic 'shift' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sign">push_sign</A></B><DD>Executes TI-Basic 'sign' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_simult">push_simult</A></B><DD>Executes TI-Basic 'simult' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sin2">push_sin2</A></B><DD>Executes TI-Basic 'sin' and 'cos' functions.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sin">push_sin</A></B><DD>Executes TI-Basic 'sin' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sinh">push_sinh</A></B><DD>Executes TI-Basic 'sinh' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_solve">push_solve</A></B><DD>Executes TI-Basic 'solve' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_spher_vector">push_spher_vector</A></B><DD>Executes the simplification of a vector written under spherical form.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sqrt">push_sqrt</A></B><DD>Executes TI-Basic '<FONT FACE="Symbol">&#214;</FONT>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_stddev">push_stddev</A></B><DD>Executes TI-Basic 'stdDev' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_str_to_expr">push_str_to_expr</A></B><DD>Executes TI-Basic 'expr' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_string">push_string</A></B><DD>Executes TI-Basic 'string' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_submat">push_submat</A></B><DD>Executes TI-Basic 'subMat' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_sumlist">push_sumlist</A></B><DD>Executes TI-Basic 'sum' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_summation">push_summation</A></B><DD>Executes TI-Basic '<FONT FACE="Symbol">S</FONT>' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_switch">push_switch</A></B><DD>Executes TI-Basic 'switch' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_tan">push_tan</A></B><DD>Executes TI-Basic 'tan' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_tanh">push_tanh</A></B><DD>Executes TI-Basic 'tanh' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_trig_collect">push_trig_collect</A></B><DD>Executes TI-Basic 'tCollect' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_trig_expand">push_trig_expand</A></B><DD>Executes TI-Basic 'tExpand' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_unitv">push_unitv</A></B><DD>Executes TI-Basic 'unitV' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_variance">push_variance</A></B><DD>Executes TI-Basic 'variance' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_when">push_when</A></B><DD>Executes TI-Basic 'when' function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#push_zeros">push_zeros</A></B><DD>Executes TI-Basic 'zeros' function.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="estack.html#primary_tag_list">primary_tag_list</A></B><DD>Array of structures containing information on <A HREF="estack.html#Tags">Tags</A>.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="estack.html#NULL_INDEX">NULL_INDEX</A></B><DD>Describes an empty expression stack index.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="estack.html#CESI">CESI</A></B><DD>Represents a pointer to a constant expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESI">ESI</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESQ">ESQ</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#EStackIndex">EStackIndex</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#Quantum">Quantum</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#SYM_STR">SYM_STR</A></B><DD>Represents a pointer to the terminating zero byte of a string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#tag_info">tag_info</A></B><DD>Structure containing information about AMS EStack tags (<A HREF="estack.html#Tags">Tags</A>, <A HREF="estack.html#ExtTags">ExtTags</A>).</DL>
+<P><B>Note:</B> All functions from this header file get parameters from the expression stack, so this
+header file must be used in conjunction with <A HREF="estack.html">estack.h</A>. You need to
+learn about the usage of the expression stack before using any function from this header file.
+All functions defined here execute particular TI-Basic functions. They sometimes
+may be useful to perform some operations which cannot be implemented in C easily. But note that
+if you use functions from this header file too much, this will decrease the performance of your
+program significantly. In an extreme case, it will in fact decrease to that of a TI-Basic program! So
+use functions from this header file only if it is really necessary. Also note that these
+functions act exactly like the appropriate TI-Basic commands (including throwing errors if
+something is wrong), so the use of an error tracking mechanism from the <A HREF="error.html">error.h</A>
+header file is highly recommended.</P>
+
+<P>See also: <A HREF="bascmd.html">bascmd.h</A>, <A HREF="basop.html">basop.h</A></P>
+<HR>
+<H3><A NAME="did_push_anti_deriv"><U>did_push_anti_deriv</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> did_push_anti_deriv(<A HREF="estack.html#CESI">CESI</A> expr, <A HREF="estack.html#CESI">CESI</A> var, <B><A HREF="keywords.html#short">short</A></B> closed_form_only_flag);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<FONT FACE="Symbol">&#242;</FONT>' function.</B></P>
+
+<P>did_push_anti_deriv integrates 'expr' with respect to variable 'var'.
+If the closed-form-only flag is TRUE, it pushes a result to the estack only if it can find a closed form integral.
+It returns TRUE if it pushed a result to the estack, FALSE otherwise.</P>
+
+<HR>
+<H3><A NAME="did_push_series"><U>did_push_series</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> did_push_series(<A HREF="estack.html#CESI">CESI</A> expr, <A HREF="estack.html#CESI">CESI</A> var, <A HREF="estack.html#CESI">CESI</A> exporder, <A HREF="estack.html#CESI">CESI</A> exppt, <B><A HREF="keywords.html#short">short</A></B> push_only_first_nonzero_term_flag);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'taylor' function.</B></P>
+
+<P>did_push_series does a Taylor series expansion of 'expr' with respect to variable 'var' about the point 'exppt' to order 'exporder'.
+If push_only_first_nonzero_term_flag is TRUE, it pushes only the first nonzero term.
+It returns TRUE if it pushed a result (not containing a SERIES_TAG) to the estack, FALSE otherwise.</P>
+
+<HR>
+<H3><A NAME="push_1st_derivative"><U>push_1st_derivative</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_1st_derivative (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<FONT FACE="Symbol">&#182;</FONT>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_abs"><U>push_abs</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_abs (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'abs' function.</B></P>
+
+<HR>
+<H3><A NAME="push_acos"><U>push_acos</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_acos (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cos<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_acosh"><U>push_acosh</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_acosh (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cosh<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_acot"><U>push_acot</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_acot (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cot<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_acoth"><U>push_acoth</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_acoth (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'coth<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_acsc"><U>push_acsc</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_acsc (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'csc<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_acsch"><U>push_acsch</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_acsch (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'csch<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_approx"><U>push_approx</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_approx (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'approx' function.</B></P>
+
+<HR>
+<H3><A NAME="push_arclen"><U>push_arclen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_arclen (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'arcLen' function.</B></P>
+
+<HR>
+<H3><A NAME="push_asec"><U>push_asec</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_asec (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sec<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_asech"><U>push_asech</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_asech (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sech<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_asin"><U>push_asin</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_asin (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sin<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_asinh"><U>push_asinh</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_asinh (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sinh<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_atan"><U>push_atan</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_atan (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'tan<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_atanh"><U>push_atanh</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_atanh (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'tanh<SUP>-1</SUP>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_augment"><U>push_augment</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_augment (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'augment' function.</B></P>
+
+<HR>
+<H3><A NAME="push_ceiling"><U>push_ceiling</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_ceiling (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'ceiling' function.</B></P>
+
+<HR>
+<H3><A NAME="push_char"><U>push_char</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_char (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'char' function.</B></P>
+
+<HR>
+<H3><A NAME="push_coldim"><U>push_coldim</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_coldim (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'colDim' function.</B></P>
+
+<HR>
+<H3><A NAME="push_colnorm"><U>push_colnorm</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_colnorm (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'colNorm' function.</B></P>
+
+<HR>
+<H3><A NAME="push_comb"><U>push_comb</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_comb (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'nCr' function.</B></P>
+
+<HR>
+<H3><A NAME="push_comdenom"><U>push_comdenom</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_comdenom (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'comDenom' function.</B></P>
+
+<HR>
+<H3><A NAME="push_conj"><U>push_conj</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_conj (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'conj' function.</B></P>
+
+<HR>
+<H3><A NAME="push_cos"><U>push_cos</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_cos (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cos' function.</B></P>
+
+<HR>
+<H3><A NAME="push_cosh"><U>push_cosh</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_cosh (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cosh' function.</B></P>
+
+<HR>
+<H3><A NAME="push_cot"><U>push_cot</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_cot (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cot' function.</B></P>
+
+<HR>
+<H3><A NAME="push_coth"><U>push_coth</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_coth (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'coth' function.</B></P>
+
+<HR>
+<H3><A NAME="push_cross_product"><U>push_cross_product</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_cross_product (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'crossP' function.</B></P>
+
+<HR>
+<H3><A NAME="push_csc"><U>push_csc</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_csc (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'csc' function.</B></P>
+
+<HR>
+<H3><A NAME="push_csch"><U>push_csch</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_csch (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'csch' function.</B></P>
+
+<HR>
+<H3><A NAME="push_csolve"><U>push_csolve</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_csolve (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cSolve' function.</B></P>
+
+<P>Please see <A HREF="#push_czeros">push_czeros</A> entry for an important note for all solver ROM calls.</P>
+
+<HR>
+<H3><A NAME="push_cumsum"><U>push_cumsum</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_cumsum (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cumSum' function.</B></P>
+
+<HR>
+<H3><A NAME="push_cylin_vector"><U>push_cylin_vector</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_cylin_vector(<A HREF="estack.html#ESI">ESI</A> mat);</TD></TR></TABLE></P>
+<P><B>Executes the simplification of a vector written under cylindrical form.</B></P>
+
+<P>The matrix pointed to by <I>mat</I> must be a one-line, three-column matrix, and the third element of the matrix must be free of tag <A HREF="estack.html#LIST_TAG">LIST_TAG</A>.</P>
+
+<P>See also: <A HREF="#push_polar_vector">push_polar_vector</A>, <A HREF="#push_spher_vector">push_spher_vector</A></P>
+<HR>
+<H3><A NAME="push_czeros"><U>push_czeros</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_czeros (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'cZeros' function.</B></P>
+
+<P><B>Important note</B> for all solver ROM calls:
+<BR>
+<BR>
+When czeros( ) is executed on the command line, the OS provides special treatment for the specified "variable of interest". Part of the "special treatment" is temporarily to promote the "variable of interest" to the top of the ordering. Directly calling push_czeros( ) bypasses this special treatment. This affects solver ROM calls such as push_zeros, push_solve, push_czeros, push_csolve, push_min, push_max, and push_desolve.
+<BR>
+<BR>
+For example, the following code for attempting to find an inverse of sqrt(x/(1-x)) gives no solutions:
+</P>
+<PRE>
+ push_quantum(X_VAR_TAG);
+ var = top_estack;
+ push_difference(Integer1Index,var);
+ expr = top_estack;
+ push_quantum(X_VAR_TAG);
+ divide_top(expr);
+ push_sqrt(top_estack);	//sqrt(x/(1-x))
+ push_zstr("solveaux"); top_estack--;
+ solvevar = top_estack;	//Auxiliary solve variable
+ push_substitute_simplify(expr,var,solvevar);
+ push_difference(top_estack,var);    //(expr|x=solveaux)-x
+ push_czeros(top_estack,solvevar);
+</PRE>
+<P>
+The simplest and most reliable way around this is to do:
+</P>
+<PRE>
+ push_expression(var);
+ push_expression(expr);
+ push_quantum(CZEROS_TAG);
+ push_simplify(top_estack);
+</PRE>
+<P>
+The above information was obtained from TI.</P>
+
+<HR>
+<H3><A NAME="push_def_int"><U>push_def_int</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_def_int (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<FONT FACE="Symbol">&#242;</FONT>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_denominator"><U>push_denominator</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_denominator (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'getDenom' function.</B></P>
+
+<HR>
+<H3><A NAME="push_dense_poly_eval"><U>push_dense_poly_eval</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_dense_poly_eval (<A HREF="estack.html#ESI">ESI</A> coeflist, <A HREF="estack.html#ESI">ESI</A> expr);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'polyEval(' function.</B></P>
+
+<P>The list 'coeflist' represents the coefficients of a polynomial in descending order. push_dense_poly_eval pushes the polynomial evaluated at 'expr'. 'expr' need not be a number, or even a variable.</P>
+
+<HR>
+<H3><A NAME="push_desolve"><U>push_desolve</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_desolve (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'deSolve' function.</B></P>
+
+<P>Please see <A HREF="#push_czeros">push_czeros</A> entry for an important note for all solver ROM calls.</P>
+
+<HR>
+<H3><A NAME="push_determinant"><U>push_determinant</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_determinant (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'det' function.</B></P>
+
+<HR>
+<H3><A NAME="push_diag"><U>push_diag</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_diag (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'diag' function.</B></P>
+
+<HR>
+<H3><A NAME="push_dimension"><U>push_dimension</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_dimension (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'dim' function.</B></P>
+
+<HR>
+<H3><A NAME="push_div_dif_1c"><U>push_div_dif_1c</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_div_dif_1c (<A HREF="estack.html#ESI">ESI</A> expr, <A HREF="estack.html#ESI">ESI</A> var, <A HREF="estack.html#ESI">ESI</A> h);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'nDeriv(' function.</B></P>
+
+<P>push_div_dif_1c pushes to the estack the 1st-order centered or symmetric difference of 'expr' with respect to variable 'var' with stepsize 'h'. You can obtain higher-order differences by repeated application, just as you can with derivatives.</P>
+
+<P>See also: <A HREF="#push_div_dif_1f">push_div_dif_1f</A></P>
+<HR>
+<H3><A NAME="push_div_dif_1f"><U>push_div_dif_1f</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_div_dif_1f (<A HREF="estack.html#ESI">ESI</A> expr, <A HREF="estack.html#ESI">ESI</A> var, <A HREF="estack.html#ESI">ESI</A> h);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'avgRC(' function.</B></P>
+
+<P>push_div_dif_1f pushes to the estack the 1st-order forward difference of 'expr' with respect to variable 'var' with stepsize 'h'. You can obtain higher-order differences by repeated application, just as you can with derivatives.</P>
+
+<P>See also: <A HREF="#push_div_dif_1c">push_div_dif_1c</A></P>
+<HR>
+<H3><A NAME="push_dotproduct"><U>push_dotproduct</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_dotproduct (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'dotP' function.</B></P>
+
+<HR>
+<H3><A NAME="push_eigvc"><U>push_eigvc</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_eigvc (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'eigVc' function.</B></P>
+
+<HR>
+<H3><A NAME="push_eigvl"><U>push_eigvl</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_eigvl (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'eigVl' function.</B></P>
+
+<HR>
+<H3><A NAME="push_exp"><U>push_exp</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_exp (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<I>e</I>^' function.</B></P>
+
+<HR>
+<H3><A NAME="push_expand"><U>push_expand</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_expand (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <B><A HREF="keywords.html#short">short</A></B>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'expand' function.</B></P>
+
+<HR>
+<H3><A NAME="push_extended_prod"><U>push_extended_prod</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_extended_prod (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<FONT FACE="Symbol">&#213;</FONT>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_factor"><U>push_factor</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_factor (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <B><A HREF="keywords.html#short">short</A></B>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'factor' function.</B></P>
+
+<HR>
+<H3><A NAME="push_floor"><U>push_floor</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_floor (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'floor' function.</B></P>
+
+<HR>
+<H3><A NAME="push_format"><U>push_format</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_format (<A HREF="estack.html#ESI">ESI</A>, <A HREF="estack.html#ESI">ESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'format' function.</B></P>
+
+<HR>
+<H3><A NAME="push_fractional_part"><U>push_fractional_part</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_fractional_part (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'fPart' function.</B></P>
+
+<HR>
+<H3><A NAME="push_gcd_numbers"><U>push_gcd_numbers</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_gcd_numbers (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'gcd' function.</B></P>
+
+<HR>
+<H3><A NAME="push_getfold"><U>push_getfold</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_getfold (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'getFold' function.</B></P>
+
+<HR>
+<H3><A NAME="push_getkey"><U>push_getkey</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_getkey (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'getKey' function.</B></P>
+
+<P>push_getkey pushes tke key code of a pressed key to the expression stack. It pushes 0 if
+no key is pressed. The pushed value is exactly the same as a value returned from the TI-Basic
+getKey function (it is mainly the same value as returned from <A HREF="kbd.html#ngetchx">ngetchx</A>,
+but not always: for example, codes for arrow keys are different).</P>
+
+<HR>
+<H3><A NAME="push_getmode"><U>push_getmode</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_getmode (<A HREF="estack.html#CESI">CESI</A> ModeNameString);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'getMode' function.</B></P>
+
+<P>push_getmode assumes that <I>ModeNameString</I> points to the tag of a string expression
+(usually <A HREF="estack.html#STR_TAG">STR_TAG</A>). If it points to a specific mode name
+string, it pushes a new string containing the current setting for that mode to the expressions
+stack. See <A HREF="#push_setmode">push_setmode</A> for a list of legal mode name strings.
+<BR><BR>
+If the mode name string is "ALL", push_getmode pushes a list of string pairs containing the
+settings of all the modes to the expression stack. So, you can restore all mode settings
+later at once using <A HREF="#push_setmode">push_setmode</A>.</P>
+
+<HR>
+<H3><A NAME="push_gettype"><U>push_gettype</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_gettype (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'getType' function.</B></P>
+
+<HR>
+<H3><A NAME="push_identity_mat"><U>push_identity_mat</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_identity_mat (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'identity' function.</B></P>
+
+<HR>
+<H3><A NAME="push_im"><U>push_im</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_im (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'imag' function.</B></P>
+
+<HR>
+<H3><A NAME="push_instring"><U>push_instring</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_instring (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'inString' function.</B></P>
+
+<HR>
+<H3><A NAME="push_integer_gcd"><U>push_integer_gcd</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_integer_gcd (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'gcd' function.</B></P>
+
+<HR>
+<H3><A NAME="push_integer_lcm"><U>push_integer_lcm</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_integer_lcm (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'lcm' function.</B></P>
+
+<HR>
+<H3><A NAME="push_integer_part"><U>push_integer_part</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_integer_part (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'iPart' function.</B></P>
+
+<HR>
+<H3><A NAME="push_integer_quotient"><U>push_integer_quotient</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_integer_quotient (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'intDiv' function.</B></P>
+
+<HR>
+<H3><A NAME="push_integer_remainder"><U>push_integer_remainder</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_integer_remainder (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'remain' function.</B></P>
+
+<HR>
+<H3><A NAME="push_is_prime"><U>push_is_prime</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_is_prime (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'isPrime' function.</B></P>
+
+<HR>
+<H3><A NAME="push_left"><U>push_left</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_left (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'left' function.</B></P>
+
+<HR>
+<H3><A NAME="push_lim"><U>push_lim</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_lim (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'limit' function.</B></P>
+
+<HR>
+<H3><A NAME="push_list_to_mat"><U>push_list_to_mat</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_list_to_mat (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'list>mat' function.</B></P>
+
+<HR>
+<H3><A NAME="push_ln"><U>push_ln</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_ln (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'ln' function.</B></P>
+
+<HR>
+<H3><A NAME="push_log10"><U>push_log10</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_log10 (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'log' function.</B></P>
+
+<HR>
+<H3><A NAME="push_mat_to_list"><U>push_mat_to_list</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_mat_to_list (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'mat>list' function.</B></P>
+
+<HR>
+<H3><A NAME="push_matnorm"><U>push_matnorm</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_matnorm (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'matNorm' function.</B></P>
+
+<HR>
+<H3><A NAME="push_max1"><U>push_max1</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_max1 (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'max' function for a single matrix.</B></P>
+
+<HR>
+<H3><A NAME="push_max2"><U>push_max2</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_max2 (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'max' function.</B></P>
+
+<HR>
+<H3><A NAME="push_max"><U>push_max</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_max (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'fMax' function.</B></P>
+
+<P>Please see <A HREF="#push_czeros">push_czeros</A> entry for an important note for all solver ROM calls.</P>
+
+<HR>
+<H3><A NAME="push_mean"><U>push_mean</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_mean (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'mean' function.</B></P>
+
+<HR>
+<H3><A NAME="push_median"><U>push_median</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_median (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'median' function.</B></P>
+
+<HR>
+<H3><A NAME="push_mid"><U>push_mid</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_mid (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'mid' function.</B></P>
+
+<HR>
+<H3><A NAME="push_min1"><U>push_min1</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_min1 (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'min' function for a single matrix.</B></P>
+
+<HR>
+<H3><A NAME="push_min2"><U>push_min2</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_min2 (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'min' function.</B></P>
+
+<HR>
+<H3><A NAME="push_min"><U>push_min</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_min (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'fMin' function.</B></P>
+
+<P>Please see <A HREF="#push_czeros">push_czeros</A> entry for an important note for all solver ROM calls.</P>
+
+<HR>
+<H3><A NAME="push_mod"><U>push_mod</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_mod (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'mod' function.</B></P>
+
+<HR>
+<H3><A NAME="push_mrow"><U>push_mrow</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_mrow (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'mRow' function.</B></P>
+
+<HR>
+<H3><A NAME="push_mrowadd"><U>push_mrowadd</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_mrowadd (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'mRowAdd' function.</B></P>
+
+<HR>
+<H3><A NAME="push_newlist"><U>push_newlist</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_newlist (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'newList' function.</B></P>
+
+<HR>
+<H3><A NAME="push_newmat"><U>push_newmat</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_newmat (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'newMat' function.</B></P>
+
+<HR>
+<H3><A NAME="push_nint"><U>push_nint</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_nint (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'nInt' function.</B></P>
+
+<HR>
+<H3><A NAME="push_nsolve"><U>push_nsolve</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_nsolve (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'nSolve' function.</B></P>
+
+<HR>
+<H3><A NAME="push_nth_derivative"><U>push_nth_derivative</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_nth_derivative (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<FONT FACE="Symbol">&#182;</FONT>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_numerator"><U>push_numerator</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_numerator (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'getNum' function.</B></P>
+
+<HR>
+<H3><A NAME="push_ord"><U>push_ord</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_ord (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'ord' function.</B></P>
+
+<HR>
+<H3><A NAME="push_part"><U>push_part</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_part ();</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'part' function.</B></P>
+
+<HR>
+<H3><A NAME="push_perm"><U>push_perm</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_perm (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'nPr' function.</B></P>
+
+<HR>
+<H3><A NAME="push_phase"><U>push_phase</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_phase (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'R>P<FONT FACE="Symbol">q</FONT>' function for a complex number (?).</B></P>
+
+<HR>
+<H3><A NAME="push_polar_vector"><U>push_polar_vector</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_polar_vector(<A HREF="estack.html#ESI">ESI</A> mat);</TD></TR></TABLE></P>
+<P><B>Executes the simplification of a vector written under polar form.</B></P>
+
+<P>The matrix pointed to by <I>mat</I> must be a one-line, two-column matrix.</P>
+
+<P>See also: <A HREF="#push_cylin_vector">push_cylin_vector</A>, <A HREF="#push_spher_vector">push_spher_vector</A></P>
+<HR>
+<H3><A NAME="push_prodlist"><U>push_prodlist</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_prodlist (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'product' function.</B></P>
+
+<HR>
+<H3><A NAME="push_propfrac"><U>push_propfrac</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_propfrac (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'propFrac' function.</B></P>
+
+<HR>
+<H3><A NAME="push_pttest"><U>push_pttest</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_pttest (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'ptTest' function.</B></P>
+
+<HR>
+<H3><A NAME="push_pxltest"><U>push_pxltest</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_pxltest (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'pxlTest' function.</B></P>
+
+<HR>
+<H3><A NAME="push_r_cis"><U>push_r_cis</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_r_cis (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'R>P<FONT FACE="Symbol">q</FONT>' function (?).</B></P>
+
+<HR>
+<H3><A NAME="push_rand"><U>push_rand</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_rand (<A HREF="estack.html#CESI">CESI</A> Range);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'rand' function.</B></P>
+
+<P>push_rand pushes a random number on the expression stack. <I>Range</I> should
+point either to <A HREF="estack.html#END_TAG">END_TAG</A>, or to an
+integer expression. If <I>Range</I> points to
+<A HREF="estack.html#END_TAG">END_TAG</A>, push_rand pushes a floating
+point number between 0 and 1. If <I>Range</I> points to an integer value
+<I>n</I>, push_rand pushes an integer number between 1 and
+<I>n</I> if <I>n</I> is positive, or between -<I>n</I> and -1 if <I>n</I> is
+negative.
+<BR><BR>
+<B>Note:</B> This function calls the TI-Basic random number generator, so it
+has nothing to do with the random number generator from
+<A HREF="stdlib.html">stdlib.h</A> (i.e. with the functions
+<A HREF="stdlib.html#rand">rand</A>,
+<A HREF="stdlib.html#random">random</A>,
+<A HREF="stdlib.html#randomize">randomize</A>, and
+<A HREF="stdlib.html#srand">srand</A>).
+You can use the function
+<A HREF="bascmd.html#cmd_randseed">cmd_randseed</A> (instead of
+<A HREF="stdlib.html#srand">srand</A>) to set the seed for the TI-Basic
+random number generator. Note also that push_rand is much slower than the
+random number generator implemented in
+<A HREF="stdlib.html">stdlib.h</A>.</P>
+
+<P>See also: <A HREF="bascmd.html#cmd_randseed">cmd_randseed</A>, <A HREF="stdlib.html#rand">rand</A>, <A HREF="stdlib.html#random">random</A></P>
+<HR>
+<H3><A NAME="push_randmat"><U>push_randmat</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_randmat (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'randMat' function.</B></P>
+
+<HR>
+<H3><A NAME="push_randnorm"><U>push_randnorm</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_randnorm (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'randNorm' function.</B></P>
+
+<HR>
+<H3><A NAME="push_randpoly"><U>push_randpoly</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_randpoly (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'randPoly' function.</B></P>
+
+<HR>
+<H3><A NAME="push_re"><U>push_re</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_re (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'real' function.</B></P>
+
+<HR>
+<H3><A NAME="push_rec_to_angle"><U>push_rec_to_angle</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_rec_to_angle (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'R>P<FONT FACE="Symbol">q</FONT>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_red_row_ech"><U>push_red_row_ech</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_red_row_ech (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'rref' function.</B></P>
+
+<HR>
+<H3><A NAME="push_right"><U>push_right</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_right (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'right' function.</B></P>
+
+<HR>
+<H3><A NAME="push_rotate"><U>push_rotate</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_rotate (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'rotate' function.</B></P>
+
+<HR>
+<H3><A NAME="push_round"><U>push_round</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_round (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'round' function.</B></P>
+
+<HR>
+<H3><A NAME="push_row_echelon"><U>push_row_echelon</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_row_echelon (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'ref' function.</B></P>
+
+<HR>
+<H3><A NAME="push_rowadd"><U>push_rowadd</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_rowadd (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'rowAdd' function.</B></P>
+
+<HR>
+<H3><A NAME="push_rowdim"><U>push_rowdim</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_rowdim (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'rowDim' function.</B></P>
+
+<HR>
+<H3><A NAME="push_rownorm"><U>push_rownorm</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_rownorm (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'rowNorm' function.</B></P>
+
+<HR>
+<H3><A NAME="push_rowswap"><U>push_rowswap</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_rowswap (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'rowSwap' function.</B></P>
+
+<HR>
+<H3><A NAME="push_sec"><U>push_sec</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sec (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sec' function.</B></P>
+
+<HR>
+<H3><A NAME="push_sech"><U>push_sech</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.08 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sech (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sech' function.</B></P>
+
+<HR>
+<H3><A NAME="push_sequence"><U>push_sequence</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sequence (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'seq' function.</B></P>
+
+<HR>
+<H3><A NAME="push_setfold"><U>push_setfold</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_setfold (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'setFold' function.</B></P>
+
+<HR>
+<H3><A NAME="push_setgraph"><U>push_setgraph</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_setgraph (<A HREF="estack.html#CESI">CESI</A> ModeNameString, <A HREF="estack.html#CESI">CESI</A> SettingString);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'setGraph' function.</B></P>
+
+<P>push_setgraph assumes that <I>ModeNameString</I> points to the tag of a string expression
+(usually <A HREF="estack.html#STR_TAG">STR_TAG</A>). It
+sets the appropriate Graph mode to the new string pointed to by <I>SettingString</I> (it should
+also point to the string tag), and pushes the previous setting string of that mode to the
+expression stack. Possible mode strings and settings strings are listed in the table below:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD>Mode name</TD><TD>Possible settings</TD></TR>
+<TR><TD VALIGN="TOP">"Coordinates"</TD><TD>"RECT", "POLAR", "OFF"</TD></TR>
+<TR><TD VALIGN="TOP">"Graph Order"</TD><TD>"SEQ", "SIMUL" (<I>not available in SEQUENCE, 3D or DIFF EQUATIONS graph mode</I>)</TD></TR>
+<TR><TD VALIGN="TOP">"Grid"</TD><TD>"OFF", "ON" (<I>not available in 3D graph mode</I>)</TD></TR>
+<TR><TD VALIGN="TOP">"Axes"</TD><TD>"OFF", "ON" (<I>not 3D graph mode</I>)<BR>"OFF", "AXES", "BOX" (<I>3D graph mode</I>)</TD></TR>
+<TR><TD VALIGN="TOP">"Leading&nbsp;Cursor"</TD><TD>"OFF", "ON" (<I>not available in 3D graph mode</I>)</TD></TR>
+<TR><TD VALIGN="TOP">"Labels"</TD><TD>"OFF", "ON"</TD></TR>
+<TR><TD VALIGN="TOP">"Style"</TD><TD>"WIRE FRAME", "HIDDEN SURFACE", "CONTOUR LEVELS", "WIRE AND CONTOUR", "IMPLICIT PLOT" (<I>applies only to 3D graph mode</I>)</TD></TR>
+<TR><TD VALIGN="TOP">"Seq Axes"</TD><TD>"TIME", "WEB", "U1-VS-U2" (<I>applies only to SEQUENCE graph mode</I>)</TD></TR>
+<TR><TD VALIGN="TOP">"DE Axes"</TD><TD>"TIME", "T-VS-Y'", "Y-VS-Y'", "Y1-VS-Y2", "Y1-VS-Y2'", "Y1'-VS-Y2'" (<I>applies only to DIFF EQUATIONS graph mode</I>)</TD></TR>
+<TR><TD VALIGN="TOP">"Solution&nbsp;Method"</TD><TD>"RK", "EULER" (<I>applies only to DIFF EQUATIONS graph mode</I>)</TD></TR>
+<TR><TD VALIGN="TOP">"Fields"</TD><TD>"SLPFLD", "DIRFLD", "FLDOFF" (<I>applies only to DIFF EQUATIONS graph mode</I>)</TD></TR>
+</TABLE></P>
+
+<HR>
+<H3><A NAME="push_setmode"><U>push_setmode</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_setmode (<A HREF="estack.html#CESI">CESI</A> ModeNameStringOrList, <A HREF="estack.html#CESI">CESI</A> SettingString);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'setMode' function.</B></P>
+
+<P>push_setmode assumes that <I>ModeNameStringOrList</I> points to the tag of a string expression
+(usually to <A HREF="estack.html#STR_TAG">STR_TAG</A>), or to a list expression (usually to
+<A HREF="estack.html#LIST_TAG">LIST_TAG</A>). If it points to a string,
+push_setmode sets the appropriate mode to the new string pointed to by <I>SettingString</I> (it should
+also point to the string tag), and pushes the previous setting string of that mode to the
+expression stack. Possible mode strings and settings strings are listed in the table below:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD>Mode name</TD><TD>Possible settings</TD></TR>
+<TR><TD VALIGN="TOP">"Graph"</TD><TD>"FUNCTION", "PARAMETRIC", "POLAR", "SEQUENCE", "3D", "DIFF EQUATIONS"</TD></TR>
+<TR><TD VALIGN="TOP">"Display Digits"</TD><TD>"FIX 0", "FIX 1", ..., "FIX 12", "FLOAT 1", "FLOAT 2", ..., "FLOAT 12"</TD></TR>
+<TR><TD VALIGN="TOP">"Angle"</TD><TD>"RADIAN", "DEGREE"</TD></TR>
+<TR><TD VALIGN="TOP">"Exponential&nbsp;Format"</TD><TD>"NORMAL", "SCIENTIFIC", "ENGINEERING"</TD></TR>
+<TR><TD VALIGN="TOP">"Complex Format"</TD><TD>"REAL", "RECTANGULAR", "POLAR"</TD></TR>
+<TR><TD VALIGN="TOP">"Vector Format"</TD><TD>"RECTANGULAR", "CYLINDRICAL", "SPHERICAL"</TD></TR>
+<TR><TD VALIGN="TOP">"Pretty Print"</TD><TD>"OFF", "ON"</TD></TR>
+<TR><TD VALIGN="TOP">"Split Screen"</TD><TD>"FULL", "TOP-BOTTOM", "LEFT-RIGHT"</TD></TR>
+<TR><TD VALIGN="TOP">"Split 1 App"</TD><TD>"Home", "Y=Editor", "Window Editor", "Graph", "Table", "Data/Matrix Editor", "Program Editor", "Text Editor", "Numeric Solver"</TD></TR>
+<TR><TD VALIGN="TOP">"Split 2 App"</TD><TD>"Home", "Y=Editor", "Window Editor", "Graph", "Table", "Data/Matrix Editor", "Program Editor", "Text Editor", "Numeric Solver"</TD></TR>
+<TR><TD VALIGN="TOP">"Number of Graphs"</TD><TD>"1", "2"</TD></TR>
+<TR><TD VALIGN="TOP">"Graph2"</TD><TD>"FUNCTION", "PARAMETRIC", "POLAR", "SEQUENCE", "3D", "DIFF EQUATIONS"</TD></TR>
+<TR><TD VALIGN="TOP">"Exact/Approx"</TD><TD>"AUTO", "EXACT", "APPROXIMATE"</TD></TR>
+<TR><TD VALIGN="TOP">"Base"</TD><TD>"DEC", "HEX", "BIN"</TD></TR>
+</TABLE>
+<BR>
+If <I>ModeNameStringOrList</I> points to a list, this list is assumed to contain pairs of keyword
+strings. push_setmode will then set them all at once (<I>SettingString</I> is ignored in this
+case). This is recommended for multiple mode changes.
+<BR><BR>
+<B>Note:</B> push_setmode may cause switching of the current application. See the <A HREF="events.html">events.h</A>
+header file for more info.</P>
+
+<HR>
+<H3><A NAME="push_settable"><U>push_settable</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_settable (<A HREF="estack.html#CESI">CESI</A> ModeNameString, <A HREF="estack.html#CESI">CESI</A> SettingString);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'setTable' function.</B></P>
+
+<P>push_settable assumes that <I>ModeNameString</I> points to the tag of a string expression
+(usually <A HREF="estack.html#STR_TAG">STR_TAG</A>). It
+sets the appropriate table parameter to the new string pointed to by <I>SettingString</I> (it should
+also point to the string tag), and pushes the previous setting string of that parameter to the
+expression stack. Possible parameter name strings and settings strings are listed in the table below:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD>Parameter name</TD><TD>Possible settings</TD></TR>
+<TR><TD VALIGN="TOP">"Graph &lt;-&gt; Table"</TD><TD>"OFF", "ON"</TD></TR>
+<TR><TD VALIGN="TOP">"Independent"</TD><TD>"AUTO", "ASK"</TD></TR>
+</TABLE></P>
+
+<HR>
+<H3><A NAME="push_shift"><U>push_shift</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_shift (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'shift' function.</B></P>
+
+<HR>
+<H3><A NAME="push_sign"><U>push_sign</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sign (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sign' function.</B></P>
+
+<HR>
+<H3><A NAME="push_simult"><U>push_simult</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_simult (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'simult' function.</B></P>
+
+<HR>
+<H3><A NAME="push_sin2"><U>push_sin2</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sin2 (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sin' and 'cos' functions.</B></P>
+
+<HR>
+<H3><A NAME="push_sin"><U>push_sin</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sin (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sin' function.</B></P>
+
+<HR>
+<H3><A NAME="push_sinh"><U>push_sinh</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sinh (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sinh' function.</B></P>
+
+<HR>
+<H3><A NAME="push_solve"><U>push_solve</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_solve (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'solve' function.</B></P>
+
+<P>Please see <A HREF="#push_czeros">push_czeros</A> entry for an important note for all solver ROM calls.</P>
+
+<HR>
+<H3><A NAME="push_spher_vector"><U>push_spher_vector</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_spher_vector(<A HREF="estack.html#ESI">ESI</A> mat);</TD></TR></TABLE></P>
+<P><B>Executes the simplification of a vector written under spherical form.</B></P>
+
+<P>The matrix pointed to by <I>mat</I> must be a one-line, three-column matrix, and all three elements of the matrix must be free of tag <A HREF="estack.html#LIST_TAG">LIST_TAG</A>.</P>
+
+<P>See also: <A HREF="#push_cylin_vector">push_cylin_vector</A>, <A HREF="#push_polar_vector">push_polar_vector</A></P>
+<HR>
+<H3><A NAME="push_sqrt"><U>push_sqrt</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sqrt (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<FONT FACE="Symbol">&#214;</FONT>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_stddev"><U>push_stddev</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_stddev (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'stdDev' function.</B></P>
+
+<HR>
+<H3><A NAME="push_str_to_expr"><U>push_str_to_expr</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_str_to_expr (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'expr' function.</B></P>
+
+<P>See also: <A HREF="#push_string">push_string</A>, <A HREF="estack.html#push_parse_text">push_parse_text</A></P>
+<HR>
+<H3><A NAME="push_string"><U>push_string</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_string (<A HREF="estack.html#CESI">CESI</A> expr);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'string' function.</B></P>
+
+<P>push_string converts the expression pointed to by <I>expr</I> to a string and
+pushes this string on the expression stack. For example, after executing the
+code</P>
+<PRE>push_shortint (100);
+push_quantum_pair (VAR_X_TAG, ADD_TAG);
+push_string (top_estack);
+</PRE>
+<P>the string <CODE>"x+100"</CODE> will be pushed on the expression stack.
+See <A HREF="estack.html#top_estack">top_estack</A>
+and <A HREF="estack.html#Tags">Tags</A> for more info about this example.
+<BR><BR>
+Of course, <I>expr</I> may point to a string containing a variable name, but
+it must not point to an ordinary string. Otherwise the string is truncated
+at the first space (but not after the 8th character). If you only want to
+push a string (not an expression converted to a string), a method which
+always works would be:</P>
+<PRE>push_expr_quantum (<I>expr</I>, STR_TAG);
+</PRE>
+
+<P>See also: <A HREF="#push_str_to_expr">push_str_to_expr</A>, <A HREF="estack.html#push_zstr">push_zstr</A>, <A HREF="estack.html#display_statements">display_statements</A></P>
+<HR>
+<H3><A NAME="push_submat"><U>push_submat</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_submat (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'subMat' function.</B></P>
+
+<HR>
+<H3><A NAME="push_sumlist"><U>push_sumlist</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_sumlist (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'sum' function.</B></P>
+
+<HR>
+<H3><A NAME="push_summation"><U>push_summation</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_summation (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic '<FONT FACE="Symbol">S</FONT>' function.</B></P>
+
+<HR>
+<H3><A NAME="push_switch"><U>push_switch</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_switch (<A HREF="estack.html#CESI">CESI</A> WinNum);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'switch' function.</B></P>
+
+<P>push_switch expects that <I>WinNum</I> points to an integer expression.
+If this integer is 0, push_switch pushes the active window number (1 for left
+or top window, 2 for right or bottom window) to the expression stack. If this
+integer is 1 or 2, push_switch activates window 1 or 2 and pushes the
+previously active window number to the expressions stack. If <I>WinNum</I>
+points to <A HREF="estack.html#END_TAG">END_TAG</A>, push_switch
+switches windows and pushes the previously active window number to the
+expression stack.
+Of course, window switching is ignored if the calculator is not displaying a
+split screen.</P>
+
+<HR>
+<H3><A NAME="push_tan"><U>push_tan</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_tan (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'tan' function.</B></P>
+
+<HR>
+<H3><A NAME="push_tanh"><U>push_tanh</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_tanh (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'tanh' function.</B></P>
+
+<HR>
+<H3><A NAME="push_trig_collect"><U>push_trig_collect</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_trig_collect (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'tCollect' function.</B></P>
+
+<HR>
+<H3><A NAME="push_trig_expand"><U>push_trig_expand</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_trig_expand (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'tExpand' function.</B></P>
+
+<HR>
+<H3><A NAME="push_unitv"><U>push_unitv</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_unitv (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'unitV' function.</B></P>
+
+<HR>
+<H3><A NAME="push_variance"><U>push_variance</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_variance (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'variance' function.</B></P>
+
+<HR>
+<H3><A NAME="push_when"><U>push_when</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_when (<A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'when' function.</B></P>
+
+<HR>
+<H3><A NAME="push_zeros"><U>push_zeros</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.02 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> push_zeros (<A HREF="estack.html#CESI">CESI</A>, <A HREF="estack.html#CESI">CESI</A>);</TD></TR></TABLE></P>
+<P><B>Executes TI-Basic 'zeros' function.</B></P>
+
+<P>Please see <A HREF="#push_czeros">push_czeros</A> entry for an important note for all solver ROM calls.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

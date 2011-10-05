@@ -1,0 +1,1690 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>events.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;events.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for event-driven programming and for mode settings</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#ABT_dialog">ABT_dialog</A></B><DD>Starts "ABOUT" dialog "applet".<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CAT_dialog">CAT_dialog</A></B><DD>Starts "CATALOG" dialog "applet".<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_captureEvents">EV_captureEvents</A></B><DD>Sets the event message handler (i.e. installs an event driven application).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_centralDispatcher">EV_centralDispatcher</A></B><DD>Enters the main controlling loop of the TIOS.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_clearPasteString">EV_clearPasteString</A></B><DD>Clears the event paste buffer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_defaultHandler">EV_defaultHandler</A></B><DD>Processes an event message using the default handler.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_eventLoop">EV_eventLoop</A></B><DD>Enters the loop in which main event messages are collected and dispatched.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_getAppID">EV_getAppID</A></B><DD>Finds a task ID number for an application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_getc">EV_getc</A></B><DD>Waits for the keypress, then fills an event structure with the keypress.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_getSplitRect">EV_getSplitRect</A></B><DD>Gets the screen rectangle for a given side.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_notifySwitchGraph">EV_notifySwitchGraph</A></B><DD>Notify appropriate applications of graph switching.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_paintOneWindow">EV_paintOneWindow</A></B><DD>Repaints the topmost window.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_paintWindows">EV_paintWindows</A></B><DD>Repaints all windows.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="flashapp.html#EV_quit">EV_quit</A></B><DD>Switches from the current application to the Home application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_registerMenu">EV_registerMenu</A></B><DD>Attaches a menu to an application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_restorePainting">EV_restorePainting</A></B><DD>Restores previous state of window painting.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_sendEvent">EV_sendEvent</A></B><DD>Sends an event message from the current side.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_sendEventSide">EV_sendEventSide</A></B><DD>Sends an event message from the given side.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_sendString">EV_sendString</A></B><DD>Sends XR string to the running application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_setCmdCheck">EV_setCmdCheck</A></B><DD>Checks/unchecks a menu item in the current application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_setCmdState">EV_setCmdState</A></B><DD>Changes the status (active/inactive) of a menu command in the current application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_setFKeyState">EV_setFKeyState</A></B><DD>Changes the status (active/inactive) of a toolbox in the menu associated with current application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_startApp">EV_startApp</A></B><DD>Starts an application from any state.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_startSide">EV_startSide</A></B><DD>Starts the given side.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_startTask">EV_startTask</A></B><DD>Starts a particular task in the running application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_suspendPainting">EV_suspendPainting</A></B><DD>Suspends window painting.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_switch">EV_switch</A></B><DD>Performs switching of sides.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#handleRclKey">handleRclKey</A></B><DD>Displays the standard "Recall Variable" dialog.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#handleVarLinkKey">handleVarLinkKey</A></B><DD>Displays the standard "Var-Link" dialog.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MO_currentOptions">MO_currentOptions</A></B><DD>Fills in options structure from current mode settings.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MO_defaults">MO_defaults</A></B><DD>Sets default mode settings.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MO_digestOptions">MO_digestOptions</A></B><DD>Updates system mode settings from options structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MO_isMultigraphTask">MO_isMultigraphTask</A></B><DD>Checks whether a task is multigraph task.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MO_modeDialog">MO_modeDialog</A></B><DD>Executes "MODE" dialog.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MO_notifyModeChange">MO_notifyModeChange</A></B><DD>Sends mode change notify message to all applications.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MO_sendQuit">MO_sendQuit</A></B><DD>Quits an application on given side.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TIOS_EV_getAppID">TIOS_EV_getAppID</A></B><DD>Finds a task ID number for an application, AMS 2.xx only.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#EV_flags">EV_flags</A></B><DD>State information for the event manager.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_hook">EV_hook</A></B><DD>A global variable pointing to the "hook" event handler.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#MO_option">MO_option</A></B><DD>Contains a pointer to the global mode settings array.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ModeSettings">ModeSettings</A></B><DD>Contains a pointer to the global <A HREF="#MO_OPTIONS">MO_OPTIONS</A> structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EV_FLAGS_enum">EV_FLAGS</A></B><DD>An enumeration for describing possible bits for <A HREF="#EV_flags">EV_flags</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EVENT_HANDLER">EVENT_HANDLER</A></B><DD>A pointer to an event handler.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EVENT">EVENT</A></B><DD>A structure describing an event message.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EventIDs">EventIDs</A></B><DD>An enumeration describing IDs of system messages.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MO_OPTIONS">MO_OPTIONS</A></B><DD>A structure containing all system mode settings.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MoNotifyFlags">MoNotifyFlags</A></B><DD>Enumerates notify messages for the <A HREF="#MO_notifyModeChange">MO_notifyModeChange</A> function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PaintFlags">PaintFlags</A></B><DD>An enumeration describing whether painting is suspended or enabled.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_RECT">SCR_RECT</A></B><DD>A scructure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_STATE">SCR_STATE</A></B><DD>A structure for saving the state of the graphics system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="statline.html#ST_ACTIVITIES">ST_ACTIVITIES</A></B><DD>Contains status bar activity flags.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#StandardTaskIDs">StandardTaskIDs</A></B><DD>An enumeration describing task ID constants.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#StartTypes">StartTypes</A></B><DD>A pseudo-enumeration describing start types for <A HREF="#EV_startTask">EV_startTask</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="vat.html#SystemDataTypes">SystemDataTypes</A></B><DD>Describes valid variable types in the "Var-Link" dialog, and for the <A HREF="vat.html#GetDataType">GetDataType</A> and <A HREF="vat.html#SmapTypeStrings">SmapTypeStrings</A> functions.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WIN_RECT">WIN_RECT</A></B><DD>A structure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WINDOW">WINDOW</A></B><DD>The main window-describing structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WinFlags">WinFlags</A></B><DD>An enumeration for describing flags which control the window manager.</DL>
+<P><B>Note:</B> Event-related functions are intended mainly for
+flash applications, although some of them may be useful even in user programs.
+Anyway, they are intended for serious programmers, not for beginners.
+Don't try to make an event-driven application if you don't understand this file really well!
+<BR><BR>
+If your program uses functions from this header file, you may have to
+define <CODE><A HREF="httigcc.html#advanced_fileinuse">SET_FILE_IN_USE_BIT</A></CODE>.</P>
+
+<HR>
+<H3><A NAME="ABT_dialog"><U>ABT_dialog</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ABT_dialog (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Starts "ABOUT" dialog "applet".</B></P>
+
+<P>The "ABOUT" dialog is an event driven "applet", which works exactly like "CATALOG" dialog applet.
+See <A HREF="#CAT_dialog">CAT_dialog</A> for more info about event driven dialogs.
+<BR><BR>
+<B>Note:</B> If your program uses this function, you have to
+define <CODE><A HREF="httigcc.html#advanced_fileinuse">SET_FILE_IN_USE_BIT</A></CODE>.</P>
+
+<HR>
+<H3><A NAME="CAT_dialog"><U>CAT_dialog</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> CAT_dialog (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Starts "CATALOG" dialog "applet".</B></P>
+
+<P>The "CATALOG" dialog is an event driven "applet". CAT_dialog draws the dialog on the screen, installs
+its own event handler, then exits (without stopping the caller program). It does not enter into a
+loop (like normal dialogs do) which ends only on pressing ENTER or ESC. Its event handler
+restores the previously installed handler after the user presses ENTER or ESC, but if the pressed key was the ENTER
+key, the selected command from the catalog is send as a <A HREF="#EventIDs">CM_STRING</A> message
+after restoring the user handler (which need to be captured via user event handler). That's
+why it is not so easy to use CAT_dialog in user programs, but this is also not very hard.
+Here is an example, which opens the "CATALOG" dialog, and displays in the help screen a message
+which tells what the user selected from the catalog (called "Catalog"):</P>
+<PRE>// Display the catalog and let the user select something
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+const char *ptr;
+HANDLE handle;
+
+CALLBACK void Handler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_STRING)
+    ptr = ev-&gt;extra.pasteText;
+  else if (ev-&gt;Type == CM_HSTRING)
+    handle = ev-&gt;extra.hPasteText;
+  ER_throw (1);
+}
+
+void _main(void)
+{
+  EVENT ev;
+  char buffer[100];
+  ptr = NULL;
+  handle = H_NULL;
+  EV_captureEvents (Handler);
+  CAT_dialog ();
+  TRY
+    EV_eventLoop ();
+  ONERR
+    EV_captureEvents (NULL);
+  ENDTRY
+  if (handle != H_NULL)
+    ptr = HLock (handle);
+  if (ptr != NULL)
+  {
+    sprintf (buffer, &quot;You selected \&quot;%s\&quot;.&quot;, ptr);
+    ST_helpMsg (buffer);
+  }
+  else ST_helpMsg (&quot;You pressed ESC.&quot;);
+  if (handle != H_NULL)
+    HeapFree (handle);
+  ev.Type = CM_UNFOCUS;               // This is more due to some
+  EV_sendEvent (AP_CURRENT, &amp;ev);     // aesthetical reasons
+}
+</PRE>
+<P>Note that it is important that <A HREF="#EV_captureEvents">EV_captureEvents</A> must be called
+before calling CAT_dialog. This example is a good test whether you understand the principles of
+event handling or not.
+<BR><BR>
+<B>Note:</B> If your program uses this function, you have to
+define <CODE><A HREF="httigcc.html#advanced_fileinuse">SET_FILE_IN_USE_BIT</A></CODE>.</P>
+
+<HR>
+<H3><A NAME="EV_captureEvents"><U>EV_captureEvents</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#EVENT_HANDLER">EVENT_HANDLER</A> EV_captureEvents (<A HREF="#EVENT_HANDLER">EVENT_HANDLER</A> NewHandler);</TD></TR></TABLE></P>
+<P><B>Sets the event message handler (i.e. installs an event driven application).</B></P>
+
+<P>EV_captureEvents sets a new event message handler to the routine pointed to by <I>NewHandler</I>,
+overriding any current handler. <I>NewHandler</I> is the pointer of type <A HREF="#EVENT_HANDLER">EVENT_HANDLER</A>,
+which is the pointer to a void function (i.e. procedure) which accepts one parameter of
+<A HREF="#EVENT">EVENT</A> type. If <I>NewHandler</I> is <A HREF="alloc.html#NULL">NULL</A>,
+EV_captureEvents restores the standard event handler (which depends on the current application
+like "Home Screen", "Graph", etc.). EV_captureEvents returns the pointer to the previous installed
+event handler.
+<BR><BR>
+Any event handler is, in fact, an event driven application. All built-in flash applications like
+"Home screen", "Graph", "Text editor", "Geometry" etc. and all add-in flash applications are event driven applications. Also,
+"About" and "Catalog" dialogs and "Error message" dialogs are also event driven applications
+(maybe the word "applets" is better for them). The whole idea of event driving is as follows:
+instead of having an application which has an internal "main loop" in which all processing are
+performed, an event driven application accepts a message (or event), checks the type of the
+event (a keypress is, for example, one type of the event), process it, then exits immediately
+after processing the event. So, the user needs to make a loop in which necessary events are
+collected and dispatched (using <A HREF="#EV_sendEvent">EV_sendEvent</A>) to the application.
+The main advantage of such an approach is in the fact that the main loop is under the control of
+the user, even if the application itself may be written by somebody else. So, the user can
+decide in the loop what events will be sent to an application etc. This would not be possible
+if the "main loop" is the part of the application itself. For example, if the user makes a
+loop in which events are dispatched to two or more applications, it is easy to estabilish a
+kind of multitasking. Note that each modern operating system (for example Windows or UNIX) is
+based on such event dispatching/handling mechanism!
+<BR><BR>
+To understand more about event driven applications, you need to read about all other
+functions in this header file (especially <A HREF="#EV_eventLoop">EV_eventLoop</A>,
+<A HREF="#EV_sendEvent">EV_sendEvent</A> and <A HREF="#EV_defaultHandler">EV_defaultHandler</A>
+may be very useful in user programs). Probably the most frequent usage of these functions in
+user programs will be to access the text editor
+application (see <A HREF="textedit.html">textedit.h</A> header file), which is event driven.
+In this header file, there is also a good example about using some event functions.
+<BR><BR>
+<B>Note:</B> If you want to "hook" on the existing event handler instead to complete overriding the
+current handler, it is better to use <A HREF="#EV_hook">EV_hook</A>.</P>
+
+<HR>
+<H3><A NAME="EV_centralDispatcher"><U>EV_centralDispatcher</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_centralDispatcher (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Enters the main controlling loop of the TIOS.</B></P>
+
+<P>As the name suggests this is the main controlling loop of the entire TIOS. This
+functions initializes all installed applications by sending <A HREF="#CM_INIT">CM_INIT</A>
+event to them, starts the "Home screen" application, then calls <A HREF="#EV_eventLoop">EV_eventLoop</A>
+under an error handler, so if any error appeared during execution of the event loop, it will
+be catched by the error handler, which will first dispatch the error code to
+<A HREF="error.html#ERD_process">ERD_process</A> then restart the event loop.
+<BR><BR>
+<B>Note:</B> As far as I know, there is no any need to call this function from your program. This
+will enter the endless loop, which cannot be broken even by throwing an error from the
+event handler (the method used to exit from <A HREF="#EV_eventLoop">EV_eventLoop</A>), because
+the event loop is now executed under the internal error handler (maybe the only method to exit
+from such loop is using <A HREF="setjmp.html#longjmp">longjmp</A> from the event handler, but
+I don't believe that such a barbaric method would leave the system in a stable state).</P>
+
+<HR>
+<H3><A NAME="EV_clearPasteString"><U>EV_clearPasteString</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_clearPasteString (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Clears the event paste buffer.</B></P>
+
+<P>EV_clearPasteString clears event paste buffer, i.e. clears the static pointer
+to the paste buffer (see default action for <A HREF="#EventIDs">CM_STRING</A> message in
+<A HREF="#EV_defaultHandler">EV_defaultHandler</A>), and eventually frees the memory
+occupied for dynamically pasted string (sent via <A HREF="#EventIDs">CM_HSTRING</A>
+message).</P>
+
+<HR>
+<H3><A NAME="EV_defaultHandler"><U>EV_defaultHandler</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_defaultHandler (<A HREF="#EVENT">EVENT</A> *event);</TD></TR></TABLE></P>
+<P><B>Processes an event message using the default handler.</B></P>
+
+<P>EV_defaultHandler performs some default actions with most common messages (<I>event</I> is the
+pointer to the message which need to be processed). This function is very useful in user event
+handlers, and it is often called to process any unhandled messages in handlers. Not all
+messages are supported in EV_defaultHandler. This is a list of supported message types (unsupported
+types are simply ignored) together with the description of the action performed by EV_defaultHandler:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">CM_ACTIVATE</TD>
+<TD>Registers and starts the menu for the running application (see <A HREF="#EV_registerMenu">EV_registerMenu</A>).</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_DEACTIVATE</TD>
+<TD>Ends custom and normal menus.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_KEY_PRESS</TD>
+<TD>Handles tokens, system and mode keys. This is maybe the most useful action performed by EV_defaultHandler.
+If the keypress is a simple key (i.e. a single character), nothing will happen. If the keypress
+is a token (like "sin", "ln" etc.), the appropriate string is sent (as a
+<A HREF="#EventIDs">CM_PASTE_STRING</A> message) to the
+application. The summary effects will be that the application will receive token as a sequence
+of single keypresses. So, tokens are all sent via <A HREF="#EV_sendString">EV_sendString</A> and
+do not have to be processed as single keypresses (note that this will not cause problems if called
+from user event handlers, although it may cause recursion; see <A HREF="textedit.html">textedit.h</A> header
+file for an useful example). If the keypress is system or mode key (see
+<A HREF="system.html#QSysKey">QSysKey</A> and <A HREF="system.html#QModeKey">QModeKey</A>), the
+corresponding action associated with the key (for example, opening a menu or a dialog) will
+be performed (see the example below this table).
+The chosen menu item is then sent as a <A HREF="#EventIDs">CM_PASTE_STRING</A> message to the current
+application (note however that VAR-LINK uses a <A HREF="#EventIDs">CM_PASTE_HANDLE</A> message
+instead), except for toolbar menus, where an appropriate menu ID is send as a message.
+Command keypresses STO, RCL, SWITCH, MODE, APPS, MEM, INS, CUT, PASTE etc. and OFF key (code
+4363) are also handled via this handler, and all of them cause usual actions (keypresses like
+CUT, PASTE etc. only send an appropriate message to the application).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_PASTE_STRING</TD>
+<TD>Pastes the string in the event paste buffer. More precise, it sets an internal
+static pointer to points to <I>event</I>-&gt;<I>extra</I>.<I>pasteText</I>
+and does not nothing more. The event loop (see <A HREF="#EV_eventLoop">EV_eventLoop</A>)
+will then send the string as individual keypresses to the current application.
+This means that the paste buffer is exported from the code, so this allows pasting
+large amounts of text.
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_PASTE_HANDLE</TD>
+<TD>Frees the memory associated with handle <I>event</I>-&gt;<I>extra</I>.<I>hPasteText</I>.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_STO</TD>
+<TD>Sends <A HREF="#EventIDs">CM_KEY_PRESS</A> event filled with key code 22 (right arrow) to the current application.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_RCL</TD>
+<TD>Performs usual actions for the RCL key (open Recall dialog, etc.).
+After execution of the Recall dialog, the content of the variable is sent to the current
+application as a <A HREF="#EventIDs">CM_PASTE_STRING</A> message.
+</TD>
+</TR>
+</TABLE>
+<BR>
+Useful examples for this functions may be found in <A HREF="textedit.html">textedit.h</A> header
+file. Here is another simple example which ilustrates how you can open the "CHAR" menu. This
+may be useful if you want to make your user input routine which allows inserting extra characters:</P>
+<PRE>EVENT ev;
+...
+ev.Type = CM_KEY_PRESS;
+ev.extra.Key.Code = KEY_CHAR;
+EV_defaultHandler (&amp;ev);
+</PRE>
+<P>After execution of the menu, the selected character will be sent as the event to the
+current application (it may be captured through an user event handler).</P>
+
+<HR>
+<H3><A NAME="EV_eventLoop"><U>EV_eventLoop</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_eventLoop (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Enters the loop in which main event messages are collected and dispatched.</B></P>
+
+<P>EV_eventLoop enters the (endless) loop in which main events are collected and dispatched to
+the current application. In the normal operation of the calculator (i.e. when no user
+program is running), the TIOS is just in this loop. Calling this function in the user program
+makes sense (and may be very useful if you are happy with set of events which are processed in
+this function) only if the program installs a custom event handler using
+<A HREF="#EV_captureEvents">EV_captureEvents</A> function, so the events may be trapped by
+the user program.
+<BR><BR>
+Here is the exact description what happens in the each iteration of this loop (not in
+exact order, but this is not important):</P>
+<UL>
+<LI><P>If there are no activities (keypresses etc.) for a long time, and if the
+timer <A HREF="system.html#Timers">APD_TIMER</A> expires (see
+<A HREF="system.html#OSRegisterTimer">OSRegisterTimer</A>), the calculator is
+turned off.</P></LI>
+<LI><P>If a key is pressed, the event <A HREF="#EventIDs">CM_KEYPRESS</A> is
+send (using <A HREF="#EV_sendEvent">EV_sendEvent</A>) to the current application. Note
+if the current application is "Home screen", this may cause evaluation of the input
+line (if the pressed key was ENTER key), including execution of user programs, etc.
+This may also cause changing of the current application (for example, if the user pressed
+APPS key).</P></LI>
+<LI><P>If there is a string in the event paste buffer (see <A HREF="#EV_sendString">EV_sendString</A>),
+the content of the buffer is processed exactly as if all codes in the buffer are typed from
+the keyboard (i.e. a sequence of <A HREF="#EventIDs">CM_KEYPRESS</A> events
+are send to the current application).</P></LI>
+<LI><P>If there is no keypress, if the cursor is enabled (see <A HREF="system.html#CU_start">CU_start</A>)
+and if <A HREF="system.html#Timers">CURSOR_TIMER</A> expires (see
+<A HREF="system.html#OSRegisterTimer">OSRegisterTimer</A>),
+<A HREF="#EventIDs">CM_BLINK</A> event is send to the current application.</P></LI>
+<LI><P>If a global variable which contains the error code is non-zero, an error dialog is
+displayed (using <A HREF="error.html#ERD_dialog">ERD_dialog</A>).</P></LI>
+<LI><P>If there are twin symbols (see <A HREF="vat.html#SymAddTwin">SymAddTwin</A>) in the VAT
+table, they are deleted. This performs cleaning up the RAM after executing of archived
+programs.</P></LI>
+<LI><P>If painting is enabled (see <A HREF="#EV_suspendPainting">EV_suspendPainting</A> and
+<A HREF="#EV_restorePainting">EV_restorePainting</A>), event <A HREF="#CM_WPAINT">CM_WPAINT</A>
+is send using <A HREF="#EV_paintOneWindow">EV_paintOneWindow</A> function.</P></LI>
+<LI><P>If there are no other activities, <A HREF="#EventIDs">CM_IDLE</A> event is send to the
+current application, and the function <A HREF="system.html#idle">idle</A> is called.</P></LI>
+</UL>
+<P>
+Note that when an user ASM program is started, the current application is always "Home screen",
+until the user changes the current application using <A HREF="#EV_startApp">EV_startApp</A> or
+installs thier own event driven "task" using <A HREF="#EV_captureEvents">EV_captureEvents</A>.
+So, if you simply call EV_eventLoop in the your program, without previous usage of
+<A HREF="#EV_captureEvents">EV_captureEvents</A> or <A HREF="#EV_startApp">EV_startApp</A>,
+you will have an illusion that you are not in the your program but in the home screen, because
+all collected events will be dispatched to the "Home screen" application. Note that in this
+case, there is no way to exit this loop, and your program will stay "resident" and
+"locked" in the memory forever, although you will not be aware of the fact that your program
+is still "running" - you will be able to execute everything,
+including running other programs etc.
+<BR><BR>
+As EV_eventLoop enters the endless loop, the only method (and this is the proposed method in
+TIOS) to exit the loop is to throw an error from the user event handler installed using
+<A HREF="#EV_captureEvents">EV_captureEvents</A>. This is possible because in the event loop
+there are no error handlers in place, so <A HREF="error.html#ER_throw">ER_throw</A> passes
+control to the previous level of error handler. In terms of normal operation (i.e. while you
+are typing in the home screen) this is handled
+by <A HREF="#EV_centralDispatcher">EV_centralDispatcher</A>, which restarts the event loop.
+However, in custom event handling it is used to return from the event loop to the calling code.
+To achieve this, you need to catch errors using <A HREF="error.html#ER_catch">ER_catch</A>
+or using <A HREF="error.html#TRY">TRY</A><B>...</B><A HREF="error.html#ONERR">ONERR</A><B>...</B><A HREF="error.html#ENDTRY">ENDTRY</A>
+construction. So, the typical usage of EV_eventLoop function in user programs is:</P>
+<PRE>EV_captureEvents (UserHandler);
+TRY
+  EV_eventLoop ();                // <I>The only way to exit from this is</I>
+ONERR                             // <I>to throw an error from the event handler!</I>
+  EV_captureEvents (NULL);
+ENDTRY
+</PRE>
+<P>Of course, user handler must decide what to do with events dispatched by EV_eventLoop. Very
+nice example of usage of this methodology is given in <A HREF="textedit.html">textedit.h</A>
+header file. Another example may be found with the description of
+<A HREF="#CAT_dialog">CAT_dialog</A> function.
+These principles are used often in the TIOS. For example, error dialogs are principally
+implemented as follows (although there are no obvious reasons why events are used in this
+example):</P>
+<PRE>void ERD_EventHandler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_KEYPRESS)
+    switch (ev-&gt;Key.Code)
+      {
+        case KEY_ENTER: ER_throw (1);
+          // <I>Exit from event loop: ENTER key pressed</I>
+        case KEY_ESC: ER_throw (2);
+          // <I>Another exit: ESC key pressed</I>
+        case KEY_OFF: EV_defaultHandler (ev);
+          // <I>OFF key pressed: allow the machine to be switched off</I>
+      }
+}
+
+short ERD_dialog(short err_no, short prog_flag)
+{
+  EV_captureEvents (ERD_EventHandler);
+  // <I>Display the dialog</I>
+  TRY
+    EV_eventLoop();
+  ONERR
+    switch(errCode)
+      {
+        case 1: // <I>Restore the screen and return KEY_ENTER code</I>
+        case 2: // <I>Restore the screen and return KEY_ESC code</I>
+      }
+  ENDTRY
+}
+</PRE>
+<P>To exit from EV_eventLoop, the best idea is to throw error codes less than 8, as they are
+never used as error codes in normal error handling.</P>
+
+<HR>
+<H3><A NAME="EV_getAppID"><U>EV_getAppID</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EV_getAppID (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *TaskName);</TD></TR></TABLE></P>
+<P><B>Finds a task ID number for an application.</B></P>
+
+<P>EV_getAppID returns a task ID number for the task/application whose internal name is
+<I>TaskName</I>, or returns -1 if the application is not found.
+Each application (including both built-in applications and external
+Flash applications) has a unique internal name (max. 8 characters). This function
+is introduced for compatibility with all AMS versions, because
+task ID numbers are inconsistent between AMS versions. On AMS 1.xx, built-in flash
+applications have fixed ID numbers attached to them, but on AMS 2.xx the task ID is
+simply the handle of the application control block (this is why it is quite hard to
+add flash applications on AMS 1.xx). So, always use EV_getAppID to determine the
+task ID number for an application. Internal names of built-in applications are given
+in the following table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD><B>Application name</B></TD><TD><B>Internal name</B></TD></TR>
+<TR><TD>Home screen</TD><TD>TIHOME</TD></TR>
+<TR><TD>Y=Editor</TD><TD>TIEQUED</TD></TR>
+<TR><TD>Window Editor</TD><TD>TIWINDED</TD></TR>
+<TR><TD>Graph</TD><TD>TIGRAPH</TD></TR>
+<TR><TD>Table</TD><TD>TITABLED</TD></TR>
+<TR><TD>Data/Matrix Editor</TD><TD>TIDMED</TD></TR>
+<TR><TD>Program Editor</TD><TD>TIPRGMED</TD></TR>
+<TR><TD>Text Editor</TD><TD>TITEXTED</TD></TR>
+<TR><TD>Numeric Solver</TD><TD>TIINSLVR</TD></TR>
+<TR><TD>Self Test</TD><TD>TISLFTST</TD></TR>
+</TABLE>
+<BR>
+<B>Note:</B> Although this function was not officially introduced before AMS 2.xx, it is
+implemented here to work even on AMS 1.xx! However, there is one difference between this
+function, and the function with the same name in Flash Studio SDK. This implementation
+of EV_getAppID returns -1 if the application is not found, but EV_getAppID from Flash
+Studio SDK returns zero under the same conditions. The convention used in Flash Studio
+is not consistent with the fact that the "Home screen" application has the ID number 0 on
+AMS 1.xx. That's why the value for "not found" is slightly changed in this implementation.</P>
+
+<P>See also: <A HREF="#TIOS_EV_getAppID">TIOS_EV_getAppID</A></P>
+<HR>
+<H3><A NAME="EV_getc"><U>EV_getc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> EV_getc (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> busy, <A HREF="#EVENT">EVENT</A> *event);</TD></TR></TABLE></P>
+<P><B>Waits for the keypress, then fills an event structure with the keypress.</B></P>
+
+<P>EV_getc is a function similar like <A HREF="kbd.html#ngetchx">ngetchx</A>. It waits for
+a keypress, and returns the keycode of the keypress. But, in addition to
+<A HREF="kbd.html#ngetchx">ngetchx</A>, it also fills the structure pointed to by <I>event</I>
+with appropriate <A HREF="#EventIDs">CM_KEYPRESS</A> event. Parameter <I>busy</I>
+may be ACTIVITY_IDLE, ACTIVITY_BUSY, ACTIVITY_PAUSED or ACTIVITY_NORMAL (these
+constants are defined in enum <A HREF="statline.html#ST_ACTIVITIES">ST_ACTIVITIES</A>). This
+parameter determines the indicator in the status line which will be displayed
+(see <A HREF="statline.html#ST_busy">ST_busy</A> for more info).
+<BR><BR>
+If there is no keypress and the cursor timer expires (cca 0.5 seconds), the
+message <A HREF="#EventIDs">CM_BLINK</A> is stored in the event structure
+instead, and the function returns zero (no keypresses). Also, this routine
+puts the calculator into low power mode until a character is available,
+and it will automatically power down the calculator if a key has not
+been pressed after a few minutes.</P>
+
+<HR>
+<H3><A NAME="EV_getSplitRect"><U>EV_getSplitRect</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *EV_getSplitRect (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Side);</TD></TR></TABLE></P>
+<P><B>Gets the screen rectangle for a given side.</B></P>
+
+<P>EV_getSplitRect consults various calculator mode settings ("Split Screen": "FULL",
+"LEFT-RIGHT" or "TOP-BOTTOM" and "Split Aspect Ratio": "1<B>:</B>1", "1<B>:</B>2" or "2<B>:</B>1") to determine
+dimensions of the rectangular area in which the application will be executed. Parameter
+<I>Side</I> determines wanted side, and it needs to be 0 or 1 (0=left or top side,
+1=right or bottom side). EV_getSplitRect returns the static pointer to the
+<A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> structure which describes the determined rectangular
+area.</P>
+
+<HR>
+<H3><A NAME="EV_notifySwitchGraph"><U>EV_notifySwitchGraph</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_notifySwitchGraph (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Notify appropriate applications of graph switching.</B></P>
+
+<P>EV_notifySwitchGraph does nothing if the calculator is not in "two-graph" mode, else sends
+<A HREF="#CM_SWITCH_GRAPH">CM_SWITCH_GRAPH</A> message to "Graph", "Window Editor", "Table"
+and "Y=&nbsp;Editor" applications (these applications are the so-called "multigraph" applications).</P>
+
+<HR>
+<H3><A NAME="EV_paintOneWindow"><U>EV_paintOneWindow</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EV_paintOneWindow (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Repaints the topmost window.</B></P>
+
+<P>EV_paintOneWindows searches through a linked list of windows (see
+<A HREF="wingraph.html">wingraph.h</A> header file) for the first window
+which has <A HREF="wingraph.html#WinFlags">WF_DIRTY</A> flag set. If the found window
+is visible (i.e. if <A HREF="wingraph.html#WinFlags">WF_VISIBLE</A> flag is set), the
+<A HREF="#CM_WPAINT">CM_WPAINT</A> message is sent to the application which
+is the owner of the window (note that <A HREF="wingraph.html#WinOpen">WinOpen</A>
+stores the task ID of the current application in <I>TaskID</I> field of the
+<A HREF="wingraph.html#WINDOW">WINDOW</A> structure). See also notes about
+<A HREF="#EV_sendEvent">EV_sendEvent</A>. After sending this message,
+<A HREF="wingraph.html#WinFlags">WF_DIRTY</A> flag of the window is cleared, and this flag is
+set in all other windows in the linked list of windows which overlap with this
+window (because repainting of this window may cause trashing of another windows).
+<BR><BR>
+EV_paintOneWindow returns <A HREF="alloc.html#Bool">TRUE</A> if the window was "painted"
+(more precise, if <A HREF="#CM_WPAINT">CM_WPAINT</A> message is sent), otherwise it
+returns <A HREF="alloc.html#Bool">FALSE</A> (i.e. if none to paint).
+<BR><BR>
+Here is an example which ilustrates that painting of all TIOS windows is "event
+driven". Suppose that you make very simplified loop which "simulates" normal behaviour
+of the calculator when it is in the home screen:</P>
+<PRE>while (TRUE)
+{
+  EV_getc (ACTIVITY_NORMAL, &amp;ev);
+  EV_sendEvent (AP_CURRENT, &amp;ev);
+}
+</PRE>
+<P>If you try this program, you will notice that although you can type in statements, execute
+user programs etc. from this loop, nothing happens on the screen when you type in
+2 + 3 &lt;ENTER&gt; (i.e. result 5 is not displayed). This is because the
+"Home screen" application didn't receive a message which forces redrawing of the Home screen.
+You can see that everything will be correct if you make the following loop:</P>
+<PRE>while (TRUE)
+{
+  EV_getc (ACTIVITY_NORMAL, &amp;ev);
+  EV_sendEvent (AP_CURRENT, &amp;ev);
+  EV_paintOneWindow ();
+}
+</PRE>
+
+<HR>
+<H3><A NAME="EV_paintWindows"><U>EV_paintWindows</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_paintWindows (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Repaints all windows.</B></P>
+
+<P>If painting is enabled (see <A HREF="#EV_suspendPainting">EV_suspendPainting</A>),
+EV_paintWindows repeatedly calls <A HREF="#EV_paintOneWindow">EV_paintOneWindow</A>
+until it returns <A HREF="alloc.html#Bool">FALSE</A> (no more to paint). So, the effect will
+be "repainting" of all "dirty" windows.</P>
+
+<HR>
+<H3><A NAME="EV_registerMenu"><U>EV_registerMenu</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_registerMenu (<B><A HREF="keywords.html#void">void</A></B> *MenuPtr);</TD></TR></TABLE></P>
+<P><B>Attaches a menu to an application.</B></P>
+
+<P>Applications can register toolbar menus with the system event handler. EV_registerMenu
+registers the toolbar menu pointed to by <I>MenuPtr</I> with the current application.
+<I>MenuPtr</I> is exactly the same pointer as expected in <A HREF="menus.html#MenuBegin">MenuBegin</A>
+function. Note that registering the menu will not automatically display nor activate the menu.
+The application will draw the menu (using <A HREF="menus.html#MenuBegin">MenuBegin</A>) on
+receipt of <A HREF="#CM_ACTIVATE">CM_ACTIVATE</A> message. So if you, for example, attach a new
+menu to the "Home screen" application, you need to send <A HREF="#CM_ACTIVATE">CM_ACTIVATE</A>
+message to it too. Also, before calling EV_registerMenu, a <A HREF="#CM_DEACTIVATE">CM_DEACTIVATE</A>
+message should to be sent to the application.
+<BR><BR>
+When a menu is attached to the application, each keypress event (a <A HREF="#EventIDs">CM_KEYPRESS</A>
+message) which represents keys F1, F2 etc. activates the menu (more precise, it is dispatched
+to the <A HREF="menus.html#MenuKey">MenuKey</A> function). After execution of
+<A HREF="menus.html#MenuKey">MenuKey</A>, the value returned from it (this is the ID
+of the selected item, see <A HREF="menus.html#MenuAddText">MenuAddText</A>) is sent as an event
+to the application. So, the <I>ID</I> value for each menu item must be carefully planned: if you
+want to have the "Cut" option in the menu, its <I>ID</I> needs to be 0x720
+(<A HREF="#EventIDs">CM_MENU_CUT</A>). Options which represent tokens (as in "Algebra" and
+"Calc" submenus) have <I>ID</I> less than 0x500, because tokens are send as XR strings
+(see <A HREF="system.html#XR_stringPtr">XR_stringPtr</A>). If you plan to create a serious
+event driven application which has toolbar menus (a flash application for example), it must
+behave in the same way (i.e. its event handler must process F-key events as described), and
+it must respond on <A HREF="#CM_ACTIVATE">CM_ACTIVATE</A> message as described above. Of course, how to
+put an application in Flash ROM without TI certificate and TI professional SDK is greater
+problem...
+<BR><BR>
+To restore the original menu after termination of the program, you need to
+get a pointer to the original menu first, and before termination, you have to
+call EV_registerMenu again passing this pointer to it. The pointer can be
+obtained by calling <A HREF="unknown.html#OO_GetAppAttr">OO_GetAppAttr</A>
+like this:</P>
+<PRE>void *oldmenu = OO_GetAppAttr (EV_runningApp, OO_APP_DEFAULT_MENU);
+</PRE>
+<P>
+<B>Note:</B> Sending <A HREF="alloc.html#NULL">NULL</A> to EV_registerMenu unattaches the toolbar menu from the
+application. Here is a dirty example which first removes the menu from the "Home screen" application,
+then changes parameters of "Home screen" parent window to expand the "Home screen" stack area into
+the menu area (but note that only a reset would restore the original state after execution of
+this program):</P>
+<PRE>EVENT ev;
+ev.Type = CM_DEACTIVATE;
+EV_sendEvent (AP_CURRENT, &amp;ev);
+EV_registerMenu (NULL);
+ev.Type = CM_ACTIVATE;
+EV_sendEvent (AP_CURRENT, &amp;ev);
+FirstWindow-&gt;Client.xy.y0 = 0;
+FirstWindow-&gt;Window.xy.y0 = 0;
+FirstWindow-&gt;Clip.xy.y0 = 0;
+</PRE>
+
+<HR>
+<H3><A NAME="EV_restorePainting"><U>EV_restorePainting</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EV_restorePainting (<B><A HREF="keywords.html#short">short</A></B> blockPaint);</TD></TR></TABLE></P>
+<P><B>Restores previous state of window painting.</B></P>
+
+<P>EV_restorePainting suspends or enables window painting, depending on whether <I>blockPaint</I>
+is <A HREF="#PaintFlags">PAINTING_ENABLED</A> or <A HREF="#PaintFlags">PAINTING_SUSPENDED</A>
+(these constants are defined in enum <A HREF="#PaintFlags">PaintFlags</A>). The main purpose of
+this function is to restore previous state after usage of <A HREF="#EV_suspendPainting">EV_suspendPainting</A>
+function. EV_restorePainting also returns previous state of painting enable flag
+(<A HREF="#PaintFlags">PAINTING_ENABLED</A> or <A HREF="#PaintFlags">PAINTING_SUSPENDED</A>)
+before calling this function.</P>
+
+<HR>
+<H3><A NAME="EV_sendEvent"><U>EV_sendEvent</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_sendEvent (<B><A HREF="keywords.html#short">short</A></B> TaskID, <A HREF="#EVENT">EVENT</A> *event);</TD></TR></TABLE></P>
+<P><B>Sends an event message from the current side.</B></P>
+
+<P>EV_sendEvent sends the event message described in the structure pointed to by <I>event</I>
+to the task/application with ID number <I>TaskID</I> (see below for more info about task
+IDs). Note that the user needs to pre-fill only <I>Type</I> field of the event structure
+and eventually <I>extra</I> field (if the message has extra information attached). All
+other fields will be filled by EV_sendEvent function before sending the message.
+<BR><BR>
+The <I>Type</I> field of the event structure is interpreted as following:</P>
+<UL>
+<LI><P>If <I>Type</I> &gt;=0x700, the message is an event command message (like <A HREF="#EventIDs">CM_KEYPRESS</A>,
+<A HREF="#CM_WPAINT">CM_WPAINT</A>, etc. These codes are defined in enum <A HREF="#EventIDs">EventIDs</A>. These
+messages are the most common messages, and such messages are the most usable messages
+in user applications. See <A HREF="#EventIDs">EventIDs</A> for detailed description of the meaning
+of such messages.</P></LI>
+<LI><P> If 0x500 &lt;=<I>Type</I> &lt; 0x700, the message is a custom command message. The interpretation
+of such messages is strictly task-dependent. The TIOS uses such messages in dialogs, etc.</P></LI>
+<LI><P> If <I>Type</I> &lt; 0x500, XR_string (see <A HREF="system.html#XR_stringPtr">XR_stringPtr</A>)
+is sent as the message. This is used for internal purposes in TIOS.</P></LI>
+</UL>
+<P>Here is the description what EV_sendEvent exactly does:</P>
+<UL>
+<LI><P>If <A HREF="#EV_hook">EV_hook</A> pointer is not <A HREF="alloc.html#NULL">NULL</A>, then a routine
+pointed to by it is called, passing <I>event</I> to it.</P></LI>
+<LI><P>If there is an user event handler installed (using <A HREF="#EV_captureEvents">EV_captureEvents</A>),
+the user handler is called, and <I>event</I> is passed to it. In this case, parameter
+<I>TaskID</I> is ignored. The only exception is when the message is <A HREF="#CM_WPAINT">CM_WPAINT</A>.
+In this case, the user handler is called only if <I>TaskID</I> is <A HREF="#StandardTaskIDs">AP_NULL</A>.</P></LI>
+<LI><P>If there is no user event handler installed, the message <I>event</I> is sent to the
+default application-dependent event handler, which is determined by parameter <I>TaskID</I>.
+Note that default application-dependent event handler will not be called if there is an
+user event handler installed. The exception is when the message is <A HREF="#CM_WPAINT">CM_WPAINT</A>.
+This message is always dispatched to the default application-dependent handler, except if
+<I>TaskID</I> is <A HREF="#StandardTaskIDs">AP_NULL</A>.</P></LI>
+</UL>
+<P>Note that task ID numbers are inconsistent between AMS versions, so always call
+<A HREF="#EV_getAppID">EV_getAppID</A> before to determine an appropriate task ID,
+or use special task IDs <A HREF="#StandardTaskIDs">AP_CURRENT</A>,
+<A HREF="#StandardTaskIDs">AP_RUNNING</A> and <A HREF="#StandardTaskIDs">AP_NONE</A>,
+which are AMS-independent.
+<BR><BR>
+If you want to send an event from the user event handler, you can enter into
+an infinite recursion. Here is an example how to avoid this. The following program will
+change the behaviour of the ENTER key to behave like pressing DIAMOND+ENTER.
+So, run the following program (called "Approximation Mode"). After this, the ENTER key
+will behave like DIAMOND+ENTER
+(note that the program is "resident": it is active for whole time, although you have
+feeling that you are in "Home screen" for example). The ENTER key will remain redefined
+until the user press DIAMOND+ENTER. After this, the original function of the ENTER key
+is restored, and the program finishes working.</P>
+<PRE>// Run Home Screen in approximation mode
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+volatile EVENT_HANDLER Old_Handler;
+
+CALLBACK void Handler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_KEYPRESS)
+    {
+      if (ev-&gt;extra.Key.Code == KEY_DIAMOND + KEY_ENTER)
+        ER_throw (1);
+      if (ev-&gt;extra.Key.Code == KEY_ENTER)
+        ev-&gt;extra.Key.Code = KEY_DIAMOND + KEY_ENTER;
+    }
+  /* Send the event to the default application handler,
+     but be careful to avoid infinite recursion! */
+  EV_captureEvents (Old_Handler);
+  EV_sendEvent (AP_CURRENT, ev);
+  Old_Handler = EV_captureEvents (Handler);
+}
+
+void _main(void)
+{
+  Old_Handler = EV_captureEvents (Handler);
+  TRY
+    EV_eventLoop ();
+  ONERR
+    EV_captureEvents (Old_Handler);
+  ENDTRY
+}
+</PRE>
+<P>Of course, this program is not extremely useful: the much easier method to achieve the same
+functionality is to set the calculator to "APPROX" mode. But, note that this is just an
+example, which should give you an idea how to redefine the keyboard.
+<BR><BR>
+<B>Note:</B> The destination application does not have to be started or active to receive
+messages. You should first start the application using <A HREF="#EV_startApp">EV_startApp</A>
+if it is important that the application be on the screen before it receives an event.</P>
+
+<HR>
+<H3><A NAME="EV_sendEventSide"><U>EV_sendEventSide</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_sendEventSide (<B><A HREF="keywords.html#short">short</A></B> TaskID, <A HREF="#EVENT">EVENT</A> *event, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Side);</TD></TR></TABLE></P>
+<P><B>Sends an event message from the given side.</B></P>
+
+<P>EV_sendEventSide is very similar to <A HREF="#EV_sendEvent">EV_sendEvent</A>. The only difference
+is in the fact that EV_sendEventSide fills the field <I>Side</I> of the event structure with
+the value of parameter <I>Side</I>. <A HREF="#EV_sendEvent">EV_sendEvent</A> fills this
+field with the current side number (0=left or top side, 1 = right or bottom side). This
+field allows the message handler to determine which side (of course, in split screen mode)
+the message is sent from, so it allows a primitive kind of multitasking.</P>
+
+<HR>
+<H3><A NAME="EV_sendString"><U>EV_sendString</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_sendString (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> XR_String);</TD></TR></TABLE></P>
+<P><B>Sends XR string to the running application.</B></P>
+
+<P>EV_sendString is an internal function which sends the XR string (see
+<A HREF="system.html#XR_stringPtr">XR_stringPtr</A>) to the running application via
+a <A HREF="#EventIDs">CM_STRING</A> message. <I>XR_String</I> is the code of
+the XR string which will be sent.</P>
+
+<HR>
+<H3><A NAME="EV_setCmdCheck"><U>EV_setCmdCheck</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_setCmdCheck (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> ID, <B><A HREF="keywords.html#short">short</A></B> State);</TD></TR></TABLE></P>
+<P><B>Checks/unchecks a menu item in the current application.</B></P>
+
+<P>This function sets or clears the check mark on a menu item in the current
+application. It is related to <A HREF="menus.html#MenuCheck">MenuCheck</A>
+from the <A HREF="menus.html">menus.h</A> header file.
+EV_setCmdCheck checks or unchecks the item with the specified <I>ID</I>
+(see <A HREF="#EV_registerMenu">EV_registerMenu</A>).
+<BR><BR>
+<I>State</I> should be one of the following values as defined in the
+<A HREF="menus.html#MenuCheckCmds">MenuCheckCmds</A> enum:
+<BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>MC_CHECK</TD>
+  <TD>Display a check mark next to the menu item.</TD>
+</TR>
+<TR>
+  <TD>MC_UNCHECK</TD>
+  <TD>AMS 2.00 or higher: Remove the check mark.</TD>
+</TR>
+<TR>
+  <TD>MC_FLIP</TD>
+  <TD>Invert the status of the check mark.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+<B>Note:</B> Unlike <A HREF="menus.html#MenuCheck">MenuCheck</A>, you
+cannot use the <A HREF="menus.html#MenuCheckCmds">MC_STATUS</A> command
+to retrieve the status of the checkmark.</P>
+
+<HR>
+<H3><A NAME="EV_setCmdState"><U>EV_setCmdState</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_setCmdState (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> cmd, <B><A HREF="keywords.html#short">short</A></B> State);</TD></TR></TABLE></P>
+<P><B>Changes the status (active/inactive) of a menu command in the current application.</B></P>
+
+<P>EV_setCmdState is similar to <A HREF="#EV_setFKeyState">EV_setFKeyState</A>, but works with
+command pulldown menus associated with the main toolbar menu which belongs to the current application.
+EV_setCmdState changes the status of the command item which has its <I>ret_val</I>
+(see <A HREF="#EV_registerMenu">EV_registerMenu</A>) equal to the <I>cmd</I>. For example,
+if you execute</P>
+<PRE>EV_setCmdState (CM_MENU_CUT, FALSE);
+</PRE>
+<P>in your program, you will see that the "Cut" command in the "Home screen" menu will be disabled
+(note that "Home screen" is the current application if you didn't use <A HREF="#EV_startApp">EV_startApp</A>
+in your program). <A HREF="#EventIDs">CM_MENU_CUT</A> is, of course, the code of the "Cut" menu command.</P>
+
+<P>See also: <A HREF="menus.html#MenuSubStat">MenuSubStat</A></P>
+<HR>
+<H3><A NAME="EV_setFKeyState"><U>EV_setFKeyState</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_setFKeyState (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Item, <B><A HREF="keywords.html#short">short</A></B> State, <B><A HREF="keywords.html#short">short</A></B> Redraw);</TD></TR></TABLE></P>
+<P><B>Changes the status (active/inactive) of a toolbox in the menu associated with current application.</B></P>
+
+<P>EV_setFKeyState changes the status of the toolbox <I>Item</I> (0 = first, 1 = second
+etc.) which belongs to the menu associated with the current application
+(see also <A HREF="menus.html#MenuTopStat">MenuTopStat</A>).
+<I>State</I> is a Boolean value: when it is <A HREF="alloc.html#Bool">TRUE</A>, the toolbox will be
+active, and when it is <A HREF="alloc.html#Bool">FALSE</A>, the toolbox will be inactive (i.e. it will be
+dimmed, and it cannot be selected).
+<BR><BR>
+EV_setFKeyState can also force redrawing of the menu after changing state: to do this,
+set Boolean parameter <I>Redraw</I> to <A HREF="alloc.html#Bool">TRUE</A>.
+Avoid menu redraw flicker when enabling/disabling several
+function keys by specifying <A HREF="alloc.html#Bool">FALSE</A> for <I>redraw</I> in all but the
+last call to this routine.</P>
+
+<P>See also: <A HREF="menus.html#MenuTopStat">MenuTopStat</A></P>
+<HR>
+<H3><A NAME="EV_startApp"><U>EV_startApp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_startApp (<A HREF="alloc.html#HANDLE">HANDLE</A> TaskID, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> StartType);</TD></TR></TABLE></P>
+<P><B>Starts an application from any state.</B></P>
+
+<P>EV_startApp is dedicated to "start the application". It changes current application to
+<I>TaskID</I> and sends a sequence of messages to it (how they will be interpreted
+depends on the concrete application), so this command may be used for changing the
+current application.
+<BR><BR>
+It is not likely that following information will be very useful for you (except if
+you are an expert who wants to make a new high perfomance flash application), but anyway
+here is the pseudo-code which describes what exactly EV_startApp does:</P>
+<PRE>if <I>TaskID</I> is equal to the current application
+  if <I>StartType</I> is <A HREF="#StartTypes">AP_START_CURRENT</A>
+    send <A HREF="#EventIDs">CM_START_CURRENT</A> to the current application
+  else {<I>change task</I>}
+    send <A HREF="#CM_UNFOCUS">CM_UNFOCUS</A>, <A HREF="#CM_DEACTIVATE">CM_DEACTIVATE</A> and <A HREF="#EventIDs">CM_ENDTASK</A> to the current application
+    call <A HREF="#EV_startTask">EV_startTask</A>, passing <I>StartTask</I> to it
+    send <A HREF="#CM_ACTIVATE">CM_ACTIVATE</A> and <A HREF="#CM_FOCUS">CM_FOCUS</A> to the current application
+  endif
+else {<I>new application</I>}
+  send <A HREF="#CM_UNFOCUS">CM_UNFOCUS</A> and <A HREF="#CM_DEACTIVATE">CM_DEACTIVATE</A> to the current application
+  if <I>TaskID</I> is equal to the application on the other side
+   and if the calculator is in "two-graph" mode
+   or <I>TaskID</I> is not "Graph", "Window Editor", "Table" nor "Y=&nbsp;Editor"
+    set current application to <I>TaskID</I>
+    invert current side
+    call <A HREF="#EV_notifySwitchGraph">EV_notifySwitchGraph</A>
+    if <I>StartType</I> is not <A HREF="#StartTypes">AP_START_CURRENT</A>
+      send <A HREF="#EventIDs">CM_ENDTASK</A> to the new application
+      call <A HREF="#EV_startTask">EV_startTask</A>, passing <I>StartTask</I> to it
+    endif
+  else
+    send <A HREF="#EventIDs">CM_ENDTASK</A> to the current application
+    set current application to <I>TaskID</I>
+    call <A HREF="#EV_startTask">EV_startTask</A>, passing <I>StartTask</I> to it
+  endif
+  send <A HREF="#CM_ACTIVATE">CM_ACTIVATE</A> and <A HREF="#CM_FOCUS">CM_FOCUS</A> to the new application
+endif
+</PRE>
+<P>Under normal circumstances, you should start another application with
+<I>StartType</I> set to <A HREF="#StartTypes">AP_START_CURRENT</A>.
+<BR><BR>
+<B>Note:</B> Task ID numbers are inconsistent between AMS versions (see <A HREF="#EV_getAppID">EV_getAppID</A> for
+more info). So, if you, for example, want to start the "Numeric Solver" application, the AMS-independent
+way to do this is</P>
+<PRE>EV_startApp (EV_getAppID ("TIINSLVR"), AP_START_CURRENT);
+</PRE>
+<P>Also, some common applications (like "Graph", "Table" or "Home screen") may be started
+safely using some commands from <A HREF="bascmd.html">bascmd.h</A> header file.</P>
+
+<HR>
+<H3><A NAME="EV_startSide"><U>EV_startSide</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_startSide (<B><A HREF="keywords.html#short">short</A></B> *saveTaskID, <A HREF="alloc.html#HANDLE">HANDLE</A> TaskID, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Side);</TD></TR></TABLE></P>
+<P><B>Starts the given side.</B></P>
+
+<P>EV_startSide first sends <A HREF="#EventIDs">CM_STARTTASK</A> message to the application
+with ID number <I>TaskID</I>. Field <I>StartType</I> of the event structure will be set
+to <A HREF="#StartTypes">AP_START_CURRENT</A>, and field <I>r</I> (in <I>extra</I> field)
+of the event structure will be filled from the result of executing <A HREF="#EV_getSplitRect">EV_getSplitRect</A>
+function (with <I>Side</I> given to it as the parameter). See <A HREF="#EV_startTask">EV_startTask</A>.
+This is all if the current side is not equal to <I>Side</I>, else messages
+<A HREF="#CM_ACTIVATE">CM_ACTIVATE</A> and <A HREF="#CM_FOCUS">CM_FOCUS</A> will also be sent
+to the task <I>TaskID</I> and side <I>Side</I> (using <A HREF="#EV_sendEventSide">EV_sendEventSide</A>).
+EV_startSide also fills the variable pointed to by <I>saveTaskID</I> with <I>TaskID</I> (I
+don't know what the purpose of this is).</P>
+
+<P>See also: <A HREF="#EV_startApp">EV_startApp</A></P>
+<HR>
+<H3><A NAME="EV_startTask"><U>EV_startTask</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_startTask (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> StartType);</TD></TR></TABLE></P>
+<P><B>Starts a particular task in the running application.</B></P>
+
+<P>EV_startTask sends <A HREF="#EventIDs">CM_STARTTASK</A> message to the running application.
+Field <I>StartType</I> of the event structure will be filled from <I>StartType</I>
+parameter of this function (this is the only message in which <I>StartType</I> field
+is significant). Field <I>r</I> (in <I>extra</I> field) of the event structure will be
+filled from the result of executing <A HREF="#EV_getSplitRect">EV_getSplitRect</A> function
+(with current side given to it as the parameter).
+How <I>StartType</I> will be interpreted depends on the concrete application. Usually,
+three types of "starting" are supported: <A HREF="#StartTypes">AP_START_CURRENT</A>,
+<A HREF="#StartTypes">AP_START_NEW</A> and <A HREF="#StartTypes">AP_START_OPEN</A> (these
+constants are defined in enum <A HREF="#StartTypes">StartTypes</A>. For example, Text and
+Data/Matrix editor may be started in three submodes: "Current", "Open" and "New".
+Under normal circumstances, you should start another task with
+<A HREF="#StartTypes">AP_START_CURRENT</A>.</P>
+
+<HR>
+<H3><A NAME="EV_suspendPainting"><U>EV_suspendPainting</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EV_suspendPainting (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Suspends window painting.</B></P>
+
+<P>EV_suspendPainting sets a flag which indicates that window painting is suspended
+(see <A HREF="#EV_eventLoop">EV_eventLoop</A> and <A HREF="#EV_paintWindows">EV_paintWindows</A>).
+Returns <A HREF="#PaintFlags">PAINTING_ENABLED</A> or <A HREF="#PaintFlags">PAINTING_SUSPENDED</A>
+depending on whether painting was enabled or disabled before calling this function (these constants
+are defined in enum <A HREF="#PaintFlags">PaintFlags</A>), so the returned value may be later
+used in the <A HREF="#EV_restorePainting">EV_restorePainting</A> function.</P>
+
+<HR>
+<H3><A NAME="EV_switch"><U>EV_switch</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_switch (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Performs switching of sides.</B></P>
+
+<P>EV_switch performs side switching. It does nothing if the current "Split Screen" mode is "FULL".
+Else, it sends <A HREF="#CM_UNFOCUS">CM_UNFOCUS</A> and <A HREF="#CM_DEACTIVATE">CM_DEACTIVATE</A> messages,
+inverts current side, sets the current application to the application on the other side, calls
+<A HREF="#EV_notifySwitchGraph">EV_notifySwitchGraph</A>, and finally, sends
+<A HREF="#CM_ACTIVATE">CM_ACTIVATE</A> and <A HREF="#CM_FOCUS">CM_FOCUS</A> messages to the
+new application.
+<BR><BR>
+<B>Note:</B> In AMS 2.xx, this function is extended to allow switching between the current application
+and the application which last ran before the current application.</P>
+
+<HR>
+<H3><A NAME="handleRclKey"><U>handleRclKey</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> handleRclKey (<B><A HREF="keywords.html#short">short</A></B> CRstatus);</TD></TR></TABLE></P>
+<P><B>Displays the standard "Recall Variable" dialog.</B></P>
+
+<P>handleRclKey is the default handler for the 'RCL' key (called from
+<A HREF="#EV_defaultHandler">EV_defaultHandler</A> when processing
+a <A HREF="#EventIDs">CM_RECALL</A> message).
+A pop-up dialog box is displayed requesting the name of a variable. The
+contents of the variable are converted to text and pasted to the current
+application as a <A HREF="#EventIDs">CM_HSTRING</A> message. Nothing is
+pasted if the user pressed 'ESC' to cancel the dialog.
+<BR><BR>
+<I>CRstatus</I> is a boolean parameter. If it is
+<A HREF="alloc.html#Bool">TRUE</A>, carriage returns are converted to
+colons after the contents of the variable have been converted to text. The
+variable itself is not changed. If it is
+<A HREF="alloc.html#Bool">FALSE</A>, carriage returns remain unchanged.
+<BR><BR>
+<B>Note:</B> This function may cause heap compression and may throw errors.</P>
+
+<P>See also: <A HREF="#handleVarLinkKey">handleVarLinkKey</A></P>
+<HR>
+<H3><A NAME="handleVarLinkKey"><U>handleVarLinkKey</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> handleVarLinkKey (<B><A HREF="keywords.html#short">short</A></B> type);</TD></TR></TABLE></P>
+<P><B>Displays the standard "Var-Link" dialog.</B></P>
+
+<P>handleVarLinkKey shows the "Var-Link" screen and allows the user to select a
+variable of type <I>type</I>. Valid values for <I>type</I> are described in the
+enum <A HREF="vat.html#SystemDataTypes">SystemDataTypes</A>. In addition to those,
+you can OR type with 0x8000 to forbid the user to change (i.e. delete, copy,
+rename, etc.) any variables. The name of any variable or folder selected is
+sent back to the currently active application as a
+<A HREF="#EventIDs">CM_HSTRING</A> message.
+<BR><BR>
+This routine may cause heap compression.</P>
+
+<P>See also: <A HREF="#handleRclKey">handleRclKey</A>, <A HREF="vat.html#GetDataType">GetDataType</A>, <A HREF="vat.html#SmapTypeStrings">SmapTypeStrings</A></P>
+<HR>
+<H3><A NAME="MO_currentOptions"><U>MO_currentOptions</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MO_currentOptions (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Fills in options structure from current mode settings.</B></P>
+
+<P>MO_currentOptions fills the structure pointed to by
+<A HREF="#ModeSettings">ModeSettings</A> and <A HREF="#MO_option">MO_option</A>
+from current mode settings. It should always be called before using <A HREF="#MO_digestOptions">MO_digestOptions</A>.</P>
+
+<HR>
+<H3><A NAME="MO_defaults"><U>MO_defaults</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MO_defaults (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Sets default mode settings.</B></P>
+
+<P>MO_defaults resets options structure (i.e. fills the structure pointed to by
+<A HREF="#ModeSettings">ModeSettings</A> and
+<A HREF="#MO_option">MO_option</A> with default settings), then calls
+<A HREF="#MO_digestOptions">MO_digestOptions</A> to dispatch these settings to
+applications.</P>
+
+<HR>
+<H3><A NAME="MO_digestOptions"><U>MO_digestOptions</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MO_digestOptions (<B><A HREF="keywords.html#short">short</A></B> Folder);</TD></TR></TABLE></P>
+<P><B>Updates system mode settings from options structure.</B></P>
+
+<P>MO_digestOptions "digests" options from the <A HREF="#ModeSettings">ModeSettings</A>
+structure (in other words, the <A HREF="#MO_option">MO_option</A> array)
+into the various TIOS system variables. It should be called after each change of the options
+structure to notify the calculator about changes. This routine may change the status line
+indicators. It also notifies all applications about eventual changes, if there was any
+essential changes (using <A HREF="#MO_notifyModeChange">MO_notifyModeChange</A>). If new
+mode settings need a change of current application or side, it may also quit an application
+(see <A HREF="#MO_sendQuit">MO_sendQuit</A>), switch sides, start a new applications/tasks
+etc. which in fact means sending a sequence of messages to applications (see
+<A HREF="#EV_startApp">EV_startApp</A> etc.).
+<BR><BR>
+Parameter <I>Folder</I> is the index (ordinal number) of the current folder in the folder
+list. Under normal conditions, you should always pass zero to this parameter. The mode dialog
+box calls MO_digestOptions with non-zero argument to indicate which folder name is highlighted
+in the "Current Folder" popup menu.</P>
+
+<HR>
+<H3><A NAME="MO_isMultigraphTask"><U>MO_isMultigraphTask</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> MO_isMultigraphTask (<B><A HREF="keywords.html#short">short</A></B> TaskID);</TD></TR></TABLE></P>
+<P><B>Checks whether a task is multigraph task.</B></P>
+
+<P>MO_isMultigraphTask returns <A HREF="alloc.html#Bool">TRUE</A> if the task with ID number <I>TaskID</I>
+is "Y=&nbsp;Editor", "Window Editor", "Graph" or "Table" (these tasks are tasks which may
+be doubled in two different part of the screen), otherwise it returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="MO_modeDialog"><U>MO_modeDialog</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MO_modeDialog (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Executes "MODE" dialog.</B></P>
+
+<P>MO_modeDialog opens the "MODE" dialog, and allows the user to set mode options. If the user
+pressed ENTER key, <A HREF="#MO_digestOptions">MO_digestOptions</A> will be called to
+"digest" new settings to TIOS. If the user pressed ESC key, nothing will happen. In each
+case, the dialog will be removed from the screen after pressing ENTER or ESC.</P>
+
+<HR>
+<H3><A NAME="MO_notifyModeChange"><U>MO_notifyModeChange</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MO_notifyModeChange (<B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Sends mode change notify message to all applications.</B></P>
+
+<P>MO_notifyModeChange sends a <A HREF="#CM_MODE_CHANGE">CM_MODE_CHANGE</A> message to all
+applications (note that the "Graph" application will receive this message first). This function
+also has a parameter <I>Flags</I>, which contains a set of flags which describes what exactly
+was changed. This parameter is attached to message in the <I>extra</I> field of the message, so it
+gives more information to applications on what they need to check.
+<BR><BR>
+The flags can be one of the following as enumerated in <A HREF="#MoNotifyFlags">MoNotifyFlags</A>:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_FOLDER</TD><TD VALIGN="TOP">The current folder has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_GRAPH_COUNT</TD><TD VALIGN="TOP">2 graph mode or 1 graph mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_GRAPH_TYPE_1</TD><TD VALIGN="TOP">Graph mode change.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_GRAPH_TYPE_2</TD><TD VALIGN="TOP">Graph mode change for graph 2 if in 2
+graph mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_SPLIT</TD><TD VALIGN="TOP">The screen size has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_ANGLE</TD><TD VALIGN="TOP">The angle mode has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_PRECISION</TD><TD VALIGN="TOP">The precision has changed between
+EXACT, APPROX and AUTO.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_FIX</TD><TD VALIGN="TOP">Fix digits or float precision change.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_NUMBER_FORMAT</TD><TD VALIGN="TOP">Exponential format: Normal, scientific
+or engineering.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_VECTOR_FORMAT</TD><TD VALIGN="TOP">Rectangular, cylindrical or spherical.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_COMPLEX_FORMAT</TD><TD VALIGN="TOP">Real, rectangular or polar.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_PRETTY_PRINT</TD><TD VALIGN="TOP">Pretty Print has been switched on or off.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_UNIT_SYSTEM</TD><TD VALIGN="TOP">SI, ENG/US or CUSTOM unit system.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_BASE</TD><TD VALIGN="TOP">DEC, HEX or BIN base.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_LANGUAGE</TD><TD VALIGN="TOP">AMS 2.00 or higher: The language mode has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">MO_NOTIFY_DESKTOP</TD><TD VALIGN="TOP">AMS 2.07 or higher: The Apps Desktop has been switched on or off.</TD>
+</TR>
+</TABLE></P>
+
+<HR>
+<H3><A NAME="MO_sendQuit"><U>MO_sendQuit</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> MO_sendQuit (<B><A HREF="keywords.html#short">short</A></B> TaskID, <B><A HREF="keywords.html#short">short</A></B> Side);</TD></TR></TABLE></P>
+<P><B>Quits an application on given side.</B></P>
+
+<P>MO_sendQuit quits an application on side <I>Side</I> (0=left/top, 1 = right/bottom).
+This is what pressing of the QUIT key does.
+More precise, if <I>Side</I> is equal to the current side, the side will receive
+<A HREF="#CM_UNFOCUS">CM_UNFOCUS</A> and <A HREF="#CM_DEACTIVATE">CM_DEACTIVATE</A> messages.
+After this, the application will receive <A HREF="#EventIDs">CM_ENDTASK</A> message.
+Finally, the application on side <I>Side</I> will be set to <A HREF="#StandardTaskIDs">CM_NULL</A>.
+If the application on side <I>Side</I> is already <A HREF="#StandardTaskIDs">CM_NULL</A>,
+nothing will be performed.
+<BR><BR>
+<B>Note:</B> If you don't understand what "quitting" means, try MO_sendQuit(AP_CURRENT, 0) from
+your program to "quit" the "Home screen" application.
+You will notice that the menu will dissappear. Later, executing commands will not show results
+in the home screen, because "repainting" of the "Home screen" window will be suspended
+(the application is set to <A HREF="#StandardTaskIDs">CM_NULL</A>).</P>
+
+<HR>
+<H3><A NAME="TIOS_EV_getAppID"><U>TIOS_EV_getAppID</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> TIOS_EV_getAppID (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *TaskName);</TD></TR></TABLE></P>
+<P><B>Finds a task ID number for an application, AMS 2.xx only.</B></P>
+
+<P>This the AMS routine called by <A HREF="#EV_getAppID">EV_getAppID</A> on AMS 2.xx.<BR>
+Upon failure to find the application ID, this routine returns 0, while EV_getAppID returns -1.<BR>
+If your program needs MIN_AMS >= 200 for another reason, you should use this function instead of
+using EV_getAppID: it will save space in your program.</P>
+
+<P>See also: <A HREF="#EV_getAppID">EV_getAppID</A></P>
+<HR>
+<H3><A NAME="EV_flags"><U>EV_flags</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#EV_FLAGS_enum">EV_FLAGS</A> EV_flags;</TD></TR></TABLE></P>
+<P><B>State information for the event manager.</B></P>
+
+<HR>
+<H3><A NAME="EV_hook"><U>EV_hook</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#EVENT_HANDLER">EVENT_HANDLER</A> EV_hook;</TD></TR></TABLE></P>
+<P><B>A global variable pointing to the "hook" event handler.</B></P>
+
+<P>EV_hook is a global pointer variable which points to the "hook" event handler (or
+<A HREF="alloc.html#NULL">NULL</A> if there is no "hook" handler installed. Hook handler hooks
+events like <A HREF="#EV_captureEvents">EV_captureEvents</A>, however, the application
+handler (either default application handler or user handler installed with
+<A HREF="#EV_captureEvents">EV_captureEvents</A>) is still called afterwards (see
+<A HREF="#EV_sendEvent">EV_sendEvent</A> for more info. This is probably meant for
+debugging purposes as it is never used in TIOS.
+<BR><BR>
+Using EV_hook you can capture all messages and process them as you like, without
+overriding current handlers. So, you can use it to change behaviour of some events,
+or add new functionalities. DoorsOS for example uses EV_hook to add SHIFT+ON feature.
+You also can hook the APPS key and display a different menu in which your application
+set will be listed (then you can start your own event driven application via
+<A HREF="#EV_captureEvents">EV_captureEvents</A>). If you understand principles
+described in this header file, this is not so hard. If you didn't understand what
+is written here, don't try to play with this...</P>
+
+<HR>
+<H3><A NAME="MO_option"><U>MO_option</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *<B><A HREF="keywords.html#const">const</A></B> MO_option;</TD></TR></TABLE></P>
+<P><B>Contains a pointer to the global mode settings array.</B></P>
+
+<P>MO_option is a constant pointer to an array of words (unsigned shorts) equivalent to the
+<A HREF="#MO_OPTIONS">MO_OPTIONS</A> structure pointed to by
+<A HREF="#ModeSettings">ModeSettings</A>. In fact, the definition is almost exactly
+the same, only the pointer type differs for compatibility with TI's compiler.</P>
+
+<P>See also: <A HREF="#ModeSettings">ModeSettings</A></P>
+<HR>
+<H3><A NAME="ModeSettings"><U>ModeSettings</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#MO_OPTIONS">MO_OPTIONS</A> *<B><A HREF="keywords.html#const">const</A></B> ModeSettings;</TD></TR></TABLE></P>
+<P><B>Contains a pointer to the global <A HREF="#MO_OPTIONS">MO_OPTIONS</A> structure.</B></P>
+
+<P>ModeSettings is the constant pointer to the <A HREF="#MO_OPTIONS">MO_OPTIONS</A> structure,
+which keeps all mode settings together. But note that this structure is "auxiliary": TIOS
+consults other variables to check various mode settings when necessary. So, values in this
+structure are correct only after calling <A HREF="#MO_currentOptions">MO_currentOptions</A>, and
+after changing one or more values in this structure, you need to call
+<A HREF="#MO_digestOptions">MO_digestOptions</A> to inform TIOS about any changes. So, if you
+want, for example, to change "Display Digits" settings to "FIX 4" and "Complex Format" to
+"POLAR", you should do:</P>
+<PRE>MO_currentOptions ();
+ModeSettings-&gt;Fix = 5;
+ModeSettings-&gt;Complex = 3;
+MO_digestOptions (0);
+</PRE>
+
+<P>See also: <A HREF="#MO_option">MO_option</A></P>
+<HR>
+<H3><A NAME="EV_FLAGS_enum"><U>EV_FLAGS</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#enum">enum</A></B> {EV_OFF = 0x0001, EV_SUSPEND_PAINTING = 0x0002} EV_FLAGS;</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible bits for <A HREF="#EV_flags">EV_flags</A>.</B></P>
+
+<P><B>EV_OFF</B>: The default event handler sets this flag when the 2ND + OFF key is pressed.
+The EV_OFF flag will never be set when any events are sent to an application, you should
+never see this flag set.<BR>
+<BR>
+<B>EV_SUSPEND_PAINTING</B>: This flag is set by
+<A HREF="#EV_suspendPainting">EV_suspendPainting</A> and restored by
+<A HREF="#EV_restorePainting">EV_restorePainting</A>.
+The event manager quits sending CM_WPAINT messages when this flag is set, and resumes painting when this flag is clear.</P>
+
+<P>See also: <A HREF="#EV_flags">EV_flags</A></P>
+<HR>
+<H3><A NAME="EVENT_HANDLER"><U>EVENT_HANDLER</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#void">void</A></B> (* EVENT_HANDLER) (<A HREF="#EVENT">EVENT</A> *) <A HREF="gnuexts.html#SEC85">CALLBACK</A>;</TD></TR></TABLE></P>
+<P><B>A pointer to an event handler.</B></P>
+
+<P>EVENT_HANDLER is a pointer type, pointing to a void function which
+accepts one parameter which is a pointer to an <A HREF="#EVENT">EVENT</A>.
+See <A HREF="#EV_captureEvents">EV_captureEvents</A> and <A HREF="#EV_hook">EV_hook</A>
+for more info.</P>
+
+<HR>
+<H3><A NAME="EVENT"><U>EVENT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> EventStruct {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Type; <I>/* ID code of the message, see <A HREF="#EventIDs">EventIDs</A> */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> RunningApp; <I>/* Task ID of the sender of the message */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Side; <I>/* Side from which message is sent */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> StatusFlags; <I>/* Status line flags */</I><BR>
+<B><A HREF="keywords.html#union">union</A></B> <I>/* Message-dependent extra information: see <A HREF="#EventIDs">EventIDs</A> */</I> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="wingraph.html#WINDOW">WINDOW</A> *w;<BR>
+<A HREF="wingraph.html#WIN_RECT">WIN_RECT</A> *r;<BR>
+<B><A HREF="keywords.html#int">char</A></B> *pasteText;<BR>
+<A HREF="alloc.html#HANDLE">HANDLE</A> hPasteText;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Mod; <I>/* Key modifiers (SHIFT, etc.) */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Code; <I>/* Key code */</I><BR>
+</TD></TR></TABLE>
+} Key;<BR>
+</TD></TR></TABLE>
+} extra;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> StartType; <I>/* Used only in the CM_STARTTASK message */</I><BR>
+</TD></TR></TABLE>
+} EVENT;</TD></TR></TABLE></P>
+<P><B>A structure describing an event message.</B></P>
+
+<P>EVENT is a structure which describes an event message in an event-driven application.</P>
+
+<HR>
+<H3><A NAME="EventIDs"><U>EventIDs</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> EventIDs {...};</TD></TR></TABLE></P>
+<P><B>An enumeration describing IDs of system messages.</B></P>
+
+<P>EventIDs is enumerated type for describing ID numbers of system messages (they are
+stored in the <I>Type</I> field of the <A HREF="#EVENT">EVENT</A> structure. All possible
+ID numbers (everything is in hex) are described in the following table. "Extra field" describes which
+subfield in <I>extra</I> union field of <A HREF="#EVENT">EVENT</A> structure
+is used for storing extra information (if any). "(depr.)" after a name specifies that
+this name is deprecated.
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+  <TR>
+    <TD VALIGN="TOP"><B>Code</B></TD>
+    <TD VALIGN="TOP"><B>Message name</B></TD>
+    <TD VALIGN="TOP"><B>Description</B></TD>
+    <TD VALIGN="TOP"><B>Extra field</B></TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x0</TD>
+    <TD VALIGN="TOP"><A NAME="CM_NOTHING">CM_NOTHING</A></TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x1 - 0x4FF</TD>
+    <TD VALIGN="TOP"><A NAME="CM_LAST_STRING_NUMBER">CM_LAST_STRING_NUMBER</A></TD>
+    <TD VALIGN="TOP">Built-in strings:<BR>
+Strings for the AMS are stored in a table for lanugage customization. <A HREF="#EV_defaultHandler">EV_defaultHandler</A> will
+turn these events into CM_PASTE_STRING events for the application to process. For compatibility
+with TI's Flash Studio, CM_LAST_STRING_NUMBER (0x4FF) is defined here.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x500</TD>
+    <TD VALIGN="TOP"><A NAME="CM_FIRST_APP_ID">CM_FIRST_APP_ID</A></TD>
+    <TD VALIGN="TOP">Commands in the range 0x500 - 0x6FF are reserved for applications.
+Generally, these commands refer to Menu choices made by the user while running the application.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x700</TD>
+    <TD VALIGN="TOP"><A NAME="CM_FIRST_SYS_ID">CM_FIRST_SYS_ID</A></TD>
+    <TD VALIGN="TOP">Commands in the range 0x700 - 0x7BF are reserved for use by the AMS.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x700</TD>
+    <TD VALIGN="TOP">CM_NULL<BR>CM_IDLE&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Idle (<A HREF="system.html#idle">idle</A> is called after message sent).
+This message is sent to the active application when there are no other
+events to process. The application might use this event to
+take care of some background processing or update an animated display.
+This message is used for example in spinning of 3D graph.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x701</TD>
+    <TD VALIGN="TOP"><A NAME="CM_INIT">CM_INIT</A></TD>
+    <TD VALIGN="TOP">Init application. This message is sent
+from <A HREF="#EV_centralDispatcher">EV_centralDispatcher</A> after a reset
+or when batteries are inserted.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x702</TD>
+    <TD VALIGN="TOP">CM_START<BR>CM_STARTTASK&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Start Task (in rect <I>r</I>). This message is sent
+to a task when it is being started. <I>r</I> is a rectangle with the requested window
+location and size chosen by the user from the mode screen settings.
+The application passes it to <A HREF="wingraph.html#WinOpen">WinOpen</A> to create
+its initial window. <I>StartType</I> field of the message is checked here
+(see <A HREF="#EV_startTask">EV_startTask</A>), because some applications display a
+"Current/Open/New" submenu on the APPS menu, so this field is needed to tell
+the application which submenu command was selected by the user.</TD>
+    <TD VALIGN="TOP">r</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x703</TD>
+    <TD VALIGN="TOP"><A NAME="CM_ACTIVATE">CM_ACTIVATE</A></TD>
+    <TD VALIGN="TOP">Activate. Applications usually respond to this message by
+highlighting their window border to make it apparent to the user which application
+is active, by setting menu command states,
+and by updating (or activating) registered menus (see <A HREF="#EV_registerMenu">EV_registerMenu</A>.
+Calling <A HREF="#EV_defaultHandler">EV_defaultHandler</A> will register and start the default toolbar
+for the running application.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x704</TD>
+    <TD VALIGN="TOP"><A NAME="CM_FOCUS">CM_FOCUS</A></TD>
+    <TD VALIGN="TOP">Focus. Applications usually respond to this message by getting Mode options, and by
+giving the focus to the application editor (see <A HREF="textedit.html#TE_focus">TE_focus</A>
+in <A HREF="textedit.html">textedit.h</A> header file).
+This usually means making the cursor flashing.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x705</TD>
+    <TD VALIGN="TOP"><A NAME="CM_UNFOCUS">CM_UNFOCUS</A></TD>
+    <TD VALIGN="TOP">UnFocus. Usually used on switching sides.
+When used on the text editor, it means turning of the cursor flashing.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x706</TD>
+    <TD VALIGN="TOP"><A NAME="CM_DEACTIVATE">CM_DEACTIVATE</A></TD>
+    <TD VALIGN="TOP">DeActivate.
+This message is sent to the active application to inform it that it no longer
+holds the interactive center of attention. Applications usually respond to this
+message by hiding menus and releasing the memory occupied by them.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x707</TD>
+    <TD VALIGN="TOP">CM_QUIT<BR>CM_ENDTASK&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">End Task. Applications usually respond to this message by hiding windows and doing
+various cleanups.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x708</TD>
+    <TD VALIGN="TOP">CM_RESTART<BR>CM_START_CURRENT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Start current.
+This message only notifies the current application that the user has chosen to
+start the same application again. Usually ignored.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x709</TD>
+    <TD VALIGN="TOP"><A NAME="CM_APD">CM_APD</A></TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70A</TD>
+    <TD VALIGN="TOP"><A NAME="CM_OFF">CM_OFF</A></TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+
+  <TR>
+    <TD VALIGN="TOP">0x70B</TD>
+    <TD VALIGN="TOP"><A NAME="CM_ON">CM_ON</A></TD>
+    <TD VALIGN="TOP">
+Sent to each application when the calculator is turned on after
+being turned off with ([2ND] [OFF]). This command is not sent
+if the calculator was turned off via APD (Auto Power Down).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70C</TD>
+    <TD VALIGN="TOP"><A NAME="CM_INSTALL">CM_INSTALL</A></TD>
+    <TD VALIGN="TOP">Sent to a FLASH application after it has been successfully installed on the calculator.
+This event will be sent when batteries are replaced, and after the FLASH app has been downloaded into the FLASH memory.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70D</TD>
+    <TD VALIGN="TOP"><A NAME="CM_UNINSTALL">CM_UNINSTALL</A></TD>
+    <TD VALIGN="TOP">Sent to a FLASH application before it is deleted from the FLASH memory.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70E</TD>
+    <TD VALIGN="TOP"><A NAME="CM_PACK">CM_PACK</A></TD>
+    <TD VALIGN="TOP">Tells a FLASH app that FLASH memory garbage collection is about to take place. All important settings should to be backed up using the application's public storage.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x70F</TD>
+    <TD VALIGN="TOP"><A NAME="CM_UNPACK">CM_UNPACK</A></TD>
+    <TD VALIGN="TOP">Tells a FLASH app that FLASH memory garbage collection has finished. The application should restore any saved settings.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x710</TD>
+    <TD VALIGN="TOP">CM_KEY_PRESS<BR>CM_KEYPRESS&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Keypress. This is the most common event. Note that a lot of system and mode events
+(opening system menus, dialogs etc.) are also processed as keypresses. They all have correct
+keypresses attached to them (usually DIAMOND + <B>...</B>). Tokens
+are usually send via <A href="#EV_sendString">EV_sendString</A> and do not have to be
+processed as single keypresses. All special keypresses may be passed to
+<A href="#EV_defaultHandler">EV_defaultHandler</A> for further processing.</TD>
+    <TD VALIGN="TOP">Key</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x720</TD>
+    <TD VALIGN="TOP">CM_CUT<BR>CM_MENU_CUT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Cut.
+Dedicated for cutting selected text to the clipboard.
+All similar (text editing) events should eventually be handled by
+<A HREF="textedit.html#TE_handleEvent">TE_handleEvent</A> (the default text editor handler).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x721</TD>
+    <TD VALIGN="TOP">CM_COPY<BR>CM_MENU_COPY&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Copy. Dedicated for copying selected text to the clipboard.
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x722</TD>
+    <TD VALIGN="TOP">CM_PASTE<BR>CM_MENU_PASTE&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Paste.
+Dedicated for pasting text from the clipboard to the edit buffer at the cursor position,
+replacing any eventually selected text.
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x723</TD>
+    <TD VALIGN="TOP">CM_PASTE_STRING<BR>CM_STRING&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Paste static (constant) text into the event paste buffer (in fact, it only sets a pointer
+to PasteText). See <A HREF="#EV_eventLoop">EV_eventLoop</A> and <A HREF="#EV_sendString">EV_sendString</A>.</TD>
+    <TD VALIGN="TOP">PasteText</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x724</TD>
+    <TD VALIGN="TOP">CM_PASTE_HANDLE<BR>CM_HSTRING&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Paste dynamic text, associated with a handle.
+The handle is released back to the heap by the default text edit handler after the paste is
+complete.</TD>
+    <TD VALIGN="TOP">hPasteText</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x725</TD>
+    <TD VALIGN="TOP">CM_DELETE<BR>CM_DEL&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">DEL (backspace) keypress. Dedicated for deleting selected text,
+or one character to the left of the cursor if no text is selected.
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x726</TD>
+    <TD VALIGN="TOP">CM_CLEAR<BR>CM_CLR&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">CLR keypress.
+Dedicated for clearing selected text (if no text is selected, clear from cursor
+to end of edit buffer, and if cursor is at end of edit buffer, clear all
+text from edit buffer).
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x727</TD>
+    <TD VALIGN="TOP">CM_CLEAR_ALL<BR>CM_MENU_CLEAR&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Clear.
+The application should decide decides what it means.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x728</TD>
+    <TD VALIGN="TOP">CM_FIND<BR>CM_MENU_FIND&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Find. The application should decide decides what it means.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x730</TD>
+    <TD VALIGN="TOP">CM_TOGGLE_INSERT<BR>CM_INSERT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Insert key. Dedicated for
+switching between text insert mode and overstrike mode.
+Should eventually be handled by the default text editor handler.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x740</TD>
+    <TD VALIGN="TOP">CM_CURSOR_FLASH<BR>CM_BLINK&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Flash cursor (0.5 sec timer expired, see <A HREF="#EV_eventLoop">EV_eventLoop</A>).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x750</TD>
+    <TD VALIGN="TOP">CM_STO<BR>CM_STORE&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">"Store" keypress. The default handler convert this message to the right arrow character.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x751</TD>
+    <TD VALIGN="TOP">CM_RCL<BR>CM_RECALL&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">"RCL" keypress. The default event handler
+displays a dialog box for the user to enter the name of a
+variable to recall. The chosen variable’s contents are pasted
+at the edit cursor.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x760</TD>
+    <TD VALIGN="TOP"><A NAME="CM_WPAINT">CM_WPAINT</A></TD>
+    <TD VALIGN="TOP">Paint window. Pointer to a window which need to be painted is attached.
+Applications should check to see if it belongs to the application and to redraw it if it is.
+See <A HREF="#EV_paintWindows">EV_paintWindows</A>. These are not sent to the capturing hook,
+unless an application ID number is set to <A HREF="#StandardTaskIDs">CM_NULL</A> (force redraw).
+<A HREF="wingraph.html#WinOpen">WinOpen</A> stores the current application ID number
+in <I>TaskId</I> field of <A HREF="wingraph.html#WINDOW">WINDOW</A> structure.</TD>
+    <TD VALIGN="TOP">w</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x770</TD>
+    <TD VALIGN="TOP">CM_OPEN<BR>CM_MENU_OPEN&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Open... (the application should decide how to handle
+this and similar event messages; there are no default actions for them).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x771</TD>
+    <TD VALIGN="TOP">CM_SAVE_AS<BR>CM_MENU_SAVE&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Save Copy As...</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x772</TD>
+    <TD VALIGN="TOP">CM_NEW<BR>CM_MENU_NEW&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: New...</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x773</TD>
+    <TD VALIGN="TOP">CM_FORMAT<BR>CM_MENU_FORMAT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: Format...</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x774</TD>
+    <TD VALIGN="TOP">CM_ABOUT<BR>CM_MENU_ABOUT&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Menu command: About...</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x780</TD>
+    <TD VALIGN="TOP"><A NAME="CM_MODE_CHANGE">CM_MODE_CHANGE</A></TD>
+    <TD VALIGN="TOP">Notify Mode Change (see <A HREF="#MO_notifyModeChange">MO_notifyModeChange</A>).</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x781</TD>
+    <TD VALIGN="TOP"><A NAME="CM_SWITCH_GRAPH">CM_SWITCH_GRAPH</A></TD>
+    <TD VALIGN="TOP">Notify Switch Graph (this message is sent to "Graph", "Window Editor",
+"Table" and "Y=Editor" applications only). This event is used when the user switches between graphs
+in two-graph mode.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x782</TD>
+    <TD VALIGN="TOP"><A NAME="CM_DEFAULTS">CM_DEFAULTS</A></TD>
+    <TD VALIGN="TOP">This command is sent when Reset->RAM->Default is executed in the MEMORY screen.
+Applications should revert to default settings.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x790</TD>
+    <TD VALIGN="TOP">CM_BACKGROUND</TD>
+    <TD VALIGN="TOP">This command is sent to applications which have a special flag set in their ACB
+	(Application Control Block). It is a very low priority message and is generally used for background processing.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+  <TR>
+    <TD VALIGN="TOP">0x7C0</TD>
+    <TD VALIGN="TOP">CM_OPEN_SYSDATA<BR>CM_GEOMETRY&nbsp;(depr.)</TD>
+    <TD VALIGN="TOP">Geometry Open Data.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+ <TR>
+    <TD VALIGN="TOP">0x7C0 - 0x7FF</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">Used especially by AMS 1.xx to communicate between applications. This command
+has been largely replaced by using application frames on AMS 2.xx</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR> 
+ <TR>
+    <TD VALIGN="TOP">0x800</TD>
+    <TD VALIGN="TOP"><A NAME="CM_FIRST_APP_STRING">CM_FIRST_APP_STRING</A></TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+ <TR>
+    <TD VALIGN="TOP">0x800 - 0xFFF</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+    <TD VALIGN="TOP">On AMS 2.xx, applications store pointers to their strings in a frame.
+Messages in the range from 0x800 - 0xFFF are reserved for the active application's strings.
+For more information, see <A HREF="system.html#XR_stringPtr">XR_stringPtr</A>.</TD>
+    <TD VALIGN="TOP">&nbsp;</TD>
+  </TR>
+</TABLE></P>
+
+<HR>
+<H3><A NAME="MO_OPTIONS"><U>MO_OPTIONS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> CurrentFolder;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> SplitScreen;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> NumGraphs;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Graph1; <I>/* Graph mode for first application */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Graph2; <I>/* Graph mode for second application */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Split1App;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Split2App;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> SplitRatio;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Angle;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> ExactApprox;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Fix; <I>/* Display Digits */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Exp; <I>/* Exponential Form */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Vector;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Complex;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Pretty;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Base;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> UnitSystem;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> CustomUnits;<BR>
+</TD></TR></TABLE>
+} MO_OPTIONS;</TD></TR></TABLE></P>
+<P><B>A structure containing all system mode settings.</B></P>
+
+<P>MO_OPTIONS is a structure which contains all system mode settings. All fields
+in this structure are in fact indices of appropriate menu options in the "MODE" dialog. The only
+exceptions are fields <I>Split1App</I> and <I>Split2App</I>: they contains task ID
+numbers of the appropriate applications.</P>
+
+<P>See also: <A HREF="#ModeSettings">ModeSettings</A>, <A HREF="#MO_option">MO_option</A>, <A HREF="#MO_currentOptions">MO_currentOptions</A>, <A HREF="#MO_digestOptions">MO_digestOptions</A></P>
+<HR>
+<H3><A NAME="MoNotifyFlags"><U>MoNotifyFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#enum">enum</A></B> MoNotifyFlags {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+MO_NOTIFY_FOLDER = 0x0001, MO_NOTIFY_GRAPH_COUNT = 0x0002, MO_NOTIFY_GRAPH_TYPE_1 = 0x0004, MO_NOTIFY_GRAPH_TYPE_2 = 0x0008, MO_NOTIFY_SPLIT = 0x0010, MO_NOTIFY_ANGLE = 0x0020, MO_NOTIFY_PRECISION = 0x0040, MO_NOTIFY_FIX = 0x0080, MO_NOTIFY_NUMBER_FORMAT = 0x0100, MO_NOTIFY_VECTOR_FORMAT = 0x0200, MO_NOTIFY_COMPLEX_FORMAT = 0x0400, MO_NOTIFY_PRETTY_PRINT = 0x0800, MO_NOTIFY_UNIT_SYSTEM = 0x1000, MO_NOTIFY_BASE = 0x2000, MO_NOTIFY_LANGUAGE = 0x4000, MO_NOTIFY_DESKTOP = 0x8000</TD></TR></TABLE>
+} MoNotifyFlags;</TD></TR></TABLE></P>
+<P><B>Enumerates notify messages for the <A HREF="#MO_notifyModeChange">MO_notifyModeChange</A> function.</B></P>
+
+<P>Enumerates notify messages for the <A HREF="#MO_notifyModeChange">MO_notifyModeChange</A> function.
+The meaning of these flags is given in <A HREF="#MO_notifyModeChange">MO_notifyModeChange</A>.</P>
+
+<P>See also: <A HREF="#MO_notifyModeChange">MO_notifyModeChange</A></P>
+<HR>
+<H3><A NAME="PaintFlags"><U>PaintFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> PaintFlags {PAINTING_ENABLED = 0, PAINTING_SUSPENDED = 2};</TD></TR></TABLE></P>
+<P><B>An enumeration describing whether painting is suspended or enabled.</B></P>
+
+<P>PaintFlags is an enumeration which describes the constants used in the
+<A HREF="#EV_suspendPainting">EV_suspendPainting</A> and
+<A HREF="#EV_restorePainting">EV_restorePainting</A> functions.</P>
+
+<HR>
+<H3><A NAME="StandardTaskIDs"><U>StandardTaskIDs</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> StandardTaskIDs {AP_NULL = -3, AP_RUNNING = -2, AP_CURRENT = -1};</TD></TR></TABLE></P>
+<P><B>An enumeration describing task ID constants.</B></P>
+
+<P>StandardTaskIDs is an enumeration which describes standard task "magic" numbers
+which works independently of actual task ID numbers, so they are AMS-independent
+(see <A HREF="#EV_sendEvent">EV_sendEvent</A>).
+<BR><BR>
+"Running" application is the application which has an attached and activated toolbar menu (this
+does not need to be equal to "Current" application). "Null" application is special value used for
+overriding <A HREF="#CM_WPAINT">CM_WPAINT</A> block (see <A HREF="#EV_sendEvent">EV_sendEvent</A>).</P>
+
+<P>See also: <A HREF="#MO_sendQuit">MO_sendQuit</A></P>
+<HR>
+<H3><A NAME="StartTypes"><U>StartTypes</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> StartTypes {...};</TD></TR></TABLE></P>
+<P><B>A pseudo-enumeration describing start types for <A HREF="#EV_startTask">EV_startTask</A>.</B></P>
+
+<P>StartTypes is a pseudo-enumeration which describes standard "start types" used in
+the <A HREF="#EV_startTask">EV_startTask</A> command, on such way to be compatible with
+all AMS versions. It is defined using macros, but it behaves as it is defined as</P>
+<PRE>enum StartTypes {AP_START_CURRENT = 0x00, AP_START_NEW = 0x10,
+AP_START_OPEN = 0x20, AP_START_ERROR = 0x30};
+</PRE>
+<P>on AMS 1.xx, and</P>
+<PRE>enum StartTypes {AP_START_CURRENT = 0, AP_START_NEW = 1,
+AP_START_OPEN = 2, AP_START_ERROR = 3};
+</PRE>
+<P>on AMS 2.xx.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

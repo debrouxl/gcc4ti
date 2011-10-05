@@ -1,0 +1,3427 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>GNU C Language Extensions</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>GNU C Language Extensions</B></FONT>
+<HR>
+<P>This part of the documentation is a modified version of the <A HREF="http://gcc.gnu.org/onlinedocs/gcc/C-Extensions.html">C Extensions</A> section of the <A HREF="http://gcc.gnu.org/onlinedocs/gcc/">GCC Manual</A>.
+Therefore it is licensed under the <A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A>.
+<BR><BR>
+GCC4TI (like all GNU C compilers) provides several language features not found
+in ISO standard C.  To test for the availability of these
+features in conditional compilation, check for a predefined macro
+<CODE><A HREF="cpp.html#SEC15_GNUC">__GNUC__</A></CODE>, which is always defined under GCC.
+<BR><BR>
+Some features that are in ISO C99 but not C89 are also, as
+extensions, accepted by GCC in C89 mode.</P>
+
+<UL>
+<LI><B><A HREF="#SEC63">Statements and Declarations in Expressions</A></B>
+<LI><B><A HREF="#SEC64">Locally Declared Labels</A></B>
+<LI><B><A HREF="#SEC65">Labels as Values</A></B>
+<LI><B><A HREF="#SEC66">Nested Functions</A></B>
+<LI><B><A HREF="#SEC67">Constructing Function Calls</A></B>
+<LI><B><A HREF="#SEC69">Referring to a Type with 'typeof'</A></B>
+<LI><B><A HREF="#SEC70">Generalized Lvalues</A></B>
+<LI><B><A HREF="#SEC71">Conditionals with Omitted Operands</A></B>
+<LI><B><A HREF="#SEC72">Double-Word Integers</A></B>
+<LI><B><A HREF="#SEC73">Complex Numbers</A></B>
+<LI><B><A HREF="#SEC74">Hex Floats</A></B>
+<LI><B><A HREF="#SEC110">Binary Numbers</A></B>
+<LI><B><A HREF="#SEC111">Structures With No Members</A></B>
+<LI><B><A HREF="#SEC75">Arrays of Length Zero</A></B>
+<LI><B><A HREF="#SEC76">Arrays of Variable Length</A></B>
+<LI><B><A HREF="#SEC77">Macros with a Variable Number of Arguments</A></B>
+<LI><B><A HREF="#SEC78">Non-Lvalue Arrays May Have Subscripts</A></B>
+<LI><B><A HREF="#SEC79">Arithmetic on void and Function Pointers</A></B>
+<LI><B><A HREF="#SEC80">Non-Constant Initializers</A></B>
+<LI><B><A HREF="#SEC81">Compound Literals (Cast Constructors)</A></B>
+<LI><B><A HREF="#SEC82">Designated Initializers</A></B>
+<LI><B><A HREF="#SEC84">Cast to a Union Type</A></B>
+<LI><B><A HREF="#SEC83">Case Ranges</A></B>
+<LI><B><A HREF="#SEC85">Specifying Attributes of Functions</A></B>
+<LI><B><A HREF="#SEC91">Specifying Attributes of Variables</A></B>
+<LI><B><A HREF="#SEC92">Specifying Attributes of Types</A></B>
+<LI><B><A HREF="#SEC85a">Attribute Syntax</A></B>
+<LI><B><A HREF="#SEC86">Prototypes and Old-Style Function Definitions</A></B>
+<LI><B><A HREF="#SEC87">C++ Style Comments</A></B>
+<LI><B><A HREF="#SEC88">Dollar Signs in Identifier Names</A></B>
+<LI><B><A HREF="#SEC89">Escape Character in Constants</A></B>
+<LI><B><A HREF="#SEC90">Inquiring on Alignment of Types or Variables</A></B>
+<LI><B><A HREF="#SEC93">Inline Functions</A></B>
+<LI><B><A HREF="#SEC94_asm">Inline Assembler</A></B>
+<LI><B><A HREF="#SEC96">Controlling Names Used in Assembler Code</A></B>
+<LI><B><A HREF="#SEC97">Variables in Specified Registers</A></B>
+<LI><B><A HREF="#SEC100">Alternate Keywords</A></B>
+<LI><B><A HREF="#SEC101">Incomplete 'enum' Types</A></B>
+<LI><B><A HREF="#SEC102">Function Names as Strings</A></B>
+<LI><B><A HREF="#SEC103">Getting the Return or Frame Address of a Function</A></B>
+<LI><B><A HREF="#SEC104">Other built-in functions provided by GCC</A></B>
+<LI><B><A HREF="#SEC105">Slightly Looser Rules for Escaped Newlines</A></B>
+<LI><B><A HREF="#SEC106">String Literals with Embedded Newlines</A></B>
+<LI><B><A HREF="#SEC107">Mixed Declarations and Code</A></B>
+<LI><B><A HREF="#SEC108">Unnamed struct/union Fields within structs/unions</A></B>
+<LI><B><A HREF="#SEC109">Definite Access of Volatile Objects</A></B>
+<LI><B><A HREF="#history">History</A></B>
+<LI><B><A HREF="gnugpl.html">GNU General Public License</A></B>
+<LI><B><A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A></B>
+<LI><B><A HREF="gnugpl.html#funding">Funding Free Software</A></B>
+</UL>
+<P>Original author: Free Software Foundation, Inc.
+<BR>
+Authors of the modifications: Zeljko Juric, Sebastian Reichelt, and Kevin Kofler
+<BR>
+Published by the TIGCC Team, and now the GCC4TI project.
+<BR>
+See the <A HREF="#history">History</A> section for details and copyright information.
+<BR><BR>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the <A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A>, Version 1.1 or any
+later version published by the Free Software Foundation; with the Invariant
+Sections being "<A HREF="gnugpl.html">GNU General Public License</A>" and "<A HREF="gnugpl.html#funding">Funding Free Software</A>", the
+Front-Cover texts being (a) (see below), and with the Back-Cover Texts being
+(b) (see below).  A copy of the license is included in the section entitled
+"<A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A>".
+<BR><BR>
+(a) The FSF's Front-Cover Text is:
+<BR><BR>
+A GNU Manual
+<BR><BR>
+(b) The FSF's Back-Cover Text is:
+<BR><BR>
+You have freedom to copy and modify this GNU Manual, like GNU software.
+Copies published by the Free Software Foundation raise funds for GNU
+development.</P>
+
+<HR>
+<H2><A NAME="SEC63"><U>Statements and Declarations in Expressions</U></A></H2>
+<P>A compound statement enclosed in parentheses may appear as an expression
+in GNU C.  This allows you to use loops, switches, and local variables
+within an expression.
+<BR><BR>
+Recall that a compound statement is a sequence of statements surrounded
+by braces; in this construct, parentheses go around the braces.  For
+example:</P>
+<PRE>({ int y = foo (); int z;
+   if (y &gt; 0) z = y;
+   else z = - y;
+   z; })
+</PRE>
+<P>is a valid (though slightly more complex than necessary) expression
+for the absolute value of <CODE>foo&nbsp;()</CODE>.
+<BR><BR>
+The last thing in the compound statement should be an expression
+followed by a semicolon; the value of this subexpression serves as the
+value of the entire construct.  (If you use some other kind of statement
+last within the braces, the construct has type <CODE><A HREF="keywords.html#void">void</A></CODE>, and thus
+effectively no value.)
+<BR><BR>
+This feature is especially useful in making macro definitions &quot;safe&quot; (so
+that they evaluate each operand exactly once).  For example, the
+&quot;maximum&quot; function is commonly defined as a macro in standard C as
+follows:</P>
+<PRE>#define max(a,b) ((a) &gt; (b) ? (a) : (b))
+</PRE>
+<P>But this definition computes either <I>a</I> or <I>b</I> twice, with bad
+results if the operand has side effects.  In GNU C, if you know the
+type of the operands (here let's assume <CODE><A HREF="keywords.html#int">int</A></CODE>), you can define
+the macro safely as follows:</P>
+<PRE>#define maxint(a,b) \
+  ({int _a = (a), _b = (b); _a &gt; _b ? _a : _b; })
+</PRE>
+<P>Embedded statements are not allowed in constant expressions, such as
+the value of an enumeration constant, the width of a bit-field, or
+the initial value of a static variable.
+<BR><BR>
+If you don't know the type of the operand, you can still do this, but you
+must use <CODE><A HREF="#SEC69">typeof</A></CODE>.</P>
+
+<HR>
+<H2><A NAME="SEC64"><U>Locally Declared Labels</U></A></H2>
+<P>Each statement expression is a scope in which <U>local labels</U> can be
+declared.  A local label is simply an identifier; you can jump to it
+with an ordinary <CODE><A HREF="keywords.html#goto">goto</A></CODE> statement, but only from within the
+statement expression it belongs to.
+<BR><BR>
+A local label declaration looks like this:</P>
+<PRE>__label__ <I>label</I>;
+</PRE>
+<P>or</P>
+<PRE>__label__ <I>label1</I>, <I>label2</I>, /* ... */;
+</PRE>
+<P>Local label declarations must come at the beginning of the statement
+expression, right after the <CODE>({</CODE>, before any ordinary
+declarations.
+<BR><BR>
+The label declaration defines the label <I>name</I>, but does not define
+the label itself.  You must do this in the usual way, with
+<CODE><I>label</I>:</CODE>, within the statements of the statement expression.
+<BR><BR>
+The local label feature is useful because statement expressions are
+often used in macros.  If the macro contains nested loops, a <CODE><A HREF="keywords.html#goto">goto</A></CODE>
+can be useful for breaking out of them.  However, an ordinary label
+whose scope is the whole function cannot be used: if the macro can be
+expanded several times in one function, the label will be multiply
+defined in that function.  A local label avoids this problem.  For
+example:</P>
+<PRE>#define SEARCH(array, target)                     \
+({                                                \
+  __label__ found;                                \
+  typeof (target) _SEARCH_target = (target);      \
+  typeof (*(array)) *_SEARCH_array = (array);     \
+  int i, j;                                       \
+  int value;                                      \
+  for (i = 0; i &lt; max; i++)                       \
+    for (j = 0; j &lt; max; j++)                     \
+      if (_SEARCH_array[i][j] == _SEARCH_target)  \
+        { value = i; goto found; }                \
+  value = -1;                                     \
+ found:                                           \
+  value;                                          \
+})
+</PRE>
+
+<HR>
+<H2><A NAME="SEC65"><U>Labels as Values</U></A></H2>
+<P>You can get the address of a label defined in the current function
+(or a containing function) with the unary operator <CODE>&amp;&amp;</CODE>.  The
++ value has type <CODE><A HREF="keywords.html#void">void</A>*</CODE>.  This value is a constant and can be used
+wherever a constant of that type is valid.  For example:</P>
+<PRE>void *ptr;
+/* ... */
+ptr = &amp;&amp;foo;
+</PRE>
+<P>To use these values, you need to be able to jump to one.  This is done
+with the computed goto statement, <CODE><A HREF="keywords.html#goto">goto</A>&nbsp;*<I>exp</I>;</CODE>.  For example,</P>
+<PRE>goto *ptr;
+</PRE>
+<P>Any expression of type <CODE><A HREF="keywords.html#void">void</A>*</CODE> is allowed.
+<BR><BR>
+One way of using these constants is in initializing a static array that
+will serve as a jump table:</P>
+<PRE>static void *array[] = { &amp;&amp;foo, &amp;&amp;bar, &amp;&amp;hack };
+</PRE>
+<P>Then you can select a label with indexing, like this:</P>
+<PRE>goto *array[i];
+</PRE>
+<P>Note that this does not check whether the subscript is in bounds - array
+indexing in C never does that.
+<BR><BR>
+Such an array of label values serves a purpose much like that of the
+<CODE><A HREF="keywords.html#switch">switch</A></CODE> statement.  The <CODE>switch</CODE> statement is cleaner, so
+use that rather than an array unless the problem does not fit a
+<CODE>switch</CODE> statement very well.
+<BR><BR>
+You may not use this mechanism to jump to code in a different function.
+If you do that, totally unpredictable things will happen.  The best way to
+avoid this is to store the label address only in automatic variables and
+never pass it as an argument.
+<BR><BR>
+An alternate way to write the above example is</P>
+<PRE>static const int array[] = { &amp;&amp;foo - &amp;&amp;foo, &amp;&amp;bar - &amp;&amp;foo,
+                             &amp;&amp;hack - &amp;&amp;foo };
+goto *(&amp;&amp;foo + array[i]);
+</PRE>
+<P>This is more friendly to code living in shared libraries (DLLs), as it reduces
+the number of dynamic relocations that are needed (and, by consequence,
+would allow the data to be read-only).</P>
+
+<HR>
+<H2><A NAME="SEC66"><U>Nested Functions</U></A></H2>
+<P>A <U>nested function</U> is a function defined inside another function.
+The nested function's
+name is local to the block where it is defined.  For example, here we
+define a nested function named <CODE>square</CODE>, and call it twice:</P>
+<PRE>double square_sum (double a, double b)
+{
+  double square (double z)
+  {
+    return z * z;
+  }
+
+  return square (a) + square (b);
+}
+</PRE>
+<P>The nested function can access all the variables of the containing
+function that are visible at the point of its definition.  This is
+called <U>lexical scoping</U>.  For example, here we show a nested
+function which uses an inherited variable named <CODE>offset</CODE>:</P>
+<PRE>int foo (int *array, int offset, int size)
+{
+  int access (int *array, int index)
+  {
+    return array[index + offset];
+  }
+
+  int i;
+  /* ... */
+  for (i = 0; i &lt; size; i++)
+    /* ... */ access (array, i) /* ... */
+}
+</PRE>
+<P>Nested function definitions are permitted within functions in the places
+where variable definitions are allowed; that is, in any block, before
+the first statement in the block.
+<BR><BR>
+It is possible to call the nested function from outside the scope of its
+name by storing its address or passing the address to another function:</P>
+<PRE>int hack (int *array, int size)
+{
+  void store (int index, int value)
+  {
+    array[index] = value;
+  }
+
+  intermediate (store, size);
+}
+</PRE>
+<P>Here, the function <CODE>intermediate</CODE> receives the address of
+<CODE>store</CODE> as an argument.  If <CODE>intermediate</CODE> calls <CODE>store</CODE>,
+the arguments given to <CODE>store</CODE> are used to store into <CODE>array</CODE>.
+But this technique works only so long as the containing function
+(<CODE>hack</CODE>, in this example) does not exit.
+<BR><BR>
+If you try to call the nested function through its address after the
+containing function has exited, all hell will break loose.  If you try
+to call it after a containing scope level has exited, and if it refers
+to some of the variables that are no longer in scope, you may be lucky,
+but it's not wise to take the risk.  If, however, the nested function
+does not refer to anything that has gone out of scope, you should be
+safe.
+<BR><BR>
+GCC implements taking the address of a nested function using a technique
+called <U>trampolines</U>.  A paper describing them is available at
+<A HREF="http://people.debian.org/~aaronl/Usenix88-lexic.pdf">http://people.debian.org/~aaronl/Usenix88-lexic.pdf</A>.
+Note that trampolines are currently broken in GCC4TI; they create code on the
+stack, which can make HW2 calculators crash.
+<BR><BR>
+A nested function can jump to a label inherited from a containing
+function, provided the label was explicitly declared in the containing
+function (see <A HREF="#SEC64">Local Labels</A>).  Such a jump returns instantly to the
+containing function, exiting the nested function which did the
+<CODE><A HREF="keywords.html#goto">goto</A></CODE> and any intermediate functions as well.  Here is an example:</P>
+<PRE>int bar (int *array, int offset, int size)
+{
+  __label__ failure;
+  int access (int *array, int index)
+    {
+      if (index &gt; size)
+        goto failure;
+      return array[index + offset];
+    }
+  int i;
+  /* ... */
+  for (i = 0; i &lt; size; i++)
+    /* ... */ access (array, i) /* ... */
+  /* ... */
+  return 0;
+
+ /* Control comes here from 'access'
+    if it detects an error.  */
+ failure:
+  return -1;
+}
+</PRE>
+<P>A nested function always has internal linkage.  Declaring one with
+<CODE>extern</CODE> is erroneous.  If you need to declare the nested function
+before its definition, use <CODE><A HREF="keywords.html#auto">auto</A></CODE> (which is otherwise meaningless
+for function declarations).</P>
+<PRE>int bar (int *array, int offset, int size)
+{
+  __label__ failure;
+  auto int access (int *, int);
+  /* ... */
+  int access (int *array, int index)
+    {
+      if (index &gt; size)
+        goto failure;
+      return array[index + offset];
+    }
+  /* ... */
+}
+</PRE>
+
+<HR>
+<H2><A NAME="SEC67"><U>Constructing Function Calls</U></A></H2>
+<P>Using the built-in functions described below, you can record
+the arguments a function received, and call another function
+with the same arguments, without knowing the number or types
+of the arguments.
+<BR><BR>
+You can also record the return value of that function call,
+and later return that value, without knowing what data type
+the function tried to return (as long as your caller expects
+that data type).</P>
+
+<UL>
+<LI><B><A HREF="#SEC67___builtin_apply_args">__builtin_apply_args</A></B>
+<LI><B><A HREF="#SEC67___builtin_apply">__builtin_apply</A></B>
+<LI><B><A HREF="#SEC67___builtin_return">__builtin_return</A></B>
+</UL>
+<H3><A NAME="SEC67___builtin_apply_args"><U>__builtin_apply_args</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#void">void</A></B> *__builtin_apply_args (<B><A HREF="keywords.html#void">void</A></B>);</CODE>
+<BR><BR>
+This built-in function returns a pointer to data
+describing how to perform a call with the same arguments as were passed
+to the current function.
+<BR><BR>
+The function saves the arg pointer register, structure value address,
+and all registers that might be used to pass arguments to a function
+into a block of memory allocated on the stack.  Then it returns the
+address of that block.</P>
+
+<H3><A NAME="SEC67___builtin_apply"><U>__builtin_apply</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#void">void</A></B> *__builtin_apply (<B><A HREF="keywords.html#void">void</A></B> (*fnc)(), <B><A HREF="keywords.html#void">void</A></B> *args, <B><A HREF="keywords.html#int">int</A></B> size);</CODE>
+<BR><BR>
+This built-in function invokes <I>function</I>
+with a copy of the parameters described by <I>arguments</I>
+and <I>size</I>.
+<BR><BR>
+The value of <I>arguments</I> should be the value returned by
+<A HREF="#SEC67___builtin_apply_args">__builtin_apply_args</A>.
+The argument <I>size</I> specifies the size
+of the stack argument data, in bytes.
+<BR><BR>
+This function returns a pointer to data describing
+how to return whatever value was returned by <I>function</I>.  The data
+is saved in a block of memory allocated on the stack.
+<BR><BR>
+It is not always simple to compute the proper value for <I>size</I>.  The
+value is used by __builtin_apply to compute the amount of data
+that should be pushed on the stack and copied from the incoming argument
+area.</P>
+
+<H3><A NAME="SEC67___builtin_return"><U>__builtin_return</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#void">void</A></B> __builtin_return (<B><A HREF="keywords.html#void">void</A></B> *result);</CODE>
+<BR><BR>
+This built-in function returns the value described by <I>result</I> from
+the containing function.  You should specify, for <I>result</I>, a value
+returned by <A HREF="#SEC67___builtin_apply">__builtin_apply</A>.</P>
+
+<HR>
+<H2><A NAME="SEC69"><U>Referring to a Type with 'typeof'</U></A></H2>
+<P>Another way to refer to the type of an expression is with <CODE>typeof</CODE>.
+The syntax of using of this keyword looks like <CODE><A HREF="keywords.html#sizeof">sizeof</A></CODE>, but the
+construct acts semantically like a type name defined with <CODE><A HREF="keywords.html#typedef">typedef</A></CODE>.
+<BR><BR>
+There are two ways of writing the argument to <CODE>typeof</CODE>: with an
+expression or with a type.  Here is an example with an expression:</P>
+<PRE>typeof (x[0](1))
+</PRE>
+<P>This assumes that <I>x</I> is an array of pointers to functions;
+the type described is that of the values of the functions.
+<BR><BR>
+Here is an example with a typename as the argument:</P>
+<PRE>typeof (int *)
+</PRE>
+<P>Here the type described is that of pointers to <CODE><A HREF="keywords.html#int">int</A></CODE>.
+<BR><BR>
+An alternate keyword for <CODE>typeof</CODE> is <CODE>__typeof__</CODE>.
+See <A HREF="#SEC100">Alternate Keywords</A>.
+<BR><BR>
+A <CODE>typeof</CODE>-construct can be used anywhere a typedef name could be
+used.  For example, you can use it in a declaration, in a cast, or inside
+of <CODE><A HREF="keywords.html#sizeof">sizeof</A></CODE> or <CODE>typeof</CODE>.
+<BR><BR>
+<CODE>typeof</CODE> is often useful in conjunction with the
+statements-within-expressions feature.  Here is how the two together can
+be used to define a safe &quot;maximum&quot; macro that operates on any
+arithmetic type and evaluates each of its arguments exactly once:</P>
+<PRE>#define max(a,b) \
+  ({ typeof (a) _a = (a); \
+      typeof (b) _b = (b); \
+    _a &gt; _b ? _a : _b; })
+</PRE>
+<P>The reason for using names that start with underscores for the local
+variables is to avoid conflicts with variable names that occur within the
+expressions that are substituted for <CODE>a</CODE> and <CODE>b</CODE>.  Eventually we
+hope to design a new form of declaration syntax that allows you to declare
+variables whose scopes start only after their initializers; this will be a
+more reliable way to prevent such conflicts.
+<BR><BR>
+Some more examples of the use of <CODE>typeof</CODE>:</P>
+<UL>
+<LI><P>This declares <I>y</I> with the type of what <I>x</I> points to.</P>
+<PRE>typeof (*x) y;
+</PRE>
+
+</LI>
+<LI><P>This declares <I>y</I> as an array of such values.</P>
+<PRE>typeof (*x) y[4];
+</PRE>
+
+</LI>
+<LI><P>This declares <I>y</I> as an array of pointers to characters:</P>
+<PRE>typeof (typeof (char *)[4]) y;
+</PRE>
+<P>It is equivalent to the following traditional C declaration:</P>
+<PRE>char *y[4];
+</PRE>
+<P>To see the meaning of the declaration using <CODE>typeof</CODE>, and why it
+might be a useful way to write, let's rewrite it with these macros:</P>
+<PRE>#define pointer(T) typeof(T *)
+#define array(T, N) typeof(T [N])
+</PRE>
+<P>Now the declaration can be rewritten this way:</P>
+<PRE>array (pointer (char), 4) y;
+</PRE>
+<P>Thus, <CODE>array&nbsp;(pointer&nbsp;(char),&nbsp;4)</CODE> is the type of arrays of 4
+pointers to <CODE>char</CODE>.</P></LI>
+</UL>
+<P><I>Compatibility Note:</I> In addition to <CODE>typeof</CODE>, GCC 2 supported
+a more limited extension which permitted one to write</P>
+<PRE>typedef <I>T</I> = <I>expr</I>;
+</PRE>
+<P>with the effect of declaring <I>T</I> to have the type of the expression
+<I>expr</I>.  This extension does not work with GCC 3 (versions between
+3.0 and 3.2 will crash; 3.2.1 and later give an error).  Code which
+relies on it should be rewritten to use <CODE>typeof</CODE>:</P>
+<PRE>typedef typeof(<I>expr</I>) <I>T</I>;
+</PRE>
+<P>This will work with all versions of GCC.</P>
+
+<HR>
+<H2><A NAME="SEC70"><U>Generalized Lvalues</U></A></H2>
+<P>Compound expressions, conditional expressions and casts are allowed as
+lvalues provided their operands are lvalues.  This means that you can take
+their addresses or store values into them.
+<BR><BR>
+For example, a compound expression can be assigned, provided the last
+expression in the sequence is an lvalue.  These two expressions are
+equivalent:</P>
+<PRE>(a, b) += 5
+a, (b += 5)
+</PRE>
+<P>Similarly, the address of the compound expression can be taken.  These two
+expressions are equivalent:</P>
+<PRE>&amp;(a, b)
+a, &amp;b
+</PRE>
+<P>A conditional expression is a valid lvalue if its type is not void and the
+true and false branches are both valid lvalues.  For example, these two
+expressions are equivalent:</P>
+<PRE>(a ? b : c) = 5
+(a ? b = 5 : (c = 5))
+</PRE>
+<P>A cast is a valid lvalue if its operand is an lvalue.  A simple
+assignment whose left-hand side is a cast works by converting the
+right-hand side first to the specified type, then to the type of the
+inner left-hand side expression.  After this is stored, the value is
+converted back to the specified type to become the value of the
+assignment.  Thus, if <CODE>a</CODE> has type <CODE><A HREF="keywords.html#int">char</A>*</CODE>, the following two
+expressions are equivalent:</P>
+<PRE>(int)a = 5
+(int)(a = (char *)(int)5)
+</PRE>
+<P>An assignment-with-arithmetic operation such as <CODE>+=</CODE> applied to a cast
+performs the arithmetic using the type resulting from the cast, and then
+continues as in the previous case.  Therefore, these two expressions are
+equivalent:</P>
+<PRE>(int)a += 5
+(int)(a = (char *)(int) ((int)a + 5))
+</PRE>
+<P>You cannot take the address of an lvalue cast, because the use of its
+address would not work out coherently.  Suppose that <CODE>&amp;(int)f</CODE> were
+permitted, where <CODE>f</CODE> has type <CODE><A HREF="keywords.html#float">float</A></CODE>.  Then the following
+statement would try to store an integer bit-pattern where a floating
+point number belongs:</P>
+<PRE>*&amp;(int)f = 1;
+</PRE>
+<P>This is quite different from what <CODE>(int)f&nbsp;=&nbsp;1</CODE> would do - that
+would convert 1 to floating point and store it.  Rather than cause this
+inconsistency, the GNU team thinks it is better to prohibit use of <CODE>&amp;</CODE> on a cast.
+<BR><BR>
+If you really do want an <CODE><A HREF="keywords.html#int">int</A>*</CODE> pointer with the address of
+<CODE>f</CODE>, you can simply write <CODE>(int*)&amp;f</CODE>.</P>
+
+<HR>
+<H2><A NAME="SEC71"><U>Conditionals with Omitted Operands</U></A></H2>
+<P>The middle operand in a conditional expression may be omitted.  Then
+if the first operand is nonzero, its value is the value of the conditional
+expression.
+<BR><BR>
+Therefore, the expression</P>
+<PRE>x ? : y
+</PRE>
+<P>has the value of <CODE>x</CODE> if that is nonzero; otherwise, the value of
+<CODE>y</CODE>.
+<BR><BR>
+This example is perfectly equivalent to</P>
+<PRE>x ? x : y
+</PRE>
+<P>In this simple case, the ability to omit the middle operand is not
+especially useful.  When it becomes useful is when the first operand does,
+or may (if it is a macro argument), contain a side effect.  Then repeating
+the operand in the middle would perform the side effect twice.  Omitting
+the middle operand uses the value already computed without the undesirable
+effects of recomputing it.</P>
+
+<HR>
+<H2><A NAME="SEC72"><U>Double-Word Integers</U></A></H2>
+<P>ISO C99 supports data types for integers that are at least 64 bits wide,
+and as an extension GCC supports them in C89 mode.
+Simply write <CODE><A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#int">int</A></CODE> for a signed integer, or
+<CODE><A HREF="keywords.html#short">unsigned</A>&nbsp;<A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#int">int</A></CODE> for an unsigned integer.  To make an
+integer constant of type <CODE>long&nbsp;long&nbsp;int</CODE>, add the suffix <CODE>LL</CODE>
+to the integer.  To make an integer constant of type <CODE>unsigned&nbsp;long
+long&nbsp;int</CODE>, add the suffix <CODE>ULL</CODE> to the integer.
+<BR><BR>
+You can use these types in arithmetic like any other integer types.
+Addition, subtraction, and bitwise boolean operations on these types
+are open-coded on all types of machines, as well as shifts with a constant
+value.  Multiplication, division and shifts are not open-coded and use
+special library routines.
+<BR><BR>
+There may be pitfalls when you use <CODE>long&nbsp;long</CODE> types for function
+arguments, unless you declare function prototypes.  If a function
+expects type <CODE><A HREF="keywords.html#int">int</A></CODE> for its argument, and you pass a value of type
+<CODE><A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#int">int</A></CODE>, confusion will result because the caller and the
+subroutine will disagree about the number of bytes for the argument.
+Likewise, if the function expects <CODE><A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#int">int</A></CODE> and you pass
+<CODE><A HREF="keywords.html#int">int</A></CODE>.  The best way to avoid such problems is to use prototypes.</P>
+
+<HR>
+<H2><A NAME="SEC73"><U>Complex Numbers</U></A></H2>
+<P>ISO C99 supports complex floating data types, and as an extension GCC
+supports them in C89 mode, and supports complex integer data
+types which are not part of ISO C99.  You can declare complex types
+using the keyword <CODE>_Complex</CODE>.  As an extension, the older GNU
+keyword <CODE>__complex__</CODE> is also supported.
+<BR><BR>
+For example, <CODE>_Complex&nbsp;double&nbsp;x;</CODE> declares <CODE>x</CODE> as a
+variable whose real part and imaginary part are both of type
+<CODE><A HREF="keywords.html#float">double</A></CODE>.  <CODE>_Complex&nbsp;short&nbsp;int&nbsp;y;</CODE> declares <CODE>y</CODE> to
+have real and imaginary parts of type <CODE><A HREF="keywords.html#short">short</A>&nbsp;<A HREF="keywords.html#int">int</A></CODE>; this is not
+likely to be useful, but it shows that the set of complex types is
+complete.
+<BR><BR>
+To write a constant with a complex data type, use the suffix <CODE>i</CODE> or
+<CODE>j</CODE> (either one; they are equivalent).  For example, <CODE>2.5fi</CODE>
+has type <CODE>_Complex&nbsp;float</CODE> and <CODE>3i</CODE> has type
+<CODE>_Complex&nbsp;int</CODE>.  Such a constant always has a pure imaginary
+value, but you can form any complex value you like by adding one to a
+real constant.  This is a GNU extension; once GCC4TI supports this, you should include <CODE>&lt;complex.h&gt;</CODE> and
+use the macros <CODE>I</CODE> or <CODE>_Complex_I</CODE> instead.
+<BR><BR>
+To extract the real part of a complex-valued expression <I>exp</I>, write
+<CODE>__real__&nbsp;<I>exp</I></CODE>.  Likewise, use <CODE>__imag__</CODE> to
+extract the imaginary part.  This is a GNU extension; for values of
+floating type, you should use the ISO C99 functions <CODE>crealf</CODE>,
+<CODE>creal</CODE>, <CODE>creall</CODE>, <CODE>cimagf</CODE>, <CODE>cimag</CODE> and
+<CODE>cimagl</CODE>, declared in <CODE>&lt;complex.h&gt;</CODE> (not yet available in GCC4TI) and also provided as
+built-in functions by GCC.
+<BR><BR>
+The operator <CODE>~</CODE> performs complex conjugation when used on a value
+with a complex type.  This is a GNU extension; for values of
+floating type, you should use the ISO C99 functions <CODE>conjf</CODE>,
+<CODE>conj</CODE> and <CODE>conjl</CODE>, declared in <CODE>&lt;complex.h&gt;</CODE> and also
+provided as built-in functions by GCC.
+<BR><BR>
+GCC can allocate complex automatic variables in a noncontiguous
+fashion; it's even possible for the real part to be in a register while
+the imaginary part is on the stack (or vice-versa).</P>
+
+<HR>
+<H2><A NAME="SEC74"><U>Hex Floats</U></A></H2>
+<P>ISO C99 supports floating-point numbers written not only in the usual
+decimal notation, such as <CODE>1.55e1</CODE>, but also numbers such as
+<CODE>0x1.fp3</CODE> written in hexadecimal format.  As a GNU extension, GCC
+supports this in C89 mode (except in some cases when strictly
+conforming).  In that format the
+<CODE>0x</CODE> hex introducer and the <CODE>p</CODE> or <CODE>P</CODE> exponent field are
+mandatory.  The exponent is a decimal number that indicates the power of
+2 by which the significant part will be multiplied.  Thus <CODE>0x1.f</CODE> is
+<CODE>1&nbsp;15/16</CODE>,
+<CODE>p3</CODE> multiplies it by 8, and the value of <CODE>0x1.fp3</CODE>
+is the same as <CODE>1.55e1</CODE>.
+<BR><BR>
+Unlike for floating-point numbers in the decimal notation the exponent
+is always required in the hexadecimal notation.  Otherwise the compiler
+would not be able to resolve the ambiguity of, e.g., <CODE>0x1.f</CODE>.  This
+could mean <CODE>1.0f</CODE> or <CODE>1.9375</CODE> since <CODE>f</CODE> is also the
+extension for floating-point constants of type <CODE><A HREF="keywords.html#float">float</A></CODE>.</P>
+
+<HR>
+<H2><A NAME="SEC110"><U>Binary Numbers</U></A></H2>
+<P>GCC4TI allows you to specify binary numbers by using a <CODE>0b</CODE> prefix.  This can be handy
+in many occasions, such as when trying to declare sprites in a way which actually allows you to see
+the picture.  For example, the following declaration defines a simple black and white 8x8 diagonal
+cross:</P>
+<PRE>unsigned char cross[8] =
+ {0b10000001,
+  0b01000010,
+  0b00100100,
+  0b00011000,
+  0b00011000,
+  0b00100100,
+  0b01000010,
+  0b10000001};
+</PRE>
+
+<HR>
+<H2><A NAME="SEC111"><U>Structures With No Members</U></A></H2>
+<P>GCC permits a C structure to have no members:</P>
+<PRE>struct empty {
+};
+</PRE>
+<P>The structure will have size zero.  In C++, empty structures are part
+of the language, and the language standard says they have size 1.</P>
+
+<HR>
+<H2><A NAME="SEC75"><U>Arrays of Length Zero</U></A></H2>
+<P>Zero-length arrays are allowed in GNU C.  They are very useful as the
+last element of a structure which is really a header for a variable-length
+object:</P>
+<PRE>struct line {
+  int length;
+  char contents[0];
+};
+
+struct line *thisline = (struct line *)
+  malloc (sizeof (struct line) + this_length);
+thisline-&gt;length = this_length;
+</PRE>
+<P>In ISO C90, you would have to give <I>contents</I> a length of 1, which
+means either you waste space or complicate the argument to <A HREF="alloc.html#malloc">malloc</A>.
+<BR><BR>
+In ISO C99, you would use a <U>flexible array member</U>, which is
+slightly different in syntax and semantics:</P>
+<UL>
+<LI><P>Flexible array members are written as <CODE>contents[]</CODE> without
+the <CODE>0</CODE>.
+</P></LI>
+<LI><P>Flexible array members have incomplete type, and so the <CODE><A HREF="keywords.html#sizeof">sizeof</A></CODE>
+operator may not be applied.  As a quirk of the original implementation
+of zero-length arrays, <CODE><A HREF="keywords.html#sizeof">sizeof</A></CODE> evaluates to zero.
+</P></LI>
+<LI><P>Flexible array members may only appear as the last member of a
+<CODE><A HREF="keywords.html#struct">struct</A></CODE> that is otherwise non-empty.
+</P></LI>
+<LI><P>A structure containing a flexible array member, or a union containing
+such a structure (possibly recursively), may not be a member of a
+structure or an element of an array.  (However, these uses are
+permitted by GCC as extensions.)</P></LI>
+</UL>
+<P>GCC versions before 3.0 allowed zero-length arrays to be statically
+initialized, as if they were flexible arrays.  In addition to those
+cases that were useful, it also allowed initializations in situations
+that would corrupt later data.  Non-empty initialization of zero-length
+arrays is now treated like any case where there are more initializer
+elements than the array holds, in that a suitable warning about &quot;excess
+elements in array&quot; is given, and the excess elements (all of them, in
+this case) are ignored.
+<BR><BR>
+Instead GCC allows static initialization of flexible array members.
+This is equivalent to defining a new structure containing the original
+structure followed by an array of sufficient size to contain the data.
+I.e. in the following, <I>f1</I> is constructed as if it were declared
+like <I>f2</I>.</P>
+<PRE>struct f1 {
+  int x; int y[];
+} f1 = { 1, { 2, 3, 4 } };
+
+struct f2 {
+  struct f1 f1; int data[3];
+} f2 = { { 1 }, { 2, 3, 4 } };
+</PRE>
+<P>The convenience of this extension is that <I>f1</I> has the desired
+type, eliminating the need to consistently refer to <I>f2</I>.<I>f1</I>.
+<BR><BR>
+This has symmetry with normal static arrays, in that an array of
+unknown size is also written with <CODE>[]</CODE>.
+<BR><BR>
+Of course, this extension only makes sense if the extra data comes at
+the end of a top-level object, as otherwise we would be overwriting
+data at subsequent offsets.  To avoid undue complication and confusion
+with initialization of deeply nested arrays, we simply disallow any
+non-empty initialization except when the structure is the top-level
+object.  For example:</P>
+<PRE>struct foo { int x; int y[]; };
+struct bar { struct foo z; };
+
+struct foo a = { 1, { 2, 3, 4 } };        // Valid.
+struct bar b = { { 1, { 2, 3, 4 } } };    // Invalid.
+struct bar c = { { 1, { } } };            // Valid.
+struct foo d[1] = { { 1, { 2, 3, 4 } } }; // Invalid.
+</PRE>
+
+<HR>
+<H2><A NAME="SEC76"><U>Arrays of Variable Length</U></A></H2>
+<P>Variable-length automatic arrays are allowed in ISO C99, and as an
+extension GCC accepts them in C89 mode.  (However, GCC's
+implementation of variable-length arrays does not yet conform in detail
+to the ISO C99 standard.)  These arrays are
+declared like any other automatic arrays, but with a length that is not
+a constant expression.  The storage is allocated at the point of
+declaration and deallocated when the brace-level is exited.  For
+example:</P>
+<PRE>FILE *concat_fopen (const char *s1, const char *s2, const char *mode)
+{
+  char str[strlen (s1) + strlen (s2) + 1];
+  strcpy (str, s1);
+  strcat (str, s2);
+  return fopen (str, mode);
+}
+</PRE>
+<P>Jumping or breaking out of the scope of the array name deallocates the
+storage.  Jumping into the scope is not allowed; you get an error
+message for it.
+<BR><BR>
+You can use the function <A HREF="alloc.html#alloca">alloca</A> to get an effect much like
+variable-length arrays.  The function <A HREF="alloc.html#alloca">alloca</A> is available in
+many other C implementations (but not in all).  On the other hand,
+variable-length arrays are more elegant.
+<BR><BR>
+There are other differences between these two methods.  Space allocated
+with <A HREF="alloc.html#alloca">alloca</A> exists until the containing <I>function</I> returns.
+The space for a variable-length array is deallocated as soon as the array
+name's scope ends.  (If you use both variable-length arrays and
+<A HREF="alloc.html#alloca">alloca</A> in the same function, deallocation of a variable-length array
+will also deallocate anything more recently allocated with <A HREF="alloc.html#alloca">alloca</A>.)
+<BR><BR>
+You can also use variable-length arrays as arguments to functions:</P>
+<PRE>struct entry
+tester (int len, char data[len][len])
+{
+  /* ... */
+}
+</PRE>
+<P>The length of an array is computed once when the storage is allocated
+and is remembered for the scope of the array in case you access it with
+<CODE><A HREF="keywords.html#sizeof">sizeof</A></CODE>.
+<BR><BR>
+If you want to pass the array first and the length afterward, you can
+use a forward declaration in the parameter list - another GNU extension.</P>
+<PRE>struct entry
+tester (int len; char data[len][len], int len)
+{
+  /* ... */
+}
+</PRE>
+<P>The <CODE>int&nbsp;len</CODE> before the semicolon is a <U>parameter forward
+declaration</U>, and it serves the purpose of making the name <I>len</I>
+known when the declaration of <I>data</I> is parsed.
+<BR><BR>
+You can write any number of such parameter forward declarations in the
+parameter list.  They can be separated by commas or semicolons, but the
+last one must end with a semicolon, which is followed by the &quot;real&quot;
+parameter declarations.  Each forward declaration must match a &quot;real&quot;
+declaration in parameter name and data type.  ISO C99 does not support
+parameter forward declarations.</P>
+
+<HR>
+<H2><A NAME="SEC77"><U>Macros with a Variable Number of Arguments</U></A></H2>
+<P>In the ISO C standard of 1999, a macro can be declared to accept a
+variable number of arguments much as a function can.  The syntax for
+defining the macro is similar to that of a function.  Here is an
+example:</P>
+<PRE>#define lprintf(format, ...) fprintf (log, format, __VA_ARGS__)
+</PRE>
+<P>Here <CODE>...</CODE> is a <U>variable argument</U>.  In the invocation of
+such a macro, it represents the zero or more tokens until the closing
+parenthesis that ends the invocation, including any commas.  This set of
+tokens replaces the identifier <CODE>__VA_ARGS__</CODE> in the macro body
+wherever it appears.
+For more information, see <A HREF="cpp.html#SEC13">Variadic Macros</A>.
+<BR><BR>
+GCC has long supported variadic macros, and used a different syntax that
+allowed you to give a name to the variable arguments just like any other
+argument.  Here is an example:</P>
+<PRE>#define lprintf(format, args...) fprintf (stderr, format, args)
+</PRE>
+<P>This is in all ways equivalent to the ISO C example above, but arguably
+more readable and descriptive.
+<BR><BR>
+GNU CPP has two further variadic macro extensions, and permits them to
+be used with either of the above forms of macro definition.
+<BR><BR>
+In standard C, you are not allowed to leave the variable argument out
+entirely; but you are allowed to pass an empty argument.  For example,
+this invocation is invalid in ISO C, because there is no comma after
+the string:</P>
+<PRE>lprintf (&quot;A message&quot;);
+</PRE>
+<P>GNU CPP permits you to completely omit the variable arguments in this
+way.  In the above examples, the compiler would complain, though since
+the expansion of the macro still has the extra comma after the format
+string.
+<BR><BR>
+To help solve this problem, CPP behaves specially for variable arguments
+used with the token paste operator, <CODE>##</CODE>.  If instead you write</P>
+<PRE>#define lprintf(format, ...) fprintf (log, format, ## __VA_ARGS__)
+</PRE>
+<P>and if the variable arguments are omitted or empty, the <CODE>##</CODE>
+operator causes the preprocessor to remove the comma before it.  If you
+do provide some variable arguments in your macro invocation, GNU CPP
+does not complain about the paste operation and instead places the
+variable arguments after the comma.  Just like any other pasted macro
+argument, these arguments are not macro expanded.</P>
+
+<HR>
+<H2><A NAME="SEC78"><U>Non-Lvalue Arrays May Have Subscripts</U></A></H2>
+<P>In ISO C99, arrays that are not lvalues still decay to pointers, and
+may be subscripted, although they may not be modified or used after
+the next sequence point and the unary <CODE>&amp;</CODE> operator may not be
+applied to them.  As an extension, GCC allows such arrays to be
+subscripted in C89 mode, though otherwise they do not decay to
+pointers outside C99 mode.  For example,
+this is valid in GNU C though not valid in C89:</P>
+<PRE>struct foo {int a[4];};
+
+struct foo f();
+
+bar (int index)
+{
+  return f().a[index];
+}
+</PRE>
+
+<HR>
+<H2><A NAME="SEC79"><U>Arithmetic on void and Function Pointers</U></A></H2>
+<P>In GNU C, addition and subtraction operations are supported on pointers to
+<CODE><A HREF="keywords.html#void">void</A></CODE> and on pointers to functions.  This is done by treating the
+size of a <CODE><A HREF="keywords.html#void">void</A></CODE> or of a function as 1.
+<BR><BR>
+A consequence of this is that <CODE><A HREF="keywords.html#sizeof">sizeof</A></CODE> is also allowed on <CODE><A HREF="keywords.html#void">void</A></CODE>
+and on function types, and returns 1.
+<BR><BR>
+The option <B>'-Wpointer-arith'</B> requests a warning if these extensions
+are used.</P>
+
+<HR>
+<H2><A NAME="SEC80"><U>Non-Constant Initializers</U></A></H2>
+<P>As in standard C++ and ISO C99, the elements of an aggregate initializer for an
+automatic variable are not required to be constant expressions in GNU C.
+Here is an example of an initializer with run-time varying elements:</P>
+<PRE>void foo (float f, float g)
+{
+  float beat_freqs[2] = { f-g, f+g };
+  /* ... */
+}
+</PRE>
+
+<HR>
+<H2><A NAME="SEC81"><U>Compound Literals (Cast Constructors)</U></A></H2>
+<P>ISO C99 supports compound literals.  A compound literal looks like
+a cast containing an initializer.  Its value is an object of the
+type specified in the cast, containing the elements specified in
+the initializer; it is an lvalue.  As an extension, GCC supports
+compound literals in C89 mode and in C++.
+<BR><BR>
+Usually, the specified type is a structure.  Assume that
+<CODE><A HREF="keywords.html#struct">struct</A>&nbsp;foo</CODE> and <I>structure</I> are declared as shown:</P>
+<PRE>struct foo {int a; char b[2];} structure;
+</PRE>
+<P>Here is an example of constructing a <CODE><A HREF="keywords.html#struct">struct</A>&nbsp;foo</CODE> with a compound literal:</P>
+<PRE>structure = ((struct foo) {x + y, 'a', 0});
+</PRE>
+<P>This is equivalent to writing the following:</P>
+<PRE>{
+  struct foo temp = {x + y, 'a', 0};
+  structure = temp;
+}
+</PRE>
+<P>You can also construct an array.  If all the elements of the compound literal
+are (made up of) simple constant expressions, suitable for use in
+initializers of objects of static storage duration, then the compound
+literal can be coerced to a pointer to its first element and used in
+such an initializer, as shown here:</P>
+<PRE>char **foo = (char *[]) { &quot;x&quot;, &quot;y&quot;, &quot;z&quot; };
+</PRE>
+<P>Compound literals for scalar types and union types are
+also allowed, but then the compound literal is equivalent
+to a cast.
+<BR><BR>
+As a GNU extension, GCC allows initialization of objects with static storage
+duration by compound literals (which is not possible in ISO C99, because
+the initializer is not a constant).
+It is handled as if the object was initialized only with the bracket
+enclosed list if compound literal's and object types match.
+The initializer list of the compound literal must be constant.
+If the object being initialized has array type of unknown size, the size is
+determined by compound literal size.</P>
+<PRE>static struct foo x = (struct foo) {1, 'a', 'b'};
+static int y[] = (int []) {1, 2, 3};
+static int z[] = (int [3]) {1};
+</PRE>
+<P>The above lines are equivalent to the following:</P>
+<PRE>static struct foo x = {1, 'a', 'b'};
+static int y[] = {1, 2, 3};
+static int z[] = {1, 0, 0};
+</PRE>
+
+<HR>
+<H2><A NAME="SEC82"><U>Designated Initializers</U></A></H2>
+<P>Standard C89 requires the elements of an initializer to appear in a fixed
+order, the same as the order of the elements in the array or structure
+being initialized.
+<BR><BR>
+In ISO C99 you can give the elements in any order, specifying the array
+indices or structure field names they apply to, and GNU C allows this as
+an extension in C89 mode as well.
+<BR><BR>
+To specify an array index, write
+<CODE>[<I>index</I>]&nbsp;=</CODE> before the element value.  For example,</P>
+<PRE>int a[6] = { [4] = 29, [2] = 15 };
+</PRE>
+<P>is equivalent to</P>
+<PRE>int a[6] = { 0, 0, 15, 0, 29, 0 };
+</PRE>
+<P>The index values must be constant expressions, even if the array being
+initialized is automatic.
+<BR><BR>
+An alternative syntax for this which has been obsolete since GCC 2.5 but
+GCC still accepts is to write <CODE>[<I>index</I>]</CODE> before the element
+value, with no <CODE>=</CODE>.
+<BR><BR>
+To initialize a range of elements to the same value, write
+<CODE>[<I>first</I>&nbsp;...&nbsp;<I>last</I>]&nbsp;=&nbsp;<I>value</I></CODE>.  This is a GNU
+extension.  For example,</P>
+<PRE>int widths[] = { [0 ... 9] = 1, [10 ... 99] = 2, [100] = 3 };
+</PRE>
+<P>If the value in it has side-effects, the side-effects will happen only once,
+not for each initialized field by the range initializer.
+<BR><BR>
+Note that the length of the array is the highest value specified
+plus one.
+<BR><BR>
+In a structure initializer, specify the name of a field to initialize
+with <CODE>.<I>fieldname</I>&nbsp;=</CODE> before the element value.  For example,
+given the following structure,</P>
+<PRE>struct point { int x, y; };
+</PRE>
+<P>the following initialization</P>
+<PRE>struct point p = { .y = yvalue, .x = xvalue };
+</PRE>
+<P>is equivalent to</P>
+<PRE>struct point p = { xvalue, yvalue };
+</PRE>
+<P>Another syntax which has the same meaning, obsolete since GCC 2.5, is
+<CODE><I>fieldname</I>:</CODE>, as shown here:</P>
+<PRE>struct point p = { y: yvalue, x: xvalue };
+</PRE>
+<P>The <CODE>[<I>index</I>]</CODE> or <CODE>.<I>fieldname</I></CODE> is known as a
+<U>designator</U>.  You can also use a designator (or the obsolete colon
+syntax) when initializing a union, to specify which element of the union
+should be used.  For example,</P>
+<PRE>union foo { int i; double d; };
+
+union foo f = { .d = 4 };
+</PRE>
+<P>will convert 4 to a <CODE><A HREF="keywords.html#float">double</A></CODE> to store it in the union using
+the second element.  By contrast, casting 4 to type <CODE><A HREF="keywords.html#union">union</A>&nbsp;foo</CODE>
+would store it into the union as the integer <CODE>i</CODE>, since it is
+an integer (see <A HREF="#SEC84">Cast to Union</A>).
+<BR><BR>
+You can combine this technique of naming elements with ordinary C
+initialization of successive elements.  Each initializer element that
+does not have a designator applies to the next consecutive element of the
+array or structure.  For example,</P>
+<PRE>int a[6] = { [1] = v1, v2, [4] = v4 };
+</PRE>
+<P>is equivalent to</P>
+<PRE>int a[6] = { 0, v1, v2, 0, v4, 0 };
+</PRE>
+<P>Labeling the elements of an array initializer is especially useful
+when the indices are characters or belong to an <CODE><A HREF="keywords.html#enum">enum</A></CODE> type.
+For example:</P>
+<PRE>int whitespace[256]
+  = { [' '] = 1, ['\t'] = 1, ['\h'] = 1,
+      ['\f'] = 1, ['\n'] = 1, ['\r'] = 1 };
+</PRE>
+<P>You can also write a series of <CODE>.<I>fieldname</I></CODE> and
+<CODE>[<I>index</I>]</CODE> designators before an <CODE>=</CODE> to specify a
+nested subobject to initialize; the list is taken relative to the
+subobject corresponding to the closest surrounding brace pair.  For
+example, with the <CODE><A HREF="keywords.html#struct">struct</A>&nbsp;point</CODE> declaration above:</P>
+<PRE>struct point ptarray[10] = { [2].y = yv2, [2].x = xv2, [0].x = xv0 };
+</PRE>
+<P>If the same field is initialized multiple times, it will have value from
+the last initialization.  If any such overridden initialization has
+side-effect, it is unspecified whether the side-effect happens or not.
+Currently, GCC will discard them and issue a warning.</P>
+
+<HR>
+<H2><A NAME="SEC84"><U>Cast to a Union Type</U></A></H2>
+<P>A cast to union type is similar to other casts, except that the type
+specified is a union type.  You can specify the type either with
+<CODE><A HREF="keywords.html#union">union</A>&nbsp;<I>tag</I></CODE> or with a typedef name.  A cast to union is actually
+a constructor though, not a cast, and hence does not yield an lvalue like
+normal casts (see <A HREF="#SEC81">Compound Literals</A>).
+<BR><BR>
+The types that may be cast to the union type are those of the members
+of the union.  Thus, given the following union and variables:</P>
+<PRE>union foo { int i; double d; };
+int x;
+double y;
+</PRE>
+<P>both <I>x</I> and <I>y</I> can be cast to type <CODE><A HREF="keywords.html#union">union</A>&nbsp;foo</CODE>.
+<BR><BR>
+Using the cast as the right-hand side of an assignment to a variable of
+union type is equivalent to storing in a member of the union:</P>
+<PRE>union foo u;
+/* ... */
+u = (union foo) x  &lt;=&gt;  u.i = x
+u = (union foo) y  &lt;=&gt;  u.d = y
+</PRE>
+<P>You can also use the union cast as a function argument:</P>
+<PRE>void hack (union foo);
+/* ... */
+hack ((union foo) x);
+</PRE>
+
+<HR>
+<H2><A NAME="SEC83"><U>Case Ranges</U></A></H2>
+<P>You can specify a range of consecutive values in a single <CODE>case</CODE> label,
+like this:</P>
+<PRE>case <I>low</I> ... <I>high</I>:
+</PRE>
+<P>This has the same effect as the proper number of individual <CODE>case</CODE>
+labels, one for each integer value from <I>low</I> to <I>high</I>, inclusive.
+<BR><BR>
+This feature is especially useful for ranges of ASCII character codes:</P>
+<PRE>case 'A' ... 'Z':
+</PRE>
+<P><B>Note:</B> Always write spaces around the <CODE>...</CODE>, for otherwise
+it may be parsed wrong when you use it with integer values.  For example,
+write this:</P>
+<PRE>case 1 ... 5:
+</PRE>
+<P>rather than this:</P>
+<PRE>case 1...5:
+</PRE>
+
+<HR>
+<H2><A NAME="SEC85"><U>Specifying Attributes of Functions</U></A></H2>
+<P>In GNU C, you declare certain things about functions called in your program
+which help the compiler optimize function calls and check your code more
+carefully.
+<BR><BR>
+The keyword <CODE>__attribute__</CODE> allows you to specify special
+attributes when making a declaration.  This keyword is followed by an
+attribute specification inside double parentheses.
+The following attributes are currently defined for functions:</P>
+
+<UL>
+<LI><B><A HREF="#SEC85_noreturn">noreturn</A></B>
+<LI><B><A HREF="#SEC85_pure">pure</A></B>
+<LI><B><A HREF="#SEC85_const">const</A></B>
+<LI><B><A HREF="#SEC85_format">format</A></B>
+<LI><B><A HREF="#SEC85_format_arg">format_arg</A></B>
+<LI><B><A HREF="#SEC85_no_instrument_function">no_instrument_function</A></B>
+<LI><B><A HREF="#SEC85_section">section</A></B>
+<LI><B><A HREF="#SEC85_constructor">constructor, destructor</A></B>
+<LI><B><A HREF="#SEC85_unused">unused</A></B>
+<LI><B><A HREF="#SEC85_used">used</A></B>
+<LI><B><A HREF="#SEC85_malloc">malloc</A></B>
+<LI><B><A HREF="#SEC85_alias">alias</A></B>
+<LI><B><A HREF="#SEC85_always_inline">always_inline</A></B>
+<LI><B><A HREF="#SEC85_noinline">noinline</A></B>
+<LI><B><A HREF="#SEC85_deprecated">deprecated</A></B>
+<LI><B><A HREF="#SEC85_regparm">regparm, stkparm</A></B>
+<LI><B><A HREF="#SEC85_nonnull">nonnull</A></B>
+<LI><B><A HREF="#SEC85_nothrow">nothrow</A></B>
+</UL>
+<P>Other attributes are supported for variable declarations (see <A HREF="#SEC91">Variable Attributes</A>)
+and for types (see <A HREF="#SEC92">Type Attributes</A>).
+<BR><BR>
+GCC4TI also defines the macros <CODE>CALLBACK, __ATTR_TIOS__, __ATTR_TIOS_NORETURN__, __ATTR_TIOS_CALLBACK__, __ATTR_GCC__, __ATTR_LIB_C__, __ATTR_LIB_ASM__, __ATTR_LIB_ASM_NORETURN__, __ATTR_LIB_CALLBACK_C__,</CODE> and <CODE>__ATTR_LIB_CALLBACK_ASM__</CODE>.
+They are useful for specifying default attributes for a specific class of functions.
+You only need to use them when you define a callback function.
+For example, the callback function type <A HREF="stdlib.html#compare_t">compare_t</A>
+needs the attributes specified by <CODE>__ATTR_LIB_CALLBACK_C__</CODE>,
+i.e. the attributes required by a callback function for a library function
+written in C.  Since this is too inconvenient for the user, all three callback
+attributes have been made equal, and we have defined a single <CODE>CALLBACK</CODE>
+macro.
+<BR><BR>
+You may also specify attributes with <CODE>__</CODE> preceding and following
+each keyword.  This allows you to use them in header files without
+being concerned about a possible macro of the same name.  For example,
+you may use <CODE>__noreturn__</CODE> instead of <CODE>noreturn</CODE>.
+For example, as <A HREF="alloc.html#malloc">malloc</A> is defined as a macro in the GCC4TI Library,
+always use <CODE>__malloc__</CODE> instead of <CODE>malloc</CODE>.
+<BR><BR>
+See <A HREF="#SEC85a">Attribute Syntax</A> for details of the exact syntax for using
+attributes.
+<BR><BR>
+You can specify multiple attributes in a declaration by separating them
+by commas within the double parentheses or by immediately following an
+attribute declaration with another attribute declaration.
+<BR><BR>
+Some people object to the <CODE>__attribute__</CODE> feature, suggesting that
+ISO C's <CODE><A HREF="cpp.html#SEC46">#pragma</A></CODE> should be used instead.  At the time
+<CODE>__attribute__</CODE> was designed, there were two reasons for not doing
+this.</P>
+<OL>
+<LI><P>It is impossible to generate <CODE>#pragma</CODE> commands from a macro.
+</P></LI>
+<LI><P>There is no telling what the same <CODE>#pragma</CODE> might mean in another
+compiler.</P></LI>
+</OL>
+<P>These two reasons applied to almost any application that might have been
+proposed for <CODE>#pragma</CODE>.  It was basically a mistake to use
+<CODE>#pragma</CODE> for <I>anything</I>.
+<BR><BR>
+The ISO C99 standard includes <CODE>_Pragma</CODE>, which now allows pragmas
+to be generated from macros.  In addition, a <CODE>#pragma&nbsp;GCC</CODE>
+namespace is now in use for GCC-specific pragmas.  However, it has been
+found convenient to use <CODE>__attribute__</CODE> to achieve a natural
+attachment of attributes to their corresponding declarations, whereas
+<CODE>#pragma&nbsp;GCC</CODE> is of use for constructs that do not naturally form
+part of the grammar.</P>
+
+<H3><A NAME="SEC85_noreturn"><U>noreturn</U></A></H3>
+<P>A few standard library functions, such as <A HREF="stdlib.html#abort">abort</A> and <A HREF="stdlib.html#exit">exit</A>,
+cannot return.  Some programs define
+their own functions that never return.  You can declare them
+<CODE>noreturn</CODE> to tell the compiler this fact.  For example:</P>
+<PRE>void fatal () __attribute__ ((noreturn));
+
+void
+fatal (/* ... */)
+{
+  /* ... */ /* Print error message. */ /* ... */
+  exit (1);
+}
+</PRE>
+<P>The <CODE>noreturn</CODE> keyword tells the compiler to assume that
+<I>fatal</I> cannot return.  It can then optimize without regard to what
+would happen if <I>fatal</I> ever did return.  This makes slightly
+better code.  More importantly, it helps avoid spurious warnings of
+uninitialized variables.
+<BR><BR>
+Do not assume that registers saved by the calling function are
+restored before calling the <CODE>noreturn</CODE> function.
+<BR><BR>
+It does not make sense for a <CODE>noreturn</CODE> function to have a return
+type other than <CODE><A HREF="keywords.html#void">void</A></CODE>.</P>
+
+<H3><A NAME="SEC85_pure"><U>pure</U></A></H3>
+<P>Many functions have no effects except the return value and their
+return value depends only on the parameters and/or global variables.
+Such a function can be subject
+to common subexpression elimination and loop optimization just as an
+arithmetic operator would be.  These functions should be declared
+with the attribute <CODE>pure</CODE>.  For example,</P>
+<PRE>int square (int) __attribute__ ((pure));
+</PRE>
+<P>says that the hypothetical function <I>square</I> is safe to call
+fewer times than the program says.
+<BR><BR>
+Some common examples of pure functions are <A HREF="string.html#strlen">strlen</A> or <A HREF="mem.html#memcmp">memcmp</A>.
+Interesting non-pure functions are functions with infinite loops or those
+depending on volatile memory or other system resource, that may change between
+two consecutive calls.</P>
+
+<P>See also: <A HREF="#SEC85_const">const</A></P>
+<H3><A NAME="SEC85_const"><U>const</U></A></H3>
+<P>Many functions do not examine any values except their arguments, and
+have no effects except the return value.  Basically this is just slightly
+more strict class than the <CODE><A HREF="#SEC85_pure">pure</A></CODE> attribute, since the function is not
+allowed to read global memory.
+<BR><BR>
+Note that a function that has pointer arguments and examines the data
+pointed to must <I>not</I> be declared <CODE>const</CODE>.  Likewise, a
+function that calls a non-<CODE>const</CODE> function usually must not be
+<CODE>const</CODE>.  It does not make sense for a <CODE>const</CODE> function to
+return <CODE><A HREF="keywords.html#void">void</A></CODE>.</P>
+
+<P>See also: <A HREF="#SEC85_pure">pure</A></P>
+<H3><A NAME="SEC85_format"><U>format</U></A></H3>
+<P>Syntax: <B>format (<I>archetype</I>, <I>string-index</I>, <I>first-to-check</I>)</B>
+<BR><BR>
+The <CODE>format</CODE> attribute specifies that a function takes <A HREF="stdio.html#printf">printf</A>
+style arguments which
+should be type-checked against a format string.  For example, the
+declaration:</P>
+<PRE>extern int
+my_printf (void *my_object, const char *my_format, ...)
+      __attribute__ ((format (printf, 2, 3)));
+</PRE>
+<P>causes the compiler to check the arguments in calls to <I>my_printf</I>
+for consistency with the <A HREF="stdio.html#printf">printf</A> style format string argument
+<I>my_format</I>.
+<BR><BR>
+The parameter <I>archetype</I> determines how the format string is
+interpreted, and should be <CODE>printf</CODE>, <CODE>scanf</CODE>, <CODE>strftime</CODE>
+or <CODE>strfmon</CODE> (note that only the function <A HREF="stdio.html#printf">printf</A> is implemented in the GCC4TI Library).
+(You can also use <CODE>__printf__</CODE>,
+<CODE>__scanf__</CODE>, <CODE>__strftime__</CODE> or <CODE>__strfmon__</CODE>.)  The
+parameter <I>string-index</I> specifies which argument is the format
+string argument (starting from 1), while <I>first-to-check</I> is the
+number of the first argument to check against the format string.  For
+functions where the arguments are not available to be checked (such as
+<A HREF="stdio.html#vprintf">vprintf</A>), specify the third parameter as zero.  In this case the
+compiler only checks the format string for consistency.  For
+<CODE>strftime</CODE> formats, the third parameter is required to be zero.
+<BR><BR>
+In the example above, the format string (<I>my_format</I>) is the second
+argument of the function <I>my_print</I>, and the arguments to check
+start with the third argument, so the correct parameters for the format
+attribute are 2 and 3.
+<BR><BR>
+The <CODE>format</CODE> attribute allows you to identify your own functions
+which take format strings as arguments, so that GCC can check the
+calls to these functions for errors.  The compiler always (unless
+<B>'-ffreestanding'</B> is used) checks formats
+for the standard library functions.
+See <A HREF="comopts.html#SEC6">Options Controlling C Dialect</A>.</P>
+
+<H3><A NAME="SEC85_format_arg"><U>format_arg</U></A></H3>
+<P>Syntax: <B>format_arg (<I>string-index</I>)</B>
+<BR><BR>
+The <CODE>format_arg</CODE> attribute specifies that a function takes a format
+string for a <A HREF="stdio.html#printf">printf</A> style function and modifies it (for example, to translate
+it into another language), so the result can be passed to a
+<A HREF="stdio.html#printf">printf</A> style
+function (with the remaining arguments to the format function the same
+as they would have been for the unmodified string).  For example, the
+declaration</P>
+<PRE>extern char *
+my_dgettext (char *my_domain, const char *my_format)
+      __attribute__ ((format_arg (2)));
+</PRE>
+<P>causes the compiler to check the arguments in calls to a <A HREF="stdio.html#printf">printf</A> type function, whose
+format string argument is the result of a call to the <I>my_dgettext</I> function, for
+consistency with the format string argument <I>my_format</I>.  If the
+<CODE>format_arg</CODE> attribute had not been specified, all the compiler
+could tell in such calls to format functions would be that the format
+string argument is not constant; this would generate a warning when
+<B>'-Wformat-nonliteral'</B> is used, but the calls could not be checked
+without the attribute.
+<BR><BR>
+The parameter <I>string-index</I> specifies which argument is the format
+string argument (starting from 1).
+<BR><BR>
+The <CODE>format-arg</CODE> attribute allows you to identify your own
+functions which modify format strings, so that GCC can check the
+calls to <A HREF="stdio.html#printf">printf</A>
+type functions whose operands are calls to one of your own functions.
+(The compiler always treats <CODE>gettext</CODE>, <CODE>dgettext</CODE>, and
+<CODE>dcgettext</CODE> in this manner except when strict ISO C support is
+requested by <B>'-ansi'</B> or an appropriate <B>'-std'</B> option, or
+<B>'-ffreestanding'</B> is used.  See <A HREF="comopts.html#SEC6">Options
+Controlling C Dialect</A>.)</P>
+
+<H3><A NAME="SEC85_no_instrument_function"><U>no_instrument_function</U></A></H3>
+<P>If <B>'-finstrument-functions'</B> is given, profiling function calls will
+be generated at entry and exit of most user-compiled functions.
+Functions with this attribute will not be so instrumented.</P>
+
+<H3><A NAME="SEC85_section"><U>section</U></A></H3>
+<P>Syntax: <B>section (&quot;<I>section-name</I>&quot;)</B>
+<BR><BR>
+Normally, the compiler places all code and data it generates in the <CODE>.data</CODE> section.
+Sometimes, however, you need additional sections, or you need certain
+particular functions to appear in special sections.  The <CODE>section</CODE>
+attribute specifies that a function lives in a particular section.
+For example, the declaration:</P>
+<PRE>extern void foobar (void) __attribute__ ((section (&quot;bar&quot;)));
+</PRE>
+<P>puts the function <I>foobar</I> in the <CODE>bar</CODE> section.
+<BR><BR>
+The use of this attribute is limited in GCC4TI, because its linker supports
+only a few types of sections.
+<BR><BR>
+The <CODE>section</CODE> attribute can also be used for <A HREF="#SEC91_section">variables</A>.</P>
+
+<H3><A NAME="SEC85_constructor"><U>constructor, destructor</U></A></H3>
+<P>The <CODE>constructor</CODE> attribute causes the function to be called
+automatically before execution enters _main.  Similarly, the
+<CODE>destructor</CODE> attribute causes the function to be called
+automatically after _main has completed or <A HREF="stdlib.html#exit">exit</A> has
+been called.  Functions with these attributes are useful for
+initializing data that will be used implicitly during the execution of
+the program.</P>
+
+<H3><A NAME="SEC85_unused"><U>unused</U></A></H3>
+<P>This attribute, attached to a function, means that the function is meant
+to be possibly unused.  GCC will not produce a warning for this
+function.
+<BR><BR>
+The <CODE>unused</CODE> attribute can also be used for <A HREF="#SEC91_unused">variables</A> and
+<A HREF="#SEC92_unused">types</A>.</P>
+
+<H3><A NAME="SEC85_used"><U>used</U></A></H3>
+<P>This attribute, attached to a function, means that code must be emitted
+for the function even if it appears that the function is not referenced.
+This is useful, for example, when the function is referenced only in
+inline assembly.</P>
+
+<H3><A NAME="SEC85_malloc"><U>malloc</U></A></H3>
+<P>The <CODE>malloc</CODE> attribute is used to tell the compiler that a function
+may be treated as if it were the <A HREF="alloc.html#malloc">malloc</A> function.  The compiler assumes
+that calls to <A HREF="alloc.html#malloc">malloc</A> result in a pointers that cannot alias anything.
+This will often improve optimization.</P>
+
+<H3><A NAME="SEC85_alias"><U>alias</U></A></H3>
+<P>Syntax: <B>alias (&quot;<I>target</I>&quot;)</B>
+<BR><BR>
+The <CODE>alias</CODE> attribute causes the declaration to be emitted as an
+alias for another symbol, which must be specified.  For instance,</P>
+<PRE>void __f () { /* Do something. */; }
+void f () __attribute__ ((weak, alias (&quot;__f&quot;)));
+</PRE>
+<P>declares <I>f</I> to be a weak alias for <I>__f</I>.
+<BR><BR>
+Not all target machines support this attribute.
+We haven't tested yet whether it is supported for the Motorola 68000.</P>
+
+<H3><A NAME="SEC85_always_inline"><U>always_inline</U></A></H3>
+<P>Generally, functions are not inlined unless optimization is specified.
+For functions declared inline, this attribute inlines the function even
+if no optimization level was specified.</P>
+
+<H3><A NAME="SEC85_noinline"><U>noinline</U></A></H3>
+<P>This function attribute prevents a function from being considered for
+inlining.</P>
+
+<H3><A NAME="SEC85_deprecated"><U>deprecated</U></A></H3>
+<P>The <CODE>deprecated</CODE> attribute results in a warning if the function
+is used anywhere in the source file.  This is useful when identifying
+functions that are expected to be removed in a future version of a
+program.  The warning also includes the location of the declaration
+of the deprecated function, to enable users to easily find further
+information about why the function is deprecated, or what they should
+do instead.  Note that the warnings only occurs for uses:</P>
+<PRE>int old_fn () __attribute__ ((deprecated));
+int old_fn ();
+int (*fn_ptr)() = old_fn;
+</PRE>
+<P>results in a warning on line 3 but not line 2.
+<BR><BR>
+The <CODE>deprecated</CODE> attribute can also be used for <A HREF="#SEC91_deprecated">variables</A> and
+<A HREF="#SEC92_deprecated">types</A>.</P>
+
+<H3><A NAME="SEC85_regparm"><U>regparm, stkparm</U></A></H3>
+<P>Syntax: <B>regparm [(<I>regcount</I>)]</B> / <B>stkparm</B>
+<BR><BR>
+The <CODE>regparm</CODE> attribute causes the function to use <I>regcount</I>
+data registers and <I>regcount</I> address registers for parameters.
+<CODE>stkparm</CODE> means the exact opposite, i.e. all parameters are passed
+on the stack.  The <B>'-mregparm'</B> switch specifies which one is the default,
+and the default for <I>regcount</I>.</P>
+
+<P>See also: <A HREF="#SEC99a">Specifying Registers for Function Parameters</A></P>
+<H3><A NAME="SEC85_nonnull"><U>nonnull</U></A></H3>
+<P>Syntax: <B>nonnull [(<I>param1</I>[, <I>param2</I>[, ...]])]</B>
+<BR><BR>
+The <CODE>nonnull</CODE> attribute specifies that some function parameters should
+be non-null pointers.  For instance, the declaration:</P>
+<PRE>extern void *
+my_memcpy (void *dest, const void *src, size_t len)
+	__attribute__((nonnull (1, 2)));
+</PRE>
+<P>causes the compiler to check that, in calls to <CODE>my_memcpy</CODE>,
+arguments <I>dest</I> and <I>src</I> are non-null.  If the compiler
+determines that a null pointer is passed in an argument slot marked
+as non-null, and the <B>'-Wnonnull'</B> option is enabled, a warning
+is issued.  The compiler may also choose to make optimizations based
+on the knowledge that certain function arguments will not be null.
+<BR><BR>
+If no argument index list is given to the <CODE>nonnull</CODE> attribute,
+all pointer arguments are marked as non-null.  To illustrate, the
+following declaration is equivalent to the previous example:</P>
+<PRE>extern void *
+my_memcpy (void *dest, const void *src, size_t len)
+	__attribute__((nonnull));
+</PRE>
+
+<H3><A NAME="SEC85_nothrow"><U>nothrow</U></A></H3>
+<P>The <CODE>nothrow</CODE> attribute is used to inform the compiler that a
+function cannot throw an exception.
+This is probably useless in GCC4TI, as it implements its own error-handling
+mechanism.</P>
+
+<HR>
+<H2><A NAME="SEC91"><U>Specifying Attributes of Variables</U></A></H2>
+<P>The keyword <CODE>__attribute__</CODE> allows you to specify special
+attributes of variables or structure fields.  This keyword is followed
+by an attribute specification inside double parentheses.
+The following attributes are currently defined for variables:</P>
+
+<UL>
+<LI><B><A HREF="#SEC91_aligned">aligned</A></B>
+<LI><B><A HREF="#SEC91_mode">mode</A></B>
+<LI><B><A HREF="#SEC91_nocommon">nocommon</A></B>
+<LI><B><A HREF="#SEC91_packed">packed</A></B>
+<LI><B><A HREF="#SEC91_section">section</A></B>
+<LI><B><A HREF="#SEC91_transparent_union">transparent_union</A></B>
+<LI><B><A HREF="#SEC91_cleanup">cleanup</A></B>
+<LI><B><A HREF="#SEC91_unused">unused</A></B>
+<LI><B><A HREF="#SEC91_deprecated">deprecated</A></B>
+</UL>
+<P>Other attributes are
+available for functions (see <A HREF="#SEC85">Function Attributes</A>) and for types
+(see <A HREF="#SEC92">Type Attributes</A>).
+<BR><BR>
+You may also specify attributes with <CODE>__</CODE> preceding and following
+each keyword.  This allows you to use them in header files without
+being concerned about a possible macro of the same name.  For example,
+you may use <CODE>__aligned__</CODE> instead of <CODE>aligned</CODE>.
+<BR><BR>
+See <A HREF="#SEC85a">Attribute Syntax</A> for details of the exact syntax for using
+attributes.
+<BR><BR>
+To specify multiple attributes, separate them by commas within the
+double parentheses: for example, <CODE>__attribute__&nbsp;((aligned&nbsp;(16),
+packed))</CODE>.</P>
+
+<H3><A NAME="SEC91_aligned"><U>aligned</U></A></H3>
+<P>Syntax: <B>aligned [(<I>alignment</I>)]</B>
+<BR><BR>
+This attribute specifies a minimum alignment for the variable or
+structure field, measured in bytes.  For example, the declaration:</P>
+<PRE>int x __attribute__ ((aligned (4))) = 0;
+</PRE>
+<P>causes the compiler to allocate the global variable <CODE>x</CODE> on a
+4-byte boundary.
+<BR><BR>
+You can also specify the alignment of structure fields.  For example, to
+create a 4-byte aligned <CODE><A HREF="keywords.html#int">int</A></CODE> pair, you could write:</P>
+<PRE>struct foo { int x[2] __attribute__ ((aligned (4))); };
+</PRE>
+<P>As in the preceding examples, you can explicitly specify the alignment
+(in bytes) that you wish the compiler to use for a given variable or
+structure field.  Alternatively, you can leave out the alignment factor
+and just ask the compiler to align a variable or field to the maximum
+useful alignment for the target machine you are compiling for.  For
+example, you could write:</P>
+<PRE>short array[3] __attribute__ ((aligned));
+</PRE>
+<P>Whenever you leave out the alignment factor in an <CODE>aligned</CODE> attribute
+specification, the compiler automatically sets the alignment for the declared
+variable or field to the largest alignment which is ever used for any data
+type on the target machine you are compiling for (useless in GCC4TI, since everything
+is already aligned well enough with the default 2-byte alignment).
+<BR><BR>
+The <CODE>aligned</CODE> attribute can only increase the alignment; but you
+can decrease it by specifying <CODE><A HREF="#SEC91_packed">packed</A></CODE> as well.</P>
+
+<H3><A NAME="SEC91_mode"><U>mode</U></A></H3>
+<P>Syntax: <B>mode (<I>mode</I>)</B>
+<BR><BR>
+This attribute specifies the data type for the declaration - whichever
+type corresponds to the mode <I>mode</I>.  This in effect lets you
+request an integer or floating point type according to its width.
+<BR><BR>
+You may also specify a mode of <CODE>byte</CODE> or <CODE>__byte__</CODE> to
+indicate the mode corresponding to a one-byte integer, <CODE>word</CODE> or
+<CODE>__word__</CODE> for the mode of a one-word integer, and <CODE>pointer</CODE>
+or <CODE>__pointer__</CODE> for the mode used to represent pointers.</P>
+
+<H3><A NAME="SEC91_nocommon"><U>nocommon</U></A></H3>
+<P>This attribute requests GCC not to place a variable
+&quot;common&quot; but instead to allocate space for it directly.  If you
+specify the <B>'-fno-common'</B> flag, GCC will do this for all
+variables.
+<BR><BR>
+Specifying the <CODE>nocommon</CODE> attribute for a variable provides an
+initialization of zeros.  A variable may only be initialized in one
+source file.</P>
+
+<H3><A NAME="SEC91_packed"><U>packed</U></A></H3>
+<P>The <CODE>packed</CODE> attribute specifies that a variable or structure field
+should have the smallest possible alignment - one byte for a variable,
+and one bit for a field, unless you specify a larger value with the
+<CODE>aligned</CODE> attribute.
+<BR><BR>
+Here is a structure in which the field <CODE>x</CODE> is packed, so that it
+immediately follows <CODE>a</CODE>:</P>
+<PRE>struct foo
+{
+  char a;
+  int x[2] __attribute__ ((packed));
+};
+</PRE>
+
+<H3><A NAME="SEC91_section"><U>section</U></A></H3>
+<P>Syntax: <B>section (&quot;<I>section-name</I>&quot;)</B>
+<BR><BR>
+Normally, the compiler places the objects it generates in sections like
+<CODE>.data</CODE> and <CODE>.bss</CODE>.  Sometimes, however, you need additional sections,
+or you need certain particular variables to appear in special sections,
+for example to map to special hardware.  The <CODE>section</CODE>
+attribute specifies that a variable (or function) lives in a particular
+section.  The use of this attribute is limited in GCC4TI, because its linker supports
+only a few types of sections, but this may be improved in the future.
+For example, this small hypothetical program uses several specific section names:</P>
+<PRE>struct duart a __attribute__ ((section (&quot;DUART_A&quot;))) = { 0 };
+struct duart b __attribute__ ((section (&quot;DUART_B&quot;))) = { 0 };
+char stack[10000] __attribute__ ((section (&quot;STACK&quot;))) = { 0 };
+int init_data __attribute__ ((section (&quot;INITDATA&quot;))) = 0;
+
+main()
+{
+  /* Initialize stack pointer */
+  init_sp (stack + sizeof (stack));
+
+  /* Initialize initialized data */
+  memcpy (&amp;init_data, &amp;data, &amp;edata - &amp;data);
+
+  /* Turn on the serial ports */
+  init_duart (&amp;a);
+  init_duart (&amp;b);
+}
+</PRE>
+<P>Use the <CODE>section</CODE> attribute with an <I>initialized</I> definition
+of a <I>global</I> variable, as shown in the example.  GCC issues
+a warning and otherwise ignores the <CODE>section</CODE> attribute in
+uninitialized variable declarations.
+<BR><BR>
+You may only use the <CODE>section</CODE> attribute with a fully initialized
+global definition because of the way linkers work.  The linker requires
+each object be defined once, with the exception that uninitialized
+variables tentatively go in the <CODE>.bss</CODE> section
+and can be multiply &quot;defined&quot;.  You can force a variable to be
+initialized with the <B>'-fno-common'</B> flag or the <CODE><A HREF="#SEC91_nocommon">nocommon</A></CODE>
+attribute.
+<BR><BR>
+The <CODE>section</CODE> attribute can also be used for <A HREF="#SEC85_section">functions</A>.</P>
+
+<H3><A NAME="SEC91_transparent_union"><U>transparent_union</U></A></H3>
+<P>This attribute, attached to a function parameter which is a union, means
+that the corresponding argument may have the type of any union member,
+but the argument is passed as if its type were that of the first union
+member.  For more details, see the
+<CODE><A HREF="#SEC92_transparent_union">transparent_union</A></CODE>
+type attribute.  You can also use
+this attribute on a <CODE><A HREF="keywords.html#typedef">typedef</A></CODE> for a union data type; then it
+applies to all function parameters with that type.</P>
+
+<H3><A NAME="SEC91_cleanup"><U>cleanup</U></A></H3>
+<P>The <CODE>cleanup</CODE> attribute runs a function when the variable goes
+out of scope.  This attribute can only be applied to auto function
+scope variables; it may not be applied to parameters or variables
+with static storage duration.  The function must take one parameter,
+a pointer to a type compatible with the variable.  The return value
+of the function (if any) is ignored.
+<BR><BR>
+If <B>'-fexceptions'</B> is enabled, then <I>cleanup_function</I>
+will be run during the stack unwinding that happens during the
+processing of the exception.  Note that the <CODE>cleanup</CODE> attribute
+does not allow the exception to be caught, only to perform an action.
+Note that GCC4TI defines its own error handling mechanism, so this attribute
+will not work if used in this way.
+It is undefined what happens if <I>cleanup_function</I> does not
+return normally.</P>
+
+<H3><A NAME="SEC91_unused"><U>unused</U></A></H3>
+<P>This attribute, attached to a variable, means that the variable is meant
+to be possibly unused.  GCC will not produce a warning for this
+variable.
+<BR><BR>
+The <CODE>unused</CODE> attribute can also be used for <A HREF="#SEC85_unused">functions</A> and
+<A HREF="#SEC92_unused">types</A>.</P>
+
+<H3><A NAME="SEC91_deprecated"><U>deprecated</U></A></H3>
+<P>The <CODE>deprecated</CODE> attribute results in a warning if the variable
+is used anywhere in the source file.  This is useful when identifying
+variables that are expected to be removed in a future version of a
+program.  The warning also includes the location of the declaration
+of the deprecated variable, to enable users to easily find further
+information about why the variable is deprecated, or what they should
+do instead.  Note that the warnings only occurs for uses:</P>
+<PRE>extern int old_var __attribute__ ((deprecated));
+extern int old_var;
+int new_fn () { return old_var; }
+</PRE>
+<P>results in a warning on line 3 but not line 2.
+<BR><BR>
+The <CODE>deprecated</CODE> attribute can also be used for <A HREF="#SEC85_deprecated">functions</A> and
+<A HREF="#SEC92_deprecated">types</A>.</P>
+
+<HR>
+<H2><A NAME="SEC92"><U>Specifying Attributes of Types</U></A></H2>
+<P>The keyword <CODE>__attribute__</CODE> allows you to specify special
+attributes of <CODE><A HREF="keywords.html#struct">struct</A></CODE> and <CODE><A HREF="keywords.html#union">union</A></CODE> types when you define such
+types.  This keyword is followed by an attribute specification inside
+double parentheses.
+The following attributes are currently defined for types:</P>
+
+<UL>
+<LI><B><A HREF="#SEC92_aligned">aligned</A></B>
+<LI><B><A HREF="#SEC92_packed">packed</A></B>
+<LI><B><A HREF="#SEC92_transparent_union">transparent_union</A></B>
+<LI><B><A HREF="#SEC92_may_alias">may_alias</A></B>
+<LI><B><A HREF="#SEC92_unused">unused</A></B>
+<LI><B><A HREF="#SEC92_deprecated">deprecated</A></B>
+</UL>
+<P>Other attributes are defined for
+functions (see <A HREF="#SEC85">Function Attributes</A>) and for variables
+(see <A HREF="#SEC91">Variable Attributes</A>).
+<BR><BR>
+You may also specify any one of these attributes with <CODE>__</CODE>
+preceding and following its keyword.  This allows you to use these
+attributes in header files without being concerned about a possible
+macro of the same name.  For example, you may use <CODE>__aligned__</CODE>
+instead of <CODE>aligned</CODE>.
+<BR><BR>
+You may specify the <CODE>aligned</CODE> and <CODE>transparent_union</CODE>
+attributes either in a <CODE>typedef</CODE> declaration or just past the
+closing curly brace of a complete enum, struct or union type
+<I>definition</I> and the <CODE>packed</CODE> attribute only past the closing
+brace of a definition.
+<BR><BR>
+You may also specify attributes between the enum, struct or union
+tag and the name of the type rather than after the closing brace.
+<BR><BR>
+See <A HREF="#SEC85a">Attribute Syntax</A> for details of the exact syntax for using
+attributes.
+<BR><BR>
+To specify multiple attributes, separate them by commas within the
+double parentheses: for example, <CODE>__attribute__&nbsp;((aligned&nbsp;(16),
+packed))</CODE>.</P>
+
+<H3><A NAME="SEC92_aligned"><U>aligned</U></A></H3>
+<P>Syntax: <B>aligned [(<I>alignment</I>)]</B>
+<BR><BR>
+This attribute specifies a minimum alignment (in bytes) for variables
+of the specified type.  For example, the declarations:</P>
+<PRE>struct S { short f[3]; } __attribute__ ((aligned (8)));
+typedef int more_aligned_int __attribute__ ((aligned (8)));
+</PRE>
+<P>force the compiler to insure (as far as it can) that each variable whose
+type is <CODE>struct&nbsp;S</CODE> or <CODE>more_aligned_int</CODE> will be allocated and
+aligned <I>at least</I> on a 8-byte boundary.
+<BR><BR>
+Note that the alignment of any given <CODE><A HREF="keywords.html#struct">struct</A></CODE> or <CODE><A HREF="keywords.html#union">union</A></CODE> type
+is required by the ISO C standard to be at least a perfect multiple of
+the lowest common multiple of the alignments of all of the members of
+the <CODE>struct</CODE> or <CODE>union</CODE> in question.  This means that you <I>can</I>
+effectively adjust the alignment of a <CODE>struct</CODE> or <CODE>union</CODE>
+type by attaching an <CODE>aligned</CODE> attribute to any one of the members
+of such a type, but the notation illustrated in the example above is a
+more obvious, intuitive, and readable way to request the compiler to
+adjust the alignment of an entire <CODE>struct</CODE> or <CODE>union</CODE> type.
+<BR><BR>
+As in the preceding example, you can explicitly specify the alignment
+(in bytes) that you wish the compiler to use for a given <CODE>struct</CODE>
+or <CODE>union</CODE> type.  Alternatively, you can leave out the alignment factor
+and just ask the compiler to align a type to the maximum
+useful alignment for the target machine you are compiling for.  For
+example, you could write:</P>
+<PRE>struct S { short f[3]; } __attribute__ ((aligned));
+</PRE>
+<P>Whenever you leave out the alignment factor in an <CODE>aligned</CODE>
+attribute specification, the compiler automatically sets the alignment
+for the type to the largest alignment which is ever used for any data
+type on the target machine you are compiling for (useless in GCC4TI, since everything
+is already aligned well enough with the default 2-byte alignment).
+<BR><BR>
+The <CODE>aligned</CODE> attribute can only increase the alignment; but you
+can decrease it by specifying <CODE><A HREF="#SEC91_packed">packed</A></CODE> as well.</P>
+
+<H3><A NAME="SEC92_packed"><U>packed</U></A></H3>
+<P>This attribute, attached to an <CODE>enum</CODE>, <CODE>struct</CODE>, or
+<CODE>union</CODE> type definition, specified that the minimum required memory
+be used to represent the type.
+<BR><BR>
+Specifying this attribute for <CODE>struct</CODE> and <CODE>union</CODE> types is
+equivalent to specifying the <CODE>packed</CODE> attribute on each of the
+structure or union members.  Specifying the <B>'-fshort-enums'</B>
+flag on the line is equivalent to specifying the <CODE>packed</CODE>
+attribute on all <CODE>enum</CODE> definitions.
+<BR><BR>
+You may only specify this attribute after a closing curly brace on an
+<CODE>enum</CODE> definition, not in a <CODE>typedef</CODE> declaration, unless that
+declaration also contains the definition of the <CODE>enum</CODE>.</P>
+
+<H3><A NAME="SEC92_transparent_union"><U>transparent_union</U></A></H3>
+<P>This attribute, attached to a <CODE><A HREF="keywords.html#union">union</A></CODE> type definition, indicates
+that any function parameter having that union type causes calls to that
+function to be treated in a special way.
+<BR><BR>
+First, the argument corresponding to a transparent union type can be of
+any type in the union; no cast is required.  Also, if the union contains
+a pointer type, the corresponding argument can be a null pointer
+constant or a void pointer expression; and if the union contains a void
+pointer type, the corresponding argument can be any pointer expression.
+If the union member type is a pointer, qualifiers like <CODE><A HREF="keywords.html#const">const</A></CODE> on
+the referenced type must be respected, just as with normal pointer
+conversions.
+<BR><BR>
+Second, the argument is passed to the function using the calling
+conventions of first member of the transparent union, not the calling
+conventions of the union itself.  All members of the union must have the
+same machine representation; this is necessary for this argument passing
+to work properly.
+<BR><BR>
+Transparent unions are designed for library functions that have multiple
+interfaces for compatibility reasons, but they may be used for various
+different purposes.</P>
+
+<H3><A NAME="SEC92_may_alias"><U>may_alias</U></A></H3>
+<P>Accesses to objects with types with this attribute are not subjected to
+type-based alias analysis, but are instead assumed to be able to alias
+any other type of objects, just like the <CODE><A HREF="keywords.html#int">char</A></CODE> type.  See
+<B>'-fstrict-aliasing'</B> for more information on aliasing issues.
+<BR><BR>
+Example of use:</P>
+<PRE>typedef short __attribute__((__may_alias__)) short_a;
+
+void _main (void)
+{
+  long a = 0x12345678;
+  short_a *b = (short_a *) &amp;a;
+
+  b[1] = 0;
+
+  if (a == 0x12345678)
+    abort();
+
+  /* ... */
+}
+</PRE>
+<P>If you replaced <CODE>short_a</CODE> with <CODE>short</CODE> in the variable
+declaration, the above program would abort when compiled with
+<B>'-fstrict-aliasing'</B>, which is on by default at <B>'-O2'</B> or
+above in recent GCC versions.</P>
+
+<H3><A NAME="SEC92_unused"><U>unused</U></A></H3>
+<P>When attached to a type (including a <CODE>union</CODE> or a <CODE>struct</CODE>),
+this attribute means that variables of that type are meant to appear
+possibly unused.  GCC will not produce a warning for any variables of
+that type, even if the variable appears to do nothing.
+<BR><BR>
+The <CODE>unused</CODE> attribute can also be used for <A HREF="#SEC85_unused">functions</A> and
+<A HREF="#SEC91_unused">variables</A>.</P>
+
+<H3><A NAME="SEC92_deprecated"><U>deprecated</U></A></H3>
+<P>The <CODE>deprecated</CODE> attribute results in a warning if the type
+is used anywhere in the source file.  This is useful when identifying
+types that are expected to be removed in a future version of a program.
+If possible, the warning also includes the location of the declaration
+of the deprecated type, to enable users to easily find further
+information about why the type is deprecated, or what they should do
+instead.  Note that the warnings only occur for uses and then only
+if the type is being applied to an identifier that itself is not being
+declared as deprecated.</P>
+<PRE>typedef int T1 __attribute__ ((deprecated));
+T1 x;
+typedef T1 T2;
+T2 y;
+typedef T1 T3 __attribute__ ((deprecated));
+T3 z __attribute__ ((deprecated));
+</PRE>
+<P>results in a warning on line 2 and 3 but not lines 4, 5, or 6.  No
+warning is issued for line 4 because T2 is not explicitly
+deprecated.  Line 5 has no warning because T3 is explicitly
+deprecated.  Similarly for line 6.
+<BR><BR>
+The <CODE>deprecated</CODE> attribute can also be used for <A HREF="#SEC85_deprecated">functions</A> and
+<A HREF="#SEC91_deprecated">variables</A>.</P>
+
+<HR>
+<H2><A NAME="SEC85a"><U>Attribute Syntax</U></A></H2>
+<P>This section describes the syntax with which <CODE>__attribute__</CODE> may be
+used, and the constructs to which attribute specifiers bind, for the C
+language.  Because of
+infelicities in the grammar for attributes, some forms described here
+may not be successfully parsed in all cases.
+<BR><BR>
+See <A HREF="#SEC85">Function Attributes</A> for details of the semantics of attributes
+applying to functions.  See <A HREF="#SEC91">Variable Attributes</A> for details of the
+semantics of attributes applying to variables.  See <A HREF="#SEC92">Type Attributes</A>
+for details of the semantics of attributes applying to structure, union
+and enumerated types.
+<BR><BR>
+An <U>attribute specifier</U> is of the form
+<CODE>__attribute__&nbsp;((<I>attribute-list</I>))</CODE>.  An <U>attribute list</U>
+is a possibly empty comma-separated sequence of <U>attributes</U>, where
+each attribute is one of the following:</P>
+<UL>
+<LI><P>Empty.  Empty attributes are ignored.
+</P></LI>
+<LI><P>A word (which may be an identifier such as <CODE>unused</CODE>, or a reserved
+word such as <CODE>const</CODE>).
+</P></LI>
+<LI><P>A word, followed by, in parentheses, parameters for the attribute.
+These parameters take one of the following forms:</P>
+<UL>
+<LI><P>An identifier.  For example, <CODE>mode</CODE> attributes use this form.
+</P></LI>
+<LI><P>An identifier followed by a comma and a non-empty comma-separated list
+of expressions.  For example, <CODE>format</CODE> attributes use this form.
+</P></LI>
+<LI><P>A possibly empty comma-separated list of expressions.  For example,
+<CODE>format_arg</CODE> attributes use this form with the list being a single
+integer constant expression, and <CODE>alias</CODE> attributes use this form
+with the list being a single string constant.</P></LI>
+</UL>
+
+</LI>
+</UL>
+<P>An <U>attribute specifier list</U> is a sequence of one or more attribute
+specifiers, not separated by any other tokens.
+<BR><BR>
+An attribute specifier list may appear after the colon following a
+label, other than a <CODE>case</CODE> or <CODE>default</CODE> label.  The only
+attribute it makes sense to use after a label is <CODE>unused</CODE>.  This
+feature is intended for code generated by programs which contains labels
+that may be unused but which is compiled with <B>'-Wall'</B>.  It would
+not normally be appropriate to use in it human-written code, though it
+could be useful in cases where the code that jumps to the label is
+contained within an <CODE>#ifdef</CODE> conditional.
+<BR><BR>
+An attribute specifier list may appear as part of a <CODE>struct</CODE>,
+<CODE>union</CODE> or <CODE>enum</CODE> specifier.  It may go either immediately
+after the <CODE>struct</CODE>, <CODE>union</CODE> or <CODE>enum</CODE> keyword, or after
+the closing brace.  It is ignored if the content of the structure, union
+or enumerated type is not defined in the specifier in which the
+attribute specifier list is used - that is, in usages such as
+<CODE>struct&nbsp;__attribute__((foo))&nbsp;bar</CODE> with no following opening brace.
+Where attribute specifiers follow the closing brace, they are considered
+to relate to the structure, union or enumerated type defined, not to any
+enclosing declaration the type specifier appears in, and the type
+defined is not complete until after the attribute specifiers.
+<BR><BR>
+Otherwise, an attribute specifier appears as part of a declaration,
+counting declarations of unnamed parameters and type names, and relates
+to that declaration (which may be nested in another declaration, for
+example in the case of a parameter declaration), or to a particular declarator
+within a declaration.  Where an
+attribute specifier is applied to a parameter declared as a function or
+an array, it should apply to the function or array rather than the
+pointer to which the parameter is implicitly converted, but this is not
+yet correctly implemented.
+<BR><BR>
+Any list of specifiers and qualifiers at the start of a declaration may
+contain attribute specifiers, whether or not such a list may in that
+context contain storage class specifiers.  (Some attributes, however,
+are essentially in the nature of storage class specifiers, and only make
+sense where storage class specifiers may be used; for example,
+<CODE>section</CODE>.)  There is one necessary limitation to this syntax: the
+first old-style parameter declaration in a function definition cannot
+begin with an attribute specifier, because such an attribute applies to
+the function instead by syntax described below (which, however, is not
+yet implemented in this case).  In some other cases, attribute
+specifiers are permitted by this grammar but not yet supported by the
+compiler.  All attribute specifiers in this place relate to the
+declaration as a whole.  In the obsolescent usage where a type of
+<CODE>int</CODE> is implied by the absence of type specifiers, such a list of
+specifiers and qualifiers may be an attribute specifier list with no
+other specifiers or qualifiers.
+<BR><BR>
+An attribute specifier list may appear immediately before a declarator
+(other than the first) in a comma-separated list of declarators in a
+declaration of more than one identifier using a single list of
+specifiers and qualifiers.  Such attribute specifiers apply
+only to the identifier before whose declarator they appear.  For
+example, in</P>
+<PRE>__attribute__((noreturn)) void d0 (void),
+    __attribute__((format(printf, 1, 2))) d1 (const char *, ...),
+     d2 (void)
+</PRE>
+<P>the <CODE>noreturn</CODE> attribute applies to all the functions
+declared; the <CODE>format</CODE> attribute only applies to <CODE>d1</CODE>.
+<BR><BR>
+An attribute specifier list may appear immediately before the comma,
+<CODE>=</CODE> or semicolon terminating the declaration of an identifier other
+than a function definition.  At present, such attribute specifiers apply
+to the declared object or function, but in future they may attach to the
+outermost adjacent declarator.  In simple cases there is no difference,
+but, for example, in</P>
+<PRE>void (****f)(void) __attribute__((noreturn));
+</PRE>
+<P>at present the <CODE>noreturn</CODE> attribute applies to <CODE>f</CODE>, which
+causes a warning since <CODE>f</CODE> is not a function, but in future it may
+apply to the function <CODE>****f</CODE>.  The precise semantics of what
+attributes in such cases will apply to are not yet specified.  Where an
+assembler name for an object or function is specified (see <A HREF="#SEC96">Asm
+Labels</A>), at present the attribute must follow the <CODE>asm</CODE>
+specification; in future, attributes before the <CODE>asm</CODE> specification
+may apply to the adjacent declarator, and those after it to the declared
+object or function.
+<BR><BR>
+An attribute specifier list may, in future, be permitted to appear after
+the declarator in a function definition (before any old-style parameter
+declarations or the function body).
+<BR><BR>
+Attribute specifiers may be mixed with type qualifiers appearing inside
+the <CODE>[]</CODE> of a parameter array declarator, in the C99 construct by
+which such qualifiers are applied to the pointer to which the array is
+implicitly converted.  Such attribute specifiers apply to the pointer,
+not to the array, but at present this is not implemented and they are
+ignored.
+<BR><BR>
+An attribute specifier list may appear at the start of a nested
+declarator.  At present, there are some limitations in this usage: the
+attributes correctly apply to the declarator, but for most individual
+attributes the semantics this implies are not implemented.
+When attribute specifiers follow the <CODE>*</CODE> of a pointer
+declarator, they may be mixed with any type qualifiers present.
+The following describes the formal semantics of this syntax.  It will make the
+most sense if you are familiar with the formal specification of
+declarators in the ISO C standard.
+<BR><BR>
+Consider (as in C99 subclause 6.7.5 paragraph 4) a declaration <CODE>T
+D1</CODE>, where <CODE>T</CODE> contains declaration specifiers that specify a type
+<I>Type</I> (such as <CODE>int</CODE>) and <CODE>D1</CODE> is a declarator that
+contains an identifier <I>ident</I>.  The type specified for <I>ident</I>
+for derived declarators whose type does not include an attribute
+specifier is as in the ISO C standard.
+<BR><BR>
+If <CODE>D1</CODE> has the form <CODE>(&nbsp;<I>attribute-specifier-list</I>&nbsp;D&nbsp;)</CODE>,
+and the declaration <CODE>T&nbsp;D</CODE> specifies the type
+&quot;<I>derived-declarator-type-list</I> <I>Type</I>&quot; for <I>ident</I>, then
+<CODE>T&nbsp;D1</CODE> specifies the type &quot;<I>derived-declarator-type-list</I>
+<I>attribute-specifier-list</I> <I>Type</I>&quot; for <I>ident</I>.
+<BR><BR>
+If <CODE>D1</CODE> has the form <CODE>*
+<I>type-qualifier-and-attribute-specifier-list</I>&nbsp;D</CODE>, and the
+declaration <CODE>T&nbsp;D</CODE> specifies the type
+&quot;<I>derived-declarator-type-list</I> <I>Type</I>&quot; for <I>ident</I>, then
+<CODE>T&nbsp;D1</CODE> specifies the type &quot;<I>derived-declarator-type-list</I>
+<I>type-qualifier-and-attribute-specifier-list</I> <I>Type</I>&quot; for
+<I>ident</I>.
+<BR><BR>
+For example,</P>
+<PRE>void (__attribute__((noreturn)) ****f) (void);
+</PRE>
+<P>specifies the type &quot;pointer to pointer to pointer to pointer to
+non-returning function returning <CODE>void</CODE>&quot;.  As another example,</P>
+<PRE>char *__attribute__((aligned(8))) *f;
+</PRE>
+<P>specifies the type &quot;pointer to 8-byte-aligned pointer to <CODE>char</CODE>&quot;.
+Note again that this does not work with most attributes; for example,
+the usage of <CODE>aligned</CODE> and <CODE>noreturn</CODE> attributes given above
+is not yet supported.
+<BR><BR>
+For compatibility with existing code written for compiler versions that
+did not implement attributes on nested declarators, some laxity is
+allowed in the placing of attributes.  If an attribute that only applies
+to types is applied to a declaration, it will be treated as applying to
+the type of that declaration.  If an attribute that only applies to
+declarations is applied to the type of a declaration, it will be treated
+as applying to that declaration; and, for compatibility with code
+placing the attributes immediately before the identifier declared, such
+an attribute applied to a function return type will be treated as
+applying to the function type, and such an attribute applied to an array
+element type will be treated as applying to the array type.  If an
+attribute that only applies to function types is applied to a
+pointer-to-function type, it will be treated as applying to the pointer
+target type; if such an attribute is applied to a function return type
+that is not a pointer-to-function type, it will be treated as applying
+to the function type.</P>
+
+<HR>
+<H2><A NAME="SEC86"><U>Prototypes and Old-Style Function Definitions</U></A></H2>
+<P>GNU C extends ISO C to allow a function prototype to override a later
+old-style non-prototype definition.  Consider the following example:</P>
+<PRE>/* Use prototypes unless the compiler is old-fashioned.  */
+#ifdef __STDC__
+#define P(x) x
+#else
+#define P(x) ()
+#endif
+
+/* Prototype function declaration.  */
+int isroot P((uid_t));
+
+/* Old-style function definition.  */
+int
+isroot (x)   /* ??? lossage here ??? */
+     uid_t x;
+{
+  return x == 0;
+}
+</PRE>
+<P>Suppose the type <CODE>uid_t</CODE> happens to be <CODE><A HREF="keywords.html#int">char</A></CODE>.  ISO C does
+not allow this example, because subword arguments in old-style
+non-prototype definitions are promoted.  Therefore in this example the
+function definition's argument is really an <CODE><A HREF="keywords.html#int">int</A></CODE>, which does not
+match the prototype argument type of <CODE><A HREF="keywords.html#int">char</A></CODE>.
+<BR><BR>
+This restriction of ISO C makes it hard to write code that is portable
+to traditional C compilers, because the programmer does not know
+whether the <CODE>uid_t</CODE> type is <CODE>short</CODE>, <CODE>int</CODE>, or
+<CODE>long</CODE>.  Therefore, in cases like these GNU C allows a prototype
+to override a later old-style definition.  More precisely, in GNU C, a
+function prototype argument type overrides the argument type specified
+by a later old-style definition if the former type is the same as the
+latter type before promotion.  Thus in GNU C the above example is
+equivalent to the following:</P>
+<PRE>int isroot (uid_t);
+
+int
+isroot (uid_t x)
+{
+  return x == 0;
+}
+</PRE>
+
+<HR>
+<H2><A NAME="SEC87"><U>C++ Style Comments</U></A></H2>
+<P>In GNU C, you may use C++ style comments, which start with <CODE>//</CODE> and
+continue until the end of the line.  Many other C implementations allow
+such comments, and they are included in the 1999 C standard.  However,
+C++ style comments are not recognized if you specify an <B>'-std'</B>
+option specifying a version of ISO C before C99, or <B>'-ansi'</B>
+(equivalent to <B>'-std=c89'</B>).</P>
+
+<HR>
+<H2><A NAME="SEC88"><U>Dollar Signs in Identifier Names</U></A></H2>
+<P>In GNU C, you may normally use dollar signs in identifier names.
+This is because many traditional C implementations allow such identifiers.</P>
+
+<HR>
+<H2><A NAME="SEC89"><U>Escape Character in Constants</U></A></H2>
+<P>You can use the sequence <CODE>\e</CODE> in a string or character constant to
+stand for the ASCII character ESC (<CODE>\x1B</CODE>).</P>
+
+<HR>
+<H2><A NAME="SEC90"><U>Inquiring on Alignment of Types or Variables</U></A></H2>
+<P>The keyword <CODE>__alignof__</CODE> allows you to inquire about how an object
+is aligned, or the minimum alignment usually required by a type.  Its
+syntax is just like <CODE><A HREF="keywords.html#sizeof">sizeof</A></CODE>.
+<BR><BR>
+In GCC4TI, <CODE>__alignof__&nbsp;(<I>anything</I>)</CODE> is always 2, except for
+<CODE><A HREF="keywords.html#int">char</A></CODE> variables.
+<BR><BR>
+If the operand of <CODE>__alignof__</CODE> is an lvalue rather than a type,
+its value is the required alignment for its type, taking into account
+any minimum alignment specified with GCC's <CODE><A HREF="#SEC91_aligned">aligned</A></CODE> attribute.  For example, after this
+declaration:</P>
+<PRE>struct foo { int x; char y; } foo1;
+</PRE>
+<P>the value of <CODE>__alignof__&nbsp;(foo1.y)</CODE> is 1, even though its actual
+alignment is 2, the same as <CODE>__alignof__&nbsp;(int)</CODE>.
+<BR><BR>
+It is an error to ask for the alignment of an incomplete type.</P>
+
+<HR>
+<H2><A NAME="SEC93"><U>Inline Functions</U></A></H2>
+<P>By declaring a function <CODE>inline</CODE>, you can direct GCC to
+integrate that function's code into the code for its callers.  This
+makes execution faster by eliminating the function-call overhead; in
+addition, if any of the actual argument values are constant, their known
+values may permit simplifications at compile time so that not all of the
+inline function's code needs to be included.  The effect on code size is
+less predictable; object code may be larger or smaller with function
+inlining, depending on the particular case.  Inlining of functions is an
+optimization and it really &quot;works&quot; only in optimizing compilation.  If
+you don't use <B>'-O'</B>, no function is really inline.
+<BR><BR>
+Inline functions are included in the ISO C99 standard, but there are
+currently substantial differences between what GCC implements and what
+the ISO C99 standard requires.
+<BR><BR>
+To declare a function inline, use the <CODE>inline</CODE> keyword in its
+declaration, like this:</P>
+<PRE>inline int
+inc (int *a)
+{
+  (*a)++;
+}
+</PRE>
+<P>(If you are writing a header file to be included in ISO C programs, write
+<CODE>__inline__</CODE> instead of <CODE>inline</CODE>.  See <A HREF="#SEC100">Alternate Keywords</A>.)
+You can also make all &quot;simple enough&quot; functions inline with the option
+<B>'-finline-functions'</B>.
+<BR><BR>
+Note that certain usages in a function definition can make it unsuitable
+for inline substitution.  Among these usages are: use of a variable number of arguments, use of
+<A HREF="alloc.html#alloca">alloca</A>, use of variable sized data types (see <A HREF="#SEC76">Variable Length Arrays</A>),
+use of computed goto (see <A HREF="#SEC65">Labels as Values</A>), use of nonlocal goto,
+and nested functions (see <A HREF="#SEC66">Nested Functions</A>).  Using <B>'-Winline'</B>
+will warn when a function marked <CODE>inline</CODE> could not be substituted,
+and will give the reason for the failure.
+<BR><BR>
+Note that in C (unlike C++), the <CODE>inline</CODE> keyword
+does not affect the linkage of the function.
+<BR><BR>
+When a function is both inline and <CODE><A HREF="keywords.html#static">static</A></CODE>, if all calls to the
+function are integrated into the caller, and the function's address is
+never used, then the function's own assembler code is never referenced.
+In this case, GCC does not actually output assembler code for the
+function, unless you specify the option <B>'-fkeep-inline-functions'</B>.
+Some calls cannot be integrated for various reasons (in particular,
+calls that precede the function's definition cannot be integrated, and
+neither can recursive calls within the definition).  If there is a
+nonintegrated call, then the function is compiled to assembler code as
+usual.  The function must also be compiled as usual if the program
+refers to its address, because that can't be inlined.
+<BR><BR>
+When an inline function is not <CODE><A HREF="keywords.html#static">static</A></CODE>, then the compiler must assume
+that there may be calls from other source files; since a global symbol can
+be defined only once in any program, the function must not be defined in
+the other source files, so the calls therein cannot be integrated.
+Therefore, a non-<CODE><A HREF="keywords.html#static">static</A></CODE> inline function is always compiled on its
+own in the usual fashion.
+<BR><BR>
+If you specify both <CODE>inline</CODE> and <CODE><A HREF="keywords.html#extern">extern</A></CODE> in the function
+definition, then the definition is used only for inlining.  In no case
+is the function compiled on its own, not even if you refer to its
+address explicitly.  Such an address becomes an external reference, as
+if you had only declared the function, and had not defined it.
+<BR><BR>
+This combination of <CODE>inline</CODE> and <CODE>extern</CODE> has almost the
+effect of a macro.  The way to use it is to put a function definition in
+a header file with these keywords, and put another copy of the
+definition (lacking <CODE>inline</CODE> and <CODE>extern</CODE>) in a library file.
+The definition in the header file will cause most calls to the function
+to be inlined.  If any uses of the function remain, they will refer to
+the single copy in the library.
+<BR><BR>
+For future compatibility with when GCC implements ISO C99 semantics for
+inline functions, it is best to use <CODE>static&nbsp;inline</CODE> only.  (The
+existing semantics will remain available when <B>'-std=gnu89'</B> is
+specified, but eventually the default will be <B>'-std=gnu99'</B> and
+that will implement the C99 semantics, though it does not do so yet.)
+<BR><BR>
+GCC does not inline any functions when not optimizing unless you specify
+the <CODE><A HREF="#SEC85_always_inline">always_inline</A></CODE> attribute for the function, like this:</P>
+<PRE>/* Prototype.  */
+inline void foo (const char*) __attribute__((always_inline));
+</PRE>
+
+<HR>
+<H2><A NAME="SEC94_asm"><U>Inline Assembler</U></A></H2>
+<P>GCC introduces a special <CODE>asm</CODE> keyword to support assembler
+instructions within C code.  Roughly, its syntax is:</P>
+<PRE>asm (&quot;<I>instructions</I>&quot; [:<I>output</I>:<I>input</I>]);
+</PRE>
+<P>The <CODE>asm</CODE> keyword may appear between usual lines of code or at
+the top level, outside of any function body.  <I>instructions</I> may
+contain labels and references to global C symbols; in fact, the contents
+of the string are copied directly into the output file.</P>
+
+<UL>
+<LI><B><A HREF="#SEC94_simple">Simple Inline Assembler Instructions</A></B>
+<LI><B><A HREF="#SEC94">Assembler Instructions with C Expression Operands</A></B>
+<LI><B><A HREF="#SEC95">Operand Constraints</A></B>
+</UL>
+<P>If you are writing a header file that should be includable in programs compiled
+in GCC's strict ISO C mode, write <CODE>__asm__</CODE> instead of <CODE>asm</CODE>.
+See <A HREF="#SEC100">Alternate Keywords</A>.</P>
+
+<H3><A NAME="SEC94_simple"><U>Simple Inline Assembler Instructions</U></A></H3>
+<P>The simplest form the <CODE>asm</CODE> keyword is:</P>
+<PRE>asm (&quot;<I>instructions</I>&quot;);
+</PRE>
+<P>where <I>instructions</I> contains one or more assembler instructions
+separated by semicolons or newlines.
+<BR><BR>
+In GCC4TI, all register names must be preceded by a percent sign, to avoid
+confusion with C variables named like one of the CPU registers.  For example:</P>
+<PRE>asm (&quot;move.l 0xC8,%a0; move.l (%a0,1656),%a0; jsr (%a0)&quot;);
+</PRE>
+<P>Hexadecimal constants must be written according to C syntax
+(like <CODE>0xC8</CODE>), not using the notation <CODE>$C8</CODE> which is
+common in various assemblers.
+<BR><BR>
+Note that something like</P>
+<PRE>asm (&quot;move.l 0xC8,a0&quot;);
+</PRE>
+<P>will be interpreted quite differently: <CODE>a0</CODE> will be regarded as a C language
+variable, not a register!  Read the documentation about the <A HREF="gnuasm.html">GNU Assembler</A>
+for more information about the exact syntax and directives which it accepts;
+since inline assembler instructions are copied directly into the output of the
+compiler, exactly the same features are available.
+<BR><BR>
+Newlines as separators are also accepted in <I>instructions</I>, so the following code is valid as well:</P>
+<PRE>asm (&quot;   move.l 0xC8,%a0
+         move.l (%a0,1656),%a0
+         jsr (%a0)&quot;);
+</PRE>
+<P>See <A HREF="#SEC106">Multi-line Strings</A> for more information.</P>
+
+<H3><A NAME="SEC94"><U>Assembler Instructions with C Expression Operands</U></A></H3>
+<P>In an assembler instruction using <CODE>asm</CODE>, you can specify the
+operands of the instruction using C expressions.  This means you need not
+guess which registers or memory locations will contain the data you want
+to use.
+<BR><BR>
+You must specify an assembler instruction template much like what
+appears in a machine description, plus an operand constraint string for
+each operand.
+<BR><BR>
+For the beginning, you will be given here a very illustrative example on how to use the 68881's
+<CODE>fsinx</CODE> instruction (note that this example is not applicable to TI calculators,
+because the MC68000 processor which is built into the TI-89 and TI-92+ does not have this
+instruction, but the example is illustrative anyway):</P>
+<PRE>asm (&quot;fsinx %1,%0&quot; : &quot;=f&quot; (result) : &quot;f&quot; (angle));
+</PRE>
+<P>Here <I>angle</I> is the C expression for the input operand while
+<I>result</I> is that of the output operand.  Each has <CODE>&quot;f&quot;</CODE> as its
+operand constraint, saying that a floating point register is required.
+The <CODE>=</CODE> in <CODE>=f</CODE> indicates that the operand is an output; all
+output operands' constraints must use <CODE>=</CODE>.  The constraints use the
+same language used in the machine description (see the section <A HREF="#SEC95">Operand Constraints</A>).
+In this example,
+the compiler will convert this instruction into a sequence of assembly instructions
+which will ensure that the evaluated expression <I>angle</I> is really stored in
+one of the 68881's floating point registers, and which will store the result of the <CODE>fsinx</CODE>
+(which is in some other floating point register) into the expression <I>result</I>
+(note that <I>result</I> need not be a variable; it can be any lvalue expression, for
+example a dereferenced pointer).
+<BR><BR>
+Each operand is described by an operand-constraint string followed by
+the C expression in parentheses.  A colon separates the assembler
+template from the first output operand and another separates the last
+output operand from the first input, if any.  Commas separate the
+operands within each group.  The total number of operands is currently
+limited to 30; this limitation may be lifted in some future version of
+GCC.
+<BR><BR>
+If there are no output operands but there are input operands, you must
+place two consecutive colons surrounding the place where the output
+operands would go.
+<BR><BR>
+As of GCC version 3.1, it is also possible to specify input and output
+operands using symbolic names which can be referenced within the
+assembler code.  These names are specified inside square brackets
+preceding the constraint string, and can be referenced inside the
+assembler code using <CODE>%[<I>name</I>]</CODE> instead of a percentage sign
+followed by the operand number.  Using named operands the above example
+could look like:</P>
+<PRE>asm (&quot;fsinx %[angle],%[output]&quot;
+     : [output] &quot;=f&quot; (result)
+     : [angle] &quot;f&quot; (angle));
+</PRE>
+<P>Note that the symbolic operand names have no relation whatsoever to
+other C identifiers.  You may use any name you like, even those of
+existing C symbols, but must ensure that no two operands within the same
+assembler construct use the same symbolic name.
+<BR><BR>
+Output operand expressions must be lvalues; the compiler can check this.
+The input operands need not be lvalues.  The compiler cannot check
+whether the operands have data types that are reasonable for the
+instruction being executed.  It does not parse the assembler instruction
+template and does not know what it means or even whether it is valid
+assembler input.  The extended <CODE>asm</CODE> feature is most often used for
+machine instructions the compiler itself does not know exist.  If
+the output expression cannot be directly addressed (for example, it is a
+bit-field), your constraint must allow a register.  In that case, GCC
+will use the register as the output of the <CODE>asm</CODE>, and then store
+that register into the output.
+<BR><BR>
+Here is an another example, which is applicable to GCC4TI. Suppose that we
+want to rotate the value of the expression <I>input</I> one bit to the left, and
+to store the result into the expression <I>output</I> (which is an lvalue).
+We can write the following code:</P>
+<PRE>asm ("move.l %1,%%d0; rol #1,%%d0; move.l %%d0,%0" : "=g" (output) : "g" (input));
+</PRE>
+<P>Note that when extended asm constructions are used, the percent sign before the
+register names must be doubled. It is important to say that in the above example
+<I>input</I> and <I>output</I> may be any valid expressions; in the simple case
+when both of them are just global variables, a simple asm construction like</P>
+<PRE>asm ("move.l input,%d0; rol #1,%d0; move.l %d0,output");
+</PRE>
+<P>would be quite enough. Extended asm constructions allow encapsulating them in macros
+which look like functions, like in the following example, which defines a macro <CODE>'rotate'</CODE>
+which acts like a void function:</P>
+<PRE>#define rotate(input, output) \
+({ asm ("move.l %1,%%d0; rol #1,%%d0; move.l %%d0,%0" \
+: "=g" (output) : "g" (input)); })
+</PRE>
+<P>The ordinary output operands must be write-only; GCC will assume that
+the values in these operands before the instruction are dead and need
+not be generated. That's why the following version of <CODE>'rotate'</CODE>
+macro which accepts just one argument (and which rotates it one bit to the left)
+is quite unreliable:</P>
+<PRE>#define rotate(inout) ({ asm ("rol #1,%0" : "=d" (inout)); })
+</PRE>
+<P>To solve such difficulties, extended asm supports input-output or read-write
+operands.  Use the constraint character <CODE>+</CODE> to indicate such an
+operand and list it with the output operands.
+<BR><BR>
+When the constraints for the read-write operand (or the operand in which
+only some of the bits are to be changed) allows a register, you may, as
+an alternative, logically split its function into two separate operands,
+one input operand and one write-only output operand.  The connection
+between them is expressed by constraints which say they need to be in
+the same location when the instruction executes.  You can use the same C
+expression for both operands, or different expressions.  For example,
+here we write the (fictitious) <CODE>combine</CODE> instruction with
+<CODE>bar</CODE> as its read-only source operand and <CODE>foo</CODE> as its
+read-write destination:</P>
+<PRE>asm (&quot;combine %2,%0&quot; : &quot;=r&quot; (foo) : &quot;0&quot; (foo), &quot;g&quot; (bar));
+</PRE>
+<P>The constraint <CODE>&quot;0&quot;</CODE> for operand 1 says that it must occupy the
+same location as operand 0.  A number in constraint is allowed only in
+an input operand and it must refer to an output operand.
+<BR><BR>
+Only a number in the constraint can guarantee that one operand will be in
+the same place as another.  The mere fact that <CODE>foo</CODE> is the value
+of both operands is not enough to guarantee that they will be in the
+same place in the generated assembler code.  The following would not
+work reliably:</P>
+<PRE>asm (&quot;combine %2,%0&quot; : &quot;=r&quot; (foo) : &quot;r&quot; (foo), &quot;g&quot; (bar));
+</PRE>
+<P>Various optimizations or reloading could cause operands 0 and 1 to be in
+different registers; GCC knows no reason not to do so.  For example, the
+compiler might find a copy of the value of <CODE>foo</CODE> in one register and
+use it for operand 1, but generate the output operand 0 in a different
+register (copying it afterward to <CODE>foo</CODE>'s own address).  Of course,
+since the register for operand 1 is not even mentioned in the assembler
+code, the result will not work, but GCC can't tell that.
+<BR><BR>
+As of GCC version 3.1, one may write <CODE>[<I>name</I>]</CODE> instead of
+the operand number for a matching constraint.  For example:</P>
+<PRE>asm (&quot;cmoveq %1,%2,%[result]&quot;
+     : [result] &quot;=r&quot;(result)
+     : &quot;r&quot; (test), &quot;r&quot;(new), &quot;[result]&quot;(old));
+</PRE>
+<P>All the examples given above have a serious drawback: they clobber the register <CODE>'d0'</CODE>.
+If the compiler keeps something important in it (which is very likely), this may cause lots
+of trouble. Of course,
+you can save it on the stack at the beginning and restore it at the end, but there is a much better
+solution which will save clobbered registers only when necessary. To describe clobbered registers,
+write a third colon after the input operands, followed by the names of
+the clobbered registers (given as strings), separated by commas:</P>
+<PRE>#define rotate(input, output) \
+({ asm ("move.l %1,%%d0; rol #1,%%d0; move.l %%d0,%0" \
+: "=g" (output) : "g" (input) : "d0"); })
+</PRE>
+<P>You may not write a clobber description in a way that overlaps with an
+input or output operand.  For example, you may not have an operand
+describing a register class with one member if you mention that register
+in the clobber list.  Variables declared to live in specific registers
+(see <A HREF="#SEC97">Explicit Reg Vars</A>), and used as asm input or output operands must
+have no part mentioned in the clobber description.
+There is no way for you to specify that an input
+operand is modified without also specifying it as an output
+operand.  Note that if all the output operands you specify are for this
+purpose (and hence unused), you will then also need to specify
+<CODE>volatile</CODE> for the <CODE>asm</CODE> construct, as described below, to
+prevent GCC from deleting the <CODE>asm</CODE> statement as unused.
+<BR><BR>
+Whenever you refer to a particular hardware register from the assembler code,
+you will probably have to list the register after the third colon to
+tell the compiler the register's value is modified.
+Alternatively, you can force the compiler to use any data register instead of
+<CODE>'d0'</CODE>, using the following trick:</P>
+<PRE>#define rotate(input, output) \
+({ register long __temp; \
+asm ("move.l %1,%2; rol #1,%2; move.l %2,%0" \
+: "=g" (output) : "g" (input), "d" (__temp)); })
+</PRE>
+<P>Here, the <CODE>"d"</CODE> constraint ensures that <CODE>'__temp'</CODE> will be stored in
+the data register (note that <CODE>rol</CODE> is applicable only to data registers).
+In fact, there is no need for a temporary register if we forced the output to be in
+a data register, which can be implemented as in the following example:</P>
+<PRE>#define rotate(input, output) \
+({ asm ("move.l %1,%0; rol #1,%0" : "=d" (output) : "g" (input)); })
+</PRE>
+<P>If your assembler instruction can alter the condition code register, add
+<CODE>cc</CODE> to the list of clobbered registers.  GCC on some machines
+represents the condition codes as a specific hardware register;
+<CODE>cc</CODE> serves to name this register.  On other machines, the
+condition code is handled differently, and specifying <CODE>cc</CODE> has no
+effect.  But it is valid no matter what the machine.
+<BR><BR>
+If your assembler instruction modifies memory in an unpredictable
+fashion, add <CODE>memory</CODE> to the list of clobbered registers.  This
+will cause GCC to not keep memory values cached in registers across
+the assembler instruction.  You will also want to add the
+<CODE>volatile</CODE> keyword if the memory affected is not listed in the
+inputs or outputs of the <CODE>asm</CODE>, as the <CODE>memory</CODE> clobber does
+not count as a side-effect of the <CODE>asm</CODE>.
+<BR><BR>
+As already mentioned above, you can put multiple assembler instructions together in a single
+<CODE>asm</CODE> template, separated either with newlines or with semicolons
+(the GNU assembler allows semicolons as a line-breaking character).
+The input operands are guaranteed not to use any of the clobbered
+registers, and neither will the output operands' addresses, so you can
+read and write the clobbered registers as many times as you like.  Here
+is an example of multiple instructions in a template; it assumes the
+subroutine <CODE>_foo</CODE> accepts arguments in registers a0 and a1:</P>
+<PRE>asm ("move.l %0,%%a0; move.l %1,%%a1; jsr _foo"
+: /* no outputs */
+: "g" (from), "g" (to)
+: "a0", "a1");
+</PRE>
+<P>Unless an output operand has the <CODE>'&amp;'</CODE> constraint modifier, GCC
+may allocate it in the same register as an unrelated input operand, on
+the assumption the inputs are consumed before the outputs are produced.
+This assumption may be false if the assembler code actually consists of
+more than one instruction.  In such a case, use <CODE>'&amp;'</CODE> for each output
+operand that may not overlap an input.  See the section <A HREF="#SEC95_cmc">Constraint Modifier Characters</A>.
+<BR><BR>
+If you want to test the condition code produced by an assembler
+instruction, you must include a branch and a label in the <CODE>asm</CODE>
+construct, as follows:</P>
+<PRE>asm ("clr.l %0; test.l %1; beq 0f; moveq #1,%0; 0:"
+: "g" (result) : "g" (input));
+</PRE>
+<P>This assumes your assembler supports local labels, which is true for the
+<A HREF="gnuasm.html">GNU Assembler</A> (it uses the suffix <CODE>'f'</CODE> for forward and <CODE>'b'</CODE> for
+backward local labels; see the section about <A HREF="gnuasm.html#SEC48L">Local Symbol Names</A>).<BR><BR>
+Speaking of labels, jumps from one <CODE>asm</CODE> to another are not
+supported.  The compiler's optimizers do not know about these jumps, and
+therefore they cannot take account of them when deciding how to
+optimize.
+<BR><BR>
+As already mentioned, usually the most convenient way to use these
+<CODE>asm</CODE> instructions is to encapsulate them in macros that look like
+functions. Here is an example of how to define a function-looking macro with
+a non-void return type:</P>
+<PRE>#define rotate(x) \
+({ unsigned long __result, __arg=(x);   \
+asm ("move.l %1,%0; rol #1,%0": "=d" (__result): "g" (__arg));  \
+__result; })
+</PRE>
+<P>This macro acts nearly exactly like a function which takes one <CODE>unsigned long</CODE>
+argument, and which returns an <CODE>unsigned long</CODE> result.
+Here the variable <CODE>__arg</CODE> is used to make sure that the instruction
+operates on a proper <CODE>unsigned long</CODE> value, and to accept only those
+arguments <CODE>x</CODE> which can convert automatically to an <CODE>unsigned long</CODE>.
+<BR><BR>
+Another way to make sure the instruction operates on the correct data
+type is to use a cast in the <CODE>asm</CODE>.  This is different from using a
+variable <CODE>__arg</CODE> in that it converts more different types.  For
+example, if the desired type were <CODE>int</CODE>, casting the argument to
+<CODE>int</CODE> would accept a pointer with no complaint, while assigning the
+argument to an <CODE>int</CODE> variable named <CODE>__arg</CODE> would warn about
+using a pointer unless the caller explicitly casts it.
+<BR><BR>
+If an <CODE>asm</CODE> has output operands, GCC assumes for optimization
+purposes the instruction has no side effects except to change the output
+operands.  This does not mean instructions with a side effect cannot be
+used, but you must be careful, because the compiler may eliminate them
+if the output operands aren't used, or move them out of loops, or
+replace two with one if they constitute a common subexpression.  Also,
+if your instruction does have a side effect on a variable that otherwise
+appears not to change, the old value of the variable may be reused later
+if it happens to be found in a register.
+<BR><BR>
+If you are not happy with this behavior,
+you can prevent an <CODE>asm</CODE> instruction from being deleted, moved
+significantly, or combined, by writing the keyword <CODE>volatile</CODE> after
+the <CODE>asm</CODE>.  For example:</P>
+<PRE>#define get_and_set_priority(new)              \
+({ int __old;                                  \
+   asm volatile (&quot;get_and_set_priority %0, %1&quot; \
+                 : &quot;=g&quot; (__old) : &quot;g&quot; (new));  \
+   __old; })
+</PRE>
+<P>If you write an <CODE>asm</CODE> instruction with no outputs, GCC will know
+the instruction has side-effects and will not delete the instruction or
+move it outside of loops.
+<BR><BR>
+The <CODE>volatile</CODE> keyword indicates that the instruction has
+important side-effects.  GCC will not delete a volatile <CODE>asm</CODE> if
+it is reachable.  (The instruction can still be deleted if GCC can
+prove that control-flow will never reach the location of the
+instruction.)  In addition, GCC will not reschedule instructions
+across a volatile <CODE>asm</CODE> instruction.  For example:</P>
+<PRE>#define inline_rowread(x) \
+  ({*(short*)0x600018=(short)(x); \
+  asm volatile("nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop":::"memory"); \
+  ~(*(unsigned char*)0x60001b);})</PRE>
+<P>Here, we can read the keyboard port at 0x60001b only 12 nops after setting
+the keyboard mask at 0x600018. Therefore, we need to make sure that the
+nops get scheduled between the write to 0x600018 and the read to 0x60001b.
+The <CODE>volatile</CODE> keyword makes sure that the instructions get ordered
+in the correct way.
+<BR><BR>
+Note that even a volatile <CODE>asm</CODE> instruction can be moved in ways
+that appear insignificant to the compiler, such as across jump
+instructions.  You can't expect a sequence of volatile <CODE>asm</CODE>
+instructions to remain perfectly consecutive.  If you want consecutive
+output, use a single <CODE>asm</CODE>.  Also, GCC will perform some
+optimizations across a volatile <CODE>asm</CODE> instruction; GCC does not
+&quot;forget everything&quot; when it encounters a volatile <CODE>asm</CODE>
+instruction the way some other compilers do.
+<BR><BR>
+An <CODE>asm</CODE> instruction without any operands or clobbers (an &quot;old
+style&quot; <CODE>asm</CODE>) will be treated identically to a volatile
+<CODE>asm</CODE> instruction.
+<BR><BR>
+It is a natural idea to look for a way to give access to the condition
+code left by the assembler instruction.  However, when we attempted to
+implement this, we found no way to make it work reliably.  The problem
+is that output operands might need reloading, which would result in
+additional following &quot;store&quot; instructions.  On most machines, these
+instructions would alter the condition code before there was time to
+test it.  This problem doesn't arise for ordinary &quot;test&quot; and
+&quot;compare&quot; instructions because they don't have any output operands.
+<BR><BR>
+For reasons similar to those described above, it is not possible to give
+an assembler instruction access to the condition code left by previous
+instructions.
+<BR><BR>
+You can write write <CODE>__asm__</CODE> instead of <CODE>asm</CODE>.
+See section <A HREF="#SEC100">Alternate Keywords</A>.</P>
+
+<H3><A NAME="SEC95"><U>Operand Constraints</U></A></H3>
+<P>Each match operand in an instruction pattern can specify a
+constraint for the type of operands allowed.  Constraints can say whether
+an operand may be in a register, and which kinds of register; whether the
+operand can be a memory reference, and which kinds of address; whether the
+operand may be an immediate constant, and which possible values it may
+have.  Constraints can also require two operands to match.  Here, only those
+operand constraints which are valid for the Motorola 68000 processor and the
+built-in inline assembly will be described (i.e. those which are applicable to GCC4TI).</P>
+
+<UL>
+<LI><B><A HREF="#SEC95_simple">Simple Constraints</A></B>
+<LI><B><A HREF="#SEC95_cmc">Constraint Modifier Characters</A></B>
+</UL>
+<H4><A NAME="SEC95_simple"><U>Simple Constraints</U></A></H4>
+<P>The simplest kind of constraint is a string full of letters, each of
+which describes one kind of operand that is permitted.  These are
+the letters that are allowed:</P>
+<DL>
+
+<DT><P><CODE>m</CODE></P><DD><P>A memory operand is allowed, with any kind of address that the machine
+supports in general.
+</P><DT><P><CODE>o</CODE></P><DD><P>A memory operand is allowed, but only if the address is
+<U>offsettable</U>.  This means that adding a small integer (actually,
+the width in bytes of the operand, as determined by its machine mode)
+may be added to the address and the result is also a valid memory
+address.
+For example, an address which is constant is offsettable; so is an
+address that is the sum of a register and a constant (as long as a
+slightly larger constant is also within the range of address-offsets
+supported by the machine); but an autoincrement or autodecrement
+address is not offsettable.  More complicated indirect/indexed
+addresses may or may not be offsettable depending on the other
+addressing modes that the machine supports.
+<BR><BR>
+Note that in an output operand which can be matched by another
+operand, the constraint letter <CODE>o</CODE> is valid only when accompanied
+by both <CODE>&lt;</CODE> (if the target machine has predecrement addressing)
+and <CODE>&gt;</CODE> (if the target machine has preincrement addressing).
+</P><DT><P><CODE>V</CODE></P><DD><P>A memory operand that is not offsettable.  In other words, anything that
+would fit the <CODE>m</CODE> constraint but not the <CODE>o</CODE> constraint.
+</P><DT><P><CODE>&lt;</CODE></P><DD><P>A memory operand with autodecrement addressing is allowed.
+</P><DT><P><CODE>&gt;</CODE></P><DD><P>A memory operand with autoincrement addressing is allowed.
+</P><DT><P><CODE>r</CODE></P><DD><P>A register operand is allowed provided that it is in a general
+register.
+</P><DT><P><CODE>d</CODE></P><DD><P>A data register is allowed. This is a Motorola-specific constraint.
+</P><DT><P><CODE>a</CODE></P><DD><P>An address register is allowed. This is a Motorola-specific constraint.
+</P><DT><P><CODE>f</CODE></P><DD><P>A 68881 floating-point register is allowed, if available (of course, it is not
+available on the TI-89 and TI-92 Plus). This is a Motorola-specific constraint.
+</P><DT><P><CODE>i</CODE></P><DD><P>An immediate integer operand (one with constant value) is allowed.
+This includes symbolic constants whose values will be known only at
+assembly time.
+</P><DT><P><CODE>n</CODE></P><DD><P>An immediate integer operand with a known numeric value is allowed.
+Many systems cannot support assembly-time constants for operands less
+than a word wide.  Constraints for these operands should use <CODE>n</CODE>
+rather than <CODE>i</CODE>.
+</P><DT><P><CODE>I</CODE></P><DD><P>An integer in the range 1 to 8 is allowed. This is a Motorola-specific constraint, and this is
+for example the range permitted as a shift count in the shift instructions.
+</P><DT><P><CODE>J</CODE></P><DD><P>A 16 bit signed number is allowed. This is a Motorola-specific constraint.
+</P><DT><P><CODE>K</CODE></P><DD><P>A signed number whose magnitude is greater than 0x80 is allowed. This is a Motorola-specific constraint.
+</P><DT><P><CODE>L</CODE></P><DD><P>An integer in the range -8 to -1 is allowed. This is a Motorola-specific constraint.
+</P><DT><P><CODE>M</CODE></P><DD><P>A signed number whose magnitude is greater than 0x100 is allowed. This is a Motorola-specific constraint.
+</P><DT><P><CODE>s</CODE></P><DD><P>An immediate integer operand whose value is not an explicit integer is
+allowed.
+<BR><BR>
+This might appear strange; if an instruction allows a constant operand with a
+value not known at compile time, it certainly must allow any known
+value.  So why use <CODE>s</CODE> instead of <CODE>i</CODE>?  Sometimes it allows
+better code to be generated.
+For example, on the 68000 in a fullword instruction it is possible to
+use an immediate operand; but if the immediate value is between -128
+and 127, better code results from loading the value into a register and
+using the register. This is because the load into the register can be
+done with a <CODE>'moveq'</CODE> instruction. The GNU team arranges for this to happen
+by defining the letter <CODE>K</CODE> to mean "any integer outside the
+range -128 to 127", and then specifying <CODE>Ks</CODE> in the operand
+constraints. (This constraint is very unlikely to be useful for inline assembly,
+since you cannot use constraints to make GCC choose between 2 different
+inline assembly statements.)
+</P><DT><P><CODE>g</CODE></P><DD><P>Any register, memory or immediate integer operand is allowed, except for
+registers that are not general registers.
+</P><DT><P><CODE>X</CODE></P><DD><P>Any operand whatsoever is allowed, even if it does not satisfy
+<CODE>general_operand</CODE>.  This is normally used in the constraint of
+a <CODE>match_scratch</CODE> when certain alternatives will not actually
+require a scratch register.
+</P><DT><P><CODE>0</CODE>, <CODE>1</CODE>, <CODE>2</CODE>, ... <CODE>9</CODE></P><DD><P>An operand that matches the specified operand number is allowed.  If a
+digit is used together with letters within the same alternative, the
+digit should come last.
+This is called a <B>matching constraint</B> and what it really means is
+that the assembler has only a single operand that fills two roles
+considered separate. More precisely, the two operands that match must
+include one input-only operand and one output-only operand.  Moreover, the digit
+must be a smaller number than the number of the operand that uses it in the
+constraint.
+</P><DT><P><CODE>p</CODE></P><DD><P>An operand that is a valid memory address is allowed.</P>
+</DL>
+<P>In order to have valid assembler code, each operand must satisfy
+its constraint.  But a failure to do so does not prevent the pattern
+from applying to an instruction pattern.  Instead, it directs the compiler to modify
+the code so that the constraint will be satisfied.  Usually this is
+done by copying an operand into a register.</P>
+
+<H4><A NAME="SEC95_cmc"><U>Constraint Modifier Characters</U></A></H4>
+<P>These are the constraint modifier characters which are meaningful for GCC4TI:</P>
+<DL>
+
+<DT><P><CODE>=</CODE></P><DD><P>Means that this operand is write-only for this instruction: the previous
+value is discarded and replaced by output data.
+</P><DT><P><CODE>+</CODE></P><DD><P>Means that this operand is both read and written by the instruction.
+<BR><BR>
+When the compiler fixes up the operands to satisfy the constraints,
+it needs to know which operands are inputs to the instruction and
+which are outputs from it.  <CODE>=</CODE> identifies an output; <CODE>+</CODE>
+identifies an operand that is both input and output; all other operands
+are assumed to be input only.
+<BR><BR>
+If you specify <CODE>=</CODE> or <CODE>+</CODE> in a constraint, you put it in the
+first character of the constraint string.
+</P><DT><P><CODE>&amp;</CODE></P><DD><P>Means (in a particular alternative) that this operand is an
+<B>earlyclobber</B> operand, which is modified before the instruction is
+finished using the input operands.  Therefore, this operand may not lie
+in a register that is used as an input operand or as part of any memory
+address.
+<CODE>&amp;</CODE> does not obviate the need to write <CODE>=</CODE>.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC96"><U>Controlling Names Used in Assembler Code</U></A></H2>
+<P>You can specify the name to be used in the assembler code for a C
+function or variable by writing the <CODE>asm</CODE> (or <CODE>__asm__</CODE>)
+keyword after the declarator as follows:</P>
+<PRE>int foo asm (&quot;myfoo&quot;) = 2;
+</PRE>
+<P>This specifies that the name to be used for the variable <CODE>foo</CODE> in
+the assembler code should be <CODE>myfoo</CODE> rather than the usual
+<CODE>foo</CODE>.
+<BR><BR>
+On systems where an underscore is normally prepended to the name of a C
+function or variable, this feature allows you to define names for the
+linker that do not start with an underscore.
+<BR><BR>
+It does not make sense to use this feature with a non-static local
+variable since such variables do not have assembler names.  If you are
+trying to put the variable in a particular register, see <A HREF="#SEC97">Explicit
+Reg Vars</A>.  GCC presently accepts such code with a warning, but will
+probably be changed to issue an error, rather than a warning, in the
+future.
+<BR><BR>
+You cannot use <CODE>asm</CODE> in this way in a function <I>definition</I>; but
+you can get the same effect by writing a <I>declaration</I> for the function
+before its definition and putting <CODE>asm</CODE> there, like this:</P>
+<PRE>extern func () asm (&quot;FUNC&quot;);
+
+func (int x, int y)
+/* ... */
+</PRE>
+<P>It is up to you to make sure that the assembler names you choose do not
+conflict with any other assembler symbols.  Also, you must not use a
+register name; that would produce completely invalid assembler code.  GCC
+does not as yet have the ability to store static variables in registers.
+Perhaps that will be added.</P>
+
+<HR>
+<H2><A NAME="SEC97"><U>Variables in Specified Registers</U></A></H2>
+<P>GNU C allows you to put a few global variables into specified hardware
+registers.  You can also specify the register in which an ordinary
+register variable should be allocated.  GCC4TI also allows you to specify
+an explicit register for function parameters.</P>
+
+<UL>
+<LI><B><A HREF="#SEC98">Defining Global Register Variables</A></B>
+<P>Global register variables reserve registers throughout the program.
+This may be useful in programs such as programming language
+interpreters which have a couple of global variables that are accessed
+very often.</P>
+<LI><B><A HREF="#SEC99">Specifying Registers for Local Variables</A></B>
+<P>Local register variables in specific registers do not reserve the
+registers.  The compiler's data flow analysis is capable of determining
+where the specified registers contain live values, and where they are
+available for other uses.  Stores into local register variables may be deleted
+when they appear to be dead according to dataflow analysis.  References
+to local register variables may be deleted or moved or simplified.</P>
+<LI><B><A HREF="#SEC99a">Specifying Registers for Function Parameters</A></B>
+<P>In GCC4TI, it is possible to specify explictly where the parameters to a function
+a stored, in a syntax similar to global and local register variables.</P>
+</UL>
+<H3><A NAME="SEC98"><U>Defining Global Register Variables</U></A></H3>
+<P><B>Global register variables reserve registers throughout the program.
+This may be useful in programs such as programming language
+interpreters which have a couple of global variables that are accessed
+very often.</B></P>
+
+<P>You can define a global register variable in GNU C like this:</P>
+<PRE>register int *foo asm (&quot;a3&quot;);
+</PRE>
+<P>Here <CODE>a3</CODE> is the name of the register which should be used.  Choose a
+register which is normally saved and restored by function calls on your
+machine, so that library routines will not clobber it.
+<BR><BR>
+Naturally the register name is cpu-dependent, so you would need to
+conditionalize your program according to cpu type.  The register
+<CODE>a3</CODE> would be a good choice on a 68000 for a variable of pointer
+type.  On machines with register windows, be sure to choose a &quot;global&quot;
+register that is not affected magically by the function call mechanism.
+<BR><BR>
+In addition, operating systems on one type of cpu may differ in how they
+name the registers; then you would need additional conditionals.  For
+example, some 68000 operating systems call this register <CODE>%a3</CODE>.
+<BR><BR>
+Eventually there may be a way of asking the compiler to choose a register
+automatically, but first we need to figure out how it should choose and
+how to enable you to guide the choice.  No solution is evident.
+<BR><BR>
+Defining a global register variable in a certain register reserves that
+register entirely for this use, at least within the current compilation.
+The register will not be allocated for any other purpose in the functions
+in the current compilation.  The register will not be saved and restored by
+these functions.  Stores into this register are never deleted even if they
+would appear to be dead, but references may be deleted or moved or
+simplified.
+<BR><BR>
+It is not safe to access the global register variables from interrupt
+handlers, because the system
+library routines may temporarily use the register for other things (unless
+you recompile them specially for the task at hand).
+<BR><BR>
+It is not safe for one function that uses a global register variable to
+call another such function <CODE>foo</CODE> by way of a third function
+<CODE>lose</CODE> that was compiled without knowledge of this variable (i.e. in a
+different source file in which the variable wasn't declared).  This is
+because <CODE>lose</CODE> might save the register and put some other value there.
+For example, you can't expect a global register variable to be available in
+the comparison-function that you pass to <A HREF="stdlib.html#qsort">qsort</A>, since it
+might have put something else in that register.  (If you are prepared to
+recompile it with the same global register variable, you can
+solve this problem.)
+<BR><BR>
+If you want to recompile <CODE>qsort</CODE> or other source files which do not
+actually use your global register variable, so that they will not use that
+register for any other purpose, then it suffices to specify the compiler
+option <B>'-ffixed-<I>reg</I>'</B>.  You need not actually add a global
+register declaration to their source code.
+<BR><BR>
+A function which can alter the value of a global register variable cannot
+safely be called from a function compiled without this variable, because it
+could clobber the value the caller expects to find there on return.
+Therefore, the function which is the entry point into the part of the
+program that uses the global register variable must explicitly save and
+restore the value which belongs to its caller.
+<BR><BR>
+Be careful if you use <A HREF="setjmp.html#longjmp">longjmp</A> with global register
+variables, because it will restore to each global register
+variable the value it had at the time of the
+<A HREF="setjmp.html#setjmp">setjmp</A>.
+<BR><BR>
+All global register variable declarations must precede all function
+definitions.  If such a declaration could appear after function
+definitions, the declaration would be too late to prevent the register from
+being used for other purposes in the preceding functions.
+<BR><BR>
+Global register variables may not have initial values, because an
+executable file has no means to supply initial contents for a register.
+<BR><BR>
+On the Motorola 68000, <CODE>a2</CODE>&nbsp;...&nbsp;<CODE>a5</CODE> should be suitable for global register variables,
+as should <CODE>d3</CODE>&nbsp;...&nbsp;<CODE>d7</CODE>.
+Of course, it will not do to use more than a few of those.
+Note that <CODE>a5</CODE> is used by
+<CODE><A HREF="httigcc.html#advanced_optrom">OPTIMIZE_ROM_CALLS</A></CODE>.</P>
+
+<H3><A NAME="SEC99"><U>Specifying Registers for Local Variables</U></A></H3>
+<P><B>Local register variables in specific registers do not reserve the
+registers.  The compiler's data flow analysis is capable of determining
+where the specified registers contain live values, and where they are
+available for other uses.  Stores into local register variables may be deleted
+when they appear to be dead according to dataflow analysis.  References
+to local register variables may be deleted or moved or simplified.</B></P>
+
+<P>These local variables are sometimes convenient for use with the extended
+<CODE>asm</CODE> feature (see the section <A HREF="#SEC94">Assembler
+Instructions with C Expression Operands</A>), if you want to write one
+output of the assembler instruction directly into a particular register
+(this will work provided the register you specify fits the constraints
+specified for that operand in the <CODE>asm</CODE> block).
+<BR><BR>
+You can define a local register variable with a specified register
+like this:</P>
+<PRE>register int *foo asm (&quot;a5&quot;);
+</PRE>
+<P>Here <CODE>a5</CODE> is the name of the register which should be used.  Note
+that this is the same syntax used for defining global register
+variables, but for a local variable it would appear within a function.
+<BR><BR>
+Naturally the register name is cpu-dependent, but this is not a
+problem, since specific registers are most often useful with explicit
+assembler instructions (see the section <A HREF="#SEC94">Assembler Instructions with C
+Expression Operands</A>), which is CPU-specific as well, and since GCC4TI
+only supports exactly one CPU (the Motorola 68000) anyway.
+<BR><BR>
+In addition, operating systems on one type of cpu may differ in how they
+name the registers; then you would need additional conditionals.  For
+example, some 68000 operating systems call this register <CODE>%a5</CODE>.
+<BR><BR>
+Defining such a register variable does not reserve the register; it
+remains available for other uses in places where flow control determines
+the variable's value is not live.  However, these registers are made
+unavailable for use in the reload pass; excessive use of this feature
+leaves the compiler too few available registers to compile certain
+functions.
+<BR><BR>
+This option does not guarantee that GCC will generate code that has
+this variable in the register you specify at all times.  You may not
+code an explicit reference to this register in an <CODE>asm</CODE> statement
+and assume it will always refer to this variable.
+<BR><BR>
+Stores into local register variables may be deleted when they appear to be dead
+according to dataflow analysis.  References to local register variables may
+be deleted or moved or simplified.</P>
+
+<H3><A NAME="SEC99a"><U>Specifying Registers for Function Parameters</U></A></H3>
+<P><B>In GCC4TI, it is possible to specify explictly where the parameters to a function
+a stored, in a syntax similar to global and local register variables.</B></P>
+
+<P>GCC4TI can pass function parameters either on the stack or through registers.
+You can use the <CODE><A HREF="#SEC85_regparm">regparm</A></CODE> attribute or the <B>'-mregparm'</B>
+compiler switch to let the compiler automatically choose registers for the parameters, but you can
+also tell GCC4TI to put a parameter into a specific register.  This can be very handy when
+interfacing with assembly code.  For example, the following assembly function expects its 2
+parameters in the <CODE>d1</CODE> and <CODE>d2</CODE> registers:</P>
+<PRE>asm(".globl add
+add:
+     move.l %d2,%d0
+     add.l %d1,%d0
+     rts");
+</PRE>
+<P>Therefore, its prototype would be:</P>
+<PRE>unsigned long add (unsigned long a asm("d1"), unsigned long b asm("d2"));
+</PRE>
+<P>Explicit register specifications for function parameters are also supported in function headers
+(not only in prototypes).  Therefore, the assembly function above could be replaced by the following
+C equivalent:</P>
+<PRE>unsigned long add (unsigned long a asm("d1"), unsigned long b asm("d2"))
+{
+  return a + b;
+}
+</PRE>
+<P>to pass a register parameter.  The registers do not necessarily need to be
+call-clobbered.  You can also use a2-a5/d3-d7 to pass a register parameter.
+But note that the called function still has to save and restore those registers,
+even if they are used as arguments!  In C code, GCC4TI takes care of that
+automatically for you, but in assembly code, it is something you need to remember.</P>
+
+<P>See also: <A HREF="#SEC85_regparm">regparm</A></P>
+<HR>
+<H2><A NAME="SEC100"><U>Alternate Keywords</U></A></H2>
+<P><B>'-ansi'</B> and the various <B>'-std'</B> options disable certain
+keywords.  This causes trouble when you want to use GNU C extensions, or
+a general-purpose header file that should be usable by all programs,
+including ISO C programs.  The keywords <CODE>asm</CODE>, <CODE>typeof</CODE> and
+<CODE>inline</CODE> are not available in programs compiled with
+<B>'-ansi'</B> or <B>'-std'</B> (although <CODE>inline</CODE> can be used in a
+program compiled with <B>'-std=c99'</B>).  The ISO C99 keyword
+<CODE>restrict</CODE> is only available when <B>'-std=gnu99'</B> (which will
+eventually be the default) or <B>'-std=c99'</B> (or the equivalent
+<B>'-std=iso9899:1999'</B>) is used.
+<BR><BR>
+The way to solve these problems is to put <CODE>__</CODE> at the beginning and
+end of each problematical keyword.  For example, use <CODE>__asm__</CODE>
+instead of <CODE>asm</CODE>, and <CODE>__inline__</CODE> instead of <CODE>inline</CODE>.
+<BR><BR>
+Other C compilers won't accept these alternative keywords; if you want to
+compile with another compiler, you can define the alternate keywords as
+macros to replace them with the customary keywords.  It looks like this:</P>
+<PRE>#ifndef __GNUC__
+#define __asm__ asm
+#endif
+</PRE>
+<P><B>'-pedantic'</B> and other options cause warnings for many GNU C extensions.
+You can
+prevent such warnings within one expression by writing
+<CODE>__extension__</CODE> before the expression.  <CODE>__extension__</CODE> has no
+effect aside from this.</P>
+
+<HR>
+<H2><A NAME="SEC101"><U>Incomplete 'enum' Types</U></A></H2>
+<P>You can define an <CODE>enum</CODE> tag without specifying its possible values.
+This results in an incomplete type, much like what you get if you write
+<CODE>struct&nbsp;foo</CODE> without describing the elements.  A later declaration
+which does specify the possible values completes the type.
+<BR><BR>
+You can't allocate variables or storage using the type while it is
+incomplete.  However, you can work with pointers to that type.
+<BR><BR>
+This extension may not be very useful, but it makes the handling of
+<CODE>enum</CODE> more consistent with the way <CODE>struct</CODE> and <CODE>union</CODE>
+are handled.</P>
+
+<HR>
+<H2><A NAME="SEC102"><U>Function Names as Strings</U></A></H2>
+<P>GCC predefines two magic identifiers to hold the name of the current
+function.  The identifier <CODE>__FUNCTION__</CODE> holds the name of the function
+as it appears in the source.  The identifier <CODE>__PRETTY_FUNCTION__</CODE>
+holds the name of the function pretty printed in a language specific
+fashion.
+(These names are always the same in a C function, but in a C++ function
+they may be different; don't care about this, because GCC4TI is not a C++ compiler.)
+<BR><BR>
+The compiler automatically replaces the identifiers with a string
+literal containing the appropriate name.  Thus, they are neither
+preprocessor macros, like <CODE>__FILE__</CODE> and <CODE>__LINE__</CODE>, nor
+variables.  This means that they catenate with other string literals, and
+that they can be used to initialize char arrays.  For example</P>
+<PRE>char here[] = &quot;Function &quot; __FUNCTION__ &quot; in &quot; __FILE__;
+</PRE>
+<P>On the other hand, <CODE>#ifdef&nbsp;__FUNCTION__</CODE> does not have any special
+meaning inside a function, since the preprocessor does not do anything
+special with the identifier <CODE>__FUNCTION__</CODE>.
+<BR><BR>
+Note that these semantics are deprecated, and that GCC 3.2 will handle
+<CODE>__FUNCTION__</CODE> and <CODE>__PRETTY_FUNCTION__</CODE> the same way as
+<CODE>__func__</CODE>.  <CODE>__func__</CODE> is defined by the ISO standard C99:
+<BR><BR>
+The identifier <CODE>__func__</CODE> is implicitly declared by the translator
+as if, immediately following the opening brace of each function
+definition, the declaration</P>
+<PRE>static const char __func__[] = &quot;function-name&quot;;
+</PRE>
+<P>appeared, where function-name is the name of the lexically-enclosing
+function.  This name is the unadorned name of the function.
+<BR><BR>
+By this definition, <CODE>__func__</CODE> is a variable, not a string literal.
+In particular, <CODE>__func__</CODE> does not catenate with other string
+literals.</P>
+
+<HR>
+<H2><A NAME="SEC103"><U>Getting the Return or Frame Address of a Function</U></A></H2>
+<P>These functions may be used to get information about the callers of a
+function.</P>
+
+<UL>
+<LI><B><A HREF="#SEC103___builtin_return_address">__builtin_return_address</A></B>
+<LI><B><A HREF="#SEC103___builtin_frame_address">__builtin_frame_address</A></B>
+</UL>
+<H3><A NAME="SEC103___builtin_return_address"><U>__builtin_return_address</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#void">void</A></B> *__builtin_return_address (<B><A HREF="keywords.html#int">int</A></B> level);</CODE>
+<BR><BR>
+This function returns the return address of the current function, or of
+one of its callers.  The <I>level</I> argument is number of frames to
+scan up the call stack.  A value of <CODE>0</CODE> yields the return address
+of the current function, a value of <CODE>1</CODE> yields the return address
+of the caller of the current function, and so forth. When inlining
+the expected behavior is that the function will return the address of
+the function that will be returned to.  To work around this behavior use
+the <CODE>noinline</CODE> function attribute.
+<BR><BR>
+The <I>level</I> argument must be a constant integer.
+<BR><BR>
+Sometimes (especially without a frame pointer)
+it may be impossible to determine the return address of
+any function other than the current one; in such cases, or when the top
+of the stack has been reached, this function will return a
+random value.  In addition, <A HREF="#SEC103___builtin_frame_address">__builtin_frame_address</A> may be used
+to determine if the top of the stack has been reached.
+<BR><BR>
+This function should be used with a nonzero argument only for debugging
+purposes.</P>
+
+<H3><A NAME="SEC103___builtin_frame_address"><U>__builtin_frame_address</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#void">void</A></B> *__builtin_frame_address (<B><A HREF="keywords.html#int">int</A></B> level);</CODE>
+<BR><BR>
+This function is similar to <A HREF="#SEC103___builtin_return_address">__builtin_return_address</A>, but it
+returns the address of the function frame rather than the return address
+of the function.  Calling __builtin_frame_address with a value of
+0 yields the frame address of the current function, a value of
+1 yields the frame address of the caller of the current function,
+and so forth.
+<BR><BR>
+The frame is the area on the stack which holds local variables and saved
+registers.  The frame address is normally the address of the first word
+pushed on to the stack by the function.  However, the exact definition
+depends upon the processor and the calling convention.  On the Motorola
+68000, if the function has a frame,
+then __builtin_frame_address will return the value of the frame
+pointer register <CODE>a6</CODE> if <I>level</I> is 0.
+<BR><BR>
+This function should be used with a nonzero argument only for debugging
+purposes.</P>
+
+<HR>
+<H2><A NAME="SEC104"><U>Other built-in functions provided by GCC</U></A></H2>
+<P>GCC provides a large number of built-in functions.  Some of these are for internal use in the processing
+of exceptions or variable-length argument lists and will not be
+documented here because they may change from time to time; we do not
+recommend general use of these functions.
+<BR><BR>
+The remaining functions are provided for optimization purposes.</P>
+
+<UL>
+<LI><B><A HREF="#SEC104___builtin_constant_p">__builtin_constant_p</A></B>
+<LI><B><A HREF="#SEC104___builtin_types_compatible_p">__builtin_types_compatible_p</A></B>
+<LI><B><A HREF="#SEC104___builtin_choose_expr">__builtin_choose_expr</A></B>
+<LI><B><A HREF="#SEC104___builtin_expect">__builtin_expect</A></B>
+<LI><B><A HREF="#SEC104___builtin_prefetch">__builtin_prefetch</A></B>
+</UL>
+<P>GCC includes built-in versions of many of the functions in the standard
+C library.  The versions prefixed with <CODE>__builtin_</CODE> will always be
+treated as having the same meaning as the C library function even if you
+specify the <B>'-fno-builtin'</B> option (see <A HREF="comopts.html#SEC6">C Dialect Options</A>).
+Many of these functions are only optimized in certain cases; if they are
+not optimized in a particular case, a call to the library function will
+be emitted
+(but this does not make sense in GCC4TI, as the standard C library is not provided with it).
+<BR><BR>
+The functions <CODE>abort</CODE>, <CODE>exit</CODE>, <CODE>_Exit</CODE> and <CODE>_exit</CODE>
+are recognized and presumed not to return, but otherwise are not built
+in (GCC4TI defines them as macros anyway).  <CODE>_exit</CODE> is not recognized in strict ISO C mode (<B>'-ansi'</B>,
+<B>'-std=c89'</B> or <B>'-std=c99'</B>).  <CODE>_Exit</CODE> is not recognized in
+strict C89 mode (<B>'-ansi'</B> or <B>'-std=c89'</B>).  All these functions
+have corresponding versions prefixed with <CODE>__builtin_</CODE>, which may be
+used even in strict C89 mode.
+<BR><BR>
+Outside strict ISO C mode, the functions <CODE>alloca</CODE>, <CODE>bcmp</CODE>,
+<CODE>bzero</CODE>, <CODE>index</CODE>, <CODE>rindex</CODE>, <CODE>ffs</CODE>, <CODE>fputs_unlocked</CODE>,
+<CODE>printf_unlocked</CODE> and <CODE>fprintf_unlocked</CODE> may be handled as
+built-in functions.  All these functions have corresponding versions
+prefixed with <CODE>__builtin_</CODE>, which may be used even in strict C89
+mode
+(in GCC4TI, <A HREF="alloc.html#alloca">alloca</A> is built-in;
+other than that only <CODE>__builtin_bzero</CODE> might be useful).
+<BR><BR>
+The ISO C99 functions <CODE>conj</CODE>, <CODE>conjf</CODE>, <CODE>conjl</CODE>,
+<CODE>creal</CODE>, <CODE>crealf</CODE>, <CODE>creall</CODE>, <CODE>cimag</CODE>, <CODE>cimagf</CODE>,
+<CODE>cimagl</CODE>, <CODE>imaxabs</CODE>, <CODE>llabs</CODE>, <CODE>snprintf</CODE>,
+<CODE>vscanf</CODE>, <CODE>vsnprintf</CODE> and <CODE>vsscanf</CODE> are handled as built-in
+functions except in strict ISO C90 mode.  There are also built-in
+versions of the ISO C99 functions <CODE>cosf</CODE>, <CODE>cosl</CODE>,
+<CODE>expf</CODE>, <CODE>expl</CODE>, <CODE>fabsf</CODE>, <CODE>fabsl</CODE>,
+<CODE>logf</CODE>, <CODE>logl</CODE>, <CODE>sinf</CODE>, <CODE>sinl</CODE>, <CODE>sqrtf</CODE>, and
+<CODE>sqrtl</CODE>, that are recognized in any mode since ISO C90 reserves
+these names for the purpose to which ISO C99 puts them.  All these
+functions have corresponding versions prefixed with <CODE>__builtin_</CODE>
+(again, none of these are implemented in GCC4TI).
+<BR><BR>
+The ISO C90 functions <CODE>abs</CODE>, <CODE>cos</CODE>, <CODE>exp</CODE>, <CODE>fabs</CODE>,
+<CODE>fprintf</CODE>, <CODE>fputs</CODE>, <CODE>labs</CODE>, <CODE>log</CODE>,
+<CODE>memcmp</CODE>, <CODE>memcpy</CODE>,
+<CODE>memset</CODE>, <CODE>printf</CODE>, <CODE>putchar</CODE>, <CODE>puts</CODE>, <CODE>scanf</CODE>,
+<CODE>sin</CODE>, <CODE>snprintf</CODE>, <CODE>sprintf</CODE>, <CODE>sqrt</CODE>, <CODE>sscanf</CODE>,
+<CODE>strcat</CODE>,
+<CODE>strchr</CODE>, <CODE>strcmp</CODE>, <CODE>strcpy</CODE>, <CODE>strcspn</CODE>,
+<CODE>strlen</CODE>, <CODE>strncat</CODE>, <CODE>strncmp</CODE>, <CODE>strncpy</CODE>,
+<CODE>strpbrk</CODE>, <CODE>strrchr</CODE>, <CODE>strspn</CODE>, <CODE>strstr</CODE>,
+<CODE>vprintf</CODE> and <CODE>vsprintf</CODE> are all
+recognized as built-in functions unless <B>'-fno-builtin'</B> is
+specified (or <B>'-fno-builtin-<I>function</I>'</B> is specified for an
+individual function).  All of these functions have corresponding
+versions prefixed with <CODE>__builtin_</CODE>
+(but most of these are defined as macros in GCC4TI).
+<BR><BR>
+GCC provides built-in versions of the ISO C99 floating point comparison
+macros that avoid raising exceptions for unordered operands.  They have
+the same names as the standard macros (<CODE>isgreater</CODE>,
+<CODE>isgreaterequal</CODE>, <CODE>isless</CODE>, <CODE>islessequal</CODE>,
+<CODE>islessgreater</CODE>, and <CODE>isunordered</CODE>), with <CODE>__builtin_</CODE>
+prefixed.  The GNU team intends for a library implementor to be able to simply
+<CODE>#define</CODE> each standard macro to its built-in equivalent.</P>
+
+<H3><A NAME="SEC104___builtin_constant_p"><U>__builtin_constant_p</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#int">int</A></B> __builtin_constant_p (exp);</CODE>
+<BR><BR>
+You can use the built-in function <CODE>__builtin_constant_p</CODE> to
+determine if a value is known to be constant at compile-time and hence
+that GCC can perform constant-folding on expressions involving that
+value.  The argument of the function is the value to test.  The function
+returns the integer 1 if the argument is known to be a compile-time
+constant and 0 if it is not known to be a compile-time constant.  A
+return of 0 does not indicate that the value is <I>not</I> a constant,
+but merely that GCC cannot prove it is a constant with the specified
+value of the <B>'-O'</B> option.
+<BR><BR>
+If you have some complex calculation,
+you may want it to be folded if it involves constants, but need to call
+a function if it does not.  For example:</P>
+<PRE>#define Scale_Value(X)      \
+  (__builtin_constant_p (X) \
+  ? ((X) * SCALE + OFFSET) : Scale (X))
+</PRE>
+<P>You may use this built-in function in either a macro or an inline
+function.  However, if you use it in an inlined function and pass an
+argument of the function as the argument to the built-in, GCC will
+never return 1 when you call the inline function with a string constant
+or compound literal (see <A HREF="#SEC81">Compound Literals</A>) and will not return 1
+when you pass a constant numeric value to the inline function unless you
+specify the <B>'-O'</B> option.
+<BR><BR>
+You may also use <CODE>__builtin_constant_p</CODE> in initializers for static
+data.  For instance, you can write</P>
+<PRE>static const int table[] = {
+   __builtin_constant_p (EXPRESSION) ? (EXPRESSION) : -1,
+   /* ... */
+};
+</PRE>
+<P>This is an acceptable initializer even if <I>EXPRESSION</I> is not a
+constant expression.  GCC must be more conservative about evaluating the
+built-in in this case, because it has no opportunity to perform
+optimization.
+<BR><BR>
+Previous versions of GCC did not accept this built-in in data
+initializers.  The earliest version where it is completely safe is
+3.0.1.</P>
+
+<H3><A NAME="SEC104___builtin_types_compatible_p"><U>__builtin_types_compatible_p</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#int">int</A></B> __builtin_types_compatible_p (type1, type2);</CODE>
+<BR><BR>
+You can use the built-in function __builtin_types_compatible_p to
+determine whether two types are the same.
+<BR><BR>
+This built-in function returns 1 if the unqualified versions of the
+types <I>type1</I> and <I>type2</I> (which are types, not expressions) are
+compatible, 0 otherwise.  The result of this built-in function can be
+used in integer constant expressions.
+<BR><BR>
+This built-in function ignores top level qualifiers (<CODE><A HREF="keywords.html#const">const</A></CODE>,
+<CODE><A HREF="keywords.html#volatile">volatile</A></CODE>, etc.).  For example, <CODE><A HREF="keywords.html#int">int</A></CODE> is equivalent to <CODE><A HREF="keywords.html#const">const</A>
+<A HREF="keywords.html#int">int</A></CODE>.
+<BR><BR>
+The type <CODE><A HREF="keywords.html#int">int</A>[]</CODE> and <CODE><A HREF="keywords.html#int">int</A>[5]</CODE> are compatible.  On the other
+hand, <CODE><A HREF="keywords.html#short">long</A>&nbsp;<A HREF="keywords.html#int">int</A></CODE> and <CODE><A HREF="keywords.html#int">char</A>*</CODE> are not compatible,
+although their sizes are the same.  Also, the
+amount of pointer indirection is taken into account when determining
+similarity.  Consequently, <CODE><A HREF="keywords.html#short">short</A>*</CODE> is not similar to
+<CODE><A HREF="keywords.html#short">short</A>**</CODE>.  Furthermore, two types that are typedefed are
+considered compatible if their underlying types are compatible.
+<BR><BR>
+An <CODE><A HREF="keywords.html#enum">enum</A></CODE> type is considered to be compatible with another
+<CODE><A HREF="keywords.html#enum">enum</A></CODE> type.  For example, <CODE>enum&nbsp;{foo,&nbsp;bar}</CODE> is similar to
+<CODE>enum&nbsp;{hot,&nbsp;dog}</CODE>.
+<BR><BR>
+You would typically use this function in code whose execution varies
+depending on the arguments' types.  For example:</P>
+<PRE>#define foo(x)                                                  \
+  ({                                                            \
+    typeof (x) tmp;                                             \
+    if (__builtin_types_compatible_p (typeof (x), long double)) \
+      tmp = foo_long_double (tmp);                              \
+    else if (__builtin_types_compatible_p (typeof (x), double)) \
+      tmp = foo_double (tmp);                                   \
+    else if (__builtin_types_compatible_p (typeof (x), float))  \
+      tmp = foo_float (tmp);                                    \
+    else                                                        \
+      abort ();                                                 \
+    tmp;                                                        \
+  })
+</PRE>
+
+<H3><A NAME="SEC104___builtin_choose_expr"><U>__builtin_choose_expr</U></A></H3>
+<P><CODE><I>type</I> __builtin_choose_expr (const_exp, exp1, exp2);</CODE>
+<BR><BR>
+You can use the built-in function __builtin_choose_expr to
+evaluate code depending on the value of a constant expression.  This
+built-in function returns <I>exp1</I> if <I>const_exp</I>, which is a
+constant expression that must be able to be determined at compile time,
+is nonzero.  Otherwise it returns 0.
+<BR><BR>
+This built-in function is analogous to the <CODE>?&nbsp;:</CODE> operator in C,
+except that the expression returned has its type unaltered by promotion
+rules.  Also, the built-in function does not evaluate the expression
+that was not chosen.  For example, if <I>const_exp</I> evaluates to true,
+<I>exp2</I> is not evaluated even if it has side-effects.
+<BR><BR>
+This built-in function can return an lvalue if the chosen argument is an
+lvalue.
+<BR><BR>
+If <I>exp1</I> is returned, the return type is the same as <I>exp1</I>'s
+type.  Similarly, if <I>exp2</I> is returned, its return type is the same
+as <I>exp2</I>.
+<BR><BR>
+Example:</P>
+<PRE>#define foo(x)                                                    \
+  __builtin_choose_expr (                                         \
+    __builtin_types_compatible_p (typeof (x), double),            \
+    foo_double (x),                                               \
+    __builtin_choose_expr (                                       \
+      __builtin_types_compatible_p (typeof (x), float),           \
+      foo_float (x),                                              \
+      /* The void expression results in a compile-time error  \
+         when assigning the result to something.  */          \
+      (void)0))
+</PRE>
+<P><B>Note:</B> The
+unused expression (<I>exp1</I> or <I>exp2</I> depending on the value of
+<I>const_exp</I>) may still generate syntax errors.  This may change in
+future revisions.</P>
+
+<H3><A NAME="SEC104___builtin_expect"><U>__builtin_expect</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#short">long</A></B> __builtin_expect (<B><A HREF="keywords.html#short">long</A></B> exp, <B><A HREF="keywords.html#short">long</A></B> c);</CODE>
+<BR><BR>
+You may use <CODE>__builtin_expect</CODE> to provide the compiler with
+branch prediction information.
+<BR><BR>
+The return value is the value of <I>exp</I>, which should be an
+integral expression.  The value of <I>c</I> must be a compile-time
+constant.  The semantics of the built-in are that it is expected
+that <I>exp</I> == <I>c</I>.  For example:</P>
+<PRE>if (__builtin_expect (x, 0))
+  foo ();
+</PRE>
+<P>would indicate that we do not expect to call <CODE>foo</CODE>, since
+we expect <CODE>x</CODE> to be zero.  Since you are limited to integral
+expressions for <I>exp</I>, you should use constructions such as</P>
+<PRE>if (__builtin_expect (ptr != NULL, 1))
+  error ();
+</PRE>
+<P>when testing pointer or floating-point values.</P>
+
+<H3><A NAME="SEC104___builtin_prefetch"><U>__builtin_prefetch</U></A></H3>
+<P><CODE><B><A HREF="keywords.html#void">void</A></B> __builtin_prefetch (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *addr, ...);</CODE>
+<BR><BR>
+This function is used to minimize cache-miss latency by moving data into
+a cache before it is accessed.
+As the Motorola 68000 processor does not have any data prefetch instruction,
+this function is not useful in GCC4TI.</P>
+
+<HR>
+<H2><A NAME="SEC105"><U>Slightly Looser Rules for Escaped Newlines</U></A></H2>
+<P>Recently, the preprocessor has relaxed its treatment of escaped
+newlines.  Previously, the newline had to immediately follow a
+backslash.  The current implementation allows whitespace in the form of
+spaces, horizontal and vertical tabs, and form feeds between the
+backslash and the subsequent newline.  The preprocessor issues a
+warning, but treats it as a valid escaped newline and combines the two
+lines to form a single logical line.  This works within comments and
+tokens, including multi-line strings, as well as between tokens.
+Comments are <I>not</I> treated as whitespace for the purposes of this
+relaxation, since they have not yet been replaced with spaces.</P>
+
+<HR>
+<H2><A NAME="SEC106"><U>String Literals with Embedded Newlines</U></A></H2>
+<P>As an extension, GNU CPP permits string literals to cross multiple lines
+without escaping the embedded newlines.  Each embedded newline is
+replaced with a single <CODE>\n</CODE> character in the resulting string
+literal, regardless of what form the newline took originally.
+<BR><BR>
+CPP currently allows such strings in directives as well (other than the
+<CODE>#include</CODE> family).</P>
+
+<HR>
+<H2><A NAME="SEC107"><U>Mixed Declarations and Code</U></A></H2>
+<P>ISO C99 and ISO C++ allow declarations and code to be freely mixed
+within compound statements.  As an extension, GCC also allows this in
+C89 mode.  For example, you could do:</P>
+<PRE>int i;
+/* ... */
+i++;
+int j = i + 2;
+</PRE>
+<P>Each identifier is visible from where it is declared until the end of
+the enclosing block.</P>
+
+<HR>
+<H2><A NAME="SEC108"><U>Unnamed struct/union Fields within structs/unions</U></A></H2>
+<P>For compatibility with other compilers, GCC allows you to define
+a structure or union that contains, as fields, structures and unions
+without names.  For example:</P>
+<PRE>struct {
+  int a;
+  union {
+    int b;
+    float c;
+  };
+  int d;
+} foo;
+</PRE>
+<P>In this example, the user would be able to access members of the unnamed
+union with code like <CODE>foo.b</CODE>.  Note that only unnamed structs and
+unions are allowed, you may not have, for example, an unnamed
+<CODE><A HREF="keywords.html#int">int</A></CODE>.
+<BR><BR>
+You must never create such structures that cause ambiguous field definitions.
+For example, this structure:</P>
+<PRE>struct {
+  int a;
+  struct {
+    int a;
+  };
+} foo;
+</PRE>
+<P>It is ambiguous which <I>a</I> is being referred to with <CODE>foo.a</CODE>.
+Such constructs are not supported and must be avoided.  In the future,
+such constructs may be detected and treated as compilation errors.</P>
+
+<HR>
+<H2><A NAME="SEC109"><U>Definite Access of Volatile Objects</U></A></H2>
+<P>Both the C and C++ standard have the concept of <A HREF="keywords.html#volatile">volatile</A> objects.  These
+are normally accessed by pointers and used for accessing hardware.  The
+standards encourage compilers to refrain from optimizations
+concerning accesses to volatile objects that it might perform on
+non-volatile objects.  The C standard leaves it implementation defined
+as to what constitutes a volatile access.  The C++ standard omits to
+specify this, except to say that C++ should behave in a similar manner
+to C with respect to volatiles, where possible.  The minimum either
+standard specifies is that at a sequence point all previous accesses to
+volatile objects have stabilized and no subsequent accesses have
+occurred.  Thus an implementation is free to reorder and combine
+volatile accesses which occur between sequence points, but cannot do so
+for accesses across a sequence point.  The use of volatiles does not
+allow you to violate the restriction on updating objects multiple times
+within a sequence point.
+<BR><BR>
+In most expressions, it is intuitively obvious what is a read and what is
+a write.  For instance</P>
+<PRE>volatile int *dst = <I>somevalue</I>;
+volatile int *src = <I>someothervalue</I>;
+*dst = *src;
+</PRE>
+<P>will cause a read of the volatile object pointed to by <I>src</I> and stores the
+value into the volatile object pointed to by <I>dst</I>.  There is no
+guarantee that these reads and writes are atomic, especially for objects
+larger than <CODE><A HREF="keywords.html#int">int</A></CODE>.
+<BR><BR>
+Less obvious expressions are where something which looks like an access
+is used in a void context.  An example would be,</P>
+<PRE>volatile int *src = <I>somevalue</I>;
+*src;
+</PRE>
+<P>With C, such expressions are rvalues, and as rvalues cause a read of
+the object, GCC interprets this as a read of the volatile being pointed
+to.</P>
+
+<HR>
+<H2><A NAME="history"><U>History</U></A></H2>
+<UL>
+<LI><P><B>Original Version:</B> <A HREF="http://gcc.gnu.org/onlinedocs/gcc/C-Extensions.html">Extensions to the C Language Family</A>
+<BR><BR>
+Published by the Free Software Foundation
+<BR>
+59 Temple Place - Suite 330
+<BR>
+Boston, MA 02111-1307 USA
+<BR><BR>
+Copyright &copy; 1988, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+2000, 2001, 2002 Free Software Foundation, Inc.
+</P></LI>
+<LI><P><B>Modifications for TIGCC:</B> <A HREF="gnuexts.html">GNU C Language Extensions</A>
+<BR><BR>
+Published by the TIGCC Team
+<BR><BR>
+Copyright &copy; 2000, 2001, 2002 Zeljko Juric, Sebastian Reichelt, Kevin Kofler</P></LI>
+<LI><P><B>Modifications for GCC4TI:</B> <A HREF="gnuexts.html">GNU C Language Extensions</A>
+<BR><BR>
+Published by the GCC4TI Project
+<BR><BR>
+Copyright &copy; 2009, 2010 Lionel Debroux</P></LI>
+</UL>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>
