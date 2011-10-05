@@ -1,0 +1,1818 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>vat.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;vat.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for accessing the variable allocation table</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#dollar">$</A></B><DD>Defines a constant VAT string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#AddSymToFolder">AddSymToFolder</A></B><DD>Adds a symbol in a given folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#checkCurrent">checkCurrent</A></B><DD>Check for the existence of a symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CheckLinkLockFlag">CheckLinkLockFlag</A></B><DD>Prevents a variable to be overwritten through link transfer if this is not allowed.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CheckReservedName">CheckReservedName</A></B><DD>Checks for graph functions and other special variable names.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CheckSysFunc">CheckSysFunc</A></B><DD>Checks for graph functions and other special variable names.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ClearUserDef">ClearUserDef</A></B><DD>Clears TI-Basic program/function status flags.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DataTypeNames">DataTypeNames</A></B><DD>Returns a pointer to a static string representing the type of the tag passed.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DerefSym">DerefSym</A></B><DD>Dereferences a symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_moveSymFromExtMem">EM_moveSymFromExtMem</A></B><DD>Moves a symbol from the archive memory to the RAM.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_moveSymToExtMem">EM_moveSymToExtMem</A></B><DD>Moves a symbol from the RAM to the archive memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EM_twinSymFromExtMem">EM_twinSymFromExtMem</A></B><DD>Creates a twin symbol, then copies a symbol from the archive memory to it.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EX_stoBCD">EX_stoBCD</A></B><DD>Stores a floating point value into a variable.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FindProgramVar">FindProgramVar</A></B><DD>Finds the running program's variable.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FindSymInFolder">FindSymInFolder</A></B><DD>Finds a symbol in a given folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderAdd">FolderAdd</A></B><DD>Creates a folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderAddTemp">FolderAddTemp</A></B><DD>Creates a temporary folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderClear">FolderClear</A></B><DD>Deletes all files in the folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderCount">FolderCount</A></B><DD>Determines a number of symbols in a folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderCur">FolderCur</A></B><DD>Sets the currently active folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderCurTemp">FolderCurTemp</A></B><DD>Sets the current temporary folder for storing local symbols.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderDel">FolderDel</A></B><DD>Deletes a folder, including all files in it.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderDelAllTemp">FolderDelAllTemp</A></B><DD>Deletes a block of temporary folders.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderDelTemp">FolderDelTemp</A></B><DD>Deletes a temporary folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderFind">FolderFind</A></B><DD>Checks whether a folder exists.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderGetCur">FolderGetCur</A></B><DD>Determines the current active folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderOp">FolderOp</A></B><DD>Locks or unlocks a folder table.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderRename">FolderRename</A></B><DD>Renames a folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetDataType">GetDataType</A></B><DD>Returns the data type for a given tag pointed to by <I>tagptr</I>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetFuncPrgmBodyPtr">GetFuncPrgmBodyPtr</A></B><DD>Returns a pointer to a TI-Basic function/program body.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GetTagStr">GetTagStr</A></B><DD>Returns the address of the string representing the special tag pointed to by <I>tag</I>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HSymDel">HSymDel</A></B><DD>Deletes a symbol pointed to by HSym.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HSYMtoName">HSYMtoName</A></B><DD>Determines a full path of a symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#is_pathname">is_pathname</A></B><DD>Checks if argument points to a pathname.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#IsMainFolderStr">IsMainFolderStr</A></B><DD>Checks whether a name is the name of the main folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#MakeHSym">MakeHSym</A></B><DD>Makes a HSym structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#partial_len">partial_len</A></B><DD>Queries information about the Data Editor.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#QSysProtected">QSysProtected</A></B><DD>Checks if a given tag represents a system-protected variable type.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ResetSymFlags">ResetSymFlags</A></B><DD>Clears all VAT symbols flags.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SetOK">SetOK</A></B><DD>Changes the system variable <CODE>'OK'</CODE>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SmapTypeStrings">SmapTypeStrings</A></B><DD>Returns the 3-4 character description of a variable type.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#StrToTokN">StrToTokN</A></B><DD>Converts a C string to a token.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymAdd">SymAdd</A></B><DD>Adds a symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymAddMain">SymAddMain</A></B><DD>Adds a symbol in the main folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymAddTwin">SymAddTwin</A></B><DD>Creates a twin symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymCmp">SymCmp</A></B><DD>Compares two symbol names.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymCpy0">SymCpy0</A></B><DD>Copies a symbol name with putting zero byte at the end.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymCpy">SymCpy</A></B><DD>Copies a symbol name.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymDel">SymDel</A></B><DD>Deletes a symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymDelTwin">SymDelTwin</A></B><DD>Deletes a twin symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFind">SymFind</A></B><DD>Finds a symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFindFirst">SymFindFirst</A></B><DD>Begins looping through the VAT.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFindFolderName">SymFindFolderName</A></B><DD>Returns an actual folder name during browsing through the VAT table.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFindHome">SymFindHome</A></B><DD>Finds a folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFindMain">SymFindMain</A></B><DD>Finds a symbol in the main folder.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFindNext">SymFindNext</A></B><DD>Finds the next entry in the VAT table.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFindPrev">SymFindPrev</A></B><DD>Finds the previous entry in the VAT table.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFindPtr">SymFindPtr</A></B><DD>Finds a symbol and returns a pointer to the VAT entry.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymMove">SymMove</A></B><DD>Moves a symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SYMSTR">SYMSTR</A></B><DD>Defines a VAT string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymSysVar">SymSysVar</A></B><DD>Checks for a system-reserved variable name.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TempFolderName">TempFolderName</A></B><DD>Creates a temporary folder name.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TokToStrN">TokToStrN</A></B><DD>Converts a token to a C string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ValidateSymName">ValidateSymName</A></B><DD>Checks for a valid VAT name symbol.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VarRecall">VarRecall</A></B><DD>A higher-level variant of <A HREF="#SymFind">SymFind</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VarStore">VarStore</A></B><DD>High-level function to store values into variables.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#H_NULL">H_NULL</A></B><DD>A null-handle value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_NULL">HS_NULL</A></B><DD>A null symbol constant.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#CESI">CESI</A></B><DD>Represents a pointer to a constant expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CompatFlags">CompatFlags</A></B><DD>An enumeration for describing possible compatibility flags in the <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESI">ESI</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESQ">ESQ</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ExtendedSysTypes">ExtendedSysTypes</A></B><DD>Describes system variable types.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FindOptions">FindOptions</A></B><DD>Describes options for <A HREF="#SymFindFirst">SymFindFirst</A> and <A HREF="files.html#TIOS_FFindFirst">FFindFirst</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderOpFlags">FolderOpFlags</A></B><DD>An enumeration for describing possible options for the <A HREF="#FolderOp">FolderOp</A> function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FolderStats">FolderStats</A></B><DD>An enumeration for describing possible results of the <A HREF="#FolderFind">FolderFind</A> function.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="gdraw.html#GraphModes">GraphModes</A></B><DD>Describes different graphing modes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HSym">HSym</A></B><DD>A structure representing a symbol reference.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HSYM_upper">HSYM</A></B><DD>An alias for <A HREF="#HSym">HSym</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A></B><DD>Describes a multi-expression, which is processed as a separate expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SYM_ENTRY">SYM_ENTRY</A></B><DD>A structure representing a VAT symbol entry.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#SYM_STR">SYM_STR</A></B><DD>Represents a pointer to the terminating zero byte of a string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SymFlags">SymFlags</A></B><DD>An enumeration for easy access to flags in VAT symbol entries.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#SystemDataTypes">SystemDataTypes</A></B><DD>Describes valid variable types in the "Var-Link" dialog, and for the <A HREF="#GetDataType">GetDataType</A> and <A HREF="#SmapTypeStrings">SmapTypeStrings</A> functions.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VarRecallFlags">VarRecallFlags</A></B><DD>A collection of flags used in <A HREF="#VarRecall">VarRecall</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VarStoreFlags">VarStoreFlags</A></B><DD>Describes possible flags for <A HREF="#VarStore">VarStore</A>.</DL>
+<HR>
+<H3><A NAME="dollar"><U>$</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> $(s) (SYMSTR (#s))</TD></TR></TABLE></P>
+<P><B>Defines a constant VAT string.</B></P>
+
+<P>This macro constructor has been superseded by the function-like macro
+<A HREF="#SYMSTR">SYMSTR</A>.</P>
+
+<HR>
+<H3><A NAME="AddSymToFolder"><U>AddSymToFolder</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> AddSymToFolder (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <A HREF="estack.html#SYM_STR">SYM_STR</A> FolderName);</TD></TR></TABLE></P>
+<P><B>Adds a symbol in a given folder.</B></P>
+
+<P>AddSymToFolder acts like <A HREF="#SymAdd">SymAdd</A>, but adds the VAT entry
+in the folder given by <I>FolderName</I>. See <A HREF="#SymAdd">SymAdd</A> and
+<A HREF="#SYMSTR">SYMSTR</A>
+for more info and rules about <I>SymName</I> and <I>FolderName</I>.
+<BR><BR>
+<B>Note:</B> This routine is a bit buggy: if the folder <I>FolderName</I> does not
+exist, the behavior of this routine is very uncertain, and may result with a crash.</P>
+
+<HR>
+<H3><A NAME="checkCurrent"><U>checkCurrent</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> checkCurrent (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <A HREF="estack.html#ESQ">ESQ</A> Type);</TD></TR></TABLE></P>
+<P><B>Check for the existence of a symbol.</B></P>
+
+<P>checkCurrent makes sure the given symbol exists and matches the requested tag
+<I>Type</I>. <I>SymName</I> is the symbol name (see
+<A HREF="#SYMSTR">SYMSTR</A> for rules about <I>SymName</I>), and
+<I>Type</I> is the requested tag type (see
+<A HREF="dialogs.html#VarNew">VarNew</A> for a list of valid tags). checkCurrent
+returns the <A HREF="#HSym">HSym</A> of the VAT entry if it exists and
+matches the requested tag type, otherwise it returns
+<A HREF="#HS_NULL">HS_NULL</A>. For example, the text editor
+uses checkCurrent when it is told to edit the current text variable, to make
+sure the previous name entered by the user still exists and is a text
+variable. If it is not then it executes the code to prompt the user for a new
+text variable to edit.</P>
+
+<HR>
+<H3><A NAME="CheckLinkLockFlag"><U>CheckLinkLockFlag</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> CheckLinkLockFlag (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SYM_ENTRY">SYM_ENTRY</A> *FuncSymEntry);</TD></TR></TABLE></P>
+<P><B>Prevents a variable to be overwritten through link transfer if this is not allowed.</B></P>
+
+<P>If <I>FuncSymEntry</I> is a pointer to the VAT entry of TI-Basic program or function
+variable, then this function sets or clears the link lock flag which is
+embedded in the program or function variable itself, according to the
+'archived' and 'locked' bits in the VAT entry. This prevents the variable to
+be overwritten through link transfer if this is not permitted. Otherwise
+this function does nothing.</P>
+
+<HR>
+<H3><A NAME="CheckReservedName"><U>CheckReservedName</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> CheckReservedName (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Checks for graph functions and other special variable names.</B></P>
+
+<P>CheckReservedName checks whether <I>SymName</I> is a graph function or
+another special variable name. It returns zero if this is not the case,
+otherwise it returns the type of the variable. This routine works in the same
+way as <A HREF="#CheckSysFunc">CheckSysFunc</A>; the only differences
+are that <I>SymName</I> is a tokenized name, and that the function may also
+return <A HREF="#ExtendedSysTypes">R_SYSVAR</A>.
+<BR><BR>
+Precisely, this function returns values from either
+<A HREF="gdraw.html#GraphModes">GraphModes</A> or
+<A HREF="#ExtendedSysTypes">ExtendedSysTypes</A>, in addition to zero:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>GR_FUNC</TD>
+  <TD>"y1".."y99"</TD>
+</TR>
+<TR>
+  <TD>GR_PAR</TD>
+  <TD>"xt1".."xt99", "yt1".."yt99"</TD>
+</TR>
+<TR>
+  <TD>GR_POL</TD>
+  <TD>"r1".."r99"</TD>
+</TR>
+<TR>
+  <TD>GR_SEQ</TD>
+  <TD>"u1".."u99"</TD>
+</TR>
+<TR>
+  <TD>GR_3D</TD>
+  <TD>"z1".."z99"</TD>
+</TR>
+<TR>
+  <TD>GR_DE</TD>
+  <TD>"y'1".."y'99"</TD>
+</TR>
+<TR>
+  <TD>SEQ_INITC</TD>
+  <TD>"ui1".."ui99"</TD>
+</TR>
+<TR>
+  <TD>DE_INITC</TD>
+  <TD>"yi1".."yi99"</TD>
+</TR>
+<TR>
+  <TD>DR_FLDPIC</TD>
+  <TD>"FldPic"</TD>
+</TR>
+<TR>
+  <TD>SOLVER_SYS_VARS</TD>
+  <TD>"Exp", "Eqn"</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">UNIT_VAR</TD>
+  <TD>name with a leading underscore</TD>
+</TR>
+<TR>
+  <TD>C_COL</TD>
+  <TD>"c1".."c99"</TD>
+</TR>
+<TR>
+  <TD>R_REGEQ</TD>
+  <TD>"RegEq"</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">R_SYSVAR</TD>
+  <TD>another system variable (see <A HREF="estack.html#EXT_SYSTEM_TAG">EXT_SYSTEM_TAG</A>)</TD>
+</TR>
+</TABLE>
+<BR>
+This function calls <A HREF="#TokToStrN">TokToStrN</A> and <A HREF="#CheckSysFunc">CheckSysFunc</A>.</P>
+
+<P>See also: <A HREF="#CheckSysFunc">CheckSysFunc</A>, <A HREF="#SymSysVar">SymSysVar</A></P>
+<HR>
+<H3><A NAME="CheckSysFunc"><U>CheckSysFunc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> CheckSysFunc (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *VarName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> *Index);</TD></TR></TABLE></P>
+<P><B>Checks for graph functions and other special variable names.</B></P>
+
+<P>CheckSysFunc checks whether <I>VarName</I> (an ordinary C string) is a
+graph function or another special variable name. It returns zero if this is
+not the case, otherwise it returns the type of the variable.
+<BR><BR>
+Precisely, this function returns values from either
+<A HREF="gdraw.html#GraphModes">GraphModes</A> or
+<A HREF="#ExtendedSysTypes">ExtendedSysTypes</A>, in addition to zero:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>GR_FUNC</TD>
+  <TD>"y1".."y99"</TD>
+</TR>
+<TR>
+  <TD>GR_PAR</TD>
+  <TD>"xt1".."xt99", "yt1".."yt99"</TD>
+</TR>
+<TR>
+  <TD>GR_POL</TD>
+  <TD>"r1".."r99"</TD>
+</TR>
+<TR>
+  <TD>GR_SEQ</TD>
+  <TD>"u1".."u99"</TD>
+</TR>
+<TR>
+  <TD>GR_3D</TD>
+  <TD>"z1".."z99"</TD>
+</TR>
+<TR>
+  <TD>GR_DE</TD>
+  <TD>"y'1".."y'99"</TD>
+</TR>
+<TR>
+  <TD>SEQ_INITC</TD>
+  <TD>"ui1".."ui99"</TD>
+</TR>
+<TR>
+  <TD>DE_INITC</TD>
+  <TD>"yi1".."yi99"</TD>
+</TR>
+<TR>
+  <TD>DR_FLDPIC</TD>
+  <TD>"FldPic"</TD>
+</TR>
+<TR>
+  <TD>SOLVER_SYS_VARS</TD>
+  <TD>"Exp", "Eqn"</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">UNIT_VAR</TD>
+  <TD>name with a leading underscore</TD>
+</TR>
+<TR>
+  <TD>C_COL</TD>
+  <TD>"c1".."c99"</TD>
+</TR>
+<TR>
+  <TD>R_REGEQ</TD>
+  <TD>"RegEq"</TD>
+</TR>
+</TABLE>
+<BR>
+Note that <A HREF="#ExtendedSysTypes">ExtendedSysTypes</A> also
+contains <A HREF="#ExtendedSysTypes">R_SYSVAR</A>, which may be
+returned only by <A HREF="#CheckReservedName">CheckReservedName</A>.
+In fact, this function cannot check for system variable names like "xmin".
+<BR><BR>
+Also, if <I>VarName</I> is a valid graph function name or column name
+("y1", "c1", etc.), CheckSysFunc stores the function/column index at the word
+pointed to by <I>Index</I>.</P>
+
+<P>See also: <A HREF="#SymSysVar">SymSysVar</A>, <A HREF="#CheckReservedName">CheckReservedName</A></P>
+<HR>
+<H3><A NAME="ClearUserDef"><U>ClearUserDef</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ClearUserDef (<A HREF="alloc.html#HANDLE">HANDLE</A> hFuncVar);</TD></TR></TABLE></P>
+<P><B>Clears TI-Basic program/function status flags.</B></P>
+
+<P>This function assumes that <I>hFuncVar</I> is the handle of a TI-Basic program or
+function variable (otherwise the behavior is unpredicted). It clears various
+status flags which are embedded in the program or function variable itself,
+which include the link lock flag (see
+<A HREF="#CheckLinkLockFlag">CheckLinkLockFlag</A>), the entry counter
+(which counts the depth of recursive calls of a function or program), and some
+flags used in the "Graph" application.</P>
+
+<HR>
+<H3><A NAME="DataTypeNames"><U>DataTypeNames</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *DataTypeNames (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to a static string representing the type of the tag passed.</B></P>
+
+<P>On AMS 2.xx, the string is localized for the current language; on AMS 1.xx, the string is in English, because no language localizations are available.<BR>
+Valid values for <I>tag</I> are a subset of <A HREF="estack.html#Tags">Tags</A> and
+<A HREF="estack.html#InstructionTags">InstructionTags</A>:</P>
+<PRE>EXT_SYSTEM_TAG (0x1C)
+STR_TAG        (0x2D)
+EQ_TAG         (0x87)
+DATA_TAG       (0xDD)
+GDB_TAG        (0xDE)
+PIC_TAG        (0xDF)
+TEXT_TAG       (0xE0)
+FIG_TAG        (0xE1)
+MAC_TAG        (0xE2)
+ASM_TAG        (0xF3)
+OTH_TAG        (0xF8)
+FUNC_ITAG      (0x17)
+PRGM_ITAG      (0x19)
+</PRE>
+<P>If the tag is not allowed, the address of the string containing "?" is returned.</P>
+
+<HR>
+<H3><A NAME="DerefSym"><U>DerefSym</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SYM_ENTRY">SYM_ENTRY</A> *DerefSym (<A HREF="#HSym">HSym</A> Sym);</TD></TR></TABLE></P>
+<P><B>Dereferences a symbol.</B></P>
+
+<P>DerefSym dereferences the symbol by converting <I>Sym</I> (which is return value from many
+TIOS VAT functions) into the actual VAT entry. DerefSym returns a pointer to the entry,
+which is a pointer to the structure
+of type <A HREF="#SYM_ENTRY">SYM_ENTRY</A>, which represents a VAT entry. Returns
+NULL in a case of error. Beware that VAT entries may moved during the heap compression,
+so <A HREF="#SYM_ENTRY">SYM_ENTRY</A> pointers may become invalid after the heap compession.
+<BR><BR>
+DerefSym may be simulated using <A HREF="alloc.html#HeapDeref">HeapDeref</A>.
+For example, the statement</P>
+<PRE>SymPtr = DerefSym (hsym);
+</PRE>
+<P>is equal to the statement</P>
+<PRE>SymPtr = (SYM_ENTRY*)((char*)HeapDeref(hsym.folder) + hsym.offset);
+</PRE>
+<P>I don't know what the best way to find the handle of the main folder is, but one method
+which is certainly legal is the following:</P>
+<PRE>MainHandle = DerefSym(SymFindHome(SYMSTR("main")))-&gt;handle;
+</PRE>
+<P><B>Note:</B> <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structures are usually
+not locked, which means that pointers to them will become invalid if a heap
+compression occurs. Basically, this means that you can only operate on them
+for a short time in which you know that no heap compression can occur.</P>
+
+<HR>
+<H3><A NAME="EM_moveSymFromExtMem"><U>EM_moveSymFromExtMem</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EM_moveSymFromExtMem (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <A HREF="#HSym">HSym</A> Sym);</TD></TR></TABLE></P>
+<P><B>Moves a symbol from the archive memory to the RAM.</B></P>
+
+<P>EM_moveSymFromExtMem unarchives an archived symbol. The symbol may be described either by
+symbol name <I>SymName</I> (in this case, parameter <I>Sym</I> should be
+set to <A HREF="#HS_NULL">HS_NULL</A>) or by <A HREF="#HSym">HSym</A> structure
+<I>Sym</I> (in this case, <I>SymName</I> must be <A HREF="alloc.html#NULL">NULL</A>).
+See <A HREF="#SYMSTR">SYMSTR</A> for rules about <I>SymName</I>.
+EM_moveSymFromExtMem returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was
+successful, else returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="EM_moveSymToExtMem"><U>EM_moveSymToExtMem</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> EM_moveSymToExtMem (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <A HREF="#HSym">HSym</A> Sym);</TD></TR></TABLE></P>
+<P><B>Moves a symbol from the RAM to the archive memory.</B></P>
+
+<P>EM_moveSymToExtMem archives a symbol. The symbol may be described either by
+symbol name <I>SymName</I> (in this case, parameter <I>Sym</I> should be
+set to <A HREF="#HS_NULL">HS_NULL</A>) or by <A HREF="#HSym">HSym</A> structure
+<I>Sym</I> (in this case, <I>SymName</I> must be <A HREF="alloc.html#NULL">NULL</A>).
+See <A HREF="#SYMSTR">SYMSTR</A> for rules about <I>SymName</I>.
+EM_moveSymToExtMem returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was
+successful, else returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="EM_twinSymFromExtMem"><U>EM_twinSymFromExtMem</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> EM_twinSymFromExtMem (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <A HREF="#HSym">HSym</A> Sym);</TD></TR></TABLE></P>
+<P><B>Creates a twin symbol, then copies a symbol from the archive memory to it.</B></P>
+
+<P>EM_twinSymFromExtMem first calls <A HREF="#SymAddTwin">SymAddTwin</A> to create a twin
+symbol, then copies the archived symbol to it. The symbol may be described either by
+symbol name <I>SymName</I> (in this case, parameter <I>Sym</I> should be
+set to <A HREF="#HS_NULL">HS_NULL</A>) or by <A HREF="#HSym">Hsym</A> structure
+<I>Sym</I> (in this case, <I>SymName</I> must be <A HREF="alloc.html#NULL">NULL</A>).
+See <A HREF="#SYMSTR">SYMSTR</A> for rules about <I>SymName</I>.
+TIOS uses EM_twinSymFromExtMem when it need to execute archived program.
+EM_twinSymFromExtMem returns a <A HREF="#HSym">HSym</A> structure which represents
+a newly created symbol (or <A HREF="#HS_NULL">HS_NULL</A> in a case of error).
+EM_twinSymFromExtMem returns <I>Sym</I> itself if the symbol is not archived.</P>
+
+<HR>
+<H3><A NAME="EX_stoBCD"><U>EX_stoBCD</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EX_stoBCD (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *VarName, <B><A HREF="keywords.html#float">float</A></B> *Src);</TD></TR></TABLE></P>
+<P><B>Stores a floating point value into a variable.</B></P>
+
+<P>EX_stoBCD stores the floating point value pointed to by <I>src</I> into the
+TI-Basic variable whose name is pointed to by <I>VarName</I> (an ordinary C
+string).</P>
+
+<HR>
+<H3><A NAME="FindProgramVar"><U>FindProgramVar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SYM_ENTRY">SYM_ENTRY</A> *FindProgramVar (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Finds the running program's variable.</B></P>
+
+<P>FindProgramVar returns a pointer to the <A HREF="#SYM_ENTRY">SYM_ENTRY</A>
+structure of the running program, or <A HREF="alloc.html#NULL">NULL</A>
+in case it is not found (e.g. if the program was compressed).
+<BR><BR>
+<B>Note:</B> Do not call anything which may cause a heap compression between
+when this function is called and when the pointer to it is used. Otherwise,
+the pointer may become invalid, causing a crash or other random, unexpected
+behavior. You can also use <A HREF="#FolderOp">FolderOp</A> to avoid
+this problem.</P>
+
+<HR>
+<H3><A NAME="FindSymInFolder"><U>FindSymInFolder</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> FindSymInFolder (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *FolderName);</TD></TR></TABLE></P>
+<P><B>Finds a symbol in a given folder.</B></P>
+
+<P>FindSymInFolder acts like <A HREF="#SymFind">SymFind</A>, but searches for a symbol
+in the folder given by <I>FolderName</I>. See <A HREF="#SYMSTR">SYMSTR</A>
+for more info and rules about <I>SymName</I> and <I>FolderName</I>. As far
+as I know, the statement</P>
+<PRE>hsym = FindSymInFolder (SYMSTR ("tetris"), SYMSTR ("games"));
+</PRE>
+<P>acts exactly the same as the statement</P>
+<PRE>hsym = SymFind (SYMSTR ("games\\tetris"));
+</PRE>
+
+<HR>
+<H3><A NAME="FolderAdd"><U>FolderAdd</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> FolderAdd (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Creates a folder.</B></P>
+
+<P>FolderAdd creates a new folder with name <I>SymName</I>. See
+<A HREF="#SYMSTR">SYMSTR</A> for rules about <I>SymName</I>. FolderAdd returns
+a handle to the created folder (more precise, to the VAT variable list which belongs to
+the created folder). Returns <A HREF="alloc.html#H_NULL">H_NULL</A> in a case of error (for example, the folder
+already exists, or there is not enough memory). Note that reserved names are not valid folder names
+and that this routine does not check for reserved names. It is up to the caller to validate
+the folder name before calling this routine. This routine may cause heap compression.
+<BR><BR>
+This routine also can be used to create temporary folders
+(see also <A HREF="#FolderAddTemp">FolderAddTemp</A>) whose names begin with a number and are not
+displayed in VAR-LINK dialog. Temporary folder numbers '0001'...'8192' are reserved for
+keeping TI-BASIC local symbols, folder number '9998' is used in Data/Matrix Editor,
+and folder number '9999' is reserved for various temporary storage.</P>
+
+<P>See also: <A HREF="#FolderAddTemp">FolderAddTemp</A>, <A HREF="#SymAdd">SymAdd</A></P>
+<HR>
+<H3><A NAME="FolderAddTemp"><U>FolderAddTemp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="estack.html#SYM_STR">SYM_STR</A> FolderAddTemp (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Creates a temporary folder.</B></P>
+
+<P>FolderAddTemp creates a temporary folder whose name will consist of four digits
+(see <A HREF="#TempFolderName">TempFolderName</A>). The first call of
+FolderAddTemp will create a folder named "0001", the next call will create a
+folder named "0002", etc.
+FolderAddTemp returns the name of the created folder, with the same
+convention as used in function
+<A HREF="#TempFolderName">TempFolderName</A>. The created folder will
+be marked as the "current temporary folder" (see
+<A HREF="#FolderCurTemp">FolderCurTemp</A>). FolderAddTemp throws a
+"Memory" error if there is not enough space for a new folder.</P>
+
+<HR>
+<H3><A NAME="FolderClear"><U>FolderClear</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FolderClear (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Deletes all files in the folder.</B></P>
+
+<P>FolderClear deletes all files in the folder <I>SymName</I>, but does not remove the folder
+itself. Returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc.html#Bool">FALSE</A> (e.g. if the folder is not found). See <A HREF="#SYMSTR">SYMSTR</A> for rules
+about <I>SymName</I>. Beware that this routine will delete all symbols in
+the folder even if they are locked, in use, or archived!
+<BR><BR>
+<B>Note:</B> This function calls original TIOS entry called "FolderDel", but passes an
+extra Boolean parameter set to <A HREF="alloc.html#Bool">TRUE</A>. See also note given with
+<A HREF="#FolderDel">FolderDel</A> function.</P>
+
+<P>See also: <A HREF="#FolderDel">FolderDel</A></P>
+<HR>
+<H3><A NAME="FolderCount"><U>FolderCount</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FolderCount (<B><A HREF="keywords.html#const">const</A></B> <A HREF="#SYM_ENTRY">SYM_ENTRY</A> *SymPtr);</TD></TR></TABLE></P>
+<P><B>Determines a number of symbols in a folder.</B></P>
+
+<P>FolderCount returns the number of symbols in the folder whose VAT entry is
+<I>SymPtr</I>. For example, to determine the number of symbols in the "main"
+folder, do the following:</P>
+<PRE>number = FolderCount (DerefSym (SymFindHome (SYMSTR ("main"))));
+</PRE>
+<P>See <A HREF="#SYMSTR">SYMSTR</A>, <A HREF="#SymFindHome">SymFindHome</A>, and
+<A HREF="#DerefSym">DerefSym</A> for more info.</P>
+
+<HR>
+<H3><A NAME="FolderCur"><U>FolderCur</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FolderCur (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <B><A HREF="keywords.html#short">short</A></B> nonSys);</TD></TR></TABLE></P>
+<P><B>Sets the currently active folder.</B></P>
+
+<P>FolderCur sets the currently active folder to <I>SymName</I> (see
+<A HREF="#SYMSTR">SYMSTR</A> for rules about <I>SymName</I>). It
+returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was
+successful, else returns <A HREF="alloc.html#Bool">FALSE</A> (e.g. if
+the folder name is invalid).
+<BR><BR>
+<I>nonSys</I> is a boolean flag which normally needs to be
+<A HREF="alloc.html#Bool">TRUE</A>. If it is set to
+<A HREF="alloc.html#Bool">TRUE</A>, FolderCur calls
+<A HREF="#SymFindNext">SymFindNext</A> repeatedly until the
+first non-system variable in this folder is reached. This is necessary, else
+the current graph may become invalid. In particular, if the graph references
+a variable defined in a folder which previously was the current folder, it is
+not redrawn if <I>nonSys</I> is set to
+<A HREF="alloc.html#Bool">FALSE</A>.
+<BR><BR>
+<B>Note:</B> The folder name in the status line will not be changed
+automatically using this command. You must change it manually using the
+function <A HREF="statline.html#ST_folder">ST_folder</A> from
+<A HREF="statline.html">statline.h</A>.
+<BR><BR>
+This routine may cause heap compression.</P>
+
+<P>See also: <A HREF="#FolderGetCur">FolderGetCur</A>, <A HREF="#FolderCurTemp">FolderCurTemp</A></P>
+<HR>
+<H3><A NAME="FolderCurTemp"><U>FolderCurTemp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FolderCurTemp (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Sets the current temporary folder for storing local symbols.</B></P>
+
+<P>FolderCurTemp sets the current temporary folder for storing local symbols to <I>SymName</I>.
+<I>SymName</I> must be a "numeric" symbol name as functions like
+<A HREF="#TempFolderName">TempFolderName</A> or <A HREF="#FolderAddTemp">FolderAddTemp</A>
+returns. FolderCurTemp returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<P>See also: <A HREF="#FolderCur">FolderCur</A></P>
+<HR>
+<H3><A NAME="FolderDel"><U>FolderDel</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FolderDel (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Deletes a folder, including all files in it.</B></P>
+
+<P>FolderDel deletes the folder <I>SymName</I>
+including all files in it, and returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc.html#Bool">FALSE</A> (e.g. if the folder is not found). See <A HREF="#SYMSTR">SYMSTR</A> for rules
+about <I>SymName</I>. If the folder <I>SymName</I> is the current folder, the new current
+folder after deleting will become the "main" folder.
+If the folder <I>SymName</I> is "main", then all symbols from it will be deleted,
+but the folder itself will remain intact. Beware that this routine will delete all symbols in
+the folder even if they are locked, in use, or archived!
+<BR><BR>
+<B>Note:</B> This function was buggy in TIGCCLIB releases prior to 2.3. I didn't know that the original
+TIOS entry called "FolderDel" requires in fact two parameters: another one is a Boolean flag. As
+this parameter was not passed before, the behaviour of this routine was random (see also
+<A HREF="#FolderClear">FolderClear</A>). Now, to keep the compatibility with already written
+programs, I modified FolderDel to always pass <A HREF="alloc.html#Bool">FALSE</A> as an extra parameter
+(in this case, FolderDel behaves as described above; when it is <A HREF="alloc.html#Bool">TRUE</A>,
+FolderDel behaves as <A HREF="#FolderClear">FolderClear</A>).</P>
+
+<P>See also: <A HREF="#FolderClear">FolderClear</A></P>
+<HR>
+<H3><A NAME="FolderDelAllTemp"><U>FolderDelAllTemp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> FolderDelAllTemp (<B><A HREF="keywords.html#short">short</A></B> StartTempNum);</TD></TR></TABLE></P>
+<P><B>Deletes a block of temporary folders.</B></P>
+
+<P>FolderDelAllTemp deletes all temporary folders whose names are series of consequent
+numbers starting from <I>StartTempNum</I> up to the first unused number, like in
+following algorithm:</P>
+<PRE>current=StartTempNum;<BR>
+while (FolderFind ((name = TempFolderName (current++))) == 3)
+FolderDel (name);
+</PRE>
+<P>The intention of this routine was very probably to delete all temporary folders when called
+with <I>StartTempNum</I> equals to 1. But, there is a problem. This routine does not reset
+the system variable which tells which is last used temporary folder number (I think that this
+is a bug in TIOS). So, a next call of <A HREF="#FolderAddTemp">FolderAddTemp</A> will not start again
+from folder named "0001". This may cause various problems later. That's why I strongly recommend
+avoiding this routine, and using repeated call to <A HREF="#FolderDelTemp">FolderDelTemp</A>
+instead.</P>
+
+<HR>
+<H3><A NAME="FolderDelTemp"><U>FolderDelTemp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> FolderDelTemp (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Deletes a temporary folder.</B></P>
+
+<P>FolderDelTemp deletes the last created temporary folder and selects the previous temporary
+folder as current temporary folder (see <A HREF="#FolderCurTemp">FolderCurTemp</A>). Nothing
+bad will happen if the temporary folder does not exist, or in case of any eventual error.</P>
+
+<HR>
+<H3><A NAME="FolderFind"><U>FolderFind</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FolderFind (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Checks whether a folder exists.</B></P>
+
+<P>FolderFind searches for a folder <I>SymName</I> through the folder table in the VAT,
+and returns the following result:</P>
+<UL>
+<LI><P>MAIN_FOLDER, if <I>SymName</I> is the "main" folder;</P></LI>
+<LI><P>FOLDER_TABLE, if a folder with name <I>SymName</I> exists;</P></LI>
+<LI><P>NOT_FOUND, if a folder with name <I>SymName</I> does not exists;</P></LI>
+<LI><P>BAD_FOLDER, if a symbol with name <I>SymName</I> is really present in the folder table,
+but does not represents a folder (i.e. folder bit is not set); this return value
+probably represents an invalid entry.</P></LI>
+</UL>
+<P>These constants are defined in enum <A HREF="#FolderStats">FolderStats</A>.
+See <A HREF="#SYM_ENTRY">SYM_ENTRY</A> for more info about structure of VAT entry, and
+<A HREF="#SYMSTR">SYMSTR</A> for rules about <I>SymName</I>.</P>
+
+<HR>
+<H3><A NAME="FolderGetCur"><U>FolderGetCur</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> FolderGetCur (<B><A HREF="keywords.html#int">char</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Determines the current active folder.</B></P>
+
+<P>FolderGetCur fills <I>buffer</I> with a name of the current active folder.
+The buffer must be at least 9 bytes long, and it will be filled with a standard C
+zero-terminated string.</P>
+
+<P>See also: <A HREF="#FolderCur">FolderCur</A></P>
+<HR>
+<H3><A NAME="FolderOp"><U>FolderOp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FolderOp (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Locks or unlocks a folder table.</B></P>
+
+<P>FolderOp locks or unlocks a folder table which name is determined by <I>SymName</I>.
+Returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful, else returns <A HREF="alloc.html#Bool">FALSE</A>.
+Parameter <I>Flags</I> may have following values (these constants are defined in
+enum <A HREF="#FolderOpFlags">FolderOpFlags</A>):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD VALIGN="TOP">FOP_UNLOCK</TD><TD>Unlocks a folder table</TD></TR>
+<TR><TD VALIGN="TOP">FOP_LOCK</TD><TD>Locks a folder table</TD></TR>
+<TR><TD VALIGN="TOP">FOP_ALL_FOLDERS</TD><TD>Locks/unlocks all folder tables (<I>SymName</I> is ignored);
+this value should be ORed with one of FOP_UNLOCK or FOP_LOCK</TD></TR>
+</TABLE>
+<BR>
+By locking the folder table, you may be sure that a dereferenced pointer to the table
+will remain valid even after a lot of heap memory allocations (i.e. a garbage collection
+will not move the table through memory).
+<BR><BR>
+<B>Note:</B> To lock the "home" folder (this is a pseudo-folder which contains all other folders in
+itself, i.e. this is the table of folders), you need to know that its name consists only of the
+character with code 0x7F (diamond). So, you can use</P>
+<PRE>FolderOp (SYMSTR ("\x7F"), FOP_LOCK);
+</PRE>
+<P>to do this.</P>
+
+<HR>
+<H3><A NAME="FolderRename"><U>FolderRename</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FolderRename (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *SrcName, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *DestName);</TD></TR></TABLE></P>
+<P><B>Renames a folder.</B></P>
+
+<P>FolderRename renames the folder <I>SrcName</I> to the name <I>DestName</I>.
+Returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful
+(<I>SrcName</I> must exist and must be a folder, and <I>DestName</I>
+must not exist),
+else returns <A HREF="alloc.html#Bool">FALSE</A>. See <A HREF="#SYMSTR">SYMSTR</A> for rules
+about folder names. Note that this routine does not check for reserved names,
+and may throw an error if renaming to or from a reserved name (e.g. "main"),
+or if any variable in the given folder is in-use.</P>
+
+<HR>
+<H3><A NAME="GetDataType"><U>GetDataType</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> GetDataType (<A HREF="estack.html#CESI">CESI</A> tagptr);</TD></TR></TABLE></P>
+<P><B>Returns the data type for a given tag pointed to by <I>tagptr</I>.</B></P>
+
+<P>Valid values for the tag pointed to by <I>tagptr</I> are defined in the enum <A HREF="#SystemDataTypes">SystemDataTypes</A>.</P>
+
+<P>See also: <A HREF="#SmapTypeStrings">SmapTypeStrings</A>, <A HREF="events.html#handleVarLinkKey">handleVarLinkKey</A></P>
+<HR>
+<H3><A NAME="GetFuncPrgmBodyPtr"><U>GetFuncPrgmBodyPtr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="estack.html#ESI">ESI</A> GetFuncPrgmBodyPtr (<A HREF="estack.html#ESI">ESI</A> ptr);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to a TI-Basic function/program body.</B></P>
+
+<P>GetFuncPrgmBodyPtr returns the pointer to the function or program body of
+the TI-Basic function or program pointed to by <I>ptr</I>. <I>ptr</I> must
+point to the <A HREF="estack.html#FUNC_TAG">FUNC_TAG</A> quantum, i.e. to
+the last byte of the variable. The parameters and flags are skipped.
+See <A HREF="estack.html#Tags">Tags</A> for more
+info on tags.</P>
+
+<HR>
+<H3><A NAME="GetTagStr"><U>GetTagStr</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#int">char</A></B> *GetTagStr (<A HREF="estack.html#ESI">ESI</A> tag, <B><A HREF="keywords.html#int">char</A></B> * buf);</TD></TR></TABLE></P>
+<P><B>Returns the address of the string representing the special tag pointed to by <I>tag</I>.</B></P>
+
+<P><I>tag</I> needs to point to one of EXT_SYSTEM_TAG (0x1C), EXT_TAG (0xE3) or EXT_INSTR_TAG (0xE4),
+otherwise garbage is returned.<BR>
+Also, if you pass GetTagStr a tag unrecognized by the AMS version, it returns a pointer to 'ERROR'.
+<BR>
+<BR>
+<I><B>Example</B></I>: The TI-BASIC command ShowStat prints the string name for each statistical
+variable it finds using GetTagStr to print the name of the variable as shown in this example.</P>
+<PRE>
+unsigned char tag[2];
+char buf[24];
+char buf2[11];
+tag[0] = X_BAR_TAG; // in fact, any tag defined in <A HREF="estack.html#SysvarTags">SysvarTags</A>.
+tag[1] = EXT_SYSTEM_TAG; // Defined in <A HREF="estack.html#Tags">Tags</A>
+sprintf(buf,"%-7s",GetTagStr(tag+1,buf2));
+</PRE>
+<P>You can use <A HREF="estack.html#HToESI">HToESI</A> to get a pointer to the tag stored in <I>tag</I>.</P>
+
+<HR>
+<H3><A NAME="HSymDel"><U>HSymDel</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> HSymDel (<A HREF="#HSym">HSym</A> Sym);</TD></TR></TABLE></P>
+<P><B>Deletes a symbol pointed to by HSym.</B></P>
+
+<P>HSymDel acts exactly like <A HREF="#SymDel">SymDel</A>, except it takes
+a structure of type <A HREF="#HSym">HSym</A> as an input parameter instead of the symbol name
+(see <A HREF="#SYMSTR">SYMSTR</A>).
+<BR><BR>
+<B>Note:</B> This routine assumes that <I>Sym</I> is valid; if it is not, it may throw
+an error (for example, if <I>Sym</I> represents a reserved symbol like "main", or if the
+referenced symbol is in-use). If HSymDel is called to delete a folder than that folder <I>must</I>
+be empty! Also do not use HSymDel to delete twin or archived variables.
+This routine modifies the VAT table, so it invalidates any other existing <A HREF="#HSym">HSym</A>s.
+The caller must be sure that the VAT table has not been changed since <I>Sym</I>
+was obtained.</P>
+
+<P>See also: <A HREF="#SymFind">SymFind</A></P>
+<HR>
+<H3><A NAME="HSYMtoName"><U>HSYMtoName</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> HSYMtoName (<A HREF="#HSym">HSym</A> Sym, <B><A HREF="keywords.html#int">char</A></B> *buffer);</TD></TR></TABLE></P>
+<P><B>Determines a full path of a symbol.</B></P>
+
+<P>HSYMtoName fills <I>buffer</I> with a full-path name (i.e. "folder\name")
+of the symbol given by <A HREF="#HSym">HSym</A> structure <I>Sym</I>. See
+<A HREF="#SYMSTR">SYMSTR</A> for more info about HSym names. The buffer must be
+at least 18 bytes long, and it will be filled with a standard C zero-terminated string.
+HSYMtoName returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="is_pathname"><U>is_pathname</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> is_pathname (<A HREF="estack.html#CESI">CESI</A> name);</TD></TR></TABLE></P>
+<P><B>Checks if argument points to a pathname.</B></P>
+
+<P><I>name</I> must be a valid <A HREF="estack.html#SYM_STR">SYM_STR</A> constructed with
+<A HREF="#SYMSTR">SYMSTR</A> or equivalent.<BR>
+This function first checks if <I>name</I> is pointing to the last byte of a SYM_STR (it must be
+0x00), and searches backwards for character 0x5C ('\'). If is_pathname finds one such character,
+it immediately retuns TRUE. If <I>name</I> doesn't point to a 0x00, or there is no '\' in the
+string, it returns FALSE.<BR>
+Note: this function is flawed, as it doesn't check if there is <I>only</I> one '\'. Indeed, a
+string such as SYMSTR("main\foo\bar"), while it is a pathname (it contains '\'), is NOT a valid
+pathname...</P>
+
+<HR>
+<H3><A NAME="IsMainFolderStr"><U>IsMainFolderStr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> IsMainFolderStr (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *Name);</TD></TR></TABLE></P>
+<P><B>Checks whether a name is the name of the main folder.</B></P>
+
+<P>IsMainFolderStr returns <A HREF="alloc.html#Bool">TRUE</A> if <I>Name</I> is the string "main",
+else returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="MakeHSym"><U>MakeHSym</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> MakeHSym (<A HREF="alloc.html#HANDLE">HANDLE</A> FldHandle, <B><A HREF="keywords.html#const">const</A></B> <A HREF="#SYM_ENTRY">SYM_ENTRY</A> *SymPtr);</TD></TR></TABLE></P>
+<P><B>Makes a HSym structure.</B></P>
+
+<P>MakeHSym is an internal function, used very often in other TIOS routines. It converts the
+VAT symbol entry pointed to by <I>SymPtr</I> which belongs to the folder associated with
+handle <I>FldHandle</I> to the <A HREF="#HSym">HSym</A> structure. As HSym-s are basically a
+combination of the folder’s handle and the offset of a symbol into that
+folder, they are valid until a symbol is added or removed from the folder
+they belong to. Dereferencing them with <A HREF="#DerefSym">DerefSym</A> produces a direct
+pointer to the symbol entry, but such pointer are not valid after a heap compression is done.
+The main usage of MakeHSym is when you need to preserve a pointer to the symbol entry after
+a heap compression, like in following example:</P>
+<PRE>hsym = MakeHsym (FldHandle, SymPtr);
+// <I>Something that may cause heap compression...</I>
+SymPtr = DerefSym (hsym);
+</PRE>
+<P>In this example, an eventual heap compression would cause the pointer to be invalid
+since it is a direct pointer into memory. So the <I>SymPtr</I> is converted to a
+<A HREF="#HSym">HSym</A> structure with MakeHsym (along with the handle of the folder that the
+symbol belongs to). After the code that may cause heap compression is
+executed, the HSym is converted back into a <A HREF="#SYM_ENTRY">SYM_ENTRY</A> pointer with
+<A HREF="#DerefSym">DerefSym</A>.</P>
+
+<P>Deprecated alias: MakeHsym</P>
+<HR>
+<H3><A NAME="partial_len"><U>partial_len</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> partial_len (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *VarName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *MaxList);</TD></TR></TABLE></P>
+<P><B>Queries information about the Data Editor.</B></P>
+
+<P>partial_len is used to query information about the temporary folder of the
+Data Editor ("9998", see <A HREF="#FolderAdd">FolderAdd</A>), which
+contains three variables for each column:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>"tc1".."tc99"</TD>
+  <TD>A STR variable containing the title for the column.</TD>
+</TR>
+<TR>
+  <TD>"hc1".."hc99"</TD>
+  <TD>An EXPR variable containing the formula for the column.</TD>
+</TR>
+<TR>
+  <TD>"c1".."c99"</TD>
+  <TD>A LIST variable containing the (fixed or calculated) cell values.</TD>
+</TR>
+</TABLE>
+<BR>
+<I>VarName</I> must be "tc", "hc", or "c", and partial_len returns the size
+of all files matching <I>VarName</I>. It stores the last column which is used
+into the byte pointed to by <I>MaxList</I>.</P>
+
+<HR>
+<H3><A NAME="QSysProtected"><U>QSysProtected</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> QSysProtected (<A HREF="estack.html#ESQ">ESQ</A> Tag);</TD></TR></TABLE></P>
+<P><B>Checks if a given tag represents a system-protected variable type.</B></P>
+
+<P>QSysProtected returns <A HREF="alloc.html#Bool">TRUE</A> if the given
+tag (see <A HREF="estack.html#Tags">Tags</A> for more info) is the tag
+of a system protected data type, i.e. a
+program/function (<A HREF="estack.html#FUNC_TAG">FUNC_TAG</A>),
+assembly program (<A HREF="estack.html#ASM_TAG">ASM_TAG</A>),
+text file (<A HREF="estack.html#TEXT_TAG">TEXT_TAG</A>),
+graph database (<A HREF="estack.html#GDB_TAG">GDB_TAG</A>),
+picture (<A HREF="estack.html#PIC_TAG">PIC_TAG</A>),
+data variable (<A HREF="estack.html#DATA_TAG">DATA_TAG</A>), or
+custom file (<A HREF="estack.html#OTH_TAG">OTH_TAG</A>).
+Otherwise, QSysProtected returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<P>See also: <A HREF="#VarStore">VarStore</A></P>
+<HR>
+<H3><A NAME="ResetSymFlags"><U>ResetSymFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> ResetSymFlags (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Clears all VAT symbols flags.</B></P>
+
+<P>Clears all VAT symbol flags (i.e. flags defined in the enum
+<A HREF="#SymFlags">SymFlags</A>) which
+are set in the <I>Flags</I> parameter, for all entries in the VAT table
+(i.e. in all folders).</P>
+
+<HR>
+<H3><A NAME="SetOK"><U>SetOK</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SetOK (<B><A HREF="keywords.html#short">short</A></B> value);</TD></TR></TABLE></P>
+<P><B>Changes the system variable <CODE>'OK'</CODE>.</B></P>
+
+<P>If <I>value</I> is <A HREF="alloc.html#Bool">TRUE</A>, <CODE>'OK'</CODE> is set to 1;
+if it is <A HREF="alloc.html#Bool">FALSE</A>, <CODE>'OK'</CODE> is set to 0.</P>
+
+<HR>
+<H3><A NAME="SmapTypeStrings"><U>SmapTypeStrings</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *SmapTypeStrings (<B><A HREF="keywords.html#short">short</A></B> type);</TD></TR></TABLE></P>
+<P><B>Returns the 3-4 character description of a variable type.</B></P>
+
+<P>SmapTypeStrings returns a string of three characters for the variable type
+represented by <I>type</I>. Valid values for <I>type</I> are defined in the
+enum <A HREF="#SystemDataTypes">SystemDataTypes</A>; you can use
+<A HREF="#GetDataType">GetDataType</A> to convert a tag to such a
+type value.<BR>
+<CODE>NULL</CODE> is returned if <I>type</I> is incorrect.
+<BR><BR>
+The value returned is the string displayed in the VAR-LINK dialog. This
+string is localized for the current language and can be up to four characters
+long. Note that files of type <A HREF="#SystemDataTypes">SDT_OTH</A> will
+return a pointer to the string "OTH", and not to the true extension of the
+file.</P>
+
+<P>See also: <A HREF="#GetDataType">GetDataType</A>, <A HREF="events.html#handleVarLinkKey">handleVarLinkKey</A></P>
+<HR>
+<H3><A NAME="StrToTokN"><U>StrToTokN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="estack.html#ESI">ESI</A> StrToTokN (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *src, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *dest);</TD></TR></TABLE></P>
+<P><B>Converts a C string to a token.</B></P>
+
+<P>StrToTokN converts a symbol name pointed to by <I>src</I>, which is an ordinary ANSI C string,
+into a tokenized symbol name. See <A HREF="#SYMSTR">SYMSTR</A> for more info about symbol names.
+<I>dest</I> must point to a buffer of 20 bytes (which is the maximum length of
+the expanded file name). The tokenized name is stored there starting at the
+end of the buffer. StrToTokN returns a pointer to the terminating zero byte of the
+converted name, exactly as expected in most routines from vat.h.
+<BR><BR>
+<B>Note:</B> This routine merely converts a name into tokenized format; it does not
+handle reserved names or check for the validity of the name passed to it.
+For this reason, <A HREF="estack.html#TokenizeSymName">TokenizeSymName</A> should
+be used in general to tokenize symbol names.</P>
+
+<P>See also: <A HREF="#TokToStrN">TokToStrN</A>, <A HREF="#SYMSTR">SYMSTR</A></P>
+<HR>
+<H3><A NAME="SymAdd"><U>SymAdd</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> SymAdd (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Adds a symbol.</B></P>
+
+<P>SymAdd creates a new entry in the variable allocation table (VAT) for a symbol called
+<I>SymName</I>, and returns the same type of result as the <A HREF="#SymFind">SymFind</A>
+function. If the symbol <I>SymName</I> already exists, SymAdd deletes the old
+symbol before creating a new one (except if <I>SymName</I> is a folder name;
+this case is considered an error). In case of an error, SymAdd returns <A HREF="#HS_NULL">HS_NULL</A>.
+This function may throw an error if the symbol already exists and it is locked.
+See <A HREF="#SymFind">SymFind</A> and <A HREF="#DerefSym">DerefSym</A> for more info.
+<BR><BR>
+<I>SymName</I> may also contain a folder name together with the symbol name
+(separated by "\"). In this case, the symbol will be added in the given folder.
+If the given folder does not exist, a dialog will appear which asks the user whether
+a new folder will be created. If the answer is "NO", a "Folder" error will be thrown
+(beware that opening a dialog may change the system font, so the use of
+<A HREF="graph.html#SaveScrState">SaveScrState</A> and <A HREF="graph.html#RestoreScrState">RestoreScrState</A>
+is highly recommended in all cases when you expect that a folder creation dialog might appear).
+If <I>SymName</I> does not contain a folder name, the symbol entry will be created
+in the current active folder. This routine does not check for reserved symbol names,
+so caution must be used when using this routine.
+<BR><BR>
+Note that SymAdd adds only an entry in the VAT with an empty handle; it does not allocate
+any space for the actual variable. To actually create a variable named "example", do
+the following (assuming that there were no errors in intermediate steps):</P>
+<PRE>HSym hsym = SymAdd (SYMSTR ("example"));
+// HeapAlloc must be executed before DerefSym
+// because of possible garbage collection.
+HANDLE handle = HeapAlloc (100);
+SYM_ENTRY *SymPtr = (DerefSym (hsym));
+MULTI_EXPR *VarPtr = HeapDeref (SymPtr-&gt;handle = handle);
+</PRE>
+<P>Now, 100 bytes of space for the variable (together with the valid handle in the VAT entry) is
+created, and <I>VarPtr</I> points to it (see <A HREF="alloc.html#HeapAlloc">HeapAlloc</A> and
+<A HREF="alloc.html#HeapDeref">HeapDeref</A> for more info). It does not mean that the actual
+length of the variable must be 100 bytes: it is only the allocated amount of memory.
+To create a concrete
+variable, you must fill the space pointed to by <I>VarPtr</I> with valid data which depends on
+the wanted type of the variable. The format of some variable types (STR, PIC, TEXT etc.) may
+be found on <A HREF="http://doors.ticalc.org">doors.ticalc.org</A>. For example, to create a
+one-character long string variable with content "A", do the following:</P>
+<PRE>VarPtr->Size = 4;            // <I>length of the variable data</I>
+VarPtr->Expr[0] = 0;         // <I>zero marks the beginning of the actual variable data</I>
+VarPtr->Expr[1] = 'A';       // <I>actual data</I>
+VarPtr->Expr[2] = 0;         // <I>end-of-string marker</I>
+VarPtr->Expr[3] = STR_TAG;   // <I>the last byte is the type (see <A HREF="estack.html#STR_TAG">STR_TAG</A>)</I>
+</PRE>
+<P><B>Note:</B> It is very dangerous to add a new entry in the VAT without allocating a memory
+space, and without assigning the handle in the entry. I didn't check whether a real
+TI-89 crashes after this, but the debugger in VTI crashes!? Rusty, this is a bug...</P>
+
+<P>See also: <A HREF="#SymAddMain">SymAddMain</A>, <A HREF="#FolderAdd">FolderAdd</A>, <A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A></P>
+<HR>
+<H3><A NAME="SymAddMain"><U>SymAddMain</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> SymAddMain (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Adds a symbol in the main folder.</B></P>
+
+<P>SymAddMain acts like <A HREF="#SymAdd">SymAdd</A>, but adds the VAT entry in the main
+folder list, regardless of the current active folder, even if <I>SymName</I> contains
+the folder name together with the symbol name. See <A HREF="#SymAdd">SymAdd</A>
+for more info.</P>
+
+<P>See also: <A HREF="#SymAdd">SymAdd</A></P>
+<HR>
+<H3><A NAME="SymAddTwin"><U>SymAddTwin</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> SymAddTwin (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Creates a twin symbol.</B></P>
+
+<P>SymAddTwin creates a twin entry in the variable allocation table (VAT) for an
+existing symbol <I>SymName</I>. A twin symbol is, in fact, another entry in the VAT
+with the same variable name, but with a different handle. The TIOS creates twin symbols
+during execution of archived programs, just in front of the normal symbol in the VAT table
+(see <A HREF="#EM_twinSymFromExtMem">EM_twinSymFromExtMem</A>).
+A twin symbol is "stronger" that a normal symbol, i.e. existence of a twin symbol temporary hides the symbol with the same
+name, until the twin symbol is deleted. Twin symbols have the "twin" bit set in the VAT
+entry (see <A HREF="#SYM_ENTRY">SYM_ENTRY</A> for the structure of a VAT entry), but in
+the VAR-LINK menu, it is shown as "archived". SymAddTwin returns the same result as
+<A HREF="#SymAdd">SymAdd</A> (<A HREF="#HS_NULL">HS_NULL</A> in case of an error). If the symbol <I>SymName</I>
+does not exist, this is also an error.</P>
+
+<HR>
+<H3><A NAME="SymCmp"><U>SymCmp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> SymCmp (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *s1, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *s2);</TD></TR></TABLE></P>
+<P><B>Compares two symbol names.</B></P>
+
+<P>SymCmp compares two symbol names by comparing at most 8 characters starting from
+addresses pointed to by <I>s1</I> and <I>s2</I>. It returns the same result as
+<A HREF="string.html#strcmp">strcmp</A>. It seems that calling this function is equal to</P>
+<PRE>strncmp (s1, s2, 8);
+</PRE>
+<P>See <A HREF="string.html#strncmp">strncmp</A> for more info.</P>
+
+<HR>
+<H3><A NAME="SymCpy0"><U>SymCpy0</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SymCpy0 (<B><A HREF="keywords.html#int">char</A></B> *dest, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *src);</TD></TR></TABLE></P>
+<P><B>Copies a symbol name with putting zero byte at the end.</B></P>
+
+<P>SymCpy0 first performs <A HREF="#SymCpy">SymCpy</A>, then puts the zero byte in
+ninth byte of the string pointed to by <I>dest</I> (i.e. in <I>dest</I>[8]). So,
+<I>dest</I> must be at least 9 bytes long.</P>
+
+<HR>
+<H3><A NAME="SymCpy"><U>SymCpy</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> SymCpy (<B><A HREF="keywords.html#int">char</A></B> *dest, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *src);</TD></TR></TABLE></P>
+<P><B>Copies a symbol name.</B></P>
+
+<P>SymCpy copies at most 8 characters from string <I>src</I> to <I>dest</I>, then fills
+rest of the <I>dest</I> up to 8 bytes, so <I>dest</I> must be at least 8 bytes
+long. It seems that calling this function is equal to</P>
+<PRE>strncpy (dest, src, 8);
+</PRE>
+<P>except in the fact that function SymCpy is void.
+See <A HREF="string.html#strncpy">strncpy</A> for more info.</P>
+
+<HR>
+<H3><A NAME="SymDel"><U>SymDel</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> SymDel (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Deletes a symbol.</B></P>
+
+<P>SymDel deletes the symbol <I>SymName</I> and returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc.html#Bool">FALSE</A>. See <A HREF="#SYMSTR">SYMSTR</A> for rules
+about <I>SymName</I>. Note that this routine will delete symbols even if they are locked or
+in use! Do not call SymDel to delete a folder, or twin or archived symbols (for these purposes,
+see <A HREF="#FolderDel">FolderDel</A> and <A HREF="#SymDelTwin">SymDelTwin</A>).
+<BR><BR>
+<B>Note:</B> Do not call SymDel to delete twin symbols. Instead, use the
+<A HREF="#SymDelTwin">SymDelTwin</A> function.</P>
+
+<HR>
+<H3><A NAME="SymDelTwin"><U>SymDelTwin</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> SymDelTwin (<A HREF="#SYM_ENTRY">SYM_ENTRY</A> *SymPtr);</TD></TR></TABLE></P>
+<P><B>Deletes a twin symbol.</B></P>
+
+<P>SymDelTwin deletes a twin symbol (see <A HREF="#SymAddTwin">SymAddTwin</A> for more info
+about twin symbols) whose VAT entry is <I>SymPtr</I>. Returns <A HREF="alloc.html#Bool">TRUE</A> if
+the operation was successful, else returns <A HREF="alloc.html#Bool">FALSE</A>.
+<BR><BR>
+When the TIOS deletes a twin symbol, the current value of the flags
+<A HREF="#SymFlags">SF_GREF1</A>, <A HREF="#SymFlags">SF_GREF2</A>,
+and <A HREF="#SymFlags">SF_STATVAR</A>
+are copied from the twin symbol to the original symbol.
+<BR><BR>
+<B>Note:</B> Since the TIOS is not able to get the folder handle with only the
+<A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure, it reads
+the folder address, the number of files in this folder, and the maximum
+number of files in the folder from the global variables used by
+<A HREF="#SymFindFirst">SymFindFirst</A> and related functions.
+If the program changes these variables (for example by simply using
+<A HREF="#SymFindFirst">SymFindFirst</A>) or if it adds or deletes a
+symbol in the VAT by itself without using <A HREF="#SymAdd">SymAdd</A>
+and <A HREF="#SymDel">SymDel</A>, SymDelTwin will cause severe data
+corruption.
+<BR><BR>
+The solution is simple: Always call <A HREF="#SymFindPtr">SymFindPtr</A>
+with the complete name of the twin symbol before calling SymDelTwin; passing
+0 to its <I>Flags</I> parameter. Samuel Stearley says that calling
+<A HREF="unknown.html#LoadSymFromFindHandle">LoadSymFromFindHandle</A>
+after finding the symbol with <A HREF="#SymFindFirst">SymFindFirst</A>
+and <A HREF="#SymFindNext">SymFindNext</A> works as well.
+(However, do not call <A HREF="#SymDel">SymDel</A> to delete twin symbols.)</P>
+
+<HR>
+<H3><A NAME="SymFind"><U>SymFind</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> SymFind (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Finds a symbol.</B></P>
+
+<P>SymFind searches the variable allocation table (VAT) for a symbol (i.e. variable)
+<I>SymName</I>. <I>SymName</I> may also contain a folder name together with
+the symbol name (separated by "\"), else only the currently active
+folder will be searched. SymFind returns a structure of type <A HREF="#HSym">HSym</A>,
+which contains the handle of the variable table list belonging to the folder
+(current, or folder given in the name), and the offset from the beginning of the list to the actual VAT symbol
+entry. Use <A HREF="#DerefSym">DerefSym</A> to get a pointer to the actual VAT
+symbol entry instead. In case of an error (for example, if the symbol does not exist), SymFind
+returns <A HREF="#HS_NULL">HS_NULL</A>. Note that most reserved symbols (i.e. system variables)
+are not stored in the VAT table, so you cannot locate them using SymFind.
+<BR><BR>
+<B>Note:</B> <I>SymName</I> is not an ordinary C string. Instead, this is a sequence
+of characters which starts with the zero character ('\0') and terminates with the zero
+character as well, and all TIOS routines for VAT handling need a pointer to the
+<I>terminating</I> zero byte as the input argument, which is a little twisty. So, to search for a symbol named
+"tetris", instead of</P>
+<PRE>hsym = SymFind ("tetris");
+</PRE>
+<P>you must do the following:</P>
+<PRE>hsym = SymFind ("\0tetris"+7);
+</PRE>
+<P>To make this job easier, the macro <A HREF="#SYMSTR">SYMSTR</A> is implemented,
+so you may simply do</P>
+<PRE>hsym = SymFind (SYMSTR ("tetris"));
+</PRE>
+<P>You may use the older <A HREF="#dollar">$</A> macro constructor as well.
+<BR><BR>
+Note also that all legal TIOS symbol names must be in lowercase!</P>
+
+<P>See also: <A HREF="#SymFindMain">SymFindMain</A>, <A HREF="#SymFindHome">SymFindHome</A>, <A HREF="#SymFindPtr">SymFindPtr</A></P>
+<HR>
+<H3><A NAME="SymFindFirst"><U>SymFindFirst</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SYM_ENTRY">SYM_ENTRY</A> *SymFindFirst (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Begins looping through the VAT.</B></P>
+
+<P>SymFindFirst searches for the first symbol entry in the variable allocation
+table which satisfies the requirements given by the parameters <I>Flags</I>
+and <I>SymName</I> (see <A HREF="#SYMSTR">SYMSTR</A> for information
+about symbol names), and sets some internal pointers so that
+<A HREF="#SymFindNext">SymFindNext</A> and
+<A HREF="#SymFindPrev">SymFindPrev</A> may be called to traverse the
+VAT. <I>SymName</I> is required only for some values of <I>Flags</I> (you
+can set it to <A HREF="alloc.html#NULL">NULL</A> otherwise).
+<I>Flags</I> is a collection of binary flags defined in the enum
+<A HREF="#FindOptions">FindOptions</A>. These flags also determine how
+subsequent calls of <A HREF="#SymFindNext">SymFindNext</A> and
+<A HREF="#SymFindPrev">SymFindPrev</A> will be interpreted.
+<BR><BR>
+If <I>Flags</I> is 0 (i.e. no flags are given), SymFindFirst and subsequent
+calls to <A HREF="#SymFindNext">SymFindNext</A> and
+<A HREF="#SymFindPrev">SymFindPrev</A> loop only through the list of
+folders. In this case, <I>SymName</I> is ignored.
+<BR><BR>
+The following flags are defined:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">FO_RECURSE</TD>
+  <TD>Loop through all folders including their symbols. Naturally,
+      <I>SymName</I> is still ignored. Subsequent calls to
+      <A HREF="#SymFindNext">SymFindNext</A> will continue searching
+      through the whole variable allocation table, including both the folder
+      table and the variable tables associated with each folder. More
+      precisely, after each folder, the complete variable table for this
+      folder will be browsed before the next folder is reached.
+      This flag can be used together with all other flags except
+      FO_SINGLE_FOLDER and FO_RETURN_FOLDER.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SKIP_TEMPS</TD>
+  <TD>Skip temporary folders when looping through the folder table. See
+      <A HREF="#FolderAddTemp">FolderAddTemp</A> for more information
+      about temporary folders. This flag cannot be used together with
+      FO_SINGLE_FOLDER, obviously.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SKIP_COLLAPSE</TD>
+  <TD>Skip variables in collapsed folders. Folders can be collapsed only
+      since AMS 2.00; therefore this flag has no effect if the AMS version is
+      lower than 2.00 (but it is still defined). This flag can only be used
+      if FO_RECURSE is set as well.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_RETURN_TWINS</TD>
+  <TD>Return the temporarily hidden equivalents of twin entries in the
+      archive as well, which is normally not the case. See
+      <A HREF="#SymAddTwin">SymAddTwin</A> for more information about
+      twin entries. Of course, this does not have any effect if neither
+      FO_RECURSE nor FO_SINGLE_FOLDER are included in <I>Flags</I> (i.e. if
+      only folder names are returned).</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SINGLE_FOLDER</TD>
+  <TD>Loop through all symbols in the folder identified by <I>SymName</I>,
+      but do not return the folder name itself.
+      This flag may be used together with FO_RETURN_FOLDER and FO_RETURN_TWINS,
+      but not with any other flag.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_RETURN_FOLDER</TD>
+  <TD>This flag can only be set if FO_SINGLE_FOLDER is set as well. It
+      slightly alters the meaning of FO_SINGLE_FOLDER so that SymFindFirst
+      returns the <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure of
+      the folder identified by <I>SymName</I>, and subsequent calls to
+      <A HREF="#SymFindNext">SymFindNext</A> will return all symbols
+      in that folder.</TD>
+</TR>
+</TABLE>
+<BR>
+SymFindFirst returns the pointer to the symbol entry in the VAT, or
+<A HREF="alloc.html#NULL">NULL</A> if there are no symbols which
+satisfy the given requirements. Here is an example how to (legally) create a
+list of all variable names in the main folder:</P>
+<PRE>counter = 0;
+SymPtr = SymFindFirst (SYMSTR ("main"), FO_SINGLE_FOLDER);
+while (SymPtr)
+{
+  strcpy (names[counter++], SymPtr-&gt;name);
+  SymPtr = SymFindNext ();
+}
+</PRE>
+<P>If you want to create a list of all folder names, simply change</P>
+<PRE>SymPtr = SymFindFirst (SYMSTR ("main"), FO_SINGLE_FOLDER);
+</PRE>
+<P>in the previous example to</P>
+<PRE>SymPtr = SymFindFirst (NULL, 0);
+</PRE>
+<P><B>Note:</B> Since this routine and subsequent calls to
+<A HREF="#SymFindNext">SymFindNext</A> and
+<A HREF="#SymFindPrev">SymFindPrev</A> return direct pointers to the
+symbol table, heap compression will cause subsequent results to be invalid or
+may crash the system. In other words, heap compression will invalidate all
+pointers returned necessitating another call to SymFindFirst. Therefore
+locking the folder table (using <A HREF="#FolderOp">FolderOp</A>)
+during the complete operation is highly recommended.</P>
+
+<P>See also: <A HREF="#SymFindNext">SymFindNext</A>, <A HREF="#SymFindPrev">SymFindPrev</A>, <A HREF="#SymFindFolderName">SymFindFolderName</A></P>
+<HR>
+<H3><A NAME="SymFindFolderName"><U>SymFindFolderName</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#int">char</A></B> *SymFindFolderName (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns an actual folder name during browsing through the VAT table.</B></P>
+
+<P>This routine is used only when you search the complete VAT table using functions <A HREF="#SymFindFirst">SymFindFirst</A>,
+<A HREF="#SymFindNext">SymFindNext</A> and <A HREF="#SymFindPrev">SymFindPrev</A> with
+<A HREF="#FindOptions">FO_RECURSE</A> in <I>Flags</I> set. Each time when a folder is encountered in the VAT table,
+the TIOS stores its name in an internal buffer. Later, when you go through the variable part of the VAT
+table, you can call this routine to retrieve the stored folder name, i.e. to get the name of the
+folder for the symbol just returned. Under any other conditions, SymFindFolderName just returns
+a pointer to the string "main".
+<BR><BR>
+See <A HREF="alloc.html#HeapWalk">HeapWalk</A> for an example using this function.</P>
+
+<P>Deprecated alias: SymFindFoldername</P>
+<HR>
+<H3><A NAME="SymFindHome"><U>SymFindHome</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> SymFindHome (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Finds a folder.</B></P>
+
+<P>SymFindHome searches the folder table part of variable allocation table (VAT)
+for a folder named <I>SymName</I> (in fact, it searches through a
+pseudo-folder called "home", which contains all other folders).
+SymFindHome returns a structure of type <A HREF="#HSym">HSym</A>,
+which contains the handle of the folder table list of the VAT, and the offset
+from the beginning of the list to the actual VAT symbol entry. Use
+<A HREF="#DerefSym">DerefSym</A> to get a pointer to the actual VAT
+symbol entry instead. In case of an error (for example, if the folder does
+not exist), SymFindHome returns <A HREF="#HS_NULL">HS_NULL</A>.
+<BR><BR>
+<B>Note:</B> I don't know what kernels do to find the handle of the folder
+list, but as far as I know, the only legal method is the following:</P>
+<PRE>FolderListHandle = SymFindHome(SYMSTR("main")).folder;
+</PRE>
+
+<P>See also: <A HREF="#SymFind">SymFind</A></P>
+<HR>
+<H3><A NAME="SymFindMain"><U>SymFindMain</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> SymFindMain (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName);</TD></TR></TABLE></P>
+<P><B>Finds a symbol in the main folder.</B></P>
+
+<P>SymFindMain acts like <A HREF="#SymFind">SymFind</A>, but searches
+only the main folder, regardless of the currently active folder, even if
+<I>SymName</I> contains a folder name together with the symbol name. See
+<A HREF="#SymFind">SymFind</A> for more info. It is useful for
+searching some symbols such as the system reserved equations ("Y1"..."Y99",
+"RegEq", etc.) which are always stored in the "main" folder and cannot be
+moved to a different folder.</P>
+
+<P>See also: <A HREF="#SymFind">SymFind</A></P>
+<HR>
+<H3><A NAME="SymFindNext"><U>SymFindNext</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SYM_ENTRY">SYM_ENTRY</A> *SymFindNext (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Finds the next entry in the VAT table.</B></P>
+
+<P>SymFindNext searches for the next symbol entry in the VAT table after
+calling <A HREF="#SymFindFirst">SymFindFirst</A>. The exact behavior
+of SymFindNext depends on the parameters passed to
+<A HREF="#SymFindFirst">SymFindFirst</A>. See the description of
+<A HREF="#SymFindFirst">SymFindFirst</A> for more information and
+examples of usage.
+<BR><BR>
+SymFindNext returns a pointer to the symbol entry in the VAT, or
+<A HREF="alloc.html#NULL">NULL</A> if there are no more entries in the
+VAT which satisfy the given requirements.</P>
+
+<P>See also: <A HREF="#SymFindFirst">SymFindFirst</A>, <A HREF="#SymFindPrev">SymFindPrev</A></P>
+<HR>
+<H3><A NAME="SymFindPrev"><U>SymFindPrev</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SYM_ENTRY">SYM_ENTRY</A> *SymFindPrev (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Finds the previous entry in the VAT table.</B></P>
+
+<P>SymFindPrev is very similar to <A HREF="#SymFindNext">SymFindNext</A>,
+but instead of the next entry in the VAT, SymFindPrev searches for the
+previous entry in the VAT.
+<BR><BR>
+Normally the only routine used with
+<A HREF="#SymFindFirst">SymFindFirst</A> is
+<A HREF="#SymFindNext">SymFindNext</A>, but this routine allows a
+program to traverse the symbol table in both directions. For example,
+the VAR-LINK dialog uses this routine to present a scrollable list of all
+symbols without having to maintain a separate list in memory.</P>
+
+<P>See also: <A HREF="#SymFindFirst">SymFindFirst</A>, <A HREF="#SymFindNext">SymFindNext</A></P>
+<HR>
+<H3><A NAME="SymFindPtr"><U>SymFindPtr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#SYM_ENTRY">SYM_ENTRY</A> *SymFindPtr (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>Finds a symbol and returns a pointer to the VAT entry.</B></P>
+
+<P>SymFindPtr acts like <A HREF="#SymFind">SymFind</A> and related
+functions, but instead of a <A HREF="#HSym">HSym</A>
+structure, it returns a pointer to the actual VAT entry. SymFindPtr returns
+<A HREF="alloc.html#NULL">NULL</A> in case of an error.
+So, it acts somewhat as a combination of
+<A HREF="#SymFind">SymFind</A> and
+<A HREF="#DerefSym">DerefSym</A>.
+<BR><BR>
+<I>Flags</I> is an additional argument which determines the searching method.
+It is a set of binary flags. The exact meaning of these flags are still
+unknown for me, but at the moment, I know the following for sure:</P>
+<UL>
+<LI><P>If <I>Flags</I>&nbsp;=&nbsp;0, the search is performed like using the
+<A HREF="#SymFind">SymFind</A> function (i.e. through current or given
+folder);</P></LI>
+<LI><P>If <I>Flags</I>&nbsp;=&nbsp;4, the search is performed like using the
+<A HREF="#SymFindMain">SymFindMain</A> function (i.e. through main
+folder only).</P></LI>
+</UL>
+<P>What I also know is that if b15 in <I>Flags</I> is set, the search is
+somewhat related to the folder list, and it is possible to search for folders
+as well. But I still can't conclude the <U>exact</U> meaning of these flags.
+So, instead of giving uncertain information, I will stop here. Everything
+about this function presented so far is certainly true. Fortunately, the TIOS
+set of VAT functions is rich enough so that eventual additional possibilities
+of this function may be simulated using other known functions. Any additional
+information will be welcomed, if someone knows more than me.
+<BR><BR>
+As an example of usage, this is a legal method how to lock a variable named
+"tetris":</P>
+<PRE>SymFindPtr(SYMSTR("tetris"),0)-&gt;flags.bits.locked = 1;
+</PRE>
+<P>See <A HREF="#SYMSTR">SYMSTR</A> for info about symbol names.</P>
+
+<P>See also: <A HREF="#SymFind">SymFind</A>, <A HREF="#SymFindMain">SymFindMain</A>, <A HREF="#SymFindHome">SymFindHome</A></P>
+<HR>
+<H3><A NAME="SymMove"><U>SymMove</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> SymMove (<A HREF="estack.html#SYM_STR">SYM_STR</A> SrcName, <A HREF="estack.html#SYM_STR">SYM_STR</A> DestName);</TD></TR></TABLE></P>
+<P><B>Moves a symbol.</B></P>
+
+<P>SymMove moves the symbol <I>SrcName</I> to the symbol <I>DestName</I>
+(see <A HREF="#SymFind">SymFind</A> for rules about <I>SrcName</I> and <I>DestName</I>).
+Both <I>SrcName</I> and <I>DestName</I> may also contain a folder name together with the
+symbol name (separated by "\"). If none of the names does not contain a folder name,
+moving will be simply reduced to renaming. If the destination folder does not exist, a dialog
+will appear which asks the user whether a new folder will be created. If the answer is "NO", a
+"Folder" error will be thrown. Destination symbol will be deleted before moving, if such
+symbol exists. SymMove returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc.html#Bool">FALSE</A>. This function will even move and rename
+locked and archived files; however, upon a reset, they will return to the original name and/or
+folder.
+<BR><BR>
+<B>Note:</B> Check whether <I>SrcName</I> exists before applying this command, because the
+destination symbol <I>DestName</I> (if exists) will be deleted even in a case of an error!</P>
+
+<HR>
+<H3><A NAME="SYMSTR"><U>SYMSTR</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="estack.html#SYM_STR">SYM_STR</A> SYMSTR (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *s);</TD></TR></TABLE></P>
+<P><B>Defines a VAT string.</B></P>
+
+<P>Most of the TIOS functions which take symbol names as parameters do not accept ordinary C strings.
+Instead, the symbol name is either a variable tag or a sequence of characters which starts with the zero character
+(<CODE>'\0'</CODE>) and terminates with the zero character as well, and the TIOS routines for VAT handling need a
+pointer to the <I>terminating</I> zero byte as the input argument, which is a little twisty.
+For example, to search for a symbol named "tetris", instead of</P>
+<PRE>hsym = SymFind ("tetris");
+</PRE>
+<P>you have to do the following:</P>
+<PRE>hsym = SymFind ("\0tetris"+7);
+</PRE>
+<P>To make this job easier, the SYMSTR macro is implemented, so you may simply do</P>
+<PRE>hsym = SymFind (SYMSTR ("tetris"));
+</PRE>
+<P>If the argument passed to SYMSTR is a string literal as in this case, SYMSTR
+simply expands to the sequence in the second example. This is an optimization
+done by the preprocessor. In all other cases, space for a temporary string is
+allocated on the stack using <A HREF="alloc.html#alloca">alloca</A>,
+and the string is copied to this location on the stack. Strictly speaking,
+SYMSTR does not return a pointer of type <A HREF="estack.html#SYM_STR">SYM_STR</A>
+in this case, but rather a pointer to non-constant data. This means that you
+may write to it if you wish.
+<BR><BR>
+Note that this macro doesn't check whether <I>s</I> is valid or not. If you
+need to tokenize a variable string and want to be sure that <I>s</I> is valid, 
+you can use the <A HREF="estack.html#TokenizeSymName">TokenizeSymName</A>
+routine.
+<BR><BR>
+<B>Note:</B> You cannot create tokens for system variables using this macro.
+See <A HREF="estack.html#EXT_SYSTEM_TAG">EXT_SYSTEM_TAG</A> for more information.
+And if you want to use a single-character variable name, you can usually use
+one of the variable tags from the enum
+<A HREF="estack.html#Tags">Tags</A>.
+Note also that all legal TIOS symbol names must be in lowercase.</P>
+
+<P>See also: <A HREF="estack.html#TokenizeSymName">TokenizeSymName</A></P>
+<HR>
+<H3><A NAME="SymSysVar"><U>SymSysVar</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> SymSysVar (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *VarName);</TD></TR></TABLE></P>
+<P><B>Checks for a system-reserved variable name.</B></P>
+
+<P>SymSysVar checks if a variable pointed to by <I>VarName</I> (an ordinary C
+string) is a system-reserved variable stored in the symbol table (in the main
+folder). It returns the same values as
+<A HREF="#CheckSysFunc">CheckSysFunc</A>. Additionally, it returns
+<A HREF="#ExtendedSysTypes">R_SYSVAR</A> if the variable name is
+"SysData" or "RegCoef". In fact, this function calls
+<A HREF="#CheckSysFunc">CheckSysFunc</A> with additional checks for
+"SysData" and "RegCoef".</P>
+
+<P>See also: <A HREF="#CheckSysFunc">CheckSysFunc</A>, <A HREF="#CheckReservedName">CheckReservedName</A></P>
+<HR>
+<H3><A NAME="TempFolderName"><U>TempFolderName</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="estack.html#SYM_STR">SYM_STR</A> TempFolderName (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> TempNum);</TD></TR></TABLE></P>
+<P><B>Creates a temporary folder name.</B></P>
+
+<P>TempFolderName converts the number <I>TempNum</I> in a four-digit string which
+corresponds to the given number (i.e. 12 will be converted into "0012"). This
+string will begin with '\0' character, and TempFolderName will return a pointer
+to the terminating '\0' character, as expected by many TIOS VAT routines (see
+<A HREF="#SymAdd">SymAdd</A> for more info about symbol names). TIOS will accept
+such "numeric" folder names, but they are invisible for the TI-Basic system,
+VAR-LINK menu, etc. TIOS creates and uses such folders for storing local variables
+during execution of TI-Basic programs.</P>
+
+<HR>
+<H3><A NAME="TokToStrN"><U>TokToStrN</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> TokToStrN (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *dest, <A HREF="estack.html#SYM_STR">SYM_STR</A> src);</TD></TR></TABLE></P>
+<P><B>Converts a token to a C string.</B></P>
+
+<P>TokToStrN converts the VAT symbol name pointed to by <I>src</I> into an
+ordinary ANSI C string. See <A HREF="#SYMSTR">SYMSTR</A> for more info
+about symbol names. <I>src</I> should point to the terminating zero byte of
+the name (or to a one-letter <A HREF="estack.html#Tags">variable tag</A>),
+and the result will be stored in the buffer pointed to by dest. The buffer has
+to be at least 20 bytes long. TokToStrN returns <A HREF="alloc.html#Bool">TRUE</A>
+if the symbol could be converted, and <A HREF="alloc.html#Bool">FALSE</A>
+if <I>src</I> does not point to a tag that represents a variable or is a
+reserved variable name.</P>
+
+<P>See also: <A HREF="#StrToTokN">StrToTokN</A></P>
+<HR>
+<H3><A NAME="ValidateSymName"><U>ValidateSymName</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> ValidateSymName (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *VarName);</TD></TR></TABLE></P>
+<P><B>Checks for a valid VAT name symbol.</B></P>
+
+<P>Checks whether the ANSI C string pointed to by <I>VarName</I> may be a valid
+name of a VAT symbol (i.e. a TI-Basic variable), and returns
+<A HREF="alloc.html#Bool">TRUE</A> if it can, or
+<A HREF="alloc.html#Bool">FALSE</A> otherwise. This function checks for
+valid characters, and for a maximum length of eight characters.</P>
+
+<HR>
+<H3><A NAME="VarRecall"><U>VarRecall</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> VarRecall (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags);</TD></TR></TABLE></P>
+<P><B>A higher-level variant of <A HREF="#SymFind">SymFind</A>.</B></P>
+
+<P>VarRecall works like <A HREF="#SymFind">SymFind</A>, but it is able to handle system variables which
+do not have an entry in the variable allocation table. <I>SymName</I> is a pointer to the
+terminating zero byte of the VAT variable name (see <A HREF="#SYMSTR">SYMSTR</A> for more info
+about symbol names). <I>Flags</I> is a collection of flags defined in the
+enum <A HREF="#VarRecallFlags">VarRecallFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">VR_NO_SYS_VARS</TD>
+  <TD>Do not return system variables.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">VR_FUNC_NAME</TD>
+  <TD>Accept strings terminating with an opening parenthesis (like "y1(") for <I>SymName</I>.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">VR_LINK</TD>
+  <TD>Used only internally by the link code.</TD>
+</TR>
+</TABLE>
+<BR>
+Note that you cannot create the necessary token for system variables with the
+<A HREF="#SYMSTR">SYMSTR</A> or <A HREF="#dollar">$</A> macro.
+Instead, system variables have their own tags. For example, to recall the
+system variable called "xmin", you have to use the following code:</P>
+<PRE>hsym = VarRecall ((const ESQ []){XMIN_TAG, EXT_SYSTEM_TAG} + 1, 0);
+</PRE>
+<P>You may use the <A HREF="estack.html#TokenizeSymName">TokenizeSymName</A>
+function if you need a generic way to access variables, like this:</P>
+<PRE>TokenizeSymName ("xmin", TSF_ALLOW_RESERVED);
+hsym = VarRecall (top_estack, 0);
+</PRE>
+<P>To make the handling of system variables consistent with normal variables
+even though system variables do not have an entry in the variable allocation
+table, VarRecall returns a reference to a dummy <A HREF="#SYM_ENTRY">SYM_ENTRY</A> if a system
+variable is requested. It actually copies the contents of the system variable
+into an internal buffer and adds the appropriate tag. Since one dummy entry
+is used for many system variables, you have to store the contents of each
+variable in your program if you need to access more than one value at a time.
+<BR><BR>
+In other words, a dummy <A HREF="#HSym">HSym</A> descriptor which is created for system variabes
+is shared by all variables not in the VAT. Thus the next call to VarRecall
+for such a variable will return the same descriptor, but with a different
+value (and the previous descriptor will be invalid). So if VarRecall is used
+for system variables, it is best to keep a copy of the value pointed to by
+the <A HREF="#HSym">HSym</A> if it is needed.
+<BR><BR>
+It might be useful to know (but it is not reliable) that internally, the
+<I>folder</I> field of the returned <A HREF="#HSym">HSym</A> contains a handle to the following type of
+structure:</P>
+<PRE>struct SysVarSym {
+  unsigned short DataSize;
+  ESQ Data[60];
+  SYM_ENTRY sysVar;
+  SYM_ENTRY tblInput;
+  SYM_ENTRY unit;
+};
+</PRE>
+<P>The offset field is then either 62 for system variables (offset to the <I>sysVar</I>
+field), 76 for the "tblInput" variable (offset to the <I>tblInput</I> field), or 90
+for units (offset to the <I>unit</I> field). The reason that three different
+<A HREF="#SYM_ENTRY">SYM_ENTRY</A> type fields are used is that they contain different flags and
+handles. <I>sysVar</I> and <I>unit</I> both contain the same handle as the <I>folder</I> field of
+the <A HREF="#HSym">HSym</A>, whereas <I>tblInput</I> contains a handle to an external memory location.
+The compatibility flag is <A HREF="#CompatFlags">CF_NONE</A> for system variables (including "tblInput"),
+but <A HREF="#CompatFlags">CF_NEW</A> for units. All three fields contain the <A HREF="#SymFlags">SF_LOCKED</A> flag.
+<BR><BR>
+If the <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structures use the same handle
+as the folder field of the <A HREF="#HSym">HSym</A> returned by VarRecall,
+they use in fact the first 62 bytes of this internal structure. This saves a
+handle in the operating system.
+<BR><BR>
+When dealing with system variables and units, it is not reliable to use the
+<I>name</I> field of the <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure
+whose address is obtained with <A HREF="#DerefSym">DerefSym</A>
+(which is, of course, one of the three structures mentioned above). It is
+blank for all system variables and units except "tblInput".
+<BR><BR>
+<B>Note:</B> This function may throw different errors. Especially, most system
+variables cannot be used in a function that is being graphed, either because
+they change too often or because they are used by the graph routines
+themselves (for example, "xmin" or "xc"). If these variables are accessed
+while graphing, VarRecall throws an error. However, locked variables may be
+looked up with VarRecall.</P>
+
+<HR>
+<H3><A NAME="VarStore"><U>VarStore</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HSym">HSym</A> VarStore (<A HREF="estack.html#SYM_STR">SYM_STR</A> SymName, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flags, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Size, ...);</TD></TR></TABLE></P>
+<P><B>High-level function to store values into variables.</B></P>
+
+<P>VarStore performs many storing operations, from basic file saving to
+list/matrix element access. Although some of its operations appear to be
+quite trivial, it provides a consistent interface to all storing operations,
+even for system variables. So, this is the general system routine for storing
+to TI-Basic variables.
+<BR><BR>
+VarStore can perform different types of operations. It can store values into
+TI-Basic variables (it will create a new VAT entry if needed), prepare
+variables to be stored to, or store individual values to elements of a list
+or matrix. The data type and domain of system variables are verified to be
+correct.
+<BR><BR>
+<I>SymName</I> is the symbol name of the variable in which the value will be stored
+(see <A HREF="#SYMSTR">SYMSTR</A> for more info about symbol names). VarStore returns the <A HREF="#HSym">HSym</A>
+descriptor of the TI-Basic variable, or <A HREF="#HS_NULL">HS_NULL</A> if the variable is a system
+variable (which is not stored in the VAT).
+<BR><BR>
+Note that you cannot create the necessary token for system variables with the
+<A HREF="#SYMSTR">SYMSTR</A> or <A HREF="#dollar">$</A> macro.
+Instead, system variables have their own tags. For example, to store something in the
+system variable <CODE>xmin</CODE>, you have to use the following code:</P>
+<PRE>VarStore ((const ESQ []){XMIN_TAG, EXT_SYSTEM_TAG} + 1, ...);
+</PRE>
+<P>You may use the <A HREF="estack.html#TokenizeSymName">TokenizeSymName</A>
+function if you need a generic way to access variables.
+<BR><BR>
+The parameter <I>Flags</I> determines the meaning of the remaining parameters:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">STOF_ESI</TD>
+  <TD>An extra parameter of type <A HREF="estack.html#ESI">ESI</A> is needed, which points to an
+      expression which will be stored into the variable. Basically, this parameter may point to an
+      arbitrary locked block of memory, not necessarily on the expression stack.
+      On a side note, this variant is used internally if <CODE>RETURN_VALUE &lt;variable&gt;</CODE>
+      is defined.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_HESI</TD>
+  <TD>Like STOF_ESI, but the extra parameter has the type
+      <A HREF="alloc.html#HANDLE">HANDLE</A>. It must be a handle
+      to a block of memory containing the data to be stored. The handle will be
+      locked during the operation.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_ELEMENT</TD>
+  <TD>Three extra parameters are needed. The first extra parameter has the type
+      <A HREF="estack.html#ESI">ESI</A>; it should point to an expression
+      which will be stored into an element of a list or matrix variable determined
+      by the <I>SymName</I> parameter. The second and third parameters have the type <CODE>unsigned short</CODE>.
+      For matrices, they determine the column and the row of the element, respectively.
+      For lists, the second extra parameter is the index and the third parameter must
+      be zero. Indices for both matrices and lists start at one.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_NONE</TD>
+  <TD>Nothing is assumed about the source, so no copying is done (it is left
+      to the caller). Only the VAT entry will be created. The name and flags
+      and other conditions will be verified.</TD>
+</TR>
+</TABLE>
+<BR>
+Additionally, the parameter <I>Flags</I> may contain some tag values (see
+<A HREF="estack.html#Tags">Tags</A> for more info). The allowed tags are
+<A HREF="estack.html#USERFUNC_TAG">USERFUNC_TAG</A> (in this case an extra parameter
+of type <A HREF="estack.html#ESI">ESI</A> should point to the user function
+which will be stored; note that this is <I>not</I> <A HREF="estack.html#FUNC_TAG">FUNC_TAG</A>),
+<A HREF="estack.html#TEXT_TAG">TEXT_TAG</A> (for text variables),
+<A HREF="estack.html#GDB_TAG">GDB_TAG</A> (for Graph Database variables),
+<A HREF="estack.html#PIC_TAG">PIC_TAG</A> (for picture variables),
+<A HREF="estack.html#DATA_TAG">DATA_TAG</A> (for data variables), and
+<A HREF="estack.html#OTH_TAG">OTH_TAG</A> (for custom type variables).
+In all of these cases except <A HREF="estack.html#USERFUNC_TAG">USERFUNC_TAG</A>,
+the destination is verified to have the same type as the source, but the copy
+operation is not done. There are more possible values for <I>Flags</I>, but
+they are used only for internal purposes in the TIOS.
+<BR><BR>
+The parameter <I>Size</I> is the size of the source data including the tag
+but not the size word stored in the heap. If <I>Size</I> is zero, then the
+size of the expression pointed to by the first extra parameter will be used
+(this is allowed if <I>Flags</I> is
+<A HREF="#VarStoreFlags">STOF_ESI</A>,
+<A HREF="#VarStoreFlags">STOF_HESI</A>, or
+<A HREF="#VarStoreFlags">STOF_ELEMENT</A>).
+Otherwise, the new variable is not allocated, but the <I>folder</I> field in
+the returned <A HREF="#HSym">HSym</A> descriptor may still not be
+<A HREF="alloc.html#H_NULL">H_NULL</A> if previous data existed in that
+variable).
+<BR><BR>
+<B>Note:</B> VarStore may throw various errors, and may cause heap compression (garbage
+collection). For example, some VAT variables are system protected (see
+<A HREF="#QSysProtected">QSysProtected</A>). These include
+programs and functions (TI-Basic or ASM), data variables, graph databases,
+custom type files, pictures, and text variables. Only variables of the same
+type can be copied to a system-protected variable. If the variable name
+already exists, the lock flag is checked (a variable that is locked or
+archived cannot be overwritten; VarStore throws an error in this case). System
+variables cannot be locked and some system variables cannot be changed by the
+user. VarStore also checks the <A HREF="#SymFlags">SF_HIDDEN</A> flag
+in the VAT entry (see the <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure for more info),
+which is actually an "in-use" flag. Any variable being used by an application
+cannot be overwritten except by that application (it cannot be deleted,
+renamed, or linked, either). The in-use count is verified to be 0 for functions
+and programs.
+<BR><BR>
+If the variable is not a system variable, locked, system protected,
+or in use, a value can be stored to it no matter what it contained before.
+However, there are type restrictions on individual elements of lists or
+matrices. Usually, VarStore makes sure there is enough memory left to store
+the new contents to the variable before deleting the current contents of the
+variable. When storing to an existing variable, both graph reference flags are
+tested (<A HREF="#SymFlags">SF_GREF1</A> and <A HREF="#SymFlags">SF_GREF2</A>).
+If one or both is set, the corresponding dirty graph and dirty table flag(s)
+are set to indicate the graph and table are no longer valid. Storing to an
+individual element or submatrix of a matrix or list does the same checks as
+for an existing variable, and updates the length. In addition, the data type
+of the element needs to be correct (expression, relation, string).
+<BR><BR>
+Only functions with the correct function arguments can be stored in the
+variables reserved as system functions. These are <CODE>y1(x)...y99(x)</CODE>,
+<CODE>xt1(t)...xt99(t)</CODE>, <CODE>yt1(t)...yt99(t)</CODE>, <CODE>r1(q)...r99(q)</CODE>, <CODE>u1(n)...u99(n)</CODE>,
+<CODE>y1'(t)...y99'(t)</CODE>, and <CODE>z1(x,y)...z99(x,y)</CODE>.
+They can be single-line or multi-line functions, but an error is returned if
+the user tries to create any other data type with those names or if the
+number of arguments is incorrect. Since they are system functions, they
+cannot be locked and must be in the main folder. Empty functions are not
+valid and should not be added to the symbol table.
+This is true for user functions as well.</P>
+
+<HR>
+<H3><A NAME="HS_NULL"><U>HS_NULL</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> HS_NULL ((<A HREF="#HSym">HSym</A>) {0, 0})</TD></TR></TABLE></P>
+<P><B>A null symbol constant.</B></P>
+
+<P>HS_NULL is a null symbol. Many TIOS functions returns such a symbol
+in case of an error. Note that you can't check whether a some variable is HS_NULL using
+the "==" operator because HS_NULL is not scalar, i.e. you can't
+write something like</P>
+<PRE>if (hs == HS_NULL) ...
+</PRE>
+<P>Instead, check the <I>folder</I> field of <A HREF="#HSym">HSym</A> structure: if it is zero,
+the whole structure is HS_NULL, because TIOS never creates <A HREF="#HSym">HSym</A>
+structures in which the <I>folder</I> field is zero and the <I>offset</I> field is nonzero.</P>
+
+<HR>
+<H3><A NAME="CompatFlags"><U>CompatFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> CompatFlags {CF_NONE = 0, CF_CONVERT = 1, CF_ENHANCED = 2, CF_NEW = 3};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible compatibility flags in the <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure.</B></P>
+
+<HR>
+<H3><A NAME="ExtendedSysTypes"><U>ExtendedSysTypes</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> ExtendedSysTypes {SEQ_INITC = 7, DE_INITC = 8, DE_FLDPIC = 9, SOLVER_SYS_VARS = 10, UNIT_VAR = 11, C_COL = 12, R_REGEQ = 13, R_SYSVAR = 14};</TD></TR></TABLE></P>
+<P><B>Describes system variable types.</B></P>
+
+<P>This is an enumeration describing system variables which are not included
+in the types described in <A HREF="gdraw.html#GraphModes">GraphModes</A> from
+<A HREF="gdraw.html">gdraw.h</A>.
+It is currently used only in
+<A HREF="#CheckReservedName">CheckReservedName</A>.</P>
+
+<HR>
+<H3><A NAME="FindOptions"><U>FindOptions</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> FindOptions {FO_SINGLE_FOLDER = 0x01, FO_RECURSE = 0x02, FO_SKIP_TEMPS = 0x04, FO_NOTEMPS = 0x04, FO_RETURN_TWINS = 0x08, FO_CKTWINS = 0x08, FO_RETURN_FOLDER = 0x10, FO_SKIP_COLLAPSE = 0x20};</TD></TR></TABLE></P>
+<P><B>Describes options for <A HREF="#SymFindFirst">SymFindFirst</A> and <A HREF="files.html#TIOS_FFindFirst">FFindFirst</A>.</B></P>
+
+<P>FindOptions is an enumeration describing flags for
+<A HREF="#SymFindFirst">SymFindFirst</A> and <A HREF="files.html#TIOS_FFindFirst">FFindFirst</A>. They can be combined with
+the <CODE>'|'</CODE> operator.</P>
+
+<HR>
+<H3><A NAME="FolderOpFlags"><U>FolderOpFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> FolderOpFlags {FOP_UNLOCK = 0, FOP_LOCK = 1, FOP_ALL_FOLDERS = 0x80};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible options for the <A HREF="#FolderOp">FolderOp</A> function.</B></P>
+
+<HR>
+<H3><A NAME="FolderStats"><U>FolderStats</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> FolderStats {MAIN_FOLDER = 2, FOLDER_TABLE = 3, NOT_FOUND = 4, BAD_FOLDER = 5};</TD></TR></TABLE></P>
+<P><B>An enumeration for describing possible results of the <A HREF="#FolderFind">FolderFind</A> function.</B></P>
+
+<HR>
+<H3><A NAME="HSym"><U>HSym</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="alloc.html#HANDLE">HANDLE</A> folder;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> offset;<BR>
+</TD></TR></TABLE>
+} HSym;</TD></TR></TABLE></P>
+<P><B>A structure representing a symbol reference.</B></P>
+
+<P>HSym is a structure which contains the handle of the variable table list belonging to the
+folder in which the symbol is located, and the offset from the beginning of the list to the
+actual VAT symbol entry of type <A HREF="#SYM_ENTRY">SYM_ENTRY</A>. These symbol
+references are used as a safe and efficient method to pass variable references around in
+the system, so that there are no probems after garbage collection (i.e. the heap compression).
+In other words, symbol references stay valid even after the heap compression.
+Note, however, that the references may become invalid whenever a symbol in the same folder
+is added, removed, or even renamed, since the actual offset of the
+<A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure may change during this operation.
+<BR><BR>
+You can use the <A HREF="#DerefSym">DerefSym</A> function to get a pointer to the
+actual <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure.</P>
+
+<HR>
+<H3><A NAME="HSYM_upper"><U>HSYM</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> HSYM <A HREF="#HSym">HSym</A></TD></TR></TABLE></P>
+<P><B>An alias for <A HREF="#HSym">HSym</A>.</B></P>
+
+<P>HSYM is an alias for <A HREF="#HSym">HSym</A>, to achieve compatibility
+between different programs.</P>
+
+<HR>
+<H3><A NAME="SYM_ENTRY"><U>SYM_ENTRY</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#int">char</A></B> name[8];<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> compat;<BR>
+<B><A HREF="keywords.html#union">union</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> flags_n;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">int</A></B> busy : 1, local : 1, flag1_5 : 1, flag1_4 : 1, collapsed : 1, twin : 1, archived : 1, in_view : 1;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">int</A></B> folder : 1, overwritten : 1, checked : 1, hidden : 1, locked : 1, statvar : 1, graph_ref_1 : 1, graph_ref_0 : 1;<BR>
+</TD></TR></TABLE>
+} bits;<BR>
+</TD></TR></TABLE>
+} flags;<BR>
+<A HREF="alloc.html#HANDLE">HANDLE</A> handle;<BR>
+</TD></TR></TABLE>
+} SYM_ENTRY;</TD></TR></TABLE></P>
+<P><B>A structure representing a VAT symbol entry.</B></P>
+
+<P>Principally, SYM_ENTRY consists of the symbol name, the flags, and the handle associated with the symbol.
+The flags are defined as a union, so you can access to all flags together using the field <I>flags_n</I>
+(in such case, constants defined in the enum <A HREF="#SymFlags">SymFlags</A> may be useful for
+bit masking), or access to individual flags (which are defined as bit fields) using the field <I>bits</I>.
+Some flags are unused, and some flags have an unknown meaning. At the moment, the known flags are:
+<I>locked</I> (set for locked symbols), <I>hidden</I> (set for symbols which are hidden for
+the TI-Basic; in fact, "hidden" files are files which are currently opened, i.e. in-use files),
+<I>checked</I> (set for symbols which are checked in VAR-LINK dialog), <I>folder</I> (set for folder entries),
+<I>collapsed</I> (set for collapsed folders; this makes sense only on AMS 2.xx),
+<I>archived</I> (set for archived symbols), <I>twin</I> (set for
+twin symols, see <A HREF="#SymAddTwin">SymAddTwin</A>), and <I>local</I> (set for local symbols).
+For example, if "SymPtr" is the pointer to the VAT symbol entry, the following command makes
+this symbol invisible for TIOS:</P>
+<PRE>SymPtr-&gt;flags.bits.hidden = 1;
+</PRE>
+<P>Note that the <I>twin</I> bit may only be set if the symbol is really a twin
+symbol, i.e. an entry with the same name exists. Otherwise, the system will
+crash upon the next call to <A HREF="#SymAdd">SymAdd</A>.
+<BR><BR>
+The <I>handle</I> field always contains a handle to a
+<A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A> structure. It must contain valid data
+for the operating system to operate properly.
+<BR><BR>
+Each symbol has also associated compatibility flag (field <I>compat</I>). It determines how
+the symbol will behave during sending to unexpanded (non-Plus) TI-92. There are four possible values
+of the compatibility flag (these constants are defined in enum <A HREF="#CompatFlags">CompatFlags</A>):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>CF_NONE</TD><TD>Sends immediately</TD></TR>
+<TR><TD>CF_CONVERT</TD><TD>Converts and sends</TD></TR>
+<TR><TD>CF_ENHANCED</TD><TD>An enhanced token - may or may not work</TD></TR>
+<TR><TD>CF_NEW</TD><TD>Will not be sent</TD></TR>
+</TABLE>
+<BR>
+A compatibilty number of CF_CONVERT or CF_NEW is determined from symbols context.
+CF_ENHANCED is related mainly for internal tokens, which does not appear in final
+results and programs.
+<BR><BR>
+Here is the list of token tags (see <A HREF="estack.html#Tags">Tags</A>) which belong
+to CF_CONVERT, CF_ENHANCED and CF_NEW categories:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>Convert:</TD>
+<TD>LOCALVAR_TAG</TD></TR>
+<TR><TD VALIGN="TOP">Enhanced:&nbsp;&nbsp;&nbsp;</TD>
+<TD>_VAR_Q_TAG, PN_INFINITY_TAG, tag 0x5F (internal), START_TAG, ISTORE_TAG, ANS_TAG,
+ENTRY_TAG, MATRIX_TAG, ERROR_MSG_TAG, tags 0xF5, 0xF6 and 0xF7 (internal)
+</TD></TR>
+<TR><TD VALIGN="TOP">New:</TD>
+<TD>PART_TAG, PN1_TAG, PN2_TAG, EIGVC_TAG, EIGVL_TAG, DASH_TAG, DESOLVE_TAG, FDASH_TAG,
+ASM_TAG, ISPRIME_TAG, OTH_TAG, ROTATE_TAG, PARENTH_START_TAG, PARENTH_END_TAG,
+MAT_START_TAG, MAT_END_TAG, LIST_START_TAG, LIST_END_TAG, COMMA_TAG, SEMICOLON_TAG,
+COMPLEX_ANGLE_TAG, SINGLE_QUOTE_TAG, QUOTE_TAG, POLCPLX_TAG, TMPCNV_TAG,
+DELTA_TMPCNV_TAG, GETUNITS_TAG, SETUNITS_TAG, BIN_TAG, HEX_TAG, INT2BIN_TAG, INT2DEC_TAG,
+INT2HEX_TAG, DET_TOL_TAG, REF_TOL_TAG, RREF_TOL_TAG, SIMULT_TOL_TAG, GETCONFG_TAG,
+V_AUGMENT_TAG, EYE_PSI_TAG, TPLOT_TAG, DIFTOL_TAG, ZEYE_PSI_TAG, T0_TAG, DTIME_TAG,
+NCURVES_TAG, FLDRES_TAG, ESTEP_TAG, ZT0DE_TAG, ZTMAXDE_TAG, ZTSTEPDE_TAG, ZTPLOTDE_TAG,
+NCONTOUR_TAG, DISPHOME_ITAG, EXEC_ITAG, ARCHIVE_ITAG, UNARCHIV_ITAG, LU_ITAG, QR_ITAG,
+BLDDATA_ITAG, DRWCTOUR_ITAG, NEWPROB_ITAG, SINREG_ITAG, LOGISTIC_ITAG, CUSTMON_ITAG,
+CUSTMOFF_ITAG, SENDCHAT_ITAG
+</TD></TR></TABLE>
+<BR>
+<B>Note:</B> SYM_ENTRY structures are usually
+not locked, which means that pointers to them will become invalid if a heap
+compression occurs. Basically, this means that you can only operate on them
+for a short time in which you know that no heap compression can occur.</P>
+
+<HR>
+<H3><A NAME="SymFlags"><U>SymFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> SymFlags {SF_GREF1 = 0x0001, SF_GREF2 = 0x0002, SF_STATVAR = 0x0004, SF_LOCKED = 0x0008, SF_HIDDEN = 0x0010, SF_OPEN = 0x0010, SF_CHECKED = 0x0020, SF_OVERWRITTEN = 0x0040, SF_FOLDER = 0x0080, SF_INVIEW = 0x0100, SF_ARCHIVED = 0x0200, SF_TWIN = 0x0400, SF_COLLAPSED = 0x0800, SF_LOCAL = 0x4000, SF_BUSY = 0x8000};</TD></TR></TABLE></P>
+<P><B>An enumeration for easy access to flags in VAT symbol entries.</B></P>
+
+<P>SymFlags is an enumeration for easy access to flags in VAT symbol entries represented by the <A HREF="#SYM_ENTRY">SYM_ENTRY</A> structure.
+<BR><BR>
+See <A HREF="#SYM_ENTRY">SYM_ENTRY</A> for more info.</P>
+
+<HR>
+<H3><A NAME="SystemDataTypes"><U>SystemDataTypes</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> SystemDataTypes {SDT_EXPR = 0, SDT_LIST = 1, SDT_MAT = 2, SDT_FUNC = 3, SDT_PRGM = 4, SDT_PIC = 5, SDT_STR = 6, SDT_TEXT = 7, SDT_GDB = 8, SDT_DATA = 9, SDT_FIG = 10, SDT_MAC = 11, SDT_OTH = 12, SDT_SYS = 13, SDT_ALL = 14, SDT_ASM = 15};</TD></TR></TABLE></P>
+<P><B>Describes valid variable types in the "Var-Link" dialog, and for the <A HREF="#GetDataType">GetDataType</A> and <A HREF="#SmapTypeStrings">SmapTypeStrings</A> functions.</B></P>
+
+<P>See also: <A HREF="#GetDataType">GetDataType</A>, <A HREF="#SmapTypeStrings">SmapTypeStrings</A>, <A HREF="events.html#handleVarLinkKey">handleVarLinkKey</A></P>
+<HR>
+<H3><A NAME="VarRecallFlags"><U>VarRecallFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> VarRecallFlags {VR_NO_SYS_VARS = 0x01, VR_FUNC_NAME = 0x02, VR_LINK = 0x04};</TD></TR></TABLE></P>
+<P><B>A collection of flags used in <A HREF="#VarRecall">VarRecall</A>.</B></P>
+
+<P>VarRecallFlags is an enumeration describing possible flags used in the
+<A HREF="#VarRecall">VarRecall</A> function.</P>
+
+<HR>
+<H3><A NAME="VarStoreFlags"><U>VarStoreFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> VarStoreFlags {STOF_ESI = 0x4000, STOF_ELEMENT = 0x4001, STOF_NONE = 0x4002, STOF_HESI = 0x4003};</TD></TR></TABLE></P>
+<P><B>Describes possible flags for <A HREF="#VarStore">VarStore</A>.</B></P>
+
+<P>VarStoreFlags is an enumeration describing flags used in the <A HREF="#VarStore">VarStore</A>
+function. Only one of these flags may be used at a time.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

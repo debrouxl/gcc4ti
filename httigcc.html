@@ -1,0 +1,1091 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Making GCC4TI Programs</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>Making GCC4TI Programs</B></FONT>
+<HR>
+<UL>
+<LI><B><A HREF="#nostub">Making Kernel-Less (NoStub) Programs</A></B>
+<LI><B><A HREF="#kernel">Making Kernel-Based Programs</A></B>
+<LI><B><A HREF="#advanced">Advanced Options of GCC4TI</A></B>
+<LI><B><A HREF="#comment">Program Comments</A></B>
+<LI><B><A HREF="#incompat">Incompatibility Information</A></B>
+<LI><B><A HREF="#minams">Defining a Minimum AMS Version</A></B>
+<LI><B><A HREF="#amsdep">Overcoming AMS Dependencies</A></B>
+</UL>
+<HR>
+<H2><A NAME="nostub"><U>Making Kernel-Less (NoStub) Programs</U></A></H2>
+<P>NoStub programs are programs which don't <I>need</I> any kernel like PreOS for execution.
+However, they work with a kernel installed. Starting from release 2.2 of TIGCCLIB, TIGCC (and
+therefore GCC4TI) produces so-called NoStub programs by default (there is no need to include
+<A HREF="nostub.html">nostub.h</A> before including any other header files from this
+library as in releases of TIGCCLIB prior 2.2; this will be explained in more details below).
+As this release of the library is highly ANSI-compatible, the first example will be the
+classic Kernighan &amp; Ritchie "Hello world" example (called "Hello World 1", slightly modified
+to include clearing the screen and waiting for the keypress):</P>
+<PRE>#define SAVE_SCREEN         // this directive forces saving/restoring the screen
+
+#define USE_TI89            // produce all types of files
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;stdio.h&gt;          // standard ANSI C input/output support
+#include &lt;kbd.h&gt;            // keyboard handling support, needed for ngetchx
+
+void _main(void)            // main entry point is function _main
+{
+  clrscr ();                // clear the screen and reset print position
+  printf (&quot;Hello world!&quot;);  // do you know what this is?
+  ngetchx ();               // wait for a keypress
+}
+</PRE>
+<P>Note that the main entry point is <CODE>_main</CODE>, not <CODE>main</CODE>
+as defined in Kernighan &amp; Ritchie. The reason for it is the compatibility with
+kernels, which propose that the main program entry
+point is called <CODE>_main</CODE>. Also note that <CODE>_main</CODE> should be a function
+with return type <CODE>void</CODE> (not <CODE>int</CODE> as usual), because you can
+not return a status code to the operating system.
+<BR><BR>
+To compile this program, you can use the
+<A HREF="ide.html">GCC4TI Integrated Environment</A>, or you can type from the command line
+(if the file is named "hello.c"):
+<BR><BR>
+<B>tigcc -O2 hello.c</B>
+<BR><BR>
+Always include the switch <B>'-O2'</B>. It will turn on optimization
+(click <A HREF="comopts.html">here</A> to see much more about compiler command line options).
+<BR><BR>
+As you can see, defining macros named <CODE>USE_TI89</CODE>,
+<CODE>USE_TI92PLUS</CODE> (or <CODE>USE_TI92P</CODE>), and <CODE>USE_V200</CODE> will generate
+.89z (for the TI-89) or .9xz (for the TI-92&nbsp;Plus and V200) executable files.
+Only the calculators which you define this way are supported; if you only
+define <CODE>USE_TI89</CODE>, then only the TI-89 will be supported. Defining
+only one calculator model may generate shorter and faster code. See
+<A HREF="compat.html">compat.h</A> for more info.
+<BR><BR>
+The old way of defining global variables called <CODE>_ti89</CODE> and <CODE>_ti92plus</CODE>
+is still supported, but it is not recommended to use it any more, since no
+optimization of the above kind can be performed. In the IDE, you will find
+replacements for these macros in the project options.
+<BR><BR>
+The directive <CODE><A HREF="#advanced_savescreen">SAVE_SCREEN</A></CODE> forces saving the screen contents before
+execution and restoring them after execution of the program.
+<BR><BR>
+Users which are familiar with very old releases of TIGCCLIB might ask what
+has happened to the <A HREF="nostub.html">nostub.h</A> header file. Nowadays,
+the use of any header file from GCC4TILIB will automatically include
+the <A HREF="nostub.html">nostub.h</A> header file, except if the global preprocessor
+symbol <CODE>USE_KERNEL</CODE> is defined, or if the <A HREF="doors.html">doors.h</A>
+is included at the beginning (see section
+<A HREF="#kernel">How to make a kernel-based program</A> for more info). This way you need
+to include <CODE>nostub.h</CODE> manually only if you don't include any
+other header file from GCC4TILIB, which is extremely unlikely. To retain compatibility
+with programs created with previous versions of the library, including
+<A HREF="nostub.html">nostub.h</A> explicitly will not cause any damage.
+<BR><BR>
+The example given above works, but it is better to use TIOS-specific functions than ANSI C console
+functions. First, they are more flexible, and second, they are built-in in the OS,
+so using them will usually produce much shorter code. For example, the use of the
+<A HREF="stdio.html#printf">printf</A> function will increase the size of your program
+by about 200 bytes, because <A HREF="stdio.html#printf">printf</A> is an advanced
+high-level function (not present in the TIOS) which may do much more than writing "Hello
+world" on the screen (like formatted output, screen scrolling, etc.). So, to write
+just "Hello world" on the screen, it is a better idea to use particular TIOS functions
+like <A HREF="graph.html#DrawStr">DrawStr</A> to do the same thing: your program will
+be much shorter and more efficient (although less "standard"). This idea is illustrated
+in the following program ("Hello World 2"), which uses only TIOS functions, and which does
+the following:</P>
+<UL>
+<LI><P>saves the contents of the screen;</P></LI>
+<LI><P>clears the screen;</P></LI>
+<LI><P>displays the "Hello world!" message using the large font;</P></LI>
+<LI><P>draws a border around the message;</P></LI>
+<LI><P>waits for a keypress;</P></LI>
+<LI><P>restores the original contents of the screen before returning.</P></LI>
+</UL>
+
+
+<PRE>#define SAVE_SCREEN
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;graph.h&gt;
+#include &lt;kbd.h&gt;
+
+void _main(void)
+{
+  static WIN_RECT rect = {0, 0, 100, 14};
+  ClrScr ();
+  FontSetSys (F_8x10);
+  DrawStr (3, 3, &quot;Hello world!&quot;, A_NORMAL);
+  DrawClipRect (&amp;rect, ScrRect, A_NORMAL);
+  ngetchx ();
+}
+</PRE>
+<P>Note that <CODE><A HREF="#advanced_savescreen">SAVE_SCREEN</A></CODE> is a new directive introduced in
+TIGCCLIB 2.0. In older releases of TIGCCLIB you had to save and restore the
+screen manually, like in the following example ("Hello World 3"):</P>
+<PRE>#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;graph.h&gt;
+#include &lt;kbd.h&gt;
+
+void _main(void)
+{
+  LCD_BUFFER buffer;
+  static WIN_RECT rect = {0, 0, 100, 14};
+  LCD_save (buffer);
+  ClrScr ();
+  FontSetSys (F_8x10);
+  DrawStr (3, 3, &quot;Hello world!&quot;, A_NORMAL);
+  DrawClipRect (&amp;rect, ScrRect, A_NORMAL);
+  ngetchx ();
+  LCD_restore (buffer);
+}
+</PRE>
+<P>See <A HREF="graph.html">graph.h</A> and <A HREF="kbd.html">kbd.h</A> for
+detailed descriptions of the used functions and data types. Be aware of the slight difference between
+<A HREF="graph.html#ClrScr">ClrScr</A> defined in <A HREF="graph.html">graph.h</A> and
+<A HREF="stdio.html#clrscr">clrscr</A> defined in <A HREF="stdio.html">stdio.h</A>.
+<BR><BR>
+The <CODE>SAVE_SCREEN</CODE> directive does exactly the same thing as in the previous
+example, but the task is automatized (i.e. you need not to explicitely declare the save buffer
+and to call functions for saving and restoring screen manually). If you are not happy with such
+allocation (the buffer is allocated on the stack, reducing its size by 3840 bytes), don't use
+<CODE>SAVE_SCREEN</CODE> directive and perform saving and restoring the screen
+using an other method (for example, using dynamic memory allocation). Note that the
+total stack size on TI is limited to 16384 bytes.
+<BR><BR>
+The disadvantage of NoStub programs is that they are somewhat longer
+than kernel programs if the program contains many ROM calls (but in the above
+example, the NoStub version is shorter than the kernel version), and they can not call
+routines from external files (often called "libraries") whithout special support
+code. Any other features supported with this library of header files work in both
+kernel and NoStub mode, so if the difference in the program size is not enormous,
+and if no external libraries are needed, NoStub mode is highly recommended. Note that
+routines defined in these header files contain most of routines which are seen
+in various external libraries, sometimes maybe with a different name and syntax. I
+think that making a program which is independent of external library files is a
+big advantage!
+<BR><BR>
+If you make a NoStub program, you must also know that the exit point defined
+by the function <CODE>_exit</CODE> has no meaning in NoStub programs.</P>
+
+<P>See also: <A HREF="nostub.html">nostub.h</A></P>
+<HR>
+<H2><A NAME="kernel"><U>Making Kernel-Based Programs</U></A></H2>
+<P>To produce a kernel-based program, i.e. a program which will need PreOS for
+executing, simply define the global preprocessor symbol <CODE>USE_KERNEL</CODE>
+at the begining of your program, before including any other header files from
+the library. Alternatively, the old method (including the
+<A HREF="doors.html">doors.h</A> header file before including any other
+header files from the library) still works. In fact, if <CODE>USE_KERNEL</CODE>
+is defined, including any header file from the library will include
+<CODE>doors.h</CODE> automatically (if it is not included explicitely before).
+So, explicitely including <CODE>doors.h</CODE> is really necessary only if your
+program does not include any other header file from the library (which is
+extremely unlikely).
+<BR><BR>
+Here is a Kernighan &amp; Ritchie "Hello world" example (kernel version, called "Hello World 4"),
+which works exactly like the example given in the previous section
+(<A HREF="#nostub">Making Kernel-Less Programs</A>):</P>
+<PRE>#define USE_KERNEL          // include kernel support
+
+#define USE_TI89            // produce all types of files
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;stdio.h&gt;          // standard ANSI C input/output support
+#include &lt;kbd.h&gt;            // keyboard handling support, needed for ngetchx
+
+void _main(void)            // main entry point is function _main
+{
+  clrscr ();                // clear the screen and reset print position
+  printf (&quot;Hello world!&quot;);  // do you know what this is?
+  ngetchx ();               // wait for a keypress
+}
+</PRE>
+<P>Note that the directive <CODE><A HREF="#advanced_savescreen">SAVE_SCREEN</A></CODE>
+is not included like in the NoStub version. PreOS saves and restores the screen content by
+default, so no extra intervention is necessary.
+<BR><BR>
+Of course, it is better again to use TIOS specific functions than ANSI C console
+functions, so an extended "Hello world" TI-specific example (kernel-based
+version), which does the same as in the NoStub case, follows (called "Hello World 5"):</P>
+<PRE>#define USE_KERNEL
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;graph.h&gt;
+#include &lt;kbd.h&gt;
+
+void _main(void)
+{
+  static WIN_RECT rect = {0, 0, 100, 14};
+  ClrScr ();
+  FontSetSys (F_8x10);
+  DrawStr (3, 3, &quot;Hello world!&quot;, A_NORMAL);
+  DrawClipRect (&amp;rect, ScrRect, A_NORMAL);
+  ngetchx ();
+}
+</PRE>
+<P>See <A HREF="graph.html">graph.h</A> and <A HREF="kbd.html">kbd.h</A> for
+detailed descriptions of the used functions and data types. Be aware of the slight difference between
+<A HREF="graph.html#ClrScr">ClrScr</A> defined in <A HREF="graph.html">graph.h</A> and
+<A HREF="stdio.html#clrscr">clrscr</A> defined in <A HREF="stdio.html">stdio.h</A>.
+<BR><BR>
+To compile this program, you can use the
+<A HREF="ide.html">GCC4TI Integrated Environment</A>, or you can type from the command line
+(if the file is named "hello.c"):
+<BR><BR>
+<B>tigcc -O2 hello.c</B>
+<BR><BR>
+Always include the <B>'-O2'</B> or <B>'-Os'</B> switch: it will turn on optimization
+(click <A HREF="comopts.html">here</A> to see much more about compiler command line options).
+See also the notes given with the example in the previous section.
+<BR><BR>
+If you make programs spread in more than one file, you must define
+<CODE>USE_KERNEL</CODE> (or include <A HREF="doors.html">doors.h</A>) in each file!
+<BR><BR>
+The advantage of kernel-based programs lies in the fact that they are
+often (but not always) shorter than NoStub programs if the
+program contains a lot of ROM calls. Kernel-based programs can also call
+routines from external files (often called "libraries") without special
+library support inside the program. Any other features supported
+with this library of header files work in both kernel and
+NoStub mode, so if the difference in the program size is not
+too large, and if no external libraries are needed, NoStub mode
+is recommended. Note that routines defined in these header files
+contain most of the routines which are seen in various external
+libraries, sometimes maybe with different name and syntax.
+<BR><BR>
+Additionally, if you want to make your program even smaller but only want to support
+new versions of the PreOS kernel, you can define <CODE>USE_PREOS_COMPRESSED_TABLES</CODE>.
+This will create compressed versions of the relocation tables, which are not
+available in older kernels. If you try to run the program with an old kernel
+installed, you will get an error message.
+<BR><BR>
+If you make a kernel-based program, knowing the following facts may be useful:</P>
+<UL>
+<LI><P>You can produce an external library file by defining the global symbol
+<CODE>_library</CODE>, i.e. by putting <CODE>int&nbsp;_library</CODE>
+in your program. If the name of your library is for example <I>MyLib</I>,
+all symbols with names like <I>MyLib__nnnn</I> will be exported as public. To make
+life easier, use the <CODE>#define</CODE> directive. For example, if you
+want to export function named <I>MyFunc</I>, you can, for example, put the directive
+<CODE>#define&nbsp;MyFunc&nbsp;MyLib__0005</CODE> at the beginning of
+your library. The same directive must be included in the program which wants
+to use the function <I>MyFunc</I> from the library <I>MyLib</I>. Also, the prototype
+of the imported function also needs to be defined.
+</P></LI>
+<LI><P>Kernel-based programs may have an exit point. The function with name
+<CODE>_exit</CODE> will be executed if and only if the program is terminated
+in an abnormal way, for example if there was an error, or if the user pressed
+STO+ON.</P></LI>
+</UL>
+
+<P>See also: <A HREF="doors.html">doors.h</A></P>
+<HR>
+<H2><A NAME="advanced"><U>Advanced Options of GCC4TI</U></A></H2>
+<P>There are several ways to optimize programs further, and enable special support
+for some not so common situations:</P>
+
+<UL>
+<LI><B><A HREF="#advanced_savescreen">SAVE_SCREEN</A></B>
+<LI><B><A HREF="#advanced_optrom">OPTIMIZE_ROM_CALLS</A></B>
+<LI><B><A HREF="#advanced_kernelrom">KERNEL_FORMAT_ROM_CALLS</A></B>
+<LI><B><A HREF="#advanced_mlinkrom">MLINK_FORMAT_ROM_CALLS</A></B>
+<LI><B><A HREF="#advanced_compressedrom">COMPRESSED_FORMAT_ROM_CALLS</A></B>
+<LI><B><A HREF="#advanced_flinerom">USE_FLINE_ROM_CALLS</A></B>
+<LI><B><A HREF="#advanced_flinejmp">USE_FLINE_JUMPS</A></B>
+<LI><B><A HREF="#advanced_flinejmp_4b">USE_4_BYTE_FLINE_JUMPS</A></B>
+<LI><B><A HREF="#advanced_kernelrelocs">KERNEL_FORMAT_RELOCS</A></B>
+<LI><B><A HREF="#advanced_mlinkrelocs">MLINK_FORMAT_RELOCS</A></B>
+<LI><B><A HREF="#advanced_compressedrelocs">COMPRESSED_FORMAT_RELOCS</A></B>
+<LI><B><A HREF="#advanced_mergebss">MERGE_BSS</A></B>
+<LI><B><A HREF="#advanced_kernelbss">KERNEL_FORMAT_BSS</A></B>
+<LI><B><A HREF="#advanced_mlinkbss">MLINK_FORMAT_BSS</A></B>
+<LI><B><A HREF="#advanced_compressedbss">COMPRESSED_FORMAT_BSS</A></B>
+<LI><B><A HREF="#advanced_uninitbss">OMIT_BSS_INIT</A></B>
+<LI><B><A HREF="#advanced_kerneldata">KERNEL_FORMAT_DATA_VAR</A></B>
+<LI><B><A HREF="#advanced_mlinkdata">MLINK_FORMAT_DATA_VAR</A></B>
+<LI><B><A HREF="#advanced_compresseddata">COMPRESSED_FORMAT_DATA_VAR</A></B>
+<LI><B><A HREF="#advanced_optcalc">OPTIMIZE_CALC_CONSTS</A></B>
+<LI><B><A HREF="#advanced_calcdetect">NO_CALC_DETECT</A></B>
+<LI><B><A HREF="#advanced_ghostspace">EXECUTE_IN_GHOST_SPACE</A></B>
+<LI><B><A HREF="#advanced_strictpointers">STRICT_POINTERS</A></B>
+<LI><B><A HREF="#advanced_fileinuse">SET_FILE_IN_USE_BIT</A></B>
+<LI><B><A HREF="#advanced_unofficial_support">UNOFFICIAL_OS_SUPPORT</A></B>
+<LI><B><A HREF="#advanced_unofficial_reject">REJECT_UNOFFICIAL_OS</A></B>
+<LI><B><A HREF="#advanced_generic_archive">_GENERIC_ARCHIVE</A></B>
+<LI><B><A HREF="#advanced_linker">Linker Optimization Facilities</A></B>
+<LI><B><A HREF="#advanced_switches_gcc">GCC Optimization Switches</A></B>
+<LI><B><A HREF="#advanced_switches_as">GNU Assembler Optimization Switches</A></B>
+</UL>
+<P>See also: <A HREF="default.html">default.h</A>, <A HREF="#minams">MIN_AMS</A>, <A HREF="htretval.html">RETURN_VALUE</A>, <A HREF="htretval.html#reterr">ENABLE_ERROR_RETURN</A></P>
+<H3><A NAME="advanced_savescreen"><U>SAVE_SCREEN</U></A></H3>
+<P>If you put</P>
+<PRE>#define SAVE_SCREEN
+</PRE>
+<P>at the beginning of your program, the screen will be saved automatically at
+startup and restored when the program terminates. This takes
+<A HREF="graph.html#LCD_SIZE">LCD_SIZE</A> bytes on the stack.
+<BR><BR>
+<B>Note:</B> Kernels always save the screen automatically, so this directive
+has no effect in kernel mode.</P>
+
+<H3><A NAME="advanced_optrom"><U>OPTIMIZE_ROM_CALLS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define OPTIMIZE_ROM_CALLS
+</PRE>
+<P>at the beginning of the program, the compiler will reserve one processor register
+(a5) to keep the base address of TIOS jump table in it. This will make all calls
+to TIOS routines smaller and faster. The disadvantage of this method lies in the
+fact that the a5 register is fully reserved during the execution of the program, so
+the compiler will have one register less for internal manipulations. The consequence
+is that it sometimes can produce somewhat longer code when compiling a particular
+expression or statement. Generally, the use of <CODE>OPTIMIZE_ROM_CALLS</CODE> usually
+leads to shorter and faster code, but this does not always need to be true. It is best
+to try it and see how it performs in a particular program.
+<BR><BR>
+If you define <CODE>OPTIMIZE_ROM_CALLS</CODE> in one file, you must also define it in
+every file that uses a function from this file.
+<BR><BR>
+<B>Note:</B> Avoid <CODE>OPTIMIZE_ROM_CALLS</CODE> in a program which may change its flow
+asynchronously in an unpredictable way (an event-driven program, for example).
+Such programs are mainly all programs which use some kind of callback function (like
+programs which use <A HREF="system.html#OSVRegisterTimer">OSVRegisterTimer</A>, complex
+dialogs with callback functions, the function <A HREF="stdio.html#vcbprintf">vcbprintf</A> etc.).
+There may also be some problems with floating point arithmetic.</P>
+
+<H3><A NAME="advanced_kernelrom"><U>KERNEL_FORMAT_ROM_CALLS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define KERNEL_FORMAT_ROM_CALLS
+</PRE>
+<P>at the beginning of the program, ROM calls will be stored and relocated in
+the same manner as kernel programs do it. This does <I>not</I> mean that your
+program will need a kernel to run. The kernel format for ROM calls is very
+efficient if the same ROM calls are used at many different places, but may
+waste space otherwise. You need to see for yourself whether using it makes
+the program smaller.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_kernel_rom_calls">__ld_insert_kernel_rom_calls</A>.</P>
+
+<P>See also: <A HREF="#advanced_mlinkrom">MLINK_FORMAT_ROM_CALLS</A>, <A HREF="#advanced_compressedrom">COMPRESSED_FORMAT_ROM_CALLS</A></P>
+<H3><A NAME="advanced_mlinkrom"><U>MLINK_FORMAT_ROM_CALLS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define MLINK_FORMAT_ROM_CALLS
+</PRE>
+<P>at the beginning of the program, ROM calls will be stored in the program in a
+compressed format.
+This format for the relocation entries (first used in Johan Eilert's mlink
+linker) is designed to balance the size of the relocs against the size of the
+decompression routine. The relocation entries take only slightly more space
+than in the compressed format, but the decoding code is much smaller.
+Moreover, as for the compressed format, the decoding code only has to be
+inserted into the program once if multiple <CODE>MLINK_FORMAT_...</CODE>
+features are used. In most cases, this should be the optimal format to use for
+relocation entries, but for programs with very few or very many relocations,
+the kernel or compressed formats (respectively) are more efficient.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_mlink_rom_calls">__ld_insert_mlink_rom_calls</A>.</P>
+
+<P>See also: <A HREF="#advanced_kernelrom">KERNEL_FORMAT_ROM_CALLS</A>, <A HREF="#advanced_compressedrom">COMPRESSED_FORMAT_ROM_CALLS</A></P>
+<H3><A NAME="advanced_compressedrom"><U>COMPRESSED_FORMAT_ROM_CALLS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define COMPRESSED_FORMAT_ROM_CALLS
+</PRE>
+<P>at the beginning of the program, ROM calls will be stored in the program in a
+compressed format.
+Relocation entries in this format take the smallest space that is reasonable.
+The relocation code for the compressed format is rather large, but part of it
+only has to be inserted into the program once if multiple
+<CODE>COMPRESSED_FORMAT_...</CODE> features are used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_compressed_rom_calls">__ld_insert_compressed_rom_calls</A>.</P>
+
+<P>See also: <A HREF="#advanced_kernelrom">KERNEL_FORMAT_ROM_CALLS</A>, <A HREF="#advanced_mlinkrom">MLINK_FORMAT_ROM_CALLS</A></P>
+<H3><A NAME="advanced_flinerom"><U>USE_FLINE_ROM_CALLS</U></A></H3>
+<P>AMS 2.04 and higher support a method of calling ROM calls in a way that is shorter
+than any other way, but very slow. If you want to use this method, write</P>
+<PRE>#define USE_FLINE_ROM_CALLS
+</PRE>
+<P>at the beginning of the program. However, you need to <A HREF="#minams">define a minimum AMS version</A>
+for your program if you want to use this. You can bypass this, assuming that the user
+has installed an emulator for Line 1111 ROM calls, by defining <CODE>USE_FLINE_EMULATOR</CODE>.
+Alternatively, you can even define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>
+to make the program install its own handler for Line 1111 ROM calls.
+<BR><BR>
+<B>Note:</B> The Line 1111 handler of the AMS does not support calling TIOS
+functions from interrupts. If you want to use your own interrupt handlers for
+something, you will have to define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>.</P>
+
+<P>See also: <A HREF="#advanced_flinejmp">USE_FLINE_JUMPS</A></P>
+<H3><A NAME="advanced_flinejmp"><U>USE_FLINE_JUMPS</U></A></H3>
+<P>AMS 2.04 and higher support a method of jumping to other places in the code
+in a way that is shorter than any other way, but very slow.
+If you want to use this method, write</P>
+<PRE>#define USE_FLINE_JUMPS
+</PRE>
+<P>at the beginning of the program. However, you need to <A HREF="#minams">define a minimum AMS version</A>
+for your program if you want to use this. You can bypass this, assuming that the user
+has installed an emulator for Line 1111 jumps, by defining <CODE>USE_FLINE_EMULATOR</CODE>.
+Alternatively, you can even define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>
+to make the program install its own handler for Line 1111 jumps.
+<BR><BR>
+<B>Note:</B> The Line 1111 handler of the AMS does not support Line 1111
+jumps from interrupts. If you want to use your own interrupt handlers for
+something, you will have to define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>,
+which includes special support for such jumps automatically if
+<A HREF="intr.html#DEFINE_INT_HANDLER">DEFINE_INT_HANDLER</A> is used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#control_ld_use_fline_jumps">__ld_use_fline_jumps</A>.</P>
+
+<P>See also: <A HREF="#advanced_flinejmp_4b">USE_4_BYTE_FLINE_JUMPS</A>, <A HREF="#advanced_flinerom">USE_FLINE_ROM_CALLS</A></P>
+<H3><A NAME="advanced_flinejmp_4b"><U>USE_4_BYTE_FLINE_JUMPS</U></A></H3>
+<P>Normal <A HREF="#advanced_flinejmp">F-Line jumps</A> take 6 bytes, but
+if they are not pc-relative but relative to the beginning of the program,
+they can fit into 4 bytes. To activate 4-byte F-Line jumps, put</P>
+<PRE>#define USE_4_BYTE_FLINE_JUMPS
+</PRE>
+<P>at the beginning of the program. However, only the internal F-Line emulator
+supports such jumps, so you need to define
+<CODE>USE_INTERNAL_FLINE_EMULATOR</CODE> as well, to make the program install
+its own handler for Line 1111 jumps.
+<BR><BR>
+<B>Note:</B> Since 4-byte F-Line jumps use codes that are otherwise used for
+ROM calls, this might break applications that are called from the program, if
+any. However, this is very unlikely, as the two ROM calls used are not
+defined yet.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#control_ld_use_4byte_fline_jumps">__ld_use_4byte_fline_jumps</A>.</P>
+
+<P>See also: <A HREF="#advanced_flinejmp">USE_FLINE_JUMPS</A>, <A HREF="#advanced_flinerom">USE_FLINE_ROM_CALLS</A></P>
+<H3><A NAME="advanced_kernelrelocs"><U>KERNEL_FORMAT_RELOCS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define KERNEL_FORMAT_RELOCS
+</PRE>
+<P>at the beginning of the program, relocation entries will be stored and
+relocated in the same manner as kernel programs do it. This does <I>not</I>
+mean that your program will need a kernel to run. The kernel format for
+relocation information is always smaller than the native TIOS format, but the
+relocation code will take up a few bytes. You need to see for yourself
+whether using it makes the program smaller.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_kernel_relocs">__ld_insert_kernel_relocs</A>.</P>
+
+<P>See also: <A HREF="#advanced_compressedrelocs">MLINK_FORMAT_RELOCS</A>, <A HREF="#advanced_compressedrelocs">COMPRESSED_FORMAT_RELOCS</A></P>
+<H3><A NAME="advanced_mlinkrelocs"><U>MLINK_FORMAT_RELOCS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define MLINK_FORMAT_RELOCS
+</PRE>
+<P>at the beginning of the program, relocation entries will be stored in the
+program in a compressed format.
+This format for the relocation entries (first used in Johan Eilert's mlink
+linker) is designed to balance the size of the relocs against the size of the
+decompression routine. The relocation entries take only slightly more space
+than in the compressed format, but the decoding code is much smaller.
+Moreover, as for the compressed format, the decoding code only has to be
+inserted into the program once if multiple <CODE>MLINK_FORMAT_...</CODE>
+features are used. In most cases, this should be the optimal format to use for
+relocation entries, but for programs with very few or very many relocations,
+the kernel or compressed formats (respectively) are more efficient.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_mlink_relocs">__ld_insert_mlink_relocs</A>.</P>
+
+<P>See also: <A HREF="#advanced_kernelrelocs">KERNEL_FORMAT_RELOCS</A>, <A HREF="#advanced_compressedrelocs">COMPRESSED_FORMAT_RELOCS</A></P>
+<H3><A NAME="advanced_compressedrelocs"><U>COMPRESSED_FORMAT_RELOCS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define COMPRESSED_FORMAT_RELOCS
+</PRE>
+<P>at the beginning of the program, relocation entries will be stored in the
+program in a compressed format.
+Relocation entries in this format take the smallest space that is reasonable.
+The relocation code for the compressed format is rather large, but part of it
+only has to be inserted into the program once if multiple
+<CODE>COMPRESSED_FORMAT_...</CODE> features are used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_compressed_relocs">__ld_insert_compressed_relocs</A>.</P>
+
+<P>See also: <A HREF="#advanced_kernelrelocs">KERNEL_FORMAT_RELOCS</A>, <A HREF="#advanced_mlinkrelocs">MLINK_FORMAT_RELOCS</A></P>
+<H3><A NAME="advanced_mergebss"><U>MERGE_BSS</U></A></H3>
+<P>In nostub mode, if you do not want the BSS section (which holds all
+uninitialized global variables) to be created dynamically, you can write</P>
+<PRE>#define MERGE_BSS
+</PRE>
+<P>at the beginning of all files. Unlike the <B>'-mno-bss'</B> compiler switch,
+this ensures that the variables are initialized to zero.</P>
+
+<P>See also: <A HREF="#advanced_kernelbss">KERNEL_FORMAT_BSS</A>, <A HREF="#advanced_mlinkbss">MLINK_FORMAT_BSS</A>, <A HREF="#advanced_compressedbss">COMPRESSED_FORMAT_BSS</A></P>
+<H3><A NAME="advanced_kernelbss"><U>KERNEL_FORMAT_BSS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define KERNEL_FORMAT_BSS
+</PRE>
+<P>at the beginning of the program, a BSS section will be created in the same
+manner as kernel programs do it. A BSS section holds uninitialized global
+variables. This does <I>not</I> mean that your program will need a kernel to
+run. Currently, this is the default.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_kernel_bss_refs">__ld_insert_kernel_bss_refs</A>.</P>
+
+<P>See also: <A HREF="#advanced_mlinkbss">MLINK_FORMAT_BSS</A>, <A HREF="#advanced_compressedbss">COMPRESSED_FORMAT_BSS</A>, <A HREF="#advanced_mergebss">MERGE_BSS</A></P>
+<H3><A NAME="advanced_mlinkbss"><U>MLINK_FORMAT_BSS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define MLINK_FORMAT_BSS
+</PRE>
+<P>at the beginning of the program, a BSS section will be created dynamically at
+run time, and the references into this section will be stored in the program
+in a compressed format. A BSS section holds uninitialized global variables.
+This format for the relocation entries (first used in Johan Eilert's mlink
+linker) is designed to balance the size of the relocs against the size of the
+decompression routine. The relocation entries take only slightly more space
+than in the compressed format, but the decoding code is much smaller.
+Moreover, as for the compressed format, the decoding code only has to be
+inserted into the program once if multiple <CODE>MLINK_FORMAT_...</CODE>
+features are used. In most cases, this should be the optimal format to use for
+relocation entries, but for programs with very few or very many relocations,
+the kernel or compressed formats (respectively) are more efficient.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_mlink_bss_refs">__ld_insert_mlink_bss_refs</A>.</P>
+
+<P>See also: <A HREF="#advanced_kernelbss">KERNEL_FORMAT_BSS</A>, <A HREF="#advanced_compressedbss">COMPRESSED_FORMAT_BSS</A>, <A HREF="#advanced_mergebss">MERGE_BSS</A></P>
+<H3><A NAME="advanced_compressedbss"><U>COMPRESSED_FORMAT_BSS</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define COMPRESSED_FORMAT_BSS
+</PRE>
+<P>at the beginning of the program, a BSS section will be created dynamically at
+run time, and the references into this section will be stored in the program
+in a compressed format. A BSS section holds uninitialized global variables.
+Relocation entries in this format take the smallest space that is reasonable.
+The relocation code for the compressed format is rather large, but part of it
+only has to be inserted into the program once if multiple
+<CODE>COMPRESSED_FORMAT_...</CODE> features are used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_compressed_bss_refs">__ld_insert_compressed_bss_refs</A>.</P>
+
+<P>See also: <A HREF="#advanced_kernelbss">KERNEL_FORMAT_BSS</A>, <A HREF="#advanced_mlinkbss">MLINK_FORMAT_BSS</A>, <A HREF="#advanced_mergebss">MERGE_BSS</A></P>
+<H3><A NAME="advanced_uninitbss"><U>OMIT_BSS_INIT</U></A></H3>
+<P>Writing</P>
+<PRE>#define OMIT_BSS_INIT
+</PRE>
+<P>at the beginning of a file specifies that uninitialized global variables
+defined in this file do not need to be set to zero at program startup. If
+this is done for all files, the BSS initialization is skipped.</P>
+
+<H3><A NAME="advanced_kerneldata"><U>KERNEL_FORMAT_DATA_VAR</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define KERNEL_FORMAT_DATA_VAR
+</PRE>
+<P>at the beginning of the program, and the data section is put into an external
+data variable, references into the data variable will be stored in the same
+manner as kernel programs store references. This does <I>not</I> mean that
+your program will need a kernel to run. Currently, this is the default.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_kernel_data_refs">__ld_insert_kernel_data_refs</A>.</P>
+
+<P>See also: <A HREF="#advanced_mlinkdata">MLINK_FORMAT_DATA_VAR</A>, <A HREF="#advanced_compresseddata">COMPRESSED_FORMAT_DATA_VAR</A></P>
+<H3><A NAME="advanced_mlinkdata"><U>MLINK_FORMAT_DATA_VAR</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define MLINK_FORMAT_DATA_VAR
+</PRE>
+<P>at the beginning of the program, and the data section is put into an external
+data variable, references into the data variable will be stored in the
+program in a compressed format.
+This format for the relocation entries (first used in Johan Eilert's mlink
+linker) is designed to balance the size of the relocs against the size of the
+decompression routine. The relocation entries take only slightly more space
+than in the compressed format, but the decoding code is much smaller.
+Moreover, as for the compressed format, the decoding code only has to be
+inserted into the program once if multiple <CODE>MLINK_FORMAT_...</CODE>
+features are used. In most cases, this should be the optimal format to use for
+relocation entries, but for programs with very few or very many relocations,
+the kernel or compressed formats (respectively) are more efficient.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_mlink_data_refs">__ld_insert_mlink_data_refs</A>.</P>
+
+<P>See also: <A HREF="#advanced_kerneldata">KERNEL_FORMAT_DATA_VAR</A>, <A HREF="#advanced_compresseddata">COMPRESSED_FORMAT_DATA_VAR</A></P>
+<H3><A NAME="advanced_compresseddata"><U>COMPRESSED_FORMAT_DATA_VAR</U></A></H3>
+<P>In nostub mode, if you put</P>
+<PRE>#define COMPRESSED_FORMAT_DATA_VAR
+</PRE>
+<P>at the beginning of the program, and the data section is put into an external
+data variable, references into the data variable will be stored in the
+program in a compressed format.
+Relocation entries in this format take the smallest space that is reasonable.
+The relocation code for the compressed format is rather large, but part of it
+only has to be inserted into the program once if multiple
+<CODE>COMPRESSED_FORMAT_...</CODE> features are used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#insert_compressed_data_refs">__ld_insert_compressed_data_refs</A>.</P>
+
+<P>See also: <A HREF="#advanced_kerneldata">KERNEL_FORMAT_DATA_VAR</A>, <A HREF="#advanced_mlinkdata">MLINK_FORMAT_DATA_VAR</A></P>
+<H3><A NAME="advanced_optcalc"><U>OPTIMIZE_CALC_CONSTS</U></A></H3>
+<P>If you are compiling a program for more than one calculator, you can put</P>
+<PRE>#define OPTIMIZE_CALC_CONSTS
+</PRE>
+<P>at the beginning of the program to optimize code speed and size. This will
+affect <A HREF="compat.html#PSEUDO_CONST_CALC">PSEUDO_CONST_CALC</A> and
+everything derived from it - mainly pseudo-constants from
+<A HREF="compat.html">compat.h</A>, but you can also define your own
+pseudo-constants very easily.
+<BR><BR>
+Defining this does have one drawback: Each of the executable files produced
+by the linker can only be run on the calculator it was linked for and cannot
+be transferred from one type of calculator to another. A check to make sure
+the program is not run on a wrong calculator is inserted automatically,
+unless <CODE><A HREF="#advanced_calcdetect">NO_CALC_DETECT</A></CODE>
+is defined.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld.html#symbols_ld_calc_const">__ld_calc_const_...</A>.</P>
+
+<H3><A NAME="advanced_calcdetect"><U>NO_CALC_DETECT</U></A></H3>
+<P>By default, code to detect the calculator model is inserted at the start
+of the program. This is used mainly to optimize the pseudo-constants defined
+in <A HREF="compat.html">compat.h</A> if more than one calculator has
+to be supported. However, it is also used to prevent the program from being
+run on an unsupported calculator. You can turn this check off by writing</P>
+<PRE>#define NO_CALC_DETECT
+</PRE>
+<P>Note that the detection is turned off automatically if it is not needed.</P>
+
+<H3><A NAME="advanced_ghostspace"><U>EXECUTE_IN_GHOST_SPACE</U></A></H3>
+<P>Sometimes, on hardware version 2, it is necessary to execute a program in the
+so-called "ghost space", which is the area of addresses above 0x40000. If you
+need to know more about this, read the
+<A HREF="faq.html#49">launcher</A> FAQ entry. If you put</P>
+<PRE>#define EXECUTE_IN_GHOST_SPACE
+</PRE>
+<P>at the beginning of your program, on hardware version 2 (and 1, for
+backwards compatibility reasons), the program will automatically be 
+executed in the ghost space. This causes an overhead of about 200 bytes.
+More precisely, it will <B>relocate</B> itself in the ghost space (by
+applying <A HREF="system.html#EX_patch">EX_patch</A> to itself with the
+start address increased by 0x40000) before entering the ghost space.
+Everything will be performed <I>before</I> anything else. Therefore, there
+are no limitations introduced by this directive on hardware versions 1 and 2,
+whereas the older
+<A HREF="system.html#enter_ghost_space">enter_ghost_space</A> function
+was very limited and hard to use.
+<BR><BR>
+<CODE>EXECUTE_IN_GHOST_SPACE</CODE> allows the user to simply call one
+program from another, without worrying about the AMS protections which
+usually prevent this.
+<BR><BR>
+Unfortunately, on hardware version 3 (TI-89 Titanium), it is not possible
+anymore to bypass the execution protection this way. EXECUTE_IN_GHOST_SPACE
+detects hardware version 3 and requires a FlashROM patch to be present,
+refusing the execution otherwise. The name might be changed in future versions
+of GCC4TI to reflect this. Therefore, you need to know that you should
+<I>not</I> blindly add 0x40000 to an address, because this does not work <I>at
+all</I> on the TI-89 Titanium. Instead, use <CODE>HW_VERSION==2?0x40000:0</CODE>
+or <CODE>HW_VERSION&lt;=2?0x40000:0</CODE> as appropriate.</P>
+
+<H3><A NAME="advanced_strictpointers"><U>STRICT_POINTERS</U></A></H3>
+<P>If functions from the GCC4TI Library take a pointer to an unsigned integer as an argument,
+you can usually pass a signed integer as well. However, this may not be desirable,
+as the function may write values to it which the turn out to be negative.
+The same is true the other way. To prevent this, use</P>
+<PRE>#define STRICT_POINTERS
+</PRE>
+
+<H3><A NAME="advanced_fileinuse"><U>SET_FILE_IN_USE_BIT</U></A></H3>
+<P>With this definition, the program's <A HREF="vat.html#SYM_ENTRY">in use</A> (a.k.a. hidden)
+bit is set while the program is running. Normally, this isn't necessary; however, the event dispatching loop deletes
+<A HREF="vat.html#SymAddTwin">twin symbols</A> unless their in-use bit is set. In many cases,
+programs which might be archived will not call the event dispatching loop directly. However, dialog
+boxes (including the catalog) <I>do</I> call the event dispatching loop. The result: If an archived
+program uses dialog boxes (including the catalog), then the program's twin symbol will get
+deleted. Thus, the area of memory the program occupies gets freed, and the program will almost
+certainly crash. Setting this bit is handled automatically now, but you can still set it manually by defining
+this at the beginning of a file:</P>
+<PRE>#define SET_FILE_IN_USE_BIT
+</PRE>
+
+<H3><A NAME="advanced_unofficial_support"><U>UNOFFICIAL_OS_SUPPORT</U></A></H3>
+<P>Normally, programs written in GCC4TI are ensured to be compatible only with
+the "AMS" operating system that is installed on TI-89, TI-89T, TI-92 Plus or
+V200 calculators by default. Running them on unofficial operating systems
+might produce an error message or crash the calculator. If you write</P>
+<PRE>#define UNOFFICIAL_OS_SUPPORT
+</PRE>
+<P>at the top of each source file, most of the hacks that require the original
+"AMS" software to be installed are turned off, generating error messages at
+compile time instead. Defining a higher
+<CODE><A HREF="#minams">MIN_AMS</A></CODE> value fixes the
+compile-time errors, but this might also prevent the program from being run
+on certain unofficial operating systems.
+<BR><BR>
+Of course, this definition does not guarantee that any <I>particular</I>
+unofficial operating system can run the program.</P>
+
+<P>See also: <A HREF="#advanced_unofficial_reject">REJECT_UNOFFICIAL_OS</A></P>
+<H3><A NAME="advanced_unofficial_reject"><U>REJECT_UNOFFICIAL_OS</U></A></H3>
+<P>If your program uses a hack that is likely to fail in unofficial operating
+systems, you should write</P>
+<PRE>#define REJECT_UNOFFICIAL_OS
+</PRE>
+<P>at the top of at least one source file. This checks against all known
+unofficial operating systems (currently only a yet unreleased system called
+"PedroM"), before actually executing the program. However, do not abuse this
+feature to reject unofficial operating systems because you do not like the
+idea of unofficial operating systems, or because you know that your program
+does not work on a <I>particular</I> system. Valid uses of this feature are
+rare.</P>
+
+<P>See also: <A HREF="#advanced_unofficial_support">UNOFFICIAL_OS_SUPPORT</A></P>
+<H3><A NAME="advanced_generic_archive"><U>_GENERIC_ARCHIVE</U></A></H3>
+<P>If you are writing a function archive (also known as a static library), you
+will probably want to write:</P>
+<PRE>#define _GENERIC_ARCHIVE
+</PRE>
+<P>at the top of every C file that includes a header file from the GCC4TI
+Library. It tells the GCC4TI Library that you are creating a function archive
+(static library) which you want programs to be able to use no matter what
+their compiler, GCC4TILIB, linker and output format settings are. It disables
+all optimizations which rely on startup code, and it makes the library use a
+kernel-independent ROM call mechanism. It also disables outputting of any
+linker control symbols which force a specific output format.
+<BR><BR>
+All static libraries should use this option unless they are created for a
+very specific program (which implies you are probably better off linking the
+files directly into your project). However, some special features of the
+GCC4TI Library may not be available.</P>
+
+<H3><A NAME="advanced_linker"><U>Linker Optimization Facilities</U></A></H3>
+<P>The <A HREF="ld.html">GCC4TI linker</A> provides a lot of settings to
+control the optimization of binary code. When using the
+<A HREF="ide.html">IDE</A>, you can set these options in the "Linking"
+tab of the project settings. When using the command-line compiler, you can
+use the <A HREF="ld.html#invocation_ld">linker switches</A>.
+<BR><BR>
+To make full use of section reordering, you should pass
+<B>'-ffunction-sections'</B> and <B>'-fdata-sections'</B> to the compiler.</P>
+
+<H3><A NAME="advanced_switches_gcc"><U>GCC Optimization Switches</U></A></H3>
+<P>The following <A HREF="comopts.html">GCC switches</A> can possibly
+generate better code. However, some of them can also increase code size,
+decrease speed, or even produce invalid code if they are used incorrectly:</P>
+<UL>
+<LI><P><B>'-O1'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B></P></LI>
+<LI><P><B>'-fomit-frame-pointer'</B></P></LI>
+<LI><P><B>'-mregparm'</B></P></LI>
+<LI><P><B>'-freg-relative-<I>reg</I>'</B></P></LI>
+<LI><P><B>'-fzero-initialized-in-bss'</B></P></LI>
+<LI><P><B>'-mno-bss'</B></P></LI>
+</UL>
+
+<H3><A NAME="advanced_switches_as"><U>GNU Assembler Optimization Switches</U></A></H3>
+<P>The following <A HREF="gnuasm.html#SEC12">GNU assembler switches</A>
+can possibly generate better code:</P>
+<UL>
+<LI><P><B>'-l'</B></P></LI>
+<LI><P><B>'--short-jumps'</B></P></LI>
+</UL>
+
+<HR>
+<H2><A NAME="comment"><U>Program Comments</U></A></H2>
+<P>Program comments are data supplied by the author of a program, to provide
+additional information for users. Some or all of the information may be
+ignored depending on the type of program or library you are creating.
+Currently only nostub programs can handle the full range of information;
+kernel programs are restricted to the simple comment string. For
+<A HREF="htdll.html">Nostub DLLs</A>, the information is <I>not</I>
+ignored (so it will waste space in the DLL), although it should be.</P>
+
+<UL>
+<LI><B><A HREF="#comment_string">COMMENT_STRING</A></B>
+<LI><B><A HREF="#comment_program_name">COMMENT_PROGRAM_NAME</A></B>
+<LI><B><A HREF="#comment_version_string">COMMENT_VERSION_STRING</A></B>
+<LI><B><A HREF="#comment_version_number">COMMENT_VERSION_NUMBER</A></B>
+<LI><B><A HREF="#comment_authors">COMMENT_AUTHORS</A></B>
+<LI><B><A HREF="#comment_bw_icon">COMMENT_BW_ICON</A></B>
+<LI><B><A HREF="#comment_gray_icon">COMMENT_GRAY_ICON</A></B>
+</UL>
+<H3><A NAME="comment_string"><U>COMMENT_STRING</U></A></H3>
+<P>To define a comment string, write</P>
+<PRE>#define COMMENT_STRING "<I>comments</I>"
+</PRE>
+<P>at the top of your source code. If supported by the target format, this will
+include the text inside the quotes as a comment string. It can be arbitrary
+text, but as a general rule, it should fit into the status line of a TI-89.</P>
+
+<H3><A NAME="comment_program_name"><U>COMMENT_PROGRAM_NAME</U></A></H3>
+<P>To define a name for your program, write</P>
+<PRE>#define COMMENT_PROGRAM_NAME "<I>name</I>"
+</PRE>
+<P>at the top of your source code. If supported by the target format, this will
+store the text inside the quotes as a program name. The name can be longer
+than eight characters, but it should not include any additional information
+such as a version number or author name(s).</P>
+
+<H3><A NAME="comment_version_string"><U>COMMENT_VERSION_STRING</U></A></H3>
+<P>To include user-visible version information in the program, write</P>
+<PRE>#define COMMENT_VERSION_STRING "<I>version</I>"
+</PRE>
+<P>at the top of your source code. If supported by the target format, this will
+include the text inside the quotes as a version string. It can have an
+arbitrary format, but it should be recognizable as a program version, for
+example <CODE><I>major</I>.<I>minor</I></CODE>.</P>
+
+<P>See also: <A HREF="#comment_version_number">COMMENT_VERSION_NUMBER</A></P>
+<H3><A NAME="comment_version_number"><U>COMMENT_VERSION_NUMBER</U></A></H3>
+<P>To include structured version information in the program, write</P>
+<PRE>#define COMMENT_VERSION_NUMBER <I>major</I>, <I>minor</I>, <I>revision</I>, <I>subrevision</I>
+</PRE>
+<P>at the top of your source code. If supported by the target format, this will
+include some or all of the numbers (which must be between 0 and 255) inside
+the program. Structured version information enables other programs such as
+shells to do version comparison and checks.</P>
+
+<P>See also: <A HREF="#comment_version_string">COMMENT_VERSION_STRING</A></P>
+<H3><A NAME="comment_authors"><U>COMMENT_AUTHORS</U></A></H3>
+<P>To include the names of the author(s) of your program, write</P>
+<PRE>#define COMMENT_AUTHORS "<I>author(s)</I>"
+</PRE>
+<P>at the top of your source code. If supported by the target format, this will
+store the text inside the quotes as author information. The name can be
+arbitrarily long, but don't include any information other than the names of
+one or more authors, authoring teams or entities. You should also keep in
+mind that these names take up place in your program and that they are
+intended to be displayed by calculator shells with limited screen space, so
+consider using a team name rather than a long list of individuals.</P>
+
+<H3><A NAME="comment_bw_icon"><U>COMMENT_BW_ICON</U></A></H3>
+<P>You can include a 16x16 pixel icon in your program, for display in shells.
+To do this, write</P>
+<PRE>#define COMMENT_BW_ICON {<I>line0</I>, <I>line1</I>, ..., <I>line15</I>}
+</PRE>
+<P>at the top of your source code. Each of the lines is specified as a 16 bit
+number, with the most significant bit being the leftmost pixel. If you use
+<A HREF="gnuexts.html#SEC110">binary numbers</A> to define the
+numbers, you can easily see what the icon will look like. The icon is defined
+in the same format as an <A HREF="graph.html#ICON">ICON</A> structure.</P>
+
+<P>See also: <A HREF="#comment_gray_icon">COMMENT_GRAY_ICON</A>, <A HREF="graph.html#ICON">ICON</A></P>
+<H3><A NAME="comment_gray_icon"><U>COMMENT_GRAY_ICON</U></A></H3>
+<P>If you have an icon in your program (see 
+<CODE><A HREF="#comment_bw_icon">COMMENT_BW_ICON</A></CODE>), you can
+enhance it using grayscale. To do this, write</P>
+<PRE>#define COMMENT_GRAY_ICON <I>dark</I>, <I>light</I>
+</PRE>
+<P>at the top of your source code, where <I>dark</I> and <I>light</I> are
+the dark and light plane parts of the icon as defined in
+<CODE><A HREF="#comment_bw_icon">COMMENT_BW_ICON</A></CODE>. For the
+dark plane part, you might actually want to use
+<CODE><A HREF="#comment_bw_icon">COMMENT_BW_ICON</A></CODE>.</P>
+
+<P>See also: <A HREF="#comment_bw_icon">COMMENT_BW_ICON</A>, <A HREF="gray.html">gray.h</A></P>
+<HR>
+<H2><A NAME="incompat"><U>Incompatibility Information</U></A></H2>
+<P>Incompatibility data can be used to specify that running the program outside
+of the usual calculator home screen environment may be problematic. Not all
+program formats permit storing incompatibility data; in particular, currently
+only the nostub format does. However, in a usual program, you will never have
+to set any of these incompatibility flags; most of them only apply to TSRs
+(programs that hook into the operating system and stay in memory after
+termination).</P>
+
+<UL>
+<LI><B><A HREF="#incompat_creates_handles">INCOMPAT_CREATES_HANDLES</A></B>
+<LI><B><A HREF="#incompat_uses_traps">INCOMPAT_USES_TRAPS</A></B>
+<LI><B><A HREF="#incompat_uses_vectors">INCOMPAT_USES_VECTORS</A></B>
+<LI><B><A HREF="#incompat_uses_ev_hook">INCOMPAT_USES_EV_HOOK</A></B>
+<LI><B><A HREF="#incompat_needs_all_stack">INCOMPAT_NEEDS_ALL_STACK</A></B>
+</UL>
+<H3><A NAME="incompat_creates_handles"><U>INCOMPAT_CREATES_HANDLES</U></A></H3>
+<P>If your program allocates memory which may not be freed automatically after
+exiting the program, and which does not belong to a
+<A HREF="vat.html">VAT</A> symbol or
+<A HREF="homescr.html">home screen</A> item, you should write</P>
+<PRE>#define INCOMPAT_CREATES_HANDLES
+</PRE>
+<P>at the top of at least one source file, before including any header file
+from the GCC4TI Library. This especially refers to TSRs that allocate memory.
+If a shell or another tool freed the memory, the calculator would crash
+sooner or later. This directive should prevent such tools from automatically
+freeing memory allocated by the program.</P>
+
+<H3><A NAME="incompat_uses_traps"><U>INCOMPAT_USES_TRAPS</U></A></H3>
+<P>If your program is a TSR that hooks a trap (see
+<A HREF="intr.html#SetIntVec">SetIntVec</A>), you should write</P>
+<PRE>#define INCOMPAT_USES_TRAPS
+</PRE>
+<P>at the top of at least one source file, before including any header file
+from the GCC4TI Library.
+If this directive is not used, a shell might automatically restore the hooked
+trap, rendering the TSR useless. Or it might even just free other resources
+allocated by the program, causing a crash.</P>
+
+<P>See also: <A HREF="#incompat_uses_vectors">INCOMPAT_USES_VECTORS</A></P>
+<H3><A NAME="incompat_uses_vectors"><U>INCOMPAT_USES_VECTORS</U></A></H3>
+<P>If your program is a TSR that hooks an interrupt or exception (see
+<A HREF="intr.html#SetIntVec">SetIntVec</A>) or makes any other change
+to the interrupt vector table other than traps, you should write</P>
+<PRE>#define INCOMPAT_USES_VECTORS
+</PRE>
+<P>at the top of at least one source file, before including any header file
+from the GCC4TI library.
+If this directive is not used, a shell might automatically restore the hooked
+interrupt, rendering the TSR useless. Or it might even just free other
+resources allocated by the program, causing a crash.</P>
+
+<P>See also: <A HREF="#incompat_uses_traps">INCOMPAT_USES_TRAPS</A></P>
+<H3><A NAME="incompat_uses_ev_hook"><U>INCOMPAT_USES_EV_HOOK</U></A></H3>
+<P>If your program is a TSR that hooks events (see
+<A HREF="events.html#EV_hook">EV_hook</A>), you should write</P>
+<PRE>#define INCOMPAT_USES_EV_HOOK
+</PRE>
+<P>at the top of at least one source file, before including any header file
+from the GCC4TI Library.
+If this directive is not used, a shell might automatically remove the event
+hook, rendering the TSR useless. Or it might even just free other resources
+allocated by the program, causing a crash.</P>
+
+<H3><A NAME="incompat_needs_all_stack"><U>INCOMPAT_NEEDS_ALL_STACK</U></A></H3>
+<P>If your program needs the entire stack (or almost the entire stack) to be
+free, you should write</P>
+<PRE>#define INCOMPAT_NEEDS_ALL_STACK
+</PRE>
+<P>at the top of at least one source file, before including any header file
+from the GCC4TI Library.
+This will prevent shells that fill up part of the stack from executing the
+program.</P>
+
+<HR>
+<H2><A NAME="minams"><U>Defining a Minimum AMS Version</U></A></H2>
+<P>In some cases it might be desirable to use features which are only present in
+the latest versions of the AMS. In this case, you need to define the minimum
+version the program will run under explicitly, like this:</P>
+<PRE>#define MIN_AMS 200
+</PRE>
+<P><CODE>MIN_AMS</CODE> has to be a 3-digit decimal number, which is obtained by
+multiplying the AMS version with 100 (or omitting the dot, if the version has
+the format "x.xx").
+<BR><BR>
+If you do not specifiy a sufficient minimum AMS version, the functions and
+constants which are not available will not even be defined. Note that
+<CODE>MIN_AMS</CODE> defaults to 101, which means AMS 1.01 on the TI-92 Plus,
+and AMS 1.00 on the TI-89. These two versions are in fact the same.
+<BR><BR>
+You can bypass the AMS check which is performed at startup by defining
+<CODE>NO_AMS_CHECK</CODE>.
+<BR><BR>
+To find out about the different ways we try to overcome AMS dependencies,
+read the next section,
+<A HREF="#amsdep">Overcoming AMS Dependencies</A>.</P>
+
+<HR>
+<H2><A NAME="amsdep"><U>Overcoming AMS Dependencies</U></A></H2>
+<P>Many AMS dependencies result from the unavailability of specific ROM calls in
+the operating system. The AMS maintains a table of pointers of functions, the
+jump table (see <A HREF="default.html#__jmp_tbl">__jmp_tbl</A> in
+<A HREF="default.html">default.h</A>). In early AMS releases this jump
+table was very incomplete, and it even changed at some places. Nevertheless,
+we try to maintain compatibility as much as possible. There are five types of
+workarounds for AMS dependencies:</P>
+
+<UL>
+<LI><B><A HREF="#amsdep_addr">Manually Obtaining the Address of a ROM Function</A></B>
+<LI><B><A HREF="#amsdep_func_tech">Wrapping a ROM Function in tigcc.a</A></B>
+<LI><B><A HREF="#amsdep_macro_tech">Wrapping a ROM Function with a Macro</A></B>
+<LI><B><A HREF="#amsdep_func_ams">Reimplementing a ROM Function in tigcc.a</A></B>
+<LI><B><A HREF="#amsdep_macro_ams">Reimplementing a ROM Function as a Macro</A></B>
+</UL>
+<H3><A NAME="amsdep_addr"><U>Manually Obtaining the Address of a ROM Function</U></A></H3>
+<P>If a function is not in the jump table (at least in early versions of the
+AMS), there are often ways to obtain its address manually through some very
+dirty hacks. If possible, these hacks are really only used in those AMS
+releases where the jump table entry is missing, so the hacks are usually
+safe. The only exception is when the function is not listed in any jump
+table. If this is the case, the documentation will contain the type
+"Function (ROM Call)", but without an index.
+<BR><BR>
+If this is not the case, you can usually gain speed and decrease the program
+size by defining a suitable <A HREF="#minams">minimum AMS version</A>.</P>
+
+<P>See also: <A HREF="default.html#_rom_call_hack">_rom_call_hack</A></P>
+<H3><A NAME="amsdep_func_tech"><U>Wrapping a ROM Function in tigcc.a</U></A></H3>
+<P>Sometimes a ROM function exists as a normal ROM call in the jump table, but
+for some reason it is not usable in a direct way. This means that it has to
+be implemented either using macros or using a wrapper function in
+<CODE>tigcc.a</CODE>.
+<BR><BR>
+This does not have to be related to an AMS dependency; it may also be
+because of a bug in the AMS, or because of some missing feature.</P>
+
+<H3><A NAME="amsdep_macro_tech"><U>Wrapping a ROM Function with a Macro</U></A></H3>
+<P>Sometimes a ROM function exists as a normal ROM call in the jump table, but
+for some reason it is not usable in a direct way. This means that it has to
+be implemented either using macros or using a wrapper function in
+<CODE>tigcc.a</CODE>. Using a macro prevents you from taking the address of
+the function and therefore from using it as a callback function.
+<BR><BR>
+This does not have to be related to an AMS dependency, although it is in the
+special case of <A HREF="system.html#XR_stringPtr">XR_stringPtr</A>.
+In fact, all functions returning
+<CODE><A HREF="keywords.html#float">float</A></CODE> values are
+implemented in this way, since the TIOS method of returning floats is strange
+to say the least.</P>
+
+<H3><A NAME="amsdep_func_ams"><U>Reimplementing a ROM Function in tigcc.a</U></A></H3>
+<P>Sometimes it is hard or tedious to obtain the address of an AMS-dependent
+function in a <A HREF="#amsdep_addr">nonstandard way</A>. In this
+case, the function may be reimplemented in tigcc.a. Often the user-defined
+<A HREF="#minams">minimum AMS version</A> is used to determine whether
+this implementation or the real ROM function should be used.</P>
+
+<H3><A NAME="amsdep_macro_ams"><U>Reimplementing a ROM Function as a Macro</U></A></H3>
+<P>Sometimes it is hard or tedious to obtain the address of an AMS-dependent
+function in a <A HREF="#amsdep_addr">nonstandard way</A>. In this
+case, the function may be implemented as a macro which works in all (or
+almost all) AMS versions. Often the user-defined
+<A HREF="#minams">minimum AMS version</A> is used to determine whether
+this macro definition or the real ROM function should be used. Like every
+macro definition, this prevents you from taking the address of the function
+and therefore from using it as a callback function.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

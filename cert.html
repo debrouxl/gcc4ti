@@ -1,0 +1,399 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>cert.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;cert.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for accessing certificates and other memory-mapped files</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#ceof">ceof</A></B><DD>Returns end-of-file status of the context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cfindfield">cfindfield</A></B><DD>Finds a matching field from a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cgetc">cgetc</A></B><DD>Gets a character from a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cgetcertrevno">cgetcertrevno</A></B><DD>Gets a certificate revision number.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cgetflen">cgetflen</A></B><DD>Gets the length of a field.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cgetfnl">cgetfnl</A></B><DD>Gets a non-aligned long integer from a field.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cgetnl">cgetnl</A></B><DD>Gets a non-aligned long integer from a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cgetns">cgetns</A></B><DD>Gets a non-aligned short integer from a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cgetsn">cgetsn</A></B><DD>Gets the calculator serial number from the Flash ROM certificate.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#copen">copen</A></B><DD>Opens a certificate file context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#copensub">copensub</A></B><DD>Opens a subcontext.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cputhdr">cputhdr</A></B><DD>Puts a field header to a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cputnl">cputnl</A></B><DD>Puts a non-aligned long integer to a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cputns">cputns</A></B><DD>Puts a non-aligned short integer to a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cread">cread</A></B><DD>Reads a field from a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#ctell">ctell</A></B><DD>Returns the current position relative to the start of a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#cwrite">cwrite</A></B><DD>Puts a field to a context.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#freeIdList">freeIdList</A></B><DD>Releases and deletes the RAM copy of the ID list, if it exists.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#CertificateMemory">CertificateMemory</A></B><DD>A pointer to the certificate memory.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#H_NULL">H_NULL</A></B><DD>A null-handle value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CERT_FIELD">CERT_FIELD</A></B><DD>A structure describing the records of certificate files.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CFILE">CFILE</A></B><DD>A structure representing the context of a memory-mapped file.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="stddef.html#size_t">size_t</A></B><DD>A type to define sizes of strings and memory blocks.</DL>
+<P><B>Note:</B> The functions <B>caddcert</B>, <B>cgetcert</B>, <B>cgetvernum</B>
+and <B>cfindcertfield</B>, which were present in the AMS 1.xx TIOS jump table, don't
+exist in the AMS 2.xx TIOS jump table any more. Fortunately, all of them are only internal routines;
+you need to use <A HREF="flash.html#FL_addCert">FL_addCert</A>, <A HREF="flash.html#FL_getCert">FL_getCert</A>
+and <A HREF="flash.html#FL_getVerNum">FL_getVerNum</A> from <A HREF="flash.html">flash.h</A> instead.
+<BR><BR>
+In AMS 2.xx, the function replacing ROM_CALL 12C (cgetcert in AMS 1.xx), is <A HREF="alloc.html#HeapWalk">HeapWalk</A>.</P>
+
+<HR>
+<H3><A NAME="ceof"><U>ceof</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> ceof (<A HREF="#CFILE">CFILE</A> *context);</TD></TR></TABLE></P>
+<P><B>Returns end-of-file status of the context.</B></P>
+
+<P>ceof returns <A HREF="alloc.html#Bool">TRUE</A> if the end-of-file indicator of the file associated
+with the file context pointed to by <I>context</I> is set, otherwise it returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="cfindfield"><U>cfindfield</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> cfindfield (<A HREF="#CFILE">CFILE</A> *context, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FieldID, <A HREF="#CERT_FIELD">CERT_FIELD</A> *dest);</TD></TR></TABLE></P>
+<P><B>Finds a matching field from a context.</B></P>
+
+<P>cfindfield searches a file associated with the file context pointed to by <I>context</I> for a
+field which has field ID number equal to <I>FieldID</I> (length bits should be set to 0).
+If such field is found, cfindfield fills the field descriptor structure pointed to by <I>dest</I>
+and returns <A HREF="alloc.html#Bool">TRUE</A>, else returns <A HREF="alloc.html#Bool">FALSE</A>.
+<BR><BR>
+cfindfield is used often in TIOS to access particular data in a certificate file. Usually,
+function <A HREF="#copensub">copensub</A> is called immediately after cfindfield to get
+access to the content of the field. If the field contains subfields, this procedure may be
+repeated several times if necessary.
+<BR><BR>
+As an illustration of layout of certificate files, the layout of certificate files used in TIOS
+is given below. First, the field ID number is shown, then the short description of the field
+follows. Indentation shows that a particular field is a subfield of the field with smaller indentation.</P>
+<UL>
+<LI><P><B>Layout of AMS header</B> (AMS is part of TIOS which may be replaced, unlike Boot Code);
+it starts at address <CODE>ROM_base+0x12000</CODE>, i.e. 0x212000 on TI-89 and V200, 0x412000 on
+TI-92 Plus and 0x812000 on TI-89T.
+</P>
+<PRE>0x8000 AMS header (organized as a certificate file, although it is not
+                   read-protected like "real" certificates)
+
+0x8010  First part of Product ID
+0x8020  Third part of Product ID
+0x8030  Fourth part of Product ID
+0x80A0  Second part of Product ID
+0x8040  Product Name: "Advanced Mathematics Software"
+0x0320  Product code (6 bytes)
+0x0200  Signature - encrypted MD5 (see <A HREF="rsa.html">rsa.h</A>) of 0x320 field
+        (including header)
+0x8070  Actual AMS code
+
+0x0200 Signature of entire AMS
+</PRE>
+<P>Fields with ID numbers 0x0320 and 0x0200 contains an authenticated number.
+More precisely, field with ID number 0x0320 contains a 4-byte field with ID 0x0900, itself
+containing a 32-bit timestamp: number of seconds elapsed since January 1st 1997, 00:00 in
+some timezone (GMT ?), and the time the OS image was signed.
+Field with ID 0x0200 is the encrypted digital signature of it.<BR>
+Product ID is formed by applying format string "%02lX-%lX-%lx-%lX" to the content of
+fields with ID numbers 0x8010, 0x80A0, 0x8020 and 0x8030.
+</P></LI>
+<LI><P>Layout of Flash ROM certificate (stored in the part of the Flash ROM which is read-protected
+when the Protection is enabled); it starts at address <CODE>ROM_base+0x10004</CODE>, i.e.
+0x210004 on TI-89 and V200, 0x410004 on TI-92 Plus and 0x810004 on TI-89T:
+</P>
+<PRE>0x0330 Flash ROM certificate
+
+0xA10 Five-byte Serial Number (used as "pass phrase")
+0xA20 Certificate Key
+</PRE>
+<P>Serial number has layout #sssss&nbsp;sssss&nbsp;cccc (all digits are in hex). First ten digits
+are picked up from the field with ID number 0xA10. Then, the Certificate Key is used to decrypt
+the MD5 (see <A HREF="rsa.html">rsa.h</A> for more info about RSA encryption) of the Serial Number to get cccc. In fact,
+decrypting the Serial Number in this way creates a 40 byte number. Only first two bytes (in
+little endian) are taken for cccc. This method ensures that only TI can create valid Serial
+Numbers, as both the Serial Number and Key are unique for each machine.
+</P></LI>
+<LI><P>Layout of .cer files, which are attached to the start of Flash applications:
+</P>
+<PRE>0x0300 Flash application certificate
+
+0x0100 Certificate Revision Number
+0x0400 Five-byte Serial Number
+0x0500 Optional field in .cer files
+
+0x0510 Author name
+
+0x0320 Product code - same construction and meaning as the field in AMS itself, see above
+0x0200 Product code signature - see above
+0x0700 Unknown certificate data
+
+0x0710 Unknown byte data
+0x0730 Signature
+0x0710 Unknown word data
+0x0730 Signature
+0x0710 Unknown word data
+0x0730 Signature
+
+0x0200 Signature of all certificate data</PRE>
+<P>Of course, such data are present in the certificate memory only if you have installed
+additional Flash applications. Function <A HREF="flash.html#FL_addCert">FL_addCert</A> is
+used to add such data to the certificate memory (this routine performs
+very strong checking of what may be written there and under what conditions, so it is not
+possible to write a garbage in this area by calling this routine).</P></LI></UL>
+<P>As it is not possible to access the certificate part of Flash ROM <I>directly</I>, because this
+area of Flash is read-protected when the Protection is enabled, the <I>usual</I> method (there's
+an <I>unusual</I> method that doesn't even require disabling the Protection from the client
+program) for reading certificates is to call <A HREF="flash.html#FL_getCert">FL_getCert</A>
+first. This function will copy all data from the certificate area which may be shown to the
+public into the RAM, so that the certificate can be read later from the RAM. For example, if you
+need to access the certificate data which shows the name of the author of an Flash application
+(assuming that such data is present in the certificate), the usual procedure is:</P>
+<PRE>HANDLE handle;
+unsigned long size;
+CFILE context;
+CERT_FIELD field;
+...
+FL_getCert (&amp;handle, &amp;size, FALSE);
+copen (&amp;context, HeapDeref (handle), size);
+cfindfield (&amp;context, 0x300, &amp;field);
+copensub (&amp;context, &amp;field);
+cfindfield (&amp;context, 0x500, &amp;field);
+copensub (&amp;context, &amp;field);
+cfindfield (&amp;context, 0x510, &amp;field);
+copensub (&amp;context, &amp;field);
+</PRE>
+<P>After this, context<B>.</B>Pos will point to the author name. Alternatively, you can pick the name
+character-by-character using <A HREF="#cgetc">cgetc</A>. If any of calls to cfindfield
+functions fail (i.e. return <A HREF="alloc.html#Bool">FALSE</A>), then such data are not present in
+the certificate area.</P>
+
+<HR>
+<H3><A NAME="cgetc"><U>cgetc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> cgetc (<A HREF="#CFILE">CFILE</A> *context);</TD></TR></TABLE></P>
+<P><B>Gets a character from a context.</B></P>
+
+<P>cgetc gets a character from the file associated with the file context pointed to by
+<I>context</I>, and moves the file pointer to the next character. This function
+is functionally equal to</P>
+<PRE>*(char*) <I>context</I>-&gt;Pos++;
+</PRE>
+
+<HR>
+<H3><A NAME="cgetcertrevno"><U>cgetcertrevno</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> cgetcertrevno (<B><A HREF="keywords.html#short">long</A></B> *dest);</TD></TR></TABLE></P>
+<P><B>Gets a certificate revision number.</B></P>
+
+<P>cgetcertrevno fills the variable pointed to by <I>dest</I> with the certificate
+revision number. Returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was
+successful, otherwise it returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="cgetflen"><U>cgetflen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> cgetflen (<A HREF="#CFILE">CFILE</A> *context, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FieldIDWord);</TD></TR></TABLE></P>
+<P><B>Gets the length of a field.</B></P>
+
+<P>cgetflen returns length of the field which has ID word (see <A HREF="#cread">cread</A>) equal to
+<I>FieldIDWord</I>. This information is present in lower 4 bits of <I>FieldIDWord</I>
+if these bits are smaller or equal to 0xC. If not, necessary information needed to
+calculate the length are read from the context pointed to by <I>context</I>. cgetflen
+returns 0 if the end of the file is reached.</P>
+
+<HR>
+<H3><A NAME="cgetfnl"><U>cgetfnl</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">long</A></B> cgetfnl (<A HREF="#CERT_FIELD">CERT_FIELD</A> *field);</TD></TR></TABLE></P>
+<P><B>Gets a non-aligned long integer from a field.</B></P>
+
+<P>cgetfnl gets a long integer (which does not necessarily need to be aligned on an even address)
+from the field described by the structure pointed to by <I>field</I>. The field need
+not to be exactly four bytes long; it can be of any length, and cgetfnl gets as many
+bytes as are available, up to the size of a long.</P>
+
+<HR>
+<H3><A NAME="cgetnl"><U>cgetnl</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">long</A></B> cgetnl (<A HREF="#CFILE">CFILE</A> *context);</TD></TR></TABLE></P>
+<P><B>Gets a non-aligned long integer from a context.</B></P>
+
+<P>cgetnl gets a long integer (which does not necessarily need to be aligned on an even address)
+from the file associated with the file context pointed to by <I>context</I>, and moves
+the file pointer forward by four characters. In fact, it calls <A HREF="#cgetc">cgetc</A>
+four times, and combines four returned bytes into one doubleword.</P>
+
+<HR>
+<H3><A NAME="cgetns"><U>cgetns</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> cgetns (<A HREF="#CFILE">CFILE</A> *context);</TD></TR></TABLE></P>
+<P><B>Gets a non-aligned short integer from a context.</B></P>
+
+<P>cgetns gets a short integer (which does not necessarily need to be aligned on an even address)
+from the file associated with the file context pointed to by <I>context</I>, and moves
+the file pointer forward by two characters. In fact, it calls <A HREF="#cgetc">cgetc</A>
+twice, and combines two returned bytes into one word.</P>
+
+<HR>
+<H3><A NAME="cgetsn"><U>cgetsn</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> cgetsn (<B><A HREF="keywords.html#int">char</A></B> *dest);</TD></TR></TABLE></P>
+<P><B>Gets the calculator serial number from the Flash ROM certificate.</B></P>
+
+<P>cgetsn fills the buffer pointed to by <I>dest</I> with the calculator serial
+number picked from the Flash ROM certificate. It has the form "pphnnnnnnn", where "pp"
+is the platform number (01 for TI-92 Plus, 03 for TI-89, 08 for V200, 09 for TI-89T),
+"h" is hardware revision level, and "nnnnnnn" is an ID number which is unique to each
+calculator.
+All the above fields consist of hexadecimal digits.
+<I>buffer</I> must be at least 17 bytes long to accept the serial number.</P>
+
+<HR>
+<H3><A NAME="copen"><U>copen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> copen (<A HREF="#CFILE">CFILE</A> *context, <B><A HREF="keywords.html#int">char</A></B> *data, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> size);</TD></TR></TABLE></P>
+<P><B>Opens a certificate file context.</B></P>
+
+<P>copen opens a memory mapped file which starts at address <I>data</I>,
+and which is <I>size</I> bytes long. It also initializes file context (this is a file
+control structure of type <A HREF="#CFILE">CFILE</A>) pointed to by
+<I>context</I>. It does not reserve any memory. In fact, copen does nothing more than</P>
+<PRE><I>context</I>-&gt;Start = <I>context</I>-&gt;Pos = <I>data</I>;
+<I>context</I>-&gt;End = <I>data</I> + <I>size</I>;
+<I>context</I>-&gt;EOF = FALSE;
+</PRE>
+<P><B>Note:</B> All functions from this header file are used in TIOS exclusively for accessing certificate
+files, which are stored in the protected area of Flash ROM, and which contain certificate data.
+However, these functions are not limited to such files. They may be used with any memory mapped
+file (i.e. a "headerless" file which does not have an entry in the VAT table), which does not need to be
+a file which really contains certificate data.</P>
+
+<HR>
+<H3><A NAME="copensub"><U>copensub</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> copensub (<A HREF="#CFILE">CFILE</A> *context, <A HREF="#CERT_FIELD">CERT_FIELD</A> *subfield);</TD></TR></TABLE></P>
+<P><B>Opens a subcontext.</B></P>
+
+<P>As the certificate file is usually consist of various field, this function is used for initializing
+the context pointed to by <I>context</I> to point to the actual content of the field described
+in the structure pointed to by <I>subfield</I>. This function is equal to</P>
+<PRE>copen (<I>context</I>, <I>subfield</I>-&gt;Data, <I>subfield</I>-&gt;Len);
+</PRE>
+<P>copen is used mainly to reset the file pointer to the start of a group of items. See
+<A HREF="#cfindfield">cfindfield</A> for more info.</P>
+
+<HR>
+<H3><A NAME="cputhdr"><U>cputhdr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> cputhdr (<A HREF="#CFILE">CFILE</A> *context, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FieldID, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> len);</TD></TR></TABLE></P>
+<P><B>Puts a field header to a context.</B></P>
+
+<P>cputhdr puts a field header to the file associated with the file context pointed to by
+<I>context</I> and moves the file pointer accordingly. The field header includes
+ID word (i.e. field ID number and four length bits), and up to four length bytes if
+necessary (see <A HREF="#cread">cread</A> for more info about fields). Required data
+for forming the header are taken from parameters <I>FieldID</I> and <I>len</I>.
+cputhdr returns <A HREF="alloc.html#Bool">TRUE</A> if the operation was successful, otherwise it returns
+<A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="cputnl"><U>cputnl</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> cputnl (<A HREF="#CFILE">CFILE</A> *context, <B><A HREF="keywords.html#short">long</A></B> l);</TD></TR></TABLE></P>
+<P><B>Puts a non-aligned long integer to a context.</B></P>
+
+<P>cputnl puts a long integer <I>l</I> to the file associated with the file context
+pointed to by <I>context</I>, and moves the file pointer forward by four characters.
+The stored integer will not always be aligned on an even address.</P>
+
+<HR>
+<H3><A NAME="cputns"><U>cputns</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> cputns (<A HREF="#CFILE">CFILE</A> *context, <B><A HREF="keywords.html#short">short</A></B> s);</TD></TR></TABLE></P>
+<P><B>Puts a non-aligned short integer to a context.</B></P>
+
+<P>cputns puts a short integer <I>s</I> to the file associated with the file context
+pointed to by <I>context</I>, and moves the file pointer forward by two characters.
+The stored integer will not always be aligned on an even address.</P>
+
+<HR>
+<H3><A NAME="cread"><U>cread</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> cread (<A HREF="#CFILE">CFILE</A> *context, <A HREF="#CERT_FIELD">CERT_FIELD</A> *dest);</TD></TR></TABLE></P>
+<P><B>Reads a field from a context.</B></P>
+
+<P>Certificate files in TIOS (which packages up all the data required to perform
+authentification) are well-organized as files of variable-length records called
+"fields". So, the different components are split up into various fields, which can
+be accessed fairly easily. Each field begins with ID word. High 12 bits of ID
+are used as field ID number, and lower 4 bits are used to encode size of the field
+(as the length of the field can be a variable size). If these bits are smaller or
+equal to 0xC, this value is just the length of the field. If these bits are 0xD,
+0xE or 0xF, then the following byte, word or doubleword contains the actual length
+of the field. Fields in the file are stored sequentially. They may contain various
+data, including other fields (i.e. "subfields"), which are usually opened with
+<A HREF="#copensub">copensub</A>.
+<BR><BR>
+cread reads a field from the file associated with the file context pointed to by
+<I>context</I> and collects necessary information (field ID number, length
+of the field, and the pointer to the actual content of the field) into the
+<A HREF="#CERT_FIELD">CERT_FIELD</A> structure pointed to by <I>dest</I>. It also
+moves the field pointer to the next field, and sets the EOF indicator in the
+context if the end of the file is reached. cread returns <A HREF="alloc.html#Bool">TRUE</A>
+if the operation was successful, otherwise it returns <A HREF="alloc.html#Bool">FALSE</A> (this usually
+means end-of-file error).</P>
+
+<HR>
+<H3><A NAME="ctell"><U>ctell</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> ctell (<A HREF="#CFILE">CFILE</A> *context);</TD></TR></TABLE></P>
+<P><B>Returns the current position relative to the start of a context.</B></P>
+
+<P>ctell returns the current position of the file pointer associated with the file
+context pointed to by <I>context</I>, measured from the start address of the file.</P>
+
+<HR>
+<H3><A NAME="cwrite"><U>cwrite</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> cwrite (<A HREF="#CFILE">CFILE</A> *context, <A HREF="#CERT_FIELD">CERT_FIELD</A> *source);</TD></TR></TABLE></P>
+<P><B>Puts a field to a context.</B></P>
+
+<P>cwrite writes a field described with <A HREF="#CERT_FIELD">CERT_FIELD</A> structure pointed to by
+<I>source</I> to the file associated with the file context pointed to by <I>context</I>.
+cwrite is the reverse of <A HREF="#cread">cread</A>. Returns <A HREF="alloc.html#Bool">TRUE</A> if the
+operation was successful, otherwise it returns <A HREF="alloc.html#Bool">FALSE</A>.</P>
+
+<HR>
+<H3><A NAME="freeIdList"><U>freeIdList</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> freeIdList (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Releases and deletes the RAM copy of the ID list, if it exists.</B></P>
+
+<P>See also: <A HREF="link.html#LIO_SendIdList">LIO_SendIdList</A></P>
+<HR>
+<H3><A NAME="CertificateMemory"><U>CertificateMemory</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *<B><A HREF="keywords.html#const">const</A></B> CertificateMemory;</TD></TR></TABLE></P>
+<P><B>A pointer to the certificate memory.</B></P>
+
+<P>This variable contains a pointer to the first byte of the certificate memory.
+Note that it always has a value of <CODE>(unsigned char *const) (ROM_base + 0x10000)</CODE>.</P>
+
+<HR>
+<H3><A NAME="CERT_FIELD"><U>CERT_FIELD</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Field; <I>/* Field ID number (without the length) */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> HdrLen; <I>/* Size of the header (ID word &amp;<BR>
+optional length bytes: 0, 1, 2 or 4) */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Len; <I>/* Total length of the field */</I><BR>
+<B><A HREF="keywords.html#void">void</A></B> *Data; <I>/* Pointer to an actual data */</I><BR>
+</TD></TR></TABLE>
+} CERT_FIELD;</TD></TR></TABLE></P>
+<P><B>A structure describing the records of certificate files.</B></P>
+
+<P>CERT_FIELD is a structure which describes the variable-length records (usually called "fields") of
+certificate files. Each field has its ID number, and some ID numbers have predefined meanings
+in the TIOS (see <A HREF="#cfindfield">cfindfield</A>).</P>
+
+<HR>
+<H3><A NAME="CFILE"><U>CFILE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#void">void</A></B> *Start, *Pos, *End; <I>/* Start, current and end position of the file pointer */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> EOFVal; <I>/* Boolean value indicating end of file */</I><BR>
+</TD></TR></TABLE>
+} CFILE;</TD></TR></TABLE></P>
+<P><B>A structure representing the context of a memory-mapped file.</B></P>
+
+<P>CFILE is a structure which represents the context of a memory-mapped file (usually a certificate
+file).</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

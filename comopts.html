@@ -1,0 +1,2892 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>GCC Command-Line Options</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>GCC Command-Line Options</B></FONT>
+<HR>
+<P>This part of the documentation is a modified version of the
+<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html">Command-Line Options</A>
+section of the <A HREF="http://gcc.gnu.org/onlinedocs/gcc/">GCC Manual</A>.
+Therefore it is licensed under the
+<A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A>.
+<BR><BR>
+This section describes the options supported by <CODE>gcc</CODE>,
+the driver program of the GNU Compiler Collection, whose C compiler
+and assembler are used here.  This program is called either by
+<CODE>tigcc</CODE> or by the IDE.  <CODE>tigcc</CODE>
+simulates some of these options itself, namely <B>'-E'</B>,
+<B>'-S'</B>, and <B>'-c'</B>, and it also has some additional ones.
+In the IDE, there is an item in the project settings where you can
+set the options described here, with some exceptions, including the
+switches mentioned above.
+<BR><BR>
+GCC4TI normally does preprocessing, compilation, assembly and linking
+all in one step, and finally produces a file which is executable on
+the calculator.  The &quot;overall options&quot; allow you to stop this
+process at an intermediate stage.  For example, the <B>'-c'</B> option
+says not to run the linker.  Then the output consists of object files
+output by the assembler.
+<BR><BR>
+Other options are passed on to one stage of processing.  Some options
+control the preprocessor and others the compiler itself.  Yet other
+options control the assembler and linker; most of these are not
+documented here, since you rarely need to use any of them.
+In fact, only those options which may be more or less useful with GCC4TI
+are mentioned here (although we didn't check whether all of them are
+really usable in GCC4TI).  For more info about standard options that are
+recognized by the compiler, read the
+<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html">official manual</A>.
+<BR><BR>
+We suggest that you use the <B>'-O2'</B> switch in all of your
+compilations; it increases speed and decreases the program size at the
+cost of compilation time.
+<BR><BR>
+<CODE>tigcc</CODE> accepts options and file names as operands.  Many
+options have multi-letter names; therefore multiple single-letter options
+may <I>not</I> be grouped: <B>'-dr'</B> is very different from <B>'-d
+-r'</B>.
+<BR><BR>
+You can mix options and other arguments.  For the most part, the order
+you use doesn't matter.  Order does matter when you use several options
+of the same kind; for example, if you specify <B>'-L'</B> more than once,
+the directories are searched in the order specified.
+<BR><BR>
+Many options have long names starting with <B>'-f'</B> or with
+<B>'-W'</B> - for example, <B>'-fforce-mem'</B>,
+<B>'-fstrength-reduce'</B>, <B>'-Wformat'</B> and so on.  Most of
+these have both positive and negative forms; the negative form of
+<B>'-ffoo'</B> would be <B>'-fno-foo'</B>.  This manual documents
+only one of these two forms, whichever one is not the default.</P>
+
+<UL>
+<LI><B><A HREF="#SEC3">Options Available in the Command Line Compiler</A></B>
+<LI><B><A HREF="#SEC4">Options Controlling the Kind of Output</A></B>
+<LI><B><A HREF="#SEC6">Options Controlling C Dialect</A></B>
+<LI><B><A HREF="#SEC8">Options to Request or Suppress Warnings</A></B>
+<LI><B><A HREF="#SEC9">Options for Debugging Your Program</A></B>
+<LI><B><A HREF="#SEC10">Options That Control Optimization</A></B>
+<LI><B><A HREF="#SEC11">Options Controlling the Preprocessor</A></B>
+<LI><B><A HREF="#SEC12">Passing Options to the Assembler and Linker</A></B>
+<LI><B><A HREF="#SEC14">Options for Directory Search</A></B>
+<LI><B><A HREF="#SEC15">GCC Spec Strings</A></B>
+<LI><B><A HREF="#SEC16">M680x0 Target Options</A></B>
+<LI><B><A HREF="#SEC44">Options for Code Generation Conventions</A></B>
+<LI><B><A HREF="#SEC45">Environment Variables Affecting GCC</A></B>
+<LI><B><A HREF="#history">History</A></B>
+<LI><B><A HREF="gnugpl.html">GNU General Public License</A></B>
+<LI><B><A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A></B>
+<LI><B><A HREF="gnugpl.html#funding">Funding Free Software</A></B>
+</UL>
+<P>Original author: Free Software Foundation, Inc.
+<BR>
+Authors of the modifications: Zeljko Juric, Sebastian Reichelt, and Kevin Kofler.
+<BR>
+Published by the TIGCC Team, and now the GCC4TI project.
+<BR>
+See the <A HREF="#history">History</A> section for details and copyright information.
+<BR><BR>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the <A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A>, Version 1.1 or any
+later version published by the Free Software Foundation; with the Invariant
+Sections being "<A HREF="gnugpl.html">GNU General Public License</A>" and "<A HREF="gnugpl.html#funding">Funding Free Software</A>", the
+Front-Cover texts being (a) (see below), and with the Back-Cover Texts being
+(b) (see below).  A copy of the license is included in the section entitled
+"<A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A>".
+<BR><BR>
+(a) The FSF's Front-Cover Text is:
+<BR><BR>
+A GNU Manual
+<BR><BR>
+(b) The FSF's Back-Cover Text is:
+<BR><BR>
+You have freedom to copy and modify this GNU Manual, like GNU software.
+Copies published by the Free Software Foundation raise funds for GNU
+development.</P>
+
+<HR>
+<H2><A NAME="SEC3"><U>Options Available in the Command Line Compiler</U></A></H2>
+<P>These options apply only to the command line compiler.  If you want to use
+the IDE instead, you do not need to worry about these topics.
+<BR><BR>
+<CODE>tigcc</CODE> has an important difference to the standard program
+<CODE>gcc</CODE>: <CODE>tigcc</CODE> always overwrites assembly or
+object files.  For example, if a file <CODE>test.c</CODE> is compiled, the
+files <CODE>test.s</CODE> and <CODE>test.o</CODE> will be created and
+overwritten if necessary, but they will automatically be deleted again if
+neither <B>'-c'</B> nor <B>'-S'</B> are specified.
+<BR><BR>
+Another important difference is that <CODE>tigcc</CODE> always looks for
+libraries in the <CODE>'Lib'</CODE> subfolder of the installation.</P>
+<DL>
+
+<DT><P><B>-pack <I>varname</I></B></P><DD><P>Compress the file generated during compilation.
+<I>varname</I> is the name of the on-calc packed variable.  Although
+<I>varname</I> cannot have an extension, the variable on the calculator will
+always have the extension <CODE>ppg</CODE>.  <I>varname</I> cannot be the
+same as the on-calc name of the program itself.  When you use this switch,
+two files will be created; one with the extension <CODE>.89y</CODE> or
+<CODE>.9xy</CODE>, and one <CODE>.89z</CODE> or <CODE>.9xz</CODE> file.
+<BR><BR>
+This option comes from
+<A HREF="mailto:thomas.nussbaumer@gmx.net">Thomas Nussbaumer</A>'s
+TI-68k Developer Utilities (now built in GCC4TI), where this feature is called
+"ExePack Technology." You can read about it on the official
+<A HREF="http://tict.ticalc.org/">TI-Chess Team site</A>.
+</P><DT><P><B>-q</B></P><DD><P>Keep as quiet as possible while assembling and linking.  This option is
+not needed by the compiler because it is always quiet, but the linker and
+especially the assembler output some information.
+</P><DT><P><B>-v0</B></P><DD><P>This switch is an addition to the <B>'-v'</B> switch.  It tells GCC4TI to
+output only the commands that are run directly.  This was the default in some
+previous releases.
+</P><DT><P><B>-g</B></P><DD><P>The <B>'-g'</B> switch in GCC turns on debugging information in the
+preferred format for the target. In GCC4TI, this is DWARF 2, which can be used
+with a GDB-enabled TiEmu.
+</P><DT><P><B>-standalone</B></P><DD><P>Do not link against <CODE>tigcc.a</CODE>.  All of GCC's internal
+functions are implemented in this library, as well as all non-TIOS functions.
+Using one of these will result in an error from the linker.
+</P><DT><P><B>-ar</B></P><DD><P>Create an archive (a static library) instead of a program.  The resulting
+file will have an <CODE>.a</CODE> ending.
+</P><DT><P><B>-bsr</B></P><DD><P>This option is ignored for compatibility.</P>
+</DL>
+<P>In addition to these options, the <CODE>tigcc</CODE> program also accepts
+most of the <A HREF="ld.html#invocation">linker options</A>.</P>
+
+<HR>
+<H2><A NAME="SEC4"><U>Options Controlling the Kind of Output</U></A></H2>
+<P>Compilation can involve up to four stages: preprocessing, compilation
+proper, assembly and linking, always in that order.  The first three
+stages apply to an individual source file, and end by producing an
+object file; linking combines all the object files (those newly
+compiled, and those specified as input) into an executable file.
+<BR><BR>
+For any given input file, the file name suffix determines what kind of
+compilation is done (some of these apply only to TIGCC/GCC4TI):</P>
+<DL>
+
+<DT><P><B><I>file</I>.c</B></P><DD><P>C source code which must be preprocessed.
+</P><DT><P><B><I>file</I>.s</B></P><DD><P>GNU Assembler code.
+</P><DT><P><B><I>file</I>.S</B></P><DD><P>GNU Assembler code which must be preprocessed.
+</P><DT><P><B><I>file</I>.asm</B></P><DD><P>A68k Assembler code.
+</P><DT><P><B><I>file</I>.o</B></P><DD><P>COFF object file to be linked using <CODE>ld</CODE>.
+</P><DT><P><B><I>file</I>.a</B></P><DD><P>Static library (function archive) to be linked using <CODE>ld</CODE>.</P>
+</DL>
+<P>You can specify the input language explicitly with the <B>'-x'</B> option:</P>
+<DL>
+
+<DT><P><B>-x <I>language</I></B></P><DD><P>Specify explicitly the <I>language</I> for the following input files
+(rather than letting the compiler choose a default based on the file
+name suffix).  This option applies to all following input files until
+the next <B>'-x'</B> option.  Possible values for <I>language</I> are:
+<BR>
+<CODE>
+c  c-header  cpp-output
+c++  c++-cpp-output
+objective-c  objc-cpp-output
+assembler  assembler-with-cpp
+ada
+f77  f77-cpp-input  ratfor
+java
+treelang
+</CODE></P><DT><P><B>-x none</B></P><DD><P>Turn off any specification of a language, so that subsequent files are
+handled according to their file name suffixes (as they are if <B>'-x'</B>
+has not been used at all).
+</P><DT><P><B>-pass-exit-codes</B></P><DD><P>Normally the <CODE>gcc</CODE> program will exit with the code of 1 if any
+phase of the compiler returns a non-success return code.  If you specify
+<B>'-pass-exit-codes'</B>, the <CODE>gcc</CODE> program will instead return with
+numerically highest error produced by any phase that returned an error
+indication.</P>
+</DL>
+<P>If you only want some of the stages of compilation, you can use
+<B>'-x'</B> (or filename suffixes) to tell <CODE>gcc</CODE> where to start, and
+one of the options <B>'-c'</B>, <B>'-S'</B>, or <B>'-E'</B> to say where
+<CODE>gcc</CODE> is to stop.  Note that some combinations (for example,
+<B>'-x cpp-output -E'</B>) instruct <CODE>gcc</CODE> to do nothing at all.</P>
+<DL>
+
+<DT><P><B>-c</B></P><DD><P>Compile or assemble the source files, but do not link.  The linking
+stage simply is not done.  The ultimate output is in the form of an
+object file for each source file.
+<BR><BR>
+By default, the object file name for a source file is made by replacing
+the suffix <CODE>.c</CODE>, <CODE>.i</CODE>, <CODE>.s</CODE>, etc., with <CODE>.o</CODE>.
+<BR><BR>
+Unrecognized input files, not requiring compilation or assembly, are
+ignored.
+</P><DT><P><B>-S</B></P><DD><P>Stop after the stage of compilation proper; do not assemble.  The output
+is in the form of an assembler code file for each non-assembler input
+file specified.
+<BR><BR>
+By default, the assembler file name for a source file is made by
+replacing the suffix <CODE>.c</CODE>, <CODE>.i</CODE>, etc., with <CODE>.s</CODE>.
+<BR><BR>
+Input files that don't require compilation are ignored.
+</P><DT><P><B>-E</B></P><DD><P>Stop after the preprocessing stage; do not run the compiler proper.  The
+output is in the form of preprocessed source code, which is sent to the
+standard output.
+<BR><BR>
+Input files which don't require preprocessing are ignored.
+</P><DT><P><B>-o <I>file</I></B></P><DD><P>Place output in file <I>file</I>.  This applies regardless to whatever
+sort of output is being produced, whether it be an executable file,
+an object file, an assembler file or preprocessed C code.
+<BR><BR>
+Since only one output file can be specified, it does not make sense to
+use <B>'-o'</B> when compiling more than one input file, unless you are
+producing an executable file as output.
+<BR><BR>
+If <B>'-o'</B> is not specified, the default is to put an executable file
+in <CODE>a.out</CODE>, the object file for <CODE><I>source</I>.<I>suffix</I></CODE> in
+<CODE><I>source</I>.o</CODE>, its assembler file in <CODE><I>source</I>.s</CODE>, and
+all preprocessed C source on standard output.
+</P><DT><P><B>-v</B></P><DD><P>Print (on standard error output) the commands executed to run the stages
+of compilation.  Also print the version number of the compiler driver
+program and of the preprocessor and the compiler proper.
+</P><DT><P><B>-###</B></P><DD><P>Like <B>'-v'</B> except the commands are not executed and all command
+arguments are quoted.  This is useful for shell scripts to capture the
+driver-generated command lines.
+</P><DT><P><B>-pipe</B></P><DD><P>Use pipes rather than temporary files for communication between the
+various stages of compilation.  This fails to work on some systems where
+the assembler is unable to read from a pipe; but the GNU assembler has
+no trouble.
+</P><DT><P><B>--help</B></P><DD><P>Print (on the standard output) a description of the command line options
+understood by <CODE>gcc</CODE>.  If the <B>'-v'</B> option is also specified
+then <B>'--help'</B> will also be passed on to the various processes
+invoked by <CODE>gcc</CODE>, so that they can display the command line options
+they accept.  If the <B>'-W'</B> option is also specified then command
+line options which have no documentation associated with them will also
+be displayed.
+</P><DT><P><B>--target-help</B></P><DD><P>Print (on the standard output) a description of target specific command
+line options for each tool.
+</P><DT><P><B>--version</B></P><DD><P>Display the version number and copyrights of the invoked GCC.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC6"><U>Options Controlling C Dialect</U></A></H2>
+<P>The following options control the dialect of C that the compiler accepts:</P>
+<DL>
+
+<DT><P><B>-ansi</B></P><DD><P>Support all ISO C89 programs.
+This turns off certain features of GCC that are incompatible with ISO C89,
+such as the <CODE>asm</CODE> and <CODE>typeof</CODE> keywords, and
+some predefined macros that identify the
+type of system you are using.  It also enables the undesirable and
+rarely used ISO trigraph feature, and disables recognition of C++ style
+<CODE>//</CODE> comments as well as the <CODE>inline</CODE> keyword.
+<BR><BR>
+The alternate keywords <CODE>__asm__</CODE>, <CODE>__extension__</CODE>,
+<CODE>__inline__</CODE> and <CODE>__typeof__</CODE> continue to work despite
+<B>'-ansi'</B>.  You would not want to use them in an ISO C program, of
+course, but it is useful to put them in header files that might be included
+in compilations done with <B>'-ansi'</B>.  Alternate predefined macros
+such as <CODE>__unix__</CODE> are also available, with or
+without <B>'-ansi'</B>.
+<BR><BR>
+The <B>'-ansi'</B> option does not cause non-ISO programs to be
+rejected gratuitously.  For that, <B>'-pedantic'</B> is required in
+addition to <B>'-ansi'</B>.  See <A HREF="#SEC8">Warning Options</A>.
+<BR><BR>
+The macro <CODE>__STRICT_ANSI__</CODE> is predefined when the <B>'-ansi'</B>
+option is used.  Some header files may notice this macro and refrain
+from declaring certain functions or defining certain macros that the
+ISO standard doesn't call for; this is to avoid interfering with any
+programs that might use these names for other things.
+<BR><BR>
+Functions which would normally be built in but do not have semantics
+defined by ISO C (such as <A HREF="alloc.html#alloca">alloca</A>) are not built-in
+functions with <B>'-ansi'</B> is used.  See <A HREF="gnuexts.html#SEC104">Other
+built-in functions provided by GCC</A> for details of the functions
+affected.
+<BR><BR>
+<B>Note:</B> At the moment, the GCC4TI library depends heavily on GNU C extensions,
+so you cannot use the <B>'-ansi'</B> switch in GCC4TI.
+</P><DT><P><B>-std=<I>standard</I></B></P><DD><P>Determine the language standard.  A value for <I>standard</I> must be provided;
+provided; possible values are
+</P>
+<DL>
+
+<DT><P><B>c89</B>
+<BR><B>iso9899:1990</B></P><DD><P>ISO C90 (same as <B>'-ansi'</B>).
+</P><DT><P><B>iso9899:199409</B></P><DD><P>ISO C90 as modified in amendment 1.
+</P><DT><P><B>c99</B>
+<BR><B>c9x</B>
+<BR><B>iso9899:1999</B>
+<BR><B>iso9899:199x</B></P><DD><P>ISO C99.  Note that this standard is not yet fully supported; see
+<A HREF="http://gcc.gnu.org/gcc-3.3/c99status.html">http://gcc.gnu.org/gcc-3.3/c99status.html</A> for more information.  The
+names <CODE>c9x</CODE> and <CODE>iso9899:199x</CODE> are deprecated.
+</P><DT><P><B>gnu89</B></P><DD><P>Default, ISO C90 plus GNU extensions (including some C99 features).
+</P><DT><P><B>gnu99</B>
+<BR><B>gnu9x</B></P><DD><P>ISO C99 plus GNU extensions.  When ISO C99 is fully implemented in GCC,
+this will become the default.  The name <CODE>gnu9x</CODE> is deprecated.</P>
+</DL>
+<P>
+Even when this option is not specified, you can still use some of the
+features of newer standards in so far as they do not conflict with
+previous C standards.  For example, you may use <CODE>__restrict__</CODE> even
+when <B>'-std=c99'</B> is not specified.
+<BR><BR>
+The <B>'-std'</B> options specifying some version of ISO C have the same
+effects as <B>'-ansi'</B>, except that features that were not in ISO C90
+but are in the specified version (for example, <CODE>//</CODE> comments and
+the <CODE>inline</CODE> keyword in ISO C99) are not disabled.
+</P><DT><P><B>-aux-info <I>filename</I></B></P><DD><P>Output to the given filename prototyped declarations for all functions
+declared and/or defined in a translation unit, including those in header
+files.  This option is silently ignored in any language other than C.
+<BR><BR>
+Besides declarations, the file indicates, in comments, the origin of
+each declaration (source file and line), whether the declaration was
+implicit, prototyped or unprototyped (<CODE>I</CODE>, <CODE>N</CODE> for new or
+<CODE>O</CODE> for old, respectively, in the first character after the line
+number and the colon), and whether it came from a declaration or a
+definition (<CODE>C</CODE> or <CODE>F</CODE>, respectively, in the following
+character).  In the case of function definitions, a K&amp;R-style list of
+arguments followed by their declarations is also provided, inside
+comments, after the declaration.
+</P><DT><P><B>-fno-asm</B></P><DD><P>Do not recognize <CODE>asm</CODE>, <CODE>inline</CODE> or <CODE>typeof</CODE> as a
+keyword, so that code can use these words as identifiers.  You can use
+the keywords <CODE>__asm__</CODE>, <CODE>__inline__</CODE> and <CODE>__typeof__</CODE>
+instead.  <B>'-ansi'</B> implies <B>'-fno-asm'</B>.
+</P><DT><P><B>-fno-builtin</B>
+<BR><B>-fno-builtin-<I>function</I></B></P><DD><P>Don't recognize built-in functions that do not begin with
+<CODE>__builtin_</CODE> as prefix.  See <A HREF="gnuexts.html#SEC104">Other built-in
+functions provided by GCC</A> for details of the functions affected,
+including those which are not built-in functions when <B>'-ansi'</B> or
+<B>'-std'</B> options for strict ISO C conformance are used because they
+do not have an ISO standard meaning.
+<BR><BR>
+GCC normally generates special code to handle certain built-in functions
+more efficiently; for instance, calls to <A HREF="alloc.html#alloca">alloca</A> may become single
+instructions that adjust the stack directly.  The resulting code is often both smaller
+and faster, but since the function calls no longer appear as such, you
+cannot set a breakpoint on those calls, nor can you change the behavior
+of the functions by linking with a different library.
+<BR><BR>
+With the <B>'-fno-builtin-<I>function</I>'</B> option,
+only the built-in function <I>function</I> is
+disabled.  <I>function</I> must not begin with <CODE>__builtin_</CODE>.  If a
+function is named this is not built-in in this version of GCC, this
+option is ignored.  There is no corresponding
+<B>'-fbuiltin-<I>function</I>'</B> option; if you wish to enable
+built-in functions selectively when using <B>'-fno-builtin'</B> or
+<B>'-ffreestanding'</B>, you may define macros such as:</P>
+<PRE>#define abs(n)          __builtin_abs ((n))
+#define strcpy(d, s)    __builtin_strcpy ((d), (s))
+</PRE>
+
+<DT><P><B>-fhosted</B></P><DD><P>Assert that compilation takes place in a hosted environment.  This implies
+<B>'-fbuiltin'</B>.  A hosted environment is one in which the
+entire standard library is available, and in which <CODE>main</CODE> has a return
+type of <CODE>int</CODE>.  Examples are nearly everything except a kernel.
+This is equivalent to <B>'-fno-freestanding'</B>.
+<BR><BR>
+Although TI calculators are not really hosted environments, <B>'-fhosted'</B>
+is kept as the default.
+</P><DT><P><B>-ffreestanding</B></P><DD><P>Assert that compilation takes place in a freestanding environment.  This
+implies <B>'-fno-builtin'</B>.  A freestanding environment
+is one in which the standard library may not exist, and program startup may
+not necessarily be at <CODE>main</CODE>.  The most obvious example is an OS kernel.
+This is equivalent to <B>'-fno-hosted'</B>.
+</P><DT><P><B>-fms-extensions</B></P><DD><P>Accept some non-standard constructs used in Microsoft header files.
+</P><DT><P><B>-trigraphs</B></P><DD><P>Support ISO C trigraphs.  The <B>'-ansi'</B> option (and <B>'-std'</B>
+options for strict ISO C conformance) implies <B>'-trigraphs'</B>.
+See <A HREF="#SEC11">Options Controlling the Preprocessor</A> for more information.
+</P><DT><P><B>-no-integrated-cpp</B></P><DD><P>Performs a compilation in two passes: preprocessing and compiling.  This
+option allows a user supplied &quot;cc1&quot; via the
+<B>'-B'</B> option. The user supplied compilation step can then add in
+an additional preprocessing step after normal preprocessing but before
+compiling. The default is to use the integrated preprocessor.
+<BR><BR>
+The semantics of this option will change if &quot;cc1&quot;, &quot;cc1plus&quot;, and
+&quot;cc1obj&quot; are merged.
+</P><DT><P><B>-traditional</B>
+<BR><B>-traditional-cpp</B></P><DD><P>Formerly, these options caused GCC to attempt to emulate a pre-standard
+C compiler.  They are now only supported with the <B>'-E'</B> switch.
+The preprocessor continues to support a <A HREF="CPP.html#SEC70">pre-standard mode</A>.
+</P><DT><P><B>-fcond-mismatch</B></P><DD><P>Allow conditional expressions with mismatched types in the second and
+third arguments.  The value of such an expression is void.
+</P><DT><P><B>-funsigned-char</B></P><DD><P>Let the type <CODE><A HREF="keywords.html#int">char</A></CODE> be unsigned, like <CODE>unsigned&nbsp;char</CODE>.
+In GCC4TI, the default is <CODE>signed char</CODE>.
+<BR><BR>
+Ideally, a portable program should always use <CODE>signed&nbsp;char</CODE> or
+<CODE>unsigned&nbsp;char</CODE> when it depends on the signedness of an object.
+But many programs have been written to use plain <CODE>char</CODE> and
+expect it to be signed, or expect it to be unsigned, depending on the
+machines they were written for.  This option, and its inverse, let you
+make such a program work with the opposite default.
+<BR><BR>
+The type <CODE>char</CODE> is always a distinct type from each of
+<CODE>signed&nbsp;char</CODE> or <CODE>unsigned&nbsp;char</CODE>, even though its behavior
+is always just like one of those two.
+</P><DT><P><B>-fsigned-char</B></P><DD><P>Let the type <CODE><A HREF="keywords.html#int">char</A></CODE> be signed, like <CODE>signed&nbsp;char</CODE>.
+<BR><BR>
+Note that this is equivalent to <B>'-fno-unsigned-char'</B>, which is
+the negative form of <B>'-funsigned-char'</B>.  Likewise, the option
+<B>'-fno-signed-char'</B> is equivalent to <B>'-funsigned-char'</B>.
+</P><DT><P><B>-fsigned-bitfields</B>
+<BR><B>-funsigned-bitfields</B>
+<BR><B>-fno-signed-bitfields</B>
+<BR><B>-fno-unsigned-bitfields</B></P><DD><P>These options control whether a bit-field is signed or unsigned, when the
+declaration does not use either <CODE>signed</CODE> or <CODE>unsigned</CODE>.  By
+default, such a bit-field is signed, because this is consistent: the
+basic integer types such as <CODE>int</CODE> are signed types.
+</P><DT><P><B>-fwritable-strings</B></P><DD><P>Store string constants in the writable data segment and don't uniquize
+them.  This is for compatibility with old programs which assume they can
+write into string constants.
+<BR><BR>
+Writing into string constants is a very bad idea; &quot;constants&quot; should
+be constant.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC8"><U>Options to Request or Suppress Warnings</U></A></H2>
+<P>Warnings are diagnostic messages that report constructions which
+are not inherently erroneous but which are risky or suggest there
+may have been an error.
+<BR><BR>
+You can request many specific warnings with options beginning <B>'-W'</B>,
+for example <B>'-Wimplicit'</B> to request warnings on implicit
+declarations.  Each of these specific warning options also has a
+negative form beginning <B>'-Wno-'</B> to turn off warnings;
+for example, <B>'-Wno-implicit'</B>.  This manual lists only one of the
+two forms, whichever is not the default.
+<BR><BR>
+The following options control the amount and kinds of warnings produced
+by GCC.</P>
+<DL>
+
+<DT><P><B>-fsyntax-only</B></P><DD><P>Check the code for syntax errors, but don't do anything beyond that.
+</P><DT><P><B>-pedantic</B></P><DD><P>Issue all the warnings demanded by strict ISO C;
+reject all programs that use forbidden extensions, and some other
+programs that do not follow ISO C.  This option follows the
+version of the ISO C standard specified by any <B>'-std'</B> option used.
+<BR><BR>
+Valid ISO C programs should compile properly with or without
+this option (though a rare few will require <B>'-ansi'</B> or a
+<B>'-std'</B> option specifying the required version of ISO C).  However,
+without this option, certain GNU extensions and traditional C
+features are supported as well.  With this option, they are rejected.
+<BR><BR>
+<B>'-pedantic'</B> does not cause warning messages for use of the
+alternate keywords whose names begin and end with <CODE>__</CODE>.  Pedantic
+warnings are also disabled in the expression that follows
+<CODE>__extension__</CODE>.  However, only system header files should use
+these escape routes; application programs should avoid them.
+See <A HREF="gnuexts.html#SEC100">Alternate Keywords</A>.
+<BR><BR>
+Some users try to use <B>'-pedantic'</B> to check programs for strict ISO
+C conformance.  They soon find that it does not do quite what they want:
+it finds some non-ISO practices, but not all - only those for which
+ISO C <I>requires</I> a diagnostic, and some others for which
+diagnostics have been added.
+<BR><BR>
+A feature to report any failure to conform to ISO C might be useful in
+some instances, but would require considerable additional work and would
+be quite different from <B>'-pedantic'</B>.  The GNU team doesn't have plans to
+support such a feature in the near future.
+<BR><BR>
+Where the standard specified with <B>'-std'</B> represents a GNU
+extended dialect of C, such as <CODE>gnu89</CODE> or <CODE>gnu99</CODE>, there is a
+corresponding <U>base standard</U>, the version of ISO C on which the GNU
+extended dialect is based.  Warnings from <B>'-pedantic'</B> are given
+where they are required by the base standard.  (It would not make sense
+for such warnings to be given only for features not in the specified GNU
+C dialect, since by definition the GNU dialects of C include all
+features the compiler supports with the given option, and there would be
+nothing to warn about.)
+</P><DT><P><B>-pedantic-errors</B></P><DD><P>Like <B>'-pedantic'</B>, except that errors are produced rather than
+warnings.
+</P><DT><P><B>-w</B></P><DD><P>Inhibit all warning messages.
+</P><DT><P><B>-Wno-import</B></P><DD><P>Inhibit warning messages about the use of <CODE><A HREF="cpp.html#SEC84">#import</A></CODE>.
+</P><DT><P><B>-Wchar-subscripts</B></P><DD><P>Warn if an array subscript has type <CODE><A HREF="keywords.html#int">char</A></CODE>.  This is a common cause
+of error, as programmers often forget that this type is signed on some
+machines.
+</P><DT><P><B>-Wcomment</B></P><DD><P>Warn whenever a comment-start sequence <CODE>/*</CODE> appears in a <CODE>/*</CODE>
+comment, or whenever a Backslash-Newline appears in a <CODE>//</CODE> comment.
+</P><DT><P><B>-Wformat</B></P><DD><P>Check calls to <A HREF="stdio.html#printf">printf</A> and <A HREF="stdio.html#scanf">scanf</A>, etc., to make sure that
+the arguments supplied have types appropriate to the format string
+specified, and that the conversions specified in the format string make
+sense.  This includes standard functions, and others specified by format
+attributes (see <A HREF="gnuexts.html#SEC85_format">format</A>).
+<BR><BR>
+Since <B>'-Wformat'</B> also checks for null format arguments for
+several functions, <B>'-Wformat'</B> also implies <B>'-Wnonnull'</B>.
+<BR><BR>
+<B>'-Wformat'</B> is included in <B>'-Wall'</B>.  For more control over some
+aspects of format checking, the options
+<B>'-Wno-format-extra-args'</B>, <B>'-Wno-format-zero-length'</B>,
+<B>'-Wformat-nonliteral'</B>, <B>'-Wformat-security'</B>, and
+<B>'-Wformat=2'</B> are available, but are not included in <B>'-Wall'</B>.
+</P><DT><P><B>-Wno-format-extra-args</B></P><DD><P>If <B>'-Wformat'</B> is specified, do not warn about excess arguments to a
+<A HREF="stdio.html#printf">printf</A> or <A HREF="stdio.html#scanf">scanf</A> format function.  The C standard specifies
+that such arguments are ignored.
+</P><DT><P><B>-Wno-format-zero-length</B></P><DD><P>If <B>'-Wformat'</B> is specified, do not warn about zero-length formats.
+The C standard specifies that zero-length formats are allowed.
+</P><DT><P><B>-Wformat-nonliteral</B></P><DD><P>If <B>'-Wformat'</B> is specified, also warn if the format string is not a
+string literal and so cannot be checked, unless the format function
+takes its format arguments as a <A HREF="stdarg.html#va_list">va_list</A>.
+</P><DT><P><B>-Wformat-security</B></P><DD><P>If <B>'-Wformat'</B> is specified, also warn about uses of format
+functions that represent possible security problems.  At present, this
+warns about calls to <A HREF="stdio.html#printf">printf</A> and <A HREF="stdio.html#scanf">scanf</A> functions where the
+format string is not a string literal and there are no format arguments,
+as in <CODE>printf&nbsp;(foo);</CODE>.  This may be a security hole if the format
+string came from untrusted input and contains <CODE>%n</CODE>.  (This is
+currently a subset of what <B>'-Wformat-nonliteral'</B> warns about, but
+in future warnings may be added to <B>'-Wformat-security'</B> that are not
+included in <B>'-Wformat-nonliteral'</B>.)
+</P><DT><P><B>-Wformat=2</B></P><DD><P>Enable <B>'-Wformat'</B> plus format checks not included in
+<B>'-Wformat'</B>.  Currently equivalent to <B>'-Wformat
+-Wformat-nonliteral -Wformat-security'</B>.
+</P><DT><P><B>-Wnonnull</B></P><DD><P>Enable warning about passing a null pointer for arguments marked as
+requiring a non-null value by the <CODE>nonnull</CODE> function attribute.
+<BR><BR>
+<B>'-Wnonnull'</B> is included in <B>'-Wall'</B> and <B>'-Wformat'</B>.  It
+can be disabled with the <B>'-Wno-nonnull'</B> option.
+</P><DT><P><B>-Wimplicit-int</B></P><DD><P>Warn when a declaration does not specify a type.
+</P><DT><P><B>-Wimplicit-function-declaration</B>
+<BR><B>-Werror-implicit-function-declaration</B></P><DD><P>Give a warning (or error) whenever a function is used before being
+declared.
+</P><DT><P><B>-Wimplicit</B></P><DD><P>Same as <B>'-Wimplicit-int -Wimplicit-function-declaration'</B>.
+</P><DT><P><B>-Wmissing-braces</B></P><DD><P>Warn if an aggregate or union initializer is not fully bracketed.  In
+the following example, the initializer for <CODE>a</CODE> is not fully
+bracketed, but that for <CODE>b</CODE> is fully bracketed.</P>
+<PRE>int a[2][2] = { 0, 1, 2, 3 };
+int b[2][2] = { { 0, 1 }, { 2, 3 } };
+</PRE>
+
+<DT><P><B>-Wparentheses</B></P><DD><P>Warn if parentheses are omitted in certain contexts, such
+as when there is an assignment in a context where a truth value
+is expected, or when operators are nested whose precedence people
+often get confused about.
+<BR><BR>
+Also warn about constructions where there may be confusion to which
+<CODE><A HREF="keywords.html#if">if</A></CODE> statement an <CODE><A HREF="keywords.html#if">else</A></CODE> branch belongs.  Here is an example of
+such a case:</P>
+<PRE>{
+  if (a)
+    if (b)
+      foo ();
+  else
+    bar ();
+}
+</PRE>
+<P>In C, every <CODE>else</CODE> branch belongs to the innermost possible <CODE>if</CODE>
+statement, which in this example is <CODE>if&nbsp;(b)</CODE>.  This is often not
+what the programmer expected, as illustrated in the above example by the
+indentation the programmer chose.  When there is the potential for this
+confusion, GCC will issue a warning when this flag is specified.
+To eliminate the warning, add explicit braces around the innermost
+<CODE>if</CODE> statement so there is no way the <CODE>else</CODE> could belong to
+the enclosing <CODE>if</CODE>.  The resulting code would look like this:</P>
+<PRE>{
+  if (a)
+    {
+      if (b)
+        foo ();
+      else
+        bar ();
+    }
+}
+</PRE>
+
+<DT><P><B>-Wsequence-point</B></P><DD><P>Warn about code that may have undefined semantics because of violations
+of sequence point rules in the C standard.
+<BR><BR>
+The C standard defines the order in which expressions in a C program are
+evaluated in terms of <U>sequence points</U>, which represent a partial
+ordering between the execution of parts of the program: those executed
+before the sequence point, and those executed after it.  These occur
+after the evaluation of a full expression (one which is not part of a
+larger expression), after the evaluation of the first operand of a
+<CODE>&amp;&amp;</CODE>, <CODE>||</CODE>, <CODE>?&nbsp;:</CODE> or <CODE>,</CODE> (comma) operator, before a
+function is called (but after the evaluation of its arguments and the
+expression denoting the called function), and in certain other places.
+Other than as expressed by the sequence point rules, the order of
+evaluation of subexpressions of an expression is not specified.  All
+these rules describe only a partial order rather than a total order,
+since, for example, if two functions are called within one expression
+with no sequence point between them, the order in which the functions
+are called is not specified.  However, the standards committee have
+ruled that function calls do not overlap.
+<BR><BR>
+It is not specified when between sequence points modifications to the
+values of objects take effect.  Programs whose behavior depends on this
+have undefined behavior; the C standard specifies that &quot;Between the
+previous and next sequence point an object shall have its stored value
+modified at most once by the evaluation of an expression.  Furthermore,
+the prior value shall be read only to determine the value to be
+stored.&quot;.  If a program breaks these rules, the results on any
+particular implementation are entirely unpredictable.
+<BR><BR>
+Examples of code with undefined behavior are <CODE>a&nbsp;=&nbsp;a++;</CODE>, <CODE>a[n]
+=&nbsp;b[n++]</CODE> and <CODE>a[i++]&nbsp;=&nbsp;i;</CODE>.  Some more complicated cases are not
+diagnosed by this option, and it may give an occasional false positive
+result, but in general it has been found fairly effective at detecting
+this sort of problem in programs.
+<BR><BR>
+The C standard is worded confusingly, therefore there is some debate
+over the precise meaning of the sequence point rules in subtle cases.
+Links to discussions of the problem, including proposed formal
+definitions, may be found on the GCC readings page, at
+<A HREF="http://gcc.gnu.org/readings.html">http://gcc.gnu.org/readings.html</A>.
+</P><DT><P><B>-Wreturn-type</B></P><DD><P>Warn whenever a function is defined with a return-type that defaults to
+<CODE><A HREF="keywords.html#int">int</A></CODE>.  Also warn about any <CODE>return</CODE> statement with no
+return-value in a function whose return-type is not <CODE><A HREF="keywords.html#void">void</A></CODE>.
+</P><DT><P><B>-Wswitch</B></P><DD><P>Warn whenever a <CODE><A HREF="keywords.html#switch">switch</A></CODE> statement has an index of enumeral type
+and lacks a <CODE><A HREF="keywords.html#switch">case</A></CODE> for one or more of the named codes of that
+enumeration.  (The presence of a <CODE>default</CODE> label prevents this
+warning.)  <CODE>case</CODE> labels outside the enumeration range also
+provoke warnings when this option is used.
+</P><DT><P><B>-Wswitch-default</B></P><DD><P>Warn whenever a <CODE>switch</CODE> statement does not have a <CODE>default</CODE>
+case.
+</P><DT><P><B>-Wswitch-enum</B></P><DD><P>Warn whenever a <CODE>switch</CODE> statement has an index of enumeral type
+and lacks a <CODE>case</CODE> for one or more of the named codes of that
+enumeration.  <CODE>case</CODE> labels outside the enumeration range also
+provoke warnings when this option is used.
+</P><DT><P><B>-Wtrigraphs</B></P><DD><P>Warn if any trigraphs are encountered that might change the meaning of
+the program (trigraphs within comments are not warned about).
+For more information about trigraphs, see <A HREF="#SEC11">Options Controlling the Preprocessor</A>.
+</P><DT><P><B>-Wunused-function</B></P><DD><P>Warn whenever a static function is declared but not defined or a
+non\-inline static function is unused.
+<BR><BR>
+To suppress this warning, use the <CODE><A HREF="gnuexts.html#SEC85_unused">unused</A></CODE> attribute.
+</P><DT><P><B>-Wunused-label</B></P><DD><P>Warn whenever a label is declared but not used.
+<BR><BR>
+To suppress this warning, use the <CODE><A HREF="gnuexts.html#SEC91_unused">unused</A></CODE> attribute.
+</P><DT><P><B>-Wunused-parameter</B></P><DD><P>Warn whenever a function parameter is unused aside from its declaration.
+<BR><BR>
+To suppress this warning, use the <CODE><A HREF="gnuexts.html#SEC91_unused">unused</A></CODE> attribute.
+</P><DT><P><B>-Wunused-variable</B></P><DD><P>Warn whenever a local variable or non-constant static variable is unused
+aside from its declaration
+<BR><BR>
+To suppress this warning, use the <CODE><A HREF="gnuexts.html#SEC91_unused">unused</A></CODE> attribute.
+</P><DT><P><B>-Wunused-value</B></P><DD><P>Warn whenever a statement computes a result that is explicitly not used.
+<BR><BR>
+To suppress this warning, cast the expression to <CODE><A HREF="keywords.html#void">void</A></CODE>.
+</P><DT><P><B>-Wunused</B></P><DD><P>All the above <B>'-Wunused'</B> options combined.
+<BR><BR>
+In order to get a warning about an unused function parameter, you must
+either specify <B>'-W -Wunused'</B> or separately specify
+<B>'-Wunused-parameter'</B>.
+</P><DT><P><B>-Wuninitialized</B></P><DD><P>Warn if an automatic variable is used without first being initialized or
+if a variable may be clobbered by a <A HREF="setjmp.html#setjmp">setjmp</A> call
+(I am not sure whether <A HREF="setjmp.html#setjmp">setjmp</A> problems may be detected in GCC4TI).
+<BR><BR>
+These warnings are possible only in optimizing compilation,
+because they require data flow information that is computed only
+when optimizing.  If you don't specify <B>'-O'</B>, you simply won't
+get these warnings.
+<BR><BR>
+These warnings occur only for variables that are candidates for
+register allocation.  Therefore, they do not occur for a variable that
+is declared <CODE><A HREF="keywords.html#volatile">volatile</A></CODE>, or whose address is taken, or whose size
+is other than 1, 2, 4 or 8 bytes.  Also, they do not occur for
+structures, unions or arrays, even when they are in registers.
+<BR><BR>
+Note that there may be no warning about a variable that is used only
+to compute a value that itself is never used, because such
+computations may be deleted by data flow analysis before the warnings
+are printed.
+<BR><BR>
+These warnings are made optional because GCC is not smart
+enough to see all the reasons why the code might be correct
+despite appearing to have an error.  Here is one example of how
+this can happen:</P>
+<PRE>{
+  int x;
+  switch (y)
+    {
+    case 1: x = 1;
+      break;
+    case 2: x = 4;
+      break;
+    case 3: x = 5;
+    }
+  foo (x);
+}
+</PRE>
+<P>If the value of <I>y</I> is always 1, 2 or 3, then <I>x</I> is
+always initialized, but GCC doesn't know this.  Here is
+another common case:</P>
+<PRE>{
+  int save_y;
+  if (change_y) save_y = y, y = new_y;
+  ...
+  if (change_y) y = save_y;
+}
+</PRE>
+<P>This has no bug because <I>save_y</I> is used only if it is set.
+<BR><BR>
+This option also warns when a non-volatile automatic variable might be
+changed by a call to <A HREF="setjmp.html#longjmp">longjmp</A>.  These warnings as well are possible
+only in optimizing compilation
+(although I am not sure whether they can be caught at all in GCC4TI).
+<BR><BR>
+The compiler sees only the calls to <A HREF="setjmp.html#setjmp">setjmp</A>.  It cannot know
+where <A HREF="setjmp.html#longjmp">longjmp</A> will be called; in fact, an interrupt handler could
+call it at any point in the code.  As a result, you may get a warning
+even when there is in fact no problem because <A HREF="setjmp.html#longjmp">longjmp</A> cannot
+in fact be called at the place which would cause a problem.
+<BR><BR>
+Some spurious warnings can be avoided if you declare all the functions
+you use that never return as <A HREF="gnuexts.html#SEC85_noreturn">noreturn</A>.
+</P><DT><P><B>-Wunknown-pragmas</B></P><DD><P>Warn when a <CODE><A HREF="cpp.html#SEC46">#pragma</A></CODE> directive is encountered which is not understood by
+GCC.  If this command line option is used, warnings will even be issued
+for unknown pragmas in system header files.  This is not the case if
+the warnings were only enabled by the <B>'-Wall'</B> command line option.
+</P><DT><P><B>-Wstrict-aliasing</B></P><DD><P>This option is only active when <B>'-fstrict-aliasing'</B> is active.
+It warns about code which might break the strict aliasing rules that the
+compiler is using for optimization. The warning does not catch all
+cases, but does attempt to catch the more common pitfalls. It is
+included in <B>'-Wall'</B>.
+</P><DT><P><B>-Wall</B></P><DD><P>All of the above <B>'-W'</B> options combined.  This enables all the
+warnings about constructions that some users consider questionable, and
+that are easy to avoid (or modify to prevent the warning), even in
+conjunction with macros.</P>
+</DL>
+<P>The following <B>'-W...'</B> options are not implied by <B>'-Wall'</B>.
+Some of them warn about constructions that users generally do not
+consider questionable, but which occasionally you might wish to check
+for; others warn about constructions that are necessary or hard to avoid
+in some cases, and there is no simple way to modify the code to suppress
+the warning.</P>
+<DL>
+
+<DT><P><B>-W</B></P><DD><P>Print extra warning messages for these events:</P>
+<UL>
+<LI><P>A function can return either with or without a value.  (Falling
+off the end of the function body is considered returning without
+a value.)  For example, this function would evoke such a
+warning:</P>
+<PRE>foo (a)
+{
+  if (a &gt; 0)
+    return a;
+}
+</PRE>
+
+</LI>
+<LI><P>An expression-statement or the left-hand side of a comma expression
+contains no side effects.
+To suppress the warning, cast the unused expression to void.
+For example, an expression such as <CODE>x[i,j]</CODE> will cause a warning,
+but <CODE>x[(void)i,j]</CODE> will not.
+</P></LI>
+<LI><P>An unsigned value is compared against zero with <CODE>&lt;</CODE> or <CODE>&lt;=</CODE>.
+</P></LI>
+<LI><P>A comparison like <CODE>x&lt;=y&lt;=z</CODE> appears; this is equivalent to
+<CODE>(x&lt;=y&nbsp;?&nbsp;1&nbsp;:&nbsp;0)&nbsp;&lt;=&nbsp;z</CODE>, which is a different interpretation from
+that of ordinary mathematical notation.
+</P></LI>
+<LI><P>Storage-class specifiers like <CODE>static</CODE> are not the first things in
+a declaration.  According to the C Standard, this usage is obsolescent.
+</P></LI>
+<LI><P>The return type of a function has a type qualifier such as <CODE>const</CODE>.
+Such a type qualifier has no effect, since the value returned by a
+function is not an lvalue.  (But don't warn about the GNU extension of
+<CODE>volatile&nbsp;void</CODE> return types.  That extension will be warned about
+if <B>'-pedantic'</B> is specified.)
+</P></LI>
+<LI><P>If <B>'-Wall'</B> or <B>'-Wunused'</B> is also specified, warn about unused
+arguments.
+</P></LI>
+<LI><P>A comparison between signed and unsigned values could produce an
+incorrect result when the signed value is converted to unsigned.
+(But don't warn if <B>'-Wno-sign-compare'</B> is also specified.)
+</P></LI>
+<LI><P>An aggregate has a partly bracketed initializer.
+For example, the following code would evoke such a warning,
+because braces are missing around the initializer for <I>x</I>.<I>h</I>:</P>
+<PRE>struct s { int f, g; };
+struct t { struct s h; int i; };
+struct t x = { 1, 2, 3 };
+</PRE>
+
+</LI>
+<LI><P>An aggregate has an initializer which does not initialize all members.
+For example, the following code would cause such a warning, because
+<I>x</I>.<I>h</I> would be implicitly initialized to zero:</P>
+<PRE>struct s { int f, g, h; };
+struct s x = { 3, 4 };
+</PRE>
+
+</LI>
+</UL>
+
+<DT><P><B>-Wno-div-by-zero</B></P><DD><P>Do not warn about compile-time integer division by zero.  Floating point
+division by zero is not warned about, as it can be a legitimate way of
+obtaining infinities and NaNs.
+</P><DT><P><B>-Wsystem-headers</B></P><DD><P>Print warning messages for constructs found in system header files.
+Warnings from system headers are normally suppressed, on the assumption
+that they usually do not indicate real problems and would only make the
+compiler output harder to read.  Using this command line option tells
+GCC to emit warnings from system headers as if they occurred in user
+code.  However, note that using <B>'-Wall'</B> in conjunction with this
+option will <I>not</I> warn about unknown pragmas in system
+headers - for that, <B>'-Wunknown-pragmas'</B> must also be used.
+<BR><BR>
+Note that the GCC4TI Library header files are not included as system header
+files.
+</P><DT><P><B>-Wfloat-equal</B></P><DD><P>Warn if floating point values are used in equality comparisons.
+<BR><BR>
+The idea behind this is that sometimes it is convenient (for the
+programmer) to consider floating-point values as approximations to
+infinitely precise real numbers.  If you are doing this, then you need
+to compute (by analyzing the code, or in some other way) the maximum or
+likely maximum error that the computation introduces, and allow for it
+when performing comparisons (and when producing output, but that's a
+different problem).  In particular, instead of testing for equality, you
+would check to see whether the two values have ranges that overlap; and
+this is done with the relational operators, so equality comparisons are
+probably mistaken.
+</P><DT><P><B>-Wtraditional</B></P><DD><P>Warn about certain constructs that behave differently in traditional and
+ISO C.  Also warn about ISO C constructs that have no traditional C
+equivalent, and/or problematic constructs which should be avoided.</P>
+<UL>
+<LI><P>Macro parameters that appear within string literals in the macro body.
+In traditional C macro replacement takes place within string literals,
+but does not in ISO C.
+</P></LI>
+<LI><P>In traditional C, some preprocessor directives did not exist.
+Traditional preprocessors would only consider a line to be a directive
+if the <CODE>#</CODE> appeared in column 1 on the line.  Therefore
+<B>'-Wtraditional'</B> warns about directives that traditional C
+understands but would ignore because the <CODE>#</CODE> does not appear as the
+first character on the line.  It also suggests you hide directives like
+<CODE><A HREF="cpp.html#SEC46">#pragma</A></CODE> not understood by traditional C by indenting them.  Some
+traditional implementations would not recognize <CODE><A HREF="cpp.html#SEC36">#elif</A></CODE>, so it
+suggests avoiding it altogether.
+</P></LI>
+<LI><P>A function-like macro that appears without arguments.
+</P></LI>
+<LI><P>The unary plus operator.
+</P></LI>
+<LI><P>The <CODE>U</CODE> integer constant suffix, or the <CODE>F</CODE> or <CODE>L</CODE> floating point
+constant suffixes.  (Traditional C does support the <CODE>L</CODE> suffix on integer
+constants.)  Note, these suffixes appear in macros defined in <A HREF="limits.html">limits.h</A>,
+for example.
+</P></LI>
+<LI><P>A function declared external in one block and then used after the end of
+the block.
+</P></LI>
+<LI><P>A <CODE><A HREF="keywords.html#switch">switch</A></CODE> statement has an operand of type <CODE><A HREF="keywords.html#short">long</A></CODE>.
+</P></LI>
+<LI><P>A non-<CODE><A HREF="keywords.html#static">static</A></CODE> function declaration follows a <CODE>static</CODE> one.
+This construct is not accepted by some traditional C compilers.
+</P></LI>
+<LI><P>The ISO type of an integer constant has a different width or
+signedness from its traditional type.  This warning is only issued if
+the base of the constant is 10, i.e. hexadecimal or octal values, which
+typically represent bit patterns, are not warned about.
+</P></LI>
+<LI><P>Usage of ISO string concatenation is detected.
+</P></LI>
+<LI><P>Initialization of automatic aggregates.
+</P></LI>
+<LI><P>Identifier conflicts with labels.  Traditional C lacks a separate
+namespace for labels.
+</P></LI>
+<LI><P>Initialization of unions.  If the initializer is zero, the warning is
+omitted.  This is done under the assumption that the zero initializer in
+user code appears conditioned on e.g. <A HREF="cpp.html#SEC15_STDC">__STDC__</A> to avoid missing
+initializer warnings and relies on default initialization to zero in the
+traditional C case.
+</P></LI>
+<LI><P>Conversions by prototypes between fixed/floating point values and vice
+versa.  The absence of these prototypes when compiling with traditional
+C would cause serious problems.  This is a subset of the possible
+conversion warnings, for the full set use <B>'-Wconversion'</B>.
+</P></LI>
+<LI><P>Use of ISO C style function definitions.  This warning intentionally is
+<I>not</I> issued for prototype declarations or variadic functions
+because these ISO C features will appear in your code when using
+libiberty's traditional C compatibility macros, <CODE>PARAMS</CODE> and
+<CODE>VPARAMS</CODE>.  This warning is also bypassed for nested functions
+because that feature is already a gcc extension and thus not relevant to
+traditional C compatibility.</P></LI>
+</UL>
+
+<DT><P><B>-Wundef</B></P><DD><P>Warn if an undefined identifier is evaluated in an <CODE>#if</CODE> directive.
+</P><DT><P><B>-Wendif-labels</B></P><DD><P>Warn whenever an <CODE>#else</CODE> or an <CODE>#endif</CODE> are followed by text.
+</P><DT><P><B>-Wshadow</B></P><DD><P>Warn whenever a local variable shadows another local variable, parameter or
+global variable or whenever a built-in function is shadowed.
+</P><DT><P><B>-Wlarger-than-<I>len</I></B></P><DD><P>Warn whenever an object of larger than <I>len</I> bytes is defined.
+</P><DT><P><B>-Wpointer-arith</B></P><DD><P>Warn about anything that depends on the &quot;size of&quot; a function type or
+of <CODE><A HREF="keywords.html#void">void</A></CODE>.  GNU C assigns these types a size of 1, for
+convenience in calculations with <CODE>void*</CODE> pointers and pointers
+to functions.
+</P><DT><P><B>-Wbad-function-cast</B></P><DD><P>Warn whenever a function call is cast to a non-matching type.
+For example, warn if <CODE>int&nbsp;malloc()</CODE> is cast to <CODE>anything&nbsp;*</CODE>.
+</P><DT><P><B>-Wcast-qual</B></P><DD><P>Warn whenever a pointer is cast so as to remove a type qualifier from
+the target type.  For example, warn if a <CODE>const&nbsp;char&nbsp;*</CODE> is cast
+to an ordinary <CODE>char&nbsp;*</CODE>.
+</P><DT><P><B>-Wcast-align</B></P><DD><P>Warn whenever a pointer is cast such that the required alignment of the
+target is increased.  For example, warn if a <CODE>char&nbsp;*</CODE> is cast to
+an <CODE>int&nbsp;*</CODE> on machines where integers can only be accessed at
+two- or four-byte boundaries.
+</P><DT><P><B>-Wwrite-strings</B></P><DD><P>When compiling C, give string constants the type <CODE>const
+char[<I>length</I>]</CODE> so that
+copying the address of one into a non-<CODE>const</CODE> <CODE>char&nbsp;*</CODE>
+pointer will get a warning; when compiling C++, warn about the
+deprecated conversion from string constants to <CODE>char&nbsp;*</CODE>.
+These warnings will help you find at
+compile time code that can try to write into a string constant, but
+only if you have been very careful about using <CODE>const</CODE> in
+declarations and prototypes.  Otherwise, it will just be a nuisance;
+this is why we did not make <B>'-Wall'</B> request these warnings.
+</P><DT><P><B>-Wconversion</B></P><DD><P>Warn if a prototype causes a type conversion that is different from what
+would happen to the same argument in the absence of a prototype.  This
+includes conversions of fixed point to floating and vice versa, and
+conversions changing the width or signedness of a fixed point argument
+except when the same as the default promotion.
+<BR><BR>
+Also, warn if a negative integer constant expression is implicitly
+converted to an unsigned type.  For example, warn about the assignment
+<CODE>x&nbsp;=&nbsp;-1</CODE> if <CODE>x</CODE> is unsigned.  But do not warn about explicit
+casts like <CODE>(unsigned)&nbsp;-1</CODE>.
+</P><DT><P><B>-Wsign-compare</B></P><DD><P>Warn when a comparison between signed and unsigned values could produce
+an incorrect result when the signed value is converted to unsigned.
+This warning is enabled by <B>'-W'</B>, and by <B>'-Wall'</B>
+in C++ only.
+</P><DT><P><B>-Waggregate-return</B></P><DD><P>Warn if any functions that return structures or unions are defined or
+called.
+</P><DT><P><B>-Wstrict-prototypes</B></P><DD><P>Warn if a function is declared or defined without specifying the
+argument types.  (An old-style function definition is permitted without
+a warning if preceded by a declaration which specifies the argument
+types.)
+</P><DT><P><B>-Wmissing-prototypes</B></P><DD><P>Warn if a global function is defined without a previous prototype
+declaration.  This warning is issued even if the definition itself
+provides a prototype.  The aim is to detect global functions that fail
+to be declared in header files.
+</P><DT><P><B>-Wmissing-declarations (C only)</B></P><DD><P>Warn if a global function is defined without a previous declaration.
+Do so even if the definition itself provides a prototype.
+Use this option to detect global functions that are not declared in
+header files.
+</P><DT><P><B>-Wmissing-noreturn</B></P><DD><P>Warn about functions which might be candidates for attribute <A HREF="gnuexts.html#SEC85_noreturn">noreturn</A>.
+Note these are only possible candidates, not absolute ones.  Care should
+be taken to manually verify functions actually do not ever return before
+adding the <A HREF="gnuexts.html#SEC85_noreturn">noreturn</A> attribute, otherwise subtle code generation
+bugs could be introduced.
+</P><DT><P><B>-Wmissing-format-attribute</B></P><DD><P>If <B>'-Wformat'</B> is enabled, also warn about functions which might be
+candidates for <A HREF="gnuexts.html#SEC85_format">format</A> attributes.  Note these are only possible
+candidates, not absolute ones.  GCC will guess that <A HREF="gnuexts.html#SEC85_format">format</A>
+attributes might be appropriate for any function that calls a function
+like <A HREF="stdio.html#vprintf">vprintf</A> or <A HREF="stdio.html#vscanf">vscanf</A>, but this might not always be the
+case, and some functions for which <A HREF="gnuexts.html#SEC85_format">format</A> attributes are
+appropriate may not be detected.  This option has no effect unless
+<B>'-Wformat'</B> is enabled (possibly by <B>'-Wall'</B>).
+</P><DT><P><B>-Wno-multichar</B></P><DD><P>Do not warn if a multicharacter constant (<CODE>'FOOF'</CODE>) is used.
+Usually they indicate a typo in the user's code, as they have
+implementation-defined values, and should not be used in portable code.
+</P><DT><P><B>-Wno-deprecated-declarations</B></P><DD><P>Do not warn about uses of functions, variables, and types marked as
+deprecated by using the <A HREF="gnuexts.html#SEC85_deprecated">deprecated</A> attribute.
+</P><DT><P><B>-Wpacked</B></P><DD><P>Warn if a structure is given the <A HREF="gnuexts.html#SEC92_packed">packed</A> attribute, but the <A HREF="gnuexts.html#SEC92_packed">packed</A>
+attribute has no effect on the layout or size of the structure.
+Such structures may be mis-aligned for little benefit.  For
+instance, in this code, the variable <I>f</I>.<I>x</I> in <CODE>struct&nbsp;bar</CODE>
+will be misaligned even though <CODE>struct&nbsp;bar</CODE> does not itself
+have the packed attribute:</P>
+<PRE>struct foo {
+  int x;
+  char a, b, c, d;
+} __attribute__((packed));
+struct bar {
+  char z;
+  struct foo f;
+};
+</PRE>
+
+<DT><P><B>-Wpadded</B></P><DD><P>Warn if padding is included in a structure, either to align an element
+of the structure or to align the whole structure.  Sometimes when this
+happens it is possible to rearrange the fields of the structure to
+reduce the padding and so make the structure smaller.
+</P><DT><P><B>-Wredundant-decls</B></P><DD><P>Warn if anything is declared more than once in the same scope, even in
+cases where multiple declaration is valid and changes nothing.
+</P><DT><P><B>-Wnested-externs</B></P><DD><P>Warn if an <CODE><A HREF="keywords.html#extern">extern</A></CODE> declaration is encountered within a function.
+</P><DT><P><B>-Wunreachable-code</B></P><DD><P>Warn if the compiler detects that code will never be executed.
+<BR><BR>
+This option is intended to warn when the compiler detects that at
+least a whole line of source code will never be executed, because
+some condition is never satisfied or because it is after a
+procedure that never returns.
+<BR><BR>
+It is possible for this option to produce a warning even though there
+are circumstances under which part of the affected line can be executed,
+so care should be taken when removing apparently-unreachable code.
+<BR><BR>
+For instance, when a function is inlined, a warning may mean that the
+line is unreachable in only one inlined copy of the function.
+<BR><BR>
+This option is not made part of <B>'-Wall'</B> because in a debugging
+version of a program there is often substantial code which checks
+correct functioning of the program and is, hopefully, unreachable
+because the program does work.  Another common use of unreachable
+code is to provide behavior which is selectable at compile-time.
+</P><DT><P><B>-Winline</B></P><DD><P>Warn if a function can not be inlined and it was declared as inline.
+Even with this option, the compiler will not warn about failures to
+inline functions declared in system headers.
+<BR><BR>
+The compiler uses a variety of heuristics to determine whether or not
+to inline a function.  For example, the compiler takes into account
+the size of the function being inlined and the the amount of inlining
+that has already been done in the current function.  Therefore,
+seemingly insignificant changes in the source program can cause the
+warnings produced by <B>'-Winline'</B> to appear or disappear.
+</P><DT><P><B>-Wlong-long</B></P><DD><P>Warn if <CODE>long&nbsp;long</CODE> type is used.  This is default.  To inhibit
+the warning messages, use <B>'-Wno-long-long'</B>.  Flags
+<B>'-Wlong-long'</B> and <B>'-Wno-long-long'</B> are taken into account
+only when <B>'-pedantic'</B> flag is used.
+</P><DT><P><B>-Wdisabled-optimization</B></P><DD><P>Warn if a requested optimization pass is disabled.  This warning does
+not generally indicate that there is anything wrong with your code; it
+merely indicates that GCC's optimizers were unable to handle the code
+effectively.  Often, the problem is that your code is too big or too
+complex; GCC will refuse to optimize programs when the optimization
+itself is likely to take inordinate amounts of time.
+</P><DT><P><B>-Werror</B></P><DD><P>Make all warnings into errors.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC9"><U>Options for Debugging Your Program</U></A></H2>
+<P>GCC has various special options that are used for debugging
+either your program or GCC.
+However, this manual is not meant to explain anything about the internals of
+GCC, so you will have to go to the
+<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html">official version</A>
+of this page on the internet if you want to debug GCC itself.
+<BR><BR>
+In order to debug GCC4TI C programs at a source level, you need a GDB-enabled
+version of the TiEmu emulator.</P>
+<DL>
+
+<DT><P><B>-g</B></P><DD><P>Produce debugging information in the operating system's native format
+(stabs is the default for the MC68000).  GDB can work with this debugging
+information.
+Note that the <CODE>tigcc</CODE> frontend defaults to DWARF 2 debugging
+information instead, see <A HREF="#SEC3">Options Available in the
+Command Line Compiler</A>.
+<BR><BR>
+Unlike most other C compilers, GCC allows you to use <B>'-g'</B> with
+<B>'-O'</B>.  The shortcuts taken by optimized code may occasionally
+produce surprising results: some variables you declared may not exist
+at all; flow of control may briefly move where you did not expect it;
+some statements may not be executed because they compute constant
+results or their values were already at hand; some statements may
+execute in different places because they were moved out of loops.
+<BR><BR>
+Nevertheless it proves possible to debug optimized output.  This makes
+it reasonable to use the optimizer for programs that might have bugs.
+<BR><BR>
+The following options are useful when GCC is generated with the
+capability for more than one debugging format.
+</P><DT><P><B>-ggdb</B></P><DD><P>Produce debugging information for use by GDB.  This means to use the
+most expressive format available, including GDB extensions if at all
+possible.
+</P><DT><P><B>-gstabs</B></P><DD><P>Produce debugging information in stabs format.
+</P><DT><P><B>-gstabs+</B></P><DD><P>Produce debugging information in stabs format,
+using GNU extensions understood only by the GNU debugger (GDB).
+</P><DT><P><B>-gcoff</B></P><DD><P>Produce debugging information in COFF format.
+</P><DT><P><B>-g<I>level</I></B>
+<BR><B>-ggdb<I>level</I></B>
+<BR><B>-gstabs<I>level</I></B>
+<BR><B>-gcoff<I>level</I></B></P><DD><P>Request debugging information and also use <I>level</I> to specify how
+much information.  The default level is 2.
+<BR><BR>
+Level 1 produces minimal information, enough for making backtraces in
+parts of the program that you don't plan to debug.  This includes
+descriptions of functions and external variables, but no information
+about local variables and no line numbers.
+<BR><BR>
+Level 3 includes extra information, such as all the macro definitions
+present in the program.  Some debuggers support macro expansion when
+you use <B>'-g3'</B>.
+</P><DT><P><B>-p</B></P><DD><P>Generate extra code to write profile information suitable for the
+analysis program <CODE>prof</CODE>.  You must use this option when compiling
+the source files you want data about, and you must also use it when
+linking.
+This option is probably useless in GCC4TI.
+</P><DT><P><B>-pg</B></P><DD><P>Generate extra code to write profile information suitable for the
+analysis program <CODE>gprof</CODE>.  You must use this option when compiling
+the source files you want data about, and you must also use it when
+linking.
+This option is probably useless in GCC4TI.
+</P><DT><P><B>-Q</B></P><DD><P>Makes the compiler print out each function name as it is compiled, and
+print some statistics about each pass when it finishes.
+</P><DT><P><B>-save-temps</B></P><DD><P>Store the usual &quot;temporary&quot; intermediate files permanently; place them
+in the current directory and name them based on the source file.  Thus,
+compiling <CODE>foo.c</CODE> with <B>'-c -save-temps'</B> would produce files
+<CODE>foo.i</CODE> and <CODE>foo.s</CODE>, as well as <CODE>foo.o</CODE>.  This creates a
+preprocessed <CODE>foo.i</CODE> output file even though the compiler now
+normally uses an integrated preprocessor.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC10"><U>Options That Control Optimization</U></A></H2>
+<P>These options control various sorts of optimizations.
+<BR><BR>
+Without any optimization option, the compiler's goal is to reduce the
+cost of compilation and to make debugging produce the expected
+results.  Statements are independent: if you stop the program with a
+breakpoint between statements, you can then assign a new value to any
+variable or change the program counter to any other statement in the
+function and get exactly the results you would expect from the source
+code.
+<BR><BR>
+Turning on optimization flags makes the compiler attempt to improve
+the performance and/or code size at the expense of compilation time
+and possibly the ability to debug the program.
+<BR><BR>
+Not all optimizations are controlled directly by a flag.  Only
+optimizations that have a flag are listed.</P>
+<DL>
+
+<DT><P><B>-O</B>
+<BR><B>-O1</B></P><DD><P>Optimize.  Optimizing compilation takes somewhat more time, and a lot
+more memory for a large function.
+<BR><BR>
+With <B>'-O'</B>, the compiler tries to reduce code size and execution
+time, without performing any optimizations that take a great deal of
+compilation time.
+<BR><BR>
+<B>'-O'</B> turns on the following optimization flags:
+-fdefer-pop -fmerge-constants -fthread-jumps -floop-optimize -fcrossjumping -fif-conversion -fif-conversion2 -fdelayed-branch -fguess-branch-probability -fcprop-registers
+<BR><BR>
+<B>'-O'</B> also turns on <B>'-fomit-frame-pointer'</B> on machines
+where doing so does not interfere with debugging.
+</P><DT><P><B>-O2</B></P><DD><P>Optimize even more.  GCC performs nearly all supported optimizations
+that do not involve a space-speed tradeoff.  The compiler does not
+perform loop unrolling or function inlining when you specify <B>'-O2'</B>.
+As compared to <B>'-O'</B>, this option increases both compilation time
+and the performance of the generated code.
+<BR><BR>
+<B>'-O2'</B> turns on all optimization flags specified by <B>'-O'</B>.  It
+also turns on the following optimization flags:
+<BR>
+<CODE>
+-fforce-mem -foptimize-sibling-calls -fstrength-reduce -fcse-follow-jumps  -fcse-skip-blocks -frerun-cse-after-loop  -frerun-loop-opt -fgcse   -fgcse-lm   -fgcse-sm -fdelete-null-pointer-checks -fexpensive-optimizations -fregmove -fschedule-insns  -fschedule-insns2 -fsched-interblock -fsched-spec -fcaller-saves -fpeephole2 -freorder-blocks  -freorder-functions -fstrict-aliasing -falign-functions  -falign-jumps -falign-loops  -falign-labels
+</CODE>
+<BR><BR>
+Please note the warning under <B>'-fgcse'</B> about
+invoking <B>'-O2'</B> on programs that use computed gotos.
+</P><DT><P><B>-O3</B></P><DD><P>Optimize yet more.  <B>'-O3'</B> turns on all optimizations specified by
+<B>'-O2'</B> and also turns on the <B>'-finline-functions'</B> and
+<B>'-frename-registers'</B> options.
+</P><DT><P><B>-O0</B></P><DD><P>Do not optimize.  This is the default.
+</P><DT><P><B>-Os</B></P><DD><P>Optimize for size.  <B>'-Os'</B> enables all <B>'-O2'</B> optimizations that
+do not typically increase code size.  It also performs further
+optimizations designed to reduce code size.
+<BR><BR>
+<B>'-Os'</B> disables the following optimization flags:
+-falign-functions  -falign-jumps  -falign-loops -falign-labels  -freorder-blocks -fprefetch-loop-arrays
+<BR><BR>
+If you use multiple <B>'-O'</B> options, with or without level numbers,
+the last such option is the one that is effective.</P>
+</DL>
+<P>Options of the form <B>'-f<I>flag</I>'</B> specify machine-independent
+flags.  Most flags have both positive and negative forms; the negative
+form of <B>'-ffoo'</B> would be <B>'-fno-foo'</B>.  In the table
+below, only one of the forms is listed: the one you typically will
+use.  You can figure out the other form by either removing <B>'no-'</B>
+or adding it.
+<BR><BR>
+The following options control specific optimizations.  They are either
+activated by <B>'-O'</B> options or are related to ones that are.  You
+can use the following flags in the rare cases when &quot;fine-tuning&quot; of
+optimizations to be performed is desired.</P>
+<DL>
+
+<DT><P><B>-fno-defer-pop</B></P><DD><P>Always pop the arguments to each function call as soon as that function
+returns.  For machines which must pop arguments after a function call,
+the compiler normally lets arguments accumulate on the stack for several
+function calls and pops them all at once.
+<BR><BR>
+Disabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fforce-mem</B></P><DD><P>Force memory operands to be copied into registers before doing
+arithmetic on them.  This produces better code by making all memory
+references potential common subexpressions.  When they are not common
+subexpressions, instruction combination should eliminate the separate
+register-load.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fforce-addr</B></P><DD><P>Force memory address constants to be copied into registers before
+doing arithmetic on them.  This may produce better code just as
+<B>'-fforce-mem'</B> may.
+</P><DT><P><B>-fomit-frame-pointer</B></P><DD><P>Don't keep the frame pointer in a register for functions that
+don't need one.  This avoids the instructions to save, set up and
+restore frame pointers; it also makes an extra register available
+in many functions.  It also makes debugging impossible on
+some machines (not on GCC4TI though, thanks to unwinding tables).
+<BR><BR>
+This option now works with floating point arithmetic.
+<BR><BR>
+Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-foptimize-sibling-calls</B></P><DD><P>Optimize sibling and tail recursive calls.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fno-inline</B></P><DD><P>Don't pay attention to the <CODE>inline</CODE> keyword.  Normally this option
+is used to keep the compiler from expanding any functions inline.
+Note that if you are not optimizing, no functions can be expanded inline.
+</P><DT><P><B>-finline-functions</B></P><DD><P>Integrate all simple functions into their callers.  The compiler
+heuristically decides which functions are simple enough to be worth
+integrating in this way.
+<BR><BR>
+If all calls to a given function are integrated, and the function is
+declared <CODE>static</CODE>, then the function is normally not output as
+assembler code in its own right.
+<BR><BR>
+Enabled at level <B>'-O3'</B>.
+</P><DT><P><B>-finline-limit=<I>n</I></B></P><DD><P>By default, gcc limits the size of functions that can be inlined.  This flag
+allows the control of this limit for functions that are explicitly marked as
+inline (i.e., marked with the inline keyword).
+<I>n</I> is the size of functions that can be inlined in
+number of pseudo instructions (not counting parameter handling).  The default
+value of <I>n</I> is 600.
+Increasing this value can result in more inlined code at
+the cost of compilation time and memory consumption.  Decreasing usually makes
+the compilation faster and less code will be inlined (which presumably
+means slower programs).  This option is particularly useful for programs that
+use inlining heavily.
+<BR><BR>
+Inlining is actually controlled by a number of parameters, which may be
+specified individually by using <B>'--param <I>name</I>=<I>value</I>'</B>.
+The <B>'-finline-limit=<I>n</I>'</B> option sets some of these parameters
+as follows:
+<BR><BR>
+ </P>
+<DL>
+<P> </P><DT><P><B>max-inline-insns</B></P><DD><P>  is set to <I>n</I>.
+ </P><DT><P><B>max-inline-insns-single</B></P><DD><P>  is set to <I>n</I>/2.
+ </P><DT><P><B>max-inline-insns-auto</B></P><DD><P>  is set to <I>n</I>/2.
+ </P><DT><P><B>min-inline-insns</B></P><DD><P>  is set to 130 or <I>n</I>/4, whichever is smaller.
+ </P><DT><P><B>max-inline-insns-rtl</B></P><DD><P>  is set to <I>n</I>.
+ </P>
+</DL>
+<P>
+Using <B>'-finline-limit=600'</B> thus results in the default settings
+for these parameters.  See below for a documentation of the individual
+parameters controlling inlining.
+<BR><BR>
+<B>Note:</B> pseudo instruction represents, in this particular context, an
+abstract measurement of function's size.  In no way, it represents a count
+of assembly instructions and as such its exact meaning might change from one
+release to an another.
+</P><DT><P><B>-fkeep-inline-functions</B></P><DD><P>Even if all calls to a given function are integrated, and the function
+is declared <CODE>static</CODE>, nevertheless output a separate run-time
+callable version of the function.  This switch does not affect
+<CODE>extern&nbsp;inline</CODE> functions.
+</P><DT><P><B>-fkeep-static-consts</B></P><DD><P>Emit variables declared <CODE><A HREF="keywords.html#static">static</A>&nbsp;<A HREF="keywords.html#const">const</A></CODE> when optimization isn't turned
+on, even if the variables aren't referenced.
+<BR><BR>
+GCC enables this option by default.  If you want to force the compiler to
+check if the variable was referenced, regardless of whether or not
+optimization is turned on, use the <B>'-fno-keep-static-consts'</B> option.
+</P><DT><P><B>-fmerge-constants</B></P><DD><P>Attempt to merge identical constants (string constants and floating point
+constants) across compilation units.
+<BR><BR>
+This option is the default for optimized compilation if the assembler and
+linker support it.  Use <B>'-fno-merge-constants'</B> to inhibit this
+behavior.
+<BR><BR>
+Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fmerge-all-constants</B></P><DD><P>Attempt to merge identical constants and identical variables.
+<BR><BR>
+This option implies <B>'-fmerge-constants'</B>.  In addition to
+<B>'-fmerge-constants'</B> this considers e.g. even constant initialized
+arrays or initialized constant variables with integral or floating point
+types.  C requires each non-automatic variable to have a distinct location,
+so using this option will result in non-conforming behavior.
+</P><DT><P><B>-fno-branch-count-reg</B></P><DD><P>Do not use &quot;decrement and branch&quot; instructions on a count register,
+but instead generate a sequence of instructions that decrement a
+register, compare it against zero, then branch based upon the result.
+This option is only meaningful on architectures that support such
+instructions, which include x86, PowerPC, IA-64 and S/390.
+<BR><BR>
+The default is <B>'-fbranch-count-reg'</B>, enabled when
+<B>'-fstrength-reduce'</B> is enabled.
+</P><DT><P><B>-fno-function-cse</B></P><DD><P>Do not put function addresses in registers; make each instruction that
+calls a constant function contain the function's address explicitly.
+<BR><BR>
+This option results in less efficient code, but some strange hacks
+that alter the assembler output may be confused by the optimizations
+performed when this option is not used.
+<BR><BR>
+The default is <B>'-ffunction-cse'</B>
+</P><DT><P><B>-fno-zero-initialized-in-bss</B></P><DD><P>If the target supports a BSS section
+(which is always the case for GCC4TI now), GCC by default puts variables that
+are initialized to zero into BSS.  This can save space in the resulting
+code.
+<BR><BR>
+This option turns off this behavior because some programs explicitly
+rely on variables going to the data section.  E.g., so that the
+resulting executable can find the beginning of that section and/or make
+assumptions based on that.
+<BR><BR>
+The default is <B>'-fzero-initialized-in-bss'</B>.
+</P><DT><P><B>-fstrength-reduce</B></P><DD><P>Perform the optimizations of loop strength reduction and
+elimination of iteration variables.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fthread-jumps</B></P><DD><P>Perform optimizations where we check to see if a jump branches to a
+location where another comparison subsumed by the first is found.  If
+so, the first branch is redirected to either the destination of the
+second branch or a point immediately following it, depending on whether
+the condition is known to be true or false.
+<BR><BR>
+Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fcse-follow-jumps</B></P><DD><P>In common subexpression elimination, scan through jump instructions
+when the target of the jump is not reached by any other path.  For
+example, when CSE encounters an <CODE>if</CODE> statement with an
+<CODE>else</CODE> clause, CSE will follow the jump when the condition
+tested is false.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fcse-skip-blocks</B></P><DD><P>This is similar to <B>'-fcse-follow-jumps'</B>, but causes CSE to
+follow jumps which conditionally skip over blocks.  When CSE
+encounters a simple <CODE>if</CODE> statement with no else clause,
+<B>'-fcse-skip-blocks'</B> causes CSE to follow the jump around the
+body of the <CODE>if</CODE>.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-frerun-cse-after-loop</B></P><DD><P>Re-run common subexpression elimination after loop optimizations have been
+performed.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-frerun-loop-opt</B></P><DD><P>Run the loop optimizer twice.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fgcse</B></P><DD><P>Perform a global common subexpression elimination pass.
+This pass also performs global constant and copy propagation.
+<BR><BR>
+<B>Note:</B> When compiling a program using computed gotos, a GCC
+extension, you may get better runtime performance if you disable
+the global common subexpression elimination pass by adding
+<B>'-fno-gcse'</B> to the command line.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fgcse-lm</B></P><DD><P>When <B>'-fgcse-lm'</B> is enabled, global common subexpression elimination will
+attempt to move loads which are only killed by stores into themselves.  This
+allows a loop containing a load/store sequence to be changed to a load outside
+the loop, and a copy/store within the loop.
+<BR><BR>
+Enabled by default when gcse is enabled.
+</P><DT><P><B>-fgcse-sm</B></P><DD><P>When <B>'-fgcse-sm'</B> is enabled, A store motion pass is run after global common
+subexpression elimination.  This pass will attempt to move stores out of loops.
+When used in conjunction with <B>'-fgcse-lm'</B>, loops containing a load/store sequence
+can be changed to a load before the loop and a store after the loop.
+<BR><BR>
+Enabled by default when gcse is enabled.
+</P><DT><P><B>-floop-optimize</B></P><DD><P>Perform loop optimizations: move constant expressions out of loops, simplify
+exit test conditions and optionally do strength-reduction and loop unrolling as
+well.
+<BR><BR>
+Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fcrossjumping</B></P><DD><P>Perform cross-jumping transformation. This transformation unifies equivalent code and save code size. The
+resulting code may or may not perform better than without cross-jumping.
+<BR><BR>
+Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fif-conversion</B></P><DD><P>Attempt to transform conditional jumps into branch-less equivalents.  This
+include use of conditional moves, min, max, set flags and abs instructions, and
+some tricks doable by standard arithmetics.  The use of conditional execution
+on chips where it is available is controlled by <CODE>if-conversion2</CODE>.
+<BR><BR>
+Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fif-conversion2</B></P><DD><P>Use conditional execution (where available) to transform conditional jumps into
+branch-less equivalents.
+<BR><BR>
+Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fdelete-null-pointer-checks</B></P><DD><P>Use global dataflow analysis to identify and eliminate useless checks
+for null pointers.  The compiler assumes that dereferencing a null
+pointer would have halted the program.  If a pointer is checked after
+it has already been dereferenced, it cannot be null.
+<BR><BR>
+In some environments, this assumption is not true, and programs can
+safely dereference null pointers.  Use
+<B>'-fno-delete-null-pointer-checks'</B> to disable this optimization
+for programs which depend on that behavior.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fexpensive-optimizations</B></P><DD><P>Perform a number of minor optimizations that are relatively expensive.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-foptimize-register-move</B>
+<BR><B>-fregmove</B></P><DD><P>Attempt to reassign register numbers in move instructions and as
+operands of other simple instructions in order to maximize the amount of
+register tying.  This is especially helpful on machines with two-operand
+instructions.
+<BR><BR>
+Note <B>'-fregmove'</B> and <B>'-foptimize-register-move'</B> are the same
+optimization.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fdelayed-branch</B></P><DD><P>If supported for the target machine, attempt to reorder instructions
+to exploit instruction slots available after delayed branch
+instructions.
+<BR><BR>
+Enabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fschedule-insns</B></P><DD><P>If supported for the target machine, attempt to reorder instructions to
+eliminate execution stalls due to required data being unavailable.  This
+helps machines that have slow floating point or memory load instructions
+by allowing other instructions to be issued until the result of the load
+or floating point instruction is required.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fschedule-insns2</B></P><DD><P>Similar to <B>'-fschedule-insns'</B>, but requests an additional pass of
+instruction scheduling after register allocation has been done.  This is
+especially useful on machines with a relatively small number of
+registers and where memory load instructions take more than one cycle.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fno-sched-interblock</B></P><DD><P>Don't schedule instructions across basic blocks.  This is normally
+enabled by default when scheduling before register allocation, i.e.
+with <B>'-fschedule-insns'</B> or at <B>'-O2'</B> or higher.
+</P><DT><P><B>-fno-sched-spec</B></P><DD><P>Don't allow speculative motion of non-load instructions.  This is normally
+enabled by default when scheduling before register allocation, i.e.
+with <B>'-fschedule-insns'</B> or at <B>'-O2'</B> or higher.
+</P><DT><P><B>-fsched-spec-load</B></P><DD><P>Allow speculative motion of some load instructions.  This only makes
+sense when scheduling before register allocation, i.e. with
+<B>'-fschedule-insns'</B> or at <B>'-O2'</B> or higher.
+</P><DT><P><B>-fsched-spec-load-dangerous</B></P><DD><P>Allow speculative motion of more load instructions.  This only makes
+sense when scheduling before register allocation, i.e. with
+<B>'-fschedule-insns'</B> or at <B>'-O2'</B> or higher.
+</P><DT><P><B>-fcaller-saves</B></P><DD><P>Enable values to be allocated in registers that will be clobbered by
+function calls, by emitting extra instructions to save and restore the
+registers around such calls.  Such allocation is done only when it
+seems to result in better code than would otherwise be produced.
+<BR><BR>
+This option is always enabled by default on certain machines, usually
+those which have no call-preserved registers to use instead.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fmove-all-movables</B></P><DD><P>Forces all invariant computations in loops to be moved
+outside the loop.
+</P><DT><P><B>-freduce-all-givs</B></P><DD><P>Forces all general-induction variables in loops to be
+strength-reduced.
+<BR><BR>
+These options may generate better or worse code; results are highly
+dependent on the structure of loops within the source code.
+<BR><BR>
+These two options are intended to be removed someday, once
+they have helped determine the efficacy of various
+approaches to improving loop optimizations.
+</P><DT><P><B>-fno-peephole</B>
+<BR><B>-fno-peephole2</B></P><DD><P>Disable any machine-specific peephole optimizations.  The difference
+between <B>'-fno-peephole'</B> and <B>'-fno-peephole2'</B> is in how they
+are implemented in the compiler; some targets use one, some use the
+other, a few use both.
+<BR><BR>
+<B>'-fpeephole'</B> is enabled by default.
+<B>'-fpeephole2'</B> enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fbranch-probabilities</B>
+<BR><B>-fno-guess-branch-probability</B></P><DD><P>Do not guess branch probabilities using a randomized model.
+<BR><BR>
+Sometimes gcc will opt to use a randomized model to guess branch
+probabilities, when none are available from either profiling feedback
+(<B>'-fprofile-arcs'</B>) or <CODE>__builtin_expect</CODE>.  This means that
+different runs of the compiler on the same program may produce different
+object code.
+<BR><BR>
+In a hard real-time system, people don't want different runs of the
+compiler to produce code that has different behavior; minimizing
+non-determinism is of paramount importance.  This switch allows users to
+reduce non-determinism, possibly at the expense of inferior
+optimization.
+<BR><BR>
+The default is <B>'-fguess-branch-probability'</B> at levels
+<B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-freorder-blocks</B></P><DD><P>Reorder basic blocks in the compiled function in order to reduce number of
+taken branches and improve code locality.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>.
+</P><DT><P><B>-freorder-functions</B></P><DD><P>Reorder basic blocks in the compiled function in order to reduce number of
+taken branches and improve code locality. This is implemented by using special
+subsections <CODE>text.hot</CODE> for most frequently executed functions and
+<CODE>text.unlikely</CODE> for unlikely executed functions.  Reordering is done by
+the linker so object file format must support named sections and linker must
+place them in a reasonable way.
+<BR><BR>
+Also profile feedback must be available in to make this option effective.  See
+<B>'-fprofile-arcs'</B> for details.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-fstrict-aliasing</B></P><DD><P>Allows the compiler to assume the strictest aliasing rules applicable to
+the language being compiled.  For C, this activates
+optimizations based on the type of expressions.  In particular, an
+object of one type is assumed never to reside at the same address as an
+object of a different type, unless the types are almost the same.  For
+example, an <CODE>unsigned&nbsp;int</CODE> can alias an <CODE>int</CODE>, but not a
+<CODE>void*</CODE> or a <CODE>double</CODE>.  A character type may alias any other
+type.
+<BR><BR>
+Pay special attention to code like this:</P>
+<PRE>union a_union {
+  int i;
+  double d;
+};
+
+int f() {
+  a_union t;
+  t.d = 3.0;
+  return t.i;
+}
+</PRE>
+<P>The practice of reading from a different union member than the one most
+recently written to (called &quot;type-punning&quot;) is common.  Even with
+<B>'-fstrict-aliasing'</B>, type-punning is allowed, provided the memory
+is accessed through the union type.  So, the code above will work as
+expected.  However, this code might not:</P>
+<PRE>int f() {
+  a_union t;
+  int* ip;
+  t.d = 3.0;
+  ip = &amp;t.i;
+  return *ip;
+}
+</PRE>
+<P>Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.
+</P><DT><P><B>-falign-functions</B>
+<BR><B>-falign-functions=<I>n</I></B></P><DD><P>Align the start of functions to the next power-of-two greater than
+<I>n</I>, skipping up to <I>n</I> bytes.  For instance,
+<B>'-falign-functions=32'</B> aligns functions to the next 32-byte
+boundary, but <B>'-falign-functions=24'</B> would align to the next
+32-byte boundary only if this can be done by skipping 23 bytes or less.
+<BR><BR>
+<B>'-fno-align-functions'</B> and <B>'-falign-functions=1'</B> are
+equivalent and mean that functions will not be aligned.
+<BR><BR>
+Some assemblers only support this flag when <I>n</I> is a power of two;
+in that case, it is rounded up.
+<BR><BR>
+If <I>n</I> is not specified, use a machine-dependent default.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>.
+</P><DT><P><B>-falign-labels</B>
+<BR><B>-falign-labels=<I>n</I></B></P><DD><P>Align all branch targets to a power-of-two boundary, skipping up to
+<I>n</I> bytes like <B>'-falign-functions'</B>.  This option can easily
+make code slower, because it must insert dummy operations for when the
+branch target is reached in the usual flow of the code.
+<BR><BR>
+If <B>'-falign-loops'</B> or <B>'-falign-jumps'</B> are applicable and
+are greater than this value, then their values are used instead.
+<BR><BR>
+If <I>n</I> is not specified, use a machine-dependent default which is
+very likely to be <CODE>1</CODE>, meaning no alignment.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>.
+</P><DT><P><B>-falign-loops</B>
+<BR><B>-falign-loops=<I>n</I></B></P><DD><P>Align loops to a power-of-two boundary, skipping up to <I>n</I> bytes
+like <B>'-falign-functions'</B>.  The hope is that the loop will be
+executed many times, which will make up for any execution of the dummy
+operations.
+<BR><BR>
+If <I>n</I> is not specified, use a machine-dependent default.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>.
+</P><DT><P><B>-falign-jumps</B>
+<BR><B>-falign-jumps=<I>n</I></B></P><DD><P>Align branch targets to a power-of-two boundary, for branch targets
+where the targets can only be reached by jumping, skipping up to <I>n</I>
+bytes like <B>'-falign-functions'</B>.  In this case, no dummy operations
+need be executed.
+<BR><BR>
+If <I>n</I> is not specified, use a machine-dependent default.
+<BR><BR>
+Enabled at levels <B>'-O2'</B>, <B>'-O3'</B>.
+</P><DT><P><B>-frename-registers</B></P><DD><P>Attempt to avoid false dependencies in scheduled code by making use
+of registers left over after register allocation.  This optimization
+will most benefit processors with lots of registers.  It can, however,
+make debugging impossible, since variables will no longer stay in
+a &quot;home register&quot;.
+<BR><BR>
+Enabled at levels <B>'-O3'</B>.
+</P><DT><P><B>-fno-cprop-registers</B></P><DD><P>After register allocation and post-register allocation instruction splitting,
+we perform a copy-propagation pass to try to reduce scheduling dependencies
+and occasionally eliminate the copy.
+<BR><BR>
+Disabled at levels <B>'-O'</B>, <B>'-O2'</B>, <B>'-O3'</B>, <B>'-Os'</B>.</P>
+</DL>
+<P>The following options control compiler behavior regarding floating
+point arithmetic.  These options trade off between speed and
+correctness.  All must be specifically enabled.</P>
+<DL>
+
+<DT><P><B>-ffloat-store</B></P><DD><P>Do not store floating point variables in registers, and inhibit other
+options that might change whether a floating point value is taken from a
+register or memory.
+<BR><BR>
+This option prevents undesirable excess precision on machines such as
+the 68000 where the floating registers (of the 68881) keep more
+precision than a <CODE><A HREF="keywords.html#float">double</A></CODE> is supposed to have.  Similarly for the
+x86 architecture.  For most programs, the excess precision does only
+good, but a few programs rely on the precise definition of IEEE floating
+point.  Use <B>'-ffloat-store'</B> for such programs, after modifying
+them to store all pertinent intermediate computations into variables.
+<BR><BR>
+This option is probably useless in GCC4TI, except as a workaround for floating
+point arithmetic errors.
+</P><DT><P><B>-ffast-math</B></P><DD><P>Sets <B>'-fno-math-errno'</B>, <B>'-funsafe-math-optimizations'</B>,
+<B>'-fno-trapping-math'</B>, <B>'-ffinite-math-only'</B> and
+<B>'-fno-signaling-nans'</B>.
+<BR><BR>
+This option causes the preprocessor macro <CODE>__FAST_MATH__</CODE> to be defined.
+<BR><BR>
+This option should never be turned on by any <B>'-O'</B> option since
+it can result in incorrect output for programs which depend on
+an exact implementation of IEEE or ISO rules/specifications for
+math functions.
+<BR><BR>
+This option is probably useless in GCC4TI.
+</P><DT><P><B>-fno-math-errno</B></P><DD><P>Do not set ERRNO after calling math functions that are executed
+with a single instruction, e.g., sqrt.  A program that relies on
+IEEE exceptions for math error handling may want to use this flag
+for speed while maintaining IEEE arithmetic compatibility.
+<BR><BR>
+This option should never be turned on by any <B>'-O'</B> option since
+it can result in incorrect output for programs which depend on
+an exact implementation of IEEE or ISO rules/specifications for
+math functions.
+<BR><BR>
+This option is probably useless in GCC4TI.
+<BR><BR>
+The default is <B>'-fmath-errno'</B>.
+</P><DT><P><B>-funsafe-math-optimizations</B></P><DD><P>Allow optimizations for floating-point arithmetic that (a) assume
+that arguments and results are valid and (b) may violate IEEE or
+ANSI standards.  When used at link-time, it may include libraries
+or startup files that change the default FPU control word or other
+similar optimizations.
+<BR><BR>
+This option should never be turned on by any <B>'-O'</B> option since
+it can result in incorrect output for programs which depend on
+an exact implementation of IEEE or ISO rules/specifications for
+math functions.
+<BR><BR>
+This option is probably useless in GCC4TI.
+<BR><BR>
+The default is <B>'-fno-unsafe-math-optimizations'</B>.
+</P><DT><P><B>-ffinite-math-only</B></P><DD><P>Allow optimizations for floating-point arithmetic that assume
+that arguments and results are not NaNs or +-Infs.
+<BR><BR>
+This option should never be turned on by any <B>'-O'</B> option since
+it can result in incorrect output for programs which depend on
+an exact implementation of IEEE or ISO rules/specifications.
+<BR><BR>
+The default is <B>'-fno-finite-math-only'</B>.
+</P><DT><P><B>-fno-trapping-math</B></P><DD><P>Compile code assuming that floating-point operations cannot generate
+user-visible traps.  These traps include division by zero, overflow,
+underflow, inexact result and invalid operation.  This option implies
+<B>'-fno-signaling-nans'</B>.  Setting this option may allow faster
+code if one relies on &quot;non-stop&quot; IEEE arithmetic, for example.
+<BR><BR>
+This option should never be turned on by any <B>'-O'</B> option since
+it can result in incorrect output for programs which depend on
+an exact implementation of IEEE or ISO rules/specifications for
+math functions.
+<BR><BR>
+This option is probably useless in GCC4TI.
+<BR><BR>
+The default is <B>'-ftrapping-math'</B>.
+</P><DT><P><B>-fsignaling-nans</B></P><DD><P>Compile code assuming that IEEE signaling NaNs may generate user-visible
+traps during floating-point operations.  Setting this option disables
+optimizations that may change the number of exceptions visible with
+signaling NaNs.  This option implies <B>'-ftrapping-math'</B>.
+<BR><BR>
+This option causes the preprocessor macro <CODE>__SUPPORT_SNAN__</CODE> to
+be defined.
+<BR><BR>
+The default is <B>'-fno-signaling-nans'</B>.
+<BR><BR>
+This option is experimental and does not currently guarantee to
+disable all GCC optimizations that affect signaling NaN behavior.
+</P><DT><P><B>-fsingle-precision-constant</B></P><DD><P>Treat floating point constant as single precision constant instead of
+implicitly converting it to double precision constant.</P>
+</DL>
+<P>The following options control optimizations that may improve
+performance, but are not enabled by any <B>'-O'</B> options.  This
+section includes experimental options that may produce broken code.</P>
+<DL>
+
+<DT><P><B>-fbranch-probabilities</B></P><DD><P>After running a program compiled with <B>'-fprofile-arcs'</B>
+(see <A HREF="#SEC9">Options for Debugging Your Program or GCC</A>),
+you can compile it a second time using
+<B>'-fbranch-probabilities'</B>, to improve optimizations based on
+the number of times each branch was taken.  When the program
+compiled with <B>'-fprofile-arcs'</B> exits, it saves arc execution
+counts to a file called <CODE><I>sourcename</I>.da</CODE> for each source
+file.  The information in this data file is very dependent on the
+structure of the generated code, so you must use the same source code
+and the same optimization options for both compilations.
+<BR><BR>
+With <B>'-fbranch-probabilities'</B>, GCC puts a
+<CODE>REG_BR_PROB</CODE> note on each <CODE>JUMP_INSN</CODE> and <CODE>CALL_INSN</CODE>.
+These can be used to improve optimization.  Currently, they are only
+used in one place: in <CODE>reorg.c</CODE>, instead of guessing which path a
+branch is mostly to take, the <CODE>REG_BR_PROB</CODE> values are used to
+exactly determine which path is taken more often.
+</P><DT><P><B>-fnew-ra</B></P><DD><P>Use a graph coloring register allocator.  Currently this option is meant
+for testing, so we are interested to hear about miscompilations with
+<B>'-fnew-ra'</B>.
+</P><DT><P><B>-ftracer</B></P><DD><P>Perform tail duplication to enlarge superblock size. This transformation
+simplifies the control flow of the function allowing other optimizations to do
+better job.
+</P><DT><P><B>-funroll-loops</B></P><DD><P>Unroll loops whose number of iterations can be determined at compile
+time or upon entry to the loop.  <B>'-funroll-loops'</B> implies both
+<B>'-fstrength-reduce'</B> and <B>'-frerun-cse-after-loop'</B>.  This
+option makes code larger, and may or may not make it run faster.
+</P><DT><P><B>-funroll-all-loops</B></P><DD><P>Unroll all loops, even if their number of iterations is uncertain when
+the loop is entered.  This usually makes programs run more slowly.
+<B>'-funroll-all-loops'</B> implies the same options as
+<B>'-funroll-loops'</B>,
+</P><DT><P><B>-fprefetch-loop-arrays</B></P><DD><P>If supported by the target machine, generate instructions to prefetch
+memory to improve the performance of loops that access large arrays.
+<BR><BR>
+Disabled at level <B>'-Os'</B>.
+</P><DT><P><B>-ffunction-sections</B>
+<BR><B>-fdata-sections</B></P><DD><P>Place each function or data item into its own section in the output
+file if the target supports arbitrary sections.  The name of the
+function or the name of the data item determines the section's name
+in the output file.
+<BR><BR>
+Use these options on systems where the linker can perform optimizations
+to improve locality of reference in the instruction space.  Most systems
+using the ELF object format and SPARC processors running Solaris 2 have
+linkers with such optimizations.  AIX may have these optimizations in
+the future.
+<BR><BR>
+Only use these options when there are significant benefits from doing
+so.  When you specify these options, the assembler and linker will
+create larger object and executable files and will also be slower.
+You will not be able to use <CODE>gprof</CODE> on all systems if you
+specify this option and you may have problems with debugging if
+you specify both this option and <B>'-g'</B>.
+</P><DT><P><B>-fssa</B></P><DD><P>Perform optimizations in static single assignment form.  Each function's
+flow graph is translated into SSA form, optimizations are performed, and
+the flow graph is translated back from SSA form.  Users should not
+specify this option, since it is not yet ready for production use.
+</P><DT><P><B>-fssa-ccp</B></P><DD><P>Perform Sparse Conditional Constant Propagation in SSA form.  Requires
+<B>'-fssa'</B>.  Like <B>'-fssa'</B>, this is an experimental feature.
+</P><DT><P><B>-fssa-dce</B></P><DD><P>Perform aggressive dead-code elimination in SSA form.  Requires <B>'-fssa'</B>.
+Like <B>'-fssa'</B>, this is an experimental feature.
+</P><DT><P><B>--param <I>name</I>=<I>value</I></B></P><DD><P>In some places, GCC uses various constants to control the amount of
+optimization that is done.  For example, GCC will not inline functions
+that contain more that a certain number of instructions.  You can
+control some of these constants on the command-line using the
+<B>'--param'</B> option.
+<BR><BR>
+In each case, the <I>value</I> is an integer.  The allowable choices for
+<I>name</I> are given in the following table:
+</P>
+<DL>
+
+<DT><P><B>max-crossjump-edges</B></P><DD><P>The maximum number of incoming edges to consider for crossjumping.
+The algorithm used by <B>'-fcrossjumping'</B> is <CODE>O(N^2)</CODE> in
+the number of edges incoming to each block.  Increasing values mean
+more aggressive optimization, making the compile time increase with
+probably small improvement in executable size.
+</P><DT><P><B>max-delay-slot-insn-search</B></P><DD><P>The maximum number of instructions to consider when looking for an
+instruction to fill a delay slot.  If more than this arbitrary number of
+instructions is searched, the time savings from filling the delay slot
+will be minimal so stop searching.  Increasing values mean more
+aggressive optimization, making the compile time increase with probably
+small improvement in executable run time.
+</P><DT><P><B>max-delay-slot-live-search</B></P><DD><P>When trying to fill delay slots, the maximum number of instructions to
+consider when searching for a block with valid live register
+information.  Increasing this arbitrarily chosen value means more
+aggressive optimization, increasing the compile time.  This parameter
+should be removed when the delay slot code is rewritten to maintain the
+control-flow graph.
+</P><DT><P><B>max-gcse-memory</B></P><DD><P>The approximate maximum amount of memory that will be allocated in
+order to perform the global common subexpression elimination
+optimization.  If more memory than specified is required, the
+optimization will not be done.
+</P><DT><P><B>max-gcse-passes</B></P><DD><P>The maximum number of passes of GCSE to run.
+</P><DT><P><B>max-pending-list-length</B></P><DD><P>The maximum number of pending dependencies scheduling will allow
+before flushing the current state and starting over.  Large functions
+with few branches or calls can create excessively large lists which
+needlessly consume memory and resources.
+</P><DT><P><B>max-inline-insns-single</B></P><DD><P>Several parameters control the tree inliner used in gcc.
+This number sets the maximum number of instructions (counted in gcc's
+internal representation) in a single function that the tree inliner
+will consider for inlining.  This only affects functions declared
+inline.
+The default value is 300.
+</P><DT><P><B>max-inline-insns-auto</B></P><DD><P>When you use <B>'-finline-functions'</B> (included in <B>'-O3'</B>),
+a lot of functions that would otherwise not be considered for inlining
+by the compiler will be investigated.  To those functions, a different
+(more restrictive) limit compared to functions declared inline can
+be applied.
+The default value is 300.
+</P><DT><P><B>max-inline-insns</B></P><DD><P>The tree inliner does decrease the allowable size for single functions
+to be inlined after we already inlined the number of instructions
+given here by repeated inlining.  This number should be a factor of
+two or more larger than the single function limit.
+Higher numbers result in better runtime performance, but incur higher
+compile-time resource (CPU time, memory) requirements and result in
+larger binaries.  Very high values are not advisable, as too large
+binaries may adversely affect runtime performance.
+The default value is 600.
+</P><DT><P><B>max-inline-slope</B></P><DD><P>After exceeding the maximum number of inlined instructions by repeated
+inlining, a linear function is used to decrease the allowable size
+for single functions.  The slope of that function is the negative
+reciprocal of the number specified here.
+The default value is 32.
+</P><DT><P><B>min-inline-insns</B></P><DD><P>The repeated inlining is throttled more and more by the linear function
+after exceeding the limit.  To avoid too much throttling, a minimum for
+this function is specified here to allow repeated inlining for very small
+functions even when a lot of repeated inlining already has been done.
+The default value is 130.
+</P><DT><P><B>max-inline-insns-rtl</B></P><DD><P>For languages that use the RTL inliner (this happens at a later stage
+than tree inlining), you can set the maximum allowable size (counted
+in RTL instructions) for the RTL inliner with this parameter.
+The default value is 600.
+</P><DT><P><B>max-unrolled-insns</B></P><DD><P>The maximum number of instructions that a loop should have if that loop
+is unrolled, and if the loop is unrolled, it determines how many times
+the loop code is unrolled.
+</P><DT><P><B>hot-bb-count-fraction</B></P><DD><P>Select fraction of the maximal count of repetitions of basic block in program
+given basic block needs to have to be considered hot.
+</P><DT><P><B>hot-bb-frequency-fraction</B></P><DD><P>Select fraction of the maximal frequency of executions of basic block in
+function given basic block needs to have to be considered hot
+</P><DT><P><B>tracer-dynamic-coverage</B>
+<BR><B>tracer-dynamic-coverage-feedback</B></P><DD><P>This value is used to limit superblock formation once the given percentage of
+executed instructions is covered.  This limits unnecessary code size
+expansion.
+<BR><BR>
+The <B>'tracer-dynamic-coverage-feedback'</B> is used only when profile
+feedback is available.  The real profiles (as opposed to statically estimated
+ones) are much less balanced allowing the threshold to be larger value.
+</P><DT><P><B>tracer-max-code-growth</B></P><DD><P>Stop tail duplication once code growth has reached given percentage.  This is
+rather hokey argument, as most of the duplicates will be eliminated later in
+cross jumping, so it may be set to much higher values than is the desired code
+growth.
+</P><DT><P><B>tracer-min-branch-ratio</B></P><DD><P>Stop reverse growth when the reverse probability of best edge is less than this
+threshold (in percent).
+</P><DT><P><B>tracer-min-branch-ratio</B>
+<BR><B>tracer-min-branch-ratio-feedback</B></P><DD><P>Stop forward growth if the best edge do have probability lower than this
+threshold.
+<BR><BR>
+Similarly to <B>'tracer-dynamic-coverage'</B> two values are present, one for
+compilation for profile feedback and one for compilation without.  The value
+for compilation with profile feedback needs to be more conservative (higher) in
+order to make tracer effective.
+</P><DT><P><B>ggc-min-expand</B></P><DD><P>GCC uses a garbage collector to manage its own memory allocation.  This
+parameter specifies the minimum percentage by which the garbage
+collector's heap should be allowed to expand between collections.
+Tuning this may improve compilation speed; it has no effect on code
+generation.
+<BR><BR>
+The default is 30% + 70% * (RAM/1GB) with an upper bound of 100% when
+RAM &gt;= 1GB.  If <CODE>getrlimit</CODE> is available, the notion of &quot;RAM&quot; is
+the smallest of actual RAM, RLIMIT_RSS, RLIMIT_DATA and RLIMIT_AS.  If
+GCC is not able to calculate RAM on a particular platform, the lower
+bound of 30% is used.  Setting this parameter and
+<B>'ggc-min-heapsize'</B> to zero causes a full collection to occur at
+every opportunity.  This is extremely slow, but can be useful for
+debugging.
+</P><DT><P><B>ggc-min-heapsize</B></P><DD><P>Minimum size of the garbage collector's heap before it begins bothering
+to collect garbage.  The first collection occurs after the heap expands
+by <B>'ggc-min-expand'</B>% beyond <B>'ggc-min-heapsize'</B>.  Again,
+tuning this may improve compilation speed, and has no effect on code
+generation.
+<BR><BR>
+The default is RAM/8, with a lower bound of 4096 (four megabytes) and an
+upper bound of 131072 (128 megabytes).  If <CODE>getrlimit</CODE> is
+available, the notion of &quot;RAM&quot; is the smallest of actual RAM,
+RLIMIT_RSS, RLIMIT_DATA and RLIMIT_AS.  If GCC is not able to calculate
+RAM on a particular platform, the lower bound is used.  Setting this
+parameter very large effectively disables garbage collection.  Setting
+this parameter and <B>'ggc-min-expand'</B> to zero causes a full
+collection to occur at every opportunity.</P>
+</DL>
+
+
+</DL>
+
+<HR>
+<H2><A NAME="SEC11"><U>Options Controlling the Preprocessor</U></A></H2>
+<P>These options control the <A HREF="cpp.html">C preprocessor</A>, which is run on each C source
+file before actual compilation.
+<BR><BR>
+If you use the <B>'-E'</B> option, nothing is done except preprocessing.
+Some of these options make sense only together with <B>'-E'</B> because
+they cause the preprocessor output to be unsuitable for actual
+compilation.
+<BR><BR>
+You can use <B>'-Wp,<I>option</I>'</B> to bypass the compiler driver
+and pass <I>option</I> directly through to the preprocessor.  If
+<I>option</I> contains commas, it is split into multiple options at the
+commas.  However, many options are modified, translated or interpreted
+by the compiler driver before being passed to the preprocessor, and
+<B>'-Wp'</B> forcibly bypasses this phase.  The preprocessor's direct
+interface is undocumented and subject to change, so whenever possible
+you should avoid using <B>'-Wp'</B> and let the driver handle the
+options instead.</P>
+<DL>
+
+<DT><P><B>-D <I>name</I></B></P><DD><P>Predefine <I>name</I> as a macro, with definition <CODE>1</CODE>.
+</P><DT><P><B>-D <I>name</I>=<I>definition</I></B></P><DD><P>Predefine <I>name</I> as a macro, with definition <I>definition</I>.
+There are no restrictions on the contents of <I>definition</I>, but if
+you are invoking the preprocessor from a shell or shell-like program you
+may need to use the shell's quoting syntax to protect characters such as
+spaces that have a meaning in the shell syntax.
+<BR><BR>
+If you wish to define a function-like macro on the command line, write
+its argument list with surrounding parentheses before the equals sign
+(if any).  Parentheses are meaningful to most shells, so you will need
+to quote the option.  With <CODE>sh</CODE> and <CODE>csh</CODE>,
+<B>'-D'<I>name</I>(<I>args...</I>)=<I>definition</I>''</B> works.
+<BR><BR>
+<B>'-D'</B> and <B>'-U'</B> options are processed in the order they
+are given on the command line.  All <B>'-imacros <I>file</I>'</B> and
+<B>'-include <I>file</I>'</B> options are processed after all
+<B>'-D'</B> and <B>'-U'</B> options.
+</P><DT><P><B>-U <I>name</I></B></P><DD><P>Cancel any previous definition of <I>name</I>, either built in or
+provided with a <B>'-D'</B> option.
+</P><DT><P><B>-undef</B></P><DD><P>Do not predefine any system-specific macros.  The common predefined
+macros remain defined.
+</P><DT><P><B>-I <I>dir</I></B></P><DD><P>Add the directory <I>dir</I> to the list of directories to be searched
+for header files.
+Directories named by <B>'-I'</B> are searched before the standard
+system include directories.  If the directory <I>dir</I> is a standard
+system include directory, the option is ignored to ensure that the
+default search order for system directories and the special treatment
+of system headers are not defeated
+(see <A HREF="cpp.html#SEC9a">System Headers</A>).
+</P><DT><P><B>-o <I>file</I></B></P><DD><P>Write output to <I>file</I>.  This is the same as specifying <I>file</I>
+as the second non-option argument to <CODE>cpp</CODE>.  <CODE>gcc</CODE> has a
+different interpretation of a second non-option argument, so you must
+use <B>'-o'</B> to specify the output file.
+</P><DT><P><B>-Wall</B></P><DD><P>Turns on all optional warnings which are desirable for normal code.  At
+present this is <B>'-Wcomment'</B> and <B>'-Wtrigraphs'</B>.  Note that
+many of the preprocessor's warnings are on by default and have no
+options to control them.
+</P><DT><P><B>-Wcomment</B>
+<BR><B>-Wcomments</B></P><DD><P>Warn whenever a comment-start sequence <CODE>/*</CODE> appears in a <CODE>/*</CODE>
+comment, or whenever a backslash-newline appears in a <CODE>//</CODE> comment.
+(Both forms have the same effect.)
+</P><DT><P><B>-Wtrigraphs</B></P><DD><P>Warn if any trigraphs are encountered.  This option used to take effect
+only if <B>'-trigraphs'</B> was also specified, but now works
+independently.  Warnings are not given for trigraphs within comments, as
+they do not affect the meaning of the program.
+</P><DT><P><B>-Wtraditional</B></P><DD><P>Warn about certain constructs that behave differently in traditional and
+ISO C.  Also warn about ISO C constructs that have no traditional C
+equivalent, and problematic constructs which should be avoided.
+See <A HREF="cpp.html#SEC70">Traditional Mode</A>.
+</P><DT><P><B>-Wimport</B></P><DD><P>Warn the first time <CODE>#import</CODE> is used.
+</P><DT><P><B>-Wundef</B></P><DD><P>Warn whenever an identifier which is not a macro is encountered in an
+<CODE>#if</CODE> directive, outside of <CODE>defined</CODE>.  Such identifiers are
+replaced with zero.
+</P><DT><P><B>-Wunused-macros</B></P><DD><P>Warn about macros defined in the main file that are unused.  A macro
+is <U>used</U> if it is expanded or tested for existence at least once.
+The preprocessor will also warn if the macro has not been used at the
+time it is redefined or undefined.
+<BR><BR>
+Built-in macros, macros defined on the command line, and macros
+defined in include files are not warned about.
+<BR><BR>
+<B>Note:</B> If a macro is actually used, but only used in skipped
+conditional blocks, then CPP will report it as unused.  To avoid the
+warning in such a case, you might improve the scope of the macro's
+definition by, for example, moving it into the first skipped block.
+Alternatively, you could provide a dummy use with something like:</P>
+<PRE>#if defined the_macro_causing_the_warning
+#endif
+</PRE>
+
+<DT><P><B>-Wendif-labels</B></P><DD><P>Warn whenever an <CODE>#else</CODE> or an <CODE>#endif</CODE> are followed by text.
+This usually happens in code of the form</P>
+<PRE>#if FOO
+...
+#else FOO
+...
+#endif FOO
+</PRE>
+<P>The second and third <CODE>FOO</CODE> should be in comments, but often are not
+in older programs.  This warning is on by default.
+</P><DT><P><B>-Werror</B></P><DD><P>Make all warnings into hard errors.  Source code which triggers warnings
+will be rejected.
+</P><DT><P><B>-Wsystem-headers</B></P><DD><P>Issue warnings for code in system headers.  These are normally unhelpful
+in finding bugs in your own code, therefore suppressed.  If you are
+responsible for the system library, you may want to see them.
+</P><DT><P><B>-w</B></P><DD><P>Suppress all warnings, including those which GNU CPP issues by default.
+</P><DT><P><B>-pedantic</B></P><DD><P>Issue all the mandatory diagnostics listed in the C standard.  Some of
+them are left out by default, since they trigger frequently on harmless
+code.
+</P><DT><P><B>-pedantic-errors</B></P><DD><P>Issue all the mandatory diagnostics, and make all mandatory diagnostics
+into errors.  This includes mandatory diagnostics that GCC issues
+without <B>'-pedantic'</B> but treats as warnings.
+</P><DT><P><B>-M</B></P><DD><P>Instead of outputting the result of preprocessing, output a rule
+suitable for <CODE>make</CODE> describing the dependencies of the main
+source file.  The preprocessor outputs one <CODE>make</CODE> rule containing
+the object file name for that source file, a colon, and the names of all
+the included files, including those coming from <B>'-include'</B> or
+<B>'-imacros'</B> command line options.
+<BR><BR>
+Unless specified explicitly (with <B>'-MT'</B> or <B>'-MQ'</B>), the
+object file name consists of the basename of the source file with any
+suffix replaced with object file suffix.  If there are many included
+files then the rule is split into several lines using <CODE>\</CODE>-newline.
+The rule has no commands.
+<BR><BR>
+This option does not suppress the preprocessor's debug output, such as
+<B>'-dM'</B>.  To avoid mixing such debug output with the dependency
+rules you should explicitly specify the dependency output file with
+<B>'-MF'</B>, or use an environment variable like
+<CODE>DEPENDENCIES_OUTPUT</CODE> (see <A HREF="cpp.html#SEC45">Environment Variables</A>).  Debug output
+will still be sent to the regular output stream as normal.
+<BR><BR>
+Passing <B>'-M'</B> to the driver implies <B>'-E'</B>, and suppresses
+warnings with an implicit <B>'-w'</B>.
+</P><DT><P><B>-MM</B></P><DD><P>Like <B>'-M'</B> but do not mention header files that are found in
+system header directories, nor header files that are included,
+directly or indirectly, from such a header.
+<BR><BR>
+This implies that the choice of angle brackets or double quotes in an
+<CODE>#include</CODE> directive does not in itself determine whether that
+header will appear in <B>'-MM'</B> dependency output.  This is a
+slight change in semantics from GCC versions 3.0 and earlier.
+</P><DT><P><B>-MF <I>file</I></B></P><DD><P>When used with <B>'-M'</B> or <B>'-MM'</B>, specifies a
+file to write the dependencies to.  If no <B>'-MF'</B> switch is given
+the preprocessor sends the rules to the same place it would have sent
+preprocessed output.
+<BR><BR>
+When used with the driver options <B>'-MD'</B> or <B>'-MMD'</B>,
+<B>'-MF'</B> overrides the default dependency output file.
+</P><DT><P><B>-MG</B></P><DD><P>In conjunction with an option such as <B>'-M'</B> requesting
+dependency generation, <B>'-MG'</B> assumes missing header files are
+generated files and adds them to the dependency list without raising
+an error.  The dependency filename is taken directly from the
+<CODE>#include</CODE> directive without prepending any path.  <B>'-MG'</B>
+also suppresses preprocessed output, as a missing header file renders
+this useless.
+<BR><BR>
+This feature is used in automatic updating of makefiles.
+</P><DT><P><B>-MP</B></P><DD><P>This option instructs CPP to add a phony target for each dependency
+other than the main file, causing each to depend on nothing.  These
+dummy rules work around errors <CODE>make</CODE> gives if you remove header
+files without updating the <CODE>Makefile</CODE> to match.
+<BR><BR>
+This is typical output:</P>
+<PRE>test.o: test.c test.h
+
+test.h:
+</PRE>
+
+<DT><P><B>-MT <I>target</I></B></P><DD><P>Change the target of the rule emitted by dependency generation.  By
+default CPP takes the name of the main input file, including any path,
+deletes any file suffix such as <CODE>.c</CODE>, and appends the platform's
+usual object suffix.  The result is the target.
+<BR><BR>
+An <B>'-MT'</B> option will set the target to be exactly the string you
+specify.  If you want multiple targets, you can specify them as a single
+argument to <B>'-MT'</B>, or use multiple <B>'-MT'</B> options.
+<BR><BR>
+For example, <B>'-MT '$(objpfx)foo.o''</B> might give</P>
+<PRE>$(objpfx)foo.o: foo.c
+</PRE>
+
+<DT><P><B>-MQ <I>target</I></B></P><DD><P>Same as <B>'-MT'</B>, but it quotes any characters which are special to
+Make.
+The default target is automatically quoted, as if it were given with
+<B>'-MQ'</B>.
+</P><DT><P><B>-MD</B></P><DD><P><B>'-MD'</B> is equivalent to <B>'-M -MF <I>file</I>'</B>, except that
+<B>'-E'</B> is not implied.  The driver determines <I>file</I> based on
+whether an <B>'-o'</B> option is given.  If it is, the driver uses its
+argument but with a suffix of <CODE>.d</CODE>, otherwise it take the
+basename of the input file and applies a <CODE>.d</CODE> suffix.
+<BR><BR>
+If <B>'-MD'</B> is used in conjunction with <B>'-E'</B>, any
+<B>'-o'</B> switch is understood to specify the dependency output file, but
+if used without <B>'-E'</B>, each <B>'-o'</B>
+is understood to specify a target object file.
+<BR><BR>
+Since <B>'-E'</B> is not implied, <B>'-MD'</B> can be used to generate
+a dependency output file as a side-effect of the compilation process.
+</P><DT><P><B>-MMD</B></P><DD><P>Like <B>'-MD'</B> except mention only user header files, not system
+-header files.
+</P><DT><P><B>-x c</B>
+<BR><B>-x c++</B>
+<BR><B>-x objective-c</B>
+<BR><B>-x assembler-with-cpp</B></P><DD><P>Specify the source language: C, C++, Objective-C, or assembly.  This has
+nothing to do with standards conformance or extensions; it merely
+selects which base syntax to expect.  If you give none of these options,
+cpp will deduce the language from the extension of the source file:
+<CODE>.c</CODE>, <CODE>.cc</CODE>, <CODE>.m</CODE>, or <CODE>.S</CODE>.  Some other common
+extensions for C++ and assembly are also recognized.  If cpp does not
+recognize the extension, it will treat the file as C; this is the most
+generic mode.  Note that C++ and Objective-C are not supported in GCC4TI.
+<BR><BR>
+<B>Note:</B> Previous versions of cpp accepted a <B>'-lang'</B> option
+which selected both the language and the standards conformance level.
+This option has been removed, because it conflicts with the <B>'-l'</B>
+option.
+</P><DT><P><B>-std=<I>standard</I></B>
+<BR><B>-ansi</B></P><DD><P>Specify the standard to which the code should conform.  Currently CPP
+knows about C and C++ standards; others may be added in the future
+(although it will not be important for GCC4TI).
+<BR><BR>
+<I>standard</I>
+may be one of:
+</P>
+<DL>
+
+<DT><P><B>iso9899:1990</B>
+<BR><B>c89</B></P><DD><P>The ISO C standard from 1990.  <CODE>c89</CODE> is the customary shorthand for
+this version of the standard.
+<BR><BR>
+The <B>'-ansi'</B> option is equivalent to <B>'-std=c89'</B>.
+</P><DT><P><B>iso9899:199409</B></P><DD><P>The 1990 C standard, as amended in 1994.
+</P><DT><P><B>iso9899:1999</B>
+<BR><B>c99</B>
+<BR><B>iso9899:199x</B>
+<BR><B>c9x</B></P><DD><P>The revised ISO C standard, published in December 1999.  Before
+publication, this was known as C9X.
+</P><DT><P><B>gnu89</B></P><DD><P>The 1990 C standard plus GNU extensions.  This is the default.
+</P><DT><P><B>gnu99</B>
+<BR><B>gnu9x</B></P><DD><P>The 1999 C standard plus GNU extensions.
+</P><DT><P><B>c++98</B></P><DD><P>The 1998 ISO C++ standard plus amendments.
+</P><DT><P><B>gnu++98</B></P><DD><P>The same as <B>'-std=c++98'</B> plus GNU extensions.  This is the
+default for C++ code.</P>
+</DL>
+<P></P><DT><P><B>-I-</B></P><DD><P>Split the include path.  Any directories specified with <B>'-I'</B>
+options before <B>'-I-'</B> are searched only for headers requested with
+<CODE>#include&nbsp;&quot;<I>file</I>&quot;</CODE>; they are not searched for
+<CODE>#include&nbsp;&lt;<I>file</I>&gt;</CODE>.  If additional directories are
+specified with <B>'-I'</B> options after the <B>'-I-'</B>, those
+directories are searched for all <CODE>#include</CODE> directives.
+<BR><BR>
+In addition, <B>'-I-'</B> inhibits the use of the directory of the current
+file directory as the first search directory for <CODE>#include
+&quot;<I>file</I>&quot;</CODE>.
+</P><DT><P><B>-nostdinc</B></P><DD><P>Do not search the standard system directories for header files.
+Only the directories you have specified with <B>'-I'</B> options
+(and the directory of the current file, if appropriate) are searched.
+</P><DT><P><B>-nostdinc++</B></P><DD><P>Do not search for header files in the C++-specific standard directories,
+but do still search the other standard directories (not applicable to GCC4TI,
+because it does not support C++).
+</P><DT><P><B>-include <I>file</I></B></P><DD><P>Process <I>file</I> as if <CODE>#include&nbsp;&quot;file&quot;</CODE> appeared as the first
+line of the primary source file.  However, the first directory searched
+for <I>file</I> is the preprocessor's working directory <I>instead of</I>
+the directory containing the main source file.  If not found there, it
+is searched for in the remainder of the <CODE>#include&nbsp;&quot;...&quot;</CODE> search
+chain as normal.
+<BR><BR>
+If multiple <B>'-include'</B> options are given, the files are included
+in the order they appear on the command line.
+</P><DT><P><B>-imacros <I>file</I></B></P><DD><P>Exactly like <B>'-include'</B>, except that any output produced by
+scanning <I>file</I> is thrown away.  Macros it defines remain defined.
+This allows you to acquire all the macros from a header without also
+processing its declarations.
+<BR><BR>
+All files specified by <B>'-imacros'</B> are processed before all files
+specified by <B>'-include'</B>.
+</P><DT><P><B>-idirafter <I>dir</I></B></P><DD><P>Search <I>dir</I> for header files, but do it <I>after</I> all
+directories specified with <B>'-I'</B> and the standard system directories
+have been exhausted.  <I>dir</I> is treated as a system include directory.
+</P><DT><P><B>-iprefix <I>prefix</I></B></P><DD><P>Specify <I>prefix</I> as the prefix for subsequent <B>'-iwithprefix'</B>
+options.  If the prefix represents a directory, you should include the
+final <CODE>/</CODE>.
+</P><DT><P><B>-iwithprefix <I>dir</I></B>
+<BR><B>-iwithprefixbefore <I>dir</I></B></P><DD><P>Append <I>dir</I> to the prefix specified previously with
+<B>'-iprefix'</B>, and add the resulting directory to the include search
+path.  <B>'-iwithprefixbefore'</B> puts it in the same place <B>'-I'</B>
+would; <B>'-iwithprefix'</B> puts it where <B>'-idirafter'</B> would.
+<BR><BR>
+Use of these options is discouraged.
+</P><DT><P><B>-isystem <I>dir</I></B></P><DD><P>Search <I>dir</I> for header files, after all directories specified by
+<B>'-I'</B> but before the standard system directories.  Mark it
+as a system directory, so that it gets the same special treatment as
+is applied to the standard system directories.
+See <A HREF="cpp.html#SEC9a">System Headers</A>.
+</P><DT><P><B>-fpreprocessed</B></P><DD><P>Indicate to the preprocessor that the input file has already been
+preprocessed.  This suppresses things like macro expansion, trigraph
+conversion, escaped newline splicing, and processing of most directives.
+The preprocessor still recognizes and removes comments, so that you can
+pass a file preprocessed with <B>'-C'</B> to the compiler without
+problems.  In this mode the integrated preprocessor is little more than
+a tokenizer for the front ends.
+<BR><BR>
+<B>'-fpreprocessed'</B> is implicit if the input file has one of the
+extensions <CODE>.i</CODE>, <CODE>.ii</CODE> or <CODE>.mi</CODE>.  These are the
+extensions that GCC uses for preprocessed files created by
+<B>'-save-temps'</B>.
+</P><DT><P><B>-ftabstop=<I>width</I></B></P><DD><P>Set the distance between tab stops.  This helps the preprocessor report
+correct column numbers in warnings or errors, even if tabs appear on the
+line.  If the value is less than 1 or greater than 100, the option is
+ignored.  The default is 8.
+</P><DT><P><B>-fno-show-column</B></P><DD><P>Do not print column numbers in diagnostics.  This may be necessary if
+diagnostics are being scanned by a program that does not understand the
+column numbers, such as <CODE>dejagnu</CODE>.
+</P><DT><P><B>-A <I>predicate</I>=<I>answer</I></B></P><DD><P>Make an assertion with the predicate <I>predicate</I> and answer
+<I>answer</I>.  This form is preferred to the older form <B>'-A
+<I>predicate</I>(<I>answer</I>)'</B>, which is still supported, because
+it does not use shell special characters.
+See <A HREF="cpp.html#SEC39">Assertions</A>.</P><DT><P><B>-A -<I>predicate</I>=<I>answer</I></B></P><DD><P>Cancel an assertion with the predicate <I>predicate</I> and answer
+<I>answer</I>.
+</P><DT><P><B>-dCHARS</B></P><DD><P><I>CHARS</I> is a sequence of one or more of the following characters,
+and must not be preceded by a space.  Other characters are interpreted
+by the compiler proper, or reserved for future versions of GCC, and so
+are silently ignored.  If you specify characters whose behavior
+conflicts, the result is undefined.
+</P>
+<DL>
+
+<DT><P><B>M</B></P><DD><P>Instead of the normal output, generate a list of <CODE>#define</CODE>
+directives for all the macros defined during the execution of the
+preprocessor, including predefined macros.  This gives you a way of
+finding out what is predefined in your version of the preprocessor.
+Assuming you have no file <CODE>foo.h</CODE>, the command</P>
+<PRE>touch foo.h; cpp -dM foo.h
+</PRE>
+<P>will show all the predefined macros.
+</P><DT><P><B>D</B></P><DD><P>Like <CODE>M</CODE> except in two respects: it does <I>not</I> include the
+predefined macros, and it outputs <I>both</I> the <CODE>#define</CODE>
+directives and the result of preprocessing.  Both kinds of output go to
+the standard output file.
+</P><DT><P><B>N</B></P><DD><P>Like <CODE>D</CODE>, but emit only the macro names, not their expansions.
+</P><DT><P><B>I</B></P><DD><P>Output <CODE>#include</CODE> directives in addition to the result of
+preprocessing.</P>
+</DL>
+<P></P><DT><P><B>-P</B></P><DD><P>Inhibit generation of linemarkers in the output from the preprocessor.
+This might be useful when running the preprocessor on something that is
+not C code, and will be sent to a program which might be confused by the
+linemarkers.
+See <A HREF="cpp.html#SEC43">Preprocessor Output</A>.
+</P><DT><P><B>-C</B></P><DD><P>Do not discard comments.  All comments are passed through to the output
+file, except for comments in processed directives, which are deleted
+along with the directive.
+<BR><BR>
+You should be prepared for side effects when using <B>'-C'</B>; it
+causes the preprocessor to treat comments as tokens in their own right.
+For example, comments appearing at the start of what would be a
+directive line have the effect of turning that line into an ordinary
+source line, since the first token on the line is no longer a <CODE>#</CODE>.
+</P><DT><P><B>-CC</B></P><DD><P>Do not discard comments, including during macro expansion.  This is
+like <B>'-C'</B>, except that comments contained within macros are
+also passed through to the output file where the macro is expanded.
+<BR><BR>
+In addition to the side-effects of the <B>'-C'</B> option, the
+<B>'-CC'</B> option causes all C++-style comments inside a macro
+to be converted to C-style comments.  This is to prevent later use
+of that macro from inadvertently commenting out the remainder of
+the source line.
+<BR><BR>
+The <B>'-CC'</B> option is generally used to support lint comments.
+</P><DT><P><B>-gcc</B></P><DD><P>Define the macros __GNUC__, __GNUC_MINOR__ and
+__GNUC_PATCHLEVEL__.  These are defined automatically when you use
+<CODE>gcc&nbsp;-E</CODE>; you can turn them off in that case with
+<B>'-no-gcc'</B>.
+</P><DT><P><B>-traditional-cpp</B></P><DD><P>Try to imitate the behavior of old-fashioned C preprocessors, as
+opposed to ISO C preprocessors.
+See <A HREF="cpp.html#SEC70">Traditional Mode</A>.
+</P><DT><P><B>-trigraphs</B></P><DD><P>Process trigraph sequences.
+See <A HREF="cpp.html#SEC3">Initial processing</A>.
+These are three-character sequences, all starting with <CODE>??</CODE>, that
+are defined by ISO C to stand for single characters.  For example,
+<CODE>??/</CODE> stands for <CODE>\</CODE>, so <CODE>'??/n'</CODE> is a character
+constant for a newline.  By default, GCC ignores trigraphs, but in
+standard-conforming modes it converts them.  See the <B>'-std'</B> and
+<B>'-ansi'</B> options.
+<BR><BR>
+The nine trigraphs and their replacements are</P>
+<PRE>Trigraph:       ??(  ??)  ??&lt;  ??&gt;  ??=  ??/  ??'  ??!  ??-
+Replacement:      [    ]    {    }    #    \    ^    |    ~
+</PRE>
+
+<DT><P><B>-remap</B></P><DD><P>Enable special code to work around file systems which only permit very
+short file names, such as MS-DOS.
+</P><DT><P><B>--help</B>
+<BR><B>--target-help</B></P><DD><P>Print text describing all the command line options instead of
+preprocessing anything.
+</P><DT><P><B>-v</B></P><DD><P>Verbose mode.  Print out GNU CPP's version number at the beginning of
+execution, and report the final form of the include path.
+</P><DT><P><B>-H</B></P><DD><P>Print the name of each header file used, in addition to other normal
+activities.  Each name is indented to show how deep in the
+<CODE>#include</CODE> stack it is.
+</P><DT><P><B>-version</B>
+<BR><B>--version</B></P><DD><P>Print out GNU CPP's version number.  With one dash, proceed to
+preprocess as normal.  With two dashes, exit immediately.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC12"><U>Passing Options to the Assembler and Linker</U></A></H2>
+<P>You can pass options to the <A HREF="gnuasm.html">GNU assembler</A>, to the
+<A HREF="a68k.html">A68k assembler</A>, and to the GNU linker.
+<BR><BR>
+However, this is only possible this way if you are using the command line compiler.
+In the IDE, you have to use the appropriate edit boxes in the project options.</P>
+<DL>
+
+<DT><P><B>-Wa,<I>option</I></B></P><DD><P>Pass <I>option</I> as an option to the GNU assembler.  If <I>option</I>
+contains commas, it is split into multiple options at the commas.
+</P><DT><P><B>-WA,<I>option</I></B></P><DD><P>Pass <I>option</I> as an option to the A68k assembler.  If <I>option</I>
+contains commas, it is split into multiple options at the commas.
+This is a TIGCC/GCC4TI-only switch.
+</P><DT><P><B>-Wl,<I>option</I></B></P><DD><P>Pass <I>option</I> as an option to the GNU linker.  If <I>option</I>
+contains commas, it is split into multiple options at the commas.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC14"><U>Options for Directory Search</U></A></H2>
+<P>These options specify directories to search for header files, for
+libraries and for parts of the compiler:</P>
+<DL>
+
+<DT><P><B>-I<I>dir</I></B></P><DD><P>Add the directory <I>dir</I> to the head of the list of directories to be
+searched for header files.  This can be used to override a system header
+file, substituting your own version, since these directories are
+searched before the system header file directories.  However, you should
+not use this option to add directories that contain vendor-supplied
+system header files (use <B>'-isystem'</B> for that).  If you use more than
+one <B>'-I'</B> option, the directories are scanned in left-to-right
+order; the standard system directories come after.
+<BR><BR>
+If a standard system include directory, or a directory specified with
+<B>'-isystem'</B>, is also specified with <B>'-I'</B>, the <B>'-I'</B>
+option will be ignored.  The directory will still be searched but as a
+system directory at its normal position in the system include chain.
+This is to ensure that GCC's procedure to fix buggy system headers and
+the ordering for the include_next directive are not inadvertently changed.
+If you really need to change the search order for system directories,
+use the <B>'-nostdinc'</B> and/or <B>'-isystem'</B> options.
+</P><DT><P><B>-I-</B></P><DD><P>Any directories you specify with <B>'-I'</B> options before the <B>'-I-'</B>
+option are searched only for the case of <CODE>#include&nbsp;&quot;<I>file</I>&quot;</CODE>;
+they are not searched for <CODE>#include&nbsp;&lt;<I>file</I>&gt;</CODE>.
+<BR><BR>
+If additional directories are specified with <B>'-I'</B> options after
+the <B>'-I-'</B>, these directories are searched for all <CODE>#include</CODE>
+directives.  (Ordinarily <I>all</I> <B>'-I'</B> directories are used
+this way.)
+<BR><BR>
+In addition, the <B>'-I-'</B> option inhibits the use of the current
+directory (where the current input file came from) as the first search
+directory for <CODE>#include&nbsp;&quot;<I>file</I>&quot;</CODE>.  There is no way to
+override this effect of <B>'-I-'</B>.  With <B>'-I.'</B> you can specify
+searching the directory which was current when the compiler was
+invoked.  That is not exactly the same as what the preprocessor does
+by default, but it is often satisfactory.
+<BR><BR>
+<B>'-I-'</B> does not inhibit the use of the standard system directories
+for header files.  Thus, <B>'-I-'</B> and <B>'-nostdinc'</B> are
+independent.
+</P><DT><P><B>-L<I>dir</I></B></P><DD><P>Add directory <I>dir</I> to the list of directories to be searched
+for <B>'-l'</B>.
+</P><DT><P><B>-B<I>prefix</I></B></P><DD><P>This option specifies where to find the executables, libraries,
+include files, and data files of the compiler itself.
+<BR><BR>
+The compiler will check to see if the path provided by the <B>'-B'</B>
+refers to a directory, and if necessary it will add a directory
+separator character at the end of the path.
+<BR><BR>
+Another way to specify a prefix much like the <B>'-B'</B> prefix is to use
+the environment variable <CODE>GCC_EXEC_PREFIX</CODE>.  See <A HREF="#SEC45">Environment
+Variables</A>.
+</P><DT><P><B>-specs=<I>file</I></B></P><DD><P>Process <I>file</I> after the compiler reads in the standard <CODE>specs</CODE>
+file, in order to override the defaults that the <CODE>gcc</CODE> driver
+program uses when determining what switches to pass to the individual programs.
+This does not work in GCC4TI.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC15"><U>GCC Spec Strings</U></A></H2>
+<P><CODE>gcc</CODE> is a driver program.  It performs its job by invoking a
+sequence of other programs to do the work of compiling, assembling and
+linking.  GCC interprets its command-line parameters and uses these to
+deduce which programs it should invoke, and which command-line options
+it ought to place on their command lines.  This behavior is controlled
+by <U>spec strings</U>.  In most cases there is one spec string for each
+program that GCC can invoke, but a few programs have multiple spec
+strings to control their behavior.  The spec strings built into GCC can
+be overridden by using the <B>'-specs='</B> command-line switch to specify
+a spec file.
+<BR><BR>
+<U>Spec files</U> are plaintext files that are used to construct spec
+strings.  They consist of a sequence of directives separated by blank
+lines.
+<BR><BR>
+Since <CODE>gcc</CODE> only performs a small part of the tasks in GCC4TI, spec
+strings are more or less irrelevant.  For details on specs, see the
+<A HREF="http://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html#Spec%20Files">original documentation</A> on the net.</P>
+
+<HR>
+<H2><A NAME="SEC16"><U>M680x0 Target Options</U></A></H2>
+<P>The GCC compiler used in GCC4TI is configured for just one target family:
+the Motorola M680x0 (M68k) family.  In the TI-89, TI-92+, and V200 calculators,
+an MC68000 processor is used, therefore GCC4TI creates code for such a
+processor by default.  However, switches specifying the processor model, such
+as <B>'-m68020'</B>, still exist, although they are not useful.  However,
+there are also options that control the code that is generated specifically
+for TI calculators; they also start with <B>'-m'</B>:</P>
+<DL>
+
+<DT><P><B>-mno-bss</B></P><DD><P>Output all uninitialized global or static variables as normal data with
+zero content. Note that this leads to different semantics if the program is
+not compressed or archived: The variables will keep their values even after
+program termination, instead of being initialized to zero every time the
+program is run. For a better alternative, see
+<CODE><A HREF="httigcc.html#advanced_mergebss">MERGE_BSS</A></CODE>.
+</P><DT><P><B>-mlong</B></P><DD><P>Consider type <CODE>int</CODE> to be 32 bits wide, like <CODE>long&nbsp;int</CODE>.
+The <B>'-mshort'</B> option is enabled by default in GCC4TI; the negative is
+actually <B>'-mnoshort'</B>, but <B>'-mno-short'</B> and <B>'-mlong'</B> have
+been added as aliases.  Constants such as <CODE>INT_MAX</CODE> are set to the
+appropriate values, and <CODE>__INT_SHORT__</CODE> will be defined if short
+integers are used (i.e. if this switch is not used).  This option may be
+useful if you need to port code from a system which uses long integers.
+</P><DT><P><B>-mno-tios</B></P><DD><P>Again, this is the negative form of a switch called <B>'-mtios'</B>,
+which changes the convention for returning pointers from functions, and which
+also implies <B>'-fcall-used-d2'</B>.  This is necessary to make GCC work
+with the TIOS calling conventions, therefore <B>'-mno-tios'</B> may only be
+used if no interaction with the operating system is required.  Since library
+calls also use the TIOS calling convention, they cannot be used either; you
+should disable linking against <CODE>tigcc.a</CODE>.  Only use this option if
+you know exactly what you are doing.
+</P><DT><P><B>-mmlink</B></P><DD><P>Assume that uninitialized global variables can be handled smartly through
+BSS blocks even in kernel-less mode.
+</P><DT><P><B>-mpcrel</B></P><DD><P>Use the pc-relative addressing mode of the 68000 directly, instead of
+using a global offset table (also known as the relocation table).
+Therefore, this option produces position-independent code.
+</P><DT><P><B>-mregparm[=<I>regcount</I>]</B></P><DD><P>Use register passing for all user-defined functions.  <I>regcount</I>
+data registers plus <I>regcount</I> address registers are used to pass
+arguments to functions.  If <I>regcount</I> is not specified, a default value
+of 2 is used.  You should not specify a value higher than 6, or 5 if you use
+<CODE><A HREF="httigcc.html#advanced_optrom">OPTIMIZE_ROM_CALLS</A></CODE>.
+Note that you have to be careful with callback functions if you use this
+switch, although you will be warned about incompatiblities.
+</P><DT><P><B>-mbitfield</B></P><DD><P>Use bit-field instructions.
+</P><DT><P><B>-malign-int</B></P><DD><P>Aligns <CODE>int</CODE>, <CODE>long</CODE>, <CODE>long&nbsp;long</CODE>,
+<CODE>float</CODE>, <CODE>double</CODE>, and <CODE>long&nbsp;double</CODE> variables on a 32-bit
+boundary.
+</P><DT><P><B>-mno-strict-align</B>
+<BR><B>-mstrict-align</B></P><DD><P>Do not or do assume that unaligned memory references will be handled by
+the system.
+</P><DT><P><B>-mno-merge-sections</B></P><DD><P>Do not merge the <CODE>.text</CODE> and <CODE>.data</CODE> sections,
+as GCC4TI normally does (to save space used by relocation).
+</P><DT><P><B>-mmerge-to-data</B></P><DD><P>When merging sections, merge to <CODE>.data</CODE> rather than to
+<CODE>.text</CODE>.
+</P><DT><P><B>-mrodata-to-text</B></P><DD><P>When not merging sections, put read-only data into <CODE>.text</CODE>
+rather than <CODE>.data</CODE>.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC44"><U>Options for Code Generation Conventions</U></A></H2>
+<P>These machine-independent options control the interface conventions
+used in code generation.
+<BR><BR>
+Most of them have both positive and negative forms; the negative form
+of <B>'-ffoo'</B> would be <B>'-fno-foo'</B>.  In the table below, only
+one of the forms is listed: the one which is not the default.  You
+can figure out the other form by either removing <B>'no-'</B> or adding
+it.</P>
+<DL>
+
+<DT><P><B>-fbounds-check</B></P><DD><P>For front-ends that support it, generate additional code to check that
+indices used to access arrays are within the declared range.  This is
+currently only supported by the Java and Fortran 77 front-ends, where
+this option defaults to true and false respectively.
+</P><DT><P><B>-ftrapv</B></P><DD><P>This option generates traps for signed overflow on addition, subtraction,
+multiplication operations.
+</P><DT><P><B>-fexceptions</B></P><DD><P>Enable exception handling.  Generates extra code needed to propagate
+exceptions.  In principle, you may need to enable this option when compiling
+C code that needs to interoperate properly with exception handlers, but this
+is useless in GCC4TI, as the standard OS uses its own exception handling
+mechanism (see <A HREF="error.html">error.h</A>).
+</P><DT><P><B>-fnon-call-exceptions</B></P><DD><P>Generate code that allows trapping instructions to throw exceptions.
+Probably useless in GCC4TI.
+</P><DT><P><B>-funwind-tables</B></P><DD><P>Similar to <B>'-fexceptions'</B>, except that it will just generate any needed
+static data, but will not affect the generated code in any other way.
+Probably useless in GCC4TI.
+</P><DT><P><B>-fasynchronous-unwind-tables</B></P><DD><P>Generate unwind table in dwarf2 format, if supported by target machine.  The
+table is exact at each instruction boundary, so it can be used for stack
+unwinding from asynchronous events (such as debugger or garbage collector).
+</P><DT><P><B>-fpcc-struct-return</B></P><DD><P>Return &quot;short&quot; <CODE>struct</CODE> and <CODE>union</CODE> values in memory like
+longer ones, rather than in registers.  This convention is less
+efficient, but it has the advantage of allowing intercallability between
+GCC-compiled files and files compiled with other compilers, particularly
+the Portable C Compiler (pcc).
+<BR><BR>
+The precise convention for returning structures in memory depends
+on the target configuration macros.
+<BR><BR>
+Short structures and unions are those whose size and alignment match
+that of some integer type.
+<BR><BR>
+<B>Warning:</B> code compiled with the <B>'-fpcc-struct-return'</B>
+switch is not binary compatible with code compiled with the
+<B>'-freg-struct-return'</B> switch.
+Use it to conform to a non-default application binary interface.
+</P><DT><P><B>-freg-struct-return</B></P><DD><P>Return <CODE>struct</CODE> and <CODE>union</CODE> values in registers when possible.
+This is more efficient for small structures than
+<B>'-fpcc-struct-return'</B>.
+<BR><BR>
+If you specify neither <B>'-fpcc-struct-return'</B> nor
+<B>'-freg-struct-return'</B>, GCC4TI defaults to <B>'-freg-struct-return'</B>.
+<BR><BR>
+<B>Warning:</B> code compiled with the <B>'-freg-struct-return'</B>
+switch is not binary compatible with code compiled with the
+<B>'-fpcc-struct-return'</B> switch.
+Use it to conform to a non-default application binary interface.
+</P><DT><P><B>-fshort-enums</B></P><DD><P>Allocate to an <CODE>enum</CODE> type only as many bytes as it needs for the
+declared range of possible values.  Specifically, the <CODE>enum</CODE> type
+will be equivalent to the smallest integer type which has enough room.
+<BR><BR>
+<B>Warning:</B> the <B>'-fshort-enums'</B> switch causes GCC to generate
+code that is not binary compatible with code generated without that switch.
+Use it to conform to a non-default application binary interface.
+</P><DT><P><B>-fshort-double</B></P><DD><P>Use the same size for <CODE>double</CODE> as for <CODE>float</CODE>.
+This is always true in GCC4TI, regardless of this switch.
+<BR><BR>
+<B>Warning:</B> the <B>'-fshort-double'</B> switch causes GCC to generate
+code that is not binary compatible with code generated without that switch.
+Use it to conform to a non-default application binary interface.
+</P><DT><P><B>-fshort-wchar</B></P><DD><P>Override the underlying type for <CODE>wchar_t</CODE> to be <CODE>short
+unsigned&nbsp;int</CODE> instead of the default for the target.  This option is
+useful for building programs to run under WINE.
+<BR><BR>
+<B>Warning:</B> the <B>'-fshort-wchar'</B> switch causes GCC to generate
+code that is not binary compatible with code generated without that switch.
+Use it to conform to a non-default application binary interface.
+</P><DT><P><B>-fshared-data</B></P><DD><P>Requests that the data and non-<CODE>const</CODE> variables of this
+compilation be shared data rather than private data.  The distinction
+makes sense only on certain operating systems, where shared data is
+shared between processes running the same program, while private data
+exists in one copy per process.
+</P><DT><P><B>-fno-common</B></P><DD><P>Allocate even uninitialized global variables in the data section of the
+object file, rather than generating them as common blocks.  This has the
+effect that if the same variable is declared (without <CODE>extern</CODE>) in
+two different compilations, you will get an error when you link them.
+The only reason this might be useful is if you wish to verify that the
+program will work on other systems which always work this way.  Currently,
+GCC4TI does not support this option, since it needs common symbols to
+communicate with the linker.
+</P><DT><P><B>-fno-ident</B></P><DD><P>Ignore the <CODE>#ident</CODE> directive.
+</P><DT><P><B>-fno-gnu-linker</B></P><DD><P>Do not output global initializations in the form used by the GNU linker
+Useless in GCC4TI, because global initializations are not implemented.
+</P><DT><P><B>-finhibit-size-directive</B></P><DD><P>Don't output a <CODE>.size</CODE> assembler directive, or anything else that
+would cause trouble if the function is split in the middle, and the
+two halves are placed at locations far apart in memory.  This option is
+used when compiling <CODE>crtstuff.c</CODE>; you should not need to use it
+for anything else.
+</P><DT><P><B>-fverbose-asm</B></P><DD><P>Put extra commentary information in the generated assembly code to
+make it more readable.  This option is generally only of use to those
+who actually need to read the generated assembly code (perhaps while
+debugging the compiler itself).
+<BR><BR>
+<B>'-fno-verbose-asm'</B>, the default, causes the
+extra information to be omitted and is useful when comparing two assembler
+files.
+</P><DT><P><B>-fvolatile</B></P><DD><P>Consider all memory references through pointers to be volatile.
+</P><DT><P><B>-fvolatile-global</B></P><DD><P>Consider all memory references to extern and global data items to
+be volatile.  GCC does not consider static data items to be volatile
+because of this switch.
+</P><DT><P><B>-fvolatile-static</B></P><DD><P>Consider all memory references to static data to be volatile.
+</P><DT><P><B>-fpic</B></P><DD><P>Generate position-independent code (PIC) suitable for use in a shared
+library.  However, it requires special support of the operating
+system (like dynamic loaders, etc.).  So forget it with the TIOS; maybe
+some future ASM shells will support this.  At the moment, forget this
+nice option.
+</P><DT><P><B>-fPIC</B></P><DD><P>If supported for the target machine, emit position-independent code,
+suitable for dynamic linking and avoiding any limit on the size of the
+global offset table.
+</P><DT><P><B>-ffixed-<I>reg</I></B></P><DD><P>Treat the register named <I>reg</I> as a fixed register; generated code
+should never refer to it (except perhaps as a stack pointer, frame
+pointer or in some other fixed role).
+<BR><BR>
+This flag does not have a negative form, because it specifies a
+three-way choice.
+</P><DT><P><B>-fcall-used-<I>reg</I></B></P><DD><P>Treat the register named <I>reg</I> as an allocable register that is
+clobbered by function calls.  It may be allocated for temporaries or
+variables that do not live across a call.  Functions compiled this way
+will not save and restore the register <I>reg</I>.
+<BR><BR>
+It is an error to used this flag with the frame pointer or stack pointer.
+Use of this flag for other registers that have fixed pervasive roles in
+the machine's execution model will produce disastrous results.
+<BR><BR>
+This flag does not have a negative form, because it specifies a
+three-way choice.
+</P><DT><P><B>-fcall-saved-<I>reg</I></B></P><DD><P>Treat the register named <I>reg</I> as an allocable register saved by
+functions.  It may be allocated even for temporaries or variables that
+live across a call.  Functions compiled this way will save and restore
+the register <I>reg</I> if they use it.
+<BR><BR>
+It is an error to used this flag with the frame pointer or stack pointer.
+Use of this flag for other registers that have fixed pervasive roles in
+the machine's execution model will produce disastrous results.
+<BR><BR>
+A different sort of disaster will result from the use of this flag for
+a register in which function values may be returned.
+<BR><BR>
+This flag does not have a negative form, because it specifies a
+three-way choice.
+</P><DT><P><B>-freg-relative-<I>reg</I></B></P><DD><P>Refer to all labels only in relation to the register specified in
+<I>reg</I>.  This can make the code somewhat smaller, but you should use this
+option with care as it is not fully supported.
+This option is implemented only in TIGCC/GCC4TI.
+</P><DT><P><B>-fpack-struct</B></P><DD><P>Pack all structure members together without holes.
+<BR><BR>
+<B>Warning:</B> the <B>'-fpack-struct'</B> switch causes GCC to generate
+code that is not binary compatible with code generated without that switch.
+Additionally, it makes the code suboptimal.
+Use it to conform to a non-default application binary interface.
+</P><DT><P><B>-finstrument-functions</B></P><DD><P>Generate instrumentation calls for entry and exit to functions.  Just
+after function entry and just before function exit, the following
+profiling functions will be called with the address of the current
+function and its call site.  (On some platforms,
+<CODE>__builtin_return_address</CODE> does not work beyond the current
+function, so the call site information may not be available to the
+profiling functions otherwise.)</P>
+<PRE>void __cyg_profile_func_enter (void *this_fn,
+                               void *call_site);
+void __cyg_profile_func_exit  (void *this_fn,
+                               void *call_site);
+</PRE>
+<P>The first argument is the address of the start of the current function,
+which may be looked up exactly in the symbol table.
+<BR><BR>
+This instrumentation is also done for functions expanded inline in other
+functions.  The profiling calls will indicate where, conceptually, the
+inline function is entered and exited.  This means that addressable
+versions of such functions must be available.  If all your uses of a
+function are expanded inline, this may mean an additional expansion of
+code size.  If you use <CODE>extern&nbsp;inline</CODE> in your C code, an
+addressable version of such functions must be provided.  (This is
+normally the case anyways, but if you get lucky and the optimizer always
+expands the functions inline, you might have gotten away without
+providing static copies.)
+<BR><BR>
+A function may be given the attribute <CODE>no_instrument_function</CODE>, in
+which case this instrumentation will not be done.  This can be used, for
+example, for the profiling functions listed above, high-priority
+interrupt routines, and any functions from which the profiling functions
+cannot safely be called (perhaps signal handlers, if the profiling
+routines generate output or allocate memory).
+</P><DT><P><B>-fstack-check</B></P><DD><P>Generate code to verify that you do not go beyond the boundary of the
+stack.  As this requires support from the operating system, it probably does
+not work in GCC4TI.
+</P><DT><P><B>-fstack-limit-register=<I>reg</I></B>
+<BR><B>-fstack-limit-symbol=<I>sym</I></B>
+<BR><B>-fno-stack-limit</B></P><DD><P>Generate code to ensure that the stack does not grow beyond a certain value,
+either the value of a register or the address of a symbol.  If the stack
+would grow beyond the value, a signal is raised.  For most targets,
+the signal is raised before the stack overruns the boundary, so
+it is possible to catch the signal without taking special precautions.
+<BR><BR>
+For instance, if the stack starts at absolute address <CODE>0x80000000</CODE>
+and grows downwards, you can use the flags
+<B>'-fstack-limit-symbol=__stack_limit'</B> and
+<B>'-Wl,--defsym,__stack_limit=0x7ffe0000'</B> to enforce a stack limit
+of 128KB.  Note that this may only work with the GNU linker.
+</P><DT><P><B>-fargument-alias</B>
+<BR><B>-fargument-noalias</B>
+<BR><B>-fargument-noalias-global</B></P><DD><P>Specify the possible relationships among parameters and between
+parameters and global data.</P>
+<UL>
+<LI><P><B>'-fargument-alias'</B> specifies that arguments (parameters) may
+alias each other and may alias global storage.</P></LI>
+<LI><P><B>'-fargument-noalias'</B> specifies that arguments do not alias
+each other, but may alias global storage.</P></LI>
+<LI><P><B>'-fargument-noalias-global'</B> specifies that arguments do not
+alias each other and do not alias global storage.</P></LI>
+</UL>
+<P>Each language will automatically use whatever option is required by
+the language standard.  You should not need to use these options yourself.
+</P><DT><P><B>-fleading-underscore</B></P><DD><P>This option and its counterpart, <B>'-fno-leading-underscore'</B>, forcibly
+change the way C symbols are represented in the object file.  One use
+is to help link with legacy assembly code.
+<BR><BR>
+<B>Warning:</B> the <B>'-fleading-underscore'</B> switch causes GCC to
+generate code that is not binary compatible with code generated without that
+switch.  Use it to conform to a non-default application binary interface.
+</P><DT><P><B>-ftls-model=<I>model</I></B></P><DD><P>Alter the thread-local storage model to be used.
+The <I>model</I> argument should be one of <CODE>global-dynamic</CODE>,
+<CODE>local-dynamic</CODE>, <CODE>initial-exec</CODE> or <CODE>local-exec</CODE>.
+<BR><BR>
+The default without <B>'-fpic'</B> is <CODE>initial-exec</CODE>; with
+<B>'-fpic'</B> the default is <CODE>global-dynamic</CODE>.
+<BR><BR>
+Useless in TIGCC/GCC4TI, as threads are not supported.</P>
+</DL>
+
+<HR>
+<H2><A NAME="SEC45"><U>Environment Variables Affecting GCC</U></A></H2>
+<P>This section describes several environment variables that affect how GCC
+operates.  Some of them work by specifying directories or prefixes to use
+when searching for various kinds of files.  Some are used to specify other
+aspects of the compilation environment.
+<BR><BR>
+Note that you can also specify places to search using options such as
+<B>'-B'</B>, <B>'-I'</B> and <B>'-L'</B> (see <A HREF="#SEC14">Options for Directory Search</A>).</P>
+<DL>
+
+<DT><P><B>LANG</B>
+<BR><B>LC_CTYPE</B>
+<BR><B>LC_MESSAGES</B>
+<BR><B>LC_ALL</B></P><DD><P>These environment variables control the way that GCC uses
+localization information that allow GCC to work with different
+national conventions.  GCC inspects the locale categories
+<CODE>LC_CTYPE</CODE> and <CODE>LC_MESSAGES</CODE> if it has been configured to do
+so.  These locale categories can be set to any value supported by your
+installation.  A typical value is <CODE>en_UK</CODE> for English in the United
+Kingdom.
+<BR><BR>
+The <CODE>LC_CTYPE</CODE> environment variable specifies character
+classification.  GCC uses it to determine the character boundaries in
+a string; this is needed for some multibyte encodings that contain quote
+and escape characters that would otherwise be interpreted as a string
+end or escape.
+<BR><BR>
+The <CODE>LC_MESSAGES</CODE> environment variable specifies the language to
+use in diagnostic messages.
+<BR><BR>
+If the <CODE>LC_ALL</CODE> environment variable is set, it overrides the value
+of <CODE>LC_CTYPE</CODE> and <CODE>LC_MESSAGES</CODE>; otherwise, <CODE>LC_CTYPE</CODE>
+and <CODE>LC_MESSAGES</CODE> default to the value of the <CODE>LANG</CODE>
+environment variable.  If none of these variables are set, GCC
+defaults to traditional C English behavior.
+</P><DT><P><B>TMPDIR</B></P><DD><P>If <CODE>TMPDIR</CODE> is set, it specifies the directory to use for temporary
+files.  GCC uses temporary files to hold the output of one stage of
+compilation which is to be used as input to the next stage: for example,
+the output of the preprocessor, which is the input to the compiler
+proper.
+</P><DT><P><B>GCC_EXEC_PREFIX</B></P><DD><P>If <CODE>GCC_EXEC_PREFIX</CODE> is set, it specifies a prefix to use in the
+names of the subprograms executed by the compiler.  No slash is added
+when this prefix is combined with the name of a subprogram, but you can
+specify a prefix that ends with a slash if you wish.
+<BR><BR>
+If <CODE>GCC_EXEC_PREFIX</CODE> is not set, GCC will attempt to figure out
+an appropriate prefix to use based on the pathname it was invoked with.
+<BR><BR>
+If GCC cannot find the subprogram using the specified prefix, it
+tries looking in the usual places for the subprogram.
+<BR><BR>
+The default value of <CODE>GCC_EXEC_PREFIX</CODE> is
+<CODE><I>prefix</I>/lib/gcc-lib/</CODE> where <I>prefix</I> is the value
+of <CODE>prefix</CODE> when you ran the <CODE>configure</CODE> script.
+<BR><BR>
+Other prefixes specified with <B>'-B'</B> take precedence over this prefix.
+<BR><BR>
+In addition, the prefix is used in an unusual way in finding the
+directories to search for header files.  For each of the standard
+directories whose name normally begins with <CODE>/usr/local/lib/gcc-lib</CODE>
+(more precisely, with the value of <CODE>GCC_INCLUDE_DIR</CODE>), GCC tries
+replacing that beginning with the specified prefix to produce an
+alternate directory name.  Thus, with <B>'-B<I>foo</I>/'</B>, GCC will search
+<CODE><I>foo</I>/<I>bar</I></CODE> where it would normally search <CODE>/usr/local/lib/<I>bar</I></CODE>.
+These alternate directories are searched first; the standard directories
+come next.
+</P><DT><P><B>COMPILER_PATH</B></P><DD><P>The value of <CODE>COMPILER_PATH</CODE> is a colon-separated list of
+directories, much like <CODE>PATH</CODE>.  GCC tries the directories thus
+specified when searching for subprograms, if it can't find the
+subprograms using <CODE>GCC_EXEC_PREFIX</CODE>.
+</P><DT><P><B>LIBRARY_PATH</B></P><DD><P>The value of <CODE>LIBRARY_PATH</CODE> is a colon-separated list of
+directories, much like <CODE>PATH</CODE>.  When configured as a native compiler (which GCC4TI is <I>not</I>),
+GCC tries the directories thus specified when searching for special
+linker files, if it can't find them using <CODE>GCC_EXEC_PREFIX</CODE>.  Linking
+using GCC also uses these directories when searching for ordinary
+libraries for the <B>'-l'</B> option (but directories specified with
+<B>'-L'</B> come first).
+</P><DT><P><B>LANG</B></P><DD><P>This variable is used to pass locale information to the compiler.  One way in
+which this information is used is to determine the character set to be used
+when character literals, string literals and comments are parsed.
+When the compiler is configured to allow multibyte characters,
+the following values for <CODE>LANG</CODE> are recognized:
+</P>
+<DL>
+
+<DT><P><B>C-JIS</B></P><DD><P>Recognize JIS characters.
+</P><DT><P><B>C-SJIS</B></P><DD><P>Recognize SJIS characters.
+</P><DT><P><B>C-EUCJP</B></P><DD><P>Recognize EUCJP characters.</P>
+</DL>
+<P>
+If <CODE>LANG</CODE> is not defined, or if it has some other value, then the
+compiler will use mblen and mbtowc as defined by the default locale to
+recognize and translate multibyte characters.</P>
+</DL>
+<P>Some additional environments variables affect the behavior of the
+preprocessor.</P>
+<DL>
+
+<DT><P><B>CPATH</B>
+<BR><B>C_INCLUDE_PATH</B></P><DD><P>Each variable's value is a list of directories separated by a special
+character, much like <CODE>PATH</CODE>, in which to look for header files.
+The special character, <CODE>PATH_SEPARATOR</CODE>, is target-dependent and
+determined at GCC build time.  For Windows-based targets it is a
+semicolon, and for almost all other targets it is a colon.
+<BR><BR>
+<CODE>CPATH</CODE> specifies a list of directories to be searched as if
+specified with <B>'-I'</B>, but after any paths given with <B>'-I'</B>
+options on the command line.
+<BR><BR>
+<CODE>C_INCLUDE_PATH</CODE> specifies a list of directories
+to be searched as if specified with <B>'-isystem'</B>, but after any
+paths given with <B>'-isystem'</B> options on the command line.
+<BR><BR>
+In all these variables, an empty element instructs the compiler to
+search its current working directory.  Empty elements can appear at the
+beginning or end of a path.  For instance, if the value of
+<CODE>CPATH</CODE> is <CODE>:/special/include</CODE>, that has the same
+effect as <CODE>-I.&nbsp;-I/special/include</CODE>.
+</P><DT><P><B>DEPENDENCIES_OUTPUT</B></P><DD><P>If this variable is set, its value specifies how to output
+dependencies for Make based on the non-system header files processed
+by the compiler.  System header files are ignored in the dependency
+output.
+<BR><BR>
+The value of <CODE>DEPENDENCIES_OUTPUT</CODE> can be just a file name, in
+which case the Make rules are written to that file, guessing the target
+name from the source file name.  Or the value can have the form
+<CODE><I>file</I>&nbsp;<I>target</I></CODE>, in which case the rules are written to
+file <I>file</I> using <I>target</I> as the target name.
+<BR><BR>
+In other words, this environment variable is equivalent to combining
+the options <B>'-MM'</B> and <B>'-MF'</B>
+(see <A HREF="#SEC11">Options Controlling the Preprocessor</A>),
+with an optional <B>'-MT'</B> switch, too.
+</P><DT><P><B>SUNPRO_DEPENDENCIES</B></P><DD><P>This variable is the same as <CODE>DEPENDENCIES_OUTPUT</CODE> (see above),
+except that system header files are not ignored, so it implies
+<B>'-M'</B> rather than <B>'-MM'</B>
+(see <A HREF="#SEC11">Options Controlling the Preprocessor</A>).
+However, the dependence on the main input file is omitted.</P>
+</DL>
+
+<HR>
+<H2><A NAME="history"><U>History</U></A></H2>
+<UL>
+<LI><P><B>Original Version:</B> <A HREF="http://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html">GCC Command Options</A>
+<BR><BR>
+Published by the Free Software Foundation
+<BR>
+59 Temple Place - Suite 330
+<BR>
+Boston, MA 02111-1307 USA
+<BR><BR>
+Copyright &copy; 1988, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+2000, 2001, 2002 Free Software Foundation, Inc.
+</P></LI>
+<LI><P><B>Modifications for TIGCC:</B> <A HREF="comopts.html">GCC Command-Line Options</A>
+<BR><BR>
+Published by the TIGCC Team
+<BR><BR>
+Copyright &copy; 2000, 2001, 2002 Zeljko Juric, Sebastian Reichelt, Kevin Kofler</P></LI>
+<LI><P><B>Modifications for GCC4TI:</B> <A HREF="comopts.html">GCC Command-Line Options</A>
+<BR><BR>
+Published by the GCC4TI Project
+<BR><BR>
+Copyright &copy; 2009, 2010, 2011 Lionel Debroux</P></LI>
+</UL>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

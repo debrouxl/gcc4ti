@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>flashapp.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;flashapp.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines, variables and structures related to FlashApps.</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#EV_quit">EV_quit</A></B><DD>Switches from the current application to the Home application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OO_GetEndOfAllFlashApps">OO_GetEndOfAllFlashApps</A></B><DD>Returns a pointer to the first word-aligned byte after the last FlashApp.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OO_GetFirstFlashAppSectorAddress">OO_GetFirstFlashAppSectorAddress</A></B><DD>Fills given CFILE and returns a pointer to the first byte of the first sector reserved for FlashApps.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OO_GetFlashAppSize">OO_GetFlashAppSize</A></B><DD>Returns the size of a FlashApp given its task ID.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="cert.html#CFILE">CFILE</A></B><DD>A structure representing the context of a memory-mapped file.</DL>
+<P>Note: this header is currently VERY incomplete.<BR>
+On AMS 2.xx and 3.xx, FlashApps enable tighter integration to AMS than ASM
+programs enable: FlashApps can extend AMS, e.g. by exporting multiple TI-BASIC
+functions, and override various aspects of AMS (e.g. the language, or the font
+used by character drawing functions).<BR>
+<BR>
+GCC4TI cannot currently generate FlashApps, but mixed mode operation with
+TIFS should be possible.</P>
+
+<HR>
+<H3><A NAME="EV_quit"><U>EV_quit</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> EV_quit (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Switches from the current application to the Home application.</B></P>
+
+<HR>
+<H3><A NAME="OO_GetEndOfAllFlashApps"><U>OO_GetEndOfAllFlashApps</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *OO_GetEndOfAllFlashApps(<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns a pointer to the first word-aligned byte after the last FlashApp.</B></P>
+
+<P>This function calls <A HREF="#OO_GetFirstFlashAppSectorAddress">OO_GetFirstFlashAppSectorAddress</A>,
+and then loops through the FlashApps, using the <A HREF="cert.html#CFILE">CFILE</A> filled
+by OO_GetFirstFlashAppSectorAddress.<BR>
+The first sector after the last sector reserved for FlashApps is the first archive memory sector.</P>
+
+<HR>
+<H3><A NAME="OO_GetFirstFlashAppSectorAddress"><U>OO_GetFirstFlashAppSectorAddress</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *OO_GetFirstFlashAppSectorAddress(<A HREF="cert.html#CFILE">CFILE</A> *certfile);</TD></TR></TABLE></P>
+<P><B>Fills given CFILE and returns a pointer to the first byte of the first sector reserved for FlashApps.</B></P>
+
+<P>After execution of this ROM_CALL, <I>certfile</I> contains the following information:</P>
+<UL>
+<LI><P><CODE>certfile->Start  = ROM_base+0x12000</CODE></P></LI>
+<LI><P><CODE>certfile->Pos    = </CODE>end of AMS code, rounded up to the next multiple of 64 KB (= return value of the ROM_CALL).</P></LI>
+<LI><P><CODE>certfile->End    = FlashMemoryEnd</CODE></P></LI>
+<LI><P><CODE>certfile->EOFVal = FALSE</CODE></P></LI>
+</UL>
+<P>At least one 64 KB sector is reserved for FlashApps in the Flash Memory. The first such sector
+is the first sector after the end of the AMS code.</P>
+
+<P>See also: <A HREF="flash.html#EM_getArchiveMemoryBeginning">EM_getArchiveMemoryBeginning</A>, <A HREF="#OO_GetEndOfAllFlashApps">OO_GetEndOfAllFlashApps</A></P>
+<HR>
+<H3><A NAME="OO_GetFlashAppSize"><U>OO_GetFlashAppSize</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> OO_GetFlashAppSize(<B><A HREF="keywords.html#short">short</A></B> TaskID);</TD></TR></TABLE></P>
+<P><B>Returns the size of a FlashApp given its task ID.</B></P>
+
+<P>On AMS 2.xx, the task ID of a FlashApp can be retrieved with <A HREF="events.html#EV_getAppID">EV_getAppID</A>.</P>
+
+<P>See also: <A HREF="events.html#EV_getAppID">EV_getAppID</A></P>
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

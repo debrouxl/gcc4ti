@@ -1,0 +1,2856 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>The GNU Assembler</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The GNU Assembler</B></FONT>
+<HR>
+<P>This part of the documentation is a modified version of the <A HREF="http://sources.redhat.com/binutils/docs-2.12/as.info/">GNU Assembler Manual</A>.
+Therefore it is licensed under the <A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A>.
+<BR><BR>
+The GNU assembler <CODE>as</CODE> is primarily intended to assemble the output
+of the GNU C compiler for use by the linker, so it may be regarded as an internal
+part of GCC4TI package.
+However, it may be called as a standalone program, and the GNU team
+tried to make <CODE>as</CODE> assemble everything correctly that other assemblers
+for the same machine would assemble. Any exceptions are documented explicitly.
+This doesn't mean <CODE>as</CODE> always uses the same syntax as other
+assemblers for the same architecture; for example, there exist several
+incompatible versions of the MC 68000 assembly language syntax, so the syntax used
+in the GNU assembler is not exactly the same as in some other assemblers
+(like the <A HREF="a68k.html">A68k Assembler</A>, which is the most frequently
+used assembler for the TI-89 and TI-92+, and which is also included in the GCC4TI
+package as a standalone program).
+<BR><BR>
+This documentation will cover <CODE>as</CODE> features which are applicable
+to GCC4TI.  The most frequent use of <CODE>as</CODE> is probably as
+an <A HREF="gnuexts.html#SEC94">inline assembler</A>, which allows mixing assembly
+statements with C code using the <CODE>asm</CODE> keyword.
+<BR><BR>
+This documentation is <I>not</I>
+intended as an introduction to programming in assembly language.  In a similar
+vein, you will not find here details about machine architecture: here you can not
+expect detailed description of the instruction set, standard mnemonics, registers
+or addressing modes.  You may want to consult the Motorola manufacturer's machine
+architecture manual for such information.
+<BR><BR>
+<B>Note:</B> It is possible to use source files for the GNU Assembler
+together with C source files in GCC4TI projects.</P>
+
+<UL>
+<LI><B><A HREF="#SEC9">GNU Assembler Command Line</A></B>
+<LI><B><A HREF="#SEC20">GNU Assembler Input and Output</A></B>
+<LI><B><A HREF="#SEC25">GNU Assembler Syntax</A></B>
+<LI><B><A HREF="#SEC39">Sections and Relocation</A></B>
+<LI><B><A HREF="#SEC45">Assembler Symbols</A></B>
+<LI><B><A HREF="#SEC60">Assembler Expressions</A></B>
+<LI><B><A HREF="#SEC67">Assembler Directives</A></B>
+<LI><B><A HREF="#acknowledge">Acknowledgements</A></B>
+<LI><B><A HREF="#history">History</A></B>
+<LI><B><A HREF="gnugpl.html">GNU General Public License</A></B>
+<LI><B><A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A></B>
+<LI><B><A HREF="gnugpl.html#funding">Funding Free Software</A></B>
+</UL>
+<P>Original author: Free Software Foundation, Inc.
+<BR>
+Authors of the modifications: Zeljko Juric, Sebastian Reichelt, and Kevin Kofler
+<BR>
+Published by the TIGCC Team, and now the GCC4TI project.
+<BR>
+See the <A HREF="#history">History</A> section for details and copyright information.
+<BR><BR>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or any
+later version published by the Free Software Foundation;
+with no Invariant Sections, with no Front-Cover Texts, and with no
+Back-Cover Texts.  A copy of the license is included in the
+section entitled "<A HREF="gnugpl.html#gnufdl">GNU Free Documentation License</A>".</P>
+
+<HR>
+<H2><A NAME="SEC9"><U>GNU Assembler Command Line</U></A></H2>
+<P>After the program name <CODE>as</CODE>, the command line may contain
+options and file names.  Options may appear in any order, and may be
+before, after, or between file names.  The order of file names is
+significant.
+<BR><BR>
+<CODE>--</CODE> (two hyphens) by itself names the standard input file
+explicitly, as one of the files for <CODE>as</CODE> to assemble.
+<BR><BR>
+Except for <CODE>--</CODE> any command line argument that begins with a
+hyphen (<CODE>-</CODE>) is an option.  Each option changes the behavior of
+<CODE>as</CODE>.  No option changes the way another option works.  An
+option is a <CODE>-</CODE> followed by one or more letters; the case of
+the letter is important.  All options are optional.
+<BR><BR>
+Some options expect exactly one file name to follow them.  The file
+name may either immediately follow the option's letter (compatible
+with older assemblers) or it may be the next command argument (GNU
+standard).  These two command lines are equivalent:</P>
+<PRE>as -o my-object-file.o mumble.s
+as -omy-object-file.o mumble.s
+</PRE>
+
+<UL>
+<LI><B><A HREF="#SEC10">Invoking the GNU Assembler from GCC4TI</A></B>
+<LI><B><A HREF="#SEC11">GNU Assembler Command-Line Options</A></B>
+</UL>
+<H3><A NAME="SEC10"><U>Invoking the GNU Assembler from GCC4TI</U></A></H3>
+<P>If you are invoking <CODE>as</CODE> via <CODE>tigcc</CODE>,
+you can use the <B>'-Wa'</B> option to pass arguments through to the assembler.
+The assembler arguments must be separated from each other (and the <B>'-Wa'</B>)
+by commas.  For example:</P>
+<PRE>tigcc -c -g -O -Wa,-alh,-L file.c
+</PRE>
+<P>This passes two options to the assembler: <B>'-alh'</B> (emit a listing to
+standard output with high-level and assembly source) and <B>'-L'</B> (retain
+local symbols in the symbol table).
+<BR><BR>
+Usually you do not need to use this <B>'-Wa'</B> mechanism, since many compiler
+command-line options are automatically passed to the assembler by the compiler.
+(You can call the GNU compiler driver with the <B>'-v'</B> option to see
+precisely what options it passes to each compilation pass, including the
+assembler.)</P>
+
+<H3><A NAME="SEC11"><U>GNU Assembler Command-Line Options</U></A></H3>
+<P>Here is a brief summary of how to invoke <CODE>as</CODE>.</P>
+<DL>
+
+<DT><P><B>-a[cdhlmns]</B></P><DD><P>Turn on listings, in any of a variety of ways:
+</P>
+<DL>
+
+<DT><P><B>-ac</B></P><DD><P>omit false conditionals
+</P><DT><P><B>-ad</B></P><DD><P>omit debugging directives
+</P><DT><P><B>-ah</B></P><DD><P>include high-level source
+</P><DT><P><B>-al</B></P><DD><P>include assembly
+</P><DT><P><B>-am</B></P><DD><P>include macro expansions
+</P><DT><P><B>-an</B></P><DD><P>omit forms processing
+</P><DT><P><B>-as</B></P><DD><P>include symbols
+</P><DT><P><B>=file</B></P><DD><P>set the name of the listing file</P>
+</DL>
+<P>
+You may combine these options; for example, use <B>'-aln'</B> for assembly
+listing without forms processing.  The <B>'=file'</B> option, if used, must be
+the last one.  By itself, <B>'-a'</B> defaults to <B>'-ahls'</B>.
+<BR><BR>
+For more information, see <A HREF="#SEC13">Enabling Listings</A>.
+</P><DT><P><B>--all-relocs</B></P><DD><P>Output all references to non-absolute symbols in the assembled file as
+relocation items in the object file, even if the form of a reference would
+permit the assembler to resolve it.  This especially affects pc-relative
+references to symbols defined in the same section, and certain calculations
+with symbols.  For some calculations, this requires special GCC4TI-specific
+support for negative relocation items.  If a calculation cannot be output
+without being resolved, an error message is generated.  This option implies
+'--keep-locals'.  The assembler also outputs a special symbol
+<CODE>__ld_all_relocs</CODE> to tell the linker that there are no implicit
+dependencies between different locations inside the sections.
+</P><DT><P><B>-D</B></P><DD><P>Ignored.  This option is accepted for script compatibility with calls to
+other assemblers.
+</P><DT><P><B>--defsym <I>sym</I>=<I>value</I></B></P><DD><P>Define the symbol <I>sym</I> to be <I>value</I> before assembling the input file.
+<I>value</I> must be an integer constant.  As in C, a leading <CODE>0x</CODE>
+indicates a hexadecimal value, and a leading <CODE>0</CODE> indicates an octal value.
+</P><DT><P><B>-f</B></P><DD><P>&quot;fast&quot; - skip whitespace and comment preprocessing (assume source is
+compiler output).
+<BR><BR>
+This option should only be used when assembling programs written by a
+(trusted) compiler.  It stops the assembler from doing whitespace
+and comment preprocessing on the input file(s) before assembling them.
+See <A HREF="#SEC26">Preprocessing</A>.
+<BR><BR>
+<B>Warning:</B> if you use <B>'-f'</B> when the files actually need to be
+preprocessed (if they contain comments, for example), <CODE>as</CODE> does
+not work correctly.
+</P><DT><P><B>--gdwarf2</B></P><DD><P>Generate DWARF 2 debugging information for each assembler line.  This
+may help debugging assembler code, if the debugger can handle it.
+</P><DT><P><B>--gstabs</B></P><DD><P>Generate stabs debugging information for each assembler line.  This
+may help debugging assembler code, if the debugger can handle it.
+</P><DT><P><B>--help</B></P><DD><P>Print a summary of the command line options and exit.
+</P><DT><P><B>--target-help</B></P><DD><P>Print a summary of all target specific options and exit.
+</P><DT><P><B>-I <I>dir</I></B></P><DD><P>Add directory <I>dir</I> to the search list for <CODE><A HREF="#SEC97">.include</A></CODE> directives.
+</P><DT><P><B>-J</B></P><DD><P>Don't warn about signed overflow.
+</P><DT><P><B>-K</B></P><DD><P>This option is accepted but has no effect on the 680x0 family.
+</P><DT><P><B>-L</B>
+<BR><B>--keep-locals</B></P><DD><P>Keep (in the symbol table) local symbols.  On traditional a.out systems
+these start with <CODE>L</CODE>, but different systems have different local
+label prefixes.  See <A HREF="#SEC18">Including Local Labels</A>.
+</P><DT><P><B>--listing-lhs-width=<I>number</I></B></P><DD><P>Set the maximum width, in words, of the output data column for an assembler
+listing to <I>number</I>.
+<BR><BR>
+For more information, see <A HREF="#SEC14">Configuring Listing Output</A>.
+</P><DT><P><B>--listing-lhs-width2=<I>number</I></B></P><DD><P>Set the maximum width, in words, of the output data column for continuation
+lines in an assembler listing to <I>number</I>.
+</P><DT><P><B>--listing-rhs-width=<I>number</I></B></P><DD><P>Set the maximum width of an input source line, as displayed in a listing, to
+<I>number</I> bytes.
+</P><DT><P><B>--listing-cont-lines=<I>number</I></B></P><DD><P>Set the maximum number of lines printed in a listing for a single line of input
+to <I>number</I>+1.
+</P><DT><P><B>-M</B>
+<BR><B>--mri</B></P><DD><P>Use MRI compatibility mode.  See <A HREF="#SEC19a">Assembling in MRI Compatibility Mode</A>.
+</P><DT><P><B>--MD <I>depfile</I></B></P><DD><P>Generate a dependency file.  This file consists of a single rule suitable for
+<CODE>make</CODE> describing the dependencies of the main source file.  The rule
+is written to the file named in its argument.  This feature is used in the automatic
+updating of makefiles.  It is not particulary useful for GCC4TI.
+</P><DT><P><B>-o <I>objfile</I></B></P><DD><P>Name the object-file output from <CODE>as</CODE> <I>objfile</I>.
+See <A HREF="#SEC15">Naming the Output File</A>.
+</P><DT><P><B>-R</B></P><DD><P>Fold the data section into the text section.  See <A HREF="#SEC17">Joining the Data and Text Sections</A>.
+</P><DT><P><B>--statistics</B></P><DD><P>Print the maximum space (in bytes) and total time (in seconds) used by
+assembly.
+</P><DT><P><B>--strip-local-absolute</B></P><DD><P>Remove local absolute symbols from the outgoing symbol table.
+</P><DT><P><B>--traditional-format</B></P><DD><P>Use a more traditional output format.  See <A HREF="#SEC19">Traditional Assembler Output Format</A>.
+</P><DT><P><B>-v</B>
+<BR><B>-version</B></P><DD><P>Print the <CODE>as</CODE> version.
+</P><DT><P><B>--version</B></P><DD><P>Print the <CODE>as</CODE> version and exit.
+</P><DT><P><B>-W</B>
+<BR><B>--no-warn</B></P><DD><P>Suppress warning messages.
+<BR><BR>
+See <A HREF="#SEC16">Controlling Warnings</A> for more information about warning switches.
+</P><DT><P><B>--fatal-warnings</B></P><DD><P>Treat warnings as errors.
+</P><DT><P><B>--warn</B></P><DD><P>Don't suppress warning messages or treat them as errors.
+</P><DT><P><B>-w</B></P><DD><P>Ignored.
+</P><DT><P><B>-x</B></P><DD><P>Ignored.
+</P><DT><P><B>-Z</B></P><DD><P>Generate an object file even after errors.
+</P><DT><P><B>-- | <I>files</I> </B></P><DD><P>Standard input, or source files to assemble.</P>
+</DL>
+
+<UL>
+<LI><B><A HREF="#SEC12">M680x0 Options</A></B>
+<LI><B><A HREF="#SEC13">Enabling Listings</A></B>
+<LI><B><A HREF="#SEC15">Naming the Object File</A></B>
+<LI><B><A HREF="#SEC16">Controlling Warnings</A></B>
+<LI><B><A HREF="#SEC17">Joining the Data and Text Sections</A></B>
+<LI><B><A HREF="#SEC18">Including Local Labels</A></B>
+<LI><B><A HREF="#SEC19">Traditional Assembler Output Format</A></B>
+<LI><B><A HREF="#SEC19a">Assembling in MRI Compatibility Mode</A></B>
+</UL>
+<H4><A NAME="SEC12"><U>M680x0 Options</U></A></H4>
+<P>The Motorola 680x0 version of <CODE>as</CODE> has a few machine
+dependent options:</P>
+<DL>
+
+<DT><P><B>-l</B></P><DD><P>You can use the <B>'-l'</B> option to shorten the size of references to undefined
+symbols.  If you do not use the <B>'-l'</B> option, references to undefined
+symbols are wide enough for a full <CODE>long</CODE> (32 bits).  (Since
+<CODE>as</CODE> cannot know where these symbols end up, <CODE>as</CODE> can
+only allocate space for the linker to fill in later.  Since <CODE>as</CODE>
+does not know how far away these symbols are, it allocates as much space as it
+can.)  If you use this option, the references are only one word wide (16 bits).
+This may be useful if you want the object file to be as small as possible, and
+you know that the relevant symbols are always less 32 KB away.  This option
+implies '--short-jumps'.
+</P><DT><P><B>--short-jumps</B></P><DD><P>The <B>'--short-jumps'</B> option shortens the size of branches to
+undefined symbols.  Unlike <B>'-l'</B>, other references to undefined symbols
+are kept wide enough for a full <CODE>long</CODE> (32 bits), unless an
+explicit size is specified.  This enables you to optimize a modular program
+that is smaller than 32 KB as well as possible, while still being able to
+reference an external BSS or data section (since no jumps can point into
+these sections). Previously (and in non-TIGCC assemblers), the <B>'-l'</B>
+option acted like this, but the documentation did not say this.
+</P><DT><P><B>--register-prefix-optional</B></P><DD><P>Since the compiler as configured for GCC4TI
+does not prepend an underscore to the names of user variables, the
+assembler requires a <CODE>%</CODE> before any use of a register name.  This
+is intended to let the assembler distinguish between C variables and
+functions named <CODE>a0</CODE> through <CODE>a7</CODE>, and so on.
+The <B>'--register-prefix-optional'</B> option may be used
+to permit omitting the <CODE>%</CODE> even in GCC4TI.
+If this is done, it will generally be impossible to
+refer to C variables and functions with the same names as register
+names.
+</P><DT><P><B>--bitwise-or</B></P><DD><P>Normally the character <CODE>|</CODE> is treated as a comment character, which
+means that it can not be used in expressions.  The <B>'--bitwise-or'</B>
+option turns <CODE>|</CODE> into a normal character.  In this mode, you must
+either use C style comments, or start comments with a <CODE>#</CODE> character
+at the beginning of a line.
+</P><DT><P><B>--base-size-default-16</B>
+<BR><B>--base-size-default-32</B></P><DD><P>If you use an addressing mode with a base register without specifying
+the size, <CODE>as</CODE> will normally use the full 32 bit value.
+For example, the addressing mode <CODE>%a0@(%d0)</CODE> is equivalent to
+<CODE>%a0@(%d0:l)</CODE>.  You may use the <B>'--base-size-default-16'</B>
+option to tell <CODE>as</CODE> to default to using the 16 bit value.
+In this case, <CODE>%a0@(%d0)</CODE> is equivalent to <CODE>%a0@(%d0:w)</CODE>.
+You may use the <B>'--base-size-default-32'</B> option to restore the
+default behaviour.
+</P><DT><P><B>--disp-size-default-16</B>
+<BR><B>--disp-size-default-32</B></P><DD><P>If you use an addressing mode with a displacement, and the value of the
+displacement is not known, <CODE>as</CODE> will normally assume that
+the value is 32 bits.  For example, if the symbol <CODE>disp</CODE> has not
+been defined, <CODE>as</CODE> will assemble the addressing mode
+<CODE>%a0@(disp,%d0)</CODE> as though <CODE>disp</CODE> is a 32 bit value.  You may
+use the <B>'--disp-size-default-16'</B> option to tell <CODE>as</CODE>
+to instead assume that the displacement is 16 bits.  In this case,
+<CODE>as</CODE> will assemble <CODE>%a0@(disp,%d0)</CODE> as though
+<CODE>disp</CODE> is a 16 bit value.  You may use the
+<B>'--disp-size-default-32'</B> option to restore the default behaviour.
+</P><DT><P><B>--pcrel</B></P><DD><P>Always keep branches PC-relative.  In the M680x0 architecture all branches
+are defined as PC-relative.  However, on some processors
+(including the M68000 used in calculators) they are limited
+to word displacements maximum.  When <CODE>as</CODE> needs a long branch
+that is not available, it normally emits an absolute jump instead.  This
+option disables this substitution.  When this option is given and no long
+branches are available, only word branches will be emitted.  An error
+message will be generated if a word branch cannot reach its target.
+See <A HREF="#SEC221">Branch Improvement</A>.
+</P><DT><P><B>-m680<I>x</I>0</B></P><DD><P><CODE>as</CODE> can assemble code for several different members of the
+Motorola 680x0 family.  The default in GCC4TI is to assemble
+code for the 68000 microprocessor.  The following options may be used to
+change the default.  These options control which instructions and
+addressing modes are permitted.  The members of the 680x0 family are
+very similar.  For detailed information about the differences, see the
+Motorola manuals.  (These options are not very useful for GCC4TI.)
+</P>
+<DL>
+
+<DT><P><B>-m68000</B>
+<BR><B>-m68ec000</B>
+<BR><B>-m68hc000</B>
+<BR><B>-m68hc001</B>
+<BR><B>-m68008</B>
+<BR><B>-m68302</B>
+<BR><B>-m68306</B>
+<BR><B>-m68307</B>
+<BR><B>-m68322</B>
+<BR><B>-m68356</B></P><DD><P>Assemble for the 68000. <B>'-m68008'</B>, <B>'-m68302'</B>, and so on are synonyms
+for <B>'-m68000'</B>, since the chips are the same from the point of view
+of the assembler.
+</P><DT><P><B>-m68010</B></P><DD><P>Assemble for the 68010.
+</P><DT><P><B>-m68020</B>
+<BR><B>-m68ec020</B></P><DD><P>Assemble for the 68020.
+</P><DT><P><B>-m68030</B>
+<BR><B>-m68ec030</B></P><DD><P>Assemble for the 68030.
+</P><DT><P><B>-m68040</B>
+<BR><B>-m68ec040</B></P><DD><P>Assemble for the 68040.
+</P><DT><P><B>-m68060</B>
+<BR><B>-m68ec060</B></P><DD><P>Assemble for the 68060.
+</P><DT><P><B>-mcpu32</B>
+<BR><B>-m68330</B>
+<BR><B>-m68331</B>
+<BR><B>-m68332</B>
+<BR><B>-m68333</B>
+<BR><B>-m68334</B>
+<BR><B>-m68336</B>
+<BR><B>-m68340</B>
+<BR><B>-m68341</B>
+<BR><B>-m68349</B>
+<BR><B>-m68360</B></P><DD><P>Assemble for the CPU32 family of chips.
+</P><DT><P><B>-m5200</B></P><DD><P>Assemble for the ColdFire family of chips.
+</P><DT><P><B>-m68881</B>
+<BR><B>-m68882</B></P><DD><P>Assemble 68881 floating point instructions.  This is the default for the
+68020, 68030, and the CPU32.  The 68040 and 68060 always support
+floating point instructions.
+</P><DT><P><B>-mno-68881</B></P><DD><P>Do not assemble 68881 floating point instructions.  This is the default
+for 68000 and the 68010.  The 68040 and 68060 always support floating
+point instructions, even if this option is used.
+</P><DT><P><B>-m68851</B></P><DD><P>Assemble 68851 MMU instructions.  This is the default for the 68020,
+68030, and 68060.  The 68040 accepts a somewhat different set of MMU
+instructions; <B>'-m68851'</B> and <B>'-m68040'</B> should not be used
+together.
+</P><DT><P><B>-mno-68851</B></P><DD><P>Do not assemble 68851 MMU instructions.  This is the default for the
+68000, 68010, and the CPU32.  The 68040 accepts a somewhat different set
+of MMU instructions.</P>
+</DL>
+<P></P>
+</DL>
+
+<H4><A NAME="SEC13"><U>Enabling Listings</U></A></H4>
+<P>The options starting with <B>'-a'</B> enable listing output from the assembler.  By itself,
+<B>'-a'</B> requests high-level, assembly, and symbols listing.
+You can use other letters to select specific options for the list:
+<B>'-ah'</B> requests a high-level language listing,
+<B>'-al'</B> requests an output-program assembly listing, and
+<B>'-as'</B> requests a symbol table listing.
+High-level listings require that a compiler debugging option like
+<B>'-g'</B> be used, and that assembly listings (<B>'-al'</B>) be requested
+also.
+<BR><BR>
+Use the <B>'-ac'</B> option to omit false conditionals from a listing.  Any lines
+which are not assembled because of a false <CODE><A HREF="#SEC96">.if</A></CODE> (or <CODE>.ifdef</CODE>, or any
+other conditional), or a true <CODE><A HREF="#SEC96">.if</A></CODE> followed by an <CODE><A HREF="#SEC83">.else</A></CODE>, will be
+omitted from the listing.
+<BR><BR>
+Use the <B>'-ad'</B> option to omit debugging directives from the
+listing.
+<BR><BR>
+Once you have specified one of these options, you can further control
+listing output and its appearance using the directives <CODE><A HREF="#SEC107">.list</A></CODE>,
+<CODE><A HREF="#SEC110">.nolist</A></CODE>, <CODE><A HREF="#SEC114">.psize</A></CODE>, <CODE><A HREF="#SEC82">.eject</A></CODE>, <CODE><A HREF="#SEC132">.title</A></CODE>, and
+<CODE><A HREF="#SEC117">.sbttl</A></CODE>.
+The <B>'-an'</B> option turns off all forms processing.
+If you do not request listing output with one of the <B>'-a'</B> options, the
+listing-control directives have no effect.
+<BR><BR>
+The letters after <B>'-a'</B> may be combined into one option,
+<I>e.g.</I>, <B>'-aln'</B>.
+<BR><BR>
+Note if the assembler source is coming from the standard input (e.g. because it
+is being created by <CODE>gcc</CODE> and the <B>'-pipe'</B> command line switch
+is being used) then the listing will not contain any comments or preprocessor
+directives.  This is because the listing code buffers input source lines from
+stdin only after they have been preprocessed by the assembler.  This reduces
+memory usage and makes the code more efficient.</P>
+
+<UL>
+<LI><B><A HREF="#SEC14">Configuring Listing Output</A></B>
+</UL>
+<H5><A NAME="SEC14"><U>Configuring Listing Output</U></A></H5>
+<P>The listing feature of the assembler can be enabled via the command line switch
+<B>'-a'</B> (see <A HREF="#SEC13">Enabling Listings</A>).  This feature combines the input source file(s) with a
+hex dump of the corresponding locations in the output object file, and displays
+them as a listing file.  The format of this listing can be controlled by pseudo
+ops inside the assembler source (see <A HREF="#SEC13">Enabling Listings</A> for details) and also by the following switches:</P>
+<DL>
+
+<DT><P><B>--listing-lhs-width=number</B></P><DD><P>Sets the maximum width, in words, of the first line of the hex byte dump.  This
+dump appears on the left hand side of the listing output.
+</P><DT><P><B>--listing-lhs-width2=number</B></P><DD><P>Sets the maximum width, in words, of any further lines of the hex byte dump for
+a given input source line.  If this value is not specified, it defaults to being
+the same as the value specified for <B>'--listing-lhs-width'</B>.  If neither
+switch is used the default is to one.
+</P><DT><P><B>--listing-rhs-width=number</B></P><DD><P>Sets the maximum width, in characters, of the source line that is displayed
+alongside the hex dump.  The default value for this parameter is 100.  The
+source line is displayed on the right hand side of the listing output.
+</P><DT><P><B>--listing-cont-lines=number</B></P><DD><P>Sets the maximum number of continuation lines of hex dump that will be
+displayed for a given single line of source input.  The default value is 4.</P>
+</DL>
+
+<H4><A NAME="SEC15"><U>Naming the Object File</U></A></H4>
+<P>There is always one object file output when you run <CODE>as</CODE>.  By
+default it has the name
+<CODE>a.out</CODE>.
+You can use the <B>'-o'</B> option (which takes exactly one filename) to give the
+object file a different name.
+<BR><BR>
+Whatever the object file is called, <CODE>as</CODE> overwrites any
+existing file of the same name.</P>
+
+<H4><A NAME="SEC16"><U>Controlling Warnings</U></A></H4>
+<P><CODE>as</CODE> should never give a warning or error message when
+assembling compiler output.  But programs written by people often
+cause <CODE>as</CODE> to give a warning that a particular assumption was
+made.  All such warnings are directed to the standard error file.
+<BR><BR>
+If you use the <B>'-W'</B> and <B>'--no-warn'</B> options, no warnings are issued.
+This only affects the warning messages: it does not change any particular of
+how <CODE>as</CODE> assembles your file.  Errors, which stop the assembly,
+are still reported.
+<BR><BR>
+If you use the <B>'--fatal-warnings'</B> option, <CODE>as</CODE> considers
+files that generate warnings to be in error.
+<BR><BR>
+You can switch these options off again by specifying <B>'--warn'</B>, which
+causes warnings to be output as usual.</P>
+
+<H4><A NAME="SEC17"><U>Joining the Data and Text Sections</U></A></H4>
+<P>The <B>'-R'</B> option tells <CODE>as</CODE> to write the object file as if all
+data-section data lives in the text section.  This is only done at
+the very last moment:  your binary data are the same, but data
+section parts are relocated differently.  The data section part of
+your object file is zero bytes long because all its bytes are
+appended to the text section.  (see <A HREF="#SEC39">Sections and Relocation</A>).
+<BR><BR>
+When you specify <B>'-R'</B>, it would be possible to generate shorter
+address displacements (because we do not have to cross between text and
+data section).  We refrain from doing this simply for compatibility with
+older versions of <CODE>as</CODE>.  In the future, <B>'-R'</B> may work this way.
+<BR><BR>
+When <CODE>as</CODE> is configured for COFF output (which is the case in GCC4TI),
+this option is only useful if you use sections named <CODE>.text</CODE> and
+<CODE>.data</CODE>.</P>
+
+<H4><A NAME="SEC18"><U>Including Local Labels</U></A></H4>
+<P>Labels beginning with <CODE>L</CODE> (upper case only) are called <U>local
+labels</U>. See <A HREF="#SEC48">Symbol Names</A>.  Normally you do not see such labels when
+debugging, because they are intended for the use of programs (like
+compilers) that compose assembler programs, not for your notice.
+Normally both <CODE>as</CODE> and <CODE>ld</CODE> discard such labels, so you do not
+normally debug with them.
+<BR><BR>
+The <B>'-L'</B> option tells <CODE>as</CODE> to retain those <CODE>L...</CODE> symbols
+in the object file.  Usually, if you do this, you also tell the linker
+<CODE>ld</CODE> to preserve symbols whose names begin with <CODE>L</CODE>.
+<BR><BR>
+By default, a local label is any label beginning with <CODE>L</CODE>, but each
+target is allowed to redefine the local label prefix.</P>
+
+<H4><A NAME="SEC19"><U>Traditional Assembler Output Format</U></A></H4>
+<P>For some targets, the output of <CODE>as</CODE> is different in some ways
+from the output of some existing assembler.  The <B>'--traditional-format'</B> switch requests
+<CODE>as</CODE> to use the traditional format instead.
+<BR><BR>
+For example, it disables the exception frame optimizations which
+<CODE>as</CODE> normally does by default on <CODE>gcc</CODE> output.</P>
+
+<H4><A NAME="SEC19a"><U>Assembling in MRI Compatibility Mode</U></A></H4>
+<P>The <B>'-M'</B> or <B>'--mri'</B> option selects MRI compatibility mode.  This
+changes the syntax and pseudo-op handling of <CODE>as</CODE> to make it
+compatible with the <CODE>ASM68K</CODE> assembler from Microtec Research.  The exact nature of the
+MRI syntax will not be documented here; see the MRI manuals for more
+information.  Note in particular that the handling of macros and macro
+arguments is somewhat different.  The purpose of this option is to permit
+assembling existing MRI assembler code using <CODE>as</CODE>.
+<BR><BR>
+The MRI compatibility is not complete.  Certain operations of the MRI assembler
+depend upon its object file format, and can not be supported using other object
+file formats.  Supporting these would require enhancing each object file format
+individually.  These are:</P>
+<UL>
+<LI><P>global symbols in common section
+The m68k MRI assembler supports common sections which are merged by the linker.
+Other object file formats do not support this.  <CODE>as</CODE> handles
+common sections by treating them as a single common symbol.  It permits local
+symbols to be defined within a common section, but it can not support global
+symbols, since it has no way to describe them.
+</P></LI>
+<LI><P>complex relocations
+The MRI assemblers support relocations against a negated section address, and
+relocations which combine the start addresses of two or more sections.  These
+are not support by other object file formats.
+</P></LI>
+<LI><P><CODE>END</CODE> pseudo-op specifying start address
+The MRI <CODE>END</CODE> pseudo-op permits the specification of a start address.
+This is not supported by other object file formats.  The start address may
+instead be specified using the <B>'-e'</B> option to the linker, or in a linker
+script.
+</P></LI>
+<LI><P><CODE>IDNT</CODE>, <CODE>.ident</CODE> and <CODE>NAME</CODE> pseudo-ops
+The MRI <CODE>IDNT</CODE>, <CODE>.ident</CODE> and <CODE>NAME</CODE> pseudo-ops assign a module
+name to the output file.  This is not supported by other object file formats.
+</P></LI>
+<LI><P><CODE>ORG</CODE> pseudo-op
+The m68k MRI <CODE>ORG</CODE> pseudo-op begins an absolute section at a given
+address.  This differs from the usual <CODE>as</CODE> <CODE>.org</CODE> pseudo-op,
+which changes the location within the current section.  Absolute sections are
+not supported by other object file formats.  The address of a section may be
+assigned within a linker script.</P></LI>
+</UL>
+<P>There are some other features of the MRI assembler which are not supported by
+<CODE>as</CODE>, typically either because they are difficult or because they
+seem of little consequence.  Some of these may be supported in future releases.</P>
+<UL>
+<LI><P>EBCDIC strings
+EBCDIC strings are not supported.
+</P></LI>
+<LI><P>packed binary coded decimal
+Packed binary coded decimal is not supported.  This means that the <CODE>DC.P</CODE>
+and <CODE>DCB.P</CODE> pseudo-ops are not supported.
+</P></LI>
+<LI><P><CODE>FEQU</CODE> pseudo-op
+The m68k <CODE>FEQU</CODE> pseudo-op is not supported.
+</P></LI>
+<LI><P><CODE>NOOBJ</CODE> pseudo-op
+The m68k <CODE>NOOBJ</CODE> pseudo-op is not supported.
+</P></LI>
+<LI><P><CODE>OPT</CODE> branch control options
+The m68k <CODE>OPT</CODE> branch control options - <CODE>B</CODE>, <CODE>BRS</CODE>, <CODE>BRB</CODE>,
+<CODE>BRL</CODE>, and <CODE>BRW</CODE> - are ignored.  <CODE>as</CODE> automatically
+relaxes all branches, whether forward or backward, to an appropriate size, so
+these options serve no purpose.
+</P></LI>
+<LI><P><CODE>OPT</CODE> list control options
+The following m68k <CODE>OPT</CODE> list control options are ignored: <CODE>C</CODE>,
+<CODE>CEX</CODE>, <CODE>CL</CODE>, <CODE>CRE</CODE>, <CODE>E</CODE>, <CODE>G</CODE>, <CODE>I</CODE>, <CODE>M</CODE>,
+<CODE>MEX</CODE>, <CODE>MC</CODE>, <CODE>MD</CODE>, <CODE>X</CODE>.
+</P></LI>
+<LI><P>other <CODE>OPT</CODE> options
+The following m68k <CODE>OPT</CODE> options are ignored: <CODE>NEST</CODE>, <CODE>O</CODE>,
+<CODE>OLD</CODE>, <CODE>OP</CODE>, <CODE>P</CODE>, <CODE>PCO</CODE>, <CODE>PCR</CODE>, <CODE>PCS</CODE>, <CODE>R</CODE>.
+</P></LI>
+<LI><P><CODE>OPT</CODE> <CODE>D</CODE> option is default
+The m68k <CODE>OPT</CODE> <CODE>D</CODE> option is the default, unlike the MRI assembler.
+<CODE>OPT&nbsp;NOD</CODE> may be used to turn it off.
+</P></LI>
+<LI><P><CODE>XREF</CODE> pseudo-op.
+The m68k <CODE>XREF</CODE> pseudo-op is ignored.
+</P></LI>
+<LI><P><CODE>.debug</CODE> pseudo-op
+The i960 <CODE>.debug</CODE> pseudo-op is not supported.
+</P></LI>
+<LI><P><CODE>.extended</CODE> pseudo-op
+The i960 <CODE>.extended</CODE> pseudo-op is not supported.
+</P></LI>
+<LI><P><CODE>.list</CODE> pseudo-op.
+The various options of the i960 <CODE>.list</CODE> pseudo-op are not supported.
+</P></LI>
+<LI><P><CODE>.optimize</CODE> pseudo-op
+The i960 <CODE>.optimize</CODE> pseudo-op is not supported.
+</P></LI>
+<LI><P><CODE>.output</CODE> pseudo-op
+The i960 <CODE>.output</CODE> pseudo-op is not supported.
+</P></LI>
+<LI><P><CODE>.setreal</CODE> pseudo-op
+The i960 <CODE>.setreal</CODE> pseudo-op is not supported.</P></LI>
+</UL>
+
+<HR>
+<H2><A NAME="SEC20"><U>GNU Assembler Input and Output</U></A></H2>
+<UL>
+<LI><B><A HREF="#SEC21">Input Files</A></B>
+<LI><B><A HREF="#SEC23">Output (Object) File</A></B>
+<LI><B><A HREF="#SEC24">Assembler Error and Warning Messages</A></B>
+</UL>
+<H3><A NAME="SEC21"><U>Input Files</U></A></H3>
+<P>We use the phrase <U>source program</U>, abbreviated <U>source</U>, to
+describe the program input to one run of <CODE>as</CODE>.  The program may
+be in one or more files; how the source is partitioned into files
+doesn't change the meaning of the source.
+<BR><BR>
+The source program is a concatenation of the text in all the files, in the
+order specified.
+<BR><BR>
+Each time you run <CODE>as</CODE> it assembles exactly one source
+program.  The source program is made up of one or more files.
+(The standard input is also a file.)
+<BR><BR>
+You give <CODE>as</CODE> a command line that has zero or more input file
+names.  The input files are read (from left file name to right).  A
+command line argument (in any position) that has no special meaning
+is taken to be an input file name.
+<BR><BR>
+If you give <CODE>as</CODE> no file names it attempts to read one input file
+from the <CODE>as</CODE> standard input, which is normally your terminal.  You
+may have to type <CODE>Ctrl-D</CODE> to tell <CODE>as</CODE> there is no more program
+to assemble.
+<BR><BR>
+Use <CODE>--</CODE> if you need to explicitly name the standard input file
+in your command line.
+<BR><BR>
+If the source is empty, <CODE>as</CODE> produces a small, empty object
+file.</P>
+
+<UL>
+<LI><B><A HREF="#SEC22">Assembler File Names and Line Numbers</A></B>
+</UL>
+<H4><A NAME="SEC22"><U>Assembler File Names and Line Numbers</U></A></H4>
+<P>There are two ways of locating a line in the input file (or files) and
+either may be used in reporting error messages.  One way refers to a line
+number in a physical file; the other refers to a line number in a
+&quot;logical&quot; file.  See <A HREF="#SEC24">Error and Warning Messages</A>.
+<BR><BR>
+<U>Physical files</U> are those files named in the command line given
+to <CODE>as</CODE>.
+<BR><BR>
+<U>Logical files</U> are simply names declared explicitly by assembler
+directives; they bear no relation to physical files.  Logical file names help
+error messages reflect the original source file, when <CODE>as</CODE> source
+is itself synthesized from other files.  <CODE>as</CODE> understands the
+<CODE>#</CODE> directives emitted by the <CODE>gcc</CODE> preprocessor.  See also
+<CODE><A HREF="#SEC90">.file</A></CODE>.</P>
+
+<H3><A NAME="SEC23"><U>Output (Object) File</U></A></H3>
+<P>Every time you run <CODE>as</CODE>, it produces an output file, which is
+your assembly language program translated into numbers.  This file
+is the object file.  Its default name is
+<CODE>a.out</CODE>.
+You can give it another name by using the <B>'-o'</B> option.  Conventionally,
+object file names end with <CODE>.o</CODE>.  The default name is used for historical
+reasons: older assemblers were capable of assembling self-contained programs
+directly into a runnable program.  (For some formats, this isn't currently
+possible, but it can be done for the <CODE>a.out</CODE> format.)
+<BR><BR>
+The object file is meant for input to the linker <CODE>ld</CODE>.  It contains
+assembled program code, information to help <CODE>ld</CODE> integrate
+the assembled program into a runnable file, and (optionally) symbolic
+information for the debugger.</P>
+
+<H3><A NAME="SEC24"><U>Assembler Error and Warning Messages</U></A></H3>
+<P><CODE>as</CODE> may write warnings and error messages to the standard error
+file (usually your terminal).  This should not happen when a compiler
+runs <CODE>as</CODE> automatically.  Warnings report an assumption made so
+that <CODE>as</CODE> could keep assembling a flawed program; errors report a
+grave problem that stops the assembly.
+<BR><BR>
+Warning messages have the format</P>
+<PRE>file_name:<I>NNN</I>:Warning Message Text
+</PRE>
+<P>(where <I>NNN</I> is a line number).  If a logical file name has been given
+(see <CODE><A HREF="#SEC90">.file</A></CODE>) it is used for the filename, otherwise the name of
+the current input file is used.  If a logical line number was given
+(see <CODE><A HREF="#SEC103">.line</A></CODE>)
+then it is used to calculate the number printed,
+otherwise the actual line in the current source file is printed.  The
+message text is intended to be self explanatory (in the grand Unix
+tradition).
+<BR><BR>
+Error messages have the format</P>
+<PRE>file_name:<I>NNN</I>:FATAL:Error Message Text
+</PRE>
+<P>The file name and line number are derived as for warning
+messages.  The actual message text may be rather less explanatory
+because many of them aren't supposed to happen.</P>
+
+<HR>
+<H2><A NAME="SEC25"><U>GNU Assembler Syntax</U></A></H2>
+<P>The machine-independent syntax used by the GNU assembler is similar to what many other
+assemblers use; it is inspired by the BSD 4.2
+assembler.
+Motorola-specific features are explained at the end of this chapter.</P>
+
+<UL>
+<LI><B><A HREF="#SEC26">Preprocessing</A></B>
+<LI><B><A HREF="#SEC27">Whitespace</A></B>
+<LI><B><A HREF="#SEC28">Comments</A></B>
+<LI><B><A HREF="#SEC29">Symbols</A></B>
+<LI><B><A HREF="#SEC30">Statements</A></B>
+<LI><B><A HREF="#SEC31">Constants</A></B>
+<LI><B><A HREF="#SEC214">Motorola 680x0 Dependent Features</A></B>
+</UL>
+<H3><A NAME="SEC26"><U>Preprocessing</U></A></H3>
+<P>The <CODE>as</CODE> internal preprocessor:</P>
+<UL>
+<LI><P>adjusts and removes extra whitespace.  It leaves one space or tab before
+the keywords on a line, and turns any other whitespace on the line into
+a single space.
+</P></LI>
+<LI><P>removes all comments, replacing them with a single space, or an
+appropriate number of newlines.
+</P></LI>
+<LI><P>converts character constants into the appropriate numeric values.</P></LI>
+</UL>
+<P>It does not do macro processing, include file handling, or
+anything else you may get from your C compiler's preprocessor.  You can
+do include file processing with the <CODE>.include</CODE> directive
+(see <CODE><A HREF="#SEC97">.include</A></CODE>).  You can use the GNU C compiler driver
+to get other &quot;CPP&quot; style preprocessing by giving the input file a
+<CODE>.S</CODE> suffix.  See <A HREF="comopts.html#SEC4">Options Controlling the Kind of
+Output, gcc.info, Using GNU CC</A>.
+<BR><BR>
+Excess whitespace, comments, and character constants
+cannot be used in the portions of the input text that are not
+preprocessed.
+<BR><BR>
+If the first line of an input file is <CODE>#NO_APP</CODE> or if you use the
+<B>'-f'</B> option, whitespace and comments are not removed from the input file.
+Within an input file, you can ask for whitespace and comment removal in
+specific portions of the by putting a line that says <CODE>#APP</CODE> before the
+text that may contain whitespace or comments, and putting a line that says
+<CODE>#NO_APP</CODE> after this text.  This feature is mainly intend to support
+<CODE>asm</CODE> statements in compilers whose output is otherwise free of comments
+and whitespace.</P>
+
+<H3><A NAME="SEC27"><U>Whitespace</U></A></H3>
+<P><U>Whitespace</U> is one or more blanks or tabs, in any order.
+Whitespace is used to separate symbols, and to make programs neater for
+people to read.  Unless within character constants
+(see <A HREF="#SEC32">Character Constants</A>), any whitespace means the same
+as exactly one space.</P>
+
+<H3><A NAME="SEC28"><U>Comments</U></A></H3>
+<P>There are two ways of rendering comments to <CODE>as</CODE>.  In both
+cases the comment is equivalent to one space.
+<BR><BR>
+Anything from <CODE>/*</CODE> through the next <CODE>*/</CODE> is a comment.
+This means you may not nest these comments.</P>
+<PRE>/*
+  The only way to include a newline ('\n') in a comment
+  is to use this sort of comment.
+*/
+
+/* This sort of comment does not nest. */
+</PRE>
+<P>Anything from the <U>line comment</U> character to the next newline
+is considered a comment and is ignored.  The line comment character is
+<CODE>|</CODE> on the 680x0 family of processors.  
+<BR><BR>
+To be compatible with past assemblers, lines that begin with <CODE>#</CODE> have a
+special interpretation.  Following the <CODE>#</CODE> should be an absolute
+expression (see <A HREF="#SEC60">Expressions</A>): the logical line number of the <I>next</I>
+line.  Then a string (see <A HREF="#SEC33">Strings</A>) is allowed: if present it is a
+new logical file name.  The rest of the line, if any, should be whitespace.
+<BR><BR>
+If the first non-whitespace characters on the line are not numeric,
+the line is ignored.  (Just like a comment.)</P>
+<PRE>                          # This is an ordinary comment.
+# 42-6 &quot;new_file_name&quot;    # New logical file name
+                          # This is logical line # 36.
+</PRE>
+<P>This feature is deprecated, and may disappear from future versions
+of <CODE>as</CODE>.</P>
+
+<H3><A NAME="SEC29"><U>Symbols</U></A></H3>
+<P>A <U>symbol</U> is one or more characters chosen from the set of all
+letters (both upper and lower case), digits and the three characters
+<CODE>_.$</CODE>.
+No symbol may begin with a digit.  Case is significant.
+There is no length limit: all characters are significant.  Symbols are
+delimited by characters not in that set, or by the beginning of a file
+(since the source program must end with a newline, the end of a file is
+not a possible symbol delimiter).  See <A HREF="#SEC45">Symbols</A>.</P>
+
+<H3><A NAME="SEC30"><U>Statements</U></A></H3>
+<P>A <U>statement</U> ends at a newline character (<CODE>\n</CODE>) or at a
+semicolon (<CODE>;</CODE>).  The newline or semicolon is considered part of
+the preceding statement.  Newlines and semicolons within character
+constants are an exception: they do not end statements.
+<BR><BR>
+It is an error to end any statement with end-of-file:  the last
+character of any input file should be a newline.
+An empty statement is allowed, and may include whitespace.  It is ignored.
+<BR><BR>
+A statement begins with zero or more labels, optionally followed by a
+key symbol which determines what kind of statement it is.  The key
+symbol determines the syntax of the rest of the statement.  If the
+symbol begins with a dot <CODE>.</CODE> then the statement is an assembler
+directive: typically valid for any computer.  If the symbol begins with
+a letter the statement is an assembly language <U>instruction</U>: it
+assembles into a machine language instruction.
+A label is a symbol immediately followed by a colon (<CODE>:</CODE>).
+Whitespace before a label or after a colon is permitted, but you may not
+have whitespace between a label's symbol and its colon. See <A HREF="#SEC46">Labels</A>.</P>
+<PRE>label:     .directive    followed by something
+another_label:           # This is an empty statement.
+           instruction   operand_1, operand_2, ...
+</PRE>
+
+<H3><A NAME="SEC31"><U>Constants</U></A></H3>
+<P>A constant is a number, written so that its value is known by
+inspection, without knowing any context.  Like this:</P>
+<PRE>.byte  74, 0112, 092, 0x4A, 0X4a, 'J, '\J # All the same value.
+.ascii &quot;Ring the bell\7&quot;                  # A string constant.
+.octa  0x123456789abcdef0123456789ABCDEF0 # A bignum.
+.float 0f-314159265358979323846264338327\
+95028841971.693993751E-40                 # - pi, a flonum.
+</PRE>
+
+<UL>
+<LI><B><A HREF="#SEC32">Character Constants</A></B>
+<LI><B><A HREF="#SEC35">Number Constants</A></B>
+</UL>
+<H4><A NAME="SEC32"><U>Character Constants</U></A></H4>
+<P>There are two kinds of character constants.  A <U>character</U> stands
+for one character in one byte and its value may be used in
+numeric expressions.  String constants (properly called string
+<I>literals</I>) are potentially many bytes and their values may not be
+used in arithmetic expressions.</P>
+
+<UL>
+<LI><B><A HREF="#SEC33">Strings</A></B>
+<LI><B><A HREF="#SEC34">Characters</A></B>
+</UL>
+<H5><A NAME="SEC33"><U>Strings</U></A></H5>
+<P>A <U>string</U> is written between double-quotes.  It may contain
+double-quotes or null characters.  The way to get special characters
+into a string is to <U>escape</U> these characters: precede them with
+a backslash <CODE>\</CODE> character.  For example <CODE>\\</CODE> represents
+one backslash:  the first <CODE>\</CODE> is an escape which tells
+<CODE>as</CODE> to interpret the second character literally as a backslash
+(which prevents <CODE>as</CODE> from recognizing the second <CODE>\</CODE> as an
+escape character).  The complete list of escapes follows.</P>
+<DL>
+
+<DT><P><B>\b</B></P><DD><P>Mnemonic for backspace; for ASCII this is octal code 010.
+</P><DT><P><B>\f</B></P><DD><P>Mnemonic for FormFeed; for ASCII this is octal code 014.
+</P><DT><P><B>\n</B></P><DD><P>Mnemonic for newline; for ASCII this is octal code 012.
+</P><DT><P><B>\r</B></P><DD><P>Mnemonic for carriage-Return; for ASCII this is octal code 015.
+</P><DT><P><B>\t</B></P><DD><P>Mnemonic for horizontal Tab; for ASCII this is octal code 011.
+</P><DT><P><B>\ <I>digit</I> <I>digit</I> <I>digit</I></B></P><DD><P>An octal character code.  The numeric code is 3 octal digits.
+For compatibility with other Unix systems, 8 and 9 are accepted as digits:
+for example, <CODE>\008</CODE> has the value 010, and <CODE>\009</CODE> the value 011.
+</P><DT><P><B>\x <I>hex-digits...</I></B></P><DD><P>A hex character code.  All trailing hex digits are combined.  Either upper or
+lower case <CODE>x</CODE> works.
+</P><DT><P><B>\\</B></P><DD><P>Represents one <CODE>\</CODE> character.
+</P><DT><P><B>\&quot;</B></P><DD><P>Represents one <CODE>&quot;</CODE> character.  Needed in strings to represent
+this character, because an unescaped <CODE>&quot;</CODE> would end the string.
+</P><DT><P><B>\ <I>anything-else</I></B></P><DD><P>Any other character when escaped by <CODE>\</CODE> gives a warning, but
+assembles as if the <CODE>\</CODE> was not present.  The idea is that if
+you used an escape sequence you clearly didn't want the literal
+interpretation of the following character.  However <CODE>as</CODE> has no
+other interpretation, so <CODE>as</CODE> knows it is giving you the wrong
+code and warns you of the fact.</P>
+</DL>
+<P>Which characters are escapable, and what those escapes represent,
+varies widely among assemblers.  The current set is what we think
+the BSD 4.2 assembler recognizes, and is a subset of what most C
+compilers recognize.  If you are in doubt, do not use an escape
+sequence.</P>
+
+<H5><A NAME="SEC34"><U>Characters</U></A></H5>
+<P>A single character may be written as a single quote immediately
+followed by that character.  The same escapes apply to characters as
+to strings.  So if you want to write the character backslash, you
+must write <CODE>'\\</CODE> where the first <CODE>\</CODE> escapes the second
+<CODE>\</CODE>.  As you can see, the quote is an acute accent, not a
+grave accent.  A newline
+(or semicolon <CODE>;</CODE>)
+immediately following an acute accent is taken as a literal character
+and does not count as the end of a statement.  The value of a character
+constant in a numeric expression is the machine's byte-wide code for
+that character.  <CODE>as</CODE> assumes your character code is ASCII:
+<CODE>'A</CODE> means 65, <CODE>'B</CODE> means 66, and so on.</P>
+
+<H4><A NAME="SEC35"><U>Number Constants</U></A></H4>
+<P><CODE>as</CODE> distinguishes three kinds of numbers according to how they
+are stored in the target machine.  <I>Integers</I> are numbers that
+would fit into an <CODE>int</CODE> in the C language.  <I>Bignums</I> are
+integers, but they are stored in more than 32 bits.  <I>Flonums</I>
+are floating point numbers, described below.</P>
+
+<UL>
+<LI><B><A HREF="#SEC36">Integers</A></B>
+<LI><B><A HREF="#SEC37">Bignums</A></B>
+<LI><B><A HREF="#SEC38">Flonums</A></B>
+</UL>
+<H5><A NAME="SEC36"><U>Integers</U></A></H5>
+<P>A binary integer is <CODE>0b</CODE> or <CODE>0B</CODE> followed by zero or more of
+the binary digits <CODE>01</CODE>.
+<BR><BR>
+An octal integer is <CODE>0</CODE> followed by zero or more of the octal
+digits (<CODE>01234567</CODE>).
+<BR><BR>
+A decimal integer starts with a non-zero digit followed by zero or
+more digits (<CODE>0123456789</CODE>).
+<BR><BR>
+A hexadecimal integer is <CODE>0x</CODE> or <CODE>0X</CODE> followed by one or
+more hexadecimal digits chosen from <CODE>0123456789abcdefABCDEF</CODE>.
+<BR><BR>
+Integers have the usual values.  To denote a negative integer, use
+the prefix operator <CODE>-</CODE> discussed under expressions
+(see <A HREF="#SEC65">Prefix Operators</A>).</P>
+
+<H5><A NAME="SEC37"><U>Bignums</U></A></H5>
+<P>A <U>bignum</U> has the same syntax and semantics as an integer
+except that the number (or its negative) takes more than 32 bits to
+represent in binary.  The distinction is made because in some places
+integers are permitted while bignums are not.</P>
+
+<H5><A NAME="SEC38"><U>Flonums</U></A></H5>
+<P>A <U>flonum</U> represents a floating point number.  The translation is
+indirect: a decimal floating point number from the text is converted by
+<CODE>as</CODE> to a generic binary floating point number of more than
+sufficient precision.  This generic floating point number is converted
+to a particular computer's floating point format (or formats) by a
+portion of <CODE>as</CODE> specialized to that computer.
+The version of <CODE>as</CODE> used by GCC4TI does not use TI's SMAP II BCD
+format; it emits standard IEEE floating point numbers.
+It would be pointless to implement the correct behavior, since the appropriate
+numbers are easy to write, and converting between base 2 and 10 can
+decrease precision.
+<BR><BR>
+A flonum is written by writing (in order)</P>
+<UL>
+<LI><P>The digit <CODE>0</CODE>.
+</P></LI>
+<LI><P>A letter, to tell <CODE>as</CODE> the rest of the number is a flonum.
+</P></LI>
+<LI><P>An optional sign: either <CODE>+</CODE> or <CODE>-</CODE>.
+</P></LI>
+<LI><P>An optional <U>integer part</U>: zero or more decimal digits.
+</P></LI>
+<LI><P>An optional <U>fractional part</U>: <CODE>.</CODE> followed by zero
+or more decimal digits.
+</P></LI>
+<LI><P>An optional exponent, consisting of:</P>
+<UL>
+<LI><P>An <CODE>E</CODE> or <CODE>e</CODE>.
+</P></LI>
+<LI><P>Optional sign: either <CODE>+</CODE> or <CODE>-</CODE>.
+</P></LI>
+<LI><P>One or more decimal digits.</P></LI>
+</UL>
+
+</LI>
+</UL>
+<P>At least one of the integer part or the fractional part must be
+present.  The floating point number has the usual base-10 value.
+<BR><BR>
+<CODE>as</CODE> does all processing using integers.  Flonums are computed
+independently of any floating point hardware in the computer running
+<CODE>as</CODE>.</P>
+
+<H3><A NAME="SEC214"><U>Motorola 680x0 Dependent Features</U></A></H3>
+<P>In this configuration of <CODE>as</CODE> (which does not prepend
+an underscore to the names of user variables), the
+assembler requires a <CODE>'%'</CODE> before any use of a register name.  This
+is intended to let the assembler distinguish between C variables and
+functions named <CODE>'a0'</CODE> through <CODE>'a7'</CODE>, and so on.
+<BR><BR>
+Two different syntaxes for the Motorola 680x0 are widely used.
+The first one was developed at MIT.  The second one is the
+standard Motorola syntax for this chip, and it differs from the MIT syntax.
+<CODE>as</CODE> can accept Motorola syntax for operands, even if MIT syntax
+is used for other operands in the same instruction.  The two kinds of syntax are
+fully compatible.</P>
+
+<UL>
+<LI><B><A HREF="#SEC216">MIT Syntax</A></B>
+<LI><B><A HREF="#SEC217">Motorola Syntax</A></B>
+<LI><B><A HREF="#SEC221">Branch Improvement</A></B>
+<LI><B><A HREF="#SEC222">Special Characters</A></B>
+</UL>
+<H4><A NAME="SEC216"><U>MIT Syntax</U></A></H4>
+<P>The MIT syntax uses instructions names and
+syntax compatible with the Sun assembler.  Intervening periods are
+ignored; for example, <CODE>movl</CODE> is equivalent to <CODE>mov.l</CODE>.
+<BR><BR>
+In the following table, <I>apc</I> stands for any of the address registers
+(<CODE>%a0</CODE> through <CODE>%a7</CODE>), the program counter (<CODE>%pc</CODE>), the
+zero-address relative to the program counter (<CODE>%zpc</CODE>), a suppressed
+address register (<CODE>%za0</CODE> through <CODE>%za7</CODE>), or it may be omitted
+entirely.  The use of <I>size</I> means one of <CODE>w</CODE> or <CODE>l</CODE>, and
+it may be omitted, along with the leading colon, unless a scale is also
+specified.  The use of <I>scale</I> means one of <CODE>1</CODE>, <CODE>2</CODE>,
+<CODE>4</CODE>, or <CODE>8</CODE>, and it may always be omitted along with the
+leading colon.
+<BR><BR>
+The following addressing modes are understood
+(note that some of them are valid only on 68020 or later processors,
+not on the ordinary 68000 used in TI calculators):</P>
+<DL>
+
+<DT><P><B>Immediate</B></P><DD><P><CODE>#<I>number</I></CODE>
+</P><DT><P><B>Data Register</B></P><DD><P><CODE>%d0</CODE> through <CODE>%d7</CODE>
+</P><DT><P><B>Address Register</B></P><DD><P><CODE>%a0</CODE> through <CODE>%a7</CODE>
+<BR>
+<CODE>%a7</CODE> is also known as <CODE>%sp</CODE>, i.e. the Stack Pointer.  <CODE>%a6</CODE>
+is also known as <CODE>%fp</CODE>, the Frame Pointer.
+</P><DT><P><B>Address Register Indirect</B></P><DD><P><CODE>%a0@</CODE> through <CODE>%a7@</CODE>
+</P><DT><P><B>Address Register Postincrement</B></P><DD><P><CODE>%a0@+</CODE> through <CODE>%a7@+</CODE>
+</P><DT><P><B>Address Register Predecrement</B></P><DD><P><CODE>%a0@-</CODE> through <CODE>%a7@-</CODE>
+</P><DT><P><B>Indirect Plus Offset</B></P><DD><P><CODE><I>apc</I>@(<I>number</I>)</CODE>
+</P><DT><P><B>Index</B></P><DD><P><CODE><I>apc</I>@(<I>number</I>,<I>register</I>:<I>size</I>:<I>scale</I>)</CODE>
+<BR><BR>
+The <I>number</I> may be omitted.
+</P><DT><P><B>Postindex</B></P><DD><P><CODE><I>apc</I>@(<I>number</I>)@(<I>onumber</I>,<I>register</I>:<I>size</I>:<I>scale</I>)</CODE>
+<BR><BR>
+The <I>onumber</I> or the <I>register</I>, but not both, may be omitted.
+</P><DT><P><B>Preindex</B></P><DD><P><CODE><I>apc</I>@(<I>number</I>,<I>register</I>:<I>size</I>:<I>scale</I>)@(<I>onumber</I>)</CODE>
+<BR><BR>
+The <I>number</I> may be omitted.  Omitting the <I>register</I> produces
+the Postindex addressing mode.
+</P><DT><P><B>Absolute</B></P><DD><P><CODE><I>symbol</I></CODE>, or <CODE><I>digits</I></CODE>, optionally followed by
+<CODE>:b</CODE>, <CODE>:w</CODE>, or <CODE>:l</CODE>.</P>
+</DL>
+
+<H4><A NAME="SEC217"><U>Motorola Syntax</U></A></H4>
+<P>In the following table, <I>apc</I> stands for any of the address registers
+(<CODE>%a0</CODE> through <CODE>%a7</CODE>), the program counter (<CODE>%pc</CODE>), the
+zero-address relative to the program counter (<CODE>%zpc</CODE>), or a
+suppressed address register (<CODE>%za0</CODE> through <CODE>%za7</CODE>).  The use
+of <I>size</I> means one of <CODE>w</CODE> or <CODE>l</CODE>, and it may always be
+omitted along with the leading dot.  The use of <I>scale</I> means one of
+<CODE>1</CODE>, <CODE>2</CODE>, <CODE>4</CODE>, or <CODE>8</CODE>, and it may always be omitted
+along with the leading asterisk.
+<BR><BR>
+The following additional addressing modes are understood
+(note that some of them are valid only on 68020 or later processors,
+not on the ordinary 68000 used in TI calculators):</P>
+<DL>
+
+<DT><P><B>Address Register Indirect</B></P><DD><P><CODE>(%a0)</CODE> through <CODE>(%a7)</CODE>
+<BR>
+<CODE>%a7</CODE> is also known as <CODE>%sp</CODE>, i.e. the Stack Pointer.  <CODE>%a6</CODE>
+is also known as <CODE>%fp</CODE>, the Frame Pointer.
+</P><DT><P><B>Address Register Postincrement</B></P><DD><P><CODE>(%a0)+</CODE> through <CODE>(%a7)+</CODE>
+</P><DT><P><B>Address Register Predecrement</B></P><DD><P><CODE>-(%a0)</CODE> through <CODE>-(%a7)</CODE>
+</P><DT><P><B>Indirect Plus Offset</B></P><DD><P><CODE><I>number</I>(<I>%a0</I>)</CODE> through <CODE><I>number</I>(<I>%a7</I>)</CODE>,
+or <CODE><I>number</I>(<I>%pc</I>)</CODE>.
+<BR><BR>
+The <I>number</I> may also appear within the parentheses, as in
+<CODE>(<I>number</I>,<I>%a0</I>)</CODE>.  When used with the <I>pc</I>, the
+<I>number</I> may be omitted (with an address register, omitting the
+<I>number</I> produces Address Register Indirect mode).
+</P><DT><P><B>Index</B></P><DD><P><CODE><I>number</I>(<I>apc</I>,<I>register</I>.<I>size</I>*<I>scale</I>)</CODE>
+<BR><BR>
+The <I>number</I> may be omitted, or it may appear within the
+parentheses.  The <I>apc</I> may be omitted.  The <I>register</I> and the
+<I>apc</I> may appear in either order.  If both <I>apc</I> and
+<I>register</I> are address registers, and the <I>size</I> and <I>scale</I>
+are omitted, then the first register is taken as the base register, and
+the second as the index register.
+</P><DT><P><B>Postindex</B></P><DD><P><CODE>([<I>number</I>,<I>apc</I>],<I>register</I>.<I>size</I>*<I>scale</I>,<I>onumber</I>)</CODE>
+<BR><BR>
+The <I>onumber</I>, or the <I>register</I>, or both, may be omitted.
+Either the <I>number</I> or the <I>apc</I> may be omitted, but not both.
+</P><DT><P><B>Preindex</B></P><DD><P><CODE>([<I>number</I>,<I>apc</I>,<I>register</I>.<I>size</I>*<I>scale</I>],<I>onumber</I>)</CODE>
+<BR><BR>
+The <I>number</I>, or the <I>apc</I>, or the <I>register</I>, or any two of
+them, may be omitted.  The <I>onumber</I> may be omitted.  The
+<I>register</I> and the <I>apc</I> may appear in either order.  If both
+<I>apc</I> and <I>register</I> are address registers, and the <I>size</I>
+and <I>scale</I> are omitted, then the first register is taken as the
+base register, and the second as the index register.</P>
+</DL>
+
+<H4><A NAME="SEC221"><U>Branch Improvement</U></A></H4>
+<P>Certain pseudo opcodes are permitted for branch instructions.
+They expand to the shortest branch instruction that reach the
+target.  Generally these mnemonics are made by substituting <CODE>j</CODE> for
+<CODE>b</CODE> at the start of a Motorola mnemonic.
+<BR><BR>
+The following table summarizes the pseudo-operations for the 68000 processor;
+the 68020 has some more possibilites.
+Note that the 68000 LONG operations are always absolute and require runtime relocation.
+They will not be used if the <B>'--pcrel'</B> option is given.
+A <CODE>(*)</CODE> flags
+cases that are more fully described after the table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>&nbsp;</TD><TD COLSPAN="6">Displacement</TD></TR>
+<TR><TD>Pseudo-Op</TD><TD>BYTE</TD><TD>WORD</TD><TD>LONG</TD></TR>
+<TR><TD>jbsr</TD><TD>bsr.s</TD><TD>bsr</TD><TD>jsr</TD></TR>
+<TR><TD>jra</TD><TD>bra.s</TD><TD>bra</TD><TD>jmp</TD></TR>
+<TR><TD>j<I>XX</I> <CODE>(*)</CODE></TD><TD>b<I>XX</I>.s</TD><TD>b<I>XX</I></TD><TD>b<I>NX</I>;&nbsp;jmp</TD></TR>
+<TR><TD>db<I>XX</I> <CODE>(*)</CODE></TD><TD>db<I>XX</I></TD><TD>db<I>XX</I></TD><TD>db<I>XX</I>;&nbsp;bra;&nbsp;jmp</TD></TR>
+</TABLE>
+<BR>
+<I>XX</I>: condition<BR>
+<I>NX</I>: negative of condition <I>XX</I></P>
+<DL>
+
+<DT><P><B>jbsr</B>
+<BR><B>jra</B></P><DD><P>These are the simplest jump pseudo-operations; they always map to one
+particular machine instruction, depending on the displacement to the
+branch target.  This instruction will be a byte or word branch if that
+is sufficient.  Otherwise, if the <B>'--pcrel'</B> option is not
+given, an absolute long jump will be emitted.
+If the <B>'--pcrel'</B> option is given and a word
+branch cannot reach the target, an error message is generated.
+<BR><BR>
+In addition to standard branch operands, <CODE>as</CODE> allows these
+pseudo-operations to have all operands that are allowed for jsr and jmp,
+substituting these instructions if the operand given is not valid for a
+branch instruction.
+</P><DT><P><B>j<I>XX</I></B></P><DD><P>Here, <CODE>j<I>XX</I></CODE> stands for an entire family of pseudo-operations,
+where <I>XX</I> is a conditional branch or condition-code test.  The full
+list of pseudo-ops in this family is:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>jhi</TD><TD>jls</TD><TD>jcc</TD><TD>jcs</TD><TD>jne</TD><TD>jeq</TD><TD>jvc</TD></TR>
+<TR><TD>jvs</TD><TD>jpl</TD><TD>jmi</TD><TD>jge</TD><TD>jlt</TD><TD>jgt</TD><TD>jle</TD></TR>
+</TABLE>
+<BR>
+Usually, each of these pseudo-operations expands to a single branch
+instruction.  However, if a word branch is not sufficient
+and the <B>'--pcrel'</B> option is not given, <CODE>as</CODE>
+issues a longer code fragment in terms of <I>NX</I>, the opposite condition
+to <I>XX</I>.  For example, under these conditions:</P>
+<PRE>    j<I>XX</I> foo
+</PRE>
+<P>gives</P>
+<PRE>     b<I>NX</I>s oof
+     jmp foo
+oof:
+</PRE>
+
+<DT><P><B>db<I>XX</I></B></P><DD><P>The full family of pseudo-operations covered here is:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>dbhi</TD><TD>dbls</TD><TD>dbcc</TD><TD>dbcs</TD><TD>dbne</TD><TD>dbeq</TD><TD>dbvc</TD></TR>
+<TR><TD>dbvs</TD><TD>dbpl</TD><TD>dbmi</TD><TD>dbge</TD><TD>dblt</TD><TD>dbgt</TD><TD>dble</TD></TR>
+<TR><TD>dbf</TD><TD>dbra</TD><TD>dbt</TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+</TABLE>
+<BR>
+Motorola <CODE>db<I>XX</I></CODE> instructions allow word displacements only.  When
+a word displacement is sufficient, each of these pseudo-operations expands
+to the corresponding Motorola instruction.  When a word displacement is not
+sufficient and long branches are available, when the source reads
+<CODE>db<I>XX</I>&nbsp;foo</CODE>, <CODE>as</CODE> emits</P>
+<PRE>     db<I>XX</I> oo1
+     bra.s oo2
+oo1: jmp foo
+oo2:
+</PRE>
+
+
+</DL>
+
+<H4><A NAME="SEC222"><U>Special Characters</U></A></H4>
+<P>The immediate character is <CODE>#</CODE> for Sun compatibility.  The
+line-comment character is <CODE>|</CODE> (unless the <B>'--bitwise-or'</B>
+option is used).  If a <CODE>#</CODE> appears at the beginning of a line, it
+is treated as a comment unless it looks like <CODE>#&nbsp;line&nbsp;file</CODE>, in
+which case it is treated normally.</P>
+
+<HR>
+<H2><A NAME="SEC39"><U>Sections and Relocation</U></A></H2>
+<P>Roughly, a section is a range of addresses, with no gaps; all data
+&quot;in&quot; those addresses is treated the same for some particular purpose.
+For example there may be a &quot;read only&quot; section.
+<BR><BR>
+The linker <CODE>ld</CODE> reads many object files (partial programs) and
+combines their contents to form a runnable program.  When <CODE>as</CODE>
+emits an object file, the partial program is assumed to start at address 0.
+<CODE>ld</CODE> assigns the final addresses for the partial program, so that
+different partial programs do not overlap.  This is actually an
+oversimplification, but it suffices to explain how <CODE>as</CODE> uses
+sections.
+<BR><BR>
+<CODE>ld</CODE> moves blocks of bytes of your program to their run-time
+addresses.  These blocks slide to their run-time addresses as rigid
+units; their length does not change and neither does the order of bytes
+within them.  Such a rigid unit is called a <I>section</I>.  Assigning
+run-time addresses to sections is called <U>relocation</U>.  It includes
+the task of adjusting mentions of object-file addresses so they refer to
+the proper run-time addresses.
+<BR><BR>
+An object file written by <CODE>as</CODE> has at least three sections, any
+of which may be empty.  These are named <U>text</U>, <U>data</U> and
+<U>bss</U> sections.
+<BR><BR>
+<CODE>as</CODE> can also generate whatever other named sections you specify
+using the <CODE><A HREF="#SEC119">.section</A></CODE> directive.
+If you do not use any directives that place output in the <CODE>.text</CODE>
+or <CODE>.data</CODE> sections, these sections still exist, but are empty.
+Within the object file, the text section starts at address <CODE>0</CODE>, the
+data section follows, and the bss section follows the data section.
+<BR><BR>
+To let <CODE>ld</CODE> know which data changes when the sections are
+relocated, and how to change that data, <CODE>as</CODE> also writes to the
+object file details of the relocation needed.  To perform relocation
+<CODE>ld</CODE> must know, each time an address in the object
+file is mentioned:</P>
+<UL>
+<LI><P>Where in the object file is the beginning of this reference to
+an address?
+</P></LI>
+<LI><P>How long (in bytes) is this reference?
+</P></LI>
+<LI><P>Which section does the address refer to?  What is the numeric value of
+(<I>address</I>) - (<I>start-address of section</I>)?
+</P></LI>
+<LI><P>Is the reference to an address &quot;Program-Counter relative&quot;?</P></LI>
+</UL>
+<P>In fact, every address <CODE>as</CODE> ever uses is expressed as
+(<I>section</I>) + (<I>offset into section</I>)
+<BR><BR>
+Further, most expressions <CODE>as</CODE> computes have this section-relative
+nature.
+In this manual we use the notation {<I>secname</I> <I>N</I>} to mean &quot;offset
+<I>N</I> into section <I>secname</I>.&quot;
+<BR><BR>
+Apart from text, data and bss sections you need to know about the
+<U>absolute</U> section.  When <CODE>ld</CODE> mixes partial programs,
+addresses in the absolute section remain unchanged.  For example, address
+<CODE>{absolute&nbsp;0}</CODE> is &quot;relocated&quot; to run-time address 0 by
+<CODE>ld</CODE>.  Although the linker never arranges two partial programs'
+data sections with overlapping addresses after linking, <I>by definition</I>
+their absolute sections must overlap.  Address <CODE>{absolute 239}</CODE> in one
+part of a program is always the same address when the program is running as
+address <CODE>{absolute 239}</CODE> in any other part of the program.
+<BR><BR>
+The idea of sections is extended to the <U>undefined</U> section.  Any
+address whose section is unknown at assembly time is by definition
+rendered {undefined <I>U</I>} - where <I>U</I> is filled in later.
+Since numbers are always defined, the only way to generate an undefined
+address is to mention an undefined symbol.  A reference to a named
+common block would be such a symbol: its value is unknown at assembly
+time so it has section <I>undefined</I>.
+<BR><BR>
+By analogy the word <I>section</I> is used to describe groups of sections in
+the linked program.  <CODE>ld</CODE> puts all partial programs' text
+sections in contiguous addresses in the linked program.  It is
+customary to refer to the <I>text section</I> of a program, meaning all
+the addresses of all partial programs' text sections.  Likewise for
+data and bss sections.
+<BR><BR>
+Some sections are manipulated by <CODE>ld</CODE>; others are invented for
+use of <CODE>as</CODE> and have no meaning except during assembly.</P>
+
+<UL>
+<LI><B><A HREF="#SEC41">Linker Sections</A></B>
+<LI><B><A HREF="#SEC42">Assembler Internal Sections</A></B>
+<LI><B><A HREF="#SEC43">Sub-Sections</A></B>
+<LI><B><A HREF="#SEC44">bss Section</A></B>
+</UL>
+<H3><A NAME="SEC41"><U>Linker Sections</U></A></H3>
+<P><CODE>ld</CODE> deals with just four kinds of sections, summarized below.</P>
+<DL>
+<P>These sections hold your program.  <CODE>as</CODE> and <CODE>ld</CODE> treat them as
+separate but equal sections.  Anything you can say of one section is
+true of another.
+When the program is running, however, it is
+customary for the text section to be unalterable.  The
+text section is often shared among processes: it contains
+instructions, constants and the like.  The data section of a running
+program is usually alterable: for example, C variables would be stored
+in the data section.</P><DT><P><B>bss section</B></P><DD><P>This section contains zeroed bytes when your program begins running.  It
+is used to hold uninitialized variables or common storage.  The length of
+each partial program's bss section is important, but because it starts
+out containing zeroed bytes there is no need to store explicit zero
+bytes in the object file.  The bss section was invented to eliminate
+those explicit zeros from object files.
+</P><DT><P><B>absolute section</B></P><DD><P>Address 0 of this section is always &quot;relocated&quot; to runtime address 0.
+This is useful if you want to refer to an address that <CODE>ld</CODE> must
+not change when relocating.  In this sense we speak of absolute
+addresses being &quot;unrelocatable&quot;: they do not change during relocation.
+</P><DT><P><B>undefined section</B></P><DD><P>This &quot;section&quot; is a catch-all for address references to objects not in
+the preceding sections.</P>
+</DL>
+<P>An idealized example of three relocatable sections follows.
+Memory addresses are on the horizontal axis.</P>
+<PRE>                      + - --+ - -+--+
+partial program # 1:  |ttttt|dddd|00|
+                      + - --+ - -+--+
+
+                      text  data bss
+                      seg.  seg. seg.
+
+                      + - + - + - +
+partial program # 2:  |TTT|DDD|000|
+                      + - + - + - +
+
+                      +--+ - + - --+--+ - -+ - + - --+~~
+linked program:       |  |TTT|ttttt|  |dddd|DDD|00000|
+                      +--+ - + - --+--+ - -+ - + - --+~~
+
+    addresses:        0 ...
+</PRE>
+
+<H3><A NAME="SEC42"><U>Assembler Internal Sections</U></A></H3>
+<P>These sections are meant only for the internal use of <CODE>as</CODE>.  They
+have no meaning at run-time.  You do not really need to know about these
+sections for most purposes; but they can be mentioned in <CODE>as</CODE>
+warning messages, so it might be helpful to have an idea of their
+meanings to <CODE>as</CODE>.  These sections are used to permit the
+value of every expression in your assembly language program to be a
+section-relative address.</P>
+<DL>
+
+<DT><P><B>ASSEMBLER-INTERNAL-LOGIC-ERROR!</B></P><DD><P>An internal assembler logic error has been found.  This means there is a
+bug in the assembler.
+</P><DT><P><B>expr section</B></P><DD><P>The assembler stores complex expression internally as combinations of
+symbols.  When it needs to represent an expression as a symbol, it puts
+it in the expr section.</P>
+</DL>
+
+<H3><A NAME="SEC43"><U>Sub-Sections</U></A></H3>
+<P>You may have separate groups of
+data in named sections
+that you want to end up near to each other in the object file, even though they
+are not contiguous in the assembler source.  <CODE>as</CODE> allows you to
+use <U>subsections</U> for this purpose.  Within each section, there can be
+numbered subsections with values from 0 to 8192.  Objects assembled into the
+same subsection go into the object file together with other objects in the same
+subsection.  For example, a compiler might want to store constants in the text
+section, but might not want to have them interspersed with the program being
+assembled.  In this case, the compiler could issue a <CODE>.text&nbsp;0</CODE> before each
+section of code being output, and a <CODE>.text&nbsp;1</CODE> before each group of
+constants being output.
+<BR><BR>
+Subsections are optional.  If you do not use subsections, everything
+goes in subsection number zero.
+<BR><BR>
+Subsections appear in your object file in numeric order, lowest numbered
+to highest.  (All this to be compatible with other people's assemblers.)
+The object file contains no representation of subsections; <CODE>ld</CODE> and
+other programs that manipulate object files see no trace of them.
+They just see all your text subsections as a text section, and all your
+data subsections as a data section.
+<BR><BR>
+To specify which subsection you want subsequent statements assembled
+into, use a numeric argument to specify it, in a <CODE>.text
+<I>expression</I></CODE> or a <CODE>.data <I>expression</I></CODE> statement.
+You
+can also use an extra subsection
+argument with arbitrarily named sections: <CODE>.section <I>name</I>,
+<I>expression</I></CODE>.
+<I>Expression</I> should be an absolute expression.
+(see <A HREF="#SEC60">Expressions</A>.)  If you just say <CODE>.text</CODE> then <CODE>.text&nbsp;0</CODE>
+is assumed.  Likewise <CODE>.data</CODE> means <CODE>.data&nbsp;0</CODE>.  Assembly
+begins in <CODE>text&nbsp;0</CODE>.  For instance:</P>
+<PRE>.text 0     # The default subsection is text 0 anyway.
+.ascii &quot;This lives in the first text subsection. *&quot;
+.text 1
+.ascii &quot;But this lives in the second text subsection.&quot;
+.data 0
+.ascii &quot;This lives in the data section,&quot;
+.ascii &quot;in the first data subsection.&quot;
+.text 0
+.ascii &quot;This lives in the first text section,&quot;
+.ascii &quot;immediately following the asterisk (*).&quot;
+</PRE>
+<P>Each section has a <U>location counter</U> incremented by one for every byte
+assembled into that section.  Because subsections are merely a convenience
+restricted to <CODE>as</CODE> there is no concept of a subsection location
+counter.  There is no way to directly manipulate a location counter - but the
+<CODE><A HREF="#SEC70">.align</A></CODE> directive changes it, and any label definition captures its
+current value.  The location counter of the section where statements are being
+assembled is said to be the <U>active</U> location counter.</P>
+
+<H3><A NAME="SEC44"><U>bss Section</U></A></H3>
+<P>The bss section is used for local common variable storage.
+You may allocate address space in the bss section, but you may
+not dictate data to load into it before your program executes.  When
+your program starts running, all the contents of the bss
+section are zeroed bytes.
+<BR><BR>
+The <CODE><A HREF="#SEC101">.lcomm</A></CODE> pseudo-op defines a symbol in the bss section.
+<BR><BR>
+The <CODE><A HREF="#SEC76">.comm</A></CODE> pseudo-op may be used to declare a common symbol, which is
+another form of uninitialized symbol.
+<BR><BR>
+You may switch into the <CODE>.bss</CODE> section and define
+symbols as usual (see <CODE><A HREF="#SEC119">.section</A></CODE>).  You may only assemble
+zero values into the section.  Typically the section will only contain symbol definitions
+and <CODE><A HREF="#SEC125">.skip</A></CODE> directives.</P>
+
+<HR>
+<H2><A NAME="SEC45"><U>Assembler Symbols</U></A></H2>
+<P>Symbols are a central concept: the programmer uses symbols to name
+things, the linker uses symbols to link, and the debugger uses symbols
+to debug.
+<BR><BR>
+Note that <CODE>as</CODE> does not place symbols in the object file in
+the same order they were declared.  This may break some debuggers.</P>
+
+<UL>
+<LI><B><A HREF="#SEC46">Labels</A></B>
+<LI><B><A HREF="#SEC47">Giving Symbols Other Values</A></B>
+<LI><B><A HREF="#SEC48">Symbol Names</A></B>
+<LI><B><A HREF="#SEC49">The Special Dot Symbol</A></B>
+<LI><B><A HREF="#SEC50">Symbol Attributes</A></B>
+</UL>
+<H3><A NAME="SEC46"><U>Labels</U></A></H3>
+<P>A <U>label</U> is written as a symbol immediately followed by a colon
+<CODE>:</CODE>.  The symbol then represents the current value of the
+active location counter, and is, for example, a suitable instruction
+operand.  You are warned if you use the same symbol to represent two
+different locations: the first definition overrides any other
+definitions.</P>
+
+<H3><A NAME="SEC47"><U>Giving Symbols Other Values</U></A></H3>
+<P>A symbol can be given an arbitrary value by writing a symbol, followed
+by an equals sign <CODE>=</CODE>, followed by an expression
+(see <A HREF="#SEC60">Expressions</A>).  This is equivalent to using the <CODE><A HREF="#SEC120">.set</A></CODE>
+directive.</P>
+
+<H3><A NAME="SEC48"><U>Symbol Names</U></A></H3>
+<P>Symbol names begin with a letter or with <CODE>.</CODE>, <CODE>_</CODE>, or <CODE>$</CODE>.
+That character may be followed by any string of digits, letters, dollar signs, and underscores.
+Case of letters is significant: <CODE>foo</CODE> is a different symbol name
+than <CODE>Foo</CODE>.
+<BR><BR>
+Each symbol has exactly one name.  Each name in an assembly language program
+refers to exactly one symbol.  You may use that symbol name any number of times
+in a program.</P>
+
+<UL>
+<LI><B><A HREF="#SEC48L">Local Symbol Names</A></B>
+<LI><B><A HREF="#SEC48LD">Dollar Local Labels</A></B>
+</UL>
+<H4><A NAME="SEC48L"><U>Local Symbol Names</U></A></H4>
+<P>Local symbols help compilers and programmers use names temporarily.
+They create symbols which are guaranteed to be unique over the entire scope of
+the input source code and which can be referred to by a simple notation.
+To define a local symbol, write a label of the form <CODE><I>N</I>:</CODE> (where <I>N</I>
+represents any positive integer).  To refer to the most recent previous
+definition of that symbol write <CODE><I>N</I>b</CODE>, using the same number as when
+you defined the label.  To refer to the next definition of a local label, write
+<CODE><I>N</I>f</CODE> - The <CODE>b</CODE> stands for &quot;backwards&quot; and the <CODE>f</CODE> stands
+for &quot;forwards&quot;.
+<BR><BR>
+There is no restriction on how you can use these labels, and you can reuse them
+as well.  So it is possible to repeatedly define the same local label (using
+the same number <I>N</I>), although you can only refer to the most recently
+defined local label of that number (for a backwards reference) or the next
+definition of a specific local label for a forward reference.  It is also worth
+noting that the first 10 local labels (<CODE>0:</CODE>...<CODE>9:</CODE>) are
+implemented in a slightly more efficient manner than the others.
+<BR><BR>
+Here is an example:</P>
+<PRE>1:        jra 1f
+2:        jra 1b
+1:        jra 2f
+2:        jra 1b
+</PRE>
+<P>Which is the equivalent of:</P>
+<PRE>label_1:  jra label_3
+label_2:  jra label_1
+label_3:  jra label_4
+label_4:  jra label_3
+</PRE>
+<P>Local symbol names are only a notational device.  They are immediately
+transformed into more conventional symbol names before the assembler uses them.
+The symbol names stored in the symbol table, appearing in error messages and
+optionally emitted to the object file.  The names are constructed using these
+parts:</P>
+<DL>
+
+<DT><P><B>L</B></P><DD><P>All local labels begin with <CODE>L</CODE>.  Normally both <CODE>as</CODE> and
+<CODE>ld</CODE> forget symbols that start with <CODE>L</CODE>.  These labels are
+used for symbols you are never intended to see.  If you use the
+<B>'-L'</B> option, <CODE>as</CODE> retains these symbols in the
+object file.  If you also instruct <CODE>ld</CODE> to retain these symbols,
+you may use them in debugging.
+</P><DT><P><B><I>N</I></B></P><DD><P>This is the number that was used in the local label definition.  So if the
+label is written <CODE>55:</CODE>, the number is <CODE>55</CODE>.
+</P><DT><P><B><CODE>\002</CODE></B></P><DD><P>This unusual character is included so you do not accidentally invent a symbol
+of the same name.
+</P><DT><P><B><I>ordinal number</I></B></P><DD><P>This is a serial number to keep the labels distinct.  The first definition of
+<CODE>0:</CODE> gets the number <CODE>1</CODE>.  The 15th definition of <CODE>0:</CODE> gets the
+number <CODE>15</CODE>, and so on.  Likewise the first definition of <CODE>1:</CODE> gets
+the number <CODE>1</CODE> and its 15th defintion gets <CODE>15</CODE> as well.</P>
+</DL>
+
+<H4><A NAME="SEC48LD"><U>Dollar Local Labels</U></A></H4>
+<P><CODE>as</CODE> also supports an even more local form of local labels called
+dollar labels.  These labels go out of scope (i.e. they become undefined) as soon
+as a non-local label is defined.  Thus they remain valid for only a small
+region of the input source code.  Normal local labels, by contrast, remain in
+scope for the entire file, or until they are redefined by another occurrence of
+the same local label.
+<BR><BR>
+Dollar labels are defined in exactly the same way as ordinary local labels,
+except that instead of being terminated by a colon, they are terminated by a
+dollar sign (for example, <CODE>55$</CODE>).
+<BR><BR>
+They can also be distinguished from ordinary local labels by their transformed
+name which uses ASCII character <CODE>\001</CODE> (control-A) as the magic character
+to distinguish them from ordinary labels.</P>
+
+<H3><A NAME="SEC49"><U>The Special Dot Symbol</U></A></H3>
+<P>The special symbol <CODE>.</CODE> refers to the current address that
+<CODE>as</CODE> is assembling into.  Thus, the expression <CODE>melvin:
+.long&nbsp;.</CODE> defines <CODE>melvin</CODE> to contain its own address.
+Assigning a value to <CODE>.</CODE> is treated the same as a <CODE>.org</CODE>
+directive.  Thus, the expression <CODE>.=.+4</CODE> is the same as saying
+<CODE>.space&nbsp;4</CODE>.</P>
+
+<H3><A NAME="SEC50"><U>Symbol Attributes</U></A></H3>
+<P>Every symbol has, as well as its name, the attributes &quot;Value&quot; and
+&quot;Type&quot;.  Depending on output format, symbols can also have auxiliary
+attributes.
+If you use a symbol without defining it, <CODE>as</CODE> assumes zero for
+all these attributes, and probably won't warn you.  This makes the
+symbol an externally defined symbol, which is generally what you
+would want.</P>
+
+<UL>
+<LI><B><A HREF="#SEC51">Value</A></B>
+<LI><B><A HREF="#SEC52">Type</A></B>
+<LI><B><A HREF="#SEC56">Symbol Attributes for COFF</A></B>
+</UL>
+<H4><A NAME="SEC51"><U>Value</U></A></H4>
+<P>The value of a symbol is (usually) 32 bits.  For a symbol which labels a
+location in the text, data, bss or absolute sections the value is the
+number of addresses from the start of that section to the label.
+Naturally for text, data and bss sections the value of a symbol changes
+as <CODE>ld</CODE> changes section base addresses during linking.  Absolute
+symbols' values do not change during linking: that is why they are
+called absolute.
+<BR><BR>
+The value of an undefined symbol is treated in a special way.  If it is
+0 then the symbol is not defined in this assembler source file, and
+<CODE>ld</CODE> tries to determine its value from other files linked into the
+same program.  You make this kind of symbol simply by mentioning a symbol
+name without defining it.  A non-zero value represents a <CODE><A HREF="#SEC76">.comm</A></CODE>
+common declaration.  The value is how much common storage to reserve, in
+bytes (addresses).  The symbol refers to the first address of the
+allocated storage.</P>
+
+<H4><A NAME="SEC52"><U>Type</U></A></H4>
+<P>The type attribute of a symbol contains relocation (section)
+information, any flag settings indicating that a symbol is external, and
+(optionally), other information for linkers and debuggers.  The exact
+format depends on the object-code output format in use.</P>
+
+<H4><A NAME="SEC56"><U>Symbol Attributes for COFF</U></A></H4>
+<P>The COFF format supports a multitude of auxiliary symbol attributes;
+like the primary symbol attributes, they are set between <CODE><A HREF="#SEC78">.def</A></CODE> and
+<CODE><A HREF="#SEC84">.endef</A></CODE> directives.</P>
+
+<UL>
+<LI><B><A HREF="#SEC57">Primary Attributes</A></B>
+<LI><B><A HREF="#SEC58">Auxiliary Attributes</A></B>
+</UL>
+<H5><A NAME="SEC57"><U>Primary Attributes</U></A></H5>
+<P>The symbol name is set with <CODE><A HREF="#SEC78">.def</A></CODE>; the value and type,
+respectively, with <CODE><A HREF="#SEC135">.val</A></CODE> and <CODE><A HREF="#SEC133">.type</A></CODE>.</P>
+
+<H5><A NAME="SEC58"><U>Auxiliary Attributes</U></A></H5>
+<P>The <CODE>as</CODE> directives <CODE><A HREF="#SEC80">.dim</A></CODE>, <CODE><A HREF="#SEC103">.line</A></CODE>, <CODE><A HREF="#SEC118">.scl</A></CODE>,
+<CODE><A HREF="#SEC123">.size</A></CODE>, and <CODE><A HREF="#SEC130">.tag</A></CODE> can generate auxiliary symbol table
+information for COFF.</P>
+
+<HR>
+<H2><A NAME="SEC60"><U>Assembler Expressions</U></A></H2>
+<P>An <U>expression</U> specifies an address or numeric value.
+Whitespace may precede and/or follow an expression.
+<BR><BR>
+The result of an expression must be an absolute number, or else an offset into
+a particular section.  If an expression is not absolute, and there is not
+enough information when <CODE>as</CODE> sees the expression to know its
+section, a second pass over the source program might be necessary to interpret
+the expression - but the second pass is currently not implemented.
+<CODE>as</CODE> aborts with an error message in this situation.</P>
+
+<UL>
+<LI><B><A HREF="#SEC61">Empty Expressions</A></B>
+<LI><B><A HREF="#SEC62">Integer Expressions</A></B>
+</UL>
+<H3><A NAME="SEC61"><U>Empty Expressions</U></A></H3>
+<P>An empty expression has no value: it is just whitespace or null.
+Wherever an absolute expression is required, you may omit the
+expression, and <CODE>as</CODE> assumes a value of (absolute) 0.  This
+is compatible with other assemblers.</P>
+
+<H3><A NAME="SEC62"><U>Integer Expressions</U></A></H3>
+<P>An <U>integer expression</U> is one or more <I>arguments</I> delimited
+by <I>operators</I>.</P>
+
+<UL>
+<LI><B><A HREF="#SEC63">Arguments</A></B>
+<LI><B><A HREF="#SEC64">Operators</A></B>
+</UL>
+<H4><A NAME="SEC63"><U>Arguments</U></A></H4>
+<P><U>Arguments</U> are symbols, numbers or subexpressions.  In other
+contexts arguments are sometimes called &quot;arithmetic operands&quot;.  In
+this manual, to avoid confusing them with the &quot;instruction operands&quot; of
+the machine language, we use the term &quot;argument&quot; to refer to parts of
+expressions only, reserving the word &quot;operand&quot; to refer only to machine
+instruction operands.
+<BR><BR>
+Symbols are evaluated to yield {<I>section</I> <I>NNN</I>} where
+<I>section</I> is one of text, data, bss, absolute,
+or undefined.  <I>NNN</I> is a signed, 2's complement 32 bit
+integer.
+<BR><BR>
+Numbers are usually integers.
+In principle, a number can be a flonum or bignum.  In this case, you are warned
+that only the low order 32 bits are used, and <CODE>as</CODE> pretends
+these 32 bits are an integer.  You may write integer-manipulating
+instructions that act on exotic constants, compatible with other
+assemblers.
+<BR><BR>
+Subexpressions are a left parenthesis <CODE>(</CODE> followed by an integer
+expression, followed by a right parenthesis <CODE>)</CODE>; or a prefix
+operator followed by an argument.</P>
+
+<H4><A NAME="SEC64"><U>Operators</U></A></H4>
+<P><U>Operators</U> are arithmetic functions, like <CODE>+</CODE> or <CODE>%</CODE>.  Prefix
+operators are followed by an argument.  Infix operators appear
+between their arguments.  Operators may be preceded and/or followed by
+whitespace.</P>
+
+<UL>
+<LI><B><A HREF="#SEC65">Prefix Operators</A></B>
+<LI><B><A HREF="#SEC66">Infix Operators</A></B>
+</UL>
+<H5><A NAME="SEC65"><U>Prefix Operators</U></A></H5>
+<P><CODE>as</CODE> has the following <U>prefix operators</U>.  They each take
+one argument, which must be absolute.</P>
+<DL>
+
+<DT><P><B>-</B></P><DD><P><U>Negation</U>.  Two's complement negation.</P><DT><P><B>~</B></P><DD><P><U>Complementation</U>.  Bitwise NOT.</P>
+</DL>
+
+<H5><A NAME="SEC66"><U>Infix Operators</U></A></H5>
+<P><U>Infix operators</U> take two arguments, one on either side.  Operators
+have precedence, but operations with equal precedence are performed left
+to right.  Apart from <CODE>+</CODE> or <CODE>-</CODE>, both arguments must be
+absolute, and the result is absolute.</P>
+<OL>
+<LI><P>Highest Precedence
+</P>
+<DL>
+
+<DT><P><B>*</B></P><DD><P><U>Multiplication</U>.
+</P><DT><P><B>/</B></P><DD><P><U>Division</U>.  Truncation is the same as the C operator <CODE>/</CODE>.
+</P><DT><P><B>%</B></P><DD><P><U>Remainder</U>.
+</P><DT><P><B>&lt;</B>
+<BR><B>&lt;&lt;</B></P><DD><P><U>Shift Left</U>.  Same as the C operator <CODE>&lt;&lt;</CODE>.
+</P><DT><P><B>&gt;</B>
+<BR><B>&gt;&gt;</B></P><DD><P><U>Shift Right</U>.  Same as the C operator <CODE>&gt;&gt;</CODE>.</P>
+</DL>
+<P></P></LI>
+<LI><P>Intermediate precedence
+</P>
+<DL>
+
+<DT><P><B>|</B></P><DD><P><U>Bitwise Inclusive OR</U>.
+</P><DT><P><B>&amp;</B></P><DD><P><U>Bitwise AND</U>.
+</P><DT><P><B>^</B></P><DD><P><U>Bitwise Exclusive OR</U>.
+</P><DT><P><B>!</B></P><DD><P><U>Bitwise OR NOT</U>.</P>
+</DL>
+<P></P></LI>
+<LI><P>Low Precedence
+</P>
+<DL>
+
+<DT><P><B>+</B></P><DD><P><U>Addition</U>.  If either argument is absolute, the result has the section of
+the other argument.  You may not add together arguments from different
+sections.
+</P><DT><P><B>-</B></P><DD><P><U>Subtraction</U>.  If the right argument is absolute, the
+result has the section of the left argument.
+If both arguments are in the same section, the result is absolute.
+You may not subtract arguments from different sections.
+</P><DT><P><B>==</B></P><DD><P><U>Is Equal To</U>.</P><DT><P><B>&lt;&gt;</B></P><DD><P><U>Is Not Equal To</U>.</P><DT><P><B>&lt;</B></P><DD><P><U>Is Less Than</U>.</P><DT><P><B>&gt;</B></P><DD><P><U>Is Greater Than</U>.</P><DT><P><B>&gt;=</B></P><DD><P><U>Is Greater Than Or Equal To</U>.</P><DT><P><B>&lt;=</B></P><DD><P><U>Is Less Than Or Equal To</U>.
+<BR><BR>
+The comparison operators can be used as infix operators.  A true results has a
+value of -1 whereas a false result has a value of 0.  Note, these operators
+perform signed comparisons.</P>
+</DL>
+<P></P></LI>
+<LI>
+
+<DL>
+
+<DT><P><B>&amp;&amp;</B></P><DD><P><U>Logical AND</U>.
+</P><DT><P><B>||</B></P><DD><P><U>Logical OR</U>.
+<BR><BR>
+These two logical operations can be used to combine the results of sub
+expressions.  Note, unlike the comparison operators a true result returns a
+value of 1.  Also note that the logical
+OR operator has a slightly lower precedence than logical AND.</P>
+</DL>
+
+</LI>
+</OL>
+<P>In short, it's only meaningful to add or subtract the <I>offsets</I> in an
+address; you can only have a defined section in one of the two arguments.</P>
+
+<HR>
+<H2><A NAME="SEC67"><U>Assembler Directives</U></A></H2>
+<P>All assembler directives have names that begin with a period (<CODE>.</CODE>).
+The rest of the name is letters, usually in lower case.
+<BR><BR>
+This chapter mostly discusses directives that are available regardless of the
+target machine configuration for the GNU assembler.</P>
+
+<UL>
+<LI><B><A HREF="#SEC68">.abort</A></B>
+<LI><B><A HREF="#SEC70">.align</A></B>
+<LI><B><A HREF="#SEC72">.ascii</A></B>
+<LI><B><A HREF="#SEC73">.asciz</A></B>
+<LI><B><A HREF="#SEC74">.balign[wl]</A></B>
+<LI><B><A HREF="#SEC75">.byte</A></B>
+<LI><B><A HREF="#SEC76">.comm</A></B>
+<LI><B><A HREF="#SEC77">.data</A></B>
+<LI><B><A HREF="#SEC78">.def</A></B>
+<LI><B><A HREF="#SEC80">.dim</A></B>
+<LI><B><A HREF="#SEC81">.double</A></B>
+<LI><B><A HREF="#SEC82">.eject</A></B>
+<LI><B><A HREF="#SEC83">.else</A></B>
+<LI><B><A HREF="#SEC83b">.end</A></B>
+<LI><B><A HREF="#SEC83IF">.elseif</A></B>
+<LI><B><A HREF="#SEC84">.endef</A></B>
+<LI><B><A HREF="#SEC84FUNC">.endfunc</A></B>
+<LI><B><A HREF="#SEC84IF">.endif</A></B>
+<LI><B><A HREF="#SEC84M">.endm</A></B>
+<LI><B><A HREF="#SEC84R">.endr</A></B>
+<LI><B><A HREF="#SEC86">.equ</A></B>
+<LI><B><A HREF="#SEC87">.equiv</A></B>
+<LI><B><A HREF="#SEC88">.err</A></B>
+<LI><B><A HREF="#SEC70E">.even</A></B>
+<LI><B><A HREF="#SEC85">.exitm</A></B>
+<LI><B><A HREF="#SEC89">.extern</A></B>
+<LI><B><A HREF="#SEC89a">.fail</A></B>
+<LI><B><A HREF="#SEC90">.file</A></B>
+<LI><B><A HREF="#SEC91">.fill</A></B>
+<LI><B><A HREF="#SEC92">.float</A></B>
+<LI><B><A HREF="#SEC92a">.func</A></B>
+<LI><B><A HREF="#SEC93">.global</A></B>
+<LI><B><A HREF="#SEC94">.hword</A></B>
+<LI><B><A HREF="#SEC95">.ident</A></B>
+<LI><B><A HREF="#SEC96">.if</A></B>
+<LI><B><A HREF="#SEC97">.include</A></B>
+<LI><B><A HREF="#SEC97B">.incbin</A></B>
+<LI><B><A HREF="#SEC98">.int</A></B>
+<LI><B><A HREF="#SEC99">.irp</A></B>
+<LI><B><A HREF="#SEC100">.irpc</A></B>
+<LI><B><A HREF="#SEC101">.lcomm</A></B>
+<LI><B><A HREF="#SEC102">.lflags</A></B>
+<LI><B><A HREF="#SEC103">.line</A></B>
+<LI><B><A HREF="#SEC105">.ln</A></B>
+<LI><B><A HREF="#SEC107">.list</A></B>
+<LI><B><A HREF="#SEC108">.long</A></B>
+<LI><B><A HREF="#SEC109">.macro</A></B>
+<LI><B><A HREF="#SEC106">.mri</A></B>
+<LI><B><A HREF="#SEC110">.nolist</A></B>
+<LI><B><A HREF="#SEC111">.octa</A></B>
+<LI><B><A HREF="#SEC112">.org</A></B>
+<LI><B><A HREF="#SEC113">.p2align[wl]</A></B>
+<LI><B><A HREF="#SEC113a">.print</A></B>
+<LI><B><A HREF="#SEC114">.psize</A></B>
+<LI><B><A HREF="#SEC114a">.purgem</A></B>
+<LI><B><A HREF="#SEC115">.quad</A></B>
+<LI><B><A HREF="#SEC116">.rept</A></B>
+<LI><B><A HREF="#SEC117">.sbttl</A></B>
+<LI><B><A HREF="#SEC118">.scl</A></B>
+<LI><B><A HREF="#SEC119">.section</A></B>
+<LI><B><A HREF="#SEC120">.set</A></B>
+<LI><B><A HREF="#SEC121">.short</A></B>
+<LI><B><A HREF="#SEC122">.single</A></B>
+<LI><B><A HREF="#SEC123">.size</A></B>
+<LI><B><A HREF="#SEC124">.sleb128</A></B>
+<LI><B><A HREF="#SEC125">.skip</A></B>
+<LI><B><A HREF="#SEC126">.space</A></B>
+<LI><B><A HREF="#SEC127">.stabd</A></B>
+<LI><B><A HREF="#SEC127N">.stabn</A></B>
+<LI><B><A HREF="#SEC127S">.stabs</A></B>
+<LI><B><A HREF="#SEC128">.string</A></B>
+<LI><B><A HREF="#SEC128a">.struct</A></B>
+<LI><B><A HREF="#SEC130">.tag</A></B>
+<LI><B><A HREF="#SEC131">.text</A></B>
+<LI><B><A HREF="#SEC132">.title</A></B>
+<LI><B><A HREF="#SEC133">.type</A></B>
+<LI><B><A HREF="#SEC134">.uleb128</A></B>
+<LI><B><A HREF="#SEC135">.val</A></B>
+<LI><B><A HREF="#SEC135a">.vtable_entry</A></B>
+<LI><B><A HREF="#SEC136">.word</A></B>
+</UL>
+<H3><A NAME="SEC68"><U>.abort</U></A></H3>
+<P>This directive stops the assembly immediately.  It is for
+compatibility with other assemblers.  The original idea was that the
+assembly language source would be piped into the assembler.  If the sender
+of the source quit, it could use this directive to tell <CODE>as</CODE> to
+quit also.  One day <CODE>.abort</CODE> will not be supported.
+<BR><BR>
+<CODE>.ABORT</CODE> is accepted as an alternate spelling of <CODE>.abort</CODE>.</P>
+
+<H3><A NAME="SEC70"><U>.align</U></A></H3>
+<P>Syntax: <B>.align <I>alignment</I>[, [<I>fill</I>][, <I>max</I>]]</B>
+<BR><BR>
+Pad the location counter (in the current subsection) to a particular storage
+boundary.  <I>alignment</I> (which must be absolute) is the alignment
+required, as described below.
+<BR><BR>
+<I>fill</I> (also absolute) gives the fill value to be stored in the
+padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
+padding bytes are normally zero.  However, on some systems, if the section is
+marked as containing code and the fill value is omitted, the space is filled
+with no-op instructions (I didn't check whether this is the case in GCC4TI).
+<BR><BR>
+<I>max</I> is also absolute, and is also optional.  If it is present,
+it is the maximum number of bytes that should be skipped by this alignment
+directive.  If doing the alignment would require skipping more bytes than the
+specified maximum, then the alignment is not done at all.  You can omit the
+fill value (the second argument) entirely by simply using two commas after the
+required alignment; this can be useful if you want the alignment to be filled
+with no-op instructions when appropriate.
+<BR><BR>
+The way the required alignment is specified varies from system to system.
+For the a29k, hppa, m68k, m88k, w65, sparc, Xtensa, and Renesas / SuperH SH,
+and i386 using ELF format,
+the first expression is the
+alignment request in bytes.  For example <CODE>.align&nbsp;8</CODE> advances
+the location counter until it is a multiple of 8.  If the location counter
+is already a multiple of 8, no change is needed.
+<BR><BR>
+For other systems, including the i386 using a.out format, and the arm and
+strongarm, it is the
+number of low-order zero bits the location counter must have after
+advancement.  For example <CODE>.align&nbsp;3</CODE> advances the location
+counter until it a multiple of 8.  If the location counter is already a
+multiple of 8, no change is needed.
+<BR><BR>
+This inconsistency is due to the different behaviors of the various
+native assemblers for these systems which <CODE>as</CODE> must emulate.
+<CODE>as</CODE> also provides <CODE><A HREF="#SEC74">.balign</A></CODE> and <CODE><A HREF="#SEC113">.p2align</A></CODE> directives,
+which have a consistent behavior across all
+architectures (but are specific to <CODE>as</CODE>).</P>
+
+<H3><A NAME="SEC72"><U>.ascii</U></A></H3>
+<P>Syntax: <B>.ascii <I>strings</I></B>
+<BR><BR>
+<CODE>.ascii</CODE> expects zero or more string literals (see <A HREF="#SEC33">Strings</A>)
+separated by commas.  It assembles each string (with no automatic
+trailing zero byte) into consecutive addresses.</P>
+
+<P>See also: <A HREF="#SEC73">.asciz</A>, <A HREF="#SEC128">.string</A></P>
+<H3><A NAME="SEC73"><U>.asciz</U></A></H3>
+<P>Syntax: <B>.asciz <I>strings</I></B>
+<BR><BR>
+<CODE>.asciz</CODE> is just like <CODE><A HREF="#SEC72">.ascii</A></CODE>, but each string is followed by
+a zero byte.  The &quot;z&quot; in <CODE>.asciz</CODE> stands for &quot;zero&quot;.</P>
+
+<P>See also: <A HREF="#SEC72">.ascii</A>, <A HREF="#SEC128">.string</A></P>
+<H3><A NAME="SEC74"><U>.balign[wl]</U></A></H3>
+<P>Syntax: <B>.balign[wl] <I>alignment</I>[, [<I>fill</I>][, <I>max</I>]]</B>
+<BR><BR>
+Pad the location counter (in the current subsection) to a particular
+storage boundary.  <I>alignment</I> (which must be absolute) is the
+alignment request in bytes.  For example <CODE>.balign&nbsp;8</CODE> advances
+the location counter until it is a multiple of 8.  If the location counter
+is already a multiple of 8, no change is needed.
+<BR><BR>
+<I>fill</I> (also absolute) gives the fill value to be stored in the
+padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
+padding bytes are normally zero.  However, on some systems, if the section is
+marked as containing code and the fill value is omitted, the space is filled
+with no-op instructions (I didn't check whether this is the case in GCC4TI).
+<BR><BR>
+<I>max</I> is also absolute, and is also optional.  If it is present,
+it is the maximum number of bytes that should be skipped by this alignment
+directive.  If doing the alignment would require skipping more bytes than the
+specified maximum, then the alignment is not done at all.  You can omit the
+fill value (the second argument) entirely by simply using two commas after the
+required alignment; this can be useful if you want the alignment to be filled
+with no-op instructions when appropriate.
+<BR><BR>
+The <CODE>.balignw</CODE> and <CODE>.balignl</CODE> directives are variants of the
+<CODE>.balign</CODE> directive.  The <CODE>.balignw</CODE> directive treats the fill
+pattern as a two byte word value.  The <CODE>.balignl</CODE> directives treats the
+fill pattern as a four byte longword value.  For example, <CODE>.balignw
+4,0x368d</CODE> will align to a multiple of 4.  If it skips two bytes, they will be
+filled in with the value 0x368d (the exact placement of the bytes depends upon
+the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
+undefined.</P>
+
+<P>See also: <A HREF="#SEC113">.p2align</A></P>
+<H3><A NAME="SEC75"><U>.byte</U></A></H3>
+<P>Syntax: <B>.byte <I>expressions</I></B>
+<BR><BR>
+<CODE>.byte</CODE> expects zero or more expressions, separated by commas.
+Each expression is assembled into the next byte.</P>
+
+<H3><A NAME="SEC76"><U>.comm</U></A></H3>
+<P>Syntax: <B>.comm <I>symbol</I>, <I>length</I></B>
+<BR><BR>
+<CODE>.comm</CODE> declares a common symbol named <I>symbol</I>.  When linking, a
+common symbol in one object file may be merged with a defined or common symbol
+of the same name in another object file.  If <CODE>ld</CODE> does not see a
+definition for the symbol - just one or more common symbols - then it will
+allocate <I>length</I> bytes of uninitialized memory.  <I>length</I> must be an
+absolute expression.  If <CODE>ld</CODE> sees multiple common symbols with
+the same name, and they do not all have the same size, it will allocate space
+using the largest size.</P>
+
+<P>See also: <A HREF="#SEC101">.lcomm</A></P>
+<H3><A NAME="SEC77"><U>.data</U></A></H3>
+<P>Syntax: <B>.data [<I>subsection</I>]</B>
+<BR><BR>
+<CODE>.data</CODE> tells <CODE>as</CODE> to assemble the following statements onto the
+end of the data subsection numbered <I>subsection</I> (which is an
+absolute expression).  If <I>subsection</I> is omitted, it defaults
+to zero.
+<BR><BR>
+In order to be compatible with the Sun assembler, the 680x0 assembler
+understands the directives <CODE>.data1</CODE> and <CODE>.data2</CODE>
+as alternatives to <CODE>.data&nbsp;1</CODE> and <CODE>.data&nbsp;2</CODE>.</P>
+
+<P>See also: <A HREF="#SEC131">.text</A></P>
+<H3><A NAME="SEC78"><U>.def</U></A></H3>
+<P>Syntax: <B>.def <I>name</I></B>
+<BR><BR>
+Begin defining debugging information for a symbol <I>name</I>; the
+definition extends until the <CODE><A HREF="#SEC84">.endef</A></CODE> directive is encountered.</P>
+
+<H3><A NAME="SEC80"><U>.dim</U></A></H3>
+<P>This directive is generated by compilers to include auxiliary debugging
+information in the symbol table.  It is only permitted inside
+<CODE><A HREF="#SEC78">.def</A></CODE>/<CODE><A HREF="#SEC84">.endef</A></CODE> pairs.</P>
+
+<H3><A NAME="SEC81"><U>.double</U></A></H3>
+<P>Syntax: <B>.double <I>flonums</I></B>
+<BR><BR>
+<CODE>.double</CODE> expects zero or more <A HREF="#SEC38">flonums</A>, separated by commas.  It
+assembles floating point numbers.</P>
+
+<P>See also: <A HREF="#SEC122">.single</A></P>
+<H3><A NAME="SEC82"><U>.eject</U></A></H3>
+<P>Force a page break at this point, when generating assembly listings.</P>
+
+<H3><A NAME="SEC83"><U>.else</U></A></H3>
+<P><CODE>.else</CODE> is part of the <CODE>as</CODE> support for conditional
+assembly; see <CODE><A HREF="#SEC96">.if</A></CODE>.  It marks the beginning of a section
+of code to be assembled if the condition for the preceding <CODE>.if</CODE>
+was false.</P>
+
+<H3><A NAME="SEC83b"><U>.end</U></A></H3>
+<P><CODE>.end</CODE> marks the end of the assembly file.  <CODE>as</CODE> does not
+process anything in the file past the <CODE>.end</CODE> directive.</P>
+
+<H3><A NAME="SEC83IF"><U>.elseif</U></A></H3>
+<P><CODE>.elseif</CODE> is part of the <CODE>as</CODE> support for conditional
+assembly; see <CODE><A HREF="#SEC96">.if</A></CODE>.  It is shorthand for beginning a new
+<CODE><A HREF="#SEC96">.if</A></CODE> block that would otherwise fill the entire <CODE>.else</CODE> section.</P>
+
+<H3><A NAME="SEC84"><U>.endef</U></A></H3>
+<P>This directive flags the end of a symbol definition begun with
+<CODE><A HREF="#SEC78">.def</A></CODE>.</P>
+
+<H3><A NAME="SEC84FUNC"><U>.endfunc</U></A></H3>
+<P><CODE>.endfunc</CODE> marks the end of a function specified with <CODE><A HREF="#SEC92a">.func</A></CODE>.</P>
+
+<H3><A NAME="SEC84IF"><U>.endif</U></A></H3>
+<P><CODE>.endif</CODE> is part of the <CODE>as</CODE> support for conditional assembly;
+it marks the end of a block of code that is only assembled
+conditionally.  See <CODE><A HREF="#SEC96">.if</A></CODE>.</P>
+
+<H3><A NAME="SEC84M"><U>.endm</U></A></H3>
+<P><CODE>.endm</CODE> terminates a <CODE><A HREF="#SEC109">.macro</A></CODE> directive.</P>
+
+<H3><A NAME="SEC84R"><U>.endr</U></A></H3>
+<P><CODE>.endr</CODE> can terminate either an <CODE><A HREF="#SEC99">.irp</A></CODE>
+or an <CODE><A HREF="#SEC100">.irpc</A></CODE> directive.</P>
+
+<H3><A NAME="SEC86"><U>.equ</U></A></H3>
+<P>Syntax: <B>.equ <I>symbol</I>, <I>expression</I></B>
+<BR><BR>
+This directive sets the value of <I>symbol</I> to <I>expression</I>.
+It is synonymous with <CODE><A HREF="#SEC120">.set</A></CODE>.</P>
+
+<P>See also: <A HREF="#SEC87">.equiv</A></P>
+<H3><A NAME="SEC87"><U>.equiv</U></A></H3>
+<P>Syntax: <B>.equiv <I>symbol</I>, <I>expression</I></B>
+<BR><BR>
+The <CODE>.equiv</CODE> directive is like <CODE><A HREF="#SEC86">.equ</A></CODE> and <CODE><A HREF="#SEC120">.set</A></CODE>, except that
+the assembler will signal an error if <I>symbol</I> is already defined.  Note a
+symbol which has been referenced but not actually defined is considered to be
+undefined.
+<BR><BR>
+Except for the contents of the error message, this is roughly equivalent to</P>
+<PRE>.ifdef SYM
+.err
+.endif
+.equ SYM,VAL
+</PRE>
+
+<H3><A NAME="SEC88"><U>.err</U></A></H3>
+<P>If <CODE>as</CODE> assembles a <CODE>.err</CODE> directive, it will print an error
+message and, unless the <B>'-Z'</B> option was used, it will not generate an
+object file.  This can be used to signal error an conditionally compiled code.</P>
+
+<H3><A NAME="SEC70E"><U>.even</U></A></H3>
+<P>This directive is a special case of the <CODE><A HREF="#SEC70">.align</A></CODE> directive; it
+aligns the output to an even byte boundary.  It is 680x0-specific;
+introduced in order to be compatible with the Sun assembler.</P>
+
+<H3><A NAME="SEC85"><U>.exitm</U></A></H3>
+<P>Exit early from the current macro definition.  See <CODE><A HREF="#SEC109">.macro</A></CODE>.</P>
+
+<H3><A NAME="SEC89"><U>.extern</U></A></H3>
+<P><CODE>.extern</CODE> is accepted in the source program - for compatibility
+with other assemblers - but it is ignored.  <CODE>as</CODE> treats
+all undefined symbols as external.</P>
+
+<H3><A NAME="SEC89a"><U>.fail</U></A></H3>
+<P>Generates an error or a warning.  If the value of the <I>expression</I> is 500
+or more, <CODE>as</CODE> will print a warning message.  If the value is less
+than 500, <CODE>as</CODE> will print an error message.  The message will
+include the value of <I>expression</I>.  This can occasionally be useful inside
+complex nested macros or conditional assembly.</P>
+
+<H3><A NAME="SEC90"><U>.file</U></A></H3>
+<P>Syntax: <B>.file <I>string</I></B>
+<BR><BR>
+<CODE>.file</CODE> tells <CODE>as</CODE> that we are about to start a new logical
+file.  <I>string</I> is the new file name.  In general, the filename is
+recognized whether or not it is surrounded by quotes (<CODE>&quot;</CODE>); but if you wish
+to specify an empty file name, you must give the quotes <CODE>&quot;&quot;</CODE>.</P>
+
+<H3><A NAME="SEC91"><U>.fill</U></A></H3>
+<P>Syntax: <B>.fill <I>repeat</I>[, <I>size</I>[, <I>value</I>]]</B>
+<BR><BR>
+<I>repeat</I>, <I>size</I> and <I>value</I> are absolute expressions.
+This emits <I>repeat</I> copies of <I>size</I> bytes.  <I>Repeat</I>
+may be zero or more.  <I>Size</I> may be zero or more, but if it is
+more than 8, then it is deemed to have the value 8, compatible with
+other people's assemblers.  The contents of each <I>repeat</I> bytes
+is taken from an 8-byte number.  The highest order 4 bytes are
+zero.  The lowest order 4 bytes are <I>value</I> rendered in the
+byte-order of an integer on the computer <CODE>as</CODE> is assembling for
+(big-endian for 680x0).
+Each <I>size</I> bytes in a repetition is taken from the lowest order
+<I>size</I> bytes of this number.  Again, this bizarre behavior is
+compatible with other people's assemblers.
+<BR><BR>
+<I>size</I> and <I>value</I> are optional.
+If the second comma and <I>value</I> are absent, <I>value</I> is
+assumed zero.  If the first comma and following tokens are absent,
+<I>size</I> is assumed to be 1.</P>
+
+<H3><A NAME="SEC92"><U>.float</U></A></H3>
+<P>Syntax: <B>.float <I>flonums</I></B>
+<BR><BR>
+This directive assembles zero or more <A HREF="#SEC38">flonums</A>, separated by commas.  It
+has the same effect as <CODE><A HREF="#SEC122">.single</A></CODE>.</P>
+
+<H3><A NAME="SEC92a"><U>.func</U></A></H3>
+<P>Syntax: <B>.func <I>name</I>[, <I>label</I>]</B>
+<BR><BR>
+<CODE>.func</CODE> emits debugging information to denote function <I>name</I>, and
+is ignored unless the file is assembled with debugging enabled.
+Only <B>'--gstabs'</B> is currently supported.
+<I>label</I> is the entry point of the function, and if omitted, <I>name</I>
+prepended with the leading character is used (no leading character in TIGCC/GCC4TI).
+All functions are currently defined to have <CODE>void</CODE> return type.
+The function must be terminated with <CODE><A HREF="#SEC84FUNC">.endfunc</A></CODE>.</P>
+
+<H3><A NAME="SEC93"><U>.global</U></A></H3>
+<P>Syntax: <B>.global <I>symbol</I></B>
+<BR><BR>
+<CODE>.global</CODE> makes the symbol visible to <CODE>ld</CODE>.  If you define
+<I>symbol</I> in your partial program, its value is made available to
+other partial programs that are linked with it.  Otherwise,
+<I>symbol</I> takes its attributes from a symbol of the same name
+from another file linked into the same program.
+<BR><BR>
+Both spellings (<CODE>.globl</CODE> and <CODE>.global</CODE>) are accepted, for
+compatibility with other assemblers. <CODE>.xdef</CODE> is also accepted as a
+synonym for <CODE>.global</CODE>.</P>
+
+<H3><A NAME="SEC94"><U>.hword</U></A></H3>
+<P>Syntax: <B>.hword <I>expressions</I></B>
+<BR><BR>
+This expects zero or more <I>expressions</I>, and emits
+a 16 bit number for each.
+<BR><BR>
+On this target, this directive is a synonym for both <CODE><A HREF="#SEC121">.short</A></CODE> and <CODE><A HREF="#SEC136">.word</A></CODE>.</P>
+
+<H3><A NAME="SEC95"><U>.ident</U></A></H3>
+<P>This directive is used by some assemblers to place tags in object files.
+<CODE>as</CODE> simply accepts the directive for source-file
+compatibility with such assemblers, but does not actually emit anything
+for it.</P>
+
+<H3><A NAME="SEC96"><U>.if</U></A></H3>
+<P>Syntax: <B>.if <I>absolute expression</I></B>
+<BR><BR>
+<CODE>.if</CODE> marks the beginning of a section of code which is only
+considered part of the source program being assembled if the argument
+(which must be an <I>absolute expression</I>) is non-zero.  The end of
+the conditional section of code must be marked by <CODE><A HREF="#SEC84IF">.endif</A></CODE>;
+optionally, you may include code for the
+alternative condition, flagged by <CODE><A HREF="#SEC83">.else</A></CODE>.
+If you have several conditions to check, <CODE><A HREF="#SEC83IF">.elseif</A></CODE> may be used to avoid
+nesting blocks if/else within each subsequent <CODE><A HREF="#SEC83">.else</A></CODE> block.
+<BR><BR>
+The following variants of <CODE>.if</CODE> are also supported:</P>
+<DL>
+
+<DT><P><B>.ifdef <I>symbol</I></B></P><DD><P>Assembles the following section of code if the specified <I>symbol</I>
+has been defined.  Note a symbol which has been referenced but not yet defined
+is considered to be undefined.
+</P><DT><P><B>.ifc <I>string1</I>, <I>string2</I></B></P><DD><P>Assembles the following section of code if the two strings are the same.  The
+strings may be optionally quoted with single quotes.  If they are not quoted,
+the first string stops at the first comma, and the second string stops at the
+end of the line.  Strings which contain whitespace should be quoted.  The
+string comparison is case sensitive.
+</P><DT><P><B>.ifeq <I>absolute expression</I></B></P><DD><P>Assembles the following section of code if the argument is zero.
+</P><DT><P><B>.ifeqs <I>string1</I>, <I>string2</I></B></P><DD><P>Another form of <CODE>.ifc</CODE>.  The strings must be quoted using double quotes.
+</P><DT><P><B>.ifge <I>absolute expression</I></B></P><DD><P>Assembles the following section of code if the argument is greater than or
+equal to zero.
+</P><DT><P><B>.ifgt <I>absolute expression</I></B></P><DD><P>Assembles the following section of code if the argument is greater than zero.
+</P><DT><P><B>.ifle <I>absolute expression</I></B></P><DD><P>Assembles the following section of code if the argument is less than or equal
+to zero.
+</P><DT><P><B>.iflt <I>absolute expression</I></B></P><DD><P>Assembles the following section of code if the argument is less than zero.
+</P><DT><P><B>.ifnc <I>string1</I>, <I>string2</I>.</B></P><DD><P>Like <CODE>.ifc</CODE>, but the sense of the test is reversed: this assembles the
+following section of code if the two strings are not the same.
+</P><DT><P><B>.ifndef <I>symbol</I></B>
+<BR><B>.ifnotdef <I>symbol</I></B></P><DD><P>Assembles the following section of code if the specified <I>symbol</I>
+has not been defined.  Both spelling variants are equivalent.  Note a symbol
+which has been referenced but not yet defined is considered to be undefined.
+</P><DT><P><B>.ifne <I>absolute expression</I></B></P><DD><P>Assembles the following section of code if the argument is not equal to zero
+(in other words, this is equivalent to <CODE>.if</CODE>).
+</P><DT><P><B>.ifnes <I>string1</I>, <I>string2</I></B></P><DD><P>Like <CODE>.ifeqs</CODE>, but the sense of the test is reversed: this assembles the
+following section of code if the two strings are not the same.</P>
+</DL>
+
+<H3><A NAME="SEC97"><U>.include</U></A></H3>
+<P>Syntax: <B>.include "<I>file</I>"</B>
+<BR><BR>
+This directive provides a way to include supporting files at specified
+points in your source program.  The code from <I>file</I> is assembled as
+if it followed the point of the <CODE>.include</CODE>; when the end of the
+included file is reached, assembly of the original file continues.  You
+can control the search paths used with the <B>'-I'</B> command-line option
+(see <A HREF="#SEC11">Command-Line Options</A>).  Quotation marks are required
+around <I>file</I>.</P>
+
+<H3><A NAME="SEC97B"><U>.incbin</U></A></H3>
+<P>Syntax: <B>.incbin "<I>file</I>"[, <I>skip</I>[, <I>count</I>]]</B>
+<BR><BR>
+The <CODE>incbin</CODE> directive includes <I>file</I> verbatim at the current
+location. You can control the search paths used with the <B>'-I'</B> command-line
+option (see <A HREF="#SEC11">Command-Line Options</A>).  Quotation marks are required
+around <I>file</I>.
+<BR><BR>
+The <I>skip</I> argument skips a number of bytes from the start of the
+<I>file</I>.  The <I>count</I> argument indicates the maximum number of bytes to
+read.  Note that the data is not aligned in any way, so it is the user's
+responsibility to make sure that proper alignment is provided both before and
+after the <CODE>incbin</CODE> directive.</P>
+
+<H3><A NAME="SEC98"><U>.int</U></A></H3>
+<P>Syntax: <B>.int <I>expressions</I></B>
+<BR><BR>
+Expect zero or more <I>expressions</I>, of any section, separated by commas.
+For each expression, emit a number that, at run time, is the value of that
+expression.  The byte order and bit size of the number depends on what kind
+of target the assembly is for (big endian 32-bit for MC 68000;
+be aware that in GCC4TI, C language <CODE>int</CODE> variables occupy 16 bits by default).</P>
+
+<H3><A NAME="SEC99"><U>.irp</U></A></H3>
+<P>Syntax: <B>.irp <I>symbol</I>[, <I>value</I>[, <I>value</I>][, ...]]</B>
+<BR><BR>
+Evaluate a sequence of statements assigning different values to <I>symbol</I>.
+The sequence of statements starts at the <CODE>.irp</CODE> directive, and is
+terminated by an <CODE><A HREF="#SEC84R">.endr</A></CODE> directive.  For each <I>value</I>, <I>symbol</I> is
+set to <I>value</I>, and the sequence of statements is assembled.  If no
+<I>value</I> is listed, the sequence of statements is assembled once, with
+<I>symbol</I> set to the null string.  To refer to <I>symbol</I> within the
+sequence of statements, use \<I>symbol</I>.
+<BR><BR>
+For example, assembling</P>
+<PRE>        .irp   param,1,2,3
+        move.l %d\param,-(%sp)
+        .endr
+</PRE>
+<P>is equivalent to assembling</P>
+<PRE>        move    %d1,-(%sp)
+        move.l %d2,-(%sp)
+        move.l %d3,-(%sp)
+</PRE>
+
+<H3><A NAME="SEC100"><U>.irpc</U></A></H3>
+<P>Syntax: <B>.irpc <I>symbol</I>[, <I>value</I>]</B>
+<BR><BR>
+Evaluate a sequence of statements assigning different values to <I>symbol</I>.
+The sequence of statements starts at the <CODE>.irpc</CODE> directive, and is
+terminated by an <CODE><A HREF="#SEC84R">.endr</A></CODE> directive.  For each character in <I>value</I>,
+<I>symbol</I> is set to the character, and the sequence of statements is
+assembled.  If no <I>value</I> is listed, the sequence of statements is
+assembled once, with <I>symbol</I> set to the null string.  To refer to
+<I>symbol</I> within the sequence of statements, use \<I>symbol</I>.
+<BR><BR>
+For example, assembling</P>
+<PRE>        .irpc    param,123
+        move.l  %d\param,-(%sp)
+        .endr
+</PRE>
+<P>is equivalent to assembling</P>
+<PRE>        move.l %d1,-(%sp)
+        move.l %d2,-(%sp)
+        move.l %d3,-(%sp)
+</PRE>
+
+<H3><A NAME="SEC101"><U>.lcomm</U></A></H3>
+<P>Syntax: <B>.lcomm <I>symbol</I>, <I>length</I></B>
+<BR><BR>
+Reserve <I>length</I> (an absolute expression) bytes for a local common
+denoted by <I>symbol</I>.  The section and value of <I>symbol</I> are
+those of the new local common.  The addresses are allocated in the bss
+section, so that at run-time the bytes start off zeroed.  <I>Symbol</I>
+is not declared global (see <CODE><A HREF="#SEC93">.global</A></CODE>), so is normally
+not visible to <CODE>ld</CODE>.</P>
+
+<P>See also: <A HREF="#SEC76">.comm</A></P>
+<H3><A NAME="SEC102"><U>.lflags</U></A></H3>
+<P><CODE>as</CODE> accepts this directive, for compatibility with other
+assemblers, but ignores it.</P>
+
+<H3><A NAME="SEC103"><U>.line</U></A></H3>
+<P>Syntax: <B>.line <I>line-number</I></B>
+<BR><BR>
+Even though this is a directive associated with the <CODE>a.out</CODE> or
+<CODE>b.out</CODE> object-code formats, <CODE>as</CODE> still recognizes it
+when producing COFF output, and treats <CODE>.line</CODE> as though it
+were the COFF <CODE><A HREF="#SEC105">.ln</A></CODE> <I>if</I> it is found outside a
+<CODE><A HREF="#SEC78">.def</A></CODE>/<CODE><A HREF="#SEC84">.endef</A></CODE> pair.
+<BR><BR>
+Inside a <CODE><A HREF="#SEC78">.def</A></CODE>, <CODE>.line</CODE> is, instead, one of the directives
+used by compilers to generate auxiliary symbol information for
+debugging.</P>
+
+<H3><A NAME="SEC105"><U>.ln</U></A></H3>
+<P>Syntax: <B>.ln <I>line-number</I></B>
+<BR><BR>
+Change the logical line number.  <I>line-number</I> must be an absolute
+expression.  The next line has that logical line number.  Therefore any other
+statements on the current line (after a statement separator character) are
+reported as on logical line number <I>line-number</I>-1.</P>
+
+<P>See also: <A HREF="#SEC103">.line</A></P>
+<H3><A NAME="SEC107"><U>.list</U></A></H3>
+<P>Control (in conjunction with the <CODE><A HREF="#SEC110">.nolist</A></CODE> directive) whether or
+not assembly listings are generated.  These two directives maintain an
+internal counter (which is zero initially).  <CODE>.list</CODE> increments the
+counter, and <CODE>.nolist</CODE> decrements it.  Assembly listings are
+generated whenever the counter is greater than zero.
+<BR><BR>
+By default, listings are disabled.  When you enable them (with the
+<B>'-a'</B> command line option; see <A HREF="#SEC11">Command-Line Options</A>),
+the initial value of the listing counter is one.</P>
+
+<H3><A NAME="SEC108"><U>.long</U></A></H3>
+<P>Syntax: <B>.long <I>expressions</I></B>
+<BR><BR>
+On this target, <CODE>.long</CODE> is the same as <CODE><A HREF="#SEC98">.int</A></CODE>.</P>
+
+<H3><A NAME="SEC109"><U>.macro</U></A></H3>
+<P>Syntax: <B>.macro <I>macname [macargs...]</I></B>
+<BR><BR>
+The commands <CODE>.macro</CODE> and <CODE><A HREF="#SEC84M">.endm</A></CODE> allow you to define macros that
+generate assembly output.  For example, this definition specifies a macro
+<CODE>sum</CODE> that puts a sequence of numbers into memory:</P>
+<PRE>        .macro  sum from=0, to=5
+        .long   \from
+        .if     \to-\from
+        sum     &quot;(\from+1)&quot;,\to
+        .endif
+        .endm
+</PRE>
+<P>With that (recursive) definition, <CODE>SUM&nbsp;0,5</CODE> is equivalent to this assembly input:</P>
+<PRE>        .long   0
+        .long   1
+        .long   2
+        .long   3
+        .long   4
+        .long   5
+</PRE>
+
+
+<DL>
+
+<DT><P><B>.macro <I>macname</I></B>
+<BR><B>.macro <I>macname</I> <I>macargs</I> </B></P><DD><P>Begin the definition of a macro called <I>macname</I>.  If your macro
+definition requires arguments, specify their names after the macro name,
+separated by commas or spaces.  You can supply a default value for any
+macro argument by following the name with <CODE>=<I>deflt</I></CODE>.  For
+example, these are all valid <CODE>.macro</CODE> statements:
+</P>
+<DL>
+
+<DT><P><B>.macro comm</B></P><DD><P>Begin the definition of a macro called <CODE>comm</CODE>, which takes no
+arguments.
+</P><DT><P><B>.macro plus1 p, p1</B>
+<BR><B>.macro plus1 p p1</B></P><DD><P>Either statement begins the definition of a macro called <CODE>plus1</CODE>,
+which takes two arguments; within the macro definition, write
+<CODE>\p</CODE> or <CODE>\p1</CODE> to evaluate the arguments.
+</P><DT><P><B>.macro reserve_str p1=0 p2</B></P><DD><P>Begin the definition of a macro called <CODE>reserve_str</CODE>, with two
+arguments.  The first argument has a default value, but not the second.
+After the definition is complete, you can call the macro either as
+<CODE>reserve_str&nbsp;<I>a</I>,<I>b</I></CODE> (with <CODE>\p1</CODE> evaluating to
+<I>a</I> and <CODE>\p2</CODE> evaluating to <I>b</I>), or as <CODE>reserve_str
+,<I>b</I></CODE> (with <CODE>\p1</CODE> evaluating as the default, in this case
+<CODE>0</CODE>, and <CODE>\p2</CODE> evaluating to <I>b</I>).</P>
+</DL>
+<P>
+When you call a macro, you can specify the argument values either by
+position, or by keyword.  For example, <CODE>sum&nbsp;9,17</CODE> is equivalent to
+<CODE>sum&nbsp;to=17,&nbsp;from=9</CODE>.
+</P><DT><P><B>.endm</B></P><DD><P>Mark the end of a macro definition.
+</P><DT><P><B>.exitm</B></P><DD><P>Exit early from the current macro definition.
+</P><DT><P><B>\</B></P><DD><P><CODE>as</CODE> maintains a counter of how many macros it has
+executed in this pseudo-variable; you can copy that number to your
+output with <CODE>\@</CODE>, but <I>only within a macro definition</I>.</P>
+</DL>
+
+<H3><A NAME="SEC106"><U>.mri</U></A></H3>
+<P>Syntax: <B>.mri <I>val</I></B>
+<BR><BR>
+If <I>val</I> is non-zero, this tells <CODE>as</CODE> to enter MRI mode.  If
+<I>val</I> is zero, this tells <CODE>as</CODE> to exit MRI mode.  This change
+affects code assembled until the next <CODE>.mri</CODE> directive, or until the end
+of the file.</P>
+
+<P>See also: <A HREF="#SEC19a">MRI Mode</A></P>
+<H3><A NAME="SEC110"><U>.nolist</U></A></H3>
+<P>Control (in conjunction with the <CODE><A HREF="#SEC107">.list</A></CODE> directive) whether or
+not assembly listings are generated.  These two directives maintain an
+internal counter (which is zero initially).  <CODE>.list</CODE> increments the
+counter, and <CODE>.nolist</CODE> decrements it.  Assembly listings are
+generated whenever the counter is greater than zero.</P>
+
+<H3><A NAME="SEC111"><U>.octa</U></A></H3>
+<P>Syntax: <B>.octa <I>bignums</I></B>
+<BR><BR>
+This directive expects zero or more bignums, separated by commas.  For each
+bignum, it emits a 16-byte integer.
+<BR><BR>
+The term &quot;octa&quot; comes from contexts in which a &quot;word&quot; is two bytes;
+hence <I>octa</I>-word for 16 bytes.</P>
+
+<H3><A NAME="SEC112"><U>.org</U></A></H3>
+<P>Syntax: <B>.org <I>new-lc</I>[, <I>fill</I>]</B>
+<BR><BR>
+Advance the location counter of the current section to
+<I>new-lc</I>.  <I>new-lc</I> is either an absolute expression or an
+expression with the same section as the current subsection.  That is,
+you can't use <CODE>.org</CODE> to cross sections: if <I>new-lc</I> has the
+wrong section, the <CODE>.org</CODE> directive is ignored.  To be compatible
+with former assemblers, if the section of <I>new-lc</I> is absolute,
+<CODE>as</CODE> issues a warning, then pretends the section of <I>new-lc</I>
+is the same as the current subsection.
+<BR><BR>
+<CODE>.org</CODE> may only increase the location counter, or leave it
+unchanged; you cannot use <CODE>.org</CODE> to move the location counter
+backwards.
+<BR><BR>
+Because <CODE>as</CODE> tries to assemble programs in one pass, <I>new-lc</I>
+may not be undefined.  If you really detest this restriction we eagerly await
+a chance to share your improved assembler.
+<BR><BR>
+Beware that the origin is relative to the start of the section, not
+to the start of the subsection.  This is compatible with other
+people's assemblers.
+<BR><BR>
+When the location counter (of the current subsection) is advanced, the
+intervening bytes are filled with <I>fill</I> which should be an
+absolute expression.  If the comma and <I>fill</I> are omitted,
+<I>fill</I> defaults to zero.</P>
+
+<H3><A NAME="SEC113"><U>.p2align[wl]</U></A></H3>
+<P>Syntax: <B>.p2align[wl] <I>alignment</I>[, [<I>fill</I>][, <I>max</I>]]</B>
+<BR><BR>
+Pad the location counter (in the current subsection) to a particular
+storage boundary.  <I>alignment</I> (which must be absolute) is the
+number of low-order zero bits the location counter must have after
+advancement.  For example <CODE>.p2align&nbsp;3</CODE> advances the location
+counter until it a multiple of 8.  If the location counter is already a
+multiple of 8, no change is needed.
+<BR><BR>
+<I>fill</I> (also absolute) gives the fill value to be stored in the
+padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
+padding bytes are normally zero.  However, on some systems, if the section is
+marked as containing code and the fill value is omitted, the space is filled
+with no-op instructions (I didn't check whether this is the case in GCC4TI).
+<BR><BR>
+<I>max</I> is also absolute, and is also optional.  If it is present,
+it is the maximum number of bytes that should be skipped by this alignment
+directive.  If doing the alignment would require skipping more bytes than the
+specified maximum, then the alignment is not done at all.  You can omit the
+fill value (the second argument) entirely by simply using two commas after the
+required alignment; this can be useful if you want the alignment to be filled
+with no-op instructions when appropriate.
+<BR><BR>
+The <CODE>.p2alignw</CODE> and <CODE>.p2alignl</CODE> directives are variants of the
+<CODE>.p2align</CODE> directive.  The <CODE>.p2alignw</CODE> directive treats the fill
+pattern as a two byte word value.  The <CODE>.p2alignl</CODE> directives treats the
+fill pattern as a four byte longword value.  For example, <CODE>.p2alignw
+2,0x368d</CODE> will align to a multiple of 4.  If it skips two bytes, they will be
+filled in with the value 0x368d (the exact placement of the bytes depends upon
+the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
+undefined.</P>
+
+<P>See also: <A HREF="#SEC74">.balign</A></P>
+<H3><A NAME="SEC113a"><U>.print</U></A></H3>
+<P>Syntax: <B>.print <I>string</I></B>
+<BR><BR>
+<CODE>as</CODE> will print <I>string</I> on the standard output during
+assembly.  You must put <I>string</I> in double quotes.</P>
+
+<H3><A NAME="SEC114"><U>.psize</U></A></H3>
+<P>Syntax: <B>.psize <I>lines</I>[, <I>columns</I>]</B>
+<BR><BR>
+Use this directive to declare the number of lines - and, optionally, the
+number of columns - to use for each page, when generating listings.
+<BR><BR>
+If you do not use <CODE>.psize</CODE>, listings use a default line-count
+of 60.  You may omit the comma and <I>columns</I> specification; the
+default width is 200 columns.
+<BR><BR>
+<CODE>as</CODE> generates formfeeds whenever the specified number of
+lines is exceeded (or whenever you explicitly request one, using
+<CODE>.eject</CODE>).
+<BR><BR>
+If you specify <I>lines</I> as <CODE>0</CODE>, no formfeeds are generated save
+those explicitly specified with <CODE>.eject</CODE>.</P>
+
+<H3><A NAME="SEC114a"><U>.purgem</U></A></H3>
+<P>Syntax: <B>.purgem <I>macname</I></B>
+<BR><BR>
+Undefine the macro <I>macname</I>, so that later uses of the string will not be
+expanded.</P>
+
+<P>See also: <A HREF="#SEC109">.macro</A></P>
+<H3><A NAME="SEC115"><U>.quad</U></A></H3>
+<P>Syntax: <B>.quad <I>bignums</I></B>
+<BR><BR>
+<CODE>.quad</CODE> expects zero or more bignums, separated by commas.  For
+each bignum, it emits
+an 8-byte integer.  If the bignum won't fit in 8 bytes, it prints a
+warning message; and just takes the lowest order 8 bytes of the bignum.
+<BR><BR>
+The term &quot;quad&quot; comes from contexts in which a &quot;word&quot; is two bytes;
+hence <I>quad</I>-word for 8 bytes.</P>
+
+<H3><A NAME="SEC116"><U>.rept</U></A></H3>
+<P>Syntax: <B>.rept <I>count</I></B>
+<BR><BR>
+Repeat the sequence of lines between the <CODE>.rept</CODE> directive and the next
+<CODE>.endr</CODE> directive <I>count</I> times.
+<BR><BR>
+For example, assembling</P>
+<PRE>        .rept   3
+        .long   0
+        .endr
+</PRE>
+<P>is equivalent to assembling</P>
+<PRE>        .long   0
+        .long   0
+        .long   0
+</PRE>
+
+<H3><A NAME="SEC117"><U>.sbttl</U></A></H3>
+<P>Syntax: <B>.sbttl "<I>subheading</I>"</B>
+<BR><BR>
+Use <I>subheading</I> as the title (third line, immediately after the
+title line) when generating assembly listings.
+<BR><BR>
+This directive affects subsequent pages, as well as the current page if
+it appears within ten lines of the top of a page.</P>
+
+<H3><A NAME="SEC118"><U>.scl</U></A></H3>
+<P>Syntax: <B>.scl <I>class</I></B>
+<BR><BR>
+Set the storage-class value for a symbol.  This directive may only be
+used inside a <CODE><A HREF="#SEC78">.def</A></CODE>/<CODE><A HREF="#SEC84">.endef</A></CODE> pair.  Storage class may flag
+whether a symbol is static or external, or it may record further
+symbolic debugging information.</P>
+
+<H3><A NAME="SEC119"><U>.section</U></A></H3>
+<P>Syntax: <B>.section <I>name</I>[, &quot;<I>flags</I>&quot;]</B> or <B>.section <I>name</I>[, <I>subsegment</I>]</B>
+<BR><BR>
+Use the <CODE>.section</CODE> directive to assemble the following code into a section
+named <I>name</I>.
+<BR><BR>
+If the optional argument is quoted, it is taken as flags to use for the
+section.  Each flag is a single character.  The following flags are recognized:</P>
+<DL>
+
+<DT><P><B>b</B></P><DD><P>bss section (uninitialized data)
+</P><DT><P><B>n</B></P><DD><P>section is not loaded
+</P><DT><P><B>w</B></P><DD><P>writable section
+</P><DT><P><B>d</B></P><DD><P>data section
+</P><DT><P><B>r</B></P><DD><P>read-only section
+</P><DT><P><B>x</B></P><DD><P>executable section
+</P><DT><P><B>m</B></P><DD><P>mergeable section (TIGCC/GCC4TI extension, symbols in the section are considered mergeable constants)
+</P><DT><P><B>u</B></P><DD><P>unaligned section (TIGCC/GCC4TI extension, the contents of the section need not be aligned)
+</P><DT><P><B>s</B></P><DD><P>shared section (meaningful for PE targets, useless for TIGCC/GCC4TI)
+</P><DT><P><B>a</B></P><DD><P>ignored (for compatibility with the ELF version)</P>
+</DL>
+<P>If no flags are specified, the default flags depend upon the section name.  If
+the section name is not recognized, the default will be for the section to be
+loaded and writable.  Note the <CODE>n</CODE> and <CODE>w</CODE> flags remove attributes
+from the section, rather than adding them, so if they are used on their own it
+will be as if no flags had been specified at all.
+<BR><BR>
+If the optional argument to the <CODE>.section</CODE> directive is not quoted, it is
+taken as a subsegment number (see <A HREF="#SEC43">Sub-Sections</A>).</P>
+
+<H3><A NAME="SEC120"><U>.set</U></A></H3>
+<P>Syntax: <B>.set <I>symbol</I>, <I>expression</I></B>
+<BR><BR>
+Set the value of <I>symbol</I> to <I>expression</I>.  This
+changes <I>symbol</I>'s value and type to conform to
+<I>expression</I>.  If <I>symbol</I> was flagged as external, it remains
+flagged (see <A HREF="#SEC50">Symbol Attributes</A>).
+<BR><BR>
+You may <CODE>.set</CODE> a symbol many times in the same assembly.
+<BR><BR>
+If you <CODE>.set</CODE> a global symbol, the value stored in the object
+file is the last value stored into it.</P>
+
+<H3><A NAME="SEC121"><U>.short</U></A></H3>
+<P>Syntax: <B>.short <I>expressions</I></B>
+<BR><BR>
+On this target, <CODE>.short</CODE> is the same as <CODE><A HREF="#SEC136">.word</A></CODE>.</P>
+
+<H3><A NAME="SEC122"><U>.single</U></A></H3>
+<P>Syntax: <B>.single <I>flonums</I></B>
+<BR><BR>
+This directive assembles zero or more <A HREF="#SEC38">flonums</A>, separated by commas.  It
+has the same effect as <CODE><A HREF="#SEC92">.float</A></CODE>.</P>
+
+<P>See also: <A HREF="#SEC81">.double</A></P>
+<H3><A NAME="SEC123"><U>.size</U></A></H3>
+<P>Syntax: <B>.size <I>expression</I></B>
+<BR><BR>
+This directive, permitted only within <CODE><A HREF="#SEC78">.def</A></CODE>/<CODE><A HREF="#SEC84">.endef</A></CODE> pairs,
+is used to set the size associated with a symbol.</P>
+
+<H3><A NAME="SEC124"><U>.sleb128</U></A></H3>
+<P>Syntax: <B>.sleb128 <I>expressions</I></B>
+<BR><BR>
+<I>sleb128</I> stands for &quot;signed little endian base 128.&quot;  This is a
+compact, variable length representation of numbers used by the DWARF
+symbolic debugging format.</P>
+
+<P>See also: <A HREF="#SEC134">.uleb128</A></P>
+<H3><A NAME="SEC125"><U>.skip</U></A></H3>
+<P><CODE>.skip</CODE> is recognized on the 680x0 platform as a synonym for
+<CODE><A HREF="#SEC126">.space</A></CODE>.</P>
+
+<H3><A NAME="SEC126"><U>.space</U></A></H3>
+<P>Syntax: <B>.space <I>size</I>[, <I>fill</I>]</B>
+<BR><BR>
+This directive emits <I>size</I> bytes, each of value <I>fill</I>.  Both
+<I>size</I> and <I>fill</I> are absolute expressions.  If the comma
+and <I>fill</I> are omitted, <I>fill</I> is assumed to be zero.</P>
+
+<H3><A NAME="SEC127"><U>.stabd</U></A></H3>
+<P>Syntax: <B>.stabd <I>type</I>, <I>other</I>, <I>desc</I></B>
+<BR><BR>
+There are three directives that begin <CODE>.stab</CODE>.
+All emit symbols (see <A HREF="#SEC45">Symbols</A>), for use by symbolic debuggers.
+The symbols are not entered in the <CODE>as</CODE> hash table: they
+cannot be referenced elsewhere in the source file.
+Up to five fields are required:</P>
+<DL>
+
+<DT><P><I>string</I></P><DD><P>This is the symbol's name.  It may contain any character except
+<CODE>\000</CODE>, so is more general than ordinary symbol names.  Some
+debuggers used to code arbitrarily complex structures into symbol names
+using this field.
+</P><DT><P><I>type</I></P><DD><P>An absolute expression.  The symbol's type is set to the low 8 bits of
+this expression.  Any bit pattern is permitted, but <CODE>ld</CODE>
+and debuggers choke on silly bit patterns.
+</P><DT><P><I>other</I></P><DD><P>An absolute expression.  The symbol's &quot;other&quot; attribute is set to the
+low 8 bits of this expression.
+</P><DT><P><I>desc</I></P><DD><P>An absolute expression.  The symbol's descriptor is set to the low 16
+bits of this expression.
+</P><DT><P><I>value</I></P><DD><P>An absolute expression which becomes the symbol's value.</P>
+</DL>
+<P>If a warning is detected while reading a <CODE>.stabd</CODE>, <CODE>.stabn</CODE>,
+or <CODE>.stabs</CODE> statement, the symbol has probably already been created;
+you get a half-formed symbol in your object file.  This is
+compatible with earlier assemblers!
+<BR><BR>
+If <CODE>.stabd</CODE> is used, the &quot;name&quot; of the symbol generated
+is not even an empty string.
+It is a null pointer, for compatibility.  Older assemblers used a
+null pointer so they didn't waste space in object files with empty
+strings.
+<BR><BR>
+The symbol's value is set to the location counter,
+relocatably.  When your program is linked, the value of this symbol
+is the address of the location counter when the <CODE>.stabd</CODE> was
+assembled.
+If <CODE>.stabn</CODE> is used, the name of the symbol is set to the empty
+string <CODE>&quot;&quot;</CODE>.
+If <CODE>.stabs</CODE> is used, all five fields are required.</P>
+
+<P>See also: <A HREF="#SEC127N">.stabn</A>, <A HREF="#SEC127S">.stabs</A></P>
+<H3><A NAME="SEC127N"><U>.stabn</U></A></H3>
+<P>Syntax: <B>.stabn <I>type</I>, <I>other</I>, <I>desc</I>, <I>value</I></B>
+<BR><BR>
+See <A HREF="#SEC127">.stabd</A>.</P>
+
+<H3><A NAME="SEC127S"><U>.stabs</U></A></H3>
+<P>Syntax: <B>.stabs <I>string</I>, <I>type</I>, <I>other</I>, <I>desc</I>, <I>value</I></B>
+<BR><BR>
+See <A HREF="#SEC127">.stabd</A>.</P>
+
+<H3><A NAME="SEC128"><U>.string</U></A></H3>
+<P>Syntax: <B>.string <I>&quot;str&quot;</I></B>
+<BR><BR>
+Copy the characters in <I>str</I> to the object file.  You may specify more than
+one string to copy, separated by commas.
+The assembler marks the end of each string with a 0 byte.
+You can use any of the escape sequences described in <A HREF="#SEC33">Strings</A>.</P>
+
+<P>See also: <A HREF="#SEC72">.ascii</A>, <A HREF="#SEC73">.asciz</A></P>
+<H3><A NAME="SEC128a"><U>.struct</U></A></H3>
+<P>Syntax: <B>.struct <I>expression</I></B>
+<BR><BR>
+Switch to the absolute section, and set the section offset to <I>expression</I>,
+which must be an absolute expression.  You might use this as follows:</P>
+<PRE>        .struct 0
+field1:
+        .struct field1 + 4
+field2:
+        .struct field2 + 4
+field3:
+</PRE>
+<P>This would define the symbol <CODE>field1</CODE> to have the value 0, the symbol
+<CODE>field2</CODE> to have the value 4, and the symbol <CODE>field3</CODE> to have the
+value 8.  Assembly would be left in the absolute section, and you would need to
+use a <CODE><A HREF="#SEC119">.section</A></CODE> directive of some sort to change to some other section
+before further assembly.</P>
+
+<H3><A NAME="SEC130"><U>.tag</U></A></H3>
+<P>Syntax: <B>.tag <I>structname</I></B>
+<BR><BR>
+This directive is generated by compilers to include auxiliary debugging
+information in the symbol table.  It is only permitted inside
+<CODE><A HREF="#SEC78">.def</A></CODE>/<CODE><A HREF="#SEC84">.endef</A></CODE> pairs.  Tags are used to link structure
+definitions in the symbol table with instances of those structures.</P>
+
+<H3><A NAME="SEC131"><U>.text</U></A></H3>
+<P>Syntax: <B>.text [<I>subsection</I>]</B>
+<BR><BR>
+Tells <CODE>as</CODE> to assemble the following statements onto the end of
+the text subsection numbered <I>subsection</I>, which is an absolute
+expression.  If <I>subsection</I> is omitted, subsection number zero
+is used.</P>
+
+<P>See also: <A HREF="#SEC77">.data</A></P>
+<H3><A NAME="SEC132"><U>.title</U></A></H3>
+<P>Syntax: <B>.title &quot;<I>heading</I>&quot;</B>
+<BR><BR>
+Use <I>heading</I> as the title (second line, immediately after the
+source file name and pagenumber) when generating assembly listings.
+<BR><BR>
+This directive affects subsequent pages, as well as the current page if
+it appears within ten lines of the top of a page.</P>
+
+<H3><A NAME="SEC133"><U>.type</U></A></H3>
+<P>Syntax: <B>.type <I>int</I></B>
+<BR><BR>
+This directive, permitted only within <CODE><A HREF="#SEC78">.def</A></CODE>/<CODE><A HREF="#SEC84">.endef</A></CODE> pairs,
+records the integer <I>int</I> as the type attribute of a symbol table entry.</P>
+
+<H3><A NAME="SEC134"><U>.uleb128</U></A></H3>
+<P>Syntax: <B>.uleb128 <I>expressions</I></B>
+<BR><BR>
+<I>uleb128</I> stands for &quot;unsigned little endian base 128.&quot;  This is a
+compact, variable length representation of numbers used by the DWARF
+symbolic debugging format.</P>
+
+<P>See also: <A HREF="#SEC124">.sleb128</A></P>
+<H3><A NAME="SEC135"><U>.val</U></A></H3>
+<P>Syntax: <B>.val <I>addr</I></B>
+<BR><BR>
+This directive, permitted only within <CODE><A HREF="#SEC78">.def</A></CODE>/<CODE><A HREF="#SEC84">.endef</A></CODE> pairs,
+records the address <I>addr</I> as the value attribute of a symbol table
+entry.</P>
+
+<H3><A NAME="SEC135a"><U>.vtable_entry</U></A></H3>
+<P>Syntax: <B>.vtable_entry <I>table</I>, <I>offset</I></B>
+<BR><BR>
+This directive finds or creates a symbol <I>table</I> and creates a
+<CODE>VTABLE_ENTRY</CODE> relocation for it with an addend of <I>offset</I>.</P>
+
+<H3><A NAME="SEC136"><U>.word</U></A></H3>
+<P>Syntax: <B>.word <I>expressions</I></B>
+<BR><BR>
+This directive expects zero or more <I>expressions</I>, of any section,
+separated by commas.
+For each expression, <CODE>as</CODE> emits a 16-bit number for this target.</P>
+
+<HR>
+<H2><A NAME="acknowledge"><U>Acknowledgements</U></A></H2>
+<P>If you have contributed to <CODE>as</CODE> and your name isn't listed here,
+it is not meant as a slight.  We just don't know about it.  Send mail to the
+maintainer, and we'll correct the situation.  Currently
+the maintainer is Ken Raeburn (email address <A HREF="mailto:raeburn@cygnus.com">raeburn@cygnus.com</A>).
+(Note: Since this is a modified version of the manual, please check the original
+version as well before sending a mail.)
+<BR><BR>
+Dean Elsner wrote the original GNU assembler for the VAX. Any
+more details?
+<BR><BR>
+Jay Fenlason maintained GAS for a while, adding support for GDB-specific debug
+information and the 68k series machines, most of the preprocessing pass, and
+extensive changes in <CODE>messages.c</CODE>, <CODE>input-file.c</CODE>, <CODE>write.c</CODE>.
+<BR><BR>
+K. Richard Pixley maintained GAS for a while, adding various enhancements and
+many bug fixes, including merging support for several processors, breaking GAS
+up to handle multiple object file format back ends (including heavy rewrite,
+testing, an integration of the coff and b.out back ends), adding configuration
+including heavy testing and verification of cross assemblers and file splits
+and renaming, converted GAS to strictly ANSI C including full prototypes, added
+support for m680[34]0 and cpu32, did considerable work on i960 including a COFF
+port (including considerable amounts of reverse engineering), a SPARC opcode
+file rewrite, DECstation, rs6000, and hp300hpux host ports, updated &quot;know&quot;
+assertions and made them work, much other reorganization, cleanup, and lint.
+<BR><BR>
+Ken Raeburn wrote the high-level BFD interface code to replace most of the code
+in format-specific I/O modules.
+<BR><BR>
+The original VMS support was contributed by David L. Kashtan.  Eric Youngdale
+has done much work with it since.
+<BR><BR>
+The Intel 80386 machine description was written by Eliot Dresselhaus.
+<BR><BR>
+Minh Tran-Le at IntelliCorp contributed some AIX 386 support.
+<BR><BR>
+The Motorola 88k machine description was contributed by Devon Bowen of Buffalo
+University and Torbjorn Granlund of the Swedish Institute of Computer Science.
+<BR><BR>
+Keith Knowles at the Open Software Foundation wrote the original MIPS back end
+(<CODE>tc-mips.c</CODE>, <CODE>tc-mips.h</CODE>), and contributed Rose format support
+(which hasn't been merged in yet).  Ralph Campbell worked with the MIPS code to
+support a.out format.
+<BR><BR>
+Support for the Zilog Z8k and Renesas H8/300 and H8/500 processors (tc-z8k,
+tc-h8300, tc-h8500), and IEEE 695 object file format (obj-ieee), was written by
+Steve Chamberlain of Cygnus Support.  Steve also modified the COFF back end to
+use BFD for some low-level operations, for use with the H8/300 and AMD 29k
+targets.
+<BR><BR>
+John Gilmore built the AMD 29000 support, added <CODE>.include</CODE> support, and
+simplified the configuration of which versions accept which directives.  He
+updated the 68k machine description so that Motorola's opcodes always produced
+fixed-size instructions (e.g., <CODE>jsr</CODE>), while synthetic instructions
+remained shrinkable (<CODE>jbsr</CODE>).  John fixed many bugs, including true tested
+cross-compilation support, and one bug in relaxation that took a week and
+required the proverbial one-bit fix.
+<BR><BR>
+Ian Lance Taylor of Cygnus Support merged the Motorola and MIT syntax for the
+68k, completed support for some COFF targets (68k, i386 SVR3, and SCO Unix),
+added support for MIPS ECOFF and ELF targets, wrote the initial RS/6000 and
+PowerPC assembler, and made a few other minor patches.
+<BR><BR>
+Steve Chamberlain made <CODE>as</CODE> able to generate listings.
+<BR><BR>
+Hewlett-Packard contributed support for the HP9000/300.
+<BR><BR>
+Jeff Law wrote GAS and BFD support for the native HPPA object format (SOM)
+along with a fairly extensive HPPA testsuite (for both SOM and ELF object
+formats).  This work was supported by both the Center for Software Science at
+the University of Utah and Cygnus Support.
+<BR><BR>
+Support for ELF format files has been worked on by Mark Eichin of Cygnus
+Support (original, incomplete implementation for SPARC), Pete Hoogenboom and
+Jeff Law at the University of Utah (HPPA mainly), Michael Meissner of the Open
+Software Foundation (i386 mainly), and Ken Raeburn of Cygnus Support (sparc,
+and some initial 64-bit support).
+<BR><BR>
+Linas Vepstas added GAS support for the ESA/390 &quot;IBM 370&quot; architecture.
+<BR><BR>
+Richard Henderson rewrote the Alpha assembler. Klaus Kaempf wrote GAS and BFD
+support for openVMS/Alpha.
+<BR><BR>
+Timothy Wall, Michael Hayes, and Greg Smart contributed to the various tic*
+flavors.
+<BR><BR>
+David Heine, Sterling Augustine, Bob Wilson and John Ruttenberg from Tensilica,
+Inc. added support for Xtensa processors.
+<BR><BR>
+Several engineers at Cygnus Support have also provided many small bug fixes and
+configuration enhancements.
+<BR><BR>
+Many others have contributed large or small bugfixes and enhancements.  If
+you have contributed significant work and are not mentioned on this list, and
+want to be, let us know.  Some of the history has been lost; we are not
+intentionally leaving anyone out.</P>
+
+<HR>
+<H2><A NAME="history"><U>History</U></A></H2>
+<UL>
+<LI><P><B>Original Version:</B> <A HREF="http://sources.redhat.com/binutils/docs-2.12/as.info/">Using as</A>
+<BR><BR>
+Published by the Free Software Foundation
+<BR>
+59 Temple Place - Suite 330
+<BR>
+Boston, MA 02111-1307 USA
+<BR><BR>
+Copyright &copy; 1988, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+</P></LI>
+<LI><P><B>Modifications for TIGCC:</B> <A HREF="gnuasm.html">The GNU Assembler</A>
+<BR><BR>
+Published by the TIGCC Team
+<BR><BR>
+Copyright &copy; 2000, 2001, 2002, 2003 Zeljko Juric, Sebastian Reichelt, Kevin Kofler</P></LI>
+<LI><P><B>Modifications for GCC4TI:</B> <A HREF="gnuasm.html">The GNU Assembler</A>
+<BR><BR>
+Published by the GCC4TI Project
+<BR><BR>
+Copyright &copy; 2009, 2010 Lionel Debroux</P></LI>
+</UL>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

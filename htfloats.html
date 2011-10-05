@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Using Floating Point Arithmetic</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>Using Floating Point Arithmetic</B></FONT>
+<HR>
+<P>If you have used very old releases of TIGCC (prior to 0.9), you probably know that the use of floating
+point values and functions was possible, but only using some very awkward syntax, which caused a lot of
+headaches and nightmares. The TIGCC Team (mostly
+<A HREF="mailto:SebastianR@gmx.de">Sebastian Reichelt</A> and
+<A HREF="mailto:zjuric@utic.net.ba">Zeljko Juric</A>) spent a lot
+of time and effort implementing native (ANSI) floats in TIGCC. And the results are now available:
+you can use regular floating point numbers and values now, as in all regular C compilers! This means
+that:</P>
+<UL>
+<LI><P>You can now use the standard ANSI types <CODE>float</CODE>, <CODE>double</CODE> and
+<CODE>long&nbsp;double</CODE> without any trouble (in fact, these three types are the same,
+there is no difference between them). The old-style type <A HREF="timath.html#ti_float">ti_float</A>
+still exists due to compatibility reasons, but now it is the same as <CODE>float</CODE>.</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>You can now use "standard" floating point constants (like 2.854). So, the following is now valid:</P>
+<PRE>float a, b, c;
+a = 2.854;
+b = 7;
+c = 1.5e-7;
+</PRE>
+<P>In other words, no more ugly <A HREF="timath.html#M_FLT">FLT</A> and
+<A HREF="timath.html#M_FEXP">FEXP</A> macros! They still exist due to compatibility reasons,
+but their usage is very deprecated now.</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>You can now use standard arithmetic ('+', '-', '*', '/) and comparison ('&lt;', '&gt;',
+'&lt;=', '&gt;=', '==' and '!=') operators with floating point values. There is no need any more
+for the use of awkward functions like <A HREF="timath.html#fadd">fadd</A>,
+<A HREF="timath.html#fcmp">fcmp</A> etc. So statements like these are now accepted:</P>
+<PRE>p = (q + 3.15) / (q - r);
+x1 = (-b + sqrt (b * b - 4 * a * c)) / (2 * a);
+if (p &lt; 3.0) q += 1e-3;
+</PRE>
+<P>This feature is probably the best present for users...</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>You can use all floating point functions (like <A HREF="timath.html#sqrt">sqrt</A>,
+<A HREF="timath.html#sin">sin</A> etc.) as usual. In this release, a standard ANSI
+math library <A HREF="math.html">math.h</A> is implemented, which contains nearly all
+functions proposed by ANSI C, with some extensions. The old
+<A HREF="timath.html">timath.h</A> library file still exists due to compatibility reasons,
+and it contains more functions than <A HREF="math.html">math.h</A>, because it contains
+some functions for making compatibility with older programs, and some functions which are
+internally related to the TIOS. Anyway, you can do calculations like these:</P>
+<PRE>a = sin (b);
+b = exp (1);
+c = log (3.19);
+a = sqrt (b + c) * sinh (a / 2.);
+</PRE>
+<P>As you can see from the second example, automatic promotion from integer constants to
+the floating point is also implemented.</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>Integer types are now automatically promoted to floating point values when necessary, as
+proposed in ANSI C. This means that the following constructions are valid, assuming that
+<CODE>'n'</CODE> is a variable of integer (short, long, signed, unsigned) type:</P>
+<PRE>a = n;
+b = sqrt (n);
+c = b + n;
+</PRE>
+<P>You can also explicitely cast an integer value to a floating point one:</P>
+<PRE>a = (float)n;
+</PRE>
+<P>The function <A HREF="timath.html#flt">flt</A> which performs the promotion explicitely
+still exists, due to compatibility reasons.</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>Floating point types are automatically truncated to integers when the program
+expects an integer value (for example, when a floating point variable is assigned to an integer
+variable), as proposed in ANSI C. This means that you can write</P>
+<PRE>n = a;
+</PRE>
+<P>where <CODE>'n'</CODE> is an integer, and <CODE>'a'</CODE> is a float, although it is better
+to express your wish more explicitely using type cast as</P>
+<PRE>n = (int)a;</PRE>
+<P>The function <A HREF="timath.html#trunc">trunc</A> which performs the
+truncation explicitely still exists due to compatibility reasons.</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>You can use <A HREF="stdio.html#printf">printf</A> and similar
+functions to print floating point values, using the format specifiers <CODE>%f</CODE>,
+<CODE>%e</CODE> and <CODE>%g</CODE>, as defined in ANSI C. So, the following is
+completely legal:</P>
+<PRE>printf ("sin(%f)=%f", a, sin(a));
+printf ("%f", 3.14);</PRE>
+<P>Note that the second statement was not valid prior to release 0.9 of TIGCC!</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>To accept a floating point value from the keyboard, first accept it as a string (using
+<A HREF="stdio.html#gets">gets</A>, some user-written input routine, or
+functions from <A HREF="dialogs.html">dialogs.h</A>), then
+convert the string to a floating point value using the <A HREF="timath.html#atof">atof</A>
+(ascii-to-float) function. To get a floating point argument passed from TI-Basic to the
+program, use the <A HREF="args.html#GetFloatArg">GetFloatArg</A> function.</P></LI>
+</UL>
+<P>As you can see, the usage of floats is now essentially the same as in all other C
+compilers. See the description of the <A HREF="math.html">math.h</A> and
+<A HREF="timath.html">timath.h</A> header files for more info. However, floating point
+support is not perfect yet. That's why there are still some limitations
+in the use of floating point values (fortunately, they are not serious):</P>
+<UL>
+<LI><P>The promotion of double long integers (<A HREF="gnuexts.html#SEC72">long long</A> types) to
+floating point values, and truncation of floating point values to longlongs are not implemented
+yet. If you try to do this (which is not very likely), you will get an "undefined reference"
+error during the linking stage.</P></LI>
+</UL>
+<P>As an example of usage of floating point values and functions, the program given below
+(called "Float Test") reads coefficients of a quadratic equation from the keyboard, then
+calculates and displays the solutions of the equation (including complex ones):</P>
+<PRE>#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#define SAVE_SCREEN
+
+#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include &lt;string.h&gt;
+#include &lt;kbd.h&gt;
+
+void _main(void)
+{
+  float a, b, c, d;
+  char buffer[200];
+  clrscr ();
+  puts (&quot;a=&quot;);
+  a = atof (gets (buffer));
+  puts (&quot;b=&quot;);
+  b = atof (gets (buffer));
+  puts (&quot;c=&quot;);
+  c = atof (gets (buffer));
+  if (is_nan (a) || is_nan (b) || is_nan (c)) return;
+  d = b * b - 4. * a * c;
+  if (d &gt;= 0.)
+    {
+      float x1, x2;
+      x1 = (-b + sqrt (d)) / (2. * a);
+      x2 = (-b - sqrt (d)) / (2. * a);
+      printf (&quot;\nx1=%f\nx2=%f&quot;, x1, x2);
+    }
+  else
+    {
+      float re, im;
+      re = -b / (2. * a);
+      im = fabs (sqrt (-d) / (2. * a));
+      printf (&quot;\nx1=%f-%f*i\nx2=%f+%f*i&quot;, re, im, re, im);
+    }
+  ngetchx();
+}
+</PRE>
+<P>See the description of the included header files for more info about the functions used.
+<BR><BR>
+As already mentioned above, the new floating point support is implemented while retaining
+good compatibility with programs written with releases of TIGCC before 0.9
+(read below to see possible reasons of incompatibility). So, the quadratic equation solver
+given below, which is written using old methods, will still work with a new compiler.
+Compare this (old-style) code with the previous (new-style) one to see how much clearer
+the new-style code is...</P>
+<PRE>#define SAVE_SCREEN
+
+#include &lt;stdio.h&gt;
+#include &lt;timath.h&gt;
+#include &lt;string.h&gt;
+#include &lt;kbd.h&gt;
+
+int _ti89, _ti92plus;
+
+void _main (void)
+{
+  ti_float a, b, c, d;
+  char buffer[200];
+  clrscr ();
+  puts ("a=");
+  a = atof (gets (buffer));
+  puts ("b=");
+  b = atof (gets (buffer));
+  puts ("c=");
+  c = atof (gets (buffer));
+  if (is_nan (a) || is_nan (b) || is_nan (c)) return;
+  d = fsub (fmul (b, b), fmul (FLT (4), fmul (a, c)));
+  if (fcmp (d, ZERO) &gt;= 0)
+    {
+      ti_float x1, x2;
+      x1 = fdiv (fadd (fneg (b), sqrt (d)), fadd (a, a));
+      x2 = fdiv (fsub (fneg (b), sqrt (d)), fadd (a, a));
+      printf ("\nx1=%f\nx2=%f", x1, x2);
+    }
+  else
+    {
+      ti_float re, im;
+      re = fdiv (fneg (b), fadd (a,a));
+      im = fabs (fdiv (sqrt (fneg (d)), fadd(a, a)));
+      printf ("\nx1=%f-%f*i\nx2=%f+%f*i", re, im, re, im);
+    }
+  ngetchx();
+}
+</PRE>
+<P>The possible reasons which may cause incompatibility (very unlikely) with programs written
+with very old versions of TIGCC (prior to 0.9) are:</P>
+<UL>
+<LI><P>The types <A HREF="timath.html#ti_float">ti_float</A> and <A HREF="timath.html#bcd">bcd</A>
+are not the same any more.
+<CODE>ti_float</CODE> is now equal to ANSI type <CODE>float</CODE>, but
+<CODE>bcd</CODE> is still a structure. If your program uses the
+<CODE>bcd</CODE> type (not very likely), you should probably change it to
+<CODE>float</CODE> to make the program work, because functions which expect a
+<CODE>float</CODE> type will not accept a structured type. Two macros called
+<A HREF="timath.html#float_to_bcd">float_to_bcd</A> and
+<A HREF="timath.html#bcd_to_float">bcd_to_float</A> have been introduced to provide more general
+conversion if necessary.</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>Functions <A HREF="timath.html#fadd">fadd</A>, <A HREF="timath.html#fsub">fsub</A>,
+<A HREF="timath.html#fmul">fmul</A>, <A HREF="timath.html#fdiv">fdiv</A>,
+<A HREF="timath.html#fneg">fneg</A>, <A HREF="timath.html#fcmp">fcmp</A>,
+<A HREF="timath.html#flt">flt</A> and <A HREF="timath.html#trunc">trunc</A> are not
+absolutely equal to functions
+<A HREF="timath.html#bcdadd">bcdadd</A>, <A HREF="timath.html#bcdsub">bcdsub</A>,
+<A HREF="timath.html#bcdmul">bcdmul</A>, <A HREF="timath.html#bcddiv">bcddiv</A>,
+<A HREF="timath.html#bcdneg">bcdneg</A>, <A HREF="timath.html#bcdcmp">bcdcmp</A>,
+<A HREF="timath.html#bcdbcd">bcdbcd</A> and <A HREF="timath.html#bcdlong">bcdlong</A> any more.
+The first group of functions now works with the ordinary <CODE>float</CODE> type (and they
+will continue to work with <A HREF="timath.html#ti_float">ti_float</A>), but the second
+group now only works with <A HREF="timath.html#bcd">bcd</A> structures. So, if you used
+<CODE>bcdadd</CODE> etc. in your program (not very likely), you should
+probably change it to <CODE>fadd</CODE> etc. to make the program work.</P></LI>
+</UL>
+
+
+<UL>
+<LI><P>Suppose that your old program uses the <A HREF="timath.html#ti_float">ti_float</A> type with
+direct access to its internal fields (not very likely), like in the following example:</P>
+<PRE>ti_float a;
+a.exponent = 0x4003;
+a.mantissa = 0x3284300000000000;
+</PRE>
+<P>Then the program will not work with the new compiler, because <CODE>ti_float</CODE> is not a
+structure any more. Using a new macro <A HREF="timath.html#bcd_var">bcd_var</A> you can easily
+get your program to work. All you need to do is to re-express the above statements as</P>
+<PRE>ti_float a;
+bcd_var(a).exponent = 0x4003;
+bcd_var(a).mantissa = 0x3284300000000000;
+</PRE>
+<P>Note, however, that the <A HREF="timath.html#bcd">bcd</A> type is still a structure.</P></LI>
+</UL>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

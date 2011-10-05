@@ -1,0 +1,1826 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>dialogs.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;dialogs.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for creating dialogs</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#Dialog">Dialog</A></B><DD>Shows and activates a dialog box given a pointer to a dialog structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAdd">DialogAdd</A></B><DD>Adds an item into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddDynamicPulldown">DialogAddDynamicPulldown</A></B><DD>Adds a dynamic pulldown menu into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddDynamicRequest">DialogAddDynamicRequest</A></B><DD>Adds a request/edit box with a dynamic buffer into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddMenu">DialogAddMenu</A></B><DD>Adds a menu into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddPulldown">DialogAddPulldown</A></B><DD>Adds a pulldown/popup menu into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddPulldownEx">DialogAddPulldownEx</A></B><DD>Adds a pulldown/popup menu into a dialog box. Extended version.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddRequest">DialogAddRequest</A></B><DD>Adds a request/edit box into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddRequestEx">DialogAddRequestEx</A></B><DD>Adds a request/edit box into a dialog box. Extended version.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddScrollRegion">DialogAddScrollRegion</A></B><DD>Adds a rectangular item-scrolling region to a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddStaticPulldown">DialogAddStaticPulldown</A></B><DD>Adds a static pulldown/popup menu into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddText">DialogAddText</A></B><DD>Adds a text into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddTextEx">DialogAddTextEx</A></B><DD>Adds a text, an image, or a custom item into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddTitle">DialogAddTitle</A></B><DD>Adds a title bar and up to two buttons into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddTitleEx">DialogAddTitleEx</A></B><DD>Adds a title/header bar and up to two buttons into a dialog box. Extended version.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogAddXFlags">DialogAddXFlags</A></B><DD>Adds extended dialog properties into a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogDo">DialogDo</A></B><DD>Activates and shows a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogNew">DialogNew</A></B><DD>Creates a new dialog box which can interact with the user program.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogNewSimple">DialogNewSimple</A></B><DD>Creates a new dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DlgMessage">DlgMessage</A></B><DD>Displays a message dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HI_WORD">HI_WORD</A></B><DD>Returns the high word from a long value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#LO_WORD">LO_WORD</A></B><DD>Returns the low word from a long value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#NoCallBack">NoCallBack</A></B><DD>Dummy callback function doing nothing.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VarNew">VarNew</A></B><DD>Displays the standard "New" dialog.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VarOpen">VarOpen</A></B><DD>Displays the standard "Open" dialog.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#VarSaveAs">VarSaveAs</A></B><DD>Displays the standard "Save Copy As" dialog.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#CENTER">CENTER</A></B><DD>A constant to describe a centered position for dialogs.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogMessages">DialogMessages</A></B><DD>An enumeration to describe messages used by a Dialog's Callback.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#H_NULL">H_NULL</A></B><DD>A null-handle value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#Buttons">Buttons</A></B><DD>An enumeration to describe possible button types.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#Dialog_Callback_t">Dialog_Callback_t</A></B><DD>Callback function type for dialogs.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#Dialog_GetHandle_t">Dialog_GetHandle_t</A></B><DD>Callback function type returning a handle for a dialog item.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DIALOG_ITEM">DIALOG_ITEM</A></B><DD>A scructure for defining dialog items.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DIALOG_STRUCT">DIALOG</A></B><DD>A scructure for defining dialogs.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogFlags">DialogFlags</A></B><DD>An enumeration to describe possible item flags in a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogTypes">DialogTypes</A></B><DD>An enumeration to describe possible item types in a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DialogXFlags">DialogXFlags</A></B><DD>An enumeration to describe possible XFlags in a dialog box.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESQ">ESQ</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="vat.html#HSym">HSym</A></B><DD>A structure representing a symbol reference.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#OWNER_DRAW_STRUCT">OWNER_DRAW_STRUCT</A></B><DD>A scructure for defining an owner draw item.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_RECT">SCR_RECT</A></B><DD>A scructure for defining a rectangular area.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="graph.html#SCR_STATE">SCR_STATE</A></B><DD>A structure for saving the state of the graphics system.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WINDOW">WINDOW</A></B><DD>The main window-describing structure.</DL>
+<H3><U>Other Identifiers</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#SIZED_DIALOG">SIZED_DIALOG</A></B><DD>A macro to help defining dialogs, it is nearly the same as DIALOG.</DL>
+<P><B>Note:</B> If your program uses functions from this header file, you probably have to
+define <CODE><A HREF="httigcc.html#advanced_fileinuse">SET_FILE_IN_USE_BIT</A></CODE>.</P>
+
+<HR>
+<H3><A NAME="Dialog"><U>Dialog</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> Dialog (<A HREF="#DIALOG_STRUCT">DIALOG</A> *DialogPtr, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#int">char</A></B> *RequestBuffer, <B><A HREF="keywords.html#short">short</A></B> *PopupBuffer);</TD></TR></TABLE></P>
+<P><B>Shows and activates a dialog box given a pointer to a dialog structure.</B></P>
+
+<P>Dialog works exactly like <A HREF="#DialogDo">DialogDo</A>, except instead of the
+handle, a pointer to the dialog structure is given as the parameter.
+<A HREF="#DialogDo">DialogDo</A> internally calls <A HREF="alloc.html#HeapDeref">HeapDeref</A>,
+then passes the returned pointer to the Dialog function. This function is mainly used
+internally in TIOS. Its advantage compared to <A HREF="#DialogDo">DialogDo</A> is
+the fact that the complete dialog structure may be given as a static pre-filled
+array of bytes, and you can give a pointer to such a structure to the Dialog function.
+It will save a lot of memory, because you do not need to call <A HREF="#DialogNew">DialogNew</A> and 
+a lot of functions like <A HREF="#DialogAddText">DialogAddText</A> etc.
+<BR><BR>
+If DialogPtr points to a dynamically created dialog box (i.e a dialog created with <A HREF="#DialogNew">DialogNew</A>
+or <A HREF="#DialogAdd">DialogAdd</A>), the heap block that stores the dialog box must be locked
+because <I>this routine may cause heap compression</I>.
+<BR><BR>
+Dialog may return:</P>
+<UL><LI><P><CODE>KEY_ENTER</CODE> if the user pressed ENTER to close the dialog box.</P></LI>
+<LI><P><CODE>KEY_ESC</CODE> if the user pressed ESC to close the dialog box.</P></LI>
+<LI><P><CODE>-1</CODE> if there is not enough memory to open the menu for the dialog box.</P></LI></UL>
+
+<P>See also: <A HREF="#DialogDo">DialogDo</A></P>
+<HR>
+<H3><A NAME="DialogAdd"><U>DialogAdd</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAdd (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">short</A></B> ItemType, ...);</TD></TR></TABLE></P>
+<P><B>Adds an item into a dialog box.</B></P>
+
+<P>DialogAdd is a universal item-adding function. It is a very complicated
+function which accepts 6 to 12 parameters depending on the type of the item
+which will be added. This type is determined by the <I>ItemType</I>
+parameter. In fact, all other functions whose names begin with "DialogAdd..."
+(such as <A HREF="#DialogAddTextEx">DialogAddTextEx</A>,
+<A HREF="#DialogAddTitleEx">DialogAddTitleEx</A>,
+<A HREF="#DialogAddRequestEx">DialogAddRequestEx</A>,
+<A HREF="#DialogAddPulldownEx">DialogAddPulldownEx</A>, etc.) are
+implemented as macros which call DialogAdd with appropriate parameters (for
+easier usage), so you can mainly avoid this function. You can read the
+<CODE>dialogs.h</CODE> header file to see how exactly these macros are
+implemented.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+DialogAdd returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case of an
+error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you used
+<A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns <I>Handle</I>.
+This routine (as well as all other 'DialogAdd...' routines) may cause heap
+compression.
+<BR><BR>
+<I>ItemType</I> can be filled with one of the following commands, defined in
+the <A HREF="#DialogTypes">DialogTypes</A> enum:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B><I>ItemType</I></B></TD>
+  <TD><B>Appearance</B></TD>
+  <TD><B>Additional Parameters</B></TD>
+  <TD><B>Macro</B></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HEADER</TD>
+  <TD VALIGN="TOP">Title bar, up to two buttons</TD>
+  <TD VALIGN="TOP"><CODE>const char *title, unsigned short LeftButton, unsigned short RightButton</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddTitleEx">DialogAddTitleEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_TEXT</TD>
+  <TD VALIGN="TOP">Text or personalized item</TD>
+  <TD VALIGN="TOP"><CODE>const char *text</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddTextEx">DialogAddTextEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_EDIT_FIELD</TD>
+  <TD VALIGN="TOP">Request (edit) box</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, unsigned short offset, unsigned short MaxLen, unsigned short width</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddRequestEx">DialogAddRequestEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HEDIT</TD>
+  <TD VALIGN="TOP">Request (edit) box</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, unsigned short width</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddDynamicRequest">DialogAddDynamicRequest</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_POPUP</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, void *Popup, unsigned short buffer</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddStaticPulldown">DialogAddStaticPulldown</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_DYNPOPUP</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, Dialog_GetHandle_t GetPopup, unsigned short index</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddDynamicPulldown">DialogAddDynamicPulldown</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HPOPUP</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, HANDLE MenuHandle, unsigned short index</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddPulldownEx">DialogAddPulldownEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_MENU</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Main menu</TD>
+  <TD VALIGN="TOP"><CODE>void *Menu, unsigned short MaxMenuWidth</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddMenu">DialogAddMenu</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_SCROLL_REGION</TD>
+  <TD VALIGN="TOP">Scroll region</TD>
+  <TD VALIGN="TOP"><CODE>unsigned short x1, unsigned short y1, unsigned short FirstItem, unsigned short LastItem, unsigned short NumDspItems, unsigned short TotNumItems, unsigned short ItemHeight</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddScrollRegion">DialogAddScrollRegion</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_XFLAGS</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Extended dialog properties</TD>
+  <TD VALIGN="TOP"><CODE>unsigned short xFlags1, unsigned short xFlags2, unsigned short xFlags3, unsigned short xFlags4</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="#DialogAddXFlags">DialogAddXFlags</A></TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>flags</I> depends on the type of element you are creating
+and can be a combination of the following flags, defined in the
+<A HREF="#DialogFlags">DialogFlags</A> enum:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B>Flag</B></TD>
+  <TD><B>Item Type</B></TD>
+  <TD><B>Description</B></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SCREEN_SAVE</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>When applied to the first item in the dialog, the dialog code saves the
+      area underneath the dialog box when it is started. DialogAdd returns
+      <A HREF="#DialogMessages">DB_MEMFULL</A> if there is not enough
+      memory to do this.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SKIP</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.
+      For example, all text items should have this flag set.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SCROLLABLE</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_TAB_ELLIPSES</TD>
+  <TD VALIGN="TOP">Request box, pulldown menu</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. It is the default on AMS 1.xx.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_TAB_SPACES</TD>
+  <TD VALIGN="TOP">Request box, pulldown menu</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_OWNER_DRAW</TD>
+  <TD VALIGN="TOP">Text</TD>
+  <TD>AMS 2.00 or higher: The callback function (see
+      <A HREF="#DialogNew">DialogNew</A> for more information) is
+      responsible for drawing this item (which can be text, an image, or
+      anything else). This can only be done if the dialog was created with
+      <A HREF="#DialogNew">DialogNew</A> and not
+      <A HREF="#DialogNewSimple">DialogNewSimple</A>.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_POPUP_RADIO</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD>AMS 2.00 or higher: If this flag is set, the item looks like a normal
+      pulldown menu that you can select, but when you press the right arrow
+      key, it does not pop up as usual, but returns control to the dialog
+      callback function. This enables the programmer to do whatever he/she
+      wants.
+      For example, in the 'MODE' dialog, setting custom units pops up another
+      dialog instead of a pulldown menu.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_MAX_MENU_WIDTH</TD>
+  <TD VALIGN="TOP">Main menu</TD>
+  <TD>AMS 2.00 or higher: Passes
+      <A HREF="menus.html#MenuBeginFlags">MBF_MAX_MENU_WIDTH</A> to
+      <A HREF="menus.html#MenuBegin">MenuBegin</A> when the menu is
+      drawn.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_CLR_ON_REDRAW</TD>
+  <TD VALIGN="TOP">Scroll region</TD>
+  <TD>Clears the entire visible scroll region when redrawn. If you do not set
+      this flag, the scroll region will not be cleared before being redrawn,
+      and you might still see the previously drawn items underneath the new
+      ones.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> If you want your program to work in AMS 1.xx, you cannot pass
+D_MENU, D_DYNPOPUP, and D_XFLAGS to this function. Nevertheless, you can
+initialize a <A HREF="#DIALOG_STRUCT">DIALOG</A> structure with these
+items, and the program will still work on AMS 1.xx.</P>
+
+<P>See also: <A HREF="#DialogDo">DialogDo</A>, <A HREF="#DialogNew">DialogNew</A>, <A HREF="#DIALOG_STRUCT">DIALOG</A></P>
+<HR>
+<H3><A NAME="DialogAddDynamicPulldown"><U>DialogAddDynamicPulldown</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddDynamicPulldown (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *label, <A HREF="#Dialog_GetHandle_t">Dialog_GetHandle_t</A> GetPopup, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> index);</TD></TR></TABLE></P>
+<P><B>Adds a dynamic pulldown menu into a dialog box.</B></P>
+
+<P>DialogAddDynamicPulldown adds a pulldown item to the dialog box associated
+with the handle <I>Handle</I> at the position (<I>x</I>,<I>y</I>), where the
+coordinates are relative to the top-left corner of the dialog box.
+<BR><BR>
+When the pulldown is opened, the function passed to the <I>GetPopup</I>
+parameter is called (with the identification number of the newly created item
+as the value of the <I>ID</I> parameter), and it must return the handle of the
+actual popup menu (usually created using
+<A HREF="menus.html#PopupNew">PopupNew</A>). See
+<A HREF="menus.html">menus.h</A> for more information about creating
+popups.
+<BR><BR>
+An optional label <I>label</I> will appear in front of the request box; an
+empty string is used to indicate that no label should be drawn. The parameter
+<I>index</I> determines where the result value of executing the pulldown menu
+will be stored, and also indicates what the initially selected option will be.
+See <A HREF="#DialogDo">DialogDo</A> for information on how and where
+the result values are actually stored.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="#DialogFlags">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_ELLIPSES</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. It is the default on AMS 1.xx.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_SPACES</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+<TR>
+  <TD>DF_POPUP_RADIO</TD>
+  <TD>AMS 2.00 or higher: If this flag is set, the item looks like a normal
+      pulldown menu that you can select, but when you press the right arrow
+      key, it does not pop up as usual, but returns control to the dialog
+      callback function. This enables the programmer to do whatever he/she
+      wants.
+      For example, in the 'MODE' dialog, setting custom units pops up another
+      dialog instead of a pulldown menu.</TD>
+</TR>
+</TABLE>
+<BR>
+DialogAddDynamicPulldown returns <A HREF="alloc.html#H_NULL">H_NULL</A>
+in case of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A>
+if you used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines)
+may cause heap compression.
+<BR><BR>
+DialogAddDynamicPulldown is in fact a macro created for your convenience.
+It calls <A HREF="#DialogAdd">DialogAdd</A> with D_DYNPOPUP as the
+<I>ItemType</I> parameter.</P>
+
+<HR>
+<H3><A NAME="DialogAddDynamicRequest"><U>DialogAddDynamicRequest</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddDynamicRequest (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *label, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> width);</TD></TR></TABLE></P>
+<P><B>Adds a request/edit box with a dynamic buffer into a dialog box.</B></P>
+
+<P>DialogAddDynamicRequest adds a request box (i.e. an input line edit box) with a
+dynamic buffer to the dialog structure associated with the handle <I>Handle</I>
+at the position (<I>x</I>,<I>y</I>), where the coordinates are relative to the
+top-left corner of the dialog box. An optional label <I>label</I> will appear
+in front of the request box. An empty string, "", is used to indicate no label.
+<BR><BR>
+Items created with DialogAddDynamicRequest doesn't use the
+<I>RequestBuffer</I> array passed to the <A HREF="#Dialog">Dialog</A>
+function, so they do not need the <I>offset</I> and <I>MaxLen</I> values like
+normal edit items as described in
+<A HREF="#DialogAddRequestEx">DialogAddRequestEx</A>. Instead, the
+callback function (see <A HREF="#DialogNew">DialogNew</A> for more
+information) is called with the first parameter equal to DB_GET_EDIT_HANDLE and
+the second parameter equal to the item's identification number. The callback
+should then return the handle of an edit buffer of at least <I>width</I> bytes
+long. <I>width</I> determines the actual width of the request box (This is very
+useful when you need to prevent the user from overstepping a special size such
+as file names). It will be such that the widest string made of <I>width</I>
+characters may fit into the box. So, the real width of box in pixels will be
+<I>width</I>*6, because the widest character 'M' is 6 pixels wide. If you try
+to enter a string with more than <I>width</I> characters, the system will
+prevent you from doing so. If <I>width</I> is wider than the actually available
+width of the dialog box, the request box will be truncated at the edge of the
+dialog box.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="#DialogFlags">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_ELLIPSES</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. (It is the default on AMS 1.xx. See the note below
+      for more information.)</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_SPACES</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> On AMS 1.xx, all request boxes in one dialog box will be aligned
+according to the request box which has the longest label, except when the label
+string finishes with a '`' character (code 96). In such case, the request box
+will start immediately after the label string ('`' is a special character,
+which will not be displayed). When the label doesn't end with '`', it can be
+padded with '<B>.</B>' characters up to the length of the longest label, except
+if the label finishes with '<B>:</B>': In that case, the label will be padded
+with space characters ('<B>:</B>' will also be displayed).
+<BR><BR>
+DialogAddDynamicRequest returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddDynamicRequest is in fact a macro created for your convenience. It
+calls <A HREF="#DialogAdd">DialogAdd</A> with D_HEDIT as the
+<I>ItemType</I> parameter.</P>
+
+<HR>
+<H3><A NAME="DialogAddMenu"><U>DialogAddMenu</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddMenu (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#void">void</A></B> *Menu, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> MaxMenuWidth);</TD></TR></TABLE></P>
+<P><B>Adds a menu into a dialog box.</B></P>
+
+<P>DialogAddMenu adds the menu <I>Menu</I>, with a maximum width of
+<I>MaxMenuWidth</I> (or zero to automatically calculate the width) at the
+position (<I>x</I>,<I>y</I>) to the dialog structure associated with the handle
+<I>Handle</I>, where the coordinates are relative to the top-left corner of the
+dialog box.
+<BR><BR>
+A menu item is defined by a pointer <I>Menu</I> to a toolbar menu structure
+created statically (i.e. you must include a pre-filled static menu in your
+source code) or dynamically with <A HREF="menus.html#MenuNew">MenuNew</A>
+(in this case the caller must ensure the structure remains locked while in use
+in the dialog box, i.e. use <A HREF="alloc.html#HLock">HLock</A> in the
+same way as for <A HREF="menus.html#MenuBegin">MenuBegin</A>). The menu
+is drawn by an internal call to
+<A HREF="menus.html#MenuBegin">MenuBegin</A>. When a menu key is pressed,
+the callback's (see <A HREF="#DialogNew">DialogNew</A> for more
+information) <I>Message</I> value will be the item's identification number and
+<I>Value</I> will be passed the menu handle returned from
+<A HREF="menus.html#MenuBegin">MenuBegin</A> in the high word and the key
+code in the low word. You can specify a maximum width for your menu in
+<I>MaxMenuWidth</I> or zero if you want it to be automatically calculated. Each
+dialog box can have at most one menu. The creation of menus is explained in the
+header file <A HREF="menus.html">menus.h</A>. Note that if you want a
+menu, you must write a callback function, else you will not be able to do
+anything but dispaying it!
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="#DialogFlags">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_MAX_MENU_WIDTH</TD>
+  <TD>AMS 2.00 or higher: Passes
+      <A HREF="menus.html#MenuBeginFlags">MBF_MAX_MENU_WIDTH</A> to
+      <A HREF="menus.html#MenuBegin">MenuBegin</A> when the menu is
+      drawn.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+DialogAddMenu returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddMenu is in fact a macro created for your convenience. It calls
+<A HREF="#DialogAdd">DialogAdd</A> with D_MENU as the <I>ItemType</I>
+parameter.</P>
+
+<HR>
+<H3><A NAME="DialogAddPulldown"><U>DialogAddPulldown</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddPulldown (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *prompt, <A HREF="alloc.html#HANDLE">HANDLE</A> MenuHandle, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> index);</TD></TR></TABLE></P>
+<P><B>Adds a pulldown/popup menu into a dialog box.</B></P>
+
+<P>DialogAddPulldown works exactly as
+<A HREF="#DialogAddPulldownEx">DialogAddPulldownEx</A>, but doesn't have
+the <I>flags</I> parameter available. This routine is in fact a macro using
+<A HREF="#DialogAdd">DialogAdd</A> with D_HPOPUP passed as a command and
+zero passed as the flags. All the parameters are explained in
+<A HREF="#DialogAddPulldownEx">DialogAddPulldownEx</A>.</P>
+
+<HR>
+<H3><A NAME="DialogAddPulldownEx"><U>DialogAddPulldownEx</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddPulldownEx (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *label, <A HREF="alloc.html#HANDLE">HANDLE</A> PopupMenu, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> index);</TD></TR></TABLE></P>
+<P><B>Adds a pulldown/popup menu into a dialog box. Extended version.</B></P>
+
+<P>DialogAddPulldownEx adds the pulldown menu <I>PopupMenu</I> to the dialog
+structure associated with the handle <I>Handle</I> at the position
+(<I>x</I>,<I>y</I>), where the coordinates are relative to the top-left corner
+of the dialog box.
+<BR><BR>
+<I>label</I> is the label which will appear in front of the popup menu (or ""
+if you don't want any name), and <I>MenuHandle</I> is the handle of the
+associated menu which needs to be created using the
+<A HREF="menus.html#PopupNew">PopupNew</A> function (the same functions
+are used for creating pulldown and popup menus). See
+<A HREF="menus.html">menus.h</A> for more info about creating popups.
+The text must fit into one line of the dialog box.
+<BR><BR>
+The parameter <I>index</I> determines where the result value of executing the
+pulldown menu will be stored, and also indicates what the initially selected
+option will be. See <A HREF="#DialogDo">DialogDo</A> for information on
+how and where the result values are actually stored.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="#DialogFlags">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_ELLIPSES</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. It is the default on AMS 1.xx.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_SPACES</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+<TR>
+  <TD>DF_POPUP_RADIO</TD>
+  <TD>AMS 2.00 or higher: If this flag is set, the item looks like a normal
+      pulldown menu that you can select, but when you press the right arrow
+      key, it does not pop up as usual, but returns control to the dialog
+      callback function. This enables the programmer to do whatever he/she
+      wants.
+      For example, in the 'MODE' dialog, setting custom units pops up another
+      dialog instead of a pulldown menu.</TD>
+</TR>
+</TABLE>
+<BR>
+DialogAddPulldownEx returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddPulldownEx is in fact a macro created for your convenience. It calls
+<A HREF="#DialogAdd">DialogAdd</A> with D_HPOPUP as the <I>ItemType</I>
+parameter. Note that DialogAddPulldownEx is the same macro as
+<A HREF="#DialogAddPulldown">DialogAddPulldown</A> except for the
+parameter <I>flags</I> which is always set to zero in
+<A HREF="#DialogAddPulldown">DialogAddPulldown</A>.</P>
+
+<HR>
+<H3><A NAME="DialogAddRequest"><U>DialogAddRequest</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddRequest (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *prompt, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> offset, <B><A HREF="keywords.html#short">short</A></B> MaxLen, <B><A HREF="keywords.html#short">short</A></B> width);</TD></TR></TABLE></P>
+<P><B>Adds a request/edit box into a dialog box.</B></P>
+
+<P>DialogAddRequest works exactly as
+<A HREF="#DialogAddRequestEx">DialogAddRequestEx</A>, but doesn't have
+the <I>flags</I> parameter available. This routine is in fact a macro using
+<A HREF="#DialogAdd">DialogAdd</A> with D_EDIT_FIELD passed as a
+command and zero passed as the flags. All the parameters are explained in
+<A HREF="#DialogAddRequestEx">DialogAddRequestEx</A>.</P>
+
+<HR>
+<H3><A NAME="DialogAddRequestEx"><U>DialogAddRequestEx</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddRequestEx (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *label, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> offset, <B><A HREF="keywords.html#short">short</A></B> MaxLen, <B><A HREF="keywords.html#short">short</A></B> width);</TD></TR></TABLE></P>
+<P><B>Adds a request/edit box into a dialog box. Extended version.</B></P>
+
+<P>DialogAddRequestEx adds a request box (i.e. an input line edit box) to the
+dialog structure associated with the handle <I>Handle</I> at the position
+(<I>x</I>,<I>y</I>), where the coordinates are relative to the top-left corner
+of the dialog box. An optional label <I>label</I> will appear in front of the
+request box. An empty string, "", is used to indicate no label.
+<BR><BR>
+The maximal number of characters which may be entered is determined by the
+parameter <I>MaxLen</I> (<I>MaxLen</I> must at most have the size of the
+<I>RequestBuffer</I> given to <A HREF="#DialogDo">DialogDo</A>), and
+<I>width</I> determines the actual display width of the request box
+(<I>MaxLen</I> can be very usefull when you need to prevent the user from
+overstepping a special size such as file names). It will be such that the
+widest string made of <I>width</I> characters may fit into the box. So, the
+real display width of box in pixels will be <I>width</I>*6, because the widest
+character 'M' is 6 pixels wide. If you try to enter a string with more than
+<I>width</I> characters, the content of the request box will scroll, and if you
+try to have a string longer than <I>MaxLen</I>, the system will prevent you
+from doing so. If <I>width</I> is wider than the actually available width of
+the dialog box, the request box will be truncated at the edge of the dialog
+box.
+<BR><BR>
+The parameter <I>offset</I> determines what will be the initial content of the
+request box, and where the entered characters will be stored. See
+<A HREF="#DialogDo">DialogDo</A> for information on how and where the
+entered characters are actually stored.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="#DialogFlags">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_ELLIPSES</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. (It is the default on AMS 1.xx. See the note below
+      for more information.)</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_SPACES</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> On AMS 1.xx, all request boxes in one dialog box will be aligned
+according to the request box which has the longest label, except when the label
+string finishes with a '`' character (code 96). In such case, the request box
+will start immediately after the label string ('`' is a special character,
+which will not be displayed). When the label doesn't end with '`', it can be
+padded with '<B>.</B>' characters up to the length of the longest label, except
+if the label finishes with '<B>:</B>': In that case, the label will be padded
+with space characters ('<B>:</B>' will also be displayed).
+<BR><BR>
+DialogAddRequestEx returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddRequestEx is in fact a macro created for your convenience. It calls
+<A HREF="#DialogAdd">DialogAdd</A> with D_EDIT_FIELD as the
+<I>ItemType</I> parameter. Note that DialogAddRequestEx is the same macro as
+<A HREF="#DialogAddRequest">DialogAddRequest</A> except for the parameter
+<I>flags</I> which is always set to zero in
+<A HREF="#DialogAddRequest">DialogAddRequest</A>.</P>
+
+<HR>
+<H3><A NAME="DialogAddScrollRegion"><U>DialogAddScrollRegion</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddScrollRegion (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> x1, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> y1, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> FirstItem, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LastItem, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> NumDspItems, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> TotNumItems, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> ItemHeight);</TD></TR></TABLE></P>
+<P><B>Adds a rectangular item-scrolling region to a dialog box.</B></P>
+
+<P>DialogAddScrollRegion adds a rectangular item-scrolling region to the dialog
+structure associated with the handle <I>Handle</I> from the
+(<I>x</I>, <I>y</I>) position to the (<I>x1</I>, <I>y1</I>) position, where
+all coordinates are relative to the top-left corner of the dialog box.
+<BR><BR>
+A scroll region defines a group of items that will scroll as the user moves
+through the items.  The identification number of the first scrollable should
+be set in <I>FirstItem</I> and the last scrollable item in <I>LastItem</I>.
+<I>NumDspItems</I> defines the number of items that are displayed at one time.
+The total number of scrollable item should be set in <I>TotNumItems</I> and
+the height of each item in <I>ItemHeight</I>. Every scrollable item must be
+defined contiguously and have the DF_SCROLLABLE flag set and must not be of
+MENU, HEADER or XFLAGS type. The coordinates of the scrollable items are
+relative to the dialog box except that they may extend beyond the bottom
+coordinate of the dialog box. They are defined assuming a virtual scroll
+region.
+<BR><BR>
+It's very easy to cause display bugs using this function (of course, that
+won't crash your calculator, but the dialog can easily become ugly), so here
+is a method you can use to avoid those bugs: First, the standard item height
+is the height of the biggest item (often the EDIT item which is 10 pixel high),
+so the minimum value in <I>ItemHeight</I> should be 10 in most cases. Then, to
+avoid any display bugs, the <I>y</I> axis should be the y value of your first
+displayed item - 2 and <I>y1</I> axis should be the y value of your last
+displayed item + 8. I.e. if you wish to scroll 8 items and only display items
+3 by 3 (but please use the available screen space: don't just restrict the
+items displayed at a time to 3 just because everyone else does it), and the
+first scrollable item is item number 4 (the last displayed item at the
+beginning is therefore item 6), the calculation should be:
+<I>y</I>=(item 4 y axis)-2 and <I>y1</I>=(item 6 y axis)+8). The difference
+<I>x1</I>-<I>x</I> should also be greater than the width of the largest item
+(else it will result in display bugs). I don't really understand the utility
+of such a <I>TotNumItems</I> parameter as it should always be equal to
+<I>LastItem</I>-<I>FirstItem</I>+1. The flag DF_CLR_ON_REDRAW is very useful
+and should be set in most cases (see below).
+<BR><BR>
+<B>Note:</B> If you use a SCROLL_REGION, it must be the first item defined in
+the dialog box. A dialog box can therefore have at most one scroll region.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="#DialogFlags">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_CLR_ON_REDRAW</TD>
+  <TD>Clears the entire visible scroll region when redrawn. If you do not set
+      this flag, the scroll region will not be cleared before being redrawn,
+      and you might still see the previously drawn items underneath the new
+      ones.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+DialogAddScrollRegion returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddScrollRegion is in fact a macro created for your convenience. It calls
+<A HREF="#DialogAdd">DialogAdd</A> with D_SCROLL_REGION as the
+<I>ItemType</I> parameter.</P>
+
+<HR>
+<H3><A NAME="DialogAddStaticPulldown"><U>DialogAddStaticPulldown</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddStaticPulldown (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *label, <B><A HREF="keywords.html#void">void</A></B> *Popup, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> index);</TD></TR></TABLE></P>
+<P><B>Adds a static pulldown/popup menu into a dialog box.</B></P>
+
+<P>DialogAddStaticPulldown uses the pointer <I>Popup</I> to a static pre-filled
+popup menu structure (popup menus and dialog pulldowns are in fact the same
+structure) and adds this pulldown menu to the dialog structure associated with
+the handle <I>Handle</I> at the position (<I>x</I>,<I>y</I>), where the
+coordinates are relative to the top-left corner of the dialog box.
+<BR><BR>
+<I>label</I> is the label which will appear in front of the popup menu (or ""
+if you don't want any name), and <I>Popup</I> is a prefilled static
+<A HREF="menus.html#MenuPopup">popup structure</A> (i.e. you must write
+this popup in your source code; for dynamic pop-ups use
+<A HREF="#DialogAddPulldownEx">DialogAddPulldownEx</A>) of the
+associated menu. See <A HREF="menus.html">menus.h</A> for more info about
+creating static popups. The text must fit into one line of the dialog box.
+<BR><BR>
+The parameter <I>index</I> determines where the result value of executing the
+pulldown menu will be stored, and also indicates what the initially selected
+option will be. See <A HREF="#DialogDo">DialogDo</A> for information on
+how and where the result values are actually stored.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+DialogAddStaticPulldown works like
+<A HREF="#DialogAddPulldownEx">DialogAddPulldownEx</A>, but only accepts
+a static pre-filled dialog <I>Popup</I> instead of a handle.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="#DialogFlags">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_ELLIPSES</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. It is the default on AMS 1.xx.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_SPACES</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+<TR>
+  <TD>DF_POPUP_RADIO</TD>
+  <TD>AMS 2.00 or higher: If this flag is set, the item looks like a normal
+      pulldown menu that you can select, but when you press the right arrow
+      key, it does not pop up as usual, but returns control to the dialog
+      callback function. This enables the programmer to do whatever he/she
+      wants.
+      For example, in the 'MODE' dialog, setting custom units pops up another
+      dialog instead of a pulldown menu.</TD>
+</TR>
+</TABLE>
+<BR>
+DialogAddStaticPulldown returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddStaticPulldown is in fact a macro created for your convenience. It
+calls <A HREF="#DialogAdd">DialogAdd</A> with D_POPUP as the
+<I>ItemType</I> parameter.</P>
+
+<HR>
+<H3><A NAME="DialogAddText"><U>DialogAddText</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddText (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *text);</TD></TR></TABLE></P>
+<P><B>Adds a text into a dialog box.</B></P>
+
+<P>DialogAddText works exactly as <A HREF="#DialogAddTextEx">DialogAddTextEx</A>,
+but doesn't have the <I>flags</I> parameter available. This routine is in fact a
+macro using <A HREF="#DialogAdd">DialogAdd</A> with D_TEXT passed as a
+command and zero passed as the flags. All the parameters are explained in
+<A HREF="#DialogAddTextEx">DialogAddTextEx</A>.</P>
+
+<HR>
+<H3><A NAME="DialogAddTextEx"><U>DialogAddTextEx</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddTextEx(<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *text);</TD></TR></TABLE></P>
+<P><B>Adds a text, an image, or a custom item into a dialog box.</B></P>
+
+<P>DialogAddTextEx gives two possibilities:
+<BR><BR>
+The first one (if, as is the case of
+<A HREF="#DialogAddText">DialogAddText</A>, the <I>flags</I> parameter
+doesn't contain the DF_OWNER_DRAW flag) is to add the text <I>text</I> to the
+dialog structure associated with the handle <I>Handle</I> at the position
+(<I>x</I>, <I>y</I>), where the coordinates are relative to the top-left corner
+of the dialog box.
+<BR><BR>
+The second possibility (when the <I>flags</I> parameter contains the
+DF_OWNER_DRAW flag) is that DialogAddText can add any kind of item to the
+dialog structure associated with the handle <I>Handle</I> at the position
+(<I>x</I>, <I>y</I>), where the coordinates are relative to the top-left corner
+of the dialog box. (This position can later be ignored so owner draw items will
+not necessarily have to stick to this position.) You can create every kind of
+item you wish with this function (such as text, buttons, bitmaps...) as far as
+you create a callback function (see <A HREF="#DialogNew">DialogNew</A>
+for more details on the <I>CallBack</I> function). See the DF_OWNER_DRAW flag
+below for more information.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="#DialogFlags">DialogFlags</A> enumeration (DF_OWNER_DRAW
+is very important as it can increase the numbers of possible items in dialogs):
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_OWNER_DRAW</TD>
+  <TD>AMS 2.00 or higher: The callback function (see
+      <A HREF="#DialogNew">DialogNew</A> for more information) is
+      responsible for drawing this item (which can be text, an image, or
+      anything else). The parameters <I>text</I>, <I>x</I> and <I>y</I> will in
+      this case be ignored. This can only be done if the dialog was created with
+      <A HREF="#DialogNew">DialogNew</A> and not
+      <A HREF="#DialogNewSimple">DialogNewSimple</A>.<BR><BR>
+      If the DF_OWNER_DRAW flag is set, then the callback is passed the item
+      identification number and a pointer to an
+      <A HREF="#OWNER_DRAW_STRUCT">OWNER_DRAW_STRUCT</A> structure. 
+      The first value <I>Item</I> in this structure is a direct pointer to the
+      <A HREF="#DIALOG_ITEM">DIALOG_ITEM</A> structure for the item to
+      be drawn. The second value <I>pW</I> is a pointer to the
+      <A HREF="wingraph.html#WINDOW">WINDOW</A> structure for the dialog box.
+      Using this pointer, the callback can draw anything and anywhere to the
+      dialog box (all clipped to the dialog box window).</TD>
+</TR>
+</TABLE>
+<BR><BR>
+<B>Note:</B> By default, the DF_SKIP flag is set whenever you try to create
+text or owner draw items so you will not be able to focus on them.
+
+<BR><BR>
+DialogAddTextEx returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddTextEx is in fact a macro created for your convenience. It calls
+<A HREF="#DialogAdd">DialogAdd</A> with D_TEXT as the <I>ItemType</I>
+parameter. Note that DialogAddTextEx is the same macro as
+<A HREF="#DialogAddText">DialogAddText</A> except for the parameter
+<I>flags</I> which is always set to zero in
+<A HREF="#DialogAddText">DialogAddText</A>.</P>
+
+<HR>
+<H3><A NAME="DialogAddTitle"><U>DialogAddTitle</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddTitle (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *title, <B><A HREF="keywords.html#short">short</A></B> left_button, <B><A HREF="keywords.html#short">short</A></B> right_button);</TD></TR></TABLE></P>
+<P><B>Adds a title bar and up to two buttons into a dialog box.</B></P>
+
+<P>DialogAddTitle works exactly as
+<A HREF="#DialogAddTitleEx">DialogAddTitleEx</A>, but doesn't have the
+<I>flags</I> parameter available. This routine is in fact a macro using
+<A HREF="#DialogAdd">DialogAdd</A> with D_HEADER passed as a command
+and zero passed as the flags. All the parameters are explained in
+<A HREF="#DialogAddTitleEx">DialogAddTitleEx</A>.</P>
+
+<HR>
+<H3><A NAME="DialogAddTitleEx"><U>DialogAddTitleEx</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddTitleEx (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *title, <B><A HREF="keywords.html#short">short</A></B> left_button, <B><A HREF="keywords.html#short">short</A></B> right_button);</TD></TR></TABLE></P>
+<P><B>Adds a title/header bar and up to two buttons into a dialog box. Extended version.</B></P>
+
+<P>DialogAddTitleEx adds a title/header bar with the text <I>title</I> and up to
+two buttons to the dialog structure associated with the handle <I>Handle</I>.
+<BR><BR>
+The parameters <I>left_button</I> and <I>right_button</I> determine the type of
+the left and right buttons which eventually will appear at the bottom of the
+dialog box (by giving <A HREF="#Buttons">BT_NONE</A> as the parameter,
+you can skip adding a button). The set of possible buttons is very limited. See
+<A HREF="#DlgMessage">DlgMessage</A> for information about possible
+types. If you wish to have buttons without having a title bar, then you must
+use an owner draw item (see
+<A HREF="#DialogAddTextEx">DialogAddTextEx</A> and the explanation on
+owner draw items given with <A HREF="#DialogNew">DialogNew</A> for more
+information).
+<BR><BR>
+The parameter <I>flags</I> can be zero or DF_SCREEN_SAVE if you wish the dialog
+code to save the area underneath the dialog box when it is started, DB_MEMFULL
+is returned if it cannot. Note that if you use this flag, the title item must
+be the first one to be created. These flags are defined in the
+<A HREF="#DialogFlags">DialogFlags</A> enumeration.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+DialogAddTitleEx returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddTitleEx is in fact a macro created for your convenience. It calls
+<A HREF="#DialogAdd">DialogAdd</A> with D_HEADER as the <I>ItemType</I>
+parameter. Note that DialogAddTitleEx is the same macro as
+<A HREF="#DialogAddTitle">DialogAddTitle</A> except for the parameter
+<I>flags</I> which is always set to zero in
+<A HREF="#DialogAddTitle">DialogAddTitle</A>. In both functions, zero is
+passed to the <I>x</I> and <I>y</I> parameters. (These parameters are ignored
+when you use D_HEADER as the <I>ItemType</I>.)</P>
+
+<HR>
+<H3><A NAME="DialogAddXFlags"><U>DialogAddXFlags</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogAddXFlags (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> flags, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> xFlags1, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> xFlags2, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> xFlags3, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> xFlags4);</TD></TR></TABLE></P>
+<P><B>Adds extended dialog properties into a dialog box.</B></P>
+
+<P>DialogAddXFlags adds extended dialog properties to the dialog structure
+associated with the handle <I>Handle</I>.<BR>
+The XFLAGS item defines an array of four extended unsigned short flags (i.e.
+<I>xFlags1</I>, <I>xFlags2</I>, <I>xFlags3</I>, <I>xFlags4</I>.) Currently only
+<I>xFlags1</I> is used: the three remaining values should always be set to zero
+for future compatibility.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>xFlags1</I> may contain a combination of the following flags,
+defined in the <A HREF="#DialogXFlags">DialogXFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>XF_ALLOW_VARLINK</TD>
+<TD>Setting this extended <I>xflag</I> allows all EDIT (=request) items in the
+dialog box to allow the [VAR-LINK] key to be activated within the dialog box
+and to paste results to the edit item. If this <I>xflag</I> or
+XF_VARLINK_SELECT_ONLY is not set, then when [VAR-LINK] is pressed in a dialog
+box, the dialog will be closed and VAR-LINK will be activated.</TD>
+</TR>
+<TR>
+<TD>XF_NO_ALPHA_LOCK</TD>
+<TD>On the TI-89, Alpha-Lock is turned on for all dialog boxes with edit items.
+Setting this extended <I>xflag</I> disables this feature.</TD>
+</TR>
+<TR>
+<TD>XF_VARLINK_SELECT_ONLY</TD>
+<TD>This <I>xflag</I> is similar to XF_ALLOW_VARLINK except thet the user may
+not make any variable changes inside VAR-LINK (like deleting, copying,
+renaming, or locking variables).</TD>
+</TR>
+<TR>
+<TD>XF_TE_REPAINT</TD>
+<TD>This <I>xflag</I> is unknown for the moment. Do not use. </TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>flags</I> can be zero or DF_SCREEN_SAVE if you wish the dialog
+code to save the area underneath the dialog box when it is started and to
+return DB_MEMFULL if it cannot. Note that if you use this flag, the item must
+be the first one to be created. These flags are defined in the
+<A HREF="#DialogFlags">DialogFlags</A> enumeration.
+<BR><BR>
+DialogAddXFlags returns <A HREF="alloc.html#H_NULL">H_NULL</A> in case
+of an error, may return <A HREF="#DialogMessages">DB_MEMFULL</A> if you
+used <A HREF="#DialogFlags">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddXFlags is in fact a macro created for your convenience. It calls
+<A HREF="#DialogAdd">DialogAdd</A> with D_XFLAGS as the <I>ItemType</I>
+parameter and with zero passed to the <I>x</I> and <I>y</I> parameters. (These
+parameters are ignored when you use D_XFLAGS as the <I>ItemType</I>.)</P>
+
+<HR>
+<H3><A NAME="DialogDo"><U>DialogDo</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> DialogDo (<A HREF="alloc.html#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">short</A></B> x, <B><A HREF="keywords.html#short">short</A></B> y, <B><A HREF="keywords.html#int">char</A></B> *RequestBuffer, <B><A HREF="keywords.html#short">short</A></B> *PulldownBuffer);</TD></TR></TABLE></P>
+<P><B>Activates and shows a dialog box.</B></P>
+
+<P>DialogDo activates and shows on the screen the dialog associated with handle <I>Handle</I>.
+The top-left corner of the dialog will be at the position (<I>x</I>,&nbsp;<I>y</I>),
+where coordinates are absolute screen coordinates. <I>x</I>, <I>y</I> or both may
+also have a special value <A HREF="#CENTER">CENTER</A> which means "center the dialog on
+the screen in x, y or both directions". DialogDo returns <A HREF="kbd.html#CommonKeys">KEY_ENTER</A>
+or <A HREF="kbd.html#CommonKeys">KEY_ESC</A>, depending on whether the user
+exits the dialog by pressing ENTER or ESC key
+(note that structures pointed to by <I>RequestBuffer</I> and <I>PulldownBuffer</I> will be
+modified regardless of whether the user exits the dialog by pressing ENTER or ESC). It also
+may return a negative number in a case of error (e.g. not enough memory to display the dialog
+box). After the execution is finished, the original
+content of the screen will be restored. This routine may cause heap compression.
+<BR><BR>
+Parameter <I>RequestBuffer</I> is the pointer to the buffer where character entered
+into request boxes will be stored. This buffer may store more than one string; the characters
+entered into a request box will be stored starting from address
+<I>RequestBuffer</I> + <I>offset</I>, where <I>offset</I> is the parameter
+given with the <A HREF="#DialogAddRequest">DialogAddRequest</A> command which created
+this request box. Each stored
+string will be zero terminated. This buffer may be pre-filled with the initial content which
+will appear in request boxes. Namely, initial content of any request box will be
+a sequence of characters starting from address <I>RequestBuffer</I> + <I>offset</I>
+up to the first zero ('\0') character (where <I>offset</I> is the parameter given when
+the request box is created). If the dialog does not contain any request boxes,
+<I>RequestBuffer</I> may be <A HREF="alloc.html#NULL">NULL</A>.
+<BR><BR>
+Parameter <I>PulldownBuffer</I> is the pointer to the buffer where return values
+of execution of pulldown menus will be stored. This buffer is, in fact, an array of
+integers; the return value of executing a pulldown menu will be stored in
+<I>PulldownBuffer</I>[<I>index</I>], where <I>index</I> is the parameter
+given with the <A HREF="#DialogAddPulldown">DialogAddPulldown</A> command which created
+this pulldown menu. This array may be pre-filled with the ordinal numbers of initial
+option in pulldown menus. Namely, initially selected option content of any pulldown menu
+will be an option with ordinal number <I>PulldownBuffer</I>[<I>index</I>]
+(where <I>index</I> is the parameter given when the pulldown menu was created).
+If the dialog does not contain any pulldown menus,
+<I>PulldownBuffer</I> may be <A HREF="alloc.html#NULL">NULL</A>.
+<BR><BR>
+Here is a concrete example (called "Dialog Test"), which creates a dialog which asks the
+user for his name, then displays a message box with a greeting message in which the user's
+name is included, except if the user pressed the ESC key:</P>
+<PRE>// Display a simple dialog box and let the user enter a name
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  char buffer[27] = &quot;Hello &quot;;
+    // 6 bytes &quot;Hello &quot;, max. 20 bytes name, 1 zero byte
+  HANDLE handle = DialogNewSimple (140, 55);
+  DialogAddTitle (handle, &quot;EXAMPLE&quot;, BT_OK, BT_CANCEL);
+  DialogAddText (handle, 3, 20, &quot;Enter name (max. 20 chars)&quot;);
+  DialogAddRequest (handle, 3, 30, &quot;Your name&quot;, 6, 20, 14);
+  if (DialogDo (handle, CENTER, CENTER, buffer, NULL) == KEY_ENTER)
+    DlgMessage (&quot;GREETINGS&quot;, buffer, BT_OK, BT_NONE);
+  HeapFree (handle);
+}
+</PRE>
+
+<HR>
+<H3><A NAME="DialogNew"><U>DialogNew</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogNew (<B><A HREF="keywords.html#short">short</A></B> Width, <B><A HREF="keywords.html#short">short</A></B> Height, <A HREF="#Dialog_Callback_t">Dialog_Callback_t</A> Callback);</TD></TR></TABLE></P>
+<P><B>Creates a new dialog box which can interact with the user program.</B></P>
+
+<P>DialogNew acts like <A HREF="#DialogNewSimple">DialogNewSimple</A>,
+but accepts a pointer to a user callback function <I>Callback</I> as a third
+parameter (i.e. you must pass the pointer of a function you wrote in your
+source code which contains the parameter types defined by
+<A HREF="#Dialog_Callback_t">Dialog_Callback_t</A>). This function is
+called more than once during the dialog's execution.
+<BR><BR>
+Such a user function allows for interaction between the dialog box and the
+user program, and permits the creation of dialog boxes which dynamically
+change their contents during execution. This is a kind of event-driven
+programming: When an event occurs in the dialog, the <I>Callback</I> function
+will be called with a specific Message parameter <I>Message</I> that should
+be processed so as to know what data the parameter <I>Value</I> contains.
+Events are only sent on a few occasions, which include:</P>
+<UL>
+<LI><P>when an item in the dialog box is created or recreated;</P></LI>
+<LI><P>when an item receives the focus;</P></LI>
+<LI><P>when the user acts on an item. The moment the callback function is called
+depends on the kind of item (some elements need to call the <I>Callback</I>
+function when they are activated, some others need to call this function when
+they return from activation). For example, the callback is called after the
+user pressed ENTER in a request box or after execution of any pulldown menu.</P></LI>
+</UL>
+<P>This function has to return a value, whose meaning also depends on the input
+<I>Message</I> parameter. However, in simple dialog boxes without any dynamic
+elements, you may always pass <A HREF="alloc.html#Bool">TRUE</A>, which
+is the same as <A HREF="#DialogMessages">DB_CONTINUE</A>, i.e.
+the standard return value. Note that if you do not want to take care of the
+<I>Callback</I> function at all (i.e. if you do not want to write such a
+function) you can use the already written
+<A HREF="#NoCallBack">NoCallBack</A> function, which does nothing but
+return <A HREF="alloc.html#Bool">TRUE</A> whatever the entering message
+is (but in that case, the best thing is to use
+<A HREF="#DialogNewSimple">DialogNewSimple</A>, which in fact is a
+macro using both DialogNew and <A HREF="#NoCallBack">NoCallBack</A>).
+<BR><BR>
+Note that if you choose not to create a CallBack function, some of the items
+(such as <A HREF="#DialogTypes">D_MENU</A>) and the
+<A HREF="#DialogFlags">DF_OWNER_DRAW</A> flag will not be very
+useful for you as they need to be handled in the callback function.
+<BR><BR>
+The following table shows what the <I>Message</I> value can be, when events
+occur and what you should return from <I>Callback</I>. The constants are
+defined in the enum <A HREF="#DialogMessages">DialogMessages</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>A nonnegative value</TD>
+  <TD>This occurs when the user pressed ENTER to activate an item, or to
+      return from an activated item.
+      <BR>
+      This nonnegative value is in fact the identification number of an item
+      in a dialog. This identification number is created automatically when
+      you use one of the creation functions
+      <A HREF="#DialogAdd">DialogAdd</A>,
+      <A HREF="#DialogAddText">DialogAddText</A>,
+      <A HREF="#DialogAddPulldown">DialogAddPulldown</A>,
+      and all other functions starting with "DialogAdd". A value of 0
+      represents the first item you created in the dialog box, 1 is the
+      second one, 2 the third one, and so on.
+      <BR>
+      The meaning of the <I>Value</I> parameter depends on the type of the
+      item. See below for a list of possible meanings.
+      <BR>
+      The return value should be a message from the enum
+      <A HREF="#DialogMessages">DialogMessages</A>:
+      <BR>
+      <TABLE BORDER CELLPADDING="3">
+      <TR>
+        <TD>DB_CONTINUE</TD>
+        <TD>Process the key pressed by the user, but do not redraw the dialog
+            box.</TD>
+      </TR>
+      <TR>
+        <TD>DB_REDRAW</TD>
+        <TD>Redraw the dialog box and ignore the key pressed by the user.
+            </TD>
+      </TR>
+      <TR>
+        <TD>DB_REDRAW_AND_CONTINUE</TD>
+        <TD>Redraw the dialog box, then process the key pressed by the user.
+            </TD>
+      </TR>
+      <TR>
+        <TD>DB_EXIT</TD>
+        <TD>You can return this value if you want the dialog box to
+            stop its execution immediately.</TD>
+      </TR>
+    </TABLE></TD>
+</TR>
+<TR>
+  <TD>DB_QACTIVE</TD>
+  <TD>Query the status of an item (enabled/disabled).
+      <BR>
+      This occurs whenever an item in the dialog box is created, gets the
+      focus, or whenever the dialog box needs to update the state of the
+      item. In this case, the value passed through <I>Value</I> is the
+      identification number of an item in the dialog (0 for the first one, 1
+      for the second one, and so on). You should return
+      <A HREF="alloc.html#Bool">TRUE</A> if the item is enabled and
+      should not be grayed out, or <A HREF="alloc.html#Bool">FALSE</A>
+      if the item is disabled and must be grayed out). Note that static items
+      such as <A HREF="#DialogTypes">D_TITLE</A> and
+      <A HREF="#DialogTypes">D_TEXT</A> are not even drawn if they
+      are disabled.
+  </TD>
+</TR>
+<TR>
+  <TD>DB_GET_TITLE</TD>
+  <TD>Query the title of a dynamic header.
+      <BR>
+      This event occurs when a special title bar which may be added to the
+      dialog using <A HREF="#DialogAdd">DialogAdd</A> with
+      <I>ItemType</I> set to
+      <A HREF="#DialogTypes">D_DYNHEADER</A> is created. The
+      <I>Value</I> parameter will be zero, and the callback function must
+      return the text for the title of the dialog box.
+      <BR>
+      <B>Note:</B> as statically created dynamic titles are not known very
+      well for the moment, in most cases you do not have to care about this
+      value.</TD>
+</TR>
+<TR>
+  <TD>DB_GET_EDIT_HANDLE</TD>
+  <TD>Query the text buffer of a dynamic edit field.
+      <BR>
+      This event occurs when a special request box which may be added to the
+      dialog using <A HREF="#DialogAdd">DialogAdd</A> with
+      <I>ItemType</I> set to <A HREF="#DialogTypes">D_HEDIT</A>
+      (or using
+      <A HREF="#DialogAddDynamicRequest">DialogAddDynamicRequest</A>)
+      is created or gets the focus. The value contained in <I>Value</I> is
+      the identification number of this edit box item in the dialog. The
+      callback function must return a handle which points to a buffer from
+      where this request box will get its initial value, and where the
+      contents of the request box will be stored. You may need the
+      <A HREF="alloc.html#HeapAlloc">HeapAlloc</A> function to get a new
+      handle and <A HREF="alloc.html#HeapDeref">HeapDeref</A> to access
+      the associated buffer (see the example below).
+      <BR>
+      <B>Note:</B> See
+      <A HREF="#DialogAddDynamicRequest">DialogAddDynamicRequest</A>
+      for more details about this special feature.</TD>
+</TR>
+</TABLE>
+<BR>
+The following table shows what the <I>Value</I> parameter is if
+<I>Message</I> is a nonnegative value, depending on the item type:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>Pulldown</TD>
+  <TD>If the item identified by <I>Message</I> is a pulldown menu (i.e. if
+      this item has been created using
+      <A HREF="#DialogAddPulldown">DialogAddPulldown</A> or
+      <A HREF="#DialogAddPulldownEx">DialogAddPulldownEx</A>, or
+      <A HREF="#DialogAdd">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="#DialogTypes">D_POPUP</A>,
+      <A HREF="#DialogTypes">D_HPOPUP</A> or
+      <A HREF="#DialogTypes">D_DYNPOPUP</A>), the value contained
+      in <I>Value</I> is the identification number of the item selected in
+      the pulldown menu (<I>not</I> one of a dialog item). The event occurs
+      only when the user selects an item and presses ENTER.</TD>
+</TR>
+<TR>
+  <TD>Request</TD>
+  <TD>If the item identified by <I>Message</I> is a request item (i.e. if
+      this item has been created using
+      <A HREF="#DialogAddRequest">DialogAddRequest</A> or
+      <A HREF="#DialogAddRequestEx">DialogAddRequestEx</A>, or
+      <A HREF="#DialogAdd">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="#DialogTypes">D_HEDIT</A> or
+      <A HREF="#DialogTypes">D_EDIT_FIELD</A>), the value
+      contained in <I>Value</I> is a pointer pointing to the data the user
+      just entered.
+      </TD>
+</TR>
+<TR>
+  <TD>Menu</TD>
+  <TD>If the item identified by <I>Message</I> is a menu (i.e. if this item
+      has been added using <A HREF="#DialogAddMenu">DialogAddMenu</A>
+      or <A HREF="#DialogAdd">DialogAdd</A> with <I>ItemType</I> set
+      to <A HREF="#DialogTypes">D_MENU</A>), the value contained
+      in <I>Value</I> is in fact the composition of two values: the 16 most
+      significant bits (the high word) of <I>Value</I> contain the execution
+      handle of the menu (the dialog box code calls
+      <A HREF="menus.html#MenuBegin">MenuBegin</A> initially to get a
+      handle for the menu) and the 16 least significant bits (the low word)
+      contain the key pressed by the user to activate the menu (for your
+      convenience, common key values are defined in the
+      <A HREF="kbd.html#CommonKeys">CommonKeys</A> enum). The macros
+      <A HREF="#LO_WORD">LO_WORD</A> and
+      <A HREF="#HI_WORD">HI_WORD</A> have been created to get both
+      values easily. The callback function may activate the menu or change
+      anything in it if needed. See
+      <A HREF="menus.html#MenuKey">MenuKey</A> for more details on
+      activating a menu.
+      <BR>
+      <B>Note:</B> The return value of a menu differs from that of any other
+      element: Returning a positive value will select (focus on) the dialog
+      item whose identification number is equal to the value you returned.
+      (This feature is mainly used in the TIOS 'MODE' dialog where pressing
+      F1, F2 or F3 changes the page displayed, which is achieved by changing
+      the focus.) With AMS 2.xx the return value can also be one of
+      <A HREF="#DialogMessages">DB_REDRAW</A>,
+      <A HREF="#DialogMessages">DB_REDRAW_AND_CONTINUE</A> or
+      <A HREF="#DialogMessages">DB_EXIT</A>, but <I>not</I>
+      <A HREF="#DialogMessages">DB_CONTINUE</A>, since that
+      value is positive.</TD>
+</TR>
+<TR>
+  <TD>Owner Draw Text</TD>
+  <TD>If the item identified by <I>Message</I> is an owner draw text/image
+      (i.e. if this item has been created using
+      <A HREF="#DialogAdd">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="#DialogTypes">D_TEXT</A> and <I>Flags</I>
+      containing <A HREF="#DialogXFlags">DF_OWNER_DRAW</A>), the value
+      contained in <I>Value</I> is a pointer to an
+      <A HREF="#OWNER_DRAW_STRUCT">OWNER_DRAW_STRUCT</A> structure.
+      The <I>Item</I> field in this structure is a direct pointer to the
+      <A HREF="#DIALOG_ITEM">DIALOG_ITEM</A> structure for the item
+      to be drawn (this is not normally used). The <I>pW</I> field is a
+      pointer to the <A HREF="wingraph.html#WINDOW">WINDOW</A> structure
+      for the dialog box. Using this pointer, the callback function can draw
+      anything anywhere to the dialog box (clipped to the window of the
+      dialog box). For example, you can draw simple text using the
+      <A HREF="wingraph.html#WinStrXY">WinStrXY</A> function, or draw a
+      standard button using
+      <A HREF="wingraph.html#DrawStaticButton">DrawStaticButton</A>, or
+      a bitmap using
+      <A HREF="wingraph.html#WinBitmapPut">WinBitmapPut</A>, etc. In
+      general, you will be able to use any of the functions from
+      <A HREF="wingraph.html">wingraph.h</A>.</TD>
+</TR>
+</TABLE>
+<BR>
+All other item types cannot be activated; <I>Callback</I> will not be called
+with their identification number as the <I>Message</I> parameter.
+<BR><BR>
+After pressing ENTER in a request box or after execution of a pulldown menu,
+the <A HREF="#DialogMessages">DB_QACTIVE</A> message will be sent to
+all items in the dialog. This permits the user to create dialogs in which the
+selection of various options in pulldown menus enables or disables some other
+items.
+<BR><BR>
+<B>Note:</B> It might be useful for you to know that dereferencing the handle
+returned by DialogNew with <A HREF="alloc.html#HeapDeref">HeapDeref</A>
+or with <A HREF="alloc.html#HLock">HLock</A> returns a pointer to the
+dialog's <A HREF="#DIALOG_STRUCT">DIALOG</A> structure.</P>
+
+<P>See also: <A HREF="#DialogDo">DialogDo</A>, <A HREF="#Dialog">Dialog</A>, <A HREF="#DialogAdd">DialogAdd</A>, <A HREF="#DIALOG_STRUCT">DIALOG</A></P>
+<HR>
+<H3><A NAME="DialogNewSimple"><U>DialogNewSimple</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> DialogNewSimple (<B><A HREF="keywords.html#short">short</A></B> width, <B><A HREF="keywords.html#short">short</A></B> height);</TD></TR></TABLE></P>
+<P><B>Creates a new dialog box.</B></P>
+
+<P>DialogNewSimple allocates memory for a dialog box with dimensions <I>width</I>&nbsp;x&nbsp;<I>height</I>,
+initializes allocated block with necessary structures and returns a handle to it (or <A HREF="alloc.html#H_NULL">H_NULL</A> in case of
+error). This routine may cause heap compression.
+DialogNewSimple in fact calls <A HREF="#DialogNew">DialogNew</A> with
+<A HREF="#NoCallBack">NoCallBack</A> as third parameter.
+<BR><BR>
+<B>Note:</B> You can later free the memory by calling <A HREF="alloc.html#HeapFree">HeapFree</A>.</P>
+
+<HR>
+<H3><A NAME="DlgMessage"><U>DlgMessage</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> DlgMessage (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *title, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *message, <B><A HREF="keywords.html#short">short</A></B> left_button, <B><A HREF="keywords.html#short">short</A></B> right_button);</TD></TR></TABLE></P>
+<P><B>Displays a message dialog box.</B></P>
+
+<P>DlgMessage displays a message dialog box, where <I>title</I> is the title string
+(pass <A HREF="alloc.html#NULL">NULL</A> for no title), and
+<I>message</I> is the content of the message. Both <I>title</I> and <I>message</I>
+must fit into one screen line, else the calculator will crash (however, on AMS 2.xx, a long
+message will simply be wrapped in the dialog box). Parameters <I>left_button</I>
+and <I>right_button</I> determine the type of the left and right buttons which will appear
+at the bottom of the dialog box. The set of possible buttons is very limited, and possible
+types are defined in enum <A HREF="#Buttons">Buttons</A> (any other values will cause a crash).
+The meanings of these constants are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>BT_NONE</TD><TD>No button at all</TD>
+</TR><TR>
+<TD>BT_OK</TD><TD>Button "Enter=OK"</TD>
+</TR><TR>
+<TD>BT_SAVE</TD><TD>Button "Enter=SAVE"</TD>
+</TR><TR>
+<TD>BT_YES</TD><TD>Button "Enter=YES"</TD>
+</TR><TR>
+<TD>BT_CANCEL</TD><TD>Button "Esc=CANCEL"</TD>
+</TR><TR>
+<TD>BT_NO</TD><TD>Button "ESC=NO"</TD>
+</TR><TR>
+<TD>BT_GOTO</TD><TD>Button "Enter=GOTO"</TD>
+</TR></TABLE>
+<BR>
+DlgMessage returns <A HREF="kbd.html#CommonKeys">KEY_ENTER</A> or <A HREF="kbd.html#CommonKeys">KEY_ESC</A>,
+depending on whether the user exits the dialog by pressing the ENTER or ESC key. This routine may
+cause heap compression.</P>
+
+<HR>
+<H3><A NAME="HI_WORD"><U>HI_WORD</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> HI_WORD(<B><A HREF="keywords.html#short">long</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the high word from a long value.</B></P>
+
+<P>This function returns the highest short value (the 16 most significant bits) of a long value. This macro function was created for <A HREF="#DialogNew">DialogNew</A>.</P>
+
+<HR>
+<H3><A NAME="LO_WORD"><U>LO_WORD</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> LO_WORD (<B><A HREF="keywords.html#short">long</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the low word from a long value.</B></P>
+
+<P>This function returns the lowest short value (the 16 least significant bits) of a long value. This macro function was created for <A HREF="#DialogNew">DialogNew</A>.</P>
+
+<HR>
+<H3><A NAME="NoCallBack"><U>NoCallBack</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> NoCallBack (<B><A HREF="keywords.html#short">short</A></B> Message, <B><A HREF="keywords.html#short">long</A></B> Value);</TD></TR></TABLE></P>
+<P><B>Dummy callback function doing nothing.</B></P>
+
+<P>NoCallBack is a dummy function which does nothing, and always returns 1 as result.
+The purpose of this function lies in the fact that it may be given as a third parameter
+to the function <A HREF="#DialogNew">DialogNew</A>, when there is no need for an
+interaction with the user program during the execution of the dialog (i.e. no
+"calling back"). <A HREF="#DialogNewSimple">DialogNewSimple</A> does exactly this:
+it calls <A HREF="#DialogNew">DialogNew</A> with NoCallBack as a third parameter.
+<BR><BR>
+<B>Note:</B> This routine was in TIOS jump table up to AMS 1.xx. In AMS 2.xx it is not 
+in the jump table! Here, NoCallBack is implemented on such whay that it can be used on
+any version of AMS.</P>
+
+<HR>
+<H3><A NAME="VarNew"><U>VarNew</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="vat.html#HSym">HSym</A> VarNew (<B><A HREF="keywords.html#const">const</A></B> <A HREF="estack.html#ESQ">ESQ</A> *FileTypes, ...);</TD></TR></TABLE></P>
+<P><B>Displays the standard "New" dialog.</B></P>
+
+<P>VarNew implements the standard "New" dialog. The user may select a type to
+create as well as the folder to create the new variable in, and then may type
+in a variable name.
+<BR><BR>
+<I>FileTypes</I> is a pointer to a zero-terminated array of types that are
+supported (see <A HREF="#VarOpen">VarOpen</A> for more info). VarNew
+returns the <A HREF="vat.html#HSym">HSym</A> descriptor of the newly
+created symbol, or <A HREF="alloc.html#H_NULL">H_NULL</A> if the user
+presses 'ESC' or in case of an error.
+<BR><BR>
+This function may cause heap compression.</P>
+
+<P>See also: <A HREF="#VarOpen">VarOpen</A>, <A HREF="#VarSaveAs">VarSaveAs</A></P>
+<HR>
+<H3><A NAME="VarOpen"><U>VarOpen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="vat.html#HSym">HSym</A> VarOpen (<B><A HREF="keywords.html#const">const</A></B> <A HREF="estack.html#ESQ">ESQ</A> *FileTypes, ...);</TD></TR></TABLE></P>
+<P><B>Displays the standard "Open" dialog.</B></P>
+
+<P>VarOpen implements the standard "Open" dialog. The user may select a type,
+the folder to look in, and finally a symbol in the selected folder which
+matches the selected type.
+<BR><BR>
+<I>FileTypes</I> is a pointer to a zero-terminated array of types that are
+supported. These types are, in fact, tags (see the
+<A HREF="estack.html#Tags">Tags</A> enum for more info). Supported
+tags are:
+<A HREF="estack.html#EQ_TAG">EQ_TAG</A> (expression),
+<A HREF="estack.html#STR_TAG">STR_TAG</A> (string),
+<A HREF="estack.html#LIST_TAG">LIST_TAG</A> (list),
+<A HREF="estack.html#MATRIX_TAG">MATRIX_TAG</A> (matrix),
+<A HREF="estack.html#PRGM_ITAG">PRGM_ITAG</A> (program),
+<A HREF="estack.html#FUNC_ITAG">FUNC_ITAG</A> (function), 
+<A HREF="estack.html#DATA_TAG">DATA_TAG</A> (data),
+<A HREF="estack.html#GDB_TAG">GDB_TAG</A> (Graph Database),
+<A HREF="estack.html#PIC_TAG">PIC_TAG</A> (picture),
+<A HREF="estack.html#TEXT_TAG">TEXT_TAG</A> (text), 
+<A HREF="estack.html#FIG_TAG">FIG_TAG</A> (geometry figure),
+<A HREF="estack.html#MAC_TAG">MAC_TAG</A> (geometry macro),
+<A HREF="estack.html#ASM_TAG">ASM_TAG</A> (assembly program), and
+<A HREF="estack.html#OTH_TAG">OTH_TAG</A> (custom-type file).
+Each value in the <I>FileTypes</I> list will be presented to the user in a
+pulldown menu, unless there is only one value in the list (then it will be a
+static field).
+<BR><BR>
+VarOpen returns the <A HREF="vat.html#HSym">HSym</A>
+descriptor of the selected symbol, or
+<A HREF="vat.html#HS_NULL">HS_NULL</A> if the user pressed 'ESC' or in
+case of an error.
+<BR><BR>
+If the <I>FileTypes</I> list contains
+<A HREF="estack.html#OTH_TAG">OTH_TAG</A> items, an extra parameter of type
+<CODE>char **</CODE> is required. This parameter is an array of strings (more
+precisely, of char pointers). There must be exactly one char pointer for each
+<A HREF="estack.html#OTH_TAG">OTH_TAG</A> item in the <I>FileTypes</I>
+list, and these pointers should point to the text to display in the pulldown
+menu for these custom types.
+<BR><BR>
+This function may cause heap compression.</P>
+
+<P>See also: <A HREF="#VarNew">VarNew</A>, <A HREF="#VarSaveAs">VarSaveAs</A></P>
+<HR>
+<H3><A NAME="VarSaveAs"><U>VarSaveAs</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="vat.html#HSym">HSym</A> VarSaveAs (<B><A HREF="keywords.html#const">const</A></B> <A HREF="estack.html#ESQ">ESQ</A> *FileTypes, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *TitleSym, ...);</TD></TR></TABLE></P>
+<P><B>Displays the standard "Save Copy As" dialog.</B></P>
+
+<P>VarSaveAs implements the standard "Save Copy As" dialog. The user may select
+a type as well as the folder to save the symbol in, and finally has to enter
+the symbol name.
+<BR><BR>
+<I>FileTypes</I> is a pointer to a zero-terminated array of types that are
+supported (see <A HREF="#VarOpen">VarOpen</A> for more info).
+<I>TitleSym</I> is a string that will be placed in the title of the dialog
+box (the title will have the form "SAVE COPY OF <I>TitleSym</I> AS").
+Alternatively, <I>TitleSym</I> may be <A HREF="alloc.html#NULL">NULL</A>
+if no such title is wanted.
+<BR><BR>
+VarSaveAs returns the <A HREF="vat.html#HSym">HSym</A> descriptor of the
+newly created symbol, or <A HREF="alloc.html#H_NULL">H_NULL</A> if the
+user pressed 'ESC' or in case of an error. This function is essentially the
+same as <A HREF="#VarNew">VarNew</A>, only the different dialog type
+is used.
+<BR><BR>
+This function may cause heap compression.</P>
+
+<P>See also: <A HREF="#VarNew">VarNew</A>, <A HREF="#VarOpen">VarOpen</A></P>
+<HR>
+<H3><A NAME="CENTER"><U>CENTER</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> CENTER (-1)</TD></TR></TABLE></P>
+<P><B>A constant to describe a centered position for dialogs.</B></P>
+
+<P>When used in the <A HREF="#DialogDo">DialogDo</A> or <A HREF="menus.html#PopupDo">PopupDo</A> command as a parameter, CENTER means
+"center the dialog or popup menu on the screen in x, y or both directions," depending on which parameter
+CENTER is used as.</P>
+
+<HR>
+<H3><A NAME="DialogMessages"><U>DialogMessages</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> DialogMessages {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+DB_CONTINUE =1, DB_MEMFULL = -1, DB_QACTIVE = -2, DB_REDRAW = -3, DB_REDRAW_AND_CONTINUE = -4, DB_UNKNOWN = -5,DB_GET_EDIT_HANDLE = -6, DB_GET_TITLE = -7, DB_EXIT = -8</TD></TR></TABLE>
+};</TD></TR></TABLE></P>
+<P><B>An enumeration to describe messages used by a Dialog's Callback.</B></P>
+
+<HR>
+<H3><A NAME="Buttons"><U>Buttons</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> Buttons {BT_NONE = 0, BT_OK = 1, BT_SAVE = 2, BT_YES = 3, BT_CANCEL = 4, BT_NO = 5, BT_GOTO = 6};</TD></TR></TABLE></P>
+<P><B>An enumeration to describe possible button types.</B></P>
+
+<P>Describes the button types used in <A HREF="#DlgMessage">DlgMessage</A>.</P>
+
+<HR>
+<H3><A NAME="Dialog_Callback_t"><U>Dialog_Callback_t</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <A HREF="gnuexts.html#SEC85">CALLBACK</A> <B><A HREF="keywords.html#short">short</A></B> (*Dialog_Callback_t) (<B><A HREF="keywords.html#short">short</A></B> Message, <B><A HREF="keywords.html#short">long</A></B> Value);</TD></TR></TABLE></P>
+<P><B>Callback function type for dialogs.</B></P>
+
+<P>Dialog_Callback_t is used in <A HREF="#DialogNew">DialogNew</A> and in
+the <A HREF="#DIALOG_STRUCT">DIALOG</A> structure to provide a
+callback mechanism for events in the dialog box.</P>
+
+<P>Deprecated alias: DialogNew_t</P>
+<HR>
+<H3><A NAME="Dialog_GetHandle_t"><U>Dialog_GetHandle_t</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <A HREF="gnuexts.html#SEC85">CALLBACK</A> <A HREF="alloc.html#HANDLE">HANDLE</A> (*Dialog_GetHandle_t) (<B><A HREF="keywords.html#short">short</A></B> ID);</TD></TR></TABLE></P>
+<P><B>Callback function type returning a handle for a dialog item.</B></P>
+
+<P>Dialog_GetHandle_t is used in
+<A HREF="#DialogAddDynamicPulldown">DialogAddDynamicPulldown</A> to
+let the program generate the menu handle on demand.</P>
+
+<HR>
+<H3><A NAME="DIALOG_ITEM"><U>DIALOG_ITEM</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Type;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Flags;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> x0, y0;<BR>
+<B><A HREF="keywords.html#union">union</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#void">void</A></B> *Menu;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> MaxMenuWidth;<BR>
+</TD></TR></TABLE>
+} dMenu;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> oText;<BR>
+<B><A HREF="keywords.html#void">void</A></B> *PopUp;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> oIndex;<BR>
+</TD></TR></TABLE>
+} dPopUp;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> oText;<BR>
+<A HREF="alloc.html#HANDLE">HANDLE</A> (*GetPopUp)(<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B>);<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> oIndex;<BR>
+</TD></TR></TABLE>
+} dDynPopUp;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> oText;<BR>
+<A HREF="alloc.html#HANDLE">HANDLE</A> hPopUp;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B>  dummy;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> oIndex;<BR>
+</TD></TR></TABLE>
+} dHPopUp;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> DEditType {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> oText;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> bOffset;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Flen;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Dlen;<BR>
+</TD></TR></TABLE>
+} dEdit;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> oText;<BR>
+</TD></TR></TABLE>
+} dText;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> oText;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B>  lButton, rButton;<BR>
+</TD></TR></TABLE>
+} dHeader;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> oIcon;<BR>
+</TD></TR></TABLE>
+} dIcon;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> x1, y1;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Index0, Index1;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> NumDspFields, TotNumFields;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> FieldHeight;<BR>
+</TD></TR></TABLE>
+} dScrollR;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> xFlags[4];<BR>
+</TD></TR></TABLE>
+} dFlags;<BR>
+</TD></TR></TABLE>
+} f;<BR>
+</TD></TR></TABLE>
+} DIALOG_ITEM;</TD></TR></TABLE></P>
+<P><B>A scructure for defining dialog items.</B></P>
+
+<P>This is the structure that defines an item in a
+<A HREF="#DIALOG_STRUCT">DIALOG</A> structure.
+<BR><BR>
+<B>Note:</B> To declare an Item of type D_END, which is all zeros, you can write:
+<BR><BR>
+<CODE>DIALOG_ITEM empty={.f={}};</CODE></P>
+
+<P>Deprecated alias: DIALOG_ITEMS</P>
+<P>See also: <A HREF="#DIALOG_STRUCT">DIALOG</A>, <A HREF="#DialogAdd">DialogAdd</A>, <A HREF="#SIZED_DIALOG">SIZED_DIALOG</A>, <A HREF="#DialogTypes">DialogTypes</A></P>
+<HR>
+<H3><A NAME="DIALOG_STRUCT"><U>DIALOG</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> TextOffset;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> NumItems;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Width, Height;<BR>
+<A HREF="#Dialog_Callback_t">Dialog_Callback_t</A> CallBack;<BR>
+<A HREF="#DIALOG_ITEM">DIALOG_ITEM</A> Fields[];<BR>
+</TD></TR></TABLE>
+} DIALOG;</TD></TR></TABLE></P>
+<P><B>A scructure for defining dialogs.</B></P>
+
+<P>DIALOG is the structure to define a pre-filled dialog box, to be used as the
+first argument to the <A HREF="#Dialog">Dialog</A> function. It
+enables making a dialog without using <A HREF="#DialogNew">DialogNew</A>,
+<A HREF="#DialogAddTitle">DialogAddTitle</A>, and all the other macros
+that use <A HREF="#DialogAdd">DialogAdd</A>.
+<BR><BR>
+There is a constraint in this structure which cannot be described within a C
+data type: The last item in the <I>Fields</I> array must be an item of type
+<A HREF="#DialogTypes">D_END</A>, and all other fields of this item
+must be filled with zero.
+<BR><BR>
+<I>TextOffset</I> is used to know where the strings that the dialog uses are.
+Most dialog fields (of type <A HREF="#DIALOG_ITEM">DIALOG_ITEM</A>)
+have a member <I>oText</I>, which is of type
+<CODE><A HREF="keywords.html#short">unsigned</A> <A HREF="keywords.html#short">short</A></CODE>
+as well. For each item, both numbers will be added to the address of the
+DIALOG structure, and the result must be the address of the string. Offsets
+are shorts and therefore they cannot be greater than 65535, so having a
+DIALOG structure on the stack with strings on the heap or vice versa
+certainly will not work. Even if both the dialog structure and the strings
+are on the stack, you must be sure that the addresses of all strings are
+greater than the address of the DIALOG structure; for example because both
+the DIALOG structure and the strings are contained in a larger structure.
+<BR><BR>
+<I>NumItem</I> must be set to the number of items without the terminating
+<A HREF="#DialogTypes">D_END</A> item. <I>Width</I>, <I>Height</I> and
+<I>Callback</I> are the same as the arguments for
+<A HREF="#DialogNew">DialogNew</A>.
+<BR><BR>
+For most of the <A HREF="#DIALOG_ITEM">DIALOG_ITEM</A> structures, the
+structures' members are the same as the arguments used by the corresponding
+macro made with <A HREF="#DialogAdd">DialogAdd</A>, just care about
+using offsets instead of pointers for strings, and add the flag
+<A HREF="#DialogFlags">DF_SKIP</A> to ScrollRegions, Menus, Titles and
+text.
+<BR><BR>
+The order in wich you place the items is very important. Usually, the order
+should be the same as the visual order of the items, because it defines the
+order in which you move between items with the arrow keys. It also defines
+each item's identification number, which is passed to the callback function.
+<BR><BR>
+Note that this is not really a static structure, since the value of
+<I>Callback</I> depends on where the program is placed in memory, and the
+handles or pointers to each pulldown can vary at each execution. If you store
+this structure as a static structure or in a data file, think about changing
+the values of pointers and handles each time you execute your program.
+(The pointer to the callback can be relocated at load time by AMS though.)
+Also, DIALOG contains a variable-size array of items, and variable-size
+arrays cannot be initialized with non-constant values. However, a DIALOG
+instance is usually non-constant. See the
+<A HREF="#SIZED_DIALOG">SIZED_DIALOG</A> macro, which was created to
+avoid this problem.</P>
+
+<P>See also: <A HREF="#Dialog">Dialog</A>, <A HREF="#DialogAdd">DialogAdd</A>, <A HREF="#DIALOG_ITEM">DIALOG_ITEM</A>, <A HREF="#DialogNew">DialogNew</A>, <A HREF="#SIZED_DIALOG">SIZED_DIALOG</A></P>
+<HR>
+<H3><A NAME="DialogFlags"><U>DialogFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> DialogFlags {DF_TAB_ELLIPSES = 0x01, DF_MAX_MENU_WIDTH = 0x01, DF_SCROLLABLE = 0x02, DF_CLR_ON_REDRAW = 0x04, DF_TAB_SPACES = 0x04, DF_OWNER_DRAW = 0x08, DF_POPUP_RADIO = 0x20, DF_SCREEN_SAVE = 0x40, DF_SKIP = 0x80};</TD></TR></TABLE></P>
+<P><B>An enumeration to describe possible item flags in a dialog box.</B></P>
+
+<P>This enumeration describes all the possible item flags in a dialog box. See <A HREF="#DialogAdd">DialogAdd</A> for more informations.</P>
+
+<HR>
+<H3><A NAME="DialogTypes"><U>DialogTypes</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> DialogTypes {D_END = 0, D_MENU = 1, D_EDIT_FIELD = 2, D_SCROLL_REGION = 3, D_OPTION = 4, D_RADIO = 5, D_BUTTON = 6, D_TEXT = 7, D_HEADER = 8, D_POPUP = 10, D_DYNPOPUP = 11, D_HEDIT = 12, D_DYNHEADER = 13, D_HPOPUP = 14, D_XFLAGS = 15};</TD></TR></TABLE></P>
+<P><B>An enumeration to describe possible item types in a dialog box.</B></P>
+
+<P>This enumeration describes all the possible item types in a dialog box. See <A HREF="#DialogAdd">DialogAdd</A> for more informations.</P>
+
+<P>See also: <A HREF="#DialogAdd">DialogAdd</A>, <A HREF="#DIALOG_ITEM">DIALOG_ITEM</A></P>
+<HR>
+<H3><A NAME="DialogXFlags"><U>DialogXFlags</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> DialogXFlags {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+XF_ALLOW_VARLINK = 0x0001, XF_TE_REPAINT = 0x0002, XF_NO_ALPHA_LOCK = 0x0004, XF_VARLINK_SELECT_ONLY = 0x8001</TD></TR></TABLE>
+};</TD></TR></TABLE></P>
+<P><B>An enumeration to describe possible XFlags in a dialog box.</B></P>
+
+<P>This enumeration describes all the possible XFlags in a dialog box. See <A HREF="#DialogAddXFlags">DialogAddXFlags</A> for more informations.</P>
+
+<HR>
+<H3><A NAME="OWNER_DRAW_STRUCT"><U>OWNER_DRAW_STRUCT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="#DIALOG_ITEM">DIALOG_ITEM</A> *Item;<BR>
+<A HREF="wingraph.html#WINDOW">WINDOW</A> *pW;<BR>
+</TD></TR></TABLE>
+} OWNER_DRAW_STRUCT;</TD></TR></TABLE></P>
+<P><B>A scructure for defining an owner draw item.</B></P>
+
+<P>This structure defines an owner draw item. A pointer to this structure is given to the callback function when an owner draw item is (re)created. See <A HREF="#DialogNew">DialogNew</A> for more informations.</P>
+
+<HR>
+<H3><A NAME="SIZED_DIALOG"><U>SIZED_DIALOG</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> SIZED_DIALOG(NumbItems,StrLen) <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> TextOffset;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> NumItems;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> Width, Height;<BR>
+<A HREF="#Dialog_Callback_t">Dialog_Callback_t</A> Callback;<BR>
+<A HREF="#DIALOG_ITEM">DIALOG_ITEM</A> Fields[(NumbItems)+1];<BR>
+<B><A HREF="keywords.html#int">char</A></B> String[StrLen];<BR>
+</TD></TR></TABLE>
+}</TD></TR></TABLE></P>
+<P><B>A macro to help defining dialogs, it is nearly the same as DIALOG.</B></P>
+
+<P>There are two main difficulties one encounters using the <A HREF="#DIALOG_STRUCT">DIALOG structure</A>:<BR>First there is a variable size array, and variable size arrays can't be initialized with non constant value.
+<BR>Secondly it doesn't include strings, which should better be placed just after the DIALOG in memory.
+<BR>SIZED_DIALOG avoids both of these problems: It needs two argument : the number of Items <I>NumbItems</I> and the size of the all the strings together <I>StrLen</I>, and defines a struct from this, wich is the same as <A HREF="#DIALOG_STRUCT">DIALOG</A> but with some place for the strings: you can define a dilalog using <I>SIZED_DIALOG(NumbItems,StrLen)={/*Dialog definition*/}</I>. It is done in the given examples. If you use that macro, it will fill to the right number of Item, and If you forget to add an item with type D_END after the last used Item, it is automatically done.<BR><BR>Using SIZED_DIALOG also helps to get the offset of the strings. You can initialize it with <I><A HREF="stddef.html#offsetof">offsetof</A>(SIZED_DIALOG(ItemsNum,0),String)</I></P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

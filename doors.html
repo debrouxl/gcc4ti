@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>doors.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;doors.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Basic header file for kernel-mode programming</B></P>
+
+<P>This header file will be included automatically by <A HREF="default.html">default.h</A>
+if you define the global preprocessor symbol <CODE>USE_KERNEL</CODE>.
+<BR><BR>
+First, this header file defines a global symbol named <CODE>DOORS</CODE> which is used
+in other header files to indicate kernel mode.
+Next, it includes <A HREF="default.html">default.h</A> to make
+sure that the basic macros which GCC4TI needs are defined. It also includes
+a header file called <CODE>romsymb.h</CODE>, which overrides some definitions
+from <A HREF="default.html">default.h</A> by referring to external
+<CODE>_ROM_CALL_xxx</CODE> symbols which are converted by the linker.
+<BR><BR>
+It contains code for <CODE>tigcc.a</CODE>, to support <CODE>RETURN_VALUE</CODE>.
+Finally, it contains some rather complicated macros and <CODE>asm</CODE> statements
+to put data needed for <CODE>RETURN_VALUE</CODE> directly into the assembly file.</P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#_ram_call_addr">_ram_call_addr</A></B><DD>Performs a kernel-mode RAM call.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#_ram_call">_ram_call</A></B><DD>Performs a kernel-mode RAM call with a cast.</DL>
+<P>See also: <A HREF="httigcc.html#kernel">How to make a kernel-based program</A>, <A HREF="default.html">default.h</A>, <A HREF="nostub.html">nostub.h</A></P>
+<HR>
+<H3><A NAME="_ram_call_addr"><U>_ram_call_addr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _ram_call_addr(ind) (&amp;_RAM_CALL_##ind)</TD></TR></TABLE></P>
+<P><B>Performs a kernel-mode RAM call.</B></P>
+
+<P>_ram_call_addr returns a void pointer to the location in memory defined
+by the kernel as RAM call <I>ind</I>.</P>
+
+<HR>
+<H3><A NAME="_ram_call"><U>_ram_call</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> _ram_call(ind,type) ((type)(&amp;_RAM_CALL_##ind))</TD></TR></TABLE></P>
+<P><B>Performs a kernel-mode RAM call with a cast.</B></P>
+
+<P>_ram_call uses <A HREF="#_ram_call_addr">_ram_call_addr</A> to get a
+void pointer to the location in memory defined by the kernel as RAM call
+<I>ind</I>, and then casts it to the type <I>type</I>. To avoid prescan
+of <I>ind</I>, <A HREF="#_ram_call_addr">_ram_call_addr</A> is
+written out.</P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

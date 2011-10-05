@@ -1,0 +1,444 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>homescr.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;homescr.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Home Screen manipulation routines</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#HomeAlone">HomeAlone</A></B><DD>Checks if the Home Screen is active in full-screen mode.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HomeExecute">HomeExecute</A></B><DD>Sends a command to the Home Screen.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HomePushEStack">HomePushEStack</A></B><DD>Creates and draws a new history pair with given contents.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HomeStore">HomeStore</A></B><DD>Creates a new history pair with contents from the expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HomeStorePair">HomeStorePair</A></B><DD>Creates a new history pair with given contents.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_chopFIFO">HS_chopFIFO</A></B><DD>Deletes all history items which exceed the limit.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_countFIFO">HS_countFIFO</A></B><DD>Returns the number of history pairs.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_deleteFIFONode">HS_deleteFIFONode</A></B><DD>Deletes a history entry/answer pair.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_freeAll">HS_freeAll</A></B><DD>Clears the Home Screen history.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_freeFIFONode">HS_freeFIFONode</A></B><DD>Frees a FIFO node.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_getAns">HS_getAns</A></B><DD>Returns the handle of a Home Screen answer.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_getEntry">HS_getEntry</A></B><DD>Returns the handle of a Home Screen entry.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_getFIFONode">HS_getFIFONode</A></B><DD>Returns the handle of a history pair.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_newFIFONode">HS_newFIFONode</A></B><DD>Allocates memory for a new FIFO node.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_popEStack">HS_popEStack</A></B><DD>Pops the entire expression stack into memory.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_pushEmptyFIFONode">HS_pushEmptyFIFONode</A></B><DD>Inserts a new almost-empty FIFO node into the history.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_pushFIFONode">HS_pushFIFONode</A></B><DD>Inserts a new filled FIFO node into the history.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#HS_FirstFIFONodeHandle">HS_FirstFIFONodeHandle</A></B><DD>The handle of the FIFO node related to the first entry of the Home Screen history.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HS_MaxExpressions">HS_MaxExpressions</A></B><DD>The maximum number of expressions allowed in the home screen.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#H_NULL">H_NULL</A></B><DD>A null-handle value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESQ">ESQ</A></B><DD>Represents a quantum within an expression.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FIFO_ELEMENT">FIFO_ELEMENT</A></B><DD>A structure describing a single entry or answer element in the history.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FIFO_NODE">FIFO_NODE</A></B><DD>Describes an entry/answer pair in the history.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="alloc.html#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A></B><DD>Describes a multi-expression, which is processed as a separate expression stack.</DL>
+<P><B>Note:</B> In most cases, this header file is used to store expressions in
+the Home Screen history. For this purpose, use the
+<A HREF="#HomeStore">HomeStore</A> and
+<A HREF="#HomeStorePair">HomeStorePair</A> functions. They are much
+less complicated than the other functions manipulating the history.</P>
+
+<HR>
+<H3><A NAME="HomeAlone"><U>HomeAlone</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> HomeAlone (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Checks if the Home Screen is active in full-screen mode.</B></P>
+
+<P>HomeAlone returns <A HREF="alloc.html#Bool">TRUE</A> if the Home Screen is active on a full screen and events are not captured,
+and <A HREF="alloc.html#Bool">FALSE</A> otherwise.</P>
+
+<HR>
+<H3><A NAME="HomeExecute"><U>HomeExecute</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HomeExecute (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#int">char</A></B> *Command, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> ComLen);</TD></TR></TABLE></P>
+<P><B>Sends a command to the Home Screen.</B></P>
+
+<P>This function sends an ordinary ANSI C string pointed to by <I>Command</I>
+(which does not have to be zero-terminated) to the
+Home Screen application, which will execute it exactly as if the string was
+typed in from the keyboard into the Home Screen entry line. <I>ComLen</I> must be
+smaller or equal to the length of <I>Command</I>.</P>
+
+<HR>
+<H3><A NAME="HomePushEStack"><U>HomePushEStack</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HomePushEStack (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Creates and draws a new history pair with given contents.</B></P>
+
+<P>HomePushEStack is a very powerful command which lets you store expressions
+straight to the history.
+<BR><BR>
+The expression (not a multi-expression) which you want to store to the
+history has to be placed at the top of the expression stack. This function
+will pop it off of the estack and into the history. It will be used as both
+entry and answer, but it will not be simplified.
+<BR><BR>
+The result of using this call is that memory is allocated, so garbage
+collection may occur. After your program exits, the allocated memory will
+remain allocated, which is perfectly normal. However, kernels like
+DoorsOS, TeOS, and PreOS (but not UniversalOS) have a feature that frees all
+handles left unfreed by kernel programs. This feature is smart and first
+checks if a handle is that of a variable, but older kernels do not check if
+it is a history item.
+<BR><BR>
+For kernel-based programs, DoorsOS and TeOS will free the handles for the
+newly stored item, and when your program exits, the calculator will crash!
+PreOs 0.62 or higher detects the history handles and handles them correctly.
+<BR><BR>
+HomePushEStack calls
+<A HREF="#HS_newFIFONode">HS_newFIFONode</A> and
+<A HREF="#HS_pushEmptyFIFONode">HS_pushEmptyFIFONode</A> to create the
+new history item.
+<BR><BR>
+<B>Note:</B> HomePushEStack redraws the home screen if it is the active
+application, which it most likely is. To circumvent this, use
+<A HREF="#HomeStore">HomeStore</A>.</P>
+
+<P>See also: <A HREF="#HomeStore">HomeStore</A>, <A HREF="#HomeStorePair">HomeStorePair</A>, <A HREF="#HS_popEStack">HS_popEStack</A></P>
+<HR>
+<H3><A NAME="HomeStore"><U>HomeStore</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HomeStore (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Creates a new history pair with contents from the expression stack.</B></P>
+
+<P>HomeStore performs the same operation as
+<A HREF="#HomePushEStack">HomePushEStack</A>. However, the visuals for
+storing something to the history with
+<A HREF="#HomePushEStack">HomePushEStack</A> will be done immediately,
+over top of your program's visuals, if the home screen is the current
+application, which it most likely is. This function suppresses this.
+<BR><BR>
+However, HomeStore still displays a message in the status bar saying "DATA
+PLACED IN HOME SCREEN HISTORY," and turns on the busy indicator.
+<BR><BR>
+HomeStore is implemented in assembly, using the following code as a starting
+point:</P>
+<PRE>CALLBACK void TempHook(EVENT *ev)
+{
+  ev->Type = CM_IDLE;
+}
+
+void HomeStore(void)
+{
+  EVENT_HANDLER temp = EV_hook;
+  EV_hook = TempHook;
+  HomePushEStack ();
+  EV_hook = temp;
+}
+</PRE>
+
+<P>See also: <A HREF="#HomePushEStack">HomePushEStack</A>, <A HREF="#HomeStorePair">HomeStorePair</A>, <A HREF="#HS_popEStack">HS_popEStack</A></P>
+<HR>
+<H3><A NAME="HomeStorePair"><U>HomeStorePair</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HomeStorePair (<A HREF="alloc.html#HANDLE">HANDLE</A> Entry, <A HREF="alloc.html#HANDLE">HANDLE</A> Ans);</TD></TR></TABLE></P>
+<P><B>Creates a new history pair with given contents.</B></P>
+
+<P>HomeStorePair creates a new Home Screen history pair with a given entry and
+answer part. <I>Entry</I> and <I>Ans</I> have to point to multi-expressions
+(see <A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A>). They may be the
+same handles; in this case, the same expression will be used on both sides
+of the screen.
+<BR><BR>
+HomeStorePair first uses <A HREF="#HS_newFIFONode">HS_newFIFONode</A>
+to allocate memory for a new FIFO node, then fills the <I>Expr</I> fields
+of the entry and answer elements with <I>Entry</I> and <I>Ans</I>, and then
+calls <A HREF="#HS_pushEmptyFIFONode">HS_pushEmptyFIFONode</A>. If
+<A HREF="#HS_pushEmptyFIFONode">HS_pushEmptyFIFONode</A> throws an
+error, it calls <A HREF="#HS_freeFIFONode">HS_freeFIFONode</A> to free
+all handles, even <I>Entry</I> and <I>Ans</I>.
+<BR><BR>
+In any case, the expressions pointed to by <I>Entry</I> and <I>Ans</I> should
+not be modified after calling this function. In fact, the two handles then
+belong to the operating system, and should not be used any more.
+<BR><BR>
+<B>Note:</B> It seems that the handles <I>Entry</I> and <I>Ans</I> should be
+allocated with <A HREF="alloc.html#HeapAlloc">HeapAlloc</A> (or
+<A HREF="alloc.html#HeapAllocThrow">HeapAllocThrow</A>), and should not
+be locked. Be sure to read the notes about
+<A HREF="#HS_pushEmptyFIFONode">HS_pushEmptyFIFONode</A> as well.</P>
+
+<P>See also: <A HREF="#HomeStore">HomeStore</A>, <A HREF="#HS_pushEmptyFIFONode">HS_pushEmptyFIFONode</A></P>
+<HR>
+<H3><A NAME="HS_chopFIFO"><U>HS_chopFIFO</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HS_chopFIFO (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Deletes all history items which exceed the limit.</B></P>
+
+<P>HS_copyFIFO deletes all Home Screen history pairs which exceed the limit set
+by the user. It is called internally by
+<A HREF="#HS_pushFIFONode">HS_pushFIFONode</A>, so usually you do
+not need to call it yourself.</P>
+
+<HR>
+<H3><A NAME="HS_countFIFO"><U>HS_countFIFO</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> HS_countFIFO (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the number of history pairs.</B></P>
+
+<P>HS_countFIFO returns the number of entry/answer pairs in the history.</P>
+
+<HR>
+<H3><A NAME="HS_deleteFIFONode"><U>HS_deleteFIFONode</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> HS_deleteFIFONode (<A HREF="alloc.html#HANDLE">HANDLE</A> Node);</TD></TR></TABLE></P>
+<P><B>Deletes a history entry/answer pair.</B></P>
+
+<P>HS_deleteFIFONode deletes the history pair associated with <I>Node</I>, and
+returns the handle of the next history item in the linked list of FIFO nodes.
+To do this, it removes the node from the linked list, and then calls
+<A HREF="#HS_freeFIFONode">HS_freeFIFONode</A>.</P>
+
+<P>See also: <A HREF="#HS_pushFIFONode">HS_pushFIFONode</A></P>
+<HR>
+<H3><A NAME="HS_freeAll"><U>HS_freeAll</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HS_freeAll (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Clears the Home Screen history.</B></P>
+
+<P>HS_freeAll clears the history, freeing all nodes. This function calls
+<A HREF="#HS_freeFIFONode">HS_freeFIFONode</A> repeatedly.</P>
+
+<P>See also: <A HREF="bascmd.html#cmd_clrhome">cmd_clrhome</A></P>
+<HR>
+<H3><A NAME="HS_freeFIFONode"><U>HS_freeFIFONode</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HS_freeFIFONode (<A HREF="alloc.html#HANDLE">HANDLE</A> Node);</TD></TR></TABLE></P>
+<P><B>Frees a FIFO node.</B></P>
+
+<P>HS_freeFIFONode frees the node pointed to by <I>Node</I>, including the
+expressions it contains. The node should have been allocated with
+<A HREF="#HS_newFIFONode">HS_newFIFONode</A>. This function takes into
+account that the handles for the entry and answer may be the same.
+<BR><BR>
+This function is called by
+<A HREF="#HS_deleteFIFONode">HS_deleteFIFONode</A> and
+<A HREF="#HS_freeAll">HS_freeAll</A>. You should call it yourself only
+if you want to free a node you have allocated yourself, but which you could
+not insert into the history using
+<A HREF="#HS_pushFIFONode">HS_pushFIFONode</A>.</P>
+
+<P>See also: <A HREF="#HS_newFIFONode">HS_newFIFONode</A>, <A HREF="#HS_deleteFIFONode">HS_deleteFIFONode</A></P>
+<HR>
+<H3><A NAME="HS_getAns"><U>HS_getAns</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> HS_getAns (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Index);</TD></TR></TABLE></P>
+<P><B>Returns the handle of a Home Screen answer.</B></P>
+
+<P>HS_getAns returns a handle to the answer part of the Home Screen history pair with
+index <I>Index</I>, where <I>Index</I> is a value between 1 and 99 and has
+the same meaning as the parameter of the TI-Basic <CODE>'ans'</CODE> pseudo-function.
+If the answer does not exist, HS_getAns returns <A HREF="alloc.html#H_NULL">H_NULL</A>.
+This happens in three conditions</P>
+<UL>
+<LI><P>The entry/answer pair does not exist.</P></LI>
+<LI><P>The answer is a message like "Done" that comes after an executed program.</P></LI>
+<LI><P>The answer is an error message (i.e. <A HREF="estack.html#ERROR_MSG_TAG">ERROR_MSG_TAG</A> is present in it)</P></LI>.
+</UL>
+<P>The returned handle contains a "multi-expression"; see
+<A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A> and
+<A HREF="#HS_getEntry">HS_getEntry</A> for more info.</P>
+
+<P>See also: <A HREF="#HS_getEntry">HS_getEntry</A>, <A HREF="#HS_getFIFONode">HS_getFIFONode</A></P>
+<HR>
+<H3><A NAME="HS_getEntry"><U>HS_getEntry</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> HS_getEntry (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Index);</TD></TR></TABLE></P>
+<P><B>Returns the handle of a Home Screen entry.</B></P>
+
+<P>HS_getEntry returns a handle to the entry part of the Home Screen history pair with
+index <I>Index</I>, where <I>Index</I> is a value between 1 and 99 and has
+the same meaning as the parameter of the TI-Basic <CODE>'entry'</CODE> pseudo-function.
+If the entry does not exist, HS_getEntry returns <A HREF="alloc.html#H_NULL">H_NULL</A>.
+<BR><BR>
+The returned handle contains a "multi-expression". A multi-expression is
+an expression consisting of multiple expressions seperated by <A HREF="estack.html#NEXTEXPR_TAG">NEXTEXPR_TAG</A>
+and ending in <A HREF="estack.html#ENDSTACK_TAG">ENDSTACK_TAG</A>. See
+<A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A> for more info.
+<BR><BR>
+Even if the multi-expression contains only one expression and therefore has
+no <A HREF="estack.html#NEXTEXPR_TAG">NEXTEXPR_TAG</A>s in it, it will still have an <A HREF="estack.html#ENDSTACK_TAG">ENDSTACK_TAG</A>.
+<BR><BR>
+The handle returned by this funtion is valid input for <A HREF="estack.html#HToESI">HToESI</A> and
+<A HREF="estack.html#Parse2DMultiExpr">Parse2DMultiExpr</A>.</P>
+
+<P>See also: <A HREF="#HS_getAns">HS_getAns</A>, <A HREF="#HS_getFIFONode">HS_getFIFONode</A></P>
+<HR>
+<H3><A NAME="HS_getFIFONode"><U>HS_getFIFONode</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> HS_getFIFONode (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Index);</TD></TR></TABLE></P>
+<P><B>Returns the handle of a history pair.</B></P>
+
+<P>This function returns the handle of an entry/answer pair in the Home Screen
+history. Dereferencing this handle using
+<A HREF="alloc.html#HeapDeref">HeapDeref</A> or
+<A HREF="alloc.html#HLock">HLock</A> returns a pointer to a
+<A HREF="#FIFO_NODE">FIFO_NODE</A> structure containing the handles
+of the entry and answer and some additional information.</P>
+
+<P>See also: <A HREF="#HS_getEntry">HS_getEntry</A>, <A HREF="#HS_getAns">HS_getAns</A></P>
+<HR>
+<H3><A NAME="HS_newFIFONode"><U>HS_newFIFONode</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> HS_newFIFONode (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Allocates memory for a new FIFO node.</B></P>
+
+<P>HS_newFIFONode simpy allocates 56 bytes for a
+<A HREF="#FIFO_NODE">FIFO_NODE</A> structure and sets them all to
+zero. It throws an error if there is not enough memory.</P>
+
+<HR>
+<H3><A NAME="HS_popEStack"><U>HS_popEStack</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="alloc.html#HANDLE">HANDLE</A> HS_popEStack (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Pops the entire expression stack into memory.</B></P>
+
+<P>HS_popEStack allocates a block in memory, pops the entire expression stack
+into the allocated block, and returns a handle which points to it. More
+precisely, it creates a <A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A>
+structure holding the expression stack. If there
+is not enough memory, it throws an error. See
+<A HREF="estack.html#NG_execute">NG_execute</A> for an example of usage.
+The returned handle is allocated with
+<A HREF="alloc.html#HeapAllocHigh">HeapAllocHigh</A>, and is
+therefore intended to be temporary. However, it is unlocked.
+<BR><BR>
+This function copies everything from
+<A HREF="estack.html#bottom_estack">bottom_estack</A> to
+<A HREF="estack.html#top_estack">top_estack</A> (including both
+<A HREF="estack.html#bottom_estack">bottom_estack</A> and
+<A HREF="estack.html#top_estack">top_estack</A>), and resets
+<A HREF="estack.html#top_estack">top_estack</A> to
+<A HREF="estack.html#bottom_estack">bottom_estack</A>. This means that
+the size of the allocated block is
+<CODE>top_estack&nbsp;-&nbsp;bottom_estack&nbsp;+&nbsp;3</CODE> (because the
+<A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A> structure reserves two
+bytes for the size). By changing
+<A HREF="estack.html#bottom_estack">bottom_estack</A> temporarily, it
+is theoretically possible to set the block which is to be popped off
+manually. However, you need to take care of the requirement that
+<A HREF="estack.html#bottom_estack">bottom_estack</A> has to point to
+an <A HREF="estack.html#ENDSTACK_TAG">ENDSTACK_TAG</A> quantum.
+<BR><BR>
+This function is intended to copy an expression into memory so that it can be
+pushed to the Home Screen using
+<A HREF="#HS_pushFIFONode">HS_pushFIFONode</A> or one of its wrapper
+functions.</P>
+
+<HR>
+<H3><A NAME="HS_pushEmptyFIFONode"><U>HS_pushEmptyFIFONode</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HS_pushEmptyFIFONode (<A HREF="alloc.html#HANDLE">HANDLE</A> Node);</TD></TR></TABLE></P>
+<P><B>Inserts a new almost-empty FIFO node into the history.</B></P>
+
+<P>HS_pushEmptyFIFONode inserts the entry/answer pair identified by <I>Node</I>
+into the linked list of FIFO nodes. <I>Node</I> must contain a handle to a
+<A HREF="#FIFO_NODE">FIFO_NODE</A> structure, but only the <I>Expr</I>
+fields of the entry and answer need to be filled. It should have
+been allocated using <A HREF="#HS_newFIFONode">HS_newFIFONode</A>.
+<BR><BR>
+This function first fills the structure pointed to by <I>Node</I>, then calls
+<A HREF="#HS_pushFIFONode">HS_pushFIFONode</A> to insert the new node.
+Unfortunately, it also calls
+<A HREF="statline.html#ST_stack">ST_stack</A> from
+<A HREF="statline.html">statline.h</A> to redraw the history status
+line indicator of the Home Screen, which cannot be prevented using
+<A HREF="graph.html#PortSet">PortSet</A> or the method used in
+<A HREF="#HomeStore">HomeStore</A>.
+In theory, it is possible to fill the structure by hand, but this is very
+tedious.
+<BR><BR>
+<B>Note:</B> The address of the HS_pushEmptyFIFONode function is not in the
+jump table of any AMS version up to 2.05, and probably will never be. Getting
+the address of this function is implemented using a <I>very</I> dirty hack.
+However, it is the main function for storing items in the Home Screen
+history, so you probably cannot avoid it unless you want to fill the
+<A HREF="#FIFO_NODE">FIFO_NODE</A> structure yourself. An error is
+thrown if the address of this function could not be determined.</P>
+
+<P>See also: <A HREF="#HS_pushFIFONode">HS_pushFIFONode</A>, <A HREF="#HomeStorePair">HomeStorePair</A></P>
+<HR>
+<H3><A NAME="HS_pushFIFONode"><U>HS_pushFIFONode</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HS_pushFIFONode (<A HREF="alloc.html#HANDLE">HANDLE</A> Node);</TD></TR></TABLE></P>
+<P><B>Inserts a new filled FIFO node into the history.</B></P>
+
+<P>HS_pushFIFONode inserts the entry/answer pair identified by <I>Node</I> into
+the linked list of FIFO nodes. <I>Node</I> must contain a handle to a
+<A HREF="#FIFO_NODE">FIFO_NODE</A> structure, which needs to be filled
+completely except for the <I>Prev</I> and <I>Next</I> fields. It should have
+been allocated using <A HREF="#HS_newFIFONode">HS_newFIFONode</A>.
+<BR><BR>
+This function calls <A HREF="#HS_chopFIFO">HS_chopFIFO</A> to
+remove the last history pair if needed. It may throw an error if inserting
+the node was not possible.</P>
+
+<P>See also: <A HREF="#HS_pushEmptyFIFONode">HS_pushEmptyFIFONode</A>, <A HREF="#HomeStorePair">HomeStorePair</A></P>
+<HR>
+<H3><A NAME="HS_FirstFIFONodeHandle"><U>HS_FirstFIFONodeHandle</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <A HREF="alloc.html#HANDLE">HANDLE</A> HS_FirstFIFONodeHandle;</TD></TR></TABLE></P>
+<P><B>The handle of the FIFO node related to the first entry of the Home Screen history.</B></P>
+
+<P><B><U>Warning:</U></B> performing inappropriate changes to HS_FirstFIFONodeHandle may cause strange things on your calculator...</P>
+
+<P>See also: <A HREF="#FIFO_NODE">FIFO_NODE</A></P>
+<HR>
+<H3><A NAME="HS_MaxExpressions"><U>HS_MaxExpressions</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.04 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> HS_MaxExpressions;</TD></TR></TABLE></P>
+<P><B>The maximum number of expressions allowed in the home screen.</B></P>
+
+<P><B><U>Warning:</U></B> performing inappropriate changes to HS_MaxExpressions may cause strange things on your calculator...</P>
+
+<HR>
+<H3><A NAME="FIFO_ELEMENT"><U>FIFO_ELEMENT</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> ScreenLeft;<BR>
+<B><A HREF="keywords.html#short">long</A></B> ScreenBottom;<BR>
+<B><A HREF="keywords.html#short">long</A></B> XStart;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Width;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Height;<BR>
+<B><A HREF="keywords.html#short">short</A></B> Top;<BR>
+<A HREF="alloc.html#HANDLE">HANDLE</A> Expr;<BR>
+<B><A HREF="keywords.html#short">short</A></B> TooLong;<BR>
+<B><A HREF="keywords.html#short">short</A></B> PrettyPrint;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Exp;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> Fix;<BR>
+</TD></TR></TABLE>
+} FIFO_ELEMENT;</TD></TR></TABLE></P>
+<P><B>A structure describing a single entry or answer element in the history.</B></P>
+
+<P>FIFO_ELEMENT is a structure used by the TIOS to describe a single entry or
+answer on the screen. It is included twice in the
+<A HREF="#FIFO_NODE">FIFO_NODE</A> structure. In most cases, you do
+not need to access the individual fields of this structure directly.
+<BR><BR>
+<I>Expr</I> contains a handle to the actual expression (a multi-expression,
+see <A HREF="estack.html#MULTI_EXPR">MULTI_EXPR</A>). You can fill the
+<I>Width</I> and <I>Height</I> fields using the
+<A HREF="estack.html#Parms2D">Parms2D</A> function. You should also know
+that the values for the <I>Fix</I> and <I>Exp</I> fields need to be one less
+than the values in <A HREF="events.html#MO_OPTIONS">MO_OPTIONS</A>.
+<BR><BR>
+FIFO elements are displayed using
+<A HREF="estack.html#Parse2DMultiExpr">Parse2DMultiExpr</A>, and then
+<A HREF="estack.html#Parse2DMultiExpr">Print2DExpr</A> if
+<I>PrettyPrint</I> is <A HREF="alloc.html#Bool">TRUE</A>, or
+<A HREF="wingraph.html#WinCharXY">WinCharXY</A> otherwise.</P>
+
+<P>See also: <A HREF="#FIFO_NODE">FIFO_NODE</A></P>
+<HR>
+<H3><A NAME="FIFO_NODE"><U>FIFO_NODE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="#FIFO_ELEMENT">FIFO_ELEMENT</A> Entry;<BR>
+<A HREF="#FIFO_ELEMENT">FIFO_ELEMENT</A> Ans;<BR>
+<A HREF="alloc.html#HANDLE">HANDLE</A> Prev;<BR>
+<A HREF="alloc.html#HANDLE">HANDLE</A> Next;<BR>
+</TD></TR></TABLE>
+} FIFO_NODE;</TD></TR></TABLE></P>
+<P><B>Describes an entry/answer pair in the history.</B></P>
+
+<P>FIFO_NODE describes an entry/answer pair (a node) in the Home Screen history.
+Usually, you do not need to access the fields of this structure directly.
+<BR><BR>
+All nodes are kept in a bidirectionally linked list; the <I>Prev</I> and
+<I>Next</I> fields contain handles to the previous and next nodes,
+respectively.
+<BR><BR>
+The <I>Expr</I> fields of the <I>Entry</I> and <I>Ans</I> fields of this
+structure may contain the same handles.</P>
+
+<P>See also: <A HREF="#FIFO_ELEMENT">FIFO_ELEMENT</A></P>
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

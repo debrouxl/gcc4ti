@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>mem.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;mem.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for manipulation of memory blocks</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#_memset">_memset</A></B><DD>Sets <I>num</I> bytes of <I>buffer</I> to byte <I>c</I>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#memchr">memchr</A></B><DD>Searches the first <I>len</I> bytes of array <I>str</I> for character <I>c</I>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#memcmp">memcmp</A></B><DD>Compares two blocks of signed chars.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#memcpy">memcpy</A></B><DD>Copies a block of <I>len</I> bytes from <I>src</I> to <I>dest</I>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#memmove">memmove</A></B><DD>Copies a block of <I>len</I> bytes from <I>src</I> to <I>dest</I>, with possibility
+of overlaping of source and destination block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#memset">memset</A></B><DD>Sets <I>num</I> bytes of <I>buffer</I> to byte <I>c</I>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#memucmp">memucmp</A></B><DD>Compares two blocks of unsigned chars.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="alloc.html#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="stddef.html#size_t">size_t</A></B><DD>A type to define sizes of strings and memory blocks.</DL>
+<P>See also: <A HREF="alloc.html">alloc.h</A></P>
+<HR>
+<H3><A NAME="_memset"><U>_memset</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *_memset (<B><A HREF="keywords.html#void">void</A></B> *buffer, <B><A HREF="keywords.html#short">short</A></B> c, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> num);</TD></TR></TABLE></P>
+<P><B>Sets <I>num</I> bytes of <I>buffer</I> to byte <I>c</I>.</B></P>
+
+<P>_memset is a slower (byte-by-byte) variant of
+<A HREF="#memset">memset</A>.</P>
+
+<HR>
+<H3><A NAME="memchr"><U>memchr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *memchr (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *str, <B><A HREF="keywords.html#short">short</A></B> c, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> len);</TD></TR></TABLE></P>
+<P><B>Searches the first <I>len</I> bytes of array <I>str</I> for character <I>c</I>.</B></P>
+
+<P>memchr searches the first <I>len</I> bytes of the block pointed to by <I>str</I> for
+character <I>c</I>. On success, memchr returns a pointer to the first occurrence of
+<I>c</I> in <I>str</I>. Otherwise, it returns <A HREF="alloc.html#NULL">NULL</A>.</P>
+
+<HR>
+<H3><A NAME="memcmp"><U>memcmp</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> memcmp (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *s1, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *s2, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> len);</TD></TR></TABLE></P>
+<P><B>Compares two blocks of signed chars.</B></P>
+
+<P>memcmp compares the first <I>len</I> bytes of the blocks <I>s1</I> and <I>s2</I> as signed chars.
+Since it compares bytes as signed chars, memcmp returns a value</P>
+<UL>
+<LI><P>&lt; 0 if <I>s1</I> is less than <I>s2</I></P></LI>
+<LI><P>=0 if <I>s1</I> is the same as <I>s2</I></P></LI>
+<LI><P>&gt; 0 if <I>s1</I> is greater than <I>s2</I></P></LI>
+</UL>
+<P>For example, <CODE>memcmp("\xFF","\x7F",1)</CODE> returns a value greater than 0. More precisely,
+the exact return value is the result of subtracting the first pair of values
+that differ in the two blocks being compared based on them being signed
+chars.
+<BR><BR>
+<B>Note:</B> This routine is declared as "short" although the ANSI standard proposes "long". This is important,
+because the TIOS memcmp routine puts garbage in the higher half of the d0 register.</P>
+
+<P>See also: <A HREF="#memucmp">memucmp</A></P>
+<HR>
+<H3><A NAME="memcpy"><U>memcpy</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *memcpy (<B><A HREF="keywords.html#void">void</A></B> *dest, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *src, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> len);</TD></TR></TABLE></P>
+<P><B>Copies a block of <I>len</I> bytes from <I>src</I> to <I>dest</I>.</B></P>
+
+<P>memcpy copies a block of <I>len</I> bytes from <I>src</I> to <I>dest</I>.
+If <I>src</I> and <I>dest</I> overlap,
+the memcpy is ill-behaved (in such case, use <A HREF="#memmove">memmove</A> instead).
+memcpy returns <I>dest</I>.</P>
+
+<HR>
+<H3><A NAME="memmove"><U>memmove</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *memmove (<B><A HREF="keywords.html#void">void</A></B> *dest, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *src, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> len);</TD></TR></TABLE></P>
+<P><B>Copies a block of <I>len</I> bytes from <I>src</I> to <I>dest</I>, with possibility
+of overlaping of source and destination block.</B></P>
+
+<P>memmove copies a block of <I>len</I> bytes from <I>src</I> to <I>dest</I>.
+Even when the source and destination blocks overlap, bytes in the overlapping
+locations are copied
+correctly (in opposite to <A HREF="#memcpy">memcpy</A>). memmove returns <I>dest</I>.</P>
+
+<HR>
+<H3><A NAME="memset"><U>memset</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *memset (<B><A HREF="keywords.html#void">void</A></B> *buffer, <B><A HREF="keywords.html#short">short</A></B> c, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> num);</TD></TR></TABLE></P>
+<P><B>Sets <I>num</I> bytes of <I>buffer</I> to byte <I>c</I>.</B></P>
+
+<P>memset sets the first <I>num</I> bytes of the array <I>buffer</I> to the character <I>c</I>.
+memset is faster than _<A HREF="#_memset">memset</A>, because it sets a
+memory in a 4-byte chunks as long as possible. memset returns <I>buffer</I>.</P>
+
+<HR>
+<H3><A NAME="memucmp"><U>memucmp</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> memucmp (<B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *s1, <B><A HREF="keywords.html#const">const</A></B> <B><A HREF="keywords.html#void">void</A></B> *s1, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> len);</TD></TR></TABLE></P>
+<P><B>Compares two blocks of unsigned chars.</B></P>
+
+<P>memucmp acts like <A HREF="#memcmp">memcmp</A>, but treats <I>s1</I>
+and <I>s2</I> as pointers to unsigned chars.</P>
+
+<P>See also: <A HREF="#memcmp">memcmp</A></P>
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

@@ -1,0 +1,804 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>alloc.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;alloc.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines for dynamic memory allocation</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#alloca">alloca</A></B><DD>Allocates memory on the local storage space.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#calloc_throw">calloc_throw</A></B><DD>Performs <A HREF="#calloc">calloc</A>, and throws an error if not successful.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#calloc">calloc</A></B><DD>Allocates a memory block for a given number and size of items.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#free">free</A></B><DD>Frees an allocated block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FreeHandles">FreeHandles</A></B><DD>Determines the number of free handles.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapAlloc">HeapAlloc</A></B><DD>Allocates memory and returns a handle of allocated block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapAllocESTACK">HeapAllocESTACK</A></B><DD>Like <A HREF="#HeapAlloc">HeapAlloc</A>, but reduces the size of the expression stack if necessary.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapAllocHigh">HeapAllocHigh</A></B><DD>Allocates memory at the high end of the heap and returns the handle of the allocated block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapAllocHighThrow">HeapAllocHighThrow</A></B><DD>Performs <A HREF="#HeapAllocHigh">HeapAllocHigh</A>, and throws an error if not successful.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapAllocPtr">HeapAllocPtr</A></B><DD>Allocates memory at the high end of the heap and returns a pointer to the allocated block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapAllocPtrThrow">HeapAllocPtrThrow</A></B><DD>Performs <A HREF="#HeapAllocPtr">HeapAllocPtr</A>, and throws an error if not successful.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapAllocThrow">HeapAllocThrow</A></B><DD>Performs <A HREF="#HeapAlloc">HeapAlloc</A>, and throws an error if not successful.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapAvail">HeapAvail</A></B><DD>Determines the size of the heap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapCompress">HeapCompress</A></B><DD>Compresses the heap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapDeref">HeapDeref</A></B><DD>Dereferences a handle.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapEnd">HeapEnd</A></B><DD>Determines the end of the heap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapFree">HeapFree</A></B><DD>Frees a heap block given its handle.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapFreeIndir">HeapFreeIndir</A></B><DD>Frees a heap block given a pointer to it.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapFreePtr">HeapFreePtr</A></B><DD>Frees a block allocated using <A HREF="#HeapAllocPtr">HeapAllocPtr</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapGetHandle">HeapGetHandle</A></B><DD>Gets the next available handle.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapGetLock">HeapGetLock</A></B><DD>Determines whether a block is locked.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapLock">HeapLock</A></B><DD>Locks a block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapMax">HeapMax</A></B><DD>Determines the size of the largest allocatable block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapMoveHigh">HeapMoveHigh</A></B><DD>Reallocates a block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapPtrToHandle">HeapPtrToHandle</A></B><DD>Determines the handle associated with a block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapRealloc">HeapRealloc</A></B><DD>Reallocates a block to a new size.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapReallocThrow">HeapReallocThrow</A></B><DD>Performs <A HREF="#HeapRealloc">HeapRealloc</A>, and throws an error if not successful.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapShuffle">HeapShuffle</A></B><DD>Shuffles all unlocked blocks on the heap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapSize">HeapSize</A></B><DD>Determines the size of an allocated block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapUnlock">HeapUnlock</A></B><DD>Unlocks a block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapWalk">HeapWalk</A></B><DD>Verifies and dumps the contents of the heap.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HLock">HLock</A></B><DD>Locks and dereferences a handle.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#hStrAppend">hStrAppend</A></B><DD>Appends a string to a handle that contains a string.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#malloc_throw">malloc_throw</A></B><DD>Performs <A HREF="#malloc">malloc</A>, and throws an error if not successful.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#malloc">malloc</A></B><DD>Allocates a memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#PtrToHandle">PtrToHandle</A></B><DD>Determines the handle associated with a block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#realloc_throw">realloc_throw</A></B><DD>Performs <A HREF="#realloc">realloc</A>, and throws an error if not successful.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#realloc">realloc</A></B><DD>Reallocates allocated memory.</DL>
+<H3><U>Constants</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#H_NULL">H_NULL</A></B><DD>A null-handle value.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#NULL">NULL</A></B><DD>A null-pointer value.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#Bool">Bool</A></B><DD>An enumeration to describe true or false values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HANDLE">HANDLE</A></B><DD>Represents a handle associated with an allocated memory block.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#HeapWalkCmds">HeapWalkCmds</A></B><DD>An enumeration describing the valid parameters for <A HREF="#HeapWalk">HeapWalk</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="stddef.html#size_t">size_t</A></B><DD>A type to define sizes of strings and memory blocks.</DL>
+<P>See also: <A HREF="mem.html">mem.h</A></P>
+<HR>
+<H3><A NAME="alloca"><U>alloca</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *alloca (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Allocates memory on the local storage space.</B></P>
+
+<P>alloca is a function which is not included in the ANSI C standard, but it exists in many C dialects
+(including GCC4TI). It allocates a block of <I>Size</I> bytes on the CPU stack (local
+storage space), in opposite to <A HREF="#malloc">malloc</A> which allocates memory on the
+memory heap. The space allocated with alloca exists until the containing function returns
+(i.e. it will be automatically deallocated at the end of the function). Be aware of the
+fact that the size of the hardware stack on TI calculators is limited to 16 kilobytes, so
+do not use alloca for allocating large blocks.
+<BR><BR>
+alloca is usually used for simulating automatic variable-sized one-dimensional arrays, which will be automatically
+deallocated when the function ends (like all automatic variables), so it is sometimes more
+preferable than <A HREF="#malloc">malloc</A>. For example, to simulate</P>
+<PRE>int a[n];
+</PRE>
+<P>where <I>'n'</I> is not known in advance, you can use</P>
+<PRE>int *a = alloca (n);
+</PRE>
+<P>Note, however, that GNU C extensions allows <A HREF="gnuexts.html#SEC76">variable-length
+arrays</A>, which are more elegant than usage of alloca, and which may also be with more than
+one dimension (which is not possible with alloca).
+<BR><BR>
+<B>Note:</B> alloca is a built-in (open-coded) function in GNU C, which is translated to a single
+instruction which simply adjusts the stack. Some compiler command options (like
+<B>'-ansi'</B>) prevent alloca from being an open-coded function. In this implementation
+of GCC4TI, you cannot use alloca with such options (however, it is very unlikely that you will
+ever have such problems).</P>
+
+<HR>
+<H3><A NAME="calloc_throw"><U>calloc_throw</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *calloc_throw (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> NoOfItems, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> SizeOfItems);</TD></TR></TABLE></P>
+<P><B>Performs <A HREF="#calloc">calloc</A>, and throws an error if not successful.</B></P>
+
+<P>calloc_throw calls <A HREF="#calloc">calloc</A> and throws a
+memory error if there is not enough memory. Otherwise, it returns a pointer
+to the allocated block.</P>
+
+<HR>
+<H3><A NAME="calloc"><U>calloc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *calloc (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> NoOfItems, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> SizeOfItems);</TD></TR></TABLE></P>
+<P><B>Allocates a memory block for a given number and size of items.</B></P>
+
+<P>calloc allocates a block of <I>NoOfItems</I>&nbsp;x&nbsp;<I>SizeOfItems</I>
+bytes from the memory heap. On success, calloc returns a pointer to the newly allocated
+block of memory. If not enough space exists for the new block, it returns
+<A HREF="#NULL">NULL</A>. The allocated block will be cleared to zero content.
+<BR><BR>
+<B>Note:</B> In releases of TIGCCLIB prior to 2.0, calloc was implemented here as a macro,
+Now, it is a function. It first calls <A HREF="#malloc">malloc</A>
+with <I>NoOfItems</I>&nbsp;x&nbsp;<I>SizeOfItems</I> as the argument, then calls
+<A HREF="mem.html#memset">memset</A> if the first call was successful.</P>
+
+<P>See also: <A HREF="#malloc">malloc</A>, <A HREF="#realloc">realloc</A>, <A HREF="#free">free</A>, <A HREF="#calloc_throw">calloc_throw</A></P>
+<HR>
+<H3><A NAME="free"><U>free</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> free (<B><A HREF="keywords.html#void">void</A></B> *Ptr);</TD></TR></TABLE></P>
+<P><B>Frees an allocated block.</B></P>
+
+<P>free deallocates a memory block allocated by a previous call to
+<A HREF="#malloc">malloc</A> or <A HREF="#calloc">calloc</A>.
+<BR><BR>
+<B>Note:</B> free is in fact an ANSI C alias for a TIOS routine originally called
+<A HREF="#HeapFreePtr">HeapFreePtr</A>.
+<BR><BR>
+Do not attempt to use free on a pointer which has changed after it was allocated
+with <A HREF="#malloc">malloc</A>, <A HREF="#calloc">calloc</A>,
+or <A HREF="#realloc">realloc</A>. For example, the following code
+will certainly crash the calculator:</P>
+<PRE>char *ptr = malloc (2);
+if (ptr)
+  {
+    *(ptr++) = 'A';  // pointer changed here
+    *ptr = 0;
+    ...
+    free (ptr);
+  }
+</PRE>
+<P>Instead, preserve the original pointer and pass it to free.</P>
+
+<P>See also: <A HREF="#malloc">malloc</A>, <A HREF="#realloc">realloc</A>, <A HREF="#calloc">calloc</A></P>
+<HR>
+<H3><A NAME="FreeHandles"><U>FreeHandles</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> FreeHandles (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Determines the number of free handles.</B></P>
+
+<P>FreeHandles returns the number of free handles.</P>
+
+<HR>
+<H3><A NAME="HeapAlloc"><U>HeapAlloc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapAlloc (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Allocates memory and returns a handle of allocated block.</B></P>
+
+<P>HeapAlloc allocates a block of heap memory of <I>Size</I> bytes (all odd sizes
+are rounded up to be even) and returns
+its handle. Allocated blocks are kept in a singly-linked list of blocks.
+Returns <A HREF="#H_NULL">H_NULL</A> if there is not enough memory. The maximum
+size of a single block is 65520 bytes, and the minimum size is 6 bytes. Use
+<A HREF="#HeapDeref">HeapDeref</A> to dereference
+the handle and get a pointer to the actual memory. Note that an unlocked pointer to the
+heap is valid only as long as heap compression (i.e. garbage collection) is not done.
+This routine may cause garbage collection.</P>
+
+<HR>
+<H3><A NAME="HeapAllocESTACK"><U>HeapAllocESTACK</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapAllocESTACK (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Like <A HREF="#HeapAlloc">HeapAlloc</A>, but reduces the size of the expression stack if necessary.</B></P>
+
+<P>HeapAllocESTACK works like <A HREF="#HeapAlloc">HeapAlloc</A>, but 
+reduces the size of the expression stack if necessary (i.e. if there is not
+enough memory). Returns <A HREF="#H_NULL">H_NULL</A> if there is not enough
+memory even after reducing the size of the expression stack.
+<BR><BR>
+<B>Note:</B> The information about this routine in releases of TIGCCLIB prior to 2.0
+was wrong!</P>
+
+<HR>
+<H3><A NAME="HeapAllocHigh"><U>HeapAllocHigh</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapAllocHigh (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Allocates memory at the high end of the heap and returns the handle of the allocated block.</B></P>
+
+<P>HeapAllocHigh allocates a block of <I>Size</I> bytes of heap memory at the high end of the heap,
+locks it, and returns its handle. Returns <A HREF="#H_NULL">H_NULL</A> if there is not enough memory.
+The primary use of this routine is to allocate task
+local storage. It also compresses the heap first to (hopefully) move all used
+(unlocked) blocks of memory down. This routine will cause garbage collection.
+<BR><BR>
+<B>Note:</B> Blocks of memory that are locked for long periods of time should be moved high
+in memory so that they do not interfere as much with rest of the system. This routine
+ALWAYS compresses the heap before it tries to allocate the requested memory and so is
+much slower than the standard <A HREF="#HeapAlloc">HeapAlloc</A> routine. Locking
+memory may cause the system to run out of useable memory sooner than if memory is
+kept unlocked.</P>
+
+<P>See also: <A HREF="#HeapAlloc">HeapAlloc</A></P>
+<HR>
+<H3><A NAME="HeapAllocHighThrow"><U>HeapAllocHighThrow</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapAllocHighThrow (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Performs <A HREF="#HeapAllocHigh">HeapAllocHigh</A>, and throws an error if not successful.</B></P>
+
+<P>HeapAllocHighThrow calls <A HREF="#HeapAllocHigh">HeapAllocHigh</A> and throws a memory error if there is
+not enough memory. Otherwise, it returns the handle of the allocated block.</P>
+
+<HR>
+<H3><A NAME="HeapAllocPtr"><U>HeapAllocPtr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *HeapAllocPtr (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Allocates memory at the high end of the heap and returns a pointer to the allocated block.</B></P>
+
+<P>HeapAllocPtr performs <A HREF="#HeapAllocHigh">HeapAllocHigh</A>, but instead of the handle, it returns
+a pointer to the allocated block (<A HREF="#NULL">NULL</A> in a case of error). It also
+gives a necessary information to the heap manager which is needed later for deallocating
+the memory using <A HREF="#HeapFreePtr">HeapFreePtr</A> command. This routine is principally
+equivalent to ANSI C <A HREF="#malloc">malloc</A> function, so it is aliased here also as
+<A HREF="#malloc">malloc</A>.
+<BR><BR>
+<B>Note:</B> If somebody is interested in it, the handle of the allocated block is stored two
+bytes below the address returned by HeapAllocPtr.</P>
+
+<HR>
+<H3><A NAME="HeapAllocPtrThrow"><U>HeapAllocPtrThrow</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *HeapAllocPtrThrow (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Performs <A HREF="#HeapAllocPtr">HeapAllocPtr</A>, and throws an error if not successful.</B></P>
+
+<P>HeapAllocPtrThrow calls <A HREF="#HeapAllocPtr">HeapAllocPtr</A> and throws a
+memory error if there is not enough memory. Otherwise, it returns the handle
+of the allocated block.</P>
+
+<HR>
+<H3><A NAME="HeapAllocThrow"><U>HeapAllocThrow</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapAllocThrow (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Performs <A HREF="#HeapAlloc">HeapAlloc</A>, and throws an error if not successful.</B></P>
+
+<P>HeapAllocThrow calls <A HREF="#HeapAlloc">HeapAlloc</A> and throws a
+memory error if there is not enough memory. Otherwise, it returns the handle
+of the allocated block.</P>
+
+<HR>
+<H3><A NAME="HeapAvail"><U>HeapAvail</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> HeapAvail (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Determines the size of the heap.</B></P>
+
+<P>HeapAvail returns the total amount of free bytes in the heap (the sum of all
+of the individual blocks of memory).</P>
+
+<HR>
+<H3><A NAME="HeapCompress"><U>HeapCompress</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HeapCompress (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Compresses the heap.</B></P>
+
+<P>HeapCompress coalesces all used heap blocks, deleting any free blocks from the
+heap if possible. If there are any locked blocks, the heap may remain fragmented.
+This routine is called automatically by the system whenever it is needed
+and usually should not be called by applications.</P>
+
+<P>See also: <A HREF="#HeapShuffle">HeapShuffle</A></P>
+<HR>
+<H3><A NAME="HeapDeref"><U>HeapDeref</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *HeapDeref (<A HREF="#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Dereferences a handle.</B></P>
+
+<P>HeapDeref dereferences <I>Handle</I> and returns a pointer to the actual block
+of the memory defined by that <I>Handle</I>. Nearly all heap allocation routines
+return a "handle" which is an identifier for a block of memory allocated in the heap.
+In order to use that memory, the handle must be dereferenced. Once a handle is
+dereferenced, that pointer is valid as long as nothing else is done to cause
+the heap to be compressed. If the heap is compressed the handle can be
+re-dereferenced to make it valid again. If a handle is locked, then the
+pointer that references that block of memory is valid even after the heap is
+compressed (since locking a handle means the heap manager will never
+move the memory associated with that handle).
+<BR><BR>
+<B>Note:</B> HeapDeref returns garbage if <I>Handle</I> is <A HREF="#H_NULL">H_NULL</A>.</P>
+
+<HR>
+<H3><A NAME="HeapEnd"><U>HeapEnd</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *HeapEnd (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Determines the end of the heap.</B></P>
+
+<P>HeapEnd returns a pointer to the end of the heap.</P>
+
+<HR>
+<H3><A NAME="HeapFree"><U>HeapFree</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HeapFree (<A HREF="#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Frees a heap block given its handle.</B></P>
+
+<P>HeapFree frees a heap block associated with handle <I>Handle</I>.</P>
+
+<HR>
+<H3><A NAME="HeapFreeIndir"><U>HeapFreeIndir</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HeapFreeIndir (<A HREF="#HANDLE">HANDLE</A> *HandlePtr);</TD></TR></TABLE></P>
+<P><B>Frees a heap block given a pointer to it.</B></P>
+
+<P>HeapFreeIndir is like <A HREF="#HeapFree">HeapFree</A> except you pass the address
+of a variable which keeps the block handle instead of the handle itself. If the handle
+that <I>HandlePtr</I> points to is not <A HREF="#H_NULL">H_NULL</A>, then it frees that
+handle and sets the handle variable that is pointed to by <I>HandlePtr</I> to
+<A HREF="#H_NULL">H_NULL</A>.
+<BR><BR>
+Maybe this sounds a bit confusing to you. In fact, doing</P>
+<PRE>HeapFreeIndir (&amp;<I>handle</I>);    // <I>The ampersand ('&amp;') is important</I>
+</PRE>
+<P>works exactly the same as</P>
+<PRE>if (<I>handle</I>) HeapFree (<I>handle</I>);
+<I>handle</I> = H_NULL;
+</PRE>
+<P><B>Note:</B> In releases of TIGCCLIB prior to 2.2, the information about this routine was
+quite misleading or even wrong.</P>
+
+<HR>
+<H3><A NAME="HeapFreePtr"><U>HeapFreePtr</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HeapFreePtr (<B><A HREF="keywords.html#void">void</A></B> *Ptr);</TD></TR></TABLE></P>
+<P><B>Frees a block allocated using <A HREF="#HeapAllocPtr">HeapAllocPtr</A>.</B></P>
+
+<P>HeapFreePtr frees a heap block pointed to by <I>Ptr</I>. The block must be a block
+which was allocated using the <A HREF="#HeapAllocPtr">HeapAllocPtr</A> command.
+<BR><BR>
+Do not attempt to use HeapFreePtr on a pointer which has changed after it was allocated
+with <A HREF="#HeapAllocPtr">HeapAllocPtr</A>. For example, the following code
+will certainly crash the calculator:</P>
+<PRE>char *ptr = HeapAllocPtr (2);
+if (ptr)
+  {
+    *(ptr++) = 'A';  // pointer changed here
+    *ptr = 0;
+    ...
+    HeapFreePtr (ptr);
+  }
+</PRE>
+<P>Instead, preserve the original pointer and pass it to HeapFreePtr.</P>
+
+<HR>
+<H3><A NAME="HeapGetHandle"><U>HeapGetHandle</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapGetHandle (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Gets the next available handle.</B></P>
+
+<P>HeapGetHandle returns the number of the first unallocated (free) handle, or
+<A HREF="#H_NULL">H_NULL</A> if there are no free handles. Used mainly
+for internal purposes.</P>
+
+<HR>
+<H3><A NAME="HeapGetLock"><U>HeapGetLock</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> HeapGetLock (<A HREF="#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Determines whether a block is locked.</B></P>
+
+<P>Returns non-zero if the block given by <I>Handle</I> is locked, 0 if it is not
+(i.e. if that memory is free to move on the next heap compression).</P>
+
+<HR>
+<H3><A NAME="HeapLock"><U>HeapLock</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapLock (<A HREF="#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Locks a block.</B></P>
+
+<P>HeapLock locks the block referenced by <I>Handle</I> so that it is not moved
+during garbage collection. Returns <I>Handle</I> if OK, else returns
+<A HREF="#H_NULL">H_NULL</A>.
+<BR><BR>
+<B>Note:</B> Locking memory may cause the system to run out of usable memory
+sooner than if memory is kept unlocked.</P>
+
+<HR>
+<H3><A NAME="HeapMax"><U>HeapMax</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> HeapMax (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Determines the size of the largest allocatable block.</B></P>
+
+<P>HeapMax returns the size of the largest block allocatable on
+the heap (it will be in the range of 0 through 65520).
+Note that this may not be equal to <A HREF="#HeapAvail">HeapAvail</A>
+due to locked blocks, overhead, and maximum block size. This routine will
+(always) cause heap compression (garbage collection).</P>
+
+<HR>
+<H3><A NAME="HeapMoveHigh"><U>HeapMoveHigh</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapMoveHigh (<A HREF="#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Reallocates a block.</B></P>
+
+<P>HeapMoveHigh tries to reallocate a block referenced by <I>Handle</I> as high in
+memory as possible. The block must not be locked. If successful, returns
+the handle passed; otherwise returns <A HREF="#H_NULL">H_NULL</A> (in this case,
+the block is still in the same place as before, so no memory is lost). This routine
+will cause heap compression (garbage collection).</P>
+
+<HR>
+<H3><A NAME="HeapPtrToHandle"><U>HeapPtrToHandle</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapPtrToHandle (<B><A HREF="keywords.html#void">void</A></B> *Ptr);</TD></TR></TABLE></P>
+<P><B>Determines the handle associated with a block.</B></P>
+
+<P>HeapPtrToHandle returns the handle associated to the block whose beginning is
+pointed to by <I>Ptr</I> (or <A HREF="#H_NULL">H_NULL</A> if <I>Ptr</I>
+does not point to the beginning of a block).
+<BR>
+This routine works by searching the entire table of handles for the given pointer.
+It will return meaningful results only if the block of memory was not moved (e.g. by heap
+compression) since the pointer was originally obtained.
+<BR>
+<B>Note:</B> <A HREF="#PtrToHandle">PtrToHandle</A>, implemented in the
+GCC4TI library, returns the handle associated to the block referenced by the pointer,
+even if the pointer does not point to the beginning of the block.</P>
+
+<P>See also: <A HREF="#PtrToHandle">PtrToHandle</A></P>
+<HR>
+<H3><A NAME="HeapRealloc"><U>HeapRealloc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapRealloc (<A HREF="#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> NewSize);</TD></TR></TABLE></P>
+<P><B>Reallocates a block to a new size.</B></P>
+
+<P>If <I>Handle</I> is <A HREF="#H_NULL">H_NULL</A>, HeapRealloc calls
+<A HREF="#HeapAlloc">HeapAlloc</A>. Otherwise, it tries to reallocate the given heap block
+to a new size. Returns <A HREF="#H_NULL">H_NULL</A> if there is not enough memory (it will
+try to call <A HREF="#HeapCompress">HeapCompress</A>) or if new size is invalid; otherwise
+returns <I>Handle</I> (but <I>Handle</I> will still be valid even if there was not enough memory).
+If the heap block is locked, then the block will not be moved in
+order to reallocate it. However, unlocked blocks above the heap block will be moved.
+The contents of the object will be unchanged up to
+the lesser of the new and old size. If the new size is larger, the value of the
+newly allocated portion of the block is indeterminate.
+This routine may cause garbage collection.
+<BR><BR>
+<B>Note:</B> Reallocating a locked block may fail very easily, especially if
+you have allocated and locked some blocks just shortly before. The reason is
+simple: If you allocate memory blocks in sequence, they are usually located
+close to each other. If you try to grow a locked block which lies directly in
+front of another locked block, the operation will fail because the second
+locked block cannot be moved. In general it is a good idea to unlock memory
+blocks before using HeapRealloc, and to lock them again afterwards if
+necessary. This way the probability to succeed is much higher.</P>
+
+<HR>
+<H3><A NAME="HeapReallocThrow"><U>HeapReallocThrow</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapReallocThrow (<A HREF="#HANDLE">HANDLE</A> Handle, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> NewSize);</TD></TR></TABLE></P>
+<P><B>Performs <A HREF="#HeapRealloc">HeapRealloc</A>, and throws an error if not successful.</B></P>
+
+<P>HeapReallocThrow calls <A HREF="#HeapRealloc">HeapRealloc</A> and throws a
+memory error if there is not enough memory. Otherwise, it returns the handle
+of the allocated block.</P>
+
+<HR>
+<H3><A NAME="HeapShuffle"><U>HeapShuffle</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> HeapShuffle (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Shuffles all unlocked blocks on the heap.</B></P>
+
+<P>HeapShuffle shuffles all unlocked blocks on the heap.
+As a consequence, all dereferenced handles to unlocked blocks of memory in the heap may become invalid.
+This function is <I>not</I> the same as <A HREF="#HeapCompress">HeapCompress</A>.
+It is used mainly for debugging the program.
+<BR><BR>
+Here is a test example (called "Heap Shuffle"):</P>
+<PRE>// Call HeapShuffle and compare addresses
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  unsigned char *p1, *p2, *p3, *p4, *p5, *p6;
+  HANDLE h1, h2, h3;
+  short f = FontGetSys ();
+  unsigned char b[50];
+  
+  h1 = HeapAlloc (0x1000);
+  h2 = HeapAlloc (0x1000);
+  h3 = HeapAlloc (0x1000);
+  
+  if (h1 &amp;&amp; h2 &amp;&amp; h3)
+    {
+      ClrScr ();
+      
+      p1 = HeapDeref (h1);
+      p3 = HeapDeref (h2);
+      p5 = HLock (h3);
+      HeapShuffle ();
+      p2 = HeapDeref (h1);
+      p4 = HeapDeref (h2);
+      p6 = HeapDeref (h3);
+      
+      FontSetSys (F_4x6);
+      DrawStr (0, 0, &quot;Before/after shuffle:&quot;, A_NORMAL);
+      
+      sprintf (b, &quot;Block 1 (unlocked): %lp %lp&quot;, p1, p2);
+      DrawStr (0, 10, b, A_NORMAL);
+      
+      sprintf (b, &quot;Block 2 (unlocked): %lp %lp&quot;, p3, p4);
+      DrawStr (0, 20, b, A_NORMAL);
+      
+      sprintf (b, &quot;Block 3 (locked): %lp %lp&quot;, p5, p6);
+      DrawStr (0, 30, b, A_NORMAL);
+      
+      FontSetSys (f); // Restore previous font
+      GKeyIn (NULL, 0);
+    }
+  
+  HeapFree (h3);
+  HeapFree (h2);
+  HeapFree (h1);
+}
+</PRE>
+
+<P>See also: <A HREF="#HeapCompress">HeapCompress</A>, <A HREF="#HeapWalk">HeapWalk</A></P>
+<HR>
+<H3><A NAME="HeapSize"><U>HeapSize</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> HeapSize (<A HREF="#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Determines the size of an allocated block.</B></P>
+
+<P>HeapSize returns the number of bytes allocated for the heap block referenced by
+<I>Handle</I>. Due to word alignment and minimum block size, this may not be the
+amount it was allocated with. Also note that because of locked blocks, it is possible
+(rare) that a heap block will actually be bumped up a few words by the
+<A HREF="#HeapCompress">HeapCompress</A> routine. So never assume that the value
+returned by HeapSize is the true number of bytes used by the data stored in the
+heap block.</P>
+
+<HR>
+<H3><A NAME="HeapUnlock"><U>HeapUnlock</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> HeapUnlock (<A HREF="#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Unlocks a block.</B></P>
+
+<P>HeapUnlock unlocks the block referenced by the <I>Handle</I> so that it can be moved
+during garbage collection. Returns <I>Handle</I> if OK, else returns
+<A HREF="#H_NULL">H_NULL</A>.</P>
+
+<HR>
+<H3><A NAME="HeapWalk"><U>HeapWalk</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">short</A></B> HeapWalk (<B><A HREF="keywords.html#short">short</A></B> function);</TD></TR></TABLE></P>
+<P><B>Verifies and dumps the contents of the heap.</B></P>
+
+<P>HeapWall looks through the heap to verify it is valid.
+Then it prints the status of the heap, prints the size of each heap block and its handle, or prints the symbol table, according to the value of <I>function</I>.
+HeapWalk uses <A HREF="link.html#LIO_SendData">LIO_SendData</A> to send the output through the link port.
+<BR><BR>
+The valid values for <I>function</I>, defined in the enum <A HREF="#HeapWalkCmds">HeapWalkCmds</A>, are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">H_WALK_VERIFY</TD>
+  <TD>The function just verifies the heap, and outputs nothing to the link port.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_STATUS</TD>
+  <TD>The function outputs the total free space, maximum size of a free block, number of used and free blocks, and the number of locked blocks.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_DUMP</TD>
+  <TD>The function outputs the heap status and the size of the heap block for each handle.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_SYM</TD>
+  <TD><B>AMS 2.04 or higher</B>: The function outputs the entire VAT.</TD>
+</TR>
+</TABLE>
+<BR>
+HeapWalk called with <I>function</I> as H_WALK_VERIFY, H_WALK_STATUS or H_WALK_DUMP, returns TRUE if the heap is valid, FALSE otherwise.<BR>
+
+<I>HeapWalk(H_WALK_SYM)</I> executes this block of code after verifying the heap. The example "List variables and folders" works on any AMS version, unlike HeapWalk(H_WALK_SYM):</P>
+<PRE>// Sends the list of all variables and folders through the link port.
+// This program does what HeapWalk(H_WALK_SYM); does on AMS 2.04 and
+// later, but also works on any AMS version.
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define NO_CALC_DETECT
+#define ENABLE_ERROR_RETURN
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+void _main(void)
+{
+SYM_ENTRY *symptr;
+unsigned char buffer[256];
+#ifdef SAVE_SYMPG // Saving the SymPG isn't necessary in _main, nobody else does it.
+SymPG_S save;
+TRY
+  memcpy(&amp;save, pSymPG, sizeof(SymPG_S));
+#endif
+  if ((symptr = SymFindFirst(NULL,2)) != NULL)
+  {
+    strcpy(buffer, &quot;\r\nName/Flags/hVal (dec)\r\n&quot;);
+    LIO_SendData(buffer, strlen((char*)buffer));
+    do
+    {
+      short flags = symptr-&gt;flags.flags_n;
+      if ((flags&amp;SF_FOLDER))
+        sprintf((char *)buffer, &quot;FOLDER: %-8s   %04X  %hd\r\n&quot;, symptr-&gt;name,
+        flags, symptr-&gt;handle);
+      else
+        sprintf((char *)buffer, &quot;%8s\\%-8s %04X  %hd\r\n&quot;, SymFindFolderName(),
+        symptr-&gt;name, flags, symptr-&gt;handle);
+      LIO_SendData(buffer, strlen((char *)buffer));
+      symptr = SymFindNext();
+    } while (symptr != NULL);
+  }
+#ifdef SAVE_SYMPG // See above.
+FINALLY
+  memcpy(pSymPG, &amp;save, sizeof(SymPG_S));
+ENDFINAL
+#endif
+}
+</PRE>
+
+<P>See also: <A HREF="#HeapShuffle">HeapShuffle</A>, <A HREF="vat.html">vat.h</A>, <A HREF="vat.html#SymFindFolderName">SymFindFolderName</A>, <A HREF="unknown.html#pSymPG">pSymPG</A>, <A HREF="unknown.html#SymPG_S">SymPG_S</A></P>
+<HR>
+<H3><A NAME="HLock"><U>HLock</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *HLock (<A HREF="#HANDLE">HANDLE</A> Handle);</TD></TR></TABLE></P>
+<P><B>Locks and dereferences a handle.</B></P>
+
+<P>HLock locks a block referenced by <I>Handle</I> so that it will not
+move on the next heap compression, and returns a pointer to the actual memory
+block. Returns <A HREF="#NULL">NULL</A> in a case of error.
+<BR><BR>
+<B>Note:</B> Locking memory may cause the system to run out of usable memory
+sooner than if memory is kept unlocked.</P>
+
+<HR>
+<H3><A NAME="hStrAppend"><U>hStrAppend</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 1.01 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> hStrAppend (<A HREF="#HANDLE">HANDLE</A> h, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> *str);</TD></TR></TABLE></P>
+<P><B>Appends a string to a handle that contains a string.</B></P>
+
+<P><I>h</I> is the handle to string to be lengthened.<BR>
+<I>str</I> is the string to append to the handle h.<BR>
+This routine may cause heap compression, and it throws "Error: memory" if there is not enough memory to expand the handle <I>h</I>.<BR>
+<BR>
+This routine provides a way to store in the clipboard something you can't paste with DIAMOND+PASTE !<BR>
+<B>But</B>: you need to take great care when you use this routine: use it only on handles your 
+program allocated, because writing garbage into system handles usually crashes the calculator !<BR>
+<BR>
+hStrAppend is normally a ROM_CALL (ROM_CALL 45F) available on AMS 2.xx only, but a wrapper makes the use of this function possible on any AMS version (take great care with very old AMS 1.00 for 92+, though).<BR>
+<BR>
+hStrAppend is implemented as follows:</P>
+<PRE>
+void hStrAppend (HANDLE h, unsigned char *str)
+{
+  unsigned char* str1;
+  unsigned long lstr1, lstr, lbuf;
+  str1 = HeapDeref(h);
+  lstr1 = strlen((char *)str1);                 /* length of string in handle */
+  lstr = strlen((char *)str);                   /* length of string to append */
+  lbuf = lstr1 + lstr + 1;                      /* new space requirement */
+  if (!HeapRealloc(h, lbuf))                    /* try to get new space */
+    ER_throw(670);
+  str1 = (unsigned char *)HeapDeref(h) + lstr1; /* point to end of original string */
+  memcpy(str1, str, lstr+1);                    /* append new string */
+}
+</PRE>
+
+<HR>
+<H3><A NAME="malloc_throw"><U>malloc_throw</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *malloc_throw (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Performs <A HREF="#malloc">malloc</A>, and throws an error if not successful.</B></P>
+
+<P>malloc_throw calls <A HREF="#malloc">malloc</A> and throws a
+memory error if there is not enough memory. Otherwise, it returns a pointer
+to the allocated block.</P>
+
+<HR>
+<H3><A NAME="malloc"><U>malloc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *malloc (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> Size);</TD></TR></TABLE></P>
+<P><B>Allocates a memory block.</B></P>
+
+<P>malloc allocates a block of <I>Size</I> bytes from the memory heap.
+It allows a program to allocate memory explicitly as it's needed, and in
+the exact amounts needed. The heap is used for dynamic allocation of
+variable-sized blocks of memory. Many data structures, such as trees and
+lists, naturally employ heap memory allocation. On success, malloc returns
+a pointer to the newly allocated block of memory. If not enough space
+exists for the new block, it returns <A HREF="#NULL">NULL</A>. The contents
+of the block are left unchanged. If the argument <I>Size</I> is zero
+malloc also returns <A HREF="#NULL">NULL</A>.
+malloc is in fact an ANSI C alias for a TIOS routine originally called
+<A HREF="#HeapAllocPtr">HeapAllocPtr</A> (see description of it for more
+system info).
+<BR><BR>
+<B>Note:</B> As the TIOS memory manager assigns a handle to each allocated block, and
+as the total number of handles is limited, malloc is not good for algorithms
+where you need to allocate a large number of small blocks (as in implementations
+of linked lists which are usually seen in various C language books and tutorials).
+The same is true for all other TIOS memory management routines.</P>
+
+<P>See also: <A HREF="#realloc">realloc</A>, <A HREF="#calloc">calloc</A>, <A HREF="#free">free</A>, <A HREF="#malloc_throw">malloc_throw</A></P>
+<HR>
+<H3><A NAME="PtrToHandle"><U>PtrToHandle</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#HANDLE">HANDLE</A> PtrToHandle (<B><A HREF="keywords.html#void">void</A></B> *Ptr);</TD></TR></TABLE></P>
+<P><B>Determines the handle associated with a block.</B></P>
+
+<P>PtrToHandle returns the handle associated to the block pointed to by <I>Ptr</I>
+(or <A HREF="#H_NULL">H_NULL</A> if <I>Ptr</I> does not point within a block).
+<BR>
+This routine will return meaningful results only if the block of memory was not moved (e.g.
+by heap compression) since the pointer was originally obtained.
+<BR>
+The following program shows the difference between <A HREF="#HeapPtrToHandle">HeapPtrToHandle</A>
+and PtrToHandle:</P>
+<PRE>// Return the EStack handle.
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return Pushed Expression
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  push_END_TAG ();
+  push_END_TAG ();
+  // Outside all allocated blocks.
+  push_shortint (HeapPtrToHandle((void *)1));
+  // Strictly inside a block.
+  push_shortint (HeapPtrToHandle((void *)estack_max_index));
+  // Strictly inside a block, must be the same handle as estack_max_index.
+  push_shortint (HeapPtrToHandle((void *)top_estack));
+  // Beginning of a block.
+  push_shortint (PtrToHandle(HeapDeref(1)));
+  push_LIST_TAG ();
+  push_END_TAG ();
+  // Outside all allocated blocks.
+  push_shortint (PtrToHandle((void *)1));
+  // Strictly inside a block.
+  push_shortint (PtrToHandle((void *)estack_max_index));
+  // Strictly inside a block, must be the same handle as estack_max_index.
+  push_shortint (PtrToHandle((void *)top_estack));
+  // Beginning of a block.
+  push_shortint (PtrToHandle(HeapDeref(1)));
+  push_LIST_TAG ();
+  push_LIST_TAG ();
+}
+</PRE>
+
+<P>See also: <A HREF="#HeapPtrToHandle">HeapPtrToHandle</A></P>
+<HR>
+<H3><A NAME="realloc_throw"><U>realloc_throw</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *realloc_throw (<B><A HREF="keywords.html#void">void</A></B> *Ptr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> NewSize);</TD></TR></TABLE></P>
+<P><B>Performs <A HREF="#realloc">realloc</A>, and throws an error if not successful.</B></P>
+
+<P>realloc_throw calls <A HREF="#realloc">realloc</A> and throws a
+memory error if there is not enough memory. Otherwise, it returns a pointer
+to the allocated block.</P>
+
+<HR>
+<H3><A NAME="realloc"><U>realloc</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> *realloc (<B><A HREF="keywords.html#void">void</A></B> *Ptr, <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> NewSize);</TD></TR></TABLE></P>
+<P><B>Reallocates allocated memory.</B></P>
+
+<P>realloc attempts to shrink or expand the previously allocated block to <I>NewSize</I>
+bytes. The <I>Ptr</I> argument points to a memory block previously obtained by calling
+<A HREF="#malloc">malloc</A>, <A HREF="#calloc">calloc</A>, or realloc.
+It may also be <A HREF="#NULL">NULL</A>; in this case the function simply calls <A HREF="#malloc">malloc</A>.
+<BR><BR>
+realloc adjusts the size of the allocated block to <I>NewSize</I>, copying the contents to a new location
+if necessary (note that the block will not stay in high memory after the reallocation, but
+it will still remain locked; see other functions from this header file for more info).
+realloc returns the address of the reallocated block, which can be different than the address
+of the original block. If the block cannot be reallocated, realloc returns <A HREF="#NULL">NULL</A>.
+<BR><BR>
+Usually realloc keeps the current contents of the block intact; only the portion of the block
+which is newly allocated is not initialized and contains random content. However, unlike
+<A HREF="#HeapRealloc">HeapRealloc</A>, the function frees the block pointed to by
+<I>Ptr</I> if there was an error, so you cannot assume that the data pointed to by <I>Ptr</I>
+is still valid. This is done because there is no way to guarantee that <I>Ptr</I> is still
+valid after the heap compression which <A HREF="#HeapRealloc">HeapRealloc</A> tries to
+perform (this function uses <A HREF="#HeapRealloc">HeapRealloc</A> internally).
+<BR><BR>
+<B>Note:</B> realloc is introduced to increase compatibility with ANSI C. It is better to use
+the official TIOS function <A HREF="#HeapRealloc">HeapRealloc</A>, which uses a system of handles
+to memory blocks.</P>
+
+<P>See also: <A HREF="#malloc">malloc</A>, <A HREF="#calloc">calloc</A>, <A HREF="#free">free</A>, <A HREF="#realloc_throw">realloc_throw</A></P>
+<HR>
+<H3><A NAME="H_NULL"><U>H_NULL</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> H_NULL 0</TD></TR></TABLE></P>
+<P><B>A null-handle value.</B></P>
+
+<P>H_NULL is a null-handle defined as a constant with value 0.</P>
+
+<HR>
+<H3><A NAME="NULL"><U>NULL</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="cpp.html#SEC10">#define</A></B> NULL ((<B><A HREF="keywords.html#void">void</A></B> *) 0)</TD></TR></TABLE></P>
+<P><B>A null-pointer value.</B></P>
+
+<P>NULL is a null-pointer value, defined as a pointer to the address 0.</P>
+
+<HR>
+<H3><A NAME="Bool"><U>Bool</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> Bool {FALSE, TRUE};</TD></TR></TABLE></P>
+<P><B>An enumeration to describe true or false values.</B></P>
+
+<P>The enum Bool represents a boolean value, that is, either 'true' or 'false'.
+The constant FALSE equals 0; TRUE equals 1.</P>
+
+<HR>
+<H3><A NAME="HANDLE"><U>HANDLE</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> HANDLE;</TD></TR></TABLE></P>
+<P><B>Represents a handle associated with an allocated memory block.</B></P>
+
+<P>The HANDLE type is mainly used to manage dynamically allocated memory using
+functions from <A HREF="alloc.html">alloc.h</A>, but a lot of functions
+from other header files take instances of this type as parameters.
+<BR><BR>
+A handle points to a word-aligned block of memory, whose current address can
+be retrieved using <A HREF="#HeapDeref">HeapDeref</A>.</P>
+
+<P>See also: <A HREF="#HeapAlloc">HeapAlloc</A>, <A HREF="#HeapFree">HeapFree</A>, <A HREF="#HLock">HLock</A>, <A HREF="#HeapUnlock">HeapUnlock</A>, <A HREF="#HeapDeref">HeapDeref</A></P>
+<HR>
+<H3><A NAME="HeapWalkCmds"><U>HeapWalkCmds</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> HeapWalkCmds {H_WALK_VERIFY = 0, H_WALK_STATUS = 1, H_WALK_DUMP = 2, H_WALK_SYM = 3};</TD></TR></TABLE></P>
+<P><B>An enumeration describing the valid parameters for <A HREF="#HeapWalk">HeapWalk</A>.</B></P>
+
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>

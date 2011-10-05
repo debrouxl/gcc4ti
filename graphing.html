@@ -1,0 +1,1146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>graphing.h</TITLE>
+<STYLE TYPE="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</STYLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#E0E0E0">
+<FONT SIZE="5"><B>The &lt;graphing.h&gt; Header File</B></FONT>
+<HR>
+<P><B>Routines, variables and structures related to graphing in general.</B></P>
+
+<H3><U>Functions</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#CkValidDelta">CkValidDelta</A></B><DD>Checks the validity of a given delta.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CptDeltax">CptDeltax</A></B><DD>Computes the system variable &#916;x.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#CptDeltay">CptDeltay</A></B><DD>Computes the system variable &#916;y.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#gdb_len">gdb_len</A></B><DD>Returns the length of the GDB in the current graph mode.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#gdb_recall">gdb_recall</A></B><DD>Actual core of <A HREF="bascmd.html#cmd_rclgdb">cmd_rclgdb</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#gdb_store">gdb_store</A></B><DD>Actual core of <A HREF="bascmd.html#cmd_stogdb">cmd_stogdb</A>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#rngLen">rngLen</A></B><DD>Returns the size of the array pointed to by <CODE>GR_WIN_VARS.rngp</CODE> if the current graphing mode if <I>GraphMode</I>.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#StepCk">StepCk</A></B><DD>Verifies that the input min, max, and step values are valid in parametric or polar mode.</DL>
+<H3><U>Global Variables</U></H3>
+<DL INDENT="20"><DT><B><A HREF="#gr_active">gr_active</A></B><DD>Pointer to the active <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#gr_flags">gr_flags</A></B><DD>Global flags used by the Graph application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#gr_other">gr_other</A></B><DD>Pointer to the second <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.</DL>
+<H3><U>Predefined Types</U></H3>
+<DL INDENT="20"><DT><B><A HREF="graph.html#Attrs">Attrs</A></B><DD>An enumeration for describing legal attribute values.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#DB3">DB3</A></B><DD>Structure for defining a 3D function spin database.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EQU_DS_AMS1">EQU_DS_AMS1</A></B><DD>Structure for defining internal Y = Editor app data (AMS 1.xx version).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#EQU_DS">EQU_DS</A></B><DD>Structure for defining internal Y = Editor app data.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="estack.html#ESI">ESI</A></B><DD>Represents an index of a value on the TIOS expression stack.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#FUNCID">FUNCID</A></B><DD>Function identifier structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GR_FLAGS_struct">GR_FLAGS</A></B><DD>A structure for defining global flags used by the Graph application.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GR_MODES">GR_MODES</A></B><DD>Structure for describing graph modes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></B><DD>Structure defining data for the graph related apps.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="gdraw.html#GraphModes">GraphModes</A></B><DD>Describes different graphing modes.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GrFmtFlags2">GrFmtFlags2</A></B><DD>Enumerates different Graph Format flags for the <A HREF="#GR_MODES">GR_MODES</A> struct.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GrFmtFlags">GrFmtFlags</A></B><DD>Enumerates different Graph Format flags for the <A HREF="#GR_MODES">GR_MODES</A> struct.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GrMode3dStyles">GrMode3dStyles</A></B><DD>Enumerates different 3D Graph Style flags for the <A HREF="#GR_MODES">GR_MODES</A> struct.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GrSides">GrSides</A></B><DD>Enumerates different Graph side flags for the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#GrWinFlags">GrWinFlags</A></B><DD>Enumerates different Graph app flags for the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="vat.html#HSym">HSym</A></B><DD>A structure representing a symbol reference.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TABLE_WIN_VARS">TABLE_WIN_VARS</A></B><DD>Structure for defining Table app data.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#TableFlags">TableFlags</A></B><DD>Enumerates different Table app flags for the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WINDOW_AMS1">WINDOW_AMS1</A></B><DD>The main window-describing structure (AMS 1.xx version).<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="wingraph.html#WINDOW">WINDOW</A></B><DD>The main window-describing structure.<IMG WIDTH="1" HEIGHT="20" ALIGN="TOP"><DT><B><A HREF="#WinVarEnum">WinVarEnum</A></B><DD>Describes different Window variables.</DL>
+<P><B>Note:</B> This header is currently <B>very</B> incomplete.</P>
+
+<HR>
+<H3><A NAME="CkValidDelta"><U>CkValidDelta</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> CkValidDelta (<B><A HREF="keywords.html#float">float</A></B> maxrng, <B><A HREF="keywords.html#float">float</A></B> minrng, <B><A HREF="keywords.html#float">float</A></B> delta);</TD></TR></TABLE></P>
+<P><B>Checks the validity of a given delta.</B></P>
+
+<P>CkValidDelta checks to see if the exponent of <I>delta</I> is too small relative to the exponents
+of <I>maxrng</I> and <I>minrng</I> so that all the significant digits of delta would be
+shifted out of the floating-point mantissa when performing arithmetic.
+<BR><BR>
+The parameter <I>maxrng</I> is the final value in the graph window variable sequence (e.g., xmax,
+ymax, tmax, etc.). The parameter <I>minrng</I> is the first value in the graph window variable sequence (e.g., xmin,
+ymin, tmin, etc.). The parameter <I>delta</I> is the increment value which will be used to compute the sequence from
+<I>minrng</I> to <I>maxrng</I> (e.g., &#916;x, &#916;y, tstep, etc.).
+<BR><BR>
+CkValidDelta returns 1 if delta is valid, 0 if the exponent of delta is too small.
+<BR><BR>
+<B>Note:</B> CkValidDelta assumes the sign of delta has already been verified as correct for
+computing a sequence from minrng to maxrng. It is valid for maxrng to be
+less than minrng if delta is negative.</P>
+
+<P>See also: <A HREF="#StepCk">StepCk</A></P>
+<HR>
+<H3><A NAME="CptDeltax"><U>CptDeltax</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> CptDeltax (<A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> *);</TD></TR></TABLE></P>
+<P><B>Computes the system variable &#916;x.</B></P>
+
+<P>Given a pointer to a GR_WIN_VARS structure (usually <A HREF="#gr_active">gr_active</A> 
+or <A HREF="#gr_other">gr_other</A>), CptDeltax computes the system variable &#916;x.
+<BR><BR>
+This function calls <A HREF="timath.html#ck_valid_float">ck_valid_float</A> and <A HREF="#CkValidDelta">CkValidDelta</A>, among others.</P>
+
+<HR>
+<H3><A NAME="CptDeltay"><U>CptDeltay</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> CptDeltay (<A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> *);</TD></TR></TABLE></P>
+<P><B>Computes the system variable &#916;y.</B></P>
+
+<P>Given a pointer to a GR_WIN_VARS structure (usually <A HREF="#gr_active">gr_active</A> 
+or <A HREF="#gr_other">gr_other</A>), CptDeltay computes the system variable &#916;y.
+<BR><BR>
+This function calls <A HREF="timath.html#ck_valid_float">ck_valid_float</A> and <A HREF="#CkValidDelta">CkValidDelta</A>, among others.</P>
+
+<HR>
+<H3><A NAME="gdb_len"><U>gdb_len</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> gdb_len (<B><A HREF="keywords.html#void">void</A></B>);</TD></TR></TABLE></P>
+<P><B>Returns the length of the GDB in the current graph mode.</B></P>
+
+<P>Used internally by <A HREF="bascmd.html#cmd_stogdb">cmd_stogdb</A>, there's no point in 
+using gdb_len directly.</P>
+
+<HR>
+<H3><A NAME="gdb_recall"><U>gdb_recall</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> gdb_recall (<A HREF="vat.html#HSym">HSym</A> var);</TD></TR></TABLE></P>
+<P><B>Actual core of <A HREF="bascmd.html#cmd_rclgdb">cmd_rclgdb</A>.</B></P>
+
+<P>This is the routine which retrieves the current GDB from the variable described by <I>var</I>.<BR>
+This routine is wrapped by <A HREF="bascmd.html#cmd_rclgdb">cmd_rclgdb</A>, which is 
+basically a combination of <A HREF="vat.html#VarRecall">VarRecall</A> and gdb_recall, so 
+there's no point in using gdb_recall directly.</P>
+
+<HR>
+<H3><A NAME="gdb_store"><U>gdb_store</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> gdb_store (<A HREF="estack.html#ESI">ESI</A> dest);</TD></TR></TABLE></P>
+<P><B>Actual core of <A HREF="bascmd.html#cmd_stogdb">cmd_stogdb</A>.</B></P>
+
+<P>This is the routine which stores the current GDB at the memory location starting at <I>dest</I>.<BR>
+This routine is wrapped by <A HREF="bascmd.html#cmd_stogdb">cmd_stogdb</A>, so there's no 
+point in using gdb_store directly.</P>
+
+<HR>
+<H3><A NAME="rngLen"><U>rngLen</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">long</A></B> rngLen (<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> GraphMode);</TD></TR></TABLE></P>
+<P><B>Returns the size of the array pointed to by <CODE>GR_WIN_VARS.rngp</CODE> if the current graphing mode if <I>GraphMode</I>.</B></P>
+
+<P>This function is used by many ROM_CALLs related to graphing, through gdb_len, gdb_recall and gdb_store.
+<BR><BR>
+Valid values for <I>GraphMode</I> are described in <A HREF="gdraw.html#GraphModes">GraphModes</A>.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>, <A HREF="gdraw.html#GraphModes">GraphModes</A></P>
+<HR>
+<H3><A NAME="StepCk"><U>StepCk</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#void">void</A></B> StepCk (<B><A HREF="keywords.html#float">float</A></B> *indep);</TD></TR></TABLE></P>
+<P><B>Verifies that the input min, max, and step values are valid in parametric or polar mode.</B></P>
+
+<P>StepCk verifies that the input min, max, and step values in the array pointed to by
+<I>indep</I> are valid values for the independent variable in parametric mode
+(tmin, tmax, and tstep) or polar mode (&#952;min, &#952;max, and &#952;step). The
+function will return to the calling routine if the values are valid, otherwise an
+error is thrown.
+<BR><BR>
+<I>indep</I> is a pointer to an array of floating-point values where
+indep[0] = min, indep[1] = max, and indep[2] = step.
+<BR><BR>
+An error is thrown if the input values are not valid for the independent
+variable in parametric mode or polar mode, such as the step value being
+negative when it should have been positive for the given min and max.</P>
+
+<P>See also: <A HREF="#CkValidDelta">CkValidDelta</A>, <A HREF="error.html">error.h</A></P>
+<HR>
+<H3><A NAME="gr_active"><U>gr_active</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> *gr_active;</TD></TR></TABLE></P>
+<P><B>Pointer to the active <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.</B></P>
+
+<P><I>gr_active</I> is a pointer to a <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct that contain most of the data used by
+the Graph application and other graph-related apps. <I>gr_active</I> points to the
+<A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct containing all the information for the active graph
+(whereas <A HREF="#gr_other">gr_other</A> points to the information for the second graph in two-graph mode).
+As the calculator user switches between the two windows in two-graph
+mode, the pointers in <I>gr_active</I> and <A HREF="#gr_other">gr_other</A> are swapped so that
+<I>gr_active</I> is always referring to the active graph. The members of a
+<A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct are given along with an explanation of the
+contents of each in the description of <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>. None of the data should be changed directly by a program,
+but can be accessed for use. System routines may be called to
+change many items (for example, <A HREF="vat.html#VarStore">VarStore</A> may be used to change the
+graph system variables), but some data is for internal use only and should
+only be changed by the appropriate system app.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>, <A HREF="#gr_other">gr_other</A></P>
+<HR>
+<H3><A NAME="gr_flags"><U>gr_flags</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#GR_FLAGS_struct">GR_FLAGS</A> gr_flags;</TD></TR></TABLE></P>
+<P><B>Global flags used by the Graph application.</B></P>
+
+<P><I>gr_flags</I> returns the Global flags used by the Graph application. Each flag is a separate 
+member of the <A HREF="#GR_FLAGS_struct">GR_FLAGS</A> struct. The contents of these flags should not be changed by a program,
+but may be accessed for testing the value. The names of the flags
+and their purposes are given with the <A HREF="#GR_FLAGS_struct">GR_FLAGS</A> struct.</P>
+
+<P>See also: <A HREF="#GR_FLAGS_struct">GR_FLAGS</A></P>
+<HR>
+<H3><A NAME="gr_other"><U>gr_other</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> *gr_other;</TD></TR></TABLE></P>
+<P><B>Pointer to the second <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.</B></P>
+
+<P><I>gr_other</I> is a pointer to a <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct that contain most of the data used by
+the Graph application and other graph related apps. <I>gr_other</I> points to the
+<A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct containing all the information for the second graph in two-graph mode
+(whereas <A HREF="#gr_active">gr_active</A> points to the information for the active graph).
+As the calculator user switches between the two windows in two-graph
+mode, the pointers in <I>gr_other</I> and <A HREF="#gr_active">gr_active</A> are swapped so that
+<A HREF="#gr_active">gr_active</A> is always referring to the active graph. The members of a
+<A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct are given along with an explanation of the
+contents of each in the description of <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>. None of the data should be changed directly by a program,
+but can be accessed for use. System routines may be called to
+change many items (for example, <A HREF="vat.html#VarStore">VarStore</A> may be used to change the
+graph system variables), but some data is for internal use only and should
+only be changed by the appropriate system app.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>, <A HREF="#gr_active">gr_active</A></P>
+<HR>
+<H3><A NAME="DB3"><U>DB3</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">long</A></B> cVertices;<BR>
+HANDLE hVertices;<BR>
+<B><A HREF="keywords.html#short">long</A></B> cEdges;<BR>
+HANDLE hEdges;<BR>
+HANDLE hContours;<BR>
+<B><A HREF="keywords.html#short">long</A></B> ciVertices;<BR>
+HANDLE hiVertices;<BR>
+<B><A HREF="keywords.html#short">long</A></B> ciEdges;<BR>
+HANDLE hiEdges;<BR>
+<B><A HREF="keywords.html#short">short</A></B> DCM[3][3];<BR>
+<B><A HREF="keywords.html#short">short</A></B> DCM0[3][3];<BR>
+<B><A HREF="keywords.html#short">short</A></B> DCMhome[3][3];<BR>
+<B><A HREF="keywords.html#short">short</A></B> cDCMangle;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> nSpinDir;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> nSpinSpeed;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> bSpinning;<BR>
+<B><A HREF="keywords.html#short">short</A></B> calp, salp;<BR>
+</TD></TR></TABLE>
+} DB3;</TD></TR></TABLE></P>
+<P><B>Structure for defining a 3D function spin database.</B></P>
+
+<P>Structure for defining a 3D function spin database. This structure is only used in the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> structure. It is not very well known, so if you have more information, please help.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="EQU_DS_AMS1"><U>EQU_DS_AMS1</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> SEquDS_AMS1 {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="wingraph.html#WINDOW_AMS1">WINDOW_AMS1</A> wMain;<BR>
+<B><A HREF="keywords.html#short">short</A></B> focus;<BR>
+<B><A HREF="keywords.html#short">short</A></B> cFunc;<BR>
+<B><A HREF="keywords.html#short">short</A></B> yPos;<BR>
+<B><A HREF="keywords.html#short">short</A></B> xOffset;<BR>
+<B><A HREF="keywords.html#short">short</A></B> yBelow;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> bAltForm;<BR>
+</TD></TR></TABLE>
+} EQU_DS_AMS1;</TD></TR></TABLE></P>
+<P><B>Structure for defining internal Y = Editor app data (AMS 1.xx version).</B></P>
+
+<P>EQU_DS_AMS1 is the AMS 1.xx version of the <A HREF="#EQU_DS">EQU_DS</A>
+structure. It uses the <A HREF="wingraph.html#WINDOW_AMS1">AMS 1.xx version</A> of the <A HREF="wingraph.html#WINDOW">WINDOW</A> structure.</P>
+
+<P>See also: <A HREF="#EQU_DS">EQU_DS</A></P>
+<HR>
+<H3><A NAME="EQU_DS"><U>EQU_DS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> SEquDS {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="wingraph.html#WINDOW">WINDOW</A> wMain;<BR>
+<B><A HREF="keywords.html#short">short</A></B> focus;<BR>
+<B><A HREF="keywords.html#short">short</A></B> cFunc;<BR>
+<B><A HREF="keywords.html#short">short</A></B> yPos;<BR>
+<B><A HREF="keywords.html#short">short</A></B> xOffset;<BR>
+<B><A HREF="keywords.html#short">short</A></B> yBelow;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> bAltForm;<BR>
+</TD></TR></TABLE>
+} EQU_DS;</TD></TR></TABLE></P>
+<P><B>Structure for defining internal Y = Editor app data.</B></P>
+
+<P>Structure for defining internal Y = Editor app data. This structure is not very well known for the moment, and it is open to anyone who knows more than I do.
+<BR><BR>
+Anyway, this structure is needed by the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> structure.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>, <A HREF="#EQU_DS_AMS1">EQU_DS_AMS1</A></P>
+<HR>
+<H3><A NAME="FUNCID"><U>FUNCID</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> FNum;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> FNum2;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> LNum;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> PlotIndex;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> PlotDir;<BR>
+</TD></TR></TABLE>
+} FUNCID;</TD></TR></TABLE></P>
+<P><B>Function identifier structure.</B></P>
+
+<P>Function identifier structure. This structure is not very well known for the moment, and it is open to anyone who knows more than I do.
+<BR><BR>
+Anyway, this structure is needed by the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> structure.</P>
+
+<HR>
+<H3><A NAME="GR_FLAGS_struct"><U>GR_FLAGS</U></A></H3>
+<P><A HREF="httigcc.html#minams">AMS 2.00 or higher</A></P>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#int">int</A></B> gr_in_progress: 1;<BR>
+<B><A HREF="keywords.html#int">int</A></B> gr_zoom_fit: 1;<BR>
+<B><A HREF="keywords.html#int">int</A></B> gr_cpt_seq_flag: 1;<BR>
+<B><A HREF="keywords.html#int">int</A></B> stat_in_progress: 1;<BR>
+<B><A HREF="keywords.html#int">int</A></B> gr_trace_seq: 1;<BR>
+<B><A HREF="keywords.html#int">int</A></B> de_init_conds: 1;<BR>
+<B><A HREF="keywords.html#int">int</A></B> gr_cpt_de_flag: 1;<BR>
+<B><A HREF="keywords.html#int">int</A></B> new_eqn: 1;<BR>
+<B><A HREF="keywords.html#int">int</A></B> de_error: 1;<BR>
+</TD></TR></TABLE>
+} GR_FLAGS;</TD></TR></TABLE></P>
+<P><B>A structure for defining global flags used by the Graph application.</B></P>
+
+<P>The <I>GR_FLAGS</I> structure is used for defining global flags used by the Graph application (this structure is pointed to by <A HREF="#gr_flags">gr_flags</A>). Each flag is a separate
+member of the structure (each member is in fact a boolean value). The contents of these flags should not be changed by a program,
+but may be accessed for testing the value.
+<BR><BR>
+The purposes of these flags are:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">gr_in_progress</TD><TD VALIGN="TOP">A graph is currently being plotted. Among
+other things, this flag alerts <A HREF="vat.html#VarRecall">VarRecall</A> to set
+the graph reference flag for every user
+variable accessed until this flag is reset to
+enable the Smart Graph feature to work.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">gr_zoom_fit</TD><TD VALIGN="TOP">ZoomFit is being executed. Every graph point
+is computed to determine the min and max
+Window variable values, but while this flag is
+set, nothing is plotted.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">gr_cpt_seq_flag</TD><TD VALIGN="TOP">A graph sequence mode function (u1 - u99)
+is being executed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">stat_in_progress</TD><TD VALIGN="TOP">A statistics calculation is currently being
+performed. Among other things, this flag
+alerts <A HREF="vat.html#VarRecall">VarRecall</A> to set the stat reference flag
+for every user variable accessed until this flag
+is reset to enable the calculator to determine
+when the statistics results are no longer valid.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">gr_trace_seq</TD><TD VALIGN="TOP">A sequence function is being traced.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">de_init_conds</TD><TD VALIGN="TOP">A differential equation is being plotted with
+initial conditions selected interactively using
+the graph cursor.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">gr_cpt_de_flag</TD><TD VALIGN="TOP">A differential equation graphing mode function
+(y1' - y99') is being executed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">new_eqn</TD><TD VALIGN="TOP">The Numeric Solver system variable eqn has
+changed. This alerts the solver graph to
+regraph.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">de_error</TD><TD VALIGN="TOP">An error has occurred while computing a
+differential equation graphing mode function.</TD>
+</TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#gr_flags">gr_flags</A></P>
+<HR>
+<H3><A NAME="GR_MODES"><U>GR_MODES</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> gr_fmt_flags; <I>/* Graph Format flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_xaxis; <I>/* X Axis for SEQUENCE or DIFF EQUATIONS CUSTOM Axes setting */</I><BR>
+<B><A HREF="keywords.html#short">signed</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_yaxis; <I>/* Y Axis for SEQUENCE or DIFF EQUATIONS CUSTOM Axes setting */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> gr_fmt_flags2; <I>/* Graph Format flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_3dflags; <I>/* 3D Graph Style */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> pad; <I>/* Unused. */</I><BR>
+</TD></TR></TABLE>
+} GR_MODES;</TD></TR></TABLE></P>
+<P><B>Structure for describing graph modes.</B></P>
+
+<P>The members of the <I>GR_MODES</I> struct and their contents are as follows:
+<BR><BR>
+Contents of the <I>gr_fmt_flags</I> (Graph Format flags) member as given in the <A HREF="#GrFmtFlags">GrFmtFlags</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_SEQ_TIME</TD>
+<TD VALIGN="TOP" ROWSPAN="2">SEQUENCE Axes settings:</P>
+<UL>
+<LI><P>GR_SEQ_TIME = 1 and GR_SEQ_WEB = 0: TIME</P></LI>
+<LI><P>GR_SEQ_TIME = 0 and GR_SEQ_WEB = 1: WEB</P></LI>
+<LI><P>GR_SEQ_TIME = 0 and GR_SEQ_WEB = 0: CUSTOM </P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_SEQ_WEB</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_BUILD_WEB</TD><TD VALIGN="TOP">SEQUENCE WEB Build Web:</P>
+<UL>
+<LI><P>GR_BUILD_WEB = 0: TRACE</P></LI>
+<LI><P>GR_BUILD_WEB = 1: AUTO</P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3dEXPAND</TD><TD VALIGN="TOP">Set for 3D expanded view mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_COORDOFF</TD><TD VALIGN="TOP" ROWSPAN="2">Graph Coordinates:</P>
+<UL>
+<LI><P>GR_COORDOFF = 0 and GR_COORD_POLAR = 0: RECT</P></LI>
+<LI><P>GR_COORDOFF = 0 and GR_COORD_POLAR = 1: POLAR</P></LI>
+<LI><P>GR_COORDOFF = 1: OFF</P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_COORD_POLAR</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_SIMUL</TD><TD VALIGN="TOP">Graph Order:</P>
+<UL>
+<LI><P>GR_SIMUL = 0: SEQ</P></LI>
+<LI><P>GR_SIMUL = 1: SIMUL</P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_GRIDON</TD><TD VALIGN="TOP">Graph Grid:</P>
+<UL>
+<LI><P>GR_GRIDON = 0: OFF</P></LI>
+<LI><P>GR_GRIDON = 1: ON</P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_AXESOFF</TD><TD VALIGN="TOP">Graph Axes:</P>
+<UL>
+<LI><P>GR_AXESOFF = 0: ON</P></LI>
+<LI><P>GR_AXESOFF = 1: OFF</P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_AXESBOX</TD><TD VALIGN="TOP">3D Axes:</P>
+<UL>
+<LI><P>GR_AXESOFF = 1: OFF</P></LI>
+<LI><P>GR_AXESOFF = 0 and GR_AXESBOX = 0: AXES</P></LI>
+<LI><P>GR_AXESOFF = 0 and GR_AXESBOX = 1: BOX</P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_LABELSON</TD><TD VALIGN="TOP">Graph Labels:</P>
+<UL>
+<LI><P>GR_LABELSON = 0: OFF</P></LI>
+<LI><P>GR_LABELSON = 1: ON</P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_LEAD_CURSOR</TD><TD VALIGN="TOP">Graph Leading Cursor:</P>
+<UL>
+<LI><P>GR_LEAD_CURSOR = 0: OFF</P></LI>
+<LI><P>GR_LEAD_CURSOR = 1: ON</P></LI>
+</UL>
+<P></TD>
+</TR>
+</TABLE>
+<BR>
+Meaning of the <I>gr_xaxis</I> member, X Axis for SEQUENCE or DIFF EQUATIONS CUSTOM Axes setting:</P>
+<UL>
+<LI><P>SEQUENCE X Axis:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP"><I>gr_xaxis</I> value:</TD><TD VALIGN="TOP">meaning:</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-1</TD><TD VALIGN="TOP">n</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">0</TD><TD VALIGN="TOP">u</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">1,2,...,99</TD><TD VALIGN="TOP">u1,u2,...,u99</TD>
+</TR>
+</TABLE></P></LI>
+<LI><P>DIFF EQUATIONS X Axis:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP"><I>gr_xaxis</I> value:</TD><TD VALIGN="TOP">meaning:</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-100</TD><TD VALIGN="TOP">y'</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-1,-2,...,-99</TD><TD VALIGN="TOP">y1',y2',...,y99'</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">0</TD><TD VALIGN="TOP">t</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">1,2,...,99</TD><TD VALIGN="TOP">y1,y2,...,y99</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">100</TD><TD VALIGN="TOP">y</TD>
+</TR>
+</TABLE></P></LI>
+</UL>
+<P>
+
+Meaning of the <I>gr_yaxis</I> member, Y Axis for SEQUENCE or DIFF EQUATIONS CUSTOM Axes setting:</P>
+<UL>
+<LI><P>SEQUENCE Y Axis:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP"><I>gr_yaxis</I> value:</TD><TD VALIGN="TOP">meaning:</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-1</TD><TD VALIGN="TOP">n</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">0</TD><TD VALIGN="TOP">u</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">1,2,...,99</TD><TD VALIGN="TOP">u1,u2,...,u99</TD>
+</TR>
+</TABLE></P></LI>
+<LI><P>DIFF EQUATIONS Y Axis:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP"><I>gr_yaxis</I> value:</TD><TD VALIGN="TOP">meaning:</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-100</TD><TD VALIGN="TOP">y'</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">-1,-2,...,-99</TD><TD VALIGN="TOP">y1',y2',...,y99'</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">0</TD><TD VALIGN="TOP">t</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">1,2,...,99</TD><TD VALIGN="TOP">y1,y2,...,y99</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">100</TD><TD VALIGN="TOP">y</TD>
+</TR>
+</TABLE></P></LI>
+</UL>
+<P>
+Contents of the <I>gr_fmt_flags2</I> (Graph Format flags) member as given in the <A HREF="#GrFmtFlags2">GrFmtFlags2</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_DE_CUSTOM</TD><TD VALIGN="TOP">GR_DE_CUSTOM = 1: DIFF EQUATIONS Axes = CUSTOM</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DE_FIELDS</TD><TD VALIGN="TOP" ROWSPAN="2">DIFF EQUATIONS Fields:</P>
+<UL>
+<LI><P>GR_DE_FIELDS = 1: SLPFLD</P></LI>
+<LI><P>GR_DE_FIELDS = 0 and GR_DIRFLD = 1: DIRFLD</P></LI>
+<LI><P>GR_DE_FIELDS = 0 and GR_DIRFLD = 0: FLDOFF</P></LI>
+</UL>
+<P></TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DIRFLD</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_EULER</TD><TD VALIGN="TOP">DIFF EQUATIONS Solution Method:</P>
+<UL>
+<LI><P>GR_EULER = 0: RK</P></LI>
+<LI><P>GR_EULER = 1: EULER</P></LI>
+</UL>
+<P></TD>
+</TR>
+</TABLE>
+<BR>
+Contents of the <I>gr_3dflags</I> (3D Graph Style) member as given in the <A HREF="#GrMode3dStyles">GrMode3dStyles</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_3D_WIRE_FRAME</TD><TD VALIGN="TOP">Wire frame</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D_HIDDEN_SURFACE</TD><TD VALIGN="TOP">Hidden surface</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D_CONTOUR</TD><TD VALIGN="TOP">Contour levels</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D_CONTOUR_WIRE</TD><TD VALIGN="TOP">Wire and contour</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D_IMPLICIT</TD><TD VALIGN="TOP">Implicit plot</TD>
+</TR>
+</TABLE></P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="GR_WIN_VARS"><U>GR_WIN_VARS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#float">float</A></B> flt_xcursor; <I>/* Graph system variable xc */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> flt_ycursor; <I>/* Graph system variable yc */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> flt_zcursor; <I>/* Graph system variable zc */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> flt_tcursor; <I>/* Graph system variable tc */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> flt_rcursor; <I>/* Graph system variable rc */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> flt_thetacursor; <I>/* Graph system variable &#952;c */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> flt_ncursor; <I>/* Graph system variable nc */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> recip_delx; <I>/* 1/&#916;x rounded to 6 significant digits */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> recip_dely; <I>/* 1/&#916;y rounded to 6 significant digits */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> orgxmin; <I>/* Original xmin, before any panning has occurred */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> orgxmax; <I>/* Original xmax, before any panning has occurred */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> panshift; <I>/* Number of columns panned from orgxmin */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> orgtblst; <I>/* Original tblStart, before any scrolling has occurred */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> tblshift; <I>/* Number of lines scrolled in table */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> tblstart; <I>/* Table system variable tblStart */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> deltatbl; <I>/* Table system variable &#916;tbl */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> *rngp; <I>/* Pointer to current Window variables array */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> PrevRange[12]; <I>/* Current ZoomPrev values */</I><BR>
+<B><A HREF="keywords.html#float">float</A></B> UserRange[29]; <I>/* Current ZoomSto values */</I><BR>
+<A HREF="#GR_MODES">GR_MODES</A> *gr_modep; <I>/* Pointer to <A HREF="#GR_MODES">GR_MODES</A> struct for current graph */</I><BR>
+<A HREF="wingraph.html#WINDOW">WINDOW</A> *grwinp; <I>/* Pointer to current Graph app <A HREF="wingraph.html#WINDOW">WINDOW</A> struct */</I><BR>
+<A HREF="wingraph.html#WINDOW">WINDOW</A> *rngwinp; <I>/* Pointer to current Window Editor app <A HREF="wingraph.html#WINDOW">WINDOW</A> struct */</I><BR>
+<A HREF="wingraph.html#WINDOW">WINDOW</A> *tblwinp; <I>/* Pointer to current Table app <A HREF="wingraph.html#WINDOW">WINDOW</A> struct */</I><BR>
+<A HREF="#TABLE_WIN_VARS">TABLE_WIN_VARS</A> *tableptr; <I>/* Pointer to internal Table app data */</I><BR>
+<B><A HREF="keywords.html#union">union</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="#EQU_DS_AMS1">EQU_DS_AMS1</A> equedDS; <I>/* Internal Y= Editor app data */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> curinc; <I>/* Graph iteration counter */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> curincy; <I>/* 3D y trace mode iteration counter */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> tblindx; <I>/* Index of tblInput element at top of Table */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> yaxispix; <I>/* Pixel number of y axis for panning */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> TBL_WidthLimit; <I>/* Format width for Table app */</I><BR>
+HANDLE zval; <I>/* Handle of the 3D z value array */</I><BR>
+<A HREF="#DB3">DB3</A> DB3z; <I>/* 3D function spin database */</I><BR>
+HANDLE htbinput; <I>/* Handle of the table system variable tblInput */</I><BR>
+HANDLE hfldpic; <I>/* Handle of the graph system variable fldpic */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> gr_win_flags; <I>/* Graph app flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> xmaxpix; <I>/* Rightmost column used by graph in current window */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> ymaxpix; <I>/* Bottom row used by graph in current window */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_ref_mask; <I>/* Graph reference flag mask for current graph */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> graph_mode; <I>/* Graph mode of current graph */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_side; <I>/* Graph window location */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_folder_cnt; <I>/* Number of functions created by the TI-BASIC Graph and Table commands */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_shade_pat; <I>/* Shade pattern */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> rng_xpix; <I>/* Maximum x pixel number on Window Editor screen */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> rng_ypix; <I>/* Maximum y pixel number on Window Editor screen */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> tbl_flags; <I>/* Table app flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> tbl_par_flags; <I>/* Internal Table app flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_top_flags; <I>/* Internal Graph app flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> ValidCursBits; <I>/* Internal Graph app flags */</I><BR>
+<B><A HREF="keywords.html#short">signed</A></B> <B><A HREF="keywords.html#int">char</A></B> de_twopass; <I>/* Internal Graph app flags */</I><BR>
+<A HREF="#FUNCID">FUNCID</A> CurFunc; <I>/* Data for currently selected function for tracing */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> PrevZoomMode; <I>/* Graph mode of current ZoomPrev values */</I><BR>
+</TD></TR></TABLE>
+} ams1;<BR>
+<B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<A HREF="#EQU_DS">EQU_DS</A> equedDS; <I>/* Internal Y= Editor app data */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> curinc; <I>/* Graph iteration counter */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> curincy; <I>/* 3D y trace mode iteration counter */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> tblindx; <I>/* Index of tblInput element at top of Table */</I><BR>
+<B><A HREF="keywords.html#short">short</A></B> yaxispix; <I>/* Pixel number of y axis for panning */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> TBL_WidthLimit; <I>/* Format width for Table app */</I><BR>
+HANDLE zval; <I>/* Handle of the 3D z value array */</I><BR>
+<A HREF="#DB3">DB3</A> DB3z; <I>/* 3D function spin database */</I><BR>
+HANDLE htbinput; <I>/* Handle of the table system variable tblInput */</I><BR>
+HANDLE hfldpic; <I>/* Handle of the graph system variable fldpic */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> gr_win_flags; <I>/* Graph app flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> xmaxpix; <I>/* Rightmost column used by graph in current window */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> ymaxpix; <I>/* Bottom row used by graph in current window */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_ref_mask; <I>/* Graph reference flag mask for current graph */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> graph_mode; <I>/* Graph mode of current graph */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_side; <I>/* Graph window location */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_folder_cnt; <I>/* Number of functions created by the TI-BASIC Graph and Table commands */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_shade_pat; <I>/* Shade pattern */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> rng_xpix; <I>/* Maximum x pixel number on Window Editor screen */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> rng_ypix; <I>/* Maximum y pixel number on Window Editor screen */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> tbl_flags; <I>/* Table app flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> tbl_par_flags; <I>/* Internal Table app flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_top_flags; <I>/* Internal Graph app flags */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> ValidCursBits; <I>/* Internal Graph app flags */</I><BR>
+<B><A HREF="keywords.html#short">signed</A></B> <B><A HREF="keywords.html#int">char</A></B> de_twopass; <I>/* Internal Graph app flags */</I><BR>
+<A HREF="#FUNCID">FUNCID</A> CurFunc; <I>/* Data for currently selected function for tracing */</I><BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> PrevZoomMode; <I>/* Graph mode of current ZoomPrev values */</I><BR>
+</TD></TR></TABLE>
+} ams2;<BR>
+</TD></TR></TABLE>
+};<BR>
+</TD></TR></TABLE>
+} GR_WIN_VARS;</TD></TR></TABLE></P>
+<P><B>Structure defining data for the graph related apps.</B></P>
+
+<P>GR_WIN_VARS is a structure which contains most of the data used by the Graph Application and other graph-related apps.
+<BR><BR>
+<B>Caution:</B> This structure is different on AMS 1.xx and AMS 2.xx (34 bytes bigger on AMS 2.xx, see <A HREF="wingraph.html#WINDOW_AMS1">WINDOW_AMS1</A> for a more detailed explanation)!
+<BR><BR>
+There are two main <I>GR_WIN_VARS</I> structures in the calculator which are pointed by <A HREF="#gr_active">gr_active</A> and <A HREF="#gr_other">gr_other</A>.
+In most cases, you will not have to create a <I>GR_WIN_VARS</I> structure, and therefore the <I>GR_WIN_VARS</I> will only be useful to access data pointed to by <A HREF="#gr_active">gr_active</A> or <A HREF="#gr_other">gr_other</A>.
+<BR><BR>
+None of the data contained in the <I>GR_WIN_VARS</I> struct should be changed directly, but it can be accessed for use. System routines may be called to
+change many items (for example, <A HREF="vat.html#VarStore">VarStore</A> may be used to change the
+graph system variables), but some data is for internal use only and should
+only be changed by the appropriate system app.
+<BR><BR>
+Here is an explanation of all the special structure members:
+<BR><BR>
+The size of the <I>rngp</I> array and the meaning of the elements depend on the current graphing mode (see <A HREF="gdraw.html#GraphModes">GraphModes</A> and <A HREF="#rngLen">rngLen</A>).
+It can point to one of the following sets of indices, as described in the <A HREF="#WinVarEnum">WinVarEnum</A> enum:</P>
+<UL>
+<LI><P>FUNCTION mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XRES</TD><TD VALIGN="TOP">System variable xres.</TD>
+</TR>
+</TABLE>
+</P></LI>
+<LI><P>PARAMETRIC mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TMIN</TD><TD VALIGN="TOP">System variable tmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TMAX</TD><TD VALIGN="TOP">System variable tmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TSTEP</TD><TD VALIGN="TOP">System variable tstep.</TD>
+</TR>
+</TABLE>
+</P></LI>
+<LI><P>POLAR mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_THETMIN</TD><TD VALIGN="TOP">System variable &#952;min.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_THETMAX</TD><TD VALIGN="TOP">System variable &#952;max.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_THETSTEP</TD><TD VALIGN="TOP">System variable &#952;step.</TD>
+</TR>
+</TABLE>
+</P></LI>
+<LI><P>SEQUENCE mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NMIN</TD><TD VALIGN="TOP">System variable nmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NMAX</TD><TD VALIGN="TOP">System variable nmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NPLOT</TD><TD VALIGN="TOP">System variable plotStrt.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NSTEP</TD><TD VALIGN="TOP">System variable plotStep.</TD>
+</TR>
+</TABLE>
+</P></LI>
+<LI><P>3D mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XGRID</TD><TD VALIGN="TOP">System variable xgrid.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YGRID</TD><TD VALIGN="TOP">System variable ygrid.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ZMIN</TD><TD VALIGN="TOP">System variable zmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ZMAX</TD><TD VALIGN="TOP">System variable zmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ZSCL</TD><TD VALIGN="TOP">System variable zscl. (Note that zscl is not used on the TI-89, TI-89 Titanium, TI-92 Plus or Voyage 200.)</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_EYE_THETA</TD><TD VALIGN="TOP">System variable eye&#952;.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_EYE_PHI</TD><TD VALIGN="TOP">System variable eye&#934;.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_EYE_PSI</TD><TD VALIGN="TOP">System variable eye&#936;.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NCONTOUR</TD><TD VALIGN="TOP">System variable ncontour.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCALE</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCALE</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ZSCALE</TD><TD VALIGN="TOP">Internal data.</TD>
+</TR>
+</TABLE>
+</P></LI>
+<LI><P>DIFF EQUATIONS mode indices:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_XMIN</TD><TD VALIGN="TOP">System variable xmin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XMAX</TD><TD VALIGN="TOP">System variable xmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_XSCL</TD><TD VALIGN="TOP">System variable xscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMIN</TD><TD VALIGN="TOP">System variable ymin.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YMAX</TD><TD VALIGN="TOP">System variable ymax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_YSCL</TD><TD VALIGN="TOP">System variable yscl.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAX</TD><TD VALIGN="TOP">System variable &#916;x.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DELTAY</TD><TD VALIGN="TOP">System variable &#916;y.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_T0</TD><TD VALIGN="TOP">System variable t0.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TMAX</TD><TD VALIGN="TOP">System variable tmax.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TSTEP</TD><TD VALIGN="TOP">System variable tstep.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_TPLOT</TD><TD VALIGN="TOP">System variable tplot.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DIFTOL</TD><TD VALIGN="TOP">System variable diftol.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ESTEP</TD><TD VALIGN="TOP">System variable Estep.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_FLDRES</TD><TD VALIGN="TOP">System variable fldres.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_NCURVES</TD><TD VALIGN="TOP">System variable ncurves.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DTIME</TD><TD VALIGN="TOP">System variable dtime.</TD>
+</TR>
+</TABLE></P></LI>
+</UL>
+<P>
+The parameter <I>gr_win_flags</I> can be a combination of the following as described in the <A HREF="#GrWinFlags">GrWinFlags</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_REDRAW</TD><TD VALIGN="TOP">Redraw 3D graph without recomputing.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DIRTY</TD><TD VALIGN="TOP">The current graph needs to be recomputed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TAB_DIRTY</TD><TD VALIGN="TOP">The current table needs to be recomputed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_ADD_TO</TD><TD VALIGN="TOP">Add a function to the current graph without recomputing.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_OPEN</TD><TD VALIGN="TOP">The current graph window is open.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GRAPH_FOLDER</TD><TD VALIGN="TOP">The temporary folder for functions created by the Graph and Table commands exists.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">EYE_DIRTY</TD><TD VALIGN="TOP">The eye of the 3D graph has changed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_SHADE_NO_PAN</TD><TD VALIGN="TOP">The panning is not valid after shading.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">FLDPIC_DIRTY</TD><TD VALIGN="TOP">The system variable fldpic needs to be recomputed.</TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>graph_mode</I> can be one of the following as described in the <A HREF="gdraw.html#GraphModes">GraphModes</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GR_FUNC</TD><TD VALIGN="TOP">FUNCTION mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_PAR</TD><TD VALIGN="TOP">PARAMETRIC mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_POL</TD><TD VALIGN="TOP">POLAR mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_SEQ</TD><TD VALIGN="TOP">SEQUENCE mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_3D</TD><TD VALIGN="TOP">3D mode.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GR_DE</TD><TD VALIGN="TOP">DIFF EQUATIONS mode.</TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>gr_side</I> can be one of the following as described in the <A HREF="#GrSides">GrSides</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">AP_SIDE_A</TD><TD VALIGN="TOP">Top or left split.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">AP_SIDE_B</TD><TD VALIGN="TOP">Bottom or right split.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">AP_SIDE_UNKNOWN</TD><TD VALIGN="TOP">Unknown.</TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>gr_shade_pat</I> can be one of the following as described in the <A HREF="graph.html#Attrs">Attrs</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">A_SHADE_V</TD><TD VALIGN="TOP">Vertical shade pattern.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">A_SHADE_H</TD><TD VALIGN="TOP">Horizontal shade pattern.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">A_SHADE_NS</TD><TD VALIGN="TOP">Negative slope 45° shade pattern.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">A_SHADE_PS</TD><TD VALIGN="TOP">Positive slope 45° shade pattern.</TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>tbl_flags</I> can be one of the following as described in the <A HREF="#TableFlags">TableFlags</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">TBL_CONNECT_TRC</TD><TD VALIGN="TOP">Set when Graph&lt;-&gt;Table = ON.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TBL_INDEP_ASK</TD><TD VALIGN="TOP">Set when Independent = ASK.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TBL_NO_MODE_CHANGE</TD><TD VALIGN="TOP">Set when executing the DispTbl command.</TD>
+</TR>
+</TABLE>
+</P>
+
+<HR>
+<H3><A NAME="GrFmtFlags2"><U>GrFmtFlags2</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> GrFmtFlags2 {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+GR_DE_CUSTOM = 0x0010, GR_DE_FIELDS = 0x0004, GR_DIRFLD = 0x0002, GR_EULER = 0x0001</TD></TR></TABLE>
+};</TD></TR></TABLE></P>
+<P><B>Enumerates different Graph Format flags for the <A HREF="#GR_MODES">GR_MODES</A> struct.</B></P>
+
+<P>Enumerates different Graph Format flags. The meaning of these flags is given in the description of <A HREF="#GR_MODES">GR_MODES</A>.</P>
+
+<P>See also: <A HREF="#GR_MODES">GR_MODES</A>, <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="GrFmtFlags"><U>GrFmtFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> GrFmtFlags {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+GR_SEQ_TIME = 0x8000, GR_SEQ_WEB = 0x4000, GR_BUILD_WEB = 0x2000, GR_3dEXPAND = 0x0800, GR_COORDOFF = 0x0080, GR_SIMUL = 0x0040, GR_GRIDON = 0x0020, GR_AXESOFF = 0x0010,GR_AXESBOX = 0x0008, GR_LABELSON = 0x0004,GR_LEAD_CURSOR = 0x0002, GR_COORD_POLAR = 0x0001</TD></TR></TABLE>
+};</TD></TR></TABLE></P>
+<P><B>Enumerates different Graph Format flags for the <A HREF="#GR_MODES">GR_MODES</A> struct.</B></P>
+
+<P>Enumerates different Graph Format flags. The meaning of these flags is given in the description of <A HREF="#GR_MODES">GR_MODES</A>.</P>
+
+<P>See also: <A HREF="#GR_MODES">GR_MODES</A>, <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="GrMode3dStyles"><U>GrMode3dStyles</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> GrMode3dStyles {GR_3D_WIRE_FRAME = 0, GR_3D_HIDDEN_SURFACE = 1, GR_3D_CONTOUR = 2, GR_3D_CONTOUR_WIRE = 3, GR_3D_IMPLICIT = 4};</TD></TR></TABLE></P>
+<P><B>Enumerates different 3D Graph Style flags for the <A HREF="#GR_MODES">GR_MODES</A> struct.</B></P>
+
+<P>Enumerates different 3D Graph Style flags. The meaning of these flags is given in the description of <A HREF="#GR_MODES">GR_MODES</A>.</P>
+
+<P>See also: <A HREF="#GR_MODES">GR_MODES</A>, <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="GrSides"><U>GrSides</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> GrSides {AP_SIDE_A = 0, AP_SIDE_B = 1, AP_SIDE_UNKNOWN = 2};</TD></TR></TABLE></P>
+<P><B>Enumerates different Graph side flags for the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.</B></P>
+
+<P>Enumerates different Graph side flags used in the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> structure. 
+<BR><BR>
+The meaning of these flags is given in the description of <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="GrWinFlags"><U>GrWinFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> GrWinFlags {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+GR_REDRAW = 0x0100, GR_DIRTY = 0x0080, TAB_DIRTY = 0x0040, GR_ADD_TO = 0x0020, GR_OPEN = 0x0010, GRAPH_FOLDER = 0x0008, EYE_DIRTY = 0x0004, GR_SHADE_NO_PAN = 0x0002, FLDPIC_DIRTY = 0x0001</TD></TR></TABLE>
+} ;</TD></TR></TABLE></P>
+<P><B>Enumerates different Graph app flags for the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.</B></P>
+
+<P>Enumerates different Graph app flags used in the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> structure. 
+<BR><BR>
+The meaning of these flags is given in the description of <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="TABLE_WIN_VARS"><U>TABLE_WIN_VARS</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#typedef">typedef</A></B> <B><A HREF="keywords.html#struct">struct</A></B> {
+<TABLE><TR><TD WIDTH="12"></TD><TD CLASS="CODE">
+<B><A HREF="keywords.html#short">short</A></B> last_col;<BR>
+<B><A HREF="keywords.html#short">short</A></B> last_row;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> table_xpix;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#short">short</A></B> table_ypix;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> curtblinc;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> curtblincy;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> col_first;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> col_last;<BR>
+<B><A HREF="keywords.html#short">short</A></B> row_first;<BR>
+<B><A HREF="keywords.html#short">short</A></B> row_last;<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> tbfn[10];<BR>
+<B><A HREF="keywords.html#short">unsigned</A></B> <B><A HREF="keywords.html#int">char</A></B> gr_xpix;<BR>
+<B><A HREF="keywords.html#float">float</A></B> orgtblmax;<BR>
+</TD></TR></TABLE>
+} TABLE_WIN_VARS;</TD></TR></TABLE></P>
+<P><B>Structure for defining Table app data.</B></P>
+
+<P>TABLE_WIN_VARS Structure is used to define Table app data. It is only used in the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> structure and is not very well known for the moment. If you have any information about this structure, please help.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="TableFlags"><U>TableFlags</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> TableFlags {TBL_CONNECT_TRC = 0x80, TBL_INDEP_ASK = 0x40, TBL_NO_MODE_CHANGE = 0x20};</TD></TR></TABLE></P>
+<P><B>Enumerates different Table app flags for the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> struct.</B></P>
+
+<P>Enumerates different Table app flags used in the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> structure. 
+<BR><BR>
+The meaning of these flags is given in the description of <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A NAME="WinVarEnum"><U>WinVarEnum</U></A></H3>
+<P><TABLE BORDER="1" CELLPADDING="2"><TR><TD CLASS="CODE"><B><A HREF="keywords.html#enum">enum</A></B> WinVarEnum {GR_XMIN = 0, GR_XMAX = 1, GR_XSCL = 2, GR_YMIN = 3, R_YMAX = 4, GR_YSCL = 5, GR_DELTAX = 6, GR_DELTAY = 7, GR_XRES = 8, GR_TMIN = 8, GR_T0 = 8, GR_TMAX = 9, GR_TSTEP = 10, GR_TPLOT = 11, GR_DIFTOL = 12, GR_ESTEP = 13, GR_FLDRES = 14, GR_NCURVES = 15, GR_DTIME = 16, GR_THETMIN = 8, GR_THETMAX = 9, GR_THETSTEP = 10, GR_XGRID = 2, GR_YGRID = 5, GR_ZMIN = 8, GR_ZMAX = 9, GR_ZSCL = 10, GR_EYE_THETA = 11, GR_EYE_PHI = 12, GR_EYE_PSI = 13, GR_NCONTOUR = 14, GR_XSCALE = 15, GR_YSCALE = 16, GR_ZSCALE = 17, GR_NMIN = 8, GR_NMAX = 9, GR_NPLOT = 10, GR_NSTEP = 11};</TD></TR></TABLE></P>
+<P><B>Describes different Window variables.</B></P>
+
+<P>WinVarEnum describes different Window variables. They are mainly used in the <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A> structure.
+<BR><BR>
+The meaning of the flags is explained in the description of <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A>.</P>
+
+<P>See also: <A HREF="#GR_WIN_VARS">GR_WIN_VARS</A></P>
+<HR>
+<H3><A HREF="index.html">Return to the main index</A></H3>
+</BODY>
+</HTML>
