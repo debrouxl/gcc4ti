@@ -4,8 +4,8 @@
 #include <string.h>
 
 //tmpnam implementation by Greg Dietsche
-//email: gforce@calc.org
-//webpage: http://gforce.calc.org/
+//email: calc@gregd.org
+//webpage: http://calc.gregd.org/
 
 __ATTR_LIB_C__ char *tmpnam(char *s)
 {
