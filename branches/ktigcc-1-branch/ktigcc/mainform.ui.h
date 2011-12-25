@@ -4194,7 +4194,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           procio->setComm(static_cast<KProcess::Communication>(
             KProcess::Stdout|KProcess::MergedStderr));
           procio->setWorkingDirectory(fileDir);
-          *procio<<(QString("%1/bin/patcher").arg(tigcc_base))
+          *procio<<(QString("%1/bin/tigcc-patcher").arg(tigcc_base))
                  <<tempAsmFile<<"-o"<<tempAsmFile;
           connect(procio,SIGNAL(processExited(KProcess*)),this,SLOT(procio_processExited()));
           connect(procio,SIGNAL(readReady(KProcIO*)),this,SLOT(procio_readReady()));

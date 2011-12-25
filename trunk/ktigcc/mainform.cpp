@@ -4303,7 +4303,7 @@ void MainForm::compileFile(void *srcFile, bool inProject, bool force)
           process=new KProcess();
           process->setOutputChannelMode(KProcess::MergedChannels);
           process->setWorkingDirectory(fileDir);
-          *process<<(QString("%1/bin/patcher").arg(tigcc_base))
+          *process<<(QString("%1/bin/tigcc-patcher").arg(tigcc_base))
                   <<tempAsmFile<<"-o"<<tempAsmFile;
           connect(process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(process_finished()));
           connect(process,SIGNAL(readyRead()),this,SLOT(process_readyRead()));
