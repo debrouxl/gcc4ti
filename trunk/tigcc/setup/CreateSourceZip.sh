@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ZIPDIR=`pwd`/../../../gcc4ti-source
+ZIPDIR=`pwd`/../../../gcc4ti-0.96b11
 
 rm -f "$ZIPDIR/gcc4tisrc.zip"
 mkdir srczip
