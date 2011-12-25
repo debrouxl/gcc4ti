@@ -31,6 +31,8 @@ else
 WINE=
 fi
 
+CC=gcc
+
 
 mkdir -p "$OUTDIR/tigcclib/doc/html"
 
@@ -51,6 +53,8 @@ cd "$TIGCCDIR/doc"
 tar -c --exclude='*/.[sS][vV][nN]' -f "$PWDSAVE/$OUTDIR/tigcclib/doc/source.tar" Programs System
 bzip2 -9 "$PWDSAVE/$OUTDIR/tigcclib/doc/source.tar"
 cp -R converter "$PWDSAVE/$OUTDIR/tigcclib/doc/"
+cd "$PWDSAVE/$OUTDIR/tigcclib/doc/converter"
+$CC -O3 -Wall -W -o chm2dcf chm2dcf.c
 cd "$PWDSAVE"
 
 echo Copying documentation files...
@@ -82,6 +86,6 @@ echo .
 
 echo Converting CHM documentation to Qt DCF/ADP format \(will take several minutes\)...
 cd "$OUTDIR/tigcclib/doc/html"
-../converter/chm2dcf
+../converter/chm2dcf; rm ../converter/chm2dcf
 ../converter/dcf2adp
 echo Done.
