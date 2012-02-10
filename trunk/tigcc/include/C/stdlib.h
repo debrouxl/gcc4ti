@@ -77,7 +77,7 @@ extern float atof(const char*)__ATTR_LIB_ASM__;
 #endif
 #if MIN_AMS>=200
 extern double strtod(const char*,char**)__ATTR_LIB_ASM__;
-double TIOS_strtod(const char*,char**);
+#define TIOS_strtod(x,y) _tios_float_2(4D4,x,y,const char*,char**)
 #endif
 #endif
 /* End Auto-Generated Part */

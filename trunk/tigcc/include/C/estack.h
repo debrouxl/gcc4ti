@@ -255,7 +255,7 @@ extern void push_shortint(short)__ATTR_LIB_ASM__;
 #define should_and_did_push_approx_arg2 ({__need_in_use_bit;_rom_call(short,(CESI,CESI),311);})
 #define signum_Float _rom_call(long,(CESI),312)
 #if MIN_AMS>=200
-const float*const FLOATTAB;
+#define FLOATTAB ((const float*const)(_rom_call_addr(464)))
 #define is0 _rom_call(short,(CESI),269)
 #define is1 _rom_call(short,(CESI),2FD)
 #define is_temperature_unit _rom_call(short,(CESI),410)
